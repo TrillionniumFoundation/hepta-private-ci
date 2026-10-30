@@ -1,0 +1,222 @@
+{
+  "base_commit": "68eb16caa9c14c7b5729585c86d9c293018a987c",
+  "channel_contract": {
+    "G": "immediate fire/reset/refractory and resume same threshold policy: x-K+q*J(b)",
+    "J": "stationary regenerative threshold policy envelope including all future firings",
+    "dual_gate_features": [
+      "scaled margin",
+      "J/(1+abs(J))",
+      "G/(1+abs(G))"
+    ],
+    "financial_scope": "J/G are policy envelope and intervention obstacle; neither is a claimed exact He-Xiong financial Call/Put operator",
+    "first_passage_probability": "drives mean-state reset/refractory and activity; not substituted for a Put value",
+    "free_continuation_gate_features": [
+      "scaled margin",
+      "J/(1+abs(J))"
+    ],
+    "free_margin_gate_features": [
+      "scaled margin"
+    ],
+    "free_ordinary": "same pressure/FPT dynamics but gate features use scaled margin and raw-state transforms; separate two_gates is ordinary gated-RNN external control",
+    "gap": "J-G; free stationary optimum nonnegative, value and first slope match at b; direct/fixed generally only value match"
+  },
+  "content_gate": {
+    "ood": "synthetic lengths32train/64test; irregular additionally3xdt; report ID/OOD separately",
+    "real_data_scope": "speaker-disjoint600FSDD recordings and MNIST images with literal query tokens; not language/video/foundation-model evidence",
+    "rule": "On each named task free_dual mean accuracy should be within2percentagepoints of best external baseline under the same search budget; this is a screening gate, not an equivalence test"
+  },
+  "core": {
+    "models": [
+      "free_dual",
+      "legacy_hcsn",
+      "two_gates",
+      "continuous_rnn",
+      "cfc",
+      "mamba1",
+      "transformer",
+      "lif_snn"
+    ],
+    "seeds": [
+      9101,
+      9102,
+      9103
+    ],
+    "tasks": [
+      "selective_copy",
+      "mqar",
+      "irregular",
+      "mnist",
+      "fsdd",
+      "multimodal_select"
+    ]
+  },
+  "cost_accounting": {
+    "additional_costs": "setup, validation, checkpoint IO, reporting, holdout evaluation, native model/owner execution, recovery separately measured and included in total",
+    "budget_unit": "2 LR candidates each20CPU sec per model-task-seed; checkpoints may choose an earlier model but full search cost charged",
+    "energy": "not measured; no Joule or neuromorphic energy claim",
+    "training_clock": "process CPU includes minibatch sampling, forward/backward, gradient summaries, clipping, optimizer; complete update overrun counted"
+  },
+  "execution": {
+    "expected_lr_candidates": 488,
+    "expected_searches": 244,
+    "job_shuffle_seed": 20261029,
+    "nominal_training_cpu_seconds": 9760,
+    "outcome_changes_forbidden": "no source/data/budget/hyperparameter changes after main outcomes; bugs require a new study identity and preserved prior evidence",
+    "parallel_workers": 3,
+    "priority_jobs": [
+      {
+        "model": "free_dual",
+        "seed": 9101,
+        "task": "mnist"
+      }
+    ],
+    "priority_reason": "unblocks the predeclared native integration evaluation; all remaining jobs shuffled before outcomes"
+  },
+  "mechanism": {
+    "models": [
+      "free_dual",
+      "fixed_dual",
+      "direct_dual",
+      "free_margin",
+      "free_continuation",
+      "free_ordinary",
+      "two_gates"
+    ],
+    "seeds": [
+      9101,
+      9102,
+      9103,
+      9104,
+      9105,
+      9106,
+      9107,
+      9108
+    ],
+    "tasks": [
+      "selective_copy",
+      "multimodal_select"
+    ]
+  },
+  "model_scope": {
+    "certified_oracle": "static scalar value, optimal boundary, first-passage terms and regenerative renewal reward; does not certify mean closure",
+    "class": "differentiable mean-state closure cell with exact stationary local boundary",
+    "continuous_process_propagation": "not exact and not timestep-consistent under repeated distribution collapse; closure001 independently measures this bias",
+    "prohibition": "Do not label mean closure as exact continuous-boundary stochastic flow, and do not interpret K*activity as real repeated-event cost"
+  },
+  "native_evaluation": {
+    "causality": "actual native STOP exits model step loop; initial durable state matched for individual channel interventions",
+    "cohort": "first32testepisodes, fixed before test metrics",
+    "cpu_cost_scenarios": {
+      "amortization_episode_counts": [
+        1000,
+        10000,
+        100000
+      ],
+      "formula": "accuracy-read_price*reads-cpu_price*((complete_search_child_CPU+shared_driver_setup_CPU+recovery_verification_CPU)/N + measured_policy_parent_and_native_inference_CPU_per_episode)",
+      "interpretation": "scenario conversion only; no observed monetary or energy cost inferred; shared training costs cancel only where both controllers use the same trained checkpoint",
+      "shared_setup": "Each standalone deployment scenario conservatively pays the whole shared audit/load/report setup once, amortized over N; scenarios are alternatives and must not be summed as one bill.",
+      "utility_units_per_cpu_second": [
+        0,
+        0.0001,
+        0.001,
+        0.01
+      ]
+    },
+    "model": "free_dual",
+    "policies": [
+      "causal_maxout",
+      "ordinary_affine",
+      "continuation_only"
+    ],
+    "read_costs": [
+      0.005,
+      0.02,
+      0.05
+    ],
+    "recovery": "state serialization and real native child process resume; distinguish same Python object recreation from true interpreter restart scaling test",
+    "references": [
+      "read_all",
+      "fixed8",
+      "fixed16",
+      "fixed24"
+    ],
+    "reward": "1 if final predicted class correct, else0; net utility reward minus price*actual reads",
+    "seed": 9101,
+    "selection": "owner controller coefficients frozen before test; no fitted-optimal controller claim",
+    "task": "mnist",
+    "training_charge": "Complete per-search wait4 child CPU, including interpreter/import/setup/two LRs/validation/checkpoint/heldout costs; conservative lifecycle charge. Require EXECUTION.json for main study."
+  },
+  "optimization": {
+    "batch_size": 32,
+    "clip_gradient_l2": 2.0,
+    "depth": 1,
+    "evaluation_batch_size": 128,
+    "fixed_step_rule": "128-only snapshot is ineligible for primary selection; secondary choose LR by validation CE at exactly128, report missing arms without extrapolation",
+    "fixed_step_secondary": 128,
+    "learning_rates": [
+      0.001,
+      0.003
+    ],
+    "loss": "task cross entropy only; ignore_index=-100",
+    "max_updates": 8192,
+    "optimizer": "Adam default betas, no weight decay",
+    "parameter_matching": "same frontend/readout; external active backbone parameters within5percent; no dummy padding; report exact counts",
+    "primary_checkpoints_cpu_seconds": [
+      5.0,
+      10.0,
+      20.0
+    ],
+    "selection": "minimum validation CE over common CPU checkpoints only, then LRs; ties favor earlier CPU, then smaller LR",
+    "threads": 1,
+    "training_cpu_seconds_per_lr": 20.0,
+    "width": 32
+  },
+  "question": "Does a task-trained stationary regenerative-boundary inductive bias improve heldout content or measured execution cost?",
+  "scaling": {
+    "batch_sizes": [
+      1,
+      16
+    ],
+    "claim_scope": "reference CPU implementations; not optimized CUDA FlashAttention/Mamba or neuromorphic hardware",
+    "environment": "CPU only, single thread per process",
+    "free_depths": [
+      1,
+      2
+    ],
+    "free_widths": [
+      16,
+      32,
+      64
+    ],
+    "sequence_lengths": [
+      32,
+      64,
+      128
+    ],
+    "timing": "one warmup and three measured repetitions; root solve forward/backward separated"
+  },
+  "schema": "hcsn-precommitted-study.v1",
+  "statistics": {
+    "acceptance": "all three: mean advantage>=.01, Holm adjusted p<=.05, paired interval lower>0",
+    "aggregation": "no pooled cross-task sample-size weighting; macro task average descriptive only",
+    "alpha": 0.05,
+    "confidence_interval": "paired t nominal95percent with7df; not a simultaneous interval",
+    "contrast": "free_dual minus comparison; first average two fixed tasks within eachseed, then across8seeds",
+    "core_three_seed_results": "descriptive only, no strong significance claim",
+    "dataset_dependence": "repeated FSDD recordings are not independent episodes; record source/speaker strata and do not use episode-level binomial CI as population evidence",
+    "mechanism_contrasts": [
+      "fixed_dual",
+      "direct_dual",
+      "free_margin",
+      "free_continuation",
+      "free_ordinary",
+      "two_gates"
+    ],
+    "minimum_mean_advantage": 0.01,
+    "missing_or_failed_run": "preserve failure evidence; affected comparison incomplete and cannot pass; no silent deletion or retuning",
+    "primary_metric": "query-token classification accuracy",
+    "test": "two-sided exact sign-flip of eight paired seed differences; symmetry/sign-exchangeability assumption; Holm family of6"
+  },
+  "status_at_freeze": "no_main_training_started",
+  "study_id": "study001"
+}

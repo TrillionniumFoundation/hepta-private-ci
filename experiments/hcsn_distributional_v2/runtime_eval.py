@@ -33,6 +33,65 @@ def write_json(path, value):
                                     allow_nan=False) + "\n")
 
 
+def verify_sources(mapping):
+    for filename, expected in mapping.items():
+        if digest(filename) != expected:
+            raise ValueError("Source identity changed: " + filename)
+
+
+def verified_training_run(directory):
+    """Bind a completed selected MNIST model, not an interchangeable NPZ shape."""
+    directory = Path(directory).resolve()
+    repository = Path(__file__).resolve().parents[2]
+    study = directory.parents[1]
+    names = ("summary.json", "selection.json", "IDENTITY.json", "EXECUTION.json")
+    summary, selection, identity, execution = (
+        json.loads((directory / name).read_bytes()) for name in names)
+    if summary["status"] != "completed" or identity["status"] != "completed" or execution["returncode"]:
+        raise ValueError("Training run is not successfully completed")
+    job = identity["job"]
+    if job["task"] != "mnist" or job["model"] != "distribution_free_dual" or execution["job"] != job:
+        raise ValueError("Expected the registered MNIST distribution_free_dual run")
+    model_config = summary["selected_model_config"]
+    constructor = {key: model_config[key] for key in ("name", "input_dim", "output_dim", "width", "depth", "seed")}
+    if constructor["input_dim"] != 64 or constructor["output_dim"] != 10:
+        raise ValueError("Unexpected MNIST input/output dimensions")
+    if constructor["name"] != job["model"] or constructor["seed"] != job["seed"]:
+        raise ValueError("Training identity differs from selected configuration")
+    request = summary["request"]
+    if any(request[key] != constructor[key] for key in ("width", "depth", "seed")) or request["model"] != constructor["name"]:
+        raise ValueError("Training request/configuration mismatch")
+    if summary["selection"] != selection or selection["completed_lr_candidates"] != len(summary["candidates"]):
+        raise ValueError("Selection record is inconsistent")
+    if selection["completed_lr_candidates"] != len(request["learning_rates"]):
+        raise ValueError("Not all learning-rate candidates completed")
+    checkpoint = directory / "selected.npz"
+    if digest(checkpoint) != selection["selected_checkpoint_sha256"]:
+        raise ValueError("Selected model weights changed")
+    if selection["dataset_sha256"] != identity["dataset_sha256"]:
+        raise ValueError("Training dataset identity differs")
+    registration = json.loads((study / "REGISTRATION.json").read_bytes())
+    if identity["protocol_sha256"] != registration["protocol_sha256"] or execution["protocol_sha256"] != registration["protocol_sha256"]:
+        raise ValueError("Training protocol binding differs")
+    protocols = [path for path in (study / "source").glob("CONTENT*PROTOCOL.json")
+                 if digest(path) == registration["protocol_sha256"]]
+    if len(protocols) != 1:
+        raise ValueError("Missing unique registered protocol snapshot")
+    protocol = json.loads(protocols[0].read_bytes())
+    if job not in protocol["jobs"] or protocol["source_files_sha256"] != identity["source_files_sha256"]:
+        raise ValueError("Unregistered training job/dependencies")
+    for relative, expected in identity["source_files_sha256"].items():
+        if digest(repository / relative) != expected:
+            raise ValueError("Registered training dependency changed: " + relative)
+    data = protocol["data"]["mnist"]
+    if data["sha256"] != identity["dataset_sha256"] or digest(repository / data["path"]) != data["sha256"]:
+        raise ValueError("Registered MNIST dataset changed")
+    binding = dict(run=str(directory), files={name: digest(directory / name) for name in names},
+                   selected_checkpoint_sha256=digest(checkpoint), protocol_sha256=registration["protocol_sha256"],
+                   full_model_config=model_config, job=job, successful_completed_worker=True)
+    return checkpoint, constructor, binding
+
+
 def measured_child(arguments, log_path):
     command = [sys.executable, "-m", __package__ + ".runtime_eval", *arguments]
     start = time.monotonic()
@@ -56,12 +115,31 @@ def numeric_state(state):
     return result
 
 
-def read_state(path, depth):
+def read_state(path, config, batch, array_schema):
     with np.load(path, allow_pickle=False) as stored:
-        arrays = {key: torch.from_numpy(np.array(stored[key], copy=True))
-                  for key in stored.files}
+        raw = {key: np.array(stored[key], copy=True) for key in stored.files}
+    expected = {"elapsed": [batch]}
+    for index in range(config["depth"]):
+        expected.update({f"layer_{index}.content": [batch, config["width"]],
+                         f"layer_{index}.probability": [batch, config["physical_channels"],
+                                                       config["grid_cells"] + config["refractory_stages"]],
+                         f"layer_{index}.boundary": [batch, config["physical_channels"]]})
+    if set(raw) != set(expected) or set(array_schema) != set(expected):
+        raise ValueError("Incomplete or unknown checkpoint fields")
+    for key, value in raw.items():
+        if list(value.shape) != expected[key] or value.dtype != np.dtype("float32") or not np.isfinite(value).all():
+            raise ValueError("Invalid checkpoint shape/dtype/numerics: " + key)
+        if array_schema[key] != dict(shape=list(value.shape), dtype=str(value.dtype)):
+            raise ValueError("Checkpoint array metadata mismatch")
+        if key.endswith("probability") and (value.min() < -1e-7 or np.max(np.abs(value.sum(-1) - 1)) > 1e-4):
+            raise ValueError("Checkpoint probability is not a valid numerical distribution")
+        if key.endswith("boundary") and value.min() <= config["lower"]:
+            raise ValueError("Checkpoint boundary is outside the physical domain")
+    if raw["elapsed"].min() < 0:
+        raise ValueError("Negative elapsed time")
+    arrays = {key: torch.from_numpy(value) for key, value in raw.items()}
     state = dict(elapsed=arrays.pop("elapsed"), layers=[])
-    for index in range(depth):
+    for index in range(config["depth"]):
         prefix = f"layer_{index}."
         layer = {key[len(prefix):]: arrays.pop(key) for key in list(arrays)
                  if key.startswith(prefix)}
@@ -115,17 +193,21 @@ def measure_case(output, name, batch, length, repeats=3):
 
 def resume_worker(output):
     contract = json.loads((output / "CHECKPOINT.json").read_bytes())
+    if contract["schema"] != "hcsn-v2-stream-checkpoint.v2":
+        raise ValueError("Unknown stream checkpoint schema")
+    if contract["writer_pid"] == os.getpid():
+        raise ValueError("Resume did not use a distinct Python process")
     for filename, expected in contract["files"].items():
         if digest(output / filename) != expected:
             raise ValueError("Resume input identity changed: " + filename)
-    for filename, expected in contract["source"].items():
-        if digest(filename) != expected:
-            raise ValueError("Resume source identity changed: " + filename)
+    verify_sources(contract["source"])
     cpu = time.process_time()
     model = build_model(**contract["model"])
+    if model.config != contract["full_model_config"]:
+        raise ValueError("Full physical model configuration changed")
     load_weights(output / "weights.npz", model)
     model.eval()
-    state = read_state(output / "mid_state.npz", contract["model"]["depth"])
+    state = read_state(output / "mid_state.npz", model.config, contract["batch"], contract["state_array_schema"])
     with np.load(output / "suffix.npz", allow_pickle=False) as archive:
         inputs = torch.from_numpy(archive["x"].copy())
         durations = torch.from_numpy(archive["dt"].copy())
@@ -139,14 +221,20 @@ def resume_worker(output):
     np.savez_compressed(output / "resumed_state.npz", **numeric_state(state))
     write_json(output / "RESUME_COST.json", dict(load_model_and_state_cpu_seconds=restored_cpu,
                self_cpu_after_input_validation=time.process_time() - cpu,
-               pid=os.getpid(), new_python_interpreter=True,
+               pid=os.getpid(), writer_pid=contract["writer_pid"],
+               new_python_interpreter=os.getpid() != contract["writer_pid"],
                scope="Worker complete CPU, including imports and hash checks, is measured by parent wait4"))
 
 
-def recovery_case(output, checkpoint=None):
+def recovery_case(output, checkpoint_run=None):
     config = dict(name="distribution_free_dual", input_dim=64, output_dim=10,
-                  width=32, depth=1 if checkpoint else 2, seed=730003)
+                  width=32, depth=2, seed=730003)
+    checkpoint, training_binding = None, None
+    if checkpoint_run:
+        checkpoint, config, training_binding = verified_training_run(checkpoint_run)
     model = build_model(**config)
+    if training_binding and model.config != training_binding["full_model_config"]:
+        raise ValueError("Selected full physical configuration is incompatible with current code")
     if checkpoint:
         load_weights(checkpoint, model)
     model.eval()
@@ -168,6 +256,8 @@ def recovery_case(output, checkpoint=None):
                                    for layer in state["layers"]))
             if index + 1 == cut:
                 np.savez_compressed(output / "mid_state.npz", **arrays)
+                state_array_schema = {key: dict(shape=list(value.shape), dtype=str(value.dtype))
+                                      for key, value in arrays.items()}
                 refractory_mass = [float(layer["probability"][..., 8:].sum(-1).max())
                                    for layer in state["layers"]]
         streaming = torch.stack(outputs, 1)
@@ -176,7 +266,9 @@ def recovery_case(output, checkpoint=None):
     np.savez_compressed(output / "uninterrupted_logits.npz", logits=expected_logits)
     np.savez_compressed(output / "uninterrupted_state.npz", **expected_state)
     source_paths = execution_sources()
-    contract = dict(schema="hcsn-v2-stream-checkpoint.v1", model=config,
+    contract = dict(schema="hcsn-v2-stream-checkpoint.v2", model=config,
+                    full_model_config=model.config, writer_pid=os.getpid(),
+                    state_array_schema=state_array_schema, training_binding=training_binding,
                     inputs="deterministic synthetic, not content-quality evaluation",
                     trained_weights=checkpoint is not None,
                     input_checkpoint_sha256=digest(checkpoint) if checkpoint else None,
@@ -198,6 +290,7 @@ def recovery_case(output, checkpoint=None):
     sequence_error = float((full-streaming).abs().max())
     record = dict(schema="hcsn-v2-recovery-result.v1", model=config,
                   trained_weights=checkpoint is not None, batch=batch, steps=length,
+                  training_binding=training_binding,
                   split_at=cut, suffix_steps=length-cut,
                   full_vs_stream_max_absolute_logit_error=sequence_error,
                   full_vs_stream_tolerance=1e-4,
@@ -209,7 +302,7 @@ def recovery_case(output, checkpoint=None):
                   persistent_state_bytes_by_step=state_sizes,
                   max_probability_mass_error=max(mass_errors),
                   resume_complete_child=cost,
-                  state_scope="Only elapsed/content/probability/old_boundary; excludes parameters, outputs, BPTT and baseline caches")
+                  state_scope="Only elapsed/content/probability/boundary; excludes parameters, outputs, BPTT and baseline caches")
     write_json(output / "RESULT.json", record)
     if (not record["resumed_logits_bitwise_equal"] or not same_state
             or sequence_error > 1e-4 or min(refractory_mass) <= 0
@@ -224,29 +317,35 @@ def execution_sources():
             + sorted(Path("experiments/continuous_spiking_network").glob("*.py")))
 
 
-def run_suite(output, checkpoint=None):
+def run_suite(output, checkpoint_run=None):
     output.mkdir(parents=True, exist_ok=False)
     source = {str(path): digest(path) for path in execution_sources()}
+    checkpoint, training_binding = None, None
+    if checkpoint_run:
+        checkpoint, _, training_binding = verified_training_run(checkpoint_run)
     write_json(output / "REGISTRATION.json", dict(schema="hcsn-v2-runtime-registration.v1",
                models=list(MODEL_NAMES), configurations=[[4, 32], [4, 128]], repeats=3,
                source=source, checkpoint_sha256=digest(checkpoint) if checkpoint else None,
+               training_binding=training_binding,
                content_quality_claim=False, gpu_energy_claim=False))
-    start, records = time.process_time(), []
+    records = []
     for batch, length in ((4, 32), (4, 128)):
         for name in MODEL_NAMES:
             directory = output / f"{name}_b{batch}_t{length}"
             directory.mkdir()
             arguments = ["bench", "--output", str(directory), "--model", name,
-                         "--batch", str(batch), "--length", str(length)]
+                         "--batch", str(batch), "--length", str(length),
+                         "--registration", str(output / "REGISTRATION.json")]
             execution = measured_child(arguments, directory / "process.log")
             write_json(directory / "EXECUTION.json", execution)
             records.append(dict(path=str(directory), execution=execution))
             write_json(output / "PROGRESS.json", dict(records=records))
     directory = output / "recovery"
     directory.mkdir()
-    arguments = ["recovery", "--output", str(directory)]
-    if checkpoint:
-        arguments += ["--checkpoint", str(checkpoint)]
+    arguments = ["recovery", "--output", str(directory),
+                 "--registration", str(output / "REGISTRATION.json")]
+    if checkpoint_run:
+        arguments += ["--checkpoint-run", str(checkpoint_run)]
     execution = measured_child(arguments, directory / "process.log")
     write_json(directory / "EXECUTION.json", execution)
     records.append(dict(path=str(directory), execution=execution))
@@ -254,7 +353,7 @@ def run_suite(output, checkpoint=None):
     complete = dict(schema="hcsn-v2-runtime-complete.v1", records=records,
                     source_changed_during_run=changed,
                     complete_workers_cpu_seconds=sum(x["execution"]["child_cpu_seconds"] for x in records),
-                    coordinator_cpu_through_cutoff=time.process_time()-start,
+                    coordinator_complete_self_cpu_through_cutoff=time.process_time(),
                     note="Nested resume CPU is already inside its recovery worker scope; do not add twice")
     write_json(output / "COMPLETE.json", complete)
     if changed or any(row["execution"]["exit_code"] for row in records):
@@ -268,15 +367,18 @@ def main():
     parser.add_argument("--model", choices=MODEL_NAMES, default="distribution_free_dual")
     parser.add_argument("--batch", type=int, default=4)
     parser.add_argument("--length", type=int, default=32)
-    parser.add_argument("--checkpoint", type=Path)
+    parser.add_argument("--checkpoint-run", type=Path)
+    parser.add_argument("--registration", type=Path)
     args = parser.parse_args()
     torch.set_num_threads(1)
+    if args.registration:
+        verify_sources(json.loads(args.registration.read_bytes())["source"])
     if args.mode == "run":
-        run_suite(args.output, args.checkpoint)
+        run_suite(args.output, args.checkpoint_run)
     elif args.mode == "bench":
         measure_case(args.output, args.model, args.batch, args.length)
     elif args.mode == "recovery":
-        recovery_case(args.output, args.checkpoint)
+        recovery_case(args.output, args.checkpoint_run)
     else:
         resume_worker(args.output)
 

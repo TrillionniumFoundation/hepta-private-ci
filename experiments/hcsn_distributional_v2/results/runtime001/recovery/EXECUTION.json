@@ -1,0 +1,18 @@
+{
+  "child_cpu_seconds": 11.792091,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_distributional_v2.runtime_eval",
+    "recovery",
+    "--output",
+    "experiments/hcsn_distributional_v2/results/runtime001/recovery",
+    "--registration",
+    "experiments/hcsn_distributional_v2/results/runtime001/REGISTRATION.json",
+    "--checkpoint-run",
+    "experiments/hcsn_distributional_v2/results/content002/runs/mnist__distribution_free_dual__9201"
+  ],
+  "exit_code": 0,
+  "maxrss_kib": 210680,
+  "wall_seconds": 41.280968285999734
+}

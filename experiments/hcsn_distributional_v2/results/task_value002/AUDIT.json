@@ -1,0 +1,2102 @@
+{
+  "analysis_scope": "Recomputed actual rewards/actions from labels, predictions, paid reads and native receipts; not an independent retraining of the neural backbone",
+  "both_fresh_process_recoveries_identical": true,
+  "counterfactual_checks": [
+    {
+      "family": "bellman_value_head",
+      "price": 0.001,
+      "reward_recomputed": true,
+      "streams": 128
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.005,
+      "reward_recomputed": true,
+      "streams": 128
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.02,
+      "reward_recomputed": true,
+      "streams": 128
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.001,
+      "reward_recomputed": true,
+      "streams": 128
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.005,
+      "reward_recomputed": true,
+      "streams": 128
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.02,
+      "reward_recomputed": true,
+      "streams": 128
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.001,
+      "reward_recomputed": true,
+      "streams": 128
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.005,
+      "reward_recomputed": true,
+      "streams": 128
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.02,
+      "reward_recomputed": true,
+      "streams": 128
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.001,
+      "reward_recomputed": true,
+      "streams": 128
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.005,
+      "reward_recomputed": true,
+      "streams": 128
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.02,
+      "reward_recomputed": true,
+      "streams": 128
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.001,
+      "reward_recomputed": true,
+      "streams": 128
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.005,
+      "reward_recomputed": true,
+      "streams": 128
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.02,
+      "reward_recomputed": true,
+      "streams": 128
+    }
+  ],
+  "counterfactual_streams_per_price_policy": 128,
+  "fresh_images": 384,
+  "native_checks": [
+    {
+      "family": "bellman_value_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 0
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 1
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 2
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 3
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 4
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 5
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 6
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 7
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 8
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 9
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 10
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 11
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 12
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 13
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 14
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 15
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 0
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 1
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 2
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 3
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 4
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 5
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 6
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 7
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 8
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 9
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 10
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 11
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 12
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 13
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 14
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 15
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 0
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 1
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 2
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 3
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 4
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 5
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 6
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 7
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 8
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 9
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 10
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 11
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 12
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 13
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 14
+    },
+    {
+      "family": "bellman_value_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 15
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 0
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 1
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 2
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 3
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 4
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 5
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 6
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 7
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 8
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 9
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 10
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 11
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 12
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 13
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 14
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 15
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 0
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 1
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 2
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 3
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 4
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 5
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 6
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 7
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 8
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 9
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 10
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 11
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 12
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 13
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 14
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 15
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 0
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 1
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 2
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 3
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 4
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 5
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 6
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 7
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 8
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 9
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 10
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 11
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 12
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 13
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 14
+    },
+    {
+      "family": "ordinary_action_head",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 15
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 0
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 1
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 2
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 3
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 4
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 5
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 6
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 7
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 8
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 9
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 10
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 11
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 12
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 13
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 14
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 15
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 0
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 1
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 2
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 3
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 4
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 5
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 6
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 7
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 8
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 9
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 10
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 11
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 12
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 13
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 14
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 15
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 0
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 1
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 2
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 3
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 4
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 5
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 6
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 7
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 8
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 9
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 10
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 11
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 12
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 13
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 14
+    },
+    {
+      "family": "tabular_bellman",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 15
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 0
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 1
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 2
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 3
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 4
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 5
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 6
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 7
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 8
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 9
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 10
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 11
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 12
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 13
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 14
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 15
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 0
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 1
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 2
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 3
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 4
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 5
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 6
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 7
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 8
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 9
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 10
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 11
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 12
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 13
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 14
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 15
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 0
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 1
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 2
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 3
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 4
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 5
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 6
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 7
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 8
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 9
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 10
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 11
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 12
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 13
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 14
+    },
+    {
+      "family": "validation_schedule",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 15
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 0
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 1
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 2
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 3
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 4
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 5
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 6
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 7
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 8
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 9
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 10
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 11
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 12
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 13
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 14
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.001,
+      "reward_and_action_recomputed": true,
+      "stream": 15
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 0
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 1
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 2
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 3
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 4
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 5
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 6
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 7
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 8
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 9
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 10
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 11
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 12
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 13
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 14
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.005,
+      "reward_and_action_recomputed": true,
+      "stream": 15
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 0
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 1
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 2
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 3
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 4
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 5
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 6
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 7
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 8
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 9
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 10
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 11
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 12
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 13
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 14
+    },
+    {
+      "family": "validation_risk",
+      "price": 0.02,
+      "reward_and_action_recomputed": true,
+      "stream": 15
+    }
+  ],
+  "native_streams_per_price_policy": 16,
+  "price_causal_comparisons": {
+    "bellman_value_head": {
+      "actions_by_price": {
+        "0.001": [
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep"
+        ],
+        "0.005": [
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep"
+        ],
+        "0.02": [
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep"
+        ]
+      },
+      "low_to_high_price_changed_first_actions": 0,
+      "paired_streams": 16
+    },
+    "ordinary_action_head": {
+      "actions_by_price": {
+        "0.001": [
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep"
+        ],
+        "0.005": [
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep"
+        ],
+        "0.02": [
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep"
+        ]
+      },
+      "low_to_high_price_changed_first_actions": 0,
+      "paired_streams": 16
+    },
+    "tabular_bellman": {
+      "actions_by_price": {
+        "0.001": [
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep"
+        ],
+        "0.005": [
+          "keep",
+          "stop",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep"
+        ],
+        "0.02": [
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop"
+        ]
+      },
+      "low_to_high_price_changed_first_actions": 16,
+      "paired_streams": 16
+    },
+    "validation_risk": {
+      "actions_by_price": {
+        "0.001": [
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep"
+        ],
+        "0.005": [
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep"
+        ],
+        "0.02": [
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop"
+        ]
+      },
+      "low_to_high_price_changed_first_actions": 16,
+      "paired_streams": 16
+    },
+    "validation_schedule": {
+      "actions_by_price": {
+        "0.001": [
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep"
+        ],
+        "0.005": [
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep",
+          "keep"
+        ],
+        "0.02": [
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop",
+          "stop"
+        ]
+      },
+      "low_to_high_price_changed_first_actions": 16,
+      "paired_streams": 16
+    }
+  },
+  "report_parent_cpu_seconds_through_audit": 0.683896915,
+  "source_sha256": {
+    "evaluation/price_0.001/bellman_value_head/stream_0/RESULT.json": "39eba96a6bf2df3a18b3aa4136ee145efd8f7fa44ce701182cf8db9387245e1d",
+    "evaluation/price_0.001/bellman_value_head/stream_1/RESULT.json": "ec4746441cee10d1c07d4a7d175a695cc45b76b8be3515ef67b5c287b45be86b",
+    "evaluation/price_0.001/bellman_value_head/stream_10/RESULT.json": "da5f2160d0320603a8e54c68851261384f9088d213792aa7bacfe14c2f8eca39",
+    "evaluation/price_0.001/bellman_value_head/stream_11/RESULT.json": "60bb129cb1c9a6c236b0b70777355d32b67e9999f018a2610b7df133087da982",
+    "evaluation/price_0.001/bellman_value_head/stream_12/RESULT.json": "f5b8f935d8c7eb87643b2b1023c02b71e50e232833c5a2a213105c1dbe44c9d6",
+    "evaluation/price_0.001/bellman_value_head/stream_13/RESULT.json": "12a166ebd2ca35b6df97156c310266131c8cadeee2ecccd6256c111534f369f9",
+    "evaluation/price_0.001/bellman_value_head/stream_14/RESULT.json": "b8129ee6e0e8c5722114538b4ce288da19b9c238db6de5193a91a87e72eeb961",
+    "evaluation/price_0.001/bellman_value_head/stream_15/RESULT.json": "e20ee61f6a83f52c85001d2cb10817a7ea2d0b2afe7d95e68c3f34b562b41eee",
+    "evaluation/price_0.001/bellman_value_head/stream_2/RESULT.json": "b8bbab04e8365efcc179d51b15af726bfbdcda11ed6b7c94b6f78e17021aec82",
+    "evaluation/price_0.001/bellman_value_head/stream_3/RESULT.json": "431c898f6c271c57d16ea6a7c5f31972970b6384f5123436b44d8f1e6fe160b8",
+    "evaluation/price_0.001/bellman_value_head/stream_4/RESULT.json": "24cc78da57fdf67813616e0fe307b7b5c625d5175c84b75b5b3d44b02843833a",
+    "evaluation/price_0.001/bellman_value_head/stream_5/RESULT.json": "81547acd0b9eda0c1105dd07fd3cf7a3eb10b7dbdbdbaed9708fc64bd039e743",
+    "evaluation/price_0.001/bellman_value_head/stream_6/RESULT.json": "7f832370e98fa72bb398783340069f8ee151d0b64a38b45efbd7e88a41b9a8f2",
+    "evaluation/price_0.001/bellman_value_head/stream_7/RESULT.json": "9dd021013e8dabfb75a87104bf279da437c30b375ea919167cfbdc3d0fcc9d87",
+    "evaluation/price_0.001/bellman_value_head/stream_8/RESULT.json": "ef9d29a596aba42234751302da28c63685a1a0fd1fb1b13e7d06e6ef97f1754d",
+    "evaluation/price_0.001/bellman_value_head/stream_9/RESULT.json": "b9f14c42a801116917d5a20b466ac2eee2ebbf9a30470430f51b81395317a173",
+    "evaluation/price_0.001/bellman_value_head_counterfactual.npz": "04d011863c8f723214c8028433cab44ff1b17a19035aeac8e07d0b0d93b4f9ca",
+    "evaluation/price_0.001/ordinary_action_head/stream_0/RESULT.json": "5f64b31b0e2ff8b94691d9b544e312de8f0a58d2d2eab603886f98445fea9113",
+    "evaluation/price_0.001/ordinary_action_head/stream_1/RESULT.json": "be69312014463e644efda3d3002ec1590a3a708661d0b6ef64fc4d2395862e37",
+    "evaluation/price_0.001/ordinary_action_head/stream_10/RESULT.json": "e186bad964c9f95718aeaeb89667a87804beb16b7881d9aa0c25be1068224f4c",
+    "evaluation/price_0.001/ordinary_action_head/stream_11/RESULT.json": "3232ee33642d53a33e25d46e6775d6af7bf1c1c77949ff910e49bc8cd592ec38",
+    "evaluation/price_0.001/ordinary_action_head/stream_12/RESULT.json": "55932eac41918391b918b566d83b0673ddde3753109f1fb33835c9a3914d6d2a",
+    "evaluation/price_0.001/ordinary_action_head/stream_13/RESULT.json": "09fcdaa7478da129755a4328a0b921e1d724ba68acc1a8a2072d0544b00e9f21",
+    "evaluation/price_0.001/ordinary_action_head/stream_14/RESULT.json": "a7d0524ffc400647cf221febc08b0d764fe3501f0df4b4613febfdb945caf91d",
+    "evaluation/price_0.001/ordinary_action_head/stream_15/RESULT.json": "b284d96ad773fe1fb0ef1b6493bffefebc7172a34ea28e31f78bd9ae67d43a59",
+    "evaluation/price_0.001/ordinary_action_head/stream_2/RESULT.json": "bb316fe32a79597d6a68d1c4f0c3a72260180ac80679d5b8debae401d136c180",
+    "evaluation/price_0.001/ordinary_action_head/stream_3/RESULT.json": "9190e78c8c57455fdab1aa151774d51d6da814fcdc0a1163370362610efc026a",
+    "evaluation/price_0.001/ordinary_action_head/stream_4/RESULT.json": "917ddda38f7fb07a2cfdf5256a0f66d7401c6be28dd6db5df0f5be12dbf7fcc0",
+    "evaluation/price_0.001/ordinary_action_head/stream_5/RESULT.json": "89178f38c1ac3777f7b2293011bcb07989129cd5387fc4b68f0f39f41e77f346",
+    "evaluation/price_0.001/ordinary_action_head/stream_6/RESULT.json": "681a18fe6fe597fcc3e123d1d287b4c168ce0fa008c4a3197bdcee24bc5046bc",
+    "evaluation/price_0.001/ordinary_action_head/stream_7/RESULT.json": "0a7703b64f7e1a7fbbcc9a99db079ef5c1469eb0f9179f6ce177557c424fdc53",
+    "evaluation/price_0.001/ordinary_action_head/stream_8/RESULT.json": "de632507425345dafef5501af51ebdaa8f6de25446b5fe5783f4e813104514d0",
+    "evaluation/price_0.001/ordinary_action_head/stream_9/RESULT.json": "d83065a0eb7bcd512597ff79f3d567b6eec8b16ed49cec746bf107a3b2a4cd54",
+    "evaluation/price_0.001/ordinary_action_head_counterfactual.npz": "04d011863c8f723214c8028433cab44ff1b17a19035aeac8e07d0b0d93b4f9ca",
+    "evaluation/price_0.001/tabular_bellman/stream_0/RESULT.json": "204fc94d5175fcc54d5342331dab0307ca499b3411f0fabb8cf04bb383632b5c",
+    "evaluation/price_0.001/tabular_bellman/stream_1/RESULT.json": "5b5776126fe300b375193f2f1a937aace2356526c3a28ca4e4a591ccb65b5b34",
+    "evaluation/price_0.001/tabular_bellman/stream_10/RESULT.json": "ed69e5a545d43819197090bab4e4bab1f884d7d0b6af11652a4a3f84c26e2360",
+    "evaluation/price_0.001/tabular_bellman/stream_11/RESULT.json": "99afc1c2ee55cb4c98f2f6aed59420dea5318563b02bb78abebd0acd119f4971",
+    "evaluation/price_0.001/tabular_bellman/stream_12/RESULT.json": "935e2ffa81cee7370bf689dfb4c8c8930e252a4d09e6a2184887ba3987087670",
+    "evaluation/price_0.001/tabular_bellman/stream_13/RESULT.json": "519f1cdc2e43e2f9cc70ed7ba4fcd4fcf2973477c14292364491ef15b4eb99af",
+    "evaluation/price_0.001/tabular_bellman/stream_14/RESULT.json": "92d21cc8c0d776622ddaeb6c7d467fb35a6d9150e0c39005c7c02284be58f06a",
+    "evaluation/price_0.001/tabular_bellman/stream_15/RESULT.json": "3e454bcb7de42f104447449adec9f11594a63909adf40b55f9a5cebc2782baa5",
+    "evaluation/price_0.001/tabular_bellman/stream_2/RESULT.json": "be466e6ee47d82566cf2d25c63f48b8aeb7d1ed5e469b0654891733e9848ddf2",
+    "evaluation/price_0.001/tabular_bellman/stream_3/RESULT.json": "65a46845f3f2a7fb5896136f8ecc7bba183dc063b1d9bfcc2dcb1a567f2954a0",
+    "evaluation/price_0.001/tabular_bellman/stream_4/RESULT.json": "a95117b178dee1caa45865eeb450a38207761f34d38e1714c227b087282ccbe5",
+    "evaluation/price_0.001/tabular_bellman/stream_5/RESULT.json": "e0c0bfebd3f423c62adaf401966fc093fb087766aca9597104d497a2945433a2",
+    "evaluation/price_0.001/tabular_bellman/stream_6/RESULT.json": "c017c8215a581ed4a84071c71c2c5b7dc71bfb12664dedb5a763d2d0380871f7",
+    "evaluation/price_0.001/tabular_bellman/stream_7/RESULT.json": "b6d35f7978375af92e1bfee432a2f780373a1f4a95d1c9504469e0d378f2b425",
+    "evaluation/price_0.001/tabular_bellman/stream_8/RESULT.json": "3e704edef6b926927bf15418da2a54342996b610bd2e62c389d181d61e4339c8",
+    "evaluation/price_0.001/tabular_bellman/stream_9/RESULT.json": "c92610d79f45ce9f8dd64d2b2fa4e1ff46dbe61209565eb27db04214711f44ee",
+    "evaluation/price_0.001/tabular_bellman_counterfactual.npz": "584cfcb6173e625fe526ec6e5defa62104211373a99f45eadd75a94e4ecbed36",
+    "evaluation/price_0.001/validation_risk/stream_0/RESULT.json": "dd3409c608b836ab0369ea2f3e3ceaf0144a229fca0fda786759a71fdec72994",
+    "evaluation/price_0.001/validation_risk/stream_1/RESULT.json": "0bb0acb1df909f3f79543d21664d94c3ef5b6a6b94bb4966544731af11b7cb43",
+    "evaluation/price_0.001/validation_risk/stream_10/RESULT.json": "ff2be53865d9462aab125560e3689b39387554bc332c19eeb4453c6403bc0fe5",
+    "evaluation/price_0.001/validation_risk/stream_11/RESULT.json": "fe6a856f76ba3038a6c0a8ca0c77fdc5fbd1a05666a1a349b8be8ce707e03260",
+    "evaluation/price_0.001/validation_risk/stream_12/RESULT.json": "576fea259a160d1df46316b1bae7f3a420c94b0e1e6375c84c92ceeec0a1f3bf",
+    "evaluation/price_0.001/validation_risk/stream_13/RESULT.json": "69da12688104fab9fb17d1f1bb71531ef4d812f4936dd3b88c482546a5944241",
+    "evaluation/price_0.001/validation_risk/stream_14/RESULT.json": "fffa19b20022f90e1887732fb4ee7d56d7da551ccde84b31fee600e9156dd84f",
+    "evaluation/price_0.001/validation_risk/stream_15/RESULT.json": "f0c78d74bad644d2f736c5c75a7fc48395a56313ad776a6827501c3d0de4f63a",
+    "evaluation/price_0.001/validation_risk/stream_2/RESULT.json": "af3bc83d0ae68010c6f9ff104f9b41fac1029afd7093cf452deffc04f021cb90",
+    "evaluation/price_0.001/validation_risk/stream_3/RESULT.json": "ce525a75cab0b84d4feec2ed601d2378fc61e825f6d9433fa209b3b7f6782982",
+    "evaluation/price_0.001/validation_risk/stream_4/RESULT.json": "0c1bde09152be6869194510965115a6366cfb2da4e4e8fce5aa3a33eeed811a4",
+    "evaluation/price_0.001/validation_risk/stream_5/RESULT.json": "0dc675e850212b762db7788b6f4f8e9a64e8691ebc5741fbe0adef72ce651435",
+    "evaluation/price_0.001/validation_risk/stream_6/RESULT.json": "4a73866e66b638e3770c0160d3ffeee05f9f046cc269f1bf7adade6649a8a5e7",
+    "evaluation/price_0.001/validation_risk/stream_7/RESULT.json": "0d54fe430a43970746c800b03da2b1c80ec061cec0e91cae36dc4d07625ec731",
+    "evaluation/price_0.001/validation_risk/stream_8/RESULT.json": "d42f6e75d4054d12f2ba7fc75673b74d921acefe8bfe6f617b35cc9b11e78b32",
+    "evaluation/price_0.001/validation_risk/stream_9/RESULT.json": "975df50fc01a063828125f878d32d516551553d6b6a0d8ec18076bc697dc86b0",
+    "evaluation/price_0.001/validation_risk_counterfactual.npz": "04d011863c8f723214c8028433cab44ff1b17a19035aeac8e07d0b0d93b4f9ca",
+    "evaluation/price_0.001/validation_schedule/stream_0/RESULT.json": "d4643f3dde4cb671288b0dba5bdd298585ba7ce2a42479587adcd32f1582892a",
+    "evaluation/price_0.001/validation_schedule/stream_1/RESULT.json": "eb3e92aa59c91100b88345b99a8c68b3e4ff06dfbb406bf0e38cc33c53880bb6",
+    "evaluation/price_0.001/validation_schedule/stream_10/RESULT.json": "dddc49864e092f30596c642f2376d4b198e8d8bddd079c23f6652647a85b7e22",
+    "evaluation/price_0.001/validation_schedule/stream_11/RESULT.json": "4f73af9417a34cd2d79dfc78397a787740773e7a59d538309de5feca9010689f",
+    "evaluation/price_0.001/validation_schedule/stream_12/RESULT.json": "77cc69d8da5b6462f668d1798282a7ae13ded4a06085cc299f8fb6b96311a3ce",
+    "evaluation/price_0.001/validation_schedule/stream_13/RESULT.json": "b03c2a6782a4154f5944c73bf8e7e104a1c2d693bcbdd2f8c1773ff0781f64a6",
+    "evaluation/price_0.001/validation_schedule/stream_14/RESULT.json": "4383a5020bd0d029fb69c1ac3f93e29cbfbcb4c52821e6a8cc0943399a631769",
+    "evaluation/price_0.001/validation_schedule/stream_15/RESULT.json": "1198dd767d169dc2977d7df7dad26944eadc858de22b9e685789a04cdca6976d",
+    "evaluation/price_0.001/validation_schedule/stream_2/RESULT.json": "5de6569f0e9a2d8b1725c32a43c2af6feb6a91f94dedbc02f1a5b24d8bf958dd",
+    "evaluation/price_0.001/validation_schedule/stream_3/RESULT.json": "87daa24a982ccc960f4e467a0a018f58385d6748f615647b72707b77a5146faa",
+    "evaluation/price_0.001/validation_schedule/stream_4/RESULT.json": "fe0984a780e54f24b83ee230fa43cbfc476d9fce62ac0187078f813156f89978",
+    "evaluation/price_0.001/validation_schedule/stream_5/RESULT.json": "5b8da250542a0a68e9fa39d16e67f583782bee5f48d16da53b0ce035cb406626",
+    "evaluation/price_0.001/validation_schedule/stream_6/RESULT.json": "8442da7175e24b2301bfcd1370b2e830c13fc92fe145014a7db8098cc49d040a",
+    "evaluation/price_0.001/validation_schedule/stream_7/RESULT.json": "cd4a1580e7b8287ed267cc8526bfcefc10e197fbee1bdad55fd33ee99ade87bd",
+    "evaluation/price_0.001/validation_schedule/stream_8/RESULT.json": "296bdf822036b40c332250606b17b1e1888052c330aae745ae5c603aacbe9b46",
+    "evaluation/price_0.001/validation_schedule/stream_9/RESULT.json": "8f3990f12aeda933ff7cefb1f7060a42af2413749b838011e8f853cefb478c56",
+    "evaluation/price_0.001/validation_schedule_counterfactual.npz": "04d011863c8f723214c8028433cab44ff1b17a19035aeac8e07d0b0d93b4f9ca",
+    "evaluation/price_0.005/bellman_value_head/stream_0/RESULT.json": "d2e75561bf1e66ae00183e4af7a81d870036dd20ecefbce263029e6e004033e1",
+    "evaluation/price_0.005/bellman_value_head/stream_1/RESULT.json": "ae6422357c5bbbc566d9d2f0ba2d1069098d772e97db408fa2923484b35c8149",
+    "evaluation/price_0.005/bellman_value_head/stream_10/RESULT.json": "d0bbdae40e974189383c9a66099c258846d10de4e9185d8ed789ea26bb2b4dd1",
+    "evaluation/price_0.005/bellman_value_head/stream_11/RESULT.json": "eeb78a014d4311a7bfa8b1b4a44b9797aea8500ce3696cf26ee2f51a264f3a82",
+    "evaluation/price_0.005/bellman_value_head/stream_12/RESULT.json": "91d9fd4a2882b488ca4d7e6493ae4cd705a26a8ff55bf7f9ed01979461769150",
+    "evaluation/price_0.005/bellman_value_head/stream_13/RESULT.json": "3d927c1dd81749d7e53ae90a943b4d1ab818c1afc123a146e47524d3f0d2ffbc",
+    "evaluation/price_0.005/bellman_value_head/stream_14/RESULT.json": "7e0c9ed5e4c45b05f920b4025073737dd93f5d8d14148ce84efe4a2f7a853676",
+    "evaluation/price_0.005/bellman_value_head/stream_15/RESULT.json": "dbaac6bdcfcd4aa880d9c9524445ab8158a3c9bdc08870d55e436b7081d54ea4",
+    "evaluation/price_0.005/bellman_value_head/stream_2/RESULT.json": "b01243e6d89031260bc49a74eef0cc10a765e8d1cf25ff9b89d1b29f9210a744",
+    "evaluation/price_0.005/bellman_value_head/stream_3/RESULT.json": "b9782031c60388d2c4c6850bfda81c5e8814258368a4ac762bc16010cc3c72a7",
+    "evaluation/price_0.005/bellman_value_head/stream_4/RESULT.json": "10e1af7231d18ea15f76292ff5d1fa942dfeea08980052786a6963ef33c4ec1a",
+    "evaluation/price_0.005/bellman_value_head/stream_5/RESULT.json": "a9281d00098895ac1d23a8070c550047147dc26483d062ab0d969289087e5590",
+    "evaluation/price_0.005/bellman_value_head/stream_6/RESULT.json": "15e78f6f573f47f90ca234ab8d85ebcc58d1957a56fda1d66d3a3e9a1b8dce32",
+    "evaluation/price_0.005/bellman_value_head/stream_7/RESULT.json": "9e9b27150225cace5650fec78c6b6d00b8b221aefa7ac7eb3ee994b0d2727933",
+    "evaluation/price_0.005/bellman_value_head/stream_8/RESULT.json": "7d9e5f8398154d55b0b210bc42716d568d3f405c36de7e7bea343d0810ba7ea8",
+    "evaluation/price_0.005/bellman_value_head/stream_9/RESULT.json": "4f1a4026ba0fdf356c86614a06422dacc1e4eff84f5fa532804751519e7900da",
+    "evaluation/price_0.005/bellman_value_head_counterfactual.npz": "56137dc38d3e118653974ffbb3b015a60f9f1d6b9deb0e1e05e6bb73e9d5c3b5",
+    "evaluation/price_0.005/ordinary_action_head/stream_0/RESULT.json": "1e696e5a3c7b8ee7e6ff7c3ccdccef84d5630daad50cf491effabc7126c4a329",
+    "evaluation/price_0.005/ordinary_action_head/stream_1/RESULT.json": "a278153169ff229e0eb0f674dbf340d7eaac047f53c9c91f406a468f8ddd0aec",
+    "evaluation/price_0.005/ordinary_action_head/stream_10/RESULT.json": "2e562626bd6c00c966b2243fc022768b86b9b63b5ea67e1a5038404fbe00c48e",
+    "evaluation/price_0.005/ordinary_action_head/stream_11/RESULT.json": "4dc535c790634fd2c0bacee88f52535317448abaeec7cb16ef2a38b8e4f1c615",
+    "evaluation/price_0.005/ordinary_action_head/stream_12/RESULT.json": "cef4fe0ecb0928c456c61d0a89ed6a7d26cffd4df5bc053722d72d248f1ec8ac",
+    "evaluation/price_0.005/ordinary_action_head/stream_13/RESULT.json": "f91f32da3c4418fc7cc2e81d29634c35edebee1e9592bbd230c1e2f062a50f68",
+    "evaluation/price_0.005/ordinary_action_head/stream_14/RESULT.json": "acf6c30c9a547a26cce1431aa15e737aaecbbbc1b6c50786c34980cc7d21ad95",
+    "evaluation/price_0.005/ordinary_action_head/stream_15/RESULT.json": "9cfa99b6b95ab2064f87d3e5999b9ba16d494fb4766c78c91c86c4742d7f41a9",
+    "evaluation/price_0.005/ordinary_action_head/stream_2/RESULT.json": "dff5ece08fd597a77510cb7c84012aa2ead422fb871a6b61a4e0f84af11ab822",
+    "evaluation/price_0.005/ordinary_action_head/stream_3/RESULT.json": "3b4c0d8338e84bffa8c4c11b54e272ded27fe795fe848bd9417aa32927576529",
+    "evaluation/price_0.005/ordinary_action_head/stream_4/RESULT.json": "e9412f823161fd1e03cd46d5f1e9d5d68b441e01c5c48d90dde0ad41e35116eb",
+    "evaluation/price_0.005/ordinary_action_head/stream_5/RESULT.json": "2af6ad0b94f0ae19a76bfff741949fd279862a79057cdb610197d15b7cf7b2fc",
+    "evaluation/price_0.005/ordinary_action_head/stream_6/RESULT.json": "f32006672d62c583b8cb1c79058a8cf4262e6bfd241bebce4a616db0785d668f",
+    "evaluation/price_0.005/ordinary_action_head/stream_7/RESULT.json": "43f6bd1b45848b45ff565bd18349c1e3df62d0a675198aef106c86c64f2ff619",
+    "evaluation/price_0.005/ordinary_action_head/stream_8/RESULT.json": "97d836e2c564829a4de550d520b23dd3edd1cb31a00c75e55b7582d589753139",
+    "evaluation/price_0.005/ordinary_action_head/stream_9/RESULT.json": "14a0c23fc45740e47f5f1363006d705878a09edf16fd8a12d505f85410054695",
+    "evaluation/price_0.005/ordinary_action_head_counterfactual.npz": "2ed8462e41f4d33e12d20667dd87d5379ce5b634db84e55e0446488800a3c00f",
+    "evaluation/price_0.005/tabular_bellman/stream_0/RESULT.json": "823faf9f97a4058c18e2ee1c241527f8f7eeec8207e724752366cb05b7460370",
+    "evaluation/price_0.005/tabular_bellman/stream_1/RESULT.json": "951fcf1380c427aa67ebb112a841bea2797fd669edbdf88ea4bfc1da32d5e89e",
+    "evaluation/price_0.005/tabular_bellman/stream_10/RESULT.json": "dceb2b0f1072e435c1186aa25e44ef57a2624cadf6c0b2858a78d2b5f99f3db3",
+    "evaluation/price_0.005/tabular_bellman/stream_11/RESULT.json": "3cba1758e9f7338d71b86a976c919e69324f2eaf47fcb587f32c13977be6d060",
+    "evaluation/price_0.005/tabular_bellman/stream_12/RESULT.json": "93f08f9d555ddf1bf6e615129912dce4c288210fda83856833f96b2f2d92777a",
+    "evaluation/price_0.005/tabular_bellman/stream_13/RESULT.json": "29478a3bbe7ded778a7c8280ec6028ecf687cf368669daebb71cfc0e7f17f402",
+    "evaluation/price_0.005/tabular_bellman/stream_14/RESULT.json": "2bb052993cba7e079ecf42563e193b35e7e4658c2cb5fdee0ad252891436cde9",
+    "evaluation/price_0.005/tabular_bellman/stream_15/RESULT.json": "f4ad0472a4963d6295387d63c73e58f9b11f3b8abd60b8177400e1d9011b62af",
+    "evaluation/price_0.005/tabular_bellman/stream_2/RESULT.json": "835aa21762f6ab42e0b43236e31202213b075381e538519e5f55ae73b203bca0",
+    "evaluation/price_0.005/tabular_bellman/stream_3/RESULT.json": "e9c9378164dbd11523ace37a81c950d01db032aec7136d3b51392942b651f170",
+    "evaluation/price_0.005/tabular_bellman/stream_4/RESULT.json": "2c961a1c64022d94b28ce598bd6e97890f1adf7d57ff3fd1f0c6f81b653cad21",
+    "evaluation/price_0.005/tabular_bellman/stream_5/RESULT.json": "35395204d173bb705fc42c98102745f530e442299e5ce3641749eedd057cea1a",
+    "evaluation/price_0.005/tabular_bellman/stream_6/RESULT.json": "4171dcf7ad8a4cad757ec0000ffd071d5dd5796bfd3540305fc043937f30dfc2",
+    "evaluation/price_0.005/tabular_bellman/stream_7/RESULT.json": "95fa079fda58b1463d01d15d7f8e3d4c1a75d790151ef05716e6335708fa4558",
+    "evaluation/price_0.005/tabular_bellman/stream_8/RESULT.json": "e2ea21d4aab7b597aecb00b4e8165bdfeb2ec1f37007e8c322c6811bdb1de340",
+    "evaluation/price_0.005/tabular_bellman/stream_9/RESULT.json": "6377d5215b44ce7495b1756f46a24e0746dc0695fa779ce2aa9b32337e0ca0eb",
+    "evaluation/price_0.005/tabular_bellman_counterfactual.npz": "2cf51d5041647164f0fcfc92a8831d40b12e5085f5580d4917490915344e52d4",
+    "evaluation/price_0.005/validation_risk/stream_0/RESULT.json": "5c04da26dda42054fe564a2a718507e328a435ac177b26f323fe4c22a73c73db",
+    "evaluation/price_0.005/validation_risk/stream_1/RESULT.json": "e57af3ccf596e078048c80cc4370d3072e81942464cfa508afc65344f0e9560d",
+    "evaluation/price_0.005/validation_risk/stream_10/RESULT.json": "82acbb69936396e838cb8c78df1c8a85729071dffb703ae420f31b5f216f61e5",
+    "evaluation/price_0.005/validation_risk/stream_11/RESULT.json": "ec0d6a57a9c59bdb55a654f9a1c17d661309338fe3b0157374189cd760ea73a3",
+    "evaluation/price_0.005/validation_risk/stream_12/RESULT.json": "80d168eed6cc729710d8daa2a1bb244cd00c2d53d581183be951aac6991db7c5",
+    "evaluation/price_0.005/validation_risk/stream_13/RESULT.json": "38638281502bba18aeb54390d9feedc4618745dfa7fa303ecd90bb3bf7176ab5",
+    "evaluation/price_0.005/validation_risk/stream_14/RESULT.json": "7a4af9c8ba61982512cd1c716da16b5c6b3cb332558dd751de5e7dddc31ca63e",
+    "evaluation/price_0.005/validation_risk/stream_15/RESULT.json": "3cd23bcc2bb3f625dad2a0466b325157d26b72e3244cd030165f741ca7c355c7",
+    "evaluation/price_0.005/validation_risk/stream_2/RESULT.json": "4f3b75f558b8d833d392ff3c50cd8483acc069e4efbe3ea4705ddee45ded1ab9",
+    "evaluation/price_0.005/validation_risk/stream_3/RESULT.json": "0a6fd5f90511c245cf48a813f9cf9d9157221065e00acc4985e8d1c8abd4531d",
+    "evaluation/price_0.005/validation_risk/stream_4/RESULT.json": "e487b7f3d6f6ad66f06de7667c44e4c3a7ccf4f80a561032bf0b048c72950874",
+    "evaluation/price_0.005/validation_risk/stream_5/RESULT.json": "3ff775a1b144e84a0993e2c46d16f986d0c8f3f54351cb8631a531bc631192a9",
+    "evaluation/price_0.005/validation_risk/stream_6/RESULT.json": "3587f3693d2f4283fd606092c2979074a35f546511e0209325c23c9c1cf582f1",
+    "evaluation/price_0.005/validation_risk/stream_7/RESULT.json": "13acd51a87447150599acc208e7294912974ac8e00b4b46ff8be011bc548fcde",
+    "evaluation/price_0.005/validation_risk/stream_8/RESULT.json": "79a72b88019d989a29949d01467f471363e455526877780c11508525db6ba776",
+    "evaluation/price_0.005/validation_risk/stream_9/RESULT.json": "64e392f32e090486f2588b85b899f0b9add49a29d69963ba5f32e34a33c0b0b1",
+    "evaluation/price_0.005/validation_risk_counterfactual.npz": "2ed8462e41f4d33e12d20667dd87d5379ce5b634db84e55e0446488800a3c00f",
+    "evaluation/price_0.005/validation_schedule/stream_0/RESULT.json": "85fca6ad3d7c8271152c879d492b06d14010bedf9bdae33340b1d5ebd2a1a375",
+    "evaluation/price_0.005/validation_schedule/stream_1/RESULT.json": "66ace67c3867b71db61f676eadfaa14cf503aa628708bacfb3b6cb6619dae530",
+    "evaluation/price_0.005/validation_schedule/stream_10/RESULT.json": "e90112ad8d5352ebfd5fccac9f43d01b4862f79f9f5da54fac8f0a6f506276e4",
+    "evaluation/price_0.005/validation_schedule/stream_11/RESULT.json": "acae1e7e606b1bc53b15b504a0d761126eba18464f0f57b696e904c0166c3459",
+    "evaluation/price_0.005/validation_schedule/stream_12/RESULT.json": "6ca7ba49a44253e5cc4eadde1b6262c5be5e1a2100a7499ce82733d7a4becb86",
+    "evaluation/price_0.005/validation_schedule/stream_13/RESULT.json": "c5564e99c32a5e5649a0573501d7f3db9183db4aaa65eb60ea82d02412437075",
+    "evaluation/price_0.005/validation_schedule/stream_14/RESULT.json": "66b35802eed2fc4c1efa21e58a21d5596a4853c1c0939567e9f9a06fb14b2c47",
+    "evaluation/price_0.005/validation_schedule/stream_15/RESULT.json": "9e8d33bab951c7f818b209a3d0f84b402f81c6ae71cab8152c89f54659f5420a",
+    "evaluation/price_0.005/validation_schedule/stream_2/RESULT.json": "04ad094e9c30fb3239ab6ee4d79be9d44e68b0ee89f4658abed92e4d0051ca4f",
+    "evaluation/price_0.005/validation_schedule/stream_3/RESULT.json": "37fcc7de61fae19583d4f974d10d4086d34a88e89eada039167cbe4d58f56cd0",
+    "evaluation/price_0.005/validation_schedule/stream_4/RESULT.json": "18c1861cdaf19d8779dcac03229e96770aef090de170acdf552c258861de4642",
+    "evaluation/price_0.005/validation_schedule/stream_5/RESULT.json": "529adeb3a92126b55f9952f9ef3a4122cffb4ac148061a939c3bb2f4117f4c72",
+    "evaluation/price_0.005/validation_schedule/stream_6/RESULT.json": "9eb595bd3fc1f103b240d0272f6b053c3452681139dd1a025c0187e7b56e5789",
+    "evaluation/price_0.005/validation_schedule/stream_7/RESULT.json": "7ad626ca6347019a70eaa1e6d9bab30f7ed522f208b13cda5213cf2f8e8b68f5",
+    "evaluation/price_0.005/validation_schedule/stream_8/RESULT.json": "fb0b7a744e44f2ee6b020a2eb78d36cfd008e2c7deb0432f7842533a63019f3a",
+    "evaluation/price_0.005/validation_schedule/stream_9/RESULT.json": "a3619f5999f49a833f68ddf7ec5236fab515f47dc2b551718482e101a5404043",
+    "evaluation/price_0.005/validation_schedule_counterfactual.npz": "2ed8462e41f4d33e12d20667dd87d5379ce5b634db84e55e0446488800a3c00f",
+    "evaluation/price_0.02/bellman_value_head/stream_0/RESULT.json": "dd41fbbc74665469c5a8f1892dc882cfe22f8a0549fd3cc2f4755fc661dc1f5d",
+    "evaluation/price_0.02/bellman_value_head/stream_1/RESULT.json": "d2c884732328e7cbeb5748d5664e0d810f75e0d3e2a0641d04099b0a8e91fe22",
+    "evaluation/price_0.02/bellman_value_head/stream_10/RESULT.json": "a5727a6e276fe0cc23d707069e210beabef66cbee6d940d64fa25421a82214dd",
+    "evaluation/price_0.02/bellman_value_head/stream_11/RESULT.json": "e5cc7e31afbb327828a669cef65b71776ea103821bc4b90ae83ae736c059d460",
+    "evaluation/price_0.02/bellman_value_head/stream_12/RESULT.json": "afc1f5f5ad89231071d9e1f67ca1be520f5a3245eae155c7c3a7ee72682c3c2c",
+    "evaluation/price_0.02/bellman_value_head/stream_13/RESULT.json": "af55f55544971cba05a5a35f62b1d0bdf9f30954dbb1bb5127d10e5c520d3fd0",
+    "evaluation/price_0.02/bellman_value_head/stream_14/RESULT.json": "d313f23f4e222c4767ec93e5731b0499a7f13c8d46483a30b40ea28b3daca704",
+    "evaluation/price_0.02/bellman_value_head/stream_15/RESULT.json": "925348f77a5e317ac733daffcfa2fe71e5467b398898bbf8b1718e74e9e4e4e5",
+    "evaluation/price_0.02/bellman_value_head/stream_2/RESULT.json": "89e9cfd40f0877d6709e7997f9d868e57a11ad08cd5f003713bc84afa3b1bf7e",
+    "evaluation/price_0.02/bellman_value_head/stream_3/RESULT.json": "a7d40958df2691d0afcc300461b230799c0b6f9fe02dca95f175cba92a4addb2",
+    "evaluation/price_0.02/bellman_value_head/stream_4/RESULT.json": "d4a4cbc6c39c9661c6b9235802870a243a68671c9b445a72103bf4b688963b6d",
+    "evaluation/price_0.02/bellman_value_head/stream_5/RESULT.json": "d49f2e8a8493d6b08e0ce4edb2adfa33323f7b3a0b77ea614e91c27ff8cacd95",
+    "evaluation/price_0.02/bellman_value_head/stream_6/RESULT.json": "b9d54e14a65f6131eb0dd5f5328c31f331a1b0801784d8c115eefa8a20b3dbcc",
+    "evaluation/price_0.02/bellman_value_head/stream_7/RESULT.json": "3be4f8d9eb6f25387ffeaaf1ba4d7a96536397bf0d10fc675d0a6e06f998a1f1",
+    "evaluation/price_0.02/bellman_value_head/stream_8/RESULT.json": "62994ec8c3471a2922fdad97ab894acc7b7f3cc3286514293e09c43f5f8e5e60",
+    "evaluation/price_0.02/bellman_value_head/stream_9/RESULT.json": "b5f2f7d5aeaf049e6e7001e5a86861e748f679e70034470bfec2ec11c6ed8060",
+    "evaluation/price_0.02/bellman_value_head_counterfactual.npz": "1de9d1ec85eecf24a26193f18bc8b40b958939581b4ea3c0c813ad6c5e4df6cf",
+    "evaluation/price_0.02/ordinary_action_head/stream_0/RESULT.json": "ad6b606ec8ce686cd75cd7295dfee0e99feb1ea2cff6848adfd1cdd5fc74f421",
+    "evaluation/price_0.02/ordinary_action_head/stream_1/RESULT.json": "3e7530dfdf4a8ee5c77957b5749a302be9ee3acbaa3be4dcf7812a8a2bf4f925",
+    "evaluation/price_0.02/ordinary_action_head/stream_10/RESULT.json": "895ad8c4da9c79b5d0895bd40f93c7e9bd2dccdccb2033bd761e1ffb28cb0d39",
+    "evaluation/price_0.02/ordinary_action_head/stream_11/RESULT.json": "710b74c6572894eef3a7a99e21c0a0808966f8f5f62264d9f99820a68b0e3fb0",
+    "evaluation/price_0.02/ordinary_action_head/stream_12/RESULT.json": "cadffea0933c9a0c5ef10ae9ea45003b21af95d9818fc6e93ff4e16a1d9a4ee8",
+    "evaluation/price_0.02/ordinary_action_head/stream_13/RESULT.json": "30a64cf1e34b2ece7cfa4f922a477647b1e680f54ed49d3ded4eb12b1fae1650",
+    "evaluation/price_0.02/ordinary_action_head/stream_14/RESULT.json": "5ad6acc65e1fb90a3accdec75e70fe4e5477354be8d5b153665f488fb1a6bf55",
+    "evaluation/price_0.02/ordinary_action_head/stream_15/RESULT.json": "1ca5de7ce47eeac0f8fd2cb75645ea694fc02fc7d34e9683cce13e3216e08605",
+    "evaluation/price_0.02/ordinary_action_head/stream_2/RESULT.json": "9620dddb9bf19b99b4eb98961db58daedd12c0945a25fb324efdb5e23fec08f9",
+    "evaluation/price_0.02/ordinary_action_head/stream_3/RESULT.json": "a261942b57053748a0a52ad4ec8b9e6a08e664a92dd5161abdc1cf0610a9d804",
+    "evaluation/price_0.02/ordinary_action_head/stream_4/RESULT.json": "9155f61bbe89147b39bb1b31d965ca3e36f42c7203f6dc5b43b3a08c039e39a5",
+    "evaluation/price_0.02/ordinary_action_head/stream_5/RESULT.json": "fcb07f30418e6c5926a514957300130763e013a8e8be9e6cff8deb67fd3500be",
+    "evaluation/price_0.02/ordinary_action_head/stream_6/RESULT.json": "6e11e4947659c2b7cf48174ca2667028c08fbfed8db5a59a5f88b9cd30347d7f",
+    "evaluation/price_0.02/ordinary_action_head/stream_7/RESULT.json": "a8041fcbee997aa5b6720f6cc1e8052e3e5a3b275aef7e57a9edbaef9b9b5f42",
+    "evaluation/price_0.02/ordinary_action_head/stream_8/RESULT.json": "ce8ea8c811ad5ee3f190f467d38316bfcd620dfdad048714918e2604ac4a17f3",
+    "evaluation/price_0.02/ordinary_action_head/stream_9/RESULT.json": "4dc9c31ebe679ac795ca7c88946d7b1e6699d8595fd492a2b3148ddaf5b72630",
+    "evaluation/price_0.02/ordinary_action_head_counterfactual.npz": "1de9d1ec85eecf24a26193f18bc8b40b958939581b4ea3c0c813ad6c5e4df6cf",
+    "evaluation/price_0.02/tabular_bellman/stream_0/RESULT.json": "e9f10cdb9139ecf83927e087da4176cca5f80c15d940e29cb0688f9758f3ffc3",
+    "evaluation/price_0.02/tabular_bellman/stream_1/RESULT.json": "3fe919e6cab3663ba0292fdcc6e96ac4d8ac745e64390aa6f91161e9dcffd5d8",
+    "evaluation/price_0.02/tabular_bellman/stream_10/RESULT.json": "50880dd1b5262eaf4fb4f8aea5205455795929a2e1aa25c636a18cf2878fa2a4",
+    "evaluation/price_0.02/tabular_bellman/stream_11/RESULT.json": "47ba43a77a2cea516785d8c1f17bff9206a3c5f3d1ec30171421c0806ec67b78",
+    "evaluation/price_0.02/tabular_bellman/stream_12/RESULT.json": "63952157854464427fb0fe84a0618ace4afc42f25ed34c452d6318a1f82e1fe4",
+    "evaluation/price_0.02/tabular_bellman/stream_13/RESULT.json": "667a12eeef5676efef452a02e26d104ad6b5e2e6cd3d5593c9e2dc995ae85562",
+    "evaluation/price_0.02/tabular_bellman/stream_14/RESULT.json": "b9bd4b3b80de660b239806af1bd184f1f755afae495b57cf2e1e33342e242197",
+    "evaluation/price_0.02/tabular_bellman/stream_15/RESULT.json": "238daade05c115e15ea0068dd23bb80d9dfb199148aaa9ba050ea6d26e84d475",
+    "evaluation/price_0.02/tabular_bellman/stream_2/RESULT.json": "0f0a157c6e70814a3429991d186b7fc7c75f6bbb445f0dba91c2eb6348536bb7",
+    "evaluation/price_0.02/tabular_bellman/stream_3/RESULT.json": "d9be9f32a11553e6a377faa96ac3fe69f50dcf304cd6f4d373d539ffcd1e19a5",
+    "evaluation/price_0.02/tabular_bellman/stream_4/RESULT.json": "c195337763c9056abf5e983f11c527b7014d1ffb66cc5a76290c81248608a807",
+    "evaluation/price_0.02/tabular_bellman/stream_5/RESULT.json": "81efe2f0c72c7c0c6a14d8f8e34128e23a0938803a11a43e93608228573bb092",
+    "evaluation/price_0.02/tabular_bellman/stream_6/RESULT.json": "cb38688ffd3567531b153a87f8a26b8c87b748a420bc658eb4db34c462b4f724",
+    "evaluation/price_0.02/tabular_bellman/stream_7/RESULT.json": "e7d983723d7eba091640ff6153c8829bb10b953df891f47b32900a6dd842c046",
+    "evaluation/price_0.02/tabular_bellman/stream_8/RESULT.json": "af91e8d3ff314d3d2d7ccb7fa01953bb7fa03a44c672144e924e42a1aba00483",
+    "evaluation/price_0.02/tabular_bellman/stream_9/RESULT.json": "89ec38c5576415894186f7af1c6273fde014bb15ce5529c3ae3dacb0c305237d",
+    "evaluation/price_0.02/tabular_bellman_counterfactual.npz": "56f38a6908e89d1ba464087d63d14c5fbe3e9bf6280855e838317a5f006e5e3b",
+    "evaluation/price_0.02/validation_risk/stream_0/RESULT.json": "91ead86edcf2e4650a186bc714b59c45f3254dc0c14d6ba96162c2e39833201a",
+    "evaluation/price_0.02/validation_risk/stream_1/RESULT.json": "6dea3c6cf68c0313222a5573a0f376177d2afb7651765acb7f56058c6893a64d",
+    "evaluation/price_0.02/validation_risk/stream_10/RESULT.json": "adf4f549b4d0da680bef66ffd2b7eb137566f6f21c71ef19f63047da25e566b2",
+    "evaluation/price_0.02/validation_risk/stream_11/RESULT.json": "52ab91a1cc3c6350f549d43a55aaca5907003b515f9bdf470954577514398f92",
+    "evaluation/price_0.02/validation_risk/stream_12/RESULT.json": "6407b55ea34de351e3a2cc990ab2060f3f9dd5458a9a78e2a9f77803955427c5",
+    "evaluation/price_0.02/validation_risk/stream_13/RESULT.json": "1428cb8a8006416687227caf4322f26f506b95c9a6b5576cdfe43c2096edb48f",
+    "evaluation/price_0.02/validation_risk/stream_14/RESULT.json": "399e1ddbe65c1200225990269c81bdcdc37bdc5a6e9dcffd121d09aec029f857",
+    "evaluation/price_0.02/validation_risk/stream_15/RESULT.json": "8368f86f39e3d12cfef21866b68fcc2c00ed361efa8ae31fb09e2f9cec037cfc",
+    "evaluation/price_0.02/validation_risk/stream_2/RESULT.json": "411308c57f823f54a938d2d5bf8f6b1f6c4e3d56bc7149ec3b6598b416fb1faa",
+    "evaluation/price_0.02/validation_risk/stream_3/RESULT.json": "4093ef8bd091d60a702c7c0aa1ddc5b60f436c384f88ab94ad82d8d8649848ad",
+    "evaluation/price_0.02/validation_risk/stream_4/RESULT.json": "ae7d8fe2ad9acdbfe48cd351bff1767f1c57fe23013cc694a9c141da94e1b1e2",
+    "evaluation/price_0.02/validation_risk/stream_5/RESULT.json": "33ad965ad1c577e7a9d866acbc7dc8cba8334920a7b3b2a92825f3236ad46b13",
+    "evaluation/price_0.02/validation_risk/stream_6/RESULT.json": "b7d8d57265b0317a55f20721d404d13408587dee6e14e369d1892789cd85c17e",
+    "evaluation/price_0.02/validation_risk/stream_7/RESULT.json": "83805a6e1c04babd9dc38534ac30c5748c9fbe2c021cf9274bf2f45cb16caffb",
+    "evaluation/price_0.02/validation_risk/stream_8/RESULT.json": "f20f5e17faf5098cf00e46af4726e8f3cb7af8ff349290ef26f355e2c8d90446",
+    "evaluation/price_0.02/validation_risk/stream_9/RESULT.json": "9587e5ec26025cbcfd3189a7224b66570ec0e4ec16447e6449e247a7010d0fce",
+    "evaluation/price_0.02/validation_risk_counterfactual.npz": "56f38a6908e89d1ba464087d63d14c5fbe3e9bf6280855e838317a5f006e5e3b",
+    "evaluation/price_0.02/validation_schedule/stream_0/RESULT.json": "c3b64d819c79cb3bf7ec7293025f0c7560845053c2a1439969d3b85177a3e9e7",
+    "evaluation/price_0.02/validation_schedule/stream_1/RESULT.json": "451e698544128a70acd323935b94cee0fc629470b8d7bd45707730c2163c699b",
+    "evaluation/price_0.02/validation_schedule/stream_10/RESULT.json": "35ec8c6e25fb86a5bc80ec4d5853848d1d1cdf6d1282f48e06cb3ad8ba901105",
+    "evaluation/price_0.02/validation_schedule/stream_11/RESULT.json": "e07f78bb15b6f4d98e89754d8657dc3d1194bad58034a0884275f1d9e10816fb",
+    "evaluation/price_0.02/validation_schedule/stream_12/RESULT.json": "19fa923dfe741a63bbff36bfa73daa43d372e8b9fb9c904fe9ccd7eac2db3a09",
+    "evaluation/price_0.02/validation_schedule/stream_13/RESULT.json": "f6e3a43e23099100aa8c42112d4136b7aea447698b6f037a551c30ae18a65835",
+    "evaluation/price_0.02/validation_schedule/stream_14/RESULT.json": "b9e44c20151c0af4d8e2b42fa2ea3c979b0883579869fb54bc6be90c94315931",
+    "evaluation/price_0.02/validation_schedule/stream_15/RESULT.json": "a7610d1476e3ee832e0c8e079485e53ce87fb293ca58301b6a8ef109cdf8f08d",
+    "evaluation/price_0.02/validation_schedule/stream_2/RESULT.json": "b58a80cd0f140d9986bd30900e0d98017bf4c99f456610da57e86ea5498224ed",
+    "evaluation/price_0.02/validation_schedule/stream_3/RESULT.json": "e42eaa81212c793e5b20c5eb018d84735f91301ae5f79527fc738cf0ad15d8e8",
+    "evaluation/price_0.02/validation_schedule/stream_4/RESULT.json": "3a5acb1c3832470f8a74b669e2fb07f6656b431c7979a2c8b8c212e18499efeb",
+    "evaluation/price_0.02/validation_schedule/stream_5/RESULT.json": "079ac17c6c8874beb7097402bd2e0a4fa5a2875f85369b4d5e95e0b223bc4ed4",
+    "evaluation/price_0.02/validation_schedule/stream_6/RESULT.json": "da08313ecdff05ecee0a78fcf8840dcada4b7768ce8e737f2c445c85e18208e2",
+    "evaluation/price_0.02/validation_schedule/stream_7/RESULT.json": "2b46819f91612771a51e3512425e5edabe7bd91edda01cbde7bacd98fe478408",
+    "evaluation/price_0.02/validation_schedule/stream_8/RESULT.json": "461dd0089132c5f55bf92ecaba1720851782edca387040540b6b0376b3e9475e",
+    "evaluation/price_0.02/validation_schedule/stream_9/RESULT.json": "4bc36b15b4ceb43b9f649a991265a223be688134c6878cd0fe55f07ca589ad0b",
+    "evaluation/price_0.02/validation_schedule_counterfactual.npz": "56f38a6908e89d1ba464087d63d14c5fbe3e9bf6280855e838317a5f006e5e3b"
+  },
+  "status": "passed"
+}

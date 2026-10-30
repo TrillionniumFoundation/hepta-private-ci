@@ -1,0 +1,266 @@
+{
+  "complete_receipt_runs": [
+    {
+      "child_system_cpu_seconds": 0.243831,
+      "child_user_cpu_seconds": 4.75273,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.kernel_tests",
+        "--output",
+        "experiments/hcsn_distributional_v2/results/kernel_validation001"
+      ],
+      "complete_child_cpu_seconds": 4.996561,
+      "log_sha256": "fbb6d942d82951076bbbe864ba3c545f2271c8b71bead34401c8bbd55345db08",
+      "nested_not_additive": {
+        "child_process_cpu_to_receipt": 4.287969823,
+        "test_and_probe_window_cpu_seconds": 1.8752548500000001
+      },
+      "receipt": "experiments/hcsn_distributional_v2/results/kernel_validation001/EXECUTION.json",
+      "receipt_sha256": "b69988fdd689cf64279c0d72dcb61f22384772fdf66b93e7114ed0aa923da991",
+      "recorded_separate_wrapper_window_cpu_seconds": 0.0005493479999999981,
+      "results_sha256": "0867ecda4510e638fb33c15fdedbbde725524254f5386b6ed924e12e6b354914",
+      "run_id": "kernel_validation001",
+      "scope": "One separate completed child process; includes its imports, numerical tests, references, performance probe repeats and serialization/exit. Wrapper measured window is separate and excludes wrapper work outside that window.",
+      "source_sha256": {
+        "MATH.md": "fe15bcf5671493739e38c1d5aa732ef77c65ba8f04ba4742acfea58310afd752",
+        "distribution_kernel.py": "5e8c8dbbb9130535f77ce515c3500fa9cd27341206feb2134a142882819559d6",
+        "kernel_tests.py": "c002d21d51631a83b7ed81ca1425dc5ad9275179ba30d9022bed1ee408c451d3"
+      },
+      "tests_run": 10,
+      "utc": "2026-10-30T01:05:36.944693+00:00",
+      "wall_seconds": 6.527842789999795
+    },
+    {
+      "child_system_cpu_seconds": 0.212005,
+      "child_user_cpu_seconds": 5.004465,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.kernel_tests",
+        "--output",
+        "experiments/hcsn_distributional_v2/results/kernel_validation002"
+      ],
+      "complete_child_cpu_seconds": 5.216469999999999,
+      "log_sha256": "deb63cae393bbce8742f8c918684c22685ecdfde7b072e9da95b794a44fc98bd",
+      "nested_not_additive": {
+        "child_process_cpu_to_receipt": 4.628036939,
+        "test_and_probe_window_cpu_seconds": 2.253321282
+      },
+      "receipt": "experiments/hcsn_distributional_v2/results/kernel_validation002/EXECUTION.json",
+      "receipt_sha256": "09cd4bbd32d0c925907fb96a600dc77b69db8bbf235daa332560d4102441e5e0",
+      "recorded_separate_wrapper_window_cpu_seconds": 0.0005264040000000011,
+      "results_sha256": "01a03cd7cfb3b358a61f9348a227b1638bc14dc74af59569035065dab0d7a26b",
+      "run_id": "kernel_validation002",
+      "scope": "One separate completed child process; includes its imports, numerical tests, references, performance probe repeats and serialization/exit. Wrapper measured window is separate and excludes wrapper work outside that window.",
+      "source_sha256": {
+        "MATH.md": "8c53b63974883a4a0dd8281a419c7a3764e9fa898a21a4f9c43c935f407cd2ef",
+        "distribution_kernel.py": "f272aa0808c2d497d4647dfb46fdc261ee481522affe0963b957d13b94f7f752",
+        "kernel_tests.py": "ac638cb5ea04183f702295707a26bd436f86475713c0d5d982b04a8d9301662d"
+      },
+      "tests_run": 13,
+      "utc": "2026-10-30T01:13:26.600283+00:00",
+      "wall_seconds": 5.264668647000008
+    },
+    {
+      "child_system_cpu_seconds": 0.496697,
+      "child_user_cpu_seconds": 8.424064,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.results.kernel_candidate003.kernel_tests",
+        "--output",
+        "experiments/hcsn_distributional_v2/results/kernel_candidate003_run001"
+      ],
+      "complete_child_cpu_seconds": 8.920760999999999,
+      "log_sha256": "7ec4d89c606a7002e6b5d0142deca6fe0dc30b86a6c37a1744674656a60666a7",
+      "nested_not_additive": {
+        "child_process_cpu_to_receipt": 8.089071061,
+        "test_and_probe_window_cpu_seconds": 5.171440186000001
+      },
+      "receipt": "experiments/hcsn_distributional_v2/results/kernel_candidate003_run001/EXECUTION.json",
+      "receipt_sha256": "df7e29ec55fa5669950af431795ebaa07e8e5197d4344cb4d425fe358ed82cb2",
+      "recorded_separate_wrapper_window_cpu_seconds": 0.0010581449999999964,
+      "results_sha256": "89ca6e46524a5e92c6aae500feb15785571eb4a112d707c2a4cd97502fd654ec",
+      "run_id": "kernel_candidate003_run001",
+      "scope": "One separate completed child process; includes its imports, numerical tests, references, performance probe repeats and serialization/exit. Wrapper measured window is separate and excludes wrapper work outside that window.",
+      "source_sha256": {
+        "MATH.md": "3899a158c856f72ba52c59de8d1f9d46f3967a9f2b8a1de2fa5e0bad97fb3a96",
+        "distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+        "kernel_tests.py": "e8c9cd018a7d707ebb8f118fd2f1e297057a5c59e2dcd06c53025cf19f045add"
+      },
+      "tests_run": 18,
+      "utc": "2026-10-30T01:32:09.644254+00:00",
+      "wall_seconds": 16.71397626099997
+    },
+    {
+      "child_system_cpu_seconds": 0.435554,
+      "child_user_cpu_seconds": 7.964316,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.kernel_tests",
+        "--output",
+        "experiments/hcsn_distributional_v2/results/kernel_validation003"
+      ],
+      "complete_child_cpu_seconds": 8.39987,
+      "log_sha256": "5c719e644cdddae4a4a50aff232fa27c6c3e29465e556ad74ecc3a5de362cd5b",
+      "nested_not_additive": {
+        "child_process_cpu_to_receipt": 7.565728493,
+        "test_and_probe_window_cpu_seconds": 5.1713793500000005
+      },
+      "receipt": "experiments/hcsn_distributional_v2/results/kernel_validation003/EXECUTION.json",
+      "receipt_sha256": "35ba1b275f749a0492720b4702781f7cb8b53d04c8bfd11e2a3d8b6cb748d6dd",
+      "recorded_separate_wrapper_window_cpu_seconds": 0.0004580820000000055,
+      "results_sha256": "fef21fc9e9f98734b7800e30ce5869570aec262f9daffb51707ce77a3aeefb39",
+      "run_id": "kernel_validation003",
+      "scope": "One separate completed child process; includes its imports, numerical tests, references, performance probe repeats and serialization/exit. Wrapper measured window is separate and excludes wrapper work outside that window.",
+      "source_sha256": {
+        "MATH.md": "3899a158c856f72ba52c59de8d1f9d46f3967a9f2b8a1de2fa5e0bad97fb3a96",
+        "distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+        "kernel_tests.py": "e8c9cd018a7d707ebb8f118fd2f1e297057a5c59e2dcd06c53025cf19f045add"
+      },
+      "tests_run": 18,
+      "utc": "2026-10-30T01:33:12.944267+00:00",
+      "wall_seconds": 13.870486126999822
+    },
+    {
+      "child_system_cpu_seconds": 0.675211,
+      "child_user_cpu_seconds": 3.22331,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.grid_control_tests",
+        "--output",
+        "experiments/hcsn_distributional_v2/results/grid_control_validation001"
+      ],
+      "complete_child_cpu_seconds": 3.898521,
+      "log_sha256": "43a7c167ab243ce259bb41ad63e75efa9395c2adc9ca94cd7113186bbec8042c",
+      "nested_not_additive": {
+        "child_process_cpu_to_receipt": 3.199773677,
+        "test_and_probe_window_cpu_seconds": 0.7787499169999998
+      },
+      "receipt": "experiments/hcsn_distributional_v2/results/grid_control_validation001/EXECUTION.json",
+      "receipt_sha256": "eeaaf0277ed1164efc90e5d0351e7e80a11ea75ad5ef11af7380a81c00227022",
+      "recorded_separate_wrapper_window_cpu_seconds": 0.0008170440000000029,
+      "results_sha256": "f755157298b4c875943876d1a96b9ffa3e89b1242e99c11cefd8134cd8c44e48",
+      "run_id": "grid_control_validation001",
+      "scope": "One separate completed child process; includes its imports, numerical tests, references, performance probe repeats and serialization/exit. Wrapper measured window is separate and excludes wrapper work outside that window.",
+      "source_sha256": {
+        "distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+        "grid_control_reference.py": "1aea0f50b1a8328394a2c2260dd89fc8203d416e73e1db8c3d38baf2e7ce2d84",
+        "grid_control_tests.py": "aebdf943a97e130d46ac51e9f997813721c05d699647523a3a09108938e7e214",
+        "model.py": "3eb5f6b8797475abf84b09ae5b588f3d0a253e0584578586cb081f15142a355f"
+      },
+      "tests_run": 5,
+      "utc": "2026-10-30T01:38:47.897510+00:00",
+      "wall_seconds": 14.165692787999888
+    }
+  ],
+  "created_utc": "2026-10-30T01:46:20.776272+00:00",
+  "frozen_sources_not_modified": {
+    "MATH.md": "3899a158c856f72ba52c59de8d1f9d46f3967a9f2b8a1de2fa5e0bad97fb3a96",
+    "distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "kernel_tests.py": "e8c9cd018a7d707ebb8f118fd2f1e297057a5c59e2dcd06c53025cf19f045add",
+    "model.py": "3eb5f6b8797475abf84b09ae5b588f3d0a253e0584578586cb081f15142a355f"
+  },
+  "nonadditivity_rules": [
+    "Never add a child RESULTS.elapsed_cpu_seconds, process_cpu_to_receipt, performance-probe repeats or MC timing to that same child EXECUTION.complete_child_cpu_seconds. They are nested diagnostics.",
+    "Do add the candidate003 and final003 child receipts: identical source hashes do not make distinct process invocations duplicate costs.",
+    "Use only process_cpu_to_receipt for each partial development run; its elapsed test window is already nested.",
+    "The separate causality discovery interval was not part of validation001; include its measured0.02800409-second window once, while marking its remaining process cost unknown.",
+    "Complete child costs plus recorded wrapper windows plus separate partial-run windows form an observed lower bound, not an exact all-development total.",
+    "If an external enclosing process-tree receipt is later used, these contained child costs must become nested rather than being added again.",
+    "Do not sum the costs of alternative future deployment scenarios as actual cumulative research expenditure."
+  ],
+  "owner": "distribution_kernel",
+  "partial_receipt_runs": [
+    {
+      "artifact": "experiments/hcsn_distributional_v2/results/kernel_development001/RESULTS.json",
+      "artifact_sha256": "1534ca79f7d3580f9c59eb705586fec6b7fec42f3d6d1029f354b08a20d16eb3",
+      "complete_process_receipt": false,
+      "field": "process_cpu_to_receipt",
+      "measurement": "Separate development process self-CPU from process start through receipt timestamp; no complete exit/wait4 receipt",
+      "missing_scope": "Remainder of serialization/printing/exit and enclosing shell/supervisor work",
+      "nested_not_additive_test_window_cpu_seconds": 1.7136231309999994,
+      "passed": true,
+      "recorded_cpu_seconds": 4.256470057,
+      "run_id": "kernel_development001",
+      "source_sha256": {
+        "distribution_kernel.py": "5e8c8dbbb9130535f77ce515c3500fa9cd27341206feb2134a142882819559d6",
+        "kernel_tests.py": "f086b235d09a3acb5da83c35d41b7e23b561eece5e85bc298849a84e3261b064"
+      },
+      "tests_run": 10
+    },
+    {
+      "artifact": "experiments/hcsn_distributional_v2/results/kernel_fixed_development001/RESULTS.json",
+      "artifact_sha256": "111327053ce64491e5bd0583f383fd84d69ff30310b6571bd3abba827b9025e1",
+      "complete_process_receipt": false,
+      "field": "process_cpu_to_receipt",
+      "measurement": "Separate development process self-CPU from process start through receipt timestamp; no complete exit/wait4 receipt",
+      "missing_scope": "Remainder of serialization/printing/exit and enclosing shell/supervisor work",
+      "nested_not_additive_test_window_cpu_seconds": 2.1927465229999994,
+      "passed": true,
+      "recorded_cpu_seconds": 4.56206583,
+      "run_id": "kernel_fixed_development001",
+      "source_sha256": {
+        "MATH.md": "8c53b63974883a4a0dd8281a419c7a3764e9fa898a21a4f9c43c935f407cd2ef",
+        "distribution_kernel.py": "f272aa0808c2d497d4647dfb46fdc261ee481522affe0963b957d13b94f7f752",
+        "kernel_tests.py": "ac638cb5ea04183f702295707a26bd436f86475713c0d5d982b04a8d9301662d"
+      },
+      "tests_run": 13
+    },
+    {
+      "artifact": "experiments/hcsn_distributional_v2/results/kernel_validation001/CAUSALITY_DISCOVERY.json",
+      "artifact_sha256": "a45e49c806b9acb5461893cf7eaf985b817447f449094fece30e013ca4ae8190",
+      "complete_process_receipt": false,
+      "field": "measured_probe_cpu_seconds",
+      "measurement": "Separate post-validation discovery probe measured interval, excluding interpreter/import/setup and work after that interval",
+      "placement_note": "Stored under validation001 but executed later as a separate diagnostic, not part of its ten-test child execution",
+      "recorded_cpu_seconds": 0.028004089999999815,
+      "run_id": "adaptive_causality_discovery",
+      "source_sha256": "5e8c8dbbb9130535f77ce515c3500fa9cd27341206feb2134a142882819559d6"
+    }
+  ],
+  "provenance": "All amounts read from immutable recorded receipts; no missing CPU values were imputed. This file adds accounting only and changes no scientific result or frozen source.",
+  "related_but_excluded": [
+    {
+      "artifact": "experiments/hcsn_distributional_v2/results/independent_execution_review001/EXECUTION.json",
+      "reason": "Root-owned execution analysis, outside numerical-kernel ledger; it is a separate through-receipt self-CPU record and should appear once in an overall research-cost ledger.",
+      "recorded_self_cpu_seconds": 1.070198277,
+      "scope": "Root independent execution audit and task campaign"
+    },
+    {
+      "artifact": "experiments/hcsn_distributional_v2/results/policy_gap001/EXECUTION.json",
+      "reason": "Root-owned and not included in this agent ledger; preserve its existing receipt in the overall cost ledger.",
+      "scope": "Root policy-gap numerical probe"
+    }
+  ],
+  "schema": "hcsn-numerical-cost-ledger.v1",
+  "scope": "Numerical kernel/control development and validation runs owned by this agent. Content training, task-owner execution, root policy-gap probes, runtime studies and external compute are outside this ledger.",
+  "totals": {
+    "complete_child_cpu_seconds": 31.432183,
+    "complete_child_receipt_count": 5,
+    "is_complete_development_cost": false,
+    "recorded_separate_wrapper_windows_cpu_seconds": 0.003409023000000004,
+    "separate_partial_development_and_discovery_cpu_seconds": 8.846539976999999,
+    "sum_of_disjoint_recorded_cpu_scopes_lower_bound": 40.282132,
+    "unknown_additional_cpu_seconds": null,
+    "wall_times_are_nonadditive_elapsed_observations": true
+  },
+  "unit": "CPU seconds, user plus system where a full child receipt exists; wall seconds are not added as CPU",
+  "unmeasured_work": [
+    {
+      "artifact": "experiments/hcsn_distributional_v2/results/grid_control_development001/SMOKE.json",
+      "artifact_sha256": "9409d0cecea5f340f98b6ae39b1e5a08658b33570f7cab5d1189001c06990b0a",
+      "recorded_cpu_seconds": null,
+      "run_id": "grid_control_preliminary_five_case_smoke",
+      "scope": "A preliminary five-case smoke completed before the urgent duration-domain repair; no full process CPU receipt was captured. Do not include this run in claims that measured audit totals cover all development compute."
+    },
+    {
+      "recorded_cpu_seconds": null,
+      "run_id": "unreceipted_process_remainders_and_meta_work",
+      "scope": "Startup/exit/supervisor portions missing from partial receipts, source editing/inspection, source snapshot/report creation and read-only peer-review checks have no complete numerical-run CPU receipts here. Unknown is not zero."
+    }
+  ]
+}

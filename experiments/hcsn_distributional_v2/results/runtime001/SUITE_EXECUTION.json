@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_distributional_v2.runtime_eval",
+    "run",
+    "--output",
+    "experiments/hcsn_distributional_v2/results/runtime001",
+    "--checkpoint-run",
+    "experiments/hcsn_distributional_v2/results/content002/runs/mnist__distribution_free_dual__9201"
+  ],
+  "exit_code": 0,
+  "complete_child_cpu_seconds": 98.293059,
+  "wall_seconds": 261.7177799320002,
+  "maxrss_kib": 408832,
+  "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Outer wait4 includes complete runtime coordinator startup/imports, all waited microbenchmark/recovery workers and nested resume; do not add child totals again."
+}

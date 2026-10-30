@@ -1,0 +1,258 @@
+{
+  "actual_native_mean_utility": {
+    "tabular_bellman": 0.8897291666666667,
+    "validation_schedule": 0.5755
+  },
+  "actual_native_runtime_cpu_per_stream": {
+    "tabular_bellman": 0.18893962708333345,
+    "validation_schedule": 0.23583529670833334
+  },
+  "analysis_parent_self_cpu_seconds_through_summary": 0.056961418,
+  "candidate": "tabular_bellman",
+  "counterfactual_quality_from_original_registered_panel": {
+    "hypothesis_test_or_multiple_comparison_gate": false,
+    "mean_paired_difference": 0.11673958333333335,
+    "nominal_descriptive_bootstrap_interval": [
+      0.041498567708333337,
+      0.19193372395833333
+    ],
+    "resampling_unit": "3-task stream, averaged over all 3 public prices before resampling"
+  },
+  "measured_setup_by_family": {
+    "tabular_bellman": 87.418699199,
+    "validation_schedule": 85.455869093
+  },
+  "positive_point_estimates": 24,
+  "reference": "validation_schedule",
+  "same_registered_rate_lifetime_grid": true,
+  "scenarios": [
+    {
+      "allocation": "measured_method_components",
+      "difference": 0.31422916666666667,
+      "future_stream_lifetime": 1000,
+      "ordinary_net_utility": 0.5755,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8897291666666667,
+      "utility_units_per_cpu_second": 0.0
+    },
+    {
+      "allocation": "measured_method_components",
+      "difference": 0.3142336599506186,
+      "future_stream_lifetime": 1000,
+      "ordinary_net_utility": 0.5754678708834199,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8897015308340385,
+      "utility_units_per_cpu_second": 0.0001
+    },
+    {
+      "allocation": "measured_method_components",
+      "difference": 0.3142740995061857,
+      "future_stream_lifetime": 1000,
+      "ordinary_net_utility": 0.5751787088341986,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8894528083403843,
+      "utility_units_per_cpu_second": 0.001
+    },
+    {
+      "allocation": "measured_method_components",
+      "difference": 0.31467849506185663,
+      "future_stream_lifetime": 1000,
+      "ordinary_net_utility": 0.5722870883419867,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8869655834038433,
+      "utility_units_per_cpu_second": 0.01
+    },
+    {
+      "allocation": "measured_method_components",
+      "difference": 0.31422916666666667,
+      "future_stream_lifetime": 10000,
+      "ordinary_net_utility": 0.5755,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8897291666666667,
+      "utility_units_per_cpu_second": 0.0
+    },
+    {
+      "allocation": "measured_method_components",
+      "difference": 0.3142338366053281,
+      "future_stream_lifetime": 10000,
+      "ordinary_net_utility": 0.5754755619116383,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8897093985169664,
+      "utility_units_per_cpu_second": 0.0001
+    },
+    {
+      "allocation": "measured_method_components",
+      "difference": 0.31427586605328106,
+      "future_stream_lifetime": 10000,
+      "ordinary_net_utility": 0.5752556191163823,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8895314851696634,
+      "utility_units_per_cpu_second": 0.001
+    },
+    {
+      "allocation": "measured_method_components",
+      "difference": 0.3146961605328107,
+      "future_stream_lifetime": 10000,
+      "ordinary_net_utility": 0.5730561911638237,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8877523516966344,
+      "utility_units_per_cpu_second": 0.01
+    },
+    {
+      "allocation": "measured_method_components",
+      "difference": 0.31422916666666667,
+      "future_stream_lifetime": 100000,
+      "ordinary_net_utility": 0.5755,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8897291666666667,
+      "utility_units_per_cpu_second": 0.0
+    },
+    {
+      "allocation": "measured_method_components",
+      "difference": 0.3142338542707991,
+      "future_stream_lifetime": 100000,
+      "ordinary_net_utility": 0.57547633101446,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8897101852852591,
+      "utility_units_per_cpu_second": 0.0001
+    },
+    {
+      "allocation": "measured_method_components",
+      "difference": 0.3142760427079906,
+      "future_stream_lifetime": 100000,
+      "ordinary_net_utility": 0.5752633101446007,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8895393528525913,
+      "utility_units_per_cpu_second": 0.001
+    },
+    {
+      "allocation": "measured_method_components",
+      "difference": 0.31469792707990607,
+      "future_stream_lifetime": 100000,
+      "ordinary_net_utility": 0.5731331014460074,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8878310285259134,
+      "utility_units_per_cpu_second": 0.01
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": 0.31422916666666667,
+      "future_stream_lifetime": 1000,
+      "ordinary_net_utility": 0.5755,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8897291666666667,
+      "utility_units_per_cpu_second": 0.0
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": 0.3142235604048291,
+      "future_stream_lifetime": 1000,
+      "ordinary_net_utility": 0.5754717689936292,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8896953293984583,
+      "utility_units_per_cpu_second": 0.0001
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": 0.3141731040482917,
+      "future_stream_lifetime": 1000,
+      "ordinary_net_utility": 0.5752176899362916,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8893907939845833,
+      "utility_units_per_cpu_second": 0.001
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": 0.3136685404829167,
+      "future_stream_lifetime": 1000,
+      "ordinary_net_utility": 0.5726768993629167,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8863454398458334,
+      "utility_units_per_cpu_second": 0.01
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": 0.31422916666666667,
+      "future_stream_lifetime": 10000,
+      "ordinary_net_utility": 0.5755,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8897291666666667,
+      "utility_units_per_cpu_second": 0.0
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": 0.31423282665074914,
+      "future_stream_lifetime": 10000,
+      "ordinary_net_utility": 0.5754759517226592,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8897087783734083,
+      "utility_units_per_cpu_second": 0.0001
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": 0.3142657665074917,
+      "future_stream_lifetime": 10000,
+      "ordinary_net_utility": 0.5752595172265916,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8895252837340833,
+      "utility_units_per_cpu_second": 0.001
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": 0.3145951650749167,
+      "future_stream_lifetime": 10000,
+      "ordinary_net_utility": 0.5730951722659167,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8876903373408334,
+      "utility_units_per_cpu_second": 0.01
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": 0.31422916666666667,
+      "future_stream_lifetime": 100000,
+      "ordinary_net_utility": 0.5755,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8897291666666667,
+      "utility_units_per_cpu_second": 0.0
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": 0.3142337532753412,
+      "future_stream_lifetime": 100000,
+      "ordinary_net_utility": 0.5754763699955622,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8897101232709034,
+      "utility_units_per_cpu_second": 0.0001
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": 0.31427503275341173,
+      "future_stream_lifetime": 100000,
+      "ordinary_net_utility": 0.5752636999556217,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8895387327090334,
+      "utility_units_per_cpu_second": 0.001
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": 0.3146878275341167,
+      "future_stream_lifetime": 100000,
+      "ordinary_net_utility": 0.5731369995562167,
+      "tabular_higher_point_estimate": true,
+      "tabular_net_utility": 0.8878248270903334,
+      "utility_units_per_cpu_second": 0.01
+    }
+  ],
+  "scope": "No new inference/training/native process. Task planning reference result, not a financial operator, learned-head, v2 neural-content or foundation-model superiority claim.",
+  "source_files_sha256": {
+    "AUDIT.json": "543869a40e99816a042286b81c119c75611fa43bc1de5e3f938918697cd430fc",
+    "CAMPAIGN_EXECUTION.json": "51789e368f4e865993d72495eb4e7cfda5862710791a01db3a28fd7c3550436d",
+    "COST_SCENARIOS.json": "6e1cbe9f4ca22261b882a8cc0645ba5248560b3bbeeb9360869ff1e8aca69504",
+    "EVALUATION_SUMMARY.json": "fc0343b13d99b68ba9d65497db7b599bdc5ab6acdeea5a771e5b5466598a17bf",
+    "PROTOCOL.json": "6b1e2f7dccfb2ef756092e2cfb39e2aacc6835642ab9e535b4846fce030f28db",
+    "REGISTRATION.json": "74199eb3757a989a9dc1c5fecb988c3a496fb3e8730e7bfc4aa8d92f30914f66",
+    "SELECTION_LOCK.json": "a885d0d2eb93b1933bcdd801143cfadf9205b5f377cdd12ec42fd3c8e370dbaa",
+    "TRAINING_SUMMARY.json": "cd55e81c2833d005a22636e830255d6995c781e0e174a2ce0defb4dd85dbd5c8"
+  },
+  "status": "completed"
+}
