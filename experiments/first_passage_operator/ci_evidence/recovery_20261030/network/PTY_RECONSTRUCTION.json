@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-30",
+  "old_logs_available": false,
+  "native_windows_execution": "pending",
+  "diagnosis": "Original selected interpreter was not logged; POSIX alias selection is a hypothesis, not a proven runtime root cause. Native CPython contract and startup/mode diagnostics are now explicit.",
+  "scope": [
+    "native CPython identity probe with resolved path",
+    "strict complete UTF-8 payload match including suffix marker",
+    "retain console mode and startup transcript on failure",
+    "no production normalizer or timeout change"
+  ],
+  "source_sha256": {
+    "codex-rs/utils/pty/src/tests.rs": "de43c610eda6bc4c30af95f1ef5854a2fe88b30dc248d1196081394e51f3cc2d",
+    "codex-rs/utils/pty/src/windows_tests.rs": "58f468808ab389ba2cae70bb862984a52452cd4e7179c4b5d012ce7bbf73d911",
+    "codex-rs/utils/pty/src/windows_python_fixture.rs": "f1650712131798aa5d937fb1c0a2db0cb479219b4e24dc19433ab66ad6c21f0b",
+    "codex-rs/utils/pty/src/windows_python_fixture_tests.rs": "25c2e238b0f96249a7ee902f59acf84a989fa4051d186b6b95932e1b621c37d5"
+  },
+  "new_validation": "pending"
+}

@@ -4,6 +4,7 @@ use codex_extension_api::ExtensionFuture;
 use codex_extension_api::ThreadIdleInput;
 use codex_extension_api::ThreadLifecycleContributor;
 use futures::poll;
+use pretty_assertions::assert_eq;
 use std::time::Duration;
 
 struct BlockingIdle {
@@ -336,4 +337,55 @@ async fn concurrent_terminal_publishers_keep_sidecars_in_event_order() {
     assert!(!recovered.is_complete());
     session.finish_task_terminalization(&recovered_id, &recovered);
     assert!(poll!(second_observer.as_mut()).is_ready());
+}
+
+#[tokio::test]
+async fn cancelled_terminal_receiver_releases_single_consumer_permit() {
+    let (session, _context, events) = make_session_and_context_with_rx().await;
+    let (tx_sub, _rx_sub) = async_channel::bounded(/*cap*/ 1);
+    let io = crate::session::SessionIo {
+        tx_sub,
+        rx_event: events,
+        agent_status: tokio::sync::watch::channel(
+            crate::agent::AgentStatus::PendingInit,
+        )
+        .1,
+        session_loop_termination: crate::session::completed_session_loop_termination(),
+    };
+    let mut cancelled = Box::pin(session.receive_event_with_completion(&io));
+    let mut replacement = Box::pin(session.receive_event_with_completion(&io));
+    assert!(poll!(cancelled.as_mut()).is_pending());
+    assert!(poll!(replacement.as_mut()).is_pending());
+    let queue = session
+        .services
+        .thread_extension_data
+        .get::<TerminalEventCompletionQueue>()
+        .expect("receiver runtime sidecar queue");
+    assert_eq!(queue.receiver.available_permits(), 0);
+    drop(cancelled);
+
+    let identity = Arc::new(());
+    let owner = StartTransitionCompletion::new("replacement-receiver".to_owned());
+    session.register_task_terminalization(
+        Arc::clone(&identity),
+        Arc::clone(&owner),
+        TaskTerminalizationKind::Finish,
+        /*suspension_handoff*/ None,
+        /*abort_handoff*/ None,
+        /*finish_handoff*/ None,
+    );
+    session
+        .deliver_event_raw(terminal_event("replacement-receiver"))
+        .await;
+    let (event, completion) = tokio::time::timeout(Duration::from_secs(2), replacement)
+        .await
+        .expect("cancelled receive must not strand the replacement listener")
+        .expect("replacement listener receives the real event");
+    assert_eq!(event.id, "replacement-receiver");
+    assert_eq!(queue.receiver.available_permits(), 1);
+    assert!(queue.entries.lock().unwrap().is_empty());
+    tokio::pin!(completion);
+    assert!(poll!(completion.as_mut()).is_pending());
+    session.finish_task_terminalization(&identity, &owner);
+    assert!(poll!(completion.as_mut()).is_ready());
 }

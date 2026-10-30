@@ -1,0 +1,22 @@
+{
+  "run": "new reconstruction validation 2026-10-30",
+  "command": [
+    "just",
+    "test",
+    "--manifest-path",
+    "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/pty_probe/Cargo.toml",
+    "--config-file",
+    "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/pty_probe/nextest.toml",
+    "--lib"
+  ],
+  "scope": "isolated manifest imports actual repository native-Python probe source",
+  "exit_code": 0,
+  "tests": 4,
+  "passed": 4,
+  "skipped": 0,
+  "native_windows_runtime": false,
+  "source_sha256": {
+    "codex-rs/utils/pty/src/windows_python_fixture.rs": "f1650712131798aa5d937fb1c0a2db0cb479219b4e24dc19433ab66ad6c21f0b",
+    "codex-rs/utils/pty/src/windows_python_fixture_tests.rs": "25c2e238b0f96249a7ee902f59acf84a989fa4051d186b6b95932e1b621c37d5"
+  }
+}

@@ -2,6 +2,7 @@ use super::collect_output_until_exit;
 use super::combine_spawned_output;
 use super::find_python;
 use super::wait_for_output_contains;
+use super::windows_python_fixture::find_native_python;
 use crate::TerminalSize;
 use crate::spawn_pipe_process_no_stdin;
 use crate::spawn_pty_process;
@@ -21,6 +22,7 @@ use winapi::um::winnt::PROCESS_QUERY_LIMITED_INFORMATION;
 
 const READY_MARKER: &str = "__CODEX_CHILD_READY__";
 const VALUE_MARKER: &str = "__CODEX_CHILD_VALUE__";
+const VALUE_END_MARKER: &str = "__CODEX_CHILD_VALUE_END__";
 
 struct WindowsShell {
     name: &'static str,
@@ -302,27 +304,26 @@ async fn rejected_job_assignment_resumes_existing_job_member() -> anyhow::Result
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn conpty_delivers_input_to_foreground_children() -> anyhow::Result<()> {
-    let Some(python) = find_python() else {
-        eprintln!("python not found; skipping ConPTY input test");
-        return Ok(());
-    };
+    let python = find_native_python()?;
+    // Keep the actual native input() path and report the inherited console mode
+    // without changing it. Split READY so an echoed shell command cannot match.
     let code = format!(
-        "print('__CODEX_CHILD_'+'READY__', flush=True); value=input(); print('{VALUE_MARKER}'+value.encode('utf-8').hex(), flush=True)"
+        "import ctypes,json,msvcrt,os,sys; from ctypes import wintypes; assert sys.platform=='win32' and os.name=='nt'; kernel=ctypes.WinDLL('kernel32',use_last_error=True); kernel.GetConsoleMode.argtypes=[wintypes.HANDLE,ctypes.POINTER(wintypes.DWORD)]; kernel.GetConsoleMode.restype=wintypes.BOOL; mode=wintypes.DWORD(); ok=kernel.GetConsoleMode(msvcrt.get_osfhandle(sys.stdin.fileno()),ctypes.byref(mode)); print('__CODEX_CONSOLE__'+json.dumps(dict(executable=sys.executable,version=sys.version,platform=sys.platform,os=os.name,stdin_raw=type(sys.stdin.buffer.raw).__name__,stdin_tty=sys.stdin.isatty(),stdout_tty=sys.stdout.isatty(),console_ok=bool(ok),input_mode=mode.value,console_error=ctypes.get_last_error())),flush=True); print('__CODEX_CHILD_'+'READY__',flush=True); value=input(); print('{VALUE_MARKER}'+value.encode('utf-8').hex()+'{VALUE_END_MARKER}',flush=True)"
     );
     let expected = "cafeé 漢字";
-    let expected_marker = format!("{VALUE_MARKER}{}", utf8_hex(expected));
+    let expected_marker = format!("{VALUE_MARKER}{}{VALUE_END_MARKER}", utf8_hex(expected));
     let mut shells = vec![WindowsShell {
         name: "cmd",
         program: std::env::var("COMSPEC").unwrap_or_else(|_| "cmd.exe".to_string()),
         args: vec!["/D".to_string(), "/Q".to_string()],
-        child_command: format!("\"{}\" -u -c \"{code}\"", python.replace('"', "\"\"")),
+        child_command: format!("\"{}\" -I -S -u -c \"{code}\"", python.replace('"', "\"\"")),
     }];
     if let Some(program) = find_powershell() {
         shells.push(WindowsShell {
             name: "PowerShell",
             program,
             args: vec!["-NoLogo".to_string(), "-NoProfile".to_string()],
-            child_command: format!("& '{}' -u -c \"{code}\"", python.replace('\'', "''")),
+            child_command: format!("& '{}' -I -S -u -c \"{code}\"", python.replace('\'', "''")),
         });
     }
     let env: HashMap<String, String> = std::env::vars().collect();
@@ -343,7 +344,7 @@ async fn conpty_delivers_input_to_foreground_children() -> anyhow::Result<()> {
         writer
             .send(format!("{}\n", shell.child_command).into_bytes())
             .await?;
-        wait_for_output_contains(&mut output_rx, READY_MARKER, /*timeout_ms*/ 10_000)
+        let ready_output = wait_for_output_contains(&mut output_rx, READY_MARKER, /*timeout_ms*/ 10_000)
             .await
             .map_err(|err| anyhow::anyhow!("{} child did not become ready: {err}", shell.name))?;
 
@@ -354,7 +355,11 @@ async fn conpty_delivers_input_to_foreground_children() -> anyhow::Result<()> {
             wait_for_output_contains(&mut output_rx, &expected_marker, /*timeout_ms*/ 10_000)
                 .await
                 .map_err(|err| {
-                    anyhow::anyhow!("{} child received incorrect input: {err}", shell.name)
+                    anyhow::anyhow!(
+                        "{} child received incorrect input: {err}; startup transcript: {:?}",
+                        shell.name,
+                        String::from_utf8_lossy(&ready_output)
+                    )
                 })?;
 
         writer.send(b"exit 0\n".to_vec()).await?;

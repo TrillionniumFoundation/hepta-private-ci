@@ -13,6 +13,9 @@ use crate::spawn_pipe_process;
 use crate::spawn_pipe_process_no_stdin;
 use crate::spawn_pty_process;
 
+#[path = "windows_python_fixture.rs"]
+mod windows_python_fixture;
+
 #[cfg(windows)]
 #[path = "windows_tests.rs"]
 mod windows_tests;

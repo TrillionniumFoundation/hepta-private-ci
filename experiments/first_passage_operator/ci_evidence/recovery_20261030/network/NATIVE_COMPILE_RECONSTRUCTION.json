@@ -1,0 +1,38 @@
+{
+  "stage": "reconstructed_native_compile_repairs",
+  "date": "2026-10-30",
+  "recovered_from": "retained conversation and checked-out c71b source",
+  "old_logs_available": false,
+  "historical_results_are_not_new_validation": true,
+  "source_status": "ready for checkpoint; tests pending",
+  "git_diff_check": {
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "source_sha256": {
+    "codex-rs/core/src/tasks/mod.rs": "d6d708823b58e5910acaba35cc7584f508c8ec0601330826e9140f55869148f7",
+    "codex-rs/core/src/tasks/terminal_event_barrier_tests.rs": "ac61574730dd3559add65a8b05b813edfe3c0f5fb009465462a6b46915f2bc53",
+    "codex-rs/hepta-automation/src/migration_convergence_tests.rs": "24ee17b4f52051adf5867542abf75355fb02c1acab08ce2352fef30cea180985",
+    "codex-rs/hepta-memory/src/cognitive_schema_tests.rs": "c91623867b07423016db6b714774161324339bde1e7930cd01b0c8ad74598044",
+    "codex-rs/hepta-memory/src/production_writer.rs": "f24a6ed391399743a6588979e3d10c9cb188f6415b097b67a0eba86d1e46a325",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs": "3b082d771837cb5a01bce364d91ebdd1e71e7c70a3047da3f523d8d94c82e971",
+    "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs": "76f363cbfd424abfacdb9a47a74cf42a4708ac4457dfd309e1463e9515c7baaf",
+    "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs": "45d919060cd366e47310cd42ae4ba188620e5fe94954189f4826ce75a4dc38eb",
+    "codex-rs/hepta-agentd/BUILD.bazel": "c2b1e20de18f87680ab3339fd515b444a27219ec14fdffcb265a15dc52b7e3bf",
+    "defs.bzl": "2f86cd54378153d10f22e832c82ca8d71410bb41279e5be290dbf7a4b0761d51"
+  },
+  "preserved_contracts": [
+    "exact publication-time lifecycle owner pairing",
+    "single consumer cancellation-safe receive permit",
+    "independent migration oracle through codex-state SQLite shim",
+    "test-only qualification dependency closure, no production legacy writes",
+    "contextual fixture failures without lint allowances"
+  ],
+  "pending": [
+    "targeted original just test",
+    "scoped original just fix",
+    "canonical root just fmt",
+    "native Bazel/Clippy and integration execution"
+  ]
+}
