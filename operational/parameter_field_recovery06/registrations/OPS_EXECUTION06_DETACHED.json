@@ -1,0 +1,295 @@
+{
+  "R_reconstruction": {
+    "additional_scheduled_gradient_microsteps": 96768,
+    "preserved_parents": 144,
+    "provenance": "New R files are reconstructed terminal checkpoints, not original terminal bytes saved during the first execution. R cannot repair or hide attempt01 raw loss.",
+    "role": "Separately registered independent evidence reconstruction and integrity comparison; all work is charged.",
+    "terminal_checkpoints": 576
+  },
+  "amendment_id": "OPS_EXECUTION06_DETACHED_20261030",
+  "attempt01_disposition": {
+    "budget_claim": "The original whole-study 1 GiB raw / 2 GiB allocatable-reserve / private-mount durability contract was not completed.",
+    "causation": "An 8 GiB cgroup and cumulative oom=8/oom_kill=4 were observed; this is consistent with memory pressure but is not PID-level proof of the cause of the executor reset.",
+    "incident_time_utc_approx": "2026-10-29T07:47:00Z",
+    "observed": "Executor transport reset; all study processes and their private mount disappeared. Host source/freezes/exports survived. No A/C completion seal survived and no new endpoint had been opened.",
+    "raw_loss": "Approximately 410 MB of private-mount raw artifacts were lost according to the incident report. Missing bytes are not represented as preserved or as literal-restore evidence.",
+    "retained": "Preserve all surviving source/freezes, exports, logs/receipts and incident records; do not overwrite the original attempt.",
+    "status": "execution_incomplete_infrastructure_loss"
+  },
+  "attempt_id": "attempt02",
+  "budgets_unchanged": {
+    "A_B_per_seed_CPU_seconds": 7200,
+    "A_B_per_seed_wall_seconds": 10800,
+    "A_per_seed_primary_gradient_microsteps": 39168,
+    "B_per_seed_primary_gradient_microsteps": 23040,
+    "C_CPU_seconds": 43200,
+    "C_independent_replay_microsteps": 384,
+    "C_primary_gradient_microsteps": 57152,
+    "C_total_gradient_microsteps": 57536,
+    "C_wall_seconds": 21600,
+    "R_extra_gradient_microsteps": 96768,
+    "W_total_gradient_microsteps": 2880
+  },
+  "concurrency": {
+    "admission_rule": "effective_current + pending_growth + new_worker_reservation + 1 GiB margin <= cgroup memory.max; workers wait for their PID to appear in ACTIVE_WORKERS before importing scientific runtime.",
+    "clean_reclaimable_formula": "max(0, inactive_file - file_dirty - file_writeback)",
+    "controller_registration_poll_seconds": 0.05,
+    "controller_registration_wait_seconds": 5.0,
+    "effective_current_formula": "max(0, memory.current - clean_reclaimable)",
+    "groups": "Controller enforces declared phase dependencies and group compatibility. W/finalization are exclusive. R may use two registered slots but is not mixed with other scientific writer groups.",
+    "max_workers": 2,
+    "memory_margin_bytes": 1073741824,
+    "memory_measurement": "cgroup v2 memory.current/memory.max/memory.stat; do not count all slab_reclaimable as available.",
+    "oom_events": "Record baseline counters before admission. On increment, stop new admission, preserve/record the event and let existing workers reach guarded persistence boundaries; do not silently retry affected work.",
+    "payload_rule": "effective_current + pending_growth + rounded_new_file_allocation + 1 GiB margin <= memory.max, as well as filesystem and logical-byte checks, inside the shared write lock.",
+    "pending_growth_formula": "sum(max(0, registered_worker_reservation - live_process_VmRSS)) over ACTIVE_WORKERS.json; nonexistent PIDs contribute zero.",
+    "resource_qualification": {
+      "after_successful_family_completion": "max(512 MiB, ceil((1.25 * maximum_completed_family_VmHWM) / 64 MiB) * 64 MiB)",
+      "eligibility": "Completed jobs only, positive recorded process high-water mark, same declared legacy family. Pure memory/completion metadata only; no score or effect qualification.",
+      "enabled_families": {
+        "legacy": [
+          "A",
+          "B",
+          "R"
+        ]
+      },
+      "initial_reservation_bytes": 805306368,
+      "max_workers_and_margin_unchanged": true,
+      "unqualified_families": [
+        "C",
+        "W",
+        "A_endpoint",
+        "B_endpoint",
+        "C_endpoint"
+      ],
+      "unqualified_reservation_bytes": 805306368
+    },
+    "worker_reservation_bytes": 805306368
+  },
+  "content_addressed_store": "/workspace/scratch/178ced6a501f/fullstudy_execution06_durable_raw_cas",
+  "durable_execution": {
+    "actual_asset_recovery": {
+      "bytes": 2029,
+      "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/ORIGINAL_ASSETS_RESTORED.json",
+      "sha256": "a0f1ab4f1f0bc61025a7f55988493dffd2a74a0a92a144ada8738b9af519f16e"
+    },
+    "asset_restoration": {
+      "bytes": 2068,
+      "path": "/workspace/scratch/178ced6a501f/assets_original/RESTORATION.json",
+      "sha256": "426d99fd7ba57fc451ac05c6cde7722322d64cc345aa9800f98957938860adb1"
+    },
+    "attempt_id_compatibility_only": "attempt02 is required by unchanged original validators; execution_episode is the new identity.",
+    "automatic_scientific_retry": false,
+    "canonical_job_order": [
+      "A-17",
+      "A-29",
+      "A-43",
+      "C",
+      "B-17",
+      "B-29",
+      "B-43",
+      "W",
+      "R-17",
+      "R-29",
+      "R-43",
+      "A_endpoint",
+      "B_endpoint",
+      "C_endpoint"
+    ],
+    "capacity_wait_contract": "Only explicit original pending-growth/margin rejection; release all persistence locks, retain the same payload and cursor, recheck all original limits, no gradient/scoring retry.",
+    "completed_A17_raw_available_for_explicit_import": true,
+    "effective_scientific_concurrency": 1,
+    "execution05_failure_sources": {
+      "bytes": 3374,
+      "path": "/workspace/scratch/178ced6a501f/execution06_preregistration_inputs/FAILURE05_SOURCE_PINS.json",
+      "sha256": "83605f6963d34b3e66716acf23d863516c285fd68dac605c31bc02d12d338518"
+    },
+    "execution05_outer_wait4": "Missing original final receipt; preserve lower-level actual costs and unknown remaining scope. New execution cannot replace the missing historical receipt.",
+    "historical_cost_mode": "preregistered_public_summary_projection",
+    "historical_preflight_originals_missing": true,
+    "historical_summary_is_not_completed_receipt_evidence": true,
+    "import_method": "copy",
+    "import_pins": {
+      "bytes": 8389,
+      "path": "/workspace/scratch/178ced6a501f/execution06_preregistration_inputs/IMPORT_A17_PINS.json",
+      "sha256": "091351bea8bbbe54331052858ed84d16db4a3e0e2931283de9bf1cd2043f427e"
+    },
+    "imported_jobs": [
+      "A-17"
+    ],
+    "initial_disk_headroom_bytes": 2415919104,
+    "initial_gate_interval_seconds": 10,
+    "initial_gate_samples": 3,
+    "initial_ram_headroom_bytes": 1879048192,
+    "launch_entrypoint": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/daemon_bootstrap.py",
+    "launch_lifecycle": "The registered daemon bootstrap detaches the complete measuring parent, closes inherited executor descriptors, waits for its final stable parent identity, and receives one exact admission before spawning the supervisor. READY is not final wait4.",
+    "maximum_capacity_wait_seconds": 300,
+    "new_scientific_jobs": [
+      "A-29",
+      "A-43",
+      "C",
+      "B-17",
+      "B-29",
+      "B-43",
+      "W",
+      "R-17",
+      "R-29",
+      "R-43",
+      "A_endpoint",
+      "B_endpoint",
+      "C_endpoint"
+    ],
+    "no_new_episode_scientific_execution_at_registration": true,
+    "old_episode03_observation": {
+      "bytes": 2883,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery04/evidence/EXECUTION03_CONTINUITY_OBSERVATION.json",
+      "sha256": "be48accdfa5ddaba1fa27b5ded3bd703c6cb775062cd3f1d9090162da1ff4b2d"
+    },
+    "old_scientific_thresholds_and_allocation_unchanged": true,
+    "owned_child_contract": "Direct-child identity checked termination and real wait4 on success or failure; preserve original exception and signal outcome.",
+    "preflight_public_summary_lower_bound_microsteps": 864,
+    "public_engineering_summary_was_seen_during_cost_recovery": true,
+    "runtime": {
+      "bytes": 3416,
+      "path": "/workspace/scratch/178ced6a501f/execution06_preregistration_inputs/RUNTIME_RESTORED.json",
+      "sha256": "d24c3ded6e032ad387d77e7a0d179cd917f2e628f652ec27ea60bcc9ef356134"
+    },
+    "schema": "hepta.fullstudy.durable-operation-plan.5",
+    "source_amendment": {
+      "bytes": 15269,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/experiments/parameter_field_fullstudy_20261029/OPS_ATTEMPT02_DISK.json",
+      "sha256": "d0572d7c26f7d15f9a78f3a8d6e6b72f70ae709e075c89a04f4599d90146d372"
+    },
+    "stage_barrier": "Completed child exit and original seal, stable archive bytes, actual external upload/readback, then exact ACK.",
+    "unchanged_numeric_resource_contract": true,
+    "unknown_upload_outcome_retry": false,
+    "worker_policy_binding": "A/C freezes precede producer map and cwd policy to avoid a hash cycle; actual policy is bound by both OPS freezes and the pipeline configuration."
+  },
+  "execution_episode": "execution06_detached_20261030",
+  "execution_ready": true,
+  "failure_and_reporting": {
+    "infrastructure_failure": "Stop new science and preserve each surviving original byte; known completed stages must have external verified archives.",
+    "mandatory_disclosure": "Original V5/attempt01 failures remain. Execution02 partial failure bytes were recovered; execution03 was last observed after two A jobs, with later state unknown. Missing historical receipts are explicitly lower-bound evidence, never completed-receipt replacements. The former 1 GiB raw / 2 GiB reserve contract remains unfulfilled.",
+    "resource_failure": "Stop and preserve exact on-disk progress; do not delete unfavorable data or weaken sample/statistical rules to fit. Any unavailable persistence is explicit execution-incomplete evidence.",
+    "scientific_outcome": "Completion does not imply a positive effect; all registered outcomes and failures remain reportable."
+  },
+  "final_evidence_container": {
+    "external_uploads": 0,
+    "external_uploads_scope": "Original core reports zero; execution06 supervisor and root record actual separate uploads.",
+    "literal_verification": "After all writers are quiescent, reconstruct every logical artifact to a real temporary file one at a time from its canonical blob, compare exact length and SHA256, record full path coverage, and remove only the verified temporary duplicate. Same-content paths may share canonical blobs but each logical path identity is checked.",
+    "no_full_tree_duplication": true,
+    "optional_tar": "Required bounded streaming stage archives outside RAW; actual remote readback SHA must match before ACK.",
+    "primary": "Original local CAS and complete literal restore, plus verified external stage archives with full path coverage.",
+    "temporary_memory_and_filesystem_gates": "Apply the registered host-memory, physical-reserve and global storage checks to temporary allocations; do not assume room for a second entire tree."
+  },
+  "operational_code_commit": "058cd3d22aecbf67f9c5054f2131eeb0ccd55793",
+  "original_protocol": {
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/experiments/parameter_field_fullstudy_20261029/PROTOCOL.json",
+    "preserve_bytes": true,
+    "sha256": "2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55"
+  },
+  "original_source_freezes": {
+    "A": {
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/experiments/parameter_field_fullstudy_20261029/registrations/A_SOURCE_FREEZE.json",
+      "protocol_sha256": "2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55",
+      "registered_commit": "68b4ecc44cea5f5bc7478ea1008adb1ab81098c6",
+      "sha256": "2a5219147d38ebb6514059bd69e2d3489bf7d69d213cd01343455f63a08a53d2",
+      "source_root": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git"
+    },
+    "C": {
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/experiments/parameter_field_fullstudy_20261029/registrations/C_SOURCE_FREEZE.json",
+      "protocol_sha256": "2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55",
+      "registered_commit": "4fc9ce3744525a5b916dd31a13ebcbe05d07cea1",
+      "sha256": "5f427c8a8cebe8c96a2a0d81318e22d286dc0aaa8b3dbf4d5844df2177949c6d",
+      "source_root": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git"
+    }
+  },
+  "persistence": {
+    "immutable_artifacts": "Refuse to overwrite existing scientific artifacts. Allow declared ops-pending atomic metadata replacement and byte-verified CAS link replacement only.",
+    "known_serializers": [
+      "Path.write_bytes/write_text",
+      "json.dump/json.dumps",
+      "numpy.savez_compressed",
+      "gzip streams",
+      "the fixed checkpoint codecs"
+    ],
+    "logical_accounting": "Each original raw artifact path counts at its full st_size, even when hardlinked. Include failures, partial evidence, receipts and logs. CAS canonical links are storage representation, not independent scientific samples.",
+    "no_lossy_changes": [
+      "no quantization",
+      "no source or condition reduction",
+      "no dropped fields",
+      "no score-only replacement",
+      "no favorable-branch filtering",
+      "no hidden reduction in sample, seed, path or archive coverage"
+    ],
+    "physical_accounting": "Count allocated blocks once per device/inode across raw_root and its CAS sibling; include metadata and transient verification/storage overhead. Report cumulative logical bytes and physical sharing separately.",
+    "protected_locks": "All *.lock and coordination .ops-* files are excluded from CAS replacement; lock inode identity is preserved.",
+    "registered_hooks": "resource_io_v2 wraps builtins.open/io.open only for write paths inside raw_root, plus raw-root os.rename/os.replace. Hooks are explicit, scoped and restored; original scientific files are not edited.",
+    "shared_write_lock": ".ops-write.lock in raw_root; check, write, flush and fsync occur while this lock is held.",
+    "text_buffer_max_bytes": 65536,
+    "text_buffer_semantics": "Flush before tell, seek, truncate and close. Quota checks cover the actual buffered payload before it reaches the filesystem; exact UTF-8 bytes are retained.",
+    "uniform_CAS": "Every closed immutable artifact may be shared with a same-filesystem SHA256 canonical blob only after equal length and full byte equality verification. The original logical path, length and exact bytes remain accessible. Mutable append logs are deduplicated only after final sealing."
+  },
+  "proposed_resource_contract": {
+    "C_training_evidence_bytes": 367001600,
+    "archive_reservation_bytes": 0,
+    "archive_reservation_note": "The previous EMPTY RAM archive reservation was released by the root operator; its receipts remain. Neither 1472 MiB nor any other new preallocated tar capacity is promised.",
+    "disk_memory_accounting": "Unchanged conservative per-write allocation memory gate, cgroup margin, pending growth and worker admission remain enforced even though files are now disk-backed.",
+    "external_raw_uploads": 0,
+    "external_raw_uploads_scope": "Unchanged original core only; external supervisor archives are separately measured and disclosed.",
+    "failure_receipt_memory_exemption": {
+      "filenames_must_contain": "FAIL",
+      "maximum_bytes": 65536,
+      "purpose": "Bounded failure receipts only; filesystem reserve and logical cap remain enforced."
+    },
+    "global_raw_logical_bytes": 2147483648,
+    "legacy_field_name_note": "minimum_private_allocatable_bytes is retained for API compatibility and enforces actual disk free capacity. Neither a private tmpfs nor the former 2 GiB reserve is claimed.",
+    "minimum_allocatable_bytes": 268435456,
+    "minimum_available_inodes": 2000,
+    "minimum_private_allocatable_bytes": 268435456,
+    "original_2GiB_reserve_satisfied": false,
+    "original_whole_study_1GiB_contract_satisfied": false,
+    "persistence_scope": "Per-stage external archives are required and verified before the next stage; current unfinished work is not promised durable.",
+    "private_mount_used": false,
+    "raw_storage_kind": "Task-owned disk-backed workspace directory; no private mount and no tmpfs raw artifacts"
+  },
+  "raw_root": "/workspace/scratch/178ced6a501f/fullstudy_execution06_durable_raw",
+  "registered_utc": "2026-10-30T14:48:31.387074+00:00",
+  "repository_branch": "research/parameter-field-backpressure-20261030",
+  "restart": {
+    "kind": "Only completed execution04 A17 is imported once; failed execution04 and execution05 A29 work is charged separately before a new whole A29. Execution03 checkpoints remain unavailable.",
+    "outcome_selection": "No efficacy values were used to select this operational restart. Byte hashes, file shapes, allocation, process memory and completion/integrity metadata may be used for storage and scheduling only.",
+    "repeated_seeds_add_independent_samples": 0,
+    "same_scientific_configuration": true,
+    "source_ancestry": "New episode freezes identify actual committed execution sources and unchanged original scientific parents.",
+    "unchanged": [
+      "architectures and all trainable parameters",
+      "initial seeds and tensors",
+      "source roles and exact identities",
+      "minibatch/noise tapes and schedules",
+      "actions and baselines",
+      "teacher/rehearsal objective",
+      "guards and complete rollback",
+      "warmup/continuation budgets",
+      "field coordinates and head fits",
+      "fit/calibration partitions",
+      "thresholds and fallback",
+      "all sample sizes and paired seeds",
+      "observers, estimands, margins, bootstrap and multiplicity rules"
+    ]
+  },
+  "schema": "hepta.parameter-field.fullstudy.operational-storage-amendment.2",
+  "scope": "Exact-design continuation with verified execution04 A17 import, separately charged failed execution04/05 A29 work, and the complete measuring parent detached before any new science; original bounded persistence backpressure and owned-child reaping remain.",
+  "source_and_endpoint_barriers": {
+    "actual_training_parent": "Scorer training_parents descriptors identify completed attempt02 training freezes, with exact path, SHA256, commit, protocol hash and source_root. Old A/C pins are scientific ancestors, not completed checkpoints.",
+    "new_endpoint_access": "All original role/checkpoint/access barriers remain. The operational restart and memory qualification never select an endpoint subset or open new data early.",
+    "new_freeze_markers": [
+      "attempt_id=attempt02",
+      "execution_kind=training or endpoint_scoring",
+      "operational_amendment_sha256",
+      "scientific_parent descriptor"
+    ],
+    "old_closure_preserved": "The original scientific-parent source_files map must be contained in the actual training freeze with identical hashes. Newly added resource/wrapper source is separately frozen."
+  },
+  "status": "REGISTERED_PRE_ENDPOINT"
+}
