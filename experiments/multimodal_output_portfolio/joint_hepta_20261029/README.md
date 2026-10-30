@@ -15,7 +15,31 @@ population exponential-utility profile at gamma=2. General recursive preference
 drivers, a task-value neuronal free boundary and large-scale semantic generation
 remain research extensions.
 
-## Completed execution and current findings
+## Latest: registered v2 execution and findings
+
+V2 completed **two seeds × two widths × eight arms**, student-state DAgger,
+learned-checkpoint feedback interventions, a 128-source/639-event natural
+observer development and 24 actual native-owner deployments. The registered
+source passed 134 tests; the final local package, including the read-only
+complete-panel summarizer, passed 139 tests. The run's eight jobs completed and
+all six compact original-evidence artifacts were committed.
+
+The overall mechanism and stable student-cost-saving development gates fail.
+Only two of eight individual mechanism endpoints pass, with no mechanism
+passing at both widths. Student utility/net-CE noninferiority passes the
+declared -0.005 development margins, but both cost-savings intervals cross zero.
+The observer selects action TSM at **22.440476%** and sound PANN at **42.450707%**;
+both remain below the unchanged 60% gate. All 64 fresh calibration sources stay
+closed; no model is promoted.
+
+See the [complete v2 execution and acceptance report](evidence/v2/RESULTS.md),
+[paired source/seed analysis](evidence/v2/analysis/REPORT.md),
+[original checkpoint/trajectory/OOF evidence index](evidence/v2/runs/9a0b16a620b4203093268a2a917f76bb99eb61ef/INDEX.json),
+and [registered method changes](V2.md). The implemented mechanism uses real
+trained content and actual continuation, but stable full-cost benefit and
+natural semantic qualification remain open research requirements.
+
+## Historical v1 execution and findings
 
 The registered 3-seed × 2-width × 6-arm study, natural diagnostic and observer,
 and 96 actual native-gated deployments have completed. The trained deployment

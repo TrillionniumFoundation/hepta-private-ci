@@ -1,0 +1,625 @@
+{
+  "candidates": [
+    {
+      "actions": [
+        "audio",
+        "verify",
+        "verify",
+        "verify",
+        "verify",
+        "verify",
+        "stop"
+      ],
+      "actual_serving_cost": 0.032543127979,
+      "candidate": "teacher",
+      "context_id": "controller-v2-development.0",
+      "delivered_utility": 0.5021516680717468,
+      "draw": 0,
+      "input_sha256": "ee0e72de3f839a903d102fb3f8222b4d325151ca435ad2013a05d55b52772f3f",
+      "model_configuration": {
+        "boundary": "direct",
+        "depth": 1,
+        "mode": "dual",
+        "width": 32
+      },
+      "model_sha256": "7c740314e09f9e6a95115b0abff4eeb8330587e08a08afe3cae4f36d08e342a6",
+      "native_evidence": {
+        "actual_tensor_restores": 1,
+        "closed_and_output_bytes_verified": true,
+        "draw": 0,
+        "native_journal_bytes_written": 10208,
+        "native_owner_cpu_seconds": 0.159972,
+        "native_recoveries": 1,
+        "native_ticks": 22,
+        "source": 0,
+        "trajectory_sha256": "4897768caa583e9c1d0e01a5c4a44dd7b47b58b9cf2a8bc3681fff1fca201a6a"
+      },
+      "outputs": [
+        {
+          "bytes": 547,
+          "decoded_metadata_only_no_reencoding": {
+            "format": "PNG",
+            "mode": "RGB",
+            "size": [
+              16,
+              16
+            ]
+          },
+          "matches_results_row_and_original_input_manifest": true,
+          "modality": "image",
+          "original_artifact_path": "joint-v2-native/run/teacher/source-000-draw-0/outputs/image.png",
+          "preserved_path": "teacher/image.png",
+          "raw_trajectory_output_sha256": "735da18c4aaed063debcabf8db19cfbb95495d3b49de7826a37a652dcb26b68b",
+          "sha256": "735da18c4aaed063debcabf8db19cfbb95495d3b49de7826a37a652dcb26b68b"
+        },
+        {
+          "bytes": 2092,
+          "decoded_metadata_only_no_reencoding": {
+            "channels": 1,
+            "format": "WAV",
+            "frames": 1024,
+            "sample_rate_hz": 2048,
+            "sample_width_bytes": 2
+          },
+          "matches_results_row_and_original_input_manifest": true,
+          "modality": "audio",
+          "original_artifact_path": "joint-v2-native/run/teacher/source-000-draw-0/outputs/audio.wav",
+          "preserved_path": "teacher/audio.wav",
+          "raw_trajectory_output_sha256": "36072c009f0c9e24bea8cbb4e03fa58d6535fe5558491c21ceb4b7fe80b71a08",
+          "sha256": "36072c009f0c9e24bea8cbb4e03fa58d6535fe5558491c21ceb4b7fe80b71a08"
+        },
+        {
+          "bytes": 4337,
+          "decoded_metadata_only_no_reencoding": {
+            "format": "GIF",
+            "frame_duration_ms": [
+              120,
+              120,
+              120,
+              120
+            ],
+            "frames": 4,
+            "size": [
+              16,
+              16
+            ]
+          },
+          "matches_results_row_and_original_input_manifest": true,
+          "modality": "video",
+          "original_artifact_path": "joint-v2-native/run/teacher/source-000-draw-0/outputs/video.gif",
+          "preserved_path": "teacher/video.gif",
+          "raw_trajectory_output_sha256": "69a4904853e9e5b07b433185b09e0f16172ee08caf46d5d91e7936115f82895e",
+          "sha256": "69a4904853e9e5b07b433185b09e0f16172ee08caf46d5d91e7936115f82895e"
+        },
+        {
+          "bytes": 17,
+          "decoded_metadata_only_no_reencoding": {
+            "content": "action=0;sound=3\n",
+            "encoding": "UTF-8",
+            "scope": "Two categorical ontology labels; not open-vocabulary language"
+          },
+          "matches_results_row_and_original_input_manifest": true,
+          "modality": "text",
+          "original_artifact_path": "joint-v2-native/run/teacher/source-000-draw-0/outputs/text.txt",
+          "preserved_path": "teacher/text.txt",
+          "raw_trajectory_output_sha256": "8694bf20f75314e9878aa3055f13f3341ecf1183f813e57bab15360d69909021",
+          "sha256": "8694bf20f75314e9878aa3055f13f3341ecf1183f813e57bab15360d69909021"
+        }
+      ],
+      "policy_sha256": "d1361a97ad2fba00e93db73b9514ead0501aa5b8e63fb03202d7fbebc4adf1d0",
+      "rng": {
+        "actor_initial_seed": 200017,
+        "emission_initial_seed": 681252950561849882,
+        "emission_seed_derivation": "int(sha256(canonical_json({seed: episode_seed, stream: emission}))[:15], 16)",
+        "episode_seed": 200017,
+        "event_randomness_keys": [
+          {
+            "event_id": "event.0",
+            "randomness_key_sha256": "b519722b3edb0b79f1da3c25e57e66fa3576db4892ee3561ef7532e5ae7e6694",
+            "selected_action": "audio"
+          },
+          {
+            "event_id": "event.1",
+            "randomness_key_sha256": "b519722b3edb0b79f1da3c25e57e66fa3576db4892ee3561ef7532e5ae7e6694",
+            "selected_action": "verify"
+          },
+          {
+            "event_id": "event.2",
+            "randomness_key_sha256": "b519722b3edb0b79f1da3c25e57e66fa3576db4892ee3561ef7532e5ae7e6694",
+            "selected_action": "verify"
+          },
+          {
+            "event_id": "event.3",
+            "randomness_key_sha256": "b519722b3edb0b79f1da3c25e57e66fa3576db4892ee3561ef7532e5ae7e6694",
+            "selected_action": "verify"
+          },
+          {
+            "event_id": "event.4",
+            "randomness_key_sha256": "b519722b3edb0b79f1da3c25e57e66fa3576db4892ee3561ef7532e5ae7e6694",
+            "selected_action": "verify"
+          },
+          {
+            "event_id": "event.5",
+            "randomness_key_sha256": "b519722b3edb0b79f1da3c25e57e66fa3576db4892ee3561ef7532e5ae7e6694",
+            "selected_action": "verify"
+          },
+          {
+            "event_id": "event.6",
+            "randomness_key_sha256": "b519722b3edb0b79f1da3c25e57e66fa3576db4892ee3561ef7532e5ae7e6694",
+            "selected_action": "stop"
+          },
+          {
+            "event_id": "event.7",
+            "randomness_key_sha256": "a4f4e375f88ba62f384622abcfbd5fbd82e881195f8a1665a8657801b86748a2",
+            "selected_action": "delivery"
+          }
+        ],
+        "randomness_contract_sha256": "11a79e0ef5e669dbe20d5d450eaac0748563bd3247ce9fadea2a55a14961deb6",
+        "restored_named_rng_sha256": [
+          "b519722b3edb0b79f1da3c25e57e66fa3576db4892ee3561ef7532e5ae7e6694"
+        ],
+        "seed_derivation_source": "runtime.py at the frozen source commit"
+      },
+      "source": 0,
+      "source_id": "synthetic.controller-v2-development.0",
+      "strategy": "planner",
+      "terminal_kind": "delivered",
+      "trained_arm": "hepta_dynamic_risk",
+      "trained_checkpoint_manifest": {
+        "config_sha256": "47e2535de3fb922364bee0ab4598ff6584ef0542058cecfb05eb63dd8a1f14cc",
+        "file_bytes": 2429372,
+        "file_sha256": "61e71dc1f4923a6a8941592a769b857bbd2396d607c19e2f006fe3af4ea4076c",
+        "generation_sha256": "789df61347b0ff7eeae444bf93f2bc93d76f1e65194a6912d69a0f821b1bd74c",
+        "input_sha256": "1cf2e1b76dc7b293af11df5c261bb00e4a2b70686b3b9b1d2d002ef4a0af5e04",
+        "model_sha256": "7c740314e09f9e6a95115b0abff4eeb8330587e08a08afe3cae4f36d08e342a6",
+        "payload_sha256": "7c85b60aa834ff2a1db925635419dc5be4abd251c28786488087c4f359ad786b",
+        "profile_sha256": "53d15a19a124d68dbee656c6a4486f6f61895b5509aa2af8f1f62d56ec689ebe",
+        "rng_sha256": "796d5b7b82f014eae0ce975e642d7ca827f0ba38c2f2b3ed40a77d04bcb92c21",
+        "schema": "hepta.joint-generation.checkpoint.v1",
+        "state_sha256": "db4113fb839dcccdc44295a3e91d21dc06b8d19ebfc067b801f504501537c1e3"
+      },
+      "trained_checkpoint_manifest_file_sha256": "674facc1b44acc36537fb93badeb0683b2aaee6494cdcd3b24d331f6c11c40b4",
+      "trajectory": {
+        "bytes": 185024,
+        "matches_native_evidence_trajectory_digest": true,
+        "matches_preserved_original_bytes": true,
+        "original_artifact_path": "joint-v2-native/run/teacher/source-000-draw-0/TRAJECTORY.json",
+        "preserved_compact_archive_member": "run/teacher/source-000-draw-0/TRAJECTORY.json",
+        "sha256": "4897768caa583e9c1d0e01a5c4a44dd7b47b58b9cf2a8bc3681fff1fca201a6a"
+      }
+    },
+    {
+      "actions": [
+        "audio",
+        "audio",
+        "audio",
+        "audio",
+        "audio",
+        "audio",
+        "stop"
+      ],
+      "actual_serving_cost": 0.027855909124999998,
+      "candidate": "student",
+      "context_id": "controller-v2-development.0",
+      "delivered_utility": 0.49437037110328674,
+      "draw": 0,
+      "input_sha256": "ee0e72de3f839a903d102fb3f8222b4d325151ca435ad2013a05d55b52772f3f",
+      "model_configuration": {
+        "boundary": "direct",
+        "depth": 1,
+        "mode": "dual",
+        "width": 32
+      },
+      "model_sha256": "838802bea55fd60d7ade5efbe09d40f840c8c78f18fd8b05d5e53bbf7fd3de05",
+      "native_evidence": {
+        "actual_tensor_restores": 1,
+        "closed_and_output_bytes_verified": true,
+        "draw": 0,
+        "native_journal_bytes_written": 10208,
+        "native_owner_cpu_seconds": 0.159893,
+        "native_recoveries": 1,
+        "native_ticks": 22,
+        "source": 0,
+        "trajectory_sha256": "f1c08a01d293382e208baa3a4aad92c3e810e5febcada9174dba75aad894551f"
+      },
+      "outputs": [
+        {
+          "bytes": 550,
+          "decoded_metadata_only_no_reencoding": {
+            "format": "PNG",
+            "mode": "RGB",
+            "size": [
+              16,
+              16
+            ]
+          },
+          "matches_results_row_and_original_input_manifest": true,
+          "modality": "image",
+          "original_artifact_path": "joint-v2-native/run/student/source-000-draw-0/outputs/image.png",
+          "preserved_path": "student/image.png",
+          "raw_trajectory_output_sha256": "3a2e23888e25c173b343f41c6e95791003aa102027d8b14acc93e283dbd8bae8",
+          "sha256": "3a2e23888e25c173b343f41c6e95791003aa102027d8b14acc93e283dbd8bae8"
+        },
+        {
+          "bytes": 2092,
+          "decoded_metadata_only_no_reencoding": {
+            "channels": 1,
+            "format": "WAV",
+            "frames": 1024,
+            "sample_rate_hz": 2048,
+            "sample_width_bytes": 2
+          },
+          "matches_results_row_and_original_input_manifest": true,
+          "modality": "audio",
+          "original_artifact_path": "joint-v2-native/run/student/source-000-draw-0/outputs/audio.wav",
+          "preserved_path": "student/audio.wav",
+          "raw_trajectory_output_sha256": "5c740cab1a3ec4e39075e2b8f3685481ea62d59ee902d84a0552271202b5c80d",
+          "sha256": "5c740cab1a3ec4e39075e2b8f3685481ea62d59ee902d84a0552271202b5c80d"
+        },
+        {
+          "bytes": 4341,
+          "decoded_metadata_only_no_reencoding": {
+            "format": "GIF",
+            "frame_duration_ms": [
+              120,
+              120,
+              120,
+              120
+            ],
+            "frames": 4,
+            "size": [
+              16,
+              16
+            ]
+          },
+          "matches_results_row_and_original_input_manifest": true,
+          "modality": "video",
+          "original_artifact_path": "joint-v2-native/run/student/source-000-draw-0/outputs/video.gif",
+          "preserved_path": "student/video.gif",
+          "raw_trajectory_output_sha256": "09f74dfefb34edf287518db5a7716507afedc647e1ab54e92608ac6644a6ad68",
+          "sha256": "09f74dfefb34edf287518db5a7716507afedc647e1ab54e92608ac6644a6ad68"
+        },
+        {
+          "bytes": 17,
+          "decoded_metadata_only_no_reencoding": {
+            "content": "action=0;sound=3\n",
+            "encoding": "UTF-8",
+            "scope": "Two categorical ontology labels; not open-vocabulary language"
+          },
+          "matches_results_row_and_original_input_manifest": true,
+          "modality": "text",
+          "original_artifact_path": "joint-v2-native/run/student/source-000-draw-0/outputs/text.txt",
+          "preserved_path": "student/text.txt",
+          "raw_trajectory_output_sha256": "8694bf20f75314e9878aa3055f13f3341ecf1183f813e57bab15360d69909021",
+          "sha256": "8694bf20f75314e9878aa3055f13f3341ecf1183f813e57bab15360d69909021"
+        }
+      ],
+      "policy_sha256": "6ec41019c4a6f6af0a749c7a237eecaf39b8052b2ee705299f30df8e7b33e23a",
+      "rng": {
+        "actor_initial_seed": 200017,
+        "emission_initial_seed": 681252950561849882,
+        "emission_seed_derivation": "int(sha256(canonical_json({seed: episode_seed, stream: emission}))[:15], 16)",
+        "episode_seed": 200017,
+        "event_randomness_keys": [
+          {
+            "event_id": "event.0",
+            "randomness_key_sha256": "b519722b3edb0b79f1da3c25e57e66fa3576db4892ee3561ef7532e5ae7e6694",
+            "selected_action": "audio"
+          },
+          {
+            "event_id": "event.1",
+            "randomness_key_sha256": "b519722b3edb0b79f1da3c25e57e66fa3576db4892ee3561ef7532e5ae7e6694",
+            "selected_action": "audio"
+          },
+          {
+            "event_id": "event.2",
+            "randomness_key_sha256": "b519722b3edb0b79f1da3c25e57e66fa3576db4892ee3561ef7532e5ae7e6694",
+            "selected_action": "audio"
+          },
+          {
+            "event_id": "event.3",
+            "randomness_key_sha256": "b519722b3edb0b79f1da3c25e57e66fa3576db4892ee3561ef7532e5ae7e6694",
+            "selected_action": "audio"
+          },
+          {
+            "event_id": "event.4",
+            "randomness_key_sha256": "b519722b3edb0b79f1da3c25e57e66fa3576db4892ee3561ef7532e5ae7e6694",
+            "selected_action": "audio"
+          },
+          {
+            "event_id": "event.5",
+            "randomness_key_sha256": "b519722b3edb0b79f1da3c25e57e66fa3576db4892ee3561ef7532e5ae7e6694",
+            "selected_action": "audio"
+          },
+          {
+            "event_id": "event.6",
+            "randomness_key_sha256": "b519722b3edb0b79f1da3c25e57e66fa3576db4892ee3561ef7532e5ae7e6694",
+            "selected_action": "stop"
+          },
+          {
+            "event_id": "event.7",
+            "randomness_key_sha256": "a4f4e375f88ba62f384622abcfbd5fbd82e881195f8a1665a8657801b86748a2",
+            "selected_action": "delivery"
+          }
+        ],
+        "randomness_contract_sha256": "11a79e0ef5e669dbe20d5d450eaac0748563bd3247ce9fadea2a55a14961deb6",
+        "restored_named_rng_sha256": [
+          "b519722b3edb0b79f1da3c25e57e66fa3576db4892ee3561ef7532e5ae7e6694"
+        ],
+        "seed_derivation_source": "runtime.py at the frozen source commit"
+      },
+      "source": 0,
+      "source_id": "synthetic.controller-v2-development.0",
+      "strategy": "greedy",
+      "terminal_kind": "delivered",
+      "trained_arm": "distilled",
+      "trained_checkpoint_manifest": {
+        "config_sha256": "47e2535de3fb922364bee0ab4598ff6584ef0542058cecfb05eb63dd8a1f14cc",
+        "file_bytes": 2429372,
+        "file_sha256": "80f8236db527c08dd2a70d05c105a946d1708f7b52418ae4cf37cbeec6bad3f5",
+        "generation_sha256": "40d5e16bf1e87c6e7a957185e72197ee2ded519a04f218dc09fdd95a0ac2553c",
+        "input_sha256": "1cf2e1b76dc7b293af11df5c261bb00e4a2b70686b3b9b1d2d002ef4a0af5e04",
+        "model_sha256": "838802bea55fd60d7ade5efbe09d40f840c8c78f18fd8b05d5e53bbf7fd3de05",
+        "payload_sha256": "84461bc019881dd9cb058648527a4c06cf91a5d71b42aa417aa99ee6deaa27d5",
+        "profile_sha256": "53d15a19a124d68dbee656c6a4486f6f61895b5509aa2af8f1f62d56ec689ebe",
+        "rng_sha256": "796d5b7b82f014eae0ce975e642d7ca827f0ba38c2f2b3ed40a77d04bcb92c21",
+        "schema": "hepta.joint-generation.checkpoint.v1",
+        "state_sha256": "db4113fb839dcccdc44295a3e91d21dc06b8d19ebfc067b801f504501537c1e3"
+      },
+      "trained_checkpoint_manifest_file_sha256": "4e06da04bf2ed60ac5886129c21443784eaf6420efa8f91a13714d156a3a1cbb",
+      "trajectory": {
+        "bytes": 184652,
+        "matches_native_evidence_trajectory_digest": true,
+        "matches_preserved_original_bytes": true,
+        "original_artifact_path": "joint-v2-native/run/student/source-000-draw-0/TRAJECTORY.json",
+        "preserved_compact_archive_member": "run/student/source-000-draw-0/TRAJECTORY.json",
+        "sha256": "f1c08a01d293382e208baa3a4aad92c3e810e5febcada9174dba75aad894551f"
+      }
+    },
+    {
+      "actions": [
+        "audio",
+        "audio",
+        "verify",
+        "text",
+        "verify",
+        "text",
+        "stop"
+      ],
+      "actual_serving_cost": 0.02919467852799998,
+      "candidate": "ordinary",
+      "context_id": "controller-v2-development.0",
+      "delivered_utility": 0.6764718294143677,
+      "draw": 0,
+      "input_sha256": "ee0e72de3f839a903d102fb3f8222b4d325151ca435ad2013a05d55b52772f3f",
+      "model_configuration": {
+        "boundary": "direct",
+        "depth": 1,
+        "mode": "ordinary",
+        "width": 32
+      },
+      "model_sha256": "1992575803eb04dc886432ea06b273ac2cdf9bb02f2c7e64a8eeac68215fd2cd",
+      "native_evidence": {
+        "actual_tensor_restores": 1,
+        "closed_and_output_bytes_verified": true,
+        "draw": 0,
+        "native_journal_bytes_written": 10208,
+        "native_owner_cpu_seconds": 0.15905199999999997,
+        "native_recoveries": 1,
+        "native_ticks": 22,
+        "source": 0,
+        "trajectory_sha256": "b8ea191e2b9f04f5695c5a26ae77cb0c087df0ae86443bfe3dccfcc9fbf2b2c6"
+      },
+      "outputs": [
+        {
+          "bytes": 548,
+          "decoded_metadata_only_no_reencoding": {
+            "format": "PNG",
+            "mode": "RGB",
+            "size": [
+              16,
+              16
+            ]
+          },
+          "matches_results_row_and_original_input_manifest": true,
+          "modality": "image",
+          "original_artifact_path": "joint-v2-native/run/ordinary/source-000-draw-0/outputs/image.png",
+          "preserved_path": "ordinary/image.png",
+          "raw_trajectory_output_sha256": "f472cfb3a96bd2520ce9ca2bc5730358629bd41164145cd183862851ff8b012e",
+          "sha256": "f472cfb3a96bd2520ce9ca2bc5730358629bd41164145cd183862851ff8b012e"
+        },
+        {
+          "bytes": 2092,
+          "decoded_metadata_only_no_reencoding": {
+            "channels": 1,
+            "format": "WAV",
+            "frames": 1024,
+            "sample_rate_hz": 2048,
+            "sample_width_bytes": 2
+          },
+          "matches_results_row_and_original_input_manifest": true,
+          "modality": "audio",
+          "original_artifact_path": "joint-v2-native/run/ordinary/source-000-draw-0/outputs/audio.wav",
+          "preserved_path": "ordinary/audio.wav",
+          "raw_trajectory_output_sha256": "155e0405699d02b52d47fe8c4023a7dd92a6ad82a3446761c62cc9d4950e83f5",
+          "sha256": "155e0405699d02b52d47fe8c4023a7dd92a6ad82a3446761c62cc9d4950e83f5"
+        },
+        {
+          "bytes": 4344,
+          "decoded_metadata_only_no_reencoding": {
+            "format": "GIF",
+            "frame_duration_ms": [
+              120,
+              120,
+              120,
+              120
+            ],
+            "frames": 4,
+            "size": [
+              16,
+              16
+            ]
+          },
+          "matches_results_row_and_original_input_manifest": true,
+          "modality": "video",
+          "original_artifact_path": "joint-v2-native/run/ordinary/source-000-draw-0/outputs/video.gif",
+          "preserved_path": "ordinary/video.gif",
+          "raw_trajectory_output_sha256": "456e8116b03ee11e6950a6ed8b1193398d8761bed02202ba89246cec7529db7d",
+          "sha256": "456e8116b03ee11e6950a6ed8b1193398d8761bed02202ba89246cec7529db7d"
+        },
+        {
+          "bytes": 17,
+          "decoded_metadata_only_no_reencoding": {
+            "content": "action=0;sound=0\n",
+            "encoding": "UTF-8",
+            "scope": "Two categorical ontology labels; not open-vocabulary language"
+          },
+          "matches_results_row_and_original_input_manifest": true,
+          "modality": "text",
+          "original_artifact_path": "joint-v2-native/run/ordinary/source-000-draw-0/outputs/text.txt",
+          "preserved_path": "ordinary/text.txt",
+          "raw_trajectory_output_sha256": "d865d4ae89337e83e789653899f74548bd2dc5ef60ff206ffc11d3530b71b4c6",
+          "sha256": "d865d4ae89337e83e789653899f74548bd2dc5ef60ff206ffc11d3530b71b4c6"
+        }
+      ],
+      "policy_sha256": "07ab1dc7af81af519e8784a4477b2c7b0a8651cb9cf27f86947f6edc06b6ed09",
+      "rng": {
+        "actor_initial_seed": 200017,
+        "emission_initial_seed": 681252950561849882,
+        "emission_seed_derivation": "int(sha256(canonical_json({seed: episode_seed, stream: emission}))[:15], 16)",
+        "episode_seed": 200017,
+        "event_randomness_keys": [
+          {
+            "event_id": "event.0",
+            "randomness_key_sha256": "4128572d71d3c0c4d597a913bd976242f33176fa922b714d0a8e6c34cf0fb5c4",
+            "selected_action": "audio"
+          },
+          {
+            "event_id": "event.1",
+            "randomness_key_sha256": "8bcee209df2314c313f92c1b31e6921aedd48bba252d323026fe3b41e11db294",
+            "selected_action": "audio"
+          },
+          {
+            "event_id": "event.2",
+            "randomness_key_sha256": "0a9a6b8e8a14316dae2e111597b063dec8b13ee67545b73bf8101ecaf870910f",
+            "selected_action": "verify"
+          },
+          {
+            "event_id": "event.3",
+            "randomness_key_sha256": "ef0677621d8a70aef34dea1b2b6d5932289b8b914cef0b53da8d93b394ac4143",
+            "selected_action": "text"
+          },
+          {
+            "event_id": "event.4",
+            "randomness_key_sha256": "140e256f2a3d87f855aa0b2b989de4605d1cbbcd8a63d3756e2379cb09d18aee",
+            "selected_action": "verify"
+          },
+          {
+            "event_id": "event.5",
+            "randomness_key_sha256": "f29983634436b7a9fe0dfb002ea8b5bb5aa866c7c1dd4c4a56987e954852aee3",
+            "selected_action": "text"
+          },
+          {
+            "event_id": "event.6",
+            "randomness_key_sha256": "f29983634436b7a9fe0dfb002ea8b5bb5aa866c7c1dd4c4a56987e954852aee3",
+            "selected_action": "stop"
+          },
+          {
+            "event_id": "event.7",
+            "randomness_key_sha256": "471f9b7d20fce4eb686a514834a6e7375689d6577ebd546f1759a0e5e827e284",
+            "selected_action": "delivery"
+          }
+        ],
+        "randomness_contract_sha256": "11a79e0ef5e669dbe20d5d450eaac0748563bd3247ce9fadea2a55a14961deb6",
+        "restored_named_rng_sha256": [
+          "4128572d71d3c0c4d597a913bd976242f33176fa922b714d0a8e6c34cf0fb5c4"
+        ],
+        "seed_derivation_source": "runtime.py at the frozen source commit"
+      },
+      "source": 0,
+      "source_id": "synthetic.controller-v2-development.0",
+      "strategy": "dynamic",
+      "terminal_kind": "delivered",
+      "trained_arm": "ordinary_dynamic_risk",
+      "trained_checkpoint_manifest": {
+        "config_sha256": "35d3330a046d330bb3745b1703c3396a37ce062dfa2f48b4a8690f2560547183",
+        "file_bytes": 2429436,
+        "file_sha256": "7be4502a00063321358734340b85fafd87ca2e13df2eaba5341e362f0c2ab98f",
+        "generation_sha256": "23269952fd26f619d1d5d7e65de733fdf0e1742bcb30ac501aeffddc9270dd56",
+        "input_sha256": "1cf2e1b76dc7b293af11df5c261bb00e4a2b70686b3b9b1d2d002ef4a0af5e04",
+        "model_sha256": "1992575803eb04dc886432ea06b273ac2cdf9bb02f2c7e64a8eeac68215fd2cd",
+        "payload_sha256": "7f03c46bd469aa29fe66d2fde008b429339d19d53dc9d6dc9e73ffded4786598",
+        "profile_sha256": "53d15a19a124d68dbee656c6a4486f6f61895b5509aa2af8f1f62d56ec689ebe",
+        "rng_sha256": "796d5b7b82f014eae0ce975e642d7ca827f0ba38c2f2b3ed40a77d04bcb92c21",
+        "schema": "hepta.joint-generation.checkpoint.v1",
+        "state_sha256": "91f20d5f2a1e3e75ade376d90e39075f4b4654c28af58398d7f52583ac975eb8"
+      },
+      "trained_checkpoint_manifest_file_sha256": "0d5f0857a02c02c6e167cdfbdce3cea994826e01c55ffdfa9b4e987fdc6478da",
+      "trajectory": {
+        "bytes": 189792,
+        "matches_native_evidence_trajectory_digest": true,
+        "matches_preserved_original_bytes": true,
+        "original_artifact_path": "joint-v2-native/run/ordinary/source-000-draw-0/TRAJECTORY.json",
+        "preserved_compact_archive_member": "run/ordinary/source-000-draw-0/TRAJECTORY.json",
+        "sha256": "b8ea191e2b9f04f5695c5a26ae77cb0c087df0ae86443bfe3dccfcc9fbf2b2c6"
+      }
+    }
+  ],
+  "compact_evidence": {
+    "artifact_id": 12978325399,
+    "input_manifest_original_sha256": "c56b05c534c2be1e587bc3c1695007d527c9379494e5751ec681ceeec0f06f14",
+    "input_manifest_stored_sha256": "c5460c14c87119f36195fe1f554b2cb60d8122b70bab14b832f70e09fa77e093",
+    "manifest_sha256": "a7eb4d4f99ef27c1f3e5518d20b09cafe83a140990490b2a0346e032f06655bc",
+    "trajectory_archive": "TRAJECTORIES.tar.gz",
+    "trajectory_archive_sha256": "640502bca80d5ceb4463c5933572852b0b27d13aef8206248808f55501f74943"
+  },
+  "copied_model_or_checkpoint_files": 0,
+  "deployment_promoted": false,
+  "driver_sha256": "69913c14d6e8dd95807c23a248e4968620082c92da54287bd398117285a6c396",
+  "frozen_source_commit": "9a0b16a620b4203093268a2a917f76bb99eb61ef",
+  "media_reencoded": false,
+  "media_regenerated": false,
+  "native_binary_sha256": "00c183e2433ba96412c5e248753721a4211c34831ad531f2d5742e9f16f8d3c9",
+  "native_results": {
+    "bytes": 108243,
+    "original_artifact_path": "joint-v2-native/run/RESULTS.json",
+    "sha256": "e2d622ae3eae75c4c5ecc7b1b8d939d9e48cc5ff1187beefe2ba9563236bea91"
+  },
+  "native_source_receipt": {
+    "bytes": 23377,
+    "original_artifact_path": "joint-v2-native/SOURCE_RECEIPT.json",
+    "sha256": "49db08c9f77622adc58fd5e6af1a27f6bb188b7e71d818656ada6e7847e31cdd"
+  },
+  "natural_semantic_qualified": false,
+  "preserved_output_bytes": 20994,
+  "preserved_output_file_count": 12,
+  "profile_sha256": "53d15a19a124d68dbee656c6a4486f6f61895b5509aa2af8f1f62d56ec689ebe",
+  "raw_media_reopened_for_this_preservation": true,
+  "research_effect_qualified": false,
+  "schema": "hepta.joint-generation.preserved-native-samples.v1",
+  "scope": "Byte preservation from an already-completed native development run; no new generation or experiment",
+  "selection": {
+    "candidate_order": [
+      "teacher",
+      "student",
+      "ordinary"
+    ],
+    "draw": 0,
+    "new_independent_quality_sources": 0,
+    "reuses_original_development_source_and_rng": true,
+    "rule": "First preregistered configuration and first source/draw for each candidate; never select on outcomes",
+    "source": 0,
+    "source_namespace": "controller-v2-development",
+    "training_seed": 17,
+    "width": 32
+  },
+  "source_artifact": {
+    "artifact_id": 12976673914,
+    "bytes": 7946719,
+    "matches_registered_artifact_size_and_sha256": true,
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "sha256": "c6c065c015668f6ca218cb7101c495b35ba223d2587394eb40fc50b4c90d9c9a",
+    "workflow_run_id": 41055922354
+  },
+  "trained_study_results_sha256": "41d62ecb1888ee4e9843eb9b6af561df66d2f2cd49927fd986dbb05b7ecc5bdb"
+}
