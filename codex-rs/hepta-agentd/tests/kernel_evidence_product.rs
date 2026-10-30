@@ -680,7 +680,7 @@ fn base_evidence(
 ) -> Result<QualificationEvidenceEnvelopeV1> {
     Ok(QualificationEvidenceEnvelopeV1 {
         schema_version: 1,
-        evidence_id: EvidenceId::parse(id)?,
+        evidence_id: EvidenceId::parse(id).map_err(anyhow::Error::msg)?,
         candidate,
         claim_class,
         receipt_kind: EvidenceReceiptKindV1::Evidence,
