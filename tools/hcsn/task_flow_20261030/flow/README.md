@@ -43,8 +43,10 @@ finite reflection and remapping retain spatial errors. Two Erlang phases do
 not represent a deterministic delay. The numerical bound controls time
 propagation of the finite process only.
 
-The positive uniformization mixture has fixed rate 8.1, 21 terms and subinterval
-at most 0.36. Each interval independently chooses a power-of-two subdivision;
+The positive uniformization mixture has fixed rate 8.1, maximum Poisson order
+21 (22 terms including order zero), and subinterval at most 0.36. The frozen
+protocol's `terms: 21` denotes that maximum order. Each interval independently
+chooses a power-of-two subdivision;
 at most 10 squarings permit duration 368.64. `kernel.error_bounds` returns the
 state L1 and event-count truncation bounds, excluding roundoff and spatial
 error. Local derivatives are supported away from upwind, remap/interpolation
