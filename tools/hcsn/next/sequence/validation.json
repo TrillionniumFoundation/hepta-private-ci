@@ -1,0 +1,399 @@
+{
+  "passed": true,
+  "jax": "0.4.38",
+  "dtype": "float64",
+  "runs": [
+    {
+      "kind": "hcsn",
+      "checks": [
+        {
+          "parameter": "bias",
+          "ad": -0.009937939578491976,
+          "finite_difference": -0.009937939576820654,
+          "absolute_error": 1.6713228023768067e-12
+        },
+        {
+          "parameter": "boundary",
+          "ad": -0.0011987755804873182,
+          "finite_difference": -0.001198775580885103,
+          "absolute_error": 3.977848866271172e-13
+        },
+        {
+          "parameter": "boundary_weights",
+          "ad": 0.004990861243868239,
+          "finite_difference": 0.004990861243725497,
+          "absolute_error": 1.4274172122075157e-13
+        },
+        {
+          "parameter": "call",
+          "ad": 3.052792106804357e-06,
+          "finite_difference": 3.052792046931429e-06,
+          "absolute_error": 5.987292791138606e-14
+        },
+        {
+          "parameter": "inp",
+          "ad": -0.007392836570213664,
+          "finite_difference": -0.007392836568961835,
+          "absolute_error": 1.2518293693308813e-12
+        },
+        {
+          "parameter": "key",
+          "ad": 0.0005262102009796534,
+          "finite_difference": 0.0005262102007602687,
+          "absolute_error": 2.1938473173527262e-13
+        },
+        {
+          "parameter": "key_bias",
+          "ad": -0.001027179041364581,
+          "finite_difference": -0.001027179041129811,
+          "absolute_error": 2.3477010266392817e-13
+        },
+        {
+          "parameter": "out",
+          "ad": 0.00495127464220958,
+          "finite_difference": 0.0049512746423674425,
+          "absolute_error": 1.578624383991034e-13
+        },
+        {
+          "parameter": "out_bias",
+          "ad": 0.02526309576026775,
+          "finite_difference": 0.025263095760480466,
+          "absolute_error": 2.1271526207122804e-13
+        },
+        {
+          "parameter": "read_current",
+          "ad": 0.02747901563689022,
+          "finite_difference": 0.027479015635156753,
+          "absolute_error": 1.7334675361801999e-12
+        },
+        {
+          "parameter": "read_fast",
+          "ad": 0.08978359451452028,
+          "finite_difference": 0.08978359450906302,
+          "absolute_error": 5.4572596441815335e-12
+        },
+        {
+          "parameter": "read_slow",
+          "ad": 0.0726661488577372,
+          "finite_difference": 0.07266614885301226,
+          "absolute_error": 4.7249426593509725e-12
+        },
+        {
+          "parameter": "recover",
+          "ad": 0.0012966699091193246,
+          "finite_difference": 0.0012966699089456135,
+          "absolute_error": 1.7371108891606202e-13
+        },
+        {
+          "parameter": "recurrent_diag",
+          "ad": 0.0023251911240906396,
+          "finite_difference": 0.0023251911240168566,
+          "absolute_error": 7.378299360372154e-14
+        },
+        {
+          "parameter": "regen",
+          "ad": 0.002178058122305105,
+          "finite_difference": 0.0021780581224012385,
+          "absolute_error": 9.613360454907571e-14
+        },
+        {
+          "parameter": "tau_fast",
+          "ad": 0.0003658394911420919,
+          "finite_difference": 0.00036583949099278085,
+          "absolute_error": 1.4931106481416712e-13
+        },
+        {
+          "parameter": "tau_slow",
+          "ad": -0.0013526382854168722,
+          "finite_difference": -0.0013526382847128813,
+          "absolute_error": 7.039909020317703e-13
+        },
+        {
+          "parameter": "temperature",
+          "ad": -0.00015308335013926614,
+          "finite_difference": -0.00015308335016284147,
+          "absolute_error": 2.3575325719393803e-14
+        },
+        {
+          "parameter": "value",
+          "ad": 0.014707497909079138,
+          "finite_difference": 0.014707497908786336,
+          "absolute_error": 2.928022407866493e-13
+        },
+        {
+          "parameter": "value_bias",
+          "ad": 0.033666319224256905,
+          "finite_difference": 0.03366631922373242,
+          "absolute_error": 5.244832346207318e-13
+        },
+        {
+          "parameter": "write",
+          "ad": -0.016665895788241427,
+          "finite_difference": -0.016665895787373874,
+          "absolute_error": 8.67552557570761e-13
+        },
+        {
+          "parameter": "write_bias",
+          "ad": 0.016199175815825174,
+          "finite_difference": 0.01619917581324737,
+          "absolute_error": 2.5778060241954392e-12
+        }
+      ],
+      "max_gradient_absolute_error": 5.4572596441815335e-12,
+      "large_input_outputs_finite": true,
+      "parameters": 6232,
+      "width": 63
+    },
+    {
+      "kind": "sigmoid",
+      "checks": [
+        {
+          "parameter": "bias",
+          "ad": -0.010882480380280977,
+          "finite_difference": -0.010882480379337254,
+          "absolute_error": 9.437225306774266e-13
+        },
+        {
+          "parameter": "boundary",
+          "ad": -0.001290396760223773,
+          "finite_difference": -0.0012903967602784228,
+          "absolute_error": 5.464986102543534e-14
+        },
+        {
+          "parameter": "boundary_weights",
+          "ad": 0.0064413083796116015,
+          "finite_difference": 0.006441308377652665,
+          "absolute_error": 1.9589364852468094e-12
+        },
+        {
+          "parameter": "call",
+          "ad": 4.067386033788173e-06,
+          "finite_difference": 4.067385664385803e-06,
+          "absolute_error": 3.694023702582156e-13
+        },
+        {
+          "parameter": "inp",
+          "ad": -0.007813561435119739,
+          "finite_difference": -0.007813561433978045,
+          "absolute_error": 1.1416943779263278e-12
+        },
+        {
+          "parameter": "key",
+          "ad": 0.000525900025513188,
+          "finite_difference": 0.0005259000256108148,
+          "absolute_error": 9.762687620124e-14
+        },
+        {
+          "parameter": "key_bias",
+          "ad": -0.0010541525003116992,
+          "finite_difference": -0.0010541525007068397,
+          "absolute_error": 3.9514051752842505e-13
+        },
+        {
+          "parameter": "out",
+          "ad": 0.005665642755568129,
+          "finite_difference": 0.005665642755642296,
+          "absolute_error": 7.41672348536504e-14
+        },
+        {
+          "parameter": "out_bias",
+          "ad": 0.02854144794752782,
+          "finite_difference": 0.02854144794742219,
+          "absolute_error": 1.0563078189917974e-13
+        },
+        {
+          "parameter": "read_current",
+          "ad": 0.030000286172622,
+          "finite_difference": 0.03000028617090866,
+          "absolute_error": 1.713341274411917e-12
+        },
+        {
+          "parameter": "read_fast",
+          "ad": 0.09415541341910165,
+          "finite_difference": 0.09415541341213639,
+          "absolute_error": 6.965261700742076e-12
+        },
+        {
+          "parameter": "read_slow",
+          "ad": 0.07736958456101815,
+          "finite_difference": 0.0773695845560779,
+          "absolute_error": 4.940256537189214e-12
+        },
+        {
+          "parameter": "recover",
+          "ad": 0.0013712744509309118,
+          "finite_difference": 0.0013712744516281015,
+          "absolute_error": 6.971897018037687e-13
+        },
+        {
+          "parameter": "recurrent_diag",
+          "ad": 0.002281198304193452,
+          "finite_difference": 0.002281198304213139,
+          "absolute_error": 1.968694304799179e-14
+        },
+        {
+          "parameter": "regen",
+          "ad": 0.002123843916637328,
+          "finite_difference": 0.0021238439170540024,
+          "absolute_error": 4.1667450739746315e-13
+        },
+        {
+          "parameter": "tau_fast",
+          "ad": 0.00034434958144836063,
+          "finite_difference": 0.0003443495818350461,
+          "absolute_error": 3.866854753065141e-13
+        },
+        {
+          "parameter": "tau_slow",
+          "ad": -0.001436868543539368,
+          "finite_difference": -0.001436868543591707,
+          "absolute_error": 5.233899251499974e-14
+        },
+        {
+          "parameter": "temperature",
+          "ad": -0.00020541311747113944,
+          "finite_difference": -0.00020541311707145124,
+          "absolute_error": 3.996882035409155e-13
+        },
+        {
+          "parameter": "value",
+          "ad": 0.015049493169148736,
+          "finite_difference": 0.015049493168675652,
+          "absolute_error": 4.73083378027539e-13
+        },
+        {
+          "parameter": "value_bias",
+          "ad": 0.034859183239646714,
+          "finite_difference": 0.034859183238589164,
+          "absolute_error": 1.0575498810005968e-12
+        },
+        {
+          "parameter": "write",
+          "ad": -0.017044829417250506,
+          "finite_difference": -0.017044829415252538,
+          "absolute_error": 1.9979677634562876e-12
+        },
+        {
+          "parameter": "write_bias",
+          "ad": 0.016560118110560018,
+          "finite_difference": 0.016560118108049915,
+          "absolute_error": 2.5101032363750164e-12
+        }
+      ],
+      "max_gradient_absolute_error": 6.965261700742076e-12,
+      "large_input_outputs_finite": true,
+      "parameters": 6232,
+      "width": 63
+    },
+    {
+      "kind": "memory_only",
+      "checks": [
+        {
+          "parameter": "bias",
+          "ad": 0.004426002001046669,
+          "finite_difference": 0.004426002000752077,
+          "absolute_error": 2.9459160805211937e-13
+        },
+        {
+          "parameter": "inp",
+          "ad": -0.0018363439167040836,
+          "finite_difference": -0.0018363439170535412,
+          "absolute_error": 3.494576589907483e-13
+        },
+        {
+          "parameter": "key",
+          "ad": 4.3370425614479336e-05,
+          "finite_difference": 4.3370425610242396e-05,
+          "absolute_error": 4.236940117328947e-15
+        },
+        {
+          "parameter": "key_bias",
+          "ad": 8.86286231783927e-05,
+          "finite_difference": 8.862862319047869e-05,
+          "absolute_error": 1.2085994639983444e-14
+        },
+        {
+          "parameter": "out",
+          "ad": 0.0002631016352981496,
+          "finite_difference": 0.0002631016352699911,
+          "absolute_error": 2.815851935303315e-14
+        },
+        {
+          "parameter": "out_bias",
+          "ad": -0.024612735469237857,
+          "finite_difference": -0.024612735469251714,
+          "absolute_error": 1.3856971126102735e-14
+        },
+        {
+          "parameter": "read_current",
+          "ad": -0.01986551272448369,
+          "finite_difference": -0.019865512725092405,
+          "absolute_error": 6.087144677202616e-13
+        },
+        {
+          "parameter": "temperature",
+          "ad": 0.00021182041092634247,
+          "finite_difference": 0.0002118204108642052,
+          "absolute_error": 6.21372799134573e-14
+        },
+        {
+          "parameter": "value",
+          "ad": -0.00040872280009336996,
+          "finite_difference": -0.00040872280004933254,
+          "absolute_error": 4.4037419110604104e-14
+        },
+        {
+          "parameter": "value_bias",
+          "ad": -0.004455489891197861,
+          "finite_difference": -0.004455489890724772,
+          "absolute_error": 4.730894495597049e-13
+        },
+        {
+          "parameter": "write",
+          "ad": -0.0014725217151838976,
+          "finite_difference": -0.0014725217165187027,
+          "absolute_error": 1.334805096314673e-12
+        },
+        {
+          "parameter": "write_bias",
+          "ad": 0.015758108572789368,
+          "finite_difference": 0.01575810857049227,
+          "absolute_error": 2.2970965407598243e-12
+        }
+      ],
+      "max_gradient_absolute_error": 2.2970965407598243e-12,
+      "large_input_outputs_finite": true,
+      "parameters": 6264,
+      "width": 67
+    }
+  ],
+  "write_gate": {
+    "scores": [
+      -1.0,
+      -1e-08,
+      0.0,
+      1e-08,
+      1.0
+    ],
+    "values": [
+      0.0,
+      0.0,
+      0.0,
+      1.0000000000000001e-16,
+      0.5
+    ],
+    "derivatives": [
+      0.0,
+      0.0,
+      0.0,
+      1.9999999999999997e-08,
+      0.5
+    ]
+  },
+  "boundedness": "Each memory scalar is a convex interpolation of its previous value and tanh(candidate), hence remains in [-1,1] from zero; learned financial-neuron parameters remain constrained and x/y bounds from the prior model apply",
+  "source_sha256": {
+    "models.py": "a7cca0cd56d971e5d384152b70f01781e3ff3d442a16668b0c9cf1c72741eb38",
+    "validate.py": "7cb0955c4a0702c8f8887c9cae80f637ce4ec3507ca86842b235853606c120c1"
+  },
+  "scope": "Discrete implemented gradients; no claim of exact nonlinear ODE flow or stable long-time gradients"
+}
