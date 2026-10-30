@@ -1629,7 +1629,19 @@ pub(crate) fn publish_active_database(
         file.write_all(b"\n").map_err(unavailable)?;
         file.sync_all().map_err(unavailable)?;
         fs::rename(&temporary, &pointer).map_err(unavailable)?;
-        File::open(root)
+        let mut directory_options = OpenOptions::new();
+        directory_options.read(true);
+        #[cfg(windows)]
+        {
+            use std::os::windows::fs::OpenOptionsExt;
+            const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
+            // FlushFileBuffers needs a writable directory handle on Windows.
+            directory_options
+                .write(true)
+                .custom_flags(FILE_FLAG_BACKUP_SEMANTICS);
+        }
+        directory_options
+            .open(root)
             .and_then(|directory| directory.sync_all())
             .map_err(unavailable)?;
         Ok(())

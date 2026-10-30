@@ -4,6 +4,8 @@ use std::path::PathBuf;
 use std::process::Stdio;
 use std::time::Duration;
 
+#[cfg(windows)]
+use anyhow::Context;
 use anyhow::anyhow;
 use codex_exec_server_protocol::JSONRPCMessage;
 use codex_exec_server_protocol::JSONRPCNotification;
@@ -51,6 +53,8 @@ impl Drop for ExecServerHarness {
 pub(crate) struct TestCodexHelperPaths {
     pub(crate) codex_exe: PathBuf,
     pub(crate) codex_linux_sandbox_exe: Option<PathBuf>,
+    #[cfg(windows)]
+    _windows_bundle: TempDir,
 }
 
 pub(crate) struct DisconnectableWebSocketProxy {
@@ -69,9 +73,45 @@ impl Drop for DisconnectableWebSocketProxy {
 
 pub(crate) fn test_codex_helper_paths() -> anyhow::Result<TestCodexHelperPaths> {
     let (helper_binary, codex_linux_sandbox_exe) = super::current_test_binary_helper_paths()?;
+    #[cfg(windows)]
+    let (helper_binary, windows_bundle) = {
+        let bundle = TempDir::new().context("create the Windows test helper bundle")?;
+        let helper_name = helper_binary
+            .file_name()
+            .context("the current test executable has no file name")?;
+        let bundled_helper = bundle.path().join(helper_name);
+        let setup = codex_utils_cargo_bin::cargo_bin("codex-windows-sandbox-setup")
+            .context("locate the Windows sandbox setup test binary")?;
+        let runner = codex_utils_cargo_bin::cargo_bin("codex-command-runner")
+            .context("locate the Windows sandbox command runner test binary")?;
+        for (source, destination) in [
+            (helper_binary.as_path(), bundled_helper.clone()),
+            (
+                setup.as_path(),
+                bundle.path().join("codex-windows-sandbox-setup.exe"),
+            ),
+            (
+                runner.as_path(),
+                bundle.path().join("codex-command-runner.exe"),
+            ),
+        ] {
+            // Setup can grant read access to its runtime files. Independent
+            // copies keep those ACL changes off the original build outputs.
+            std::fs::copy(source, &destination).with_context(|| {
+                format!(
+                    "copy Windows test helper {} to {}",
+                    source.display(),
+                    destination.display()
+                )
+            })?;
+        }
+        (bundled_helper, bundle)
+    };
     Ok(TestCodexHelperPaths {
         codex_exe: helper_binary,
         codex_linux_sandbox_exe,
+        #[cfg(windows)]
+        _windows_bundle: windows_bundle,
     })
 }
 

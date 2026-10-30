@@ -389,6 +389,9 @@ async fn conpty_ctrl_c_interrupts_powershell_foreground_child() -> anyhow::Resul
     };
     let args = vec!["-NoLogo".to_string(), "-NoProfile".to_string()];
     let env: HashMap<String, String> = std::env::vars().collect();
+    let ctrl_c_diagnostics =
+        super::windows_ctrl_c_diagnostic::collect_ctrl_c_diagnostics(&env).await;
+    eprintln!("{ctrl_c_diagnostics}");
     let spawned = spawn_pty_process(
         &program,
         &args,
@@ -412,7 +415,8 @@ async fn conpty_ctrl_c_interrupts_powershell_foreground_child() -> anyhow::Resul
         "Microsoft Windows",
         /*timeout_ms*/ 10_000,
     )
-    .await?;
+    .await
+    .map_err(|error| anyhow::anyhow!("{error}; {ctrl_c_diagnostics}"))?;
 
     writer.send(b"exit 0\n".to_vec()).await?;
     let (remaining, exit_code) =

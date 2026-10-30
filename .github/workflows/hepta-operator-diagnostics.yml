@@ -60,7 +60,7 @@ jobs:
             runner: ubuntu-24.04
             timeout_minutes: 120
           - lane: canonical-format
-            runner: ubuntu-24.04
+            runner: macos-15-intel
             timeout_minutes: 30
           - lane: mac-native-consumers
             runner: macos-15-intel
@@ -128,7 +128,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: ${{ runner.os == 'Windows' && '3.13.17' || '3.12.14' }}
+          python-version: ${{ runner.os == 'Linux' && '3.12.14' || '3.13.17' }}
 
       - name: Prepare native CI build paths
         if: matrix.lane != 'research-unit-tests' && matrix.lane != 'bazel-lock'
@@ -241,9 +241,12 @@ jobs:
                    "--features", "sandbox", "--locked"],
                   ["just", "test", "-p", "codex-windows-sandbox", "-p", "codex-code-mode-runtime",
                    "--lib", "--locked"],
+                  ["just", "test", "-p", "codex-windows-sandbox", "--test", "helper_manifest", "--locked"],
+                  ["just", "test", "-p", "codex-exec-server", "--test", "file_system_windows", "--locked"],
                   ["just", "fix", "-p", "codex-hepta-contracts", "-p", "codex-hepta-intelligence",
                    "-p", "codex-hepta-operator-acceptance", "-p", "codex-hepta-shadow-qualification",
                    "-p", "codex-v8-poc", "-p", "codex-windows-sandbox", "-p", "codex-code-mode-runtime",
+                   "-p", "codex-exec-server",
                    "--features", "codex-v8-poc/sandbox", "--locked", "--", "-D", "warnings"],
               ],
               "vendor-compatibility": [
@@ -274,14 +277,19 @@ jobs:
                   ["just", "fmt", "--all"],
               ],
               "mac-native-consumers": [
+                  [sys.executable, "scripts/diagnose_hepta_fixture_paths.py",
+                   "--output", str(output / "fixture-path-observation.json")],
                   ["just", "test", "-p", "codex-hepta-fleet", "-p", "codex-utils-pty",
                    "-p", "codex-shell-escalation", "-p", "codex-sandboxing",
                    "-p", "codex-exec-server", "--lib", "--locked", "--success-output", "immediate"],
                   ["just", "test", "-p", "codex-exec-server", "--test", "file_system_unix",
                    "--test", "authorized_read_rpc", "--locked"],
                   ["just", "test", "-p", "codex-hepta-supervisor", "--test", "paired_process_product", "--locked"],
+                  ["just", "test", "-p", "codex-state", "-p", "codex-rollout",
+                   "-p", "codex-thread-store", "--lib", "--locked"],
                   ["just", "fix", "-p", "codex-hepta-fleet", "-p", "codex-utils-pty",
                    "-p", "codex-shell-escalation", "-p", "codex-sandboxing", "-p", "codex-exec-server",
+                   "-p", "codex-state", "-p", "codex-rollout", "-p", "codex-thread-store",
                    "--locked", "--", "-D", "warnings"],
               ],
               "research-unit-tests": [
