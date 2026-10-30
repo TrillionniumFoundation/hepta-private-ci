@@ -13,6 +13,35 @@ class IndependentPassageTests(unittest.TestCase):
         self.assertLess(report['max_F_difference'],2e-10)
         self.assertLess(report['max_G_difference'],2e-10)
 
+    def test_distant_first_passage_mode_cannot_disappear(self):
+        # Prior unpartitioned quad([u0, infinity)) returned F ~ 1.3e-15
+        # here, although the independently evaluated reflection gives F=1.
+        # The density has its narrow u-mode at ~sqrt(-a) >> u0.
+        kwargs=dict(x=3.69821872103264, drift=-.7997788483837058,
+                    sigma=.07189992168352377, discount=4.966000807445653e-5,
+                    horizon=85.44911244689267)
+        actual=integrate_passage(**kwargs)
+        reference=reflected_passage(**kwargs)
+        self.assertGreater(actual.probability,.999)
+        self.assertLess(abs(actual.probability-reference.probability),3e-11)
+        self.assertLess(abs(actual.discounted-reference.discounted),3e-11)
+
+    def test_distant_density_modes_72_cases(self):
+        # Independent integral must resolve the f64 peak, including the
+        # discount-shifted location when G has a different mode from F.
+        from itertools import product
+        count=0
+        for x,drift,sigma,horizon,q in product(
+                (2.5,4.,8.),(-.2,-.8),(.05,.1),(20.,120.),(.001,.5,5.)):
+            params=dict(x=x,drift=drift,sigma=sigma,
+                        horizon=horizon,discount=q)
+            a=integrate_passage(**params)
+            b=reflected_passage(**params)
+            self.assertLess(abs(a.probability-b.probability),3e-11,params)
+            self.assertLess(abs(a.discounted-b.discounted),3e-11,params)
+            count+=1
+        self.assertEqual(count,72)
+
     def test_hitting_probability_domains(self):
         for x in (.0001,.06,.2,1.,4.):
             for drift in (-.2,0.,.02,.2):
