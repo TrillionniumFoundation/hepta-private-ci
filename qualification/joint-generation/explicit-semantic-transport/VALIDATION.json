@@ -1,0 +1,20 @@
+{
+  "claims": "Finite-vocabulary control serving, not general image/model learning; no original digit recovery or equal-total-budget success",
+  "exact_scope": "Two fixed synthetic RGB supervised bases, zero model training, same full516 validation rows each, same five partial-command gates; observed decoded semantics required bijective",
+  "literal_tests": {
+    "errors": 0,
+    "failures": 0,
+    "run": 9
+  },
+  "reused_helper": "control.py byte-identical to previous qualified support profile; previous nine tests not counted again",
+  "rust_checks": "Not run: no Rust changed; portable standalone Python scope.",
+  "source_sha256": {
+    "PLAN.md": "8d964f9b3e4155f0277b1af87d69ce5f5114cccdefe92703ab303df494dd697a",
+    "control.py": "a5f9c5d53ae6f5668f2dc4ce893bc4c10ea1625573b58514681a69d75c11796b",
+    "test_transport.py": "f8baed1b2694cb8e72bbca9a2a75b953bfaccbc95fcecbe0b754ee7ac8be46fe",
+    "transport.py": "bb346a716642e181871a6527eeda175a52e988aa94999cf645dbd3b7c9331805"
+  },
+  "status": "PASS_NINE_NEW_LITERAL_TESTS_AND_COMPLETE_BOUNDED_TRANSPORT_STUDY",
+  "structural_checks": 5472,
+  "tests_included_in_complete_child_CPU_seconds": 0.668309
+}
