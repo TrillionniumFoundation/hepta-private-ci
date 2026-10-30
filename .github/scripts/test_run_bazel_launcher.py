@@ -42,7 +42,9 @@ class WorkspaceRootLauncherTest(unittest.TestCase):
         self.launcher = self.root / "launcher.sh"
         self.launcher.write_text(
             TEMPLATE.read_text(encoding="utf-8")
-            .replace("__WORKSPACE_ROOT_MARKER__", "codex-rs/utils/cargo-bin/repo_root.marker")
+            .replace(
+                "__WORKSPACE_ROOT_MARKER__", "codex-rs/utils/cargo-bin/repo_root.marker"
+            )
             .replace("__TEST_BIN__", "child")
             .replace("__RUNFILE_ENV_EXPORTS__", "")
             .replace("__WORKSPACE_ROOT_SETUP__", ""),
@@ -52,7 +54,9 @@ class WorkspaceRootLauncherTest(unittest.TestCase):
             key: value
             for key, value in os.environ.items()
             if key not in {"TMPDIR", "TEST_TMPDIR"}
-            and not key.startswith(("TEST_", "RULES_RUST_", "RUNFILES_", "CODEX_BAZEL_"))
+            and not key.startswith(
+                ("TEST_", "RULES_RUST_", "RUNFILES_", "CODEX_BAZEL_")
+            )
         }
         self.env.update(RUNFILES_DIR=str(runfiles), LAUNCHER_RESULT=str(self.result))
         self.bash = shutil.which("bash")
@@ -100,7 +104,9 @@ class WorkspaceRootLauncherTest(unittest.TestCase):
         )
 
     def test_unavailable_explicit_root_fails_before_child(self) -> None:
-        self.env.update(TMPDIR=str(self.root / "missing"), TEST_TMPDIR=str(self.physical))
+        self.env.update(
+            TMPDIR=str(self.root / "missing"), TEST_TMPDIR=str(self.physical)
+        )
         result = self.run_launcher()
         self.assertNotEqual(result.returncode, 0)
         self.assertFalse(self.result.exists())

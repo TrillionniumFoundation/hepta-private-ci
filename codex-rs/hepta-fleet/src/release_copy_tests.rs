@@ -48,8 +48,8 @@ fn readonly_source_is_copied_synced_and_preserved_on_duplicate_install()
 }
 
 #[test]
-fn unsealed_catalog_root_cannot_gain_an_agent_allowance()
--> Result<(), Box<dyn std::error::Error>> {
+fn unsealed_catalog_root_cannot_gain_an_agent_allowance() -> Result<(), Box<dyn std::error::Error>>
+{
     let temporary = tempfile::tempdir()?;
     let parent = temporary.path().canonicalize()?;
     let root = HeptaFleetRoot::parse(parent.join("fleet"))?;

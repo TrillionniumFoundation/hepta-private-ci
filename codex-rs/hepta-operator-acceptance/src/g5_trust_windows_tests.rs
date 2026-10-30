@@ -59,7 +59,11 @@ fn exact_signature_transport_refuses_windows_and_assessment_cannot_grant_authori
         write_fixture_file(&signature, packet.as_bytes()).expect("signature fixture");
         let before = fixture.snapshot();
         let assessed = fixture
-            .assess(&challenge, G5SignatureInput::Detached(&signature), /*time*/ 1_001)
+            .assess(
+                &challenge,
+                G5SignatureInput::Detached(&signature),
+                /*time*/ 1_001,
+            )
             .expect("failed verification assessment");
         assert_eq!(assessed.status, ASSESSMENT_STATUS_SIGNATURE_INVALID);
         assert!(!assessed.signature_verified);

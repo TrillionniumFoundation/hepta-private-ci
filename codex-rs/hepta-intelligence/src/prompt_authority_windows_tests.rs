@@ -58,7 +58,14 @@ fn unsupported_authority_leaves_no_admitted_prompt_or_deliverable_payload()
     };
     let generation = Digest32::of_bytes(b"generation-vector");
     let snapshot = registry.snapshot_v2(generation, &tuple)?;
-    let available = registry.read_compatible_v2(&snapshot, generation, &tuple, /*now_unix_ms*/ 100, vec![], /*maximum_results*/ 8)?;
+    let available = registry.read_compatible_v2(
+        &snapshot,
+        generation,
+        &tuple,
+        /*now_unix_ms*/ 100,
+        vec![],
+        /*maximum_results*/ 8,
+    )?;
     assert!(available.bindings.is_empty());
     assert!(!available.authority.grants_any());
     assert!(matches!(
