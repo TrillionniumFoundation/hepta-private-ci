@@ -16,9 +16,9 @@ The old independent test in #4382 deliberately exposes a float32 witness: for `b
 python -m unittest -v experiments.hcsn_hx_unified_v3.test_quantized_barrier
 ```
 
-Locally tested on Python 3.13.5, NumPy 2.3.5, SciPy 1.17.0: **6/6 tests pass**. Includes one-ULP negative classification, the literal original alias, finite/invalid encoding checks, 200 deterministic true-value-in-cell probes, and 80 selected double-precision first-passage bracket checks. The **exact remote Git blobs match local tested bytes**:
+Locally tested on Python 3.13.5, NumPy 2.3.5, SciPy 1.17.0: **7/7 tests pass**. Includes one-ULP negative classification, the literal original alias, finite/invalid encoding checks, 200 deterministic true-value-in-cell probes, 80 selected double-precision first-passage bracket checks, and a further 1,500-case seeded guard sweep (1,318 ABOVE, 182 AMBIGUOUS, zero >3e-11 reference bracket overages). The **exact remote Git blobs match local tested bytes**:
 - `quantized_barrier.py`: `3d94dea54853b898ddfb129461b35ad5e53da31a`
-- `test_quantized_barrier.py`: `b2e6951df141acbbd71c0a21f8e4999dc35253f7`
+- `test_quantized_barrier.py`: `26d213ccf70aa6888af4fe0835cb89fcce7f80b8`
 
 ## Hard boundary: still NOT an fp32/production PASS
 
