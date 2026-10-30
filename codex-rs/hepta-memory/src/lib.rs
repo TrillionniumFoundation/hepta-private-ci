@@ -37,6 +37,7 @@ mod memory_inventory_owner;
 mod memory_inventory_revalidate;
 mod memory_inventory_snapshot;
 mod memory_inventory_write;
+mod memory_training_projection_v11;
 mod model_receipt;
 mod neuron_proposal;
 mod operation_claims;
@@ -72,6 +73,8 @@ pub use memory_inventory_owner::MemoryInventoryAddressV1;
 pub use memory_inventory_owner::MemoryInventoryOwnerRecordV1;
 pub use memory_inventory_owner::MemoryInventoryOwnerSnapshotV1;
 pub use memory_inventory_owner::MemoryInventoryRecordV1;
+pub use memory_training_projection_v11::MemoryTrainingProjectionV11;
+pub use memory_training_projection_v11::MemoryTrainingSelectorV11;
 
 pub use codex_hepta_memory_retrieval::RetrievalCandidateIdentityV1;
 pub use cognitive_compact::COGNITIVE_COMPACT_HOOK_NAMESPACE;
