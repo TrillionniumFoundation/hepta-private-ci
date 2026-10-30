@@ -1,0 +1,22 @@
+{
+  "status": "Declared before observing any new AG News or CIFAR10 head test outcomes",
+  "datasets": ["ag_news", "cifar10"],
+  "features": "Exactly the shared frozen encoders and train-only PCA produced by next/encoder",
+  "variants": ["full", "full_sigmoid", "no_call", "no_recovery", "static_boundary", "no_memory", "memory_only"],
+  "seeds": [0, 1, 2, 3, 4],
+  "steps": 300,
+  "batch_size": 32,
+  "learning_rate": 0.003,
+  "width_policy": "Use the nearest v2 width to 6000 parameters for full/full_sigmoid; component deletions keep that same width, with lower actual trainable counts reported",
+  "full_kernel": "Normalized complete A7 call and explicitly C1-modified first-hit risk, compiled from float64 into a validated float32 Hermite table; financial parameters fixed",
+  "full_sigmoid": "Change only q to sigmoid(2*z), retain the complete-model Call and all neural structure; slope at z=0 differs and is not claimed matched",
+  "no_call": "Remove restoration Call gain and replace Call-based write shape with relu(score)^2/(1+relu(score)^2), retaining an ordinary C1 closed region",
+  "no_recovery": "Remove slow recovery dynamics and its readout",
+  "static_boundary": "Remove input and memory dependence of the learned boundary coordinate",
+  "no_memory": "Remove residual memory and candidate projection; retain fast/slow continuous neuron states",
+  "memory_only": "Ordinary sigmoid read gate and ordinary C1 write shape with residual memory; remove both financial gate functions and fast/slow neuron dynamics",
+  "checkpoint_selection": "Minimum clean validation cross entropy every 50 updates",
+  "test_use": "Clean and raw-input-corrupted test are evaluated only after the fixed training protocol; no test tuning",
+  "interpretation": "Component deletion is width-matched, not parameter-matched. Full versus full_sigmoid is exactly parameter-matched. Shared fixed financial lookup coefficients are reported separately from trainable parameters.",
+  "claims_not_presupposed": ["Full-formula operator is better", "All removed modules are useful", "Either modality implies joint multimodal consistency", "Approximate LUT derivatives equal the original formula exactly"]
+}
