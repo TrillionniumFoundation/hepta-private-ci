@@ -61,5 +61,85 @@ class ReflectionCancellationTests(unittest.TestCase):
             self.assertLessEqual(result.probability,1.+5e-15)
 
 
+    def test_large_finite_sigma_does_not_drop_discounted_tail(self):
+        # The old delta numerator overflows although the final small
+        # exponent is finite. This tests reflection only, not quadrature.
+        sigma=1e154
+        self.assertTrue(math.isfinite(sigma*sigma))
+        self.assertTrue(math.isinf(2.*(sigma*sigma)))
+        for drift in (-1e154,1e154):
+            with self.subTest(drift=drift):
+                result=reflected_passage(1.,drift=drift,sigma=sigma,
+                                          discount=1.,horizon=1.)
+                # Distance / sigma is 1e-154; both exact probabilities
+                # differ from one below f64 resolution for these inputs.
+                self.assertAlmostEqual(result.probability,1.,delta=3e-15)
+                self.assertAlmostEqual(result.discounted,1.,delta=3e-15)
+
+    def test_direct_exponent_retains_both_drift_fixture_controls(self):
+        # Reuse frozen ordinary-range values, without importing high
+        # precision arithmetic or claiming a general-domain error bound.
+        cases=(
+            (.15927864477835885,-1.057495025698587,.0010799136435169741,
+             2.0743660892253688e-5,5.221671082293789,.9999968756193146843707),
+            (.04,.35,.03,1e-8,3.,3.080463860371850719369e-14),
+        )
+        for x,drift,sigma,discount,horizon,expected in cases:
+            with self.subTest(drift=drift):
+                result=reflected_passage(x,drift=drift,sigma=sigma,
+                                          discount=discount,horizon=horizon)
+                self.assertLess(abs(result.discounted-expected),3e-15)
+
+    def test_subnormal_squared_scale_retains_nonzero_exponent(self):
+        # Rejected proposal v1 formed denominator*x before dividing by s2,
+        # producing zero although the dimensionless exponent is exactly .25.
+        sigma=math.ldexp(1.,-537)
+        x=math.ldexp(1.,-539)
+        self.assertGreater(sigma*sigma,0.)
+        self.assertEqual(sigma*x,0.)
+        result=reflected_passage(x,drift=0.,sigma=sigma,discount=.5,horizon=1.)
+        # Independent dimensionless substitution: F=2*Phi(-.25),
+        # G=exp(.25)*Phi(-1.25)+exp(-.25)*Phi(.75).
+        self.assertAlmostEqual(result.probability,.8025873486341526,delta=3e-15)
+        self.assertAlmostEqual(result.discounted,.7379602182304501,delta=3e-15)
+
+    def test_unresolved_reflection_intermediates_fail_closed(self):
+        base=dict(x=1.,drift=-1.,sigma=1.,discount=1.,horizon=1.)
+        changes=(
+            dict(sigma=1e200),  # sigma squared overflows
+            dict(sigma=1e-200),  # sigma squared underflows to zero
+            dict(discount=1e308),  # twice discount overflows
+            dict(drift=1e308),  # z + abs(drift) overflows
+            dict(x=5e-324),  # distance / denominator underflows to zero
+            dict(discount=5e-324,x=1e-100),  # small exponent product underflows
+            dict(drift=1e154,sigma=1e-154),  # denominator / sigma overflows
+            dict(drift=5e-324,sigma=1e154),  # nonzero drift / sigma becomes zero
+            dict(drift=1e-200,x=1e-200),  # dimensionless drift product becomes zero
+            dict(x=1e308),  # noncancelling exponent product overflows
+            dict(drift=-2.,horizon=1e308),  # tail argument overflows
+            dict(sigma=math.ldexp(1.,-537),horizon=math.ldexp(1.,-1074),
+                 drift=.25,x=math.ldexp(1.,-1074)),  # positive time products lost
+        )
+        for change in changes:
+            with self.subTest(change=change),self.assertRaises(ArithmeticError):
+                reflected_passage(**(base | change))
+
+    def test_subnormal_drift_products_retain_both_sign_probabilities(self):
+        sigma=math.ldexp(1.,-537)
+        x=math.ldexp(1.,-539)
+        # Independent dimensionless inputs are x=.25, drift=+/-1,
+        # sigma=1, q=.5, T=1. Frozen values use the two normal-CDF terms.
+        cases=((-1.,.9475596767123303,.8793139640911344),
+               (1.,.5747239958334194,.5333308787347266))
+        for sign,expected_f,expected_g in cases:
+            drift=sign*sigma
+            with self.subTest(sign=sign):
+                self.assertEqual((-2*drift)*x,0.)
+                result=reflected_passage(x,drift=drift,sigma=sigma,
+                                          discount=.5,horizon=1.)
+                self.assertAlmostEqual(result.probability,expected_f,delta=3e-15)
+                self.assertAlmostEqual(result.discounted,expected_g,delta=3e-15)
+
+
 if __name__ == '__main__':
     unittest.main()
