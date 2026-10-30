@@ -246,8 +246,15 @@ def main():
     asset_recovery = desc(BASE / 'executor_recovery_20261030T1152/ORIGINAL_ASSETS_RESTORED.json')
     for name in ('cwd_runner.py', 'registration.py', 'historical_costs.py', 'supervisor.py',
                  'wait4_launcher.py', 'ancestry.py', 'producer_adapter.py', 'controller.py',
-                 'owned_children.py', 'resource_backpressure.py', 'execution04_costs.py'):
+                 'owned_children.py', 'resource_backpressure.py', 'execution04_costs.py',
+                 'import_probe.py', 'archive_io.py'):
         require((OWN / name).relative_to(SOURCE).as_posix() in closure, 'Required operational source missing: ' + name)
+    for name in ('prepare_plan.py', 'prepare_pins.py', 'run_supplement.py', 'review.py', 'test_review.py',
+                 'FIELD_MAP.json', 'C_SCOPE.json', 'FINAL_CONCLUSION_TEMPLATE.zh-CN.md'):
+        path = OWN / 'postseal' / name
+        item = desc(path)
+        require(hashlib.sha256(git('show', args.source_commit + ':' + path.relative_to(SOURCE).as_posix())).hexdigest()
+                == item['sha256'], 'Postseal input is not present byte-exact in the committed tree: ' + name)
     amendment_path = OWN / 'registrations/OPS_EXECUTION05_BACKPRESSURE.json'
     if args.prepare_amendment:
         amendment_path.parent.mkdir(parents=True, exist_ok=True)

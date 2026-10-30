@@ -1,0 +1,88 @@
+{
+  "actual_execution05_raw_or_ops_created_by_tests": false,
+  "child_peak_rss_bytes": 27254784,
+  "child_pid": 131235,
+  "execution": "actual tiny unittest process, synthetic scientific imports only",
+  "exit_code": 0,
+  "measuring_parent_cpu_seconds": 0.0011782790000000008,
+  "oom_after": {
+    "oom": 0,
+    "oom_kill": 0
+  },
+  "oom_before": {
+    "oom": 0,
+    "oom_kill": 0
+  },
+  "owned_wait4_cpu_seconds": 0.69759,
+  "owned_wait4_system_cpu_seconds": 0.077512,
+  "owned_wait4_user_cpu_seconds": 0.620078,
+  "production_import_probe_executed": false,
+  "schema": "hepta.execution05.import-probe-fixture-validation.1",
+  "scientific_execution": 0,
+  "source_files": {
+    "ancestry": {
+      "bytes": 28331,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/ancestry.py",
+      "sha256": "616fbf51e69662549aa6381bbc4c47195ce16e364f25609af878cfbf5ecbff44"
+    },
+    "controller": {
+      "bytes": 24990,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/controller.py",
+      "sha256": "26347d490932f0c007dd78b5167438be8fda675b049a6838863204d8182a4b50"
+    },
+    "cwd_runner": {
+      "bytes": 25883,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/cwd_runner.py",
+      "sha256": "ebfa2af01025edd61aa12ef3027911a8c598c79085c19d35bf305a26687c9547"
+    },
+    "historical_costs": {
+      "bytes": 38532,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/historical_costs.py",
+      "sha256": "035d6aed995e705bcde6af7bce9b4edb498d682d095e4578cbea00fbd1e238fe"
+    },
+    "import_probe": {
+      "bytes": 16538,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/import_probe.py",
+      "sha256": "b53c09b12d5e4e09825bed2ed375e7a6d83ad741ccc6a51c241e6b1ffa1483b1"
+    },
+    "producer_adapter": {
+      "bytes": 24985,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/producer_adapter.py",
+      "sha256": "e5ab20f7d56d9abb9c51d6314178c8bae1ea7efc5ef2b29a8630d73ba34560d6"
+    },
+    "registration": {
+      "bytes": 23035,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/registration.py",
+      "sha256": "bf2401540e407ba689cf21eaa4f0e40ef64e8866888470cfa56811d483098e7b"
+    },
+    "resource_backpressure": {
+      "bytes": 40624,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/resource_backpressure.py",
+      "sha256": "8c179f68253c4c6559b76b18ca1afd7109fa99a6e39fae4c150514fe97267bca"
+    },
+    "test_import_probe": {
+      "bytes": 15858,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/test_import_probe.py",
+      "sha256": "31e27221ae13132cd25b103764d615b67605c273a2dc627c95a280bb870688d7"
+    }
+  },
+  "source_files_unchanged_during_validation": true,
+  "status": "PASS",
+  "test_result": {
+    "errors": 0,
+    "failures": 0,
+    "fixture_scope": "Real eight source-pinned producer factories; synthetic metadata/import-only control flow; no actual execution05 registration or scientific import.",
+    "numpy_imported": false,
+    "scientific_workers_started": 0,
+    "skipped": 0,
+    "successful": true,
+    "tests_run": 12,
+    "torch_imported": false
+  },
+  "transcript": {
+    "bytes": 2625,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/validation/import_probe/TEST_TRANSCRIPT.txt",
+    "sha256": "7a42d7093477085e77d90894c71723491598b6f482fd7a600f8d73f03d8f1c08"
+  },
+  "wall_seconds": 0.7098732079975889
+}

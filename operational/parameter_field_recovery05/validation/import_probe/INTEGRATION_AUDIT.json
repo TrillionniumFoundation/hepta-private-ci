@@ -1,0 +1,100 @@
+{
+  "actual_execution05_raw_or_ops_created_by_this_agent": false,
+  "actual_production_import_probe_run": false,
+  "checks": {
+    "a_and_c_use_same_original_protocol_sha256": "2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55",
+    "a_c_then_producer_then_policy_then_ops_freeze_order_has_no_hash_cycle": true,
+    "c1_code_then_c2_amendment_source_binding_has_no_hash_cycle": true,
+    "current_policy_13_keys_match_cwd_runner": true,
+    "install_before_producer_factory_order_checked_with_real_factories": true,
+    "new_postseal_python_sources_and_review_contracts_explicitly_checked_in_initializer": true,
+    "original_scientific_and_execution04_git_diff_exit_code": 0,
+    "producer_configuration_and_fresh_registration_keys_match_current_apis": true
+  },
+  "decision": "NO_ADDITIONAL_INTEGRATION_BLOCKER_FOUND_IN_REVIEWED_CONTRACTS; READY_FOR_COMMITTED_REGISTRATION_AND_ACTUAL_IMPORT_PROBE_ONLY",
+  "fixture_validation": {
+    "bytes": 3851,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/validation/import_probe/VALIDATION.json",
+    "sha256": "c9237798d159c7dcfe9bc2d99415553b2af800ed498a99e27e407f13f84adda4"
+  },
+  "real_restored_cost_evidence_audit": {
+    "a29_failed_cpu_seconds": 1270.1102759120001,
+    "a29_failed_gradient_microsteps": 14784,
+    "all_supports_in_their_own_waited_step_directory": true,
+    "cost_plan_bindings": 133,
+    "distinct_measured_child_identities": 32,
+    "inclusive_outer_cpu_seconds_excluded_from_sum": 3290.208896,
+    "nonzero_exit_root_measurement_retained": true,
+    "root_disjoint_cpu_seconds_lower_bound": 13.075601269,
+    "root_wait4_receipts": 32,
+    "scope": "Actual cost builder and execution04 cost validator exercised against restored real receipts; import metadata binding and output directory were explicit temporary fixtures only. No actual import was materialized.",
+    "support_receipts_individually_hashed": 96
+  },
+  "recorded_utc": "2026-10-30T12:30:38.881669+00:00",
+  "remaining_real_admission_steps": [
+    "Commit all executable sources as C1, prepare amendment, commit amendment as C2 without executable-byte drift.",
+    "Materialize the separately validated A17 import and generate actual registration/policy artifacts.",
+    "Run the new probe from registered empty cwd with actual external policy/freeze/configuration SHA pins.",
+    "Complete the root-owned original resource gates and publication/launch prerequisites."
+  ],
+  "reviewed_sources": {
+    "controller.py": {
+      "bytes": 24990,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/controller.py",
+      "sha256": "26347d490932f0c007dd78b5167438be8fda675b049a6838863204d8182a4b50"
+    },
+    "cwd_runner.py": {
+      "bytes": 25883,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/cwd_runner.py",
+      "sha256": "ebfa2af01025edd61aa12ef3027911a8c598c79085c19d35bf305a26687c9547"
+    },
+    "execution04_costs.py": {
+      "bytes": 3503,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/execution04_costs.py",
+      "sha256": "08d9a5f52b78e46c131cb4232ec04c85ee051de54646479a3d01960ac122c674"
+    },
+    "historical_costs.py": {
+      "bytes": 38532,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/historical_costs.py",
+      "sha256": "035d6aed995e705bcde6af7bce9b4edb498d682d095e4578cbea00fbd1e238fe"
+    },
+    "import_probe.py": {
+      "bytes": 16538,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/import_probe.py",
+      "sha256": "b53c09b12d5e4e09825bed2ed375e7a6d83ad741ccc6a51c241e6b1ffa1483b1"
+    },
+    "initialize.py": {
+      "bytes": 22606,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/initialize.py",
+      "sha256": "274c9c44f48b7a0546b959e0551148230da1c7b1a8a50650cbc2b39046e8a178"
+    },
+    "producer_adapter.py": {
+      "bytes": 24985,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/producer_adapter.py",
+      "sha256": "e5ab20f7d56d9abb9c51d6314178c8bae1ea7efc5ef2b29a8630d73ba34560d6"
+    },
+    "registration.py": {
+      "bytes": 23035,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/registration.py",
+      "sha256": "bf2401540e407ba689cf21eaa4f0e40ef64e8866888470cfa56811d483098e7b"
+    },
+    "resource_backpressure.py": {
+      "bytes": 40624,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/resource_backpressure.py",
+      "sha256": "8c179f68253c4c6559b76b18ca1afd7109fa99a6e39fae4c150514fe97267bca"
+    },
+    "supervisor.py": {
+      "bytes": 51312,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/supervisor.py",
+      "sha256": "e91ddc38e374f37c379618cbf89bb05a46e265a5e9865afbe3d47a585934661b"
+    }
+  },
+  "schema": "hepta.execution05.pre-registration-integration-audit.1",
+  "scientific_workers_started": 0,
+  "source_changes_made_by_this_audit": [
+    "operational/parameter_field_recovery05/import_probe.py",
+    "operational/parameter_field_recovery05/test_import_probe.py",
+    "operational/parameter_field_recovery05/IMPORT_PROBE.md",
+    "operational/parameter_field_recovery05/validation/import_probe/"
+  ]
+}
