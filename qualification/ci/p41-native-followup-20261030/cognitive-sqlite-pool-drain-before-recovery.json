@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.p41-sqlite-cold-recovery-fixture-close-source-review.v1",
+  "observed_date_utc": "2026-10-30",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 4184,
+  "parent_head": "81cbf7d52d7927c7fbd77cb998557b50e9902e59",
+  "source_changes": [
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "before": "no public awaitable full pool drain",
+      "after": "consuming close awaits SQLx pool closure before dropping store and recovery lock"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
+      "before": "drop(store) immediately after recovery_anchor",
+      "after": "store.close().await before opening fenced writer generation"
+    }
+  ],
+  "native_failure": {
+    "run": 41096463350,
+    "linux_gnu_job": 124208671042,
+    "linux_musl_job": 124208670860,
+    "test": "agentd_product_host_recovers_exact_cut_into_fenced_writer_generation",
+    "observed": "SQLite recovery is indeterminate: the complete immutable file identity was not established",
+    "status": "FAIL"
+  },
+  "source_comparison": {
+    "owning_unit_case": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+    "unit_case_behavior": "store.pool.close().await followed by drop(store) before open_with_recovery",
+    "product_test_behavior": "only drop(store) before open_with_recovery",
+    "sqlx_pool_behavior": "Drop need not synchronously drain all SQLite connections; a pending WAL/SHM shutdown can race strict identity binding",
+    "root_cause_proven": false
+  },
+  "preserved": [
+    "original test positive and negative assertions",
+    "source descriptor and sidecar identity checks",
+    "fail-closed recovery gate",
+    "independent expected cut and authority lease",
+    "no production permission changes",
+    "no Rust dependency or lock change"
+  ],
+  "static_checks": {
+    "exact_single_anchored_replacement": true,
+    "unchanged_assertions": true,
+    "files_changed": 2,
+    "syntax_compilation": "NOT_RUN",
+    "rustfmt": "NOT_RUN",
+    "owning_native_tests": "NOT_RUN"
+  },
+  "qualification": "SOURCE_CANDIDATE_AWAITING_CURRENT_EXACT_HEAD_NATIVE_VALIDATION",
+  "mode": "SHADOW_ONLY",
+  "authority": "DENY_ALL",
+  "production": "HOLD_NO_GO"
+}

@@ -343,6 +343,15 @@ impl CognitiveStore {
         })
     }
 
+    /// Drain SQLite connections while the owner's open/recovery fence is still held.
+    ///
+    /// Dropping a SQLx pool can close its connections asynchronously; explicit
+    /// closure prevents a following exact-cut recovery from racing sidecar cleanup.
+    /// This does not grant or bypass production writer authority.
+    pub async fn close(self) {
+        self.pool.close().await;
+    }
+
     pub fn path(&self) -> &Path {
         &self.path
     }
