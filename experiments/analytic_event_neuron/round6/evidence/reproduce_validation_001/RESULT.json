@@ -1,0 +1,68 @@
+{
+  "commands": [
+    {
+      "child_system_seconds": 0.02426,
+      "child_user_seconds": 0.305774,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-",
+        "/dev/shm/hepta-round6-d831a963ef2f/reproduce_validation_001/inputs",
+        "/dev/shm/hepta-round6-d831a963ef2f/reproduce_validation_001/restored_development"
+      ],
+      "completed_utc": "2026-10-30T13:18:21.984335+00:00",
+      "cwd": "/dev/shm/hepta-round6-d831a963ef2f/hepta-analytic",
+      "environment_overrides": {},
+      "returncode": 0,
+      "started_utc": "2026-10-30T13:18:21.653421+00:00",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdin_sha256": "e340a65340feeac1c017b59d1410a62f678d2d9f3e533a8babe4f1e97283b504",
+      "stdout_sha256": "bdf169b8f59572dcd109754685f4a08f26e15dd09d582c6432e8b77c7e93fd22",
+      "wall_ns": 330762312
+    },
+    {
+      "child_system_seconds": 0.085315,
+      "child_user_seconds": 1.159399,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "experiments.analytic_event_neuron.round6.test_qualifier",
+        "-v"
+      ],
+      "completed_utc": "2026-10-30T13:18:22.610658+00:00",
+      "cwd": "/dev/shm/hepta-round6-d831a963ef2f/hepta-analytic",
+      "environment_overrides": {
+        "HEPTA_QUALIFICATION_RESULT": "/dev/shm/hepta-round6-d831a963ef2f/reproduce_validation_001/restored_development/experiments/analytic_event_neuron/round6/evidence/native_qualification_001/results"
+      },
+      "returncode": 0,
+      "started_utc": "2026-10-30T13:18:21.984652+00:00",
+      "stderr_sha256": "ac369bc6135ac961c62347b87cebabe29d10d773a4613f7b6c238e2bcdea5f3b",
+      "stdin_sha256": null,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_ns": 625958385
+    }
+  ],
+  "completed_utc": "2026-10-30T13:18:22.623741+00:00",
+  "development_archive_sha256": "6be4c5bfc0d2ae329ca735f04d909f78459e43cdd627ba1c8235e1a719b1ea47",
+  "development_manifest_sha256": "31f50587439ffbb75385297860824d1f9e8fafb5cdd232c48e662caada61bbab",
+  "documentation_correction_required": false,
+  "documentation_sha256": "3516fa9132fe5f8b7c6c1fd8e8b5e679bf7d3aa5f140cc35a5e01dcf44857a80",
+  "exact_documented_snippet_sha256": "e340a65340feeac1c017b59d1410a62f678d2d9f3e533a8babe4f1e97283b504",
+  "full_child_cpu_seconds": 1.574748,
+  "full_command_wall_ns": 956720697,
+  "passed": true,
+  "primary_matches_review_002": true,
+  "primary_source_count": 118,
+  "primary_sources_unchanged": true,
+  "registered_or_confirmation_paths_written": false,
+  "restored_directory_count": 67,
+  "restored_file_count": 375,
+  "restored_fixture": "/dev/shm/hepta-round6-d831a963ef2f/reproduce_validation_001/restored_development/experiments/analytic_event_neuron/round6/evidence/native_qualification_001/results",
+  "retained_qualifier_tests": 4,
+  "runner_sha256": "3f10eaf2733dcc5e4808bfeec16e0779b2f6536e97b837dd8efea13880aff196",
+  "schema": "hepta.documented-reproduction.conformance.v1",
+  "scientific_experiment_repeated": false,
+  "scope": "Actual complete-development-tar branch of the exact documented adapter, followed by four retained-evidence tests at the relocated fixture path."
+}

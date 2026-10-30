@@ -1,0 +1,23 @@
+{
+  "child_system_seconds": 0.085315,
+  "child_user_seconds": 1.159399,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "experiments.analytic_event_neuron.round6.test_qualifier",
+    "-v"
+  ],
+  "completed_utc": "2026-10-30T13:18:22.610658+00:00",
+  "cwd": "/dev/shm/hepta-round6-d831a963ef2f/hepta-analytic",
+  "environment_overrides": {
+    "HEPTA_QUALIFICATION_RESULT": "/dev/shm/hepta-round6-d831a963ef2f/reproduce_validation_001/restored_development/experiments/analytic_event_neuron/round6/evidence/native_qualification_001/results"
+  },
+  "returncode": 0,
+  "started_utc": "2026-10-30T13:18:21.984652+00:00",
+  "stderr_sha256": "ac369bc6135ac961c62347b87cebabe29d10d773a4613f7b6c238e2bcdea5f3b",
+  "stdin_sha256": null,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "wall_ns": 625958385
+}
