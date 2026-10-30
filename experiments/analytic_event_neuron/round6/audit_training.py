@@ -46,6 +46,14 @@ def dynamics(data, model, receipt, checks):
     checks.require(initial != model['prior'] and receipt['prior_parameters_changed'], 'actual mixture parameter change')
     checks.close(model['gaussian_prior']['means'], [float(errors.mean())], 'Gaussian empirical mean', 3e-13)
     checks.close(model['gaussian_prior']['variances'], [float(np.var(errors))], 'Gaussian empirical variance', 3e-13)
+    checks.close(model['calibration']['error_variance'], float(np.var(errors)), 'training error variance calibration', 3e-13)
+    checks.require(receipt['gaussian_prior'] == model['gaussian_prior'] and receipt['em_steps'] == 80,
+                   'Gaussian prior and exact completed EM count binding')
+    final_density = np.exp(-0.5 * (errors[:, None] - means) ** 2 / variances) / np.sqrt(2 * np.pi * variances)
+    final_nll = float(-np.log(final_density @ weights).mean())
+    saved = model['prior']
+    saved_density = np.exp(-0.5 * (errors[:, None] - saved['means']) ** 2 / saved['variances']) / np.sqrt(2 * np.pi * np.asarray(saved['variances']))
+    checks.close(float(-np.log(saved_density @ saved['weights']).mean()), final_nll, 'final-parameter independent prior NLL', 3e-10)
     sensor_errors = np.concatenate([data['self_evaluation'] - data['target'], data['wait_evaluation'] - data['target']])
     declared = np.concatenate([data['sensor_variance'], data['wait_variance']])
     scale = float(np.mean(sensor_errors ** 2 / declared))
@@ -70,6 +78,11 @@ def dynamics(data, model, receipt, checks):
     checks.close(model['calibration']['public_scale'], spread, 'public feature scale', 3e-13)
     centers = ((raw - center) / spread)[np.linspace(0, len(raw) - 1, 43).astype(int)]
     checks.close(model['calibration']['history_centers'], centers, 'shared history radial centers', 3e-13)
+    return {'initial_prior_nll': losses[0], 'last_recorded_pre_update_nll': losses[-1],
+            'final_prior_nll_after_80_updates': final_nll, 'actual_supervised_noise_scale': scale,
+            'noise_nll_at_initial_scale': noise_objective(0.0, sensor_errors, declared)[0],
+            'noise_nll_at_fitted_scale': noise_objective(np.log(scale), sensor_errors, declared)[0],
+            'noise_gradient_at_fitted_scale': noise_objective(np.log(scale), sensor_errors, declared)[1]}
 
 
 def head_candidates(model, fits, train_rows, dev_rows, checks):
@@ -132,6 +145,7 @@ def head_candidates(model, fits, train_rows, dev_rows, checks):
 
 def audit_seed(directory, replay, checks):
     directory = Path(directory)
+    before_calls, before_ticks = replay.native.calls, replay.native.original_sparse_ticks
     receipt = json.loads((directory / 'TRAINING_RECEIPT.json').read_text())
     for key, filename in [('model_file_sha256', 'MODELS.json'), ('training_rows_sha256', 'TRAINING_ROWS.json.gz'),
                           ('training_data_sha256', 'TRAIN.npz'), ('development_data_sha256', 'DEVELOPMENT.npz')]:
@@ -140,9 +154,9 @@ def audit_seed(directory, replay, checks):
     with gzip.open(directory / 'TRAINING_ROWS.json.gz', 'rt') as stream:
         collections = json.load(stream)
     train = load_npz(directory / 'TRAIN.npz')
-    dynamics(train, model, receipt['dynamics'], checks)
+    dynamics_review = dynamics(train, model, receipt['dynamics'], checks)
     base_model = {key: model[key] for key in ('prior', 'gaussian_prior', 'calibration')}
-    archive_files = 0
+    archive_files, original_roundtrip_ns = 0, 0
     for split, filename, archive_key, count_key in [('train', 'TRAIN.npz', 'training_archive', 'train_rows'),
             ('development', 'DEVELOPMENT.npz', 'development_archive', 'development_rows')]:
         data = load_npz(directory / filename)
@@ -163,6 +177,8 @@ def audit_seed(directory, replay, checks):
                 owner = replay.owner([row['case'], 'shared'], digest(base_model), 'event')
                 checkpoint = '0' * 64
                 for stage_index, stage in enumerate(row['stages']):
+                    original_roundtrip_ns += sum(r['subprocess_roundtrip_ns'] for r in stage['runtime']['native'])
+                    original_roundtrip_ns += sum(r['subprocess_roundtrip_ns'] for arm in LEARNED for r in stage['native'][arm])
                     public = acquired_public(values, stage_index == 1, checks)
                     checks.require(public == stage['public'], 'prepared acquired public equality')
                     checkpoint, independent = replay.stage(owner, stage['runtime'], model, 'event', public, stage_index + 1, checkpoint)
@@ -181,6 +197,11 @@ def audit_seed(directory, replay, checks):
         finally:
             archive.close()
     head_candidates(model, receipt['fits'], collections['train'], collections['development'], checks)
+    checks.require(receipt['native']['requests'] == replay.native.calls - before_calls
+                   and receipt['native']['ticks'] == replay.native.original_sparse_ticks - before_ticks,
+                   'all original supervised native requests and ticks replayed')
+    checks.require(receipt['native']['roundtrip_ns'] == original_roundtrip_ns, 'complete original training native cost ledger')
     return {'seed': receipt['seed'], 'namespace': receipt['namespace'], 'train_rows': receipt['train_rows'],
             'development_rows': receipt['development_rows'], 'readout_candidates_verified': 45,
-            'EM_steps_independently_reconstructed': 80, 'archive_members_verified': archive_files}
+            'EM_steps_independently_reconstructed': 80, 'archive_members_verified': archive_files,
+            'dynamics_review': dynamics_review}

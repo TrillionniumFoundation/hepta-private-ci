@@ -50,7 +50,10 @@ def artifacts(run_dir):
     root = Path(run_dir).resolve()
     result = {}
     for name in ("prepared", "native"):
-        for path in sorted((root / name).rglob("*")):
+        directory = root / name
+        if directory.is_symlink() or (directory.exists() and not directory.is_dir()):
+            raise ValueError("Prepared evidence roots must be real directories")
+        for path in sorted(directory.rglob("*")):
             if path.is_symlink():
                 raise ValueError("Prepared evidence may not contain symlinks")
             if path.is_file():
@@ -62,6 +65,8 @@ def prepared_layout(run_dir):
     """Require the nine artifacts; record harmless empty transport directories."""
     root = Path(run_dir).resolve()
     prepared = root / "prepared"
+    if prepared.is_symlink() or not prepared.is_dir():
+        raise ValueError("Prepared evidence root must be a real directory")
     if {p.name for p in prepared.iterdir()} != {f"seed_{s}" for s in REGISTRATION["seeds"]}:
         raise ValueError("Incomplete or additional prepared seed inventory")
     empty_directories = []
