@@ -803,6 +803,7 @@ fn write_recovery_frontier(
     store_id: &str,
     snapshot: codex_hepta_evidence::EvidenceRecoverySnapshotV1,
 ) -> Result<(std::path::PathBuf, std::path::PathBuf)> {
+    let directory = directory.canonicalize()?;
     let signer_key = SigningKey::from_bytes(&[63; 32]);
     let mut frontier = EvidenceRecoveryFrontierV1 {
         schema_version: 1,
