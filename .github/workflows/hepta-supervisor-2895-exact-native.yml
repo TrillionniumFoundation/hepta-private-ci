@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   restart-budget-2895-exact:
-    name: Exact #2895 restart-budget recovery on ${{ matrix.os }}
+    name: "Exact #2895 restart-budget recovery on  ${{ matrix.os }}"
     if: >-
       github.event.pull_request.head.repo.full_name == github.repository &&
       github.event.pull_request.head.ref == 'audit/2895-exact-restart-native-20261030'
@@ -38,7 +38,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Reject any drift from #2895 source, test, or dependency locks
+      - name: "Reject any drift from #2895 source, test, or dependency locks"
         shell: bash
         run: |
           set -euo pipefail
@@ -57,7 +57,7 @@ jobs:
         with:
           toolchain: "1.95.0"
 
-      - name: Execute original #2895 restart-budget recovery assertion
+      - name: "Execute original #2895 restart-budget recovery assertion"
         shell: bash
         run: |
           set -euo pipefail
