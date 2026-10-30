@@ -25,7 +25,15 @@ fn workspace_normalization_rejects_relative_and_parent_aliases() {
     let child = canonical.join("child");
     std::fs::create_dir(&child).expect("child");
     assert_eq!(canonical_workspace_path(Path::new("relative")), None);
-    assert_eq!(canonical_workspace_path(&child.join("..")), None);
+    // PathBuf::join on a Windows verbatim path may normalize away `..` before
+    // validation. Preserve the lexical alias so this actually tests rejection.
+    let mut parent_alias = canonical.as_os_str().to_os_string();
+    parent_alias.push(format!(
+        "{}child{}..",
+        std::path::MAIN_SEPARATOR,
+        std::path::MAIN_SEPARATOR
+    ));
+    assert_eq!(canonical_workspace_path(Path::new(&parent_alias)), None);
     assert_eq!(canonical_workspace_path(&canonical.join("missing")), None);
 }
 
