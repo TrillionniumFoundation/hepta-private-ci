@@ -1,0 +1,36 @@
+{
+  "literal_tests": {
+    "errors": 0,
+    "failures": 0,
+    "run": 13
+  },
+  "measurements": {
+    "global": {
+      "complete_anchor_FD_coordinates": 8,
+      "max_complete_FD": 4.8792513730527495e-11,
+      "max_utility_FD": 5.890636473748637e-11,
+      "utility_FD_coordinates": 8
+    },
+    "legacy_group": {
+      "finite_difference_coordinates": 8,
+      "max_FD_error": 5.73196221390071e-11
+    },
+    "legacy_integration": {
+      "aligned_anchor_FD_coordinates": 8,
+      "aligned_group_utility_FD_coordinates": 8,
+      "maximum_aligned_anchor_FD_error": 3.481658852281383e-11,
+      "maximum_aligned_group_utility_FD_error": 3.346549345826415e-11
+    }
+  },
+  "receipt_sha256": "d0a91c6e1c1d4146dbb6dab0709e77c8a85bc9462e5f239afde0a16e356677f3",
+  "result_sha256": "b7e76072a129a6e666b37a1bffcc2fee359783972cbc994f22ec5bed0faca11c",
+  "saved_review_sha256": "1f0dacfdad57b004b752d9801338dd9fa07f12870923f0bfafa4aece88ddee61",
+  "scope": "Python-only literal chain qualification; no scientific benefit; old failures unchanged",
+  "source_review_sha256": "adb75362127e652d5cc6fd4291e79c72f58ecfa3b337403587f107d8cc796e17",
+  "source_sha256": {
+    "PLAN.md": "c7a8cf39b782e895c269173e7e119b51a9023450ce18753f28ab8a12b861cd2c",
+    "global_risk.py": "2f2867436b49b6e6e65d065c275580bbe1c5daccab04592ea49a289185428c78",
+    "test_global_risk.py": "8a7603e8effa7abfbd675e58dd10d142996ddcb77f1a661883f8416ed05ec3ae"
+  },
+  "status": "GLOBAL64_LITERAL_QUALIFICATION_PASS_NOT_SCIENCE"
+}
