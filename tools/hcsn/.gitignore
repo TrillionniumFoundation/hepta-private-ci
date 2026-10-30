@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.log
+*.partial
+.venv/
+# Public pretrained weights and source data are downloaded into an external cache.
+model.onnx
+tokenizer.json
+sst_*.parquet
+frozen_features.npz
