@@ -1,0 +1,54 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "experiments/first_passage_deadline/tests",
+    "-v"
+  ],
+  "source_files": [
+    {
+      "path": "experiments/first_passage_deadline/NUMERICAL_CONTRACT.md",
+      "sha256": "20346a8787d11bf50fce22e4e33e094cca786bcb3fbe785a829c43fa91528c1c"
+    },
+    {
+      "path": "experiments/first_passage_deadline/PROTOCOL.json",
+      "sha256": "de2169420dfac7b3d680f638a0ba44a64a8a556813b992f77679cd75a7cd779a"
+    },
+    {
+      "path": "experiments/first_passage_deadline/__init__.py",
+      "sha256": "70f9f88609c726dcbc7b974add0007fc73822371b895e2b160565aab49726143"
+    },
+    {
+      "path": "experiments/first_passage_deadline/policy.py",
+      "sha256": "ce0db71dcff2a366fa687ad30b3ad67f674de7d33fd6ea74e0339721363a60bd"
+    },
+    {
+      "path": "experiments/first_passage_deadline/qvi.py",
+      "sha256": "57c40a08260048d1806335b6ae322c78e5f3359d0a5ccb6d8f060a55770bb4ff"
+    },
+    {
+      "path": "experiments/first_passage_deadline/requirements.txt",
+      "sha256": "1668a3152e33680d94637b13421c15e68bd97cd8701f7f555c691f5bc5c0b9f3"
+    },
+    {
+      "path": "experiments/first_passage_deadline/tests/test_deadline.py",
+      "sha256": "72168ceeab05422dbebe6cf749021e7783f061552283d661f9e6922bcf0888af"
+    },
+    {
+      "path": "experiments/first_passage_deadline/validate.py",
+      "sha256": "4e24eb2ff7910689e186318bd7f749e4d78fcb2886c5490a9ea9d3a2c227751f"
+    }
+  ],
+  "thread_environment": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "status": "passed",
+  "exit_code": 0,
+  "seconds": 6.040966339999613,
+  "log_sha256": "28e953067f475570fc4888d3681d906e2edc53aa09c27e655140998ddb4d8864"
+}

@@ -1,0 +1,1016 @@
+{
+  "schema": "hepta.deadline-numerical-report.v1",
+  "status": "failed numerical gates",
+  "protocol_sha256": "de2169420dfac7b3d680f638a0ba44a64a8a556813b992f77679cd75a7cd779a",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "thread_environment": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "cases": [
+    {
+      "name": "positive_drift",
+      "spec": {
+        "mu": 0.12,
+        "sigma": 0.45,
+        "reset": 0.0,
+        "refractory": 0.2,
+        "discount": 0.2,
+        "spike_cost": 0.6
+      },
+      "levels": [
+        {
+          "file": "positive_drift.level_0.json",
+          "grid": {
+            "dt": 0.02,
+            "dx": 0.04
+          },
+          "probe_error": 0.005775986368578623,
+          "refinement_difference": null
+        },
+        {
+          "file": "positive_drift.level_1.json",
+          "grid": {
+            "dt": 0.01,
+            "dx": 0.02
+          },
+          "probe_error": 0.0028983481454342985,
+          "refinement_difference": 0.001207066406360098
+        },
+        {
+          "file": "positive_drift.level_2.json",
+          "grid": {
+            "dt": 0.005,
+            "dx": 0.01
+          },
+          "probe_error": 0.0014514954044089479,
+          "refinement_difference": 0.000482388812954794
+        }
+      ],
+      "independent_audits": {
+        "same_policy_quadrature_order_difference": 5.384581669432009e-15,
+        "fixed_policy_space_time_refinement_difference": 0.0006443542056612239,
+        "order16_diagnostics": {
+          "mass_defect_max": 2.142730437526552e-14,
+          "lower_tail_mass_max": 0.3695196393319634,
+          "negative_weight_mass_max": 0.0,
+          "cached_matrices_limit": 8,
+          "quadrature_order": 16,
+          "dt": 0.005,
+          "dx": 0.01,
+          "lower_truncation_value_bound": 9.946810528831698e-09,
+          "projection": "linear state interpolation and linear past reset-value time interpolation",
+          "row_normalization": false
+        },
+        "refined_diagnostics": {
+          "mass_defect_max": 3.097522238704187e-14,
+          "lower_tail_mass_max": 0.4068887822595013,
+          "negative_weight_mass_max": 0.0,
+          "cached_matrices_limit": 8,
+          "quadrature_order": 16,
+          "dt": 0.0025,
+          "dx": 0.005,
+          "lower_truncation_value_bound": 9.99330510865197e-09,
+          "projection": "linear state interpolation and linear past reset-value time interpolation",
+          "row_normalization": false
+        },
+        "refined_probe_values": [
+          5.958728882435817e-07,
+          0.006163876335180593,
+          0.06194732103947716,
+          0.3065423760576369,
+          0.6005458514757726,
+          1.1721722605740252,
+          0.00012453098386105602,
+          0.020555125130058416,
+          0.08952607943235237,
+          0.315840867785354,
+          0.6015178287441802,
+          1.1721722605740252,
+          0.0026848601945402696,
+          0.04963166175305837,
+          0.12891108320978947,
+          0.336151845314965,
+          0.6048489268319284,
+          1.1722919086281662,
+          0.017533391502493414,
+          0.0977668855314358,
+          0.18281035131312567,
+          0.3712291043508196,
+          0.6171207794450919,
+          1.1807435612106716,
+          0.03768490078838868,
+          0.13523529674906712,
+          0.22120650986538484,
+          0.39985625609133413,
+          0.6355097529713485,
+          1.1984609764927747,
+          3.944897068511087e-18,
+          5.31578217598769e-06,
+          0.001267886382825724,
+          0.01399280299564663,
+          0.03340000444501278,
+          0.0,
+          0.0,
+          0.00011964805414095103,
+          0.008571300636646404,
+          0.02628871591874952
+        ],
+        "no_policy_reoptimization": true
+      }
+    },
+    {
+      "name": "zero_drift",
+      "spec": {
+        "mu": 0.0,
+        "sigma": 0.45,
+        "reset": 0.0,
+        "refractory": 0.2,
+        "discount": 0.2,
+        "spike_cost": 0.6
+      },
+      "levels": [
+        {
+          "file": "zero_drift.level_0.json",
+          "grid": {
+            "dt": 0.02,
+            "dx": 0.04
+          },
+          "probe_error": 0.006060864606363792,
+          "refinement_difference": null
+        },
+        {
+          "file": "zero_drift.level_1.json",
+          "grid": {
+            "dt": 0.01,
+            "dx": 0.02
+          },
+          "probe_error": 0.0030583772035239487,
+          "refinement_difference": 0.0012126786732754857
+        },
+        {
+          "file": "zero_drift.level_2.json",
+          "grid": {
+            "dt": 0.005,
+            "dx": 0.01
+          },
+          "probe_error": 0.001537192624698619,
+          "refinement_difference": 0.0004940180659980392
+        }
+      ],
+      "independent_audits": {
+        "same_policy_quadrature_order_difference": 1.27675647831893e-15,
+        "fixed_policy_space_time_refinement_difference": 0.0006969729374445288,
+        "order16_diagnostics": {
+          "mass_defect_max": 1.0325074129013956e-14,
+          "lower_tail_mass_max": 0.3766581119656993,
+          "negative_weight_mass_max": 0.0,
+          "cached_matrices_limit": 8,
+          "quadrature_order": 16,
+          "dt": 0.005,
+          "dx": 0.01,
+          "lower_truncation_value_bound": 9.898584729476048e-09,
+          "projection": "linear state interpolation and linear past reset-value time interpolation",
+          "row_normalization": false
+        },
+        "refined_diagnostics": {
+          "mass_defect_max": 1.554312234475219e-14,
+          "lower_tail_mass_max": 0.4120704478709598,
+          "negative_weight_mass_max": 0.0,
+          "cached_matrices_limit": 8,
+          "quadrature_order": 16,
+          "dt": 0.0025,
+          "dx": 0.005,
+          "lower_truncation_value_bound": 9.968389875510605e-09,
+          "projection": "linear state interpolation and linear past reset-value time interpolation",
+          "row_normalization": false
+        },
+        "refined_probe_values": [
+          4.057267677925854e-07,
+          0.0051423742439330265,
+          0.056061970802710796,
+          0.30000000000000004,
+          0.6,
+          0.8115124735378855,
+          8.271441614134035e-05,
+          0.016557807582131566,
+          0.07810245464023788,
+          0.30175740467339984,
+          0.6,
+          0.8115124735378855,
+          0.0017160930441894669,
+          0.038149006395861565,
+          0.10734181860657821,
+          0.31017445048466563,
+          0.6000794711374943,
+          0.8115919446753798,
+          0.010625209812406717,
+          0.07094621146180774,
+          0.14407255033922275,
+          0.32847802683536,
+          0.6053193291135461,
+          0.8168318026514316,
+          0.02202036105414334,
+          0.09470210062946792,
+          0.16878279642255636,
+          0.34549334937519954,
+          0.6156191018923198,
+          0.8271315754302053,
+          2.745929518549726e-18,
+          3.593474619009168e-06,
+          0.0008207831889059589,
+          0.008549070256043241,
+          0.019629249045750172,
+          0.0,
+          0.0,
+          7.947113749425026e-05,
+          0.005319329113546173,
+          0.015619101892319829
+        ],
+        "no_policy_reoptimization": true
+      }
+    },
+    {
+      "name": "negative_drift",
+      "spec": {
+        "mu": -0.12,
+        "sigma": 0.45,
+        "reset": 0.0,
+        "refractory": 0.2,
+        "discount": 0.2,
+        "spike_cost": 0.6
+      },
+      "levels": [
+        {
+          "file": "negative_drift.level_0.json",
+          "grid": {
+            "dt": 0.02,
+            "dx": 0.04
+          },
+          "probe_error": 0.0057168107119594525,
+          "refinement_difference": null
+        },
+        {
+          "file": "negative_drift.level_1.json",
+          "grid": {
+            "dt": 0.01,
+            "dx": 0.02
+          },
+          "probe_error": 0.0029138342676351403,
+          "refinement_difference": 0.0012597387392380213
+        },
+        {
+          "file": "negative_drift.level_2.json",
+          "grid": {
+            "dt": 0.005,
+            "dx": 0.01
+          },
+          "probe_error": 0.0014662891319660865,
+          "refinement_difference": 0.0005334993634911259
+        }
+      ],
+      "independent_audits": {
+        "same_policy_quadrature_order_difference": 8.049116928532385e-16,
+        "fixed_policy_space_time_refinement_difference": 0.0006744270125331187,
+        "order16_diagnostics": {
+          "mass_defect_max": 1.1213252548714081e-14,
+          "lower_tail_mass_max": 0.3838390109860049,
+          "negative_weight_mass_max": 0.0,
+          "cached_matrices_limit": 8,
+          "quadrature_order": 16,
+          "dt": 0.005,
+          "dx": 0.01,
+          "lower_truncation_value_bound": 9.864569964473572e-09,
+          "projection": "linear state interpolation and linear past reset-value time interpolation",
+          "row_normalization": false
+        },
+        "refined_diagnostics": {
+          "mass_defect_max": 1.554312234475219e-14,
+          "lower_tail_mass_max": 0.4172674891053746,
+          "negative_weight_mass_max": 0.0,
+          "cached_matrices_limit": 8,
+          "quadrature_order": 16,
+          "dt": 0.0025,
+          "dx": 0.005,
+          "lower_truncation_value_bound": 9.96958444076982e-09,
+          "projection": "linear state interpolation and linear past reset-value time interpolation",
+          "row_normalization": false
+        },
+        "refined_probe_values": [
+          2.7506957331942494e-07,
+          0.004303272962036712,
+          0.051341400299485314,
+          0.29999999999999993,
+          0.572172260574025,
+          0.6,
+          5.4680477045740595e-05,
+          0.01341836239614709,
+          0.06925495462458219,
+          0.29999999999999993,
+          0.572172260574025,
+          0.6,
+          0.0010895901333416507,
+          0.029568356471591086,
+          0.09124447611544505,
+          0.3004727894314845,
+          0.5722247969988984,
+          0.6000525364248733,
+          0.006356812036012887,
+          0.05190761606204602,
+          0.11626534150428135,
+          0.3072389643662954,
+          0.5754421543531872,
+          0.6032698937791622,
+          0.012611636859924308,
+          0.06668897750927241,
+          0.1317722807636482,
+          0.3156510890200333,
+          0.5813015110533402,
+          0.6091292504793151,
+          1.907824647249575e-18,
+          2.41843965163976e-06,
+          0.0005282656314410517,
+          0.00516301884895735,
+          0.011322532389205595,
+          0.0,
+          0.0,
+          5.253642487335859e-05,
+          0.003269893779162187,
+          0.009129250479315149
+        ],
+        "no_policy_reoptimization": true
+      }
+    },
+    {
+      "name": "reset_at_cost",
+      "spec": {
+        "mu": 0.12,
+        "sigma": 0.45,
+        "reset": 0.6,
+        "refractory": 0.2,
+        "discount": 0.2,
+        "spike_cost": 0.6
+      },
+      "levels": [
+        {
+          "file": "reset_at_cost.level_0.json",
+          "grid": {
+            "dt": 0.02,
+            "dx": 0.04
+          },
+          "probe_error": 0.007835280631067365,
+          "refinement_difference": null
+        },
+        {
+          "file": "reset_at_cost.level_1.json",
+          "grid": {
+            "dt": 0.01,
+            "dx": 0.02
+          },
+          "probe_error": 0.003981263709275817,
+          "refinement_difference": 0.0029288027371878016
+        },
+        {
+          "file": "reset_at_cost.level_2.json",
+          "grid": {
+            "dt": 0.005,
+            "dx": 0.01
+          },
+          "probe_error": 0.0020058009101365237,
+          "refinement_difference": 0.001010656980356156
+        }
+      ],
+      "independent_audits": {
+        "same_policy_quadrature_order_difference": 2.3314683517128287e-15,
+        "fixed_policy_space_time_refinement_difference": 0.0008983972380301464,
+        "order16_diagnostics": {
+          "mass_defect_max": 2.098321516541546e-14,
+          "lower_tail_mass_max": 0.3695196393320056,
+          "negative_weight_mass_max": 0.0,
+          "cached_matrices_limit": 8,
+          "quadrature_order": 16,
+          "dt": 0.005,
+          "dx": 0.01,
+          "lower_truncation_value_bound": 9.995286615503315e-09,
+          "projection": "linear state interpolation and linear past reset-value time interpolation",
+          "row_normalization": false
+        },
+        "refined_diagnostics": {
+          "mass_defect_max": 3.064215547965432e-14,
+          "lower_tail_mass_max": 0.4068887822595626,
+          "negative_weight_mass_max": 0.0,
+          "cached_matrices_limit": 8,
+          "quadrature_order": 16,
+          "dt": 0.0025,
+          "dx": 0.005,
+          "lower_truncation_value_bound": 9.995286615503315e-09,
+          "projection": "linear state interpolation and linear past reset-value time interpolation",
+          "row_normalization": false
+        },
+        "refined_probe_values": [
+          5.958728882435814e-07,
+          0.006163876335180583,
+          0.061947321039477185,
+          0.30654237605763673,
+          0.6005458514757722,
+          1.1721722605740252,
+          0.00012453098386105597,
+          0.020555125130058402,
+          0.08952607943235237,
+          0.3158408677853538,
+          0.6015178287441799,
+          1.1721722605740252,
+          0.0026849931583019407,
+          0.05001916943810801,
+          0.13405336242554838,
+          0.3860157116473161,
+          0.6860157116473161,
+          1.2581879722213414,
+          0.018126280518891147,
+          0.10785051513063502,
+          0.2118801397560951,
+          0.46835522982900446,
+          0.7683552298290045,
+          1.3405274904030298,
+          0.04156726916777211,
+          0.16101185067808832,
+          0.2758851693790054,
+          0.5356379145738905,
+          0.8356379145738906,
+          1.4078101751479157,
+          0.030640233914608097,
+          0.06931444657488478,
+          0.11591254700777415,
+          0.19600986247835275,
+          0.26115297071291976,
+          0.0,
+          0.0,
+          0.08601571164731617,
+          0.16835522982900447,
+          0.23563791457389055
+        ],
+        "no_policy_reoptimization": true
+      }
+    }
+  ],
+  "gates": [
+    {
+      "name": "positive_drift.level0.lcp_residual",
+      "observed": 7.771561172376096e-16,
+      "limit": 5e-10,
+      "passed": true
+    },
+    {
+      "name": "positive_drift.level0.raw_killed_mass",
+      "observed": 6.439293542825908e-15,
+      "limit": 2e-09,
+      "passed": true
+    },
+    {
+      "name": "positive_drift.level0.negative_weights",
+      "observed": 0.0,
+      "limit": 0.0,
+      "passed": true
+    },
+    {
+      "name": "positive_drift.level0.lower_truncation",
+      "observed": 9.946810528831698e-09,
+      "limit": 1.000000000001e-08,
+      "passed": true
+    },
+    {
+      "name": "positive_drift.level0.single_stop_upper_bound",
+      "observed": -0.31217226057402514,
+      "limit": 0.040000000001,
+      "passed": true
+    },
+    {
+      "name": "positive_drift.level0.expiry_boundary",
+      "observed": 0.040000000000000036,
+      "limit": 0.27091883092036784,
+      "passed": true
+    },
+    {
+      "name": "positive_drift.level1.lcp_residual",
+      "observed": 1.3322676295501878e-15,
+      "limit": 5e-10,
+      "passed": true
+    },
+    {
+      "name": "positive_drift.level1.raw_killed_mass",
+      "observed": 9.547918011776346e-15,
+      "limit": 2e-09,
+      "passed": true
+    },
+    {
+      "name": "positive_drift.level1.negative_weights",
+      "observed": 0.0,
+      "limit": 0.0,
+      "passed": true
+    },
+    {
+      "name": "positive_drift.level1.lower_truncation",
+      "observed": 9.946810528831698e-09,
+      "limit": 1.000000000001e-08,
+      "passed": true
+    },
+    {
+      "name": "positive_drift.level1.single_stop_upper_bound",
+      "observed": -0.2921722605740251,
+      "limit": 0.020000000001,
+      "passed": true
+    },
+    {
+      "name": "positive_drift.level1.expiry_boundary",
+      "observed": 0.040000000000000036,
+      "limit": 0.17500000000000002,
+      "passed": true
+    },
+    {
+      "name": "positive_drift.level2.lcp_residual",
+      "observed": 2.6645352591003757e-15,
+      "limit": 5e-10,
+      "passed": true
+    },
+    {
+      "name": "positive_drift.level2.raw_killed_mass",
+      "observed": 1.942890293094024e-14,
+      "limit": 2e-09,
+      "passed": true
+    },
+    {
+      "name": "positive_drift.level2.negative_weights",
+      "observed": 0.0,
+      "limit": 0.0,
+      "passed": true
+    },
+    {
+      "name": "positive_drift.level2.lower_truncation",
+      "observed": 9.946810528831698e-09,
+      "limit": 1.000000000001e-08,
+      "passed": true
+    },
+    {
+      "name": "positive_drift.level2.single_stop_upper_bound",
+      "observed": -0.2921722605740251,
+      "limit": 0.010000000001,
+      "passed": true
+    },
+    {
+      "name": "positive_drift.level2.expiry_boundary",
+      "observed": 0.020000000000000018,
+      "limit": 0.11545941546018393,
+      "passed": true
+    },
+    {
+      "name": "positive_drift.finest_lcp_vs_policy",
+      "observed": 0.0014514954044089479,
+      "limit": 0.006,
+      "passed": true
+    },
+    {
+      "name": "positive_drift.last_lcp_refinement",
+      "observed": 0.000482388812954794,
+      "limit": 0.004,
+      "passed": true
+    },
+    {
+      "name": "positive_drift.quadrature_order",
+      "observed": 5.384581669432009e-15,
+      "limit": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "positive_drift.fixed_policy_refinement",
+      "observed": 0.0006443542056612239,
+      "limit": 0.002,
+      "passed": true
+    },
+    {
+      "name": "positive_drift.refined_mass",
+      "observed": 3.097522238704187e-14,
+      "limit": 2e-09,
+      "passed": true
+    },
+    {
+      "name": "zero_drift.level0.lcp_residual",
+      "observed": 3.885780586188048e-16,
+      "limit": 5e-10,
+      "passed": true
+    },
+    {
+      "name": "zero_drift.level0.raw_killed_mass",
+      "observed": 4.218847493575595e-15,
+      "limit": 2e-09,
+      "passed": true
+    },
+    {
+      "name": "zero_drift.level0.negative_weights",
+      "observed": 0.0,
+      "limit": 0.0,
+      "passed": true
+    },
+    {
+      "name": "zero_drift.level0.lower_truncation",
+      "observed": 9.489900123450252e-09,
+      "limit": 1.000000000001e-08,
+      "passed": true
+    },
+    {
+      "name": "zero_drift.level0.single_stop_upper_bound",
+      "observed": -0.19151247353788525,
+      "limit": 0.040000000001,
+      "passed": true
+    },
+    {
+      "name": "zero_drift.level0.expiry_boundary",
+      "observed": 0.20000000000000007,
+      "limit": 0.27091883092036784,
+      "passed": true
+    },
+    {
+      "name": "zero_drift.level1.lcp_residual",
+      "observed": 1.1102230246251565e-15,
+      "limit": 5e-10,
+      "passed": true
+    },
+    {
+      "name": "zero_drift.level1.raw_killed_mass",
+      "observed": 7.105427357601002e-15,
+      "limit": 2e-09,
+      "passed": true
+    },
+    {
+      "name": "zero_drift.level1.negative_weights",
+      "observed": 0.0,
+      "limit": 0.0,
+      "passed": true
+    },
+    {
+      "name": "zero_drift.level1.lower_truncation",
+      "observed": 9.760437477396155e-09,
+      "limit": 1.000000000001e-08,
+      "passed": true
+    },
+    {
+      "name": "zero_drift.level1.single_stop_upper_bound",
+      "observed": -0.19151247353788525,
+      "limit": 0.020000000001,
+      "passed": true
+    },
+    {
+      "name": "zero_drift.level1.expiry_boundary",
+      "observed": 0.16000000000000003,
+      "limit": 0.17500000000000002,
+      "passed": true
+    },
+    {
+      "name": "zero_drift.level2.lcp_residual",
+      "observed": 1.9984014443252818e-15,
+      "limit": 5e-10,
+      "passed": true
+    },
+    {
+      "name": "zero_drift.level2.raw_killed_mass",
+      "observed": 1.0325074129013956e-14,
+      "limit": 2e-09,
+      "passed": true
+    },
+    {
+      "name": "zero_drift.level2.negative_weights",
+      "observed": 0.0,
+      "limit": 0.0,
+      "passed": true
+    },
+    {
+      "name": "zero_drift.level2.lower_truncation",
+      "observed": 9.898584729476048e-09,
+      "limit": 1.000000000001e-08,
+      "passed": true
+    },
+    {
+      "name": "zero_drift.level2.single_stop_upper_bound",
+      "observed": -0.19151247353788525,
+      "limit": 0.010000000001,
+      "passed": true
+    },
+    {
+      "name": "zero_drift.level2.expiry_boundary",
+      "observed": 0.12,
+      "limit": 0.11545941546018393,
+      "passed": false
+    },
+    {
+      "name": "zero_drift.finest_lcp_vs_policy",
+      "observed": 0.001537192624698619,
+      "limit": 0.006,
+      "passed": true
+    },
+    {
+      "name": "zero_drift.last_lcp_refinement",
+      "observed": 0.0004940180659980392,
+      "limit": 0.004,
+      "passed": true
+    },
+    {
+      "name": "zero_drift.quadrature_order",
+      "observed": 1.27675647831893e-15,
+      "limit": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "zero_drift.fixed_policy_refinement",
+      "observed": 0.0006969729374445288,
+      "limit": 0.002,
+      "passed": true
+    },
+    {
+      "name": "zero_drift.refined_mass",
+      "observed": 1.554312234475219e-14,
+      "limit": 2e-09,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.level0.lcp_residual",
+      "observed": 2.7755575615628914e-16,
+      "limit": 5e-10,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.level0.raw_killed_mass",
+      "observed": 3.6637359812630166e-15,
+      "limit": 2e-09,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.level0.negative_weights",
+      "observed": 0.0,
+      "limit": 0.0,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.level0.lower_truncation",
+      "observed": 9.257309100409404e-09,
+      "limit": 1.000000000001e-08,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.level0.single_stop_upper_bound",
+      "observed": -0.11217226057402496,
+      "limit": 0.040000000001,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.level0.expiry_boundary",
+      "observed": 0.12,
+      "limit": 0.27091883092036784,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.level1.lcp_residual",
+      "observed": 6.661338147750939e-16,
+      "limit": 5e-10,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.level1.raw_killed_mass",
+      "observed": 7.216449660063518e-15,
+      "limit": 2e-09,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.level1.negative_weights",
+      "observed": 0.0,
+      "limit": 0.0,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.level1.lower_truncation",
+      "observed": 9.657847865560498e-09,
+      "limit": 1.000000000001e-08,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.level1.single_stop_upper_bound",
+      "observed": -0.09217226057402494,
+      "limit": 0.020000000001,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.level1.expiry_boundary",
+      "observed": 0.10000000000000009,
+      "limit": 0.17500000000000002,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.level2.lcp_residual",
+      "observed": 1.3877787807814457e-15,
+      "limit": 5e-10,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.level2.raw_killed_mass",
+      "observed": 1.0769163338864018e-14,
+      "limit": 2e-09,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.level2.negative_weights",
+      "observed": 0.0,
+      "limit": 0.0,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.level2.lower_truncation",
+      "observed": 9.864569964473572e-09,
+      "limit": 1.000000000001e-08,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.level2.single_stop_upper_bound",
+      "observed": -0.09217226057402494,
+      "limit": 0.010000000001,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.level2.expiry_boundary",
+      "observed": 0.08000000000000007,
+      "limit": 0.11545941546018393,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.finest_lcp_vs_policy",
+      "observed": 0.0014662891319660865,
+      "limit": 0.006,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.last_lcp_refinement",
+      "observed": 0.0005334993634911259,
+      "limit": 0.004,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.quadrature_order",
+      "observed": 8.049116928532385e-16,
+      "limit": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.fixed_policy_refinement",
+      "observed": 0.0006744270125331187,
+      "limit": 0.002,
+      "passed": true
+    },
+    {
+      "name": "negative_drift.refined_mass",
+      "observed": 1.554312234475219e-14,
+      "limit": 2e-09,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.level0.lcp_residual",
+      "observed": 4.996003610813204e-16,
+      "limit": 5e-10,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.level0.raw_killed_mass",
+      "observed": 1.2656542480726785e-14,
+      "limit": 2e-09,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.level0.negative_weights",
+      "observed": 0.0,
+      "limit": 0.0,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.level0.lower_truncation",
+      "observed": 9.902495379964293e-09,
+      "limit": 1.000000000001e-08,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.level0.single_stop_upper_bound",
+      "observed": -0.3521722605740254,
+      "limit": 0.040000000001,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.level0.expiry_boundary",
+      "observed": 0.040000000000000036,
+      "limit": 0.27091883092036784,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.level1.lcp_residual",
+      "observed": 1.2212453270876722e-15,
+      "limit": 5e-10,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.level1.raw_killed_mass",
+      "observed": 9.769962616701378e-15,
+      "limit": 2e-09,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.level1.negative_weights",
+      "observed": 0.0,
+      "limit": 0.0,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.level1.lower_truncation",
+      "observed": 9.902495379964293e-09,
+      "limit": 1.000000000001e-08,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.level1.single_stop_upper_bound",
+      "observed": -0.3521722605740254,
+      "limit": 0.020000000001,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.level1.expiry_boundary",
+      "observed": 0.040000000000000036,
+      "limit": 0.17500000000000002,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.level2.lcp_residual",
+      "observed": 2.3314683517128287e-15,
+      "limit": 5e-10,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.level2.raw_killed_mass",
+      "observed": 2.1760371282653068e-14,
+      "limit": 2e-09,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.level2.negative_weights",
+      "observed": 0.0,
+      "limit": 0.0,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.level2.lower_truncation",
+      "observed": 9.995286615503315e-09,
+      "limit": 1.000000000001e-08,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.level2.single_stop_upper_bound",
+      "observed": -0.3521722605740254,
+      "limit": 0.010000000001,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.level2.expiry_boundary",
+      "observed": 0.020000000000000018,
+      "limit": 0.11545941546018393,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.finest_lcp_vs_policy",
+      "observed": 0.0020058009101365237,
+      "limit": 0.006,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.last_lcp_refinement",
+      "observed": 0.001010656980356156,
+      "limit": 0.004,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.quadrature_order",
+      "observed": 2.3314683517128287e-15,
+      "limit": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.fixed_policy_refinement",
+      "observed": 0.0008983972380301464,
+      "limit": 0.002,
+      "passed": true
+    },
+    {
+      "name": "reset_at_cost.refined_mass",
+      "observed": 3.064215547965432e-14,
+      "limit": 2e-09,
+      "passed": true
+    }
+  ],
+  "scope": "Deterministic scalar numerical validation; no training, heldout reuse, network optimality or certified continuous optimality gap.",
+  "seconds": 181.30822282200006
+}

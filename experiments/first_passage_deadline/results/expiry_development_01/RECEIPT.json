@@ -1,0 +1,21 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "experiments/first_passage_deadline/tests",
+    "-p",
+    "test_expiry.py",
+    "-v"
+  ],
+  "exit_code": 0,
+  "seconds": 1.9858417679997729,
+  "log_sha256": "391cf8b5b3f9857d6a93048bdbc8644253488d5a049553ca15a177ee97628178",
+  "source_sha256": {
+    "experiments/first_passage_deadline/expiry.py": "8357fb05e6451291f7aa166abac48b7dacdb6ef2630f460e00a3cc2346a3b84e",
+    "experiments/first_passage_deadline/tests/test_expiry.py": "e8f6865154b6809b41fda862716db14ab904041b15384775fe4693f8f139bc8a",
+    "experiments/first_passage_deadline/EXPIRY_DIAGNOSTIC_PROTOCOL.json": "013c804281e19095bf23e95ec13ba72ba5b8e8aeb6c9e267302b65c2b6f61156"
+  }
+}

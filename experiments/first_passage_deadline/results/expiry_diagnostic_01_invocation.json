@@ -1,0 +1,20 @@
+{
+  "command": [
+    "python3",
+    "-u",
+    "-m",
+    "experiments.first_passage_deadline.validate_expiry",
+    "--output",
+    "experiments/first_passage_deadline/results/expiry_diagnostic_01"
+  ],
+  "cwd": "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci",
+  "thread_environment": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "status": "passed",
+  "exit_code": 0,
+  "seconds": 1.814256697000019,
+  "log_sha256": "4280c7310cee462946f9a2c2a180325bee00c653493834edf2d9f5172d676620"
+}

@@ -1,0 +1,469 @@
+{
+  "schema": "hepta.multilayer-independent-audit.v1",
+  "status": "completed_read_only_audit_of_existing_negative_confirmation",
+  "executive_summary_zh": "在冻结的 3 任务、3 训练种子和 55 参数预算下，多层解析首达网络完成了联合训练，但 6 项优势门槛均未通过。顺序任务对两种基线、延迟匹配对 RNN 的损失差均在全部 3 个种子上为负。研究可以以有边界的负结果完成；跨任务优势本身仍未实现，不能靠改门槛、改损失口径或反复确认来宣称闭合。",
+  "scope": {
+    "new_training": false,
+    "new_model_execution": false,
+    "new_example_generation": false,
+    "new_hypothesis_tests": false,
+    "original_sources_models_protocols_results_modified": false,
+    "operation": "Read frozen source and receipts; verify hashes; recompute the original descriptive statistics and original named bootstrap from retained confirmation arrays.",
+    "fresh_research_execution_authorized_by_this_file": false
+  },
+  "integrity": {
+    "original_four_frozen_sources_match": true,
+    "frozen_fit_files_match": 27,
+    "confirmation_records_and_retained_arrays": "All 27 confirmation records agree with their checkpoint/freeze identities; retained loss/correct/probability arrays have 8 by 256 shape and reproduce recorded example means.",
+    "bootstrap": "Reproduced the original 4000 replicates, RNG seed 2026102907, original task/baseline order, seed-cluster then paired-complete-example resampling. Stochastic repetitions remain within an example.",
+    "maximum_interval_reproduction_error": 2.220446049250313e-16,
+    "sources": [
+      "experiments/first_passage_operator/NETWORK_PROTOCOL.json",
+      "experiments/first_passage_operator/network.py",
+      "experiments/first_passage_operator/train_network.py",
+      "experiments/first_passage_operator/tasks.py",
+      "experiments/first_passage_operator/tests/test_network.py",
+      "experiments/first_passage_operator/NETWORK_DIAGNOSTIC_PROTOCOL.json",
+      "experiments/first_passage_operator/diagnose_network.py",
+      "experiments/first_passage_operator/network_evidence/DIAGNOSTIC_SUMMARY.json",
+      "experiments/first_passage_operator/network_evidence/CONFIRMATION_SUMMARY.json",
+      "experiments/first_passage_operator/network_evidence/DEVELOPMENT_SUMMARY.json",
+      "experiments/first_passage_operator/network_evidence/NUMERICAL_VALIDATION.json",
+      "experiments/first_passage_operator/ci_evidence/recovery/value/network_readonly_audit/STATISTICS.json"
+    ]
+  },
+  "primary_result": {
+    "estimand": "baseline expected single-rollout binary cross entropy minus first-passage expected single-rollout binary cross entropy; natural logarithms; larger favors first passage",
+    "confirmation_design": "256 fresh examples per task and training seed, 8 trajectories per stochastic model/example; all 3 frozen seeds retained",
+    "registered_gate": "Each adjusted empirical lower endpoint must exceed 0.005 and every seed mean must be positive; all six comparisons required for the cross-task claim.",
+    "passed": 0,
+    "total": 6,
+    "comparisons": [
+      {
+        "task": "evidence",
+        "baseline": "lif",
+        "mean_improvement": 0.01128492204044374,
+        "seed_means": [
+          0.027697217411309653,
+          -0.002192331367271023,
+          0.008349880077292588
+        ],
+        "empirical_interval": [
+          -0.007392013051299321,
+          0.03034278926719782
+        ],
+        "passes": false,
+        "reproduction_error": 2.6020852139652106e-18
+      },
+      {
+        "task": "evidence",
+        "baseline": "rnn",
+        "mean_improvement": 0.010424738440012295,
+        "seed_means": [
+          0.009283315693608678,
+          -0.009287916097424386,
+          0.031278815723852604
+        ],
+        "empirical_interval": [
+          -0.017165660337041085,
+          0.055773855817119584
+        ],
+        "passes": false,
+        "reproduction_error": 0.0
+      },
+      {
+        "task": "order",
+        "baseline": "lif",
+        "mean_improvement": -0.5243091546509286,
+        "seed_means": [
+          -0.4737345548865124,
+          -0.6499375484173837,
+          -0.44925536064888966
+        ],
+        "empirical_interval": [
+          -0.6532761008150437,
+          -0.43728603255198184
+        ],
+        "passes": false,
+        "reproduction_error": 0.0
+      },
+      {
+        "task": "order",
+        "baseline": "rnn",
+        "mean_improvement": -0.5374816324344277,
+        "seed_means": [
+          -0.4825833709208318,
+          -0.6643245221840477,
+          -0.46553700419840377
+        ],
+        "empirical_interval": [
+          -0.6673179830802789,
+          -0.45764925188787653
+        ],
+        "passes": false,
+        "reproduction_error": 2.220446049250313e-16
+      },
+      {
+        "task": "delayed_match",
+        "baseline": "lif",
+        "mean_improvement": 0.0011872220529329008,
+        "seed_means": [
+          0.002057838149594928,
+          0.00013228100878559697,
+          0.001371547000418178
+        ],
+        "empirical_interval": [
+          -0.0034925663923680264,
+          0.005466883580928659
+        ],
+        "passes": false,
+        "reproduction_error": 6.071532165918825e-18
+      },
+      {
+        "task": "delayed_match",
+        "baseline": "rnn",
+        "mean_improvement": -0.27819177363529374,
+        "seed_means": [
+          -0.2921736854727257,
+          -0.24616842483964027,
+          -0.2962332105935152
+        ],
+        "empirical_interval": [
+          -0.3136595781736483,
+          -0.22976512131071206
+        ],
+        "passes": false,
+        "reproduction_error": 0.0
+      }
+    ],
+    "interpretation": "The result is not explained solely by intervals being wide: all three order seed differences against both baselines and all three delayed-match differences against RNN are negative, with their reported empirical intervals entirely below zero. This remains a finite model/task/budget result, not an impossibility theorem.",
+    "uncertainty_limit": "Three seed clusters are insufficient to establish population coverage or universal model-family superiority. The registered bootstrap intervals are empirical summaries.",
+    "source_refs": [
+      "protocol",
+      "confirmation_results",
+      "read_only_reproduction"
+    ]
+  },
+  "information_bottleneck": {
+    "question": "Do the observations establish where useful information is lost?",
+    "observed": [
+      "The pre-confirmation timing amendment makes every label-relevant input reachable by the last second-layer segment; the one-segment transmission delay is explicit. The earlier development attempt is retained. Reachability is not a guarantee of useful memory.",
+      "The probes observe only each layer's final three-dimensional decaying count trace, rather than the complete event history, membrane history, or a mutual-information statistic.",
+      "All recorded order-diagnostic units usually fired. The mean episode count ranges from 1.51953125 to 6.8125; the zero-episode fraction is zero except one unit at 0.015625. A blanket dead-neuron explanation is unsupported.",
+      "Learned trace retention over 1.25 seconds ranges from 0.026712563255271205 to 0.32631379197073335. This is attenuation of one trace state, not a bound on all physical memory or label information.",
+      "Layer-wise mean-feature probe accuracy does not decrease uniformly across layers. The diagnostics do not identify a single causal information bottleneck."
+    ],
+    "probe_results": [
+      {
+        "layers": [
+          {
+            "layer": 0,
+            "mean_trace_probe_accuracy": 0.9453125,
+            "mean_trace_probe_loss": 0.15219297665128134,
+            "single_rollout_probe_accuracy": 0.802734375,
+            "single_rollout_probe_loss": 0.4592540719843351
+          },
+          {
+            "layer": 1,
+            "mean_trace_probe_accuracy": 0.9453125,
+            "mean_trace_probe_loss": 0.14497487405701795,
+            "single_rollout_probe_accuracy": 0.802734375,
+            "single_rollout_probe_loss": 0.7838190858745697
+          }
+        ],
+        "native_ensemble_loss": 0.46957547793576193,
+        "native_single_rollout_loss": 0.5018245408596967,
+        "seed": 3109
+      },
+      {
+        "layers": [
+          {
+            "layer": 0,
+            "mean_trace_probe_accuracy": 0.9296875,
+            "mean_trace_probe_loss": 0.18036734539021254,
+            "single_rollout_probe_accuracy": 0.787109375,
+            "single_rollout_probe_loss": 0.680457528468341
+          },
+          {
+            "layer": 1,
+            "mean_trace_probe_accuracy": 0.75,
+            "mean_trace_probe_loss": 0.5701905506593421,
+            "single_rollout_probe_accuracy": 0.62890625,
+            "single_rollout_probe_loss": 0.7173845732301337
+          }
+        ],
+        "native_ensemble_loss": 0.6717470521229719,
+        "native_single_rollout_loss": 0.6746346962919161,
+        "seed": 3163
+      },
+      {
+        "layers": [
+          {
+            "layer": 0,
+            "mean_trace_probe_accuracy": 0.8046875,
+            "mean_trace_probe_loss": 0.4221079170995279,
+            "single_rollout_probe_accuracy": 0.71484375,
+            "single_rollout_probe_loss": 0.7123618253238759
+          },
+          {
+            "layer": 1,
+            "mean_trace_probe_accuracy": 0.9140625,
+            "mean_trace_probe_loss": 0.21029481718921217,
+            "single_rollout_probe_accuracy": 0.751953125,
+            "single_rollout_probe_loss": 0.9084217295563889
+          }
+        ],
+        "native_ensemble_loss": 0.45793613989434456,
+        "native_single_rollout_loss": 0.5080606131883584,
+        "seed": 3203
+      }
+    ],
+    "objective_mismatch": {
+      "training": "The diagnostic linear heads were fitted to four-trajectory mean features.",
+      "mathematics": "For fixed y and linear score w^T Z+b, convexity gives BCE(y,w^T E[Z]+b) <= E[BCE(y,w^T Z+b)]. For a finite cached set, the same inequality holds between its mean feature and its average loss.",
+      "implication": "Separability after averaging noisy traces can coexist with poor expected single-trajectory loss. Fitting the mean-feature objective can favor coefficients that are overconfident on individual traces.",
+      "observed_second_layer": "For all three seeds, the mean-feature probe has lower development loss than its own single-rollout evaluation, while its single-rollout loss is worse than the native single-rollout head on that diagnostic draw.",
+      "prohibited_conclusion": "The probe has rescued the deployed network or established single-rollout superiority.",
+      "sampling_scope": "Development-only descriptive probes; no confirmation selection or registered superiority gate. Averaging more trajectories consumes additional inference compute."
+    },
+    "conclusion": "The retained traces contain label signal under aggregation, but current evidence does not distinguish noisy representation, insufficient memory, an ill-suited readout, or upstream learning as the unique cause. Additional mechanistic work, if undertaken, must isolate one difference.",
+    "source_refs": [
+      "task_generator",
+      "forward_and_backward",
+      "diagnostic_protocol",
+      "diagnostic_implementation",
+      "diagnostic_results",
+      "read_only_reproduction"
+    ]
+  },
+  "biased_gradient": {
+    "question": "Which derivatives have actually been validated?",
+    "forward_contract": "Continuous first-hit and killed-survivor sampling, reset, and deterministic refractory carry are exact model laws within the declared piecewise-constant segment drives, subject to numerical arithmetic. The delayed count communication is part of the architecture; this is not a continuous coupling model with continuously changing synaptic drives.",
+    "backward_rule": "observed_sample + conditional_moment - stop_gradient(conditional_moment)",
+    "joint_training_evidence": {
+      "fit_count": 27,
+      "active_parameters_changed_per_fit": 55,
+      "updates_per_fit": 320,
+      "all_recorded_groups_have_nonzero_accumulated_gradient": true
+    },
+    "readout_distinction": "Conditional on a sampled trace, the raw readout BCE derivative is the ordinary exact derivative. With a frozen encoder and the usual expectation/interchange conditions, averaging such raw derivatives estimates the head risk gradient without the straight-through approximation. This statement is before whole-model gradient clipping; the actual clipped update need not be unbiased.",
+    "upstream_distinction": "Credit assignment through sampled counts, final voltages and refractory states to earlier layers and dynamics uses the biased conditional-moment surrogate. Exact forward simulation and exact or well-approximated local moments do not establish the derivative of the composed stochastic expected loss.",
+    "local_gradient_check": "The retained test gradchecks a conditional-moment function at one interior input using quadrature order 32. Training uses order 8. It does not gradcheck the end-to-end expected loss.",
+    "recorded_order8_near_boundary_moment_max_errors": {
+      "active": 0.00015100079920754572,
+      "count": 2.6978419498391304e-14,
+      "refractory": 0.00015100079920753184,
+      "voltage": 0.0007550039960375621
+    },
+    "recorded_directional_diagnostics": {
+      "first_passage": {
+        "comparisons": 18,
+        "descriptive_2SE_exceedances": 1,
+        "max_absolute_surrogate_minus_finite": 0.1773923704284756,
+        "max_paired_discrepancy_standard_error": 0.18230273461448346,
+        "note": "Finite-step bias persists, including deterministic RNN; 2SE counts are descriptive, not corrected inference."
+      },
+      "lif": {
+        "comparisons": 18,
+        "descriptive_2SE_exceedances": 11,
+        "max_absolute_surrogate_minus_finite": 0.09698343860957209,
+        "max_paired_discrepancy_standard_error": 0.03654699881699801,
+        "note": "Finite-step bias persists, including deterministic RNN; 2SE counts are descriptive, not corrected inference."
+      },
+      "rnn": {
+        "comparisons": 18,
+        "descriptive_2SE_exceedances": null,
+        "max_absolute_surrogate_minus_finite": 0.00016617163949766978,
+        "max_paired_discrepancy_standard_error": 0.0,
+        "note": "Finite-step bias persists, including deterministic RNN; 2SE counts are descriptive, not corrected inference."
+      }
+    },
+    "directional_diagnostic_limit": "Only 3 random 55-dimensional directions per seed, two finite perturbation scales (0.03 and 0.1), 32 development examples and 64 stochastic repeats were used. Monte Carlo uncertainty, finite-step bias and changing random-number consumption remain. One of 18 first-passage descriptive 2-SE exceedances is neither a proof of unbiasedness nor a reliable upper bound on all gradient error.",
+    "causality_limit": "The diagnostic has no isolated replacement of the upstream estimator at otherwise fixed dynamics and data. It cannot assign the observed task failure solely to gradient bias.",
+    "source_refs": [
+      "protocol",
+      "forward_and_backward",
+      "moment_gradient_test",
+      "numerical_results",
+      "diagnostic_protocol",
+      "diagnostic_results",
+      "read_only_reproduction"
+    ]
+  },
+  "compute_fairness": {
+    "question": "Which resources and functional capabilities were matched?",
+    "matched": "55 active scalar parameters, the same examples and named training seeds, 320 Adam updates per fit, the same learning-rate/clipping budget, and eight scheduled development checkpoints with the same selection criterion.",
+    "not_matched": [
+      "Wall time, arithmetic work, simulation substeps, event count, hardware energy and independently optimized hyperparameter budgets were not equalized.",
+      "The RNN allocates 18 coefficients to within-layer recurrence. The physical networks allocate coefficients to diffusion, threshold, reset, refractory and trace dynamics. Equal parameter count does not imply equal expressive capability.",
+      "The LIF comparator has leak 1 with 20 Euler substeps per segment; the first-passage model is Brownian voltage without that leak inside each segment. The comparison changes dynamics and gradient estimators as well as propagation accuracy.",
+      "Adaptive stochastic samplers consume different random draws; matched seeds do not provide common-Brownian-path coupling across families."
+    ],
+    "performance": [
+      {
+        "task": "evidence",
+        "kind": "first_passage",
+        "mean_loss": 0.03770211684168535,
+        "mean_single_rollout_accuracy": 0.9856770833333334,
+        "mean_ensemble_accuracy": 0.98828125,
+        "mean_confirmation_wall_seconds": 0.7924374856665963
+      },
+      {
+        "task": "evidence",
+        "kind": "lif",
+        "mean_loss": 0.04898703888212908,
+        "mean_single_rollout_accuracy": 0.9871419270833334,
+        "mean_ensemble_accuracy": 0.9869791666666666,
+        "mean_confirmation_wall_seconds": 0.40586845900058205
+      },
+      {
+        "task": "evidence",
+        "kind": "rnn",
+        "mean_loss": 0.04812685528169764,
+        "mean_single_rollout_accuracy": 0.9869791666666666,
+        "mean_ensemble_accuracy": 0.9869791666666666,
+        "mean_confirmation_wall_seconds": 0.008913332332061449
+      },
+      {
+        "task": "order",
+        "kind": "first_passage",
+        "mean_loss": 0.5445145746140608,
+        "mean_single_rollout_accuracy": 0.7433268229166666,
+        "mean_ensemble_accuracy": 0.8450520833333334,
+        "mean_confirmation_wall_seconds": 0.7963020089979788
+      },
+      {
+        "task": "order",
+        "kind": "lif",
+        "mean_loss": 0.020205419963132368,
+        "mean_single_rollout_accuracy": 0.9959309895833334,
+        "mean_ensemble_accuracy": 0.9973958333333334,
+        "mean_confirmation_wall_seconds": 0.4342571759989369
+      },
+      {
+        "task": "order",
+        "kind": "rnn",
+        "mean_loss": 0.007032942179633195,
+        "mean_single_rollout_accuracy": 1.0,
+        "mean_ensemble_accuracy": 1.0,
+        "mean_confirmation_wall_seconds": 0.00844530766820147
+      },
+      {
+        "task": "delayed_match",
+        "kind": "first_passage",
+        "mean_loss": 0.6934168452710542,
+        "mean_single_rollout_accuracy": 0.5126953125,
+        "mean_ensemble_accuracy": 0.4973958333333333,
+        "mean_confirmation_wall_seconds": 0.7797367033344926
+      },
+      {
+        "task": "delayed_match",
+        "kind": "lif",
+        "mean_loss": 0.6946040673239872,
+        "mean_single_rollout_accuracy": 0.5008138020833334,
+        "mean_ensemble_accuracy": 0.5169270833333334,
+        "mean_confirmation_wall_seconds": 0.4276527373343318
+      },
+      {
+        "task": "delayed_match",
+        "kind": "rnn",
+        "mean_loss": 0.41522507163576056,
+        "mean_single_rollout_accuracy": 0.7643229166666666,
+        "mean_ensemble_accuracy": 0.7643229166666666,
+        "mean_confirmation_wall_seconds": 0.012003506999462843
+      }
+    ],
+    "timing_unit": "Each reported confirmation wall-time entry is a mean over the three model seeds, each evaluating 256 examples by 8 repeats. These are recorded execution times, not a controlled latency or energy benchmark. Repeats for the deterministic RNN are redundant.",
+    "development_timing_caution": "DEVELOPMENT_SUMMARY.by_task.*.*.fit_wall_seconds is an aggregate over three fits, not a mean per fit. No mean-training-time claim is made here.",
+    "primary_vs_ensemble": "The primary metric averages losses over individual trajectories. It cannot be replaced after inspection by loss of an averaged prediction or ensemble accuracy; that would change both the estimand and deployed compute.",
+    "conclusion": "This is a valid registered comparison of the implemented models under one shared parameter/update budget. It does not isolate the effect of the analytic propagator, establish compute-optimality, or support an energy or speed advantage.",
+    "source_refs": [
+      "protocol",
+      "forward_and_backward",
+      "fit_and_confirmation",
+      "development_results",
+      "read_only_reproduction"
+    ]
+  },
+  "finite_research_closure": {
+    "can_be_completed": [
+      "The implemented segment/renewal contract and its recorded numerical checks, within their declared scope.",
+      "A trainable multilayer prototype with input weights, dynamics, thresholds, resets, refractory and trace parameters actually participating in training.",
+      "The finite registered comparison, source/model freeze, retained failures, uncertainty report and independent statistics reproduction.",
+      "A negative conclusion for the stated cross-task superiority hypothesis under this exact protocol."
+    ],
+    "not_established": [
+      "Cross-task advantage over the registered LIF and RNN baselines.",
+      "An unbiased end-to-end stochastic gradient or a global optimization certificate for training.",
+      "A globally optimal natural-spike free boundary for a coupled multilayer network. Scalar stationary and finite-deadline QVI results have separate assumptions.",
+      "Latency, energy or compute-budget superiority."
+    ],
+    "NDU_scope": "This classification audit makes no new finding about the separate NDU/action-value experiments. Classification accuracy cannot replace evaluation of realized subsequent net utility under the original recursive-utility contract.",
+    "release_recommendation": "Retain the implementation as an explicitly experimental option with the negative results attached; do not promote it as a generally superior neuron or default replacement on this evidence.",
+    "user_goal_limit": "Completion of a finite research package is not the same as achieving every requested scientific advantage. If an advantage is a mandatory acceptance criterion, that criterion remains unmet.",
+    "stop_rule": "Do not change the old margin, seed set, tasks, loss estimand, parameter/compute accounting or checkpoint selection after confirmation. No repeated confirmation until a favorable result. A future study requires a distinct question, fresh identities and a separately frozen bounded protocol."
+  },
+  "optional_followup": "OPTIONAL_V2_PLAN.json is an unexecuted proposal that isolates the diagnostic mean-feature versus single-rollout-risk objective. It is not needed to complete the negative original study and is not a full-network superiority study.",
+  "source_registry": {
+    "protocol": {
+      "path": "experiments/first_passage_operator/NETWORK_PROTOCOL.json",
+      "bytes": 3498,
+      "sha256": "b2d139a9d1b81e1cbf52906856754fc50b7e0ab3e7f117e0c94736484baffc03"
+    },
+    "forward_and_backward": {
+      "path": "experiments/first_passage_operator/network.py",
+      "bytes": 14405,
+      "sha256": "29710433a7d704ae3d87938495719185c24039551b31b583a165107f75d2ea95"
+    },
+    "fit_and_confirmation": {
+      "path": "experiments/first_passage_operator/train_network.py",
+      "bytes": 13158,
+      "sha256": "d25fd29c2614f94ae206fbbcc8007b5bab1b95a40f82f4c6fe6d90c1874ec50d"
+    },
+    "task_generator": {
+      "path": "experiments/first_passage_operator/tasks.py",
+      "bytes": 1395,
+      "sha256": "79f11d7b23e055da8709972817f5cb62051cb167125dff36af4454dfcb0a81f4"
+    },
+    "moment_gradient_test": {
+      "path": "experiments/first_passage_operator/tests/test_network.py",
+      "bytes": 6022,
+      "sha256": "ba54a4eb9685a5df1ef9cf073a36fbca67c2ec4254322f00f9fedfa2a03db794"
+    },
+    "diagnostic_protocol": {
+      "path": "experiments/first_passage_operator/NETWORK_DIAGNOSTIC_PROTOCOL.json",
+      "bytes": 1806,
+      "sha256": "7c07d973b4798dc843b149675faf5d6ede1e74d75fe3fc370c3aedfdfe93580d"
+    },
+    "diagnostic_implementation": {
+      "path": "experiments/first_passage_operator/diagnose_network.py",
+      "bytes": 8622,
+      "sha256": "5f2f9c89a7bbd3b288e234ff63c8caab4d2a9289a55623f223536c5bb1d18e78"
+    },
+    "diagnostic_results": {
+      "path": "experiments/first_passage_operator/network_evidence/DIAGNOSTIC_SUMMARY.json",
+      "bytes": 3692,
+      "sha256": "e472c91cdf7d05788cd4469fbc00e98e70e8d5bcd395adc6f3e3373cd762d91e"
+    },
+    "confirmation_results": {
+      "path": "experiments/first_passage_operator/network_evidence/CONFIRMATION_SUMMARY.json",
+      "bytes": 2542,
+      "sha256": "17ba32095c0622a3d3c23adc4ab1c9584b1af5d9d52684ae569544808db87ef4"
+    },
+    "development_results": {
+      "path": "experiments/first_passage_operator/network_evidence/DEVELOPMENT_SUMMARY.json",
+      "bytes": 6554,
+      "sha256": "0b4338583688f982a2b36a9f41f6112216bd89082adee2493f0812768994339f"
+    },
+    "numerical_results": {
+      "path": "experiments/first_passage_operator/network_evidence/NUMERICAL_VALIDATION.json",
+      "bytes": 44150,
+      "sha256": "1d7f93d7a7abc489a70f49eba5b6f2f6c5fe58baf9996ac453eb9111dc8da1e9"
+    },
+    "read_only_reproduction": {
+      "path": "experiments/first_passage_operator/ci_evidence/recovery/value/network_readonly_audit/STATISTICS.json",
+      "bytes": 24238,
+      "sha256": "19ddaaf033fb98d3bdfc1bd54c12fdb0b60c0167dcb55e3af5bb9bcb5ba0cb5d"
+    }
+  }
+}
