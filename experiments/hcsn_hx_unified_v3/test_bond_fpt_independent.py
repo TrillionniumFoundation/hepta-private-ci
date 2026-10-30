@@ -111,7 +111,11 @@ class IndependentPassageTests(unittest.TestCase):
     def test_exact_upstream_hx_f_g_and_bond_when_present(self):
         try:
             from .hx import HX, boundary, bond_value, default_probability, discounted_default_factor
-        except ImportError:
+        except ModuleNotFoundError as exc:
+            # Only a genuinely absent optional HX module may skip. Missing
+            # symbols or dependencies in a present HX module must fail.
+            if exc.name != f'{__package__}.hx':
+                raise
             self.skipTest('Exact upstream hx.py not mounted in local reference copy')
         for p in (HX(), HX(sale_fraction=.2), HX(payout=0),
                   HX(sale_fraction=0), HX(maturity=.5,volatility=.36)):
@@ -130,6 +134,53 @@ class IndependentPassageTests(unittest.TestCase):
                     self.assertAlmostEqual(fp.discounted,
                         discounted_default_factor(p,asset,tau,b),delta=3e-9)
                     self.assertAlmostEqual(d,bond_value(p,asset,tau,b),delta=3e-8)
+
+
+class UpstreamImportGuardTests(unittest.TestCase):
+    """Import failure classification only; no numerical oracle is evaluated."""
+
+    def _invoke_with_import_failure(self, failure):
+        import builtins
+        from unittest.mock import patch
+
+        original_import = builtins.__import__
+        def guarded_import(name, globals=None, locals=None, fromlist=(), level=0):
+            if (name == 'hx' and level == 1 and globals is not None
+                    and globals.get('__package__') == __package__):
+                raise failure
+            return original_import(name, globals, locals, fromlist, level)
+
+        case = IndependentPassageTests(
+            'test_exact_upstream_hx_f_g_and_bond_when_present')
+        with patch('builtins.__import__', side_effect=guarded_import):
+            case.test_exact_upstream_hx_f_g_and_bond_when_present()
+
+    def test_absent_exact_upstream_module_is_optional(self):
+        failure = ModuleNotFoundError('No upstream fixture', name=f'{__package__}.hx')
+        with self.assertRaises(unittest.SkipTest) as caught:
+            self._invoke_with_import_failure(failure)
+        self.assertEqual(caught.exception.args,
+                         ('Exact upstream hx.py not mounted in local reference copy',))
+
+    def test_missing_transitive_or_other_module_is_not_optional(self):
+        for name in ('scipy.special', 'other.hx', f'{__package__}.hx_dependency', None):
+            with self.subTest(name=name):
+                failure = ModuleNotFoundError('Dependency unavailable', name=name)
+                with self.assertRaises(ModuleNotFoundError) as caught:
+                    self._invoke_with_import_failure(failure)
+                self.assertIs(caught.exception, failure)
+
+    def test_missing_upstream_symbol_is_not_optional(self):
+        failure = ImportError("cannot import name 'bond_value'", name=f'{__package__}.hx')
+        with self.assertRaises(ImportError) as caught:
+            self._invoke_with_import_failure(failure)
+        self.assertIs(caught.exception, failure)
+
+    def test_unrelated_import_error_is_not_optional(self):
+        failure = ImportError('Upstream initialization failed')
+        with self.assertRaises(ImportError) as caught:
+            self._invoke_with_import_failure(failure)
+        self.assertIs(caught.exception, failure)
 
 
 if __name__=='__main__':
