@@ -53,6 +53,7 @@ jobs:
             /.github/workflows/hcsn-conservative-hosted.yml
       - name: Materialize only the pinned source and bounded data objects
         run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           python3 -m experiments.hcsn_conservative_acceleration_v1.hosted.restore_data --print-sparse-paths > "$RUNNER_TEMP/hcsn-sparse-paths.txt"
           git sparse-checkout set --no-cone --stdin < "$RUNNER_TEMP/hcsn-sparse-paths.txt"
       - name: Check the pinned interpreter and actual cgroup namespace
