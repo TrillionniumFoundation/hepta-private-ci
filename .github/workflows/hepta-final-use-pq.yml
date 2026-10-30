@@ -36,7 +36,7 @@ env:
 
 jobs:
   selected-observation:
-    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'fix/hepta-final-use-mldsa65-v2-20261029'
+    if: github.event.pull_request.head.repo.full_name == github.repository && (github.event.pull_request.head.ref == 'fix/hepta-final-use-mldsa65-v2-20261029' || github.event.pull_request.head.ref == 'fix/hepta-provider-operation-binding-20261030')
     runs-on: ubuntu-24.04-arm
     timeout-minutes: ${{ matrix.phase == 'lock-artifact' && 45 || 120 }}
     strategy:
@@ -111,7 +111,7 @@ jobs:
         shell: bash
         run: |
           python3 scripts/hepta_ci_exec.py --output "$PQ_RECORDS/build-codex.json" --timeout-seconds 5400 -- cargo build --manifest-path codex-rs/Cargo.toml -p codex-cli --bin codex --locked --message-format=json
-      - name: Require core, old host and each of the six new actual host cases
+      - name: Require core, old host and each of the seven actual host cases
         if: matrix.phase == 'native'
         shell: bash
         run: |

@@ -1,0 +1,1702 @@
+{
+  "archives": [
+    {
+      "bytes": 45474,
+      "path": "caller-proof-independent.tar.gz",
+      "sha256": "1dae900fb6bf646de4687ef19d3835500ab091b11decfc4d5529d5bc42b41cc0"
+    },
+    {
+      "bytes": 30501,
+      "path": "caller-proof-local.tar.gz",
+      "sha256": "be6688c667fe3a7b9e1de2e322b298a2ed8a8b2484e202c1849f3cbd15237705"
+    },
+    {
+      "bytes": 141941,
+      "path": "chain-codeql-review.tar.gz",
+      "sha256": "185ff55e5827f1f7adfae6d6b2fa3a3b1c96381612cf1d7c7367e34888b1b694"
+    },
+    {
+      "bytes": 90736,
+      "path": "chain-raw-history.tar.gz",
+      "sha256": "f8e4cc864f96e78f5d9cfaf100ed35659731b815589ea0f149017dbce8f34205"
+    },
+    {
+      "bytes": 317242,
+      "path": "chain-sarif-originals.tar.gz",
+      "sha256": "7507d4e590ffd2999f08e809e9f5738b9f9414cd5260c970d4cb2e06fb8c70fb"
+    },
+    {
+      "bytes": 2103,
+      "path": "final-source-observations.tar.gz",
+      "sha256": "f2ef51ce43e7d2b6fd302baa776d98555d3ef0783e022b30b0161967122ad94a"
+    },
+    {
+      "bytes": 400360,
+      "path": "hosted-hepta-baseline.tar.gz",
+      "sha256": "c04bcf7fdf1fd42d2de3f7b5c915f5fe48dbe5d9d6e4464d0a44d952a4007b8a"
+    },
+    {
+      "bytes": 299883,
+      "path": "latest-readonly-observations.tar.gz",
+      "sha256": "272ecdea4f4ec0a226990b50a7efb7d0902d93a203098b0b61f36abca755ac5e"
+    },
+    {
+      "bytes": 7577,
+      "path": "root-followup-checks.tar.gz",
+      "sha256": "5969b12935bacf08da8a285a0d94ca6f601fc3a0adee86aee48a35b70dbde81d"
+    },
+    {
+      "bytes": 8006,
+      "path": "windows-wrapper-final.tar.gz",
+      "sha256": "6a49c0958e12761d0c28e0d5afded5d888d09ad5020e78c97e4716de2c783a9c"
+    },
+    {
+      "bytes": 6667,
+      "path": "windows-wrapper-history.tar.gz",
+      "sha256": "52884941ba1328ec746ba899e2b86e372508ae332ebb3d162362eb298c84bf4d"
+    }
+  ],
+  "context": {
+    "chain_merge_configured_in_parent": "db139b5ef964509318de12974ed0d0cea7b02737",
+    "chain_observed_source": "24b265834daea34947adbb5903d887e3f6043838",
+    "followup_pair_configuration": {
+      "chain_merge": "52a3c9d614281897dd5a6adeb3576a8acfb1ee82",
+      "chain_source": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+      "scope": "Configuration only; original executions retain their original source/merge IDs, and no successful execution of this new pair is inferred."
+    },
+    "hepta_parent": "f874d948a38c119e57b1368adab79437956acd78",
+    "identity_scope": "Retained observations and parent configuration only; no final-pair or later-HEAD qualification."
+  },
+  "members": [
+    {
+      "archive": "caller-proof-independent.tar.gz",
+      "bytes": 5062,
+      "member": "quantum-review-b23c/caller-proof-independent-final-review.json",
+      "original_observation_fields": {
+        "scope": "Independent static source/policy review and seven retained Python protected-file counterexamples only. No Rust/Bazel build, source edit, publication, runtime signature test or PQ qualification."
+      },
+      "scope": "Independent static review and seven exact retained source-drift counterexamples; no Rust build or runtime/PQ qualification.",
+      "sha256": "1850fdaec80730720f15d1f39fae677edb079a715e1b686f96236ca9fc868a1d",
+      "source": "quantum-review-b23c/caller-proof-independent-final-review.json"
+    },
+    {
+      "archive": "caller-proof-independent.tar.gz",
+      "bytes": 338,
+      "member": "quantum-review-b23c/caller-proof-independent-red/conditional-context-result.json",
+      "original_observation_fields": {
+        "scope": "Python textual contract only, no Rust compile"
+      },
+      "scope": "Independent static review and seven exact retained source-drift counterexamples; no Rust build or runtime/PQ qualification.",
+      "sha256": "decd054d8bb6207430da64f07a02ba2e29803a94b7d4eb86dbee83d8cc93fa8b",
+      "source": "quantum-review-b23c/caller-proof-independent-red/conditional-context-result.json"
+    },
+    {
+      "archive": "caller-proof-independent.tar.gz",
+      "bytes": 8610,
+      "member": "quantum-review-b23c/caller-proof-independent-red/conditional_context.rs",
+      "scope": "Independent static review and seven exact retained source-drift counterexamples; no Rust build or runtime/PQ qualification.",
+      "sha256": "5ee169dbc235525fe45177cd7970ab91e8aebae8207617d5382aed546bb993fe",
+      "source": "quantum-review-b23c/caller-proof-independent-red/conditional_context.rs"
+    },
+    {
+      "archive": "caller-proof-independent.tar.gz",
+      "bytes": 230,
+      "member": "quantum-review-b23c/caller-proof-independent-red/grant-message-result.json",
+      "original_observation_fields": {
+        "scope": "Python textual contract only, no Rust compile"
+      },
+      "scope": "Independent static review and seven exact retained source-drift counterexamples; no Rust build or runtime/PQ qualification.",
+      "sha256": "a486480c9d53f941ade2919a56e8da8416c97dfc5e0a86856c6467368339870b",
+      "source": "quantum-review-b23c/caller-proof-independent-red/grant-message-result.json"
+    },
+    {
+      "archive": "caller-proof-independent.tar.gz",
+      "bytes": 40403,
+      "member": "quantum-review-b23c/caller-proof-independent-red/grant_binding_skip_serializing.rs",
+      "scope": "Independent static review and seven exact retained source-drift counterexamples; no Rust build or runtime/PQ qualification.",
+      "sha256": "f763751ae55fc4a36cf05134cd552162f901865538009bdaf2e0a833eef900c1",
+      "source": "quantum-review-b23c/caller-proof-independent-red/grant_binding_skip_serializing.rs"
+    },
+    {
+      "archive": "caller-proof-independent.tar.gz",
+      "bytes": 8936,
+      "member": "quantum-review-b23c/caller-proof-independent-red/macro_with_qualified_real_impl.rs",
+      "scope": "Independent static review and seven exact retained source-drift counterexamples; no Rust build or runtime/PQ qualification.",
+      "sha256": "c05a7e742934c1bf96847d88c9bc9b5279efbbce5598ddebd6bf8b80d26e2623",
+      "source": "quantum-review-b23c/caller-proof-independent-red/macro_with_qualified_real_impl.rs"
+    },
+    {
+      "archive": "caller-proof-independent.tar.gz",
+      "bytes": 8770,
+      "member": "quantum-review-b23c/caller-proof-independent-red/nested_context_constant.rs",
+      "scope": "Independent static review and seven exact retained source-drift counterexamples; no Rust build or runtime/PQ qualification.",
+      "sha256": "de27388955cf141eac371e0511c75e025c8e9da4c65cb10e9e01d09052510f65",
+      "source": "quantum-review-b23c/caller-proof-independent-red/nested_context_constant.rs"
+    },
+    {
+      "archive": "caller-proof-independent.tar.gz",
+      "bytes": 8629,
+      "member": "quantum-review-b23c/caller-proof-independent-red/nested_import_alias.rs",
+      "scope": "Independent static review and seven exact retained source-drift counterexamples; no Rust build or runtime/PQ qualification.",
+      "sha256": "d0adab7bbab83c7a338a41c86e54796c7af52152e681af6009d08a6d94f26f37",
+      "source": "quantum-review-b23c/caller-proof-independent-red/nested_import_alias.rs"
+    },
+    {
+      "archive": "caller-proof-independent.tar.gz",
+      "bytes": 8590,
+      "member": "quantum-review-b23c/caller-proof-independent-red/nested_key_binding_function.rs",
+      "scope": "Independent static review and seven exact retained source-drift counterexamples; no Rust build or runtime/PQ qualification.",
+      "sha256": "e152b8ff987102c36a4b335778147f3262bebfcc2bce9f39080ae97dcff2c0ee",
+      "source": "quantum-review-b23c/caller-proof-independent-red/nested_key_binding_function.rs"
+    },
+    {
+      "archive": "caller-proof-independent.tar.gz",
+      "bytes": 8726,
+      "member": "quantum-review-b23c/caller-proof-independent-red/nested_other_impl.rs",
+      "scope": "Independent static review and seven exact retained source-drift counterexamples; no Rust build or runtime/PQ qualification.",
+      "sha256": "dd7f967a74a93eb140c9f066a516fb1e7e449afc5aed7d6a1f2e357afaa3b96c",
+      "source": "quantum-review-b23c/caller-proof-independent-red/nested_other_impl.rs"
+    },
+    {
+      "archive": "caller-proof-independent.tar.gz",
+      "bytes": 4616,
+      "member": "quantum-review-b23c/caller-proof-independent-red/reproduce.py",
+      "scope": "Independent static review and seven exact retained source-drift counterexamples; no Rust build or runtime/PQ qualification.",
+      "sha256": "e028b8398cab616f1245005f29471caf4fd8f266118a51076bee07c90e916d8d",
+      "source": "quantum-review-b23c/caller-proof-independent-red/reproduce.py"
+    },
+    {
+      "archive": "caller-proof-independent.tar.gz",
+      "bytes": 1990,
+      "member": "quantum-review-b23c/caller-proof-independent-red/result.json",
+      "original_observation_fields": {
+        "scope": "Independent Python textual gate controls only; no Rust compilation, no product source edit, no production/PQ qualification"
+      },
+      "scope": "Independent static review and seven exact retained source-drift counterexamples; no Rust build or runtime/PQ qualification.",
+      "sha256": "88cef9c2e254e370c6b1716686c494770c905a40e7f534f43bcc41efe2f66d5b",
+      "source": "quantum-review-b23c/caller-proof-independent-red/result.json"
+    },
+    {
+      "archive": "caller-proof-independent.tar.gz",
+      "bytes": 658,
+      "member": "quantum-review-b23c/caller-proof-independent-red/snapshot-hashes.json",
+      "original_observation_fields": {},
+      "scope": "Independent static review and seven exact retained source-drift counterexamples; no Rust build or runtime/PQ qualification.",
+      "sha256": "12d5d5b56d05df9078716e9f113da99dbe3923cfb89d679b48a42884480f23e2",
+      "source": "quantum-review-b23c/caller-proof-independent-red/snapshot-hashes.json"
+    },
+    {
+      "archive": "caller-proof-independent.tar.gz",
+      "bytes": 31799,
+      "member": "quantum-review-b23c/caller-proof-independent-red/snapshot/CALLERS.toml",
+      "scope": "Independent static review and seven exact retained source-drift counterexamples; no Rust build or runtime/PQ qualification.",
+      "sha256": "2553fa4c59d5f46dc49d616a2bff0a9f21a7ae31f6af4d854b9cdae0afa78827",
+      "source": "quantum-review-b23c/caller-proof-independent-red/snapshot/CALLERS.toml"
+    },
+    {
+      "archive": "caller-proof-independent.tar.gz",
+      "bytes": 40372,
+      "member": "quantum-review-b23c/caller-proof-independent-red/snapshot/codex-rs/hepta-contracts/src/final_use.rs",
+      "scope": "Independent static review and seven exact retained source-drift counterexamples; no Rust build or runtime/PQ qualification.",
+      "sha256": "123512d86e7713e7892a22a651b45f05a1eb18ba665d5133644a9b5dcc2a6063",
+      "source": "quantum-review-b23c/caller-proof-independent-red/snapshot/codex-rs/hepta-contracts/src/final_use.rs"
+    },
+    {
+      "archive": "caller-proof-independent.tar.gz",
+      "bytes": 8455,
+      "member": "quantum-review-b23c/caller-proof-independent-red/snapshot/codex-rs/hepta-contracts/src/final_use_ml_dsa65_v2.rs",
+      "scope": "Independent static review and seven exact retained source-drift counterexamples; no Rust build or runtime/PQ qualification.",
+      "sha256": "796d9c15f04f37d0b820b4f2b847e38a8e4ce29b3a230b32cb61aa887e4d6066",
+      "source": "quantum-review-b23c/caller-proof-independent-red/snapshot/codex-rs/hepta-contracts/src/final_use_ml_dsa65_v2.rs"
+    },
+    {
+      "archive": "caller-proof-independent.tar.gz",
+      "bytes": 17745,
+      "member": "quantum-review-b23c/caller-proof-independent-red/snapshot/qa/b4-no-bypass/test_verify_hepta_callers.py",
+      "scope": "Independent static review and seven exact retained source-drift counterexamples; no Rust build or runtime/PQ qualification.",
+      "sha256": "3331469218478826a6a793dd9d1cb4f7ec333a1524188f8f854ef31f97590d18",
+      "source": "quantum-review-b23c/caller-proof-independent-red/snapshot/qa/b4-no-bypass/test_verify_hepta_callers.py"
+    },
+    {
+      "archive": "caller-proof-independent.tar.gz",
+      "bytes": 6893,
+      "member": "quantum-review-b23c/caller-proof-independent-red/snapshot/scripts/hepta_typed_callers.py",
+      "scope": "Independent static review and seven exact retained source-drift counterexamples; no Rust build or runtime/PQ qualification.",
+      "sha256": "a0c5a77a7579e6cb72b8b22039f16c99796dcc95d79f439f1174ccffb87f82a3",
+      "source": "quantum-review-b23c/caller-proof-independent-red/snapshot/scripts/hepta_typed_callers.py"
+    },
+    {
+      "archive": "caller-proof-independent.tar.gz",
+      "bytes": 29587,
+      "member": "quantum-review-b23c/caller-proof-independent-red/snapshot/scripts/verify_hepta_callers.py",
+      "scope": "Independent static review and seven exact retained source-drift counterexamples; no Rust build or runtime/PQ qualification.",
+      "sha256": "e31a604be9241b742953ca70f4203507bb64eaeafda0eceeaacd69b5e4e8249e",
+      "source": "quantum-review-b23c/caller-proof-independent-red/snapshot/scripts/verify_hepta_callers.py"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 1475,
+      "member": "hepta-caller-proof-f874/base-drift-proof.json",
+      "original_observation_fields": {},
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "aa5448bfe0461d54ec881f7f15b7f6585453634a893322503c1f19f8440dfa50",
+      "source": "hepta-caller-proof-f874/base-drift-proof.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 936,
+      "member": "hepta-caller-proof-f874/candidate-b4-final.json",
+      "original_observation_fields": {
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "qa/b4-no-bypass",
+          "-p",
+          "test_*.py",
+          "-v"
+        ],
+        "exit_code": 0,
+        "source_stable": true
+      },
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "5bc08cfdc4f731cd863576c0bd5ceb42bb09b2bc1b3a260fce8114f184a3e0f5",
+      "source": "hepta-caller-proof-f874/candidate-b4-final.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 3889,
+      "member": "hepta-caller-proof-f874/candidate-b4-final.log",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "cb2d927dc3073953783c5f822f5cb110af70a708fbffb811d777c2b46900da87",
+      "source": "hepta-caller-proof-f874/candidate-b4-final.log"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 218,
+      "member": "hepta-caller-proof-f874/candidate-b4-first.json",
+      "original_observation_fields": {
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "qa/b4-no-bypass",
+          "-p",
+          "test_*.py",
+          "-v"
+        ],
+        "exit_code": 0
+      },
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "e60f88ee0f03697704548d4248f63c7b117db5c7d949da916184e3543c66554b",
+      "source": "hepta-caller-proof-f874/candidate-b4-first.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 3529,
+      "member": "hepta-caller-proof-f874/candidate-b4-first.log",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "d0abf716e34768ed3ec2dc4e7c389076db93baea8be687d856867da1438c6023",
+      "source": "hepta-caller-proof-f874/candidate-b4-first.log"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 961,
+      "member": "hepta-caller-proof-f874/candidate-diff-check.json",
+      "original_observation_fields": {
+        "command": [
+          "git",
+          "diff",
+          "--check",
+          "--",
+          "CALLERS.toml",
+          "scripts/verify_hepta_callers.py",
+          "qa/b4-no-bypass/test_verify_hepta_callers.py"
+        ],
+        "exit_code": 0,
+        "source_stable": true
+      },
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "edde89ce7d1d6c90c837d271ecc0107cbc19dc3d8b3169b9958b56cb7894ab5f",
+      "source": "hepta-caller-proof-f874/candidate-diff-check.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 0,
+      "member": "hepta-caller-proof-f874/candidate-diff-check.log",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "hepta-caller-proof-f874/candidate-diff-check.log"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 881,
+      "member": "hepta-caller-proof-f874/candidate-self-test.json",
+      "original_observation_fields": {
+        "command": [
+          "python3",
+          "-B",
+          "scripts/verify_hepta_callers.py",
+          "self-test"
+        ],
+        "exit_code": 0,
+        "source_stable": true
+      },
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "d6f88df4da5f90ef089d559dcf5fa4be5ce6ecd37e17ddf745d6f9487bcf8da9",
+      "source": "hepta-caller-proof-f874/candidate-self-test.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 48,
+      "member": "hepta-caller-proof-f874/candidate-self-test.log",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "source": "hepta-caller-proof-f874/candidate-self-test.log"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 554,
+      "member": "hepta-caller-proof-f874/candidate-source-manifest.json",
+      "original_observation_fields": {},
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "538c8ffdd4348df2acb8e350ddd4d66db760b83affdef1ef4ffb090d80e78f98",
+      "source": "hepta-caller-proof-f874/candidate-source-manifest.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 948,
+      "member": "hepta-caller-proof-f874/candidate-typed-callers.json",
+      "original_observation_fields": {
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "scripts",
+          "-p",
+          "test_hepta_typed_callers.py",
+          "-v"
+        ],
+        "exit_code": 0,
+        "source_stable": true
+      },
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "1af041f41fe5b233166578f363135378896a350de1c9b377cae7e88c5920fdea",
+      "source": "hepta-caller-proof-f874/candidate-typed-callers.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 1797,
+      "member": "hepta-caller-proof-f874/candidate-typed-callers.log",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "1af6e5e61b36bb7bde7732160ba21b3a813eea24fca965ae4ca71ffdd35089fb",
+      "source": "hepta-caller-proof-f874/candidate-typed-callers.log"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 383,
+      "member": "hepta-caller-proof-f874/candidate-v1-nested-decoy-red.json",
+      "original_observation_fields": {
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "qa/b4-no-bypass",
+          "-p",
+          "test_verify_hepta_callers.py",
+          "-k",
+          "nested_items",
+          "-v"
+        ],
+        "exit_code": 1,
+        "source_stable": true
+      },
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "addafd0e66f7fdb55c6652a35bfd532d5421888e50cbfc3809e1f11d0442f6a7",
+      "source": "hepta-caller-proof-f874/candidate-v1-nested-decoy-red.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 5429,
+      "member": "hepta-caller-proof-f874/candidate-v1-nested-decoy-red.log",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "a8614dda62dcf2777080756d2d11bfdb45f87bb457dc22ae542ecb79c793dd66",
+      "source": "hepta-caller-proof-f874/candidate-v1-nested-decoy-red.log"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 265,
+      "member": "hepta-caller-proof-f874/candidate-v2-focused.json",
+      "original_observation_fields": {
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "qa/b4-no-bypass",
+          "-p",
+          "test_verify_hepta_callers.py",
+          "-k",
+          "final_use",
+          "-v"
+        ],
+        "exit_code": 0
+      },
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "3bd22c46ceaaf285e92b4c65c1d9ab41221f7f125a7cd1e5a24f3450ca7cf07a",
+      "source": "hepta-caller-proof-f874/candidate-v2-focused.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 1392,
+      "member": "hepta-caller-proof-f874/candidate-v2-focused.log",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "62cf7f1bc25f34bd836ecc9d48a87470128648f4b04c1c127ca1a1c97158ca13",
+      "source": "hepta-caller-proof-f874/candidate-v2-focused.log"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 264,
+      "member": "hepta-caller-proof-f874/candidate-v3-focused.json",
+      "original_observation_fields": {
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "qa/b4-no-bypass",
+          "-p",
+          "test_verify_hepta_callers.py",
+          "-k",
+          "final_use",
+          "-v"
+        ],
+        "exit_code": 0
+      },
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "58f7310d159b04137cbc8ba1a2a7f563549a1773d0a239fc131de3aacc3eae4b",
+      "source": "hepta-caller-proof-f874/candidate-v3-focused.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 1392,
+      "member": "hepta-caller-proof-f874/candidate-v3-focused.log",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "0421b7e3b6d3230ae5df98e01240a182d460dab15ec51e1349f78ef0b49a8fc4",
+      "source": "hepta-caller-proof-f874/candidate-v3-focused.log"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 32521,
+      "member": "hepta-caller-proof-f874/candidate-v3-source-snapshot/CALLERS.toml",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "c0086102633f801dbe3abc2034eec624c0af6ad771100058db5de8c146898df3",
+      "source": "hepta-caller-proof-f874/candidate-v3-source-snapshot/CALLERS.toml"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 436,
+      "member": "hepta-caller-proof-f874/candidate-v3-source-snapshot/manifest.json",
+      "original_observation_fields": {},
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "cc6a94d2b9b5f56aa8f30eb2747fbf18fdc17233003a2ee0a1e14c9f76ff1d7c",
+      "source": "hepta-caller-proof-f874/candidate-v3-source-snapshot/manifest.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 22359,
+      "member": "hepta-caller-proof-f874/candidate-v3-source-snapshot/qa/b4-no-bypass/test_verify_hepta_callers.py",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "743774bac8939d95183ad8e69ccc02c7c2752cef6d095ca7fb3a1f6d9a7f5606",
+      "source": "hepta-caller-proof-f874/candidate-v3-source-snapshot/qa/b4-no-bypass/test_verify_hepta_callers.py"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 32621,
+      "member": "hepta-caller-proof-f874/candidate-v3-source-snapshot/scripts/verify_hepta_callers.py",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "2fafa18fe3e7eaad5a96bbe77bf22596740de00d1aacd71b7aec76e6fe0f5d41",
+      "source": "hepta-caller-proof-f874/candidate-v3-source-snapshot/scripts/verify_hepta_callers.py"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 999,
+      "member": "hepta-caller-proof-f874/candidate-verify.json",
+      "original_observation_fields": {
+        "command": [
+          "python3",
+          "-B",
+          "scripts/verify_hepta_callers.py",
+          "verify"
+        ],
+        "exit_code": 0,
+        "source_stable": true,
+        "status": "PASS_HEPTA_CALLER_CLOSED_SET"
+      },
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "eda6fa4ba783f72c264274ffd322155c7f8ecca29b3543e3e4433f7a01b4a92d",
+      "source": "hepta-caller-proof-f874/candidate-verify.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 16087,
+      "member": "hepta-caller-proof-f874/candidate-verify.log",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "ac84138b19eabd5f9e98cb11038c8c0402b075a0124c6f8e72609d0f564b6d0e",
+      "source": "hepta-caller-proof-f874/candidate-verify.log"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 277,
+      "member": "hepta-caller-proof-f874/original-b4.json",
+      "original_observation_fields": {
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "qa/b4-no-bypass",
+          "-p",
+          "test_*.py",
+          "-v"
+        ],
+        "exit_code": 0
+      },
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "79234fda4aa4e7846489e684382f1ad2cbb536ba76586d885e0cd5fe362e2cd0",
+      "source": "hepta-caller-proof-f874/original-b4.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 2795,
+      "member": "hepta-caller-proof-f874/original-b4.log",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "7bde4a81ff19a602ac9e21dc8bc9aa16b5a7fd75dde832d90945163ebda90057",
+      "source": "hepta-caller-proof-f874/original-b4.log"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 223,
+      "member": "hepta-caller-proof-f874/original-self-test.json",
+      "original_observation_fields": {
+        "command": [
+          "python3",
+          "-B",
+          "scripts/verify_hepta_callers.py",
+          "self-test"
+        ],
+        "exit_code": 0
+      },
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "7848aac049b1173d02da25f4b911faea2b8ec0ee9f4a4d6cf3935fd0979caa4d",
+      "source": "hepta-caller-proof-f874/original-self-test.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 48,
+      "member": "hepta-caller-proof-f874/original-self-test.log",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "source": "hepta-caller-proof-f874/original-self-test.log"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 1160,
+      "member": "hepta-caller-proof-f874/original-verifier-counterfactual.json",
+      "original_observation_fields": {
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "qa/b4-no-bypass",
+          "-p",
+          "test_verify_hepta_callers.py",
+          "-k",
+          "final_use",
+          "-v"
+        ],
+        "exit_code": 1,
+        "source_stable": true
+      },
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "9b0f0cceeee291d9dccfabb31abc884dfab4f57bcdf1342d01088dcf4dd3867f",
+      "source": "hepta-caller-proof-f874/original-verifier-counterfactual.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 39576,
+      "member": "hepta-caller-proof-f874/original-verifier-counterfactual.log",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "bafdae2427167d8508db90abddff91b1ff3d2c4ae98577d86996c88404e8c303",
+      "source": "hepta-caller-proof-f874/original-verifier-counterfactual.log"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 217,
+      "member": "hepta-caller-proof-f874/original-verify.json",
+      "original_observation_fields": {
+        "command": [
+          "python3",
+          "-B",
+          "scripts/verify_hepta_callers.py",
+          "verify"
+        ],
+        "exit_code": 1
+      },
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "2a569aed7b5c4da9d78aaafaa8125d775bda1d92d153ac9a10cb1b7c5b3a41f6",
+      "source": "hepta-caller-proof-f874/original-verify.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 88,
+      "member": "hepta-caller-proof-f874/original-verify.log",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "aea1b6db9a72e2d79557af4e46a398aac2124b56260ffd6773024df9652c3eb8",
+      "source": "hepta-caller-proof-f874/original-verify.log"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 937,
+      "member": "hepta-caller-proof-f874/source-pin-b4.json",
+      "original_observation_fields": {
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "qa/b4-no-bypass",
+          "-p",
+          "test_*.py",
+          "-v"
+        ],
+        "exit_code": 0,
+        "source_stable": true
+      },
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "f6674372840e52c1ab5b1e2836d97a7fb4caf4567ebb3711fba223d7e6b22a55",
+      "source": "hepta-caller-proof-f874/source-pin-b4.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 3353,
+      "member": "hepta-caller-proof-f874/source-pin-b4.log",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "bd98e45a704b566bf40f0dc78c841c4d7e3252d33cd29d471b59fe4582564e62",
+      "source": "hepta-caller-proof-f874/source-pin-b4.log"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 961,
+      "member": "hepta-caller-proof-f874/source-pin-diff-check.json",
+      "original_observation_fields": {
+        "command": [
+          "git",
+          "diff",
+          "--check",
+          "--",
+          "CALLERS.toml",
+          "scripts/verify_hepta_callers.py",
+          "qa/b4-no-bypass/test_verify_hepta_callers.py"
+        ],
+        "exit_code": 0,
+        "source_stable": true
+      },
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "f85ae35c0361803d20d1f7fc4fed1fabaa4d1f3c5364721fa0aa19c9a25f306d",
+      "source": "hepta-caller-proof-f874/source-pin-diff-check.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 0,
+      "member": "hepta-caller-proof-f874/source-pin-diff-check.log",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "hepta-caller-proof-f874/source-pin-diff-check.log"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 1074,
+      "member": "hepta-caller-proof-f874/source-pin-final-manifest.json",
+      "original_observation_fields": {
+        "scope": "Exact source-byte binding in existing caller proof only; no runtime or cryptographic qualification"
+      },
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "f51ebf8c58b344d98fb6a0cff8d06c05bdf7b545e041351d8a8f03538e45fff6",
+      "source": "hepta-caller-proof-f874/source-pin-final-manifest.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 1155,
+      "member": "hepta-caller-proof-f874/source-pin-original-verifier-counterfactual.json",
+      "original_observation_fields": {
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "qa/b4-no-bypass",
+          "-p",
+          "test_verify_hepta_callers.py",
+          "-k",
+          "pin",
+          "-v"
+        ],
+        "exit_code": 1,
+        "source_stable": true
+      },
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "8695b580f421c25727916ec9019a75fec7e0ceff9a95451afdf9c3505a68751b",
+      "source": "hepta-caller-proof-f874/source-pin-original-verifier-counterfactual.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 20603,
+      "member": "hepta-caller-proof-f874/source-pin-original-verifier-counterfactual.log",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "25e078a77a1335e112e9805e536a356668bd5667024bd5e7e52db16f7054a4ef",
+      "source": "hepta-caller-proof-f874/source-pin-original-verifier-counterfactual.log"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 883,
+      "member": "hepta-caller-proof-f874/source-pin-self-test.json",
+      "original_observation_fields": {
+        "command": [
+          "python3",
+          "-B",
+          "scripts/verify_hepta_callers.py",
+          "self-test"
+        ],
+        "exit_code": 0,
+        "source_stable": true
+      },
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "090735f6aed9018b2a38dadcedafa056c4108369d4885b8163b4e7a0b5c91e66",
+      "source": "hepta-caller-proof-f874/source-pin-self-test.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 48,
+      "member": "hepta-caller-proof-f874/source-pin-self-test.log",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "source": "hepta-caller-proof-f874/source-pin-self-test.log"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 948,
+      "member": "hepta-caller-proof-f874/source-pin-typed-callers.json",
+      "original_observation_fields": {
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "scripts",
+          "-p",
+          "test_hepta_typed_callers.py",
+          "-v"
+        ],
+        "exit_code": 0,
+        "source_stable": true
+      },
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "0fc719172497d1afa944268a8fda54c98a059f0434539570473a38ae438efb62",
+      "source": "hepta-caller-proof-f874/source-pin-typed-callers.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 1797,
+      "member": "hepta-caller-proof-f874/source-pin-typed-callers.log",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "39a9aa4b0513659165519acc3e4620b60ea1bffaaada2795f2aed42eaf8a8b30",
+      "source": "hepta-caller-proof-f874/source-pin-typed-callers.log"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 998,
+      "member": "hepta-caller-proof-f874/source-pin-verify.json",
+      "original_observation_fields": {
+        "command": [
+          "python3",
+          "-B",
+          "scripts/verify_hepta_callers.py",
+          "verify"
+        ],
+        "exit_code": 0,
+        "source_stable": true,
+        "status": "PASS_HEPTA_CALLER_CLOSED_SET"
+      },
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "21a8c6b41c8b98734322ad7ba929ca250179ffbe509e2918bf3453a44bac7133",
+      "source": "hepta-caller-proof-f874/source-pin-verify.json"
+    },
+    {
+      "archive": "caller-proof-local.tar.gz",
+      "bytes": 16087,
+      "member": "hepta-caller-proof-f874/source-pin-verify.log",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification.",
+      "sha256": "ac84138b19eabd5f9e98cb11038c8c0402b075a0124c6f8e72609d0f564b6d0e",
+      "source": "hepta-caller-proof-f874/source-pin-verify.log"
+    },
+    {
+      "archive": "chain-codeql-review.tar.gz",
+      "bytes": 47163,
+      "member": "hosted-24b/codeql-b23-to-24b-sarif-comparison.json",
+      "original_observation_fields": {
+        "scope": "Read-only comparison of immutable original SARIF artifacts; no new security scan, no source mutation and no claim of complete extraction coverage."
+      },
+      "scope": "Full original 780-finding triage and explicit bidirectional result mapping; extraction coverage and official gate remain unqualified.",
+      "sha256": "705404cdcb2d08e8a091afc27dd494a7024196529f599514b5a3fa638d407752",
+      "source": "hosted-24b/codeql-b23-to-24b-sarif-comparison.json"
+    },
+    {
+      "archive": "chain-codeql-review.tar.gz",
+      "bytes": 53049,
+      "member": "quantum-review-b23c/chain24b-actions-security-observation.json",
+      "original_observation_fields": {},
+      "scope": "Full original 780-finding triage and explicit bidirectional result mapping; extraction coverage and official gate remain unqualified.",
+      "sha256": "6435055f3e744c28247bf5a4a0f2324a85d1a70cadcaa649f60b062f4c1e5315",
+      "source": "quantum-review-b23c/chain24b-actions-security-observation.json"
+    },
+    {
+      "archive": "chain-codeql-review.tar.gz",
+      "bytes": 99136,
+      "member": "quantum-review-b23c/chain24b-export-job-123918418063.log",
+      "scope": "Full original 780-finding triage and explicit bidirectional result mapping; extraction coverage and official gate remain unqualified.",
+      "sha256": "c8febf7321231ead6da73de5b6339073654d3cf8686eac71ce09d937b2b9c31f",
+      "source": "quantum-review-b23c/chain24b-export-job-123918418063.log"
+    },
+    {
+      "archive": "chain-codeql-review.tar.gz",
+      "bytes": 110438,
+      "member": "quantum-review-b23c/chain24b-rust-job-123918417062.log",
+      "scope": "Full original 780-finding triage and explicit bidirectional result mapping; extraction coverage and official gate remain unqualified.",
+      "sha256": "b8b97b4f476f4f2a9dc98782a80be2c22ae8b791976ca47bae4d6f6b5ecb32e2",
+      "source": "quantum-review-b23c/chain24b-rust-job-123918417062.log"
+    },
+    {
+      "archive": "chain-codeql-review.tar.gz",
+      "bytes": 7183,
+      "member": "quantum-review-b23c/codeql-b23-production-triage-summary.md",
+      "scope": "Full original 780-finding triage and explicit bidirectional result mapping; extraction coverage and official gate remain unqualified.",
+      "sha256": "b20a760a409fd17d71c2a48d0deda6636e53843514a9071c533c0793c9ba208b",
+      "source": "quantum-review-b23c/codeql-b23-production-triage-summary.md"
+    },
+    {
+      "archive": "chain-codeql-review.tar.gz",
+      "bytes": 1581465,
+      "member": "quantum-review-b23c/codeql-b23-production-triage.json",
+      "original_observation_fields": {
+        "scope": {
+          "all_referenced_source_blobs_equal_at_both_commits": true,
+          "deep_review": "Every one of 23 logging primary locations and all six hardcoded candidates outside tests/historical evidence; inline-test boundaries and historical fixture contexts checked. Test-only entries retained individually with original location and context.",
+          "not_performed": [
+            "No Rust build or runtime test",
+            "No source/rule/model/gate edits",
+            "No SARIF result suppression/deletion",
+            "No check-runs API request",
+            "No complete repository secret scan or security/PQ certification"
+          ],
+          "repository": "https://github.com/TrillionniumFoundation/Trillionnium-Chain",
+          "rust_manifest_lock_diff_paths": [],
+          "same_reviewed_rust_at_commit": "24b265834daea34947adbb5903d887e3f6043838",
+          "sarif_source_commit": "b23c0ef85f058507185b2ccb404a5d648e447c06"
+        }
+      },
+      "scope": "Full original 780-finding triage and explicit bidirectional result mapping; extraction coverage and official gate remain unqualified.",
+      "sha256": "a729b7955fafe25873ff2afdd9754c198b5ec4e432e1e9a7b660bfcdfea752a1",
+      "source": "quantum-review-b23c/codeql-b23-production-triage.json"
+    },
+    {
+      "archive": "chain-codeql-review.tar.gz",
+      "bytes": 7273,
+      "member": "quantum-review-b23c/codeql-result-review.json",
+      "original_observation_fields": {
+        "scope": "Read-only review of small original artifact ZIPs; no rerun, source mutation, query suppression, or official security-gate authentication."
+      },
+      "scope": "Full original 780-finding triage and explicit bidirectional result mapping; extraction coverage and official gate remain unqualified.",
+      "sha256": "ec3fd64339e467a4f2dcd3c6526d04a5ae16f52433014a1720c0e87d69b34591",
+      "source": "quantum-review-b23c/codeql-result-review.json"
+    },
+    {
+      "archive": "chain-raw-history.tar.gz",
+      "bytes": 717,
+      "member": "hosted-24b/artifact-metadata.json",
+      "original_observation_fields": {},
+      "scope": "Read-only original 24b raw-History artifact/cost readbacks; original failed completion/pressure criteria remain failed, with source/run IDs and full ZIP references.",
+      "sha256": "4210dea3f39594befc6e3eb95ea1449ca66e82fbd923e4f7c5160214af0ddfa7",
+      "source": "hosted-24b/artifact-metadata.json"
+    },
+    {
+      "archive": "chain-raw-history.tar.gz",
+      "bytes": 8306,
+      "member": "hosted-24b/b23-fence-actual-depletion-comparison.json",
+      "original_observation_fields": {},
+      "scope": "Read-only original 24b raw-History artifact/cost readbacks; original failed completion/pressure criteria remain failed, with source/run IDs and full ZIP references.",
+      "sha256": "c8467f20835671c82116db4eefaf8b77e09627c86b97b51aa6a4f70dff1c22c4",
+      "source": "hosted-24b/b23-fence-actual-depletion-comparison.json"
+    },
+    {
+      "archive": "chain-raw-history.tar.gz",
+      "bytes": 6828,
+      "member": "hosted-24b/raw-history-24b-code-diagnosis-index.json",
+      "original_observation_fields": {},
+      "scope": "Read-only original 24b raw-History artifact/cost readbacks; original failed completion/pressure criteria remain failed, with source/run IDs and full ZIP references.",
+      "sha256": "b2f2e7bc36ab6769a00eef21b2a24385e2fbc2f91675388ebc0d4512ccf9d35b",
+      "source": "hosted-24b/raw-history-24b-code-diagnosis-index.json"
+    },
+    {
+      "archive": "chain-raw-history.tar.gz",
+      "bytes": 111071,
+      "member": "hosted-24b/raw-history-24b-compact-business-pressure-readback.json",
+      "original_observation_fields": {},
+      "scope": "Read-only original 24b raw-History artifact/cost readbacks; original failed completion/pressure criteria remain failed, with source/run IDs and full ZIP references.",
+      "sha256": "35b6a8d6e2bb1a6669378465127e56c08a7ad0bb585292b580b21cce4b7b31cc",
+      "source": "hosted-24b/raw-history-24b-compact-business-pressure-readback.json"
+    },
+    {
+      "archive": "chain-raw-history.tar.gz",
+      "bytes": 686194,
+      "member": "hosted-24b/raw-history-24b-phase-cost-readback-summary.json",
+      "original_observation_fields": {},
+      "scope": "Read-only original 24b raw-History artifact/cost readbacks; original failed completion/pressure criteria remain failed, with source/run IDs and full ZIP references.",
+      "sha256": "a4eb684d8e8d2c019b80249ecf56a0d5118b1f260b93305dfe379976bfef807a",
+      "source": "hosted-24b/raw-history-24b-phase-cost-readback-summary.json"
+    },
+    {
+      "archive": "chain-sarif-originals.tar.gz",
+      "bytes": 135488,
+      "member": "hosted-24b/codeql-24b-rust-sarif.zip",
+      "scope": "Immutable original b23 and 24b SARIF archive bytes plus original metadata; no new scan or waiver.",
+      "sha256": "ee8370ad85331b13e6ecf3359bbcd0ce92a436a93bbcc8e7b77f260c0bf1123b",
+      "source": "hosted-24b/codeql-24b-rust-sarif.zip"
+    },
+    {
+      "archive": "chain-sarif-originals.tar.gz",
+      "bytes": 56341,
+      "member": "quantum-review-b23c/codeql-rust-metadata-b23c.zip",
+      "scope": "Immutable original b23 and 24b SARIF archive bytes plus original metadata; no new scan or waiver.",
+      "sha256": "eafe9a99c54b7e1d5637cb42871b057a4a39dc652acf21664e40f8aa1669e162",
+      "source": "quantum-review-b23c/codeql-rust-metadata-b23c.zip"
+    },
+    {
+      "archive": "chain-sarif-originals.tar.gz",
+      "bytes": 135604,
+      "member": "quantum-review-b23c/codeql-rust-sarif-b23c.zip",
+      "scope": "Immutable original b23 and 24b SARIF archive bytes plus original metadata; no new scan or waiver.",
+      "sha256": "15f835191f4dbad39260c9140d50039ce7981a0501aaa02fe72a9b55c45e67dc",
+      "source": "quantum-review-b23c/codeql-rust-sarif-b23c.zip"
+    },
+    {
+      "archive": "final-source-observations.tar.gz",
+      "bytes": 2736,
+      "member": "hepta-ci-followup-current-pair-source.json",
+      "original_observation_fields": {
+        "scope": "Configured exact source pair and local canonical Git merge identity; neither a new native campaign nor a qualification. Historical observations retain their original source identities."
+      },
+      "scope": "Original final formatter mutation, AST-only equivalence, stable format check and configured pair/canonical merge source receipt. No new tests, native execution or pair qualification.",
+      "sha256": "70ab5b1eeecb7eb3fce5fa73b5130358c9f54c794710f0ece6cf49e76a61390d",
+      "source": "hepta-ci-followup-current-pair-source.json"
+    },
+    {
+      "archive": "final-source-observations.tar.gz",
+      "bytes": 730,
+      "member": "hepta-ci-followup-final-format-ast-equality.json",
+      "original_observation_fields": {
+        "scope": "Exact tested pre-format source recovered from retained patch; formatting-only Python AST equality including all constants. No test rerun or native Windows build is claimed."
+      },
+      "scope": "Original final formatter mutation, AST-only equivalence, stable format check and configured pair/canonical merge source receipt. No new tests, native execution or pair qualification.",
+      "sha256": "954c7c67ea3b2300a2674165ad05819b23d72a1b45a52a75dc74c3d01e862360",
+      "source": "hepta-ci-followup-final-format-ast-equality.json"
+    },
+    {
+      "archive": "final-source-observations.tar.gz",
+      "bytes": 2370,
+      "member": "hepta-ci-followup-final-format-check.json",
+      "original_observation_fields": {
+        "command": [
+          "just",
+          "fmt",
+          "--check"
+        ],
+        "exit_code": 0,
+        "source_stable": true,
+        "status": "passed"
+      },
+      "scope": "Original final formatter mutation, AST-only equivalence, stable format check and configured pair/canonical merge source receipt. No new tests, native execution or pair qualification.",
+      "sha256": "5a327794f72404277182f51e82e154c75de6bb606b430aba2344aa6adca5044b",
+      "source": "hepta-ci-followup-final-format-check.json"
+    },
+    {
+      "archive": "final-source-observations.tar.gz",
+      "bytes": 0,
+      "member": "hepta-ci-followup-final-format-check.log",
+      "scope": "Original final formatter mutation, AST-only equivalence, stable format check and configured pair/canonical merge source receipt. No new tests, native execution or pair qualification.",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "hepta-ci-followup-final-format-check.log"
+    },
+    {
+      "archive": "final-source-observations.tar.gz",
+      "bytes": 2356,
+      "member": "hepta-ci-followup-final-format.json",
+      "original_observation_fields": {
+        "command": [
+          "just",
+          "fmt"
+        ],
+        "exit_code": 0,
+        "source_stable": false,
+        "status": "failed"
+      },
+      "scope": "Original final formatter mutation, AST-only equivalence, stable format check and configured pair/canonical merge source receipt. No new tests, native execution or pair qualification.",
+      "sha256": "f2ca48d0e2cf397098f3850dd53a6132fe09588f610972ec1ca523f06bbab46a",
+      "source": "hepta-ci-followup-final-format.json"
+    },
+    {
+      "archive": "final-source-observations.tar.gz",
+      "bytes": 0,
+      "member": "hepta-ci-followup-final-format.log",
+      "scope": "Original final formatter mutation, AST-only equivalence, stable format check and configured pair/canonical merge source receipt. No new tests, native execution or pair qualification.",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "hepta-ci-followup-final-format.log"
+    },
+    {
+      "archive": "hosted-hepta-baseline.tar.gz",
+      "bytes": 1978,
+      "member": "hosted-hepta-f874/original-job-log-digests.json",
+      "original_observation_fields": {
+        "scope": "Exact decoded Actions job log text returned by supported GitHub tool, UTF-8 encoded without newline normalization; gzip is only storage compression."
+      },
+      "scope": "Original f874 hosted failures and read-only compact spawned-action decoding; no action replay or successful new hosted run.",
+      "sha256": "68cee1edf642036c9f8087659f98612e7af6c0b63016b692b0e9d6f11083458c",
+      "source": "hosted-hepta-f874/original-job-log-digests.json"
+    },
+    {
+      "archive": "hosted-hepta-baseline.tar.gz",
+      "bytes": 53809,
+      "member": "hosted-hepta-f874/privileged-closed-set-job.log",
+      "scope": "Original f874 hosted failures and read-only compact spawned-action decoding; no action replay or successful new hosted run.",
+      "sha256": "5b524f4d73089959cf7dd55639a7b15f0299b1e078c7f3ceeb3a2c5bc41ac058",
+      "source": "hosted-hepta-f874/privileged-closed-set-job.log"
+    },
+    {
+      "archive": "hosted-hepta-baseline.tar.gz",
+      "bytes": 7421,
+      "member": "hosted-hepta-f874/read_compact_execution.py",
+      "scope": "Original f874 hosted failures and read-only compact spawned-action decoding; no action replay or successful new hosted run.",
+      "sha256": "098c1f649c17c929457cd1b973ca61c412a018a7486da080d56c224c0fa012b4",
+      "source": "hosted-hepta-f874/read_compact_execution.py"
+    },
+    {
+      "archive": "hosted-hepta-baseline.tar.gz",
+      "bytes": 59682,
+      "member": "hosted-hepta-f874/windows-shard2-execution-selected.json",
+      "original_observation_fields": {
+        "scope": "Read-only decoding of original shard-2 execution log; no action replay or toolchain execution."
+      },
+      "scope": "Original f874 hosted failures and read-only compact spawned-action decoding; no action replay or successful new hosted run.",
+      "sha256": "9027c73b05f7df406767e777130238f950bd5d050e67fddaa7981f98599b7974",
+      "source": "hosted-hepta-f874/windows-shard2-execution-selected.json"
+    },
+    {
+      "archive": "hosted-hepta-baseline.tar.gz",
+      "bytes": 386617,
+      "member": "hosted-hepta-f874/windows_shard2.job.log.gz",
+      "scope": "Original f874 hosted failures and read-only compact spawned-action decoding; no action replay or successful new hosted run.",
+      "sha256": "9323f3ba9d054378671a242921eed849e907f87170f40231716f871e0d2b227c",
+      "source": "hosted-hepta-f874/windows_shard2.job.log.gz"
+    },
+    {
+      "archive": "latest-readonly-observations.tar.gz",
+      "bytes": 7336,
+      "member": "chain-a38-pq-readonly-review/review.json",
+      "original_observation_fields": {
+        "scope": "Immutable remote source/evidence read and byte-hash verification only; no Rust, Bazel, native tests, archived commands, repository edits or remote mutations."
+      },
+      "scope": "Original f874 musl complete log and bounded failure triage; time-stamped Actions metadata; static compatibility review of separately published a38. No native rerun, retargeting of prior results, acceptance or activation.",
+      "sha256": "e32c28a4ecefdd7d694429fa22c478ba18f7d3dfb3e2a19769574dc36f283822",
+      "source": "chain-a38-pq-readonly-review/review.json"
+    },
+    {
+      "archive": "latest-readonly-observations.tar.gz",
+      "bytes": 49459,
+      "member": "quantum-review-b23c/actions-refresh-20261030-0713.json",
+      "original_observation_fields": {},
+      "scope": "Original f874 musl complete log and bounded failure triage; time-stamped Actions metadata; static compatibility review of separately published a38. No native rerun, retargeting of prior results, acceptance or activation.",
+      "sha256": "bd74167708c33f64d638565b69957cfabb2ca762004299fd737cd1446301d8c1",
+      "source": "quantum-review-b23c/actions-refresh-20261030-0713.json"
+    },
+    {
+      "archive": "latest-readonly-observations.tar.gz",
+      "bytes": 6384,
+      "member": "quantum-review-b23c/actions-refresh-20261030-0713.md",
+      "scope": "Original f874 musl complete log and bounded failure triage; time-stamped Actions metadata; static compatibility review of separately published a38. No native rerun, retargeting of prior results, acceptance or activation.",
+      "sha256": "9b7d1a43e8c74548c92039053c5c8acc6d4ea8ae435ea2593958bba4ff0b3c86",
+      "source": "quantum-review-b23c/actions-refresh-20261030-0713.md"
+    },
+    {
+      "archive": "latest-readonly-observations.tar.gz",
+      "bytes": 2257296,
+      "member": "quantum-review-b23c/hepta-f874-musl-job-123922567669.log",
+      "scope": "Original f874 musl complete log and bounded failure triage; time-stamped Actions metadata; static compatibility review of separately published a38. No native rerun, retargeting of prior results, acceptance or activation.",
+      "sha256": "9b6289502942ebb450ae5ac8c35983cf283b746b1dacd3ebe8ea75ff057f005f",
+      "source": "quantum-review-b23c/hepta-f874-musl-job-123922567669.log"
+    },
+    {
+      "archive": "latest-readonly-observations.tar.gz",
+      "bytes": 25709,
+      "member": "quantum-review-b23c/hepta-f874-musl-scope-triage.json",
+      "original_observation_fields": {
+        "scope": "Read-only Actions job-log extraction and immutable Git source-blob comparison. No Rust/Bazel execution, no source edit, no CI rerun."
+      },
+      "scope": "Original f874 musl complete log and bounded failure triage; time-stamped Actions metadata; static compatibility review of separately published a38. No native rerun, retargeting of prior results, acceptance or activation.",
+      "sha256": "03b81dac708d738f982c882fd10a17fd567faa4a893956dbba314da18d52faf9",
+      "source": "quantum-review-b23c/hepta-f874-musl-scope-triage.json"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 340,
+      "member": "bazel-tool-verification.json",
+      "original_observation_fields": {},
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "5a23224db3a692cc90ffaa5791be9c578e72c3085974950c03f69a90b5335cd7",
+      "source": "bazel-tool-verification.json"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 1539,
+      "member": "hepta-bazel-deps-buildifier.json",
+      "original_observation_fields": {
+        "command": [
+          "/dev/shm/trnm-system-safety-20261030/bazel-tools/buildifier",
+          "-mode=check",
+          "defs.bzl",
+          "codex-rs/hepta-agentd/BUILD.bazel"
+        ],
+        "exit_code": 0,
+        "source_stable": true,
+        "status": "passed"
+      },
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "072d5fcc3844e696185fa0c2402dd0228f8d6eddff7be361c3050efd4a56cee6",
+      "source": "hepta-bazel-deps-buildifier.json"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 0,
+      "member": "hepta-bazel-deps-buildifier.log",
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "hepta-bazel-deps-buildifier.log"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 2016,
+      "member": "hepta-bazel-deps-direct-query-system-trust.json",
+      "original_observation_fields": {
+        "command": [
+          "/dev/shm/trnm-system-safety-20261030/bazel-tools/bazel",
+          "--batch",
+          "--output_user_root=/dev/shm/trnm-system-safety-20261030/bazel-query-root",
+          "--host_jvm_args=-Djavax.net.ssl.trustStore=/dev/shm/trnm-system-safety-20261030/bazel-tools/system-truststore",
+          "query",
+          "labels(deps, //codex-rs/hepta-agentd:hepta-agentd-plasticity_process_e2e-test)",
+          "--repository_cache=/dev/shm/trnm-system-safety-20261030/bazel-repository-cache",
+          "--repo_contents_cache=/dev/shm/trnm-system-safety-20261030/bazel-contents-cache",
+          "--disk_cache=",
+          "--lockfile_mode=error",
+          "--noshow_progress"
+        ],
+        "exit_code": 0,
+        "source_stable": true,
+        "status": "passed"
+      },
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "e95b2af15f5f4af13c6de016e54f7928d7ba07cf6b1f86ecb1ce7dc364ffc226",
+      "source": "hepta-bazel-deps-direct-query-system-trust.json"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 4587,
+      "member": "hepta-bazel-deps-direct-query-system-trust.log",
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "48f332adeaf0d917f4988ba4b11768be2b1e7c23744bb7685aee21f4fd52f70f",
+      "source": "hepta-bazel-deps-direct-query-system-trust.log"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 1901,
+      "member": "hepta-bazel-deps-direct-query.json",
+      "original_observation_fields": {
+        "command": [
+          "/dev/shm/trnm-system-safety-20261030/bazel-tools/bazel",
+          "--batch",
+          "--output_user_root=/dev/shm/trnm-system-safety-20261030/bazel-query-root",
+          "query",
+          "labels(deps, //codex-rs/hepta-agentd:hepta-agentd-plasticity_process_e2e-test)",
+          "--repository_cache=/dev/shm/trnm-system-safety-20261030/bazel-repository-cache",
+          "--repo_contents_cache=/dev/shm/trnm-system-safety-20261030/bazel-contents-cache",
+          "--disk_cache=",
+          "--lockfile_mode=error",
+          "--noshow_progress"
+        ],
+        "exit_code": 32,
+        "source_stable": false,
+        "status": "failed"
+      },
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "8b47fb6e78656f4447999a32056871b6c0e98f44adbf0c22643bf49678b46b76",
+      "source": "hepta-bazel-deps-direct-query.json"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 1008,
+      "member": "hepta-bazel-deps-direct-query.log",
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "0837c0ec145b9393be7f95351276941e77af071e3e9c646d79a72e78df4e71eb",
+      "source": "hepta-bazel-deps-direct-query.log"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 2798,
+      "member": "hepta-bazel-other-direct-dependencies-query.json",
+      "original_observation_fields": {
+        "command": [
+          "/dev/shm/trnm-system-safety-20261030/bazel-tools/bazel",
+          "--batch",
+          "--output_user_root=/dev/shm/trnm-system-safety-20261030/bazel-query-root",
+          "--host_jvm_args=-Djavax.net.ssl.trustStore=/dev/shm/trnm-system-safety-20261030/bazel-tools/system-truststore",
+          "query",
+          "labels(deps, set(//codex-rs/hepta-agentd:hepta-agentd //codex-rs/hepta-agentd:codex-hepta-agentd //codex-rs/hepta-agentd:hepta-agentd-five_agent_rolling_upgrade-test))",
+          "--repository_cache=/dev/shm/trnm-system-safety-20261030/bazel-repository-cache",
+          "--repo_contents_cache=/dev/shm/trnm-system-safety-20261030/bazel-contents-cache",
+          "--disk_cache=",
+          "--lockfile_mode=error",
+          "--noshow_progress"
+        ],
+        "exit_code": 0,
+        "source_stable": true,
+        "status": "passed"
+      },
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "70078cbb9d15377d157ef5aa67419af3d9437d1eaa479251c70b0bf296793005",
+      "source": "hepta-bazel-other-direct-dependencies-query.json"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 4569,
+      "member": "hepta-bazel-other-direct-dependencies-query.log",
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "21ee58bb6df3d59af078ab6e7e58735638afc06d57e1b2ebb78278a33084432e",
+      "source": "hepta-bazel-other-direct-dependencies-query.log"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 2336,
+      "member": "hepta-bazel-production-explicit-no-qualification-query.json",
+      "original_observation_fields": {
+        "command": [
+          "/dev/shm/trnm-system-safety-20261030/bazel-tools/bazel",
+          "--batch",
+          "--output_user_root=/dev/shm/trnm-system-safety-20261030/bazel-query-root",
+          "--host_jvm_args=-Djavax.net.ssl.trustStore=/dev/shm/trnm-system-safety-20261030/bazel-tools/system-truststore",
+          "query",
+          "somepath(set(//codex-rs/hepta-agentd:hepta-agentd //codex-rs/hepta-agentd:codex-hepta-agentd), //codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib)",
+          "--noimplicit_deps",
+          "--notool_deps",
+          "--repository_cache=/dev/shm/trnm-system-safety-20261030/bazel-repository-cache",
+          "--repo_contents_cache=/dev/shm/trnm-system-safety-20261030/bazel-contents-cache",
+          "--disk_cache=",
+          "--lockfile_mode=error",
+          "--noshow_progress"
+        ],
+        "exit_code": 7,
+        "source_stable": true,
+        "status": "failed"
+      },
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "9856e81211f029127fd67767e9ce3f8a2b725feb0e1059e79b60f343f07ebd5b",
+      "source": "hepta-bazel-production-explicit-no-qualification-query.json"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 4672,
+      "member": "hepta-bazel-production-explicit-no-qualification-query.log",
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "1b449a30c9121197b4a79a8209d0d1c3f8a57c062e7f0fa3cb460d6c654e53df",
+      "source": "hepta-bazel-production-explicit-no-qualification-query.log"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 2105,
+      "member": "hepta-bazel-production-no-qualification-query.json",
+      "original_observation_fields": {
+        "command": [
+          "/dev/shm/trnm-system-safety-20261030/bazel-tools/bazel",
+          "--batch",
+          "--output_user_root=/dev/shm/trnm-system-safety-20261030/bazel-query-root",
+          "--host_jvm_args=-Djavax.net.ssl.trustStore=/dev/shm/trnm-system-safety-20261030/bazel-tools/system-truststore",
+          "query",
+          "somepath(set(//codex-rs/hepta-agentd:hepta-agentd //codex-rs/hepta-agentd:codex-hepta-agentd), //codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib)",
+          "--repository_cache=/dev/shm/trnm-system-safety-20261030/bazel-repository-cache",
+          "--repo_contents_cache=/dev/shm/trnm-system-safety-20261030/bazel-contents-cache",
+          "--disk_cache=",
+          "--lockfile_mode=error",
+          "--noshow_progress"
+        ],
+        "exit_code": 7,
+        "source_stable": true,
+        "status": "failed"
+      },
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "82450d3ffb082f03dbf193b7c3e09b3721df6844660bc146134f2cfde78fa242",
+      "source": "hepta-bazel-production-no-qualification-query.json"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 4991,
+      "member": "hepta-bazel-production-no-qualification-query.log",
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "c5b41920825e1c9eaff15ffbd15a781263f9bddef2faf9a9d62da5ddabbf46d8",
+      "source": "hepta-bazel-production-no-qualification-query.log"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 410,
+      "member": "hepta-bazel-query-cache-reclaim-final.json",
+      "original_observation_fields": {},
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "1041e68242d7301f77d44ac755b464d51161935d4b2a8f522a1d59d327e51ce2",
+      "source": "hepta-bazel-query-cache-reclaim-final.json"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 400,
+      "member": "hepta-bazel-query-cache-reclaim.json",
+      "original_observation_fields": {},
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "d937c3d6098c848a03c007219686dc0ec3854d124be5f13248be66190ffefd1f",
+      "source": "hepta-bazel-query-cache-reclaim.json"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 1672,
+      "member": "hepta-caller-bazel-followup-docs.json",
+      "original_observation_fields": {
+        "command": [
+          "python",
+          "scripts/hepta-docs.py",
+          "verify",
+          "--profile",
+          "development"
+        ],
+        "exit_code": 0,
+        "source_stable": true,
+        "status": "passed"
+      },
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "8bb89d2ca3b2ad4483664f1cfa87d423d2ac3fb1926775fdab028665ccba950b",
+      "source": "hepta-caller-bazel-followup-docs.json"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 683,
+      "member": "hepta-caller-bazel-followup-docs.log",
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "079e958668a861388c9af0daaf22c4b2cc90f112ba6d715178b3d8955aa3e934",
+      "source": "hepta-caller-bazel-followup-docs.log"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 1618,
+      "member": "hepta-caller-bazel-followup-format-check.json",
+      "original_observation_fields": {
+        "command": [
+          "just",
+          "fmt",
+          "--check"
+        ],
+        "exit_code": 0,
+        "source_stable": true,
+        "status": "passed"
+      },
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "019cbb66c46a688204391a43c7ca833d9365fddc619d12b67f0b329ecd431a6a",
+      "source": "hepta-caller-bazel-followup-format-check.json"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 0,
+      "member": "hepta-caller-bazel-followup-format-check.log",
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "hepta-caller-bazel-followup-format-check.log"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 1603,
+      "member": "hepta-caller-bazel-followup-format.json",
+      "original_observation_fields": {
+        "command": [
+          "just",
+          "fmt"
+        ],
+        "exit_code": 0,
+        "source_stable": false,
+        "status": "failed"
+      },
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "e81b853f9510d57b0bc2c17b4eb929ad574a1ed2655564cc990d7118535fae04",
+      "source": "hepta-caller-bazel-followup-format.json"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 0,
+      "member": "hepta-caller-bazel-followup-format.log",
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "hepta-caller-bazel-followup-format.log"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 1645,
+      "member": "hepta-caller-bazel-followup-source-verify.json",
+      "original_observation_fields": {
+        "command": [
+          "python",
+          "scripts/verify_hepta_callers.py",
+          "verify"
+        ],
+        "exit_code": 0,
+        "source_stable": true,
+        "status": "passed"
+      },
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "1acdee8e121f9594d00a16bfad2b05b3969b02635821875e654d314f63cce790",
+      "source": "hepta-caller-bazel-followup-source-verify.json"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 16087,
+      "member": "hepta-caller-bazel-followup-source-verify.log",
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "ac84138b19eabd5f9e98cb11038c8c0402b075a0124c6f8e72609d0f564b6d0e",
+      "source": "hepta-caller-bazel-followup-source-verify.log"
+    },
+    {
+      "archive": "root-followup-checks.tar.gz",
+      "bytes": 368,
+      "member": "hepta-followup-format-ast-equality.json",
+      "original_observation_fields": {
+        "scope": "Python AST equality for the sole formatter change, not a new runtime test"
+      },
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability.",
+      "sha256": "94a4149e7228a7c8ea8a4fdd761e8b35764fa71ffa0d4b8acf7063dda515184d",
+      "source": "hepta-followup-format-ast-equality.json"
+    },
+    {
+      "archive": "windows-wrapper-final.tar.gz",
+      "bytes": 15671,
+      "member": "hosted-hepta-f874/native-msvc-keyed-wrapper.patch",
+      "scope": "Later 66-control Python wrapper run and independent 39-control static/Python review; no successful native Windows rebuild or hosted qualification inferred.",
+      "sha256": "ef979c65b26397525efeb87f2e99ba744712206ab98e41e69c2b671671d6ba7b",
+      "source": "hosted-hepta-f874/native-msvc-keyed-wrapper.patch"
+    },
+    {
+      "archive": "windows-wrapper-final.tar.gz",
+      "bytes": 12141,
+      "member": "hosted-hepta-f874/native-msvc-wrapper-full.log",
+      "scope": "Later 66-control Python wrapper run and independent 39-control static/Python review; no successful native Windows rebuild or hosted qualification inferred.",
+      "sha256": "7af8c6ecc245fd9a59f61e778fc4a85d2d0aeab01f6a3e65efbd32996cc31f0f",
+      "source": "hosted-hepta-f874/native-msvc-wrapper-full.log"
+    },
+    {
+      "archive": "windows-wrapper-final.tar.gz",
+      "bytes": 4769,
+      "member": "hosted-hepta-f874/native-msvc-wrapper-validation.json",
+      "original_observation_fields": {
+        "green": {
+          "command": "python3 -m unittest discover -s .github/scripts -p 'test_run_bazel*.py' -v",
+          "exit_code": 0,
+          "failures": 0,
+          "seconds": 2.459,
+          "tests": 66
+        },
+        "red": {
+          "cause": "Keyed native cache/BES invocation omitted the two original MSVC compiler-selection arguments; authentication/configuration and caller arguments were retained.",
+          "command": "python3 -m unittest discover -s .github/scripts -p test_run_bazel_native_msvc_toolchain.py -v",
+          "exit_code": 1,
+          "failures": 1,
+          "tests": 3
+        },
+        "scope": "Only wrapper and existing native-MSVC Python test; no Rust/Cargo/native protocol, CI timeout/target roster or remote write changes."
+      },
+      "scope": "Later 66-control Python wrapper run and independent 39-control static/Python review; no successful native Windows rebuild or hosted qualification inferred.",
+      "sha256": "949269ed35c28ff6030c078f0525910045fcd9cf9212e4738a4cc92df739e06d",
+      "source": "hosted-hepta-f874/native-msvc-wrapper-validation.json"
+    },
+    {
+      "archive": "windows-wrapper-final.tar.gz",
+      "bytes": 14053,
+      "member": "quantum-review-b23c/native-msvc-wrapper-independent-review.json",
+      "original_observation_fields": {
+        "scope": "Independent read-only static/AST review, pure Python argument controls and producer evidence hashes. No real key read/printed; no Rust/Bazel/native Windows build or remote mutation.",
+        "source_stable": true
+      },
+      "scope": "Later 66-control Python wrapper run and independent 39-control static/Python review; no successful native Windows rebuild or hosted qualification inferred.",
+      "sha256": "464ed26e385b2bf4239ef2e8d61d87a0e0358bd630bf82376d8b765589341a54",
+      "source": "quantum-review-b23c/native-msvc-wrapper-independent-review.json"
+    },
+    {
+      "archive": "windows-wrapper-history.tar.gz",
+      "bytes": 13458,
+      "member": "hosted-hepta-f874/native-msvc-keyed-wrapper-candidate1.patch",
+      "scope": "Original 3-test RED, superseded 65-control Python candidate, and nine-test review RED with eight failing subcases; no native Windows execution.",
+      "sha256": "5858875450518eb2ebea3ca33692a8cf1f52af5d13dcdaf80c84759f50fd5201",
+      "source": "hosted-hepta-f874/native-msvc-keyed-wrapper-candidate1.patch"
+    },
+    {
+      "archive": "windows-wrapper-history.tar.gz",
+      "bytes": 11934,
+      "member": "hosted-hepta-f874/native-msvc-wrapper-full-candidate1.log",
+      "scope": "Original 3-test RED, superseded 65-control Python candidate, and nine-test review RED with eight failing subcases; no native Windows execution.",
+      "sha256": "92250f2c0197b6a5e2837940b7f046bb66807bae590ba96d62bebd4421d63618",
+      "source": "hosted-hepta-f874/native-msvc-wrapper-full-candidate1.log"
+    },
+    {
+      "archive": "windows-wrapper-history.tar.gz",
+      "bytes": 2090,
+      "member": "hosted-hepta-f874/native-msvc-wrapper-red.log",
+      "scope": "Original 3-test RED, superseded 65-control Python candidate, and nine-test review RED with eight failing subcases; no native Windows execution.",
+      "sha256": "fb2d49a8d07aaf3dd87396d89e723aa3339d742ba9df17c43cd387075ea0816e",
+      "source": "hosted-hepta-f874/native-msvc-wrapper-red.log"
+    },
+    {
+      "archive": "windows-wrapper-history.tar.gz",
+      "bytes": 14931,
+      "member": "hosted-hepta-f874/native-msvc-wrapper-review-red.log",
+      "scope": "Original 3-test RED, superseded 65-control Python candidate, and nine-test review RED with eight failing subcases; no native Windows execution.",
+      "sha256": "4ee3ccef7ca40dbc82f8dc8cacc6fb41105a150bcadffc63cf7a67607f7b167c",
+      "source": "hosted-hepta-f874/native-msvc-wrapper-review-red.log"
+    },
+    {
+      "archive": "windows-wrapper-history.tar.gz",
+      "bytes": 2522,
+      "member": "hosted-hepta-f874/native-msvc-wrapper-validation-candidate1.json",
+      "original_observation_fields": {
+        "green": {
+          "command": "python3 -m unittest discover -s .github/scripts -p 'test_run_bazel*.py' -v",
+          "exit_code": 0,
+          "failures": 0,
+          "tests": 65
+        },
+        "red": {
+          "cause": "Keyed native cache/BES invocation omitted the two original MSVC compiler-selection arguments; authentication/configuration and caller arguments were retained.",
+          "command": "python3 -m unittest discover -s .github/scripts -p test_run_bazel_native_msvc_toolchain.py -v",
+          "exit_code": 1,
+          "failures": 1,
+          "tests": 3
+        },
+        "scope": "Only wrapper and existing native-MSVC Python test; no Rust/Cargo/native protocol, CI timeout/target roster or remote write changes."
+      },
+      "scope": "Original 3-test RED, superseded 65-control Python candidate, and nine-test review RED with eight failing subcases; no native Windows execution.",
+      "sha256": "de5ad8cbee0635f6987352d6e899417307ccdb7ab3ac276b02a042c8cbd31325",
+      "source": "hosted-hepta-f874/native-msvc-wrapper-validation-candidate1.json"
+    }
+  ],
+  "purpose": "Raw observations and source identity only; not a status authority, waiver, plan, acceptance or qualification.",
+  "source_observation": {
+    "files": {
+      ".gitattributes": {
+        "bytes": 722,
+        "sha256": "bb9c66d3546eafb06e0e44c4a4eefcad0c5b9ebf3f477d54db1b59de4eb27f2b"
+      },
+      ".github/scripts/run_bazel_with_buildbuddy.py": {
+        "bytes": 16310,
+        "sha256": "2f47b73ff9d39fba2216be940adac80954aeea92c989af6668c3934b56069067"
+      },
+      ".github/scripts/test_run_bazel_native_msvc_toolchain.py": {
+        "bytes": 10700,
+        "sha256": "925d8366e9954d858d3ef9e2ee88fa4452bc8b0b59acb301d5588ffc5bfd71e9"
+      },
+      ".github/workflows/hepta-pon-native-pair.yml": {
+        "bytes": 58646,
+        "sha256": "fe1a466e1c388b9496cc9b87b8091ff80a0341f689b8b3a6b996816f78afda7b"
+      },
+      "CALLERS.toml": {
+        "bytes": 26732,
+        "sha256": "8575504ec9769490cf366ad73ee58f5cb27117f309d18e2902fea1b5c312ad89"
+      },
+      "codex-rs/hepta-agentd/BUILD.bazel": {
+        "bytes": 6073,
+        "sha256": "f03e78fd809f3207e4516e271685127d908fcb15ed76c09d08ca67baf3b7d139"
+      },
+      "defs.bzl": {
+        "bytes": 33368,
+        "sha256": "574911f478d014898c84f7d7731a4ac0928b80aa57792f03cdd5577ffa75a559"
+      },
+      "qa/b4-no-bypass/test_verify_hepta_callers.py": {
+        "bytes": 15087,
+        "sha256": "7ee287cc870ba6173e6e895533ba666aca4e4b74ca93fa3a8add9806f4cebc70"
+      },
+      "scripts/verify_hepta_callers.py": {
+        "bytes": 26885,
+        "sha256": "a5fed1f437433cca2754bac33211a18f798133bad0d95f362656ad2c648e5b77"
+      }
+    },
+    "stable_during_assembly": true
+  },
+  "source_observation_note": "Current source bytes, including configured pair workflow, do not retarget prior execution records to a new commit or pair.",
+  "storage": {
+    "blob_limit_exclusive": 512000,
+    "compression_level": 9,
+    "gzip_mtime": 0,
+    "tar_mtime_uid_gid": 0
+  },
+  "support_files": [
+    {
+      "bytes": 9147,
+      "path": "README.md",
+      "sha256": "51bae2c57ff44ed304efb1dde1508023e4300260bfe6b679c7454f92d49100a8"
+    },
+    {
+      "bytes": 7343,
+      "path": "assemble_ci_followup.py",
+      "sha256": "655d140406566a40138497e604b52e06f8ec93e1b222748564258c9964ca778a"
+    },
+    {
+      "bytes": 11831,
+      "path": "selection.json",
+      "sha256": "ddb651b8e26dbc1008337bc07e802c2fedbee06bf104d129225d72e5a8f952de"
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+ Downloading crates ...
+  Downloaded bytes v1.12.1
+  Downloaded socket2 v0.6.3
+  Downloaded mio v1.2.0
+   Compiling rustix v1.1.4
+   Compiling linux-raw-sys v0.12.1
+   Compiling mio v1.2.0
+   Compiling socket2 v0.6.3
+   Compiling bytes v1.12.1
+   Compiling tempfile v3.27.0
+   Compiling tokio v1.53.1
+   Compiling codex-uds v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/uds)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.41s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.4` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 3d4c2d8d-a2d6-4178-b922-1f4f6c46b230 with nextest profile: local
+    Starting 13 tests across 1 binary
+        PASS [   0.002s] codex-uds deadline_guard::tests::pending_future_is_not_polled_again_after_deadline_and_is_dropped
+  stdout ───
+
+    running 1 test
+    test deadline_guard::tests::pending_future_is_not_polled_again_after_deadline_and_is_dropped ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.00s
+
+
+        PASS [   0.002s] codex-uds deadline_guard::tests::expired_ready_future_is_dropped_without_being_polled
+  stdout ───
+
+    running 1 test
+    test deadline_guard::tests::expired_ready_future_is_dropped_without_being_polled ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.00s
+
+
+        PASS [   0.002s] codex-uds deadline_guard::tests::external_cancellation_drops_the_pending_inner_future
+  stdout ───
+
+    running 1 test
+    test deadline_guard::tests::external_cancellation_drops_the_pending_inner_future ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.00s
+
+
+        PASS [   0.002s] codex-uds lib_tests::bound_listener_path_is_stale_socket_path
+  stdout ───
+
+    running 1 test
+    test lib_tests::bound_listener_path_is_stale_socket_path ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.00s
+
+
+        PASS [   0.002s] codex-uds lib_tests::prepare_private_socket_directory_sets_existing_permissions_to_owner_only
+  stdout ───
+
+    running 1 test
+    test lib_tests::prepare_private_socket_directory_sets_existing_permissions_to_owner_only ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.00s
+
+
+        PASS [   0.003s] codex-uds deadline_guard::tests::early_error_result_is_not_reinterpreted_as_expiry
+  stdout ───
+
+    running 1 test
+    test deadline_guard::tests::early_error_result_is_not_reinterpreted_as_expiry ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.00s
+
+
+        PASS [   0.003s] codex-uds deadline_guard::tests::public_monotonic_entry_rejects_expired_ready_future_before_polling
+  stdout ───
+
+    running 1 test
+    test deadline_guard::tests::public_monotonic_entry_rejects_expired_ready_future_before_polling ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.00s
+
+
+        PASS [   0.003s] codex-uds platform::tests::peer_uid_gate_accepts_only_the_process_owner
+  stdout ───
+
+    running 1 test
+    test platform::tests::peer_uid_gate_accepts_only_the_process_owner ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] codex-uds lib_tests::peer_identity_gate_accepts_same_user_on_supported_platforms
+  stdout ───
+
+    running 1 test
+    test lib_tests::peer_identity_gate_accepts_same_user_on_supported_platforms ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] codex-uds deadline_guard::tests::early_completion_preserves_the_original_result
+  stdout ───
+
+    running 1 test
+    test deadline_guard::tests::early_completion_preserves_the_original_result ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.00s
+
+
+        PASS [   0.018s] codex-uds lib_tests::stream_round_trips_data_between_listener_and_client
+  stdout ───
+
+    running 1 test
+    test lib_tests::stream_round_trips_data_between_listener_and_client ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.00s
+
+
+        PASS [   0.018s] codex-uds lib_tests::regular_file_path_is_not_stale_socket_path
+  stdout ───
+
+    running 1 test
+    test lib_tests::regular_file_path_is_not_stale_socket_path ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.00s
+
+
+        PASS [   0.018s] codex-uds lib_tests::prepare_private_socket_directory_creates_directory
+  stdout ───
+
+    running 1 test
+    test lib_tests::prepare_private_socket_directory_creates_directory ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.00s
+
+
+────────────
+     Summary [   0.019s] 13 tests run: 13 passed, 0 skipped

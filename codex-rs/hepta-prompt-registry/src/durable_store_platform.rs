@@ -1,5 +1,5 @@
-//! The original registry store's platform I/O boundary, with explicit Windows
-//! namespace inputs. Ordinary Windows path factories remain closed.
+//! The original registry store's platform I/O boundary. Windows path opens
+//! produce the same held native namespace proof required by opaque inputs.
 
 use super::DurableRegistryError;
 #[cfg(windows)]
@@ -30,8 +30,41 @@ pub(super) fn lock_directory(path: &Path) -> Result<LockedDirectory, DurableRegi
     })
 }
 #[cfg(windows)]
-pub(super) fn lock_directory(_path: &Path) -> Result<LockedDirectory, DurableRegistryError> {
-    Err(DurableRegistryError::UnsafeStateDirectory)
+pub(super) fn lock_directory(path: &Path) -> Result<LockedDirectory, DurableRegistryError> {
+    use codex_hepta_contracts::windows_private_owner::CreationFailure;
+    use codex_hepta_contracts::windows_private_owner::ParentAnchor;
+    use std::os::windows::ffi::OsStrExt;
+    use std::path::Component;
+
+    if path.as_os_str().encode_wide().nth(/*n*/ 8192).is_some() {
+        return Err(DurableRegistryError::UnsafeStateDirectory);
+    }
+    let mut components = path.components();
+    let Some(Component::Normal(leaf)) = components.next_back() else {
+        return Err(DurableRegistryError::UnsafeStateDirectory);
+    };
+    let leaf = leaf
+        .to_str()
+        .ok_or(DurableRegistryError::UnsafeStateDirectory)?;
+    let parent = ParentAnchor::for_create_only(components.as_path())
+        .map_err(|_| DurableRegistryError::UnsafeStateDirectory)?;
+    let directory = match parent.prepare_private_store_directory(leaf) {
+        Ok(directory) => directory,
+        Err(CreationFailure::NotAdmitted(_)) => {
+            return Err(DurableRegistryError::UnsafeStateDirectory);
+        }
+        Err(CreationFailure::Created {
+            directory,
+            error: _,
+        }) => {
+            // Hold the actual unverified-created role until this factory refuses.
+            // RAII only closes its handles; no deletion, retry, reset or ACL repair.
+            // The public error does not carry custody beyond this return.
+            let _created_until_refusal = directory;
+            return Err(DurableRegistryError::UnsafeStateDirectory);
+        }
+    };
+    LockedDirectory::from_windows(directory)
 }
 #[cfg(windows)]
 impl LockedDirectory {
@@ -105,7 +138,8 @@ pub(super) fn sync_directory(directory: &Directory) -> Result<(), DurableRegistr
 impl super::DurablePromptRegistry {
     /// Open the existing V3 extent store from a live opaque private namespace.
     /// Full original schema/configuration/digest validation precedes orphan-tail
-    /// recovery or migration writes. This does not open ordinary path factories.
+    /// recovery or migration writes. The path factory must produce the same live
+    /// native namespace proof; a path alone never admits store authority.
     pub fn open_windows_private(
         directory: codex_hepta_contracts::windows_private_owner::PrivateStoreDirectory,
         maximum_records: usize,
@@ -135,3 +169,7 @@ impl super::DurablePromptRegistry {
 #[cfg(all(test, windows))]
 #[path = "durable_windows_tests.rs"]
 mod tests;
+
+#[cfg(all(test, windows))]
+#[path = "ordinary_windows_factory_tests.rs"]
+mod ordinary_windows_factory_tests;

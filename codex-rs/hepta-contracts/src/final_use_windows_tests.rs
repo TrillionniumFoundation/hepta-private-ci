@@ -245,3 +245,120 @@ fn native_legacy_zero_nonce_preserves_original_staged_and_committed_bytes() -> R
     }
     Ok(())
 }
+
+// Restore only this fixture's already-held marker attributes on every unwind.
+// This is not a namespace/ACL repair and provides no production trust source.
+struct RestoreOwnedMarkerPermissions {
+    path: PathBuf,
+    original: fs::Permissions,
+}
+impl RestoreOwnedMarkerPermissions {
+    fn restore(&self) -> io::Result<()> {
+        fs::set_permissions(&self.path, self.original.clone())
+    }
+}
+impl Drop for RestoreOwnedMarkerPermissions {
+    fn drop(&mut self) {
+        if let Err(error) = self.restore() {
+            eprintln!("owned final-use fixture marker attribute restore failed: {error}");
+        }
+    }
+}
+
+#[test]
+fn native_retained_owner_drift_fences_preclaimed_entries_and_stays_failed() -> Result {
+    #[derive(Debug)]
+    enum Boundary {
+        TokenEntry,
+        RevocationRead,
+        ConsumerEntry,
+        EffectEntry,
+        DispatchEntry,
+    }
+    // The original in-memory frontier and system clock remain test fixtures.
+    // Each case uses a distinct real NTFS owner and original signed claim path.
+    for boundary in [
+        Boundary::TokenEntry,
+        Boundary::RevocationRead,
+        Boundary::ConsumerEntry,
+        Boundary::EffectEntry,
+        Boundary::DispatchEntry,
+    ] {
+        let (fixture, input) = Fixture::new()?;
+        let frontier = Arc::new(Frontier(Mutex::new(FinalUseFrontier::for_initial_head(
+            &head(),
+        )?)));
+        let owner = open(input, frontier)?;
+        let now = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?;
+        let grant = FinalUseGrant {
+            schema_version: 1,
+            signer_id: "security-owner".into(),
+            authority_epoch: 9,
+            grant_id: "held-owner-probe".into(),
+            nonce: [7; 32],
+            binding: FinalUseBinding {
+                subject_id: "agent-one".into(),
+                destination_id: "provider:heptabao".into(),
+                request_sha256: [1; 32],
+                scope_sha256: [2; 32],
+                payload_sha256: [3; 32],
+            },
+            not_before_unix_ms: now - 1000,
+            expires_at_unix_ms: now + 30_000,
+        };
+        let signed = SignedFinalUseGrant {
+            signature: SigningKey::from_bytes(&[47; 32])
+                .sign(&grant.signing_bytes()?)
+                .to_bytes()
+                .to_vec(),
+            grant,
+        };
+        let expected = signed.grant.binding.clone();
+        let token = owner.claim(&signed, &expected)?;
+        let marker = fixture.path("authority.lock");
+        let original = fs::metadata(&marker)?.permissions();
+        assert!(!original.readonly());
+        let restore = RestoreOwnedMarkerPermissions {
+            path: marker.clone(),
+            original: original.clone(),
+        };
+        let mut changed = original;
+        changed.set_readonly(/*readonly*/ true);
+        fs::set_permissions(&marker, changed)?;
+        assert!(fs::metadata(&marker)?.permissions().readonly());
+        let callbacks = std::sync::atomic::AtomicUsize::new(/*v*/ 0);
+        let outcome = match boundary {
+            Boundary::TokenEntry => token.enter(&expected).map(|_| ()),
+            Boundary::RevocationRead => {
+                drop(token);
+                owner.revocation_head().map(|_| ())
+            }
+            Boundary::ConsumerEntry => owner.with_verified_use(token, &expected, || {
+                callbacks.fetch_add(/*val*/ 1, Ordering::SeqCst);
+            }),
+            Boundary::EffectEntry => owner.with_verified_effect(token, &expected, || {
+                callbacks.fetch_add(/*val*/ 1, Ordering::SeqCst);
+            }),
+            Boundary::DispatchEntry => owner.with_dispatch_boundary(token, &expected, || {
+                callbacks.fetch_add(/*val*/ 1, Ordering::SeqCst);
+            }),
+        };
+        assert!(
+            matches!(outcome, Err(FinalUseError::Unavailable)),
+            "{boundary:?}"
+        );
+        assert_eq!(callbacks.load(Ordering::SeqCst), 0, "{boundary:?}");
+        assert!(
+            owner
+                .0
+                .state
+                .lock()
+                .map_err(|_| "authority state poisoned")?
+                .failed
+        );
+        restore.restore()?;
+        assert!(!fs::metadata(&marker)?.permissions().readonly());
+        assert!(matches!(owner.frontier(), Err(FinalUseError::Unavailable)));
+    }
+    Ok(())
+}

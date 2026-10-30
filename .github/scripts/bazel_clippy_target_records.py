@@ -72,7 +72,10 @@ def main() -> None:
         raise ValueError("configured Clippy target roster is empty")
     for label in sorted(incompatible):
         print(f"Bazel Clippy target is platform-incompatible: {label}", file=sys.stderr)
-    sys.stdout.write("".join(f"{label}\n" for label in sorted(compatible)))
+    # Bash reads this machine roster on Windows too; text stdout would emit CRLF.
+    sys.stdout.buffer.write(
+        "".join(f"{label}\n" for label in sorted(compatible)).encode("utf-8")
+    )
 
 
 if __name__ == "__main__":

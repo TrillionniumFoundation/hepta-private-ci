@@ -676,6 +676,8 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Backport the complete upstream GHSA-8ffr-xgwf-xj56 skip-depth fix.
+aws-smithy-json = { path = "third_party/aws-smithy-json-0.61.9" }
 # Preserve credentials-login while migrating only its reviewed P-256/RNG dependency edge.
 aws-config = { path = "third_party/aws-config-1.8.12" }
 # Adapt the original Rama alpha.4 DNS edge to maintained Hickory 0.26.3.

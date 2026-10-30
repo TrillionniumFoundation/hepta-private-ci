@@ -1,0 +1,238 @@
+{
+  "schema": "d328-final-use-retained-owner-barrier-source-candidate-v1",
+  "created_utc": "2026-10-28T18:07:35.001208+00:00",
+  "state": "FROZEN_MIRRORS_FOR_INDEPENDENT_STATIC_REVIEW_ONLY",
+  "base_head": "d3284e385e2b6037dd86752ddd246b616144a87c",
+  "base_tree": "eed42a952ac5a713fc733b29707b4be3c20e00b2",
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "before_present": true,
+      "before_bytes": 39684,
+      "before_sha256": "fde6acfb9ed13da256a91875b94a0ac2c2b1dc3bb4c8740adae10d318066f48c",
+      "before_git_blob": "32c5f8f823f898d88b429c4fa3dea2d07910be75",
+      "after_bytes": 39400,
+      "after_sha256": "0a6360b6572fc24001ac12a8686dbe2018a6c4484024d8742e1205cfe619f865",
+      "after_git_blob": "0385b5546a636b9062d99047fe306c6b0594ea08",
+      "after_lines": 1055,
+      "added_lines": 14,
+      "removed_lines": 32,
+      "emitted_hunk_replay": "EXACT_AFTER_BYTES"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_live_owner.rs",
+      "before_present": false,
+      "before_bytes": 0,
+      "before_sha256": null,
+      "before_git_blob": null,
+      "after_bytes": 1009,
+      "after_sha256": "750f2902c607cb8bb5663f72ab37785aa1571173b2ae620a93551feffa3ac19f",
+      "after_git_blob": "e7e44bb748f3de84e7ae6ab0c5cce01027c1d410",
+      "after_lines": 34,
+      "added_lines": 34,
+      "removed_lines": 0,
+      "emitted_hunk_replay": "EXACT_AFTER_BYTES"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+      "before_present": true,
+      "before_bytes": 15199,
+      "before_sha256": "adb38a55572b34077fa08be9b45bd8f4811738d10e0205dbe58b9baeac93af86",
+      "before_git_blob": "84890afa419ce4919bc32daf504784cba3e8d593",
+      "after_bytes": 15637,
+      "after_sha256": "39a69d36a99aaa569eec1cd5b0d0bb10cc94ab570256612dbdfe0f9814e518e8",
+      "after_git_blob": "78e2ea64c2169340441b758272d21ca1a88b8d78",
+      "after_lines": 433,
+      "added_lines": 10,
+      "removed_lines": 0,
+      "emitted_hunk_replay": "EXACT_AFTER_BYTES"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
+      "before_present": true,
+      "before_bytes": 8503,
+      "before_sha256": "fd028a28e8425b031f4065517b66a57531c77896b85a9a95b8086dc6351d7829",
+      "before_git_blob": "a9b203d6d00b2fbf43d472ab1490a289fc71da22",
+      "after_bytes": 12713,
+      "after_sha256": "b7bca7cf745d5e003cbf9346d5b6442cc74764e5e85419e5f94e503426397141",
+      "after_git_blob": "a6b3cb55b71e3dd60b950671201ff9f146531943",
+      "after_lines": 354,
+      "added_lines": 107,
+      "removed_lines": 0,
+      "emitted_hunk_replay": "EXACT_AFTER_BYTES"
+    }
+  ],
+  "patch": {
+    "path": "d328-final-use-retained-owner-barrier.patch",
+    "bytes": 12029,
+    "sha256": "63d32a9ab3f69bf4ce8f5a79fa356b7bd3a4a9533b7155a497d4eb281bbbb5e2",
+    "added_lines": 165,
+    "removed_lines": 32
+  },
+  "consumer_proofs": [
+    {
+      "function": "pub fn enter(self,",
+      "matching_inner": "self.owner",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 326
+    },
+    {
+      "function": "pub fn frontier(&self)",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 493
+    },
+    {
+      "function": "pub fn capacity(&self)",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 507
+    },
+    {
+      "function": "pub fn revocation_head(&self)",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 526
+    },
+    {
+      "function": "pub fn update_revocations(&self,",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": true,
+      "after_helper_line": 538
+    },
+    {
+      "function": "pub fn check_unclaimed_grant(",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 576
+    },
+    {
+      "function": "pub fn claim(",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": true,
+      "after_helper_line": 623
+    },
+    {
+      "function": "fn enter_verified_effect(",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 765
+    },
+    {
+      "function": "fn validate_token_live_witness(",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 807
+    },
+    {
+      "function": "fn with_dispatch_boundary_witness<T>(",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 835
+    }
+  ],
+  "mechanical_only_checks": {
+    "emitted_unified_hunks_replayed": true,
+    "final_use_exact_wiring_inverted_to_base_bytes": true,
+    "native_tests_original_bytes_are_exact_prefix": true,
+    "native_tests_original_prefix_bytes": 8503,
+    "native_tests_original_prefix_sha256": "fd028a28e8425b031f4065517b66a57531c77896b85a9a95b8086dc6351d7829",
+    "native_tests_appended_bytes": 4210,
+    "NOT_RUNTIME_OR_RUST_TESTS": true
+  },
+  "protected_source_pins": [
+    {
+      "path": "AGENTS.md",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "patch_excludes_path": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store_io.rs",
+      "git_blob": "5dc155c4d3a26b09c75a0660a4514a22c0182aef",
+      "bytes": 8066,
+      "sha256": "febde7c29b947473a77e215937f4c9e4a7de9dc877c488da1fe32157dd33bd93",
+      "patch_excludes_path": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_windows.rs",
+      "git_blob": "6d66664f78a87c5f8f974d94223ca18e26d922c6",
+      "bytes": 4208,
+      "sha256": "c07fb42ccdd07e0d8889a136a25f37535531d4585055006bb61303002c28062b",
+      "patch_excludes_path": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
+      "git_blob": "043ffd75a20c42935959a98d37f40e3d7229c407",
+      "bytes": 2313,
+      "sha256": "7d468026631ae10908c084c66a4bd49f2caac67ed96ae1a4d3572df886cde352",
+      "patch_excludes_path": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+      "git_blob": "4abe82b93130d0ae7efa4e704863eda766339c76",
+      "bytes": 30454,
+      "sha256": "ed0576ebdc3424fe6f6db4f3d6b5ad5a8688052714d9c104c467799530944371",
+      "patch_excludes_path": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store_tests.rs",
+      "git_blob": "b481cf7d5a233e377a4b058b8c3cee3dfb40dfdc",
+      "bytes": 5615,
+      "sha256": "f5550d5ec1b54f70493ece536d97442ccc9fc02cd63d36e9fdeeb4472b17da8c",
+      "patch_excludes_path": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "git_blob": "56c0a1a9430b9845020e43e7436736be0d8097f0",
+      "bytes": 41841,
+      "sha256": "51b79d090247c27ace0f03804046a8966ff61ac86e8082b8d8b4908a2e916b2d",
+      "patch_excludes_path": true
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/private_owner_lock.rs",
+      "git_blob": "3a1e76616c2e3d2cb4efea47902debd537d74a79",
+      "bytes": 7825,
+      "sha256": "9f6ef5f7ac348bf2ebac9c3872b19df16776ea88c47b2009aab05ca3f91f1c82",
+      "patch_excludes_path": true
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/parent_anchor.rs",
+      "git_blob": "d4aa5488310694442c4173be20ae26d03834becb",
+      "bytes": 8706,
+      "sha256": "790b4ac7105d585fa07793b584426cd919ac50a1f2e07170236aef91e49e0bf2",
+      "patch_excludes_path": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/BUILD.bazel",
+      "git_blob": "04098e1179d086e61e1602576c59484287d3a293",
+      "bytes": 4603,
+      "sha256": "37039c59c18cc5f108fea97f09d4d5759856bbbfc81220121806944955821775",
+      "patch_excludes_path": true
+    },
+    {
+      "path": "defs.bzl",
+      "git_blob": "10a20d3aab25870f03205b446575c5e8510ba509",
+      "bytes": 32777,
+      "sha256": "f8495f7c1fe8e340efdd16d972e3e522dff1b4db5a4830f3a36a28e62524f618",
+      "patch_excludes_path": true
+    }
+  ],
+  "active_source_worktree_ref_index_changes": false,
+  "format_compile_test_native_CI": "NOT_RUN",
+  "budget_started_reset": false,
+  "merge_ready": false,
+  "task_complete": false,
+  "NO_GO": true
+}

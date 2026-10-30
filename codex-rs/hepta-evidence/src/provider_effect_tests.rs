@@ -1857,3 +1857,159 @@ async fn reopen_rejects_illegal_ack_even_when_late_uncertainty_exists() {
     let reopen = HeptaEvidenceStore::open(&sqlite).await;
     assert!(matches!(reopen, Err(EvidenceError::Corrupt(_))));
 }
+
+#[tokio::test]
+async fn operation_binding_unknown_rejects_substitution_without_redispatch() {
+    for status in [
+        ProviderEffectAckStatus::Accepted,
+        ProviderEffectAckStatus::Completed,
+    ] {
+        let temp = TempDir::new().expect("temp dir");
+        let sqlite = sqlite_config(&temp);
+        let store = HeptaEvidenceStore::open(&sqlite).await.expect("open");
+        let intent = effect_intent(b"operation-binding-payload");
+        let mut accepted = completed_ack(&intent, b"original-operation");
+        accepted.status = ProviderEffectAckStatus::Accepted;
+        let initial = scripted_adapter(
+            ProviderEffectIdempotencyCapability::KeyAndStatusLookup,
+            ProviderEffectDispatch::Ack(accepted.clone()),
+            ProviderEffectLookup::Unknown,
+        );
+        assert_eq!(
+            store
+                .dispatch_provider_effect_qualification(&initial, &intent)
+                .await
+                .expect("initial send")
+                .state,
+            ProviderEffectState::Accepted
+        );
+        assert_eq!(
+            store
+                .reconcile_provider_effect_with_adapter(&initial, &intent.key)
+                .await
+                .expect("unknown status"),
+            ProviderEffectState::Indeterminate
+        );
+        drop(store);
+        let reopened = HeptaEvidenceStore::open(&sqlite).await.expect("reopen");
+        let mut substituted = completed_ack(&intent, b"different-operation");
+        substituted.status = status;
+        let incorrect = scripted_adapter(
+            ProviderEffectIdempotencyCapability::KeyAndStatusLookup,
+            ProviderEffectDispatch::Unknown,
+            ProviderEffectLookup::Ack(substituted),
+        );
+        assert!(matches!(
+            reopened
+                .reconcile_provider_effect_with_adapter(&incorrect, &intent.key)
+                .await,
+            Err(EvidenceError::IdempotencyConflict { .. })
+        ));
+        let quarantined = reopened
+            .get_provider_effect(&intent.key)
+            .await
+            .expect("read quarantine")
+            .expect("effect");
+        assert_eq!(quarantined.state(), ProviderEffectState::Indeterminate);
+        assert_eq!(quarantined.acknowledgements.len(), 1);
+        assert_eq!(quarantined.acknowledgements[0].ack, accepted);
+        let replay = reopened
+            .dispatch_provider_effect_qualification(&incorrect, &intent)
+            .await
+            .expect("quarantined replay");
+        assert_eq!(replay.state, ProviderEffectState::Indeterminate);
+        assert!(!replay.dispatch_attempted);
+        assert_eq!(incorrect.dispatches.load(Ordering::Relaxed), 0);
+        assert_eq!(incorrect.lookups.load(Ordering::Relaxed), 1);
+
+        let correct = scripted_adapter(
+            ProviderEffectIdempotencyCapability::KeyAndStatusLookup,
+            ProviderEffectDispatch::Unknown,
+            ProviderEffectLookup::Ack(completed_ack(&intent, b"original-operation")),
+        );
+        assert_eq!(
+            reopened
+                .reconcile_provider_effect_with_adapter(&correct, &intent.key)
+                .await
+                .expect("original operation completes"),
+            ProviderEffectState::Completed
+        );
+        assert_eq!(initial.dispatches.load(Ordering::Relaxed), 1);
+        assert_eq!(correct.dispatches.load(Ordering::Relaxed), 0);
+        assert_eq!(correct.lookups.load(Ordering::Relaxed), 1);
+        drop(reopened);
+        let final_store = HeptaEvidenceStore::open(&sqlite)
+            .await
+            .expect("reopen valid completion");
+        assert_eq!(
+            final_store
+                .get_provider_effect(&intent.key)
+                .await
+                .expect("read completed")
+                .expect("effect")
+                .state(),
+            ProviderEffectState::Completed
+        );
+    }
+}
+
+#[tokio::test]
+async fn operation_binding_reopen_rejects_substituted_status_after_uncertainty() {
+    let temp = TempDir::new().expect("temp dir");
+    let sqlite = sqlite_config(&temp);
+    let store = HeptaEvidenceStore::open(&sqlite).await.expect("open");
+    let intent = effect_intent(b"operation-binding-import");
+    store
+        .append_provider_effect_intent(&intent)
+        .await
+        .expect("intent");
+    let mut accepted = completed_ack(&intent, b"original-operation");
+    accepted.status = ProviderEffectAckStatus::Accepted;
+    store
+        .append_provider_effect_ack(&accepted)
+        .await
+        .expect("accepted");
+    store
+        .mark_provider_effect_indeterminate(&intent.key, "provider_lookup_unknown")
+        .await
+        .expect("quarantine");
+    let quarantined = store
+        .get_provider_effect(&intent.key)
+        .await
+        .expect("read quarantine")
+        .expect("effect");
+    let recorded_at_ms = quarantined
+        .uncertainties
+        .last()
+        .expect("uncertainty")
+        .recorded_at_ms
+        + 1;
+
+    // A canonical, correctly projected imported row must not let an Unknown
+    // marker authorize replacing the previously accepted provider operation.
+    let substituted = completed_ack(&intent, b"different-operation");
+    let bytes = crate::canonical::canonical_json(&substituted).expect("canonical ACK");
+    let record_sha = Sha256Digest::for_bytes(&bytes);
+    let json = String::from_utf8(bytes).expect("ACK JSON");
+    sqlx::query(
+        "INSERT INTO provider_effect_acknowledgements (
+            effect_key, payload_sha256, provider_operation_id_sha256,
+            status, source, schema_version, payload_json, record_sha256, recorded_at_ms
+         ) VALUES (?, ?, ?, 'completed', 'status_lookup', ?, ?, ?, ?)",
+    )
+    .bind(intent.key.as_str())
+    .bind(substituted.payload_sha256.as_str())
+    .bind(substituted.provider_operation_id_sha256.as_str())
+    .bind(i64::from(substituted.schema_version))
+    .bind(json)
+    .bind(record_sha.as_str())
+    .bind(recorded_at_ms)
+    .execute(&store.pool)
+    .await
+    .expect("insert imported ACK");
+    drop(store);
+    assert!(matches!(
+        HeptaEvidenceStore::open(&sqlite).await,
+        Err(EvidenceError::Corrupt(_))
+    ));
+}

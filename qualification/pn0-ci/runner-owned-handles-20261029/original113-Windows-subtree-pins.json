@@ -1,0 +1,680 @@
+[
+  {
+    "path": "codex-rs/windows-sandbox-rs/BUILD.bazel",
+    "mode": "100644",
+    "git_blob": "8531cb4d664c25de6fbf200c71cb8042d1d8d865",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/Cargo.toml",
+    "mode": "100644",
+    "git_blob": "3131a42840739d4191b0871cb71856d5f8b1e0b1",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/build.rs",
+    "mode": "100644",
+    "git_blob": "6ba79e6c75deb87067ced02e824eaf7faf79346d",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup.manifest",
+    "mode": "100644",
+    "git_blob": "14807962f83a2a89109ae22557d82a8cbb7d761b",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/sandbox_smoketests.py",
+    "mode": "100644",
+    "git_blob": "f6689587f5ce73fa35529f491d01b675aeffe43a",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+    "mode": "100644",
+    "git_blob": "d42ad2529d9f0d23007b5bd6e1ea618dd424d0a0",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+    "mode": "100644",
+    "git_blob": "462d5c8b8204becc265cb577679d0851f06b3a0b",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/allow.rs",
+    "mode": "100644",
+    "git_blob": "5a10261d0c5e82f5987df16c86680d68e7a6d705",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/audit.rs",
+    "mode": "100644",
+    "git_blob": "5dd2a5846683f1d2e599b36fed9286c256e5184a",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/main.rs",
+    "mode": "100644",
+    "git_blob": "9fe70c87508e6b171eaa434ffd2bfba7b43e38ba",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs",
+    "mode": "100644",
+    "git_blob": "302d4f7df4ebf5878371e69c933a42d0fdce5907",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win/cwd_junction.rs",
+    "mode": "100644",
+    "git_blob": "7ddd391c3498c611b47c15b858d59b2eda1cce41",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win/process_observation.rs",
+    "mode": "100644",
+    "git_blob": "5f748887f3f4f2ecec5523c76d93c6730550a72d",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win/process_observation_tests.rs",
+    "mode": "100644",
+    "git_blob": "b8473287426c968288de061b8cd409d09ebd20e3",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win_boundary_tests.rs",
+    "mode": "100644",
+    "git_blob": "bfb53b796208c01c45344679b3bc71c8c5f9a0b3",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/main.rs",
+    "mode": "100644",
+    "git_blob": "262460775ef6b5e02f0ba4485f388e1b389cc85f",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+    "mode": "100644",
+    "git_blob": "d26c69cdd72891b13f940ac413a5808c0219315b",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/firewall.rs",
+    "mode": "100644",
+    "git_blob": "bf2476dd123ca52cbf4e4064bc7b5a366efb275a",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/no_reparse_dir.rs",
+    "mode": "100644",
+    "git_blob": "93d983f12f027d43dc959b6d0fea324bbdeed7c4",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/no_reparse_dir_tests.rs",
+    "mode": "100644",
+    "git_blob": "4d8f987f5111b7d9b691349f5490c04fc2584de1",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl.rs",
+    "mode": "100644",
+    "git_blob": "a054879a3d4449a15bd595a20fcf118069569a54",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_cross_root_tests.rs",
+    "mode": "100644",
+    "git_blob": "b88ac1cbb14a1eeed2cc7aa0cbf83adb513bac26",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+    "mode": "100644",
+    "git_blob": "f5b94f052a461f0897147946ddd1150d79b815ab",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_tests.rs",
+    "mode": "100644",
+    "git_blob": "8da87ba5853c20e6c3653e5274097081418cb522",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/sandbox_users.rs",
+    "mode": "100644",
+    "git_blob": "6c18a3cb8338e45cc47c8609de561747e68eb63a",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/setup_runtime_bin.rs",
+    "mode": "100644",
+    "git_blob": "176ef07504e17139120a3420ffff2578c3eafa44",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/setup_runtime_bin_tests.rs",
+    "mode": "100644",
+    "git_blob": "ad8aa7c3e46fd05403649f7abb5422d513e6a77f",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win_acl_tests.rs",
+    "mode": "100644",
+    "git_blob": "e488e2a914b119ecb02cfc1a13a90009bc6120ea",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/cap.rs",
+    "mode": "100644",
+    "git_blob": "6dc500ba8a6298cb92a6118e2a817858a451f844",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/cap_registry_tests.rs",
+    "mode": "100644",
+    "git_blob": "2cd2f83775b7aa87aa2f6cfe3de8d4085608b8c9",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/capability_plan.rs",
+    "mode": "100644",
+    "git_blob": "66e875add1be8956ac57df12787bf46d28133db2",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/capability_plan_tests.rs",
+    "mode": "100644",
+    "git_blob": "22ee28f764c42458592e39f38666dcc5ed41da42",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/capability_registry.rs",
+    "mode": "100644",
+    "git_blob": "94665599259bc3f742211adf66f2d9df64b23be9",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/capability_registry_tests.rs",
+    "mode": "100644",
+    "git_blob": "e61d0c03dfce3da93514e8bb31820723c55c6909",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/conpty/mod.rs",
+    "mode": "100644",
+    "git_blob": "3b5399d6d846f4dacc1f91d4232bc5607c898e64",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/deny_read_acl.rs",
+    "mode": "100644",
+    "git_blob": "dd3bc350e48299fe5a99e8d45eba61a239e5a186",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/deny_read_resolver.rs",
+    "mode": "100644",
+    "git_blob": "498ceabfd0b72d0c4788dc9195f1b32617854d51",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/deny_read_state.rs",
+    "mode": "100644",
+    "git_blob": "fd073a4d45c781f0441839708f92e32d0831556c",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/desktop.rs",
+    "mode": "100644",
+    "git_blob": "23bd442b35070b9ae910bcdcda5a007969d8d636",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/desktop_acl.rs",
+    "mode": "100644",
+    "git_blob": "6ba6f0de57636cfceb6a47aec9836b67cedde507",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/desktop_capability.rs",
+    "mode": "100644",
+    "git_blob": "9513f71d2e4c6c8b82971e4414125841c2268839",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/desktop_tests.rs",
+    "mode": "100644",
+    "git_blob": "993401d191231d2fe27dc6836a6a49f715b24942",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/dpapi.rs",
+    "mode": "100644",
+    "git_blob": "3a90704127e2fd7c71131492aa0d25f70dfba114",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/elevated/ipc_framed.rs",
+    "mode": "100644",
+    "git_blob": "ffa65c8509c52c594618e1e1defa0ed4c5de475f",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/elevated/ipc_role_version_tests.rs",
+    "mode": "100644",
+    "git_blob": "c507ae65a2afc3204b86af2488cc46b4f315ca3b",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/elevated/mod.rs",
+    "mode": "100644",
+    "git_blob": "3c8084bb623452c61bfcbf5e4467417d2263d03d",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+    "mode": "100644",
+    "git_blob": "961365d21d0dc3619633bfea65aa570fb57575aa",
+    "scope": "one candidate changed mirror"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/elevated/runner_pipe.rs",
+    "mode": "100644",
+    "git_blob": "c8ae092c4a00fc3e029be48cb77cc78db4580d87",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+    "mode": "100644",
+    "git_blob": "44a529f734e4daf8052809712c09ef412b69db48",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/env.rs",
+    "mode": "100644",
+    "git_blob": "bdf7a76ab2efa345664b6467aed6e7550a80be0d",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/filesystem_read_acl.rs",
+    "mode": "100644",
+    "git_blob": "7e06161eee9a439775a2f336bbd455361191162b",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/filesystem_read_acl_tests.rs",
+    "mode": "100644",
+    "git_blob": "0b9115bc30b42d4f0764391ce8b0b7909b87d336",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/fresh_managed_base.rs",
+    "mode": "100644",
+    "git_blob": "181b55bce07407590711efb825ef1ac3daf04024",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/helper_materialization.rs",
+    "mode": "100644",
+    "git_blob": "7532d191ead69f010f17ef48a8e0b90d2bca3e71",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/hide_users.rs",
+    "mode": "100644",
+    "git_blob": "b91944002294555847f3574c7d3952f45196bf36",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/identity.rs",
+    "mode": "100644",
+    "git_blob": "718f2e1180365bff228f559b0be83b5343f54763",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/identity_role_tests.rs",
+    "mode": "100644",
+    "git_blob": "a39b3df28ee7be4cba756aa386fe750e930d78af",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/legacy_boundary.rs",
+    "mode": "100644",
+    "git_blob": "37f7b5797f590e8a3f9b0dd1ba1661fb36fb9a73",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/legacy_boundary_tests.rs",
+    "mode": "100644",
+    "git_blob": "de791d45ea8b99ca74cbd378a0f6efc56d619702",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+    "mode": "100644",
+    "git_blob": "9d6a1f068e02f713016b19ea13731c7e4d9ea15c",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/logging.rs",
+    "mode": "100644",
+    "git_blob": "7108a1de3691b9682c60eb5e5bcb50010cfee4af",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/managed_account_source.rs",
+    "mode": "100644",
+    "git_blob": "5e709302b11dae2582bde453e16ed3cac51c27e1",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/managed_account_source_tests.rs",
+    "mode": "100644",
+    "git_blob": "2ccff176f1c98f3ea8be8e6c162020a0c8d57955",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/managed_token_policy.rs",
+    "mode": "100644",
+    "git_blob": "7d5b4b0c54c72c20e4e57cc78a0a06b56e9b1f36",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/managed_token_policy_tests.rs",
+    "mode": "100644",
+    "git_blob": "3acbb4fd0372b6bac500aa8c4d048118acfec365",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/owned_child_stdio.rs",
+    "mode": "100644",
+    "git_blob": "93e475c8773ca0a6f9eb340c9366d2f5171f405a",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/owned_child_stdio_tests.rs",
+    "mode": "100644",
+    "git_blob": "25cab1b4bf5417cc01d9fb1b5ff6b1353745a2ca",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/path_normalization.rs",
+    "mode": "100644",
+    "git_blob": "1735b745a28dc92b2c78e6f61fd70fa878042352",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/permission_binding.rs",
+    "mode": "100644",
+    "git_blob": "af37c4413086fbf653d46dbb93a8e382b3e2a99f",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/prepared_filesystem.rs",
+    "mode": "100644",
+    "git_blob": "5abbe8d9b95a5509443e64e71eb787939f643053",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/prepared_filesystem_existing.rs",
+    "mode": "100644",
+    "git_blob": "0f280b3463a54163617196b10aec3303e3b6977c",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/prepared_filesystem_readback_tests.rs",
+    "mode": "100644",
+    "git_blob": "f8fb38a99efbdd39f5c2f84d336d518bc772e3ce",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/prepared_process_context.rs",
+    "mode": "100644",
+    "git_blob": "cd32943200593897593f9d385d16690708715da5",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/private_state_native_probe_support.rs",
+    "mode": "100644",
+    "git_blob": "57959dd587211b38b8c1ce3775ca37e4ac7fef65",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/private_state_native_probe_tests.rs",
+    "mode": "100644",
+    "git_blob": "3936e9a73388cd72315025f803cc6960ce456e8f",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/proc_thread_attr.rs",
+    "mode": "100644",
+    "git_blob": "38110a69239e9707a324f2d4cf4a1fad932b4132",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/process.rs",
+    "mode": "100644",
+    "git_blob": "c89b943953ac877ff41242be40e6bdc1c76beaa6",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/read_acl_query.rs",
+    "mode": "100644",
+    "git_blob": "3554d7abc1258d907d85e2032fd8ab9410cf1f30",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/read_role_descriptor.rs",
+    "mode": "100644",
+    "git_blob": "431944b75214998db02e109303865bfdc0c1c3b7",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/read_role_descriptor_tests.rs",
+    "mode": "100644",
+    "git_blob": "67f80914ffcd8d3ca12c7879aa7b8edf4d4ce61a",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/resolved_permissions.rs",
+    "mode": "100644",
+    "git_blob": "1b6260ae6c2ab028238a16968dd5c0bd2ef474a1",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/sandbox_utils.rs",
+    "mode": "100644",
+    "git_blob": "1dfd7683021065d8e2899ce589b3f55c8999aebb",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/setup.rs",
+    "mode": "100644",
+    "git_blob": "8c883744ecd05fb82b845cdc50e22e41e2ea49e9",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/setup_error.rs",
+    "mode": "100644",
+    "git_blob": "d9104602bc19af88101fbb5b44f839a1d799c174",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/setup_role_tests.rs",
+    "mode": "100644",
+    "git_blob": "ad6bd1675a5e4b3492562219e9a69ec7b3116cc6",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/spawn_prep.rs",
+    "mode": "100644",
+    "git_blob": "4c425c60271c6cd7fe78a71eefd4993801dc8449",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/ssh_config_dependencies.rs",
+    "mode": "100644",
+    "git_blob": "ae6d82d560190e99d84b2f147df7e2f40a656e4b",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/stdio_bridge.rs",
+    "mode": "100644",
+    "git_blob": "3ad722ba8db4eae79918aa79f14e102ea8cdb634",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/stdio_bridge_tests.rs",
+    "mode": "100644",
+    "git_blob": "c13632b84a1e25d906dd46e2570a9f6273774604",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+    "mode": "100644",
+    "git_blob": "f0447f40e1e20a5d790c37d5d23ed803051fc1ef",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/token_full_restriction.rs",
+    "mode": "100644",
+    "git_blob": "5fc6ad4be63d05b39be279b78ea56d1e3dbf0bc9",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/token_full_restriction_tests.rs",
+    "mode": "100644",
+    "git_blob": "af5a0017b1a4e2df3b9e6b4529344348a3559920",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/token_prepared_filesystem.rs",
+    "mode": "100644",
+    "git_blob": "9ab1b9d538e8de3c0aa3c0ffdd8e71780f0b6957",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/token_prepared_filesystem_tests.rs",
+    "mode": "100644",
+    "git_blob": "e17a0031fd3c3c757369285631ceb5e7f908e695",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/token_query.rs",
+    "mode": "100644",
+    "git_blob": "8df8ef5ed9e076c23b77e612f1a81c19d64cd1f1",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+    "mode": "100644",
+    "git_blob": "4a07e762c86aaa2cac0a02dfc672320f175e2a66",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs",
+    "mode": "100644",
+    "git_blob": "f2ea4c8636dca50fba18e1f5f26781146419ac9f",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backend_selection_tests.rs",
+    "mode": "100644",
+    "git_blob": "15f83a354141f9fdeb68981f10799b24988467ab",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated.rs",
+    "mode": "100644",
+    "git_blob": "264a8c1b21ac9998d7cfb617c31d4678c226976f",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated_tests.rs",
+    "mode": "100644",
+    "git_blob": "68a6b076fa9ce29bc291c0e3697794e597bddd0a",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/legacy.rs",
+    "mode": "100644",
+    "git_blob": "6fbf819c921a0097cd306e9de9ba9c965ecf0163",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/mod.rs",
+    "mode": "100644",
+    "git_blob": "9d2aaa9070bb269c766b404a3bdeb365fc29955b",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/windows_common.rs",
+    "mode": "100644",
+    "git_blob": "f37829e950567b4f0f64217a894f078436f877fb",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs",
+    "mode": "100644",
+    "git_blob": "d554113bce828edce75cba838e3b3517e330b4de",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+    "mode": "100644",
+    "git_blob": "3571fed975ef0821053bf1db110a6b6dc20ad453",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/wfp.rs",
+    "mode": "100644",
+    "git_blob": "9291b6eb994d640828a16493e5b558339ed73156",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/wfp/filter_specs.rs",
+    "mode": "100644",
+    "git_blob": "d86df4ac1eff0c9cc2cc567817a9cdc8584f78cc",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/wfp_setup.rs",
+    "mode": "100644",
+    "git_blob": "688878583b017ef029a9b54b8fdf5e806a7d94ad",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/winutil.rs",
+    "mode": "100644",
+    "git_blob": "45378b4bb527ce2b202913ab3b21aad9ef4b1828",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/workspace_acl.rs",
+    "mode": "100644",
+    "git_blob": "7143212b54c088e317ef5acbc729060e68237e68",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/wrapper.rs",
+    "mode": "100644",
+    "git_blob": "9729db1b840ceecaa7de2a27be0a7f4fb9792313",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/wrapper_tests.rs",
+    "mode": "100644",
+    "git_blob": "207361d4c60f8559d51e1842743c6f6c69bc5618",
+    "scope": "candidate unchanged original Git object"
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/tests/helper_manifest.rs",
+    "mode": "100644",
+    "git_blob": "cbebcad2cae99fce5d8ea4fa2bf4c33c07c15933",
+    "scope": "candidate unchanged original Git object"
+  }
+]

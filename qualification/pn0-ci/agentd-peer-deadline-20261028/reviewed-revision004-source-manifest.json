@@ -1,0 +1,182 @@
+{
+  "schema": "consumed-peer-gate-with-per-poll-deadline-source-revision004-v1",
+  "created_utc": "2026-10-29T00:24:54.130583+00:00",
+  "state": "FROZEN_FOUR_SOURCE_MIRRORS_FOR_INDEPENDENT_REVIEW_ONLY",
+  "base_head": "d3284e385e2b6037dd86752ddd246b616144a87c",
+  "base_tree": "eed42a952ac5a713fc733b29707b4be3c20e00b2",
+  "bf36_control_same_preimage": true,
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/control.rs",
+      "before_present": true,
+      "before_bytes": 8231,
+      "before_sha256": "c0a338c105a621632e0823273ded807e83aaefdab4f57f06470d73a8c0376651",
+      "before_git_blob": "9d376e5f1d79ca01126d567cf9f2bc5f778ef2d2",
+      "after_bytes": 8924,
+      "after_sha256": "a5cab59312c1b0cfdee7b3b2f07c6240b85d11c13592682e60e246614de1953b",
+      "after_git_blob": "d43aa74d2be93960b7be7b49472513edebd422e5",
+      "after_lines": 266,
+      "emitted_hunk_replay": "EXACT_AFTER_BYTES"
+    },
+    {
+      "path": "codex-rs/uds/src/deadline_guard.rs",
+      "before_present": false,
+      "before_bytes": 0,
+      "before_sha256": null,
+      "before_git_blob": null,
+      "after_bytes": 1608,
+      "after_sha256": "7905e7c432bf7ba0716e31bd7edc5890319d4a782d45f9e01958d6a18e0efdf5",
+      "after_git_blob": "8567a79b6b9c4e7959533ec125e4225fc925396d",
+      "after_lines": 51,
+      "emitted_hunk_replay": "EXACT_AFTER_BYTES"
+    },
+    {
+      "path": "codex-rs/uds/src/deadline_guard_tests.rs",
+      "before_present": false,
+      "before_bytes": 0,
+      "before_sha256": null,
+      "before_git_blob": null,
+      "after_bytes": 5147,
+      "after_sha256": "c1deefa46140cb02eb05c5728f4e5e18a1a945b48eb6bfd431271cf796dfdcf4",
+      "after_git_blob": "bcde3cdc04f210db4fb12ce3885a45fcad90e0bd",
+      "after_lines": 163,
+      "emitted_hunk_replay": "EXACT_AFTER_BYTES"
+    },
+    {
+      "path": "codex-rs/uds/src/lib.rs",
+      "before_present": true,
+      "before_bytes": 14398,
+      "before_sha256": "b81907ec7757b85cce001328f272c9d1c3467e42b8772d667b09b17a7d455c75",
+      "before_git_blob": "9fe8556c9681be665fa7606a5978fd7b35ed7e42",
+      "after_bytes": 14473,
+      "after_sha256": "23751dd9128234b4e5f19a8ae54806a491ddbec9865cdeff390c3217ae09f645",
+      "after_git_blob": "d3e9a91efa8f647d216f6c7fd890584ec6cafad6",
+      "after_lines": 449,
+      "emitted_hunk_replay": "EXACT_AFTER_BYTES"
+    }
+  ],
+  "consolidated_from_d328": {
+    "path": "d328-peer-gate-and-per-poll-deadline.patch",
+    "bytes": 11005,
+    "sha256": "29e36831b5b092ae218c21f43f7503ec7b91dfd40a71fb77c4de9ef72ee74293",
+    "added_lines": 242,
+    "removed_lines": 10
+  },
+  "incremental_from_original87f9": {
+    "path": "peer-gate87f9-to-per-poll-deadline.patch",
+    "bytes": 10055,
+    "sha256": "3a959e7f25fe1a3c05daedcfec93c9d416240307ae38354cb2fa1b1ec59c1030",
+    "added_lines": 230,
+    "removed_lines": 10
+  },
+  "original87f9_preserved": {
+    "manifest_sha256": "a23544aff8610ba2e7d67ad1a8aa5a6b66f39d0198c266a0adeec098c33cbfb4",
+    "patch_sha256": "87f973d85129af474ffa55ce8e4ef2eed795c447de4471f52e63a24bf2907af8",
+    "after_source_sha256": "534cc76e107deac9db744e44c34fb3b64e54f74c6eea31ebdc794238401a52f9"
+  },
+  "R01_history": "Static rootfinding: original overload immediatecheck used2s notmin50ms; latest rootinstruction superseded one-line-onlyfix with everypollgateforbothfutures. No runtime/compiler/nativeRED inferred. No standaloneR01source revision applied.",
+  "mechanical_source_checks": {
+    "all_emitted_hunks_replay_exact": true,
+    "original_uds_lib_exact_after_removing_only_new_module_reexport": true,
+    "original_uds_lib_tests_byte_unchanged": true,
+    "control_serve_and_entire_following_suffix_unchanged": true,
+    "original_2_32_50_constant_declarations_unchanged": [
+      "const CONNECTION_CAPACITY: usize = 32;",
+      "const IO_TIMEOUT: Duration = Duration::from_secs(2);",
+      "const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);"
+    ],
+    "actual_control_future_guard_calls": 2,
+    "not_test_or_compiler_execution": true
+  },
+  "all68_original_agentd_tests_inventory": {
+    "reference": "../all-original-agentd-test-files.json",
+    "sha256": "4849b04bcd3b3b0cae36f901c649c6d7fe3daae50851d31ff74f4d019130c915",
+    "count": 68,
+    "total_bytes": 1015604
+  },
+  "protected_source_pins": [
+    {
+      "path": "codex-rs/uds/src/lib_tests.rs",
+      "bytes": 5638,
+      "sha256": "a5e437bb409156b954b989dad6d3928038088cd8deba9a54b06dd315d883e3d4",
+      "git_blob": "9c2d25cd72fdfbbb74b04705d0bd69872570f01b",
+      "patch_excludes_path": true
+    },
+    {
+      "path": "codex-rs/uds/Cargo.toml",
+      "bytes": 684,
+      "sha256": "4da6aa32dd7c36fd520c4e9787f1354cbf3421b669e88a8e1237a6cbc2381e13",
+      "git_blob": "66ba1d9d2d915dae795b2cda4eef7d2d4bd91539",
+      "patch_excludes_path": true
+    },
+    {
+      "path": "codex-rs/uds/BUILD.bazel",
+      "bytes": 109,
+      "sha256": "8d63234480ab3da7a82e1754fcc10d988ff2e3f38344f9fe086914985c03cebc",
+      "git_blob": "a539147dd2956ece9acf95923fb30b8963cca0c1",
+      "patch_excludes_path": true
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "bytes": 423615,
+      "sha256": "5a19566686df77ef3f5a0a34d346d510e5a4ee4c37fecb5a704618dc3b4966a9",
+      "git_blob": "3aa2b601b94fc53a76abf0e40e0e5219caf3a437",
+      "patch_excludes_path": true
+    },
+    {
+      "path": "MODULE.bazel.lock",
+      "bytes": 1720024,
+      "sha256": "bf33d97b2d4d7a26b2d56949a12d0244d7e0c85c23cbe44762c28111eb3a9c16",
+      "git_blob": "ecdd4a2ead73806e328f882777102430ec6d9aba",
+      "patch_excludes_path": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "bytes": 25950,
+      "sha256": "e13456dc3678a7d0bf34614a4a69cfb430df425099ae7711b08a8e152b4b7cc6",
+      "git_blob": "cbafcfb553ee8d7a2699878e12c7eda5f91a4a95",
+      "patch_excludes_path": true
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/src/control.rs",
+      "bytes": 36655,
+      "sha256": "b7b32d9968c21986be64868e632f3b4dc18a41c4e5395566032bd1923345185b",
+      "git_blob": "ee46d46b10465e65858237a040dd160c9c47fcf6",
+      "patch_excludes_path": true
+    }
+  ],
+  "new_deterministic_test_sources": [
+    "expired_ready_future_is_dropped_without_being_polled",
+    "pending_future_is_not_polled_again_after_deadline_and_is_dropped",
+    "early_completion_preserves_the_original_result",
+    "early_error_result_is_not_reinterpreted_as_expiry",
+    "external_cancellation_drops_the_pending_inner_future",
+    "public_monotonic_entry_rejects_expired_ready_future_before_polling"
+  ],
+  "new_dependency_feature_Cargo_Bazel_lock_changes": false,
+  "production_clock": "Only std::time::Instant::now; private unitclock notAuthorityClock/notsecurityprovider",
+  "no_timer_or_preemption": "Original caller timeout_at retained forwake/cancel; guardchecks beforeeachpoll only, cannotinterruptsinglepoll/construction/drop",
+  "fmt_compile_tests_CI_native": "NOT_RUN",
+  "source_worktree_refs_index_changes": false,
+  "budget_started_reset": false,
+  "merge_ready": false,
+  "task_complete": false,
+  "NO_GO": true,
+  "prior_revision002_preserved": {
+    "manifest_sha256": "270fab86cf7a987956caa2bd6d7b054542b356949999bb80d289143390506c99",
+    "consolidated_sha256": "242e5762f8d95c996fdbfe045e2c34ba0d0b2b0bfde3d84aa50a0f2fefe50090"
+  },
+  "style_history": "Private helper asyncfn avoids possiblemanual_async_fn stylelint; source-only concern, no executedClippyerror. Publicfn signature and other3files exactrevision002.",
+  "incremental_from_revision003": {
+    "path": "revision003-to004-test-import-public-entry.patch",
+    "bytes": 1125,
+    "sha256": "cfcd6d623d6730871c22eee5cf1b4814459f8ba4629a2f862ccd191065fdcae2",
+    "added_lines": 14,
+    "removed_lines": 0
+  },
+  "prior_revision003_preserved": {
+    "manifest_sha256": "b20bbecef510644363d051ee67074124d5899e5e186570e238182db0ecce8a5e",
+    "consolidated_sha256": "2e341daefadc5af9514cc4e22d0246173a3da53eb02f0600ccd88d362e9646cf"
+  },
+  "revision004_scope": "Onlynewtestfile differsfrom003: existingdevpretty_assertions import +actualpublicproductionclockexpiredreadytest; nooldfivebody/assertedit"
+}

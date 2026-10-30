@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import sys
 import tempfile
 import textwrap
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -191,6 +193,145 @@ class CallerProofTests(unittest.TestCase):
         )
         with self.assertRaises(MODULE.VerificationFailure):
             MODULE.verify(root, manifest)
+
+    def test_optional_source_pin_is_exact_and_requires_an_explicit_update(self) -> None:
+        root = self.make_fixture()
+        data = tomllib.loads((root / "CALLERS.toml").read_text())
+        row = data["protected_file"][0]
+        source = root / row["path"]
+        MODULE._verify_protected_files(root, data)  # Original rows need no pin.
+        row["source_sha256"] = hashlib.sha256(source.read_bytes()).hexdigest()
+        MODULE._verify_protected_files(root, data)
+        source.write_bytes(source.read_bytes() + b"\n")
+        with self.assertRaisesRegex(MODULE.VerificationFailure, "protected source SHA256 mismatch"):
+            MODULE._verify_protected_files(root, data)
+        # Even a formatting change needs a matching source-identity update.
+        row["source_sha256"] = hashlib.sha256(source.read_bytes()).hexdigest()
+        MODULE._verify_protected_files(root, data)
+        row["source_sha256"] = "0" * 64
+        with self.assertRaisesRegex(MODULE.VerificationFailure, "protected source SHA256 mismatch"):
+            MODULE._verify_protected_files(root, data)
+
+    def test_present_source_pin_rejects_empty_malformed_and_wrong_type_values(self) -> None:
+        root = self.make_fixture()
+        data = tomllib.loads((root / "CALLERS.toml").read_text())
+        for invalid in (None, "", False, 0, [], {}, "a" * 63, "a" * 65, "A" * 64, "g" * 64):
+            with self.subTest(pin=invalid):
+                data["protected_file"][0]["source_sha256"] = invalid
+                with self.assertRaisesRegex(MODULE.VerificationFailure, "source_sha256 must be 64 lowercase hex"):
+                    MODULE._verify_protected_files(root, data)
+
+    def test_real_final_use_pins_reject_known_verifier_and_message_drift(self) -> None:
+        paths = [
+            "codex-rs/hepta-contracts/src/final_use.rs",
+            "codex-rs/hepta-contracts/src/final_use_ml_dsa65_v2.rs",
+        ]
+        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        data = {"protected_file": [
+            row for row in manifest["protected_file"] if row["path"] in paths
+        ]}
+        self.assertEqual([row["path"] for row in data["protected_file"]], paths)
+        for row in data["protected_file"]:
+            self.assertIn("source_sha256", row)
+        originals = {path: (ROOT / path).read_bytes() for path in paths}
+        source = originals[paths[1]].decode("utf-8")
+        code = MODULE._strip_rust_non_code(source)
+
+        def item(marker: str) -> tuple[str, str]:
+            start = source.index(marker)
+            brace = code.index("{", start)
+            end = MODULE._matching_delimiter(code, brace, "{", "}")
+            self.assertIsNotNone(end)
+            return source[start:end + 1], source[start:brace]
+
+        verify, header = item("pub(super) fn verify(")
+        broken = source.replace(verify, header + "{ true }")
+        decoy = (
+            "const DECOY: () = { enum OtherIssuer { "
+            "Ed25519V1(VerifyingKey), MlDsa65V2(Box<MlDsaVerifyingKey<MlDsa65>>) "
+            "} impl OtherIssuer { " + verify + " } };"
+        )
+        implementation, _ = item("impl IssuerVerifier {")
+        imports = source[source.index("use ml_dsa::EncodedVerifyingKey;"):source.index("pub const")]
+        constants = source[source.index("pub const"):source.index("\n\n/// One host-pinned")]
+        binding, binding_header = item("fn bind_key_id(")
+        context = 'pub const FINAL_USE_ML_DSA65_V2_CONTEXT: &[u8] = b"hepta.kernel.final-use.ml-dsa-65.v2";'
+        mutations = {
+            "nested_impl": broken.replace("impl IssuerVerifier {", "impl IssuerVerifier { " + decoy),
+            "macro": broken.replace("impl IssuerVerifier {", "impl self::IssuerVerifier {")
+                + "\nmacro_rules! ignore { ($($t:tt)*) => {}; }\nignore!(" + implementation + ");\n",
+            "nested_import": source.replace("use ml_dsa::MlDsa65;", "use ml_dsa::MlDsa87 as MlDsa65;")
+                + "\nmod decoy { " + imports + " }\n",
+            "nested_context": source.replace('b"hepta.kernel.final-use.ml-dsa-65.v2"', 'b"hepta.kernel.final-use.ml-dsa-65.v3"')
+                + "\nmod decoy { " + constants + " }\n",
+            "nested_key_binding": source.replace(binding, binding_header + "{ Ok(input.to_vec()) }")
+                + "\nmod decoy { " + binding + " }\n",
+            "conditional_context": source.replace(context, '#[cfg(target_os = "windows")]\n' + context)
+                + '\n#[cfg(not(target_os = "windows"))]\n' + context.replace("65.v2", "65.v3"),
+            "serde_grant": originals[paths[0]].decode("utf-8").replace(
+                "    pub binding: FinalUseBinding,", "    #[serde(skip_serializing)]\n    pub binding: FinalUseBinding,"
+            ),
+        }
+        for name, changed in mutations.items():
+            with self.subTest(mutation=name), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                for relative, raw in originals.items():
+                    target = root / relative
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes(raw)
+                self.assertEqual(MODULE._verify_protected_files(root, data), paths)
+                target = root / paths[0 if name == "serde_grant" else 1]
+                self.assertNotEqual(target.read_text(), changed)
+                target.write_text(changed)
+                with self.assertRaisesRegex(MODULE.VerificationFailure, "protected source SHA256 mismatch"):
+                    MODULE._verify_protected_files(root, data)
+
+
+    def test_real_final_use_retained_owner_delegate_noops_fail_source_pins(self) -> None:
+        paths = [
+            "codex-rs/hepta-contracts/src/final_use.rs",
+            "codex-rs/hepta-contracts/src/final_use_ml_dsa65_v2.rs",
+            "codex-rs/hepta-contracts/src/final_use_live_owner.rs",
+            "codex-rs/hepta-contracts/src/final_use_store.rs",
+            "codex-rs/utils/windows-private-state/src/private_owner_lock.rs",
+        ]
+        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        data = {
+            "protected_file": [
+                row for row in manifest["protected_file"] if row["path"] in paths
+            ]
+        }
+        originals = {path: (ROOT / path).read_bytes() for path in paths}
+        cases = [
+            (paths[2], "pub(super) fn ensure_live_state<'state>", "Ok(state)"),
+            (paths[3], "pub(super) fn revalidate_owner(", "Ok(())"),
+            (paths[4], "pub fn revalidate_shared(", "Ok(())"),
+        ]
+        for relative, marker, body in cases:
+            with self.subTest(delegate=relative), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                for path, raw in originals.items():
+                    target = root / path
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes(raw)
+                # Exercise the original validator on the actual reviewed sources
+                # before replacing one real delegate body with a permissive no-op.
+                MODULE._verify_protected_files(root, data)
+                source = originals[relative].decode("utf-8")
+                code = MODULE._strip_rust_non_code(source)
+                self.assertEqual(code.count(marker), 1)
+                start = code.index(marker)
+                brace = code.index("{", start)
+                end = MODULE._matching_delimiter(code, brace, "{", "}")
+                self.assertIsNotNone(end)
+                assert end is not None
+                changed = source[:brace] + "{ " + body + " }" + source[end + 1 :]
+                self.assertNotEqual(source, changed)
+                (root / relative).write_text(changed, encoding="utf-8")
+                with self.assertRaisesRegex(
+                    MODULE.VerificationFailure, "protected source SHA256 mismatch"
+                ):
+                    MODULE._verify_protected_files(root, data)
 
 
 if __name__ == "__main__":

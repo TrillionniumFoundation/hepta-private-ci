@@ -1,0 +1,1181 @@
+{
+  "schema": "system-safety-local-executions-v1",
+  "repository": "hepta",
+  "scope": "Original local functional, lint, format, reader and failed execution records. No hosted fixed-Host or production qualification is inferred.",
+  "interpretation": [
+    "Every selected completed execution is retained, including compile errors, failed tests, zero-test filters, source-mutating runs and resource failures.",
+    "A formatter or fix tool may exit zero and change source; the driver correctly records source_stable=false rather than an immutable-source pass.",
+    "Only an exit-zero, source-stable execution with the required actual tests can support its scoped claim. Broad historical failures remain failures.",
+    "Per-execution source_before/source_after include the base commit and exact changed-file hashes; these are not whole-commit hosted checks."
+  ],
+  "archive": {
+    "path": "local-executions.tar.gz",
+    "bytes": 111037,
+    "sha256": "2d484c4ec8501d8a0dcce303c47b4ccd10f4d445cfa065d80db01b21832616f6"
+  },
+  "executions": [
+    {
+      "name": "hepta-final-agentd-fix",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "--profile",
+        "dev-small",
+        "-p",
+        "codex-hepta-agentd",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "recorded_status": "passed",
+      "exit_code": 0,
+      "source_stable": true,
+      "elapsed_seconds": 446.0286260590001,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-final-agentd-fix.json",
+          "bytes": 6807,
+          "sha256": "8a306fa02c1c006c86ee384f05c1ee02436a7df8e26b849b84b44e74add53450"
+        },
+        {
+          "path": "hepta-final-agentd-fix.log",
+          "bytes": 63202,
+          "sha256": "1926b2a233901a5e5e17e6a740097899c9671c8dffdad5370df833888f28d96d"
+        }
+      ]
+    },
+    {
+      "name": "hepta-final-agentd-helper-format-check",
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "recorded_status": "passed",
+      "exit_code": 0,
+      "source_stable": true,
+      "elapsed_seconds": 0.6155301260005217,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-final-agentd-helper-format-check.json",
+          "bytes": 6686,
+          "sha256": "8ee205511c2605e19e58d236401dd874223657bcf5e27a37865ae3dc1545380c"
+        },
+        {
+          "path": "hepta-final-agentd-helper-format-check.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "hepta-final-agentd-helper-format",
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "recorded_status": "failed",
+      "exit_code": 0,
+      "source_stable": false,
+      "elapsed_seconds": 0.6558683330003987,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-final-agentd-helper-format.json",
+          "bytes": 6687,
+          "sha256": "19ed022c0363b9b718965451e440274bd50d37037f3907263fbe5ee90028aff8"
+        },
+        {
+          "path": "hepta-final-agentd-helper-format.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "hepta-final-agentd-http-controls-retry",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--test-threads",
+        "1",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(host_provider_) | test(host_dispatches_exact_wire_payload_once)"
+      ],
+      "recorded_status": "passed",
+      "exit_code": 0,
+      "source_stable": true,
+      "elapsed_seconds": 67.6799285379966,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-final-agentd-http-controls-retry.json",
+          "bytes": 7149,
+          "sha256": "14ac913cdee5e0257be79f36dae40f22c1318939efe8aac37e723d4316ea4e9f"
+        },
+        {
+          "path": "hepta-final-agentd-http-controls-retry.log",
+          "bytes": 28253,
+          "sha256": "6cabd9e5ef6a7a56ad20b48d8f70f5c116046edf11e43d61ca6b00d7a8bc3371"
+        }
+      ]
+    },
+    {
+      "name": "hepta-final-agentd-http-controls",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--test-threads",
+        "1",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(host_provider_) | test(host_dispatches_exact_wire_payload_once)"
+      ],
+      "recorded_status": "failed",
+      "exit_code": 101,
+      "source_stable": true,
+      "elapsed_seconds": 667.9667453970033,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-final-agentd-http-controls.json",
+          "bytes": 7152,
+          "sha256": "2fbbe560245217dd1ca7ba4ca2ac3eb9a4d528d2d030929e7487d89cb5f1b07c"
+        },
+        {
+          "path": "hepta-final-agentd-http-controls.log",
+          "bytes": 44517,
+          "sha256": "61ba21af7e8bf04c3046b7372a56f15271e1fbfeecdc06ef6342b1eb5d4e44a1"
+        }
+      ]
+    },
+    {
+      "name": "hepta-final-agentd-strict-clippy",
+      "command": [
+        "just",
+        "clippy",
+        "--locked",
+        "--profile",
+        "dev-small",
+        "-p",
+        "codex-hepta-agentd",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "recorded_status": "passed",
+      "exit_code": 0,
+      "source_stable": true,
+      "elapsed_seconds": 303.5476164490028,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-final-agentd-strict-clippy.json",
+          "bytes": 6810,
+          "sha256": "8dfb1bc103af3ea51eda7ed661344dc97ba21b0e4f13ce8f4451a32c6d77a75c"
+        },
+        {
+          "path": "hepta-final-agentd-strict-clippy.log",
+          "bytes": 30445,
+          "sha256": "2f061fe9d790d7f2e04909c8b2c13566f7c1d955b0ef71f16c7f0ac1482cc807"
+        }
+      ]
+    },
+    {
+      "name": "hepta-final-doc-format",
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "recorded_status": "passed",
+      "exit_code": 0,
+      "source_stable": true,
+      "elapsed_seconds": 0.7890398649979034,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-final-doc-format.json",
+          "bytes": 6686,
+          "sha256": "823aab886848584be81476af77aaa9637b6a814b24749caa1c0cde0c6954b6b3"
+        },
+        {
+          "path": "hepta-final-doc-format.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "hepta-final-effects-fix",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "--profile",
+        "dev-small",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-evidence",
+        "-p",
+        "codex-hepta-automation",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "recorded_status": "passed",
+      "exit_code": 0,
+      "source_stable": true,
+      "elapsed_seconds": 209.0321719929998,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-final-effects-fix.json",
+          "bytes": 6630,
+          "sha256": "fe90a56b3b6a8576be29dc0c5b78f3dc128ec7bc8632ac9d9949f7f07617cc25"
+        },
+        {
+          "path": "hepta-final-effects-fix.log",
+          "bytes": 31147,
+          "sha256": "2854faf5f922c201aefdbd014d6d2793c21f2b2a519f29c1b1c8fd7c30c4f514"
+        }
+      ]
+    },
+    {
+      "name": "hepta-final-effects-strict-clippy",
+      "command": [
+        "just",
+        "clippy",
+        "--locked",
+        "--profile",
+        "dev-small",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-evidence",
+        "-p",
+        "codex-hepta-automation",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "recorded_status": "passed",
+      "exit_code": 0,
+      "source_stable": true,
+      "elapsed_seconds": 62.551445162000164,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-final-effects-strict-clippy.json",
+          "bytes": 6634,
+          "sha256": "2dfe9b17623a00db687a9a43d49ff7df3f83e06d4298b74cc1d2106901858392"
+        },
+        {
+          "path": "hepta-final-effects-strict-clippy.log",
+          "bytes": 15528,
+          "sha256": "22422dd113097f864d82a360f3800387d3e3cea76a77976f95ab9007dea5fe6c"
+        }
+      ]
+    },
+    {
+      "name": "hepta-final-full-automation",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--test-threads",
+        "1",
+        "-p",
+        "codex-hepta-automation"
+      ],
+      "recorded_status": "passed",
+      "exit_code": 0,
+      "source_stable": true,
+      "elapsed_seconds": 39.549186879001354,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-final-full-automation.json",
+          "bytes": 6556,
+          "sha256": "62522868a7e0cb27e836d9190de9866668eff1ff3bedf392eb8e42548c7663ec"
+        },
+        {
+          "path": "hepta-final-full-automation.log",
+          "bytes": 40727,
+          "sha256": "d1016cfcb1626494ee3dc4bc0843cc41e9dd92f614029bcbfd9b177e99f78f3e"
+        }
+      ]
+    },
+    {
+      "name": "hepta-final-owner-format",
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "recorded_status": "failed",
+      "exit_code": 0,
+      "source_stable": false,
+      "elapsed_seconds": 0.6127395059993432,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-final-owner-format.json",
+          "bytes": 6429,
+          "sha256": "3b44378b9ba6d65786f8bcbefc0ee27b41726089e47416ed3c3daac0e04d587b"
+        },
+        {
+          "path": "hepta-final-owner-format.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "hepta-final-pair-workflow-entrypoint-controls",
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "scripts.test_hepta_ci_cargo_entrypoints",
+        "-v"
+      ],
+      "recorded_status": "passed",
+      "exit_code": 0,
+      "source_stable": true,
+      "elapsed_seconds": 0.6696058149973396,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-final-pair-workflow-entrypoint-controls.json",
+          "bytes": 7002,
+          "sha256": "ef81dd25b0d5e644bbf4b9d02216613c4e6d1c01e03f98f8d5d958f770d3a377"
+        },
+        {
+          "path": "hepta-final-pair-workflow-entrypoint-controls.log",
+          "bytes": 1965,
+          "sha256": "553383cba96c8198e92a0402e377e8a3432995c8b7f5c7b09d35a20c8b52d354"
+        }
+      ]
+    },
+    {
+      "name": "hepta-final-provider-effects-all",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--test-threads",
+        "1",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-evidence",
+        "provider_effect"
+      ],
+      "recorded_status": "passed",
+      "exit_code": 0,
+      "source_stable": true,
+      "elapsed_seconds": 19.746032225004456,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-final-provider-effects-all.json",
+          "bytes": 6616,
+          "sha256": "b759ed93dfb81c683116de9b7e271574ab0aca33617f3df068af5fb65d6116b1"
+        },
+        {
+          "path": "hepta-final-provider-effects-all.log",
+          "bytes": 32657,
+          "sha256": "bb828a312a0806b51faf90b3973b8c3c334f27389c1668b606d2691d04ed6f96"
+        }
+      ]
+    },
+    {
+      "name": "hepta-final-sqlite-helper-format",
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "recorded_status": "passed",
+      "exit_code": 0,
+      "source_stable": true,
+      "elapsed_seconds": 0.5696080529996834,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-final-sqlite-helper-format.json",
+          "bytes": 6428,
+          "sha256": "739e549710456bc7e0e497c78571371b1d93630667d3b6d7333e3fb1a188cb56"
+        },
+        {
+          "path": "hepta-final-sqlite-helper-format.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "hepta-format-stage1",
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "recorded_status": "failed",
+      "exit_code": 0,
+      "source_stable": false,
+      "elapsed_seconds": 0.40773236399763846,
+      "source_head": "96a446e1f48a04cf837610da8349e93c8bf9c91e",
+      "files": [
+        {
+          "path": "hepta-format-stage1.json",
+          "bytes": 3842,
+          "sha256": "2805b2a77098a13a726232736138ae5f2fbae295ed8952ef66fa115ba1114d5e"
+        },
+        {
+          "path": "hepta-format-stage1.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "hepta-late-ack-real-owner-green",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--test-threads",
+        "1",
+        "-p",
+        "codex-hepta-automation",
+        "--test",
+        "authorized_effect",
+        "late_dispatch_"
+      ],
+      "recorded_status": "passed",
+      "exit_code": 0,
+      "source_stable": true,
+      "elapsed_seconds": 9.226928439999028,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-late-ack-real-owner-green.json",
+          "bytes": 6616,
+          "sha256": "42bcdc902d5c66757a5a1439aaa483854fb7c39b09c4bc1f440d28d91c7c7c68"
+        },
+        {
+          "path": "hepta-late-ack-real-owner-green.log",
+          "bytes": 23726,
+          "sha256": "48333746d12d8e61017f0700cdc3bab752ce9027f77f9bdfd17ae2263fcb911b"
+        }
+      ]
+    },
+    {
+      "name": "hepta-late-ack-real-owner-red",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--test-threads",
+        "1",
+        "-p",
+        "codex-hepta-automation",
+        "--test",
+        "authorized_effect",
+        "late_dispatch_"
+      ],
+      "recorded_status": "failed",
+      "exit_code": 100,
+      "source_stable": true,
+      "elapsed_seconds": 5.293581875997916,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-late-ack-real-owner-red.json",
+          "bytes": 6618,
+          "sha256": "ffa7cb105b2da4c63846c89d0f8c50c2cbc1391e2d026d18da5db62ae3a0e7fb"
+        },
+        {
+          "path": "hepta-late-ack-real-owner-red.log",
+          "bytes": 25782,
+          "sha256": "fdf2f1a79ede5c640f3140f3fe88064c086a4c8bf437829432029594c43a2efa"
+        }
+      ]
+    },
+    {
+      "name": "hepta-late-ack-red-format",
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "recorded_status": "failed",
+      "exit_code": 0,
+      "source_stable": false,
+      "elapsed_seconds": 0.6130296289993566,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-late-ack-red-format.json",
+          "bytes": 6429,
+          "sha256": "8d1781e50dadd14e4445e048d5ccf5056b0e6c32217f666767fdea1d4d6e576e"
+        },
+        {
+          "path": "hepta-late-ack-red-format.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "hepta-operation-binding-green-small",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--test-threads",
+        "1",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-evidence",
+        "operation_binding"
+      ],
+      "recorded_status": "failed",
+      "exit_code": 0,
+      "source_stable": false,
+      "elapsed_seconds": 24.02072659999976,
+      "source_head": "96a446e1f48a04cf837610da8349e93c8bf9c91e",
+      "files": [
+        {
+          "path": "hepta-operation-binding-green-small.json",
+          "bytes": 3722,
+          "sha256": "c8bf5f7f08df42021b1b7868448feb300bdc03459e532bda789e6c18cd329ada"
+        },
+        {
+          "path": "hepta-operation-binding-green-small.log",
+          "bytes": 23477,
+          "sha256": "f848068da329f349deba5f74b9d589c5567ffcd6fab464b0d46180747a9beef7"
+        }
+      ]
+    },
+    {
+      "name": "hepta-operation-binding-red-small",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--test-threads",
+        "1",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-evidence",
+        "operation_binding"
+      ],
+      "recorded_status": "failed",
+      "exit_code": 100,
+      "source_stable": false,
+      "elapsed_seconds": 447.919699525999,
+      "source_head": "96a446e1f48a04cf837610da8349e93c8bf9c91e",
+      "files": [
+        {
+          "path": "hepta-operation-binding-red-small.json",
+          "bytes": 2292,
+          "sha256": "1e624703c1b2ef299b6ae8f60385bdfb9046127e2da7896b65f3411d633a7dd6"
+        },
+        {
+          "path": "hepta-operation-binding-red-small.log",
+          "bytes": 52108,
+          "sha256": "58ac14f54419e1f9e836e35f2ff5e18008a6ac472aa23c23900b176fdbcf98c8"
+        }
+      ]
+    },
+    {
+      "name": "hepta-operation-binding-red2",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-evidence",
+        "operation_binding"
+      ],
+      "recorded_status": "failed",
+      "exit_code": 101,
+      "source_stable": true,
+      "elapsed_seconds": 258.21723971100073,
+      "source_head": "96a446e1f48a04cf837610da8349e93c8bf9c91e",
+      "files": [
+        {
+          "path": "hepta-operation-binding-red2.json",
+          "bytes": 1311,
+          "sha256": "eaf950e5b2ac3c848ef905a6a81d9f0b4dfcd2c4541318f7da5b2c26660e0e9f"
+        },
+        {
+          "path": "hepta-operation-binding-red2.log",
+          "bytes": 13111,
+          "sha256": "3f71a2ad8aba24f42062eb760166e45a22c4b55e475d52aa9e9ce8946ebac06a"
+        }
+      ]
+    },
+    {
+      "name": "hepta-provider-effects-all-small",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--test-threads",
+        "1",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-evidence",
+        "provider_effect"
+      ],
+      "recorded_status": "passed",
+      "exit_code": 0,
+      "source_stable": true,
+      "elapsed_seconds": 3.6165043040018645,
+      "source_head": "96a446e1f48a04cf837610da8349e93c8bf9c91e",
+      "files": [
+        {
+          "path": "hepta-provider-effects-all-small.json",
+          "bytes": 4028,
+          "sha256": "ecd333af289f901898f675c96bf8341aea71fa277ffd75a6d1b99c461ca8615f"
+        },
+        {
+          "path": "hepta-provider-effects-all-small.log",
+          "bytes": 31818,
+          "sha256": "20405950345d6731dbed76ae37d513c091d83bf19a11dee67def30ce8d9dbbe1"
+        }
+      ]
+    },
+    {
+      "name": "hepta-provider-stage1-lint",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "--profile",
+        "dev-small",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-evidence",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "recorded_status": "failed",
+      "exit_code": 0,
+      "source_stable": false,
+      "elapsed_seconds": 199.201188068997,
+      "source_head": "96a446e1f48a04cf837610da8349e93c8bf9c91e",
+      "files": [
+        {
+          "path": "hepta-provider-stage1-lint.json",
+          "bytes": 4002,
+          "sha256": "f670782ec96b3df10364e3dff6376090294948fd9a7d197cba347f829ada9ab4"
+        },
+        {
+          "path": "hepta-provider-stage1-lint.log",
+          "bytes": 30040,
+          "sha256": "9ce018d0286d4240d14574965fac78719fa408e31fd66ae22b1eb87dfad13ac9"
+        }
+      ]
+    },
+    {
+      "name": "hepta-stage2-authorized-effects",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--test-threads",
+        "1",
+        "-p",
+        "codex-hepta-automation",
+        "--test",
+        "authorized_effect"
+      ],
+      "recorded_status": "failed",
+      "exit_code": 101,
+      "source_stable": true,
+      "elapsed_seconds": 12.422381039003085,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-stage2-authorized-effects.json",
+          "bytes": 5113,
+          "sha256": "183734762d4b737f3b1f6a5ce3d7a2bda6d148f49623ddead5f4f19e5eff517b"
+        },
+        {
+          "path": "hepta-stage2-authorized-effects.log",
+          "bytes": 20040,
+          "sha256": "060b414d1092e4ffe0635abb471c194303218ce998ecf6eaff99c7ef2d597907"
+        }
+      ]
+    },
+    {
+      "name": "hepta-stage2-authorized-effects2",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--test-threads",
+        "1",
+        "-p",
+        "codex-hepta-automation",
+        "--test",
+        "authorized_effect"
+      ],
+      "recorded_status": "failed",
+      "exit_code": 101,
+      "source_stable": true,
+      "elapsed_seconds": 6.023767009002768,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-stage2-authorized-effects2.json",
+          "bytes": 5112,
+          "sha256": "dd492a6d14575325da2d065478905f599d37fe0e480f72220ee2210b9e52a203"
+        },
+        {
+          "path": "hepta-stage2-authorized-effects2.log",
+          "bytes": 13384,
+          "sha256": "e6fe2be1772a2a30306ddd4e3fdc612dad56ad07ae1f91b2c3de3d18b4f8a1b0"
+        }
+      ]
+    },
+    {
+      "name": "hepta-stage2-authorized-effects3",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--test-threads",
+        "1",
+        "-p",
+        "codex-hepta-automation",
+        "--test",
+        "authorized_effect"
+      ],
+      "recorded_status": "failed",
+      "exit_code": 100,
+      "source_stable": true,
+      "elapsed_seconds": 11.333528049999586,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-stage2-authorized-effects3.json",
+          "bytes": 5113,
+          "sha256": "2109cbf7d589a77d76e296b0b4677ff7f58d6ebabe25f127489d62d46d2d7172"
+        },
+        {
+          "path": "hepta-stage2-authorized-effects3.log",
+          "bytes": 28884,
+          "sha256": "61278b9ce4453ecf8ea1ecf097a6dc11baf645005afe032b278e64f5cdf11a9f"
+        }
+      ]
+    },
+    {
+      "name": "hepta-stage2-authorized-effects4",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--test-threads",
+        "1",
+        "-p",
+        "codex-hepta-automation",
+        "--test",
+        "authorized_effect"
+      ],
+      "recorded_status": "passed",
+      "exit_code": 0,
+      "source_stable": true,
+      "elapsed_seconds": 13.482656738000514,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-stage2-authorized-effects4.json",
+          "bytes": 5111,
+          "sha256": "2b541567c0649f87efeac0b23291f561da6dba71eb0156282c4289744ec90e46"
+        },
+        {
+          "path": "hepta-stage2-authorized-effects4.log",
+          "bytes": 26792,
+          "sha256": "9afcb70f8d6cedddffb02952e55fee434db0cf8243983ed5f252a6214089f096"
+        }
+      ]
+    },
+    {
+      "name": "hepta-stage2-format",
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "recorded_status": "failed",
+      "exit_code": 0,
+      "source_stable": false,
+      "elapsed_seconds": 0.40479304700056673,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-stage2-format.json",
+          "bytes": 3902,
+          "sha256": "e5a213c84f3ab05f2a6310ade44a5fdfac9dd222d422383bd3531e54cea1103c"
+        },
+        {
+          "path": "hepta-stage2-format.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "hepta-stage2-owner-format",
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "recorded_status": "failed",
+      "exit_code": 0,
+      "source_stable": false,
+      "elapsed_seconds": 0.5562188690018957,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-stage2-owner-format.json",
+          "bytes": 4945,
+          "sha256": "d741a283adfa69e2c42c6833380af573ebb898bb0b3741f9a1daacacfadc5edf"
+        },
+        {
+          "path": "hepta-stage2-owner-format.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "hepta-stage2-owner-format2",
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "recorded_status": "failed",
+      "exit_code": 0,
+      "source_stable": false,
+      "elapsed_seconds": 0.536744960998476,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-stage2-owner-format2.json",
+          "bytes": 4944,
+          "sha256": "a687834c277d0edd4e7bf7d1b49bd1c9dcdab0133e932fb2724974e98c8bbdbd"
+        },
+        {
+          "path": "hepta-stage2-owner-format2.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "hepta-stage2-owner-format3",
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "recorded_status": "failed",
+      "exit_code": 0,
+      "source_stable": false,
+      "elapsed_seconds": 0.6091903650012682,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-stage2-owner-format3.json",
+          "bytes": 4945,
+          "sha256": "9a215aee35bf22374cae6503b58bb7673edadc784a54aa509724cfc1cf2031d5"
+        },
+        {
+          "path": "hepta-stage2-owner-format3.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "hepta-stage2-terminal-diagnostic",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--test-threads",
+        "1",
+        "-p",
+        "codex-hepta-automation",
+        "--test",
+        "authorized_effect",
+        "pins_accepted_identity_and_blocks_opaque_bypass"
+      ],
+      "recorded_status": "failed",
+      "exit_code": 100,
+      "source_stable": true,
+      "elapsed_seconds": 28.65563473599832,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-stage2-terminal-diagnostic.json",
+          "bytes": 5167,
+          "sha256": "8e521128c6fa3402b96c65a0371f38d762fb7218881ae1bc2b21b2ec537a7386"
+        },
+        {
+          "path": "hepta-stage2-terminal-diagnostic.log",
+          "bytes": 28160,
+          "sha256": "53c4fbf19f51fa3d7587ed29302bd735e7f8f013af0f2dcd548dd4905305194d"
+        }
+      ]
+    },
+    {
+      "name": "hepta-stage3-automation-and-key-controls",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--profile",
+        "dev-small",
+        "-p",
+        "codex-hepta-automation",
+        "-p",
+        "codex-hepta-contracts",
+        "-E",
+        "package(codex-hepta-automation) | test(provider_effect_taskflow_key_v2)",
+        "--test-threads=1"
+      ],
+      "recorded_status": "failed",
+      "exit_code": 96,
+      "source_stable": true,
+      "elapsed_seconds": 0.24617421099901549,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-stage3-automation-and-key-controls.json",
+          "bytes": 6363,
+          "sha256": "985248dda69594257eae051b0a829b71e5d407ef3e2725c4811edddf8dbee264"
+        },
+        {
+          "path": "hepta-stage3-automation-and-key-controls.log",
+          "bytes": 406,
+          "sha256": "369006f77e92878a5077d1cc2581899eeb0ae5d49f49830da1b525aa566fb29e"
+        }
+      ]
+    },
+    {
+      "name": "hepta-stage3-format",
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "recorded_status": "failed",
+      "exit_code": 0,
+      "source_stable": false,
+      "elapsed_seconds": 0.5814208070005407,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-stage3-format.json",
+          "bytes": 6119,
+          "sha256": "9b03bf834d2e044b7c06a453a8190b849636ec46fc83d55011ea6abf85be67ef"
+        },
+        {
+          "path": "hepta-stage3-format.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "hepta-stage3-full-automation",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--test-threads",
+        "1",
+        "-p",
+        "codex-hepta-automation"
+      ],
+      "recorded_status": "passed",
+      "exit_code": 0,
+      "source_stable": true,
+      "elapsed_seconds": 45.706861225000466,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-stage3-full-automation.json",
+          "bytes": 6246,
+          "sha256": "8fd2b808f84de022f12769346b745bcf6ca16d9aeb2a7d310c6ce0216cd9d8da"
+        },
+        {
+          "path": "hepta-stage3-full-automation.log",
+          "bytes": 39973,
+          "sha256": "cb3abcad8b5fd1308a6e407f3228788617a15aad2306588cc8cafa453ac2424e"
+        }
+      ]
+    },
+    {
+      "name": "hepta-stage3-owner-format",
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "recorded_status": "failed",
+      "exit_code": 0,
+      "source_stable": false,
+      "elapsed_seconds": 0.5442544799989264,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-stage3-owner-format.json",
+          "bytes": 6119,
+          "sha256": "0710a804240408ee72278fcacaf72d60d7463c5253a2cadffea4f6b2c26c1891"
+        },
+        {
+          "path": "hepta-stage3-owner-format.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "hepta-stage3-taskflow-key-controls",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--test-threads",
+        "1",
+        "-p",
+        "codex-hepta-contracts",
+        "provider_effect_taskflow_key_v2"
+      ],
+      "recorded_status": "failed",
+      "exit_code": 4,
+      "source_stable": true,
+      "elapsed_seconds": 32.818048990000534,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-stage3-taskflow-key-controls.json",
+          "bytes": 6284,
+          "sha256": "55932b8acf9b03e7710db095c8d6a2f8545ae32980ef85d243cbdf63b8ecddad"
+        },
+        {
+          "path": "hepta-stage3-taskflow-key-controls.log",
+          "bytes": 3964,
+          "sha256": "0d567d29b6495d955d5c55335fe609a33441982f821eeb2cd3cacf9d560cf0fa"
+        }
+      ]
+    },
+    {
+      "name": "hepta-stage3-taskflow-key-controls2",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--test-threads",
+        "1",
+        "-p",
+        "codex-hepta-contracts",
+        "taskflow_v2_"
+      ],
+      "recorded_status": "passed",
+      "exit_code": 0,
+      "source_stable": true,
+      "elapsed_seconds": 0.7434611889984808,
+      "source_head": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+      "files": [
+        {
+          "path": "hepta-stage3-taskflow-key-controls2.json",
+          "bytes": 6265,
+          "sha256": "3b2b32efd5cf767f67605492c616679952c0ad81b8c15f58fa87825226733710"
+        },
+        {
+          "path": "hepta-stage3-taskflow-key-controls2.log",
+          "bytes": 3219,
+          "sha256": "6623b5a20ec9411a24551ccf0490b59e5d4d39abad64501305ed61f030d03bb4"
+        }
+      ]
+    },
+    {
+      "name": "reclaim-hepta-debug-target",
+      "command": [
+        "cargo",
+        "clean",
+        "--manifest-path",
+        "codex-rs/Cargo.toml"
+      ],
+      "recorded_status": "passed",
+      "exit_code": 0,
+      "source_stable": true,
+      "elapsed_seconds": 0.3604702550001093,
+      "source_head": "96a446e1f48a04cf837610da8349e93c8bf9c91e",
+      "files": [
+        {
+          "path": "reclaim-hepta-debug-target.json",
+          "bytes": 1243,
+          "sha256": "3d5ea4ad0305fb13ae2fb1f97a6eaf3b8d93d88c2a19888b5d67867eea28a5b3"
+        },
+        {
+          "path": "reclaim-hepta-debug-target.log",
+          "bytes": 38,
+          "sha256": "2e72440bbc22782f135d8d7f8c6d50b4f035e736b1428208bc9ef92dc17873dd"
+        }
+      ]
+    }
+  ]
+}

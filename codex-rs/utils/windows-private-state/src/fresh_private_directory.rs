@@ -98,13 +98,48 @@ impl HeldDirectory {
     }
 }
 
+enum DirectoryCreation {
+    Created(FreshPrivateDirectory),
+    Collision {
+        parent: Box<ParentAnchor>,
+        error: ValidationError,
+    },
+}
+
 impl ParentAnchor {
     /// Create one new leaf with its protected owner descriptor already attached.
     /// FILE_CREATE never opens, repairs or resets an existing object.
     pub fn create_private_directory(
-        mut self,
+        self,
         leaf: &str,
     ) -> Result<FreshPrivateDirectory, CreationFailure> {
+        match self.try_create_private_directory(leaf)? {
+            DirectoryCreation::Created(directory) => Ok(directory),
+            DirectoryCreation::Collision { error, .. } => Err(CreationFailure::NotAdmitted(error)),
+        }
+    }
+
+    /// Provision a private store leaf or inspect the same held parent's exact
+    /// native collision. Existing state still needs its original marker/schema
+    /// protocol; every other creation error, including held unverified creation,
+    /// refuses admission without retry, reset, repair or absence inference.
+    pub fn prepare_private_store_directory(
+        self,
+        leaf: &str,
+    ) -> Result<PrivateStoreDirectory, CreationFailure> {
+        match self.try_create_private_directory(leaf)? {
+            DirectoryCreation::Created(directory) => Ok(PrivateStoreDirectory::Fresh(directory)),
+            DirectoryCreation::Collision { parent, .. } => (*parent)
+                .open_existing_candidate(leaf)
+                .map(PrivateStoreDirectory::Existing)
+                .map_err(CreationFailure::NotAdmitted),
+        }
+    }
+
+    fn try_create_private_directory(
+        mut self,
+        leaf: &str,
+    ) -> Result<DirectoryCreation, CreationFailure> {
         let prepare = (|| {
             if leaf.len() > 128 {
                 return Err(ValidationError::UnsafeObject);
@@ -115,7 +150,7 @@ impl ParentAnchor {
         })();
         let descriptor = prepare.map_err(CreationFailure::NotAdmitted)?;
         let mut event: Option<OpenObservation> = None;
-        let file = mechanism::create_protected_directory(
+        let result = mechanism::create_protected_directory(
             &self
                 .ancestors
                 .last()
@@ -124,8 +159,26 @@ impl ParentAnchor {
             leaf,
             &descriptor,
             |value| event = Some(value),
-        )
-        .map_err(|error| CreationFailure::NotAdmitted(error.into()))?;
+        );
+        let file = match result {
+            Ok(file) => file,
+            Err(error) => {
+                // Failed native Information is not a creation grant. Only the
+                // actual synchronous FILE_CREATE collision can inspect existing
+                // state, retaining this same captured owner and held ancestry.
+                if matches!(event, Some(event)
+                    if event.relative_to_held_root
+                        && event.disposition == mechanism::FILE_CREATE
+                        && event.ntstatus == 0xC000_0035_u32 as i32)
+                {
+                    return Ok(DirectoryCreation::Collision {
+                        parent: Box::new(self),
+                        error: error.into(),
+                    });
+                }
+                return Err(CreationFailure::NotAdmitted(error.into()));
+            }
+        };
         let mut directory = HeldDirectory { parent: self, file };
         let validate = (|| {
             let event = event.ok_or(ValidationError::UnsafeObject)?;
@@ -135,13 +188,13 @@ impl ParentAnchor {
             directory.inspect()
         })();
         match validate {
-            Ok(identity) => Ok(FreshPrivateDirectory {
+            Ok(identity) => Ok(DirectoryCreation::Created(FreshPrivateDirectory {
                 context: Arc::new(Mutex::new(DirectoryContext {
                     directory,
                     identity,
                     continuity: Continuity::Live,
                 })),
-            }),
+            })),
             Err(error) => Err(CreationFailure::Created {
                 directory: Box::new(UnverifiedCreatedDirectory {
                     _directory: directory,

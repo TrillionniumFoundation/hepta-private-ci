@@ -1,0 +1,42 @@
+{
+  "schema": "actual-original-Linux-Clippy-three-panic-sites-source-fix-v1",
+  "recorded_utc": "2026-10-28T14:15:15.514908+00:00",
+  "original_job": 122823483907,
+  "actual_original_checkout": "09575e9c3983f79d00b15f3424a4eae561bbed6e",
+  "source": "aca32e0df184a4a0b1c094918d1cf3dbd20e4588",
+  "official_full_original_artifact": {
+    "id": 12819347391,
+    "bytes": 8042596,
+    "SHA256": "13127324bae3a7cd59a17f42184edd6bb51a8b80874defabe9fd5757d18d7938",
+    "all_CRC_and_members_read": true
+  },
+  "source_changes": [
+    {
+      "path": "codex-rs/third_party/aws-smithy-json-0.61.9/src/deserialize/token.rs",
+      "before_SHA256": "6ab3335cec6753262b4e734c8f1ebee07c683f7cdc6d3c5a3d8652efa7f6bc02",
+      "after_SHA256": "f9e3e46784ebdd489b7de07011d97adcfd58ea832e013213b87c667b4e06fd79",
+      "production_replacements": 2,
+      "existing_cfg_test_bytes_exact": true
+    },
+    {
+      "path": "codex-rs/third_party/aws-smithy-json-0.61.9/src/deserialize.rs",
+      "before_SHA256": "1354295cf138384426e12834ade67d8ad58a7aafd0ba3e64c7c1ae046a6d0352",
+      "after_SHA256": "d257346f7a63005142c11002195e6ca654da55c6e1c4675eba7ebd257f64c065",
+      "production_replacements": 2,
+      "existing_cfg_test_bytes_exact": true
+    },
+    {
+      "path": "codex-rs/third_party/aws-smithy-json-0.61.9/src/escape.rs",
+      "before_SHA256": "6f3b38a31aa030c0c271d37a57209006705f6b3596f73ab402b3ac4747b6dfc7",
+      "after_SHA256": "21c7e4bb594b1fd70b9c40c9b1687e8ea18f5aef172da4cece5d988d5ed61bce",
+      "production_replacements": 1,
+      "existing_cfg_test_bytes_exact": true
+    }
+  ],
+  "behavior": "Consume peeked end-array via existing Result propagation; report UTF8 literal and Unicode conversion errors through existing error variants instead of panics; use method references. Existing valid literal/hex and error offsets remain; all original test bytes and limits/lints unchanged.",
+  "ownership": "Only root owns these three previously idle vendor source files. Live Actix component tests use their separate official external crates; Cargo graph inputs and active renderer scripts are unchanged. No live AWS source consumer existed before this new edit.",
+  "not_published_or_native_CI_failure_closed": true,
+  "no_lint_allow_policy_assertion_resource_or_guard_change": true,
+  "task_complete": false,
+  "merge_ready": false
+}

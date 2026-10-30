@@ -1,0 +1,64 @@
+{
+  "scope": "Explicit selected pair after preserving concurrent parent/active same-transaction optimization. This is source and canonical merge identity, not executed current-pair acceptance. Historical f874/24b/a38 observations remain unchanged.",
+  "observed_at_utc": "2026-10-30T08:02:49.533177+00:00",
+  "hepta_parent_for_pair_followup": "94ad3dc948702ddb4b89e8f993016925dea12e84",
+  "selected_chain": {
+    "source": "89218d818a1766c5610b64f09d75fc3d2ff6007d",
+    "base": "1d11f875493f8125e36b9adceacb342df108e5e5",
+    "merge": "bfd6b6a6a8d3b32ca130d179f6e8d80655f1c83f",
+    "ordered_parents": [
+      "1d11f875493f8125e36b9adceacb342df108e5e5",
+      "89218d818a1766c5610b64f09d75fc3d2ff6007d"
+    ],
+    "tree": "bbf42409ba719d496a155317dc8b6f23666b97c2",
+    "canonical_merge_tree": "bbf42409ba719d496a155317dc8b6f23666b97c2"
+  },
+  "workflow_changes": {
+    "native_sql_minimum_before": 74,
+    "native_sql_minimum_after": 77,
+    "new_original_tests": 3,
+    "timeouts_budgets_commands_other_profiles_unchanged": true,
+    "source_and_merge_pins_updated": true
+  },
+  "source_files": {
+    ".gitattributes": {
+      "bytes": 722,
+      "sha256": "bb9c66d3546eafb06e0e44c4a4eefcad0c5b9ebf3f477d54db1b59de4eb27f2b"
+    },
+    ".github/scripts/run_bazel_with_buildbuddy.py": {
+      "bytes": 16310,
+      "sha256": "2f47b73ff9d39fba2216be940adac80954aeea92c989af6668c3934b56069067"
+    },
+    ".github/scripts/test_run_bazel_native_msvc_toolchain.py": {
+      "bytes": 10700,
+      "sha256": "925d8366e9954d858d3ef9e2ee88fa4452bc8b0b59acb301d5588ffc5bfd71e9"
+    },
+    ".github/workflows/hepta-pon-native-pair.yml": {
+      "bytes": 58646,
+      "sha256": "5895a505d2f543f36a9fb6be6c3cdd591cbaa0d292020dad66e0bf15890907a0"
+    },
+    "CALLERS.toml": {
+      "bytes": 26732,
+      "sha256": "8575504ec9769490cf366ad73ee58f5cb27117f309d18e2902fea1b5c312ad89"
+    },
+    "codex-rs/hepta-agentd/BUILD.bazel": {
+      "bytes": 6073,
+      "sha256": "f03e78fd809f3207e4516e271685127d908fcb15ed76c09d08ca67baf3b7d139"
+    },
+    "defs.bzl": {
+      "bytes": 33368,
+      "sha256": "574911f478d014898c84f7d7731a4ac0928b80aa57792f03cdd5577ffa75a559"
+    },
+    "qa/b4-no-bypass/test_verify_hepta_callers.py": {
+      "bytes": 15087,
+      "sha256": "7ee287cc870ba6173e6e895533ba666aca4e4b74ca93fa3a8add9806f4cebc70"
+    },
+    "scripts/verify_hepta_callers.py": {
+      "bytes": 26885,
+      "sha256": "a5fed1f437433cca2754bac33211a18f798133bad0d95f362656ad2c648e5b77"
+    }
+  },
+  "new_native_execution_claimed": false,
+  "whole_system_qualified": false,
+  "activation": false
+}

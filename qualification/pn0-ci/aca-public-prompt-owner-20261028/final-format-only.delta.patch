@@ -1,0 +1,39 @@
+--- a/codex-rs/hepta-agentd/src/prompt_runtime_windows.rs
++++ b/codex-rs/hepta-agentd/src/prompt_runtime_windows.rs
+@@ -45,7 +45,10 @@
+     match parent.prepare_private_store_directory(leaf) {
+         Ok(input) => Ok(input),
+         Err(CreationFailure::NotAdmitted(_)) => Err(AgentdPromptRuntimeError::Unavailable),
+-        Err(CreationFailure::Created { directory, error: _ }) => {
++        Err(CreationFailure::Created {
++            directory,
++            error: _,
++        }) => {
+             // Retain the actual unverified-created role until this factory
+             // refuses. Normal RAII then only closes its handles: no deletion,
+             // retry, rebuild or ACL repair. The public error does not carry
+@@ -100,7 +103,10 @@
+         }
+         let bytes = store
+             .root
+-            .read_bounded(STATE_FILE, /*maximum*/ MAX_DURABLE_STATE_BYTES as usize)
++            .read_bounded(
++                STATE_FILE,
++                /*maximum*/ MAX_DURABLE_STATE_BYTES as usize,
++            )
+             .map_err(|_| AgentdPromptRuntimeError::CorruptState)?;
+         let stored: StoredPromptRuntimeState =
+             serde_json::from_slice(&bytes).map_err(|_| AgentdPromptRuntimeError::CorruptState)?;
+--- a/codex-rs/utils/windows-private-state/src/parent_anchor_tests.rs
++++ b/codex-rs/utils/windows-private-state/src/parent_anchor_tests.rs
+@@ -204,8 +204,8 @@
+     assert_eq!(owner.origin(), &super::OwnerLockOrigin::Created);
+     owner.revalidate()?;
+     drop(owner);
+-    let existing = ParentAnchor::for_create_only(&canonical)?
+-        .prepare_private_store_directory("private")?;
++    let existing =
++        ParentAnchor::for_create_only(&canonical)?.prepare_private_store_directory("private")?;
+     let mut reopened = existing.lock_original_marker("authority.lock")?;
+     assert_eq!(reopened.origin(), &super::OwnerLockOrigin::Existing);
+     reopened.revalidate()?;

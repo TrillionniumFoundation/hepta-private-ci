@@ -454,6 +454,10 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
         Err(_) if !socket_path.exists() => return Ok(()),
         Err(error) => return Err(error.into()),
     }
+    // Windows can report ConnectionRefused for an absent AF_UNIX path too.
+    if !tokio::fs::try_exists(socket_path).await? {
+        return Ok(());
+    }
     if codex_uds::is_stale_socket_path(socket_path).await? {
         tokio::fs::remove_file(socket_path).await?;
         Ok(())

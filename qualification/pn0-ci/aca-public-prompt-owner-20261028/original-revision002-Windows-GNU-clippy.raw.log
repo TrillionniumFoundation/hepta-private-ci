@@ -1,0 +1,34 @@
+cargo clippy --tests {args}
+ Downloading crates ...
+  Downloaded windows-sys v0.52.0
+   Compiling windows_x86_64_gnu v0.52.6
+    Checking windows-targets v0.52.6
+    Checking windows-sys v0.52.0
+    Checking codex-utils-windows-private-state v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/utils/windows-private-state)
+error: large size difference between variants
+   --> utils/windows-private-state/src/fresh_private_directory.rs:101:1
+    |
+101 | /  enum DirectoryCreation {
+102 | |      Created(FreshPrivateDirectory),
+    | |      ------------------------------ the second-largest variant contains at least 8 bytes
+103 | |/     Collision {
+104 | ||         parent: ParentAnchor,
+105 | ||         error: ValidationError,
+106 | ||     },
+    | ||_____- the largest variant contains at least 264 bytes
+107 | |  }
+    | |__^ the entire enum is at least 264 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+    = note: `-D clippy::large-enum-variant` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::large_enum_variant)]`
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+104 -         parent: ParentAnchor,
+104 +         parent: Box<ParentAnchor>,
+    |
+
+error: could not compile `codex-utils-windows-private-state` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `codex-utils-windows-private-state` (lib test) due to 1 previous error
+error: recipe `clippy` failed on line 61 with exit code 101

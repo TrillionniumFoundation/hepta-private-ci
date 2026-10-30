@@ -486,7 +486,12 @@ mod tests {
 
     #[tokio::test]
     async fn duplicate_start_is_one_local_intent_and_stop_is_idempotent() {
-        let temp = TempDir::new().expect("temp dir");
+        let temp = TempDir::new_in(
+            tempfile::env::temp_dir()
+                .canonicalize()
+                .expect("canonical temporary parent"),
+        )
+        .expect("temp dir");
         let store = opened_store(&temp).await;
         let contributor = LocalTurnLifecycleContributor::new(Arc::clone(&store));
         let session = ExtensionData::new("session");
@@ -541,7 +546,12 @@ mod tests {
 
     #[tokio::test]
     async fn active_lease_replays_after_host_store_restart() {
-        let temp = TempDir::new().expect("temp dir");
+        let temp = TempDir::new_in(
+            tempfile::env::temp_dir()
+                .canonicalize()
+                .expect("canonical temporary parent"),
+        )
+        .expect("temp dir");
         let store = opened_store(&temp).await;
         let first = LocalTurnLifecycleContributor::new(Arc::clone(&store));
         let session = ExtensionData::new("session");
@@ -589,7 +599,12 @@ mod tests {
 
     #[tokio::test]
     async fn acquire_before_admit_replays_and_retries_local_admission() {
-        let temp = TempDir::new().expect("temp dir");
+        let temp = TempDir::new_in(
+            tempfile::env::temp_dir()
+                .canonicalize()
+                .expect("canonical temporary parent"),
+        )
+        .expect("temp dir");
         let store = opened_store(&temp).await;
         let session = ExtensionData::new("session");
         let thread = ExtensionData::new("thread-902-admit");
@@ -633,7 +648,12 @@ mod tests {
 
     #[tokio::test]
     async fn indeterminate_crash_window_replays_as_terminal_and_releases() {
-        let temp = TempDir::new().expect("temp dir");
+        let temp = TempDir::new_in(
+            tempfile::env::temp_dir()
+                .canonicalize()
+                .expect("canonical temporary parent"),
+        )
+        .expect("temp dir");
         let store = opened_store(&temp).await;
         let first = LocalTurnLifecycleContributor::new(Arc::clone(&store));
         let session = ExtensionData::new("session");

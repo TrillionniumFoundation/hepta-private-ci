@@ -175,3 +175,39 @@ fn actual_parent_delete_child_rights_reject_live_and_cold_anchor() -> Result {
     );
     Ok(())
 }
+
+#[test]
+fn actual_canonical_drive_prefix_preserves_held_ancestry_and_store_creation() -> Result {
+    let fixture = Fixture::new()?;
+    let canonical = fixture.0.canonicalize()?;
+    assert!(matches!(canonical.components().next(),
+        Some(std::path::Component::Prefix(prefix))
+            if matches!(prefix.kind(), std::path::Prefix::VerbatimDisk(_))));
+    let mut literal = ParentAnchor::for_create_only(&fixture.0)?;
+    let mut actual = ParentAnchor::for_create_only(&canonical)?;
+    assert_eq!(
+        literal
+            .ancestors
+            .iter()
+            .map(|ancestor| &ancestor.identity)
+            .collect::<Vec<_>>(),
+        actual
+            .ancestors
+            .iter()
+            .map(|ancestor| &ancestor.identity)
+            .collect::<Vec<_>>()
+    );
+    literal.revalidate()?;
+    actual.revalidate()?;
+    let directory = actual.prepare_private_store_directory("private")?;
+    let mut owner = directory.lock_original_marker("authority.lock")?;
+    assert_eq!(owner.origin(), &super::OwnerLockOrigin::Created);
+    owner.revalidate()?;
+    drop(owner);
+    let existing =
+        ParentAnchor::for_create_only(&canonical)?.prepare_private_store_directory("private")?;
+    let mut reopened = existing.lock_original_marker("authority.lock")?;
+    assert_eq!(reopened.origin(), &super::OwnerLockOrigin::Existing);
+    reopened.revalidate()?;
+    Ok(())
+}

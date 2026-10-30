@@ -34,6 +34,7 @@ use codex_extension_api::empty_extension_registry;
 use codex_features::Feature;
 use codex_home::CodexHomeUserInstructionsProvider;
 use codex_login::CodexAuth;
+use codex_model_provider_info::ContentItemKindsCapability;
 use codex_model_provider_info::ModelProviderInfo;
 use codex_model_provider_info::built_in_model_providers;
 use codex_models_manager::bundled_models_response;
@@ -811,6 +812,10 @@ impl TestCodexBuilder {
         cwd_override: AbsolutePathBuf,
     ) -> anyhow::Result<(Config, Arc<TempDir>)> {
         let model_provider = ModelProviderInfo {
+            // This harness owns the exact mock receiver and its content-kind contract.
+            content_item_kinds_capability: Some(ContentItemKindsCapability {
+                endpoint: base_url.clone(),
+            }),
             base_url: Some(base_url),
             // Most core tests use SSE-only mock servers, so keep websocket transport off unless
             // a test explicitly opts into websocket coverage.

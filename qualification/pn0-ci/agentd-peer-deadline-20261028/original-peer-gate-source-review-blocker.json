@@ -1,0 +1,188 @@
+{
+  "schema": "agentd-consumed-peer-gate-frozen87f9-independent-source-review-v1",
+  "created_utc": "2026-10-29T00:11:19.273579+00:00",
+  "reviewer": "/root/e153_windows_raw_review",
+  "candidate": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/d328-agentd-consumed-peer-gate-source-candidate-20261028-007",
+  "manifest_sha256": "a23544aff8610ba2e7d67ad1a8aa5a6b66f39d0198c266a0adeec098c33cbfb4",
+  "patch": {
+    "path": "d328-agentd-consumed-peer-gate.patch",
+    "bytes": 2547,
+    "sha256": "87f973d85129af474ffa55ce8e4ef2eed795c447de4471f52e63a24bf2907af8",
+    "added_lines": 18,
+    "removed_lines": 6
+  },
+  "base_head": "d3284e385e2b6037dd86752ddd246b616144a87c",
+  "base_tree": "eed42a952ac5a713fc733b29707b4be3c20e00b2",
+  "bf36_head": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+  "bf36_tree": "803e1e9b12efa4dd236ecd99333a717b5d52b033",
+  "READ": true,
+  "REVIEW": "COMPLETE_FOR_FROZEN87F9_SOURCE",
+  "APPLY": false,
+  "committed": false,
+  "published": false,
+  "scope": "Read-only frozen single-file source mirror, immutable actual locald328/bf36 source/blob pins,68 original test files and existing matching-version Tokio timeout implementation. No source/mirror/ref/index writes, test/compile/fmt/native/CI/network/VM execution, expired allocation use or budget reset. New review report only.",
+  "binding": {
+    "source_file": {
+      "path": "codex-rs/hepta-agentd/src/control.rs",
+      "before_bytes": 8231,
+      "before_sha256": "c0a338c105a621632e0823273ded807e83aaefdab4f57f06470d73a8c0376651",
+      "before_git_blob": "9d376e5f1d79ca01126d567cf9f2bc5f778ef2d2",
+      "after_bytes": 8811,
+      "after_sha256": "534cc76e107deac9db744e44c34fb3b64e54f74c6eea31ebdc794238401a52f9",
+      "after_git_blob": "9e1de21972c3d1f792df9fb5b97488313bd4d249"
+    },
+    "before_exact_actual_d328_and_bf36_bytes": true,
+    "after_exact_manifest_size_SHA": true,
+    "all68_original_tests": {
+      "file": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/d328-agentd-consumed-peer-gate-source-candidate-20261028-007/all-original-agentd-test-files.json",
+      "sha256": "4849b04bcd3b3b0cae36f901c649c6d7fe3daae50851d31ff74f4d019130c915",
+      "count": 68,
+      "bytes": 1015604,
+      "selection_recomputed_from_actual_d328_tree": true,
+      "every_d328_file_size_SHA_verified": true,
+      "every_bf36_blob_OID_equals_original": true
+    },
+    "protected_source_pins": [
+      {
+        "path": "codex-rs/uds/src/lib.rs",
+        "bytes": 14398,
+        "sha256": "b81907ec7757b85cce001328f272c9d1c3467e42b8772d667b09b17a7d455c75",
+        "git_blob": "9fe8556c9681be665fa7606a5978fd7b35ed7e42",
+        "bf36_same_blob": true,
+        "patch_excludes_file": true
+      },
+      {
+        "path": "codex-rs/uds/src/lib_tests.rs",
+        "bytes": 5638,
+        "sha256": "a5e437bb409156b954b989dad6d3928038088cd8deba9a54b06dd315d883e3d4",
+        "git_blob": "9c2d25cd72fdfbbb74b04705d0bd69872570f01b",
+        "bf36_same_blob": true,
+        "patch_excludes_file": true
+      },
+      {
+        "path": "codex-rs/uds/Cargo.toml",
+        "bytes": 684,
+        "sha256": "4da6aa32dd7c36fd520c4e9787f1354cbf3421b669e88a8e1237a6cbc2381e13",
+        "git_blob": "66ba1d9d2d915dae795b2cda4eef7d2d4bd91539",
+        "bf36_same_blob": true,
+        "patch_excludes_file": true
+      },
+      {
+        "path": "codex-rs/uds/BUILD.bazel",
+        "bytes": 109,
+        "sha256": "8d63234480ab3da7a82e1754fcc10d988ff2e3f38344f9fe086914985c03cebc",
+        "git_blob": "a539147dd2956ece9acf95923fb30b8963cca0c1",
+        "bf36_same_blob": true,
+        "patch_excludes_file": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/client.rs",
+        "bytes": 25950,
+        "sha256": "e13456dc3678a7d0bf34614a4a69cfb430df425099ae7711b08a8e152b4b7cc6",
+        "git_blob": "cbafcfb553ee8d7a2699878e12c7eda5f91a4a95",
+        "bf36_same_blob": true,
+        "patch_excludes_file": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/runtime.rs",
+        "bytes": 21284,
+        "sha256": "34f8468a75327e539a9810b88fdbb03dfc10484e813a9f3f548f4926d7f85c24",
+        "git_blob": "b3d9131f5b07c7f3d1f61c82657512985e7033ad",
+        "bf36_same_blob": true,
+        "patch_excludes_file": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/state.rs",
+        "bytes": 33646,
+        "sha256": "e0d3dfcc84fbeaacf5dd0fb23a584363f4a602fc3e913241fe07bfc8a4d35ee2",
+        "git_blob": "7f787dccb9318399b1a940aaac5e940dd5dbf029",
+        "bf36_same_blob": true,
+        "patch_excludes_file": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/config.rs",
+        "bytes": 24207,
+        "sha256": "fcac8f2ae9dedc4e4fdc792715ccaf3febb15c077d8c1f371ca43d0fdcd10d85",
+        "git_blob": "3aba66f280ab69f6755e8ca31523915f8e41e27b",
+        "bf36_same_blob": true,
+        "patch_excludes_file": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neural_cognitive_execution.rs",
+        "bytes": 1615,
+        "sha256": "f93d89d7054a2148834dd48b9e1bab08180db7e20088d60537259bacdea0d800",
+        "git_blob": "fc03c0d66dc4ff5073c21275b1231713b52be4ad",
+        "bf36_same_blob": true,
+        "patch_excludes_file": true
+      },
+      {
+        "path": "codex-rs/hepta-matrixd/src/control.rs",
+        "bytes": 36655,
+        "sha256": "b7b32d9968c21986be64868e632f3b4dc18a41c4e5395566032bd1923345185b",
+        "git_blob": "ee46d46b10465e65858237a040dd160c9c47fcf6",
+        "bf36_same_blob": true,
+        "patch_excludes_file": true
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use.rs",
+        "bytes": 39684,
+        "sha256": "fde6acfb9ed13da256a91875b94a0ac2c2b1dc3bb4c8740adae10d318066f48c",
+        "git_blob": "32c5f8f823f898d88b429c4fa3dea2d07910be75",
+        "bf36_same_blob": true,
+        "patch_excludes_file": true
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_store_io.rs",
+        "bytes": 8066,
+        "sha256": "febde7c29b947473a77e215937f4c9e4a7de9dc877c488da1fe32157dd33bd93",
+        "git_blob": "5dc155c4d3a26b09c75a0660a4514a22c0182aef",
+        "bf36_same_blob": true,
+        "patch_excludes_file": true
+      }
+    ],
+    "all12_d328_bytes_size_SHA_and_bf36_blob_OIDs_match": true,
+    "serve_and_entire_following_suffix_exact": {
+      "bytes": 4823,
+      "sha256": "0aeca89aec9cc2d455c064d3d0199f5bc1bf3fc3b0eb2cd86d84e0b3a4516b48"
+    },
+    "original2seconds_32capacity_50milliseconds_MAXframe_declarations_unchanged": true
+  },
+  "findings": [
+    {
+      "id": "R01",
+      "priority": "P1",
+      "blocking": true,
+      "title": "Overload inner entry does not check its actual50ms-limited deadline",
+      "source": "codex-rs/hepta-agentd/src/control.rs",
+      "lines": "73-81",
+      "detail": "The effective overload_deadline is min(accepted2s deadline,now+original50ms), but inner future only compares std now to the accepted2s deadline. If first poll occurs after50ms but before2s, inner can start write_all even though its actual overload deadline expired. Tokio timeout is not an entry admission barrier.",
+      "local_pinned_source_evidence": {
+        "Cargo_lock_version": "actuald328 tokio1.53.1",
+        "path": "/home/qian-qi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.53.1/src/time/timeout.rs",
+        "bytes": 8026,
+        "sha256": "5b1b20cb77de63fb5071b696ac644706a9749e0aeb6dbea57220834cba6dc953",
+        "lines": "210-223",
+        "observation": "Timeout<T>::poll tries me.value.poll first, only then polls deadline. This is local matching-version source inspection, not a new test or complete official crate integrity audit."
+      },
+      "required_narrow_change": "Compare tokio::time::Instant::now() directly to the already computed overload_deadline at inner future entry. Keep min2s/50ms and original values; do not rely only on timeout_at or extend windows.",
+      "not_runtime_failure": "Static counter-schedule from existing poll order; no native/compiler failure was observed in this review."
+    }
+  ],
+  "preserved_source_semantics": [
+    "Accepted actual stream deadline is created once before peer validation and reused for the original execution object; no new deadline after queuing.",
+    "Existing stream.ensure_current_user_peer is called immediately after accept before semaphore acquisition, overload protocol write, spawn or request reads. Err/expiredcontinue drops that actual stream naturally; no response or permit on refusal.",
+    "Original peer producer is unchanged: supported Unix uses actual OS peer UID; Windows remains Unsupported and therefore connections refuse rather than fabricating PID/SID proof.",
+    "Existing execution.check is called at spawned task start before serve_connection future; original cancellation drop guard and permit remain retained on the original task. Timeout is used for cleanup, not issuance of peer or execution authority.",
+    "No schema/request handler/serve suffix, wire frame cap,32semaphore size,2swindow or50msoverload constant changes. Original68tests/consumer APIs/providers/nativepeer/pathDACL are not replaced."
+  ],
+  "limits": [
+    "Fixing first-poll entry is narrower than proving every later write_all poll or physical cleanup finishes within50ms. The existing timeout future polls its body first on later polls too; no whole-I/O hard latency bound is qualified. If per-poll no-expired-bytes is required, it needs a separate reviewed deadline-aware I/O implementation.",
+    "Existing synchronous OS peer query is not preempted by deadline; code can refuse later protocol admission after it returns, not prove hard accepted-socket retirement latency.",
+    "Windows functional peer producer and private socket DACL are still open; adding fail-closed consumption does not qualify ordinary Windows control service.",
+    "No actual Agentd caller/package/native tests, fullCI, real model/host/SDK budget renewal or bf36 V8 build was run."
+  ],
+  "disposition": "BLOCKED_BY_R01_ON_FROZEN87F9_ENTRY_DEADLINE_SOURCE",
+  "merge_ready": false,
+  "task_complete": false,
+  "NO_GO": true
+}

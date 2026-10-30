@@ -21,6 +21,8 @@ use serde::Serialize;
 use sha2::Digest;
 use sha2::Sha256;
 
+#[path = "final_use_live_owner.rs"]
+mod live_owner;
 #[path = "final_use_ml_dsa65_v2.rs"]
 mod ml_dsa65_v2;
 #[path = "final_use_store.rs"]
@@ -334,9 +336,7 @@ impl VerifiedUseToken {
             .state
             .lock()
             .map_err(|_| FinalUseError::Unavailable)?;
-        if state.failed {
-            return Err(FinalUseError::Unavailable);
-        }
+        let state = self.owner.ensure_live_state(state)?;
         let now_unix_ms = self.owner.clock.now_unix_ms().map_err(map_trust_error)?;
         validate_live(&self.grant, &state.head, now_unix_ms)?;
         if state.head != self.claimed_head {
@@ -503,9 +503,7 @@ impl FinalUseAuthority {
             .state
             .lock()
             .map_err(|_| FinalUseError::Unavailable)?;
-        if state.failed {
-            return Err(FinalUseError::Unavailable);
-        }
+        let state = self.0.ensure_live_state(state)?;
         Ok(frontier_for_state(&state))
     }
 
@@ -519,9 +517,7 @@ impl FinalUseAuthority {
             .state
             .lock()
             .map_err(|_| FinalUseError::Unavailable)?;
-        if state.failed {
-            return Err(FinalUseError::Unavailable);
-        }
+        let state = self.0.ensure_live_state(state)?;
         Ok(FinalUseCapacity {
             authority_epoch: state.head.authority_epoch,
             revision: state.head.revision,
@@ -540,23 +536,19 @@ impl FinalUseAuthority {
             .state
             .lock()
             .map_err(|_| FinalUseError::Unavailable)?;
-        if state.failed {
-            return Err(FinalUseError::Unavailable);
-        }
+        let state = self.0.ensure_live_state(state)?;
         Ok(state.head.clone())
     }
 
     /// Called only by the trusted host, not from a provider response or grant.
     /// Revocations are monotonic within an epoch and are never silently dropped.
     pub fn update_revocations(&self, head: FinalUseRevocations) -> Result<(), FinalUseError> {
-        let mut state = self
+        let state = self
             .0
             .state
             .lock()
             .map_err(|_| FinalUseError::Unavailable)?;
-        if state.failed {
-            return Err(FinalUseError::Unavailable);
-        }
+        let mut state = self.0.ensure_live_state(state)?;
         if !valid_head(&head)
             || head.authority_epoch < state.head.authority_epoch
             || head.revision <= state.head.revision
@@ -594,9 +586,7 @@ impl FinalUseAuthority {
             .state
             .lock()
             .map_err(|_| FinalUseError::Unavailable)?;
-        if state.failed {
-            return Err(FinalUseError::Unavailable);
-        }
+        let state = self.0.ensure_live_state(state)?;
         validate_live(&signed.grant, &state.head, self.now_unix_ms()?)?;
         if state.used_nonces.contains(&signed.grant.nonce) {
             return Err(FinalUseError::AlreadyClaimed);
@@ -647,14 +637,12 @@ impl FinalUseAuthority {
         expected: &FinalUseBinding,
     ) -> Result<VerifiedUseToken, FinalUseError> {
         let input = self.grant_signing_input(signed, expected)?;
-        let mut state = self
+        let state = self
             .0
             .state
             .lock()
             .map_err(|_| FinalUseError::Unavailable)?;
-        if state.failed {
-            return Err(FinalUseError::Unavailable);
-        }
+        let mut state = self.0.ensure_live_state(state)?;
         let now_unix_ms = self.now_unix_ms()?;
         validate_live(&signed.grant, &state.head, now_unix_ms)?;
         if state.used_nonces.contains(&signed.grant.nonce) {
@@ -796,9 +784,7 @@ impl FinalUseAuthority {
             .state
             .lock()
             .map_err(|_| FinalUseError::Unavailable)?;
-        if state.failed {
-            return Err(FinalUseError::Unavailable);
-        }
+        let state = self.0.ensure_live_state(state)?;
         validate_live(&token.grant, &state.head, self.now_unix_ms()?)?;
         self.0.active_dispatches.fetch_add(1, Ordering::AcqRel);
         drop(state);
@@ -840,9 +826,7 @@ impl FinalUseAuthority {
             .state
             .lock()
             .map_err(|_| FinalUseError::Unavailable)?;
-        if state.failed {
-            return Err(FinalUseError::Unavailable);
-        }
+        let state = self.0.ensure_live_state(state)?;
         let now_unix_ms = self.now_unix_ms()?;
         validate_live(&token.grant, &state.head, now_unix_ms)?;
         Ok(VerifiedUseTokenWitnessV1::final_use(
@@ -870,9 +854,7 @@ impl FinalUseAuthority {
             .state
             .lock()
             .map_err(|_| FinalUseError::Unavailable)?;
-        if state.failed {
-            return Err(FinalUseError::Unavailable);
-        }
+        let state = self.0.ensure_live_state(state)?;
         let now_unix_ms = self.now_unix_ms()?;
         validate_live(&token.grant, &state.head, now_unix_ms)?;
         let witness = VerifiedUseTokenWitnessV1::final_use(

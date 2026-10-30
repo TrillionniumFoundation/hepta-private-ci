@@ -1227,6 +1227,12 @@ async fn verify_store(pool: &SqlitePool, owner_agent_id: &AgentId) -> Result<(),
     verify_taskflow_store(pool, owner_agent_id)
         .await
         .map_err(map_taskflow_verify_error)?;
+    crate::effect_dispatch_provider_receipt::verify_provider_receipts(
+        pool,
+        owner_agent_id.as_str(),
+    )
+    .await
+    .map_err(map_taskflow_verify_error)?;
     Ok(())
 }
 
@@ -1372,6 +1378,10 @@ async fn reconcile_legacy_migration_ids(pool: &SqlitePool) -> Result<(), Automat
     }
     transaction.commit().await.map_err(unavailable)
 }
+
+#[cfg(test)]
+#[path = "provider_append_migration_tests.rs"]
+mod provider_append_migration_tests;
 
 #[cfg(test)]
 #[path = "migration_convergence_tests.rs"]

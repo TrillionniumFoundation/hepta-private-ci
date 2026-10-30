@@ -166,7 +166,7 @@ id = "final_use_claim_raw"
 symbol = "FinalUseAuthority::claim"
 receiver_type = "FinalUseAuthority"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
-definition_markers = ["pub fn claim(", "verify_strict", "used_nonces"]
+definition_markers = ["pub fn claim(", "grant_signing_input", "candidate.key.verify(", "used_nonces"]
 product_callers = ["codex-rs/hepta-memory/src/production_writer.rs", "codex-rs/hepta-automation/src/authorized_effect.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-operations/src/durable_store.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
 caller_markers = ["authority", "binding"]
 
@@ -462,8 +462,37 @@ forbidden = ["impl Default for HttpProviderEffectAdapter"]
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/final_use.rs"
-required = ["pub fn open_state_dir(", "pub fn open_state_dir_with_trust(", "pub fn open_state_dir_with_issuer_keys(", "FinalUseIssuerTrustKey", "pub fn claim_final_use(", "pub fn deliver_final_use", "pub fn deliver_final_use_with_witness", "pub fn dispatch_final_use", "pub fn dispatch_final_use_with_witness", "pub fn claim(", "pub fn with_verified_use", "pub fn with_dispatch_boundary", "FinalUseFrontier", "VerifiedUseTokenWitnessV1", "verify_strict", "validate_live"]
+# Pin the reviewed owner/delegate bytes; this does not grant runtime authority
+# or establish cryptographic qualification. Source changes update these pins.
+source_sha256 = "a79db5397fa7da372fd24b400639e7fff583a32b19c3f8319eb1c39658fbb28a"
+required = ["pub fn open_state_dir(", "pub fn open_state_dir_with_trust(", "pub fn open_state_dir_with_issuer_keys(", "FinalUseIssuerTrustKey", "pub fn claim_final_use(", "pub fn deliver_final_use", "pub fn deliver_final_use_with_witness", "pub fn dispatch_final_use", "pub fn dispatch_final_use_with_witness", "pub fn claim(", "pub fn with_verified_use", "pub fn with_dispatch_boundary", "FinalUseFrontier", "VerifiedUseTokenWitnessV1", "grant_signing_input", "candidate.key.verify(", "validate_live"]
 forbidden = ["impl Default for FinalUseAuthority", "pub fn permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/final_use_ml_dsa65_v2.rs"
+source_sha256 = "796d9c15f04f37d0b820b4f2b847e38a8e4ce29b3a230b32cb61aa887e4d6066"
+required = ["pub(super) enum IssuerVerifier", "verify_strict", "MlDsaSignature::<MlDsa65>", "verify_with_context", "FINAL_USE_ML_DSA65_V2_CONTEXT"]
+forbidden = ["impl Default for IssuerVerifier", "pub fn permit_all"]
+
+# Keep the direct retained-owner delegation bound after it leaves final_use.rs.
+# Native directory/ACL behavior still requires the existing platform qualification.
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/final_use_live_owner.rs"
+source_sha256 = "750f2902c607cb8bb5663f72ab37785aa1571173b2ae620a93551feffa3ac19f"
+required = ["pub(super) fn ensure_live_state", "state.failed", "self.store.revalidate_owner()", "state.failed = true", "Ok(state)"]
+forbidden = ["impl Default for Inner"]
+
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/final_use_store.rs"
+source_sha256 = "e5462d76502c103c14ccb21b83d8118fd885cc6aae492893b51d9acc61f439ad"
+required = ["pub(super) fn revalidate_owner(", ".revalidate_shared()", "MlDsa65IssuerKeyRingV2", "open_ml_dsa65_key_ring_exact", "append_claim"]
+forbidden = ["impl Default for Store", "pub fn permit_all"]
+
+[[protected_file]]
+path = "codex-rs/utils/windows-private-state/src/private_owner_lock.rs"
+source_sha256 = "9f6ef5f7ac348bf2ebac9c3872b19df16776ea88c47b2009aab05ca3f91f1c82"
+required = ["pub fn revalidate_shared(", "self.validate_locked(&mut held)", "held.revalidate()?", "inspect(&self.file, held)? != self.identity", "held.continuity = Continuity::Refused"]
+forbidden = ["impl Clone for OwnerLock", "impl Default for OwnerLock", "pub fn permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/final_use_control.rs"

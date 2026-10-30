@@ -1,0 +1,9 @@
+# Integration CI follow-up
+
+The actual `daa0209` / `18cf2d2` execution found two concrete blockers. The current main README cleanup removed the discovery links required by the unchanged development/readiness verifier. Six README lines now link to the actual development guide and readiness index. The original development-docs command reproduces the failure and then passes; original readiness controls also pass with authority flags still false.
+
+The macOS ARM complete Bazel test run terminated with exit 33 and `OutOfMemoryError: unable to create native thread`, before completing the original test set. The original macOS profile selected a local TestRunner while inheriting remote parallelism. One configuration line now caps local test jobs at eight. Remote jobs 800, runner resources, time limits, test selection and all other configuration bytes remain unchanged. This is a proposed resource correction. Its effect requires the next source's complete macOS CI and is not inferred from static review.
+
+The archive retains the original hosted/local failures, exact before/after source, unchanged checker hashes, local GREEN records, independent configuration review and final formatting observations. It grants no native, cryptographic, model-efficacy or production qualification. Full source and per-member hashes are in `manifest.json` and `INDEX.json`.
+
+The original Windows artifact also proves that all 40 and seven previously required cases remain present and pass, with one real upstream case added to each group. The exact rosters and corresponding counts now require all 41 and eight cases. Replaying the original checker on the original tee bytes and actual process return codes reproduces both old failures exactly; the expanded checker passes the same bytes. This is reader replay, not a new native Windows run. The original overall result, broad-identity deletion failure, legacy launch refusal and command exit discrepancies remain preserved.

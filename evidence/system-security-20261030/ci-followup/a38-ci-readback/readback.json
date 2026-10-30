@@ -1,0 +1,1495 @@
+{
+  "schema": "chain-a38-ci-terminal-readback-v1",
+  "source": {
+    "head": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+    "tree": "feda9e006cded26631e8dbfcbf537511ddb053be",
+    "base": "1d11f875493f8125e36b9adceacb342df108e5e5",
+    "prospective_merge": "52a3c9d614281897dd5a6adeb3576a8acfb1ee82"
+  },
+  "scope": "Read-only current-head original Actions jobs, connector-decoded full job logs, and two original small evidence ZIPs. No project source execution or repository/remote mutation. Historical 24b executions remain separate.",
+  "runs": [
+    {
+      "id": 41014451843,
+      "name": "Pure PoN raw History joint research",
+      "head_sha": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_attempt": 1,
+      "created_at": "2026-10-30T06:30:12Z",
+      "updated_at": "2026-10-30T06:42:35Z",
+      "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/41014451843",
+      "path": ".github/workflows/pon-pure-history-raw-joint.yml"
+    },
+    {
+      "id": 41014451558,
+      "name": "Pinned CodeQL analysis and coverage research",
+      "head_sha": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_attempt": 1,
+      "created_at": "2026-10-30T06:30:12Z",
+      "updated_at": "2026-10-30T06:45:31Z",
+      "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/41014451558",
+      "path": ".github/workflows/pon-pinned-codeql-analysis-v1.yml"
+    },
+    {
+      "id": 41014451738,
+      "name": "CodeQL exact-source analysis export",
+      "head_sha": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_attempt": 1,
+      "created_at": "2026-10-30T06:30:12Z",
+      "updated_at": "2026-10-30T06:50:28Z",
+      "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/41014451738",
+      "path": ".github/workflows/codeql-analysis-export.yml"
+    },
+    {
+      "id": 41014451652,
+      "name": "History V6 exact-source native recovery",
+      "head_sha": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "created_at": "2026-10-30T06:30:12Z",
+      "updated_at": "2026-10-30T07:02:25Z",
+      "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/41014451652",
+      "path": ".github/workflows/pon-history-epoch-v1-native.yml"
+    },
+    {
+      "id": 41014451503,
+      "name": "PoN recent batch exact-source acceptance",
+      "head_sha": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "created_at": "2026-10-30T06:30:12Z",
+      "updated_at": "2026-10-30T06:41:59Z",
+      "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/41014451503",
+      "path": ".github/workflows/pon-recent-batch-acceptance.yml"
+    }
+  ],
+  "raw_history": [
+    {
+      "job_id": 123927495098,
+      "summary_log_line": 1470,
+      "schema": "pon-pure-history-raw-joint-ci-v1",
+      "expected_head": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+      "expected_tree": "feda9e006cded26631e8dbfcbf537511ddb053be",
+      "complete_success": false,
+      "failure": "ORIGINAL_THREE_RUN_CAMPAIGN_FAILED",
+      "finalization_failures": [],
+      "history_resource_profile": "history-account-graph-resource-fence-v1",
+      "native_selector": "separate_process_pure_history_raw_graph_fence_campaign",
+      "original_campaign_outer_timeout_seconds": 600,
+      "planned_complete_runs": 3,
+      "admission_search_budget": 0,
+      "expected_resources": {
+        "cpu_max": "400000 100000",
+        "memory_max": "17179869184",
+        "nice": 10
+      },
+      "separate_verifier_limits": {
+        "cpu.max": "25000 100000",
+        "cpu.max.burst": "0",
+        "memory.max": "2147483648",
+        "memory.swap.max": "0",
+        "pids.max": "256"
+      },
+      "original_inputs": {
+        "attacker_processes": [
+          0,
+          24,
+          24
+        ],
+        "business_blocks": 21,
+        "modes": [
+          "baseline",
+          "from-zero",
+          "late-product"
+        ],
+        "phase_seconds": 30,
+        "seed_blocks": 4,
+        "seed_transfers": 1024
+      },
+      "binary": {
+        "actual_compiler_artifact_profile": {
+          "debug_assertions": false,
+          "debuginfo": 0,
+          "opt_level": "3",
+          "overflow_checks": false,
+          "test": true
+        },
+        "build_artifact": "/home/runner/work/_temp/target-native-campaign/release/deps/public_v3_multiprocess-81e73e5be197a972",
+        "build_separate_from_measured_campaign": true,
+        "bytes": 11500416,
+        "execution": "original cargo test command using the checked build artifact",
+        "retained": "public_v3_multiprocess.bin",
+        "sha256_after": "8b02f6dc4225e14057a9974a7f80f1896f0f592e990ab533fd414b94a71d251c",
+        "sha256_before": "8b02f6dc4225e14057a9974a7f80f1896f0f592e990ab533fd414b94a71d251c"
+      },
+      "source_kind": "head",
+      "strict_profile_result_is_separate": true,
+      "state_backend": "authenticated-v1",
+      "work_profile": "pure-history-raw-v1",
+      "runner_sha256": "b0b477511064042cb7c96356b2cbce29357275bea7cdaaeb9749bbfacb1e98b9",
+      "verifier_reader_sha256": "5bebc27eff6c2813db82e74c7dde3d84247a2d7049db788bff602f0c2fd2a610",
+      "build": {
+        "returncode": 0,
+        "complete_success": true,
+        "elapsed_seconds": 141.513346805,
+        "error": null
+      },
+      "pure_reader_controls": {
+        "returncode": 0,
+        "complete_success": true,
+        "elapsed_seconds": 0.578727117,
+        "error": null,
+        "stderr_bytes": 113,
+        "stderr_sha256": "aa02f827c26b92706ab44336ee1c1c97d5786a0f8a213a8571dc969b29d8393d",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "actual_test_count_not_visible_in_selected_job_log": true
+      },
+      "pure_controls": [
+        {
+          "name": "pure-library-controls",
+          "returncode": 0,
+          "complete_success": true,
+          "error": null
+        },
+        {
+          "name": "pure-cli-controls",
+          "returncode": 0,
+          "complete_success": true,
+          "error": null
+        },
+        {
+          "name": "pure-campaign-binding-controls",
+          "returncode": 0,
+          "complete_success": true,
+          "error": null
+        }
+      ],
+      "attempts": [
+        {
+          "number": 1,
+          "complete_success": false,
+          "original_criteria_met": false,
+          "report_validation_failure": "actual full receiver/verifier state equality required",
+          "step": {
+            "command": [
+              "/home/runner/.cargo/bin/cargo",
+              "+1.95.0",
+              "test",
+              "--locked",
+              "--offline",
+              "--release",
+              "--manifest-path",
+              "trillionnium/Cargo.toml",
+              "-p",
+              "trnm-pon-node",
+              "--test",
+              "public_v3_multiprocess",
+              "separate_process_pure_history_raw_graph_fence_campaign",
+              "--",
+              "--exact",
+              "--ignored",
+              "--nocapture",
+              "--test-threads=1"
+            ],
+            "elapsed_seconds": 101.922754512,
+            "outer_stage_timeout_seconds": 600,
+            "returncode": 101,
+            "complete_success": false,
+            "error": null,
+            "stderr_bytes": 1615,
+            "stderr_sha256": "4cab85a8581221725a8fe2b2d43c35bfe14228e52ed0fa19315821d3a1df3cc2",
+            "stdout_bytes": 271,
+            "stdout_sha256": "487c9f4b503729f38073d46b3d0e928ee142abc137f5bf489c39b90ea3611c96"
+          }
+        },
+        {
+          "number": 2,
+          "complete_success": false,
+          "original_criteria_met": false,
+          "report_validation_failure": "actual full receiver/verifier state equality required",
+          "step": {
+            "command": [
+              "/home/runner/.cargo/bin/cargo",
+              "+1.95.0",
+              "test",
+              "--locked",
+              "--offline",
+              "--release",
+              "--manifest-path",
+              "trillionnium/Cargo.toml",
+              "-p",
+              "trnm-pon-node",
+              "--test",
+              "public_v3_multiprocess",
+              "separate_process_pure_history_raw_graph_fence_campaign",
+              "--",
+              "--exact",
+              "--ignored",
+              "--nocapture",
+              "--test-threads=1"
+            ],
+            "elapsed_seconds": 103.312056634,
+            "outer_stage_timeout_seconds": 600,
+            "returncode": 101,
+            "complete_success": false,
+            "error": null,
+            "stderr_bytes": 1615,
+            "stderr_sha256": "5c408e87ff4c8b430c12dd7367bcc7a6bdd500092ab3350a4b37e4ea35303d66",
+            "stdout_bytes": 271,
+            "stdout_sha256": "0363d7aaddd324e2e83d1abac0c095f51921f0ef86239b0bc9deb4f56f9ac980"
+          }
+        },
+        {
+          "number": 3,
+          "complete_success": false,
+          "original_criteria_met": false,
+          "report_validation_failure": "actual full receiver/verifier state equality required",
+          "step": {
+            "command": [
+              "/home/runner/.cargo/bin/cargo",
+              "+1.95.0",
+              "test",
+              "--locked",
+              "--offline",
+              "--release",
+              "--manifest-path",
+              "trillionnium/Cargo.toml",
+              "-p",
+              "trnm-pon-node",
+              "--test",
+              "public_v3_multiprocess",
+              "separate_process_pure_history_raw_graph_fence_campaign",
+              "--",
+              "--exact",
+              "--ignored",
+              "--nocapture",
+              "--test-threads=1"
+            ],
+            "elapsed_seconds": 101.90875718,
+            "outer_stage_timeout_seconds": 600,
+            "returncode": 101,
+            "complete_success": false,
+            "error": null,
+            "stderr_bytes": 1615,
+            "stderr_sha256": "58fa52856ee44cc5b157f5c3890b959dc755c6628fc5e849b2dc3467cefdeaec",
+            "stdout_bytes": 271,
+            "stdout_sha256": "bca303f9364159841f20559f54294d021a58c285a57da716f16eaff42f8a5d51"
+          }
+        }
+      ],
+      "controller_lifeline": {
+        "line": 1536,
+        "value": {
+          "complete_success": true,
+          "failure": null,
+          "finalization_failures": [],
+          "head": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+          "output": "/home/runner/work/_temp/pon-native-campaign-41014451843-1/verifier-lifeline",
+          "tree": "feda9e006cded26631e8dbfcbf537511ddb053be"
+        }
+      },
+      "interpretation_limit": "All three actual native commands exit 101 and the current reader reports full receiver/verifier state equality failure. No per-phase imports, CPU hotspot, later reader condition, or complete underlying failure set inferred from these selected logs."
+    },
+    {
+      "job_id": 123927495329,
+      "summary_log_line": 1472,
+      "schema": "pon-pure-history-raw-joint-ci-v1",
+      "expected_head": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+      "expected_tree": "feda9e006cded26631e8dbfcbf537511ddb053be",
+      "complete_success": false,
+      "failure": "ORIGINAL_THREE_RUN_CAMPAIGN_FAILED",
+      "finalization_failures": [],
+      "history_resource_profile": "strict-every-native-checkpoint-v1",
+      "native_selector": "separate_process_pure_history_raw_strict_campaign",
+      "original_campaign_outer_timeout_seconds": 600,
+      "planned_complete_runs": 3,
+      "admission_search_budget": 0,
+      "expected_resources": {
+        "cpu_max": "400000 100000",
+        "memory_max": "17179869184",
+        "nice": 10
+      },
+      "separate_verifier_limits": {
+        "cpu.max": "25000 100000",
+        "cpu.max.burst": "0",
+        "memory.max": "2147483648",
+        "memory.swap.max": "0",
+        "pids.max": "256"
+      },
+      "original_inputs": {
+        "attacker_processes": [
+          0,
+          24,
+          24
+        ],
+        "business_blocks": 21,
+        "modes": [
+          "baseline",
+          "from-zero",
+          "late-product"
+        ],
+        "phase_seconds": 30,
+        "seed_blocks": 4,
+        "seed_transfers": 1024
+      },
+      "binary": {
+        "actual_compiler_artifact_profile": {
+          "debug_assertions": false,
+          "debuginfo": 0,
+          "opt_level": "3",
+          "overflow_checks": false,
+          "test": true
+        },
+        "build_artifact": "/home/runner/work/_temp/target-native-campaign/release/deps/public_v3_multiprocess-81e73e5be197a972",
+        "build_separate_from_measured_campaign": true,
+        "bytes": 11500416,
+        "execution": "original cargo test command using the checked build artifact",
+        "retained": "public_v3_multiprocess.bin",
+        "sha256_after": "8b02f6dc4225e14057a9974a7f80f1896f0f592e990ab533fd414b94a71d251c",
+        "sha256_before": "8b02f6dc4225e14057a9974a7f80f1896f0f592e990ab533fd414b94a71d251c"
+      },
+      "source_kind": "head",
+      "strict_profile_result_is_separate": true,
+      "state_backend": "authenticated-v1",
+      "work_profile": "pure-history-raw-v1",
+      "runner_sha256": "b0b477511064042cb7c96356b2cbce29357275bea7cdaaeb9749bbfacb1e98b9",
+      "verifier_reader_sha256": "5bebc27eff6c2813db82e74c7dde3d84247a2d7049db788bff602f0c2fd2a610",
+      "build": {
+        "returncode": 0,
+        "complete_success": true,
+        "elapsed_seconds": 171.196318238,
+        "error": null
+      },
+      "pure_reader_controls": {
+        "returncode": 0,
+        "complete_success": true,
+        "elapsed_seconds": 0.820869595,
+        "error": null,
+        "stderr_bytes": 113,
+        "stderr_sha256": "3c9e24009627349fd061cfb5fc0f5d0ae0aec3b3d93ee4c2b78b460f82d416c9",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "actual_test_count_not_visible_in_selected_job_log": true
+      },
+      "pure_controls": [
+        {
+          "name": "pure-library-controls",
+          "returncode": 0,
+          "complete_success": true,
+          "error": null
+        },
+        {
+          "name": "pure-cli-controls",
+          "returncode": 0,
+          "complete_success": true,
+          "error": null
+        },
+        {
+          "name": "pure-campaign-binding-controls",
+          "returncode": 0,
+          "complete_success": true,
+          "error": null
+        }
+      ],
+      "attempts": [
+        {
+          "number": 1,
+          "complete_success": false,
+          "original_criteria_met": false,
+          "report_validation_failure": "actual full receiver/verifier state equality required",
+          "step": {
+            "command": [
+              "/home/runner/.cargo/bin/cargo",
+              "+1.95.0",
+              "test",
+              "--locked",
+              "--offline",
+              "--release",
+              "--manifest-path",
+              "trillionnium/Cargo.toml",
+              "-p",
+              "trnm-pon-node",
+              "--test",
+              "public_v3_multiprocess",
+              "separate_process_pure_history_raw_strict_campaign",
+              "--",
+              "--exact",
+              "--ignored",
+              "--nocapture",
+              "--test-threads=1"
+            ],
+            "elapsed_seconds": 103.488070567,
+            "outer_stage_timeout_seconds": 600,
+            "returncode": 101,
+            "complete_success": false,
+            "error": null,
+            "stderr_bytes": 1605,
+            "stderr_sha256": "10153218b0c609dbb049007e5712a568c53735a9984f4d78e2af8a96e195bba2",
+            "stdout_bytes": 261,
+            "stdout_sha256": "711fc14386ddc47ce261e4bb29bae72e511217074024d516e04f0e45aa5b3ef1"
+          }
+        },
+        {
+          "number": 2,
+          "complete_success": false,
+          "original_criteria_met": false,
+          "report_validation_failure": "actual full receiver/verifier state equality required",
+          "step": {
+            "command": [
+              "/home/runner/.cargo/bin/cargo",
+              "+1.95.0",
+              "test",
+              "--locked",
+              "--offline",
+              "--release",
+              "--manifest-path",
+              "trillionnium/Cargo.toml",
+              "-p",
+              "trnm-pon-node",
+              "--test",
+              "public_v3_multiprocess",
+              "separate_process_pure_history_raw_strict_campaign",
+              "--",
+              "--exact",
+              "--ignored",
+              "--nocapture",
+              "--test-threads=1"
+            ],
+            "elapsed_seconds": 103.455089098,
+            "outer_stage_timeout_seconds": 600,
+            "returncode": 101,
+            "complete_success": false,
+            "error": null,
+            "stderr_bytes": 1605,
+            "stderr_sha256": "ac550fc2eaac53909003dfa10ba0e007aec147bd240d17492fa8f4e80a63dc66",
+            "stdout_bytes": 261,
+            "stdout_sha256": "15b4eb5122475b517ec286e239651db65500a7335836b83c87207ae4d85b5be3"
+          }
+        },
+        {
+          "number": 3,
+          "complete_success": false,
+          "original_criteria_met": false,
+          "report_validation_failure": "actual full receiver/verifier state equality required",
+          "step": {
+            "command": [
+              "/home/runner/.cargo/bin/cargo",
+              "+1.95.0",
+              "test",
+              "--locked",
+              "--offline",
+              "--release",
+              "--manifest-path",
+              "trillionnium/Cargo.toml",
+              "-p",
+              "trnm-pon-node",
+              "--test",
+              "public_v3_multiprocess",
+              "separate_process_pure_history_raw_strict_campaign",
+              "--",
+              "--exact",
+              "--ignored",
+              "--nocapture",
+              "--test-threads=1"
+            ],
+            "elapsed_seconds": 103.497663717,
+            "outer_stage_timeout_seconds": 600,
+            "returncode": 101,
+            "complete_success": false,
+            "error": null,
+            "stderr_bytes": 1605,
+            "stderr_sha256": "c3cf096e8475345b3b2636980649f0dde6b38f48ca3a5912e33c87d590e77491",
+            "stdout_bytes": 261,
+            "stdout_sha256": "5963cbee0d3a3b4355c6fb6641941f05479017087c86c47896c2bc6013c40b2d"
+          }
+        }
+      ],
+      "controller_lifeline": {
+        "line": 1538,
+        "value": {
+          "complete_success": true,
+          "failure": null,
+          "finalization_failures": [],
+          "head": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+          "output": "/home/runner/work/_temp/pon-native-campaign-41014451843-1/verifier-lifeline",
+          "tree": "feda9e006cded26631e8dbfcbf537511ddb053be"
+        }
+      },
+      "interpretation_limit": "All three actual native commands exit 101 and the current reader reports full receiver/verifier state equality failure. No per-phase imports, CPU hotspot, later reader condition, or complete underlying failure set inferred from these selected logs."
+    }
+  ],
+  "codeql_rust": {
+    "run_id": 41014451558,
+    "job_id": 123927494945,
+    "actual_terminal_log_line": 773,
+    "artifact_id": 12960020097,
+    "artifact_file": "codeql-rust-metadata-a38.zip",
+    "artifact_bytes": 56448,
+    "artifact_sha256": "3fcd6c5e6571b7fb995a49fc62696c2e17ddca60b873600b6e1dfbf5adef413c",
+    "result_member": "raw/analysis/result.json",
+    "result_sha256": "f8373fa720697a69ac7d1918fefc9d083506b6af324c66cdc1b721b11bba7a30",
+    "verified_manifest_members": 37,
+    "schema": "pon-pinned-codeql-analysis-v1",
+    "expected_head": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+    "analysis_execution_complete": true,
+    "source_stable": true,
+    "passed": false,
+    "official_security_gate_qualified": false,
+    "production_qualified": false,
+    "query_or_model_changes": false,
+    "findings_require_separate_review": true,
+    "finding_count": 780,
+    "findings_by_rule": {
+      "rust/cleartext-logging": 23,
+      "rust/hard-coded-cryptographic-value": 757
+    },
+    "extraction_coverage_complete": false,
+    "selected_query_count": 37,
+    "tracked_input_count": 1141,
+    "successful_tracked_inputs": 1141,
+    "direct_successful_tracked_inputs": 1141,
+    "missing_tracked_inputs": [],
+    "error_diagnostics": [
+      {
+        "message": {
+          "text": "Ill-formed type mention"
+        },
+        "level": "error",
+        "descriptor": {
+          "id": "rust/diagnostics/type-inference-consistency-counts",
+          "index": 1
+        },
+        "properties": {
+          "formattedMessage": {
+            "text": "Ill-formed type mention"
+          }
+        }
+      },
+      {
+        "message": {
+          "text": "Phi node has less than two inputs"
+        },
+        "level": "error",
+        "descriptor": {
+          "id": "rust/diagnostics/ssa-consistency-counts",
+          "index": 9
+        },
+        "properties": {
+          "formattedMessage": {
+            "text": "Phi node has less than two inputs"
+          }
+        }
+      },
+      {
+        "message": {
+          "text": "Phi has less than 2 immediately prior references"
+        },
+        "level": "error",
+        "descriptor": {
+          "id": "rust/diagnostics/ssa-consistency-counts",
+          "index": 9
+        },
+        "properties": {
+          "formattedMessage": {
+            "text": "Phi has less than 2 immediately prior references"
+          }
+        }
+      }
+    ],
+    "semantic_extraction_failure_markers": [
+      "failed to load workspace",
+      "macro expansion will be skipped",
+      "semantic analyzer unavailable"
+    ],
+    "warning_diagnostic_count": 15,
+    "query_source_hashes_unchanged": true,
+    "query_result_inventory_all_37_present": true,
+    "query_result_bytes_not_downloaded_or_independently_rehashed": true,
+    "source_before": {
+      "schema": "trnm-ci-source-v1",
+      "kind": "head",
+      "tested_commit": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+      "tested_tree": "feda9e006cded26631e8dbfcbf537511ddb053be",
+      "candidate": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+      "base": null,
+      "prospective_merge": null,
+      "tracked_worktree_verified": true,
+      "tracked_entries": 7477,
+      "tracked_bytes": 965418559,
+      "tests_executed_by_identity_check": false
+    },
+    "source_after": {
+      "schema": "trnm-ci-source-v1",
+      "kind": "head",
+      "tested_commit": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+      "tested_tree": "feda9e006cded26631e8dbfcbf537511ddb053be",
+      "candidate": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+      "base": null,
+      "prospective_merge": null,
+      "tracked_worktree_verified": true,
+      "tracked_entries": 7477,
+      "tracked_bytes": 965418559,
+      "tests_executed_by_identity_check": false
+    },
+    "same_780_identity_as_prior_run_not_tested_in_this_task": true
+  },
+  "codeql_export": {
+    "run_id": 41014451738,
+    "job_id": 123927495381,
+    "artifact_id": 12959477572,
+    "artifact_file": "codeql-export-a38.zip",
+    "artifact_bytes": 320287,
+    "artifact_sha256": "9fe01a22651ab5f9bb1a174a5d0ff8a690baa6179b6dc9633d34cb3ed06cdcc0",
+    "verified_internal_hash_entries": 402,
+    "result_member": "analysis/result.json",
+    "result_sha256": "21739cd568c30bb7ff6bffe9ee8d54dd6f4170042082eddb2001c1fc98de89ba",
+    "original_result": {
+      "all_branch_historical_alerts": false,
+      "analyses": [],
+      "check_annotations": [],
+      "complete": false,
+      "error": "CodeQL analyses/checks did not complete and stabilize before the deadline",
+      "finished_utc": "2026-10-30T06:50:24.247106+00:00",
+      "full_original_sarif_upload": false,
+      "last_checks": [],
+      "schema": "codeql-exact-source-analysis-export-v2",
+      "scope": "All API-available exact PR source analyses/categories after the existing CodeQL check completes; SARIF is the API-provided subset. Source-only check annotations may lack a PR association; complete export does not qualify the PR security gate.",
+      "security_gate_changed": false,
+      "started_utc": "2026-10-30T06:30:38.555571+00:00",
+      "target": {
+        "base": "1d11f875493f8125e36b9adceacb342df108e5e5",
+        "event": "pull_request",
+        "head": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+        "head_ref": "refs/pull/558/head",
+        "merge": "52a3c9d614281897dd5a6adeb3576a8acfb1ee82",
+        "pr": 558,
+        "ref": "refs/pull/558/merge"
+      },
+      "target_pr_gate_authenticated": false,
+      "target_pr_gate_verdict": null
+    },
+    "retained_poll_count": 39,
+    "all_retained_selections_not_ready": true,
+    "all_retained_selections_empty_analyses_checks": true,
+    "last_selection": {
+      "analyses": [],
+      "checks": [],
+      "ready": false
+    },
+    "stdout_wait_messages": 38,
+    "original_exit_error_line": 761,
+    "interpretation_limit": "Deadline with no ready exact-source API selection is observed. No authorization error or remote CodeQL query failure is inferred. This review reads recorded export observations and makes no check-runs API request."
+  },
+  "history_v6": {
+    "run_id": 41014451652,
+    "job_count": 4,
+    "successful_jobs": 4,
+    "terminals": [
+      {
+        "job_id": 123927494431,
+        "terminal_log_line": 749,
+        "schema": "history-effect-v6-hosted-native-terminal-v1",
+        "expected_source": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+        "passed": true,
+        "source_stable": true,
+        "binary_sha256": "8818556941e70e64eb4bb9353702467ee422bfcbd260e0445d0812a734e726a7",
+        "binary_stable": true,
+        "production_qualified": false,
+        "whole_history_p0_closed": false,
+        "native_test_budget_seconds": 600,
+        "native": {
+          "native_returncode": 0,
+          "actual_wait4_status": 0,
+          "passed": true,
+          "elapsed_seconds": 517.1998695299999,
+          "budget_seconds": 600,
+          "exact_twenty_two_pass_one_ignored": true,
+          "cleanup_leader_terminal_observed": true,
+          "descendant_quiescence_qualified": false,
+          "cleanup_contract": "signal the owned group before reaping its pinned leader; does not attest every descendant has terminated",
+          "termination_reason": null,
+          "log_sha256": "ea88018ec9bfd105f0373e4ff3f87649110607cdc14089c02fa4dc64ff2682a2"
+        },
+        "roster_count": 23
+      },
+      {
+        "job_id": 123933531618,
+        "terminal_log_line": 724,
+        "schema": "history-reorg-continuation-native-terminal-v1",
+        "expected_source": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+        "passed": true,
+        "source_stable": true,
+        "binary_sha256": "8818556941e70e64eb4bb9353702467ee422bfcbd260e0445d0812a734e726a7",
+        "binary_bytes": 56218376,
+        "binary_stable": true,
+        "production_qualified": false,
+        "whole_history_p0_closed": false,
+        "native": {
+          "native_returncode": 0,
+          "actual_wait4_status": 0,
+          "passed": true,
+          "elapsed_seconds": 707.625540429,
+          "budget_seconds": 900,
+          "exact_seven_pass_zero_ignored": true,
+          "cleanup_leader_terminal_observed": true,
+          "descendant_quiescence_qualified": false,
+          "cleanup_contract": "signal the owned group before reaping its pinned leader; does not attest every descendant has terminated",
+          "termination_reason": null,
+          "log_sha256": "518489008a6907a42a4844a8d25c0b4cd9f913ff444da46c154287f829fb8c15"
+        },
+        "roster_count": 7
+      },
+      {
+        "job_id": 123933531680,
+        "terminal_log_line": 721,
+        "schema": "history-lifecycle-native-terminal-v1",
+        "expected_source": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+        "passed": true,
+        "source_stable": true,
+        "binary_sha256": "8818556941e70e64eb4bb9353702467ee422bfcbd260e0445d0812a734e726a7",
+        "binary_bytes": 56218376,
+        "binary_stable": true,
+        "production_qualified": false,
+        "whole_history_p0_closed": false,
+        "native": {
+          "native_returncode": 0,
+          "actual_wait4_status": 0,
+          "passed": true,
+          "elapsed_seconds": 300.245762705,
+          "budget_seconds": 900,
+          "exact_twelve_pass_zero_ignored": true,
+          "cleanup_leader_terminal_observed": true,
+          "descendant_quiescence_qualified": false,
+          "cleanup_contract": "signal the owned group before reaping its pinned leader; does not attest every descendant has terminated",
+          "termination_reason": null,
+          "log_sha256": "3e8ca7643c3aaca009eb7ce8fda535819e34db28359d7c97526459366ab434f4"
+        },
+        "roster_count": 12
+      },
+      {
+        "job_id": 123933531714,
+        "terminal_log_line": 841,
+        "schema": "history-graph-resource-physical-native-terminal-v1",
+        "expected_source": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+        "passed": true,
+        "source_stable": true,
+        "binary_sha256": "8818556941e70e64eb4bb9353702467ee422bfcbd260e0445d0812a734e726a7",
+        "binary_bytes": 56218376,
+        "binary_same_as_history22": true,
+        "production_qualified": false,
+        "whole_history_p0_closed": false,
+        "new_lane_budget_seconds": 1800,
+        "original_22_7_12_budgets_unchanged": true,
+        "original_campaign_budgets_unchanged": true,
+        "original_history22_gate_required": true,
+        "wall_clock_revocation_bound_claimed": false,
+        "elapsed_seconds": 40.241557993,
+        "planned_cases": [
+          {
+            "case": "cpu-window-0",
+            "trigger": "after-node",
+            "offset": 0,
+            "action": "cpu"
+          },
+          {
+            "case": "cpu-window-1",
+            "trigger": "after-node",
+            "offset": 1,
+            "action": "cpu"
+          },
+          {
+            "case": "cpu-window-2",
+            "trigger": "after-node",
+            "offset": 2,
+            "action": "cpu"
+          },
+          {
+            "case": "cpu-window-3",
+            "trigger": "after-node",
+            "offset": 3,
+            "action": "cpu"
+          },
+          {
+            "case": "cpu-window-4",
+            "trigger": "after-node",
+            "offset": 4,
+            "action": "cpu"
+          },
+          {
+            "case": "cpu-window-5",
+            "trigger": "after-node",
+            "offset": 5,
+            "action": "cpu"
+          },
+          {
+            "case": "cpu-window-6",
+            "trigger": "after-node",
+            "offset": 6,
+            "action": "cpu"
+          },
+          {
+            "case": "cpu-window-7",
+            "trigger": "after-node",
+            "offset": 7,
+            "action": "cpu"
+          },
+          {
+            "case": "strict-cpu-next-node",
+            "trigger": "strict-after-node0",
+            "action": "cpu"
+          },
+          {
+            "case": "cpu-before-enter",
+            "trigger": "enter",
+            "action": "cpu"
+          },
+          {
+            "case": "cpu-before-final-relation",
+            "trigger": "final-relation",
+            "action": "cpu"
+          },
+          {
+            "case": "cpu-before-exit",
+            "trigger": "exit",
+            "action": "cpu"
+          },
+          {
+            "case": "cpu-before-admission-commit",
+            "trigger": "admission-commit",
+            "action": "cpu"
+          },
+          {
+            "case": "cpu-before-activation-commit",
+            "trigger": "activation-commit",
+            "action": "cpu"
+          },
+          {
+            "case": "cpu-before-settlement-commit",
+            "trigger": "settlement",
+            "action": "cpu"
+          },
+          {
+            "case": "burst-window-1",
+            "trigger": "after-node",
+            "offset": 1,
+            "action": "burst"
+          },
+          {
+            "case": "memory-window-3",
+            "trigger": "after-node",
+            "offset": 3,
+            "action": "memory"
+          },
+          {
+            "case": "swap-window-4",
+            "trigger": "after-node",
+            "offset": 4,
+            "action": "swap"
+          },
+          {
+            "case": "pids-window-5",
+            "trigger": "after-node",
+            "offset": 5,
+            "action": "pids"
+          },
+          {
+            "case": "unreadable-window-2",
+            "trigger": "after-node",
+            "offset": 2,
+            "action": "unreadable-cpu"
+          },
+          {
+            "case": "nonleader-process-migration-window-3",
+            "trigger": "after-node",
+            "offset": 3,
+            "action": "migrate-process"
+          },
+          {
+            "case": "full-import-equivalence",
+            "trigger": "full-import-equivalence",
+            "action": "none"
+          },
+          {
+            "case": "public-import-known-close",
+            "trigger": "public-import-known-close",
+            "action": "cpu"
+          }
+        ],
+        "actual_cases": 23,
+        "passed_cases": 23,
+        "case_verdicts": [
+          {
+            "case": "cpu-window-0",
+            "passed": true
+          },
+          {
+            "case": "cpu-window-1",
+            "passed": true
+          },
+          {
+            "case": "cpu-window-2",
+            "passed": true
+          },
+          {
+            "case": "cpu-window-3",
+            "passed": true
+          },
+          {
+            "case": "cpu-window-4",
+            "passed": true
+          },
+          {
+            "case": "cpu-window-5",
+            "passed": true
+          },
+          {
+            "case": "cpu-window-6",
+            "passed": true
+          },
+          {
+            "case": "cpu-window-7",
+            "passed": true
+          },
+          {
+            "case": "strict-cpu-next-node",
+            "passed": true
+          },
+          {
+            "case": "cpu-before-enter",
+            "passed": true
+          },
+          {
+            "case": "cpu-before-final-relation",
+            "passed": true
+          },
+          {
+            "case": "cpu-before-exit",
+            "passed": true
+          },
+          {
+            "case": "cpu-before-admission-commit",
+            "passed": true
+          },
+          {
+            "case": "cpu-before-activation-commit",
+            "passed": true
+          },
+          {
+            "case": "cpu-before-settlement-commit",
+            "passed": true
+          },
+          {
+            "case": "burst-window-1",
+            "passed": true
+          },
+          {
+            "case": "memory-window-3",
+            "passed": true
+          },
+          {
+            "case": "swap-window-4",
+            "passed": true
+          },
+          {
+            "case": "pids-window-5",
+            "passed": true
+          },
+          {
+            "case": "unreadable-window-2",
+            "passed": true
+          },
+          {
+            "case": "nonleader-process-migration-window-3",
+            "passed": true
+          },
+          {
+            "case": "full-import-equivalence",
+            "passed": true
+          },
+          {
+            "case": "public-import-known-close",
+            "passed": true
+          }
+        ]
+      }
+    ],
+    "interpretation_limit": "Scoped original native lanes pass. Their own terminal production_qualified and whole_history_p0_closed remain false; original cleanup contract does not attest every descendant terminated."
+  },
+  "recent_batch": {
+    "run_id": 41014451503,
+    "job_count": 4,
+    "successful_jobs": 4,
+    "jobs": [
+      {
+        "job_id": 123927494017,
+        "source_identity_first": {
+          "line": 717,
+          "value": {
+            "base": null,
+            "candidate": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+            "kind": "head",
+            "prospective_merge": null,
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+            "tested_tree": "feda9e006cded26631e8dbfcbf537511ddb053be",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 965418559,
+            "tracked_entries": 7477,
+            "tracked_worktree_verified": true
+          }
+        },
+        "source_identity_final": {
+          "line": 3544,
+          "value": {
+            "base": null,
+            "candidate": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+            "kind": "head",
+            "prospective_merge": null,
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+            "tested_tree": "feda9e006cded26631e8dbfcbf537511ddb053be",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 965418559,
+            "tracked_entries": 7477,
+            "tracked_worktree_verified": true
+          }
+        },
+        "selected_native_suite_results": [
+          {
+            "text": "test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 879 filtered out; finished in 12.10s",
+            "log_lines": [
+              1895,
+              1897
+            ],
+            "duplicate_prints_are_not_extra_executions": true
+          },
+          {
+            "text": "test result: ok. 74 passed; 0 failed; 0 ignored; 0 measured; 827 filtered out; finished in 7.34s",
+            "log_lines": [
+              2209,
+              2211,
+              2212
+            ],
+            "duplicate_prints_are_not_extra_executions": true
+          }
+        ],
+        "public_business_reports": [
+          {
+            "line": 3354,
+            "value": {
+              "confirmed": 24,
+              "false_calls": 774,
+              "overlap": 61,
+              "passed": true,
+              "schema": "public-v3-network-only-business-v1"
+            }
+          },
+          {
+            "line": 3357,
+            "value": {
+              "attempts": 130,
+              "finite_target_met": true,
+              "public_network_ready": false,
+              "schema": "public-v3-local-mixed-service-v2"
+            }
+          },
+          {
+            "line": 3376,
+            "value": {
+              "confirmed": 24,
+              "false_calls": 774,
+              "overlap": 59,
+              "passed": true,
+              "schema": "public-v3-network-only-business-v1"
+            }
+          }
+        ]
+      },
+      {
+        "job_id": 123927494059,
+        "source_identity_first": {
+          "line": 717,
+          "value": {
+            "base": null,
+            "candidate": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+            "kind": "head",
+            "prospective_merge": null,
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+            "tested_tree": "feda9e006cded26631e8dbfcbf537511ddb053be",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 965418559,
+            "tracked_entries": 7477,
+            "tracked_worktree_verified": true
+          }
+        },
+        "source_identity_final": {
+          "line": 3516,
+          "value": {
+            "base": null,
+            "candidate": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+            "kind": "head",
+            "prospective_merge": null,
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+            "tested_tree": "feda9e006cded26631e8dbfcbf537511ddb053be",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 965418559,
+            "tracked_entries": 7477,
+            "tracked_worktree_verified": true
+          }
+        },
+        "selected_native_suite_results": [
+          {
+            "text": "test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 879 filtered out; finished in 19.97s",
+            "log_lines": [
+              1895,
+              1897
+            ],
+            "duplicate_prints_are_not_extra_executions": true
+          },
+          {
+            "text": "test result: ok. 74 passed; 0 failed; 0 ignored; 0 measured; 827 filtered out; finished in 13.39s",
+            "log_lines": [
+              2209,
+              2211,
+              2212
+            ],
+            "duplicate_prints_are_not_extra_executions": true
+          }
+        ],
+        "public_business_reports": [
+          {
+            "line": 3354,
+            "value": {
+              "confirmed": 24,
+              "false_calls": 773,
+              "overlap": 59,
+              "passed": true,
+              "schema": "public-v3-network-only-business-v1"
+            }
+          },
+          {
+            "line": 3357,
+            "value": {
+              "attempts": 130,
+              "finite_target_met": true,
+              "public_network_ready": false,
+              "schema": "public-v3-local-mixed-service-v2"
+            }
+          },
+          {
+            "line": 3376,
+            "value": {
+              "confirmed": 24,
+              "false_calls": 773,
+              "overlap": 59,
+              "passed": true,
+              "schema": "public-v3-network-only-business-v1"
+            }
+          }
+        ]
+      },
+      {
+        "job_id": 123927494094,
+        "source_identity_first": {
+          "line": 721,
+          "value": {
+            "base": "1d11f875493f8125e36b9adceacb342df108e5e5",
+            "candidate": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+            "kind": "prospective-merge",
+            "prospective_merge": "52a3c9d614281897dd5a6adeb3576a8acfb1ee82",
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "52a3c9d614281897dd5a6adeb3576a8acfb1ee82",
+            "tested_tree": "feda9e006cded26631e8dbfcbf537511ddb053be",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 965418559,
+            "tracked_entries": 7477,
+            "tracked_worktree_verified": true
+          }
+        },
+        "source_identity_final": {
+          "line": 3520,
+          "value": {
+            "base": "1d11f875493f8125e36b9adceacb342df108e5e5",
+            "candidate": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+            "kind": "prospective-merge",
+            "prospective_merge": "52a3c9d614281897dd5a6adeb3576a8acfb1ee82",
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "52a3c9d614281897dd5a6adeb3576a8acfb1ee82",
+            "tested_tree": "feda9e006cded26631e8dbfcbf537511ddb053be",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 965418559,
+            "tracked_entries": 7477,
+            "tracked_worktree_verified": true
+          }
+        },
+        "selected_native_suite_results": [
+          {
+            "text": "test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 879 filtered out; finished in 19.75s",
+            "log_lines": [
+              1899,
+              1901
+            ],
+            "duplicate_prints_are_not_extra_executions": true
+          },
+          {
+            "text": "test result: ok. 74 passed; 0 failed; 0 ignored; 0 measured; 827 filtered out; finished in 13.24s",
+            "log_lines": [
+              2213,
+              2215,
+              2216
+            ],
+            "duplicate_prints_are_not_extra_executions": true
+          }
+        ],
+        "public_business_reports": [
+          {
+            "line": 3358,
+            "value": {
+              "confirmed": 24,
+              "false_calls": 773,
+              "overlap": 60,
+              "passed": true,
+              "schema": "public-v3-network-only-business-v1"
+            }
+          },
+          {
+            "line": 3361,
+            "value": {
+              "attempts": 130,
+              "finite_target_met": true,
+              "public_network_ready": false,
+              "schema": "public-v3-local-mixed-service-v2"
+            }
+          },
+          {
+            "line": 3380,
+            "value": {
+              "confirmed": 24,
+              "false_calls": 773,
+              "overlap": 60,
+              "passed": true,
+              "schema": "public-v3-network-only-business-v1"
+            }
+          }
+        ]
+      },
+      {
+        "job_id": 123927494117,
+        "source_identity_first": {
+          "line": 714,
+          "value": {
+            "base": "1d11f875493f8125e36b9adceacb342df108e5e5",
+            "candidate": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+            "kind": "prospective-merge",
+            "prospective_merge": "52a3c9d614281897dd5a6adeb3576a8acfb1ee82",
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "52a3c9d614281897dd5a6adeb3576a8acfb1ee82",
+            "tested_tree": "feda9e006cded26631e8dbfcbf537511ddb053be",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 965418559,
+            "tracked_entries": 7477,
+            "tracked_worktree_verified": true
+          }
+        },
+        "source_identity_final": {
+          "line": 3513,
+          "value": {
+            "base": "1d11f875493f8125e36b9adceacb342df108e5e5",
+            "candidate": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+            "kind": "prospective-merge",
+            "prospective_merge": "52a3c9d614281897dd5a6adeb3576a8acfb1ee82",
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "52a3c9d614281897dd5a6adeb3576a8acfb1ee82",
+            "tested_tree": "feda9e006cded26631e8dbfcbf537511ddb053be",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 965418559,
+            "tracked_entries": 7477,
+            "tracked_worktree_verified": true
+          }
+        },
+        "selected_native_suite_results": [
+          {
+            "text": "test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 879 filtered out; finished in 8.42s",
+            "log_lines": [
+              1892,
+              1894
+            ],
+            "duplicate_prints_are_not_extra_executions": true
+          },
+          {
+            "text": "test result: ok. 74 passed; 0 failed; 0 ignored; 0 measured; 827 filtered out; finished in 5.16s",
+            "log_lines": [
+              2206,
+              2208,
+              2209
+            ],
+            "duplicate_prints_are_not_extra_executions": true
+          }
+        ],
+        "public_business_reports": [
+          {
+            "line": 3351,
+            "value": {
+              "confirmed": 24,
+              "false_calls": 774,
+              "overlap": 53,
+              "passed": true,
+              "schema": "public-v3-network-only-business-v1"
+            }
+          },
+          {
+            "line": 3354,
+            "value": {
+              "attempts": 130,
+              "finite_target_met": true,
+              "public_network_ready": false,
+              "schema": "public-v3-local-mixed-service-v2"
+            }
+          },
+          {
+            "line": 3373,
+            "value": {
+              "confirmed": 24,
+              "false_calls": 774,
+              "overlap": 52,
+              "passed": true,
+              "schema": "public-v3-network-only-business-v1"
+            }
+          }
+        ]
+      }
+    ],
+    "no_aggregate_test_total_inferred_from_duplicate_log_prints": true
+  },
+  "retained_logs": [
+    {
+      "file": "job-123927494017.log.gz",
+      "compressed_bytes": 79666,
+      "compressed_sha256": "0e35e02b917ad86a68b70e6533dcc93513976ab10b37e0115b0de4f52adfc4b8",
+      "decoded_log_utf8_bytes": 441060,
+      "decoded_log_utf8_sha256": "19f34b6e83f41e79166addc03487eba98f10598e187598621853cd22f9410548",
+      "lines": 3666,
+      "format": "gzip concatenated members; exact connector-decoded original log string re-encoded UTF-8"
+    },
+    {
+      "file": "job-123927494059.log.gz",
+      "compressed_bytes": 78550,
+      "compressed_sha256": "b4db52fd32a7b0f9262ccb299c9cc3f55723c9ffbf30b3395c9738f29b7e12ed",
+      "decoded_log_utf8_bytes": 436897,
+      "decoded_log_utf8_sha256": "4135c50a88e78a5f3a283d2a553b10d87e9daed19139742a5b5b7887c55fb0a3",
+      "lines": 3602,
+      "format": "gzip concatenated members; exact connector-decoded original log string re-encoded UTF-8"
+    },
+    {
+      "file": "job-123927494094.log.gz",
+      "compressed_bytes": 78475,
+      "compressed_sha256": "78938e0838b8b8caf334f0565d6a29c569a8be574a951ad14abb4a755cd50607",
+      "decoded_log_utf8_bytes": 438037,
+      "decoded_log_utf8_sha256": "7d73f25c350ff56081fe691f05bc8b9794177b848de823a77c63d97b7301f80a",
+      "lines": 3606,
+      "format": "gzip concatenated members; exact connector-decoded original log string re-encoded UTF-8"
+    },
+    {
+      "file": "job-123927494117.log.gz",
+      "compressed_bytes": 77964,
+      "compressed_sha256": "986bba013d9d268f72234e521d825866f527a2a8a19455be9bf6b2e62f9f8bee",
+      "decoded_log_utf8_bytes": 437556,
+      "decoded_log_utf8_sha256": "b754ea756ff0471dc603187fb2ad0871f9c87cf51c414882fc71e39898f8642c",
+      "lines": 3599,
+      "format": "gzip concatenated members; exact connector-decoded original log string re-encoded UTF-8"
+    },
+    {
+      "file": "job-123927494431.log.gz",
+      "compressed_bytes": 21480,
+      "compressed_sha256": "c2a4f643c76e90fad865744d5ece1a676c3b7fe268f027c7163d4ce7fe1bafd4",
+      "decoded_log_utf8_bytes": 112713,
+      "decoded_log_utf8_sha256": "70d0f360d4559e313ccf88d021edea83f77711f9b3678b5540ddff63e7b0e555",
+      "lines": 846,
+      "format": "gzip concatenated members; exact connector-decoded original log string re-encoded UTF-8"
+    },
+    {
+      "file": "job-123927494945.log.gz",
+      "compressed_bytes": 20147,
+      "compressed_sha256": "3f9253e99c3186e32e8b38db9a324428aa5d685c5d5fdfae46ec9d69d03e6610",
+      "decoded_log_utf8_bytes": 110437,
+      "decoded_log_utf8_sha256": "dbd93df1f9361bcdb0c95f9064451303f8f0bbff8e602f399660d1ce2f7e8fd5",
+      "lines": 1021,
+      "format": "gzip concatenated members; exact connector-decoded original log string re-encoded UTF-8"
+    },
+    {
+      "file": "job-123927495098.log.gz",
+      "compressed_bytes": 36840,
+      "compressed_sha256": "0efb4ddddf2f8f7a98c36bde39503976b2e3a72e3cbf88b625f00521438ed770",
+      "decoded_log_utf8_bytes": 176066,
+      "decoded_log_utf8_sha256": "82c15b7e7f8744a2d77a70b5b01735cd70f08bfe1a66c7e5b1b514d09e7c47e9",
+      "lines": 1667,
+      "format": "gzip concatenated members; exact connector-decoded original log string re-encoded UTF-8"
+    },
+    {
+      "file": "job-123927495329.log.gz",
+      "compressed_bytes": 36950,
+      "compressed_sha256": "68b93c67894cb2b1bfc1a0428cd2712f8081ca7e3f531f076cf74d034fa44d49",
+      "decoded_log_utf8_bytes": 175937,
+      "decoded_log_utf8_sha256": "3c3dc7f6234f7d42ef2a216dd4138b10649e98af11c4c64f714ffce11189c395",
+      "lines": 1667,
+      "format": "gzip concatenated members; exact connector-decoded original log string re-encoded UTF-8"
+    },
+    {
+      "file": "job-123927495381.log.gz",
+      "compressed_bytes": 18236,
+      "compressed_sha256": "16e282e7c8daa357e3032ad0a38a0e8329a6ff4deee6ef2042eb1d34e1475f1e",
+      "decoded_log_utf8_bytes": 99266,
+      "decoded_log_utf8_sha256": "a99522bac5fcd63d4f43a1bbfb06cb95df9acc4592fe1f1cebe549cce57c738e",
+      "lines": 845,
+      "format": "gzip concatenated members; exact connector-decoded original log string re-encoded UTF-8"
+    },
+    {
+      "file": "job-123933531618.log.gz",
+      "compressed_bytes": 19450,
+      "compressed_sha256": "41195525dff879f9799f63d9b6b9ab661df46a753d731b8c393e34ad3fb87e4f",
+      "decoded_log_utf8_bytes": 101830,
+      "decoded_log_utf8_sha256": "30d6b262c8e58262fae21f9b8139c40aaf2495bac53fa8ad07f84778dc66f137",
+      "lines": 812,
+      "format": "gzip concatenated members; exact connector-decoded original log string re-encoded UTF-8"
+    },
+    {
+      "file": "job-123933531680.log.gz",
+      "compressed_bytes": 19429,
+      "compressed_sha256": "c8c7bc607d8f38288f0e07afdfe6fd2bb92fca9c85bdf86e6f8267f7081b30a8",
+      "decoded_log_utf8_bytes": 102847,
+      "decoded_log_utf8_sha256": "bd0f040c653c098c6bfb6ccae1d8eaf52b6e77dbb748d645111eba94694d1edc",
+      "lines": 809,
+      "format": "gzip concatenated members; exact connector-decoded original log string re-encoded UTF-8"
+    },
+    {
+      "file": "job-123933531714.log.gz",
+      "compressed_bytes": 36565,
+      "compressed_sha256": "2f4e0bab21d0d70379b1c46230dc5819ed4e45beb4c97aa218521f652f6b0297",
+      "decoded_log_utf8_bytes": 174613,
+      "decoded_log_utf8_sha256": "bae761a36e77f48015be73d0fd2b9e01224db7a2a137e8598c8d90644dba0628",
+      "lines": 945,
+      "format": "gzip concatenated members; exact connector-decoded original log string re-encoded UTF-8"
+    }
+  ],
+  "artifact_download_scope": {
+    "original_zip_count": 2,
+    "total_zip_bytes": 376735,
+    "full_raw_history_zip_downloaded": false,
+    "full_codeql_database_artifact_downloaded": false,
+    "sarif_retriage_performed": false
+  }
+}

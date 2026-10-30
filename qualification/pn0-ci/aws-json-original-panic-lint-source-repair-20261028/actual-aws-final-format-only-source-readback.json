@@ -1,0 +1,28 @@
+{
+  "recorded_utc": "2026-10-28T14:35:06.413620+00:00",
+  "actual_original_fmt_wait": 0,
+  "raw_preformat_and_postformat_maps_equal": false,
+  "actual_formatter_change": "Only Rust line wrapping in result.as_ref().map(Result::is_err).unwrap_or(false); exact replacement compared all file bytes. No literals, operators, assertions or policy changed. Original early equality AssertionError was an overly strict reader assertion, not a test or formatter failure. Original terminal record retained.",
+  "files": [
+    {
+      "path": "codex-rs/third_party/aws-smithy-json-0.61.9/src/deserialize.rs",
+      "validated_before_fmt_SHA256": "d257346f7a63005142c11002195e6ca654da55c6e1c4675eba7ebd257f64c065",
+      "final_formatted_SHA256": "a526c18be42f2e12017be332d9b44d8d3c46e53084e16a261ca96e074c115753",
+      "only_verified_line_wrapping_no_other_changes": true
+    },
+    {
+      "path": "codex-rs/third_party/aws-smithy-json-0.61.9/src/deserialize/token.rs",
+      "validated_before_fmt_SHA256": "f9e3e46784ebdd489b7de07011d97adcfd58ea832e013213b87c667b4e06fd79",
+      "final_formatted_SHA256": "f9e3e46784ebdd489b7de07011d97adcfd58ea832e013213b87c667b4e06fd79",
+      "only_verified_line_wrapping_no_other_changes": true
+    },
+    {
+      "path": "codex-rs/third_party/aws-smithy-json-0.61.9/src/escape.rs",
+      "validated_before_fmt_SHA256": "21c7e4bb594b1fd70b9c40c9b1687e8ea18f5aef172da4cece5d988d5ed61bce",
+      "final_formatted_SHA256": "21c7e4bb594b1fd70b9c40c9b1687e8ea18f5aef172da4cece5d988d5ed61bce",
+      "only_verified_line_wrapping_no_other_changes": true
+    }
+  ],
+  "native_retest_after_final_fmt": false,
+  "native_results_scope": "68 passed/1 original ignored and production-library Clippy restriction flags returned0 before final formatting; pre/post hashes and exact formatting transformation retained. Hosted whole CI still failed and unpublished source not qualified."
+}

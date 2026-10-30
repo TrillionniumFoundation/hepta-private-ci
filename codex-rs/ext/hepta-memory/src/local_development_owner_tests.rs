@@ -62,7 +62,12 @@ async fn prepared_owner_inputs() -> (
     codex_hepta_memory::LocalCompactExecutor,
     CompactCheckpoint,
 ) {
-    let temp = TempDir::new().expect("temp");
+    let temp = TempDir::new_in(
+        tempfile::env::temp_dir()
+            .canonicalize()
+            .expect("canonical temporary parent"),
+    )
+    .expect("temp");
     let fleet_root = temp.path().join("fleet");
     fs::create_dir_all(&fleet_root).expect("fleet root");
     let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet");
@@ -215,7 +220,12 @@ async fn explicit_owner_writes_bound_witness_and_replays_without_registration() 
 
 #[tokio::test]
 async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
-    let temp = TempDir::new().expect("temp");
+    let temp = TempDir::new_in(
+        tempfile::env::temp_dir()
+            .canonicalize()
+            .expect("canonical temporary parent"),
+    )
+    .expect("temp");
     let fleet_root = temp.path().join("fleet");
     fs::create_dir_all(&fleet_root).expect("fleet root");
     let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet");
@@ -254,7 +264,12 @@ async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
         .await
         .expect("intent");
 
-    let other_temp = TempDir::new().expect("other temp");
+    let other_temp = TempDir::new_in(
+        tempfile::env::temp_dir()
+            .canonicalize()
+            .expect("canonical temporary parent"),
+    )
+    .expect("other temp");
     let other_root = other_temp.path().join("fleet");
     fs::create_dir_all(&other_root).expect("other fleet root");
     let other_fleet = HeptaFleetRoot::parse(other_root).expect("other fleet");
@@ -341,7 +356,12 @@ async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
 
 #[tokio::test]
 async fn explicit_owner_rejects_unbound_lease_expiry() {
-    let temp = TempDir::new().expect("temp");
+    let temp = TempDir::new_in(
+        tempfile::env::temp_dir()
+            .canonicalize()
+            .expect("canonical temporary parent"),
+    )
+    .expect("temp");
     let fleet_root = temp.path().join("fleet");
     fs::create_dir_all(&fleet_root).expect("fleet root");
     let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet");

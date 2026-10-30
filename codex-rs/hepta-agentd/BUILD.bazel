@@ -15,6 +15,13 @@ codex_rust_crate(
     name = "hepta-agentd",
     compile_data = ["src/cognitive_three_generation_support.rs"],
     crate_name = "codex_hepta_agentd",
+    # This process fixture seeds a historical ledger before launching the
+    # ordinary product binary. Keep the legacy writer in this harness only.
+    integration_test_dependency_replacements = {
+        "plasticity_process_e2e": {
+            "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+        },
+    },
     integration_test_timeout = "long",
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
 )

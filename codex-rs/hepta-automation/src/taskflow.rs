@@ -1036,8 +1036,13 @@ impl AutomationStore {
               AND o.run_id = a.run_id
               AND o.step_id = a.step_id
               AND o.attempt = a.attempt
+             LEFT JOIN taskflow_effect_dispatch_reconciliations r
+               ON r.owner_agent_id = a.owner_agent_id
+              AND r.run_id = a.run_id
+              AND r.step_id = a.step_id
+              AND r.attempt = a.attempt
              WHERE a.owner_agent_id = ? AND a.run_id = ?
-               AND (o.observation IS NULL OR o.observation != 'proven_absent')",
+               AND COALESCE(r.observation, o.observation, 'unobserved') != 'proven_absent'",
         )
         .bind(self.taskflow_owner_agent_id().as_str())
         .bind(run_id)
@@ -1054,12 +1059,25 @@ impl AutomationStore {
                 "provider absence must be durably requeued before run takeover".to_string(),
             ));
         }
-        if let Some(previous_generation) = run.generation
+        // Requeue clears the current lease projection, but cannot erase the
+        // monotonic fence history that the event owner already verified above.
+        let (maximum_generation, maximum_owner_epoch): (Option<i64>, Option<i64>) = sqlx::query_as(
+            "SELECT MAX(generation), MAX(owner_epoch) FROM taskflow_events
+             WHERE owner_agent_id=? AND run_id=?",
+        )
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(run_id)
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(|_| TaskFlowError::Unavailable)?;
+        let previous_generation = maximum_generation.map(to_u64).transpose()?;
+        let previous_epoch = maximum_owner_epoch.map(to_u64).transpose()?;
+        if let Some(previous_generation) = previous_generation
             && fence.generation <= previous_generation
         {
             return Err(TaskFlowError::StaleFence);
         }
-        if let Some(previous_epoch) = run.owner_epoch
+        if let Some(previous_epoch) = previous_epoch
             && fence.owner_epoch < previous_epoch
         {
             return Err(TaskFlowError::StaleFence);

@@ -72,7 +72,12 @@ async fn fixture(
     RetrievalExecutionContextV1,
     String,
 ) {
-    let temp = tempfile::tempdir().unwrap();
+    let temp = tempfile::tempdir_in(
+        tempfile::env::temp_dir()
+            .canonicalize()
+            .expect("canonical temporary parent"),
+    )
+    .unwrap();
     let fleet = temp.path().join("fleet");
     std::fs::create_dir_all(&fleet).unwrap();
     let owner = AgentId::parse(format!("00000000-0000-4000-8000-{suffix:012}")).unwrap();

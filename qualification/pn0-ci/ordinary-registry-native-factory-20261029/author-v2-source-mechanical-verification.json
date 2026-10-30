@@ -1,0 +1,108 @@
+{
+  "schema": "registry-public-native-factory-revision002-source-proof-v1",
+  "v1_all_manifest_files_unchanged": true,
+  "full_hunk_replay_SOURCE_ONLY": [
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/durable_store_platform.rs",
+      "hunks": 4,
+      "matches_frozen_after": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+      "hunks": 1,
+      "matches_frozen_after": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime_windows.rs",
+      "hunks": 3,
+      "matches_frozen_after": true
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/ordinary_windows_factory_tests.rs",
+      "hunks": 1,
+      "matches_frozen_after": true
+    }
+  ],
+  "v1_delta_hunk_replay_SOURCE_ONLY": [
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/durable_store_platform.rs",
+      "hunks": 2,
+      "matches_frozen_after": true
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/ordinary_windows_factory_tests.rs",
+      "hunks": 1,
+      "matches_frozen_after": true
+    }
+  ],
+  "original_182_test_files_unchanged": true,
+  "old_private_native_test_file": {
+    "path": "codex-rs/hepta-prompt-registry/src/durable_windows_tests.rs",
+    "bytes": 4469,
+    "sha256": "f5c8a67d4107fdea4fb9d6ec685e031aefc5e7f8d3fee2f5869ed768b37e406a",
+    "names": [
+      "native_registry_retains_os_lock_and_recovers_only_unselected_payload_tail",
+      "native_registry_corrupt_manifest_never_trims_or_rewrites_existing_state",
+      "native_registry_existing_marker_with_missing_manifest_never_reinitializes"
+    ]
+  },
+  "Agentd_two_companion_sources_v1_byte_exact": true,
+  "new_test_scope": "Three source-only native public factory cases. No private opaque constructor in positive tests; sole ParentAnchor create is the genuine bare-directory negative control.",
+  "new_test": {
+    "bytes": 5045,
+    "sha256": "4ccc18376e4e49f275adea45510b41c9d1ebd867fe24abda81172724eff07804"
+  },
+  "new_cleanup": "Guard declared before original role/owner and armed only after actual native/public success; Rust reverse-declaration drop closes owners first, Err before initialization performs no fixture cleanup. It is test file cleanup, not store authority or proven OS completion.",
+  "nth_8192": "Semantically the same >8192 code-unit rejection; bounded read of at most8193 UTF16 units in new factory. Runtime original producer body unchanged; not whole hard quota.",
+  "std_assert_eq_style": "Root chose existing crate native-test style; no pretty_assertions devdependency or Cargo/Bazel lock changes.",
+  "Rust_fmt_compile_tests_native_CI_budget": "NOT_RUN",
+  "source": [
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/durable_store_platform.rs",
+      "before": {
+        "bytes": 5319,
+        "sha256": "977d167aff7b707480e731190affcece1afe3fc2ef8e270194079989d6b66c46"
+      },
+      "after": {
+        "bytes": 6985,
+        "sha256": "b9d6f00f4fb7d12e50093dff0d0a3c6557d33705e84ed8b71df720e7a118777c"
+      },
+      "new_source": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+      "before": {
+        "bytes": 47584,
+        "sha256": "f64077547cf54cdd18a27c69cf7de83af4986bb6e5c971df2da4b6c99a34a2f5"
+      },
+      "after": {
+        "bytes": 47437,
+        "sha256": "f96d1d44d97c6fe50bd1d972503c46fdeab692dc96378a662dc760b641794b98"
+      },
+      "new_source": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime_windows.rs",
+      "before": {
+        "bytes": 6924,
+        "sha256": "39c78dc6c8931f7459f45b17af0227e9074f35ad7e1698604309714443230a53"
+      },
+      "after": {
+        "bytes": 6397,
+        "sha256": "8181d1891f3ffaedd5f88a503674c1654db32fc145a2c01296401b3bb8b8080a"
+      },
+      "new_source": false
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/ordinary_windows_factory_tests.rs",
+      "before": {
+        "exists": false
+      },
+      "after": {
+        "bytes": 5045,
+        "sha256": "4ccc18376e4e49f275adea45510b41c9d1ebd867fe24abda81172724eff07804"
+      },
+      "new_source": true
+    }
+  ]
+}

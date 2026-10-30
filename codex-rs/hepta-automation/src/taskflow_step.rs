@@ -298,6 +298,70 @@ impl AutomationStore {
         })
     }
 
+    /// Validate the existing step owner's live dispatch admission while the
+    /// caller holds the original effect-ledger write transaction. Historical
+    /// read access alone never authorizes a new provider contact.
+    pub(crate) async fn validate_effect_dispatch_step_tx(
+        &self,
+        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        run: &TaskFlowRun,
+        step_id: &str,
+        attempt: u32,
+        fence: &TaskFlowFence,
+        intent_digest: &Sha256Digest,
+        payload_digest: &Sha256Digest,
+        previous_absence: Option<(u32, &Sha256Digest)>,
+        now_ms: u64,
+    ) -> Result<(), TaskFlowError> {
+        validate_fence(self, fence)?;
+        if run.state != crate::TaskFlowRunState::Running || run.cancel_requested {
+            return Err(TaskFlowError::Conflict(
+                "a new effect dispatch requires an active TaskFlow run".to_string(),
+            ));
+        }
+        check_active_run_fence(run, fence, now_ms)?;
+        let definition = load_definition(tx, self, run).await?;
+        validate_step_node(&definition, step_id)?;
+        let events = load_step_events(tx, self, &run.run_id, step_id, attempt).await?;
+        let current = reconstruct_step(
+            self.taskflow_owner_agent_id(),
+            &run.run_id,
+            step_id,
+            attempt,
+            &events,
+        )?;
+        check_step_fence(&current.fence, fence)?;
+        if current.state != TaskFlowStepState::Claimed
+            || current.intent_digest != *intent_digest
+            || current.payload_digest != *payload_digest
+        {
+            return Err(TaskFlowError::Conflict(
+                "effect dispatch requires its exact claimed step".to_string(),
+            ));
+        }
+        if let Some((previous_attempt, proof)) = previous_absence {
+            let events = load_step_events(tx, self, &run.run_id, step_id, previous_attempt).await?;
+            let previous = reconstruct_step(
+                self.taskflow_owner_agent_id(),
+                &run.run_id,
+                step_id,
+                previous_attempt,
+                &events,
+            )?;
+            if previous.state != TaskFlowStepState::Reconciled
+                || previous.final_outcome != Some(TaskFlowReconcileOutcome::Cancelled)
+                || previous.receipt_digest.as_ref() != Some(proof)
+                || fence.generation <= previous.fence.generation
+                || fence.owner_epoch < previous.fence.owner_epoch
+            {
+                return Err(TaskFlowError::Conflict(
+                    "effect absence must be settled before a newly fenced attempt".to_string(),
+                ));
+            }
+        }
+        Ok(())
+    }
+
     /// Append the fenced claim receipt for a prepared step.  Replaying the
     /// same command is idempotent; a different command with the same id or a
     /// stale fence is rejected before any row is written.
@@ -545,12 +609,32 @@ impl AutomationStore {
         }
         ensure_step_schema(self).await?;
         let mut tx = self.begin_step_tx().await?;
-        let run = load_run(&mut tx, self, run_id).await?;
-        let definition = load_definition(&mut tx, self, &run).await?;
+        let receipt = self
+            .read_verified_step_tx(&mut tx, run_id, step_id, attempt, fence)
+            .await?;
+        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+        Ok(receipt)
+    }
+
+    /// Share the immutable step and current owner checks with evidence appends
+    /// so an owner change cannot commit between verification and persistence.
+    pub(crate) async fn read_verified_step_tx(
+        &self,
+        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+        fence: Option<&TaskFlowFence>,
+    ) -> Result<Option<TaskFlowStepReceipt>, TaskFlowError> {
+        validate_common_without_digests(run_id, step_id, attempt, "read")?;
+        if let Some(fence) = fence {
+            validate_fence(self, fence)?;
+        }
+        let run = load_run(tx, self, run_id).await?;
+        let definition = load_definition(tx, self, &run).await?;
         validate_step_node(&definition, step_id)?;
-        let events = load_step_events(&mut tx, self, run_id, step_id, attempt).await?;
+        let events = load_step_events(tx, self, run_id, step_id, attempt).await?;
         if events.is_empty() {
-            tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
             return Ok(None);
         }
         let receipt = reconstruct_step(
@@ -600,11 +684,9 @@ impl AutomationStore {
                     TaskFlowStepState::Recorded | TaskFlowStepState::Reconciled
                 )
             {
-                tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
                 return Ok(None);
             }
         }
-        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
         Ok(Some(receipt))
     }
 

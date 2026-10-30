@@ -26,6 +26,7 @@ use codex_hepta_memory::ProductionCognitiveMutationError;
 use codex_hepta_memory::RetrievalRequest;
 use codex_hepta_memory::SourceDraft;
 use codex_hepta_memory::StableMemoryId;
+use codex_hepta_memory::canonical_workspace_binding;
 use codex_tools::ResponsesApiNamespace;
 use codex_tools::ResponsesApiNamespaceTool;
 use serde::Deserialize;
@@ -277,7 +278,11 @@ impl CognitiveTool {
     fn validate_call_scope(&self, call: &ToolCall) -> Result<(), FunctionCallError> {
         if call.turn_id != self.witness.turn_id
             || !call.environments.iter().any(|environment| {
-                path_identity_bytes(environment.cwd.as_path())
+                let Ok(Some(workspace)) = canonical_workspace_binding(environment.cwd.as_path())
+                else {
+                    return false;
+                };
+                path_identity_bytes(workspace.as_path())
                     == path_identity_bytes(self.witness.workspace.as_path())
             })
         {
