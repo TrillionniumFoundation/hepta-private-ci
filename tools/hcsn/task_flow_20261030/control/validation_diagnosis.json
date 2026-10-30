@@ -1,0 +1,325 @@
+{
+  "exploratory": true,
+  "interpretation": "Potential prospective correction; these are not new confirmation results",
+  "original_primary_gate_remains_false": true,
+  "question": "Does excluding infeasible-action sentinel regression improve approximation of TRAIN-fitted DP on already exposed validation states?",
+  "rows": [
+    {
+      "policy": "learned_value",
+      "ridge": 1e-05,
+      "seed": 61,
+      "valid_mse": 0.015305257459930211,
+      "validation_action_disagreement": 0.4710648148148148
+    },
+    {
+      "policy": "learned_value",
+      "ridge": 0.001,
+      "seed": 61,
+      "valid_mse": 0.015305004331122992,
+      "validation_action_disagreement": 0.4710648148148148
+    },
+    {
+      "policy": "learned_value",
+      "ridge": 0.1,
+      "seed": 61,
+      "valid_mse": 0.01528325148271487,
+      "validation_action_disagreement": 0.4722222222222222
+    },
+    {
+      "policy": "ordinary_boundary",
+      "ridge": 1e-05,
+      "seed": 61,
+      "valid_mse": 0.06808582693563728,
+      "validation_action_disagreement": 0.11921296296296297
+    },
+    {
+      "policy": "ordinary_boundary",
+      "ridge": 0.001,
+      "seed": 61,
+      "valid_mse": 0.0680857781161849,
+      "validation_action_disagreement": 0.11921296296296297
+    },
+    {
+      "policy": "ordinary_boundary",
+      "ridge": 0.1,
+      "seed": 61,
+      "valid_mse": 0.06808148538386485,
+      "validation_action_disagreement": 0.11921296296296297
+    },
+    {
+      "policy": "first_event_value",
+      "ridge": 1e-05,
+      "seed": 61,
+      "valid_mse": 0.0025732575231397848,
+      "validation_action_disagreement": 0.375
+    },
+    {
+      "policy": "first_event_value",
+      "ridge": 0.001,
+      "seed": 61,
+      "valid_mse": 0.002573203838813903,
+      "validation_action_disagreement": 0.375
+    },
+    {
+      "policy": "first_event_value",
+      "ridge": 0.1,
+      "seed": 61,
+      "valid_mse": 0.0025689720109996436,
+      "validation_action_disagreement": 0.3726851851851852
+    },
+    {
+      "policy": "learned_value",
+      "ridge": 1e-05,
+      "seed": 73,
+      "valid_mse": 0.017537231800256115,
+      "validation_action_disagreement": 0.4618055555555556
+    },
+    {
+      "policy": "learned_value",
+      "ridge": 0.001,
+      "seed": 73,
+      "valid_mse": 0.017536983941436428,
+      "validation_action_disagreement": 0.4618055555555556
+    },
+    {
+      "policy": "learned_value",
+      "ridge": 0.1,
+      "seed": 73,
+      "valid_mse": 0.01751498110735784,
+      "validation_action_disagreement": 0.4618055555555556
+    },
+    {
+      "policy": "ordinary_boundary",
+      "ridge": 1e-05,
+      "seed": 73,
+      "valid_mse": 0.07058044423610776,
+      "validation_action_disagreement": 0.13425925925925927
+    },
+    {
+      "policy": "ordinary_boundary",
+      "ridge": 0.001,
+      "seed": 73,
+      "valid_mse": 0.07058019855957991,
+      "validation_action_disagreement": 0.13425925925925927
+    },
+    {
+      "policy": "ordinary_boundary",
+      "ridge": 0.1,
+      "seed": 73,
+      "valid_mse": 0.0705583441576836,
+      "validation_action_disagreement": 0.13425925925925927
+    },
+    {
+      "policy": "first_event_value",
+      "ridge": 1e-05,
+      "seed": 73,
+      "valid_mse": 0.0026187061695925845,
+      "validation_action_disagreement": 0.37037037037037035
+    },
+    {
+      "policy": "first_event_value",
+      "ridge": 0.001,
+      "seed": 73,
+      "valid_mse": 0.0026186983066487975,
+      "validation_action_disagreement": 0.37037037037037035
+    },
+    {
+      "policy": "first_event_value",
+      "ridge": 0.1,
+      "seed": 73,
+      "valid_mse": 0.0026181089973649607,
+      "validation_action_disagreement": 0.3715277777777778
+    },
+    {
+      "policy": "learned_value",
+      "ridge": 1e-05,
+      "seed": 89,
+      "valid_mse": 0.015911007061484014,
+      "validation_action_disagreement": 0.4618055555555556
+    },
+    {
+      "policy": "learned_value",
+      "ridge": 0.001,
+      "seed": 89,
+      "valid_mse": 0.015910455988329745,
+      "validation_action_disagreement": 0.4618055555555556
+    },
+    {
+      "policy": "learned_value",
+      "ridge": 0.1,
+      "seed": 89,
+      "valid_mse": 0.015862172278238714,
+      "validation_action_disagreement": 0.4618055555555556
+    },
+    {
+      "policy": "ordinary_boundary",
+      "ridge": 1e-05,
+      "seed": 89,
+      "valid_mse": 0.06565551655521494,
+      "validation_action_disagreement": 0.12037037037037036
+    },
+    {
+      "policy": "ordinary_boundary",
+      "ridge": 0.001,
+      "seed": 89,
+      "valid_mse": 0.06565480911382712,
+      "validation_action_disagreement": 0.12037037037037036
+    },
+    {
+      "policy": "ordinary_boundary",
+      "ridge": 0.1,
+      "seed": 89,
+      "valid_mse": 0.06559235219021449,
+      "validation_action_disagreement": 0.12037037037037036
+    },
+    {
+      "policy": "first_event_value",
+      "ridge": 1e-05,
+      "seed": 89,
+      "valid_mse": 0.0025682087930222197,
+      "validation_action_disagreement": 0.3993055555555556
+    },
+    {
+      "policy": "first_event_value",
+      "ridge": 0.001,
+      "seed": 89,
+      "valid_mse": 0.002568105056538965,
+      "validation_action_disagreement": 0.3993055555555556
+    },
+    {
+      "policy": "first_event_value",
+      "ridge": 0.1,
+      "seed": 89,
+      "valid_mse": 0.0025590775473096922,
+      "validation_action_disagreement": 0.40046296296296297
+    },
+    {
+      "policy": "learned_value",
+      "ridge": 1e-05,
+      "seed": 101,
+      "valid_mse": 0.01718115325041829,
+      "validation_action_disagreement": 0.43287037037037035
+    },
+    {
+      "policy": "learned_value",
+      "ridge": 0.001,
+      "seed": 101,
+      "valid_mse": 0.017181119216243972,
+      "validation_action_disagreement": 0.43287037037037035
+    },
+    {
+      "policy": "learned_value",
+      "ridge": 0.1,
+      "seed": 101,
+      "valid_mse": 0.017177997141580907,
+      "validation_action_disagreement": 0.4340277777777778
+    },
+    {
+      "policy": "ordinary_boundary",
+      "ridge": 1e-05,
+      "seed": 101,
+      "valid_mse": 0.07149872752885837,
+      "validation_action_disagreement": 0.13657407407407407
+    },
+    {
+      "policy": "ordinary_boundary",
+      "ridge": 0.001,
+      "seed": 101,
+      "valid_mse": 0.0714986016230655,
+      "validation_action_disagreement": 0.13657407407407407
+    },
+    {
+      "policy": "ordinary_boundary",
+      "ridge": 0.1,
+      "seed": 101,
+      "valid_mse": 0.07148725477942813,
+      "validation_action_disagreement": 0.13541666666666666
+    },
+    {
+      "policy": "first_event_value",
+      "ridge": 1e-05,
+      "seed": 101,
+      "valid_mse": 0.0024043704673501775,
+      "validation_action_disagreement": 0.33912037037037035
+    },
+    {
+      "policy": "first_event_value",
+      "ridge": 0.001,
+      "seed": 101,
+      "valid_mse": 0.002404381621190387,
+      "validation_action_disagreement": 0.33912037037037035
+    },
+    {
+      "policy": "first_event_value",
+      "ridge": 0.1,
+      "seed": 101,
+      "valid_mse": 0.002405515644239478,
+      "validation_action_disagreement": 0.3414351851851852
+    },
+    {
+      "policy": "learned_value",
+      "ridge": 1e-05,
+      "seed": 113,
+      "valid_mse": 0.015094632212175134,
+      "validation_action_disagreement": 0.48842592592592593
+    },
+    {
+      "policy": "learned_value",
+      "ridge": 0.001,
+      "seed": 113,
+      "valid_mse": 0.015094449750752388,
+      "validation_action_disagreement": 0.48842592592592593
+    },
+    {
+      "policy": "learned_value",
+      "ridge": 0.1,
+      "seed": 113,
+      "valid_mse": 0.01507765082732438,
+      "validation_action_disagreement": 0.48726851851851855
+    },
+    {
+      "policy": "ordinary_boundary",
+      "ridge": 1e-05,
+      "seed": 113,
+      "valid_mse": 0.06687691221932773,
+      "validation_action_disagreement": 0.12152777777777778
+    },
+    {
+      "policy": "ordinary_boundary",
+      "ridge": 0.001,
+      "seed": 113,
+      "valid_mse": 0.06687689917339203,
+      "validation_action_disagreement": 0.12152777777777778
+    },
+    {
+      "policy": "ordinary_boundary",
+      "ridge": 0.1,
+      "seed": 113,
+      "valid_mse": 0.06687610658228388,
+      "validation_action_disagreement": 0.12152777777777778
+    },
+    {
+      "policy": "first_event_value",
+      "ridge": 1e-05,
+      "seed": 113,
+      "valid_mse": 0.0028316025070439605,
+      "validation_action_disagreement": 0.38657407407407407
+    },
+    {
+      "policy": "first_event_value",
+      "ridge": 0.001,
+      "seed": 113,
+      "valid_mse": 0.0028315997945919905,
+      "validation_action_disagreement": 0.38657407407407407
+    },
+    {
+      "policy": "first_event_value",
+      "ridge": 0.1,
+      "seed": 113,
+      "valid_mse": 0.002831506436599209,
+      "validation_action_disagreement": 0.38773148148148145
+    }
+  ],
+  "source_sha256": "67a7ea9428255220bf42ca38a046eefa7dbb99e1d40f43be17ada9133089a65a",
+  "status": "Created after all original test outcomes were visible; no heldout predictions or outcomes recomputed"
+}

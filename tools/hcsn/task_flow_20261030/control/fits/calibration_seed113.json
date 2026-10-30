@@ -1,0 +1,3100 @@
+{
+  "confusion": [
+    [
+      0.9923076923076923,
+      0.007692307692307693
+    ],
+    [
+      0.007692307692307693,
+      0.9923076923076923
+    ]
+  ],
+  "counts": [
+    [
+      64,
+      0
+    ],
+    [
+      0,
+      64
+    ]
+  ],
+  "cpu_seconds": 0.9344368300000099,
+  "packets": [
+    {
+      "content_wall_seconds": 0.006151215000500088,
+      "feature_wall_seconds": 0.00011005599844793323,
+      "io_wall_seconds": 0.00022700100089423358,
+      "logits": [
+        7.8372955322265625,
+        -2.355680465698242,
+        -2.7821991443634033,
+        -1.9377474784851074
+      ],
+      "numerical": {
+        "maximum_condition": 35.82044469798173,
+        "maximum_read": 1.1435192823410034,
+        "maximum_relative_residual": 1.3563149939634463e-16,
+        "maximum_write_mass": 8.429335551487068
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0000.json",
+      "payload_bytes": 586,
+      "payload_sha256": "8dcce037156ebebe954dd968b2892d92e9012b085a06de72f3966d1f5f04ba0f",
+      "symbol": 0,
+      "total_cpu_seconds": 0.00637147199999788,
+      "total_wall_seconds": 0.006510786999569973
+    },
+    {
+      "content_wall_seconds": 0.009763269999893964,
+      "feature_wall_seconds": 5.7295999795314856e-05,
+      "io_wall_seconds": 0.00036575999911292456,
+      "logits": [
+        -1.9998962879180908,
+        7.7190937995910645,
+        -0.6920297741889954,
+        -5.456754207611084
+      ],
+      "numerical": {
+        "maximum_condition": 38.48589796279904,
+        "maximum_read": 1.4888660907745361,
+        "maximum_relative_residual": 1.2721637358204876e-16,
+        "maximum_write_mass": 7.998643476117758
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0001.json",
+      "payload_bytes": 586,
+      "payload_sha256": "de274ae4c98ae9919f49512829e1d0df24a445a961efc172e36fb626a1745fd5",
+      "symbol": 1,
+      "total_cpu_seconds": 0.010081591000002277,
+      "total_wall_seconds": 0.010211774999334011
+    },
+    {
+      "content_wall_seconds": 0.010356753000451135,
+      "feature_wall_seconds": 5.943899850535672e-05,
+      "io_wall_seconds": 0.00030922500081942417,
+      "logits": [
+        8.035894393920898,
+        -2.9360735416412354,
+        -2.4164814949035645,
+        -1.7327419519424438
+      ],
+      "numerical": {
+        "maximum_condition": 33.028907153568966,
+        "maximum_read": 1.2256908416748047,
+        "maximum_relative_residual": 1.261186662897392e-16,
+        "maximum_write_mass": 9.19573746845778
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0002.json",
+      "payload_bytes": 586,
+      "payload_sha256": "6dec994394e29d81853b4cdeae985de86165d2ee3743bc29d72401ce01dec3fe",
+      "symbol": 0,
+      "total_cpu_seconds": 0.010616916000003584,
+      "total_wall_seconds": 0.01075012500041339
+    },
+    {
+      "content_wall_seconds": 0.01003195399971446,
+      "feature_wall_seconds": 5.783699998573866e-05,
+      "io_wall_seconds": 0.00034508899989305064,
+      "logits": [
+        -1.8607580661773682,
+        7.882994651794434,
+        -0.4669525623321533,
+        -6.024979591369629
+      ],
+      "numerical": {
+        "maximum_condition": 42.82959144053085,
+        "maximum_read": 1.462962031364441,
+        "maximum_relative_residual": 1.5529866391491423e-16,
+        "maximum_write_mass": 9.415155013218206
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0003.json",
+      "payload_bytes": 586,
+      "payload_sha256": "6640cf167ad3ff67377c25aef4808640b0a185e5455fb265d0348d77ebe016e8",
+      "symbol": 1,
+      "total_cpu_seconds": 0.010293064999999046,
+      "total_wall_seconds": 0.010456702999363188
+    },
+    {
+      "content_wall_seconds": 0.0059434729992062785,
+      "feature_wall_seconds": 4.51279993285425e-05,
+      "io_wall_seconds": 0.00028382699929352384,
+      "logits": [
+        7.587186336517334,
+        -2.0770316123962402,
+        -2.456252098083496,
+        -2.3164072036743164
+      ],
+      "numerical": {
+        "maximum_condition": 34.23404255728983,
+        "maximum_read": 1.099578857421875,
+        "maximum_relative_residual": 1.1870019566667434e-16,
+        "maximum_write_mass": 7.72222265907002
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0004.json",
+      "payload_bytes": 586,
+      "payload_sha256": "b8519b4e19d7a4b6c2a9f723d7d71b77baf92720a5ea233f8addeb7925c9a1fc",
+      "symbol": 0,
+      "total_cpu_seconds": 0.006163413999999534,
+      "total_wall_seconds": 0.006288672000664519
+    },
+    {
+      "content_wall_seconds": 0.007614928001203225,
+      "feature_wall_seconds": 4.487699879973661e-05,
+      "io_wall_seconds": 0.0003586490001907805,
+      "logits": [
+        -1.480301022529602,
+        8.54051399230957,
+        -1.1071428060531616,
+        -6.726100921630859
+      ],
+      "numerical": {
+        "maximum_condition": 30.008857157999987,
+        "maximum_read": 1.5156840085983276,
+        "maximum_relative_residual": 1.2787994541614657e-16,
+        "maximum_write_mass": 8.509771416566853
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0005.json",
+      "payload_bytes": 586,
+      "payload_sha256": "8e6fff77fedd31ae9ab688d0bbf3b9755db41cbdc11ad10d0f2d7cf08aa06115",
+      "symbol": 1,
+      "total_cpu_seconds": 0.007816286999997146,
+      "total_wall_seconds": 0.00803662199905375
+    },
+    {
+      "content_wall_seconds": 0.007583671000247705,
+      "feature_wall_seconds": 4.377599907456897e-05,
+      "io_wall_seconds": 0.0003266709991294192,
+      "logits": [
+        8.101814270019531,
+        -2.0861971378326416,
+        -3.0809662342071533,
+        -2.2679059505462646
+      ],
+      "numerical": {
+        "maximum_condition": 39.85862910505996,
+        "maximum_read": 1.184879183769226,
+        "maximum_relative_residual": 1.4627554877895338e-16,
+        "maximum_write_mass": 8.521419477414055
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0006.json",
+      "payload_bytes": 586,
+      "payload_sha256": "44cca71cb183ce4a86f1a25f24a31546e609aff228a6574801a82deffcb6e89b",
+      "symbol": 0,
+      "total_cpu_seconds": 0.007818941000010682,
+      "total_wall_seconds": 0.00798097899860295
+    },
+    {
+      "content_wall_seconds": 0.009134234000157448,
+      "feature_wall_seconds": 5.883799894945696e-05,
+      "io_wall_seconds": 0.00035490399932314176,
+      "logits": [
+        -1.6856932640075684,
+        8.111892700195312,
+        -0.9130356907844543,
+        -6.009586811065674
+      ],
+      "numerical": {
+        "maximum_condition": 42.267057024117754,
+        "maximum_read": 1.4979788064956665,
+        "maximum_relative_residual": 1.528148208777598e-16,
+        "maximum_write_mass": 8.763969252360612
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0007.json",
+      "payload_bytes": 586,
+      "payload_sha256": "6c618150d1988397a075f4085579651afcaf1839a40201cd3aba161e4ff7e226",
+      "symbol": 1,
+      "total_cpu_seconds": 0.0094219509999931,
+      "total_wall_seconds": 0.009571190999849932
+    },
+    {
+      "content_wall_seconds": 0.005356880001272657,
+      "feature_wall_seconds": 5.651500032399781e-05,
+      "io_wall_seconds": 0.0003581590008252533,
+      "logits": [
+        7.492140769958496,
+        -3.383666515350342,
+        -1.9573553800582886,
+        -0.9005720019340515
+      ],
+      "numerical": {
+        "maximum_condition": 27.495876444100077,
+        "maximum_read": 1.1073331832885742,
+        "maximum_relative_residual": 1.422673160375758e-16,
+        "maximum_write_mass": 7.150091992183503
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0008.json",
+      "payload_bytes": 586,
+      "payload_sha256": "5e10747834a14802c5b2de973457c361cba6676e27ac668cda0f53d89c867d60",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005622379999991267,
+      "total_wall_seconds": 0.005787317000795156
+    },
+    {
+      "content_wall_seconds": 0.005987938999169273,
+      "feature_wall_seconds": 4.68299986096099e-05,
+      "io_wall_seconds": 0.0002627260000735987,
+      "logits": [
+        -1.8540077209472656,
+        7.7660932540893555,
+        -0.5550468564033508,
+        -5.724686622619629
+      ],
+      "numerical": {
+        "maximum_condition": 45.29936325125477,
+        "maximum_read": 1.4857112169265747,
+        "maximum_relative_residual": 1.6701309809670998e-16,
+        "maximum_write_mass": 8.85376347527902
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0009.json",
+      "payload_bytes": 586,
+      "payload_sha256": "c26519723eb6f77e8d5c9c3e625eedcef3144996136433013b94fff01e5d8e01",
+      "symbol": 1,
+      "total_cpu_seconds": 0.0061616699999973434,
+      "total_wall_seconds": 0.006315392000033171
+    },
+    {
+      "content_wall_seconds": 0.00639688499904878,
+      "feature_wall_seconds": 7.267000000865664e-05,
+      "io_wall_seconds": 0.0002907679991039913,
+      "logits": [
+        7.572202682495117,
+        -3.5053858757019043,
+        -2.089162588119507,
+        -0.7653104066848755
+      ],
+      "numerical": {
+        "maximum_condition": 26.870196356439564,
+        "maximum_read": 1.1327253580093384,
+        "maximum_relative_residual": 1.3752795298750814e-16,
+        "maximum_write_mass": 7.616033038571684
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0010.json",
+      "payload_bytes": 586,
+      "payload_sha256": "e3aff0bde7d4116d4d1261a1e8536a53df2eb8a94a993ab2e322184b7d6f7341",
+      "symbol": 0,
+      "total_cpu_seconds": 0.006599410000006856,
+      "total_wall_seconds": 0.00677776799966523
+    },
+    {
+      "content_wall_seconds": 0.006255352000152925,
+      "feature_wall_seconds": 4.475700006878469e-05,
+      "io_wall_seconds": 0.00032702199860068504,
+      "logits": [
+        -2.0739991664886475,
+        7.377782821655273,
+        -0.2282891571521759,
+        -5.437753677368164
+      ],
+      "numerical": {
+        "maximum_condition": 40.52737185274644,
+        "maximum_read": 1.4420955181121826,
+        "maximum_relative_residual": 1.2634603882911052e-16,
+        "maximum_write_mass": 8.966688627119238
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0011.json",
+      "payload_bytes": 586,
+      "payload_sha256": "17b004e54f6f95e7c28e8fb4d967aeb32bdbe36c93ca8ab3bcebba19f7ff2cd8",
+      "symbol": 1,
+      "total_cpu_seconds": 0.006469036000012807,
+      "total_wall_seconds": 0.006645467999987886
+    },
+    {
+      "content_wall_seconds": 0.005415708999862545,
+      "feature_wall_seconds": 4.0640999941388145e-05,
+      "io_wall_seconds": 0.000282504999631783,
+      "logits": [
+        7.396897792816162,
+        -2.7329883575439453,
+        -2.2434897422790527,
+        -1.4729444980621338
+      ],
+      "numerical": {
+        "maximum_condition": 27.49566111991581,
+        "maximum_read": 1.072163462638855,
+        "maximum_relative_residual": 1.3770273270184688e-16,
+        "maximum_write_mass": 7.203726261310647
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0012.json",
+      "payload_bytes": 586,
+      "payload_sha256": "65d14598eda9d773d2347e5a30dcc946d844df5ec07d19f6d00a2f552057a884",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005612254000013195,
+      "total_wall_seconds": 0.005753837000156636
+    },
+    {
+      "content_wall_seconds": 0.006405638001524494,
+      "feature_wall_seconds": 5.192800017539412e-05,
+      "io_wall_seconds": 0.0003300660009699641,
+      "logits": [
+        -1.5545982122421265,
+        8.534648895263672,
+        -1.1028058528900146,
+        -6.652012825012207
+      ],
+      "numerical": {
+        "maximum_condition": 35.17488408729601,
+        "maximum_read": 1.53318452835083,
+        "maximum_relative_residual": 1.6857086553461975e-16,
+        "maximum_write_mass": 7.594282061146323
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0013.json",
+      "payload_bytes": 586,
+      "payload_sha256": "c3b004dd329465879ccffd1112ccfc1bf35322b845a6c7ff6e240499c62cbe68",
+      "symbol": 1,
+      "total_cpu_seconds": 0.006656694999989554,
+      "total_wall_seconds": 0.006806560999393696
+    },
+    {
+      "content_wall_seconds": 0.006905378999363165,
+      "feature_wall_seconds": 4.758099930768367e-05,
+      "io_wall_seconds": 0.0004614750014297897,
+      "logits": [
+        8.070523262023926,
+        -2.1043341159820557,
+        -2.9367470741271973,
+        -2.368140697479248
+      ],
+      "numerical": {
+        "maximum_condition": 38.99231270278236,
+        "maximum_read": 1.1844961643218994,
+        "maximum_relative_residual": 1.3063548129027193e-16,
+        "maximum_write_mass": 8.336172954314373
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0014.json",
+      "payload_bytes": 586,
+      "payload_sha256": "f9e5951f334a3e84fa514af584c6432c6b0b850abb9dc33aa0eb12cd229c638d",
+      "symbol": 0,
+      "total_cpu_seconds": 0.007231318999998848,
+      "total_wall_seconds": 0.007434816001477884
+    },
+    {
+      "content_wall_seconds": 0.009694735999801196,
+      "feature_wall_seconds": 5.645499913953245e-05,
+      "io_wall_seconds": 0.0003144430011161603,
+      "logits": [
+        -1.5551170110702515,
+        8.42851448059082,
+        -1.0222607851028442,
+        -6.513909339904785
+      ],
+      "numerical": {
+        "maximum_condition": 38.923094674167025,
+        "maximum_read": 1.5350264310836792,
+        "maximum_relative_residual": 1.4866836673646114e-16,
+        "maximum_write_mass": 8.413241053675248
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0015.json",
+      "payload_bytes": 586,
+      "payload_sha256": "3ad3eecb7342d92cc1bfcfa60958a066ec165f8697e6a99c916f05afb31cd96d",
+      "symbol": 1,
+      "total_cpu_seconds": 0.009934211000000914,
+      "total_wall_seconds": 0.01009172399972158
+    },
+    {
+      "content_wall_seconds": 0.008213187998990179,
+      "feature_wall_seconds": 6.007000047247857e-05,
+      "io_wall_seconds": 0.0003306479993625544,
+      "logits": [
+        7.573374271392822,
+        -2.870748281478882,
+        -2.2489335536956787,
+        -1.488021969795227
+      ],
+      "numerical": {
+        "maximum_condition": 31.662534753764852,
+        "maximum_read": 1.1291420459747314,
+        "maximum_relative_residual": 1.2389545790900363e-16,
+        "maximum_write_mass": 8.932513562713503
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0016.json",
+      "payload_bytes": 586,
+      "payload_sha256": "84c8a24d3b57fe90d47451f65f630007f1a9732eaadfd20d714a84f2fdb787f1",
+      "symbol": 0,
+      "total_cpu_seconds": 0.008466052000002833,
+      "total_wall_seconds": 0.008625799000583356
+    },
+    {
+      "content_wall_seconds": 0.00985333599965088,
+      "feature_wall_seconds": 5.544399937207345e-05,
+      "io_wall_seconds": 0.0002740119998634327,
+      "logits": [
+        -1.7572355270385742,
+        8.106874465942383,
+        -0.7704636454582214,
+        -6.200128078460693
+      ],
+      "numerical": {
+        "maximum_condition": 35.871055414310966,
+        "maximum_read": 1.4924349784851074,
+        "maximum_relative_residual": 1.359181426958774e-16,
+        "maximum_write_mass": 8.169781703304512
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0017.json",
+      "payload_bytes": 586,
+      "payload_sha256": "00280b450fa89a79387beaae02d34922bf7e5127a9f8701b0038eac14b3a2dd1",
+      "symbol": 1,
+      "total_cpu_seconds": 0.01008466499999372,
+      "total_wall_seconds": 0.010204184000031091
+    },
+    {
+      "content_wall_seconds": 0.007976802999110078,
+      "feature_wall_seconds": 5.91690004512202e-05,
+      "io_wall_seconds": 0.0004593309986375971,
+      "logits": [
+        7.8675971031188965,
+        -2.970749616622925,
+        -2.3456406593322754,
+        -1.4840754270553589
+      ],
+      "numerical": {
+        "maximum_condition": 31.605833360032488,
+        "maximum_read": 1.1603103876113892,
+        "maximum_relative_residual": 1.3542392967112317e-16,
+        "maximum_write_mass": 7.893363048173265
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0018.json",
+      "payload_bytes": 586,
+      "payload_sha256": "4dd2a99adec75cdd3157476689c9c2a0f285dee513c2c5156886e453a4a8cfc1",
+      "symbol": 0,
+      "total_cpu_seconds": 0.00819207600000027,
+      "total_wall_seconds": 0.008513159000358428
+    },
+    {
+      "content_wall_seconds": 0.008637246000944288,
+      "feature_wall_seconds": 5.535299897019286e-05,
+      "io_wall_seconds": 0.0006136840002000099,
+      "logits": [
+        -1.7590705156326294,
+        8.16421127319336,
+        -0.8161531090736389,
+        -6.182009696960449
+      ],
+      "numerical": {
+        "maximum_condition": 38.08075487859338,
+        "maximum_read": 1.5082402229309082,
+        "maximum_relative_residual": 1.4600073013905207e-16,
+        "maximum_write_mass": 7.684076652281602
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0019.json",
+      "payload_bytes": 586,
+      "payload_sha256": "f6aa2d21721ce606b094e705fc5fdad83e0824f63dc2529db640e408193f22e1",
+      "symbol": 1,
+      "total_cpu_seconds": 0.008844883999998387,
+      "total_wall_seconds": 0.009323327998572495
+    },
+    {
+      "content_wall_seconds": 0.008269653000752442,
+      "feature_wall_seconds": 5.218800106376875e-05,
+      "io_wall_seconds": 0.0006342439992295112,
+      "logits": [
+        7.918131351470947,
+        -2.191145896911621,
+        -2.709699869155884,
+        -2.328367233276367
+      ],
+      "numerical": {
+        "maximum_condition": 36.95215711245643,
+        "maximum_read": 1.1614909172058105,
+        "maximum_relative_residual": 1.4004567634394753e-16,
+        "maximum_write_mass": 8.095002644453036
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0020.json",
+      "payload_bytes": 586,
+      "payload_sha256": "d1d481c7c2875942e00b5e0e12f032e13241e8308e7e7e1b53ed198daf521c0f",
+      "symbol": 0,
+      "total_cpu_seconds": 0.008460674000005497,
+      "total_wall_seconds": 0.008976315999461804
+    },
+    {
+      "content_wall_seconds": 0.008374790999368997,
+      "feature_wall_seconds": 5.25699997524498e-05,
+      "io_wall_seconds": 0.00043603599988273345,
+      "logits": [
+        -1.5306850671768188,
+        8.565044403076172,
+        -1.0458089113235474,
+        -6.715290546417236
+      ],
+      "numerical": {
+        "maximum_condition": 34.56387051336751,
+        "maximum_read": 1.546927571296692,
+        "maximum_relative_residual": 1.4190621891833e-16,
+        "maximum_write_mass": 6.811483855527821
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0021.json",
+      "payload_bytes": 586,
+      "payload_sha256": "1ae8876482269dd92d0b85c6eb9e5411a62061efafd23e5470724cf2d02d810b",
+      "symbol": 1,
+      "total_cpu_seconds": 0.0085719690000019,
+      "total_wall_seconds": 0.008882104000804247
+    },
+    {
+      "content_wall_seconds": 0.0076228790003369795,
+      "feature_wall_seconds": 5.337000038707629e-05,
+      "io_wall_seconds": 0.0003341430001455592,
+      "logits": [
+        7.589762210845947,
+        -3.0070927143096924,
+        -2.1083433628082275,
+        -1.4666872024536133
+      ],
+      "numerical": {
+        "maximum_condition": 30.305095826153472,
+        "maximum_read": 1.1075077056884766,
+        "maximum_relative_residual": 1.477429074681349e-16,
+        "maximum_write_mass": 7.186248041537221
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0022.json",
+      "payload_bytes": 586,
+      "payload_sha256": "f9991b7aa6c4ffbd71bdb20f91c04041b65b4c4162bf8a134dc87714949451c7",
+      "symbol": 0,
+      "total_cpu_seconds": 0.007815524999998047,
+      "total_wall_seconds": 0.008027988998946967
+    },
+    {
+      "content_wall_seconds": 0.008126077000270016,
+      "feature_wall_seconds": 5.340999996406026e-05,
+      "io_wall_seconds": 0.00029671700031030923,
+      "logits": [
+        -1.9954497814178467,
+        7.61300802230835,
+        -0.44252443313598633,
+        -5.612183094024658
+      ],
+      "numerical": {
+        "maximum_condition": 34.39061535289663,
+        "maximum_read": 1.4521006345748901,
+        "maximum_relative_residual": 1.128339925918362e-16,
+        "maximum_write_mass": 8.243180473708966
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0023.json",
+      "payload_bytes": 586,
+      "payload_sha256": "7cbe30a74fedad6ccc1c03681e87e9420a78587ef8305fe2339ccfb967183337",
+      "symbol": 1,
+      "total_cpu_seconds": 0.008339564999999993,
+      "total_wall_seconds": 0.008496964999721968
+    },
+    {
+      "content_wall_seconds": 0.007998244000191335,
+      "feature_wall_seconds": 4.346499918028712e-05,
+      "io_wall_seconds": 0.00024647999998705927,
+      "logits": [
+        7.399491310119629,
+        -2.3487484455108643,
+        -2.2801618576049805,
+        -1.9515647888183594
+      ],
+      "numerical": {
+        "maximum_condition": 30.314898355626116,
+        "maximum_read": 1.0716551542282104,
+        "maximum_relative_residual": 1.2737351902486862e-16,
+        "maximum_write_mass": 7.23988528058506
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0024.json",
+      "payload_bytes": 586,
+      "payload_sha256": "0c31c823852e584a9b08f6a118ffb8f7d02e78b4a35ecac989883a8db97494a0",
+      "symbol": 0,
+      "total_cpu_seconds": 0.008192105000006222,
+      "total_wall_seconds": 0.008301881000079447
+    },
+    {
+      "content_wall_seconds": 0.007698983999944176,
+      "feature_wall_seconds": 5.620499905489851e-05,
+      "io_wall_seconds": 0.0005943239993939642,
+      "logits": [
+        -1.6731411218643188,
+        8.358245849609375,
+        -1.0619250535964966,
+        -6.327328681945801
+      ],
+      "numerical": {
+        "maximum_condition": 31.95251113838652,
+        "maximum_read": 1.5023465156555176,
+        "maximum_relative_residual": 1.362360940776688e-16,
+        "maximum_write_mass": 7.687448069094279
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0025.json",
+      "payload_bytes": 586,
+      "payload_sha256": "d7d5c2956bf5441609ed48a886a9fec34c32a58ed97f553739ae08b18704a9cf",
+      "symbol": 1,
+      "total_cpu_seconds": 0.007880963000005181,
+      "total_wall_seconds": 0.008363674000065657
+    },
+    {
+      "content_wall_seconds": 0.00915852999969502,
+      "feature_wall_seconds": 4.9825001042336226e-05,
+      "io_wall_seconds": 0.00031157900048128795,
+      "logits": [
+        8.160211563110352,
+        -1.7768614292144775,
+        -3.0210204124450684,
+        -2.86675763130188
+      ],
+      "numerical": {
+        "maximum_condition": 41.17927572319491,
+        "maximum_read": 1.2139670848846436,
+        "maximum_relative_residual": 1.5252770817402012e-16,
+        "maximum_write_mass": 7.796833296138523
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0026.json",
+      "payload_bytes": 586,
+      "payload_sha256": "403fa2043ce8a1e9ce600885f62fffedf10f4f6cefe5452afa2148ed148230f3",
+      "symbol": 0,
+      "total_cpu_seconds": 0.009338928999994778,
+      "total_wall_seconds": 0.009540604998619528
+    },
+    {
+      "content_wall_seconds": 0.00852816100086784,
+      "feature_wall_seconds": 7.617499977641273e-05,
+      "io_wall_seconds": 0.0009798949995456496,
+      "logits": [
+        -1.6157070398330688,
+        8.2660493850708,
+        -0.8956384658813477,
+        -6.407268047332764
+      ],
+      "numerical": {
+        "maximum_condition": 31.95247614232938,
+        "maximum_read": 1.5085350275039673,
+        "maximum_relative_residual": 1.497551309143916e-16,
+        "maximum_write_mass": 7.687444695245276
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0027.json",
+      "payload_bytes": 586,
+      "payload_sha256": "e4a949d832ab9d565744b8e12bdc1212ef97d0e793340ad133d739cc676ef0a8",
+      "symbol": 1,
+      "total_cpu_seconds": 0.008812095000010345,
+      "total_wall_seconds": 0.009603689000869053
+    },
+    {
+      "content_wall_seconds": 0.009403418000147212,
+      "feature_wall_seconds": 5.76959992031334e-05,
+      "io_wall_seconds": 0.0003117889991699485,
+      "logits": [
+        7.6916399002075195,
+        -1.3321200609207153,
+        -3.0570664405822754,
+        -2.8737587928771973
+      ],
+      "numerical": {
+        "maximum_condition": 40.050440840218535,
+        "maximum_read": 1.1282968521118164,
+        "maximum_relative_residual": 1.2605457246178429e-16,
+        "maximum_write_mass": 7.794540923352004
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0028.json",
+      "payload_bytes": 586,
+      "payload_sha256": "f0fe60495b35eb223222b480960356a461fc2b351164d199179991d97f48fd76",
+      "symbol": 0,
+      "total_cpu_seconds": 0.009627586999997106,
+      "total_wall_seconds": 0.00979235399972822
+    },
+    {
+      "content_wall_seconds": 0.008861963999152067,
+      "feature_wall_seconds": 5.8388000979903154e-05,
+      "io_wall_seconds": 0.0003901470008713659,
+      "logits": [
+        -2.15840744972229,
+        7.3756103515625,
+        -0.3369637131690979,
+        -5.273476600646973
+      ],
+      "numerical": {
+        "maximum_condition": 35.7077174108363,
+        "maximum_read": 1.429084062576294,
+        "maximum_relative_residual": 1.2636666973894175e-16,
+        "maximum_write_mass": 8.689361829000154
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0029.json",
+      "payload_bytes": 586,
+      "payload_sha256": "0ee2ae2ece5b1384c67a09d4f57564b4dd7530a1550b4da5536c662ba66c096a",
+      "symbol": 1,
+      "total_cpu_seconds": 0.009088757000000669,
+      "total_wall_seconds": 0.009327794999990147
+    },
+    {
+      "content_wall_seconds": 0.008975243999884697,
+      "feature_wall_seconds": 5.5993999922065996e-05,
+      "io_wall_seconds": 0.0003658900004666066,
+      "logits": [
+        7.796354293823242,
+        -2.433821439743042,
+        -2.524421453475952,
+        -1.9986165761947632
+      ],
+      "numerical": {
+        "maximum_condition": 35.36520421005746,
+        "maximum_read": 1.1151490211486816,
+        "maximum_relative_residual": 1.3516269509280223e-16,
+        "maximum_write_mass": 7.073324009534888
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0030.json",
+      "payload_bytes": 586,
+      "payload_sha256": "a7f67b4e9518dfed6cd8deeb5711bfdfc14e0946cf15ca172822a9451815c076",
+      "symbol": 0,
+      "total_cpu_seconds": 0.009305197000003318,
+      "total_wall_seconds": 0.009453073000258883
+    },
+    {
+      "content_wall_seconds": 0.010928362999038654,
+      "feature_wall_seconds": 5.294900074659381e-05,
+      "io_wall_seconds": 0.00029841899959137663,
+      "logits": [
+        -1.866778016090393,
+        7.868096828460693,
+        -0.6540563106536865,
+        -5.8337273597717285
+      ],
+      "numerical": {
+        "maximum_condition": 33.19515580668166,
+        "maximum_read": 1.4823453426361084,
+        "maximum_relative_residual": 1.3422792873642747e-16,
+        "maximum_write_mass": 7.797003960553992
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0031.json",
+      "payload_bytes": 586,
+      "payload_sha256": "d49ac2753b102dfb0dd4600326da7ba09af6b4f730b55e23d7c7c2ca756ec311",
+      "symbol": 1,
+      "total_cpu_seconds": 0.011152711999997678,
+      "total_wall_seconds": 0.011299060999590438
+    },
+    {
+      "content_wall_seconds": 0.009543809999740915,
+      "feature_wall_seconds": 0.0001396510015183594,
+      "io_wall_seconds": 0.000330987999404897,
+      "logits": [
+        7.539942264556885,
+        -3.101085901260376,
+        -2.0460622310638428,
+        -1.2177199125289917
+      ],
+      "numerical": {
+        "maximum_condition": 28.19147711784479,
+        "maximum_read": 1.1062440872192383,
+        "maximum_relative_residual": 1.420528163414885e-16,
+        "maximum_write_mass": 7.3353358268138535
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0032.json",
+      "payload_bytes": 586,
+      "payload_sha256": "84f3d098d3078e67499c80c4bbf11fcda33fec74dfd4e265021faab99aab68fd",
+      "symbol": 0,
+      "total_cpu_seconds": 0.009867002999996544,
+      "total_wall_seconds": 0.01003436800056079
+    },
+    {
+      "content_wall_seconds": 0.008639128000140772,
+      "feature_wall_seconds": 5.778699960501399e-05,
+      "io_wall_seconds": 0.000347973000316415,
+      "logits": [
+        -2.1997246742248535,
+        7.287938117980957,
+        -0.11624638736248016,
+        -5.2915940284729
+      ],
+      "numerical": {
+        "maximum_condition": 39.37077875869428,
+        "maximum_read": 1.4336543083190918,
+        "maximum_relative_residual": 1.4607476116837607e-16,
+        "maximum_write_mass": 8.910763077433375
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0033.json",
+      "payload_bytes": 586,
+      "payload_sha256": "4603bf8d0e8b96d169c6a8e83c64b3f6c7a9b4108c726c3e25a4e90524d3ac07",
+      "symbol": 1,
+      "total_cpu_seconds": 0.008956119999993462,
+      "total_wall_seconds": 0.00911170899962599
+    },
+    {
+      "content_wall_seconds": 0.005275657000311185,
+      "feature_wall_seconds": 4.331499985710252e-05,
+      "io_wall_seconds": 0.00046782400022493675,
+      "logits": [
+        7.91276741027832,
+        -1.9015041589736938,
+        -2.9290242195129395,
+        -2.505826473236084
+      ],
+      "numerical": {
+        "maximum_condition": 40.35552774936865,
+        "maximum_read": 1.148687720298767,
+        "maximum_relative_residual": 1.4867872703269242e-16,
+        "maximum_write_mass": 8.445731132163441
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0034.json",
+      "payload_bytes": 586,
+      "payload_sha256": "7ac39c25b7f35bed4183f6bdd309951ed6f5e2e1522f827ececa5ae0fcaaadfa",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005470213000009494,
+      "total_wall_seconds": 0.005800818000352592
+    },
+    {
+      "content_wall_seconds": 0.005393044999436825,
+      "feature_wall_seconds": 3.811699934885837e-05,
+      "io_wall_seconds": 0.00024658099937369116,
+      "logits": [
+        -1.8622132539749146,
+        7.910869121551514,
+        -0.6638191342353821,
+        -5.9229512214660645
+      ],
+      "numerical": {
+        "maximum_condition": 41.5686212666222,
+        "maximum_read": 1.487838864326477,
+        "maximum_relative_residual": 1.428620510557369e-16,
+        "maximum_write_mass": 8.63235792157153
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0035.json",
+      "payload_bytes": 586,
+      "payload_sha256": "831bc6e7d8efd686c179eb1a023cc0761490fb3ba66fcbac3e0c9c52885c04df",
+      "symbol": 1,
+      "total_cpu_seconds": 0.005584053000006861,
+      "total_wall_seconds": 0.005693957000403316
+    },
+    {
+      "content_wall_seconds": 0.006323784000414889,
+      "feature_wall_seconds": 3.9137999920058064e-05,
+      "io_wall_seconds": 0.0003119289995083818,
+      "logits": [
+        7.692718982696533,
+        -3.0476624965667725,
+        -2.3273823261260986,
+        -1.3125791549682617
+      ],
+      "numerical": {
+        "maximum_condition": 29.845098451214533,
+        "maximum_read": 1.1552734375,
+        "maximum_relative_residual": 1.270113836696503e-16,
+        "maximum_write_mass": 9.027969108371291
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0036.json",
+      "payload_bytes": 586,
+      "payload_sha256": "fca19850d7fabb4cb2b0004b65313ce5d321fd8a335b665cab8675eeac47d288",
+      "symbol": 0,
+      "total_cpu_seconds": 0.006516297000004556,
+      "total_wall_seconds": 0.006692179000310716
+    },
+    {
+      "content_wall_seconds": 0.005560366000281647,
+      "feature_wall_seconds": 4.085200089321006e-05,
+      "io_wall_seconds": 0.0002849590000550961,
+      "logits": [
+        -1.8072113990783691,
+        8.148981094360352,
+        -0.7297613620758057,
+        -6.2178053855896
+      ],
+      "numerical": {
+        "maximum_condition": 39.438862652614716,
+        "maximum_read": 1.4927978515625,
+        "maximum_relative_residual": 1.3554340892482512e-16,
+        "maximum_write_mass": 8.727808667825732
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0037.json",
+      "payload_bytes": 586,
+      "payload_sha256": "db33f1b4561351bb5b87b3de2c8510e4b3e70b88a20c47af2f7f507126b48be1",
+      "symbol": 1,
+      "total_cpu_seconds": 0.0057868420000062315,
+      "total_wall_seconds": 0.005899196001337259
+    },
+    {
+      "content_wall_seconds": 0.005293243999403785,
+      "feature_wall_seconds": 3.926899989892263e-05,
+      "io_wall_seconds": 0.00024532899988116696,
+      "logits": [
+        7.652097225189209,
+        -2.4499998092651367,
+        -2.377375841140747,
+        -1.9599295854568481
+      ],
+      "numerical": {
+        "maximum_condition": 32.59102312146555,
+        "maximum_read": 1.1195740699768066,
+        "maximum_relative_residual": 1.4111783088045795e-16,
+        "maximum_write_mass": 8.132242512431171
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0038.json",
+      "payload_bytes": 586,
+      "payload_sha256": "1d442347fbba222da068d5198722c88ad87c3392b9e532722fb9eebf8f6927ba",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005456003000006149,
+      "total_wall_seconds": 0.005591672999798902
+    },
+    {
+      "content_wall_seconds": 0.005319563999364618,
+      "feature_wall_seconds": 3.749600000446662e-05,
+      "io_wall_seconds": 0.00026796299971465487,
+      "logits": [
+        -1.8039333820343018,
+        8.150409698486328,
+        -0.8163271546363831,
+        -6.058281421661377
+      ],
+      "numerical": {
+        "maximum_condition": 31.713527316877475,
+        "maximum_read": 1.5040218830108643,
+        "maximum_relative_residual": 1.367042214400109e-16,
+        "maximum_write_mass": 6.828960621679693
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0039.json",
+      "payload_bytes": 586,
+      "payload_sha256": "0c941336b1d556536194befe251863e93dcea3186dbcd6e46a5622f5cedbe0e1",
+      "symbol": 1,
+      "total_cpu_seconds": 0.0054874690000019655,
+      "total_wall_seconds": 0.005637882999508292
+    },
+    {
+      "content_wall_seconds": 0.005187916000068071,
+      "feature_wall_seconds": 3.796800046984572e-05,
+      "io_wall_seconds": 0.0002520589987398125,
+      "logits": [
+        7.485397815704346,
+        -1.6954774856567383,
+        -2.5764153003692627,
+        -2.6466422080993652
+      ],
+      "numerical": {
+        "maximum_condition": 34.87939984862327,
+        "maximum_read": 1.0510727167129517,
+        "maximum_relative_residual": 1.2304345708677296e-16,
+        "maximum_write_mass": 7.256279956972131
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0040.json",
+      "payload_bytes": 586,
+      "payload_sha256": "49c98bfc8cb31ca55fb18143da23182ba546ddd4ab695191fb7bffcac9788994",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005363645000002748,
+      "total_wall_seconds": 0.005490462001034757
+    },
+    {
+      "content_wall_seconds": 0.005396660000769771,
+      "feature_wall_seconds": 3.8667998524033464e-05,
+      "io_wall_seconds": 0.0002602419990580529,
+      "logits": [
+        -1.7948133945465088,
+        8.246515274047852,
+        -0.7136678099632263,
+        -6.337889671325684
+      ],
+      "numerical": {
+        "maximum_condition": 40.966464002521064,
+        "maximum_read": 1.5145014524459839,
+        "maximum_relative_residual": 1.3398068802994772e-16,
+        "maximum_write_mass": 7.720235277515693
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0041.json",
+      "payload_bytes": 586,
+      "payload_sha256": "0d707ebb7bd6c9b1d4f6a04fc5c471cb46d5ae709b42f44906d1d6fbed8118ab",
+      "symbol": 1,
+      "total_cpu_seconds": 0.005601257999998666,
+      "total_wall_seconds": 0.005708509999749367
+    },
+    {
+      "content_wall_seconds": 0.005281997000565752,
+      "feature_wall_seconds": 3.5774000934907235e-05,
+      "io_wall_seconds": 0.00023782800053595565,
+      "logits": [
+        7.513151168823242,
+        -3.3921828269958496,
+        -1.862046241760254,
+        -1.1356538534164429
+      ],
+      "numerical": {
+        "maximum_condition": 28.657672398722912,
+        "maximum_read": 1.1214687824249268,
+        "maximum_relative_residual": 1.3875545167794246e-16,
+        "maximum_write_mass": 7.206012929060623
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0042.json",
+      "payload_bytes": 586,
+      "payload_sha256": "919c6253e8f076925108ee53182f64b35a88736933a4ce5353f654abddfa55c9",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005446808999991504,
+      "total_wall_seconds": 0.005569269998886739
+    },
+    {
+      "content_wall_seconds": 0.005271642001389409,
+      "feature_wall_seconds": 3.579400072339922e-05,
+      "io_wall_seconds": 0.0003052789998037042,
+      "logits": [
+        -1.9820053577423096,
+        7.823910236358643,
+        -0.6332306861877441,
+        -5.678172588348389
+      ],
+      "numerical": {
+        "maximum_condition": 43.385996441217586,
+        "maximum_read": 1.493944525718689,
+        "maximum_relative_residual": 1.3211236508581503e-16,
+        "maximum_write_mass": 8.275972454138897
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0043.json",
+      "payload_bytes": 586,
+      "payload_sha256": "ef24f7a4d1fdcffb301dd12a5c696a94bf16aedfed15c823ab9ba83ff3dcc976",
+      "symbol": 1,
+      "total_cpu_seconds": 0.005436012000004098,
+      "total_wall_seconds": 0.005623650999041274
+    },
+    {
+      "content_wall_seconds": 0.0058492709995334735,
+      "feature_wall_seconds": 3.678500070236623e-05,
+      "io_wall_seconds": 0.0002554340007918654,
+      "logits": [
+        7.673924446105957,
+        -1.7540943622589111,
+        -2.7176051139831543,
+        -2.594395637512207
+      ],
+      "numerical": {
+        "maximum_condition": 39.66179367099527,
+        "maximum_read": 1.091609001159668,
+        "maximum_relative_residual": 1.3367965313916927e-16,
+        "maximum_write_mass": 8.314118157647068
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0044.json",
+      "payload_bytes": 586,
+      "payload_sha256": "bafec95ae7a35c804156440dd94add4d0b215d4482cffb3decad87d95645d7cd",
+      "symbol": 0,
+      "total_cpu_seconds": 0.006024785999997562,
+      "total_wall_seconds": 0.006155802999273874
+    },
+    {
+      "content_wall_seconds": 0.005735971000831341,
+      "feature_wall_seconds": 4.215300032228697e-05,
+      "io_wall_seconds": 0.0003278229996794835,
+      "logits": [
+        -1.639089822769165,
+        8.407840728759766,
+        -1.005956768989563,
+        -6.479226589202881
+      ],
+      "numerical": {
+        "maximum_condition": 33.79364256381489,
+        "maximum_read": 1.509057879447937,
+        "maximum_relative_residual": 1.4003845332269834e-16,
+        "maximum_write_mass": 8.26523534696726
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0045.json",
+      "payload_bytes": 586,
+      "payload_sha256": "88c03801b8ec787a0af3bc6bde2de9ef673bfa2e547b691e4809c0017673e8a7",
+      "symbol": 1,
+      "total_cpu_seconds": 0.005947293000005516,
+      "total_wall_seconds": 0.006120918998931302
+    },
+    {
+      "content_wall_seconds": 0.005242158000328345,
+      "feature_wall_seconds": 3.4851998861995526e-05,
+      "io_wall_seconds": 0.00022707100106345024,
+      "logits": [
+        8.202190399169922,
+        -2.1697134971618652,
+        -3.0347633361816406,
+        -2.366704225540161
+      ],
+      "numerical": {
+        "maximum_condition": 41.165955347907285,
+        "maximum_read": 1.2212954759597778,
+        "maximum_relative_residual": 1.3875555282681136e-16,
+        "maximum_write_mass": 8.967597555929254
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0046.json",
+      "payload_bytes": 586,
+      "payload_sha256": "214296bea46c60a7691b16975bb846d22156001d0442f50b31c6dcd001cad0f4",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005410245000007308,
+      "total_wall_seconds": 0.0055165499998111045
+    },
+    {
+      "content_wall_seconds": 0.005305792999934056,
+      "feature_wall_seconds": 0.0001203520005219616,
+      "io_wall_seconds": 0.0005261919995973585,
+      "logits": [
+        -1.7437678575515747,
+        8.02950668334961,
+        -0.8072119951248169,
+        -6.040599822998047
+      ],
+      "numerical": {
+        "maximum_condition": 36.246150286254455,
+        "maximum_read": 1.4848802089691162,
+        "maximum_relative_residual": 1.366641612699137e-16,
+        "maximum_write_mass": 8.430714308951693
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0047.json",
+      "payload_bytes": 586,
+      "payload_sha256": "f4ca4ccb8ddcc1519263cc91b95ffcbf04481017cafe2ad8eecb14a1491391cf",
+      "symbol": 1,
+      "total_cpu_seconds": 0.005817679000003295,
+      "total_wall_seconds": 0.005966606999209034
+    },
+    {
+      "content_wall_seconds": 0.009933110000929446,
+      "feature_wall_seconds": 3.751599979295861e-05,
+      "io_wall_seconds": 0.0002398610013187863,
+      "logits": [
+        8.124520301818848,
+        -2.2856760025024414,
+        -2.90928053855896,
+        -2.153191566467285
+      ],
+      "numerical": {
+        "maximum_condition": 39.074628179361994,
+        "maximum_read": 1.196995496749878,
+        "maximum_relative_residual": 1.4936187829387481e-16,
+        "maximum_write_mass": 8.7264269653411
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0048.json",
+      "payload_bytes": 586,
+      "payload_sha256": "e42dd558078e6f4f17b390bdc299d8a47f50e86f3eebc5d92b49ca576081a986",
+      "symbol": 0,
+      "total_cpu_seconds": 0.010117109000006508,
+      "total_wall_seconds": 0.01023373200041533
+    },
+    {
+      "content_wall_seconds": 0.007097838999470696,
+      "feature_wall_seconds": 0.00012207300096633844,
+      "io_wall_seconds": 0.00041008699918165803,
+      "logits": [
+        -1.530652642250061,
+        8.701090812683105,
+        -1.2038543224334717,
+        -6.771035194396973
+      ],
+      "numerical": {
+        "maximum_condition": 33.52941877294279,
+        "maximum_read": 1.5415116548538208,
+        "maximum_relative_residual": 1.2902638058914165e-16,
+        "maximum_write_mass": 7.614046203183516
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0049.json",
+      "payload_bytes": 586,
+      "payload_sha256": "c6701c4e1b6f6ee32719460fa70a47cd43d4d430de3452994322ccfc6270b2e3",
+      "symbol": 1,
+      "total_cpu_seconds": 0.007505985999998188,
+      "total_wall_seconds": 0.007646764999662992
+    },
+    {
+      "content_wall_seconds": 0.006210023999301484,
+      "feature_wall_seconds": 4.462699871510267e-05,
+      "io_wall_seconds": 0.00035791900154436007,
+      "logits": [
+        7.511291027069092,
+        -1.8849703073501587,
+        -2.5035319328308105,
+        -2.4865574836730957
+      ],
+      "numerical": {
+        "maximum_condition": 35.55156552524636,
+        "maximum_read": 1.0609877109527588,
+        "maximum_relative_residual": 1.5327291484325976e-16,
+        "maximum_write_mass": 7.831780682814408
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0050.json",
+      "payload_bytes": 586,
+      "payload_sha256": "3cf5080871def5faa082923b2f348e30f363746f97c9be7eb381c15e7b130399",
+      "symbol": 0,
+      "total_cpu_seconds": 0.006462886999997863,
+      "total_wall_seconds": 0.006629294000958907
+    },
+    {
+      "content_wall_seconds": 0.009054542999365367,
+      "feature_wall_seconds": 3.801700040639844e-05,
+      "io_wall_seconds": 0.00024627099992358126,
+      "logits": [
+        -1.2933214902877808,
+        8.828357696533203,
+        -1.349595546722412,
+        -7.059951305389404
+      ],
+      "numerical": {
+        "maximum_condition": 29.169770872658205,
+        "maximum_read": 1.5490387678146362,
+        "maximum_relative_residual": 1.5465550544612796e-16,
+        "maximum_write_mass": 7.597652945783713
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0051.json",
+      "payload_bytes": 586,
+      "payload_sha256": "7d891e012e11eb2193992e6a4782764065905ea16098ce9474e9a638195d502b",
+      "symbol": 1,
+      "total_cpu_seconds": 0.009254712000000609,
+      "total_wall_seconds": 0.009361224998428952
+    },
+    {
+      "content_wall_seconds": 0.009658431999923778,
+      "feature_wall_seconds": 0.00012245399921084754,
+      "io_wall_seconds": 0.00048214500020549167,
+      "logits": [
+        7.824936389923096,
+        -2.973972797393799,
+        -2.4357433319091797,
+        -1.4094527959823608
+      ],
+      "numerical": {
+        "maximum_condition": 30.38837277283368,
+        "maximum_read": 1.1719610691070557,
+        "maximum_relative_residual": 1.2811771747407386e-16,
+        "maximum_write_mass": 8.693638988819771
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0052.json",
+      "payload_bytes": 586,
+      "payload_sha256": "c60fa390abe02a6d71f9267b7ae79f2c9b10cd988310cf108012f67a9fea147c",
+      "symbol": 0,
+      "total_cpu_seconds": 0.010009844999999018,
+      "total_wall_seconds": 0.010286466998877586
+    },
+    {
+      "content_wall_seconds": 0.011055875000238302,
+      "feature_wall_seconds": 6.33449999440927e-05,
+      "io_wall_seconds": 0.0004025250000267988,
+      "logits": [
+        -1.6014918088912964,
+        8.371065139770508,
+        -0.9292665123939514,
+        -6.537459850311279
+      ],
+      "numerical": {
+        "maximum_condition": 33.11182749234788,
+        "maximum_read": 1.5133204460144043,
+        "maximum_relative_residual": 1.4944313616763885e-16,
+        "maximum_write_mass": 7.743367969521335
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0053.json",
+      "payload_bytes": 586,
+      "payload_sha256": "b89da8b946666c2affe590c53c31050bea54acfd3aaa3e56dda75bf6dc81e688",
+      "symbol": 1,
+      "total_cpu_seconds": 0.011375102999991782,
+      "total_wall_seconds": 0.011546272999112261
+    },
+    {
+      "content_wall_seconds": 0.006390043999999762,
+      "feature_wall_seconds": 0.00017732700143824331,
+      "io_wall_seconds": 0.00036423800156626385,
+      "logits": [
+        7.86771821975708,
+        -2.514183282852173,
+        -2.476280927658081,
+        -2.029627799987793
+      ],
+      "numerical": {
+        "maximum_condition": 35.09379689730624,
+        "maximum_read": 1.1584340333938599,
+        "maximum_relative_residual": 1.508433113459077e-16,
+        "maximum_write_mass": 8.634345767893757
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0054.json",
+      "payload_bytes": 586,
+      "payload_sha256": "698b2b978c5b1e8f9978725dc12f1ed6ec790db29404fc38a2b6261fc067c575",
+      "symbol": 0,
+      "total_cpu_seconds": 0.006792737000012039,
+      "total_wall_seconds": 0.006949025999347214
+    },
+    {
+      "content_wall_seconds": 0.006488712999271229,
+      "feature_wall_seconds": 4.0831000660546124e-05,
+      "io_wall_seconds": 0.00032927500069490634,
+      "logits": [
+        -1.8469542264938354,
+        8.192438125610352,
+        -0.7727479338645935,
+        -6.104593753814697
+      ],
+      "numerical": {
+        "maximum_condition": 48.39369381006779,
+        "maximum_read": 1.5436763763427734,
+        "maximum_relative_residual": 1.3216481567531e-16,
+        "maximum_write_mass": 8.163045090768728
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0055.json",
+      "payload_bytes": 586,
+      "payload_sha256": "2ddca943ae0807141ee3ac86a443a9042d765545b36463a01e20232d940438c0",
+      "symbol": 1,
+      "total_cpu_seconds": 0.006691236999998296,
+      "total_wall_seconds": 0.006876327001009486
+    },
+    {
+      "content_wall_seconds": 0.00643199699879915,
+      "feature_wall_seconds": 4.5818998842150904e-05,
+      "io_wall_seconds": 0.0004079930004081689,
+      "logits": [
+        7.503227233886719,
+        -1.9989374876022339,
+        -2.538332939147949,
+        -2.2014145851135254
+      ],
+      "numerical": {
+        "maximum_condition": 35.214954573174076,
+        "maximum_read": 1.0422983169555664,
+        "maximum_relative_residual": 1.4146579936967975e-16,
+        "maximum_write_mass": 7.961104994655427
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0056.json",
+      "payload_bytes": 586,
+      "payload_sha256": "4d238ab611bee112c7e46622aae688a63ba57a75c98981227bc2025f10df045b",
+      "symbol": 0,
+      "total_cpu_seconds": 0.006701752000012107,
+      "total_wall_seconds": 0.006902424998770584
+    },
+    {
+      "content_wall_seconds": 0.005926126999838743,
+      "feature_wall_seconds": 4.6350000047823414e-05,
+      "io_wall_seconds": 0.00034161399889853783,
+      "logits": [
+        -1.810631513595581,
+        7.640035152435303,
+        -0.574445903301239,
+        -5.654462814331055
+      ],
+      "numerical": {
+        "maximum_condition": 48.64834462152998,
+        "maximum_read": 1.4577925205230713,
+        "maximum_relative_residual": 1.6778461645166102e-16,
+        "maximum_write_mass": 9.877725231562827
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0057.json",
+      "payload_bytes": 586,
+      "payload_sha256": "78064b3fdb2eb5a8b6de3b44a0cec5f35798a35c1ac5c43f98520687b608da27",
+      "symbol": 1,
+      "total_cpu_seconds": 0.006180267999994271,
+      "total_wall_seconds": 0.006329383000775124
+    },
+    {
+      "content_wall_seconds": 0.005899767000300926,
+      "feature_wall_seconds": 3.936900066037197e-05,
+      "io_wall_seconds": 0.0002410219985904405,
+      "logits": [
+        7.33091402053833,
+        -1.691662073135376,
+        -2.500706434249878,
+        -2.523789644241333
+      ],
+      "numerical": {
+        "maximum_condition": 34.03145332068036,
+        "maximum_read": 1.0179286003112793,
+        "maximum_relative_residual": 1.270232578837388e-16,
+        "maximum_write_mass": 7.514926400975572
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0058.json",
+      "payload_bytes": 586,
+      "payload_sha256": "e807ed4bb07e8f1856ddaedf8f67f42ef50b2b9f8af320dbceb93e13f540e692",
+      "symbol": 0,
+      "total_cpu_seconds": 0.00609638299999915,
+      "total_wall_seconds": 0.006195101001139847
+    },
+    {
+      "content_wall_seconds": 0.00567823300116288,
+      "feature_wall_seconds": 4.376600008981768e-05,
+      "io_wall_seconds": 0.00027489400054037105,
+      "logits": [
+        -1.7790077924728394,
+        8.103780746459961,
+        -0.719996452331543,
+        -6.195413112640381
+      ],
+      "numerical": {
+        "maximum_condition": 33.092332728072776,
+        "maximum_read": 1.484255313873291,
+        "maximum_relative_residual": 1.269965102803113e-16,
+        "maximum_write_mass": 8.133622145414053
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0059.json",
+      "payload_bytes": 586,
+      "payload_sha256": "ccc9d679c415d8f5fba77d23cd2df448a66dc55392a93be4e1e600b0c2641805",
+      "symbol": 1,
+      "total_cpu_seconds": 0.005911729000004584,
+      "total_wall_seconds": 0.00601137400008156
+    },
+    {
+      "content_wall_seconds": 0.006423164999432629,
+      "feature_wall_seconds": 5.368100028135814e-05,
+      "io_wall_seconds": 0.0003159650004818104,
+      "logits": [
+        7.498785972595215,
+        -2.595034599304199,
+        -2.2016546726226807,
+        -1.8285682201385498
+      ],
+      "numerical": {
+        "maximum_condition": 30.269563353234904,
+        "maximum_read": 1.0887062549591064,
+        "maximum_relative_residual": 1.3931633824146462e-16,
+        "maximum_write_mass": 8.020395363725944
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0060.json",
+      "payload_bytes": 586,
+      "payload_sha256": "f304aad2213c2e3936ac4a2c1589d9508e669c642b71f264a88e3796da5909ab",
+      "symbol": 0,
+      "total_cpu_seconds": 0.006708252000009907,
+      "total_wall_seconds": 0.006811949999246281
+    },
+    {
+      "content_wall_seconds": 0.010690529999919818,
+      "feature_wall_seconds": 0.0001133010009652935,
+      "io_wall_seconds": 0.0002634169995872071,
+      "logits": [
+        -2.3118252754211426,
+        7.034867286682129,
+        0.008100252598524094,
+        -4.910477638244629
+      ],
+      "numerical": {
+        "maximum_condition": 41.478332033403,
+        "maximum_read": 1.4392495155334473,
+        "maximum_relative_residual": 1.1333970607604593e-16,
+        "maximum_write_mass": 8.815316379650461
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0061.json",
+      "payload_bytes": 586,
+      "payload_sha256": "e1329881275c409b41e304e5dfad0b893c7e2380f3a37e145eae70274bdf5a2b",
+      "symbol": 1,
+      "total_cpu_seconds": 0.011004346999996528,
+      "total_wall_seconds": 0.01109540899960848
+    },
+    {
+      "content_wall_seconds": 0.01016961100140179,
+      "feature_wall_seconds": 6.906400085426867e-05,
+      "io_wall_seconds": 0.0004850589994020993,
+      "logits": [
+        8.131340026855469,
+        -2.6171932220458984,
+        -2.643996477127075,
+        -2.027261734008789
+      ],
+      "numerical": {
+        "maximum_condition": 36.72116506739541,
+        "maximum_read": 1.2120325565338135,
+        "maximum_relative_residual": 1.3030121831478282e-16,
+        "maximum_write_mass": 8.951200184584469
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0062.json",
+      "payload_bytes": 586,
+      "payload_sha256": "505b368235ebbd5a107ef172013a45adaeba963cf0334aa2c31b3af206af1c0d",
+      "symbol": 0,
+      "total_cpu_seconds": 0.010614492000001974,
+      "total_wall_seconds": 0.010747791000540019
+    },
+    {
+      "content_wall_seconds": 0.010268079999150359,
+      "feature_wall_seconds": 5.769699964730535e-05,
+      "io_wall_seconds": 0.0003505380009301007,
+      "logits": [
+        -1.8186556100845337,
+        8.167184829711914,
+        -0.8984823822975159,
+        -6.108017921447754
+      ],
+      "numerical": {
+        "maximum_condition": 32.41489068289434,
+        "maximum_read": 1.495398759841919,
+        "maximum_relative_residual": 1.3914349918876445e-16,
+        "maximum_write_mass": 7.61176023714502
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0063.json",
+      "payload_bytes": 586,
+      "payload_sha256": "007427330c906c18294518146f3a09ef2fc8c9925c41b30af8836429d3b6af0f",
+      "symbol": 1,
+      "total_cpu_seconds": 0.010624969000005535,
+      "total_wall_seconds": 0.010768292000648216
+    },
+    {
+      "content_wall_seconds": 0.010428071000205819,
+      "feature_wall_seconds": 6.051100172044244e-05,
+      "io_wall_seconds": 0.0003011429998878157,
+      "logits": [
+        7.670032501220703,
+        -2.3475866317749023,
+        -2.5665557384490967,
+        -1.9668961763381958
+      ],
+      "numerical": {
+        "maximum_condition": 33.88352148829024,
+        "maximum_read": 1.1168032884597778,
+        "maximum_relative_residual": 1.316015474947474e-16,
+        "maximum_write_mass": 7.407656070305782
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0064.json",
+      "payload_bytes": 586,
+      "payload_sha256": "7ad2b6ae1698c1f8e5a13d98e218ac5b80b9b2a4d39d8ff1be95646259a50c17",
+      "symbol": 0,
+      "total_cpu_seconds": 0.010686969999994744,
+      "total_wall_seconds": 0.010815513000125065
+    },
+    {
+      "content_wall_seconds": 0.010360108000895707,
+      "feature_wall_seconds": 5.7856999774230644e-05,
+      "io_wall_seconds": 0.0003208130001439713,
+      "logits": [
+        -1.7729759216308594,
+        7.872562885284424,
+        -0.6816085577011108,
+        -5.913153648376465
+      ],
+      "numerical": {
+        "maximum_condition": 40.75582087343923,
+        "maximum_read": 1.4919089078903198,
+        "maximum_relative_residual": 1.295223146632488e-16,
+        "maximum_write_mass": 9.17398537186273
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0065.json",
+      "payload_bytes": 586,
+      "payload_sha256": "de8efcddc349dc5fce5755498bf33baa2512446d7fa7d020bd7ec53950026edb",
+      "symbol": 1,
+      "total_cpu_seconds": 0.010585570000003486,
+      "total_wall_seconds": 0.010758938000435592
+    },
+    {
+      "content_wall_seconds": 0.010395130000688368,
+      "feature_wall_seconds": 5.674600106431171e-05,
+      "io_wall_seconds": 0.0003527209992171265,
+      "logits": [
+        7.5278849601745605,
+        -2.040132761001587,
+        -2.4883575439453125,
+        -2.236811876296997
+      ],
+      "numerical": {
+        "maximum_condition": 33.18172901725812,
+        "maximum_read": 1.0697038173675537,
+        "maximum_relative_residual": 1.3191076079069328e-16,
+        "maximum_write_mass": 7.276044994773276
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0066.json",
+      "payload_bytes": 586,
+      "payload_sha256": "c7ad5199048b0b08ad1b225a6999a8ea8f62eba97e39e78a2f5103fc87e83410",
+      "symbol": 0,
+      "total_cpu_seconds": 0.010674461000007796,
+      "total_wall_seconds": 0.010828774000401609
+    },
+    {
+      "content_wall_seconds": 0.009569232999638189,
+      "feature_wall_seconds": 5.6103999668266624e-05,
+      "io_wall_seconds": 0.000289135001366958,
+      "logits": [
+        -1.7740981578826904,
+        8.027085304260254,
+        -0.8434430956840515,
+        -5.950273036956787
+      ],
+      "numerical": {
+        "maximum_condition": 40.37060354626163,
+        "maximum_read": 1.5066999197006226,
+        "maximum_relative_residual": 1.3297502199180225e-16,
+        "maximum_write_mass": 8.186179049476507
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0067.json",
+      "payload_bytes": 586,
+      "payload_sha256": "f615ac6c1b95bd22c99a2150f9d702ecf83201a31fb1839d50ec873e4e3ba3c0",
+      "symbol": 1,
+      "total_cpu_seconds": 0.009860798000005389,
+      "total_wall_seconds": 0.009941172000253573
+    },
+    {
+      "content_wall_seconds": 0.009687235000455985,
+      "feature_wall_seconds": 6.303500049398281e-05,
+      "io_wall_seconds": 0.0003551640002115164,
+      "logits": [
+        7.6835618019104,
+        -2.7361438274383545,
+        -2.2176527976989746,
+        -1.83175790309906
+      ],
+      "numerical": {
+        "maximum_condition": 32.20107594037143,
+        "maximum_read": 1.1269019842147827,
+        "maximum_relative_residual": 1.4587784692642908e-16,
+        "maximum_write_mass": 7.42742048504387
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0068.json",
+      "payload_bytes": 586,
+      "payload_sha256": "3ebe971549f466996be25d2cde5fa96b3b7191520321de0bfd86735981ee473c",
+      "symbol": 0,
+      "total_cpu_seconds": 0.00998317500000212,
+      "total_wall_seconds": 0.010129471000254853
+    },
+    {
+      "content_wall_seconds": 0.009795619000215083,
+      "feature_wall_seconds": 6.037099956301972e-05,
+      "io_wall_seconds": 0.0004633070002455497,
+      "logits": [
+        -1.4046876430511475,
+        8.646549224853516,
+        -1.160616159439087,
+        -6.828719615936279
+      ],
+      "numerical": {
+        "maximum_condition": 34.25050017352086,
+        "maximum_read": 1.5563437938690186,
+        "maximum_relative_residual": 1.500014394429328e-16,
+        "maximum_write_mass": 7.148101506349763
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0069.json",
+      "payload_bytes": 586,
+      "payload_sha256": "9a5325f1a56cd7afe404602b41e728461fe7525e060c8aff07c5a8a6ff9480a2",
+      "symbol": 1,
+      "total_cpu_seconds": 0.010073058999992668,
+      "total_wall_seconds": 0.010343562998968991
+    },
+    {
+      "content_wall_seconds": 0.009320634000687278,
+      "feature_wall_seconds": 5.812800009152852e-05,
+      "io_wall_seconds": 0.00036409800122783054,
+      "logits": [
+        7.859177589416504,
+        -1.9722257852554321,
+        -3.069676637649536,
+        -2.201427698135376
+      ],
+      "numerical": {
+        "maximum_condition": 43.07585901686083,
+        "maximum_read": 1.1358153820037842,
+        "maximum_relative_residual": 1.471642084850848e-16,
+        "maximum_write_mass": 9.001465594957185
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0070.json",
+      "payload_bytes": 586,
+      "payload_sha256": "920c7e2d8b31120ea82ac0e00718fb6d06deb8ab8a5cede2e203e79a3c31e711",
+      "symbol": 0,
+      "total_cpu_seconds": 0.00960364099999822,
+      "total_wall_seconds": 0.009763400999872829
+    },
+    {
+      "content_wall_seconds": 0.009484569998676307,
+      "feature_wall_seconds": 5.83970013394719e-05,
+      "io_wall_seconds": 0.0003307570004835725,
+      "logits": [
+        -1.5488899946212769,
+        8.441216468811035,
+        -0.9689285755157471,
+        -6.620632171630859
+      ],
+      "numerical": {
+        "maximum_condition": 34.59428238986417,
+        "maximum_read": 1.5170044898986816,
+        "maximum_relative_residual": 1.6241332764804933e-16,
+        "maximum_write_mass": 8.060223695862948
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0071.json",
+      "payload_bytes": 586,
+      "payload_sha256": "ac093487e993544b7afe30d6180fa563a378f6dc634898e6984c07355bba13c7",
+      "symbol": 1,
+      "total_cpu_seconds": 0.009750178999993864,
+      "total_wall_seconds": 0.009894577000522986
+    },
+    {
+      "content_wall_seconds": 0.010858827999982168,
+      "feature_wall_seconds": 6.000000030326191e-05,
+      "io_wall_seconds": 0.00034422800126776565,
+      "logits": [
+        7.533808708190918,
+        -2.0922937393188477,
+        -2.418097972869873,
+        -2.2961854934692383
+      ],
+      "numerical": {
+        "maximum_condition": 33.867950755751025,
+        "maximum_read": 1.0824193954467773,
+        "maximum_relative_residual": 1.4319268723404373e-16,
+        "maximum_write_mass": 7.851544904973212
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0072.json",
+      "payload_bytes": 586,
+      "payload_sha256": "5c9536dd5b474d0777a834cf3fb13da390cebfd2ccd95ce16835824c9b288531",
+      "symbol": 0,
+      "total_cpu_seconds": 0.011127854999998021,
+      "total_wall_seconds": 0.011288534999039257
+    },
+    {
+      "content_wall_seconds": 0.010809634999532136,
+      "feature_wall_seconds": 6.492700049420819e-05,
+      "io_wall_seconds": 0.00038863500049046706,
+      "logits": [
+        -1.7436332702636719,
+        8.217812538146973,
+        -0.9349429607391357,
+        -6.155181407928467
+      ],
+      "numerical": {
+        "maximum_condition": 38.7089361165806,
+        "maximum_read": 1.4862242937088013,
+        "maximum_relative_residual": 1.5020793191695947e-16,
+        "maximum_write_mass": 9.269438293839602
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0073.json",
+      "payload_bytes": 586,
+      "payload_sha256": "4b4229205f5024a25eb9e2a5c5a3ad542b717071b2b30b5835dc465752a5e4e7",
+      "symbol": 1,
+      "total_cpu_seconds": 0.011114886000001434,
+      "total_wall_seconds": 0.011288334999335348
+    },
+    {
+      "content_wall_seconds": 0.01059264799914672,
+      "feature_wall_seconds": 5.950900049356278e-05,
+      "io_wall_seconds": 0.00033038800029316917,
+      "logits": [
+        7.693387985229492,
+        -2.707184314727783,
+        -2.486354112625122,
+        -1.6264569759368896
+      ],
+      "numerical": {
+        "maximum_condition": 34.28002681248189,
+        "maximum_read": 1.131771206855774,
+        "maximum_relative_residual": 1.1146857912837284e-16,
+        "maximum_write_mass": 8.968674717944936
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0074.json",
+      "payload_bytes": 586,
+      "payload_sha256": "4846d6b70bd905e86b67ec59b164da7bedb63c0465951ee82ef51e11ce3f46e8",
+      "symbol": 0,
+      "total_cpu_seconds": 0.01087678099999323,
+      "total_wall_seconds": 0.011007432000042172
+    },
+    {
+      "content_wall_seconds": 0.008824647000437835,
+      "feature_wall_seconds": 6.952400144655257e-05,
+      "io_wall_seconds": 0.0022630149996984983,
+      "logits": [
+        -1.9496393203735352,
+        7.753563404083252,
+        -0.550220251083374,
+        -5.708990097045898
+      ],
+      "numerical": {
+        "maximum_condition": 36.82005326500712,
+        "maximum_read": 1.4728881120681763,
+        "maximum_relative_residual": 1.2903948726574217e-16,
+        "maximum_write_mass": 8.018407349985305
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0075.json",
+      "payload_bytes": 586,
+      "payload_sha256": "e4c27caa7ed6680cabb97f38cefda5e892ac57193c8e2b8121b146638fb5d540",
+      "symbol": 1,
+      "total_cpu_seconds": 0.00925420200000815,
+      "total_wall_seconds": 0.011183327000253485
+    },
+    {
+      "content_wall_seconds": 0.007685597998715821,
+      "feature_wall_seconds": 5.6135000704671256e-05,
+      "io_wall_seconds": 0.0004635879995475989,
+      "logits": [
+        7.4573163986206055,
+        -1.2345346212387085,
+        -2.912991523742676,
+        -2.836275100708008
+      ],
+      "numerical": {
+        "maximum_condition": 38.14258180995773,
+        "maximum_read": 1.0895073413848877,
+        "maximum_relative_residual": 1.364575299508712e-16,
+        "maximum_write_mass": 7.607009245797888
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0076.json",
+      "payload_bytes": 586,
+      "payload_sha256": "c07f6e938223550f0ac336fe48c4325ea552b046f76ce319d3008a9a3b86cf26",
+      "symbol": 0,
+      "total_cpu_seconds": 0.007969571000003839,
+      "total_wall_seconds": 0.00822495899956266
+    },
+    {
+      "content_wall_seconds": 0.006433770000512595,
+      "feature_wall_seconds": 6.252400089579169e-05,
+      "io_wall_seconds": 0.00031788799969945103,
+      "logits": [
+        -1.4828855991363525,
+        8.69742488861084,
+        -1.2284973859786987,
+        -6.790067195892334
+      ],
+      "numerical": {
+        "maximum_condition": 32.91667753374493,
+        "maximum_read": 1.546820044517517,
+        "maximum_relative_residual": 1.4454955404090617e-16,
+        "maximum_write_mass": 6.831248271459862
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0077.json",
+      "payload_bytes": 586,
+      "payload_sha256": "07742c999b8268db19af8c33de2a1db71d169b6f9b19cd9b17ad6f2b914c41dc",
+      "symbol": 1,
+      "total_cpu_seconds": 0.006680580000008263,
+      "total_wall_seconds": 0.006831218999650446
+    },
+    {
+      "content_wall_seconds": 0.005657321999024134,
+      "feature_wall_seconds": 4.41169995610835e-05,
+      "io_wall_seconds": 0.0003112479989795247,
+      "logits": [
+        7.681803226470947,
+        -2.6090917587280273,
+        -2.3402740955352783,
+        -1.787370204925537
+      ],
+      "numerical": {
+        "maximum_condition": 31.72875265991522,
+        "maximum_read": 1.121142864227295,
+        "maximum_relative_residual": 1.3834610796730262e-16,
+        "maximum_write_mass": 7.94699916487928
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0078.json",
+      "payload_bytes": 586,
+      "payload_sha256": "dc3e5bb1ad2e0be8bfc33ce4bf299f5d6ecc629a550cc2f22c7354b49cb4cce3",
+      "symbol": 0,
+      "total_cpu_seconds": 0.0058638060000077985,
+      "total_wall_seconds": 0.006031324999639764
+    },
+    {
+      "content_wall_seconds": 0.011837886999273906,
+      "feature_wall_seconds": 4.167299994151108e-05,
+      "io_wall_seconds": 0.00026604999948176555,
+      "logits": [
+        -1.6518925428390503,
+        8.114725112915039,
+        -0.8030113577842712,
+        -6.173266410827637
+      ],
+      "numerical": {
+        "maximum_condition": 38.24443378443368,
+        "maximum_read": 1.4924453496932983,
+        "maximum_relative_residual": 1.3242500719231772e-16,
+        "maximum_write_mass": 9.008505957257244
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0079.json",
+      "payload_bytes": 586,
+      "payload_sha256": "8337dd11181ebf1088106c782d1b242a0687109165f9f8a057a9125f682fcb5e",
+      "symbol": 1,
+      "total_cpu_seconds": 0.012035776999994141,
+      "total_wall_seconds": 0.012166291000539786
+    },
+    {
+      "content_wall_seconds": 0.010138053999980912,
+      "feature_wall_seconds": 5.687600059900433e-05,
+      "io_wall_seconds": 0.00032713200016587507,
+      "logits": [
+        7.984289169311523,
+        -2.855672597885132,
+        -2.4209837913513184,
+        -1.7519022226333618
+      ],
+      "numerical": {
+        "maximum_condition": 32.82989130194257,
+        "maximum_read": 1.1876994371414185,
+        "maximum_relative_residual": 1.2576006460620572e-16,
+        "maximum_write_mass": 8.339538179783517
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0080.json",
+      "payload_bytes": 586,
+      "payload_sha256": "929661518d8e40e386392809caf3b56489eff7306ce3c7788a03e8af43d7066a",
+      "symbol": 0,
+      "total_cpu_seconds": 0.010379854000007072,
+      "total_wall_seconds": 0.010540089000642183
+    },
+    {
+      "content_wall_seconds": 0.007056211999952211,
+      "feature_wall_seconds": 5.2339000831125304e-05,
+      "io_wall_seconds": 0.0004106780015717959,
+      "logits": [
+        -1.9351762533187866,
+        8.187131881713867,
+        -0.6870166659355164,
+        -6.146111965179443
+      ],
+      "numerical": {
+        "maximum_condition": 34.360114174765954,
+        "maximum_read": 1.4874800443649292,
+        "maximum_relative_residual": 1.4371823016771118e-16,
+        "maximum_write_mass": 7.852926861331017
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0081.json",
+      "payload_bytes": 586,
+      "payload_sha256": "f55a77b8b50ea2d70edac189ac59cc65bcb8dfce8615a1ef1b385aed2ce9543a",
+      "symbol": 1,
+      "total_cpu_seconds": 0.00727591000000416,
+      "total_wall_seconds": 0.007532117999289767
+    },
+    {
+      "content_wall_seconds": 0.005478091999975732,
+      "feature_wall_seconds": 4.2453999412828125e-05,
+      "io_wall_seconds": 0.0005316799997672206,
+      "logits": [
+        7.691458225250244,
+        -1.0470197200775146,
+        -3.0969367027282715,
+        -3.220029830932617
+      ],
+      "numerical": {
+        "maximum_condition": 42.58990029886608,
+        "maximum_read": 1.188914179801941,
+        "maximum_relative_residual": 1.1365796072438356e-16,
+        "maximum_write_mass": 7.960023413147118
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0082.json",
+      "payload_bytes": 586,
+      "payload_sha256": "977f8d7d74188e3dfdd4a1420b9dbfab6f71761548b48d48b6a2e7123f6ce2d1",
+      "symbol": 0,
+      "total_cpu_seconds": 0.0056580620000090676,
+      "total_wall_seconds": 0.0060636929993052036
+    },
+    {
+      "content_wall_seconds": 0.005072481999377487,
+      "feature_wall_seconds": 3.8127000152599066e-05,
+      "io_wall_seconds": 0.00022757199985790066,
+      "logits": [
+        -1.6538690328598022,
+        8.320380210876465,
+        -0.8727224469184875,
+        -6.448387622833252
+      ],
+      "numerical": {
+        "maximum_condition": 32.27791311550759,
+        "maximum_read": 1.5058625936508179,
+        "maximum_relative_residual": 1.4944033031674568e-16,
+        "maximum_write_mass": 7.9483752943589945
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0083.json",
+      "payload_bytes": 586,
+      "payload_sha256": "d63cc2ee41bfc8b82eb0e3be65758eefb3fb78cf0ab601e2a427b30c5ad9bf51",
+      "symbol": 1,
+      "total_cpu_seconds": 0.00525568400000509,
+      "total_wall_seconds": 0.005347857000742806
+    },
+    {
+      "content_wall_seconds": 0.005144239999935962,
+      "feature_wall_seconds": 3.639399983512703e-05,
+      "io_wall_seconds": 0.0004087449997314252,
+      "logits": [
+        7.955428600311279,
+        -2.6928505897521973,
+        -2.564943313598633,
+        -1.8370270729064941
+      ],
+      "numerical": {
+        "maximum_condition": 33.719700806733094,
+        "maximum_read": 1.1846235990524292,
+        "maximum_relative_residual": 1.4639718590676175e-16,
+        "maximum_write_mass": 8.524786437360163
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0084.json",
+      "payload_bytes": 586,
+      "payload_sha256": "a64a52ed9f431f86e1fd2392a12e234d2897a776e5daff13f39824de15b92cb4",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005337936999993076,
+      "total_wall_seconds": 0.005599104000793886
+    },
+    {
+      "content_wall_seconds": 0.00547705099961604,
+      "feature_wall_seconds": 0.00010726100117608439,
+      "io_wall_seconds": 0.0003213139989384217,
+      "logits": [
+        -1.5534065961837769,
+        8.438801765441895,
+        -1.123132586479187,
+        -6.44751501083374
+      ],
+      "numerical": {
+        "maximum_condition": 30.060602748920225,
+        "maximum_read": 1.512030005455017,
+        "maximum_relative_residual": 1.2845321915960667e-16,
+        "maximum_write_mass": 7.446277068252762
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0085.json",
+      "payload_bytes": 586,
+      "payload_sha256": "1f75412aabb8e314c9c4a5dd43fac3be05e3c4a49a78ce04363e769820a322fe",
+      "symbol": 1,
+      "total_cpu_seconds": 0.005715105999996695,
+      "total_wall_seconds": 0.005916992000493337
+    },
+    {
+      "content_wall_seconds": 0.005509299000550527,
+      "feature_wall_seconds": 3.604399898904376e-05,
+      "io_wall_seconds": 0.00020916399989800993,
+      "logits": [
+        7.736567497253418,
+        -2.6371471881866455,
+        -2.567758798599243,
+        -1.6319024562835693
+      ],
+      "numerical": {
+        "maximum_condition": 35.84920228038942,
+        "maximum_read": 1.126459002494812,
+        "maximum_relative_residual": 1.3342831669842578e-16,
+        "maximum_write_mass": 8.948912780092172
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0086.json",
+      "payload_bytes": 586,
+      "payload_sha256": "5379c3153748f10ee3101ec852f50c83bdcaedc832da46162f6e23751024b4fe",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005656490000006897,
+      "total_wall_seconds": 0.005764083000030951
+    },
+    {
+      "content_wall_seconds": 0.005339994999303599,
+      "feature_wall_seconds": 3.3510001230752096e-05,
+      "io_wall_seconds": 0.00020274500093364622,
+      "logits": [
+        -1.676044225692749,
+        8.33191204071045,
+        -0.8482100963592529,
+        -6.507604598999023
+      ],
+      "numerical": {
+        "maximum_condition": 34.04257319397286,
+        "maximum_read": 1.522623896598816,
+        "maximum_relative_residual": 1.4704244198278532e-16,
+        "maximum_write_mass": 6.94080515281901
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0087.json",
+      "payload_bytes": 586,
+      "payload_sha256": "207cc7f0d17573b3a4ea3f6c0b4da25167da41494f8a6c9da067cc12b81b3653",
+      "symbol": 1,
+      "total_cpu_seconds": 0.00548254199999576,
+      "total_wall_seconds": 0.005587427000136813
+    },
+    {
+      "content_wall_seconds": 0.005295516999467509,
+      "feature_wall_seconds": 3.801700040639844e-05,
+      "io_wall_seconds": 0.00048327700096706394,
+      "logits": [
+        7.457007884979248,
+        -2.0192806720733643,
+        -2.4965336322784424,
+        -2.2265703678131104
+      ],
+      "numerical": {
+        "maximum_condition": 32.743019968215584,
+        "maximum_read": 1.05131995677948,
+        "maximum_relative_residual": 1.238597579900992e-16,
+        "maximum_write_mass": 7.4053661988589745
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0088.json",
+      "payload_bytes": 586,
+      "payload_sha256": "684ee44c85174f2dbdf89edb1f81ac8742d57bd57d8b333302c4f019d1ba828a",
+      "symbol": 0,
+      "total_cpu_seconds": 0.00545906700000387,
+      "total_wall_seconds": 0.005830191999848466
+    },
+    {
+      "content_wall_seconds": 0.005394716999944649,
+      "feature_wall_seconds": 4.1232000512536615e-05,
+      "io_wall_seconds": 0.0004966179985785857,
+      "logits": [
+        -1.7845288515090942,
+        8.18697452545166,
+        -0.6989898085594177,
+        -6.29485559463501
+      ],
+      "numerical": {
+        "maximum_condition": 38.69814547095121,
+        "maximum_read": 1.4897191524505615,
+        "maximum_relative_residual": 1.3437000285234773e-16,
+        "maximum_write_mass": 8.205942659353916
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0089.json",
+      "payload_bytes": 586,
+      "payload_sha256": "3ecd5344d2c425851648a36ff3f2bcf1be9db3537713b8fefcf8504fb3d5e3d9",
+      "symbol": 1,
+      "total_cpu_seconds": 0.005639956000010216,
+      "total_wall_seconds": 0.00594693800121604
+    },
+    {
+      "content_wall_seconds": 0.0056647229994268855,
+      "feature_wall_seconds": 4.187299964542035e-05,
+      "io_wall_seconds": 0.00038546999894606415,
+      "logits": [
+        7.611401081085205,
+        -1.9429858922958374,
+        -2.546163320541382,
+        -2.4641051292419434
+      ],
+      "numerical": {
+        "maximum_condition": 35.13664990993876,
+        "maximum_read": 1.0778816938400269,
+        "maximum_relative_residual": 1.242878456812733e-16,
+        "maximum_write_mass": 7.517213667776593
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0090.json",
+      "payload_bytes": 586,
+      "payload_sha256": "907df14c59f4e124eab7b2a9cfaba82902c5a522d578d5418f9b2c23337cc533",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005879301000007331,
+      "total_wall_seconds": 0.006135681998785003
+    },
+    {
+      "content_wall_seconds": 0.005395447999035241,
+      "feature_wall_seconds": 4.12520003010286e-05,
+      "io_wall_seconds": 0.0002693349997571204,
+      "logits": [
+        -1.8765616416931152,
+        8.01138687133789,
+        -0.5825271010398865,
+        -6.088149070739746
+      ],
+      "numerical": {
+        "maximum_condition": 44.08176969632752,
+        "maximum_read": 1.498522162437439,
+        "maximum_relative_residual": 1.2761009922411386e-16,
+        "maximum_write_mass": 8.407583992425582
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0091.json",
+      "payload_bytes": 586,
+      "payload_sha256": "38582cf71bbc5ee25777ab4d5be2f6923b14dc7fd80342aa0d209b45ab5905c0",
+      "symbol": 1,
+      "total_cpu_seconds": 0.005585073000005991,
+      "total_wall_seconds": 0.005720897999708541
+    },
+    {
+      "content_wall_seconds": 0.005806015999041847,
+      "feature_wall_seconds": 4.081100087205414e-05,
+      "io_wall_seconds": 0.00027658599901769776,
+      "logits": [
+        7.875996112823486,
+        -1.658692717552185,
+        -2.900876522064209,
+        -2.812849283218384
+      ],
+      "numerical": {
+        "maximum_condition": 42.93832266096022,
+        "maximum_read": 1.1621568202972412,
+        "maximum_relative_residual": 1.3219063618568466e-16,
+        "maximum_write_mass": 8.61121249768076
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0092.json",
+      "payload_bytes": 586,
+      "payload_sha256": "3139488cfbf6f5d98499d41ae9b852edf8bfb8f50f972902a06aede569d2837d",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005986078999995925,
+      "total_wall_seconds": 0.006140188999779639
+    },
+    {
+      "content_wall_seconds": 0.005956641998636769,
+      "feature_wall_seconds": 4.212400017422624e-05,
+      "io_wall_seconds": 0.00028296600066823885,
+      "logits": [
+        -1.8307467699050903,
+        7.772879600524902,
+        -0.5798066258430481,
+        -5.751676082611084
+      ],
+      "numerical": {
+        "maximum_condition": 39.15668244366791,
+        "maximum_read": 1.471026062965393,
+        "maximum_relative_residual": 1.3152843427928068e-16,
+        "maximum_write_mass": 8.85713145275
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0093.json",
+      "payload_bytes": 586,
+      "payload_sha256": "8d8ed854084aaa114e0f2a52601ea47cd4808cd75c2b23d974f871c7e21b7404",
+      "symbol": 1,
+      "total_cpu_seconds": 0.0061828320000074655,
+      "total_wall_seconds": 0.006299747999946703
+    },
+    {
+      "content_wall_seconds": 0.005608829000266269,
+      "feature_wall_seconds": 3.988999924331438e-05,
+      "io_wall_seconds": 0.0002476429999660468,
+      "logits": [
+        7.5005364418029785,
+        -1.8439329862594604,
+        -2.6619763374328613,
+        -2.3408548831939697
+      ],
+      "numerical": {
+        "maximum_condition": 34.1555583420147,
+        "maximum_read": 1.0520718097686768,
+        "maximum_relative_residual": 1.3151864788641162e-16,
+        "maximum_write_mass": 7.071038366704954
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0094.json",
+      "payload_bytes": 586,
+      "payload_sha256": "c816bbd82f885da16bcacef65fe4a313a5b3bbc3b91e405462d8f09c383aba22",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005791740999995909,
+      "total_wall_seconds": 0.005906628000957426
+    },
+    {
+      "content_wall_seconds": 0.00516038500063587,
+      "feature_wall_seconds": 3.757600097742397e-05,
+      "io_wall_seconds": 0.00024058199960563798,
+      "logits": [
+        -1.7422254085540771,
+        8.257729530334473,
+        -0.8437100052833557,
+        -6.301839351654053
+      ],
+      "numerical": {
+        "maximum_condition": 36.406890750005154,
+        "maximum_read": 1.5092869997024536,
+        "maximum_relative_residual": 1.325815178035579e-16,
+        "maximum_write_mass": 7.703839864274348
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0095.json",
+      "payload_bytes": 586,
+      "payload_sha256": "56a91848f3aeaa903fad1ef204e41eee728bb6f3fc5f78d77bcba1ced69c96f2",
+      "symbol": 1,
+      "total_cpu_seconds": 0.005318307999999661,
+      "total_wall_seconds": 0.005449840000437689
+    },
+    {
+      "content_wall_seconds": 0.0053990140004316345,
+      "feature_wall_seconds": 3.5162998756277375e-05,
+      "io_wall_seconds": 0.00026367700047558174,
+      "logits": [
+        7.789331436157227,
+        -2.163865804672241,
+        -2.648312568664551,
+        -2.2910687923431396
+      ],
+      "numerical": {
+        "maximum_condition": 36.60727246835888,
+        "maximum_read": 1.1419001817703247,
+        "maximum_relative_residual": 1.3341037702371324e-16,
+        "maximum_write_mass": 8.224322383634942
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0096.json",
+      "payload_bytes": 586,
+      "payload_sha256": "bf0761f5d0fe38407500355084747e84c644cca870962afc94fd8ad83c70b020",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005543441000000371,
+      "total_wall_seconds": 0.005708299000616535
+    },
+    {
+      "content_wall_seconds": 0.005285491999529768,
+      "feature_wall_seconds": 3.457200000411831e-05,
+      "io_wall_seconds": 0.00023623500055691693,
+      "logits": [
+        -1.7753090858459473,
+        8.169166564941406,
+        -0.7188647985458374,
+        -6.278306007385254
+      ],
+      "numerical": {
+        "maximum_condition": 38.37387620079469,
+        "maximum_read": 1.5041037797927856,
+        "maximum_relative_residual": 1.470420240949764e-16,
+        "maximum_write_mass": 7.945008791209084
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0097.json",
+      "payload_bytes": 586,
+      "payload_sha256": "834ff9e08d4b1f40814c41bf8627b0eae11ff994e9bce8f5eaf4e522a46cb9fa",
+      "symbol": 1,
+      "total_cpu_seconds": 0.005429453000004969,
+      "total_wall_seconds": 0.0055669360008323565
+    },
+    {
+      "content_wall_seconds": 0.005428358001154265,
+      "feature_wall_seconds": 3.319999996165279e-05,
+      "io_wall_seconds": 0.0002531909995013848,
+      "logits": [
+        7.941972732543945,
+        -2.6446101665496826,
+        -2.6194605827331543,
+        -1.8139050006866455
+      ],
+      "numerical": {
+        "maximum_condition": 34.63528605561751,
+        "maximum_read": 1.1848143339157104,
+        "maximum_relative_residual": 1.2509260344815537e-16,
+        "maximum_write_mass": 8.710032343448399
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0098.json",
+      "payload_bytes": 586,
+      "payload_sha256": "8da77b408b100402787b04c4d250ccefc4db8374bfe3bb3fe24d7eacb1a29e54",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005571693000007372,
+      "total_wall_seconds": 0.005724844000724261
+    },
+    {
+      "content_wall_seconds": 0.005157630999747198,
+      "feature_wall_seconds": 4.047099901072215e-05,
+      "io_wall_seconds": 0.00032423800075775944,
+      "logits": [
+        -1.9538050889968872,
+        7.5929975509643555,
+        -0.5877983570098877,
+        -5.467898368835449
+      ],
+      "numerical": {
+        "maximum_condition": 34.810091779426706,
+        "maximum_read": 1.4566200971603394,
+        "maximum_relative_residual": 1.2894637709477077e-16,
+        "maximum_write_mass": 8.504114199721203
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0099.json",
+      "payload_bytes": 586,
+      "payload_sha256": "3739be86fafe7fba1889724f2adfd3ab5b6e6fd65a0d9f325e075548e3eb87f9",
+      "symbol": 1,
+      "total_cpu_seconds": 0.005405838000001495,
+      "total_wall_seconds": 0.005535128000701661
+    },
+    {
+      "content_wall_seconds": 0.005302647999997134,
+      "feature_wall_seconds": 3.974999890488107e-05,
+      "io_wall_seconds": 0.0002541129997553071,
+      "logits": [
+        7.9649200439453125,
+        -2.1647510528564453,
+        -2.798815965652466,
+        -2.2534875869750977
+      ],
+      "numerical": {
+        "maximum_condition": 40.4759222598753,
+        "maximum_read": 1.1568467617034912,
+        "maximum_relative_residual": 1.3897660488781507e-16,
+        "maximum_write_mass": 8.83598701352189
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0100.json",
+      "payload_bytes": 586,
+      "payload_sha256": "5faf9306a884a7d6f66e74409f55e56ed8b1e113d2966229e66021f1a04f6a88",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005474128999992445,
+      "total_wall_seconds": 0.005608559000393143
+    },
+    {
+      "content_wall_seconds": 0.005230239001321024,
+      "feature_wall_seconds": 4.1522998799337074e-05,
+      "io_wall_seconds": 0.000700444001267897,
+      "logits": [
+        -1.5399017333984375,
+        8.522466659545898,
+        -0.9632916450500488,
+        -6.767374515533447
+      ],
+      "numerical": {
+        "maximum_condition": 35.45055123333823,
+        "maximum_read": 1.5299410820007324,
+        "maximum_relative_residual": 1.4527474989752786e-16,
+        "maximum_write_mass": 7.855216475177562
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0101.json",
+      "payload_bytes": 586,
+      "payload_sha256": "420eb79722ecdea3f095ddf09c8dd16d1d084d665a5b6c8b95a9deee7a512101",
+      "symbol": 1,
+      "total_cpu_seconds": 0.005403654999994956,
+      "total_wall_seconds": 0.005986617999951704
+    },
+    {
+      "content_wall_seconds": 0.005229557998973178,
+      "feature_wall_seconds": 3.977000051236246e-05,
+      "io_wall_seconds": 0.0002884740006265929,
+      "logits": [
+        7.594622611999512,
+        -1.9084478616714478,
+        -2.562819242477417,
+        -2.4664626121520996
+      ],
+      "numerical": {
+        "maximum_condition": 35.13663545720864,
+        "maximum_read": 1.0886387825012207,
+        "maximum_relative_residual": 1.3638632444928376e-16,
+        "maximum_write_mass": 7.517214748750604
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0102.json",
+      "payload_bytes": 586,
+      "payload_sha256": "6a80428a9bc2142929d502f53c34588f4bd64f48dbd886d3fb4ca8ce866aba73",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005427249999996775,
+      "total_wall_seconds": 0.005569259999901988
+    },
+    {
+      "content_wall_seconds": 0.00536197700057528,
+      "feature_wall_seconds": 9.264900108973961e-05,
+      "io_wall_seconds": 0.00024612100060039666,
+      "logits": [
+        -1.6090936660766602,
+        8.433004379272461,
+        -1.1001394987106323,
+        -6.428954601287842
+      ],
+      "numerical": {
+        "maximum_condition": 38.11367916783903,
+        "maximum_read": 1.5284223556518555,
+        "maximum_relative_residual": 1.4139793990287285e-16,
+        "maximum_write_mass": 8.618251568331123
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0103.json",
+      "payload_bytes": 586,
+      "payload_sha256": "7d158570b123ec1018fa84f09742c6898854752628035974e316a44a2b976a8e",
+      "symbol": 1,
+      "total_cpu_seconds": 0.0055811179999949445,
+      "total_wall_seconds": 0.0057124439990730025
+    },
+    {
+      "content_wall_seconds": 0.005396419999669888,
+      "feature_wall_seconds": 3.8807998862466775e-05,
+      "io_wall_seconds": 0.00023725699975329917,
+      "logits": [
+        7.756137847900391,
+        -2.7802419662475586,
+        -2.2475574016571045,
+        -1.7645552158355713
+      ],
+      "numerical": {
+        "maximum_condition": 31.262609466265783,
+        "maximum_read": 1.1437865495681763,
+        "maximum_relative_residual": 1.244141717374756e-16,
+        "maximum_write_mass": 8.022685089515129
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0104.json",
+      "payload_bytes": 586,
+      "payload_sha256": "7303b38e530704afe1d1efc9fb640437c5f15aa662c06043a430553b2f91ea3d",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005563741999992544,
+      "total_wall_seconds": 0.005685865000486956
+    },
+    {
+      "content_wall_seconds": 0.005624081999485497,
+      "feature_wall_seconds": 3.963900053349789e-05,
+      "io_wall_seconds": 0.00026505900132178795,
+      "logits": [
+        -1.9361652135849,
+        7.923180103302002,
+        -0.8120642304420471,
+        -5.683769702911377
+      ],
+      "numerical": {
+        "maximum_condition": 34.53166310233321,
+        "maximum_read": 1.4996531009674072,
+        "maximum_relative_residual": 1.752701959429632e-16,
+        "maximum_write_mass": 7.516307908003537
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0105.json",
+      "payload_bytes": 586,
+      "payload_sha256": "7b32f0c18c0d940b0f230da0359946b729c07710766f73944c4d71c01c5eef15",
+      "symbol": 1,
+      "total_cpu_seconds": 0.005787753999996426,
+      "total_wall_seconds": 0.005940458000623039
+    },
+    {
+      "content_wall_seconds": 0.005515748998732306,
+      "feature_wall_seconds": 3.8918999052839354e-05,
+      "io_wall_seconds": 0.0002622539996082196,
+      "logits": [
+        7.128856658935547,
+        -1.8535367250442505,
+        -2.34527587890625,
+        -2.280693769454956
+      ],
+      "numerical": {
+        "maximum_condition": 28.929805346816952,
+        "maximum_read": 0.9906821846961975,
+        "maximum_relative_residual": 1.3113084783115724e-16,
+        "maximum_write_mass": 6.97666319987163
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0106.json",
+      "payload_bytes": 586,
+      "payload_sha256": "e008c5ec0f27b44fe0771cb0f2e1a4f8c92ce444042b0fb7d49fb47a7e5743e6",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005678512999992336,
+      "total_wall_seconds": 0.0058298820003983565
+    },
+    {
+      "content_wall_seconds": 0.005591433000518009,
+      "feature_wall_seconds": 5.170700023882091e-05,
+      "io_wall_seconds": 0.0015569429997412954,
+      "logits": [
+        -1.5703569650650024,
+        8.488480567932129,
+        -0.9773856997489929,
+        -6.610568046569824
+      ],
+      "numerical": {
+        "maximum_condition": 38.29376648399064,
+        "maximum_read": 1.5326272249221802,
+        "maximum_relative_residual": 1.2850389705757084e-16,
+        "maximum_write_mass": 7.891376437784816
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0107.json",
+      "payload_bytes": 586,
+      "payload_sha256": "b544a36e0f3c46e7f1a46b845a48d2be31f4bd46047dd62eaa9762a114eb6a9a",
+      "symbol": 1,
+      "total_cpu_seconds": 0.005828715999996348,
+      "total_wall_seconds": 0.007223357999464497
+    },
+    {
+      "content_wall_seconds": 0.005709260000003269,
+      "feature_wall_seconds": 5.0736000048345886e-05,
+      "io_wall_seconds": 0.000434564000897808,
+      "logits": [
+        7.3509321212768555,
+        -2.775346517562866,
+        -2.006878137588501,
+        -1.5887203216552734
+      ],
+      "numerical": {
+        "maximum_condition": 25.539393351561912,
+        "maximum_read": 1.0822433233261108,
+        "maximum_relative_residual": 1.4304338425246218e-16,
+        "maximum_write_mass": 7.743068955137369
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0108.json",
+      "payload_bytes": 586,
+      "payload_sha256": "ceec5e23490255037c6b8f35e0a118c25228a6fd20ab087ac5ef4f5aada7d50a",
+      "symbol": 0,
+      "total_cpu_seconds": 0.006044286000005172,
+      "total_wall_seconds": 0.006216032001248095
+    },
+    {
+      "content_wall_seconds": 0.0058075779998034704,
+      "feature_wall_seconds": 5.1076998715871014e-05,
+      "io_wall_seconds": 0.00036128400097368285,
+      "logits": [
+        -1.6889019012451172,
+        8.306577682495117,
+        -1.0241140127182007,
+        -6.27582311630249
+      ],
+      "numerical": {
+        "maximum_condition": 34.749649615960955,
+        "maximum_read": 1.5098049640655518,
+        "maximum_relative_residual": 1.281042950917526e-16,
+        "maximum_write_mass": 7.7236042159471126
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0109.json",
+      "payload_bytes": 586,
+      "payload_sha256": "e13426763eaecc3887d947159934ab57f0c40bd92a1cad313c3b7fa512e638c7",
+      "symbol": 1,
+      "total_cpu_seconds": 0.006057216000002086,
+      "total_wall_seconds": 0.006240310000066529
+    },
+    {
+      "content_wall_seconds": 0.00619339900003979,
+      "feature_wall_seconds": 4.995500057702884e-05,
+      "io_wall_seconds": 0.0003599920000851853,
+      "logits": [
+        7.389531135559082,
+        -1.7027003765106201,
+        -2.801677942276001,
+        -2.3014280796051025
+      ],
+      "numerical": {
+        "maximum_condition": 33.67944894658138,
+        "maximum_read": 1.0319597721099854,
+        "maximum_relative_residual": 1.3810842749400747e-16,
+        "maximum_write_mass": 7.200357016669148
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0110.json",
+      "payload_bytes": 586,
+      "payload_sha256": "92f931e9295181f5d54e3047aa90c7e0154b7fc04685818909e2b8f87c6a260c",
+      "symbol": 0,
+      "total_cpu_seconds": 0.006437328999993497,
+      "total_wall_seconds": 0.006623706000027596
+    },
+    {
+      "content_wall_seconds": 0.005659054999341606,
+      "feature_wall_seconds": 4.9094000132754445e-05,
+      "io_wall_seconds": 0.0003046080000785878,
+      "logits": [
+        -1.8415151834487915,
+        8.04198169708252,
+        -0.6476724743843079,
+        -6.125601768493652
+      ],
+      "numerical": {
+        "maximum_condition": 38.6968631912271,
+        "maximum_read": 1.4760905504226685,
+        "maximum_relative_residual": 1.6772463571410082e-16,
+        "maximum_write_mass": 8.932818611909875
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0111.json",
+      "payload_bytes": 586,
+      "payload_sha256": "a38ab6083b86016a616515b2352d6dbdbce646df5b19d16944166d6b5922b831",
+      "symbol": 1,
+      "total_cpu_seconds": 0.005947391000006519,
+      "total_wall_seconds": 0.0060310739991109585
+    },
+    {
+      "content_wall_seconds": 0.006162322000818676,
+      "feature_wall_seconds": 4.564800110529177e-05,
+      "io_wall_seconds": 0.00033083699963754043,
+      "logits": [
+        7.28137731552124,
+        -1.3600465059280396,
+        -2.75018048286438,
+        -2.672285318374634
+      ],
+      "numerical": {
+        "maximum_condition": 38.60582422693857,
+        "maximum_read": 1.0242429971694946,
+        "maximum_relative_residual": 1.3728529919669347e-16,
+        "maximum_write_mass": 7.921574496441314
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0112.json",
+      "payload_bytes": 586,
+      "payload_sha256": "7b31eb9062ddeefc7d9e028232a0d4e8536895c4f3587042834ecc27f5a74a52",
+      "symbol": 0,
+      "total_cpu_seconds": 0.006117564000007292,
+      "total_wall_seconds": 0.00655840800027363
+    },
+    {
+      "content_wall_seconds": 0.005579505001151119,
+      "feature_wall_seconds": 4.667000030167401e-05,
+      "io_wall_seconds": 0.0003125000002910383,
+      "logits": [
+        -1.6437816619873047,
+        8.497276306152344,
+        -1.0798943042755127,
+        -6.502826690673828
+      ],
+      "numerical": {
+        "maximum_condition": 34.29920455726877,
+        "maximum_read": 1.4985183477401733,
+        "maximum_relative_residual": 1.5057949297050087e-16,
+        "maximum_write_mass": 9.794670582046233
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0113.json",
+      "payload_bytes": 586,
+      "payload_sha256": "5009a59840b4d17d5ef603233dba44b90fb4b8e0f23736f6bbe426f7731560d7",
+      "symbol": 1,
+      "total_cpu_seconds": 0.0058180500000020174,
+      "total_wall_seconds": 0.00595705300111149
+    },
+    {
+      "content_wall_seconds": 0.005401427000833792,
+      "feature_wall_seconds": 4.4487000195658766e-05,
+      "io_wall_seconds": 0.00032330599970009644,
+      "logits": [
+        7.52839469909668,
+        -3.256265640258789,
+        -1.9120056629180908,
+        -1.184485673904419
+      ],
+      "numerical": {
+        "maximum_condition": 25.39418121946472,
+        "maximum_read": 1.1150482892990112,
+        "maximum_relative_residual": 1.3968255373263872e-16,
+        "maximum_write_mass": 7.6894317836335
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0114.json",
+      "payload_bytes": 586,
+      "payload_sha256": "7bd9e86bc484ae63dc1de7899d073989f287fa9b5e153a42bb9dd0cd05e502cb",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005615419000008615,
+      "total_wall_seconds": 0.005787207999674138
+    },
+    {
+      "content_wall_seconds": 0.005482239001139533,
+      "feature_wall_seconds": 4.918400009046309e-05,
+      "io_wall_seconds": 0.00041987199983850587,
+      "logits": [
+        -1.6035555601119995,
+        8.5355806350708,
+        -1.2507909536361694,
+        -6.363346576690674
+      ],
+      "numerical": {
+        "maximum_condition": 42.381621401692954,
+        "maximum_read": 1.5627936124801636,
+        "maximum_relative_residual": 1.2659266784911835e-16,
+        "maximum_write_mass": 7.3859040700564105
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0115.json",
+      "payload_bytes": 586,
+      "payload_sha256": "3110ef6b7d6bc948695195e4973fbea01c845701dff130949ac0a6e9a3625a4b",
+      "symbol": 1,
+      "total_cpu_seconds": 0.005717009999997913,
+      "total_wall_seconds": 0.005967537999822525
+    },
+    {
+      "content_wall_seconds": 0.005779004999567405,
+      "feature_wall_seconds": 4.523799907474313e-05,
+      "io_wall_seconds": 0.00034012099968094844,
+      "logits": [
+        7.614952087402344,
+        -2.5854897499084473,
+        -2.387862205505371,
+        -1.7541569471359253
+      ],
+      "numerical": {
+        "maximum_condition": 32.79572469385668,
+        "maximum_read": 1.1194580793380737,
+        "maximum_relative_residual": 1.4499946649242634e-16,
+        "maximum_write_mass": 8.522496267241724
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0116.json",
+      "payload_bytes": 586,
+      "payload_sha256": "4bef555b0b18012a6f14be79c8537fae3a5f077aca4608c50c5ca001ae042545",
+      "symbol": 0,
+      "total_cpu_seconds": 0.006000110999991648,
+      "total_wall_seconds": 0.006181982000271091
+    },
+    {
+      "content_wall_seconds": 0.00518214700059616,
+      "feature_wall_seconds": 4.670000089390669e-05,
+      "io_wall_seconds": 0.00032284600092680193,
+      "logits": [
+        -1.917511224746704,
+        7.860433101654053,
+        -0.4778245985507965,
+        -5.962174415588379
+      ],
+      "numerical": {
+        "maximum_condition": 39.603012888487896,
+        "maximum_read": 1.459354043006897,
+        "maximum_relative_residual": 1.255229089500948e-16,
+        "maximum_write_mass": 9.118063257435267
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0117.json",
+      "payload_bytes": 586,
+      "payload_sha256": "243991bc678814fd30dcd0feec9bd828c45cd4b983304bda5da860173fdf319b",
+      "symbol": 1,
+      "total_cpu_seconds": 0.0053979260000005524,
+      "total_wall_seconds": 0.005564733000937849
+    },
+    {
+      "content_wall_seconds": 0.0052619769994635135,
+      "feature_wall_seconds": 4.340499981481116e-05,
+      "io_wall_seconds": 0.0003705479994096095,
+      "logits": [
+        8.18374252319336,
+        -2.7540268898010254,
+        -2.7338385581970215,
+        -1.837969422340393
+      ],
+      "numerical": {
+        "maximum_condition": 35.16963117589958,
+        "maximum_read": 1.245058298110962,
+        "maximum_relative_residual": 1.3810125046104116e-16,
+        "maximum_write_mass": 8.451388920674942
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0118.json",
+      "payload_bytes": 586,
+      "payload_sha256": "ea64ca56bed8b0de4cc369ab222871dd4b310d90343e7ef40429736473b4fa88",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005449441999999749,
+      "total_wall_seconds": 0.005691443000614527
+    },
+    {
+      "content_wall_seconds": 0.005327936998583027,
+      "feature_wall_seconds": 4.246400021656882e-05,
+      "io_wall_seconds": 0.0002652690000104485,
+      "logits": [
+        -1.8174384832382202,
+        7.989887714385986,
+        -0.6768397092819214,
+        -6.02855110168457
+      ],
+      "numerical": {
+        "maximum_condition": 34.05247511223445,
+        "maximum_read": 1.4810857772827148,
+        "maximum_relative_residual": 1.6375644668640958e-16,
+        "maximum_write_mass": 7.591995021142029
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0119.json",
+      "payload_bytes": 586,
+      "payload_sha256": "ea41e931181864ea97d4fe3e03de021b2a764bb2bc6ad72f7872ed2f72dfd46b",
+      "symbol": 1,
+      "total_cpu_seconds": 0.0055108640000014475,
+      "total_wall_seconds": 0.005650320999848191
+    },
+    {
+      "content_wall_seconds": 0.005210100000113016,
+      "feature_wall_seconds": 4.218299909553025e-05,
+      "io_wall_seconds": 0.0002681440000742441,
+      "logits": [
+        8.013650894165039,
+        -1.8728424310684204,
+        -2.9983742237091064,
+        -2.5923357009887695
+      ],
+      "numerical": {
+        "maximum_condition": 43.336877059751714,
+        "maximum_read": 1.1891505718231201,
+        "maximum_relative_residual": 1.3351513578704368e-16,
+        "maximum_write_mass": 8.872144517343846
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0120.json",
+      "payload_bytes": 586,
+      "payload_sha256": "66f1ae28687a7988ff7dbcd2942d80fa7c093bf07c762cb8cbf326f52af66216",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005387249999998289,
+      "total_wall_seconds": 0.005533145000299555
+    },
+    {
+      "content_wall_seconds": 0.005358242000511382,
+      "feature_wall_seconds": 4.203299977234565e-05,
+      "io_wall_seconds": 0.00027347200011718087,
+      "logits": [
+        -2.014920473098755,
+        7.780911922454834,
+        -0.7083695530891418,
+        -5.499749183654785
+      ],
+      "numerical": {
+        "maximum_condition": 33.35923835318035,
+        "maximum_read": 1.4898278713226318,
+        "maximum_relative_residual": 1.3225676266903336e-16,
+        "maximum_write_mass": 7.460384847498068
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0121.json",
+      "payload_bytes": 586,
+      "payload_sha256": "7222c80dee33016cc7a1c72d3b2aa1e69a2ae8fbc96dc27d3b5bed5b048060f3",
+      "symbol": 1,
+      "total_cpu_seconds": 0.005538213999997765,
+      "total_wall_seconds": 0.005687136999767972
+    },
+    {
+      "content_wall_seconds": 0.005478713001139113,
+      "feature_wall_seconds": 3.990000004705507e-05,
+      "io_wall_seconds": 0.0002522790000512032,
+      "logits": [
+        7.8532562255859375,
+        -2.551011800765991,
+        -2.3791000843048096,
+        -2.073714017868042
+      ],
+      "numerical": {
+        "maximum_condition": 34.180074545266315,
+        "maximum_read": 1.162873387336731,
+        "maximum_relative_residual": 1.3726866732797118e-16,
+        "maximum_write_mass": 8.44909798377814
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0122.json",
+      "payload_bytes": 586,
+      "payload_sha256": "9d430eba45d19f2f1a0d1f4c1f36279a85ee42ff3b756b4dbb4a83659c13dfe3",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005650610999992978,
+      "total_wall_seconds": 0.005782850999821676
+    },
+    {
+      "content_wall_seconds": 0.005216448998908163,
+      "feature_wall_seconds": 4.1601999328122474e-05,
+      "io_wall_seconds": 0.0003045579996978631,
+      "logits": [
+        -1.9142098426818848,
+        7.9608025550842285,
+        -0.6751570105552673,
+        -5.905337333679199
+      ],
+      "numerical": {
+        "maximum_condition": 40.86311434675649,
+        "maximum_read": 1.4991908073425293,
+        "maximum_relative_residual": 1.370025480905539e-16,
+        "maximum_write_mass": 8.110492074681234
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0123.json",
+      "payload_bytes": 586,
+      "payload_sha256": "bb9b0d5e31636212079e33d21695c27777f49f33c6ddb962a9475451d909bfc9",
+      "symbol": 1,
+      "total_cpu_seconds": 0.005393448999996053,
+      "total_wall_seconds": 0.005574127000727458
+    },
+    {
+      "content_wall_seconds": 0.005635388999507995,
+      "feature_wall_seconds": 4.017999890493229e-05,
+      "io_wall_seconds": 0.00032300599923473783,
+      "logits": [
+        7.744655132293701,
+        -2.3874659538269043,
+        -2.464503288269043,
+        -2.088904857635498
+      ],
+      "numerical": {
+        "maximum_condition": 34.6487043291757,
+        "maximum_read": 1.1312751770019531,
+        "maximum_relative_residual": 1.329309276489134e-16,
+        "maximum_write_mass": 8.373408791179935
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0124.json",
+      "payload_bytes": 586,
+      "payload_sha256": "88c2aa8b32b5f456f58bad05de49185a677ab368ab1c10f380f73fa6a3fbd813",
+      "symbol": 0,
+      "total_cpu_seconds": 0.005814815000007911,
+      "total_wall_seconds": 0.006010514000081457
+    },
+    {
+      "content_wall_seconds": 0.005444843000077526,
+      "feature_wall_seconds": 4.1743000110727735e-05,
+      "io_wall_seconds": 0.0003186290014127735,
+      "logits": [
+        -1.8253871202468872,
+        8.335029602050781,
+        -0.8374899625778198,
+        -6.314754486083984
+      ],
+      "numerical": {
+        "maximum_condition": 37.41037122205281,
+        "maximum_read": 1.4937522411346436,
+        "maximum_relative_residual": 1.2711934579646641e-16,
+        "maximum_write_mass": 8.486637694070476
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0125.json",
+      "payload_bytes": 586,
+      "payload_sha256": "f08e2e66f89818a6d623ca61087cbb2c8ae874efc4d2bd4b2c5974505c0f1578",
+      "symbol": 1,
+      "total_cpu_seconds": 0.005620485999997982,
+      "total_wall_seconds": 0.005816521999804536
+    },
+    {
+      "content_wall_seconds": 0.005578883999987738,
+      "feature_wall_seconds": 4.011100099887699e-05,
+      "io_wall_seconds": 0.0002475519995641662,
+      "logits": [
+        7.607963562011719,
+        -2.2586886882781982,
+        -2.3982715606689453,
+        -2.180196523666382
+      ],
+      "numerical": {
+        "maximum_condition": 34.239710421101016,
+        "maximum_read": 1.100233793258667,
+        "maximum_relative_residual": 1.1693722207801472e-16,
+        "maximum_write_mass": 8.112476972308926
+      },
+      "observation": 0,
+      "path": "data/calibration_seed113/packet0126.json",
+      "payload_bytes": 586,
+      "payload_sha256": "e1bacb81e957beadc137046072a556ce93016890a568f55ed6e2c9f2f9f3b714",
+      "symbol": 0,
+      "total_cpu_seconds": 0.00574917699999844,
+      "total_wall_seconds": 0.00588027800040436
+    },
+    {
+      "content_wall_seconds": 0.005627738000839599,
+      "feature_wall_seconds": 4.238399924361147e-05,
+      "io_wall_seconds": 0.0002681240002857521,
+      "logits": [
+        -1.8097902536392212,
+        8.189043045043945,
+        -0.9014583826065063,
+        -6.12218713760376
+      ],
+      "numerical": {
+        "maximum_condition": 35.226975404625556,
+        "maximum_read": 1.5166637897491455,
+        "maximum_relative_residual": 1.4076343759151303e-16,
+        "maximum_write_mass": 7.647916868285138
+      },
+      "observation": 1,
+      "path": "data/calibration_seed113/packet0127.json",
+      "payload_bytes": 586,
+      "payload_sha256": "21f3436b71b1302a2197cf414f6d53cfd89da108e679380d38294a9d4f281d1b",
+      "symbol": 1,
+      "total_cpu_seconds": 0.005809858000006329,
+      "total_wall_seconds": 0.005952425999566913
+    }
+  ],
+  "policy_access": "Only this TRAIN-fitted confusion matrix enters controllers",
+  "seed": 113,
+  "wall_seconds": 0.9616959810009575
+}
