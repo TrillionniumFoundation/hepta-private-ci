@@ -13,6 +13,7 @@ import subprocess
 
 
 MANIFEST = Path(__file__).resolve().parent/"native/SOURCE_IDENTITY.json"
+SUPPORT_SCRIPTS = {"scripts/run-nextest.py", "scripts/just-shell.py"}
 
 
 def materialize(repository, output, manifest=MANIFEST):
@@ -24,7 +25,7 @@ def materialize(repository, output, manifest=MANIFEST):
     expected = {row["path"]: row["git_blob_sha"] for row in identity["files"]}
     if len(expected) != len(identity["files"]):
         raise ValueError("Duplicate pinned owner source")
-    paths = sorted(set(expected)|{"scripts/run-nextest.py"})
+    paths = sorted(set(expected)|SUPPORT_SCRIPTS)
     payloads, receipt = {}, {}
     for name in paths:
         path = PurePosixPath(name)

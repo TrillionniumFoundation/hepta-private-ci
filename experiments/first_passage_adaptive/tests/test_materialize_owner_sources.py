@@ -16,6 +16,7 @@ class MaterializationTests(unittest.TestCase):
         source.mkdir()
         (source/"scripts").mkdir()
         (source/"scripts/run-nextest.py").write_text("# artificial test runner\n")
+        (source/"scripts/just-shell.py").write_text("# artificial shell adapter\n")
         payload = b"original owner source\n"
         (source/"owner.rs").write_bytes(payload)
         for command in (["init", "-q"], ["add", "."], ["-c", "user.name=fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "artificial source"]):
@@ -33,7 +34,8 @@ class MaterializationTests(unittest.TestCase):
             (source/"owner.rs").write_text("different current worktree\n")
             result = materialize(source, root/"replay", manifest)
             self.assertEqual((root/"replay/owner.rs").read_bytes(), payload)
-            self.assertEqual(len(result["files"]), 2)
+            self.assertEqual(len(result["files"]), 3)
+            self.assertEqual((root/"replay/scripts/just-shell.py").read_text(), "# artificial shell adapter\n")
             self.assertEqual((source/"owner.rs").read_text(), "different current worktree\n")
 
     def test_bad_frozen_identity_refuses_materialization(self):
@@ -44,6 +46,19 @@ class MaterializationTests(unittest.TestCase):
             data["files"][0]["git_blob_sha"] = "0"*40
             manifest.write_text(json.dumps(data))
             with self.assertRaisesRegex(ValueError, "frozen identity"):
+                materialize(source, root/"rejected", manifest)
+            self.assertFalse((root/"rejected").exists())
+
+    def test_missing_historical_shell_adapter_refuses_partial_output(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source, manifest, _ = self.fixture(root)
+            subprocess.run(["git", "-C", str(source), "rm", "scripts/just-shell.py"], check=True, capture_output=True)
+            subprocess.run(["git", "-C", str(source), "-c", "user.name=fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "remove shell adapter"], check=True, capture_output=True)
+            data = json.loads(manifest.read_text())
+            data["source_commit"] = subprocess.check_output(["git", "-C", str(source), "rev-parse", "HEAD"], text=True).strip()
+            manifest.write_text(json.dumps(data))
+            with self.assertRaises(subprocess.CalledProcessError):
                 materialize(source, root/"rejected", manifest)
             self.assertFalse((root/"rejected").exists())
 
