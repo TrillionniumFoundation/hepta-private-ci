@@ -3219,6 +3219,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "codex-execution-core"
+version = "0.0.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "sha2",
+]
+
+[[package]]
 name = "codex-experimental-api-macros"
 version = "0.0.0"
 dependencies = [
@@ -3464,6 +3473,7 @@ dependencies = [
  "codex-app-server-protocol",
  "codex-arg0",
  "codex-config",
+ "codex-execution-core",
  "codex-features",
  "codex-hepta-agent-protocol",
  "codex-hepta-authbus",
@@ -3606,6 +3616,7 @@ version = "0.0.0"
 dependencies = [
  "codex-app-server-client",
  "codex-app-server-protocol",
+ "codex-execution-core",
  "codex-hepta-prompt-extension",
  "codex-hepta-types",
  "codex-hepta-wire",
@@ -4130,6 +4141,7 @@ name = "codex-hepta-runtime"
 version = "0.0.0"
 dependencies = [
  "anyhow",
+ "codex-execution-core",
  "codex-hepta-contracts",
  "codex-hepta-control-plane",
  "codex-hepta-intelligence",
