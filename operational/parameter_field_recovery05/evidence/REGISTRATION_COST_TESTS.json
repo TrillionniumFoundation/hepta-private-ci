@@ -1,0 +1,95 @@
+{
+  "actual_raw_writes": 0,
+  "at_utc": "2026-10-30T12:16:54.838656+00:00",
+  "errors": 0,
+  "failures": 0,
+  "forbidden_scientific_imports": [],
+  "measurement_scope": "This synthetic unittest process interval; no actual science, import, launch or upload.",
+  "own_cpu_seconds": 6.708863262,
+  "peak_rss_bytes": 31309824,
+  "schema": "hepta.execution05.synthetic-registration-cost-tests.1",
+  "science_workers_started": 0,
+  "source_after": [
+    {
+      "bytes": 23035,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/registration.py",
+      "sha256": "bf2401540e407ba689cf21eaa4f0e40ef64e8866888470cfa56811d483098e7b"
+    },
+    {
+      "bytes": 38532,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/historical_costs.py",
+      "sha256": "035d6aed995e705bcde6af7bce9b4edb498d682d095e4578cbea00fbd1e238fe"
+    },
+    {
+      "bytes": 24985,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/producer_adapter.py",
+      "sha256": "e5ab20f7d56d9abb9c51d6314178c8bae1ea7efc5ef2b29a8630d73ba34560d6"
+    },
+    {
+      "bytes": 30516,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/test_registration_costs.py",
+      "sha256": "fbe18aaac1c84f23cfa0c7195da6659036edb43edfe6da5bef26266666d6cb48"
+    },
+    {
+      "bytes": 15758,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/test_producer_adapter.py",
+      "sha256": "cdc4228f0da084c8dba73fc1b190bf16505fc612e0e97304558baeed12b587ce"
+    },
+    {
+      "bytes": 28331,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/ancestry.py",
+      "sha256": "616fbf51e69662549aa6381bbc4c47195ce16e364f25609af878cfbf5ecbff44"
+    },
+    {
+      "bytes": 24990,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/controller.py",
+      "sha256": "26347d490932f0c007dd78b5167438be8fda675b049a6838863204d8182a4b50"
+    }
+  ],
+  "source_before": [
+    {
+      "bytes": 23035,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/registration.py",
+      "sha256": "bf2401540e407ba689cf21eaa4f0e40ef64e8866888470cfa56811d483098e7b"
+    },
+    {
+      "bytes": 38532,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/historical_costs.py",
+      "sha256": "035d6aed995e705bcde6af7bce9b4edb498d682d095e4578cbea00fbd1e238fe"
+    },
+    {
+      "bytes": 24985,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/producer_adapter.py",
+      "sha256": "e5ab20f7d56d9abb9c51d6314178c8bae1ea7efc5ef2b29a8630d73ba34560d6"
+    },
+    {
+      "bytes": 30516,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/test_registration_costs.py",
+      "sha256": "fbe18aaac1c84f23cfa0c7195da6659036edb43edfe6da5bef26266666d6cb48"
+    },
+    {
+      "bytes": 15758,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/test_producer_adapter.py",
+      "sha256": "cdc4228f0da084c8dba73fc1b190bf16505fc612e0e97304558baeed12b587ce"
+    },
+    {
+      "bytes": 28331,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/ancestry.py",
+      "sha256": "616fbf51e69662549aa6381bbc4c47195ce16e364f25609af878cfbf5ecbff44"
+    },
+    {
+      "bytes": 24990,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/controller.py",
+      "sha256": "26347d490932f0c007dd78b5167438be8fda675b049a6838863204d8182a4b50"
+    }
+  ],
+  "source_identity_unchanged": true,
+  "success": true,
+  "synthetic_only": true,
+  "test_modules": [
+    "operational.parameter_field_recovery05.test_registration_costs",
+    "operational.parameter_field_recovery05.test_producer_adapter"
+  ],
+  "tests": 31,
+  "wall_seconds": 16.088564466999742
+}

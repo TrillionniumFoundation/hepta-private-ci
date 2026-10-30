@@ -130,6 +130,11 @@ class ProducerAdapter:
         def encode(value):
             if isinstance(value, dict) and value.get("schema") == "hepta.fullstudy.source-freeze.1":
                 value = self.bind_freeze(value)
+                if value.get("execution_kind") == "evidence_finalization":
+                    require(value.get("evidence_id", "verification05") == "verification05"
+                            and value.get("evidence_relative", "evidence_v2/verification05") == "evidence_v2/verification05",
+                            "Finalizer destination cannot drift from execution05")
+                    value.update({"evidence_id": "verification05", "evidence_relative": "evidence_v2/verification05"})
             elif isinstance(value, dict) and value.get("schema") == "hepta.fullstudy.checkpoint-metadata-preview.1":
                 value = {**value, "producer_map": self.map_descriptor, "actual_sources_A_by_seed": self.source_map(),
                     "training_parent_scope": "Primary phase producer; A checkpoints use their own registered seed producers."}
@@ -329,13 +334,23 @@ class ProducerAdapter:
 
     def for_finalizer(self, module):
         result = isolated_module(module, self)
-        original = result.verify_source_freeze
+        original_verify, original_finalize = result.verify_source_freeze, result.finalize
+        verified = {}
         def verify(path, registration):
             self.require_current(registration)
-            freeze = original(path, registration)
+            freeze = original_verify(path, registration)
             self.require_bound(freeze)
+            require(freeze.get("evidence_id") == "verification05"
+                    and freeze.get("evidence_relative") == "evidence_v2/verification05",
+                    "Finalizer source does not bind execution05 evidence destination")
+            verified["source_freeze_sha256"] = ancestry.archive.descriptor(Path(path).resolve())["sha256"]
             return freeze
-        result.verify_source_freeze = verify
+        def finalize(storage, binding, evidence_id="verification05"):
+            require(evidence_id == "verification05" and storage.root == self.raw
+                    and bool(verified) and binding.get("source_freeze_sha256") == verified["source_freeze_sha256"],
+                    "Finalizer requires its verified source and fixed execution05 destination")
+            return original_finalize(storage, binding, evidence_id)
+        result.verify_source_freeze, result.finalize = verify, finalize
         return result
 
     def postseal_profile(self, operation, phase, seed, store, binding):

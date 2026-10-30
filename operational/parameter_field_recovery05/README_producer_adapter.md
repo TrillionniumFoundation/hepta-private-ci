@@ -36,3 +36,7 @@ The postseal plan must name episode `execution05_backpressure_20261030` and exac
 Cost accounting retains original A17 once in the complete A population and excludes it from the failure increment. Failed A29 work is separate. The adapter cannot convert unknown costs into measurements or a completed protocol into a positive scientific effect.
 
 Run `python3 -B -m unittest operational.parameter_field_recovery05.test_producer_adapter -v`. Synthetic checks cover source/map tampering, seed/profile scope, IMPORT without fabricated START, independent globals, unchanged pending behavior, original B collection and literal B/W/R source bindings. Exact AST compilation imports no NumPy or Torch. These tests are not experimental results or full scientific execution.
+
+## Fixed finalizer destination added for registration05
+
+Before finalizer freeze serialization, the private encoder binds `evidence_id: verification05` and `evidence_relative: evidence_v2/verification05`. The finalizer namespace requires the verified producer-bound freeze and matching freeze hash before entering the original literal algorithm at that destination. Original finalizer source, algorithm, and sealed evidence are unchanged. A focused synthetic test covers wrong destination and invocation before source verification.

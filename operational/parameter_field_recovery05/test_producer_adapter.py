@@ -2,6 +2,7 @@
 
 import copy
 import importlib
+import json
 from pathlib import Path
 import struct
 import sys
@@ -203,6 +204,31 @@ class AdapterTests(unittest.TestCase):
         factory.ab = types.SimpleNamespace(SEEDS=(), collect_checkpoints=lambda *args: {"completions": {}, "entries": []})
         self.assertEqual(factory.collect_ab(self.fixture.fresh, "B", "synthetic-runtime", {}, {}), {"completions": {}, "entries": []})
         self.assertIs(module.ab, None)
+
+
+    def test_finalizer_destination_is_bound_before_serialization_and_checked_before_io(self):
+        value = {"schema": "hepta.fullstudy.source-freeze.1", "execution_kind": "evidence_finalization", "artifacts": {}}
+        encoded = self.adapter.encoding(ancestry.canonical)
+        freeze = json.loads(encoded(value))
+        self.assertEqual((freeze["evidence_id"], freeze["evidence_relative"]), ("verification05", "evidence_v2/verification05"))
+        self.assertNotIn("evidence_id", value)
+        with self.assertRaises(ValueError):
+            encoded({**value, "evidence_id": "verification02"})
+        item = write(self.fixture.base / "FINALIZER_FREEZE.json", freeze)
+        module = original("finalize_v2")
+        with patch.object(module, "verify_source_freeze", return_value=freeze):
+            with patch.object(module, "finalize", return_value={"synthetic_literal_result": True}) as literal:
+                factory = self.adapter.for_finalizer(module)
+                storage = types.SimpleNamespace(root=self.fixture.fresh)
+                binding = {"source_freeze_sha256": item["sha256"]}
+                with self.assertRaises(ValueError):
+                    factory.finalize(storage, binding, "verification05")
+                factory.verify_source_freeze(item["path"], self.registration)
+                with self.assertRaises(ValueError):
+                    factory.finalize(storage, binding, "verification02")
+                self.assertEqual(factory.finalize(storage, binding, "verification05"), {"synthetic_literal_result": True})
+                literal.assert_called_once_with(storage, binding, "verification05")
+
 
 
 if __name__ == "__main__":
