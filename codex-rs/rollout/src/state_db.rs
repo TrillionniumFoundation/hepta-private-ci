@@ -291,6 +291,21 @@ pub fn normalize_cwd_for_state_db(cwd: &Path) -> PathBuf {
     normalize_for_path_comparison(cwd).unwrap_or_else(|_| cwd.to_path_buf())
 }
 
+async fn sqlite_config_matches_runtime(
+    runtime: &codex_state::StateRuntime,
+    requested: &SqliteConfig,
+) -> bool {
+    if runtime.sqlite() == requested {
+        return true;
+    }
+    // StateRuntime resolves the home before opening its databases. Accept an
+    // alias only while it still resolves to that bound home; a missing or
+    // retargeted alias must not authorize queries against another runtime.
+    tokio::fs::canonicalize(requested.home())
+        .await
+        .is_ok_and(|resolved| resolved == runtime.sqlite().home())
+}
+
 /// List thread ids from SQLite for parity checks without rollout scanning.
 #[allow(clippy::too_many_arguments)]
 pub async fn list_thread_ids_db(
@@ -305,7 +320,7 @@ pub async fn list_thread_ids_db(
     stage: &str,
 ) -> Option<Vec<ThreadId>> {
     let ctx = context?;
-    if ctx.sqlite() != sqlite {
+    if !sqlite_config_matches_runtime(ctx, sqlite).await {
         warn!(
             "state db SQLite home mismatch: expected {}, got {}",
             sqlite.home().display(),
@@ -366,7 +381,7 @@ pub async fn list_threads_db(
     search_term: Option<&str>,
 ) -> Option<codex_state::ThreadsPage> {
     let ctx = context?;
-    if ctx.sqlite() != sqlite {
+    if !sqlite_config_matches_runtime(ctx, sqlite).await {
         warn!(
             "state db SQLite home mismatch: expected {}, got {}",
             sqlite.home().display(),
@@ -742,3 +757,7 @@ pub async fn touch_thread_updated_at(
 #[cfg(test)]
 #[path = "state_db_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "state_db_alias_tests.rs"]
+mod alias_tests;
