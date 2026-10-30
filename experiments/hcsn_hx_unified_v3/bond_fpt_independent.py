@@ -43,7 +43,16 @@ def integrate_passage(x: float, *, drift: float, sigma: float,
     u0 = scale / math.sqrt(horizon)
     if not math.isfinite(u0) or u0 == 0 or scale == 0:
         raise ArithmeticError('First-passage transformation outside resolved f64 domain')
-    a = drift*x/(sigma*sigma)
+    # Finite input parameters do not imply finite transformed parameters:
+    # sigma**2 can underflow to zero, or drift*x/sigma**2 can overflow.
+    # Continuing with a=inf silently drops a narrow negative-drift peak
+    # and can return F=G=0 even when a hit is virtually certain.
+    sigma_sq = sigma*sigma
+    if not math.isfinite(sigma_sq) or sigma_sq == 0:
+        raise ArithmeticError('First-passage squared volatility unresolved in f64')
+    a = drift*x/sigma_sq
+    if not math.isfinite(a):
+        raise ArithmeticError('First-passage transformed drift unresolved in f64')
     # Split the near-boundary layer at u=O(x/sigma). Integrating all the
     # way from u0 to infinity in one adaptive call can silently miss this
     # layer, report a tiny quadrature error, and return G~=F when x is tiny.
@@ -105,6 +114,17 @@ def integrate_passage(x: float, *, drift: float, sigma: float,
         # math.hypot avoids an intermediate overflow from squaring a.
         def peaked_integral(q):
             mode=math.sqrt(math.hypot(a,math.sqrt(2*q)*scale))
+            if not math.isfinite(mode):
+                raise ArithmeticError('First-passage density mode unresolved in f64')
+            # The large-u negative-drift peak is O(1) wide, independent
+            # of the mode location. When the mode's f64 spacing exceeds
+            # the declared quadrature tolerance, u+a/u loses the local
+            # peak shape by catastrophic cancellation. Refuse the claim
+            # instead of returning a near-zero integral with tiny error.
+            # This is a conservative floating-point guard, NOT interval
+            # certification, and it does not cover every rounding error.
+            if mode > uc and math.ulp(mode) > 3e-12:
+                raise ArithmeticError('First-passage density peak unresolved in f64')
             cuts=[uc]
             for edge in (mode-8.,mode+8.):
                 if math.isfinite(edge) and edge>cuts[-1]:
