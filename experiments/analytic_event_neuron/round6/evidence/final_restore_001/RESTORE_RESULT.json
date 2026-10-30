@@ -1,0 +1,149 @@
+{
+  "TMPDIR": "/dev/shm/hepta-round6-d831a963ef2f/final_restore_001/tmp",
+  "TMPDIR_reason": "Overlay had only about 648 MB free; root authorized task-owned tmpfs staging and restore. Original sealed repo/package are read-only inputs.",
+  "archive": {
+    "bytes": 354658019,
+    "name": "archive.tar.gz",
+    "sha256": "2a1b985439029ada9eb3493a6f2cb6d51d204fe051ef2327e9e7d2ef397e5336"
+  },
+  "complete_archive_omitted_from_input": true,
+  "directories": 201,
+  "documented_commands": {
+    "exact_freeze_environment_and_118_source_lifecycle_verify_passed": true,
+    "expected_freeze_sha256": "1f4d994da28d3bd61853a904d3e9da03b6ea6c90fe9d680e217f976656450ca1",
+    "part_verify_passed": true,
+    "restore_and_readback_passed": true
+  },
+  "documented_guide_sha256": "8a74b89b1e3e830bae9f5bed49281f14bfe936935939b109d9e42125911f4cb3",
+  "documented_helper_sha256": "3c98bfe234c1bfba14b72e114f771cd18c06fc900d754be3c59d3145a12cbb66",
+  "evidence_sha256": {
+    "COMMAND_SOURCE.json": "10cb84bed67d07514c1c45802002dd29d22939690ebcbc71ccc547aa09e531af",
+    "DOCUMENTED_BLOCK_1.sh": "1b13b881c1af7c5bfac0489556975622c9f4bf6ab259fa4b9a192418916b998d",
+    "DOCUMENTED_BLOCK_2.sh": "cb909b61e04f702f53187377a875b8c2552452fceac304a58f2a76b5e00944d4",
+    "DOCUMENTED_COMMANDS.sh": "b8dc28c77c2f63a2abe936a4ccbd8411bfb9c1e6467897e03dd3e77bec9a9195",
+    "DOCUMENTED_EXECUTION_INPUT.json": "8e3e0008a6006ba1a6a1b5ee9c14e3a632c38c3b135f945b31044685c532efd0",
+    "FINAL_PUBLICATION_INPUT.json": "b45f00a41fb223b43870f9349357bbe4bd05b87355c0992e99ae528cc4730380",
+    "GUIDE_BLOCK_1.sh": "57979b5e38474217f5f1a917286adef6565ceef055bbf7ffaf07319b809e8fc4",
+    "GUIDE_BLOCK_2.sh": "cb909b61e04f702f53187377a875b8c2552452fceac304a58f2a76b5e00944d4",
+    "INPUT_STAGING.json": "47143a87696148e11b9881acffb410cf8a7451ccb22da5c37a083be2534ff274",
+    "RESTORE_VERIFICATION.json": "090d3164f4877706ea7a0cfa0bdaeb9718e21ec868d76072ba1c4cefcc0f4dc6",
+    "REVIEWER_CORRECTION.json": "e14e5bca4bc5591cf6bf8e21c1e32e54341175446cfa12cdee27a8d5000b9696",
+    "RUN_DOCUMENTED.sh": "a14477242c2a9e975fed16f0b344b1a9c0bfcb268e8f795e47630763d8748e13",
+    "RUN_RESTORE.py": "c486743cdd28097c2fab29b1eeefb0e8791f3b5115c204b3df68de081a72dd71",
+    "VERIFY_RESTORED.py": "4feefc65854f0fa11f4f665324f78f22ef625a61b606e05f3a2c4e425583a844",
+    "VERIFY_RESTORED_V2.py": "b69bda643487852ecc9df5b0a5101b25124ad7725f8a708e1e204e8b6c3fd730",
+    "execution/documented_final_restore_001.log": "d4a61545f131ea6900e9e075934922075066428963e15a8b9ab03c0dc32ca954",
+    "execution/documented_final_restore_001_COMPLETED.json": "4a698c764113acd061baea3fac0636190f8d800b495c2f512346e279c4557e2e",
+    "execution/documented_final_restore_001_STARTED.json": "261a91c77b6894940e1f542dddfbac2b50c580770c8a56bad602bd3be24e4a1e",
+    "execution/restored_integrity_002.log": "055d98bf875626f164e025bcf83e5b96f139a5320125da20b7caa6eed5ed3692",
+    "execution/restored_integrity_002_COMPLETED.json": "8268a2e4507808c172d147309d9573b280054955d7078d1518b483c554fcb518",
+    "execution/restored_integrity_002_STARTED.json": "a3ce8655dcd24a531de9643212b0216f6731e53b1cd10d1c0716316b531e2fc0"
+  },
+  "external_publication_input": {
+    "fields": {
+      "bundle_path": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001",
+      "manifest_sha256": "539d5b59740faeb3e96f68428d7af093e48ec47156e14de2ab0b346e16426bfc"
+    },
+    "final_index_already_final_at_verification": false,
+    "final_index_required_identical_fields": {
+      "bundle_path": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001",
+      "manifest_sha256": "539d5b59740faeb3e96f68428d7af093e48ec47156e14de2ab0b346e16426bfc"
+    },
+    "note": "These immutable input fields are required to be identical in the later final published index; this receipt does not claim that index is already final.",
+    "path": "FINAL_PUBLICATION_INPUT.json",
+    "sha256": "b45f00a41fb223b43870f9349357bbe4bd05b87355c0992e99ae528cc4730380"
+  },
+  "files": 1052,
+  "financial_cost": null,
+  "finished_utc": "2026-10-30T14:17:40.726486+00:00",
+  "guide_block_indices": [
+    1,
+    2
+  ],
+  "independent_restored_checks": {
+    "all_members_rehashed_after_documented_helper_readback": true,
+    "all_modes_and_exact_tree_verified": true,
+    "created_utc": "2026-10-30T14:16:25.951432+00:00",
+    "directories_verified": 201,
+    "files_verified": 1052,
+    "frozen_source_files": 118,
+    "key_restored_sha256": {
+      "experiments/analytic_event_neuron/round6/REPORT.md": "3da96f337bff2abbe80645ec8ecf01295b4dc3fd40c974647198e61c2c689e88",
+      "experiments/analytic_event_neuron/round6/REPORT_SOURCE.json": "8bf91c60944460cbe6930cfaba81861b121cfd075e8298f595bec6215be2be9a",
+      "experiments/analytic_event_neuron/round6/REPRODUCE.md": "8a74b89b1e3e830bae9f5bed49281f14bfe936935939b109d9e42125911f4cb3",
+      "experiments/analytic_event_neuron/round6/artifact_bundle.py": "3c98bfe234c1bfba14b72e114f771cd18c06fc900d754be3c59d3145a12cbb66",
+      "experiments/analytic_event_neuron/round6/evidence/registered_001/FREEZE.json": "1f4d994da28d3bd61853a904d3e9da03b6ea6c90fe9d680e217f976656450ca1",
+      "experiments/analytic_event_neuron/round6/evidence/registered_001/PREPARED.json": "01cd90245b3d024d5be8676a684266c44a2e8e608fd9d175625db979d48d688a",
+      "experiments/analytic_event_neuron/round6/evidence/registered_001/RESULTS.json": "303e98b4c6679f7dd827bb2c3a7083d96010984adbba43e1c6548b7930f53a69",
+      "experiments/analytic_event_neuron/round6/evidence/registered_001/native/analytic_event": "b519cae26325f818d9596aab34504490a0b5355b9eb633369878e6f07a50e179",
+      "experiments/analytic_event_neuron/round6/evidence/report_review_001/FINAL_REPORT_REVIEW.json": "4b629de565b73bea167f1fd0542606a5f89d833a10288264b6b019cd96f9a917",
+      "experiments/analytic_event_neuron/round6/evidence/review_confirmation_registered_001/REVIEW.json": "ef2ef939432eaa457b97def830f8719030e5050afa79457e4c663d33e5f977f2"
+    },
+    "lifecycle_import_from_restored_checkout": true,
+    "lifecycle_import_origin": "/dev/shm/hepta-round6-d831a963ef2f/final_restore_001/tmp/hepta-round6-final.OpQtYC/research/experiments/analytic_event_neuron/round6/lifecycle.py",
+    "native_binary_executable": true,
+    "native_binary_mode": 493,
+    "native_protocol_invoked": false,
+    "parts_only_input": true,
+    "passed": true,
+    "python_executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "restored_root": "/dev/shm/hepta-round6-d831a963ef2f/final_restore_001/tmp/hepta-round6-final.OpQtYC/research",
+    "schema": "hepta.round6.restored-checkout-verification.v1",
+    "science_rerun": false
+  },
+  "input_provenance": "Local copy of the already sealed package, not newly fetched Git or network bytes. Root performs remote publication/readback separately.",
+  "literal_mktemp_command_preserved": true,
+  "manifest_sha256": "539d5b59740faeb3e96f68428d7af093e48ec47156e14de2ab0b346e16426bfc",
+  "measured_invocations": [
+    {
+      "child_cpu_seconds": 12.932893999999997,
+      "children_system_seconds": 2.155855,
+      "children_user_seconds": 10.777038999999998,
+      "label": "documented_final_restore_001",
+      "returncode": 1,
+      "wall_ns": 11684199058
+    },
+    {
+      "child_cpu_seconds": 2.3090450000000002,
+      "children_system_seconds": 0.24193599999999998,
+      "children_user_seconds": 2.0671090000000003,
+      "label": "restored_integrity_002",
+      "returncode": 0,
+      "wall_ns": 1427587190
+    }
+  ],
+  "native_energy": null,
+  "new_training_or_confirmation_or_native_protocol_execution": false,
+  "only_documented_path_interpreter_substitutions": {
+    "hepta_final_bundle=/absolute/path/to/downloaded/final_bundle_001": "hepta_final_bundle=/dev/shm/hepta-round6-d831a963ef2f/final_restore_001/input_bundle",
+    "hepta_helper=/absolute/path/to/downloaded/artifact_bundle.py": "hepta_helper=/dev/shm/hepta-round6-d831a963ef2f/hepta-analytic/experiments/analytic_event_neuron/round6/artifact_bundle.py",
+    "hepta_publication=/absolute/path/to/downloaded/FINAL_PUBLICATION.json": "hepta_publication=/dev/shm/hepta-round6-d831a963ef2f/final_restore_001/FINAL_PUBLICATION_INPUT.json",
+    "hepta_transport_python=python": "hepta_transport_python=/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python"
+  },
+  "original_and_executed_command_body_sha256": {
+    "DOCUMENTED_BLOCK_1.sh": "1b13b881c1af7c5bfac0489556975622c9f4bf6ab259fa4b9a192418916b998d",
+    "DOCUMENTED_BLOCK_2.sh": "cb909b61e04f702f53187377a875b8c2552452fceac304a58f2a76b5e00944d4",
+    "DOCUMENTED_COMMANDS.sh": "b8dc28c77c2f63a2abe936a4ccbd8411bfb9c1e6467897e03dd3e77bec9a9195",
+    "GUIDE_BLOCK_1.sh": "57979b5e38474217f5f1a917286adef6565ceef055bbf7ffaf07319b809e8fc4",
+    "GUIDE_BLOCK_2.sh": "cb909b61e04f702f53187377a875b8c2552452fceac304a58f2a76b5e00944d4",
+    "RUN_DOCUMENTED.sh": "a14477242c2a9e975fed16f0b344b1a9c0bfcb268e8f795e47630763d8748e13"
+  },
+  "original_sealed_bundle": "/dev/shm/hepta-round6-d831a963ef2f/final_bundle_001",
+  "original_sealed_key_identities_and_118_primary_sources_unchanged": true,
+  "parts": 451,
+  "parts_only_input": "/dev/shm/hepta-round6-d831a963ef2f/final_restore_001/input_bundle",
+  "passed": true,
+  "production_promotion": false,
+  "restored_file_bytes": 684283902,
+  "restored_root": "/dev/shm/hepta-round6-d831a963ef2f/final_restore_001/tmp/hepta-round6-final.OpQtYC/research",
+  "reviewer_failure_retained": {
+    "cause": "Added post-restore checker omitted explicit import importlib.util. Both documented command blocks had already completed successfully.",
+    "correction": "Separate VERIFY_RESTORED_V2.py adds that import only; rechecks the same already restored checkout. Original failed script/log/receipt retained.",
+    "first_full_invocation_returncode": 1,
+    "new_restoration_or_scientific_rerun_performed_for_correction": false
+  },
+  "schema": "hepta.round6.final-package-restore-result.v1",
+  "sum_measured_child_cpu_seconds": 15.241938999999999,
+  "sum_measured_invocation_wall_ns_not_whole_process_elapsed": 13111786248,
+  "unmetered_scope": "Command/script preparation, manual diagnosis between invocations, final receipt assembly, assistant/tool service time, and publication are not included. Failed invocation costs are retained, not treated as zero."
+}

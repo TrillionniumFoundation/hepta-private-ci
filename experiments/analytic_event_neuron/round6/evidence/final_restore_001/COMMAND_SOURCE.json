@@ -1,0 +1,37 @@
+{
+  "TMPDIR": "/dev/shm/hepta-round6-d831a963ef2f/final_restore_001/tmp",
+  "created_utc": "2026-10-30T14:14:31.328449+00:00",
+  "guide_path": "/dev/shm/hepta-round6-d831a963ef2f/hepta-analytic/experiments/analytic_event_neuron/round6/REPRODUCE.md",
+  "guide_sha256": "8a74b89b1e3e830bae9f5bed49281f14bfe936935939b109d9e42125911f4cb3",
+  "helper_path": "/dev/shm/hepta-round6-d831a963ef2f/hepta-analytic/experiments/analytic_event_neuron/round6/artifact_bundle.py",
+  "helper_sha256": "3c98bfe234c1bfba14b72e114f771cd18c06fc900d754be3c59d3145a12cbb66",
+  "mktemp_command_changed": false,
+  "original_bash_block_indices": [
+    1,
+    2
+  ],
+  "publication_index_is_final": false,
+  "reason_for_tmpdir": "Overlay had only about 648 MB free; root authorized task-owned tmpfs staging and restore. Original sealed repo/package are read-only inputs.",
+  "schema": "hepta.round6.documented-restore-command-source.v1",
+  "second_block_modified": false,
+  "shell_body_files_sha256": {
+    "DOCUMENTED_BLOCK_1.sh": "1b13b881c1af7c5bfac0489556975622c9f4bf6ab259fa4b9a192418916b998d",
+    "DOCUMENTED_BLOCK_2.sh": "cb909b61e04f702f53187377a875b8c2552452fceac304a58f2a76b5e00944d4",
+    "DOCUMENTED_COMMANDS.sh": "b8dc28c77c2f63a2abe936a4ccbd8411bfb9c1e6467897e03dd3e77bec9a9195",
+    "GUIDE_BLOCK_1.sh": "57979b5e38474217f5f1a917286adef6565ceef055bbf7ffaf07319b809e8fc4",
+    "GUIDE_BLOCK_2.sh": "cb909b61e04f702f53187377a875b8c2552452fceac304a58f2a76b5e00944d4",
+    "RUN_DOCUMENTED.sh": "a14477242c2a9e975fed16f0b344b1a9c0bfcb268e8f795e47630763d8748e13"
+  },
+  "substitutions": {
+    "hepta_final_bundle=/absolute/path/to/downloaded/final_bundle_001": "hepta_final_bundle=/dev/shm/hepta-round6-d831a963ef2f/final_restore_001/input_bundle",
+    "hepta_helper=/absolute/path/to/downloaded/artifact_bundle.py": "hepta_helper=/dev/shm/hepta-round6-d831a963ef2f/hepta-analytic/experiments/analytic_event_neuron/round6/artifact_bundle.py",
+    "hepta_publication=/absolute/path/to/downloaded/FINAL_PUBLICATION.json": "hepta_publication=/dev/shm/hepta-round6-d831a963ef2f/final_restore_001/FINAL_PUBLICATION_INPUT.json",
+    "hepta_transport_python=python": "hepta_transport_python=/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python"
+  },
+  "support_script_sha256": {
+    "RUN_RESTORE.py": "c486743cdd28097c2fab29b1eeefb0e8791f3b5115c204b3df68de081a72dd71",
+    "VERIFY_RESTORED.py": "4feefc65854f0fa11f4f665324f78f22ef625a61b606e05f3a2c4e425583a844"
+  },
+  "wrapper_path": "/dev/shm/hepta-round6-d831a963ef2f/hepta-analytic/experiments/analytic_event_neuron/round4/evidence/execute.py",
+  "wrapper_sha256": "deb76c6de55d3bf2b05b8b47800b264225600051e998b8f1f5128afe90d34439"
+}

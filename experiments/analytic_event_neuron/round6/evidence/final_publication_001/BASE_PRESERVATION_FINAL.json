@@ -1,0 +1,33 @@
+{
+  "all_existing_paths_outside_new_round6_subtree_preserved": true,
+  "base_commit": "d6a828eac92cc8df03f3ccce0a6d2fc04c7ce9f6",
+  "base_tree": "ef0c61469912aae83e5e81cf90ec7d527c73f4b0",
+  "checked_head": "f6c5594cd1c183578eb68da7bf20613ce9723e26",
+  "checked_tree": "2d0d680c0fba22f84c5f6f8499ee628e1c9c10b7",
+  "checks": [
+    {
+      "after_tree": "2d0d680c0fba22f84c5f6f8499ee628e1c9c10b7",
+      "before_tree": "ef0c61469912aae83e5e81cf90ec7d527c73f4b0",
+      "changed_subtree": "experiments",
+      "level": "repository",
+      "preserved_entries": 52
+    },
+    {
+      "after_tree": "d7b4fdea935f2ec11a1643816af298a72e3f4e32",
+      "before_tree": "e4a66115bb3ace357d8cc525c048eef0171b6d27",
+      "changed_subtree": "analytic_event_neuron",
+      "level": "experiments",
+      "preserved_entries": 1
+    },
+    {
+      "after_tree": "1093c86bc745f8b1e9124ac78cffcc8849c3d16d",
+      "before_tree": "03b6938386ab3aee7b93dc5666636a7e98c6623f",
+      "changed_subtree": "round6",
+      "level": "experiments/analytic_event_neuron",
+      "preserved_entries": 37
+    }
+  ],
+  "git_merkle_subtree_equality": true,
+  "observed_utc": "2026-10-30 15:27:24 UTC",
+  "schema": "hepta.round6.base-preservation.v1"
+}
