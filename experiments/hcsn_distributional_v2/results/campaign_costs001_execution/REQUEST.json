@@ -1,0 +1,24 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "experiments.hcsn_distributional_v2.campaign_costs",
+    "--archive-completion",
+    "artifacts/ARCHIVE_COMPLETION.json",
+    "--extra-scopes",
+    "experiments/hcsn_distributional_v2/results/campaign_costs_extra_scopes007.json",
+    "--output",
+    "experiments/hcsn_distributional_v2/results/campaign_costs001"
+  ],
+  "cwd": "/workspace/scratch/58af017d4789/hepta-csn",
+  "environment_contract": {
+    "MKL_NUM_THREADS": null,
+    "NUMEXPR_NUM_THREADS": null,
+    "OMP_NUM_THREADS": null,
+    "OPENBLAS_NUM_THREADS": null,
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "schema": "hcsn-measured-support-request.v1",
+  "source_sha256": "c0f774ddcfeec9cb68062db0d56a15be4201fcd73ac50461e3394b105057d7f7",
+  "started_utc": "2026-10-30T06:02:33.398251+00:00"
+}

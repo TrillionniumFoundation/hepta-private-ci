@@ -1,0 +1,210 @@
+{
+  "acceptance": [
+    [
+      "1",
+      "合同明确",
+      "已完成",
+      "金融价值、内部策略值、有限控制最优值、任务值分别定义；FIRE 含后续再生收益"
+    ],
+    [
+      "2",
+      "低维 oracle",
+      "在已声明问题内通过",
+      "解析参考与有限模型独立核对；有限网格最优性单独评估"
+    ],
+    [
+      "3",
+      "联合训练",
+      "实现与更新证据成立",
+      "原严格审计175/176；producer一致性补充176/176；主模型五类参数实际更新"
+    ],
+    [
+      "4",
+      "隔离贡献并取得优势",
+      "0/4 项登记优势门",
+      "只能按具体对照和固定两任务范围解释"
+    ],
+    [
+      "5",
+      "内容能力达到强基线",
+      "0/6 项 ID 描述性筛查",
+      "完整 ID/OOD 与 LIF 数据如下；不等同基础模型验收"
+    ],
+    [
+      "6",
+      "实际执行与规模化净收益",
+      "执行与恢复已验证；整体优势未确立",
+      "当前 CPU 明显较慢；旧表格规划器的局部收益不能归给新架构"
+    ]
+  ],
+  "created_utc": "2026-10-30T06:04:28.975007+00:00",
+  "descriptive_content_screens": 0,
+  "foundation_model_or_gpu_advantage_established": false,
+  "free_dual_joint_learning": {
+    "boundary": {
+      "candidates": 56,
+      "minimum_observed_max_gradient": 4.322120366850868e-05,
+      "minimum_selected_change_l2": 0.011428643701969056
+    },
+    "content": {
+      "candidates": 56,
+      "minimum_observed_max_gradient": 0.17783188819885254,
+      "minimum_selected_change_l2": 0.8881543910077445
+    },
+    "dynamics": {
+      "candidates": 56,
+      "minimum_observed_max_gradient": 0.00031237921211868525,
+      "minimum_selected_change_l2": 0.11102263218620738
+    },
+    "refractory": {
+      "candidates": 56,
+      "minimum_observed_max_gradient": 4.51400046586059e-05,
+      "minimum_selected_change_l2": 0.014919548558200461
+    },
+    "reset": {
+      "candidates": 56,
+      "minimum_observed_max_gradient": 2.36440737353405e-05,
+      "minimum_selected_change_l2": 0.009075503401391922
+    }
+  },
+  "input_sha256": {
+    "blocked_scaling_protocol": {
+      "path": "SCALING001_PROTOCOL.json",
+      "sha256": "287c56ae904ec5c4cabe6e5ee309d6a22b8f4648e9b1890ed650af2b0fbc1fa3"
+    },
+    "blocked_scaling_receipt": {
+      "path": "results/scaling001/NOT_EXECUTED.json",
+      "sha256": "842eb51ba69d9f3619215d94fde27dfa729f9e009d845f5798e3e795b28dcd08"
+    },
+    "calibration": {
+      "path": "results/task_future_calibration001/SUMMARY.json",
+      "sha256": "c91372fec6456886e28fd69dfb374658e5e54689e827633d47836b091c8a367a"
+    },
+    "ce_diagnostic": {
+      "path": "results/content_ce_diagnostic002/RESULT.json",
+      "sha256": "9a7e1e1ed6dd9bf959fa65a652f932175fb264afe012c7937f971a093423a0a9"
+    },
+    "content": {
+      "path": "results/content_analysis_supplement001/ANALYSIS.json",
+      "sha256": "6e7aa0c66627663ea84e962f502a7a73dcb46b0c0569e71feb932e51b27ecffd"
+    },
+    "content_protocol": {
+      "path": "CONTENT002_PROTOCOL.json",
+      "sha256": "03070eb0d3fc264ace436f25a06c989bb898f3c33caba83936f5040c660e6b9c"
+    },
+    "content_scheduler": {
+      "path": "results/content002/SCHEDULER_EXECUTION.json",
+      "sha256": "678b4a877fad5d20a841e382629ccc9d6e146198813a95e5d4fe800baebf86de"
+    },
+    "content_supplement_protocol": {
+      "path": "CONTENT_SUPPLEMENT001_PROTOCOL.json",
+      "sha256": "5e431b9165efc855d7b45cad5185cc7d093c900a533c2aa37e2c81eec231a6c2"
+    },
+    "content_supplement_source": {
+      "path": "content_supplemental_analysis.py",
+      "sha256": "2f4dd656fcd868a891ee78808f7974e45a990a713020a1aaef2b89e74d771413"
+    },
+    "control": {
+      "path": "results/grid_control_validation001/RESULTS.json",
+      "sha256": "f755157298b4c875943876d1a96b9ffa3e89b1242e99c11cefd8134cd8c44e48"
+    },
+    "costs": {
+      "path": "results/campaign_costs001/LEDGER.json",
+      "sha256": "a52cb1d9075caa98f5540ce97041c4daded0f37b10139631ffe0e2c2360f4c4f"
+    },
+    "kernel": {
+      "path": "results/kernel_validation003/RESULTS.json",
+      "sha256": "fef21fc9e9f98734b7800e30ce5869570aec262f9daffb51707ce77a3aeefb39"
+    },
+    "lif": {
+      "path": "results/lif_analysis001/ANALYSIS.json",
+      "sha256": "757a13820a15517c65b5c157f26715cb1a7cd30d35ebc10a10201f9d7c3f582f"
+    },
+    "lif_protocol": {
+      "path": "LIF_SUPPLEMENT001_PROTOCOL.json",
+      "sha256": "68a55b63c7c91d413c507766463cf07cf8b0163ddf092fdeaf810bbded7278cc"
+    },
+    "lif_scheduler": {
+      "path": "results/lif_supplement001/SCHEDULER_EXECUTION.json",
+      "sha256": "efda6065633bd5d796af694780d9561fac330baa990fa253d26179e21c860519"
+    },
+    "native_v2": {
+      "path": "results/distributional_native001/COMPLETE.json",
+      "sha256": "de0203202684ecfbb5ee6829ddd4ef2b65c0b474096b6570825f4a4c42e4842e"
+    },
+    "native_v2_rows": {
+      "path": "results/distributional_native001/EVALUATION_SUMMARY.json",
+      "sha256": "8fd9369157c319ec4469633d09532a0ad60eba06a3b08d7c70f684f182b65c4b"
+    },
+    "runtime": {
+      "path": "results/runtime_review001/SUMMARY.json",
+      "sha256": "49ab1ababf660f4c4034fd9350c0343e7282f1d2b4b3aa1c76da506e5315fcb3"
+    },
+    "scaling": {
+      "path": "results/scaling002_summary_repair001/SUMMARY.json",
+      "sha256": "668443779ddaaf03bf058c443d91da5c3180594ab107531b83f068852194cd19"
+    },
+    "scaling_complete": {
+      "path": "results/scaling002_summary_repair001/COMPLETE.json",
+      "sha256": "49bef4fbc4b9af92417dab708d197a3aa39be59693ab28753fcde812a36e5281"
+    },
+    "scaling_execution": {
+      "path": "results/scaling002_summary_repair001_execution/EXECUTION.json",
+      "sha256": "a94aa21f1889f96ff5f2b74a6f85daf9a47d8f5e0c9e9e21b53705f6863bad9f"
+    },
+    "scaling_failed_execution": {
+      "path": "results/scaling002/SUITE_EXECUTION.json",
+      "sha256": "fa3731bffbc8ca577c3a2eef6e3d0e513a1c8a427afdd8813c91901a75860aec"
+    },
+    "scaling_protocol": {
+      "path": "SCALING002_PROTOCOL.json",
+      "sha256": "b836b139d18d06a81628fc6c36865c232fac28518159b6b17fd995a8494ab8c0"
+    },
+    "strict_content": {
+      "path": "results/content_analysis002/ANALYSIS.json",
+      "sha256": "654f1f3b235bd066e8ee64f2f20e18dc16eb7f83ecbef31379a066d94433da76"
+    },
+    "task": {
+      "path": "results/task_value002/EVALUATION_SUMMARY.json",
+      "sha256": "fc0343b13d99b68ba9d65497db7b599bdc5ab6acdeea5a771e5b5466598a17bf"
+    },
+    "task_review": {
+      "path": "results/independent_execution_review001/SUMMARY.json",
+      "sha256": "f696285a6009145f646fd1399616ea5f5d2d5bc5265009b7053a4b21ecfe6f85"
+    }
+  },
+  "integrity": {
+    "lif_valid_pairs": 18,
+    "original_strict_content_invalid": 1,
+    "original_strict_content_valid": 175,
+    "original_strict_gate_passed": false,
+    "supplement_is_post_hoc": true,
+    "supplemental_content_invalid": 0,
+    "supplemental_content_valid": 176
+  },
+  "native_v2_policy_mean_utility": {
+    "tabular_bellman": 0.16383333333333333,
+    "tabular_myopic": 0.49566666666666664
+  },
+  "new_statistical_tests_or_selection": false,
+  "new_training_or_inference": false,
+  "observed_cpu_lower_bound_seconds": 30939.006142960003,
+  "registered_mechanism_positive_gates": 0,
+  "research_cost_is_complete_all_work_bill": false,
+  "scaling": {
+    "all_cases_successful": true,
+    "attempted": 30,
+    "failed": 0,
+    "successful": 30
+  },
+  "schema": "hcsn-complete-evidence-synthesis.v1",
+  "source_sha256": "04777ec4ea6cfff4f2d49951ae3f04aebb077581f385df10fbdcfbf149a1de48",
+  "uniform_random_expected_accuracy": {
+    "fsdd": 0.1,
+    "irregular": 0.5,
+    "mnist": 0.1,
+    "mqar": 0.125,
+    "multimodal_select": 0.1,
+    "selective_copy": 0.125
+  }
+}

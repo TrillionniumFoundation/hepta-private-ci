@@ -209,7 +209,11 @@ def run(output, costs_path):
     max_qvi = max(max(row['residuals'][key] for key in ('active_qvi_absolute_residual',
         'continuation_positive_violation', 'forced_phase_absolute_residual', 'obstacle_positive_violation'))
         for row in enum)
-    largest_gain = max((row for row in enum if row['cells']==8), key=lambda row: row['initial_relative_improvement'])
+    defined_relative_gains = [row for row in enum if row['cells']==8
+                              and row['initial_relative_improvement'] is not None]
+    assert defined_relative_gains and all(math.isfinite(row['initial_relative_improvement'])
+                                          for row in defined_relative_gains)
+    largest_gain = max(defined_relative_gains, key=lambda row: row['initial_relative_improvement'])
     numerical_rows = [
         ['最终内核', f"{d['kernel']['tests_run']} 项测试通过"],
         ['独立稠密传播：最大状态 L1 误差', f"{max(r['state_l1_error'] for r in dense):.3e}"],
