@@ -1,0 +1,88 @@
+{
+  "recorded_at_utc": "2026-10-30T17:12:31.781516+00:00",
+  "scope": "Windows sandbox public admission, native boundary diagnostics and exact helper fixture; frozen before canonical format/native validation",
+  "sources": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/backend_selection.rs",
+      "sha256": "dd5fa7ea0d369103e6565c85a44e6732288be68553aa00b4d67b8c021401f42c",
+      "bytes": 1822
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/capture.rs",
+      "sha256": "120473f487e7598c3b79110e9ce49b37d93b73b424ff081d536141493d54075f",
+      "bytes": 3547
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+      "sha256": "d55be3a0e71028c99645180d305f6f70c307ebd88bf6b4088ca431d42f115c9e",
+      "bytes": 30437
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/public_admission_tests.rs",
+      "sha256": "4ad91b91c57b4c068fe15c8580ceb0a5a8790e91c8e61d0670dde900932e2905",
+      "bytes": 11535
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/spawn_prep.rs",
+      "sha256": "4e523d6bbf0b020a2d27378a058b52f2efe34cbe766e5c6aab5f2b8b1e068fd5",
+      "bytes": 27279
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+      "sha256": "9e30f126fc10ed60f11deed2a238a850e52388264b7921090dd1b5d67b4782fd",
+      "bytes": 18372
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "sha256": "98e8a28b9f1f3c028a102f19780daa533c1bdb91773c4efcb22192f094dd707c",
+      "bytes": 12049
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_acl_test_support.rs",
+      "sha256": "1f29992cb89fb38b5569f5ddc9e3f7634e9b825e96829d229eebaf12dba9e793",
+      "bytes": 4010
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backend_selection_tests.rs",
+      "sha256": "2daee6bc20a309a1859347a7e90f83e5b8c68d0f62ad26be6fed795a0941190a",
+      "bytes": 1570
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/mod.rs",
+      "sha256": "4e713fd6013af2b18baf67427bac4bba6af1e9cfdeb6b661921836801146f2b3",
+      "bytes": 171
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs",
+      "sha256": "bbf9eb6eafc9f84e2be124ba6cbf5876a592065154594cf146f4fac7013c8e74",
+      "bytes": 6359
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+      "sha256": "829b8e77664fa0c3b732308f9c2dd06c3ac0d926a74388183f87a10a26650233",
+      "bytes": 43121
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/helper_bundle_test_support.rs",
+      "sha256": "fd203429471644860e3c0c5c8cb56dd3eef32a96e52b33d5149c6d9895714c6c",
+      "bytes": 4012
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/readonly_boundary_tests.rs",
+      "sha256": "00cd34ff7a437f9f66d86fee7fc5743bb4b277b9eee754743444a8efd9272858",
+      "bytes": 6362
+    }
+  ],
+  "evidence": [
+    {
+      "path": "experiments/first_passage_operator/ci_evidence/recovery_8976/windows_security_followup/BOUNDARY_ASSERTION_REVIEW.json",
+      "sha256": "b5cbcb6e902a7e504d291028de4e96729e19e3124ee15dd0b7b71ddc4fd9f9e7",
+      "bytes": 3149
+    },
+    {
+      "path": "experiments/first_passage_operator/ci_evidence/recovery_8976/windows_security_followup/FOLLOWUP_REVIEW.json",
+      "sha256": "4a106dd1fe8e194b4fa6e85416a3107dc79df6080d7ecbaf2e6d7258ad1c85b3",
+      "bytes": 13841
+    }
+  ]
+}

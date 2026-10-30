@@ -48,6 +48,9 @@ pub struct WindowsSandboxProvisioningSettings {
 
 #[cfg(target_os = "windows")]
 mod acl;
+#[cfg(all(target_os = "windows", test))]
+#[path = "token_acl_test_support.rs"]
+mod acl_test_support;
 #[cfg(target_os = "windows")]
 mod allow;
 #[cfg(target_os = "windows")]
@@ -176,11 +179,11 @@ pub use capture::WindowsSandboxCaptureRequest;
 #[cfg(target_os = "windows")]
 pub use capture::run_windows_sandbox_capture;
 #[cfg(target_os = "windows")]
-pub use capture::run_windows_sandbox_capture_with_filesystem_overrides;
-#[cfg(target_os = "windows")]
 pub use capture::run_windows_sandbox_capture_for_level;
 #[cfg(target_os = "windows")]
 pub use capture::run_windows_sandbox_capture_for_permission_profile_elevated;
+#[cfg(target_os = "windows")]
+pub use capture::run_windows_sandbox_capture_with_filesystem_overrides;
 #[cfg(target_os = "windows")]
 pub use conpty::ConptyInstance;
 #[cfg(target_os = "windows")]
@@ -373,49 +376,76 @@ pub use stub::run_windows_sandbox_legacy_preflight;
 
 #[cfg(target_os = "windows")]
 mod windows_impl {
+    #[cfg(test)]
     use super::WindowsSandboxCancellationToken;
+    #[cfg(test)]
     use super::logging::log_failure;
+    #[cfg(test)]
     use super::logging::log_note;
+    #[cfg(test)]
     use super::logging::log_success;
+    #[cfg(test)]
     use super::process::ConsoleMode;
+    #[cfg(test)]
     use super::process::create_process_as_user;
     use super::sandbox_utils::ensure_codex_home_exists;
     use super::spawn_prep::LegacyAclSids;
+    #[cfg(test)]
     use super::spawn_prep::SpawnPrepOptions;
+    #[cfg(test)]
     use super::spawn_prep::allow_null_device_for_workspace_write;
     use super::spawn_prep::apply_legacy_session_acl_rules;
     use super::spawn_prep::legacy_session_capability_roots;
+    #[cfg(test)]
     use super::spawn_prep::prepare_legacy_session_security;
+    #[cfg(test)]
     use super::spawn_prep::prepare_legacy_spawn_context;
     use super::spawn_prep::root_capability_sids;
     use anyhow::Result;
     use codex_protocol::models::PermissionProfile;
     use codex_utils_absolute_path::AbsolutePathBuf;
     use std::collections::HashMap;
+    #[cfg(test)]
     use std::io;
     use std::path::Path;
+    #[cfg(test)]
     use std::ptr;
+    #[cfg(test)]
     use std::sync::Arc;
+    #[cfg(test)]
     use std::time::Duration;
+    #[cfg(test)]
     use std::time::Instant;
+    #[cfg(test)]
     use windows_sys::Win32::Foundation::CloseHandle;
+    #[cfg(test)]
     use windows_sys::Win32::Foundation::GetLastError;
+    #[cfg(test)]
     use windows_sys::Win32::Foundation::HANDLE;
+    #[cfg(test)]
     use windows_sys::Win32::Foundation::HANDLE_FLAG_INHERIT;
+    #[cfg(test)]
     use windows_sys::Win32::Foundation::SetHandleInformation;
+    #[cfg(test)]
     use windows_sys::Win32::System::Pipes::CreatePipe;
+    #[cfg(test)]
     use windows_sys::Win32::System::Threading::GetExitCodeProcess;
+    #[cfg(test)]
     use windows_sys::Win32::System::Threading::INFINITE;
+    #[cfg(test)]
     use windows_sys::Win32::System::Threading::WaitForSingleObject;
 
+    #[cfg(test)]
     type PipeHandles = ((HANDLE, HANDLE), (HANDLE, HANDLE), (HANDLE, HANDLE));
 
+    #[cfg(test)]
     enum WaitOutcome {
         Exited,
         TimedOut,
         Cancelled,
     }
 
+    #[cfg(test)]
     fn wait_for_process(
         process: HANDLE,
         timeout_ms: Option<u64>,
@@ -454,6 +484,7 @@ mod windows_impl {
         }
     }
 
+    #[cfg(test)]
     unsafe fn setup_stdio_pipes() -> io::Result<PipeHandles> {
         let mut in_r: HANDLE = 0;
         let mut in_w: HANDLE = 0;
@@ -489,6 +520,8 @@ mod windows_impl {
         pub timed_out: bool,
     }
 
+    // Retain the raw backend only for negative tests; public launches require the broker.
+    #[cfg(test)]
     #[allow(clippy::too_many_arguments)]
     pub(super) fn run_windows_sandbox_capture_restricted(
         permission_profile: &PermissionProfile,

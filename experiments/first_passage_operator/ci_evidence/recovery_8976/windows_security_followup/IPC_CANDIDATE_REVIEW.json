@@ -1,0 +1,243 @@
+{
+  "recorded_at_utc": "2026-10-30T17:21:26.070790+00:00",
+  "status": "read_only_design_review; candidate not implemented or natively validated",
+  "scope": "Retain WRITE_RESTRICTED; assess removing ambient User/Logon/Everyone from broker child restricting SIDs without weakening the existing assertions or changing sandbox environment flags.",
+  "frozen_source_manifest": {
+    "path": "experiments/first_passage_operator/ci_evidence/recovery_8976/windows_security_followup/SOURCE_MANIFEST.json",
+    "sha256": "c3a7cf9dbfdcc2c7faf369a79ab2761aad6d3b3092b7fb7760757dfb617a7fcd",
+    "all_14_source_hashes_match": true
+  },
+  "sources": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+      "sha256": "9e30f126fc10ed60f11deed2a238a850e52388264b7921090dd1b5d67b4782fd",
+      "bytes": 18372
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "sha256": "98e8a28b9f1f3c028a102f19780daa533c1bdb91773c4efcb22192f094dd707c",
+      "bytes": 12049
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/desktop.rs",
+      "sha256": "4e26ba072fada10f6185d16682274022108ef843f8292d1e7f9ed237f7e1a56f",
+      "bytes": 9710
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/desktop_tests.rs",
+      "sha256": "72240b370392cdfb0a4b38e90265ab2b3afb033433fe0fee83dde4cebdff5e94",
+      "bytes": 4756
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/process.rs",
+      "sha256": "7c7ea19f6fcfa88990cf5582273eede6139a52ccda8212468087276bb50eaca7",
+      "bytes": 11792
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/conpty/mod.rs",
+      "sha256": "a16c9b5a46e0e04a1942a30df824f08d9275d93177f06cc6afaa554cd718ea78",
+      "bytes": 6442
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated/runner_pipe.rs",
+      "sha256": "fa1fd3c5822c10303421a895cbe76ab3dd368c645c831ffc1c003bba626925db",
+      "bytes": 5321
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+      "sha256": "8d22e6acb74148bf2d8f2b81bbeccc2fd0bdaf89310e772119f9c2f2fd9e7b0c",
+      "bytes": 20235
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs",
+      "sha256": "295e74edb0562eb253d3dc4e733cbd5a918e666ac8515bde290a526a76fbd700",
+      "bytes": 25503
+    },
+    {
+      "path": "codex-rs/utils/pty/src/win/conpty.rs",
+      "sha256": "0dc2739c7df7f84dafe65658db3802d917dd719afa1dfa40663e5ae9609aa8d0",
+      "bytes": 5482
+    }
+  ],
+  "conclusions": [
+    {
+      "status": "observed native counterexample",
+      "finding": "Removing ambient restricting identities alone is insufficient to establish DELETE isolation. The existing create_workspace_write_token_with_caps_from uses RestrictingIdentity::Exclude, but exact-35c9 workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces still allowed both outside file and directory deletion while refusing overwrite and file creation.",
+      "native_head": "35c9ff15f6759b024459a14eaa39a5e5a3a65edf",
+      "native_run_id": 41089406109,
+      "source": "token.rs:383-392; token_tests.rs:230-309",
+      "native_reference": "FOLLOWUP_REVIEW.json original_native and findings; command-5.log first failure lines 1106-1128",
+      "qualification": "The documented DELETE-on-object OR FILE_DELETE_CHILD-on-parent paths are relevant, but this evidence does not identify which kernel authorization path was selected. Do not report that unmeasured internal mechanism as proven."
+    },
+    {
+      "status": "source inference with primary API contract",
+      "finding": "The broker child currently includes capability, dedicated-user, Logon and Everyone restricting SID alternatives. Removing the ambient alternatives tightens ordinary write matching, while retaining the normal token identity for the first access check. This is a candidate improvement, not a security proof.",
+      "source": "token.rs:451-535; bin/command_runner/win.rs:269-287"
+    },
+    {
+      "status": "source confirmed",
+      "finding": "The public-admission routing patch closes the direct legacy entry paths. It does not establish the safety of the selected broker. Readonly and writable-root deletion boundaries remain open until actual native positive and negative cases pass."
+    },
+    {
+      "status": "scope separation",
+      "finding": "The restrictive SID list and token default DACL have different roles. Do not mechanically remove normal-identity default-DACL entries when removing ambient restricting alternatives. Existing default DACL includes normal identity and capability grants for newly created child IPC, and intentionally omits extra route identity markers.",
+      "source": "token.rs:527-535"
+    }
+  ],
+  "breakage_matrix": [
+    {
+      "surface": "Runner control named pipes",
+      "current_contract": "Parent creates exact per-run pipe instances whose DACL grants the dedicated sandbox user; no inheritance. Runner starts with CreateProcessWithLogonW and opens both pipes under its normal identity before reading the spawn request or creating the restricted child token.",
+      "source": [
+        "elevated/runner_pipe.rs:55-102",
+        "elevated/runner_client.rs:315-365",
+        "bin/command_runner/win.rs:549-580"
+      ],
+      "candidate_assessment": "No child capability grant needed for these already-open runner-owned handles. Do not grant child capabilities access to privileged runner control endpoints.",
+      "validation": "Keep actual setup/runner handshake, peer-PID validation, framed request and output tests. A pre-child CreateProcessWithLogonW 1326 is a separate credential/setup failure, not caused by editing the subsequent child restricting SID list."
+    },
+    {
+      "surface": "Non-TTY stdin/stdout/stderr",
+      "current_contract": "Normal runner creates anonymous pipes; create_process_as_user explicitly marks standard handles inheritable and installs an explicit handle list before CreateProcessAsUserW.",
+      "source": [
+        "process.rs:127-159",
+        "process.rs:222-277"
+      ],
+      "candidate_assessment": "Inherited handles retain their access rights; no new path-based open is needed just to use standard streams. Any child later reopening a device or pipe is a separate access check.",
+      "validation": "Preserve native cmd/PowerShell output, stdin, environment, exit-code, interrupt and capture cancellation cases."
+    },
+    {
+      "surface": "ConPTY",
+      "current_contract": "Runner creates pseudo-console and its input/output pipes before spawning child. Pseudo-console and job attributes are attached with bInheritHandles=0; this is not ordinary standard-pipe inheritance.",
+      "source": [
+        "conpty/mod.rs:119-169",
+        "../utils/pty/src/win/conpty.rs:41-91"
+      ],
+      "candidate_assessment": "Runner-side resize and I/O retain already-open handles. Child console initialization and CONIN$/CONOUT$ opens still require actual native validation; handle-inheritance reasoning alone is insufficient.",
+      "validation": "Native PowerShell prompt/input, Unicode, Ctrl-C, resizing and descendant lifetime tests, using real helper executables and the candidate token."
+    },
+    {
+      "surface": "Job/process cancellation handles",
+      "current_contract": "Runner creates job and holds job/process handles independently of the child token; child is assigned via creation attributes.",
+      "source": [
+        "process.rs:105-124",
+        "conpty/mod.rs:125-142"
+      ],
+      "candidate_assessment": "No reason to grant child extra access to the runner job or broaden any DACL. Existing parent handle operations should remain valid.",
+      "validation": "Keep cancellation versus normal-exit distinction, descendant termination/preservation, and exact original deadlines."
+    },
+    {
+      "surface": "Private desktop",
+      "current_contract": "When no Logon SID occurs in the restricting list, private_desktop_restricting_sids returns every restricting SID; grant_desktop_access grants each DESKTOP_ALL_ACCESS and adds runner Logon SID.",
+      "source": [
+        "desktop.rs:143-254"
+      ],
+      "candidate_assessment": "Capability grants are expected, but a retained network route identity marker would now be copied into the desktop DACL. A cap-only broker candidate must pass or derive a validated capability-only grant set, separate from extra identity markers. Do not infer that all TokenRestrictedSids entries are capabilities.",
+      "validation": "Exact-capability native allow, unrelated-capability deny, route-marker-only deny, default-DACL exclusion of route markers, and successful launch under the dedicated account."
+    },
+    {
+      "surface": "Default desktop opt-out",
+      "current_contract": "LaunchDesktop::prepare explicitly fails when restricting_sids is nonempty and use_private_desktop=false.",
+      "source": [
+        "desktop.rs:69-91",
+        "desktop_tests.rs:111-133"
+      ],
+      "candidate_assessment": "Definite compatibility change: removing Logon from the broker child restriction set reaches this explicit error. The old readonly test uses the ambient-including constructor, so it does not validate the candidate. Do not silently override the caller flag or broaden Winsta0/Default ACLs.",
+      "validation": "Make the supported fail-closed contract explicit, preserve the request value, and native-test it. Any requirement to continue supporting default desktop needs a separately reviewed capability-safe implementation."
+    },
+    {
+      "surface": "NUL device",
+      "current_contract": "Runner explicitly calls allow_null_device for the retained capability SIDs.",
+      "source": [
+        "bin/command_runner/win.rs:288-295"
+      ],
+      "candidate_assessment": "Capability support already exists; ambient restricting identities should not be necessary for this explicit grant.",
+      "validation": "Native redirection to and reading from NUL under both token modes; do not add a broad fallback."
+    },
+    {
+      "surface": "Child-created IPC",
+      "current_contract": "Default DACL keeps normal identity grants plus the explicit capabilities, excluding additional route identity markers.",
+      "source": [
+        "token.rs:527-535"
+      ],
+      "candidate_assessment": "Preserve the distinction between normal identity access and restricting capability access. This is source-based compatibility reasoning, not proof for every PowerShell/COM/RPC object.",
+      "validation": "Native named-pipe/pipeline positives; any failed third-party endpoint must be identified and scoped, not repaired with global Everyone/Logon restricting alternatives."
+    },
+    {
+      "surface": "Read/execute and runtime initialization",
+      "current_contract": "WRITE_RESTRICTED remains enabled, so restricting SID checks are documented for write access; ordinary identity and broker read-root grants remain.",
+      "source": [
+        "token.rs:511-535"
+      ],
+      "candidate_assessment": "No permission to drop WRITE_RESTRICTED or add deny masks containing shared SYNCHRONIZE. DLL/runtime, cwd traversal, window-station and device interactions still need native coverage.",
+      "validation": "Real allowed reads including outside read-only roots, executable/DLL startup, then refused overwrite/create/delete, for readonly and writable-root profiles."
+    },
+    {
+      "surface": "Network route identity",
+      "current_contract": "Runner parses optional network_proxy_restricting_sid separately from capability SIDs, then passes it to the token constructor as an additional restriction.",
+      "source": [
+        "bin/command_runner/win.rs:254-287"
+      ],
+      "candidate_assessment": "Preserve the identity marker needed by managed networking. Do not grant it filesystem/default-DACL/private-desktop rights or confuse it with a write capability.",
+      "validation": "Existing managed-network rejection contract plus actual proxy enforcement; exact token SID inventory and explicit non-grant checks."
+    },
+    {
+      "surface": "Filesystem DELETE and rename boundaries",
+      "current_contract": "Existing cap-only raw workspace native test still permits outside file and directory deletion under broad identity ACEs; all original deletion assertions remain intact.",
+      "source": [
+        "token_tests.rs:230-309"
+      ],
+      "candidate_assessment": "Blocking counterexample. No IPC fix or ambient-SID removal proves these boundaries. Parent FILE_DELETE_CHILD is a documented alternative, but the exact failed access path must be measured.",
+      "validation": "Keep existing outside/protected .git assertions; include readonly public capture/session test, writable-root positive deletes, unrelated-capability negatives, object DELETE and parent FILE_DELETE_CHILD access probes in an owned fixture, and real delete/rename outcomes. Do not replace negative outcomes with expected success or skip."
+    }
+  ],
+  "minimal_candidate_plan_not_implemented": [
+    "Use an explicitly named broker capability-only constructor, or an equally explicit audited mode, rather than silently changing the semantics of public functions whose name and documentation promise the dedicated user SID. Keep the same normal token, privileges and WRITE_RESTRICTED flag.",
+    "Build the restricting SID set from exact capability SIDs plus separately typed required network identities. Verify User, Logon and Everyone are absent from that restricting set. Keep network route markers out of all capability grants.",
+    "Before adopting that constructor in both runner token modes, make private-desktop grant derivation consume only validated capabilities. Preserve default-DACL normal/capability grants, existing NUL grants, and runner-owned control endpoints.",
+    "Treat use_private_desktop=false as a separately explicit fail-closed compatibility decision. Do not secretly force private desktop or alter shared desktop ACLs.",
+    "Run unchanged raw and public native boundary tests first. The known DELETE counterexample must be fixed by a demonstrated authorization mechanism before the candidate can be described as complete. No production token edit is made by this review."
+  ],
+  "minimum_native_acceptance": [
+    "Record exact TokenRestrictedSids, default-DACL ACE fields and fixture object/parent ACE fields; no credential content.",
+    "Readonly capture and session: read succeeds; overwrite/create/outside-file-delete/outside-directory-delete/protected-.git-delete fail; original artifacts remain intact.",
+    "Workspace: allowed-root writes/deletes succeed; outside and protected-root writes/deletes fail under broad Logon/Everyone ACEs and an unrelated capability.",
+    "Partial deny repair reaches a stable second application; await actual ACE diagnostics before changing canonicalization logic.",
+    "Real setup and runner are present; run exactly one intended re-executed unit case with zero skips, preserving original output/deadlines/cancellation/descendant assertions.",
+    "Actual cmd/PowerShell/ConPTY, private desktop and managed-network cases pass on Windows; earlier native results are not relabeled as candidate verification."
+  ],
+  "primary_api_sources": [
+    {
+      "url": "https://learn.microsoft.com/windows/win32/api/securitybaseapi/nf-securitybaseapi-createrestrictedtoken",
+      "github_blob": "11a876b048d20f5925c72682cb48bd2138d97361",
+      "used_for": "WRITE_RESTRICTED and dual access-check contract"
+    },
+    {
+      "url": "https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-deletefilew",
+      "github_blob": "52c9d4c2b3d07db7619c07ba8749e151e325c944",
+      "used_for": "DELETE on object or FILE_DELETE_CHILD on parent"
+    },
+    {
+      "url": "https://learn.microsoft.com/windows/win32/sysinfo/handle-inheritance",
+      "github_blob": "132a957596bcc2b4d881ea18ecc88cc3a8dae0cb",
+      "used_for": "Inherited handles refer to same object"
+    },
+    {
+      "url": "https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessasuserw",
+      "github_blob": "e92d67122adcb968c71844a98afb15b6c33d785d",
+      "used_for": "Inherited access rights and desktop requirements"
+    },
+    {
+      "url": "https://learn.microsoft.com/windows/win32/fileio/file-security-and-access-rights",
+      "github_blob": "2f1ca58a2ec69db01a79815e34e7889c4899ff1e",
+      "used_for": "Shared SYNCHRONIZE in generic read/write masks; do not blindly widen deny masks"
+    }
+  ],
+  "verification": {
+    "new_rust_builds": 0,
+    "new_native_runs": 0,
+    "production_or_test_source_writes_during_this_review": 0,
+    "frozen_manifest_unchanged": true,
+    "candidate_security_qualification": "open"
+  }
+}

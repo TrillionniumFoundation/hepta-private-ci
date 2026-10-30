@@ -3,10 +3,17 @@
 #[path = "acl_setup_tests.rs"]
 mod acl_setup_tests;
 
+#[path = "helper_bundle_test_support.rs"]
+mod helper_bundle;
+
+#[path = "readonly_boundary_tests.rs"]
+mod readonly_boundary_tests;
+
 use super::WindowsSandboxSessionRequest;
 use super::spawn_windows_sandbox_session_elevated_for_permission_profile;
 use super::spawn_windows_sandbox_session_for_level;
 use super::spawn_windows_sandbox_session_legacy;
+use helper_bundle::run_in_helper_bundle;
 use crate::WindowsSandboxCancellationToken;
 use crate::ipc_framed::Message;
 use crate::ipc_framed::decode_bytes;
@@ -266,6 +273,9 @@ fn restricted_token_rejects_managed_network_before_spawn() {
 
 #[test]
 fn legacy_non_tty_cmd_emits_output() {
+    if run_in_helper_bundle("unified_exec::tests::legacy_non_tty_cmd_emits_output") {
+        return;
+    }
     let _guard = legacy_process_test_guard();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
@@ -305,6 +315,9 @@ fn legacy_non_tty_cmd_emits_output() {
 
 #[test]
 fn elevated_non_tty_cmd_forwards_env_output_and_exit() {
+    if run_in_helper_bundle("unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit") {
+        return;
+    }
     let _guard = legacy_process_test_guard();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
@@ -390,6 +403,9 @@ fn restricted_token_non_tty_cmd_rejects_deny_read_overrides() {
 
 #[test]
 fn legacy_non_tty_powershell_interrupt_terminates_process() {
+    if run_in_helper_bundle("unified_exec::tests::legacy_non_tty_powershell_interrupt_terminates_process") {
+        return;
+    }
     let Some(pwsh) = pwsh_path() else {
         return;
     };
@@ -609,6 +625,9 @@ fn runner_resizer_sends_resize_frame() {
 
 #[test]
 fn legacy_capture_emits_output_and_preserves_descendant_after_normal_exit() {
+    if run_in_helper_bundle("unified_exec::tests::legacy_capture_emits_output_and_preserves_descendant_after_normal_exit") {
+        return;
+    }
     let Some(pwsh) = pwsh_path() else {
         return;
     };
@@ -680,6 +699,9 @@ fn legacy_capture_emits_output_and_preserves_descendant_after_normal_exit() {
 
 #[test]
 fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
+    if run_in_helper_bundle("unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots") {
+        return;
+    }
     let _guard = legacy_process_test_guard();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
@@ -790,6 +812,9 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
 
 #[test]
 fn legacy_capture_cancellation_terminates_descendants_without_timeout() {
+    if run_in_helper_bundle("unified_exec::tests::legacy_capture_cancellation_terminates_descendants_without_timeout") {
+        return;
+    }
     let Some(pwsh) = pwsh_path() else {
         eprintln!("skipping cancellation regression test: PowerShell 7 is not installed");
         return;
@@ -969,6 +994,9 @@ async fn assert_legacy_tty_descendant_lifecycle(
 
 #[test]
 fn legacy_tty_job_terminates_and_preserves_descendants() {
+    if run_in_helper_bundle("unified_exec::tests::legacy_tty_job_terminates_and_preserves_descendants") {
+        return;
+    }
     let Some(pwsh) = pwsh_path() else {
         eprintln!("skipping sandbox ConPTY lifecycle test: PowerShell 7 is not installed");
         return;
@@ -983,6 +1011,9 @@ fn legacy_tty_job_terminates_and_preserves_descendants() {
 
 #[test]
 fn legacy_tty_powershell_emits_output_and_accepts_input() {
+    if run_in_helper_bundle("unified_exec::tests::legacy_tty_powershell_emits_output_and_accepts_input") {
+        return;
+    }
     let Some(pwsh) = pwsh_path() else {
         return;
     };

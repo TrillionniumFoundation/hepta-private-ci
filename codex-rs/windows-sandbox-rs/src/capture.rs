@@ -1,8 +1,7 @@
 use crate::CaptureResult;
 use crate::WindowsSandboxCancellationToken;
-use crate::backend_selection::WindowsSandboxBackend;
-use crate::backend_selection::WindowsSandboxBackendRequest;
-use crate::backend_selection::select_windows_sandbox_backend;
+use crate::backend_selection::WindowsSandboxBrokerRequest;
+use crate::backend_selection::require_windows_sandbox_broker;
 use anyhow::Result;
 use codex_protocol::config_types::WindowsSandboxLevel;
 use codex_protocol::models::PermissionProfile;
@@ -10,7 +9,7 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 use std::collections::HashMap;
 use std::path::Path;
 
-/// Capture parameters shared by both Windows sandbox backends.
+/// Capture parameters passed intact to the Windows sandbox broker.
 ///
 /// The existing elevated request name remains available for callers that
 /// explicitly require that backend.
@@ -80,47 +79,20 @@ pub fn run_windows_sandbox_capture_with_filesystem_overrides(
     )
 }
 
-/// Capture output using the backend required by the complete request policy.
+/// Capture output through the broker with the complete request policy.
 ///
 /// A broker error is returned to the caller without attempting a token launch.
 pub fn run_windows_sandbox_capture_for_level(
     windows_sandbox_level: WindowsSandboxLevel,
     request: WindowsSandboxCaptureRequest<'_>,
 ) -> Result<CaptureResult> {
-    let backend = select_windows_sandbox_backend(&WindowsSandboxBackendRequest {
-        permission_profile: request.permission_profile,
-        workspace_roots: request.workspace_roots,
-        cwd: request.cwd,
-        env_map: &request.env_map,
+    require_windows_sandbox_broker(&WindowsSandboxBrokerRequest {
         windows_sandbox_level,
         proxy_enforced: request.proxy_enforced,
         network_proxy_restricting_sid: request.network_proxy_restricting_sid.as_deref(),
-        read_roots_override: request.read_roots_override,
-        write_roots_override: request.write_roots_override,
-        deny_read_paths_override: request.deny_read_paths_override,
-        deny_write_paths_override: request.deny_write_paths_override,
     })?;
 
-    match backend {
-        WindowsSandboxBackend::Elevated => {
-            crate::elevated_impl::run_windows_sandbox_capture_for_permission_profile(request)
-        }
-        WindowsSandboxBackend::RestrictedToken => {
-            crate::windows_impl::run_windows_sandbox_capture_restricted(
-                request.permission_profile,
-                request.workspace_roots,
-                request.codex_home,
-                request.command,
-                request.cwd,
-                request.env_map,
-                request.timeout_ms,
-                request.cancellation,
-                request.deny_read_paths_override,
-                request.deny_write_paths_override,
-                request.use_private_desktop,
-            )
-        }
-    }
+    crate::elevated_impl::run_windows_sandbox_capture_for_permission_profile(request)
 }
 
 pub fn run_windows_sandbox_capture_for_permission_profile_elevated(

@@ -2,15 +2,14 @@
 //!
 //! This module is the thin orchestration layer for Windows unified-exec sessions.
 //! Backend-specific mechanics live in sibling modules:
-//! - `backends::legacy` adapts the direct restricted-token spawn path into a live session.
+//! - `backends::legacy` retains the raw token path for test-only negative coverage.
 //! - `backends::elevated` adapts the elevated command-runner IPC path into the same session API.
 //! - `backends::windows_common` holds the small shared Windows backend helpers
 //!   used by both.
 
 mod backends;
 
-use crate::backend_selection::WindowsSandboxBackend;
-use crate::backend_selection::WindowsSandboxBackendRequest;
+use crate::backend_selection::WindowsSandboxBrokerRequest;
 use anyhow::Result;
 use codex_protocol::config_types::WindowsSandboxLevel;
 use codex_protocol::models::PermissionProfile;
@@ -23,7 +22,7 @@ use std::path::PathBuf;
 /// Fully resolved Windows sandbox session launch request.
 ///
 /// Callers should parse their own input shape first, then use this request to
-/// share the elevated-vs-legacy backend selection and session launch path.
+/// share broker admission and the session launch path.
 pub struct WindowsSandboxSessionRequest<'a> {
     pub permission_profile: &'a PermissionProfile,
     pub workspace_roots: &'a [AbsolutePathBuf],
@@ -46,72 +45,42 @@ pub struct WindowsSandboxSessionRequest<'a> {
     pub use_private_desktop: bool,
 }
 
-fn select_windows_sandbox_backend(
-    request: &WindowsSandboxSessionRequest<'_>,
-) -> Result<WindowsSandboxBackend> {
-    crate::backend_selection::select_windows_sandbox_backend(&WindowsSandboxBackendRequest {
-        permission_profile: request.permission_profile,
-        workspace_roots: request.workspace_roots,
-        cwd: request.cwd,
-        env_map: &request.env_map,
+fn require_windows_sandbox_broker(request: &WindowsSandboxSessionRequest<'_>) -> Result<()> {
+    crate::backend_selection::require_windows_sandbox_broker(&WindowsSandboxBrokerRequest {
         windows_sandbox_level: request.windows_sandbox_level,
         proxy_enforced: request.proxy_enforced,
         network_proxy_restricting_sid: request.network_proxy_restricting_sid.as_deref(),
-        read_roots_override: request.read_roots_override,
-        write_roots_override: request.write_roots_override,
-        deny_read_paths_override: request.deny_read_paths_override,
-        deny_write_paths_override: request.deny_write_paths_override,
     })
 }
 
 pub async fn spawn_windows_sandbox_session_for_level(
     request: WindowsSandboxSessionRequest<'_>,
 ) -> Result<SpawnedProcess> {
-    match select_windows_sandbox_backend(&request)? {
-        WindowsSandboxBackend::Elevated => {
-            backends::elevated::spawn_windows_sandbox_session_elevated_for_permission_profile(
-                request.permission_profile,
-                request.workspace_roots,
-                request.codex_home,
-                request.command,
-                request.cwd,
-                request.env_map,
-                request.proxy_enforced,
-                request.network_proxy_restricting_sid,
-                request.proxy_settings_mode,
-                request.timeout_ms,
-                request.read_roots_override,
-                request.read_roots_include_platform_defaults,
-                request.write_roots_override,
-                request.deny_read_paths_override,
-                request.deny_write_paths_override,
-                request.tty,
-                request.stdin_open,
-                request.use_private_desktop,
-            )
-            .await
-        }
-        WindowsSandboxBackend::RestrictedToken => {
-            backends::legacy::spawn_windows_sandbox_session_legacy(
-                request.permission_profile,
-                request.workspace_roots,
-                request.codex_home,
-                request.command,
-                request.cwd,
-                request.env_map,
-                request.timeout_ms,
-                request.deny_read_paths_override,
-                request.deny_write_paths_override,
-                request.tty,
-                request.stdin_open,
-                request.use_private_desktop,
-            )
-            .await
-        }
-    }
+    require_windows_sandbox_broker(&request)?;
+    backends::elevated::spawn_windows_sandbox_session_elevated_for_permission_profile(
+        request.permission_profile,
+        request.workspace_roots,
+        request.codex_home,
+        request.command,
+        request.cwd,
+        request.env_map,
+        request.proxy_enforced,
+        request.network_proxy_restricting_sid,
+        request.proxy_settings_mode,
+        request.timeout_ms,
+        request.read_roots_override,
+        request.read_roots_include_platform_defaults,
+        request.write_roots_override,
+        request.deny_read_paths_override,
+        request.deny_write_paths_override,
+        request.tty,
+        request.stdin_open,
+        request.use_private_desktop,
+    )
+    .await
 }
 
-/// Compatibility entry point whose policy may require the elevated broker.
+/// Compatibility entry point that preserves its request through broker admission.
 #[allow(clippy::too_many_arguments)]
 pub async fn spawn_windows_sandbox_session_legacy(
     permission_profile: &PermissionProfile,

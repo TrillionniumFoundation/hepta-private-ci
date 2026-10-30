@@ -33,13 +33,13 @@ struct UnavailableBroker {
 
 impl UnavailableBroker {
     fn new() -> Self {
-        let root = TempDir::new().expect("create admission fixture");
+        let root = TempDir::new().unwrap_or_else(|error| panic!("create admission fixture: {error}"));
         let codex_home = root.path().join("codex-home");
         let workspace = root.path().join("workspace");
-        fs::create_dir_all(&workspace).expect("create admission workspace");
-        fs::create_dir_all(sandbox_dir(&codex_home)).expect("create fixture setup directory");
+        fs::create_dir_all(&workspace).unwrap_or_else(|error| panic!("create admission workspace: {error}"));
+        fs::create_dir_all(sandbox_dir(&codex_home)).unwrap_or_else(|error| panic!("create fixture setup directory: {error}"));
         fs::create_dir_all(sandbox_secrets_dir(&codex_home))
-            .expect("create fixture identity directory");
+            .unwrap_or_else(|error| panic!("create fixture identity directory: {error}"));
 
         // Version-valid metadata reaches the real broker identity loader. The
         // invalid fixture password fails before DPAPI, setup, or account logon,
@@ -65,18 +65,18 @@ impl UnavailableBroker {
         };
         fs::write(
             setup_marker_path(&codex_home),
-            serde_json::to_vec(&marker).expect("serialize fixture setup marker"),
+            serde_json::to_vec(&marker).unwrap_or_else(|error| panic!("serialize fixture setup marker: {error}")),
         )
-        .expect("write fixture setup marker");
+        .unwrap_or_else(|error| panic!("write fixture setup marker: {error}"));
         fs::write(
             sandbox_users_path(&codex_home),
-            serde_json::to_vec(&users).expect("serialize fixture identities"),
+            serde_json::to_vec(&users).unwrap_or_else(|error| panic!("serialize fixture identities: {error}")),
         )
-        .expect("write fixture identities");
+        .unwrap_or_else(|error| panic!("write fixture identities: {error}"));
 
         Self {
             workspace_roots: vec![
-                AbsolutePathBuf::from_absolute_path(&workspace).expect("absolute workspace"),
+                AbsolutePathBuf::from_absolute_path(&workspace).unwrap_or_else(|error| panic!("absolute workspace: {error}")),
             ],
             spawned_marker: workspace.join("spawned.txt"),
             _root: root,
@@ -119,13 +119,15 @@ impl UnavailableBroker {
     }
 
     fn assert_no_fallback(&self, result: anyhow::Result<()>) {
-        let error = result.expect_err("invalid broker identity must prevent process launch");
+        let Err(error) = result else {
+            panic!("invalid broker identity must prevent process launch");
+        };
         assert_eq!(
             (
                 error.to_string(),
                 self.spawned_marker
                     .try_exists()
-                    .expect("inspect process marker"),
+                    .unwrap_or_else(|error| panic!("inspect process marker: {error}")),
             ),
             ("base64 decode password".to_string(), false),
             "unexpected admission failure: {error:#}",
@@ -179,7 +181,7 @@ fn legacy_session_does_not_fall_back_when_required_broker_fails() {
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()
-        .expect("build admission runtime");
+        .unwrap_or_else(|error| panic!("build admission runtime: {error}"));
     fixture.assert_no_fallback(runtime.block_on(async {
         spawn_windows_sandbox_session_legacy(
             &PermissionProfile::workspace_write(),
@@ -223,7 +225,7 @@ fn capture_and_session_overrides_require_broker_for_read_only_profile() {
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()
-        .expect("build override admission runtime");
+        .unwrap_or_else(|error| panic!("build override admission runtime: {error}"));
 
     for (read_roots, write_roots, deny_read, deny_write) in [
         (Some(roots.as_slice()), None, no_paths, no_paths),
@@ -267,4 +269,53 @@ fn capture_and_session_overrides_require_broker_for_read_only_profile() {
             .map(|_| ())
         }));
     }
+}
+
+#[test]
+fn read_only_without_overrides_requires_broker_for_capture_and_session() {
+    let fixture = UnavailableBroker::new();
+    let profile = PermissionProfile::read_only();
+    fixture.assert_no_fallback(
+        run_windows_sandbox_capture_for_level(
+            WindowsSandboxLevel::RestrictedToken,
+            fixture.capture_request(&profile),
+        )
+        .map(|_| ()),
+    );
+    fixture.assert_no_fallback(
+        run_windows_sandbox_capture(
+            &profile,
+            &fixture.workspace_roots,
+            &fixture.codex_home,
+            fixture.command(),
+            &fixture.workspace,
+            HashMap::new(),
+            Some(5_000),
+            /*cancellation*/ None,
+            /*use_private_desktop*/ true,
+        )
+        .map(|_| ()),
+    );
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .unwrap_or_else(|error| panic!("build read-only admission runtime: {error}"));
+    fixture.assert_no_fallback(runtime.block_on(async {
+        spawn_windows_sandbox_session_legacy(
+            &profile,
+            &fixture.workspace_roots,
+            &fixture.codex_home,
+            fixture.command(),
+            &fixture.workspace,
+            HashMap::new(),
+            Some(5_000),
+            &[],
+            &[],
+            /*tty*/ false,
+            /*stdin_open*/ false,
+            /*use_private_desktop*/ true,
+        )
+        .await
+        .map(|_| ())
+    }));
 }

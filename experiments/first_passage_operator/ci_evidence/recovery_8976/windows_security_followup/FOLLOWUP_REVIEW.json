@@ -1,0 +1,193 @@
+{
+  "recorded_at_utc": "2026-10-30T17:12:31.780513+00:00",
+  "mode": "source follow-up; changed sources have not been compiled or run on Windows",
+  "original_native": {
+    "provenance": {
+      "source_head": "35c9ff15f6759b024459a14eaa39a5e5a3a65edf",
+      "source_tree": "e8581cdcaef7af64e7eeef1e56482410a7808fc0",
+      "lane": "windows-private-state",
+      "run_id": "41089406109",
+      "run_attempt": "1",
+      "input_sha256": {
+        ".github/workflows/hepta-operator-diagnostics.yml": "8b62ef1e459495dc1105de95a9aaf271233f9362fafeb832748e829453299ef9",
+        "codex-rs/Cargo.toml": "b61ebbb5fe5dbff5ee166e29802626520ee7b49ba8598f664798b3094674b40f",
+        "codex-rs/Cargo.lock": "7e97d9e53fcd41f1646b4fadce4674b357edefd6b4f38cfa691d46e0c74768c4",
+        "codex-rs/deny.toml": "c07ae3102c69cb0b4de756ae7e21a90f30acf483c75a3366f7142099c20e40ce",
+        "MODULE.bazel": "62feac95cd51985e9b00087e8803e9aa292a8c9e28b735c78a6fabca5de4188a",
+        "MODULE.bazel.lock": "12da0026d5f27c355aa4c2e5257afca5d2f96e282ea1bff63a471fa8590852f6",
+        ".bazelversion": "0de84bea2c72a4e54444f9fdf93e84d046f78d3af33f44cf01ae433634369980",
+        "justfile": "325e27adeb9034ffbabf4a7c6245447fc65c496365ddacc16eb1c80ca4636b3e",
+        "experiments/first_passage_operator/requirements.txt": "af0f6cd0ed1192b5c1eb55269c6cc3a92618cabd43a663a0cf32c7a5a59e7c72",
+        "experiments/first_passage_deadline/requirements.txt": "fdf15f8e56a3349c4cf3a05e4d073f03512a65deff2383767a4eaed1c445310f"
+      },
+      "research_command_scope": "unit tests only; no confirmation run"
+    },
+    "artifact_input_identities": {
+      "source-provenance.json": {
+        "sha256": "0e327bf4c707630ab2b8e8e23d5a63ead973d5d092787ce749f6f409fe61b426",
+        "bytes": 1337
+      },
+      "commands.json": {
+        "sha256": "fe3b251d30ee5b8f54d920f25663ffb547388106692df8590ecb2f103db36ed5",
+        "bytes": 1899
+      },
+      "command-5.log": {
+        "sha256": "3239324eb02b50c0c12b43fb71610db18c38046ae35da76b8399e862ce137623",
+        "bytes": 85667
+      },
+      "command-5-junit/0/local/junit.xml": {
+        "sha256": "995c6be90f0e3bd00d0e34a0b85a35ddf6db99e746a077f7a03042edc534de46",
+        "bytes": 76404
+      },
+      "command-6.log": {
+        "sha256": "71cd571f55fc35982eeb7c652dc70dec840fa06e2d51aacf84624a89418b5abb",
+        "bytes": 28980
+      }
+    },
+    "command": {
+      "argv": [
+        "just",
+        "test",
+        "-p",
+        "codex-windows-sandbox",
+        "-p",
+        "codex-code-mode-runtime",
+        "--lib",
+        "--locked"
+      ],
+      "exit_code": 1,
+      "log": "command-5.log"
+    },
+    "junit_totals": {
+      "name": "nextest-run",
+      "tests": "220",
+      "failures": "10",
+      "errors": "0",
+      "uuid": "e2295bf6-246a-4169-925a-f34eb6412dcf",
+      "timestamp": "2026-10-30T16:35:45.610+00:00",
+      "time": "3.602"
+    },
+    "suites": [
+      {
+        "name": "codex-code-mode-runtime",
+        "tests": "68",
+        "disabled": "0",
+        "errors": "0",
+        "failures": "0"
+      },
+      {
+        "name": "codex-windows-sandbox",
+        "tests": "152",
+        "disabled": "0",
+        "errors": "0",
+        "failures": "10"
+      }
+    ],
+    "public_admission_passed": [
+      "public_admission_tests::capture_for_level_requires_broker_for_workspace_writes",
+      "public_admission_tests::capture_and_session_overrides_require_broker_for_read_only_profile",
+      "public_admission_tests::legacy_capture_does_not_fall_back_when_required_broker_fails",
+      "public_admission_tests::legacy_capture_overrides_do_not_bypass_required_broker",
+      "public_admission_tests::legacy_session_does_not_fall_back_when_required_broker_fails"
+    ],
+    "failures": [
+      {
+        "suite": "codex-windows-sandbox",
+        "test": "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+        "failure": "thread 'token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes' (4296) panicked at windows-sandbox-rs\\src\\token_tests.rs:213:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n>    false,\n     true,\n<    true,\n<    true,\n>    false,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      {
+        "suite": "codex-windows-sandbox",
+        "test": "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+        "failure": "thread 'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces' (4688) panicked at windows-sandbox-rs\\src\\token_tests.rs:280:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n [\n     Some(\n         PermissionDenied,\n     ),\n     Some(\n         PermissionDenied,\n     ),\n<    None,\n<    None,\n>    Some(\n>        PermissionDenied,\n>    ),\n>    Some(\n>        PermissionDenied,\n>    ),\n ]\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      {
+        "suite": "codex-windows-sandbox",
+        "test": "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+        "failure": "thread 'unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit' (3196) panicked at windows-sandbox-rs\\src\\unified_exec\\tests.rs:343:10:\nspawn elevated non-tty cmd session: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      {
+        "suite": "codex-windows-sandbox",
+        "test": "unified_exec::tests::legacy_capture_cancellation_terminates_descendants_without_timeout",
+        "failure": "thread 'unified_exec::tests::legacy_capture_cancellation_terminates_descendants_without_timeout' (4364) panicked at windows-sandbox-rs\\src\\unified_exec\\tests.rs:850:6:\nrun legacy capture powershell with cancellation: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      {
+        "suite": "codex-windows-sandbox",
+        "test": "unified_exec::tests::legacy_capture_emits_output_and_preserves_descendant_after_normal_exit",
+        "failure": "thread 'unified_exec::tests::legacy_capture_emits_output_and_preserves_descendant_after_normal_exit' (1368) panicked at windows-sandbox-rs\\src\\unified_exec\\tests.rs:653:6:\nrun legacy capture powershell: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      {
+        "suite": "codex-windows-sandbox",
+        "test": "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+        "failure": "thread 'unified_exec::tests::legacy_non_tty_cmd_emits_output' (8712) panicked at windows-sandbox-rs\\src\\unified_exec\\tests.rs:295:10:\nspawn legacy non-tty cmd session: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      {
+        "suite": "codex-windows-sandbox",
+        "test": "unified_exec::tests::legacy_non_tty_powershell_interrupt_terminates_process",
+        "failure": "thread 'unified_exec::tests::legacy_non_tty_powershell_interrupt_terminates_process' (5252) panicked at windows-sandbox-rs\\src\\unified_exec\\tests.rs:423:10:\nspawn legacy non-tty powershell session: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      {
+        "suite": "codex-windows-sandbox",
+        "test": "unified_exec::tests::legacy_tty_job_terminates_and_preserves_descendants",
+        "failure": "thread 'unified_exec::tests::legacy_tty_job_terminates_and_preserves_descendants' (8308) panicked at windows-sandbox-rs\\src\\unified_exec\\tests.rs:934:6:\nspawn legacy sandbox ConPTY lifecycle test: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      {
+        "suite": "codex-windows-sandbox",
+        "test": "unified_exec::tests::legacy_tty_powershell_emits_output_and_accepts_input",
+        "failure": "thread 'unified_exec::tests::legacy_tty_powershell_emits_output_and_accepts_input' (8228) panicked at windows-sandbox-rs\\src\\unified_exec\\tests.rs:1018:10:\nspawn legacy tty powershell session: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      {
+        "suite": "codex-windows-sandbox",
+        "test": "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+        "failure": "thread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (8364) panicked at windows-sandbox-rs\\src\\unified_exec\\tests.rs:769:10:\nspawn legacy delete session: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      }
+    ],
+    "nextest_skipped_count": 2
+  },
+  "findings": {
+    "read_only_exception": "The former selector allowed full-read/no-write/no-override requests onto a direct token. That constructor includes ambient Logon and Everyone among restricting SID alternatives. It cannot prove no writes where those identities have matching allow ACEs; a bounded Everyone-only audit also cannot establish a universal no-write/delete boundary. This is source-supported; no native read-only result has been claimed.",
+    "native_capability_delete_failure": "The exact native capability-only workspace token test denied two writes but permitted deletion of both outside targets. Removing identity SID alternatives alone has not established DELETE isolation under WRITE_RESTRICTED.",
+    "native_acl_idempotence_failure": "The repaired ACL blocks writes, but repeated repair returns (true,true,true), expected (false,true,false). Original logs contain no actual ACE layout. Mapped/split inheritance is a candidate requiring the newly added native trace.",
+    "broker_scope": "Public requests now require the existing broker. The broker still uses restricted tokens containing ambient identities and is not yet qualified by real broad-identity read-only/workspace boundary tests."
+  },
+  "changes": {
+    "broker_admission": "Remove the RestrictedToken selection result and both public fallback branches; preserve explicit managed networking and proxy-SID admission errors; pass the complete capture/session request to the broker.",
+    "raw_paths": "Raw token capture/session and their dedicated preparation helpers are compiled only for negative tests. Token primitives used by the broker remain unchanged.",
+    "tests": "Keep all nine assertion macros across the two raw token failures and original outside/.git session boundary byte-identical to exact35c9. Add read-only no-override fail-closed coverage and a real broad-identity public capture/session boundary test.",
+    "helper_bundle": "Eight existing process cases run in independent copies of the test executable and actual setup/runner binaries. The parent verifies exact child admission, successful exit and one passed/zero failed/zero ignored test before dropping TempDir. No parent environment mutation or production helper search fallback.",
+    "acl_diagnostics": "Read-only native GetSecurityInfo/GetAce traces record stage, descriptor control, ACE type/flags/size, raw and mapped masks and matching SID. No ACL mask/flags or repair logic changed.",
+    "lint": "Replace new fixture expect/expect_err calls with contextual panic or explicit Err matching."
+  },
+  "validation": {
+    "scoped_git_diff_check": "passed; GIT_NO_LAZY_FETCH=1, explicit existing owned paths",
+    "source_assertions": "BOUNDARY_ASSERTION_REVIEW.json; 4+4+1 exact assertion macros unchanged",
+    "rustfmt": "pending canonical remote formatter",
+    "rust_compile": "not run; no local toolchain installed for this stage",
+    "native_windows": "pending on this new source",
+    "new_ignores_or_skips": false,
+    "dependencies_or_lock_changes": false
+  },
+  "open_blockers": [
+    "Native ACL representation and idempotence need actual new trace.",
+    "Raw capability DELETE isolation assertion remains failing and unchanged.",
+    "Real read-only and workspace broker DELETE/write boundaries remain unqualified.",
+    "Helper bundle needs native execution and canonical formatting."
+  ],
+  "sources": [
+    {
+      "url": "https://learn.microsoft.com/windows/win32/api/securitybaseapi/nf-securitybaseapi-createrestrictedtoken",
+      "github_blob_sha": "11a876b048d20f5925c72682cb48bd2138d97361",
+      "claim": "WRITE_RESTRICTED consults restricting SIDs only for write access; ordinary and restricting access checks must both allow access."
+    },
+    {
+      "url": "https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-deletefilew",
+      "github_blob_sha": "52c9d4c2b3d07db7619c07ba8749e151e325c944",
+      "claim": "File deletion or rename can be authorized by target DELETE or parent delete-child permission."
+    },
+    {
+      "url": "https://learn.microsoft.com/windows/win32/secauthz/ace-inheritance-rules",
+      "github_blob_sha": "456d0610c977a5cd917c4456b7c63aa40ae004b7",
+      "claim": "Inherited effective generic ACEs are mapped; a container can receive separate effective and inherit-only ACEs. This does not establish the actual current fixture layout."
+    }
+  ]
+}

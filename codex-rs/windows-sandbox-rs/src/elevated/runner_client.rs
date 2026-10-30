@@ -363,11 +363,16 @@ pub(crate) fn spawn_runner_transport(
             &mut pi,
         )
     };
+    // Preserve the logon error before another Win32 call can replace it.
+    let spawn_error = if spawn_res == 0 {
+        Some(unsafe { GetLastError() })
+    } else {
+        None
+    };
     unsafe {
         SetErrorMode(previous_error_mode);
     }
-    if spawn_res == 0 {
-        let err = unsafe { GetLastError() };
+    if let Some(err) = spawn_error {
         unsafe {
             CloseHandle(h_pipe_in);
             CloseHandle(h_pipe_out);
