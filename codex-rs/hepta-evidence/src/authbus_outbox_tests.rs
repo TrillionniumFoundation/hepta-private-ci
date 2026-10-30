@@ -419,7 +419,7 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
     // are never claimed or authenticated; signed admission is tested above.
     sqlx::query("WITH RECURSIVE n(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM n WHERE x < 4095)
         INSERT INTO authbus_outbox SELECT randomblob(32), 'issuer:capacity:' || x, key_epoch, 'fixture:' || x,
-        subject_id, scope_digest, payload_digest, sequence, expires_at_ms, signature, payload,
+        subject_id, scope_digest, payload_digest, sequence, expires_at_ms, auth_version, signature, payload,
         state, fence, attempts, worker_id, lease_until_ms, available_at_ms, created_at_ms,
         updated_at_ms, terminal_at_ms, acknowledgement FROM authbus_outbox, n WHERE delivery_id = ?")
         .bind(id.as_array().as_slice()).execute(&store.pool).await.unwrap();
@@ -587,7 +587,7 @@ async fn one_issuer_cannot_exhaust_the_global_active_outbox_across_epochs() {
          SELECT randomblob(32), issuer_id,
                 randomblob(8),
                 'issuer-cap:' || x, subject_id, scope_digest, payload_digest,
-                sequence, expires_at_ms, signature, payload, state, fence, attempts,
+                sequence, expires_at_ms, auth_version, signature, payload, state, fence, attempts,
                 worker_id, lease_until_ms, available_at_ms, created_at_ms,
                 updated_at_ms, terminal_at_ms, acknowledgement
          FROM authbus_outbox, n

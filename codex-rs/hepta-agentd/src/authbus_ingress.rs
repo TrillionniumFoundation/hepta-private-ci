@@ -5,6 +5,7 @@ use std::sync::Arc;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_authbus::AuthBusAlgorithm;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_contracts::AgentId;
@@ -35,6 +36,8 @@ pub(crate) struct TextIngress {
     pub checkpoint: ReplayCheckpointFile,
     pub subject: StableId,
     pub scope: Digest32,
+    algorithm: AuthBusAlgorithm,
+    trust_update: tokio::sync::Mutex<()>,
 }
 
 impl TextIngress {
@@ -43,9 +46,13 @@ impl TextIngress {
         trust_file: PathBuf,
         checkpoint_file: PathBuf,
     ) -> Result<Self, AgentdError> {
-        TextTrust::load(&trust_file, identity)?;
+        let algorithm = TextTrust::load(&trust_file, identity)?.algorithm()?;
         let home = AbsolutePathBuf::from_absolute_path(&identity.home_root)?;
         let evidence = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home))
+            .await
+            .map_err(|error| invalid(&error.to_string()))?;
+        evidence
+            .bind_authbus_profile(algorithm)
             .await
             .map_err(|error| invalid(&error.to_string()))?;
         let (checkpoint, external) = ReplayCheckpointFile::open(checkpoint_file, identity)?;
@@ -72,17 +79,38 @@ impl TextIngress {
                 }
             }
         }
-        Ok(Self {
+        let host = Self {
             evidence,
             trust_file,
             checkpoint,
             subject: subject(&identity.agent_id)?,
-            scope: scope(&identity.agent_id),
-        })
+            scope: scope(&identity.agent_id, algorithm),
+            algorithm,
+            trust_update: tokio::sync::Mutex::new(()),
+        };
+        host.refresh_trust(identity).await?;
+        Ok(host)
     }
 
-    pub fn trust(&self, state: &AgentdState) -> Result<TextTrust, AgentdError> {
-        TextTrust::load(&self.trust_file, state.identity())
+    pub async fn trust(&self, state: &AgentdState) -> Result<TextTrust, AgentdError> {
+        self.refresh_trust(state.identity()).await
+    }
+
+    async fn refresh_trust(&self, identity: &AgentdIdentity) -> Result<TextTrust, AgentdError> {
+        let _guard = self.trust_update.lock().await;
+        let trust = TextTrust::load(&self.trust_file, identity)?;
+        if trust.algorithm()? != self.algorithm {
+            return Err(invalid(
+                "owner cryptographic profile changed after activation",
+            ));
+        }
+        self.sync_replay_checkpoint().await?;
+        self.evidence
+            .pin_authbus_issuer(&trust.issuer()?)
+            .await
+            .map_err(|error| invalid(&error.to_string()))?;
+        self.sync_replay_checkpoint().await?;
+        Ok(trust)
     }
 
     pub async fn sync_replay_checkpoint(&self) -> Result<(), AgentdError> {
@@ -112,6 +140,8 @@ pub fn authbus_text_claims(
     request: &AuthBusTextIngress,
 ) -> Result<SignedMessageClaims, AgentdError> {
     let payload = payload(&request.body)?;
+    let algorithm = AuthBusAlgorithm::from_schema_version(request.auth_version)
+        .map_err(|_| invalid("unsupported text authentication version"))?;
     Ok(SignedMessageClaims {
         issuer_id: StableId::new(&request.issuer_id)
             .map_err(|error| invalid(&error.to_string()))?,
@@ -120,7 +150,7 @@ pub fn authbus_text_claims(
         message_id: StableId::new(&request.message_id)
             .map_err(|error| invalid(&error.to_string()))?,
         subject_id: subject(owner)?,
-        scope_digest: scope(owner),
+        scope_digest: scope(owner, algorithm),
         payload_digest: Digest32::of_bytes(&payload),
         sequence: request.sequence,
         expires_at_ms: request.expires_at_ms,
@@ -133,7 +163,7 @@ pub(crate) async fn submit(
 ) -> Result<AuthBusTextStatus, AgentdError> {
     require_ready(state)?;
     let host = attached(state)?;
-    let trust = host.trust(state)?;
+    let trust = host.trust(state).await?;
     if !trust.permits(&request.body.thread_id)
         || request.body.spawn_generation != state.identity().spawn_generation
     {
@@ -143,9 +173,19 @@ pub(crate) async fn submit(
     if request.expires_at_ms <= now || request.expires_at_ms.saturating_sub(now) > 300_000 {
         return Err(invalid("message expiry must be within five minutes"));
     }
+    let algorithm = trust.algorithm()?;
+    if request.auth_version != algorithm.schema_version() {
+        return Err(invalid(
+            "wire authentication version differs from owner profile",
+        ));
+    }
+    let signature = match algorithm {
+        AuthBusAlgorithm::Ed25519V1 => hex_bytes::<64>(&request.signature_hex)?.into(),
+        AuthBusAlgorithm::MlDsa65V2 => hex_bytes::<3309>(&request.signature_hex)?.into(),
+    };
     let message = SignedMessage {
         claims: authbus_text_claims(&state.identity().agent_id, &request)?,
-        signature: hex_bytes::<64>(&request.signature_hex)?.into(),
+        signature,
     };
     let body = payload(&request.body)?;
     let result = host
@@ -160,7 +200,7 @@ pub(crate) async fn submit(
     // If authority changed during admission, preserve the committed message but
     // refuse to report readiness. The worker independently refreshes all gates.
     require_ready(state)?;
-    let current = host.trust(state)?;
+    let current = host.trust(state).await?;
     message
         .authenticate(
             &current.issuer()?,
@@ -247,10 +287,31 @@ fn subject(owner: &AgentId) -> Result<StableId, AgentdError> {
     StableId::new(owner.as_str()).map_err(|error| invalid(&error.to_string()))
 }
 
-fn scope(owner: &AgentId) -> Digest32 {
-    let mut bytes = b"hepta:agentd:signed-text:v1\0".to_vec();
+fn scope(owner: &AgentId, algorithm: AuthBusAlgorithm) -> Digest32 {
+    let mut bytes = match algorithm {
+        AuthBusAlgorithm::Ed25519V1 => b"hepta:agentd:signed-text:v1\0".as_slice(),
+        AuthBusAlgorithm::MlDsa65V2 => b"hepta:agentd:signed-text:pq:v2\0".as_slice(),
+    }
+    .to_vec();
     bytes.extend_from_slice(owner.as_str().as_bytes());
     Digest32::of_bytes(&bytes)
+}
+
+/// Independent PQ producer for the same versioned text wire consumed by Agentd.
+pub fn sign_authbus_text_pq(
+    owner: &AgentId,
+    request: &mut AuthBusTextIngress,
+    key: &codex_hepta_contracts::pq_auth::PqNativeSigningKey,
+) -> Result<(), AgentdError> {
+    if request.auth_version != 2 {
+        return Err(invalid("PQ text signing requires wire version 2"));
+    }
+    let claims = authbus_text_claims(owner, request)?;
+    let signature = key
+        .sign_exact_message(&claims.signing_bytes_for(AuthBusAlgorithm::MlDsa65V2))
+        .map_err(|_| invalid("PQ text signing failed"))?;
+    request.signature_hex = signature.iter().map(|byte| format!("{byte:02x}")).collect();
+    Ok(())
 }
 
 pub(crate) fn now_ms() -> Result<u64, AgentdError> {

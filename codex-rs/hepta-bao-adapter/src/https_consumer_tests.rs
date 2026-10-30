@@ -9,6 +9,7 @@ use std::sync::Arc;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_authbus::AuthBusAlgorithm;
 use codex_hepta_authbus::AuthBusAuthorityHost;
 use codex_hepta_authbus::AuthBusAuthorityStore;
 use codex_hepta_authbus::IssuerPurpose;
@@ -37,6 +38,10 @@ use tokio_rustls::TlsAcceptor;
 type TestError = Box<dyn std::error::Error + Send + Sync>;
 
 const SECRET: &str = "fixture-only-consumer-secret";
+
+#[path = "https_consumer_pq_tests.rs"]
+mod pq;
+use pq::EvidenceSigner;
 
 async fn server<F>(
     status: u16,
@@ -480,17 +485,17 @@ async fn root_namespace_omits_namespace_header() {
 }
 
 struct AuthBusEvidence {
-    time_key: SigningKey,
-    settlement_key: SigningKey,
+    time_key: EvidenceSigner,
+    settlement_key: EvidenceSigner,
     revision: u64,
     wall_time_ms: u64,
 }
 
 impl AuthBusEvidence {
-    fn new(wall_time_ms: u64) -> Self {
+    fn new(wall_time_ms: u64, algorithm: AuthBusAlgorithm) -> Self {
         Self {
-            time_key: SigningKey::from_bytes(&[81; 32]),
-            settlement_key: SigningKey::from_bytes(&[82; 32]),
+            time_key: EvidenceSigner::new(81, algorithm),
+            settlement_key: EvidenceSigner::new(82, algorithm),
             revision: 0,
             wall_time_ms,
         }
@@ -500,7 +505,7 @@ impl AuthBusEvidence {
         IssuerSpec {
             issuer_id: StableId::new("issuer:bao-time").unwrap(),
             key_epoch: Generation::new(1).unwrap(),
-            verifying_key: self.time_key.verifying_key().into(),
+            verifying_key: self.time_key.verifying_key(),
         }
     }
 
@@ -508,16 +513,25 @@ impl AuthBusEvidence {
         IssuerSpec {
             issuer_id: StableId::new("issuer:bao-settlement").unwrap(),
             key_epoch: Generation::new(1).unwrap(),
-            verifying_key: self.settlement_key.verifying_key().into(),
+            verifying_key: self.settlement_key.verifying_key(),
         }
     }
 }
 
 impl BaoAuthBusEvidenceProvider for AuthBusEvidence {
-    fn trusted_time(&mut self) -> Result<SignedTrustedTimeAttestation, BaoAuthBusError> {
+    fn trusted_time(
+        &mut self,
+        challenge: Option<TrustedTimeChallenge>,
+    ) -> Result<SignedTrustedTimeAttestation, BaoAuthBusError> {
         self.revision += 1;
-        self.wall_time_ms += 1;
+        self.wall_time_ms = (self.wall_time_ms + 1).max(
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_millis() as u64,
+        );
         let claims = TrustedTimeAttestationClaims {
+            challenge,
             issuer_id: StableId::new("issuer:bao-time")
                 .map_err(|_| BaoAuthBusError::Evidence("time issuer id"))?,
             key_epoch: Generation::new(1)
@@ -531,9 +545,7 @@ impl BaoAuthBusEvidenceProvider for AuthBusEvidence {
         Ok(SignedTrustedTimeAttestation {
             signature: self
                 .time_key
-                .sign(&claims.signing_bytes())
-                .to_bytes()
-                .into(),
+                .sign(&claims.signing_bytes_for(self.time_key.algorithm())),
             claims,
         })
     }
@@ -562,9 +574,7 @@ impl BaoAuthBusEvidenceProvider for AuthBusEvidence {
         Ok(SignedSettlementEvidence {
             signature: self
                 .settlement_key
-                .sign(&claims.signing_bytes())
-                .to_bytes()
-                .into(),
+                .sign(&claims.signing_bytes_for(self.settlement_key.algorithm())),
             claims,
         })
     }
@@ -574,6 +584,7 @@ async fn authbus_host(
     client: &BaoClient,
     request: &BaoReadRequest,
     now: u64,
+    algorithm: AuthBusAlgorithm,
 ) -> Result<
     (
         tempfile::TempDir,
@@ -599,7 +610,10 @@ async fn authbus_host(
         .path()
         .join("authbus-authority-checkpoint.json");
 
-    let raw = AuthBusAuthorityStore::open(&database).await?;
+    let raw = match algorithm {
+        AuthBusAlgorithm::Ed25519V1 => AuthBusAuthorityStore::open(&database).await?,
+        AuthBusAlgorithm::MlDsa65V2 => AuthBusAuthorityStore::open_pq(&database).await?,
+    };
     let frontier = raw.authority_frontier_digest().await?;
     drop(raw);
     let document = serde_json::json!({
@@ -617,8 +631,15 @@ async fn authbus_host(
     file.flush()?;
     file.sync_all()?;
 
-    let host = AuthBusAuthorityHost::open(&database, checkpoint, "bao-product-owner").await?;
-    let mut evidence = AuthBusEvidence::new(now);
+    let host = match algorithm {
+        AuthBusAlgorithm::Ed25519V1 => {
+            AuthBusAuthorityHost::open(&database, checkpoint, "bao-product-owner").await?
+        }
+        AuthBusAlgorithm::MlDsa65V2 => {
+            AuthBusAuthorityHost::open_pq(&database, checkpoint, "bao-product-owner").await?
+        }
+    };
+    let mut evidence = AuthBusEvidence::new(now, algorithm);
     host.enroll_issuer(IssuerPurpose::TrustedTime, evidence.time_spec())
         .await?;
     host.enroll_issuer(IssuerPurpose::Settlement, evidence.settlement_spec())
@@ -626,9 +647,7 @@ async fn authbus_host(
 
     let binding = client.binding(request)?;
     let scope = Digest32::from_array(binding.scope_sha256);
-    let time = host
-        .observe_trusted_time_attestation(&evidence.trusted_time()?)
-        .await?;
+    let time = observe_provider_time(&host, &mut evidence).await?;
     let policy = host
         .create_policy(
             PolicySpec {
@@ -643,9 +662,7 @@ async fn authbus_host(
             time,
         )
         .await?;
-    let time = host
-        .observe_trusted_time_attestation(&evidence.trusted_time()?)
-        .await?;
+    let time = observe_provider_time(&host, &mut evidence).await?;
     let quota = host
         .create_quota(
             QuotaSpec {
@@ -686,7 +703,9 @@ async fn authbus_product_path_reserves_fences_final_use_and_settles_observed_cos
         .unwrap()
         .as_millis() as u64;
     let (_db, _checkpoint, authbus, mut evidence, admission) =
-        authbus_host(&client, &request, now).await.unwrap();
+        authbus_host(&client, &request, now, AuthBusAlgorithm::Ed25519V1)
+            .await
+            .unwrap();
     let (authority, grant, _authority_dir) = grant(&client, &request).unwrap();
 
     let receipt = client
@@ -730,7 +749,9 @@ async fn authbus_timeout_keeps_quota_held_as_indeterminate() {
         .unwrap()
         .as_millis() as u64;
     let (_db, _checkpoint, authbus, mut evidence, admission) =
-        authbus_host(&client, &request, now).await.unwrap();
+        authbus_host(&client, &request, now, AuthBusAlgorithm::Ed25519V1)
+            .await
+            .unwrap();
     let (authority, grant, _authority_dir) = grant(&client, &request).unwrap();
 
     let result = client

@@ -12,7 +12,6 @@ use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_learning_ledger::DurableRunStartJournal;
 use codex_hepta_learning_ledger::RunStartRecordV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -613,8 +612,8 @@ impl AgentdState {
                 // Owner preparation is asynchronous. Revalidate the durable
                 // signed Objective and Fleet fence again after it completes,
                 // twice as the compatibility path does at its final boundary.
-                let first_now = self.require_current_run_start(record)?;
-                let second_now = self.require_current_run_start(record)?;
+                let first_now = self.require_current_run_start(record).await?;
+                let second_now = self.require_current_run_start(record).await?;
                 let now_ms = first_now.max(second_now);
                 let snapshot = prepared.run_snapshot();
                 let attachment = prepared.context_attachment();
@@ -671,31 +670,15 @@ impl AgentdState {
     /// Revalidate a durable run-start record against the current owner trust,
     /// current Fleet generation and exact Agentd fence, then project it into
     /// the sole daemon-owned run coordinator.
-    pub(crate) fn start_current_run_start(
-        &self,
-        journal: &DurableRunStartJournal,
-        run_id: &StableId,
-    ) -> Result<RunReceipt, AgentdError> {
-        let record = journal
-            .get(run_id)
-            .map_err(|error| {
-                AgentdError::Protocol(format!("durable run-start journal rejected read: {error}"))
-            })?
-            .ok_or_else(|| {
-                AgentdError::Protocol(format!("durable run-start {run_id} is not published"))
-            })?;
-        self.start_current_run_start_record(record)
-    }
-
-    pub(crate) fn start_current_run_start_record(
+    pub(crate) async fn start_current_run_start_record(
         &self,
         record: &RunStartRecordV1,
     ) -> Result<RunReceipt, AgentdError> {
-        let now_ms = self.require_current_run_start(record)?;
+        let now_ms = self.require_current_run_start(record).await?;
         // Re-read both mutable authority domains immediately before mutation.
         // This is intentionally redundant: a trust/fleet change during the
         // first validation must not survive into runtime admission.
-        let final_now_ms = self.require_current_run_start(record)?;
+        let final_now_ms = self.require_current_run_start(record).await?;
         let now_ms = now_ms.max(final_now_ms);
         self.runs
             .lock()
@@ -704,7 +687,15 @@ impl AgentdState {
             .map_err(run_error)
     }
 
-    fn require_current_run_start(&self, record: &RunStartRecordV1) -> Result<u64, AgentdError> {
+    async fn require_current_run_start(
+        &self,
+        record: &RunStartRecordV1,
+    ) -> Result<u64, AgentdError> {
+        let host = crate::authbus_ingress::attached(self)?;
+        let trust = host.trust(self).await?;
+        trust.require_run_start_v1()?;
+        // The durable trust refresh may wait on SQLite/checkpoint IO. Resolve
+        // generation, fence and deadline only after that wait completes.
         crate::authbus_ingress::require_ready(self)?;
         let now_ms = crate::authbus_ingress::now_ms()?;
         let current_generation = self
@@ -721,8 +712,6 @@ impl AgentdState {
             ));
         }
 
-        let host = crate::authbus_ingress::attached(self)?;
-        let trust = host.trust(self)?;
         let authentication = &record.authentication;
         let message = SignedMessage {
             claims: SignedMessageClaims {

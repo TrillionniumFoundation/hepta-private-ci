@@ -66,7 +66,7 @@ pub(crate) async fn run(
 pub(crate) async fn tick(state: &AgentdState) -> Result<(), AgentdError> {
     require_ready(state)?;
     let host = attached(state)?;
-    let trust = host.trust(state)?;
+    let trust = host.trust(state).await?;
     let issuer = trust.issuer()?;
     if issuer.revoked {
         host.evidence
@@ -93,7 +93,7 @@ pub(crate) async fn tick(state: &AgentdState) -> Result<(), AgentdError> {
     };
     let client = connect(state).await?;
     require_ready(state)?;
-    let issuer = host.trust(state)?.issuer()?;
+    let issuer = host.trust(state).await?.issuer()?;
     let worker = StableId::new(format!("agentd:{}", state.identity().spawn_generation))
         .map_err(|error| invalid(&error.to_string()))?;
     let delivery = host
@@ -150,7 +150,7 @@ async fn deliver<Q: TextQueueTransport>(
     client: &Q,
     delivery: AuthBusDelivery,
 ) -> Result<(), AgentdError> {
-    let trust = host.trust(state)?;
+    let trust = host.trust(state).await?;
     let issuer = trust.issuer()?;
     let body = serde_json::from_slice::<AuthBusTextBody>(&delivery.payload);
     let Ok(body) = body else {
@@ -180,20 +180,12 @@ async fn deliver<Q: TextQueueTransport>(
             now_ms()?,
         )
         .map_err(|error| invalid(&error.to_string()))?;
-    // Renew immediately before the transport boundary to reject a stolen/expired
-    // lease. A process crash after this point always recovers with lookup only.
-    let lease = host
-        .evidence
-        .renew_authbus_delivery(&issuer, &delivery.lease, /*lease_ms*/ 30_000)
-        .await
-        .map_err(|error| invalid(&error.to_string()))?;
-    require_ready(state)?;
-    let fresh = host.trust(state)?;
+    let fresh = host.trust(state).await?;
     let fresh_issuer = fresh.issuer()?;
     if !fresh.permits(&body.thread_id) {
         return host
             .evidence
-            .quarantine_authbus_delivery(&fresh_issuer, &lease)
+            .quarantine_authbus_delivery(&fresh_issuer, &delivery.lease)
             .await
             .map_err(|error| invalid(&error.to_string()));
     }
@@ -211,14 +203,29 @@ async fn deliver<Q: TextQueueTransport>(
     } else {
         ThreadQueueReconcileMode::ReconcileOnly
     };
-    let client_id = format!("hepta.authbus:{}", lease.delivery_id());
+    let client_id = format!("hepta.authbus:{}", delivery.lease.delivery_id());
     let input = vec![UserInput::Text {
         text: body.text,
         text_elements: Vec::new(),
     }];
     let expected = input_digest(&input)?;
+    // Trust refresh can wait for SQLite and checkpoint fsync. Renew only after
+    // every such await, rechecking the current persisted issuer and lease fence
+    // in one transaction immediately before the transport boundary.
+    let lease = host
+        .evidence
+        .renew_authbus_delivery(&fresh_issuer, &delivery.lease, /*lease_ms*/ 30_000)
+        .await
+        .map_err(|error| invalid(&error.to_string()))?;
+    require_ready(state)?;
+    let now = now_ms()?;
+    let remaining_ms = u64::try_from(lease.expires_at_ms())
+        .ok()
+        .and_then(|deadline| deadline.checked_sub(now))
+        .filter(|remaining| *remaining > 0)
+        .ok_or_else(|| invalid("AuthBus delivery lease expired before transport"))?;
     let response = timeout(
-        Duration::from_secs(5),
+        Duration::from_millis(remaining_ms.min(5_000)),
         client.reconcile(ThreadQueueReconcileParams {
             thread_id: body.thread_id.clone(),
             input,
@@ -229,7 +236,7 @@ async fn deliver<Q: TextQueueTransport>(
     )
     .await;
     require_ready(state)?;
-    let current = host.trust(state)?;
+    let current = host.trust(state).await?;
     let issuer = current.issuer()?;
     if !current.permits(&body.thread_id) {
         return host

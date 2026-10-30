@@ -213,9 +213,17 @@ impl AuthBusAuthorityStore {
             attestation.claims.key_epoch,
         )
         .await?;
-        let sample = attestation.verify(&record)?;
+        self.require_key(&record.verifying_key)?;
+        let mut sample = attestation.verify(&record)?;
+        match (self.algorithm(), &attestation.claims.challenge) {
+            (AuthBusAlgorithm::Ed25519V1, None) => {}
+            (AuthBusAlgorithm::MlDsa65V2, Some(challenge)) => {
+                crate::time_freshness::consume_challenge(&mut tx, challenge, &mut sample).await?;
+            }
+            _ => return Err(AuthBusAuthorityError::InvalidTrustedTimeFreshness),
+        }
         advance_time(&mut tx, &sample).await?;
-        tx.commit().await.map_err(storage)?;
+        crate::authority_store::commit_with_time(tx, &sample).await?;
         Ok(sample)
     }
 }

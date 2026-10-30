@@ -467,8 +467,17 @@ impl QualificationEvidenceStore<'_> {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
+        crate::authbus_issuer_floor::require_current_issuer(&mut transaction, issuer)
+            .await
+            .map_err(|error| EvidenceError::InvalidRecord(error.to_string()))?;
         let now = u64::try_from(now_millis()?)
             .map_err(|_| EvidenceError::Unavailable("clock predates Unix epoch".into()))?;
+        crate::authbus_issuer_floor::require_bounded_deadline(
+            issuer,
+            message.claims.expires_at_ms,
+            now,
+        )
+        .map_err(|error| EvidenceError::InvalidRecord(error.to_string()))?;
         let authenticated = message
             .authenticate(
                 issuer,

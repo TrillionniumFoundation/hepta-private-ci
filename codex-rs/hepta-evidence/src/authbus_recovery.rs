@@ -1,4 +1,5 @@
 use codex_hepta_authbus::IssuerPurpose;
+use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_authbus::IssuerRetirement;
 use codex_hepta_types::Digest32;
 use sqlx::Row;
@@ -10,6 +11,10 @@ use crate::EvidenceError;
 use crate::HeptaEvidenceStore;
 use crate::schema_validation::classify_sqlx_error;
 use crate::store::now_millis;
+
+#[path = "authbus_frontier_guard.rs"]
+mod guard;
+pub(crate) use guard::verify_replay_frontier;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct ReplayCheckpoint {
@@ -29,6 +34,8 @@ pub enum AuthBusRecoveryError {
     RetirementConflict,
     #[error("AuthBus replay epoch still has active deliveries")]
     ActiveDeliveries,
+    #[error(transparent)]
+    Admission(#[from] crate::AuthBusAdmissionError),
     #[error(transparent)]
     Storage(#[from] EvidenceError),
 }
@@ -133,6 +140,9 @@ impl HeptaEvidenceStore {
             .ok_or(AuthBusRecoveryError::RollbackDetected)?;
         let pending = load_pending_checkpoint(&mut tx).await?;
         if external == current {
+            if replay_frontier_digest_tx(&mut tx).await? != pending.unwrap_or(current).digest {
+                return Err(AuthBusRecoveryError::RollbackDetected);
+            }
             tx.commit().await.map_err(classify_sqlx_error)?;
             return Ok(pending);
         }
@@ -195,6 +205,8 @@ impl HeptaEvidenceStore {
     /// has produced an opaque retirement proof and the external checkpoint is
     /// current. The tombstone is retained permanently and itself participates
     /// in the next checkpoint root.
+    /// A PQ owner must pin this exact revoked key before retirement and before
+    /// advancing its issuer floor to a later epoch; unknown old keys fail closed.
     pub async fn retire_authbus_replay_epoch(
         &self,
         retirement: &IssuerRetirement,
@@ -212,6 +224,16 @@ impl HeptaEvidenceStore {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
+        crate::authbus_issuer_floor::require_current_issuer(
+            &mut tx,
+            &IssuerRegistration {
+                issuer_id: retirement.issuer_id().clone(),
+                key_epoch: retirement.key_epoch(),
+                verifying_key: retirement.verifying_key().clone(),
+                revoked: true,
+            },
+        )
+        .await?;
         if replay_checkpoint_pending(&mut tx).await? {
             return Err(AuthBusRecoveryError::CheckpointPending);
         }
@@ -388,7 +410,7 @@ async fn load_checkpoint_storage(
 
 async fn load_pending_checkpoint(
     tx: &mut Transaction<'_, Sqlite>,
-) -> Result<Option<ReplayCheckpoint>, AuthBusRecoveryError> {
+) -> Result<Option<ReplayCheckpoint>, EvidenceError> {
     sqlx::query(
         "SELECT generation, checkpoint_digest
          FROM authbus_restore_checkpoint_pending WHERE singleton = 1",
@@ -398,7 +420,6 @@ async fn load_pending_checkpoint(
     .map_err(classify_sqlx_error)?
     .map(|row| checkpoint_from_row(&row))
     .transpose()
-    .map_err(Into::into)
 }
 
 fn checkpoint_from_row(row: &SqliteRow) -> Result<ReplayCheckpoint, EvidenceError> {
@@ -437,6 +458,14 @@ async fn replay_frontier_digest_tx(
     .map_err(classify_sqlx_error)?;
 
     let mut bytes = b"hepta.authbus.replay-frontier.v1\0".to_vec();
+    match crate::authbus_crypto_profile::profile(tx).await? {
+        None | Some(1) => {}
+        Some(2) => {
+            bytes = b"hepta.authbus.replay-frontier.pq.v2\0".to_vec();
+            crate::authbus_issuer_floor::append_frontier(tx, &mut bytes).await?;
+        }
+        Some(_) => return Err(EvidenceError::Corrupt("invalid AuthBus profile".into())),
+    }
     bytes.extend_from_slice(&(replay_rows.len() as u64).to_be_bytes());
     for row in replay_rows {
         push_text(
@@ -492,3 +521,7 @@ fn digest32(value: Vec<u8>) -> Result<Digest32, AuthBusRecoveryError> {
 #[cfg(test)]
 #[path = "authbus_recovery_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "authbus_retirement_pq_tests.rs"]
+mod pq_retirement_tests;

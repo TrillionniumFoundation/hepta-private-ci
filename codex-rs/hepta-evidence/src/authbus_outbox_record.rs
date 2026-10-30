@@ -130,7 +130,16 @@ impl OutboxRecord {
                 sequence: u64::from_be_bytes(blob(&row, "sequence")?),
                 expires_at_ms: u64::from_be_bytes(blob(&row, "expires_at_ms")?),
             },
-            signature: blob::<64>(&row, "signature")?.into(),
+            signature: {
+                let version: u32 = row.try_get("auth_version").map_err(classify_sqlx_error)?;
+                let algorithm = codex_hepta_authbus::AuthBusAlgorithm::from_schema_version(version)
+                    .map_err(|_| {
+                        EvidenceError::Corrupt("invalid AuthBus signature algorithm".into())
+                    })?;
+                let bytes: Vec<u8> = row.try_get("signature").map_err(classify_sqlx_error)?;
+                codex_hepta_authbus::AuthBusSignature::from_bytes(algorithm, &bytes)
+                    .map_err(|_| EvidenceError::Corrupt("invalid AuthBus signature width".into()))?
+            },
         };
         let state: String = row.try_get("state").map_err(classify_sqlx_error)?;
         let state = match state.as_str() {

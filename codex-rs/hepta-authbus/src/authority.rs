@@ -13,6 +13,7 @@ pub struct TrustedTimeSample {
     pub(crate) wall_time_ms: u64,
     pub(crate) source_revision: u64,
     pub(crate) source_digest: Digest32,
+    pub(crate) valid_until_ms: Option<u64>,
 }
 
 impl TrustedTimeSample {
@@ -30,6 +31,7 @@ impl TrustedTimeSample {
             wall_time_ms,
             source_revision,
             source_digest,
+            valid_until_ms: None,
         })
     }
 
@@ -189,6 +191,8 @@ pub enum AuthBusAuthorityError {
     TrustedTimeIssuerMismatch,
     #[error("trusted-time attestation signature is invalid")]
     InvalidTrustedTimeSignature,
+    #[error("trusted-time challenge or sample is expired, replayed or outside clock bounds")]
+    InvalidTrustedTimeFreshness,
     #[error("invalid AuthBus authority state transition")]
     InvalidTransition,
     #[error("trusted AuthBus time moved backwards")]

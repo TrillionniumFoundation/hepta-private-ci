@@ -110,6 +110,7 @@ async fn trusted_time_requires_an_active_registered_signer() {
         .await
         .expect("enroll time issuer");
     let claims = TrustedTimeAttestationClaims {
+        challenge: None,
         issuer_id: id("issuer:time"),
         key_epoch: Generation::new(1).expect("generation"),
         wall_time_ms: 2_000,

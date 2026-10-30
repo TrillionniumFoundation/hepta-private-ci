@@ -265,4 +265,20 @@ fn recovered_authentication_rejects_revoked_and_stale_owner_trust() {
         !authentication_is_current(&durable, &stale, &identity, now_ms)
             .expect("stale authentication")
     );
+
+    let spki =
+        codex_hepta_contracts::pq_auth::PqNativeSigningKey::public_spki_from_seed(&[89; 32].into());
+    let pq_trust = serde_json::json!({
+        "schema_version": 2,
+        "agent_id": identity.agent_id.as_str(),
+        "issuer_id": "issuer.objective",
+        "key_epoch": 2,
+        "public_key_hex": spki.iter().map(|byte| format!("{byte:02x}")).collect::<String>(),
+        "revoked": false,
+        "thread_ids": ["thread.objective"]
+    });
+    std::fs::write(&trust_path, serde_json::to_vec(&pq_trust).unwrap()).unwrap();
+    let pq = TextTrust::load(&trust_path, &identity).expect("valid PQ trust");
+    let error = authentication_is_current(&durable, &pq, &identity, now_ms).unwrap_err();
+    assert!(error.to_string().contains("RunStart V1 does not support"));
 }

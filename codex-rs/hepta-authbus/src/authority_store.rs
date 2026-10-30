@@ -75,14 +75,14 @@ impl AuthBusAuthorityStore {
     pub async fn observe_time(&self, time: TrustedTimeSample) -> Result<(), AuthBusAuthorityError> {
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
-        tx.commit().await.map_err(storage)
+        crate::authority_store::commit_with_time(tx, &time).await
     }
 
     pub async fn last_trusted_time(
         &self,
     ) -> Result<Option<TrustedTimeSample>, AuthBusAuthorityError> {
         let row = sqlx::query(
-            "SELECT wall_time_ms, source_revision, source_digest
+            "SELECT wall_time_ms, source_revision, source_digest, valid_until_ms
              FROM authbus_trusted_time WHERE singleton = 1",
         )
         .fetch_optional(&self.pool)
@@ -151,7 +151,7 @@ impl AuthBusAuthorityStore {
             revoked: false,
         };
         record_policy_history(&mut tx, &policy).await?;
-        tx.commit().await.map_err(storage)?;
+        crate::authority_store::commit_with_time(tx, &time).await?;
         Ok(policy)
     }
 
@@ -193,7 +193,7 @@ impl AuthBusAuthorityStore {
         .await
         .map_err(storage)?;
         record_policy_history(&mut tx, &current).await?;
-        tx.commit().await.map_err(storage)?;
+        crate::authority_store::commit_with_time(tx, &time).await?;
         Ok(current)
     }
 
@@ -221,7 +221,7 @@ impl AuthBusAuthorityStore {
                 .map_err(storage)?;
             record_policy_history(&mut tx, &current).await?;
         }
-        tx.commit().await.map_err(storage)?;
+        crate::authority_store::commit_with_time(tx, &time).await?;
         Ok(current)
     }
 
@@ -317,7 +317,7 @@ impl AuthBusAuthorityStore {
             return Err(AuthBusAuthorityError::PolicyUnavailable);
         }
         let decision = PolicyDecision::new(&policy, &time);
-        tx.commit().await.map_err(storage)?;
+        crate::authority_store::commit_with_time(tx, &time).await?;
         Ok(decision)
     }
 }
@@ -332,13 +332,14 @@ pub(crate) async fn advance_time(
     tx: &mut Transaction<'_, Sqlite>,
     sample: &TrustedTimeSample,
 ) -> Result<(), AuthBusAuthorityError> {
+    crate::time_freshness::require_fresh_sample(tx, sample).await?;
     if sample.wall_time_ms == 0 || sample.source_revision == 0 || sample.source_digest.is_zero() {
         return Err(AuthBusAuthorityError::InvalidInput(
             "trusted time must bind non-zero time, revision and source digest",
         ));
     }
     let previous = sqlx::query(
-        "SELECT wall_time_ms, source_revision, source_digest
+        "SELECT wall_time_ms, source_revision, source_digest, valid_until_ms
          FROM authbus_trusted_time WHERE singleton = 1",
     )
     .fetch_optional(&mut **tx)
@@ -357,15 +358,17 @@ pub(crate) async fn advance_time(
     }
     sqlx::query(
         "INSERT INTO authbus_trusted_time
-         (singleton, wall_time_ms, source_revision, source_digest) VALUES (1, ?, ?, ?)
+         (singleton, wall_time_ms, source_revision, source_digest, valid_until_ms) VALUES (1, ?, ?, ?, ?)
          ON CONFLICT(singleton) DO UPDATE SET
          wall_time_ms = excluded.wall_time_ms,
          source_revision = excluded.source_revision,
-         source_digest = excluded.source_digest",
+         source_digest = excluded.source_digest,
+         valid_until_ms = excluded.valid_until_ms",
     )
     .bind(u64_bytes(sample.wall_time_ms).as_slice())
     .bind(u64_bytes(sample.source_revision).as_slice())
     .bind(sample.source_digest.as_array().as_slice())
+    .bind(sample.valid_until_ms.map(u64_bytes).as_ref().map(<[u8; 8]>::as_slice))
     .execute(&mut **tx)
     .await
     .map_err(storage)?;
@@ -445,11 +448,29 @@ fn policy_from_row(row: &sqlx::sqlite::SqliteRow) -> Result<AuthPolicy, AuthBusA
 fn trusted_time_from_row(
     row: &sqlx::sqlite::SqliteRow,
 ) -> Result<TrustedTimeSample, AuthBusAuthorityError> {
-    TrustedTimeSample::new(
+    let mut sample = TrustedTimeSample::new(
         nonzero_u64(row, "wall_time_ms")?,
         nonzero_u64(row, "source_revision")?,
         Digest32::from_array(blob_array::<32>(row, "source_digest")?),
-    )
+    )?;
+    let deadline: Option<Vec<u8>> = row.try_get("valid_until_ms").map_err(storage)?;
+    sample.valid_until_ms = deadline
+        .map(|bytes| {
+            let bytes: [u8; 8] = bytes
+                .try_into()
+                .map_err(|_| AuthBusAuthorityError::CorruptState("invalid time deadline"))?;
+            Ok::<_, AuthBusAuthorityError>(u64::from_be_bytes(bytes))
+        })
+        .transpose()?;
+    Ok(sample)
+}
+
+pub(crate) async fn commit_with_time(
+    mut tx: Transaction<'_, Sqlite>,
+    sample: &TrustedTimeSample,
+) -> Result<(), AuthBusAuthorityError> {
+    crate::time_freshness::require_fresh_sample(&mut tx, sample).await?;
+    tx.commit().await.map_err(storage)
 }
 
 fn validate_policy_spec(spec: &PolicySpec) -> Result<(), AuthBusAuthorityError> {

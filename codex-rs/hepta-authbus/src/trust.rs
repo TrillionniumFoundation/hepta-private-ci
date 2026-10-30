@@ -46,6 +46,7 @@ pub struct TrustedTimeAttestationClaims {
     pub wall_time_ms: u64,
     pub source_revision: u64,
     pub source_digest: Digest32,
+    pub challenge: Option<crate::TrustedTimeChallenge>,
 }
 
 impl TrustedTimeAttestationClaims {
@@ -64,6 +65,17 @@ impl TrustedTimeAttestationClaims {
         bytes.extend_from_slice(&self.wall_time_ms.to_be_bytes());
         bytes.extend_from_slice(&self.source_revision.to_be_bytes());
         bytes.extend_from_slice(self.source_digest.as_array());
+        if algorithm == AuthBusAlgorithm::MlDsa65V2 {
+            match &self.challenge {
+                Some(challenge) => {
+                    bytes.push(1);
+                    bytes.extend_from_slice(challenge.nonce.as_array());
+                    bytes.extend_from_slice(&challenge.issued_at_ms.to_be_bytes());
+                    bytes.extend_from_slice(&challenge.expires_at_ms.to_be_bytes());
+                }
+                None => bytes.push(0),
+            }
+        }
         bytes
     }
 }
@@ -108,6 +120,7 @@ pub struct IssuerRetirement {
     purpose: IssuerPurpose,
     key_epoch: Generation,
     revision: u64,
+    verifying_key: AuthBusVerifyingKey,
     retirement_digest: Digest32,
 }
 
@@ -132,8 +145,16 @@ impl IssuerRetirement {
         self.retirement_digest
     }
 
+    /// Exact trusted registry key whose revoked epoch produced this proof.
+    pub fn verifying_key(&self) -> &AuthBusVerifyingKey {
+        &self.verifying_key
+    }
+
     pub(crate) fn from_record(record: &IssuerRecord) -> Self {
-        let mut bytes = b"hepta.authbus.issuer-retirement.v1\0".to_vec();
+        let mut bytes = match record.verifying_key.algorithm() {
+            AuthBusAlgorithm::Ed25519V1 => b"hepta.authbus.issuer-retirement.v1\0".to_vec(),
+            AuthBusAlgorithm::MlDsa65V2 => b"hepta.authbus.issuer-retirement.pq.v2\0".to_vec(),
+        };
         push_id(&mut bytes, &record.issuer_id);
         bytes.push(match record.purpose {
             IssuerPurpose::Message => 1,
@@ -148,6 +169,7 @@ impl IssuerRetirement {
             purpose: record.purpose,
             key_epoch: record.key_epoch,
             revision: record.revision,
+            verifying_key: record.verifying_key.clone(),
             retirement_digest: Digest32::of_bytes(&bytes),
         }
     }

@@ -172,6 +172,13 @@ impl AuthBusAuthorityHost {
         self.finish(result).await
     }
 
+    pub async fn trusted_time_challenge(
+        &self,
+    ) -> Result<Option<crate::TrustedTimeChallenge>, AuthBusAuthorityError> {
+        let result = self.store.trusted_time_challenge().await;
+        self.finish(result).await
+    }
+
     pub async fn message_issuer(
         &self,
         issuer_id: &StableId,

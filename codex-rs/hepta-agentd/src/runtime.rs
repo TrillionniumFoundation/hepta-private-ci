@@ -172,7 +172,8 @@ pub async fn run(
             &state,
             current_generation,
             crate::authbus_ingress::now_ms()?,
-        )?;
+        )
+        .await?;
         state
             .objective_runtime
             .set(host)
@@ -448,7 +449,8 @@ async fn monitor_runtime(
                             &state,
                             state.current_generation()?,
                             crate::authbus_ingress::now_ms()?,
-                        )?;
+                        )
+                        .await?;
                     }
                     app_server_ready = true;
                 }
