@@ -1,0 +1,38 @@
+{
+  "cost": "Diagnostic process is measured separately by Linux wait4 and added to the study's actual execution cost; no energy estimate",
+  "decisions": "No diagnostic result can change model choice, optimizer budget, checkpoint selection, test membership or primary endpoint",
+  "diagnostics": [
+    {
+      "input": "Original heldout common-interval durations from the sealed feature cache",
+      "interpretation": "Quantifies the direct duration shortcut in the superseded unexecuted profile",
+      "name": "duration_only",
+      "score": "Negative absolute pairwise duration difference; both directions and all-clips/same-actor scopes",
+      "training": "None"
+    },
+    {
+      "input": "Registered time-normalized main predictions",
+      "interpretation": "Primary result with direct per-clip duration metadata removed; ordinary visual/audio nuisance cues remain possible",
+      "name": "fixed_dt_with_content",
+      "training": "Frozen risk model,3seeds,128-update supplement with dt=1"
+    },
+    {
+      "input": "All128 feature coordinates set to0, preserving original variable durations",
+      "interpretation": "Out-of-distribution clock-only counterfactual; not an estimate of original variable-duration training performance",
+      "name": "zero_content_original_dt",
+      "training": "No refit; same validation-selected time-normalized checkpoint"
+    },
+    {
+      "input": "All feature coordinates0 and dt=1; identical input is evaluated once and predictions are broadcast to every candidate",
+      "interpretation": "Exact input-constant null control; tied retrieval ranks are broken by registered clip index",
+      "name": "zero_content_fixed_dt",
+      "training": "No refit; same selected checkpoint"
+    }
+  ],
+  "failures": "All incomplete main attempts and diagnostic failures are retained explicitly",
+  "metrics": "Unchanged bidirectional recall1,recall5,MRR with deterministic index tie breaking; recognition accuracy/CE for model counterfactuals",
+  "primary_profile": "risk_supplement_v1: dt=1, unchanged late fusion, frozen risk_margin_j_risk",
+  "reason": "Same-recording duration is common metadata that can support paired retrieval without audiovisual content",
+  "registration": "Post-baseline but before the first supplemental fit or supplemental heldout evaluation",
+  "schema": "hcsn-real-av-risk-duration-diagnostics-v1",
+  "timing": "After all3 registered supplemental attempts are recorded; only completed jobs with durable validation selection are diagnosed"
+}

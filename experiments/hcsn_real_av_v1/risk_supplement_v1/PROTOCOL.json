@@ -1,0 +1,109 @@
+{
+  "attribution_scope": "Actual new-risk model performance on real AV; not a pure risk-only ablation because the upstream model also uses bounded regenerative state projection",
+  "base_freeze_sha256": "948e80ac379f7353577a3379cafcce76f6596fcb076c1bf8a671564d88e1a9d6",
+  "base_protocol_sha256": "d88dbc345d4d5b8c77cdd14a7c119413864d0fc389183ab5e99bfb277e5503ce",
+  "batch_size": 16,
+  "cohort": {
+    "clips": 720,
+    "emotions": [
+      "ANG",
+      "DIS",
+      "FEA",
+      "HAP",
+      "NEU",
+      "SAD"
+    ],
+    "intensity": "XX",
+    "paired_source": "Audio and original video decoded from the same hash-verified FLV",
+    "selection": "Thirty complete actors sorted by SHA256(hcsn-real-av-cohort-v1: + actor_id)",
+    "sentences": [
+      "DFA",
+      "IOM",
+      "ITH",
+      "IWL"
+    ],
+    "test_actors": 5,
+    "train_actors": 20,
+    "validation_actors": 5
+  },
+  "comparison_scope": "Equal 128-update fit budgets and data exposure with identical validation selection; selected weights may come from32/64/128 updates; full128-update CPU is reported; no fixed-CPU equivalence claim",
+  "cost": "All failures retained; raw process wall, CPU, peakRSS; GPU and joules null; dataset preparation measured separately",
+  "depth": 1,
+  "derangement_scope": "Within-actor derangement may change emotion and sentence; it measures general sensitivity to destroying the pair, not a specific proof of temporal synchronization",
+  "embedding_dimension": 32,
+  "expected_jobs": 3,
+  "features": {
+    "audio": "16kHz mono; 25ms Hann, 10ms hop, FFT512; 64 triangular mel bands; log floor1e-8",
+    "normalization": "Per-modality training-actor moments only; std floor1e-5",
+    "observations_per_clip": 32,
+    "sampling": "Both modalities interpolated to common-interval bin centers; concatenate 64 values and 64 backward differences",
+    "scope": "Time-normalized offline low-level encoder; no pretrained backbone, identity objective, natural-language queries or streaming claim",
+    "time_input": "dt=1 for all32 observations in allclips and allmodalities; cumulative time is identical; original clip duration is not supplied as an input",
+    "video": "Original timestamped frames; area resize16x16 grayscale; orthonormal DCT upper8x8"
+  },
+  "forbidden_changes": "No test-based retuning, omitted failed models, test-set redefinition or replacement of old protocol evidence",
+  "inference_scope": "Three training seeds are descriptive; actor is the generalization unit; no registered significance or superiority gate",
+  "learning_rate": 0.001,
+  "minibatches": "Same seeded without-replacement permutation prefix for each model/seed; no repeated clip within one batch",
+  "model_change": "Frozen risk_margin_j_risk uses margin, continuation J and actual first-event risk P; inherits the audited stable regenerative projection and unnormalized killed survival operator",
+  "models": [
+    "risk_margin_j_risk"
+  ],
+  "objective": "CE(fused) + 0.25*(CE(audio)+CE(video)) + 0.5*symmetric same-clip InfoNCE",
+  "parent_matrix_status_at_registration": "Started; execution status and CPU costs inspected, no intermediate AV quality score used to set this supplement",
+  "preflight": "Same eight train-only clips from the original preflight, now all dt=1; seed9401; two optimizer updates per arm; finite connected gradients and nonzero group changes; disposable checkpoints",
+  "primary_metrics": [
+    "fused acted-emotion recognition accuracy and CE",
+    "same-recording audiovisual retrieval recall1 in both directions"
+  ],
+  "probability_gate": "Every HCSN forward, training and evaluation: finite, nonnegative, max unit-mass error <=1e-4 on all 32 observations; original v2 kernel retained",
+  "registered_utc": "2026-10-30T03:00:57.711326+00:00",
+  "registration_scope": "Post-baseline supplement registered after the prior21-job matrix started; no change to that study and no tuning based on intermediate AV quality scores",
+  "resource_cap_training_cpu_seconds": 900,
+  "risk_bounds": "Every forward: first-event probability finite and in[-1e-9,1+2e-6], matching the upstream preflight roundoff contract",
+  "risk_implementation_sources": {
+    "experiments/hcsn_distributional_v2/stable_probability.py": "d4bc918a5907a253007f8efd793ef379ab8c0e7ce9d5753af7feadcd8b836770",
+    "experiments/hcsn_risk_ablation_v1/model.py": "4bccacfabd1b63874dd92b12db3a91c8c8d881f6c3c48fbbb9fc6c714f8c868a",
+    "experiments/hcsn_risk_ablation_v1/risk_kernel.py": "a69eda0e0727e87fcd8462ba145aac4799514541b1aa71bbc17fe8a988b4c2e9"
+  },
+  "risk_parent_protocol_path": "experiments/hcsn_risk_ablation_v1/PROTOCOL.json",
+  "risk_parent_protocol_sha256": "a479546a28ab92f4d6bdbfa440c487da968c986b811c3090e74d3b3a09c68c62",
+  "schema": "hcsn-real-av-risk-supplement-v1",
+  "secondary_metrics": [
+    "audio-only and video-only recognition",
+    "retrieval recall5 and MRR",
+    "within-actor retrieval",
+    "fixed within-actor paired-video derangement"
+  ],
+  "seeds": [
+    9301,
+    9302,
+    9303
+  ],
+  "selection": "Minimum validation fused CE; earlier update breaks ties; no test-based model evaluation before selection lock; fixed preprocessing and integrity checks are outcome-free",
+  "selection_updates": [
+    32,
+    64,
+    128
+  ],
+  "temperature": 0.1,
+  "timing_confound": "Original same-recording duration metadata is common to modalities and can solve retrieval without content; direct duration input removed before any formal fit or heldout model evaluation",
+  "unchanged_fields": [
+    "cohort",
+    "seeds",
+    "width",
+    "depth",
+    "embedding_dimension",
+    "learning_rate",
+    "batch_size",
+    "updates",
+    "selection_updates",
+    "selection",
+    "temperature",
+    "objective",
+    "minibatches"
+  ],
+  "updates": 128,
+  "upstream_commit": "1658cd342dff90010aa843eaeebd53610a08b1dc",
+  "width": 32
+}
