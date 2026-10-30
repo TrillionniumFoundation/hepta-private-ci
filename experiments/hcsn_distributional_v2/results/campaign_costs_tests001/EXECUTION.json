@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "experiments.hcsn_distributional_v2.campaign_costs_tests",
+    "-v"
+  ],
+  "exit_code": 0,
+  "complete_child_cpu_seconds": 0.11664799999999999,
+  "wall_seconds": 0.1826969490002739,
+  "outer_parent_self_cpu_seconds_to_cutoff": 0.048211649,
+  "source_sha256": {
+    "campaign_costs.py": "4e591ecc5dc519bc260009bd3f5fc38abb126b2406d4cd7e6aed735246d2dfe5",
+    "campaign_costs_tests.py": "b53fc95e4aea47789a4e4a134a617640ea2c8fee9833b72e40d92cbd0fb4ff3e"
+  },
+  "log_sha256": "0d4c34ff18154d8f85c1a1ba6cc384fd85923629e35294ab259e894b2615a937",
+  "scope": "Complete tiny-fixture cost-audit test child; separate outer supervisor self CPU through receipt. No experiment, model or heldout data."
+}
