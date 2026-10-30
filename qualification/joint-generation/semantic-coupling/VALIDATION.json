@@ -1,0 +1,33 @@
+{
+  "complete_child_CPU_seconds": 3.6984239999999997,
+  "control_gate": true,
+  "dependencies": "../explicit-semantic-transport/{control.py,transport.py}, unchanged exact qualified helpers",
+  "literal_tests": {
+    "errors": 0,
+    "failures": 0,
+    "run": 8
+  },
+  "ndu_gate_by_service": {
+    "coupled": false,
+    "independent": false
+  },
+  "original_aligned_control_digest_parity": {
+    "11-additive": true,
+    "11-joint-ndu": true,
+    "23-additive": true,
+    "23-joint-ndu": true
+  },
+  "preservation": {
+    "max_CDF_normalized_marginal_error": 8.118505867571457e-16,
+    "max_absolute_marginal_error": 9.992007221626409e-16,
+    "max_agreement_bound_error": 6.661338147750939e-16
+  },
+  "public_boundary": "No model payloads/private paths/row identifiers/per-request outputs; finite generated RGB only",
+  "rust_checks": "Not run: no Rust changed; portable Python scope",
+  "source_sha256": {
+    "PLAN.md": "c9be3492956b0ce57e3568d65e7e7eaced3cd2f49ddc351a7d50ee021c4d7896",
+    "coupling.py": "2bd05f93e28a2944301b4607f49565125f9384c2579c12417b0776b166df210c",
+    "test_coupling.py": "2e1549b7c643969240f5ba4da0ad4eaa92980e0bb8777ec290a8847ec2cfab5f"
+  },
+  "status": "PASS_EIGHT_LITERAL_TESTS_AND_CONTENT_CONTROL_GATE_NOT_ORIGINAL_NDU_GATE"
+}
