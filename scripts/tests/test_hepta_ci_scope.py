@@ -202,5 +202,24 @@ class ScopeTests(unittest.TestCase):
             self.assertTrue(select(paths)["inference"])
 
 
+class CliCrateRootRegressionTests(unittest.TestCase):
+    def test_both_cli_binaries_have_explicit_query_depth_roots(self):
+        import tomllib
+
+        repository_root = Path(__file__).resolve().parents[2]
+        cli_root = repository_root / "codex-rs" / "cli"
+        manifest = tomllib.loads((cli_root / "Cargo.toml").read_text())
+        self.assertIs(manifest["package"]["autobins"], False)
+        binaries = {entry["name"]: entry["path"] for entry in manifest["bin"]}
+        self.assertEqual(binaries["codex"], "src/codex.rs")
+        self.assertEqual(binaries["hepta"], "src/hepta.rs")
+        self.assertNotIn("src/main.rs", binaries.values())
+        for name in ("codex", "hepta"):
+            with self.subTest(binary=name):
+                source = (cli_root / "src" / f"{name}.rs").read_text()
+                self.assertIn('#![recursion_limit = "256"]', source)
+                self.assertIn('include!("main.rs");', source)
+
+
 if __name__ == "__main__":
     unittest.main()
