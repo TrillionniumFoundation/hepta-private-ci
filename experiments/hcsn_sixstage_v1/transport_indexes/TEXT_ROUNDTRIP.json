@@ -1,0 +1,36 @@
+{
+  "records": [
+    {
+      "index": "experiments/hcsn_sixstage_v1/transport_indexes/initial_text_bounded.json",
+      "verification": {
+        "schema": "hcsn-bounded-transport-verification.v1",
+        "index_sha256": "11f9f3cbe619d0385a5fb3b1577b89f5e2bfe3fe5157d22784ac3603f7755e4b",
+        "restored": 8,
+        "already_identical": 0,
+        "files": 8,
+        "logical_bytes": 29374352
+      },
+      "cpu_seconds": 0.446028258,
+      "wall_seconds": 0.453603142999782,
+      "parts": 83,
+      "encoded_bytes": 39165895,
+      "raw_bytes": 29374352
+    },
+    {
+      "index": "experiments/hcsn_sixstage_v1/transport_indexes/content_text_bounded.json",
+      "verification": {
+        "schema": "hcsn-bounded-transport-verification.v1",
+        "index_sha256": "262279bd34cae15ae6cb11fe0b705831d1ff7a90adc08515431dd7a98705f8dc",
+        "restored": 46,
+        "already_identical": 0,
+        "files": 46,
+        "logical_bytes": 186182203
+      },
+      "cpu_seconds": 2.3720478650000003,
+      "wall_seconds": 2.3932196789992304,
+      "parts": 533,
+      "encoded_bytes": 248243585,
+      "raw_bytes": 186182203
+    }
+  ]
+}

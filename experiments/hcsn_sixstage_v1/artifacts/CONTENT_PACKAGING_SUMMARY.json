@@ -1,0 +1,69 @@
+{
+  "schema": "hcsn-complete-content-packaging.v1",
+  "records": [
+    {
+      "name": "content002_complete",
+      "source_root": "experiments/hcsn_distributional_v2/results/content002",
+      "manifest_path": "experiments/hcsn_sixstage_v1/artifacts/content002_complete.json",
+      "manifest_sha256": "fc3e46e563ef00de08a040cd9b7c6b1515204736e7983be495a8cd675ce8b34d",
+      "files": 4106,
+      "compressed_bytes": 150376244,
+      "original_bytes": 384561932,
+      "parts": 36,
+      "restore_verification": {
+        "restored_or_already_identical": 4106,
+        "archive_sha256": "e26a00d4f0696c74812bab4649d2c785585d8c7c6af1accf423b45f1fdc50ed6"
+      },
+      "pack_and_restore_cpu_seconds": 380.359279744,
+      "pack_and_restore_wall_seconds": 389.9609612880013
+    },
+    {
+      "name": "content002_analysis",
+      "source_root": "experiments/hcsn_distributional_v2/results/content_analysis002",
+      "manifest_path": "experiments/hcsn_sixstage_v1/artifacts/content002_analysis.json",
+      "manifest_sha256": "0f6baeccac0b4271f907896bc069f188e6a32781276fa4139bec3afa7a1a2035",
+      "files": 4,
+      "compressed_bytes": 74860,
+      "original_bytes": 607676,
+      "parts": 1,
+      "restore_verification": {
+        "restored_or_already_identical": 4,
+        "archive_sha256": "bb5c00f735f5b22e479095bfdf44bd60a45d804c3c93a6a139ed8f4e358b8c90"
+      },
+      "pack_and_restore_cpu_seconds": 0.23732609600000387,
+      "pack_and_restore_wall_seconds": 0.2413007489994925
+    },
+    {
+      "name": "lif_supplement001_complete",
+      "source_root": "experiments/hcsn_distributional_v2/results/lif_supplement001",
+      "manifest_path": "experiments/hcsn_sixstage_v1/artifacts/lif_supplement001_complete.json",
+      "manifest_sha256": "dd70f121da8989d295bc73897363ffed380489a4fe65a40a253635680f55ae21",
+      "files": 502,
+      "compressed_bytes": 34969916,
+      "original_bytes": 85029105,
+      "parts": 9,
+      "restore_verification": {
+        "restored_or_already_identical": 502,
+        "archive_sha256": "f190b5c4cd9a1467fc97c7256707fdf10083322c1e7d2f618f0f0abbf7b5f270"
+      },
+      "pack_and_restore_cpu_seconds": 97.523320512,
+      "pack_and_restore_wall_seconds": 102.918071013999
+    },
+    {
+      "name": "lif_supplement001_analysis",
+      "source_root": "experiments/hcsn_distributional_v2/results/lif_analysis001",
+      "manifest_path": "experiments/hcsn_sixstage_v1/artifacts/lif_supplement001_analysis.json",
+      "manifest_sha256": "a48ffb0a5931422b310fd9f13bbde810577039da0ebf2d7109854608eaf7ded2",
+      "files": 3,
+      "compressed_bytes": 25772,
+      "original_bytes": 187275,
+      "parts": 1,
+      "restore_verification": {
+        "restored_or_already_identical": 3,
+        "archive_sha256": "9048b7743c26954f3e9631d76ef72ec86ce35b7993d492c9866df8eb28133a35"
+      },
+      "pack_and_restore_cpu_seconds": 0.05419991100001198,
+      "pack_and_restore_wall_seconds": 0.056319580999115715
+    }
+  ]
+}

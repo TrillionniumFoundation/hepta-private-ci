@@ -1,0 +1,58 @@
+{
+  "schema": "hcsn-publication-size-normalization.v1",
+  "pre_normalization_public_head": "b788f041ba8237434b34636c51c9dca8fae2dc5a",
+  "repository_maximum_blob_bytes": 512000,
+  "allowlist_modified": false,
+  "logical_paths_materialized_by_transport": [
+    {
+      "path": "experiments/hcsn_distributional_v2/results/content002_execution_20261030/runs/fsdd__transformer__9202/lr_0_0.001/updates.jsonl",
+      "bytes": 2495341,
+      "sha256": "053fff4d3d301f62d07e149cfb1ff15ce56d6c1f6dcc354ac1a4ffcdf0874c4c",
+      "git_blob_sha": "c52faa60d60ca487722ca1405aeb779282366a6c"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/content002_execution_20261030/runs/fsdd__transformer__9202/lr_1_0.003/updates.jsonl",
+      "bytes": 2873197,
+      "sha256": "8177e23fbcf3d5591bfaa6e670fd93ab352e469893e9c63156475561bcaa5d96",
+      "git_blob_sha": "0a2e64737d99e4d220099583abd5eb18c96181c2"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/completion_export/independent_generators_and_raw_mc.npz",
+      "bytes": 513390,
+      "sha256": "4c036eb02d9a7b8b0c6f14235ee13a827e462b5d57c9e154700d68aacaca6b52",
+      "git_blob_sha": "32bc0f5a2fcb7b51925fdb8d8b10ab40adf6124a"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_network_long_stream002/raw_stream.npz",
+      "bytes": 1911699,
+      "sha256": "b6e2bea99865e8f80d843d9bf779a8618ebb090c0bbcafc756ddbdd5b05d49cd",
+      "git_blob_sha": "432cda93303c71166973ab121e235ec933a035cd"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/data/test.npz",
+      "bytes": 3596130,
+      "sha256": "5d041d12b134ab31586d9dc768b8e6d3dec391ab373f6b1c88d11d25739d86d7",
+      "git_blob_sha": "0331c700ad03ab460e984e548866f8d553952fbb"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/data/validation.npz",
+      "bytes": 3600317,
+      "sha256": "1c2206425d32e4166d4cd44a2b5d3199e4a5da50c1258e405a62ad84e31be906",
+      "git_blob_sha": "cbe0529de905ce48e6d88d2c700cfef56144ffd6"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/data/transport/train.npz.part000",
+      "bytes": 8388608,
+      "sha256": "86a54e5079dd075b880854e6a11617251735a2bcdb3a1e25a32d78971ff943ba",
+      "git_blob_sha": "0cf936618692340a71943635d429cf1af9ef9441"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/data/transport/train.npz.part001",
+      "bytes": 5995670,
+      "sha256": "cb652f0d06ac36d1d3552f6f004854c03934fab4142d475089a6420b0b5c46de",
+      "git_blob_sha": "625fbddbb28294ae09ad9043d4631b5ea5d6422d"
+    }
+  ],
+  "action": "Replace large logical blobs at branch head with exact bounded transport; preserve earlier commits and all original numeric hashes.",
+  "roundtrip_receipt": "experiments/hcsn_sixstage_v1/transport_indexes/TEXT_ROUNDTRIP.json"
+}
