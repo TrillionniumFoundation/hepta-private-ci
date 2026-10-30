@@ -1,0 +1,16 @@
+{
+  "schema": "hcsn-environment-recovery.v1",
+  "observation": "Before formal registration, the original execution filesystem and its Python environment became unavailable; the same workspace root was empty. The cause is unknown.",
+  "formal_training_launched_before_loss": false,
+  "formal_registration_completed_before_loss": false,
+  "preserved_exact_bytes": ["kernel.py", "kernel_tests.py", "validation.py", "CONTRACT.md", "README.md", "SOURCE_BASELINE.json", "BASELINE_VERIFICATION.json", "results/validation001/REGISTRATION.json", "results/validation001/RESULTS.json"],
+  "baseline_recovery": {"files": 162, "remote_commit": "63fd568b177c0456ddd8b590e3ac77d35307c0c4", "method": "Read exact GitHub blobs; verify every Git blob SHA and SOURCE_BASELINE SHA256", "mismatches": []},
+  "new_code_recovery": "Agents reconstructed their source from original tool inputs. New source-bound verification is required. No lost result JSON was reconstructed from remembered numbers.",
+  "lost_original_evidence": ["model_tests001", "model_tests002", "runtime_benchmark001", "native_smoke001", "stream_smoke001", "native_causal_smoke001", "train_preflight001", "train_preflight002", "runner_train_fixture001", "runner_train_fixture002"],
+  "interpretation_of_lost_evidence": "Previously observed tool outputs remain historical progress observations. They are excluded from the new formal evidence corpus because their full raw files are unavailable.",
+  "recovered_python": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+  "recovered_native_binary": "/workspace/scratch/d831a963ef2f/native-env-r6/recovered-host/native_readout_objective_host",
+  "native_sha256": "1dc702aea6a448ad84407aeb71dc8f23066205fab79fe7c6859fc02c55e6f7a5",
+  "first_persistent_math_commit": "20c21282e4a3f54cc57579070dec501f6daf55c8",
+  "unmeasured_recovery_development_cost": true
+}
