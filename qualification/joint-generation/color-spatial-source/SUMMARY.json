@@ -1,0 +1,130 @@
+{
+  "result": {
+    "fullfactor_measurements": {
+      "A_anchor_bothhead_FD_coordinates": 8,
+      "A_anchor_max_FD": 5.813182053782118e-11,
+      "model_A_anchor_FD_coordinates": 7,
+      "model_A_anchor_max_FD": 5.100408073319129e-11,
+      "model_FD_coordinates": 7,
+      "model_max_FD": 2.359050177425104e-10,
+      "virtual_logit_cotangent_FD_coordinates": 48,
+      "virtual_logit_cotangent_max_FD": 1.0952134338326758e-10
+    },
+    "literal_tests": {
+      "errors": 0,
+      "failures": 0,
+      "run": 17
+    },
+    "literal_toy_updates": "Included in tests and wholechild costs; not zero",
+    "measurements": {
+      "A_anchor_bothhead_FD_coordinates": 8,
+      "A_anchor_max_FD": 4.918529993014342e-11,
+      "model_A_anchor_FD_coordinates": 7,
+      "model_A_anchor_max_FD": 4.036691206993348e-11,
+      "model_FD_coordinates": 7,
+      "model_max_FD": 2.2774727936880623e-10,
+      "virtual_logit_cotangent_FD_coordinates": 48,
+      "virtual_logit_cotangent_max_FD": 1.0015854118305967e-10
+    },
+    "model_restores": 0,
+    "objective_key": "895c53aa433c430aef15b9b932c1aca4fb0d04bdb607979b6f20e7999ec0c7a6",
+    "objective_profile": {
+      "attributes": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "gradient": "virtual factor-logit gradient; row sum tolerance1e-12; centered residual",
+      "mode": "canonical-color-spatial-source-v1",
+      "normalization_tolerance": 1e-12,
+      "positive_policy": true,
+      "prior": "source label factors, not observed decoder semantics",
+      "schema": "rgb-canonical-3x4-color-spatial-source-v1"
+    },
+    "scientific_dataset_rows": 0,
+    "scientific_models": 0,
+    "scientific_training_updates": 0,
+    "scope": "Color/spatial factorization qualification with hand-input toy model initialization/updates; no restored models/scientific training/datasets or renderer. Not a decoded semantic guarantee.",
+    "source_freeze_sha256": "a07f6e9e01f92e653a0d5279be04fb45c9b7923491a46a3165281a65c2398238",
+    "status": "COMPLETE_LITERAL_COLOR_SPATIAL_SOURCE",
+    "toy_model_counts": {
+      "toy_model_initializations": 14
+    }
+  },
+  "scientific_benefit": "NOT_EVALUATED",
+  "whole_waited_child": {
+    "automatic_retry": false,
+    "complete_wait": true,
+    "exit_code": 0,
+    "limits": {
+      "AS_bytes": 536870912,
+      "CPU_seconds": 5,
+      "affinity": [
+        0
+      ],
+      "file_bytes": 4194304,
+      "numerical_threads": 1,
+      "wall_seconds": 30
+    },
+    "max_rss_kib": 30540,
+    "new_synthetic_only_shared_lock": true,
+    "not_original_digit_lock": true,
+    "preparation_review_and_shared_upstream_costs": "OUTSIDE_CHILD_NOT_ZERO",
+    "raw_wait_status": 0,
+    "result_sha256": "e9f0ae960133d42220f0691a4e8e161e642cd6f9a70fd6cdd6c07ff6bd68b921",
+    "source_freeze_sha256": "a07f6e9e01f92e653a0d5279be04fb45c9b7923491a46a3165281a65c2398238",
+    "status": "COMPLETE_LITERAL_COLOR_SPATIAL_SOURCE",
+    "supervisor_CPU_observed_prefix_seconds": 0.003134104999999998,
+    "supervisor_final_tail": "UNKNOWN_NOT_ZERO",
+    "system_CPU_seconds": 0.036258,
+    "timed_out": false,
+    "user_CPU_seconds": 0.31152199999999997,
+    "wall_seconds": 0.3717042389980634,
+    "whole_child_CPU_seconds": 0.34778
+  }
+}
