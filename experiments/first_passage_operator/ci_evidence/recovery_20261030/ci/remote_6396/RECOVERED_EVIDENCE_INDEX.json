@@ -1,0 +1,1322 @@
+{
+  "recovery_base_head": "8976aee9209c353131ce3cf67d8318bd6a9e2de2",
+  "original_source_head": "6396bc013fdb16a955cced8a746e27279311361c",
+  "original_source_tree": "9d1c618826d394568a5e4a5064239739337eb518",
+  "original_diagnostic_run": 40990854701,
+  "original_blocking_run": 40990854635,
+  "original_blocking_tested_merge": "6ab5ce1169f5ffa35ba937ecc8f147b72cf9cd34",
+  "status": "Restored historical evidence only; no new execution. Original log bytes came from retained tool outputs; the three archive bytes were downloaded again and matched their previously recorded digests. Reconstruction receipts explicitly distinguish old byte equality from fresh verification.",
+  "archive_instructions": "Concatenate parts in listed order, verify stored_sha256, decompress once when encoding is gzip, then verify original_sha256. An identity-stored .log.gz remains the original gzip stream.",
+  "entries": [
+    {
+      "original_path": "blocking/gnu-release.log.gz",
+      "original_bytes": 79029,
+      "original_sha256": "49bbaceb69b9c9bc594e03662647eae3af6fab5874f41cce7ded57a5076264aa",
+      "encoding": "identity",
+      "stored_bytes": 79029,
+      "stored_sha256": "49bbaceb69b9c9bc594e03662647eae3af6fab5874f41cce7ded57a5076264aa",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/gnu-release.log.gz",
+          "bytes": 79029,
+          "sha256": "49bbaceb69b9c9bc594e03662647eae3af6fab5874f41cce7ded57a5076264aa"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/gnu-release.log.gz.recovery.json",
+      "original_bytes": 757,
+      "original_sha256": "072ac64907b276abc2aa97f7e3e6c57f4775ce1436f6d25bb05c92ae736222be",
+      "encoding": "gzip",
+      "stored_bytes": 477,
+      "stored_sha256": "a2be7c312aeba0e4e957e5e3cb965d2d17bfb3c0d4cfb944d4f1f0909e461edc",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/gnu-release.log.gz.recovery.json.gz",
+          "bytes": 477,
+          "sha256": "a2be7c312aeba0e4e957e5e3cb965d2d17bfb3c0d4cfb944d4f1f0909e461edc"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/gnu-test.log.gz",
+      "original_bytes": 91661,
+      "original_sha256": "4c62754769900945f15e715e08cdba5ed320dea220ccc352e9b045cb02d31650",
+      "encoding": "identity",
+      "stored_bytes": 91661,
+      "stored_sha256": "4c62754769900945f15e715e08cdba5ed320dea220ccc352e9b045cb02d31650",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/gnu-test.log.gz",
+          "bytes": 91661,
+          "sha256": "4c62754769900945f15e715e08cdba5ed320dea220ccc352e9b045cb02d31650"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/gnu-test.log.gz.recovery.json",
+      "original_bytes": 751,
+      "original_sha256": "7761986f033cc3b3c9e51d63ccb5cc2a80489aa7ad67fe3cec2ec25725651784",
+      "encoding": "gzip",
+      "stored_bytes": 474,
+      "stored_sha256": "8eae3c8533ef5ee2d9a72fa7e67597a8a707a9b2efc1adf225f66a7b10a87e95",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/gnu-test.log.gz.recovery.json.gz",
+          "bytes": 474,
+          "sha256": "8eae3c8533ef5ee2d9a72fa7e67597a8a707a9b2efc1adf225f66a7b10a87e95"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/linux-clippy.log.gz",
+      "original_bytes": 92544,
+      "original_sha256": "4229402d0706c89d12571c71b6b0e74bc6f2a2c9b585e0ab9880253adef2b23f",
+      "encoding": "identity",
+      "stored_bytes": 92544,
+      "stored_sha256": "4229402d0706c89d12571c71b6b0e74bc6f2a2c9b585e0ab9880253adef2b23f",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/linux-clippy.log.gz",
+          "bytes": 92544,
+          "sha256": "4229402d0706c89d12571c71b6b0e74bc6f2a2c9b585e0ab9880253adef2b23f"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/linux-clippy.log.gz.recovery.json",
+      "original_bytes": 759,
+      "original_sha256": "892f9eea1d676630c89bc7577b764c01ef9517d77d3c22768666303a4b96a269",
+      "encoding": "gzip",
+      "stored_bytes": 480,
+      "stored_sha256": "0f8b15a74db05c55495ac5e981cc254cdd472a548016e833e3e7651e27e99e2b",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/linux-clippy.log.gz.recovery.json.gz",
+          "bytes": 480,
+          "sha256": "0f8b15a74db05c55495ac5e981cc254cdd472a548016e833e3e7651e27e99e2b"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/mac-arm.log.gz",
+      "original_bytes": 201759,
+      "original_sha256": "c631742a08deade94b76ae854a2d9cb5a51e018246dc35d83ef23c3fc3db3d23",
+      "encoding": "identity",
+      "stored_bytes": 201759,
+      "stored_sha256": "c631742a08deade94b76ae854a2d9cb5a51e018246dc35d83ef23c3fc3db3d23",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/mac-arm.log.gz",
+          "bytes": 201759,
+          "sha256": "c631742a08deade94b76ae854a2d9cb5a51e018246dc35d83ef23c3fc3db3d23"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/mac-arm.log.gz.recovery.json",
+      "original_bytes": 750,
+      "original_sha256": "f02820d400c80fe5064a0aeab4b12cf4286d87fb70849e6d2005b667c257b126",
+      "encoding": "gzip",
+      "stored_bytes": 472,
+      "stored_sha256": "55bfcff7efed39c63878e867ced5e66c478e8868b6e446a147a944817272952c",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/mac-arm.log.gz.recovery.json.gz",
+          "bytes": 472,
+          "sha256": "55bfcff7efed39c63878e867ced5e66c478e8868b6e446a147a944817272952c"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/mac-clippy.log.gz",
+      "original_bytes": 86505,
+      "original_sha256": "e03bd21de1964d34d89a7a43e536bfbcd74b23d9ab74c7f7b99c1a3b1f98f0da",
+      "encoding": "identity",
+      "stored_bytes": 86505,
+      "stored_sha256": "e03bd21de1964d34d89a7a43e536bfbcd74b23d9ab74c7f7b99c1a3b1f98f0da",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/mac-clippy.log.gz",
+          "bytes": 86505,
+          "sha256": "e03bd21de1964d34d89a7a43e536bfbcd74b23d9ab74c7f7b99c1a3b1f98f0da"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/mac-clippy.log.gz.recovery.json",
+      "original_bytes": 755,
+      "original_sha256": "ad4d30e9328583842a82227c3a0842208e846b19e65cb50e08f0433d63abb80c",
+      "encoding": "gzip",
+      "stored_bytes": 477,
+      "stored_sha256": "61a73d291c99d49cb37dd683d05afd1aea98b9d5a83f87cbc7b8758128ea0112",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/mac-clippy.log.gz.recovery.json.gz",
+          "bytes": 477,
+          "sha256": "61a73d291c99d49cb37dd683d05afd1aea98b9d5a83f87cbc7b8758128ea0112"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/mac-intel.log.gz",
+      "original_bytes": 198041,
+      "original_sha256": "0584e31bc6979f3f73fb4a2098bddc8a5a8ec0f81a4dfced3df394c6de956dc4",
+      "encoding": "identity",
+      "stored_bytes": 198041,
+      "stored_sha256": "0584e31bc6979f3f73fb4a2098bddc8a5a8ec0f81a4dfced3df394c6de956dc4",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/mac-intel.log.gz",
+          "bytes": 198041,
+          "sha256": "0584e31bc6979f3f73fb4a2098bddc8a5a8ec0f81a4dfced3df394c6de956dc4"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/mac-intel.log.gz.recovery.json",
+      "original_bytes": 754,
+      "original_sha256": "dd452c2de0ced4592c5b371c216530547e2da69190dccb84e79245ddd4ba4761",
+      "encoding": "gzip",
+      "stored_bytes": 474,
+      "stored_sha256": "c119d78d7b091e3c9ebb6a4df789a6984d71013e176c52297c9d0fa30f0dfe91",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/mac-intel.log.gz.recovery.json.gz",
+          "bytes": 474,
+          "sha256": "c119d78d7b091e3c9ebb6a4df789a6984d71013e176c52297c9d0fa30f0dfe91"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/musl.log.gz",
+      "original_bytes": 94146,
+      "original_sha256": "530f604c30dc778e4912a276b1c3128b41a803ee0850d178d2bd9c3b77cb47ef",
+      "encoding": "identity",
+      "stored_bytes": 94146,
+      "stored_sha256": "530f604c30dc778e4912a276b1c3128b41a803ee0850d178d2bd9c3b77cb47ef",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/musl.log.gz",
+          "bytes": 94146,
+          "sha256": "530f604c30dc778e4912a276b1c3128b41a803ee0850d178d2bd9c3b77cb47ef"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/musl.log.gz.recovery.json",
+      "original_bytes": 743,
+      "original_sha256": "d8a07f85bf6a7e7630db1dd0b35f28663af257ad3cadc45bfa756e5d4ada9242",
+      "encoding": "gzip",
+      "stored_bytes": 472,
+      "stored_sha256": "b30995e3f245fc772784ac4d3b67f3ca5633d5952278501b952a61a3e2ba8672",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/musl.log.gz.recovery.json.gz",
+          "bytes": 472,
+          "sha256": "b30995e3f245fc772784ac4d3b67f3ca5633d5952278501b952a61a3e2ba8672"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/sdk.log.gz",
+      "original_bytes": 69365,
+      "original_sha256": "7c159bcb23fd1ecafc7fb08c515dbf0114ac3acba0202d67de137ea810d3c2e4",
+      "encoding": "identity",
+      "stored_bytes": 69365,
+      "stored_sha256": "7c159bcb23fd1ecafc7fb08c515dbf0114ac3acba0202d67de137ea810d3c2e4",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/sdk.log.gz",
+          "bytes": 69365,
+          "sha256": "7c159bcb23fd1ecafc7fb08c515dbf0114ac3acba0202d67de137ea810d3c2e4"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/sdk.log.gz.recovery.json",
+      "original_bytes": 741,
+      "original_sha256": "f1451a87c1d65ce083ba5c27c6cfac31c9c66bee41102bb98c06d404ebcec4dc",
+      "encoding": "gzip",
+      "stored_bytes": 473,
+      "stored_sha256": "21e6810c6e3bde080934264d1980bdd8ba33951dfc93a050855cb748f090ec1f",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/sdk.log.gz.recovery.json.gz",
+          "bytes": 473,
+          "sha256": "21e6810c6e3bde080934264d1980bdd8ba33951dfc93a050855cb748f090ec1f"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/win-clippy.log.gz",
+      "original_bytes": 95433,
+      "original_sha256": "c930a421a491420250137c5db5d626d7163a006314a34022c5b43e3437e1b2b2",
+      "encoding": "identity",
+      "stored_bytes": 95433,
+      "stored_sha256": "c930a421a491420250137c5db5d626d7163a006314a34022c5b43e3437e1b2b2",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/win-clippy.log.gz",
+          "bytes": 95433,
+          "sha256": "c930a421a491420250137c5db5d626d7163a006314a34022c5b43e3437e1b2b2"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/win-clippy.log.gz.recovery.json",
+      "original_bytes": 754,
+      "original_sha256": "bc9aee1436da3da941b1e7d89b725cd9282b9c3ccf3ca6945e6c99caef11b30e",
+      "encoding": "gzip",
+      "stored_bytes": 473,
+      "stored_sha256": "7a01626a317a40c4b0be28c122caea87ab88d22a920a2b46ac69595c192fed05",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/win-clippy.log.gz.recovery.json.gz",
+          "bytes": 473,
+          "sha256": "7a01626a317a40c4b0be28c122caea87ab88d22a920a2b46ac69595c192fed05"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/win-release.log.gz",
+      "original_bytes": 60476,
+      "original_sha256": "b8f78e365d234c8c218b023e4bb0a2ccfab0597911233c9bd7179030219f06c1",
+      "encoding": "identity",
+      "stored_bytes": 60476,
+      "stored_sha256": "b8f78e365d234c8c218b023e4bb0a2ccfab0597911233c9bd7179030219f06c1",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/win-release.log.gz",
+          "bytes": 60476,
+          "sha256": "b8f78e365d234c8c218b023e4bb0a2ccfab0597911233c9bd7179030219f06c1"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/win-release.log.gz.recovery.json",
+      "original_bytes": 757,
+      "original_sha256": "25d49565b0727e13ea8afd748bb91895b6d7420a3a59f4fe0f652fff926a2fe2",
+      "encoding": "gzip",
+      "stored_bytes": 478,
+      "stored_sha256": "72fd04edfaac8b7cd3fe2322e07723558807b73a6fb89791019564d435bbc481",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/win-release.log.gz.recovery.json.gz",
+          "bytes": 478,
+          "sha256": "72fd04edfaac8b7cd3fe2322e07723558807b73a6fb89791019564d435bbc481"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/win-shard1.log.gz",
+      "original_bytes": 59940,
+      "original_sha256": "ac7681833cb69827ac0a5ec370621b86496cf017b1e0385da65eb04c639d11de",
+      "encoding": "identity",
+      "stored_bytes": 59940,
+      "stored_sha256": "ac7681833cb69827ac0a5ec370621b86496cf017b1e0385da65eb04c639d11de",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/win-shard1.log.gz",
+          "bytes": 59940,
+          "sha256": "ac7681833cb69827ac0a5ec370621b86496cf017b1e0385da65eb04c639d11de"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/win-shard1.log.gz.recovery.json",
+      "original_bytes": 754,
+      "original_sha256": "70a8c938bcdc00dda05501db51c78c07f77155d407126fa1c019a86de4432413",
+      "encoding": "gzip",
+      "stored_bytes": 473,
+      "stored_sha256": "554b8a8463da05c6c40d15755461c35a2f87d3f17bb1049988cade169a7df853",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/win-shard1.log.gz.recovery.json.gz",
+          "bytes": 473,
+          "sha256": "554b8a8463da05c6c40d15755461c35a2f87d3f17bb1049988cade169a7df853"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/win-shard2.log.gz",
+      "original_bytes": 84900,
+      "original_sha256": "b5705252de1ea55500d4f232eeb9a5ae22ef3d42c39619d8ce8b717f0221018b",
+      "encoding": "identity",
+      "stored_bytes": 84900,
+      "stored_sha256": "b5705252de1ea55500d4f232eeb9a5ae22ef3d42c39619d8ce8b717f0221018b",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/win-shard2.log.gz",
+          "bytes": 84900,
+          "sha256": "b5705252de1ea55500d4f232eeb9a5ae22ef3d42c39619d8ce8b717f0221018b"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/win-shard2.log.gz.recovery.json",
+      "original_bytes": 754,
+      "original_sha256": "a730efae9acc8c139850be017cb89dd6c7c58e630c1b43866901caee30bec610",
+      "encoding": "gzip",
+      "stored_bytes": 472,
+      "stored_sha256": "bffad7979b8d89ad9850a4d50d59dc8c551b4ede5f6d566f430edad2da7bd4dd",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/win-shard2.log.gz.recovery.json.gz",
+          "bytes": 472,
+          "sha256": "bffad7979b8d89ad9850a4d50d59dc8c551b4ede5f6d566f430edad2da7bd4dd"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/win-shard3.log.gz",
+      "original_bytes": 55811,
+      "original_sha256": "8a3c90786c673610b04e5a6b531ec20d1a236c48bc8973152c53b0f9dad7eeba",
+      "encoding": "identity",
+      "stored_bytes": 55811,
+      "stored_sha256": "8a3c90786c673610b04e5a6b531ec20d1a236c48bc8973152c53b0f9dad7eeba",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/win-shard3.log.gz",
+          "bytes": 55811,
+          "sha256": "8a3c90786c673610b04e5a6b531ec20d1a236c48bc8973152c53b0f9dad7eeba"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/win-shard3.log.gz.recovery.json",
+      "original_bytes": 755,
+      "original_sha256": "cf09dbd3aff239329f954069b0e4e67c35ca220fa4aa1b24fa71242bc4b360a1",
+      "encoding": "gzip",
+      "stored_bytes": 477,
+      "stored_sha256": "daec2143dc0c8ef90ef1bd002a14f10750258ffadecb6e78598333b5748078db",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/win-shard3.log.gz.recovery.json.gz",
+          "bytes": 477,
+          "sha256": "daec2143dc0c8ef90ef1bd002a14f10750258ffadecb6e78598333b5748078db"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/win-shard4.log.gz",
+      "original_bytes": 55246,
+      "original_sha256": "e6c006bc0abbb7db2a603a5c73b962afdb288a10ba6ce0f49774a648ee8ef2f5",
+      "encoding": "identity",
+      "stored_bytes": 55246,
+      "stored_sha256": "e6c006bc0abbb7db2a603a5c73b962afdb288a10ba6ce0f49774a648ee8ef2f5",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/win-shard4.log.gz",
+          "bytes": 55246,
+          "sha256": "e6c006bc0abbb7db2a603a5c73b962afdb288a10ba6ce0f49774a648ee8ef2f5"
+        }
+      ]
+    },
+    {
+      "original_path": "blocking/win-shard4.log.gz.recovery.json",
+      "original_bytes": 755,
+      "original_sha256": "ffbb58212aae944b5703be3f852c4c9462484899d3942358109d04f1d31470dd",
+      "encoding": "gzip",
+      "stored_bytes": 477,
+      "stored_sha256": "4796669f685e353e8a03afab14be92ce465923d0325d85b399ccd78a73790d69",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/win-shard4.log.gz.recovery.json.gz",
+          "bytes": 477,
+          "sha256": "4796669f685e353e8a03afab14be92ce465923d0325d85b399ccd78a73790d69"
+        }
+      ]
+    },
+    {
+      "original_path": "security-consumers-job.log.gz",
+      "original_bytes": 60323,
+      "original_sha256": "466883850b410923f1c4b074d6ba3a59e79140ffdb4c42d2ccaa597812b5676e",
+      "encoding": "identity",
+      "stored_bytes": 60323,
+      "stored_sha256": "466883850b410923f1c4b074d6ba3a59e79140ffdb4c42d2ccaa597812b5676e",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/security-consumers-job.log.gz",
+          "bytes": 60323,
+          "sha256": "466883850b410923f1c4b074d6ba3a59e79140ffdb4c42d2ccaa597812b5676e"
+        }
+      ]
+    },
+    {
+      "original_path": "security-consumers-job.log.gz.recovery.json",
+      "original_bytes": 704,
+      "original_sha256": "cd5508250eea051e2a51686cb8443698c4b9c33e1b9de5e34aa3d3a330a8998f",
+      "encoding": "gzip",
+      "stored_bytes": 446,
+      "stored_sha256": "aabdaa16343669fb49ab97d9de8e3f56edff1b130e241e72e53f3e3b7f26a261",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/security-consumers-job.log.gz.recovery.json.gz",
+          "bytes": 446,
+          "sha256": "aabdaa16343669fb49ab97d9de8e3f56edff1b130e241e72e53f3e3b7f26a261"
+        }
+      ]
+    },
+    {
+      "original_path": "windows-job.log.gz",
+      "original_bytes": 43981,
+      "original_sha256": "405316f67c71f2a337b3549647eeea6151cc3075011d2287be84bc0bf4285bb0",
+      "encoding": "identity",
+      "stored_bytes": 43981,
+      "stored_sha256": "405316f67c71f2a337b3549647eeea6151cc3075011d2287be84bc0bf4285bb0",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/windows-job.log.gz",
+          "bytes": 43981,
+          "sha256": "405316f67c71f2a337b3549647eeea6151cc3075011d2287be84bc0bf4285bb0"
+        }
+      ]
+    },
+    {
+      "original_path": "windows-job.log.gz.recovery.json",
+      "original_bytes": 681,
+      "original_sha256": "8db209b6562f71cd7a2aedb92a567d061c8753aec03f4370b71a060c0d0917dd",
+      "encoding": "gzip",
+      "stored_bytes": 432,
+      "stored_sha256": "ff304f0534f672e1e6187370ad52204f30d5d53f4b46afe1e3aaa480ccf8c66f",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/windows-job.log.gz.recovery.json.gz",
+          "bytes": 432,
+          "sha256": "ff304f0534f672e1e6187370ad52204f30d5d53f4b46afe1e3aaa480ccf8c66f"
+        }
+      ]
+    },
+    {
+      "original_path": "restored-metadata.json",
+      "original_bytes": 56315,
+      "original_sha256": "907c3255ddbf5604fb36591f394fb980e5c8e485ed9ed762e3e69c022f1a4b2f",
+      "encoding": "gzip",
+      "stored_bytes": 4719,
+      "stored_sha256": "29d843dbc4cd6faf52b777d496d53f218f268198c0d6ae4369d2b9a4d5259108",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/restored-metadata.json.gz",
+          "bytes": 4719,
+          "sha256": "29d843dbc4cd6faf52b777d496d53f218f268198c0d6ae4369d2b9a4d5259108"
+        }
+      ]
+    },
+    {
+      "original_path": "original-windows.zip",
+      "original_bytes": 24533,
+      "original_sha256": "da915dcc7eea245fe86f17191eabafc5184775782d261167f0ac55123c42475c",
+      "encoding": "identity",
+      "stored_bytes": 24533,
+      "stored_sha256": "da915dcc7eea245fe86f17191eabafc5184775782d261167f0ac55123c42475c",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/original-windows.zip",
+          "bytes": 24533,
+          "sha256": "da915dcc7eea245fe86f17191eabafc5184775782d261167f0ac55123c42475c"
+        }
+      ]
+    },
+    {
+      "original_path": "artifact-recovery-windows.json",
+      "original_bytes": 3217,
+      "original_sha256": "9df49c5608d38b9c7d5bce9d70e8ef6105e97e94fba47cc0cca0781553903220",
+      "encoding": "gzip",
+      "stored_bytes": 954,
+      "stored_sha256": "15f963fd167b6c34eb66c6cb02d6d6c7bd18353d1fcf11060a36b87d0074b9c6",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/artifact-recovery-windows.json.gz",
+          "bytes": 954,
+          "sha256": "15f963fd167b6c34eb66c6cb02d6d6c7bd18353d1fcf11060a36b87d0074b9c6"
+        }
+      ]
+    },
+    {
+      "original_path": "windows/artifact-manifest.json",
+      "original_bytes": 1661,
+      "original_sha256": "9a865de7129f2200d021d21ef167150f3ab6fa1c148e7b4df88bc39b3ac0d83c",
+      "encoding": "gzip",
+      "stored_bytes": 682,
+      "stored_sha256": "9846a1a132ec60e879d02d06e6c58b6ad6e656eb97fd053abc90a64317905a2a",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/windows/artifact-manifest.json.gz",
+          "bytes": 682,
+          "sha256": "9846a1a132ec60e879d02d06e6c58b6ad6e656eb97fd053abc90a64317905a2a"
+        }
+      ]
+    },
+    {
+      "original_path": "windows/command-1-junit/0/local/junit.xml",
+      "original_bytes": 36249,
+      "original_sha256": "c985c0a9f632f34488188d5e5eaef071d5980008207124d615d676fee0bf88ad",
+      "encoding": "gzip",
+      "stored_bytes": 4926,
+      "stored_sha256": "b21be7f1b23e9a37a241671eb039366090e710d173459f1bf71f7f32178dd7e5",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/windows/command-1-junit/0/local/junit.xml.gz",
+          "bytes": 4926,
+          "sha256": "b21be7f1b23e9a37a241671eb039366090e710d173459f1bf71f7f32178dd7e5"
+        }
+      ]
+    },
+    {
+      "original_path": "windows/command-1.log",
+      "original_bytes": 32621,
+      "original_sha256": "6b5aed3a3e4b927fcb39b48c7d32552f90c1de976e9f2dad5970417f60cb769d",
+      "encoding": "gzip",
+      "stored_bytes": 6927,
+      "stored_sha256": "0bf1fe08d9c2990290861f96f462910d20e62c8c3180509845c57f93383e93ca",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/windows/command-1.log.gz",
+          "bytes": 6927,
+          "sha256": "0bf1fe08d9c2990290861f96f462910d20e62c8c3180509845c57f93383e93ca"
+        }
+      ]
+    },
+    {
+      "original_path": "windows/command-2-junit/0/local/junit.xml",
+      "original_bytes": 9893,
+      "original_sha256": "db1a1b2796abad0c52bc916b2778ccc7992bc5f377ce152981dfd24870f403f3",
+      "encoding": "gzip",
+      "stored_bytes": 1377,
+      "stored_sha256": "e0cd3597eb6bf0b41f927ad25fdc16015b4dae72840e8cd031d2378644238f8b",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/windows/command-2-junit/0/local/junit.xml.gz",
+          "bytes": 1377,
+          "sha256": "e0cd3597eb6bf0b41f927ad25fdc16015b4dae72840e8cd031d2378644238f8b"
+        }
+      ]
+    },
+    {
+      "original_path": "windows/command-2.log",
+      "original_bytes": 8938,
+      "original_sha256": "a88a06e5a541ce211ed4eed685068e6f89c560aee5fdaa823e36d74f70820ebe",
+      "encoding": "gzip",
+      "stored_bytes": 2165,
+      "stored_sha256": "ebf2cafbfe62cdeb56aa690efb2e1cae8888eb1cd6fbb68ef0fa704baab79667",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/windows/command-2.log.gz",
+          "bytes": 2165,
+          "sha256": "ebf2cafbfe62cdeb56aa690efb2e1cae8888eb1cd6fbb68ef0fa704baab79667"
+        }
+      ]
+    },
+    {
+      "original_path": "windows/command-3.log",
+      "original_bytes": 12647,
+      "original_sha256": "3537716939538adf5939aa7ba2474f498d6830a8316c4a5afb04d5f762f458d7",
+      "encoding": "gzip",
+      "stored_bytes": 3170,
+      "stored_sha256": "14af007ae9511ea6548e297854df2e9bcc3c5bd239296d3d451a53868245ab89",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/windows/command-3.log.gz",
+          "bytes": 3170,
+          "sha256": "14af007ae9511ea6548e297854df2e9bcc3c5bd239296d3d451a53868245ab89"
+        }
+      ]
+    },
+    {
+      "original_path": "windows/command-4-junit/0/local/junit.xml",
+      "original_bytes": 1521,
+      "original_sha256": "6ccb8d62c33e932cc54528aaf51aa2b0568586728f28dd0aad3b828f4671ac3e",
+      "encoding": "gzip",
+      "stored_bytes": 448,
+      "stored_sha256": "2ab361e59d8435bec33d7ab1cc449f6ae767fb1247f6a2f7cb2a9891edba1ca9",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/windows/command-4-junit/0/local/junit.xml.gz",
+          "bytes": 448,
+          "sha256": "2ab361e59d8435bec33d7ab1cc449f6ae767fb1247f6a2f7cb2a9891edba1ca9"
+        }
+      ]
+    },
+    {
+      "original_path": "windows/command-4.log",
+      "original_bytes": 7326,
+      "original_sha256": "a21cb5ce1e7d57f66a9dcada6f5aff1a65ad6a425bb91035911f9645880493c2",
+      "encoding": "gzip",
+      "stored_bytes": 1853,
+      "stored_sha256": "b25589d925e8d40e22466fb09c9460e4df9262a880db48eac27b801675f854a9",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/windows/command-4.log.gz",
+          "bytes": 1853,
+          "sha256": "b25589d925e8d40e22466fb09c9460e4df9262a880db48eac27b801675f854a9"
+        }
+      ]
+    },
+    {
+      "original_path": "windows/commands.json",
+      "original_bytes": 1054,
+      "original_sha256": "577152568895ec1958367861ef520871f98e5d0e83758e7930d06b20734480b0",
+      "encoding": "gzip",
+      "stored_bytes": 257,
+      "stored_sha256": "e125df98dc7f15876e1c16a8bee44051a44c49d5df5d458c79bf4cce94533213",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/windows/commands.json.gz",
+          "bytes": 257,
+          "sha256": "e125df98dc7f15876e1c16a8bee44051a44c49d5df5d458c79bf4cce94533213"
+        }
+      ]
+    },
+    {
+      "original_path": "windows/generated.patch",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "gzip",
+      "stored_bytes": 20,
+      "stored_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/windows/generated.patch.gz",
+          "bytes": 20,
+          "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+        }
+      ]
+    },
+    {
+      "original_path": "windows/source-provenance.json",
+      "original_bytes": 1209,
+      "original_sha256": "8d8365360f7d8d3cb7fc2fca25e41d385ad931cacd13ae22821acbe0a05de8d9",
+      "encoding": "gzip",
+      "stored_bytes": 739,
+      "stored_sha256": "92c69a2995431f4b04b1bf8f4fca332fc9515e9bbc9007f788dca4cf7a870e5a",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/windows/source-provenance.json.gz",
+          "bytes": 739,
+          "sha256": "92c69a2995431f4b04b1bf8f4fca332fc9515e9bbc9007f788dca4cf7a870e5a"
+        }
+      ]
+    },
+    {
+      "original_path": "windows/v8-artifact-provenance.json",
+      "original_bytes": 450,
+      "original_sha256": "e2a5415626e5bec0a2fb76f66adfa21af23a21cb85a48b2929961e0c8c757991",
+      "encoding": "gzip",
+      "stored_bytes": 292,
+      "stored_sha256": "cc90c77d7de0db864f8f9b53322599d1ab485231b6cad4241784b2c8192367a1",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/windows/v8-artifact-provenance.json.gz",
+          "bytes": 292,
+          "sha256": "cc90c77d7de0db864f8f9b53322599d1ab485231b6cad4241784b2c8192367a1"
+        }
+      ]
+    },
+    {
+      "original_path": "windows/worktree-status.txt",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "gzip",
+      "stored_bytes": 20,
+      "stored_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/windows/worktree-status.txt.gz",
+          "bytes": 20,
+          "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+        }
+      ]
+    },
+    {
+      "original_path": "original-security-consumers.zip",
+      "original_bytes": 26532,
+      "original_sha256": "99234da087fad95b5451e9123411c322c54d0d2a713e8372823602cdafb7ac84",
+      "encoding": "identity",
+      "stored_bytes": 26532,
+      "stored_sha256": "99234da087fad95b5451e9123411c322c54d0d2a713e8372823602cdafb7ac84",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/original-security-consumers.zip",
+          "bytes": 26532,
+          "sha256": "99234da087fad95b5451e9123411c322c54d0d2a713e8372823602cdafb7ac84"
+        }
+      ]
+    },
+    {
+      "original_path": "artifact-recovery-security-consumers.json",
+      "original_bytes": 2366,
+      "original_sha256": "efc4656a2488747a3c7b8a5d022757cdfef74b6f4f10b28586cfdbf9dbf48f60",
+      "encoding": "gzip",
+      "stored_bytes": 761,
+      "stored_sha256": "7b7c306386a56d881f3df19fc555153292e9b27198ca635933c67259792043e3",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/artifact-recovery-security-consumers.json.gz",
+          "bytes": 761,
+          "sha256": "7b7c306386a56d881f3df19fc555153292e9b27198ca635933c67259792043e3"
+        }
+      ]
+    },
+    {
+      "original_path": "security-consumers/artifact-manifest.json",
+      "original_bytes": 1056,
+      "original_sha256": "0409b9814aba61f7ec3072363d3cd46c9985c798aa9266796ef456bbf4356807",
+      "encoding": "gzip",
+      "stored_bytes": 484,
+      "stored_sha256": "9300a0f620b1dc0cba6b6d7dd9d50345a1a815d6c6b99a7762a07db8a1a0c39d",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/security-consumers/artifact-manifest.json.gz",
+          "bytes": 484,
+          "sha256": "9300a0f620b1dc0cba6b6d7dd9d50345a1a815d6c6b99a7762a07db8a1a0c39d"
+        }
+      ]
+    },
+    {
+      "original_path": "security-consumers/command-1-junit/0/local/junit.xml",
+      "original_bytes": 9174,
+      "original_sha256": "ebe4325b96c75611b28954cd025db71dd080f69be6d042b87ba02ad784787067",
+      "encoding": "gzip",
+      "stored_bytes": 1836,
+      "stored_sha256": "95620773971037107e581787a1429153d8994b3b4e7fd2c9d230facff4883bda",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/security-consumers/command-1-junit/0/local/junit.xml.gz",
+          "bytes": 1836,
+          "sha256": "95620773971037107e581787a1429153d8994b3b4e7fd2c9d230facff4883bda"
+        }
+      ]
+    },
+    {
+      "original_path": "security-consumers/command-1.log",
+      "original_bytes": 73622,
+      "original_sha256": "2d77ad2b678868ceb9067a4ae87fb48f4bb7ad666d323472a49fc00c4f9708ba",
+      "encoding": "gzip",
+      "stored_bytes": 14619,
+      "stored_sha256": "abeabcd0edeb81f303ca6f4bc92e3f22851f123f340004a8b7b626a083bd63df",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/security-consumers/command-1.log.gz",
+          "bytes": 14619,
+          "sha256": "abeabcd0edeb81f303ca6f4bc92e3f22851f123f340004a8b7b626a083bd63df"
+        }
+      ]
+    },
+    {
+      "original_path": "security-consumers/command-2.log",
+      "original_bytes": 33426,
+      "original_sha256": "fb41db6887b3a4c2c93dd116f7174669028359b49e7315c3d84851c211cda5c9",
+      "encoding": "gzip",
+      "stored_bytes": 7100,
+      "stored_sha256": "dce09ffadb7ae022ce7169bba87783a12224cede57055f427958596d6d658fbd",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/security-consumers/command-2.log.gz",
+          "bytes": 7100,
+          "sha256": "dce09ffadb7ae022ce7169bba87783a12224cede57055f427958596d6d658fbd"
+        }
+      ]
+    },
+    {
+      "original_path": "security-consumers/commands.json",
+      "original_bytes": 472,
+      "original_sha256": "58c49f123906139e8390117b9a017ff685e6a452d490c1660a775e240c0b85a7",
+      "encoding": "gzip",
+      "stored_bytes": 184,
+      "stored_sha256": "1dc109544428d5d5c85ce96d8226d7b28134e303817257192b91c71bb0c962c5",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/security-consumers/commands.json.gz",
+          "bytes": 184,
+          "sha256": "1dc109544428d5d5c85ce96d8226d7b28134e303817257192b91c71bb0c962c5"
+        }
+      ]
+    },
+    {
+      "original_path": "security-consumers/generated.patch",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "gzip",
+      "stored_bytes": 20,
+      "stored_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/security-consumers/generated.patch.gz",
+          "bytes": 20,
+          "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+        }
+      ]
+    },
+    {
+      "original_path": "security-consumers/source-provenance.json",
+      "original_bytes": 1187,
+      "original_sha256": "91a86deb8221f4af1e2a25f6184d71304f3e53b30eaaed5795fe6a37cb51e973",
+      "encoding": "gzip",
+      "stored_bytes": 735,
+      "stored_sha256": "a7dff60fb18ee5dfa102e004ae5c5b720b55ca6fb32b744b32ef86a3fc85b65b",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/security-consumers/source-provenance.json.gz",
+          "bytes": 735,
+          "sha256": "a7dff60fb18ee5dfa102e004ae5c5b720b55ca6fb32b744b32ef86a3fc85b65b"
+        }
+      ]
+    },
+    {
+      "original_path": "security-consumers/v8-artifact-provenance.json",
+      "original_bytes": 443,
+      "original_sha256": "2a290a28319b6a7abe13c4138450328bca1df6373b4f083e8c5c4ee2c88249b9",
+      "encoding": "gzip",
+      "stored_bytes": 294,
+      "stored_sha256": "0b63874effbe1076fe4e18806c75134c7413961b665c9a26ea2914215425592a",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/security-consumers/v8-artifact-provenance.json.gz",
+          "bytes": 294,
+          "sha256": "0b63874effbe1076fe4e18806c75134c7413961b665c9a26ea2914215425592a"
+        }
+      ]
+    },
+    {
+      "original_path": "security-consumers/worktree-status.txt",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "gzip",
+      "stored_bytes": 20,
+      "stored_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/security-consumers/worktree-status.txt.gz",
+          "bytes": 20,
+          "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+        }
+      ]
+    },
+    {
+      "original_path": "original-deny.zip",
+      "original_bytes": 937044,
+      "original_sha256": "39bf4321e33688a87eb8615a68c5ff98e3fe6a6088eb74e4dc9183ca1f9c477a",
+      "encoding": "identity",
+      "stored_bytes": 937044,
+      "stored_sha256": "39bf4321e33688a87eb8615a68c5ff98e3fe6a6088eb74e4dc9183ca1f9c477a",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/original-deny.zip.part-000",
+          "bytes": 400000,
+          "sha256": "45474d2719c015ed6a8a93c14688291e984570601f1e12158e726ad76a281fc4"
+        },
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/original-deny.zip.part-001",
+          "bytes": 400000,
+          "sha256": "8934138e6aa4d12ece071efb511057d916502f5e5936cd3d981ba204fc295b1e"
+        },
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/original-deny.zip.part-002",
+          "bytes": 137044,
+          "sha256": "4d759b22a24bd79cf02af356821aa1cca4ed5a07f19a8635852dc16948c2376f"
+        }
+      ]
+    },
+    {
+      "original_path": "artifact-recovery-deny.json",
+      "original_bytes": 1745,
+      "original_sha256": "e945dd6611e44e788aedb33d7f4b726a5b1d2150572df86b254779c4b3663d4c",
+      "encoding": "gzip",
+      "stored_bytes": 609,
+      "stored_sha256": "b058d27b068cae7cec6277d1370011487ae8a5fc9a0ce27d3ed3891b7f6e0951",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/artifact-recovery-deny.json.gz",
+          "bytes": 609,
+          "sha256": "b058d27b068cae7cec6277d1370011487ae8a5fc9a0ce27d3ed3891b7f6e0951"
+        }
+      ]
+    },
+    {
+      "original_path": "deny/artifact-manifest.json",
+      "original_bytes": 771,
+      "original_sha256": "4fb505f3edb1085067285e454b8600201ddfa8361cf3fd12168329b693e7de73",
+      "encoding": "gzip",
+      "stored_bytes": 366,
+      "stored_sha256": "c7e586bca76e6e085242f6e052b68179fea6e5379564c0b9b6951c75b3617f7f",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/deny/artifact-manifest.json.gz",
+          "bytes": 366,
+          "sha256": "c7e586bca76e6e085242f6e052b68179fea6e5379564c0b9b6951c75b3617f7f"
+        }
+      ]
+    },
+    {
+      "original_path": "deny/command-1.log",
+      "original_bytes": 18,
+      "original_sha256": "adb7fef6f86abdd43a1514a9c4afe36bfb27d64bd1b956bf1c82d9480587fe85",
+      "encoding": "gzip",
+      "stored_bytes": 38,
+      "stored_sha256": "bdb820a7090678989469c28a7d38e3ed9594ce8a96f30410b7e3d89bde49c580",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/deny/command-1.log.gz",
+          "bytes": 38,
+          "sha256": "bdb820a7090678989469c28a7d38e3ed9594ce8a96f30410b7e3d89bde49c580"
+        }
+      ]
+    },
+    {
+      "original_path": "deny/command-2.log",
+      "original_bytes": 15779611,
+      "original_sha256": "08dd8e74797507f5a85916d573d33bf7fb2f61f3be5e00f249b0b3527f58d802",
+      "encoding": "gzip",
+      "stored_bytes": 862631,
+      "stored_sha256": "f67691585a692164b8c36f00b4987cab01e00e7398f39847a66a41aa20d42ef1",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/deny/command-2.log.gz.part-000",
+          "bytes": 400000,
+          "sha256": "b1603422be2a1a0bfac3bbcf628ee1854a975063a5521b0829ede6ef7aaa3c74"
+        },
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/deny/command-2.log.gz.part-001",
+          "bytes": 400000,
+          "sha256": "acebe864d932dd717068faafac83652720a323b31a7f40975e6d68f82d0ed0fd"
+        },
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/deny/command-2.log.gz.part-002",
+          "bytes": 62631,
+          "sha256": "45958f22af89b601562ee6efa170a171113b38fdaf26b0c640c9b7505b7388cd"
+        }
+      ]
+    },
+    {
+      "original_path": "deny/commands.json",
+      "original_bytes": 360,
+      "original_sha256": "0cdd612d0427f77cd032df542f4302f5e0cf059f09df3b00d42ecb2bd36fc437",
+      "encoding": "gzip",
+      "stored_bytes": 176,
+      "stored_sha256": "2f8959ade3b635b46ddbc053ed96d20682ce3ec08ba5804c0c374142fa1dbc25",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/deny/commands.json.gz",
+          "bytes": 176,
+          "sha256": "2f8959ade3b635b46ddbc053ed96d20682ce3ec08ba5804c0c374142fa1dbc25"
+        }
+      ]
+    },
+    {
+      "original_path": "deny/generated.patch",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "gzip",
+      "stored_bytes": 20,
+      "stored_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/deny/generated.patch.gz",
+          "bytes": 20,
+          "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+        }
+      ]
+    },
+    {
+      "original_path": "deny/source-provenance.json",
+      "original_bytes": 1179,
+      "original_sha256": "b767194d0f4ace1f3cde2d658875501f46773b736bbeba6dda727c0ef5c2171a",
+      "encoding": "gzip",
+      "stored_bytes": 727,
+      "stored_sha256": "9c1cfba5a396fbac647fdd56f7d0977b822dfe339a3a1f770f50672576dafb4e",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/deny/source-provenance.json.gz",
+          "bytes": 727,
+          "sha256": "9c1cfba5a396fbac647fdd56f7d0977b822dfe339a3a1f770f50672576dafb4e"
+        }
+      ]
+    },
+    {
+      "original_path": "deny/worktree-status.txt",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "gzip",
+      "stored_bytes": 20,
+      "stored_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "parts": [
+        {
+          "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/deny/worktree-status.txt.gz",
+          "bytes": 20,
+          "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+        }
+      ]
+    }
+  ],
+  "artifact_audits": [
+    {
+      "lane": "windows",
+      "artifact_id": 12949610873,
+      "archive_sha256": "da915dcc7eea245fe86f17191eabafc5184775782d261167f0ac55123c42475c",
+      "all_artifact_manifest_members_verified": true,
+      "source_head": "6396bc013fdb16a955cced8a746e27279311361c",
+      "source_tree": "9d1c618826d394568a5e4a5064239739337eb518",
+      "source_identity_basis": "The authenticated original artifact source-provenance record; all manifested archive member byte counts and SHA256 were reverified. This recovery does not claim a new execution or a new independent input checkout comparison.",
+      "commands": [
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-utils-path",
+            "-p",
+            "codex-hepta-prompt-registry",
+            "-p",
+            "codex-hepta-contracts",
+            "--lib",
+            "--locked"
+          ],
+          "exit_code": 0,
+          "log": "command-1.log"
+        },
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-utils-pty",
+            "--lib",
+            "--locked"
+          ],
+          "exit_code": 1,
+          "log": "command-2.log"
+        },
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-intelligence",
+            "-p",
+            "codex-hepta-prompt-optimizer",
+            "-p",
+            "codex-hepta-operator-acceptance",
+            "-p",
+            "codex-hepta-shadow-qualification",
+            "--lib",
+            "--locked"
+          ],
+          "exit_code": 1,
+          "log": "command-3.log"
+        },
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-v8-poc",
+            "--lib",
+            "--features",
+            "sandbox",
+            "--locked"
+          ],
+          "exit_code": 0,
+          "log": "command-4.log"
+        }
+      ],
+      "junit": [
+        {
+          "artifact_member": "command-1-junit/0/local/junit.xml",
+          "sha256": "c985c0a9f632f34488188d5e5eaef071d5980008207124d615d676fee0bf88ad",
+          "suites": [
+            {
+              "name": "codex-hepta-contracts",
+              "cases": 129,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "failed_tests": []
+            },
+            {
+              "name": "codex-hepta-prompt-registry",
+              "cases": 30,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "failed_tests": []
+            },
+            {
+              "name": "codex-utils-path",
+              "cases": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "failed_tests": []
+            }
+          ]
+        },
+        {
+          "artifact_member": "command-2-junit/0/local/junit.xml",
+          "sha256": "db1a1b2796abad0c52bc916b2778ccc7992bc5f377ce152981dfd24870f403f3",
+          "suites": [
+            {
+              "name": "codex-utils-pty",
+              "cases": 25,
+              "failures": 1,
+              "errors": 0,
+              "skipped": 0,
+              "failed_tests": [
+                "tests::windows_tests::conpty_ctrl_c_interrupts_powershell_foreground_child"
+              ]
+            }
+          ]
+        },
+        {
+          "artifact_member": "command-4-junit/0/local/junit.xml",
+          "sha256": "6ccb8d62c33e932cc54528aaf51aa2b0568586728f28dd0aad3b828f4671ac3e",
+          "suites": [
+            {
+              "name": "codex-v8-poc",
+              "cases": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "failed_tests": []
+            }
+          ]
+        }
+      ],
+      "limitations": [
+        "Command 2 has one failing Ctrl-C test.",
+        "Command 3 stopped on the missing std::fs import before any runtime tests.",
+        "The seven V8 tests cover codex-v8-poc only, not codex-code-mode-runtime."
+      ]
+    },
+    {
+      "lane": "security-consumers",
+      "artifact_id": 12948414861,
+      "archive_sha256": "99234da087fad95b5451e9123411c322c54d0d2a713e8372823602cdafb7ac84",
+      "all_artifact_manifest_members_verified": true,
+      "source_head": "6396bc013fdb16a955cced8a746e27279311361c",
+      "source_tree": "9d1c618826d394568a5e4a5064239739337eb518",
+      "source_identity_basis": "The authenticated original artifact source-provenance record; all manifested archive member byte counts and SHA256 were reverified. This recovery does not claim a new execution or a new independent input checkout comparison.",
+      "commands": [
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-aws-auth",
+            "-p",
+            "codex-hepta-matrix-sdk",
+            "-p",
+            "codex-secrets",
+            "-p",
+            "codex-execpolicy",
+            "--lib",
+            "--locked"
+          ],
+          "exit_code": 0,
+          "log": "command-1.log"
+        },
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-core-plugins",
+            "--lib",
+            "--locked"
+          ],
+          "exit_code": 101,
+          "log": "command-2.log"
+        }
+      ],
+      "junit": [
+        {
+          "artifact_member": "command-1-junit/0/local/junit.xml",
+          "sha256": "ebe4325b96c75611b28954cd025db71dd080f69be6d042b87ba02ad784787067",
+          "suites": [
+            {
+              "name": "codex-aws-auth",
+              "cases": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "failed_tests": []
+            },
+            {
+              "name": "codex-execpolicy",
+              "cases": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "failed_tests": []
+            },
+            {
+              "name": "codex-hepta-matrix-sdk",
+              "cases": 22,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "failed_tests": []
+            },
+            {
+              "name": "codex-secrets",
+              "cases": 9,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "failed_tests": []
+            }
+          ]
+        }
+      ],
+      "limitations": [
+        "Command 2 stopped at ambiguous assert_eq imports; no core-plugins test success is inferred.",
+        "The Matrix SDK unit results do not qualify Matrixd or real Synapse integration."
+      ]
+    },
+    {
+      "lane": "deny",
+      "artifact_id": 12948803740,
+      "archive_sha256": "39bf4321e33688a87eb8615a68c5ff98e3fe6a6088eb74e4dc9183ca1f9c477a",
+      "all_artifact_manifest_members_verified": true,
+      "source_head": "6396bc013fdb16a955cced8a746e27279311361c",
+      "source_tree": "9d1c618826d394568a5e4a5064239739337eb518",
+      "source_identity_basis": "The authenticated original artifact source-provenance record; all manifested archive member byte counts and SHA256 were reverified. This recovery does not claim a new execution or a new independent input checkout comparison.",
+      "commands": [
+        {
+          "argv": [
+            "cargo",
+            "deny",
+            "--version"
+          ],
+          "exit_code": 0,
+          "log": "command-1.log"
+        },
+        {
+          "argv": [
+            "cargo",
+            "deny",
+            "--log-level",
+            "warn",
+            "--manifest-path",
+            "codex-rs/Cargo.toml",
+            "--all-features",
+            "check"
+          ],
+          "exit_code": 0,
+          "log": "command-2.log"
+        }
+      ],
+      "junit": [],
+      "warnings_by_code": {
+        "license-not-encountered": 1,
+        "duplicate": 112,
+        "unmatched-source": 1,
+        "unused-wrapper": 1,
+        "yanked": 3
+      },
+      "limitations": [
+        "The exact original cargo-deny policy passed with warnings, not a zero-warning claim."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "base_head": "35c9ff15f6759b024459a14eaa39a5e5a3a65edf",
+  "phase": "pre-format, native validation pending",
+  "root_changes": {
+    "state_cold_images": "Canonicalize two newly created fixture homes before binding the unchanged strict recovery guard.",
+    "rollout_state_queries": "StateRuntime stores its canonical SQLite home. Two query helpers now accept an alias only while it resolves to the same bound home; foreign or missing aliases are rejected.",
+    "real_query_regression": "Both real query APIs succeed through a same-home alias, reject retargeted and missing aliases, and preserve original metadata and a foreign sentinel.",
+    "workflow": "Use officially available Python 3.13.17 on Mac, a Mac formatter runner, actual Windows helper bundle gates, Mac path observation and state/rollout/thread-store gates."
+  },
+  "independent_read_only_review": {
+    "reviewer": "phase2_network/pty_rebuild_review",
+    "result": "No must-fix source error found; no compilation performed.",
+    "limits": [
+      "Canonicalization is a point-in-time alias check, not a pinned-alias lease. Later alias changes cannot redirect calls away from the already-bound runtime.",
+      "Literal-equality fast path preserves existing behavior.",
+      "PTY READY and RESULT may coalesce after scheduling delay; diagnostic can report an error while readiness transcript retains RESULT. Original PowerShell assertion is unchanged.",
+      "Preserve means post-CPython-startup state. Neither observer route proves the PowerShell cause."
+    ]
+  },
+  "verification": {
+    "git_diff_check": "exit 0",
+    "targeted_codespell_2_4_3": "exit 0 after byte-exact raw-evidence archival",
+    "workflow_yaml_and_embedded_python": "parse succeeded",
+    "just_fmt": "pending remote canonical lane",
+    "native_just_test_and_just_fix": "pending; no current-source pass claim"
+  },
+  "research_protocols_or_confirmation_changed": false,
+  "sources": [
+    {
+      "path": ".github/workflows/hepta-operator-diagnostics.yml",
+      "sha256": "a7ef83f6deaea0f94aeb8495f1da215cec433c2dedd70153ce1b46e97c464418",
+      "bytes": 20133
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_image_tests.rs",
+      "sha256": "66c4357281ab623ddb5deb3dae1add55c72b1415845041841ed3b4af9bbc235e",
+      "bytes": 4009
+    },
+    {
+      "path": "codex-rs/rollout/src/state_db.rs",
+      "sha256": "8a7714f1028894f9dc2e68a0dbe9303b0fe27a58f7f3a686ae9fcd274feaeb11",
+      "bytes": 25458
+    },
+    {
+      "path": "codex-rs/rollout/src/state_db_alias_tests.rs",
+      "sha256": "93e2fd01596cc6deb984dd1fd1699e72b24627cb3f5e7f321240a90d1c2c3906",
+      "bytes": 2937
+    }
+  ]
+}

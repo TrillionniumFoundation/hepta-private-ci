@@ -1,0 +1,94 @@
+{
+  "schema": 1,
+  "created_utc": "2026-10-30T16:35:55.640150+00:00",
+  "scope": "Reconstruct unpublished PTY test changes after ephemeral workspace loss.",
+  "local_base_commit": "8976aee9209c353131ce3cf67d8318bd6a9e2de2",
+  "other_remote_work_parent_reported_preserved": "35c9ff15f6759b024459a14eaa39a5e5a3a65edf",
+  "recovery_kind": "Reconstructed from visible task history and current baseline, not byte-exact restoration of the lost unpublished source.",
+  "old_unpublished_source_found": false,
+  "source_scope": "Four files in utils/pty tests only; no production, manifest, workflow, retry, or environment changes.",
+  "changes": [
+    "Split the Python readiness marker across two string literals so terminal echo cannot satisfy readiness.",
+    "Add a manually polled channel regression that first delivers echoed input, then executed output.",
+    "Retain the 4 MiB drain workload and two-second deadline; append backend, Python command, elapsed-time, queue-length and process-status diagnostics.",
+    "Retain accumulated output on marker timeout.",
+    "Run two private native-CPython control-event observations before the original PowerShell ping assertion; preserve and reset only differ by a child-local ignore-flag reset."
+  ],
+  "source_contract_checks": {
+    "original_windows_source_recovered_exactly_after_removing_additive_diagnostics": true,
+    "original_windows_10_second_deadlines_count": 3,
+    "original_ping_raw_0x03_200ms_followup_and_exit_assertion_unchanged": true,
+    "drain_payload_bytes": 4194304,
+    "drain_deadline_seconds": 2,
+    "child_python_ast": "passed",
+    "child_python_sha256": "7bfb27c7221a46ad23fd6f5eafbd7d5e66197f2bbe5121f16bd450e1c4b8efca"
+  },
+  "callback_lifetime": {
+    "ownership": "The callback object and event handle are module globals in one private child.",
+    "termination": "The child uses os._exit after flushed output; process termination owns event cleanup and avoids Python interpreter teardown while a control-handler thread may enter it.",
+    "no_unregistration_join_claim": true,
+    "no_handle_close_while_callback_can_run": true,
+    "mode_error": "null when GetConsoleMode succeeds; captured immediately on failure.",
+    "wait_error": "Captured immediately only when WaitForSingleObject returns WAIT_FAILED (0xffffffff); WAIT_TIMEOUT is a distinct observation."
+  },
+  "observation_limits": [
+    "Preserve describes state after CPython and CRT startup; it does not establish the raw inherited ignore attribute.",
+    "A difference between the two Python children does not prove the original PowerShell/ping failure has the same cause.",
+    "The child begins a bounded 1500 ms observation after printing readiness; transport and scheduling latency can consume that interval.",
+    "No observed control event is not proof that delivery could never occur.",
+    "Both routes and their errors remain reported; their measurements do not replace the original PowerShell success assertion."
+  ],
+  "new_validation": {
+    "python_syntax": "passed",
+    "source_contract_checks": "passed",
+    "standalone_linux_pty_echo_proof": {
+      "command": "python3 experiments/first_passage_operator/ci_evidence/recovery_8976/pty_rebuild/echo_execution_proof.py",
+      "exit_code": 0,
+      "elapsed_seconds": 0.023596525999892037,
+      "scope": "Two owned, pipe-gated subprocesses; original echo contains marker before execution, split echo does not, and both execute to the same marker. Not a Rust or macOS result.",
+      "input_source_sha256": "93f8913f0bc385683af947b112986595f16cb39d21456cc2b8f887c68f1787a3"
+    },
+    "canonical_format": "pending remote execution by parent",
+    "rust_native_tests": "not invoked",
+    "windows_native_ab_observation": "not invoked",
+    "macos_native_tests": "not invoked",
+    "strict_clippy_and_just_fix": "not invoked"
+  },
+  "resource_block": {
+    "instruction": "No tool installation or local native build; parent will run canonical format and actual original tests remotely.",
+    "observed": {
+      "filesystem_free_bytes": 521723904,
+      "filesystem_available_bytes": 0,
+      "memory.current": "7672156160",
+      "memory.max": "8589934592",
+      "memory.events": "low 0\nhigh 0\nmax 1694033\noom 0\noom_kill 0\noom_group_kill 0"
+    }
+  },
+  "historical_evidence": [
+    {
+      "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/windows/command-2.log.gz",
+      "bytes": 2165,
+      "sha256": "ebf2cafbfe62cdeb56aa690efb2e1cae8888eb1cd6fbb68ef0fa704baab79667",
+      "decoded_sha256": "a88a06e5a541ce211ed4eed685068e6f89c560aee5fdaa823e36d74f70820ebe"
+    },
+    {
+      "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/windows/command-2-junit/0/local/junit.xml.gz",
+      "bytes": 1377,
+      "sha256": "e0cd3597eb6bf0b41f927ad25fdc16015b4dae72840e8cd031d2378644238f8b",
+      "decoded_sha256": "db1a1b2796abad0c52bc916b2778ccc7992bc5f377ce152981dfd24870f403f3"
+    },
+    {
+      "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/mac-intel.log.gz",
+      "bytes": 198041,
+      "sha256": "0584e31bc6979f3f73fb4a2098bddc8a5a8ec0f81a4dfced3df394c6de956dc4",
+      "decoded_sha256": "31dd6a135c97ea0fee76460736764f8405a0d00865c1af96ae5bf08d1ef6aa21"
+    }
+  ],
+  "historical_failure": "6396 Windows JUnit: 25 tests, 24 pass, one Ctrl-C failure and one failed rerun. Existing Mac Intel log records the two unchanged PTY failures. Those results predate these reconstructed files.",
+  "remaining_gates": [
+    "Canonical formatter and original scoped just test on the exact new source.",
+    "Actual Windows control-event observations and the original PowerShell/ping test.",
+    "Actual Mac readiness and 4 MiB output-drain tests; the drain cause remains unresolved.",
+    "Strict scoped Clippy and required just fix, with distinct records for environment failures."
+  ]
+}

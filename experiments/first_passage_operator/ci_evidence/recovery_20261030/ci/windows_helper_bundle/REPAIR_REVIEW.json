@@ -1,0 +1,190 @@
+{
+  "base_local_head": "8976aee9209c353131ce3cf67d8318bd6a9e2de2",
+  "source_changes": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/tests/helper_manifest.rs",
+      "before_sha256": "6f8afae11af3bfeea64843e2e2116cc32339a16bc183982341b9bb49e68ad233",
+      "sha256": "edc8d029350d66f9a427ecdf6178af50b655967014b1b51a38a2fc8695e86ced",
+      "bytes": 3284
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/Cargo.toml",
+      "before_sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d",
+      "sha256": "dce261976c1eb7b943da155c6663241b3631e21ff8221df268ff1d104cba33fe",
+      "bytes": 2483
+    },
+    {
+      "path": "codex-rs/exec-server/Cargo.toml",
+      "before_sha256": "b8641cebd95d435df3ea56bc85b3efbf237260e7f29a1c0beacf9f295c83d366",
+      "sha256": "c45429a966e8d087144085598cac8c63e6e9b285fad97a5700294b409665ee14",
+      "bytes": 2741
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "before_sha256": "7cd3ac48f8a03093674bf8e54ffa8b86dcbeaac64d535b1d8c59b21e5dd327e3",
+      "sha256": "b07d974847eded24b53d7b765849846238164d6b7aaa9bf0ca34e4341d8b7e1b",
+      "bytes": 422663
+    },
+    {
+      "path": "codex-rs/exec-server/BUILD.bazel",
+      "before_sha256": "7098fd4e727ccc4a64059cbc89aaf3d4bfe2c1b1bbdcfea79d974e186d8dce6e",
+      "sha256": "7ebe1f8d7aa1f5bbe8eb55b8f3914af11ca97032cd604cc68686ad4fd2cc2244",
+      "bytes": 890
+    },
+    {
+      "path": "codex-rs/exec-server/tests/common/exec_server.rs",
+      "before_sha256": "5a8ad34ef0f3367b83dd3d3722dc7362b95ec5c82af1be9b7a3f92e4f7db14b2",
+      "sha256": "c468401b81e333e574dce218d27b990da1e57d1fa16da238e7ae21ebfab8903f",
+      "bytes": 14665
+    }
+  ],
+  "failure_evidence": [
+    {
+      "job_id": 123853058007,
+      "original_source_head": "6396bc013fdb16a955cced8a746e27279311361c",
+      "original_log_sha256": "5676020b330692d30d7d924df1f75afa228a533b44ffcc86c4dd0bcde3e1fc1e",
+      "log": "../remote_6396/blocking/win-shard2.log.gz",
+      "excerpts": [
+        {
+          "first_original_line": 2682,
+          "last_original_line": 2692,
+          "text": "2026-10-30T02:27:52.4202949Z running 1 test\n2026-10-30T02:27:52.4203848Z test setup_helper_embeds_as_invoker_manifest ... FAILED\n2026-10-30T02:27:52.4204438Z \n2026-10-30T02:27:52.4204728Z failures:\n2026-10-30T02:27:52.4205099Z \n2026-10-30T02:27:52.4205519Z ---- setup_helper_embeds_as_invoker_manifest stdout ----\n2026-10-30T02:27:52.4206510Z Error: find setup helper _main/codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup.exe\n2026-10-30T02:27:52.4207299Z \n2026-10-30T02:27:52.4207590Z Caused by:\n2026-10-30T02:27:52.4208218Z     The system cannot find the path specified. (os error 3)\n2026-10-30T02:27:52.4208796Z "
+        },
+        {
+          "first_original_line": 4434,
+          "last_original_line": 4444,
+          "text": "2026-10-30T02:34:14.1143622Z running 1 test\n2026-10-30T02:34:14.1144057Z test setup_helper_embeds_as_invoker_manifest ... FAILED\n2026-10-30T02:34:14.1144482Z \n2026-10-30T02:34:14.1144660Z failures:\n2026-10-30T02:34:14.1144841Z \n2026-10-30T02:34:14.1145149Z ---- setup_helper_embeds_as_invoker_manifest stdout ----\n2026-10-30T02:34:14.1145935Z Error: find setup helper _main/codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup.exe\n2026-10-30T02:34:14.1146575Z \n2026-10-30T02:34:14.1146700Z Caused by:\n2026-10-30T02:34:14.1147452Z     The system cannot find the path specified. (os error 3)\n2026-10-30T02:34:14.1148546Z "
+        }
+      ]
+    },
+    {
+      "job_id": 123853058091,
+      "original_source_head": "6396bc013fdb16a955cced8a746e27279311361c",
+      "original_log_sha256": "051df7c7b7ff36fd3962d2eaa4d2beccc6fc2374bf09857f46a69725af4ff897",
+      "log": "../remote_6396/blocking/win-shard4.log.gz",
+      "excerpts": [
+        {
+          "first_original_line": 3136,
+          "last_original_line": 3146,
+          "text": "2026-10-30T02:35:27.9332120Z test shared::path_uri_join_and_parent_preserve_lexical_paths ... ok\n2026-10-30T02:35:27.9332812Z test shared::sandbox_context_from_profile_preserves_workspace_write_read_only_subpaths ... ok\n2026-10-30T02:35:27.9333458Z \n2026-10-30T02:35:27.9333616Z failures:\n2026-10-30T02:35:27.9333785Z \n2026-10-30T02:35:27.9334098Z ---- file_system_operations_can_reject_junctions_in_any_path_component::local stdout ----\n2026-10-30T02:35:27.9335262Z Error: fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:27.9336095Z \n2026-10-30T02:35:27.9336489Z ---- file_system_operations_can_reject_junctions_in_any_path_component::remote stdout ----\n2026-10-30T02:35:27.9338088Z Error: fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:27.9339188Z "
+        },
+        {
+          "first_original_line": 3139,
+          "last_original_line": 3149,
+          "text": "2026-10-30T02:35:27.9333616Z failures:\n2026-10-30T02:35:27.9333785Z \n2026-10-30T02:35:27.9334098Z ---- file_system_operations_can_reject_junctions_in_any_path_component::local stdout ----\n2026-10-30T02:35:27.9335262Z Error: fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:27.9336095Z \n2026-10-30T02:35:27.9336489Z ---- file_system_operations_can_reject_junctions_in_any_path_component::remote stdout ----\n2026-10-30T02:35:27.9338088Z Error: fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:27.9339188Z \n2026-10-30T02:35:27.9339609Z ---- shared::file_system_create_directory_creates_nested_directories::local_sandboxed_no_follow stdout ----\n2026-10-30T02:35:27.9340624Z Error: mode=local, sandboxed=true\n2026-10-30T02:35:27.9340911Z "
+        },
+        {
+          "first_original_line": 3145,
+          "last_original_line": 3155,
+          "text": "2026-10-30T02:35:27.9338088Z Error: fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:27.9339188Z \n2026-10-30T02:35:27.9339609Z ---- shared::file_system_create_directory_creates_nested_directories::local_sandboxed_no_follow stdout ----\n2026-10-30T02:35:27.9340624Z Error: mode=local, sandboxed=true\n2026-10-30T02:35:27.9340911Z \n2026-10-30T02:35:27.9341049Z Caused by:\n2026-10-30T02:35:27.9341879Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:27.9342658Z \n2026-10-30T02:35:27.9344388Z ---- shared::file_system_create_directory_creates_nested_directories::remote_sandboxed_no_follow stdout ----\n2026-10-30T02:35:27.9345318Z Error: mode=remote, sandboxed=true\n2026-10-30T02:35:27.9345993Z "
+        },
+        {
+          "first_original_line": 3151,
+          "last_original_line": 3161,
+          "text": "2026-10-30T02:35:27.9341879Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:27.9342658Z \n2026-10-30T02:35:27.9344388Z ---- shared::file_system_create_directory_creates_nested_directories::remote_sandboxed_no_follow stdout ----\n2026-10-30T02:35:27.9345318Z Error: mode=remote, sandboxed=true\n2026-10-30T02:35:27.9345993Z \n2026-10-30T02:35:27.9346129Z Caused by:\n2026-10-30T02:35:27.9346962Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:27.9347658Z \n2026-10-30T02:35:27.9348051Z ---- shared::file_system_remove_no_follow_removes_file_and_empty_directory::local_sandboxed stdout ----\n2026-10-30T02:35:27.9348696Z Error: mode=local, sandboxed=true\n2026-10-30T02:35:27.9348950Z "
+        },
+        {
+          "first_original_line": 3157,
+          "last_original_line": 3167,
+          "text": "2026-10-30T02:35:27.9346962Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:27.9347658Z \n2026-10-30T02:35:27.9348051Z ---- shared::file_system_remove_no_follow_removes_file_and_empty_directory::local_sandboxed stdout ----\n2026-10-30T02:35:27.9348696Z Error: mode=local, sandboxed=true\n2026-10-30T02:35:27.9348950Z \n2026-10-30T02:35:27.9349045Z Caused by:\n2026-10-30T02:35:27.9349891Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:27.9350675Z \n2026-10-30T02:35:27.9351060Z ---- shared::file_system_remove_no_follow_removes_file_and_empty_directory::remote_sandboxed stdout ----\n2026-10-30T02:35:27.9351695Z Error: mode=remote, sandboxed=true\n2026-10-30T02:35:27.9352164Z "
+        },
+        {
+          "first_original_line": 3163,
+          "last_original_line": 3173,
+          "text": "2026-10-30T02:35:27.9349891Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:27.9350675Z \n2026-10-30T02:35:27.9351060Z ---- shared::file_system_remove_no_follow_removes_file_and_empty_directory::remote_sandboxed stdout ----\n2026-10-30T02:35:27.9351695Z Error: mode=remote, sandboxed=true\n2026-10-30T02:35:27.9352164Z \n2026-10-30T02:35:27.9352268Z Caused by:\n2026-10-30T02:35:27.9353035Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:27.9354021Z \n2026-10-30T02:35:27.9354346Z ---- shared::file_system_write_file_writes_bytes::local_sandboxed_no_follow stdout ----\n2026-10-30T02:35:27.9354896Z Error: mode=local, sandboxed=true\n2026-10-30T02:35:27.9355341Z "
+        },
+        {
+          "first_original_line": 3169,
+          "last_original_line": 3179,
+          "text": "2026-10-30T02:35:27.9353035Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:27.9354021Z \n2026-10-30T02:35:27.9354346Z ---- shared::file_system_write_file_writes_bytes::local_sandboxed_no_follow stdout ----\n2026-10-30T02:35:27.9354896Z Error: mode=local, sandboxed=true\n2026-10-30T02:35:27.9355341Z \n2026-10-30T02:35:27.9355459Z Caused by:\n2026-10-30T02:35:27.9356260Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:27.9357032Z \n2026-10-30T02:35:27.9357323Z ---- shared::file_system_write_file_writes_bytes::remote_sandboxed_no_follow stdout ----\n2026-10-30T02:35:27.9357912Z Error: mode=remote, sandboxed=true\n2026-10-30T02:35:27.9358124Z "
+        },
+        {
+          "first_original_line": 3175,
+          "last_original_line": 3185,
+          "text": "2026-10-30T02:35:27.9356260Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:27.9357032Z \n2026-10-30T02:35:27.9357323Z ---- shared::file_system_write_file_writes_bytes::remote_sandboxed_no_follow stdout ----\n2026-10-30T02:35:27.9357912Z Error: mode=remote, sandboxed=true\n2026-10-30T02:35:27.9358124Z \n2026-10-30T02:35:27.9358257Z Caused by:\n2026-10-30T02:35:27.9359042Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:27.9359814Z \n2026-10-30T02:35:27.9359818Z \n2026-10-30T02:35:27.9359923Z failures:\n2026-10-30T02:35:27.9360350Z     file_system_operations_can_reject_junctions_in_any_path_component::local"
+        },
+        {
+          "first_original_line": 3596,
+          "last_original_line": 3606,
+          "text": "2026-10-30T02:35:51.3869301Z test shared::path_uri_join_and_parent_preserve_lexical_paths ... ok\n2026-10-30T02:35:51.3869990Z test shared::sandbox_context_from_profile_preserves_workspace_write_read_only_subpaths ... ok\n2026-10-30T02:35:51.3870427Z \n2026-10-30T02:35:51.3870513Z failures:\n2026-10-30T02:35:51.3870622Z \n2026-10-30T02:35:51.3870916Z ---- file_system_operations_can_reject_junctions_in_any_path_component::local stdout ----\n2026-10-30T02:35:51.3872011Z Error: fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:51.3872785Z \n2026-10-30T02:35:51.3873067Z ---- file_system_operations_can_reject_junctions_in_any_path_component::remote stdout ----\n2026-10-30T02:35:51.3874118Z Error: fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:51.3874864Z "
+        },
+        {
+          "first_original_line": 3599,
+          "last_original_line": 3609,
+          "text": "2026-10-30T02:35:51.3870513Z failures:\n2026-10-30T02:35:51.3870622Z \n2026-10-30T02:35:51.3870916Z ---- file_system_operations_can_reject_junctions_in_any_path_component::local stdout ----\n2026-10-30T02:35:51.3872011Z Error: fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:51.3872785Z \n2026-10-30T02:35:51.3873067Z ---- file_system_operations_can_reject_junctions_in_any_path_component::remote stdout ----\n2026-10-30T02:35:51.3874118Z Error: fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:51.3874864Z \n2026-10-30T02:35:51.3875220Z ---- shared::file_system_create_directory_creates_nested_directories::local_sandboxed_no_follow stdout ----\n2026-10-30T02:35:51.3875773Z Error: mode=local, sandboxed=true\n2026-10-30T02:35:51.3875966Z "
+        },
+        {
+          "first_original_line": 3605,
+          "last_original_line": 3615,
+          "text": "2026-10-30T02:35:51.3874118Z Error: fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:51.3874864Z \n2026-10-30T02:35:51.3875220Z ---- shared::file_system_create_directory_creates_nested_directories::local_sandboxed_no_follow stdout ----\n2026-10-30T02:35:51.3875773Z Error: mode=local, sandboxed=true\n2026-10-30T02:35:51.3875966Z \n2026-10-30T02:35:51.3876040Z Caused by:\n2026-10-30T02:35:51.3876780Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:51.3877634Z \n2026-10-30T02:35:51.3878003Z ---- shared::file_system_create_directory_creates_nested_directories::remote_sandboxed_no_follow stdout ----\n2026-10-30T02:35:51.3878573Z Error: mode=remote, sandboxed=true\n2026-10-30T02:35:51.3878774Z "
+        },
+        {
+          "first_original_line": 3611,
+          "last_original_line": 3621,
+          "text": "2026-10-30T02:35:51.3876780Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:51.3877634Z \n2026-10-30T02:35:51.3878003Z ---- shared::file_system_create_directory_creates_nested_directories::remote_sandboxed_no_follow stdout ----\n2026-10-30T02:35:51.3878573Z Error: mode=remote, sandboxed=true\n2026-10-30T02:35:51.3878774Z \n2026-10-30T02:35:51.3878855Z Caused by:\n2026-10-30T02:35:51.3879581Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:51.3880301Z \n2026-10-30T02:35:51.3880637Z ---- shared::file_system_remove_no_follow_removes_file_and_empty_directory::local_sandboxed stdout ----\n2026-10-30T02:35:51.3881347Z Error: mode=local, sandboxed=true\n2026-10-30T02:35:51.3881559Z "
+        },
+        {
+          "first_original_line": 3617,
+          "last_original_line": 3627,
+          "text": "2026-10-30T02:35:51.3879581Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:51.3880301Z \n2026-10-30T02:35:51.3880637Z ---- shared::file_system_remove_no_follow_removes_file_and_empty_directory::local_sandboxed stdout ----\n2026-10-30T02:35:51.3881347Z Error: mode=local, sandboxed=true\n2026-10-30T02:35:51.3881559Z \n2026-10-30T02:35:51.3881638Z Caused by:\n2026-10-30T02:35:51.3882363Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:51.3883074Z \n2026-10-30T02:35:51.3883424Z ---- shared::file_system_remove_no_follow_removes_file_and_empty_directory::remote_sandboxed stdout ----\n2026-10-30T02:35:51.3884879Z Error: mode=remote, sandboxed=true\n2026-10-30T02:35:51.3885058Z "
+        },
+        {
+          "first_original_line": 3623,
+          "last_original_line": 3633,
+          "text": "2026-10-30T02:35:51.3882363Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:51.3883074Z \n2026-10-30T02:35:51.3883424Z ---- shared::file_system_remove_no_follow_removes_file_and_empty_directory::remote_sandboxed stdout ----\n2026-10-30T02:35:51.3884879Z Error: mode=remote, sandboxed=true\n2026-10-30T02:35:51.3885058Z \n2026-10-30T02:35:51.3885140Z Caused by:\n2026-10-30T02:35:51.3885857Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:51.3886573Z \n2026-10-30T02:35:51.3886830Z ---- shared::file_system_write_file_writes_bytes::local_sandboxed_no_follow stdout ----\n2026-10-30T02:35:51.3887311Z Error: mode=local, sandboxed=true\n2026-10-30T02:35:51.3887496Z "
+        },
+        {
+          "first_original_line": 3629,
+          "last_original_line": 3639,
+          "text": "2026-10-30T02:35:51.3885857Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:51.3886573Z \n2026-10-30T02:35:51.3886830Z ---- shared::file_system_write_file_writes_bytes::local_sandboxed_no_follow stdout ----\n2026-10-30T02:35:51.3887311Z Error: mode=local, sandboxed=true\n2026-10-30T02:35:51.3887496Z \n2026-10-30T02:35:51.3887716Z Caused by:\n2026-10-30T02:35:51.3888438Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:51.3889162Z \n2026-10-30T02:35:51.3889423Z ---- shared::file_system_write_file_writes_bytes::remote_sandboxed_no_follow stdout ----\n2026-10-30T02:35:51.3889903Z Error: mode=remote, sandboxed=true\n2026-10-30T02:35:51.3890110Z "
+        },
+        {
+          "first_original_line": 3635,
+          "last_original_line": 3645,
+          "text": "2026-10-30T02:35:51.3888438Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:51.3889162Z \n2026-10-30T02:35:51.3889423Z ---- shared::file_system_write_file_writes_bytes::remote_sandboxed_no_follow stdout ----\n2026-10-30T02:35:51.3889903Z Error: mode=remote, sandboxed=true\n2026-10-30T02:35:51.3890110Z \n2026-10-30T02:35:51.3890193Z Caused by:\n2026-10-30T02:35:51.3890922Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n2026-10-30T02:35:51.3891644Z \n2026-10-30T02:35:51.3891658Z \n2026-10-30T02:35:51.3891737Z failures:\n2026-10-30T02:35:51.3892079Z     file_system_operations_can_reject_junctions_in_any_path_component::local"
+        }
+      ]
+    }
+  ],
+  "production_sources_unchanged": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/setup.rs",
+      "sha256": "1fa3bfafe7eb75d3ff009bc7ed741689ee9cf25595f7a5433538c325b1254b09"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/helper_materialization.rs",
+      "sha256": "37746f520536d158c112b7ed2d0ec4d0fc868822d7bf6fab256864b5f4b685b8"
+    },
+    {
+      "path": "codex-rs/exec-server/src/fs_sandbox.rs",
+      "sha256": "6bd757ade4b4df954c30478fdeecf4de955ee94bc959d88e0b546b8a28228b4e"
+    },
+    {
+      "path": "codex-rs/sandboxing/src/manager.rs",
+      "sha256": "5b8e8e46b4a6947eb2a9c7f4de656d4b144374302a49357be213933261826fe3"
+    }
+  ],
+  "design": [
+    "Resolve the actual setup binary with the shared Cargo/Bazel cargo_bin resolver, preserving the existing Windows resource inspection and asInvoker assertions.",
+    "Declare both helper binaries as exec-server Bazel test data and CARGO_BIN_EXE inputs through the existing extra_binaries abstraction. Non-Windows helper main functions are existing panic stubs and these binaries have no Windows-only target-compatibility restriction; the fixture bundle branch compiles only on Windows.",
+    "Create a per-fixture Windows directory containing independent copies of the current test executable, setup helper and command runner. The current-exe bundle path travels through the existing ExecServerRuntimePaths and direct-spawn wrapper. Local FileSystemContext and remote ExecServerHarness retain the directory for the operation lifetime.",
+    "Independent copies intentionally avoid NTFS hard links because genuine setup may add read ACEs to runtime files; linked copies would share the original build output file security descriptor.",
+    "Add only two existing workspace development dependency edges for cargo-bin. No third-party package identity, version, checksum, production lookup, sandbox environment flag, ACL rule, policy assertion or timeout changes."
+  ],
+  "validation": [
+    "git diff --check passed for all six paths.",
+    "Python TOML parse and package-by-package Cargo.lock comparison confirm exactly two added development dependency edges and no version changes.",
+    "Independent source review checked the direct-spawn wrapper, child constructor dispatch and fixture-owned directory lifetime.",
+    "No new Rust build, Cargo metadata solve, Bazel analysis, Windows runtime or formatter execution has been claimed in this resource-constrained environment."
+  ],
+  "required_native_commands": [
+    "just test --locked -p codex-windows-sandbox --test helper_manifest",
+    "just test --locked -p codex-exec-server --test file_system_windows"
+  ],
+  "required_build_gate": "Original just bazel-lock-update plus canonical lock diff review; all original required tests remain active.",
+  "limits": [
+    "The observed eight filesystem integration failures use the direct-spawn wrapper. This repair does not establish coverage of LocalProcess calls that use an in-process native session spawner.",
+    "For the focused Cargo sequence, the helper_manifest command builds the Windows-sandbox package binaries before the exec-server command uses them. Merely adding the resolver dependency does not build another package binaries.",
+    "The existing remote harness Drop starts asynchronous child termination. Explicit shutdown().await waits for exit, but a destructor-only path can still leave a temporary bundle if Windows holds an image mapping during cleanup; no deterministic cleanup claim is made."
+  ]
+}

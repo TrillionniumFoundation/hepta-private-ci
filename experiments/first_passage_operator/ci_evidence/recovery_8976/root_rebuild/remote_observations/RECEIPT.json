@@ -1,0 +1,35 @@
+{
+  "sources": {
+    "codespell6396": {
+      "job": 123852633423,
+      "source_head": "6396bc013fdb16a955cced8a746e27279311361c",
+      "merge_head": "6ab5ce1169f5ffa35ba937ecc8f147b72cf9cd34",
+      "result": "9 raw files, 10 spell-check matches; no raw text changes"
+    },
+    "mac35c9setup": {
+      "job": 124179006005,
+      "source_head": "35c9ff15f6759b024459a14eaa39a5e5a3a65edf",
+      "result": "Python 3.12.14 unavailable for macOS x64; no build or native tests ran"
+    }
+  },
+  "logs": [
+    {
+      "name": "codespell6396",
+      "bytes": 30338,
+      "sha256": "af61b05a78de9ed0f2c528bce3d66c8ad45525febfad07d88f654db788044b7d",
+      "archive_sha256": "6ffd37554a9e7caa1f8f7d13b2f5ad6d6cec3cef6d8089723bc484e9b923b9ab"
+    },
+    {
+      "name": "mac35c9setup",
+      "bytes": 37537,
+      "sha256": "ead33d631f78b78acf6e6a61c84d6ecf37506e460eaa9fe04425fb24abe0e3e2",
+      "archive_sha256": "7833828961f69918571f1d083a88d2619e7c93e04f6cd0ba103cab4197e524f3"
+    }
+  ],
+  "repair": {
+    "macos_python": "3.13.17",
+    "official_manifest": "https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json",
+    "observed_available_filename": "python-3.13.17-darwin-x64.tar.gz",
+    "mac_native_validation": "pending"
+  }
+}

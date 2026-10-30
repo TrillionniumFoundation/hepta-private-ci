@@ -1,0 +1,25 @@
+{
+  "command": [
+    "just",
+    "--justfile",
+    "/home/runner/work/hepta-private-ci/hepta-private-ci/justfile",
+    "test",
+    "--manifest-path",
+    "/home/runner/work/_temp/hepta-vendor-work/Cargo.toml",
+    "-p",
+    "aws-config",
+    "--lib",
+    "--locked",
+    "--features",
+    "credentials-login",
+    "-E",
+    "test(=login::dpop::compatibility_tests::dpop_proof_preserves_es256_header_payload_and_signature)"
+  ],
+  "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+  "exit_code": 0,
+  "seconds": 75.73692345500001,
+  "log": "aws-config.log.gz",
+  "log_uncompressed_bytes": 19567,
+  "log_uncompressed_sha256": "21b42e17252f310e890cd9696e8c7aa46cb3cd640bdb37426649e0c176932d57",
+  "log_gzip_sha256": "e2c08183831c46a5f01088fdcf0e05317f6e3fefe9c023cd230d84b792ceb293"
+}

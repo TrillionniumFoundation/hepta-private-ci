@@ -1,0 +1,26 @@
+{
+  "command": [
+    "just",
+    "--justfile",
+    "/home/runner/work/hepta-private-ci/hepta-private-ci/justfile",
+    "test",
+    "--manifest-path",
+    "/home/runner/work/_temp/hepta-vendor-work/Cargo.toml",
+    "-p",
+    "matrix-sdk",
+    "--lib",
+    "--locked",
+    "--no-default-features",
+    "--features",
+    "e2e-encryption,sqlite",
+    "-E",
+    "test(=event_handler::compatibility_tests::event_context_clone_preserves_type_isolation_and_send_sync)"
+  ],
+  "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+  "exit_code": 0,
+  "seconds": 114.45412766500002,
+  "log": "matrix-sdk.log.gz",
+  "log_uncompressed_bytes": 214246,
+  "log_uncompressed_sha256": "0144a3a1528639c7a9a278b15f77920b8057441f02a290bb351397a001fb9f18",
+  "log_gzip_sha256": "ba718d859b513350ea6eabe986ba8e3b6238934cbae770a3cfe6d2bc8346eda6"
+}

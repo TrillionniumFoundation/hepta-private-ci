@@ -1,0 +1,23 @@
+{
+  "command": [
+    "just",
+    "--justfile",
+    "/home/runner/work/hepta-private-ci/hepta-private-ci/justfile",
+    "test",
+    "--manifest-path",
+    "/home/runner/work/_temp/hepta-vendor-work/Cargo.toml",
+    "-p",
+    "i18n-config",
+    "--lib",
+    "--locked",
+    "-E",
+    "test(=compatibility_tests::public_crate_loader_preserves_package_and_language_config) | test(=compatibility_tests::public_config_loader_preserves_defaults_and_unicode) | test(=compatibility_tests::public_parse_errors_keep_path_and_diagnostic)"
+  ],
+  "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+  "exit_code": 0,
+  "seconds": 6.06984965800001,
+  "log": "i18n-config.log.gz",
+  "log_uncompressed_bytes": 5241,
+  "log_uncompressed_sha256": "29b9acad782a2d6f034427c595a53bd34cc3d64e9c4c4c9b55760ae81f6eea1f",
+  "log_gzip_sha256": "c85a00246e057c7df8aeda616bfe7d5d6fc6e678441b3cab21790c2fe0152ad5"
+}

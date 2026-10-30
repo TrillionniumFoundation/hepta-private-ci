@@ -1,0 +1,243 @@
+{
+  "schema": "hepta.vendor-compatibility.v2",
+  "repo": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+  "work": "/home/runner/work/_temp/hepta-vendor-work",
+  "status": "passed: six focused tests, zero skipped",
+  "expected_tests": {
+    "aws-config": [
+      "login::dpop::compatibility_tests::dpop_proof_preserves_es256_header_payload_and_signature"
+    ],
+    "matrix-sdk": [
+      "event_handler::compatibility_tests::event_context_clone_preserves_type_isolation_and_send_sync"
+    ],
+    "i18n-config": [
+      "compatibility_tests::public_crate_loader_preserves_package_and_language_config",
+      "compatibility_tests::public_config_loader_preserves_defaults_and_unicode",
+      "compatibility_tests::public_parse_errors_keep_path_and_diagnostic"
+    ],
+    "starlark": [
+      "pagable::heap_ref_id::compatibility_tests::blake3_adapter_preserves_known_digest_and_chunked_writes"
+    ]
+  },
+  "feature_arguments": {
+    "aws-config": [
+      "--features",
+      "credentials-login"
+    ],
+    "matrix-sdk": [
+      "--no-default-features",
+      "--features",
+      "e2e-encryption,sqlite"
+    ],
+    "i18n-config": [],
+    "starlark": []
+  },
+  "root_lock_before_sha256": "7cd3ac48f8a03093674bf8e54ffa8b86dcbeaac64d535b1d8c59b21e5dd327e3",
+  "entrypoint_sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+  "nextest_wrapper_sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127",
+  "helper_sha256": "7682ead5a7cee78dcbf310779dfde36a4dd8dec675c65e099f0c71079e989be6",
+  "scope": "Independent exact-source vendor tests; root consumer compilation and behavior require separate evidence.",
+  "commands": [
+    {
+      "command": [
+        "cargo",
+        "update",
+        "--workspace",
+        "--manifest-path",
+        "/home/runner/work/_temp/hepta-vendor-work/Cargo.toml"
+      ],
+      "cwd": "/home/runner/work/_temp/hepta-vendor-work",
+      "exit_code": 0,
+      "seconds": 7.195344198000001,
+      "log": "resolve.log.gz",
+      "log_uncompressed_bytes": 27724,
+      "log_uncompressed_sha256": "96fe97e0be7231dc77ef0cac9edbafde3082a723a5fdf0f1621edc1d2dc502f9",
+      "log_gzip_sha256": "e31e85ed87e56a55ddb2cdd03ac68db9de218bf5fdbf793cc1519cfee6d70b10"
+    },
+    {
+      "command": [
+        "just",
+        "--justfile",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/justfile",
+        "test",
+        "--manifest-path",
+        "/home/runner/work/_temp/hepta-vendor-work/Cargo.toml",
+        "-p",
+        "aws-config",
+        "--lib",
+        "--locked",
+        "--features",
+        "credentials-login",
+        "-E",
+        "test(=login::dpop::compatibility_tests::dpop_proof_preserves_es256_header_payload_and_signature)"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "exit_code": 0,
+      "seconds": 75.73692345500001,
+      "log": "aws-config.log.gz",
+      "log_uncompressed_bytes": 19567,
+      "log_uncompressed_sha256": "21b42e17252f310e890cd9696e8c7aa46cb3cd640bdb37426649e0c176932d57",
+      "log_gzip_sha256": "e2c08183831c46a5f01088fdcf0e05317f6e3fefe9c023cd230d84b792ceb293",
+      "junit": {
+        "tests": 1,
+        "passed": 1,
+        "skipped": 0,
+        "names": [
+          "login::dpop::compatibility_tests::dpop_proof_preserves_es256_header_payload_and_signature"
+        ]
+      }
+    },
+    {
+      "command": [
+        "just",
+        "--justfile",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/justfile",
+        "test",
+        "--manifest-path",
+        "/home/runner/work/_temp/hepta-vendor-work/Cargo.toml",
+        "-p",
+        "matrix-sdk",
+        "--lib",
+        "--locked",
+        "--no-default-features",
+        "--features",
+        "e2e-encryption,sqlite",
+        "-E",
+        "test(=event_handler::compatibility_tests::event_context_clone_preserves_type_isolation_and_send_sync)"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "exit_code": 0,
+      "seconds": 114.45412766500002,
+      "log": "matrix-sdk.log.gz",
+      "log_uncompressed_bytes": 214246,
+      "log_uncompressed_sha256": "0144a3a1528639c7a9a278b15f77920b8057441f02a290bb351397a001fb9f18",
+      "log_gzip_sha256": "ba718d859b513350ea6eabe986ba8e3b6238934cbae770a3cfe6d2bc8346eda6",
+      "junit": {
+        "tests": 1,
+        "passed": 1,
+        "skipped": 0,
+        "names": [
+          "event_handler::compatibility_tests::event_context_clone_preserves_type_isolation_and_send_sync"
+        ]
+      }
+    },
+    {
+      "command": [
+        "just",
+        "--justfile",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/justfile",
+        "test",
+        "--manifest-path",
+        "/home/runner/work/_temp/hepta-vendor-work/Cargo.toml",
+        "-p",
+        "i18n-config",
+        "--lib",
+        "--locked",
+        "-E",
+        "test(=compatibility_tests::public_crate_loader_preserves_package_and_language_config) | test(=compatibility_tests::public_config_loader_preserves_defaults_and_unicode) | test(=compatibility_tests::public_parse_errors_keep_path_and_diagnostic)"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "exit_code": 0,
+      "seconds": 6.06984965800001,
+      "log": "i18n-config.log.gz",
+      "log_uncompressed_bytes": 5241,
+      "log_uncompressed_sha256": "29b9acad782a2d6f034427c595a53bd34cc3d64e9c4c4c9b55760ae81f6eea1f",
+      "log_gzip_sha256": "c85a00246e057c7df8aeda616bfe7d5d6fc6e678441b3cab21790c2fe0152ad5",
+      "junit": {
+        "tests": 3,
+        "passed": 3,
+        "skipped": 0,
+        "names": [
+          "compatibility_tests::public_crate_loader_preserves_package_and_language_config",
+          "compatibility_tests::public_parse_errors_keep_path_and_diagnostic",
+          "compatibility_tests::public_config_loader_preserves_defaults_and_unicode"
+        ]
+      }
+    },
+    {
+      "command": [
+        "just",
+        "--justfile",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/justfile",
+        "test",
+        "--manifest-path",
+        "/home/runner/work/_temp/hepta-vendor-work/Cargo.toml",
+        "-p",
+        "starlark",
+        "--lib",
+        "--locked",
+        "-E",
+        "test(=pagable::heap_ref_id::compatibility_tests::blake3_adapter_preserves_known_digest_and_chunked_writes)"
+      ],
+      "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "exit_code": 0,
+      "seconds": 44.978100772000005,
+      "log": "starlark.log.gz",
+      "log_uncompressed_bytes": 11983,
+      "log_uncompressed_sha256": "17051e104b9c863483bff08b12e64f7dd310811ed45999293b34e4cc9ae6da56",
+      "log_gzip_sha256": "fe33cb5955ec1dfa4ae9e95a8359565986c5ca492f7a2c126906366d21ebe8e7",
+      "junit": {
+        "tests": 1,
+        "passed": 1,
+        "skipped": 0,
+        "names": [
+          "pagable::heap_ref_id::compatibility_tests::blake3_adapter_preserves_known_digest_and_chunked_writes"
+        ]
+      }
+    }
+  ],
+  "vendors": {
+    "aws-config": {
+      "directory": "aws-config-1.8.12",
+      "files": 74,
+      "source_inventory": "aws-config-1.8.12.source.json",
+      "source_manifest_sha256": "67f53abcc8dc7701ab2685b8957163b9bbdca1f16de8357bff9c306d91acf669",
+      "copied_manifest_sha256": "67f53abcc8dc7701ab2685b8957163b9bbdca1f16de8357bff9c306d91acf669",
+      "manifest_transformation": "none; only the independent workspace root is generated"
+    },
+    "matrix-sdk": {
+      "directory": "matrix-sdk-0.19.1",
+      "files": 211,
+      "source_inventory": "matrix-sdk-0.19.1.source.json",
+      "source_manifest_sha256": "c5898fe086c2e408715036a0799a503afb9cc0b786c1efd2a60bfd58120a4151",
+      "copied_manifest_sha256": "c5898fe086c2e408715036a0799a503afb9cc0b786c1efd2a60bfd58120a4151",
+      "manifest_transformation": "none; only the independent workspace root is generated"
+    },
+    "matrix-sdk-sqlite": {
+      "directory": "matrix-sdk-sqlite-0.19.1",
+      "files": 72,
+      "source_inventory": "matrix-sdk-sqlite-0.19.1.source.json",
+      "source_manifest_sha256": "21e25ca585ec01e11b39bfcdb7425d3103261fdda86aedef422078d2f8b02931",
+      "copied_manifest_sha256": "21e25ca585ec01e11b39bfcdb7425d3103261fdda86aedef422078d2f8b02931",
+      "manifest_transformation": "none; only the independent workspace root is generated"
+    },
+    "i18n-config": {
+      "directory": "i18n-config-0.4.8",
+      "files": 14,
+      "source_inventory": "i18n-config-0.4.8.source.json",
+      "source_manifest_sha256": "fa9af23aa873dffb238e36ca60c26b7cc01023741ab5037b8d793928f63fe1fa",
+      "copied_manifest_sha256": "fa9af23aa873dffb238e36ca60c26b7cc01023741ab5037b8d793928f63fe1fa",
+      "manifest_transformation": "none; only the independent workspace root is generated"
+    },
+    "starlark": {
+      "directory": "starlark-0.14.2",
+      "files": 688,
+      "source_inventory": "starlark-0.14.2.source.json",
+      "source_manifest_sha256": "abdd0c39609dcfec0f2d5057587bab53a48dae717ebe5360c85d5e43b030cfd5",
+      "copied_manifest_sha256": "abdd0c39609dcfec0f2d5057587bab53a48dae717ebe5360c85d5e43b030cfd5",
+      "manifest_transformation": "none; only the independent workspace root is generated"
+    },
+    "zip": {
+      "directory": "zip-9.1.3",
+      "files": 68,
+      "source_inventory": "zip-9.1.3.source.json",
+      "source_manifest_sha256": "ecb707a9125e995ce36040e211c4b6321ced0d5365c621bbbc7fc76fd3f6d7b6",
+      "copied_manifest_sha256": "ecb707a9125e995ce36040e211c4b6321ced0d5365c621bbbc7fc76fd3f6d7b6",
+      "manifest_transformation": "none; only the independent workspace root is generated"
+    }
+  },
+  "isolated_lock_sha256": "5fc7ebf9d62aa3341556845695377315e129916e7064e7008f44268d659f2563",
+  "passed": 6,
+  "failures": [],
+  "root_lock_after_sha256": "7cd3ac48f8a03093674bf8e54ffa8b86dcbeaac64d535b1d8c59b21e5dd327e3"
+}

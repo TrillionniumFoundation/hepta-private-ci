@@ -1,0 +1,23 @@
+{
+  "command": [
+    "just",
+    "--justfile",
+    "/home/runner/work/hepta-private-ci/hepta-private-ci/justfile",
+    "test",
+    "--manifest-path",
+    "/home/runner/work/_temp/hepta-vendor-work/Cargo.toml",
+    "-p",
+    "starlark",
+    "--lib",
+    "--locked",
+    "-E",
+    "test(=pagable::heap_ref_id::compatibility_tests::blake3_adapter_preserves_known_digest_and_chunked_writes)"
+  ],
+  "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+  "exit_code": 0,
+  "seconds": 44.978100772000005,
+  "log": "starlark.log.gz",
+  "log_uncompressed_bytes": 11983,
+  "log_uncompressed_sha256": "17051e104b9c863483bff08b12e64f7dd310811ed45999293b34e4cc9ae6da56",
+  "log_gzip_sha256": "fe33cb5955ec1dfa4ae9e95a8359565986c5ca492f7a2c126906366d21ebe8e7"
+}
