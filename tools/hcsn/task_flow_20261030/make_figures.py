@@ -65,7 +65,9 @@ def main():
     folder = HERE / "figures"
     folder.mkdir(exist_ok=True)
     fig.savefig(folder / "memory_tradeoffs.png", dpi=180)
-    fig.savefig(folder / "memory_tradeoffs.svg")
+    svg = folder / "memory_tradeoffs.svg"
+    fig.savefig(svg)
+    svg.write_text("\n".join(line.rstrip() for line in svg.read_text().splitlines()) + "\n")
     plt.close(fig)
     record = dict(source="memory/results.json", source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
                   matplotlib=matplotlib.__version__, records=records,
