@@ -1,0 +1,648 @@
+{
+  "accessed_tensor": "experiments/hcsn_real_av_v1/data/train.npz",
+  "cpu_seconds": 6.253637316999999,
+  "indices": [
+    175,
+    211,
+    181,
+    68,
+    85,
+    186,
+    205,
+    208
+  ],
+  "max_train_dt": 1.5221874713897705,
+  "max_train_total_dt": 48.70999526977539,
+  "models": [
+    {
+      "audio_counts": {
+        "backbone": 17936,
+        "frontend": 4256,
+        "groups": {
+          "boundary": 8,
+          "content": 22944,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 1056,
+        "total": 23248
+      },
+      "model": "distribution_free_dual",
+      "probability_checks": {
+        "audio": {
+          "forwards": 2,
+          "max_mass_error": 4.947185516357422e-06,
+          "min_probability": 2.0750536577907042e-07,
+          "tolerance": 0.0001
+        },
+        "video": {
+          "forwards": 2,
+          "max_mass_error": 5.781650543212891e-06,
+          "min_probability": 2.3690913053542317e-07,
+          "tolerance": 0.0001
+        }
+      },
+      "total_parameters": 46694,
+      "updates": [
+        {
+          "changes": {
+            "audio.boundary": 0.002826451601634117,
+            "audio.content": 0.15112006855128607,
+            "audio.dynamics": 0.016727740433106195,
+            "audio.refractory": 0.002827188220232159,
+            "audio.reset": 0.002749749929666963,
+            "head": 0.014071178805023623,
+            "video.boundary": 0.0027947772016921283,
+            "video.content": 0.15102342494477564,
+            "video.dynamics": 0.01672160887848887,
+            "video.refractory": 0.00282148829710173,
+            "video.reset": 0.002824702348649587
+          },
+          "gradients": {
+            "audio.boundary": 0.0003768233738426114,
+            "audio.content": 7.542958577715705,
+            "audio.dynamics": 0.011857070683111549,
+            "audio.refractory": 0.0008809379051702369,
+            "audio.reset": 0.00040847989783217954,
+            "head": 1.0545878045328811,
+            "video.boundary": 0.00012918620286565065,
+            "video.content": 7.257288758525072,
+            "video.dynamics": 0.009528895527357318,
+            "video.refractory": 0.0005115064334777308,
+            "video.reset": 0.00019320546567065804
+          },
+          "loss": 4.218466758728027
+        },
+        {
+          "changes": {
+            "audio.boundary": 0.002788253245901721,
+            "audio.content": 0.13871587707026603,
+            "audio.dynamics": 0.015427825976266145,
+            "audio.refractory": 0.0027766567967102422,
+            "audio.reset": 0.0026145784507297983,
+            "head": 0.013378334819052777,
+            "video.boundary": 0.0024549303386829017,
+            "video.content": 0.13734170890926622,
+            "video.dynamics": 0.015439066394094847,
+            "video.refractory": 0.0025962886059184265,
+            "video.reset": 0.0027213793024269952
+          },
+          "gradients": {
+            "audio.boundary": 0.0002503372941600453,
+            "audio.content": 4.833046108103384,
+            "audio.dynamics": 0.0085544991774256,
+            "audio.refractory": 0.0007242152619759718,
+            "audio.reset": 0.0002867289351360309,
+            "head": 1.0892620380026214,
+            "video.boundary": 7.312922141872167e-05,
+            "video.content": 4.3733571254221655,
+            "video.dynamics": 0.007059137987535546,
+            "video.refractory": 0.0004177869280809079,
+            "video.reset": 0.0001283617474018149
+          },
+          "loss": 3.538581371307373
+        }
+      ],
+      "video_counts": {
+        "backbone": 17936,
+        "frontend": 4256,
+        "groups": {
+          "boundary": 8,
+          "content": 22944,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 1056,
+        "total": 23248
+      }
+    },
+    {
+      "audio_counts": {
+        "backbone": 17952,
+        "frontend": 4256,
+        "groups": {
+          "boundary": 24,
+          "content": 22944,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 1056,
+        "total": 23264
+      },
+      "model": "distribution_conditional_dual",
+      "probability_checks": {
+        "audio": {
+          "forwards": 2,
+          "max_mass_error": 5.125999450683594e-06,
+          "min_probability": 6.408258741430473e-07,
+          "tolerance": 0.0001
+        },
+        "video": {
+          "forwards": 2,
+          "max_mass_error": 5.245208740234375e-06,
+          "min_probability": 6.450442242567078e-07,
+          "tolerance": 0.0001
+        }
+      },
+      "total_parameters": 46726,
+      "updates": [
+        {
+          "changes": {
+            "audio.boundary": 0.004891636538134194,
+            "audio.content": 0.1510706493648815,
+            "audio.dynamics": 0.016726950955605637,
+            "audio.refractory": 0.0028273035458402152,
+            "audio.reset": 0.0028237719982462557,
+            "head": 0.014071191732075387,
+            "video.boundary": 0.004882575193241383,
+            "video.content": 0.1510742059034069,
+            "video.dynamics": 0.01671918487698706,
+            "video.refractory": 0.0028102010260808224,
+            "video.reset": 0.002819432594199481
+          },
+          "gradients": {
+            "audio.boundary": 0.001707958427274716,
+            "audio.content": 7.535671254559899,
+            "audio.dynamics": 0.010295631330559097,
+            "audio.refractory": 0.0008835858161052656,
+            "audio.reset": 0.00042981593336593923,
+            "head": 1.0546397728187689,
+            "video.boundary": 0.0008691073057942745,
+            "video.content": 7.2656253168301745,
+            "video.dynamics": 0.00861235188161158,
+            "video.refractory": 0.0004913184801224817,
+            "video.reset": 0.00020257274945798657
+          },
+          "loss": 4.217602729797363
+        },
+        {
+          "changes": {
+            "audio.boundary": 0.004249516359191304,
+            "audio.content": 0.13861701671314453,
+            "audio.dynamics": 0.015493163417424821,
+            "audio.refractory": 0.0027810956492905405,
+            "audio.reset": 0.0026626618509629093,
+            "head": 0.013379519534292336,
+            "video.boundary": 0.004442255913433924,
+            "video.content": 0.13724158918686272,
+            "video.dynamics": 0.015667040445962403,
+            "video.refractory": 0.002624164724005675,
+            "video.reset": 0.002696763498460933
+          },
+          "gradients": {
+            "audio.boundary": 0.0011773180984325626,
+            "audio.content": 4.827738926818667,
+            "audio.dynamics": 0.008235039049665965,
+            "audio.refractory": 0.0007284301366715005,
+            "audio.reset": 0.00030006588433046456,
+            "head": 1.089063248709335,
+            "video.boundary": 0.0007943419666820435,
+            "video.content": 4.382273454269589,
+            "video.dynamics": 0.006652601402091746,
+            "video.refractory": 0.0004078663572281373,
+            "video.reset": 0.00012101489795990723
+          },
+          "loss": 3.5374112129211426
+        }
+      ],
+      "video_counts": {
+        "backbone": 17952,
+        "frontend": 4256,
+        "groups": {
+          "boundary": 24,
+          "content": 22944,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 1056,
+        "total": 23264
+      }
+    },
+    {
+      "audio_counts": {
+        "backbone": 17936,
+        "frontend": 4256,
+        "groups": {
+          "boundary": 8,
+          "content": 22944,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 1056,
+        "total": 23248
+      },
+      "model": "distribution_free_ordinary",
+      "probability_checks": {
+        "audio": {
+          "forwards": 2,
+          "max_mass_error": 4.887580871582031e-06,
+          "min_probability": 2.0750536577907042e-07,
+          "tolerance": 0.0001
+        },
+        "video": {
+          "forwards": 2,
+          "max_mass_error": 5.424022674560547e-06,
+          "min_probability": 2.371395737554849e-07,
+          "tolerance": 0.0001
+        }
+      },
+      "total_parameters": 46694,
+      "updates": [
+        {
+          "changes": {
+            "audio.boundary": 0.002803544921462481,
+            "audio.content": 0.15114069725668924,
+            "audio.dynamics": 0.016726308770822262,
+            "audio.refractory": 0.0028249803637930755,
+            "audio.reset": 0.002825441837505497,
+            "head": 0.014071165877959983,
+            "video.boundary": 0.002826103897299166,
+            "video.content": 0.1511044580016,
+            "video.dynamics": 0.0167129339458184,
+            "video.refractory": 0.00282494350059072,
+            "video.reset": 0.002822121474239776
+          },
+          "gradients": {
+            "audio.boundary": 0.0003413537659258888,
+            "audio.content": 7.567981618528149,
+            "audio.dynamics": 0.012063154142360987,
+            "audio.refractory": 0.0007806435230793137,
+            "audio.reset": 0.00026534655686208456,
+            "head": 1.0537690013199539,
+            "video.boundary": 0.00025963612221801614,
+            "video.content": 7.341560482427664,
+            "video.dynamics": 0.012429389229042244,
+            "video.refractory": 0.0005195834492999226,
+            "video.reset": 0.00017250993932353193
+          },
+          "loss": 4.229259014129639
+        },
+        {
+          "changes": {
+            "audio.boundary": 0.0027000158712275684,
+            "audio.content": 0.13863506134642822,
+            "audio.dynamics": 0.015304222773427106,
+            "audio.refractory": 0.0027184962720299376,
+            "audio.reset": 0.0025493050585552474,
+            "head": 0.013383760909876707,
+            "video.boundary": 0.002574742982174078,
+            "video.content": 0.137594408537961,
+            "video.dynamics": 0.01571500818929,
+            "video.refractory": 0.002642244147462973,
+            "video.reset": 0.002560200826353335
+          },
+          "gradients": {
+            "audio.boundary": 0.0002809198841400729,
+            "audio.content": 4.847294039459788,
+            "audio.dynamics": 0.009040208867527585,
+            "audio.refractory": 0.0006606540538714062,
+            "audio.reset": 0.00020057979674169347,
+            "head": 1.0889014268632282,
+            "video.boundary": 0.0001619502292660359,
+            "video.content": 4.4264088324789626,
+            "video.dynamics": 0.009650228418702665,
+            "video.refractory": 0.0004328927574988082,
+            "video.reset": 0.00011785309453229878
+          },
+          "loss": 3.5424365997314453
+        }
+      ],
+      "video_counts": {
+        "backbone": 17936,
+        "frontend": 4256,
+        "groups": {
+          "boundary": 8,
+          "content": 22944,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 1056,
+        "total": 23248
+      }
+    },
+    {
+      "audio_counts": {
+        "backbone": 17770,
+        "frontend": 4256,
+        "matching": {
+          "hidden_width": 49,
+          "n_parameters": 17770,
+          "parameter_padding": false,
+          "relative_gap": 0.009255129348795719,
+          "target_parameters": 17936
+        },
+        "readout": 1056,
+        "total": 23082
+      },
+      "model": "two_gates",
+      "probability_checks": {},
+      "total_parameters": 46362,
+      "updates": [
+        {
+          "changes": {
+            "audio.backbone": 0.13318590159851176,
+            "audio.frontend": 0.06523348534218847,
+            "audio.readout": 0.032495386647741556,
+            "head": 0.014071181002623261,
+            "video.backbone": 0.13314687710526074,
+            "video.frontend": 0.06523481895048014,
+            "video.readout": 0.03249549221991029
+          },
+          "gradients": {
+            "audio.backbone": 0.2160762409984108,
+            "audio.frontend": 0.1681807683969558,
+            "audio.readout": 0.2280200777386943,
+            "head": 0.849637726058601,
+            "video.backbone": 0.28235396754732417,
+            "video.frontend": 0.18581249529814353,
+            "video.readout": 0.2465018944778725
+          },
+          "loss": 3.656951904296875
+        },
+        {
+          "changes": {
+            "audio.backbone": 0.11727884042656378,
+            "audio.frontend": 0.055837098110139566,
+            "audio.readout": 0.02818536916134303,
+            "head": 0.013853034762345553,
+            "video.backbone": 0.09736737747996695,
+            "video.frontend": 0.048403330695870925,
+            "video.readout": 0.025241565032535992
+          },
+          "gradients": {
+            "audio.backbone": 0.24462080837214176,
+            "audio.frontend": 0.22576245280482296,
+            "audio.readout": 0.32605152136815985,
+            "head": 0.8431720962124013,
+            "video.backbone": 0.41477132221619584,
+            "video.frontend": 0.3366840781127456,
+            "video.readout": 0.2926546129240979
+          },
+          "loss": 3.619492530822754
+        }
+      ],
+      "video_counts": {
+        "backbone": 17770,
+        "frontend": 4256,
+        "matching": {
+          "hidden_width": 49,
+          "n_parameters": 17770,
+          "parameter_padding": false,
+          "relative_gap": 0.009255129348795719,
+          "target_parameters": 17936
+        },
+        "readout": 1056,
+        "total": 23082
+      }
+    },
+    {
+      "audio_counts": {
+        "backbone": 18392,
+        "frontend": 4256,
+        "matching": {
+          "hidden_width": 36,
+          "n_parameters": 18392,
+          "parameter_padding": false,
+          "relative_gap": 0.025423728813559324,
+          "target_parameters": 17936
+        },
+        "readout": 1056,
+        "total": 23704
+      },
+      "model": "transformer",
+      "probability_checks": {},
+      "total_parameters": 47606,
+      "updates": [
+        {
+          "changes": {
+            "audio.backbone": 0.13546917645094744,
+            "audio.frontend": 0.06523649485203926,
+            "audio.readout": 0.03249591025098361,
+            "head": 0.01407122443746332,
+            "video.backbone": 0.1354710592449997,
+            "video.frontend": 0.06523696874984268,
+            "video.readout": 0.03249606743106729
+          },
+          "gradients": {
+            "audio.backbone": 1.8548642242518396,
+            "audio.frontend": 2.001543915492577,
+            "audio.readout": 1.267613488337371,
+            "head": 1.0854568790057382,
+            "video.backbone": 1.8139936466356221,
+            "video.frontend": 1.6805103786637494,
+            "video.readout": 1.0795353358538295
+          },
+          "loss": 3.882962226867676
+        },
+        {
+          "changes": {
+            "audio.backbone": 0.11448707262580693,
+            "audio.frontend": 0.05563958815478377,
+            "audio.readout": 0.02795186883690811,
+            "head": 0.013327602256815337,
+            "video.backbone": 0.11009805959942774,
+            "video.frontend": 0.05144993126491481,
+            "video.readout": 0.02724525701291659
+          },
+          "gradients": {
+            "audio.backbone": 1.0421422184252007,
+            "audio.frontend": 1.04351861077916,
+            "audio.readout": 0.8732280308568436,
+            "head": 1.13344151363919,
+            "video.backbone": 1.375207067866831,
+            "video.frontend": 0.8513996722437175,
+            "video.readout": 0.7681642265135364
+          },
+          "loss": 3.5659050941467285
+        }
+      ],
+      "video_counts": {
+        "backbone": 18392,
+        "frontend": 4256,
+        "matching": {
+          "hidden_width": 36,
+          "n_parameters": 18392,
+          "parameter_padding": false,
+          "relative_gap": 0.025423728813559324,
+          "target_parameters": 17936
+        },
+        "readout": 1056,
+        "total": 23704
+      }
+    },
+    {
+      "audio_counts": {
+        "backbone": 17886,
+        "frontend": 4256,
+        "matching": {
+          "hidden_width": 79,
+          "n_parameters": 17886,
+          "parameter_padding": false,
+          "relative_gap": 0.0027876895628902764,
+          "target_parameters": 17936
+        },
+        "readout": 1056,
+        "total": 23198
+      },
+      "model": "lif_snn",
+      "probability_checks": {},
+      "total_parameters": 46594,
+      "updates": [
+        {
+          "changes": {
+            "audio.backbone": 0.09605323713115585,
+            "audio.frontend": 0.06522920097557273,
+            "audio.readout": 0.03249177560437857,
+            "head": 0.014071206856710875,
+            "video.backbone": 0.09932622789039913,
+            "video.frontend": 0.06522844227346115,
+            "video.readout": 0.03249498238041183
+          },
+          "gradients": {
+            "audio.backbone": 0.16635946695039433,
+            "audio.frontend": 0.06935010066310532,
+            "audio.readout": 0.26135955544558614,
+            "head": 0.8301185957074679,
+            "video.backbone": 0.21215104749544492,
+            "video.frontend": 0.058358346490574226,
+            "video.readout": 0.2402491254852626
+          },
+          "loss": 3.662313938140869
+        },
+        {
+          "changes": {
+            "audio.backbone": 0.08402039853103054,
+            "audio.frontend": 0.05381265135966567,
+            "audio.readout": 0.02926332513486521,
+            "head": 0.013799079768490628,
+            "video.backbone": 0.07966566014891072,
+            "video.frontend": 0.051089957234393496,
+            "video.readout": 0.027346346271034834
+          },
+          "gradients": {
+            "audio.backbone": 0.14778235143269644,
+            "audio.frontend": 0.05518836615516093,
+            "audio.readout": 0.2570985667870136,
+            "head": 0.8270577039799377,
+            "video.backbone": 0.26778039398951897,
+            "video.frontend": 0.07095941990931123,
+            "video.readout": 0.24647351133705864
+          },
+          "loss": 3.6586427688598633
+        }
+      ],
+      "video_counts": {
+        "backbone": 17886,
+        "frontend": 4256,
+        "matching": {
+          "hidden_width": 79,
+          "n_parameters": 17886,
+          "parameter_padding": false,
+          "relative_gap": 0.0027876895628902764,
+          "target_parameters": 17936
+        },
+        "readout": 1056,
+        "total": 23198
+      }
+    },
+    {
+      "audio_counts": {
+        "backbone": 17826,
+        "frontend": 4256,
+        "matching": {
+          "hidden_width": 41,
+          "n_parameters": 17826,
+          "parameter_padding": false,
+          "relative_gap": 0.006132917038358609,
+          "target_parameters": 17936
+        },
+        "readout": 1056,
+        "total": 23138
+      },
+      "model": "mamba1",
+      "probability_checks": {},
+      "total_parameters": 46474,
+      "updates": [
+        {
+          "changes": {
+            "audio.backbone": 0.13086381408070966,
+            "audio.frontend": 0.0652363965922615,
+            "audio.readout": 0.03249600457032021,
+            "head": 0.014071121473405916,
+            "video.backbone": 0.1309463341095499,
+            "video.frontend": 0.06523691005652062,
+            "video.readout": 0.03249603737211435
+          },
+          "gradients": {
+            "audio.backbone": 2.5478329535731326,
+            "audio.frontend": 4.390851580468306,
+            "audio.readout": 1.6441522736973937,
+            "head": 0.8789430398658629,
+            "video.backbone": 2.38001049889398,
+            "video.frontend": 2.161756346904339,
+            "video.readout": 1.7293130231490672
+          },
+          "loss": 3.9549591541290283
+        },
+        {
+          "changes": {
+            "audio.backbone": 0.11350164833732769,
+            "audio.frontend": 0.05366519272309546,
+            "audio.readout": 0.026991115762141117,
+            "head": 0.013397783979410037,
+            "video.backbone": 0.10605879645264825,
+            "video.frontend": 0.055134801074630965,
+            "video.readout": 0.026725624208223935
+          },
+          "gradients": {
+            "audio.backbone": 1.6398641734394181,
+            "audio.frontend": 2.321802397722152,
+            "audio.readout": 1.069624763396463,
+            "head": 0.8900194702938663,
+            "video.backbone": 1.4519102149713352,
+            "video.frontend": 1.6836477050991936,
+            "video.readout": 1.0289109355208665
+          },
+          "loss": 3.5570759773254395
+        }
+      ],
+      "video_counts": {
+        "backbone": 17826,
+        "frontend": 4256,
+        "matching": {
+          "hidden_width": 41,
+          "n_parameters": 17826,
+          "parameter_padding": false,
+          "relative_gap": 0.006132917038358609,
+          "target_parameters": 17936
+        },
+        "readout": 1056,
+        "total": 23138
+      }
+    }
+  ],
+  "passed": true,
+  "peak_rss_bytes": 494649344,
+  "source_sha256": {
+    "experiments/continuous_spiking_network/BASELINES.md": "3c32544dabde264f2347913f23685aa6a0c53651cd51f80010bcb78edc3a659b",
+    "experiments/continuous_spiking_network/__init__.py": "192d1f289893035488c967e19332d164c1b2687c127c627ae88ad24ac9db07bc",
+    "experiments/continuous_spiking_network/baseline.py": "526eaf3ea650d67188cbf898e8a246e7511b196ee2b0b50e7a6063c9ab1583f8",
+    "experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "experiments/hcsn_distributional_v2/model.py": "3eb5f6b8797475abf84b09ae5b588f3d0a253e0584578586cb081f15142a355f",
+    "experiments/hcsn_free_boundary_v1/model.py": "c86535bf5b37589503aada3b1d979d80b75e54eb19e6be4f3b93482066147625",
+    "experiments/hcsn_free_boundary_v1/oracle_torch.py": "c651bc1c895596d2f1ca847b0bea80eb01efc951d9392a695ff0ccc2a0c61e9a",
+    "experiments/hcsn_real_av_v1/PROTOCOL.json": "ca8b25df68285a7c2e1928781d1d14e06e8be64372f966e1b5432d7017cb0882",
+    "experiments/hcsn_real_av_v1/audit.py": "025ae4b5691d50d075c85158f9cae818aa482a539edf63eb722fcd6a57173a2c",
+    "experiments/hcsn_real_av_v1/data.py": "02fc21d1f3f1b98320659421f6ed03450fbe042eed25d91ae2bc93e50bde485f",
+    "experiments/hcsn_real_av_v1/study.py": "95c7308acd9e0b3f16cfec20a2ef1fcbfe9a3243ec3881a57373978c831adbee"
+  },
+  "torch": "2.8.0+cpu",
+  "train_only": true,
+  "train_sha256": "f4074f14b5d46702cb8ae293a7d6c974b9576f651377e85836566f154eac4a33"
+}

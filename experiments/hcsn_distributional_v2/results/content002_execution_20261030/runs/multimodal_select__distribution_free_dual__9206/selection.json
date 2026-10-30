@@ -1,0 +1,19 @@
+{
+  "completed_lr_candidates": 2,
+  "dataset_sha256": "88a70438b843596f2500de6345c534212597cbfd11201ed38519917a9fa56e53",
+  "rule": "minimum_validation_cross_entropy_only",
+  "selected_checkpoint_sha256": "f22616aae62beea60df7e8aa3a9607bc3046960b4d567afe36e75e1a49f519f2",
+  "selected_learning_rate": 0.001,
+  "selected_step": 64,
+  "selected_validation": {
+    "accuracy": 0.10546875,
+    "correct": 27,
+    "cross_entropy": 2.3065683841705322,
+    "distribution_audited": true,
+    "max_expected_events_per_interval": 0.18031372129917145,
+    "max_mass_error": 2.384185791015625e-06,
+    "min_probability": 7.48165140951329e-11,
+    "samples": 256,
+    "supervised_positions": 256
+  }
+}

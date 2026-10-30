@@ -1,0 +1,92 @@
+[
+  {
+    "crossed_cpu_targets": [
+      15.0
+    ],
+    "endpoint_overrun_seconds": 0.0,
+    "fixed_step_128": false,
+    "primary_eligible": true,
+    "sha256": "362e3574de20111bb9d76c6e7fc5805548fd27c3a97bf9ba483f1bc648358a1b",
+    "step": 67,
+    "training_cpu_seconds": 15.025965044999921,
+    "validation": {
+      "accuracy": 0.09765625,
+      "correct": 25,
+      "cross_entropy": 2.5168251991271973,
+      "distribution_audited": false,
+      "max_expected_events_per_interval": null,
+      "max_mass_error": null,
+      "min_probability": null,
+      "samples": 256,
+      "supervised_positions": 256
+    },
+    "weights": "step_000067.npz"
+  },
+  {
+    "crossed_cpu_targets": [],
+    "endpoint_overrun_seconds": 0.0,
+    "fixed_step_128": true,
+    "primary_eligible": false,
+    "sha256": "79a1bfbb66ec771cdf8ea0e7820a6d228a679522930041b0bca79dd6d2ab7acd",
+    "step": 128,
+    "training_cpu_seconds": 27.85080372499999,
+    "validation": {
+      "accuracy": 0.109375,
+      "correct": 28,
+      "cross_entropy": 2.7911345958709717,
+      "distribution_audited": false,
+      "max_expected_events_per_interval": null,
+      "max_mass_error": null,
+      "min_probability": null,
+      "samples": 256,
+      "supervised_positions": 256
+    },
+    "weights": "step_000128.npz"
+  },
+  {
+    "crossed_cpu_targets": [
+      30.0
+    ],
+    "endpoint_overrun_seconds": 0.0,
+    "fixed_step_128": false,
+    "primary_eligible": true,
+    "sha256": "0ef15e820f368ec4fe4e4bd761815514627ea4a12c96e3e2228cd6ee9a8fd58a",
+    "step": 139,
+    "training_cpu_seconds": 30.232473073999955,
+    "validation": {
+      "accuracy": 0.1796875,
+      "correct": 46,
+      "cross_entropy": 2.30490505695343,
+      "distribution_audited": false,
+      "max_expected_events_per_interval": null,
+      "max_mass_error": null,
+      "min_probability": null,
+      "samples": 256,
+      "supervised_positions": 256
+    },
+    "weights": "step_000139.npz"
+  },
+  {
+    "crossed_cpu_targets": [
+      60.0
+    ],
+    "endpoint_overrun_seconds": 0.22290996199997437,
+    "fixed_step_128": false,
+    "primary_eligible": true,
+    "sha256": "0dd687f9a5d2ab96fbae0695daa37114cdb56192f857cbced9227b2ce9d30d9f",
+    "step": 279,
+    "training_cpu_seconds": 60.222909961999974,
+    "validation": {
+      "accuracy": 0.1484375,
+      "correct": 38,
+      "cross_entropy": 2.7921053171157837,
+      "distribution_audited": false,
+      "max_expected_events_per_interval": null,
+      "max_mass_error": null,
+      "min_probability": null,
+      "samples": 256,
+      "supervised_positions": 256
+    },
+    "weights": "step_000279.npz"
+  }
+]

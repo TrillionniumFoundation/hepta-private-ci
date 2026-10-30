@@ -1,0 +1,881 @@
+{
+  "active_jobs": [
+    {
+      "model": "distribution_free_dual",
+      "seed": 9201,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9206,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9203,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9202,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9202,
+      "task": "irregular"
+    }
+  ],
+  "protocol_sha256": "03070eb0d3fc264ace436f25a06c989bb898f3c33caba83936f5040c660e6b9c",
+  "stop": {
+    "reason": "operator_stop",
+    "request": {
+      "active_workers": "finish naturally; preserve wait4 receipts",
+      "all_canonical_source_hashes_match": true,
+      "canonical_execution": "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/content002",
+      "canonical_protocol_sha256": "03070eb0d3fc264ace436f25a06c989bb898f3c33caba83936f5040c660e6b9c",
+      "duplicate_role": "engineering reproducibility repeat; excluded from prespecified 176-job primary comparisons",
+      "reason": "Recovered the original still-running frozen CONTENT002 study with identical protocol and all 47 source hashes; stop redundant scheduling and retain all already started repeat costs and artifacts. No model scores were inspected for this decision. Original study remains untouched.",
+      "requested_utc": "2026-10-30T02:12:45.593226+00:00",
+      "schema": "hcsn-duplicate-run-stop.v1"
+    },
+    "request_sha256": "77e05c90a67e89770e57c0c91bb134d478a0019279ad45ad79d7a79cad167acf"
+  },
+  "unstarted": [
+    {
+      "model": "two_gates",
+      "seed": 9203,
+      "task": "irregular"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9201,
+      "task": "mqar"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9203,
+      "task": "mqar"
+    },
+    {
+      "model": "transformer",
+      "seed": 9203,
+      "task": "irregular"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9203,
+      "task": "mqar"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9201,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9208,
+      "task": "selective_copy"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9203,
+      "task": "mqar"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9208,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9202,
+      "task": "irregular"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9203,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9201,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9202,
+      "task": "mqar"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9203,
+      "task": "fsdd"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9208,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9201,
+      "task": "fsdd"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9207,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9203,
+      "task": "selective_copy"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9203,
+      "task": "fsdd"
+    },
+    {
+      "model": "transformer",
+      "seed": 9201,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9203,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9205,
+      "task": "selective_copy"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9207,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9202,
+      "task": "mnist"
+    },
+    {
+      "model": "transformer",
+      "seed": 9203,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9203,
+      "task": "fsdd"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9203,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9206,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9203,
+      "task": "irregular"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9202,
+      "task": "irregular"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9202,
+      "task": "selective_copy"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9202,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9204,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9201,
+      "task": "irregular"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9203,
+      "task": "mnist"
+    },
+    {
+      "model": "transformer",
+      "seed": 9202,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9201,
+      "task": "selective_copy"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9206,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9203,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9201,
+      "task": "fsdd"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9202,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9208,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9204,
+      "task": "selective_copy"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9203,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9208,
+      "task": "selective_copy"
+    },
+    {
+      "model": "transformer",
+      "seed": 9203,
+      "task": "fsdd"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9203,
+      "task": "mnist"
+    },
+    {
+      "model": "transformer",
+      "seed": 9203,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9202,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9206,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9206,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9206,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9201,
+      "task": "mqar"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9203,
+      "task": "fsdd"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9201,
+      "task": "fsdd"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9202,
+      "task": "selective_copy"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9208,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9201,
+      "task": "fsdd"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9205,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9201,
+      "task": "irregular"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9206,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9207,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9201,
+      "task": "irregular"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9202,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9204,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9201,
+      "task": "irregular"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9201,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9202,
+      "task": "irregular"
+    },
+    {
+      "model": "transformer",
+      "seed": 9201,
+      "task": "irregular"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9203,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9207,
+      "task": "selective_copy"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9208,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9201,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9203,
+      "task": "mnist"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9207,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9207,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9201,
+      "task": "irregular"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9207,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9203,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9203,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9202,
+      "task": "fsdd"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9205,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9202,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9201,
+      "task": "mnist"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9203,
+      "task": "mqar"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9202,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9201,
+      "task": "fsdd"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9201,
+      "task": "selective_copy"
+    },
+    {
+      "model": "transformer",
+      "seed": 9202,
+      "task": "mqar"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9202,
+      "task": "fsdd"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9202,
+      "task": "mqar"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9202,
+      "task": "mqar"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9201,
+      "task": "mnist"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9202,
+      "task": "irregular"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9203,
+      "task": "mqar"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9202,
+      "task": "selective_copy"
+    },
+    {
+      "model": "transformer",
+      "seed": 9203,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9202,
+      "task": "fsdd"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9204,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9205,
+      "task": "selective_copy"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9205,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9202,
+      "task": "fsdd"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9203,
+      "task": "irregular"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9202,
+      "task": "selective_copy"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9203,
+      "task": "selective_copy"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9201,
+      "task": "mqar"
+    },
+    {
+      "model": "transformer",
+      "seed": 9202,
+      "task": "selective_copy"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9202,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9204,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9201,
+      "task": "mnist"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9201,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9203,
+      "task": "irregular"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9208,
+      "task": "selective_copy"
+    },
+    {
+      "model": "transformer",
+      "seed": 9201,
+      "task": "fsdd"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9208,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9207,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9204,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9204,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9202,
+      "task": "mqar"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9205,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9201,
+      "task": "mqar"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9201,
+      "task": "irregular"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9203,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9205,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9202,
+      "task": "irregular"
+    },
+    {
+      "model": "transformer",
+      "seed": 9201,
+      "task": "selective_copy"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9201,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9202,
+      "task": "selective_copy"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9205,
+      "task": "selective_copy"
+    },
+    {
+      "model": "transformer",
+      "seed": 9201,
+      "task": "mqar"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9201,
+      "task": "fsdd"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9203,
+      "task": "mnist"
+    },
+    {
+      "model": "transformer",
+      "seed": 9202,
+      "task": "irregular"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9203,
+      "task": "irregular"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9204,
+      "task": "selective_copy"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9202,
+      "task": "fsdd"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9206,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "transformer",
+      "seed": 9201,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9203,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9203,
+      "task": "mqar"
+    },
+    {
+      "model": "transformer",
+      "seed": 9202,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9202,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9206,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9202,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9203,
+      "task": "fsdd"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9208,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9201,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9201,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9201,
+      "task": "mqar"
+    },
+    {
+      "model": "transformer",
+      "seed": 9203,
+      "task": "mqar"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9202,
+      "task": "mqar"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9201,
+      "task": "mqar"
+    },
+    {
+      "model": "two_gates",
+      "seed": 9204,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9202,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9203,
+      "task": "fsdd"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9202,
+      "task": "mqar"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9201,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9205,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9202,
+      "task": "mnist"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9204,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_conditional_dual",
+      "seed": 9205,
+      "task": "selective_copy"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9201,
+      "task": "selective_copy"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9201,
+      "task": "multimodal_select"
+    },
+    {
+      "model": "distribution_free_dual",
+      "seed": 9202,
+      "task": "fsdd"
+    },
+    {
+      "model": "active_mean_collapse_free_dual",
+      "seed": 9206,
+      "task": "selective_copy"
+    },
+    {
+      "model": "legacy_free",
+      "seed": 9203,
+      "task": "irregular"
+    },
+    {
+      "model": "distribution_free_ordinary",
+      "seed": 9207,
+      "task": "selective_copy"
+    }
+  ]
+}

@@ -1,0 +1,237 @@
+{
+  "action": "inspect train-only architecture counts before choosing a new registered scale design",
+  "count_probe_cpu_seconds": 4.746276029000001,
+  "reason": "Backbone parameter gap exceeds frozen parent3percent target at a new size",
+  "rows": [
+    {
+      "counts": {
+        "backbone": 7200,
+        "frontend": 1104,
+        "groups": {
+          "boundary": 8,
+          "content": 8264,
+          "dynamics": 152,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 136,
+        "total": 8440
+      },
+      "depth": 1,
+      "gap": 0.0,
+      "model": "distribution_free_dual",
+      "width": 16
+    },
+    {
+      "counts": {
+        "backbone": 7312,
+        "frontend": 1104,
+        "matching": {
+          "hidden_width": 32,
+          "n_parameters": 7312,
+          "parameter_padding": false,
+          "relative_gap": 0.015555555555555555,
+          "target_parameters": 7200
+        },
+        "readout": 136,
+        "total": 8552
+      },
+      "depth": 1,
+      "gap": 0.015555555555555555,
+      "model": "two_gates",
+      "width": 16
+    },
+    {
+      "counts": {
+        "backbone": 7296,
+        "frontend": 1104,
+        "matching": {
+          "hidden_width": 52,
+          "n_parameters": 7296,
+          "parameter_padding": false,
+          "relative_gap": 0.013333333333333334,
+          "target_parameters": 7200
+        },
+        "readout": 136,
+        "total": 8536
+      },
+      "depth": 1,
+      "gap": 0.013333333333333334,
+      "model": "lif_snn",
+      "width": 16
+    },
+    {
+      "counts": {
+        "backbone": 7422,
+        "frontend": 1104,
+        "matching": {
+          "hidden_width": 23,
+          "n_parameters": 7422,
+          "parameter_padding": false,
+          "relative_gap": 0.030833333333333334,
+          "target_parameters": 7200
+        },
+        "readout": 136,
+        "total": 8662
+      },
+      "depth": 1,
+      "gap": 0.030833333333333334,
+      "model": "transformer",
+      "width": 16
+    },
+    {
+      "counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408
+      },
+      "depth": 1,
+      "gap": 0.0,
+      "model": "distribution_free_dual",
+      "width": 32
+    },
+    {
+      "counts": {
+        "backbone": 17770,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 49,
+          "n_parameters": 17770,
+          "parameter_padding": false,
+          "relative_gap": 0.009255129348795719,
+          "target_parameters": 17936
+        },
+        "readout": 264,
+        "total": 20242
+      },
+      "depth": 1,
+      "gap": 0.009255129348795719,
+      "model": "two_gates",
+      "width": 32
+    },
+    {
+      "counts": {
+        "backbone": 17886,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 79,
+          "n_parameters": 17886,
+          "parameter_padding": false,
+          "relative_gap": 0.0027876895628902764,
+          "target_parameters": 17936
+        },
+        "readout": 264,
+        "total": 20358
+      },
+      "depth": 1,
+      "gap": 0.0027876895628902764,
+      "model": "lif_snn",
+      "width": 32
+    },
+    {
+      "counts": {
+        "backbone": 18392,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 36,
+          "n_parameters": 18392,
+          "parameter_padding": false,
+          "relative_gap": 0.025423728813559324,
+          "target_parameters": 17936
+        },
+        "readout": 264,
+        "total": 20864
+      },
+      "depth": 1,
+      "gap": 0.025423728813559324,
+      "model": "transformer",
+      "width": 32
+    },
+    {
+      "counts": {
+        "backbone": 100320,
+        "frontend": 4416,
+        "groups": {
+          "boundary": 16,
+          "content": 104136,
+          "dynamics": 1072,
+          "refractory": 16,
+          "reset": 16
+        },
+        "readout": 520,
+        "total": 105256
+      },
+      "depth": 2,
+      "gap": 0.0,
+      "model": "distribution_free_dual",
+      "width": 64
+    },
+    {
+      "counts": {
+        "backbone": 100426,
+        "frontend": 4416,
+        "matching": {
+          "hidden_width": 86,
+          "n_parameters": 100426,
+          "parameter_padding": false,
+          "relative_gap": 0.0010566188197767144,
+          "target_parameters": 100320
+        },
+        "readout": 520,
+        "total": 105362
+      },
+      "depth": 2,
+      "gap": 0.0010566188197767144,
+      "model": "two_gates",
+      "width": 64
+    },
+    {
+      "counts": {
+        "backbone": 99890,
+        "frontend": 4416,
+        "matching": {
+          "hidden_width": 142,
+          "n_parameters": 99890,
+          "parameter_padding": false,
+          "relative_gap": 0.00428628389154705,
+          "target_parameters": 100320
+        },
+        "readout": 520,
+        "total": 104826
+      },
+      "depth": 2,
+      "gap": 0.00428628389154705,
+      "model": "lif_snn",
+      "width": 64
+    },
+    {
+      "counts": {
+        "backbone": 99968,
+        "frontend": 4416,
+        "matching": {
+          "hidden_width": 64,
+          "n_parameters": 99968,
+          "parameter_padding": false,
+          "relative_gap": 0.0035087719298245615,
+          "target_parameters": 100320
+        },
+        "readout": 520,
+        "total": 104904
+      },
+      "depth": 2,
+      "gap": 0.0035087719298245615,
+      "model": "transformer",
+      "width": 64
+    }
+  ],
+  "source_unchanged": true,
+  "status": "preflight_failed_before_registration"
+}

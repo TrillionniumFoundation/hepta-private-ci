@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-u",
+    "-m",
+    "experiments.hcsn_cost_scaling_v1.study",
+    "preflight",
+    "--output",
+    "experiments/hcsn_cost_scaling_v1/results/train_preflight004"
+  ],
+  "returncode": 0,
+  "whole_worker_cpu_seconds": 6.766869,
+  "wall_seconds": 14.044669762000012,
+  "peak_rss_bytes": 336748544,
+  "started_utc": "2026-10-30T02:27:47.905572+00:00"
+}

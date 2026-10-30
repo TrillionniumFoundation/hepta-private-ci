@@ -1,0 +1,80 @@
+{
+  "schema": "hcsn-long-horizon-registration.v1",
+  "cases": [
+    {
+      "name": "central",
+      "parameters": [
+        0.1,
+        0.45,
+        0.85,
+        -0.1,
+        0.75
+      ]
+    },
+    {
+      "name": "negative_drift",
+      "parameters": [
+        -0.28,
+        0.32,
+        1.1,
+        -0.25,
+        1.1
+      ]
+    },
+    {
+      "name": "fast_cycle",
+      "parameters": [
+        0.48,
+        0.6,
+        0.55,
+        0.05,
+        0.3
+      ]
+    },
+    {
+      "name": "rate_domain_corner",
+      "parameters": [
+        0.5,
+        0.6,
+        0.35,
+        -0.1,
+        0.3
+      ]
+    }
+  ],
+  "observations": 4096,
+  "snapshots": [
+    16,
+    64,
+    256,
+    1024,
+    4096
+  ],
+  "durations": [
+    0.07,
+    0.36,
+    0.495755147934,
+    3.2
+  ],
+  "dtypes": [
+    "float32",
+    "float64"
+  ],
+  "source_sha256": {
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_distributional_v2/long_horizon_audit.py": "2b14006708869f8f1f12935299ff941f8cf205b25ee4143f037e7badcb967c6e",
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_distributional_v2/kernel_tests.py": "e8c9cd018a7d707ebb8f118fd2f1e297057a5c59e2dcd06c53025cf19f045add",
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_distributional_v2/MATH.md": "3899a158c856f72ba52c59de8d1f9d46f3967a9f2b8a1de2fa5e0bad97fb3a96"
+  },
+  "initialization": "Independent finite-chain stationary distribution, cast to tested dtype",
+  "reference": "Dense augmented matrix exponential and independent renewal/occupation linear equations",
+  "checks": "Renewal algebra 1e-10; report original API mass-contract violations without changing its tolerance",
+  "task_labels_read": false,
+  "frozen_protocol_or_source_changed": false,
+  "limitations": [
+    "Finite reflecting-domain CTMC; no unbounded Brownian exactness",
+    "Erlang refractory phases; no deterministic-delay claim",
+    "Roundoff is outside the production analytic Poisson-tail certificate",
+    "Diagnostic horizons do not change the frozen content experiment"
+  ]
+}

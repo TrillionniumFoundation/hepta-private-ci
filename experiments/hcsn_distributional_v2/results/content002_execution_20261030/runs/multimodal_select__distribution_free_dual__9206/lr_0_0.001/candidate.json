@@ -1,0 +1,194 @@
+{
+  "batch_prefix_sha256": "efa411f63c2b95525c7467e2f92537d1f98fe193862c42d7bcd1a46236305713",
+  "best": {
+    "crossed_cpu_targets": [
+      60.0
+    ],
+    "endpoint_overrun_seconds": 0.4984901179999923,
+    "fixed_step_128": false,
+    "primary_eligible": true,
+    "sha256": "f22616aae62beea60df7e8aa3a9607bc3046960b4d567afe36e75e1a49f519f2",
+    "step": 64,
+    "training_cpu_seconds": 60.49849011799999,
+    "validation": {
+      "accuracy": 0.10546875,
+      "correct": 27,
+      "cross_entropy": 2.3065683841705322,
+      "distribution_audited": true,
+      "max_expected_events_per_interval": 0.18031372129917145,
+      "max_mass_error": 2.384185791015625e-06,
+      "min_probability": 7.48165140951329e-11,
+      "samples": 256,
+      "supervised_positions": 256
+    },
+    "weights": "step_000064.npz"
+  },
+  "checkpoints": [
+    {
+      "crossed_cpu_targets": [
+        15.0
+      ],
+      "endpoint_overrun_seconds": 0.0,
+      "fixed_step_128": false,
+      "primary_eligible": true,
+      "sha256": "128ab898d18dd02d8ec273982d5c08a8937ee2f7c9f5032391ab438e7b4d3b75",
+      "step": 17,
+      "training_cpu_seconds": 15.290394309999998,
+      "validation": {
+        "accuracy": 0.1015625,
+        "correct": 26,
+        "cross_entropy": 2.308084487915039,
+        "distribution_audited": true,
+        "max_expected_events_per_interval": 0.2004200518131256,
+        "max_mass_error": 2.2649765014648438e-06,
+        "min_probability": 2.518980302124163e-10,
+        "samples": 256,
+        "supervised_positions": 256
+      },
+      "weights": "step_000017.npz"
+    },
+    {
+      "crossed_cpu_targets": [
+        30.0
+      ],
+      "endpoint_overrun_seconds": 0.0,
+      "fixed_step_128": false,
+      "primary_eligible": true,
+      "sha256": "9ecefd86bdf718c0e1b88ec8baaedac7348228b60b6dbde077438ed287320515",
+      "step": 34,
+      "training_cpu_seconds": 30.081309929999993,
+      "validation": {
+        "accuracy": 0.09765625,
+        "correct": 25,
+        "cross_entropy": 2.317256212234497,
+        "distribution_audited": true,
+        "max_expected_events_per_interval": 0.2021925449371338,
+        "max_mass_error": 2.2649765014648438e-06,
+        "min_probability": 1.2465796450644717e-10,
+        "samples": 256,
+        "supervised_positions": 256
+      },
+      "weights": "step_000034.npz"
+    },
+    {
+      "crossed_cpu_targets": [
+        60.0
+      ],
+      "endpoint_overrun_seconds": 0.4984901179999923,
+      "fixed_step_128": false,
+      "primary_eligible": true,
+      "sha256": "f22616aae62beea60df7e8aa3a9607bc3046960b4d567afe36e75e1a49f519f2",
+      "step": 64,
+      "training_cpu_seconds": 60.49849011799999,
+      "validation": {
+        "accuracy": 0.10546875,
+        "correct": 27,
+        "cross_entropy": 2.3065683841705322,
+        "distribution_audited": true,
+        "max_expected_events_per_interval": 0.18031372129917145,
+        "max_mass_error": 2.384185791015625e-06,
+        "min_probability": 7.48165140951329e-11,
+        "samples": 256,
+        "supervised_positions": 256
+      },
+      "weights": "step_000064.npz"
+    }
+  ],
+  "config": {
+    "depth": 1,
+    "grid_cells": 8,
+    "input_dim": 64,
+    "lower": -2.0,
+    "max_independent_chunks": 1048576,
+    "max_physical_substep": 0.36,
+    "name": "distribution_free_dual",
+    "output_dim": 10,
+    "per_token_chunks": true,
+    "physical_channels": 8,
+    "physical_time_scale": 0.1,
+    "precomputed_operators": true,
+    "refractory_stages": 2,
+    "seed": 9206,
+    "uniformization_rate": 8.1,
+    "uniformization_terms": 21,
+    "width": 32
+  },
+  "counts": {
+    "backbone": 17936,
+    "frontend": 2208,
+    "groups": {
+      "boundary": 8,
+      "content": 20170,
+      "dynamics": 280,
+      "refractory": 8,
+      "reset": 8
+    },
+    "readout": 330,
+    "total": 20474
+  },
+  "derivative_scope": "first derivatives; upwind/remap/reset interpolation piecewise differentiable",
+  "final_parameter_changes": {
+    "boundary": {
+      "l2": 0.02508067227102384,
+      "max_abs": 0.015038367360830307
+    },
+    "content": {
+      "l2": 1.5526123987502718,
+      "max_abs": 0.042437564581632614
+    },
+    "dynamics": {
+      "l2": 0.18025034181347024,
+      "max_abs": 0.033396072685718536
+    },
+    "refractory": {
+      "l2": 0.038611834329635455,
+      "max_abs": 0.02209527976810932
+    },
+    "reset": {
+      "l2": 0.03774807614613364,
+      "max_abs": 0.02424006350338459
+    }
+  },
+  "first128_prefix_sha256": null,
+  "initial_sha256": "12f9e57285b90714d1ce1c244c291e7151ec2fb3d5a78b4b41770b8457d8153a",
+  "learning_rate": 0.001,
+  "model": "distribution_free_dual",
+  "overrun_seconds": 0.4984901179999923,
+  "primary_cpu_targets": [
+    15.0,
+    30.0,
+    60.0
+  ],
+  "process_peak_rss_bytes": 823189504,
+  "requested_training_cpu_seconds": 60.0,
+  "seed": 9206,
+  "selected_parameter_changes": {
+    "boundary": {
+      "l2": 0.02508067227102384,
+      "max_abs": 0.015038367360830307
+    },
+    "content": {
+      "l2": 1.5526123987502718,
+      "max_abs": 0.042437564581632614
+    },
+    "dynamics": {
+      "l2": 0.18025034181347024,
+      "max_abs": 0.033396072685718536
+    },
+    "refractory": {
+      "l2": 0.038611834329635455,
+      "max_abs": 0.02209527976810932
+    },
+    "reset": {
+      "l2": 0.03774807614613364,
+      "max_abs": 0.02424006350338459
+    }
+  },
+  "setup_cpu_seconds": 1.181661528,
+  "stopping_reason": "cpu_budget",
+  "total_cpu_seconds": 70.687805898,
+  "total_wall_seconds": 120.426532339,
+  "training_cpu_seconds": 60.49849011799999,
+  "updates": 64,
+  "validation_cpu_seconds": 8.966185198999984
+}

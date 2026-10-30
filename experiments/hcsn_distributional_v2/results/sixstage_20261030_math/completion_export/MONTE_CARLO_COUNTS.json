@@ -1,0 +1,70 @@
+{
+  "schema": "hcsn-raw-mc-counts.v1",
+  "records": [
+    {
+      "case": "phase_mixture",
+      "seed": 103021,
+      "trials": 30000,
+      "first_event_count": 8326,
+      "no_event_count": 21674,
+      "saved_probability": 0.27753333333333335,
+      "replayed_probability": 0.27753333333333335,
+      "exact_saved_count_reproduced": true,
+      "simulated_physical_transitions": 31969,
+      "raw_indicator_key": "phase_mixture_mc_first_event_indicator",
+      "event_or_censoring_time_key": "phase_mixture_mc_event_time_or_censoring_time"
+    },
+    {
+      "case": "repeated_event_window",
+      "seed": 103022,
+      "trials": 30000,
+      "first_event_count": 28872,
+      "no_event_count": 1128,
+      "saved_probability": 0.9624,
+      "replayed_probability": 0.9624,
+      "exact_saved_count_reproduced": true,
+      "simulated_physical_transitions": 291710,
+      "raw_indicator_key": "repeated_event_window_mc_first_event_indicator",
+      "event_or_censoring_time_key": "repeated_event_window_mc_event_time_or_censoring_time"
+    },
+    {
+      "case": "self_reset",
+      "seed": 103023,
+      "trials": 30000,
+      "first_event_count": 27672,
+      "no_event_count": 2328,
+      "saved_probability": 0.9224,
+      "replayed_probability": 0.9224,
+      "exact_saved_count_reproduced": true,
+      "simulated_physical_transitions": 60061,
+      "raw_indicator_key": "self_reset_mc_first_event_indicator",
+      "event_or_censoring_time_key": "self_reset_mc_event_time_or_censoring_time"
+    },
+    {
+      "case": "zero_duration_shrink",
+      "seed": 103024,
+      "trials": 30000,
+      "first_event_count": 14145,
+      "no_event_count": 15855,
+      "saved_probability": 0.4715,
+      "replayed_probability": 0.4715,
+      "exact_saved_count_reproduced": true,
+      "simulated_physical_transitions": 0,
+      "raw_indicator_key": "zero_duration_shrink_mc_first_event_indicator",
+      "event_or_censoring_time_key": "zero_duration_shrink_mc_event_time_or_censoring_time"
+    },
+    {
+      "case": "zero_duration_expand",
+      "seed": 103025,
+      "trials": 30000,
+      "first_event_count": 0,
+      "no_event_count": 30000,
+      "saved_probability": 0.0,
+      "replayed_probability": 0.0,
+      "exact_saved_count_reproduced": true,
+      "simulated_physical_transitions": 0,
+      "raw_indicator_key": "zero_duration_expand_mc_first_event_indicator",
+      "event_or_censoring_time_key": "zero_duration_expand_mc_event_time_or_censoring_time"
+    }
+  ]
+}

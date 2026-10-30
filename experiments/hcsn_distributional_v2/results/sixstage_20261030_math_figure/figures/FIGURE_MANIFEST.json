@@ -1,0 +1,109 @@
+{
+  "schema": "hcsn-three-panel-math-figure.v1",
+  "sources": [
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/central_float32.npz",
+      "sha256": "6469e29fa76e91e180fc34dda14cc15b169eac90af2dad18be10d346d94d7930"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_stable_probability/long_central_float32.npz",
+      "sha256": "03275b516c6f616fb986fc83fd4b1fe6db5f9d163af57747bbdd3057b375a721"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_dynamics_comparison/RESULTS.json",
+      "sha256": "c11aa4469e4c94e1a334c5bb5e8bee6ec1bf7faa43ddb6f237531541cf0b6083"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_risk_independent/RESULTS.json",
+      "sha256": "87b6d9efac326343ebb91e1a3e1159b0dd48f127112b525aa5d00a9b85c3e030"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/plot_sixstage_math.py",
+      "sha256": "44114a3f20cd5e64c46476b3778630f965f0c52987a3c2ef85cfe25947188347"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math_figure/figures/sixstage_math_audit.png",
+      "sha256": "3cadb9a3eec93087cd773ca5b6d1b2704deb9964832f299638e53ec5c9f5f735",
+      "bytes": 293309
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math_figure/figures/sixstage_math_audit.svg",
+      "sha256": "a42e26ce48eb56feedb0049c10239a16cb783ad7f4777d822d7dcd0e4dbb5c1f",
+      "bytes": 65305
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math_figure/figures/plot_data.npz",
+      "sha256": "eb5f45cf187c20d41aa4d1aa62ffdc296b9e971dc2cb7584e613f93abeddb995",
+      "bytes": 25554
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math_figure/figures/plot_source.py",
+      "sha256": "44114a3f20cd5e64c46476b3778630f965f0c52987a3c2ef85cfe25947188347",
+      "bytes": 9149
+    }
+  ],
+  "panel_A": {
+    "state_dtype": "float32",
+    "mass_reduction_dtype": "float64",
+    "statistic": "running maximum of absolute total-mass error",
+    "old_final_max": 0.0014474205672740936,
+    "new_final_max": 2.9802322387695312e-08,
+    "original_checked_mass_guard": 3.0517578125e-05,
+    "zero_errors": "omitted from logarithmic display; retained in plot_data.npz"
+  },
+  "panel_B": {
+    "order": [
+      "absorbing_no_reset",
+      "end_window_probability_reset",
+      "instant_reset_ctmc",
+      "erlang2_refractory_ctmc"
+    ],
+    "model_time_horizon": 16,
+    "durations": [
+      0.0625,
+      0.25,
+      1.0
+    ],
+    "counts": [
+      [
+        0.9995992617577649,
+        0.9995992617577641,
+        0.9995992617577647
+      ],
+      [
+        13.434525605022857,
+        12.451481431317903,
+        9.238799928843427
+      ],
+      [
+        13.79582046806641,
+        13.79582046806654,
+        13.795820468066543
+      ],
+      [
+        10.992373159966544,
+        10.992373159966476,
+        10.99237315996647
+      ]
+    ]
+  },
+  "panel_C": {
+    "cases": [
+      "repeated_event_window",
+      "self_reset"
+    ],
+    "input_dtype": "float64",
+    "risk": [
+      0.9641444811857283,
+      0.9226725768221309
+    ],
+    "expected_events": [
+      4.811650700626814,
+      3.994393654185974
+    ]
+  },
+  "simulated_or_invented_plot_data": false,
+  "scope": "Finite-grid numerical and event semantics; no task-quality or hardware-efficiency inference"
+}

@@ -1,0 +1,10 @@
+{
+  "schema": "hcsn-duplicate-run-stop.v1",
+  "requested_utc": "2026-10-30T02:12:45.593226+00:00",
+  "reason": "Recovered the original still-running frozen CONTENT002 study with identical protocol and all 47 source hashes; stop redundant scheduling and retain all already started repeat costs and artifacts. No model scores were inspected for this decision. Original study remains untouched.",
+  "canonical_execution": "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/content002",
+  "canonical_protocol_sha256": "03070eb0d3fc264ace436f25a06c989bb898f3c33caba83936f5040c660e6b9c",
+  "all_canonical_source_hashes_match": true,
+  "duplicate_role": "engineering reproducibility repeat; excluded from prespecified 176-job primary comparisons",
+  "active_workers": "finish naturally; preserve wait4 receipts"
+}

@@ -1,0 +1,1168 @@
+{
+  "elapsed_cpu_seconds": 5.950172934000001,
+  "elapsed_wall_seconds": 18.421842309999192,
+  "errors": [],
+  "failures": [],
+  "old_model_changed": false,
+  "passed": true,
+  "peak_rss_kib_linux": 265920,
+  "process_cpu_to_receipt": 15.264028372,
+  "python": "3.12.14",
+  "records": {
+    "active_collapse": {
+      "mean_after": -0.34578596679265006,
+      "mean_before": -0.34578596679265006,
+      "variance_after": 0.038399398276972155,
+      "variance_before": 0.3730591222184948
+    },
+    "dense_propagation": [
+      {
+        "cells": 8,
+        "duration": 0.73,
+        "event_error": 5.624389842751043e-13,
+        "expected_events": 0.04016181185846521,
+        "parameters": [
+          0.23,
+          0.51,
+          0.91,
+          -0.17,
+          0.41
+        ],
+        "phases": 2,
+        "reward_error": 2.86839996199717e-13,
+        "solver": {
+          "chunks": 1,
+          "event_error_bound": 1.3629885340206492e-11,
+          "max_chunk_mean": 3.5609791707317067,
+          "numerical_configuration": "adaptive_scalar_reference",
+          "probability_l1_error_bound": 1.8459170640988676e-12,
+          "roundoff_included": false,
+          "terms": 23,
+          "uniformization_rate": 4.878053658536585
+        },
+        "state_l1_error": 3.677752546948909e-13
+      },
+      {
+        "cells": 13,
+        "duration": 1.23,
+        "event_error": 3.9843128796235305e-14,
+        "expected_events": 0.07468978275044384,
+        "parameters": [
+          -0.31,
+          0.67,
+          0.83,
+          -0.21,
+          0.37
+        ],
+        "phases": 4,
+        "reward_error": 1.7132129048746947e-14,
+        "solver": {
+          "chunks": 2,
+          "event_error_bound": 1.1673371911774494e-11,
+          "max_chunk_mean": 6.648655297297297,
+          "numerical_configuration": "adaptive_scalar_reference",
+          "probability_l1_error_bound": 1.048615330645536e-12,
+          "roundoff_included": false,
+          "terms": 32,
+          "uniformization_rate": 10.81082162162162
+        },
+        "state_l1_error": 1.778707389710199e-13
+      },
+      {
+        "cells": 9,
+        "duration": 6.0,
+        "event_error": 2.2999380178134743e-12,
+        "expected_events": 3.627649847120949,
+        "parameters": [
+          0.8,
+          0.7,
+          0.8,
+          -0.2,
+          0.15
+        ],
+        "phases": 2,
+        "reward_error": 9.203748874142548e-13,
+        "solver": {
+          "chunks": 7,
+          "event_error_bound": 9.737722377989966e-11,
+          "max_chunk_mean": 11.428582857142857,
+          "numerical_configuration": "adaptive_scalar_reference",
+          "probability_l1_error_bound": 2.7356833853798063e-12,
+          "roundoff_included": false,
+          "terms": 43,
+          "uniformization_rate": 13.333346666666666
+        },
+        "state_l1_error": 4.877175052708793e-15
+      },
+      {
+        "cells": 12,
+        "duration": 2.1,
+        "event_error": 9.983125437429408e-13,
+        "expected_events": 0.378797649269076,
+        "parameters": [
+          0.19,
+          0.71,
+          1.1,
+          -0.21,
+          0.0
+        ],
+        "phases": 0,
+        "reward_error": 6.98885394001536e-13,
+        "solver": {
+          "chunks": 2,
+          "event_error_bound": 6.05414068358561e-11,
+          "max_chunk_mean": 7.3852114304152305,
+          "numerical_configuration": "adaptive_scalar_reference",
+          "probability_l1_error_bound": 3.562910113805506e-12,
+          "roundoff_included": false,
+          "terms": 33,
+          "uniformization_rate": 7.033534695633553
+        },
+        "state_l1_error": 1.2725931419765857e-13
+      }
+    ],
+    "dense_value_reference": [
+      {
+        "cells": 8,
+        "intervention_max_error": 2.498001805406602e-16,
+        "minimum_renewal_denominator": 0.7356224733188934,
+        "parameters": [
+          0.23,
+          0.51,
+          0.91,
+          -0.17,
+          0.41
+        ],
+        "phases": 2,
+        "value_max_error": 5.551115123125783e-17
+      },
+      {
+        "cells": 17,
+        "intervention_max_error": 5.551115123125783e-16,
+        "minimum_renewal_denominator": 0.9645772075708153,
+        "parameters": [
+          -0.33,
+          0.61,
+          1.13,
+          -0.24,
+          0.39
+        ],
+        "phases": 5,
+        "value_max_error": 1.1102230246251565e-16
+      },
+      {
+        "cells": 13,
+        "intervention_max_error": 4.440892098500626e-16,
+        "minimum_renewal_denominator": 0.6618227923189218,
+        "parameters": [
+          0.17,
+          0.71,
+          0.89,
+          -0.21,
+          0.0
+        ],
+        "phases": 0,
+        "value_max_error": 5.551115123125783e-17
+      }
+    ],
+    "fixed_configuration_gradients": [
+      {
+        "autograd": 0.17579200215924715,
+        "finite_difference": 0.17579200215223076,
+        "parameter": "mu",
+        "scaled_error": 3.9913007333235085e-11
+      },
+      {
+        "autograd": 0.13170135370466068,
+        "finite_difference": 0.13170135369361402,
+        "parameter": "sigma",
+        "scaled_error": 8.387661382408943e-11
+      },
+      {
+        "autograd": -0.23722484550998146,
+        "finite_difference": -0.23722484549515419,
+        "parameter": "boundary",
+        "scaled_error": 6.25030580717667e-11
+      },
+      {
+        "autograd": 0.24696992747713284,
+        "finite_difference": 0.24696992747957888,
+        "parameter": "reset",
+        "scaled_error": 9.904215435526659e-12
+      },
+      {
+        "autograd": -0.009499929467638989,
+        "finite_difference": -0.009499929470857538,
+        "parameter": "tau",
+        "scaled_error": 3.387971143708006e-10
+      },
+      {
+        "autograd": -0.10362749056328319,
+        "finite_difference": -0.10362749061909592,
+        "parameter": "rho",
+        "scaled_error": 5.385899929127934e-10
+      },
+      {
+        "autograd": -0.22206440099882413,
+        "finite_difference": -0.22206440100092092,
+        "parameter": "K",
+        "scaled_error": 9.44228318646171e-12
+      }
+    ],
+    "fixed_configuration_noninterference": [
+      {
+        "changed_solver": {
+          "chunks": 1,
+          "event_error_bound": 2.3229281685518774e-11,
+          "max_chunk_mean": 2.9160001158714293,
+          "numerical_configuration": "fixed_neural_contract",
+          "probability_l1_error_bound": 1.8538051373888857e-12,
+          "roundoff_included": false,
+          "terms": 21,
+          "uniformization_rate": 8.1
+        },
+        "common_solver": {
+          "chunks": 1,
+          "event_error_bound": 2.3229281685518774e-11,
+          "max_chunk_mean": 2.9160001158714293,
+          "numerical_configuration": "fixed_neural_contract",
+          "probability_l1_error_bound": 1.8538051373888857e-12,
+          "roundoff_included": false,
+          "terms": 21,
+          "uniformization_rate": 8.1
+        },
+        "dtype": "torch.float32",
+        "exact_prefix_equality": {
+          "G": true,
+          "J": true,
+          "event_vector": true,
+          "reward_vector": true,
+          "transition": true
+        },
+        "future_and_neighbor_input_gradient_max": 0.0,
+        "shape": [
+          3,
+          7,
+          4,
+          10
+        ]
+      },
+      {
+        "changed_solver": {
+          "chunks": 1,
+          "event_error_bound": 2.322926382252103e-11,
+          "max_chunk_mean": 2.916,
+          "numerical_configuration": "fixed_neural_contract",
+          "probability_l1_error_bound": 1.853803720898125e-12,
+          "roundoff_included": false,
+          "terms": 21,
+          "uniformization_rate": 8.1
+        },
+        "common_solver": {
+          "chunks": 1,
+          "event_error_bound": 2.322926382252103e-11,
+          "max_chunk_mean": 2.916,
+          "numerical_configuration": "fixed_neural_contract",
+          "probability_l1_error_bound": 1.853803720898125e-12,
+          "roundoff_included": false,
+          "terms": 21,
+          "uniformization_rate": 8.1
+        },
+        "dtype": "torch.float64",
+        "exact_prefix_equality": {
+          "G": true,
+          "J": true,
+          "event_vector": true,
+          "reward_vector": true,
+          "transition": true
+        },
+        "future_and_neighbor_input_gradient_max": 0.0,
+        "shape": [
+          3,
+          7,
+          4,
+          10
+        ]
+      }
+    ],
+    "fixed_generator_composition": [
+      {
+        "accumulated_local_state_bound": 4.8557257034109636e-12,
+        "event_difference": 0.0,
+        "expected_events": 0.5382390968584696,
+        "partitions": 1,
+        "probability_l1_difference": 0.0
+      },
+      {
+        "accumulated_local_state_bound": 2.5400876188381388e-11,
+        "event_difference": 6.473932501194213e-12,
+        "expected_events": 0.5382390968519957,
+        "partitions": 4,
+        "probability_l1_difference": 1.8990879832245233e-12
+      },
+      {
+        "accumulated_local_state_bound": 9.47790501438398e-11,
+        "event_difference": 1.9088841618497554e-11,
+        "expected_events": 0.5382390968393808,
+        "partitions": 16,
+        "probability_l1_difference": 6.672166278135459e-12
+      },
+      {
+        "accumulated_local_state_bound": 1.1722562396949433e-10,
+        "event_difference": 1.702860075170065e-11,
+        "expected_events": 0.538239096841441,
+        "partitions": 64,
+        "probability_l1_difference": 6.7641003204371025e-12
+      }
+    ],
+    "fixed_neural_certificate": {
+      "boundary_lower": 0.35,
+      "cells": 8,
+      "event_error": 1.6952550474513828e-12,
+      "fixed_chunks": 1,
+      "fixed_terms": 21,
+      "independently_computed_gross_rate_bound": 7.960162969669533,
+      "lower": -2,
+      "maximum_physical_duration": 0.36,
+      "mu_interval": [
+        -0.3,
+        0.5
+      ],
+      "out_of_duration_rate_and_insufficient_terms_rejected": true,
+      "phase_rate_bound": 6.666666666666667,
+      "phases": 2,
+      "registered_uniformization_rate": 8.1,
+      "reset_interval": [
+        -0.3,
+        0.1
+      ],
+      "sigma_interval": [
+        0.3,
+        0.6
+      ],
+      "solver": {
+        "chunks": 1,
+        "event_error_bound": 2.322926382252103e-11,
+        "max_chunk_mean": 2.916,
+        "numerical_configuration": "fixed_neural_contract",
+        "probability_l1_error_bound": 1.853803720898125e-12,
+        "roundoff_included": false,
+        "terms": 21,
+        "uniformization_rate": 8.1
+      },
+      "state_l1_error": 5.750955267558311e-13,
+      "tau_interval": [
+        0.3,
+        1.2
+      ]
+    },
+    "float32_long_sequence": {
+      "maximum_mass_error": 5.960464477539062e-07,
+      "minimum_final_probability": 0.01678977534174919,
+      "steps": 64,
+      "unit_mass_negative_dt_invalid_reset_zero_phase_tau_rejected": true
+    },
+    "independent_chunks_dense": {
+      "fixed_rate": 8.1,
+      "maximum_mass_error": 3.1086244689504383e-15,
+      "numerical_configuration": "fixed_rate_terms_independent_token_chunks",
+      "records": [
+        {
+          "chunks": 1,
+          "duration": 0.0,
+          "event_bound": 2.322926382252103e-11,
+          "event_error": 0.0,
+          "expected_events": 0.0,
+          "reward_error": 0.0,
+          "state_l1_bound": 1.853803720898125e-12,
+          "state_l1_error": 0.0
+        },
+        {
+          "chunks": 1,
+          "duration": 0.12,
+          "event_bound": 2.322926382252103e-11,
+          "event_error": 1.3877787807814457e-17,
+          "expected_events": 0.03397966900247217,
+          "reward_error": 4.336808689942018e-19,
+          "state_l1_bound": 1.853803720898125e-12,
+          "state_l1_error": 2.949029909160572e-16
+        },
+        {
+          "chunks": 1,
+          "duration": 0.36,
+          "event_bound": 2.322926382252103e-11,
+          "event_error": 3.341632526243643e-13,
+          "expected_events": 0.056142582088073614,
+          "reward_error": 3.7496915294976674e-14,
+          "state_l1_bound": 1.853803720898125e-12,
+          "state_l1_error": 3.2957664375388163e-13
+        },
+        {
+          "chunks": 2,
+          "duration": 0.360001,
+          "event_bound": 5.186421929518099e-11,
+          "event_error": 5.551115123125783e-17,
+          "expected_events": 0.08968285648296521,
+          "reward_error": 1.214306433183765e-17,
+          "state_l1_bound": 3.70760744179625e-12,
+          "state_l1_error": 1.186550857568136e-15
+        },
+        {
+          "chunks": 2,
+          "duration": 0.495755147934,
+          "event_bound": 5.186421929518099e-11,
+          "event_error": 4.85722573273506e-16,
+          "expected_events": 0.05104104208781094,
+          "reward_error": 9.540979117872439e-17,
+          "state_l1_bound": 3.70760744179625e-12,
+          "state_l1_error": 2.0469737016526324e-16
+        },
+        {
+          "chunks": 2,
+          "duration": 0.72,
+          "event_bound": 5.186421929518099e-11,
+          "event_error": 1.2540524174653456e-12,
+          "expected_events": 0.2852358563162815,
+          "reward_error": 2.9541646906494634e-13,
+          "state_l1_bound": 3.70760744179625e-12,
+          "state_l1_error": 3.470210230283044e-13
+        },
+        {
+          "chunks": 3,
+          "duration": 0.720001,
+          "event_bound": 8.59048664179799e-11,
+          "event_error": 5.412337245047638e-16,
+          "expected_events": 0.08224561840921844,
+          "reward_error": 1.5265566588595902e-16,
+          "state_l1_bound": 5.561411162694375e-12,
+          "state_l1_error": 4.371503159461554e-16
+        },
+        {
+          "chunks": 3,
+          "duration": 1.079999,
+          "event_bound": 8.59048664179799e-11,
+          "event_error": 1.6018297799291759e-12,
+          "expected_events": 0.13876644311590036,
+          "reward_error": 5.090303178967304e-13,
+          "state_l1_bound": 5.561411162694375e-12,
+          "state_l1_error": 1.2626774625879023e-12
+        },
+        {
+          "chunks": 9,
+          "duration": 3.2,
+          "event_bound": 4.0366827380769083e-10,
+          "event_error": 6.259881502046483e-12,
+          "expected_events": 1.2270537358956004,
+          "reward_error": 2.2465362903290043e-12,
+          "state_l1_bound": 1.6684233488083124e-11,
+          "state_l1_error": 2.58491145155304e-13
+        },
+        {
+          "chunks": 21,
+          "duration": 7.31,
+          "event_bound": 1.6230097868021175e-09,
+          "event_error": 1.1040057756872557e-11,
+          "expected_events": 3.1611875137711527,
+          "reward_error": 4.416245147353948e-12,
+          "state_l1_bound": 3.892987813886063e-11,
+          "state_l1_error": 3.3801086929408086e-14
+        }
+      ],
+      "resource_cap": 1048576,
+      "resource_cap_and_invalid_inputs_rejected": true,
+      "scheduling_binary_rounds": 5,
+      "terms": 21
+    },
+    "independent_chunks_float32_long_sequence": {
+      "duration_pattern": [
+        0.0,
+        0.05,
+        0.36,
+        0.495755147934,
+        1.2,
+        3.2
+      ],
+      "expected_events": 14.331437110900879,
+      "maximum_mass_error": 4.5299530029296875e-06,
+      "minimum_probability": 0.015003494918346405,
+      "numerical_configuration": "fixed_rate_terms_independent_token_chunks",
+      "steps": 64
+    },
+    "independent_chunks_gradients": {
+      "chunks": 4,
+      "halves_state_l1_difference": 2.185751579730777e-16,
+      "records": [
+        {
+          "autograd": 0.6518358021535117,
+          "finite_difference": 0.6518358021581627,
+          "parameter": "mu",
+          "scaled_error": 7.1353204314077035e-12
+        },
+        {
+          "autograd": 0.34948909470961265,
+          "finite_difference": 0.34948909469201256,
+          "parameter": "sigma",
+          "scaled_error": 5.035947707935361e-11
+        },
+        {
+          "autograd": -0.14055883442087283,
+          "finite_difference": -0.14055883440777794,
+          "parameter": "boundary",
+          "scaled_error": 9.316302558709746e-11
+        },
+        {
+          "autograd": 0.2872112273117293,
+          "finite_difference": 0.2872112273136218,
+          "parameter": "reset",
+          "scaled_error": 6.5891789310503926e-12
+        },
+        {
+          "autograd": -0.07036843093272949,
+          "finite_difference": -0.07036843092667056,
+          "parameter": "tau",
+          "scaled_error": 8.610297337599033e-11
+        },
+        {
+          "autograd": -0.09710809697267014,
+          "finite_difference": -0.09710809702884181,
+          "parameter": "rho",
+          "scaled_error": 5.784447050310064e-10
+        },
+        {
+          "autograd": -0.22793691909136407,
+          "finite_difference": -0.2279369190907876,
+          "parameter": "K",
+          "scaled_error": 2.5291352881145087e-12
+        },
+        {
+          "autograd": 0.20319827196562393,
+          "finite_difference": 0.20319827195858228,
+          "parameter": "duration",
+          "scaled_error": 3.465405968743464e-11
+        }
+      ],
+      "repeated_strict_chunk_equivalence": {
+        "events": 0.0,
+        "probability_max": 1.6653345369377348e-16,
+        "reward": 0.0
+      },
+      "scope": "Local first derivatives with per-token integer chunk count fixed; no claim across count/interpolation knots"
+    },
+    "independent_chunks_noninterference": [
+      {
+        "dtype": "torch.float32",
+        "exact_equality_to_previous_short_profile": {
+          "event_vector": true,
+          "reward_vector": true,
+          "transition": true
+        },
+        "exact_prefix_equality": {
+          "G": true,
+          "J": true,
+          "chunk_duration": true,
+          "chunks": true,
+          "event_error_bound": true,
+          "event_vector": true,
+          "probability_l1_error_bound": true,
+          "reward_vector": true,
+          "transition": true
+        },
+        "forbidden_derivative_max": 0.0,
+        "original_scheduling_rounds": 0,
+        "perturbed_maximum_chunks": 21,
+        "perturbed_scheduling_rounds": 5,
+        "shape": [
+          3,
+          7,
+          4,
+          10
+        ]
+      },
+      {
+        "dtype": "torch.float64",
+        "exact_equality_to_previous_short_profile": {
+          "event_vector": true,
+          "reward_vector": true,
+          "transition": true
+        },
+        "exact_prefix_equality": {
+          "G": true,
+          "J": true,
+          "chunk_duration": true,
+          "chunks": true,
+          "event_error_bound": true,
+          "event_vector": true,
+          "probability_l1_error_bound": true,
+          "reward_vector": true,
+          "transition": true
+        },
+        "forbidden_derivative_max": 0.0,
+        "original_scheduling_rounds": 0,
+        "perturbed_maximum_chunks": 21,
+        "perturbed_scheduling_rounds": 5,
+        "shape": [
+          3,
+          7,
+          4,
+          10
+        ]
+      }
+    ],
+    "independent_chunks_performance_probe": {
+      "batch": 8,
+      "cells": 8,
+      "dtype": "float32",
+      "duration_values": [
+        0.07,
+        0.495755147934,
+        3.2
+      ],
+      "energy_measured": false,
+      "median_ratio_sequential_over_prepared": 7.4355574527285,
+      "mode": "forward+backward; no optimizer update",
+      "numerical_configuration": {
+        "fixed_rate": 8.1,
+        "fixed_terms": 21,
+        "max_chunk_duration": 0.36,
+        "per_token_chunks": true
+      },
+      "phases": 2,
+      "physical_channels": 4,
+      "records": {
+        "prepared_composite_operator": {
+          "cpu_seconds": [
+            0.04789112799999984,
+            0.06503877099999933,
+            0.05379466899999841
+          ],
+          "median_cpu_seconds": 0.05379466899999841,
+          "objectives": [
+            37.97814178466797,
+            37.97814178466797,
+            37.97814178466797
+          ]
+        },
+        "sequential_local_composite_operator": {
+          "cpu_seconds": [
+            0.42305550199999864,
+            0.3975852790000012,
+            0.39999335200000097
+          ],
+          "median_cpu_seconds": 0.39999335200000097,
+          "objectives": [
+            37.97814178466797,
+            37.97814178466797,
+            37.97814178466797
+          ]
+        }
+      },
+      "steps": 16
+    },
+    "independent_chunks_remap_once": {
+      "independent_immediate_count": 0.41050015921602867,
+      "independent_immediate_reward": 0.164183511774877,
+      "records": [
+        {
+          "chunks": 1,
+          "duration": 0.0,
+          "event_error": 0.0,
+          "immediate_events": 0.41050015921602867,
+          "reward_error": 2.7755575615628914e-17,
+          "state_l1_error": 3.642919299551295e-17,
+          "total_events": 0.41050015921602867
+        },
+        {
+          "chunks": 3,
+          "duration": 0.8,
+          "event_error": 6.5503158452884236e-15,
+          "immediate_events": 0.41050015921602867,
+          "reward_error": 2.220446049250313e-16,
+          "state_l1_error": 1.790234627208065e-15,
+          "total_events": 0.6433097365956195
+        },
+        {
+          "chunks": 9,
+          "duration": 3.2,
+          "event_error": 4.9757975517650266e-12,
+          "immediate_events": 0.41050015921602867,
+          "reward_error": 1.542654892716655e-13,
+          "state_l1_error": 2.4137636334131685e-13,
+          "total_events": 1.4647650250809705
+        }
+      ],
+      "reference": "Independent physical-overlap loops then one SciPy matrix exponential"
+    },
+    "independent_markov_mc": {
+      "cells": 12,
+      "event_z_score": 0.6929162181450556,
+      "finite_expected_events": 0.8665822365475554,
+      "horizon": 2.3,
+      "max_probability_difference": 0.0036348278113225163,
+      "parameters": [
+        0.37,
+        0.63,
+        0.91,
+        -0.19,
+        0.41
+      ],
+      "phases": 3,
+      "reference": {
+        "event_standard_error": 0.003870939194836241,
+        "mean_events": 0.8639,
+        "probability": [
+          0.00046666666666666666,
+          0.001,
+          0.0026666666666666666,
+          0.0064,
+          0.014533333333333334,
+          0.03203333333333333,
+          0.0619,
+          0.1175,
+          0.21306666666666665,
+          0.1948,
+          0.15063333333333334,
+          0.06816666666666667,
+          0.047,
+          0.0437,
+          0.04613333333333333
+        ],
+        "samples": 30000,
+        "seed": 710111,
+        "total_markov_jumps": 369250
+      }
+    },
+    "initial_atom": {
+      "events": 1,
+      "phase_continuation": 0.17282486378684625,
+      "reward": 0.9
+    },
+    "performance_probe": {
+      "batch": 8,
+      "cells": 8,
+      "dtype": "float32",
+      "energy_measured": false,
+      "median_ratio_sequential_over_prepared": 4.136407289350255,
+      "mode": "forward+backward; no optimizer update; fixed synthetic parameters",
+      "numerical_configuration": {
+        "chunks": 1,
+        "fixed_rate": 8.1,
+        "fixed_terms": 21,
+        "max_duration": 0.36
+      },
+      "phases": 2,
+      "physical_channels": 4,
+      "records": {
+        "prepared_basis_operator": {
+          "cpu_seconds": [
+            0.07355947799999996,
+            0.0686386840000015,
+            0.07604743599999964
+          ],
+          "median_cpu_seconds": 0.07355947799999996,
+          "objectives": [
+            21.995868682861328,
+            21.995868682861328,
+            21.995868682861328
+          ]
+        },
+        "sequential_sparse_step": {
+          "cpu_seconds": [
+            0.30427196099999954,
+            0.3070684100000012,
+            0.30046807199999925
+          ],
+          "median_cpu_seconds": 0.30427196099999954,
+          "objectives": [
+            21.995859146118164,
+            21.995859146118164,
+            21.995859146118164
+          ]
+        }
+      },
+      "steps": 16
+    },
+    "physical_gradients": {
+      "base_branch": {
+        "chunks": 1,
+        "max_chunk_mean": 5.25180381294964,
+        "terms": 30,
+        "uniformization_rate": 7.194251798561151
+      },
+      "records": [
+        {
+          "absolute_error": 4.5987658126023234e-12,
+          "autograd": 0.5233609828227317,
+          "finite_difference": 0.5233609828181329,
+          "minus_branch": {
+            "chunks": 1,
+            "max_chunk_mean": 5.25180381294964,
+            "terms": 30,
+            "uniformization_rate": 7.194251798561151
+          },
+          "parameter": "mu",
+          "plus_branch": {
+            "chunks": 1,
+            "max_chunk_mean": 5.25180381294964,
+            "terms": 30,
+            "uniformization_rate": 7.194251798561151
+          },
+          "scaled_error": 8.786986350872829e-12
+        },
+        {
+          "absolute_error": 1.5918433238226726e-11,
+          "autograd": 0.3576082397531022,
+          "finite_difference": 0.35760823973718375,
+          "minus_branch": {
+            "chunks": 1,
+            "max_chunk_mean": 5.25180381294964,
+            "terms": 30,
+            "uniformization_rate": 7.194251798561151
+          },
+          "parameter": "sigma",
+          "plus_branch": {
+            "chunks": 1,
+            "max_chunk_mean": 5.25180381294964,
+            "terms": 30,
+            "uniformization_rate": 7.194251798561151
+          },
+          "scaled_error": 4.45136086627244e-11
+        },
+        {
+          "absolute_error": 4.2205128281125326e-12,
+          "autograd": -0.22307039809910276,
+          "finite_difference": -0.22307039809488224,
+          "minus_branch": {
+            "chunks": 1,
+            "max_chunk_mean": 5.25180381294964,
+            "terms": 30,
+            "uniformization_rate": 7.194251798561151
+          },
+          "parameter": "boundary",
+          "plus_branch": {
+            "chunks": 1,
+            "max_chunk_mean": 5.25180381294964,
+            "terms": 30,
+            "uniformization_rate": 7.194251798561151
+          },
+          "scaled_error": 1.8920093675169537e-11
+        },
+        {
+          "absolute_error": 1.0278999873492012e-12,
+          "autograd": 0.3458440541465869,
+          "finite_difference": 0.3458440541476148,
+          "minus_branch": {
+            "chunks": 1,
+            "max_chunk_mean": 5.25180381294964,
+            "terms": 30,
+            "uniformization_rate": 7.194251798561151
+          },
+          "parameter": "reset",
+          "plus_branch": {
+            "chunks": 1,
+            "max_chunk_mean": 5.25180381294964,
+            "terms": 30,
+            "uniformization_rate": 7.194251798561151
+          },
+          "scaled_error": 2.972148790826018e-12
+        },
+        {
+          "absolute_error": 1.1134565491843773e-11,
+          "autograd": -0.06384258766364379,
+          "finite_difference": -0.06384258767477835,
+          "minus_branch": {
+            "chunks": 1,
+            "max_chunk_mean": 5.251929758507399,
+            "terms": 30,
+            "uniformization_rate": 7.194424326722464
+          },
+          "parameter": "tau",
+          "plus_branch": {
+            "chunks": 1,
+            "max_chunk_mean": 5.251677873432292,
+            "terms": 30,
+            "uniformization_rate": 7.194079278674372
+          },
+          "scaled_error": 1.7440655050770434e-10
+        },
+        {
+          "absolute_error": 5.57559970415511e-11,
+          "autograd": -0.10791004413344069,
+          "finite_difference": -0.10791004418919668,
+          "minus_branch": {
+            "chunks": 1,
+            "max_chunk_mean": 5.25180381294964,
+            "terms": 30,
+            "uniformization_rate": 7.194251798561151
+          },
+          "parameter": "rho",
+          "plus_branch": {
+            "chunks": 1,
+            "max_chunk_mean": 5.25180381294964,
+            "terms": 30,
+            "uniformization_rate": 7.194251798561151
+          },
+          "scaled_error": 5.166895951204981e-10
+        },
+        {
+          "absolute_error": 2.629063633463602e-12,
+          "autograd": -0.2526851565680311,
+          "finite_difference": -0.252685156565402,
+          "minus_branch": {
+            "chunks": 1,
+            "max_chunk_mean": 5.25180381294964,
+            "terms": 30,
+            "uniformization_rate": 7.194251798561151
+          },
+          "parameter": "K",
+          "plus_branch": {
+            "chunks": 1,
+            "max_chunk_mean": 5.25180381294964,
+            "terms": 30,
+            "uniformization_rate": 7.194251798561151
+          },
+          "scaled_error": 1.0404503648725906e-11
+        }
+      ],
+      "scope": "Local first derivatives away from overlap/interpolation/drift knots; adaptive terms/chunks unchanged in each finite-difference pair"
+    },
+    "poisson_majorants": [
+      {
+        "exact_tail": 8.264185641806515e-13,
+        "exact_tail_first_moment": 4.133471826263344e-12,
+        "mean": 0.01,
+        "tail_bound": 8.264188929458825e-13,
+        "tail_first_moment_bound": 4.133474128991425e-12,
+        "terms": 4
+      },
+      {
+        "exact_tail": 1.136418557989856e-39,
+        "exact_tail_first_moment": 1.5910617866395955e-38,
+        "mean": 0.01,
+        "tail_bound": 1.1364185895941957e-39,
+        "tail_first_moment_bound": 1.5910618372123673e-38,
+        "terms": 13
+      },
+      {
+        "exact_tail": 3.733680025912573e-93,
+        "exact_tail_first_moment": 1.1201160555462939e-91,
+        "mean": 0.01,
+        "tail_bound": 3.7336800380611333e-93,
+        "tail_first_moment_bound": 1.1201160594339517e-91,
+        "terms": 29
+      },
+      {
+        "exact_tail": 2.2581905529578234e-06,
+        "exact_tail_first_moment": 1.1368048151631334e-05,
+        "mean": 0.2,
+        "tail_bound": 2.2585675946978813e-06,
+        "tail_first_moment_bound": 1.1370719614685887e-05,
+        "terms": 4
+      },
+      {
+        "exact_tail": 1.5594709659551693e-21,
+        "exact_tail_first_moment": 2.1853631549246883e-20,
+        "mean": 0.2,
+        "tail_bound": 1.5594887082086663e-21,
+        "tail_first_moment_bound": 2.185391608665388e-20,
+        "terms": 13
+      },
+      {
+        "exact_tail": 3.3357331747017673e-54,
+        "exact_tail_first_moment": 1.0009364700865342e-52,
+        "mean": 0.2,
+        "tail_bound": 3.335737566650528e-54,
+        "tail_first_moment_bound": 1.0009378763306553e-52,
+        "terms": 29
+      },
+      {
+        "exact_tail": 0.003659846827343713,
+        "exact_tail_first_moment": 0.01898815687615381,
+        "mean": 1.0,
+        "tail_bound": 0.003678794411714421,
+        "tail_first_moment_bound": 0.01912973094091499,
+        "terms": 4
+      },
+      {
+        "exact_tail": 4.519852546965122e-12,
+        "exact_tail_first_moment": 6.359777327134151e-11,
+        "mean": 1.0,
+        "tail_bound": 4.521269443192056e-12,
+        "tail_first_moment_bound": 6.362072002205964e-11,
+        "terms": 13
+      },
+      {
+        "exact_tail": 1.4330814167223303e-33,
+        "exact_tail_first_moment": 4.3040109680083484e-32,
+        "mean": 1.0,
+        "tail_bound": 1.4331309735157697e-33,
+        "tail_first_moment_bound": 4.3041700237923617e-32,
+        "terms": 29
+      },
+      {
+        "exact_tail": 0.0511336157928473,
+        "exact_tail_first_moment": 0.4426959136102944,
+        "mean": 4.0,
+        "tail_bound": 0.05358632634875376,
+        "tail_first_moment_bound": 0.471559671869033,
+        "terms": 7
+      },
+      {
+        "exact_tail": 1.1328315291698046e-06,
+        "exact_tail_first_moment": 1.9570442879511348e-05,
+        "mean": 4.0,
+        "tail_bound": 1.1374121921469686e-06,
+        "tail_first_moment_bound": 1.9660982178540455e-05,
+        "terms": 16
+      },
+      {
+        "exact_tail": 1.7630174687875932e-19,
+        "exact_tail_first_moment": 5.841266402886416e-18,
+        "mean": 4.0,
+        "tail_bound": 1.7638991931578393e-19,
+        "tail_first_moment_bound": 5.844385993329641e-18,
+        "terms": 32
+      },
+      {
+        "exact_tail": 0.15558434754981676,
+        "exact_tail_first_moment": 2.735705612357461,
+        "mean": 12.0,
+        "tail_bound": 0.18459735637392896,
+        "tail_first_moment_bound": 3.396591357280293,
+        "terms": 15
+      },
+      {
+        "exact_tail": 0.0006856332013882274,
+        "exact_tail_first_moment": 0.017674550187795242,
+        "mean": 12.0,
+        "tail_bound": 0.0007017735601415684,
+        "tail_first_moment_bound": 0.018145859197946267,
+        "terms": 24
+      },
+      {
+        "exact_tail": 4.5190661985998755e-11,
+        "exact_tail_first_moment": 1.8704535722837736e-09,
+        "mean": 12.0,
+        "tail_bound": 4.5351997069085284e-11,
+        "tail_first_moment_bound": 1.877572678660131e-09,
+        "terms": 40
+      }
+    ],
+    "prepared_vs_step": {
+      "errors": {
+        "events": 1.7735812818386876e-14,
+        "gradient_max_absolute": 5.748179709996748e-14,
+        "probability": 2.55351295663786e-15,
+        "rewards": 7.396860901565105e-15,
+        "values": 1.887379141862766e-15
+      },
+      "shape": [
+        2,
+        6,
+        3,
+        10
+      ],
+      "solver": {
+        "chunks": 1,
+        "event_error_bound": 2.0889592560844048e-13,
+        "max_chunk_mean": 0.5234899611088968,
+        "numerical_configuration": "adaptive_scalar_reference",
+        "probability_l1_error_bound": 4.3828854920949863e-14,
+        "roundoff_included": false,
+        "terms": 12,
+        "uniformization_rate": 5.40541081081081
+      }
+    },
+    "spatial_refinement": {
+      "horizon": 1.7,
+      "initial": 0.11,
+      "lower": -4,
+      "parameters": [
+        0.21,
+        0.61,
+        0.97,
+        -0.19,
+        0.0
+      ],
+      "records": [
+        {
+          "cells": 8,
+          "event_error": 0.02404035213720629,
+          "events": 0.48618807221913557,
+          "mean": -0.13617612118346742,
+          "mean_error": 0.06708476588842946,
+          "variance": 0.397826445090259,
+          "variance_error": 0.13710507906694397
+        },
+        {
+          "cells": 16,
+          "event_error": 0.029140944112823253,
+          "events": 0.49128866419475253,
+          "mean": -0.11427574961372924,
+          "mean_error": 0.045184394318691284,
+          "variance": 0.3149216216544907,
+          "variance_error": 0.0542002556311757
+        },
+        {
+          "cells": 32,
+          "event_error": 0.017329074402474443,
+          "events": 0.4794767944844037,
+          "mean": -0.09219373610135805,
+          "mean_error": 0.023102380806320086,
+          "variance": 0.2805437005769388,
+          "variance_error": 0.019822334553623755
+        },
+        {
+          "cells": 64,
+          "event_error": 0.010920822336467573,
+          "events": 0.47306854241839685,
+          "mean": -0.08253072111880655,
+          "mean_error": 0.01343936582376859,
+          "variance": 0.2706050116137,
+          "variance_error": 0.00988364559038496
+        },
+        {
+          "cells": 128,
+          "event_error": 0.005746149763209529,
+          "events": 0.4678938698451388,
+          "mean": -0.0759516695795794,
+          "mean_error": 0.006860314284541438,
+          "variance": 0.2652839030144822,
+          "variance_error": 0.004562536991167154
+        }
+      ],
+      "reference": {
+        "count_tail_tolerance": 1e-12,
+        "events": 0.4621477200819293,
+        "mean": -0.06909135529503796,
+        "quadrature_error_note": "Individual unscaled integral estimates; not a bound on moments",
+        "quadrature_integral_error_estimates": {
+          "I0": 5.305840524427939e-10,
+          "I1": 0.0,
+          "Iprev": 5.305840524427939e-10
+        },
+        "refractory_mass": 0.0,
+        "second_moment": 0.2654949813998202,
+        "variance": 0.260721366023315
+      },
+      "scope": "Unbounded Brownian zero-delay renewal versus finite reflecting-domain/upwind grids; not an exact equality at finite grid"
+    },
+    "zero_time_boundary_jump": {
+      "events": 0.1730628712921294,
+      "independent_integral_events": 0.1730628712921294,
+      "independent_integral_reward": 0.0867036799633928,
+      "preserved_existing_nonzero_phases": true,
+      "reward": 0.08670367996339282
+    }
+  },
+  "schema": "hcsn-distribution-kernel-audit.v1",
+  "scientific_scope": "Finite-volume CTMC plus bounded Poisson propagation; local fixed-policy values; not task optimality",
+  "source_sha256": {
+    "MATH.md": "3899a158c856f72ba52c59de8d1f9d46f3967a9f2b8a1de2fa5e0bad97fb3a96",
+    "distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "kernel_tests.py": "e8c9cd018a7d707ebb8f118fd2f1e297057a5c59e2dcd06c53025cf19f045add"
+  },
+  "supplemental_error": null,
+  "tests_run": 18,
+  "threads": 1,
+  "torch": "2.8.0+cpu"
+}

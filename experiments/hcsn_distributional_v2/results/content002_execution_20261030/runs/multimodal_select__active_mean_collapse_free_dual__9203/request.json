@@ -1,0 +1,17 @@
+{
+  "batch_size": 32,
+  "cpu_seconds": 60.0,
+  "data": "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_free_boundary_v1/data/study001/multimodal_select.npz",
+  "depth": 1,
+  "learning_rates": [
+    0.001,
+    0.003
+  ],
+  "loss": "task_cross_entropy_only",
+  "max_updates": 65536,
+  "model": "active_mean_collapse_free_dual",
+  "seed": 9203,
+  "torch_threads": 1,
+  "torch_version": "2.8.0+cpu",
+  "width": 32
+}

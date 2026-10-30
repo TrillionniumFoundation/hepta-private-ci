@@ -1,0 +1,1575 @@
+{
+  "schema": "hcsn-four-reset-dynamics-audit.v1",
+  "passed": true,
+  "records": [
+    {
+      "model": "absorbing_no_reset",
+      "observation_dt": 0.0625,
+      "horizon": 1.0,
+      "seed": 103041,
+      "expected_events": 0.6527153218146567,
+      "event_count_mean_from_law": 0.6527153218146569,
+      "event_count_variance_from_law": 0.226678030483046,
+      "passive_recovery_mean": 0.3372082989660106,
+      "final_active_mass": 0.3472846781853433,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.6527153218146567,
+      "half_step_semigroup_error": {
+        "state_l1": 8.691248569204481e-17,
+        "expected_count": 3.469446951953614e-18,
+        "passive_recovery": 3.469446951953614e-18
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": null,
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 7861,
+        "count_mean": 0.6550833333333334,
+        "count_standard_error": 0.004339431514112648,
+        "count_mean_registered_guard": 0.028036589084675885,
+        "passive_recovery_mean": 0.33767278868583955,
+        "passive_recovery_standard_error": 0.002584731974751633,
+        "passive_recovery_registered_guard": 0.017508391848509795,
+        "count_cdf_max_error": 0.0023680115186769934,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 39769,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "absorbing_no_reset_dt0p0625_T1.npz",
+      "raw_sha256": "67e73fb3e02513361f227c61a918b45e75f6287219d4218c25516d8cbbf0db3e"
+    },
+    {
+      "model": "absorbing_no_reset",
+      "observation_dt": 0.0625,
+      "horizon": 4.0,
+      "seed": 103042,
+      "expected_events": 0.9433896574114026,
+      "event_count_mean_from_law": 0.9433896574114027,
+      "event_count_variance_from_law": 0.053405611700599265,
+      "passive_recovery_mean": 0.045611710488841696,
+      "final_active_mass": 0.056610342588597526,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.9433896574114026,
+      "half_step_semigroup_error": {
+        "state_l1": 8.691248569204481e-17,
+        "expected_count": 3.469446951953614e-18,
+        "passive_recovery": 3.469446951953614e-18
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": null,
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 11318,
+        "count_mean": 0.9431666666666667,
+        "count_standard_error": 0.002113602234534709,
+        "count_mean_registered_guard": 0.014681613407208255,
+        "passive_recovery_mean": 0.04537639109828598,
+        "passive_recovery_standard_error": 0.0009962263107972,
+        "passive_recovery_registered_guard": 0.0079773578647832,
+        "count_cdf_max_error": 0.0002229907447356752,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 66519,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "absorbing_no_reset_dt0p0625_T4.npz",
+      "raw_sha256": "fc570ce278a23ce8dcd57c426758096136fdbabb005ed7c4b5105c1c0f0e8a61"
+    },
+    {
+      "model": "absorbing_no_reset",
+      "observation_dt": 0.0625,
+      "horizon": 16.0,
+      "seed": 103043,
+      "expected_events": 0.9995992617577649,
+      "event_count_mean_from_law": 0.9995992617577639,
+      "event_count_variance_from_law": 0.00040057765109667847,
+      "passive_recovery_mean": 0.00019247387181953502,
+      "final_active_mass": 0.0004007382422354644,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.9995992617577649,
+      "half_step_semigroup_error": {
+        "state_l1": 8.691248569204481e-17,
+        "expected_count": 3.469446951953614e-18,
+        "passive_recovery": 3.469446951953614e-18
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 2.2726202239100575e-142
+      },
+      "original_source_kernel_comparison": null,
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 11997,
+        "count_mean": 0.99975,
+        "count_standard_error": 0.0001443255376630731,
+        "count_mean_registered_guard": 0.0028659532259784387,
+        "passive_recovery_mean": 9.314254865795372e-05,
+        "passive_recovery_standard_error": 2.769640045195293e-05,
+        "passive_recovery_registered_guard": 0.0021661784027117176,
+        "count_cdf_max_error": 0.00015073824223546842,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 74947,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "absorbing_no_reset_dt0p0625_T16.npz",
+      "raw_sha256": "75b9f27ddfc43e9842347a22e1470e5e257ef48a62dfa950ab63692b9881228b"
+    },
+    {
+      "model": "absorbing_no_reset",
+      "observation_dt": 0.25,
+      "horizon": 1.0,
+      "seed": 103044,
+      "expected_events": 0.6527153218146564,
+      "event_count_mean_from_law": 0.6527153218146569,
+      "event_count_variance_from_law": 0.226678030483046,
+      "passive_recovery_mean": 0.33720829896601046,
+      "final_active_mass": 0.3472846781853435,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.6527153218146564,
+      "half_step_semigroup_error": {
+        "state_l1": 8.857567525039252e-16,
+        "expected_count": 1.1102230246251565e-16,
+        "passive_recovery": 1.942890293094024e-16
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": null,
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 7821,
+        "count_mean": 0.65175,
+        "count_standard_error": 0.004349241824774849,
+        "count_mean_registered_guard": 0.028095450948649098,
+        "passive_recovery_mean": 0.33750805375665477,
+        "passive_recovery_standard_error": 0.002602800835313576,
+        "passive_recovery_registered_guard": 0.017616805011881453,
+        "count_cdf_max_error": 0.0009653218146563614,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 40270,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "absorbing_no_reset_dt0p25_T1.npz",
+      "raw_sha256": "ff23a9e47f458a61ea341892bf1797b6e1b19ba842dde804dd0abf0268a20b55"
+    },
+    {
+      "model": "absorbing_no_reset",
+      "observation_dt": 0.25,
+      "horizon": 4.0,
+      "seed": 103045,
+      "expected_events": 0.9433896574114022,
+      "event_count_mean_from_law": 0.9433896574114027,
+      "event_count_variance_from_law": 0.053405611700599265,
+      "passive_recovery_mean": 0.045611710488841745,
+      "final_active_mass": 0.05661034258859765,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.9433896574114022,
+      "half_step_semigroup_error": {
+        "state_l1": 8.857567525039252e-16,
+        "expected_count": 1.1102230246251565e-16,
+        "passive_recovery": 1.942890293094024e-16
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": null,
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 11293,
+        "count_mean": 0.9410833333333334,
+        "count_standard_error": 0.002149614575886811,
+        "count_mean_registered_guard": 0.014897687455320866,
+        "passive_recovery_mean": 0.04532665757849022,
+        "passive_recovery_standard_error": 0.000985841814679736,
+        "passive_recovery_registered_guard": 0.007915050888078416,
+        "count_cdf_max_error": 0.002306324078069008,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 67422,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "absorbing_no_reset_dt0p25_T4.npz",
+      "raw_sha256": "0cc1b257d64fbf86318ff36d7fdfea6b2a191f405f1aec6f3f6c7935727e988b"
+    },
+    {
+      "model": "absorbing_no_reset",
+      "observation_dt": 0.25,
+      "horizon": 16.0,
+      "seed": 103046,
+      "expected_events": 0.9995992617577641,
+      "event_count_mean_from_law": 0.9995992617577639,
+      "event_count_variance_from_law": 0.00040057765109667847,
+      "passive_recovery_mean": 0.00019247387181953597,
+      "final_active_mass": 0.00040073824223546626,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.9995992617577641,
+      "half_step_semigroup_error": {
+        "state_l1": 8.857567525039252e-16,
+        "expected_count": 1.1102230246251565e-16,
+        "passive_recovery": 1.942890293094024e-16
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 2.2726202239100575e-142
+      },
+      "original_source_kernel_comparison": null,
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 11992,
+        "count_mean": 0.9993333333333333,
+        "count_standard_error": 0.00023563349814342144,
+        "count_mean_registered_guard": 0.003413800988860529,
+        "passive_recovery_mean": 0.0001158494027478696,
+        "passive_recovery_standard_error": 3.4594789020090686e-05,
+        "passive_recovery_registered_guard": 0.0022075687341205443,
+        "count_cdf_max_error": 0.0002659284244311982,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 76247,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "absorbing_no_reset_dt0p25_T16.npz",
+      "raw_sha256": "6a4e4561b0e72f8e8ed55a6e75dcd8d9f55f3ffd61388947d169be25c29bb691"
+    },
+    {
+      "model": "absorbing_no_reset",
+      "observation_dt": 1.0,
+      "horizon": 1.0,
+      "seed": 103047,
+      "expected_events": 0.6527153218146565,
+      "event_count_mean_from_law": 0.6527153218146569,
+      "event_count_variance_from_law": 0.226678030483046,
+      "passive_recovery_mean": 0.33720829896601046,
+      "final_active_mass": 0.3472846781853435,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.6527153218146565,
+      "half_step_semigroup_error": {
+        "state_l1": 0.0,
+        "expected_count": 0.0,
+        "passive_recovery": 0.0
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": null,
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 7870,
+        "count_mean": 0.6558333333333334,
+        "count_standard_error": 0.004337191712907642,
+        "count_mean_registered_guard": 0.028023150277445855,
+        "passive_recovery_mean": 0.3378594051498773,
+        "passive_recovery_standard_error": 0.002589562860370906,
+        "passive_recovery_registered_guard": 0.017537377162225434,
+        "count_cdf_max_error": 0.0031180115186769664,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 40196,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "absorbing_no_reset_dt1p0_T1.npz",
+      "raw_sha256": "bb858a442eb1d93f47f847156014d78477958dc13356d73a11fb6ee385d204a8"
+    },
+    {
+      "model": "absorbing_no_reset",
+      "observation_dt": 1.0,
+      "horizon": 4.0,
+      "seed": 103048,
+      "expected_events": 0.9433896574114026,
+      "event_count_mean_from_law": 0.9433896574114027,
+      "event_count_variance_from_law": 0.053405611700599265,
+      "passive_recovery_mean": 0.04561171048884176,
+      "final_active_mass": 0.056610342588597644,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.9433896574114026,
+      "half_step_semigroup_error": {
+        "state_l1": 0.0,
+        "expected_count": 0.0,
+        "passive_recovery": 0.0
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": null,
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 11330,
+        "count_mean": 0.9441666666666667,
+        "count_standard_error": 0.0020960352570591674,
+        "count_mean_registered_guard": 0.014576211542355005,
+        "passive_recovery_mean": 0.04570173521446404,
+        "passive_recovery_standard_error": 0.0010162091790002256,
+        "passive_recovery_registered_guard": 0.008097255074001353,
+        "count_cdf_max_error": 0.0007770092552643257,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 66840,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "absorbing_no_reset_dt1p0_T4.npz",
+      "raw_sha256": "cff855561ea496279e4f7160ffce3b41d199f8dd3b4848481107f0fe367b64d7"
+    },
+    {
+      "model": "absorbing_no_reset",
+      "observation_dt": 1.0,
+      "horizon": 16.0,
+      "seed": 103049,
+      "expected_events": 0.9995992617577647,
+      "event_count_mean_from_law": 0.9995992617577639,
+      "event_count_variance_from_law": 0.00040057765109667847,
+      "passive_recovery_mean": 0.0001924738718195361,
+      "final_active_mass": 0.0004007382422354666,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.9995992617577647,
+      "half_step_semigroup_error": {
+        "state_l1": 0.0,
+        "expected_count": 0.0,
+        "passive_recovery": 0.0
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 2.2726202239100575e-142
+      },
+      "original_source_kernel_comparison": null,
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 11996,
+        "count_mean": 0.9996666666666667,
+        "count_standard_error": 0.00016664583029461433,
+        "count_mean_registered_guard": 0.002999874981767686,
+        "passive_recovery_mean": 9.046800705613454e-05,
+        "passive_recovery_standard_error": 3.32524127191698e-05,
+        "passive_recovery_registered_guard": 0.0021995144763150187,
+        "count_cdf_max_error": 6.740490890213511e-05,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 74173,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "absorbing_no_reset_dt1p0_T16.npz",
+      "raw_sha256": "24e037330b6c28de4e654fd58529c29a96e3c55f9f32ee2c8923798d0822bc70"
+    },
+    {
+      "model": "end_window_probability_reset",
+      "observation_dt": 0.0625,
+      "horizon": 1.0,
+      "seed": 103050,
+      "expected_events": 0.9943211807274387,
+      "event_count_mean_from_law": 0.9943211807274392,
+      "event_count_variance_from_law": 0.8607526134614041,
+      "passive_recovery_mean": 0.599050759281635,
+      "final_active_mass": 0.9999999999999996,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 0.001498347474628726,
+        "expected_count": 4.069224286468512e-05,
+        "passive_recovery": 0.00020368521675174708
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": null,
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 11945,
+        "count_mean": 0.9954166666666666,
+        "count_standard_error": 0.008441630902463804,
+        "count_mean_registered_guard": 0.052649785414782824,
+        "passive_recovery_mean": 0.5994550966334652,
+        "passive_recovery_standard_error": 0.005400021675503537,
+        "passive_recovery_registered_guard": 0.03440013005302123,
+        "count_cdf_max_error": 0.002701344852009846,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 62132,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "end_window_probability_reset_dt0p0625_T1.npz",
+      "raw_sha256": "01426667c19d504508161bdbdcad428c3c0abff29609a7c93e0a035e4a0e2dd5"
+    },
+    {
+      "model": "end_window_probability_reset",
+      "observation_dt": 0.0625,
+      "horizon": 4.0,
+      "seed": 103051,
+      "expected_events": 3.618779731508557,
+      "event_count_mean_from_law": 3.618779731508562,
+      "event_count_variance_from_law": 4.3257125186178875,
+      "passive_recovery_mean": 0.7026071348241641,
+      "final_active_mass": 0.9999999999999987,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 0.001498347474628726,
+        "expected_count": 4.069224286468512e-05,
+        "passive_recovery": 0.00020368521675174708
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": null,
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 43403,
+        "count_mean": 3.6169166666666666,
+        "count_standard_error": 0.019059906522503525,
+        "count_mean_registered_guard": 0.11635943913502114,
+        "passive_recovery_mean": 0.7041136624146698,
+        "passive_recovery_standard_error": 0.0058209773899957394,
+        "passive_recovery_registered_guard": 0.03692586433997444,
+        "count_cdf_max_error": 0.004866937742893873,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 246918,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "end_window_probability_reset_dt0p0625_T4.npz",
+      "raw_sha256": "92b33fec914d9761b24f0496de094786284145aaaef7547f4e42866405497978"
+    },
+    {
+      "model": "end_window_probability_reset",
+      "observation_dt": 0.0625,
+      "horizon": 16.0,
+      "seed": 103052,
+      "expected_events": 13.434525605022857,
+      "event_count_mean_from_law": 13.434525605022891,
+      "event_count_variance_from_law": 20.884781777885365,
+      "passive_recovery_mean": 0.6784025605946623,
+      "final_active_mass": 0.9999999999999962,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 0.001498347474628726,
+        "expected_count": 4.069224286468512e-05,
+        "passive_recovery": 0.00020368521675174708
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 7.272585980188898e-110,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": null,
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 160375,
+        "count_mean": 13.364583333333334,
+        "count_standard_error": 0.041883353105502945,
+        "count_mean_registered_guard": 0.25330011863301766,
+        "passive_recovery_mean": 0.6762101091146605,
+        "passive_recovery_standard_error": 0.00580167090973274,
+        "passive_recovery_registered_guard": 0.03681002545839644,
+        "count_cdf_max_error": 0.010882208585302922,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 980003,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "end_window_probability_reset_dt0p0625_T16.npz",
+      "raw_sha256": "9acb4eef93170e641e8a3bfc837f34e205fd0b9b15668b8a9a02f1aa0e2b507d"
+    },
+    {
+      "model": "end_window_probability_reset",
+      "observation_dt": 0.25,
+      "horizon": 1.0,
+      "seed": 103053,
+      "expected_events": 0.9150180903050746,
+      "event_count_mean_from_law": 0.9150180903050744,
+      "event_count_variance_from_law": 0.674696467422736,
+      "passive_recovery_mean": 0.6127746849692001,
+      "final_active_mass": 1.0,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 0.04444390738097529,
+        "expected_count": 0.005380645764070657,
+        "passive_recovery": 0.005230191832541281
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": null,
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 10892,
+        "count_mean": 0.9076666666666666,
+        "count_standard_error": 0.007551848114307464,
+        "count_mean_registered_guard": 0.047311088685844785,
+        "passive_recovery_mean": 0.6072503290805615,
+        "passive_recovery_standard_error": 0.005370281404066198,
+        "passive_recovery_registered_guard": 0.03422168842439719,
+        "count_cdf_max_error": 0.008715321814656618,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 56623,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "end_window_probability_reset_dt0p25_T1.npz",
+      "raw_sha256": "ac9d64f0e1b30300bdd410add62469068e697895f4c31f841337e2d8c6e0c3d0"
+    },
+    {
+      "model": "end_window_probability_reset",
+      "observation_dt": 0.25,
+      "horizon": 4.0,
+      "seed": 103054,
+      "expected_events": 3.339107609508665,
+      "event_count_mean_from_law": 3.339107609508663,
+      "event_count_variance_from_law": 3.400345000199312,
+      "passive_recovery_mean": 0.7288985909115477,
+      "final_active_mass": 1.0000000000000004,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 0.04444390738097529,
+        "expected_count": 0.005380645764070657,
+        "passive_recovery": 0.005230191832541281
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": null,
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 39750,
+        "count_mean": 3.3125,
+        "count_standard_error": 0.016778272806515695,
+        "count_mean_registered_guard": 0.10266963683909416,
+        "passive_recovery_mean": 0.7230894650798352,
+        "passive_recovery_standard_error": 0.005760702589259554,
+        "passive_recovery_registered_guard": 0.036564215535557325,
+        "count_cdf_max_error": 0.007534168903502336,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 226176,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "end_window_probability_reset_dt0p25_T4.npz",
+      "raw_sha256": "94d8219fd7aa24964150fa8a1920ce9c50e0a76325f28dc9fd0c4b234f941516"
+    },
+    {
+      "model": "end_window_probability_reset",
+      "observation_dt": 0.25,
+      "horizon": 16.0,
+      "seed": 103055,
+      "expected_events": 12.451481431317903,
+      "event_count_mean_from_law": 12.451481431317886,
+      "event_count_variance_from_law": 16.644329669505662,
+      "passive_recovery_mean": 0.7054403828044502,
+      "final_active_mass": 1.0000000000000016,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 0.04444390738097529,
+        "expected_count": 0.005380645764070657,
+        "passive_recovery": 0.005230191832541281
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": null,
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 149275,
+        "count_mean": 12.439583333333333,
+        "count_standard_error": 0.037293029505568676,
+        "count_mean_registered_guard": 0.22575817703341206,
+        "passive_recovery_mean": 0.7051822530652341,
+        "passive_recovery_standard_error": 0.005776072880838371,
+        "passive_recovery_registered_guard": 0.03665643728503023,
+        "count_cdf_max_error": 0.0029229299121869,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 910826,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "end_window_probability_reset_dt0p25_T16.npz",
+      "raw_sha256": "949971e6c8878b251e128fb48f91eab89fb27597a24b81742f34c4e06a02a916"
+    },
+    {
+      "model": "end_window_probability_reset",
+      "observation_dt": 1.0,
+      "horizon": 1.0,
+      "seed": 103056,
+      "expected_events": 0.6527153218146564,
+      "event_count_mean_from_law": 0.6527153218146564,
+      "event_count_variance_from_law": 0.2266780304830459,
+      "passive_recovery_mean": 0.6527153218146564,
+      "final_active_mass": 0.9999999999999999,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 0.26612640326932213,
+        "expected_count": 0.17082814400405233,
+        "passive_recovery": 0.021254634813370532
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": null,
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 7884,
+        "count_mean": 0.657,
+        "count_standard_error": 0.004333683775718105,
+        "count_mean_registered_guard": 0.02800210265430863,
+        "passive_recovery_mean": 0.657,
+        "passive_recovery_standard_error": 0.004333683775718105,
+        "passive_recovery_registered_guard": 0.02800210265430863,
+        "count_cdf_max_error": 0.004284678185343449,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 39919,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "end_window_probability_reset_dt1p0_T1.npz",
+      "raw_sha256": "80e8dd4845909ab1f6cf68c5f2a2899e5fd49ae7d27dc1add86021bc5e58128b"
+    },
+    {
+      "model": "end_window_probability_reset",
+      "observation_dt": 1.0,
+      "horizon": 4.0,
+      "seed": 103057,
+      "expected_events": 2.4297040097518217,
+      "event_count_mean_from_law": 2.4297040097518217,
+      "event_count_variance_from_law": 1.2498462619252242,
+      "passive_recovery_mean": 0.8127422791082345,
+      "final_active_mass": 0.9999999999999997,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 0.26612640326932213,
+        "expected_count": 0.17082814400405233,
+        "passive_recovery": 0.021254634813370532
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": null,
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 29061,
+        "count_mean": 2.42175,
+        "count_standard_error": 0.010309717211482982,
+        "count_mean_registered_guard": 0.0638583032688979,
+        "passive_recovery_mean": 0.8082464793145764,
+        "passive_recovery_standard_error": 0.004988537207152759,
+        "passive_recovery_registered_guard": 0.03193122324291656,
+        "count_cdf_max_error": 0.005055347371304808,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 165565,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "end_window_probability_reset_dt1p0_T4.npz",
+      "raw_sha256": "79b6b336343820af1485af7b1fe1c544f201e401865455e608e81bb59a778831"
+    },
+    {
+      "model": "end_window_probability_reset",
+      "observation_dt": 1.0,
+      "horizon": 16.0,
+      "seed": 103058,
+      "expected_events": 9.238799928843427,
+      "event_count_mean_from_law": 9.238799928843427,
+      "event_count_variance_from_law": 6.539378741248295,
+      "passive_recovery_mean": 0.7934528769574365,
+      "final_active_mass": 0.9999999999999991,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 0.26612640326932213,
+        "expected_count": 0.17082814400405233,
+        "passive_recovery": 0.021254634813370532
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": null,
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 111223,
+        "count_mean": 9.268583333333334,
+        "count_standard_error": 0.02318641353158979,
+        "count_mean_registered_guard": 0.14111848118953874,
+        "passive_recovery_mean": 0.7924542443628301,
+        "passive_recovery_standard_error": 0.005046332108320119,
+        "passive_recovery_registered_guard": 0.03227799264992071,
+        "count_cdf_max_error": 0.006088972052147867,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 671918,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "end_window_probability_reset_dt1p0_T16.npz",
+      "raw_sha256": "e7b27bd6070ebbfc796d37441a1675e542ebdefd5310b77d81acf51e32dc928d"
+    },
+    {
+      "model": "instant_reset_ctmc",
+      "observation_dt": 0.0625,
+      "horizon": 1.0,
+      "seed": 103059,
+      "expected_events": 1.0257269729258283,
+      "event_count_mean_from_law": 1.0257269729258294,
+      "event_count_variance_from_law": 0.9438491831686723,
+      "passive_recovery_mean": 0.5951525598524613,
+      "final_active_mass": 0.9999999999999998,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 1.9642710590439476e-16,
+        "expected_count": 1.3877787807814457e-17,
+        "passive_recovery": 6.938893903907228e-18
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": {
+        "state_l1_error": 1.0809365555419781e-13,
+        "event_error": 1.3704593015972932e-12,
+        "probability_bound": 5.561411162694375e-12,
+        "event_bound": 8.59048664179799e-11
+      },
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 12333,
+        "count_mean": 1.02775,
+        "count_standard_error": 0.008939891214638881,
+        "count_mean_registered_guard": 0.05563934728783329,
+        "passive_recovery_mean": 0.5966558612853838,
+        "passive_recovery_standard_error": 0.005533300731700471,
+        "passive_recovery_registered_guard": 0.03519980439020283,
+        "count_cdf_max_error": 0.0018186232691292936,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 63939,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "instant_reset_ctmc_dt0p0625_T1.npz",
+      "raw_sha256": "c373271e75db2f6a68def11406f7aa2142aeee50d1a310b7786d7f9b1b8c30ce"
+    },
+    {
+      "model": "instant_reset_ctmc",
+      "observation_dt": 0.0625,
+      "horizon": 4.0,
+      "seed": 103060,
+      "expected_events": 3.7231799607887393,
+      "event_count_mean_from_law": 3.723179960788749,
+      "event_count_variance_from_law": 4.713052834923031,
+      "passive_recovery_mean": 0.6940761584498443,
+      "final_active_mass": 0.9999999999999998,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 1.9642710590439476e-16,
+        "expected_count": 1.3877787807814457e-17,
+        "passive_recovery": 6.938893903907228e-18
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 2.4477338630513506e-216,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": {
+        "state_l1_error": 5.382673473608435e-14,
+        "event_error": 5.091926880140818e-12,
+        "probability_bound": 2.22456446507775e-11,
+        "event_bound": 6.355268147794219e-10
+      },
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 44869,
+        "count_mean": 3.7390833333333333,
+        "count_standard_error": 0.019876146132377075,
+        "count_mean_registered_guard": 0.12125687679426245,
+        "passive_recovery_mean": 0.6973327385297959,
+        "passive_recovery_standard_error": 0.0058642655119676345,
+        "passive_recovery_registered_guard": 0.03718559307180581,
+        "count_cdf_max_error": 0.006027009255264323,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 254213,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "instant_reset_ctmc_dt0p0625_T4.npz",
+      "raw_sha256": "d9cfe8051fc6d9e865722428db5ebfa6df6c9ef08e5cee4cda48daa91f257383"
+    },
+    {
+      "model": "instant_reset_ctmc",
+      "observation_dt": 0.0625,
+      "horizon": 16.0,
+      "seed": 103061,
+      "expected_events": 13.79582046806641,
+      "event_count_mean_from_law": 13.79582046806658,
+      "event_count_variance_from_law": 22.61338541167771,
+      "passive_recovery_mean": 0.6696507125483353,
+      "final_active_mass": 0.9999999999999984,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 1.9642710590439476e-16,
+        "expected_count": 1.3877787807814457e-17,
+        "passive_recovery": 6.938893903907228e-18
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 3.5447943550468984e-88,
+        "poisson_tail": 2.2726202239100575e-142
+      },
+      "original_source_kernel_comparison": {
+        "state_l1_error": 1.3841358614818944e-14,
+        "event_error": 6.52331522132954e-11,
+        "probability_bound": 8.342116744041562e-11,
+        "event_bound": 6.39695160565099e-09
+      },
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 165994,
+        "count_mean": 13.832833333333333,
+        "count_standard_error": 0.04352740191241553,
+        "count_mean_registered_guard": 0.2631644114744932,
+        "passive_recovery_mean": 0.6609890117757029,
+        "passive_recovery_standard_error": 0.005782655053903475,
+        "passive_recovery_registered_guard": 0.03669593032342085,
+        "count_cdf_max_error": 0.00419420001834836,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 1007860,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "instant_reset_ctmc_dt0p0625_T16.npz",
+      "raw_sha256": "919a7ea38f0c35556cdbd4fafbacafc41f16fa4a08c977e9c1976add2878ca72"
+    },
+    {
+      "model": "instant_reset_ctmc",
+      "observation_dt": 0.25,
+      "horizon": 1.0,
+      "seed": 103062,
+      "expected_events": 1.025726972925829,
+      "event_count_mean_from_law": 1.0257269729258294,
+      "event_count_variance_from_law": 0.9438491831686723,
+      "passive_recovery_mean": 0.5951525598524621,
+      "final_active_mass": 1.0000000000000016,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 1.6488453465535353e-15,
+        "expected_count": 1.942890293094024e-16,
+        "passive_recovery": 2.7755575615628914e-16
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": {
+        "state_l1_error": 1.0680865913936799e-13,
+        "event_error": 1.3711254354120683e-12,
+        "probability_bound": 5.561411162694375e-12,
+        "event_bound": 8.59048664179799e-11
+      },
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 12373,
+        "count_mean": 1.0310833333333334,
+        "count_standard_error": 0.008883643266200137,
+        "count_mean_registered_guard": 0.055301859597200825,
+        "passive_recovery_mean": 0.5961957020593542,
+        "passive_recovery_standard_error": 0.005451084515454984,
+        "passive_recovery_registered_guard": 0.034706507092729905,
+        "count_cdf_max_error": 0.0029750498043996654,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 63987,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "instant_reset_ctmc_dt0p25_T1.npz",
+      "raw_sha256": "ed8efc057c171d4cfe5173b83c927cada5223301db532061ebb7c63dab57e827"
+    },
+    {
+      "model": "instant_reset_ctmc",
+      "observation_dt": 0.25,
+      "horizon": 4.0,
+      "seed": 103063,
+      "expected_events": 3.723179960788749,
+      "event_count_mean_from_law": 3.723179960788749,
+      "event_count_variance_from_law": 4.713052834923031,
+      "passive_recovery_mean": 0.6940761584498473,
+      "final_active_mass": 1.0000000000000049,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 1.6488453465535353e-15,
+        "expected_count": 1.942890293094024e-16,
+        "passive_recovery": 2.7755575615628914e-16
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 2.4477338630513506e-216,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": {
+        "state_l1_error": 5.0867296486067914e-14,
+        "event_error": 5.101696842757519e-12,
+        "probability_bound": 2.22456446507775e-11,
+        "event_bound": 6.355268147794219e-10
+      },
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 44600,
+        "count_mean": 3.716666666666667,
+        "count_standard_error": 0.0198419783532719,
+        "count_mean_registered_guard": 0.12105187011963141,
+        "passive_recovery_mean": 0.690086366620723,
+        "passive_recovery_standard_error": 0.005866437538704165,
+        "passive_recovery_registered_guard": 0.03719862523222499,
+        "count_cdf_max_error": 0.004037728783669703,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 253577,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "instant_reset_ctmc_dt0p25_T4.npz",
+      "raw_sha256": "1e8d995fe1a7cec4d02f163d91a93414c647a3283e55006118bfa73abaac5052"
+    },
+    {
+      "model": "instant_reset_ctmc",
+      "observation_dt": 0.25,
+      "horizon": 16.0,
+      "seed": 103064,
+      "expected_events": 13.79582046806654,
+      "event_count_mean_from_law": 13.79582046806658,
+      "event_count_variance_from_law": 22.61338541167771,
+      "passive_recovery_mean": 0.6696507125483484,
+      "final_active_mass": 1.0000000000000187,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 1.6488453465535353e-15,
+        "expected_count": 1.942890293094024e-16,
+        "passive_recovery": 2.7755575615628914e-16
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 3.5447943550468984e-88,
+        "poisson_tail": 2.2726202239100575e-142
+      },
+      "original_source_kernel_comparison": {
+        "state_l1_error": 6.239800343088575e-15,
+        "event_error": 6.536282626257162e-11,
+        "probability_bound": 8.342116744041562e-11,
+        "event_bound": 6.39695160565099e-09
+      },
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 166809,
+        "count_mean": 13.90075,
+        "count_standard_error": 0.04366934449405161,
+        "count_mean_registered_guard": 0.2640160669643097,
+        "passive_recovery_mean": 0.669356216440143,
+        "passive_recovery_standard_error": 0.005839934433669148,
+        "passive_recovery_registered_guard": 0.03703960660201489,
+        "count_cdf_max_error": 0.012786953301449633,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 1008369,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "instant_reset_ctmc_dt0p25_T16.npz",
+      "raw_sha256": "cad54721f3b6e38169f86f0cf1f68a6b9eb9cc2f1c0f6e7469f1cb48508b1220"
+    },
+    {
+      "model": "instant_reset_ctmc",
+      "observation_dt": 1.0,
+      "horizon": 1.0,
+      "seed": 103065,
+      "expected_events": 1.025726972925829,
+      "event_count_mean_from_law": 1.0257269729258294,
+      "event_count_variance_from_law": 0.9438491831686723,
+      "passive_recovery_mean": 0.5951525598524621,
+      "final_active_mass": 1.0000000000000016,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 0.0,
+        "expected_count": 0.0,
+        "passive_recovery": 0.0
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": {
+        "state_l1_error": 1.0685419563061238e-13,
+        "event_error": 1.3711254354120683e-12,
+        "probability_bound": 5.561411162694375e-12,
+        "event_bound": 8.59048664179799e-11
+      },
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 12239,
+        "count_mean": 1.0199166666666666,
+        "count_standard_error": 0.008866754130447524,
+        "count_mean_registered_guard": 0.05520052478268514,
+        "passive_recovery_mean": 0.5935816341008872,
+        "passive_recovery_standard_error": 0.005489356306912242,
+        "passive_recovery_registered_guard": 0.03493613784147345,
+        "count_cdf_max_error": 0.0037749501956004794,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 63876,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "instant_reset_ctmc_dt1p0_T1.npz",
+      "raw_sha256": "6b42e1f8a3415cd0ba4690449a0b414aea4540342f8b58754af2a55b3e91333e"
+    },
+    {
+      "model": "instant_reset_ctmc",
+      "observation_dt": 1.0,
+      "horizon": 4.0,
+      "seed": 103066,
+      "expected_events": 3.723179960788749,
+      "event_count_mean_from_law": 3.723179960788749,
+      "event_count_variance_from_law": 4.713052834923031,
+      "passive_recovery_mean": 0.6940761584498474,
+      "final_active_mass": 1.0000000000000049,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 0.0,
+        "expected_count": 0.0,
+        "passive_recovery": 0.0
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 2.4477338630513506e-216,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": {
+        "state_l1_error": 5.0926277084251126e-14,
+        "event_error": 5.101696842757519e-12,
+        "probability_bound": 2.22456446507775e-11,
+        "event_bound": 6.355268147794219e-10
+      },
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 45154,
+        "count_mean": 3.7628333333333335,
+        "count_standard_error": 0.019916454609860874,
+        "count_mean_registered_guard": 0.12149872765916525,
+        "passive_recovery_mean": 0.711320996441581,
+        "passive_recovery_standard_error": 0.00593514688510411,
+        "passive_recovery_registered_guard": 0.037610881310624664,
+        "count_cdf_max_error": 0.010706676448970165,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 254373,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "instant_reset_ctmc_dt1p0_T4.npz",
+      "raw_sha256": "738a6da27700eae4d35b5d645eba8d2c00f8a54e7368f6cc0466f0685d639170"
+    },
+    {
+      "model": "instant_reset_ctmc",
+      "observation_dt": 1.0,
+      "horizon": 16.0,
+      "seed": 103067,
+      "expected_events": 13.795820468066543,
+      "event_count_mean_from_law": 13.79582046806658,
+      "event_count_variance_from_law": 22.61338541167771,
+      "passive_recovery_mean": 0.6696507125483486,
+      "final_active_mass": 1.0000000000000187,
+      "final_refractory_phase_mass": [],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 0.0,
+        "expected_count": 0.0,
+        "passive_recovery": 0.0
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 3.5447943550468984e-88,
+        "poisson_tail": 2.2726202239100575e-142
+      },
+      "original_source_kernel_comparison": {
+        "state_l1_error": 6.385517115070627e-15,
+        "event_error": 6.536637897625042e-11,
+        "probability_bound": 8.342116744041562e-11,
+        "event_bound": 6.39695160565099e-09
+      },
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 166194,
+        "count_mean": 13.8495,
+        "count_standard_error": 0.043549696700770676,
+        "count_mean_registered_guard": 0.26329818020462403,
+        "passive_recovery_mean": 0.672630295000632,
+        "passive_recovery_standard_error": 0.005874610971702066,
+        "passive_recovery_registered_guard": 0.0372476658302124,
+        "count_cdf_max_error": 0.00773667653367327,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 1006056,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "instant_reset_ctmc_dt1p0_T16.npz",
+      "raw_sha256": "820c665f3fbde2f7288639d4a2ec7e59209e2fd630f0f27df23b58c5e3a3cdc8"
+    },
+    {
+      "model": "erlang2_refractory_ctmc",
+      "observation_dt": 0.0625,
+      "horizon": 1.0,
+      "seed": 103068,
+      "expected_events": 0.8252092616569052,
+      "event_count_mean_from_law": 0.8252092616569053,
+      "event_count_variance_from_law": 0.5112259595113288,
+      "passive_recovery_mean": 0.4660953995278457,
+      "final_active_mass": 0.7654514036045811,
+      "final_refractory_phase_mass": [
+        0.11580499626286433,
+        0.11874360013255522
+      ],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 3.492510732665063e-17,
+        "expected_count": 0.0,
+        "passive_recovery": 3.469446951953614e-18
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": {
+        "state_l1_error": 8.669627515889289e-14,
+        "event_error": 1.0721423748805137e-12,
+        "probability_bound": 5.561411162694375e-12,
+        "event_bound": 8.59048664179799e-11
+      },
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 9973,
+        "count_mean": 0.8310833333333333,
+        "count_standard_error": 0.006558032611787958,
+        "count_mean_registered_guard": 0.04134819567072775,
+        "passive_recovery_mean": 0.4697650953159151,
+        "passive_recovery_standard_error": 0.004029974794102344,
+        "passive_recovery_registered_guard": 0.026179848764614065,
+        "count_cdf_max_error": 0.003784678185343504,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 66897,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "erlang2_refractory_ctmc_dt0p0625_T1.npz",
+      "raw_sha256": "667b458eee02b6830693b98a00b8174f2d209c08504e9e0d2dc886b3592ebfe2"
+    },
+    {
+      "model": "erlang2_refractory_ctmc",
+      "observation_dt": 0.0625,
+      "horizon": 4.0,
+      "seed": 103069,
+      "expected_events": 2.943709378951473,
+      "event_count_mean_from_law": 2.943709378951474,
+      "event_count_variance_from_law": 2.3932255843853563,
+      "passive_recovery_mean": 0.5502882052538319,
+      "final_active_mass": 0.7950287528189484,
+      "final_refractory_phase_mass": [
+        0.10238255279836807,
+        0.10258869438268654
+      ],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 3.492510732665063e-17,
+        "expected_count": 0.0,
+        "passive_recovery": 3.469446951953614e-18
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": {
+        "state_l1_error": 4.720789731349484e-14,
+        "event_error": 4.068301251436424e-12,
+        "probability_bound": 2.22456446507775e-11,
+        "event_bound": 6.355268147794219e-10
+      },
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 35127,
+        "count_mean": 2.92725,
+        "count_standard_error": 0.014101781697164195,
+        "count_mean_registered_guard": 0.08661069018298517,
+        "passive_recovery_mean": 0.5489289860239889,
+        "passive_recovery_standard_error": 0.004288425932396259,
+        "passive_recovery_registered_guard": 0.027730555594377558,
+        "count_cdf_max_error": 0.0054548444216128145,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 267190,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "erlang2_refractory_ctmc_dt0p0625_T4.npz",
+      "raw_sha256": "d75752cd84daa5cb02c50b435f2da68e4b785d8004397d5f4e67c8233ffa06da"
+    },
+    {
+      "model": "erlang2_refractory_ctmc",
+      "observation_dt": 0.0625,
+      "horizon": 16.0,
+      "seed": 103070,
+      "expected_events": 10.992373159966544,
+      "event_count_mean_from_law": 10.992373159966553,
+      "event_count_variance_from_law": 11.657176471928544,
+      "passive_recovery_mean": 0.5352463268660719,
+      "final_active_mass": 0.7992846338531865,
+      "final_refractory_phase_mass": [
+        0.10035761281275035,
+        0.10035775333407423
+      ],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 3.492510732665063e-17,
+        "expected_count": 0.0,
+        "passive_recovery": 3.469446951953614e-18
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 2.2726202239100575e-142
+      },
+      "original_source_kernel_comparison": {
+        "state_l1_error": 4.621303340002214e-15,
+        "event_error": 5.2239101933082566e-11,
+        "probability_bound": 8.342116744041562e-11,
+        "event_bound": 6.39695160565099e-09
+      },
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 132415,
+        "count_mean": 11.034583333333334,
+        "count_standard_error": 0.030824328593601014,
+        "count_mean_registered_guard": 0.18694597156160608,
+        "passive_recovery_mean": 0.5374181788374435,
+        "passive_recovery_standard_error": 0.004301455431683028,
+        "passive_recovery_registered_guard": 0.027808732590098167,
+        "count_cdf_max_error": 0.008524487632403377,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 1063666,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "erlang2_refractory_ctmc_dt0p0625_T16.npz",
+      "raw_sha256": "80a1a2a152bb58dc59da66e6d99911000d3dba96af53e3d4a3862dec56da422c"
+    },
+    {
+      "model": "erlang2_refractory_ctmc",
+      "observation_dt": 0.25,
+      "horizon": 1.0,
+      "seed": 103071,
+      "expected_events": 0.8252092616569056,
+      "event_count_mean_from_law": 0.8252092616569053,
+      "event_count_variance_from_law": 0.5112259595113288,
+      "passive_recovery_mean": 0.4660953995278456,
+      "final_active_mass": 0.7654514036045805,
+      "final_refractory_phase_mass": [
+        0.11580499626286424,
+        0.11874360013255507
+      ],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 1.6517328818707253e-15,
+        "expected_count": 1.6653345369377348e-16,
+        "passive_recovery": 2.220446049250313e-16
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": {
+        "state_l1_error": 8.710426043639918e-14,
+        "event_error": 1.0724754417879012e-12,
+        "probability_bound": 5.561411162694375e-12,
+        "event_bound": 8.59048664179799e-11
+      },
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 9886,
+        "count_mean": 0.8238333333333333,
+        "count_standard_error": 0.006521382568900419,
+        "count_mean_registered_guard": 0.041128295413402516,
+        "passive_recovery_mean": 0.4632118959756652,
+        "passive_recovery_standard_error": 0.00400325793094565,
+        "passive_recovery_registered_guard": 0.026019547585673902,
+        "count_cdf_max_error": 0.0007986551479898241,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 66665,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "erlang2_refractory_ctmc_dt0p25_T1.npz",
+      "raw_sha256": "3ae0168996a0d0c8c4bafdba2910a523c9ce35565ec3e9498be4899fe8604518"
+    },
+    {
+      "model": "erlang2_refractory_ctmc",
+      "observation_dt": 0.25,
+      "horizon": 4.0,
+      "seed": 103072,
+      "expected_events": 2.9437093789514686,
+      "event_count_mean_from_law": 2.943709378951474,
+      "event_count_variance_from_law": 2.3932255843853563,
+      "passive_recovery_mean": 0.5502882052538306,
+      "final_active_mass": 0.7950287528189455,
+      "final_refractory_phase_mass": [
+        0.10238255279836767,
+        0.10258869438268614
+      ],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 1.6517328818707253e-15,
+        "expected_count": 1.6653345369377348e-16,
+        "passive_recovery": 2.220446049250313e-16
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": {
+        "state_l1_error": 4.967467409633386e-14,
+        "event_error": 4.063860359337923e-12,
+        "probability_bound": 2.22456446507775e-11,
+        "event_bound": 6.355268147794219e-10
+      },
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 35411,
+        "count_mean": 2.9509166666666666,
+        "count_standard_error": 0.014056053655414173,
+        "count_mean_registered_guard": 0.08633632193248504,
+        "passive_recovery_mean": 0.5526520399473273,
+        "passive_recovery_standard_error": 0.004292683930523998,
+        "passive_recovery_registered_guard": 0.02775610358314399,
+        "count_cdf_max_error": 0.0040003669765602545,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 267913,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "erlang2_refractory_ctmc_dt0p25_T4.npz",
+      "raw_sha256": "0070f0d9c7e9efd549c19198fdba7acf31221c07c9c0c14ea1f84643071cd0d4"
+    },
+    {
+      "model": "erlang2_refractory_ctmc",
+      "observation_dt": 0.25,
+      "horizon": 16.0,
+      "seed": 103073,
+      "expected_events": 10.992373159966476,
+      "event_count_mean_from_law": 10.992373159966553,
+      "event_count_variance_from_law": 11.657176471928544,
+      "passive_recovery_mean": 0.5352463268660655,
+      "final_active_mass": 0.7992846338531764,
+      "final_refractory_phase_mass": [
+        0.10035761281274902,
+        0.10035775333407287
+      ],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 1.6517328818707253e-15,
+        "expected_count": 1.6653345369377348e-16,
+        "passive_recovery": 2.220446049250313e-16
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 2.2726202239100575e-142
+      },
+      "original_source_kernel_comparison": {
+        "state_l1_error": 8.352693536828326e-15,
+        "event_error": 5.2171600373185356e-11,
+        "probability_bound": 8.342116744041562e-11,
+        "event_bound": 6.39695160565099e-09
+      },
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 131792,
+        "count_mean": 10.982666666666667,
+        "count_standard_error": 0.031102876266335344,
+        "count_mean_registered_guard": 0.18861725759801207,
+        "passive_recovery_mean": 0.5318856496475228,
+        "passive_recovery_standard_error": 0.004309835475763295,
+        "passive_recovery_registered_guard": 0.02785901285457977,
+        "count_cdf_max_error": 0.007145092406519726,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 1062847,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "erlang2_refractory_ctmc_dt0p25_T16.npz",
+      "raw_sha256": "7a83d7127a8f22426954b82931a58c88b4452dbc4321c85b2facc630f943ce40"
+    },
+    {
+      "model": "erlang2_refractory_ctmc",
+      "observation_dt": 1.0,
+      "horizon": 1.0,
+      "seed": 103074,
+      "expected_events": 0.8252092616569053,
+      "event_count_mean_from_law": 0.8252092616569053,
+      "event_count_variance_from_law": 0.5112259595113288,
+      "passive_recovery_mean": 0.4660953995278456,
+      "final_active_mass": 0.7654514036045805,
+      "final_refractory_phase_mass": [
+        0.11580499626286421,
+        0.11874360013255505
+      ],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 0.0,
+        "expected_count": 0.0,
+        "passive_recovery": 0.0
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": {
+        "state_l1_error": 8.717766092347645e-14,
+        "event_error": 1.0722533971829762e-12,
+        "probability_bound": 5.561411162694375e-12,
+        "event_bound": 8.59048664179799e-11
+      },
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 10055,
+        "count_mean": 0.8379166666666666,
+        "count_standard_error": 0.006534236901638271,
+        "count_mean_registered_guard": 0.04120542140982963,
+        "passive_recovery_mean": 0.47283283447918373,
+        "passive_recovery_standard_error": 0.004041622533111985,
+        "passive_recovery_registered_guard": 0.02624973519867191,
+        "count_cdf_max_error": 0.008368011518676888,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 67444,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "erlang2_refractory_ctmc_dt1p0_T1.npz",
+      "raw_sha256": "dfbdd8b965581245101cafc031dcf42238ebce9b6e696beb488f219317a65678"
+    },
+    {
+      "model": "erlang2_refractory_ctmc",
+      "observation_dt": 1.0,
+      "horizon": 4.0,
+      "seed": 103075,
+      "expected_events": 2.9437093789514686,
+      "event_count_mean_from_law": 2.943709378951474,
+      "event_count_variance_from_law": 2.3932255843853563,
+      "passive_recovery_mean": 0.5502882052538308,
+      "final_active_mass": 0.7950287528189455,
+      "final_refractory_phase_mass": [
+        0.10238255279836765,
+        0.10258869438268613
+      ],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 0.0,
+        "expected_count": 0.0,
+        "passive_recovery": 0.0
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 0.0
+      },
+      "original_source_kernel_comparison": {
+        "state_l1_error": 4.978309431358241e-14,
+        "event_error": 4.063860359337923e-12,
+        "probability_bound": 2.22456446507775e-11,
+        "event_bound": 6.355268147794219e-10
+      },
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 35285,
+        "count_mean": 2.9404166666666667,
+        "count_standard_error": 0.014045749978437563,
+        "count_mean_registered_guard": 0.08627449987062538,
+        "passive_recovery_mean": 0.5458684089999482,
+        "passive_recovery_standard_error": 0.004238675048743894,
+        "passive_recovery_registered_guard": 0.027432050292463366,
+        "count_cdf_max_error": 0.0029851808152755455,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 267346,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "erlang2_refractory_ctmc_dt1p0_T4.npz",
+      "raw_sha256": "dc6968434be45513936c820c9a5ad84a066a0499d4731062432c1277dd9587ae"
+    },
+    {
+      "model": "erlang2_refractory_ctmc",
+      "observation_dt": 1.0,
+      "horizon": 16.0,
+      "seed": 103076,
+      "expected_events": 10.99237315996647,
+      "event_count_mean_from_law": 10.992373159966553,
+      "event_count_variance_from_law": 11.657176471928544,
+      "passive_recovery_mean": 0.5352463268660652,
+      "final_active_mass": 0.7992846338531758,
+      "final_refractory_phase_mass": [
+        0.10035761281274896,
+        0.10035775333407282
+      ],
+      "final_absorbed_mass": 0.0,
+      "half_step_semigroup_error": {
+        "state_l1": 0.0,
+        "expected_count": 0.0,
+        "passive_recovery": 0.0
+      },
+      "count_law_certificate": {
+        "count_tail_discarded": 0.0,
+        "poisson_tail": 2.2726202239100575e-142
+      },
+      "original_source_kernel_comparison": {
+        "state_l1_error": 8.935560624756533e-15,
+        "event_error": 5.2164494945827755e-11,
+        "probability_bound": 8.342116744041562e-11,
+        "event_bound": 6.39695160565099e-09
+      },
+      "monte_carlo": {
+        "samples": 12000,
+        "count_sum": 131980,
+        "count_mean": 10.998333333333333,
+        "count_standard_error": 0.03103330686763645,
+        "count_mean_registered_guard": 0.1881998412058187,
+        "passive_recovery_mean": 0.5375180688691301,
+        "passive_recovery_standard_error": 0.004300147232569607,
+        "passive_recovery_registered_guard": 0.02780088339541764,
+        "count_cdf_max_error": 0.005711416953254778,
+        "simultaneous_dkw_guard": 0.023705666069346022,
+        "physical_jumps": 1064057,
+        "raw_final_count_saved": true,
+        "raw_first128_trajectories_saved": true
+      },
+      "raw_path": "erlang2_refractory_ctmc_dt1p0_T16.npz",
+      "raw_sha256": "982ef2761cfbc99bf4c58ef0ac5976c746c2072fd2778b3aed4074866dcfebf5"
+    }
+  ],
+  "failures": [],
+  "source_sha256": {
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_distributional_v2/dynamics_comparison.py": "fe0e6479088fadfbd8f2bcaeb779232996d8c94e9bd0e471617c66589e7f2fb4",
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_distributional_v2/kernel_tests.py": "e8c9cd018a7d707ebb8f118fd2f1e297057a5c59e2dcd06c53025cf19f045add"
+  },
+  "source_changed_during_audit": [],
+  "self_cpu_seconds": 5.517608112,
+  "wall_seconds": 12.53499867499977,
+  "peak_rss_kib_linux": 297312,
+  "gpu_measured": false,
+  "energy_measured": false
+}

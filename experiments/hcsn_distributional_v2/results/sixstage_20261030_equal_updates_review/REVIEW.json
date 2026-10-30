@@ -1,0 +1,29 @@
+{
+  "schema": "hcsn-risk128-readonly-review.v1",
+  "review_type": "static independent review plus protocol identity verification",
+  "blocking_bug_found": false,
+  "modified_reviewed_files": false,
+  "source_sha256": {
+    "experiments/hcsn_risk_ablation_v1/equal_updates.py": "3f25324065b36fb9ee389cda34f1aa155bfc1235c3c0fd9d6866e195607281fe",
+    "experiments/hcsn_risk_ablation_v1/equal_updates_analysis.py": "006c7c5930bcccb3090af9f0861b02db3bc43b8af0c753d57ac4effe7733224e",
+    "experiments/hcsn_risk_ablation_v1/EQUAL_UPDATES_PROTOCOL.json": "8238fa621dfdf574e8ce3867346b8fe33ad4404809258652ac79f72b1855c11a",
+    "experiments/hcsn_risk_ablation_v1/EQUAL_UPDATES.md": "b33f5652a2f83bde7725fec8ff3ee0ff952ba8183254708036e72c7344a705b8",
+    "experiments/hcsn_risk_ablation_v1/PROTOCOL.json": "a479546a28ab92f4d6bdbfa440c487da968c986b811c3090e74d3b3a09c68c62"
+  },
+  "upstream_55_hashes_identical": true,
+  "jobs": 112,
+  "fixed_updates": 128,
+  "total_optimizer_updates": 14336,
+  "checks": [
+    "single learning rate and fixed update128 checkpoint",
+    "validation test and OOD loaded only after weight identity and selection lock",
+    "900 process-CPU training cap after each complete update, including update128",
+    "failed candidates have no heldout and are not rerun or replaced",
+    "same seeded 128 minibatch exposure verified by prefix replay",
+    "each seed averages two task differences, not 16 independent replicates",
+    "four primary Holm-adjusted comparisons within each family",
+    "corresponding gate must pass in both resource regimes for an unqualified specific-contrast claim",
+    "architecture-wide superiority remains explicitly false"
+  ],
+  "operational_caveat": "run may return process exit0 after writing ABORTED; monitor terminal receipt status, not exitcode alone. Analyzer requires COMPLETE and all112 unique jobs."
+}

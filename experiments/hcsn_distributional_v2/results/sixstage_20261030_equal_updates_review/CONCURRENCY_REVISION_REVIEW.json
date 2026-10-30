@@ -1,0 +1,21 @@
+{
+  "schema": "hcsn-worker-only-revision-independent-check.v1",
+  "passed": true,
+  "old_protocol_sha256": "8238fa621dfdf574e8ce3867346b8fe33ad4404809258652ac79f72b1855c11a",
+  "new_protocol_sha256": "86bd8bc59c08b96cf76de482cfde007b251ae7fcb2295ff44a4ad0616f1d9a56",
+  "worker_count_before": 2,
+  "worker_count_after": 4,
+  "all_other_original_fields_exactly_equal": true,
+  "source_hashes_unchanged": 59,
+  "execution_revision": {
+    "before_any_heldout": true,
+    "new_workers": 4,
+    "old_workers": 2,
+    "original_protocol": "experiments/hcsn_risk_ablation_v1/EQUAL_UPDATES_PROTOCOL.json",
+    "original_protocol_sha256": "8238fa621dfdf574e8ce3867346b8fe33ad4404809258652ac79f72b1855c11a",
+    "reason": "Schedule the same frozen 112 fixed-128-update candidates after other studies release memory and cores; reduce idle-core wall time without changing candidate data exposure, numerical sources, selection, cap, or statistics.",
+    "revised_utc": "2026-10-30T02:31:13.224118+00:00",
+    "schema": "hcsn-execution-concurrency-only-revision.v1",
+    "unchanged_scope": "All original fields except execution.workers remain identical; 59 source hashes,112 jobs,seeds,128 updates,900 training CPU cap and four-primary statistical family unchanged."
+  }
+}

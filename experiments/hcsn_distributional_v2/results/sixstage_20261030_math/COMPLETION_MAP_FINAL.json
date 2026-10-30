@@ -1,0 +1,44 @@
+{
+  "schema": "hcsn-sixstage-math-completion-appendix.v1",
+  "prior_evidence_retained": true,
+  "frozen_model_or_protocol_modified": false,
+  "artifacts": [
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/completion_export/COMPLETION_MAP.json",
+      "sha256": "0ddf57f78b3dcdb134ed32e47b40ff2f0ec0b899cdbcdcfd08b92d25c144c1fd"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_dynamics_comparison/REGISTRATION.json",
+      "sha256": "bad4d09575f24f888cc98fb7f5176adc86b810529de3f88246749b0ac3555531"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_dynamics_comparison/RESULTS.json",
+      "sha256": "c11aa4469e4c94e1a334c5bb5e8bee6ec1bf7faa43ddb6f237531541cf0b6083"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math_figure/figures_final/FIGURE_MANIFEST.json",
+      "sha256": "b554301de5709de64ac165add5a33ed3e21f32af8424997293b733d88504c4ba"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_cost_review/REVIEW.json",
+      "sha256": "c8eed2a0b9995d046e78b759e1cd85f90777c7aaf3ea5c0cdd0ce7701d2756bf"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_equal_updates_review/REVIEW.json",
+      "sha256": "4600c94d738b729a41bf93562af23684c1d23bd65d561d5ba5f525c615f16364"
+    }
+  ],
+  "additional_stage4": {
+    "status": "passed",
+    "dynamics": 4,
+    "observation_durations": 3,
+    "physical_horizons": 3,
+    "scenarios": 36,
+    "monte_carlo_paths": 432000,
+    "raw_final_counts_states_recovery_saved": true,
+    "raw_sample_trajectories_per_scenario": 128,
+    "passive_recovery_feedback": false
+  },
+  "figure_qa_passed": true,
+  "cost_and_equal_update_reviews_are_static_not_execution_results": true
+}

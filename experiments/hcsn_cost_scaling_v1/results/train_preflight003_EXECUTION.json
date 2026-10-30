@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-u",
+    "-m",
+    "experiments.hcsn_cost_scaling_v1.study",
+    "preflight",
+    "--output",
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_cost_scaling_v1/results/train_preflight003"
+  ],
+  "returncode": 0,
+  "whole_worker_cpu_seconds": 7.293894,
+  "wall_seconds": 15.916114777000075,
+  "peak_rss_bytes": 335515648,
+  "started_utc": "2026-10-30T02:25:32.265417+00:00"
+}

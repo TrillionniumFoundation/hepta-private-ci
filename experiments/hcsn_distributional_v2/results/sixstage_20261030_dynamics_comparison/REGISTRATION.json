@@ -1,0 +1,77 @@
+{
+  "schema": "hcsn-four-reset-dynamics-registration.v1",
+  "parameters": [
+    0.45,
+    0.6,
+    0.55,
+    0.05,
+    0.3
+  ],
+  "parameter_order": [
+    "mu",
+    "sigma",
+    "boundary",
+    "reset",
+    "mean_refractory_duration"
+  ],
+  "driver": "Same constant mu, sigma, boundary and reset across all variants; initial state at reset interpolation",
+  "models": [
+    "absorbing_no_reset",
+    "end_window_probability_reset",
+    "instant_reset_ctmc",
+    "erlang2_refractory_ctmc"
+  ],
+  "observation_durations": [
+    0.0625,
+    0.25,
+    1.0
+  ],
+  "horizons": [
+    1.0,
+    4.0,
+    16.0
+  ],
+  "cells": 8,
+  "lower_wall": -2.0,
+  "initial_at_reset": true,
+  "monte_carlo_samples": 12000,
+  "monte_carlo_seed_start": 103041,
+  "raw_trajectory_samples": 128,
+  "count_cap": 128,
+  "reference_uniformization_rate": 8.1,
+  "reference_uniformization_terms": 512,
+  "limits": {
+    "dense_semigroup": 5e-12,
+    "source_kernel_state_l1": 2e-10,
+    "source_kernel_events": 2e-10,
+    "distribution_mass": 2e-12,
+    "histogram_tail": 1e-12,
+    "count_moment": 2e-10,
+    "monte_carlo_family_alpha": 0.0001,
+    "monte_carlo_mean_standard_errors": 6.0,
+    "monte_carlo_mean_absolute_slack": 0.002
+  },
+  "passive_recovery": {
+    "tau": 0.8,
+    "definition": "sum exp(-(t-event_time)/tau)",
+    "feedback_into_driver": false,
+    "probability_reset_event_time": "observation-window endpoint"
+  },
+  "no_reset": "Killed active process plus absorbing fired state; at most one event total",
+  "probability_reset": "First event in each window freezes path; reset deposited at endpoint, at most one event per window",
+  "instantaneous_reset": "Marked CTMC with immediate reinjection, allowing repeated events including self-reset",
+  "refractory": "Marked CTMC reinjects after two Erlang phases, with mean tau and variance tau^2/2",
+  "source_sha256": {
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_distributional_v2/dynamics_comparison.py": "fe0e6479088fadfbd8f2bcaeb779232996d8c94e9bd0e471617c66589e7f2fb4",
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_distributional_v2/kernel_tests.py": "e8c9cd018a7d707ebb8f118fd2f1e297057a5c59e2dcd06c53025cf19f045add"
+  },
+  "task_labels_read": false,
+  "frozen_sources_changed": false,
+  "limitations": [
+    "Finite reflecting grid, not Brownian spatial convergence evidence",
+    "Passive recovery is a diagnostic readout, not new adaptive feedback",
+    "No-reset has no reset or refractory parameter to train",
+    "These dynamical checks do not test content quality"
+  ]
+}

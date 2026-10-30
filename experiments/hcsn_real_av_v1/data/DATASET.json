@@ -1,0 +1,69 @@
+{
+  "actual_total_media_bytes": 233076129,
+  "decode_receipt_sha256": "176ae39f66bd76c22054cfeab26dd853c73b6f0c875a4c400d75d12408f24eec",
+  "decoder_sha256": "02fc21d1f3f1b98320659421f6ed03450fbe042eed25d91ae2bc93e50bde485f",
+  "frontend_scope": "fixed low-level features with full-clip resampling; offline encoder",
+  "manifest_sha256": "982367fca163d49022c02deadbaa2ccd07c9f1ec4203320a1302e89771add0b8",
+  "normalization": "training actors only; distinct moments for audio and video",
+  "normalization_sha256": "3817a7b6ab57999b782e968124e2d7666909b22b96cc9a12c16dde747c035247",
+  "schema": "hcsn-real-av-tensors-v1",
+  "shape_per_modality": [
+    32,
+    128
+  ],
+  "splits": {
+    "test": {
+      "actors": [
+        "1004",
+        "1023",
+        "1025",
+        "1040",
+        "1066"
+      ],
+      "examples": 120,
+      "path": "test.npz",
+      "sha256": "5d041d12b134ab31586d9dc768b8e6d3dec391ab373f6b1c88d11d25739d86d7"
+    },
+    "train": {
+      "actors": [
+        "1003",
+        "1012",
+        "1016",
+        "1027",
+        "1031",
+        "1039",
+        "1043",
+        "1046",
+        "1047",
+        "1050",
+        "1051",
+        "1053",
+        "1060",
+        "1062",
+        "1064",
+        "1069",
+        "1072",
+        "1077",
+        "1085",
+        "1089"
+      ],
+      "examples": 480,
+      "path": "train.npz",
+      "sha256": "f4074f14b5d46702cb8ae293a7d6c974b9576f651377e85836566f154eac4a33"
+    },
+    "validation": {
+      "actors": [
+        "1001",
+        "1011",
+        "1034",
+        "1076",
+        "1082"
+      ],
+      "examples": 120,
+      "path": "validation.npz",
+      "sha256": "1c2206425d32e4166d4cd44a2b5d3199e4a5da50c1258e405a62ad84e31be906"
+    }
+  },
+  "targets": "acted filename emotion and same-recording audiovisual match",
+  "time_scale": "model dt = 10 * elapsed seconds; HCSN physical scale 0.1 restores seconds"
+}

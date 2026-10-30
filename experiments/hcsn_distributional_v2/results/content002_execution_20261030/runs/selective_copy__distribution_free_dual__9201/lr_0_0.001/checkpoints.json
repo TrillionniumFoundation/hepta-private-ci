@@ -1,0 +1,71 @@
+[
+  {
+    "crossed_cpu_targets": [
+      15.0
+    ],
+    "endpoint_overrun_seconds": 0.0,
+    "fixed_step_128": false,
+    "primary_eligible": true,
+    "sha256": "f1f96fc3227e6fa705afa1cf3f4f2292fc42404a1cfacadaeb0c4aa57dad70a7",
+    "step": 9,
+    "training_cpu_seconds": 15.198791364999998,
+    "validation": {
+      "accuracy": 0.130859375,
+      "correct": 134,
+      "cross_entropy": 2.0843042135238647,
+      "distribution_audited": true,
+      "max_expected_events_per_interval": 0.14008232951164246,
+      "max_mass_error": 2.7418136596679688e-06,
+      "min_probability": 2.2645352260042273e-09,
+      "samples": 256,
+      "supervised_positions": 1024
+    },
+    "weights": "step_000009.npz"
+  },
+  {
+    "crossed_cpu_targets": [
+      30.0
+    ],
+    "endpoint_overrun_seconds": 0.0,
+    "fixed_step_128": false,
+    "primary_eligible": true,
+    "sha256": "b798bad8c32286fd0df041bf33bf15f524008f325546c9734d3687a1a8cd9983",
+    "step": 28,
+    "training_cpu_seconds": 30.853074279999994,
+    "validation": {
+      "accuracy": 0.1171875,
+      "correct": 120,
+      "cross_entropy": 2.082622528076172,
+      "distribution_audited": true,
+      "max_expected_events_per_interval": 0.14330357313156128,
+      "max_mass_error": 2.5033950805664062e-06,
+      "min_probability": 2.020064115981768e-09,
+      "samples": 256,
+      "supervised_positions": 1024
+    },
+    "weights": "step_000028.npz"
+  },
+  {
+    "crossed_cpu_targets": [
+      60.0
+    ],
+    "endpoint_overrun_seconds": 0.2514186179999953,
+    "fixed_step_128": false,
+    "primary_eligible": true,
+    "sha256": "5a02e68fd0717580b0aa6cba2203d74273aadd143e26089c3d8da94b1e1adb04",
+    "step": 60,
+    "training_cpu_seconds": 60.251418617999995,
+    "validation": {
+      "accuracy": 0.1328125,
+      "correct": 136,
+      "cross_entropy": 2.0796722173690796,
+      "distribution_audited": true,
+      "max_expected_events_per_interval": 0.15061728656291962,
+      "max_mass_error": 2.5033950805664062e-06,
+      "min_probability": 1.969961749281879e-09,
+      "samples": 256,
+      "supervised_positions": 1024
+    },
+    "weights": "step_000060.npz"
+  }
+]

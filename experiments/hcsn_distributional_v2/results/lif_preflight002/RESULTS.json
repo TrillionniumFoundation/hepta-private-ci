@@ -1,0 +1,1481 @@
+{
+  "body_self_cpu_seconds": 2.378469752,
+  "lif_contract": {
+    "backward": "fast-sigmoid surrogate slope5",
+    "cost": "Dense PyTorch recurrent implementation; no neuromorphic or energy claim",
+    "forward": "hard0/1 at membrane>=threshold",
+    "leak": "exp(-softplus(log_rate)*dt)",
+    "refractory": "none in this traditional LIF comparator",
+    "reset": "subtract spike.detach()*threshold",
+    "threshold": "softplus(raw_threshold)+1e-4"
+  },
+  "parent_protocol_sha256": "03070eb0d3fc264ace436f25a06c989bb898f3c33caba83936f5040c660e6b9c",
+  "passed": true,
+  "process_self_cpu_to_receipt": 4.463776215,
+  "records": [
+    {
+      "access_log": [
+        {
+          "event": "load_split",
+          "samples": 1024,
+          "split": "train"
+        }
+      ],
+      "common_initialization_equal": true,
+      "counts": {
+        "backbone": 17886,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 79,
+          "n_parameters": 17886,
+          "parameter_padding": false,
+          "relative_gap": 0.0027876895628902764,
+          "target_parameters": 17936
+        },
+        "readout": 264,
+        "total": 20358
+      },
+      "input_shape": [
+        1024,
+        32,
+        64
+      ],
+      "maximum_train_dt": 1.499998688697815,
+      "physical_gradient_max": {
+        "backbone.blocks.0.cell.log_rate": 4.3233252654317766e-05,
+        "backbone.blocks.0.cell.raw_threshold": 0.00042621843749657273
+      },
+      "physical_parameter_max_changes": {
+        "backbone.blocks.0.cell.log_rate": 0.001998250838369131,
+        "backbone.blocks.0.cell.raw_threshold": 0.002001136541366577
+      },
+      "reference_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408
+      },
+      "relative_backbone_gap": 0.0027876895628902764,
+      "seed": 9201,
+      "spike_count": 252.0,
+      "task": "selective_copy",
+      "unique_forward_spike_values": [
+        0.0,
+        1.0
+      ],
+      "updates": [
+        {
+          "forward_spike_count": 132.0,
+          "loss": 2.080265760421753,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 2.0901483367197216e-05,
+            "backbone.blocks.0.cell.raw_threshold": 0.00016264004807453603
+          },
+          "step": 1
+        },
+        {
+          "forward_spike_count": 120.0,
+          "loss": 2.0967493057250977,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 4.3233252654317766e-05,
+            "backbone.blocks.0.cell.raw_threshold": 0.00042621843749657273
+          },
+          "step": 2
+        }
+      ]
+    },
+    {
+      "access_log": [
+        {
+          "event": "load_split",
+          "samples": 1024,
+          "split": "train"
+        }
+      ],
+      "common_initialization_equal": true,
+      "counts": {
+        "backbone": 17886,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 79,
+          "n_parameters": 17886,
+          "parameter_padding": false,
+          "relative_gap": 0.0027876895628902764,
+          "target_parameters": 17936
+        },
+        "readout": 264,
+        "total": 20358
+      },
+      "input_shape": [
+        1024,
+        32,
+        64
+      ],
+      "maximum_train_dt": 1.499998688697815,
+      "physical_gradient_max": {
+        "backbone.blocks.0.cell.log_rate": 6.971259426791221e-05,
+        "backbone.blocks.0.cell.raw_threshold": 0.00045985099859535694
+      },
+      "physical_parameter_max_changes": {
+        "backbone.blocks.0.cell.log_rate": 0.0019954806193709373,
+        "backbone.blocks.0.cell.raw_threshold": 0.0020008087158203125
+      },
+      "reference_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408
+      },
+      "relative_backbone_gap": 0.0027876895628902764,
+      "seed": 9202,
+      "spike_count": 472.0,
+      "task": "selective_copy",
+      "unique_forward_spike_values": [
+        0.0,
+        1.0
+      ],
+      "updates": [
+        {
+          "forward_spike_count": 259.0,
+          "loss": 2.086700201034546,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 6.971259426791221e-05,
+            "backbone.blocks.0.cell.raw_threshold": 0.00045985099859535694
+          },
+          "step": 1
+        },
+        {
+          "forward_spike_count": 213.0,
+          "loss": 2.0747487545013428,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 4.705517494585365e-05,
+            "backbone.blocks.0.cell.raw_threshold": 0.0003393913502804935
+          },
+          "step": 2
+        }
+      ]
+    },
+    {
+      "access_log": [
+        {
+          "event": "load_split",
+          "samples": 1024,
+          "split": "train"
+        }
+      ],
+      "common_initialization_equal": true,
+      "counts": {
+        "backbone": 17886,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 79,
+          "n_parameters": 17886,
+          "parameter_padding": false,
+          "relative_gap": 0.0027876895628902764,
+          "target_parameters": 17936
+        },
+        "readout": 264,
+        "total": 20358
+      },
+      "input_shape": [
+        1024,
+        32,
+        64
+      ],
+      "maximum_train_dt": 1.499998688697815,
+      "physical_gradient_max": {
+        "backbone.blocks.0.cell.log_rate": 8.871172030922025e-05,
+        "backbone.blocks.0.cell.raw_threshold": 0.0008314549340866506
+      },
+      "physical_parameter_max_changes": {
+        "backbone.blocks.0.cell.log_rate": 0.0019975602626800537,
+        "backbone.blocks.0.cell.raw_threshold": 0.001999974250793457
+      },
+      "reference_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408
+      },
+      "relative_backbone_gap": 0.0027876895628902764,
+      "seed": 9203,
+      "spike_count": 110.0,
+      "task": "selective_copy",
+      "unique_forward_spike_values": [
+        0.0,
+        1.0
+      ],
+      "updates": [
+        {
+          "forward_spike_count": 54.0,
+          "loss": 2.086665630340576,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 8.061518747126684e-05,
+            "backbone.blocks.0.cell.raw_threshold": 0.0005701059708371758
+          },
+          "step": 1
+        },
+        {
+          "forward_spike_count": 56.0,
+          "loss": 2.0821330547332764,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 8.871172030922025e-05,
+            "backbone.blocks.0.cell.raw_threshold": 0.0008314549340866506
+          },
+          "step": 2
+        }
+      ]
+    },
+    {
+      "access_log": [
+        {
+          "event": "load_split",
+          "samples": 1024,
+          "split": "train"
+        }
+      ],
+      "common_initialization_equal": true,
+      "counts": {
+        "backbone": 17886,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 79,
+          "n_parameters": 17886,
+          "parameter_padding": false,
+          "relative_gap": 0.0027876895628902764,
+          "target_parameters": 17936
+        },
+        "readout": 264,
+        "total": 20358
+      },
+      "input_shape": [
+        1024,
+        32,
+        64
+      ],
+      "maximum_train_dt": 1.4999680519104004,
+      "physical_gradient_max": {
+        "backbone.blocks.0.cell.log_rate": 0.00011201977031305432,
+        "backbone.blocks.0.cell.raw_threshold": 0.0006391180795617402
+      },
+      "physical_parameter_max_changes": {
+        "backbone.blocks.0.cell.log_rate": 0.0019975530449301004,
+        "backbone.blocks.0.cell.raw_threshold": 0.002001255750656128
+      },
+      "reference_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408
+      },
+      "relative_backbone_gap": 0.0027876895628902764,
+      "seed": 9201,
+      "spike_count": 84.0,
+      "task": "mqar",
+      "unique_forward_spike_values": [
+        0.0,
+        1.0
+      ],
+      "updates": [
+        {
+          "forward_spike_count": 41.0,
+          "loss": 2.0776748657226562,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 0.00011201977031305432,
+            "backbone.blocks.0.cell.raw_threshold": 0.0006391180795617402
+          },
+          "step": 1
+        },
+        {
+          "forward_spike_count": 43.0,
+          "loss": 2.070272207260132,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 7.972068851813674e-05,
+            "backbone.blocks.0.cell.raw_threshold": 0.0004250008787494153
+          },
+          "step": 2
+        }
+      ]
+    },
+    {
+      "access_log": [
+        {
+          "event": "load_split",
+          "samples": 1024,
+          "split": "train"
+        }
+      ],
+      "common_initialization_equal": true,
+      "counts": {
+        "backbone": 17886,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 79,
+          "n_parameters": 17886,
+          "parameter_padding": false,
+          "relative_gap": 0.0027876895628902764,
+          "target_parameters": 17936
+        },
+        "readout": 264,
+        "total": 20358
+      },
+      "input_shape": [
+        1024,
+        32,
+        64
+      ],
+      "maximum_train_dt": 1.4999680519104004,
+      "physical_gradient_max": {
+        "backbone.blocks.0.cell.log_rate": 0.00026355707086622715,
+        "backbone.blocks.0.cell.raw_threshold": 0.0012054109247401357
+      },
+      "physical_parameter_max_changes": {
+        "backbone.blocks.0.cell.log_rate": 0.0019997479394078255,
+        "backbone.blocks.0.cell.raw_threshold": 0.002001166343688965
+      },
+      "reference_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408
+      },
+      "relative_backbone_gap": 0.0027876895628902764,
+      "seed": 9202,
+      "spike_count": 844.0,
+      "task": "mqar",
+      "unique_forward_spike_values": [
+        0.0,
+        1.0
+      ],
+      "updates": [
+        {
+          "forward_spike_count": 401.0,
+          "loss": 2.0857436656951904,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 0.00016150578449014574,
+            "backbone.blocks.0.cell.raw_threshold": 0.0005453674239106476
+          },
+          "step": 1
+        },
+        {
+          "forward_spike_count": 443.0,
+          "loss": 2.0810046195983887,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 0.00026355707086622715,
+            "backbone.blocks.0.cell.raw_threshold": 0.0012054109247401357
+          },
+          "step": 2
+        }
+      ]
+    },
+    {
+      "access_log": [
+        {
+          "event": "load_split",
+          "samples": 1024,
+          "split": "train"
+        }
+      ],
+      "common_initialization_equal": true,
+      "counts": {
+        "backbone": 17886,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 79,
+          "n_parameters": 17886,
+          "parameter_padding": false,
+          "relative_gap": 0.0027876895628902764,
+          "target_parameters": 17936
+        },
+        "readout": 264,
+        "total": 20358
+      },
+      "input_shape": [
+        1024,
+        32,
+        64
+      ],
+      "maximum_train_dt": 1.4999680519104004,
+      "physical_gradient_max": {
+        "backbone.blocks.0.cell.log_rate": 0.00012011850776616484,
+        "backbone.blocks.0.cell.raw_threshold": 0.0012512723915278912
+      },
+      "physical_parameter_max_changes": {
+        "backbone.blocks.0.cell.log_rate": 0.0019981632940471172,
+        "backbone.blocks.0.cell.raw_threshold": 0.0020009875297546387
+      },
+      "reference_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408
+      },
+      "relative_backbone_gap": 0.0027876895628902764,
+      "seed": 9203,
+      "spike_count": 259.0,
+      "task": "mqar",
+      "unique_forward_spike_values": [
+        0.0,
+        1.0
+      ],
+      "updates": [
+        {
+          "forward_spike_count": 116.0,
+          "loss": 2.0745928287506104,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 6.039033905835822e-05,
+            "backbone.blocks.0.cell.raw_threshold": 0.0008259359165094793
+          },
+          "step": 1
+        },
+        {
+          "forward_spike_count": 143.0,
+          "loss": 2.0755467414855957,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 0.00012011850776616484,
+            "backbone.blocks.0.cell.raw_threshold": 0.0012512723915278912
+          },
+          "step": 2
+        }
+      ]
+    },
+    {
+      "access_log": [
+        {
+          "event": "load_split",
+          "samples": 1024,
+          "split": "train"
+        }
+      ],
+      "common_initialization_equal": true,
+      "counts": {
+        "backbone": 17886,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 79,
+          "n_parameters": 17886,
+          "parameter_padding": false,
+          "relative_gap": 0.0027876895628902764,
+          "target_parameters": 17936
+        },
+        "readout": 66,
+        "total": 20160
+      },
+      "input_shape": [
+        1024,
+        32,
+        64
+      ],
+      "maximum_train_dt": 1.1999971866607666,
+      "physical_gradient_max": {
+        "backbone.blocks.0.cell.log_rate": 9.260391379939392e-05,
+        "backbone.blocks.0.cell.raw_threshold": 0.00038039765786379576
+      },
+      "physical_parameter_max_changes": {
+        "backbone.blocks.0.cell.log_rate": 0.002000853419303894,
+        "backbone.blocks.0.cell.raw_threshold": 0.001999408006668091
+      },
+      "reference_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 19906,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 66,
+        "total": 20210
+      },
+      "relative_backbone_gap": 0.0027876895628902764,
+      "seed": 9201,
+      "spike_count": 135.0,
+      "task": "irregular",
+      "unique_forward_spike_values": [
+        0.0,
+        1.0
+      ],
+      "updates": [
+        {
+          "forward_spike_count": 52.0,
+          "loss": 0.6986352801322937,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 4.331086893216707e-05,
+            "backbone.blocks.0.cell.raw_threshold": 0.00038039765786379576
+          },
+          "step": 1
+        },
+        {
+          "forward_spike_count": 83.0,
+          "loss": 0.692193329334259,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 9.260391379939392e-05,
+            "backbone.blocks.0.cell.raw_threshold": 0.0002913281787186861
+          },
+          "step": 2
+        }
+      ]
+    },
+    {
+      "access_log": [
+        {
+          "event": "load_split",
+          "samples": 1024,
+          "split": "train"
+        }
+      ],
+      "common_initialization_equal": true,
+      "counts": {
+        "backbone": 17886,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 79,
+          "n_parameters": 17886,
+          "parameter_padding": false,
+          "relative_gap": 0.0027876895628902764,
+          "target_parameters": 17936
+        },
+        "readout": 66,
+        "total": 20160
+      },
+      "input_shape": [
+        1024,
+        32,
+        64
+      ],
+      "maximum_train_dt": 1.1999971866607666,
+      "physical_gradient_max": {
+        "backbone.blocks.0.cell.log_rate": 9.954725828720257e-05,
+        "backbone.blocks.0.cell.raw_threshold": 0.0010129455476999283
+      },
+      "physical_parameter_max_changes": {
+        "backbone.blocks.0.cell.log_rate": 0.0019996603950858116,
+        "backbone.blocks.0.cell.raw_threshold": 0.0019425749778747559
+      },
+      "reference_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 19906,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 66,
+        "total": 20210
+      },
+      "relative_backbone_gap": 0.0027876895628902764,
+      "seed": 9202,
+      "spike_count": 412.0,
+      "task": "irregular",
+      "unique_forward_spike_values": [
+        0.0,
+        1.0
+      ],
+      "updates": [
+        {
+          "forward_spike_count": 202.0,
+          "loss": 0.6913172006607056,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 4.1776129364734516e-05,
+            "backbone.blocks.0.cell.raw_threshold": 0.0002528468321543187
+          },
+          "step": 1
+        },
+        {
+          "forward_spike_count": 210.0,
+          "loss": 0.6784158945083618,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 9.954725828720257e-05,
+            "backbone.blocks.0.cell.raw_threshold": 0.0010129455476999283
+          },
+          "step": 2
+        }
+      ]
+    },
+    {
+      "access_log": [
+        {
+          "event": "load_split",
+          "samples": 1024,
+          "split": "train"
+        }
+      ],
+      "common_initialization_equal": true,
+      "counts": {
+        "backbone": 17886,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 79,
+          "n_parameters": 17886,
+          "parameter_padding": false,
+          "relative_gap": 0.0027876895628902764,
+          "target_parameters": 17936
+        },
+        "readout": 66,
+        "total": 20160
+      },
+      "input_shape": [
+        1024,
+        32,
+        64
+      ],
+      "maximum_train_dt": 1.1999971866607666,
+      "physical_gradient_max": {
+        "backbone.blocks.0.cell.log_rate": 0.00016167183639481664,
+        "backbone.blocks.0.cell.raw_threshold": 0.001385070034302771
+      },
+      "physical_parameter_max_changes": {
+        "backbone.blocks.0.cell.log_rate": 0.0019976573530584574,
+        "backbone.blocks.0.cell.raw_threshold": 0.0018805861473083496
+      },
+      "reference_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 19906,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 66,
+        "total": 20210
+      },
+      "relative_backbone_gap": 0.0027876895628902764,
+      "seed": 9203,
+      "spike_count": 96.0,
+      "task": "irregular",
+      "unique_forward_spike_values": [
+        0.0,
+        1.0
+      ],
+      "updates": [
+        {
+          "forward_spike_count": 63.0,
+          "loss": 0.6861096620559692,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 1.911686922539957e-05,
+            "backbone.blocks.0.cell.raw_threshold": 0.00018880862626247108
+          },
+          "step": 1
+        },
+        {
+          "forward_spike_count": 33.0,
+          "loss": 0.7252584099769592,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 0.00016167183639481664,
+            "backbone.blocks.0.cell.raw_threshold": 0.001385070034302771
+          },
+          "step": 2
+        }
+      ]
+    },
+    {
+      "access_log": [
+        {
+          "event": "load_split",
+          "samples": 1024,
+          "split": "train"
+        }
+      ],
+      "common_initialization_equal": true,
+      "counts": {
+        "backbone": 17886,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 79,
+          "n_parameters": 17886,
+          "parameter_padding": false,
+          "relative_gap": 0.0027876895628902764,
+          "target_parameters": 17936
+        },
+        "readout": 330,
+        "total": 20424
+      },
+      "input_shape": [
+        1024,
+        32,
+        64
+      ],
+      "maximum_train_dt": 4.9575514793396,
+      "physical_gradient_max": {
+        "backbone.blocks.0.cell.log_rate": 7.393796840915456e-05,
+        "backbone.blocks.0.cell.raw_threshold": 0.000719724630471319
+      },
+      "physical_parameter_max_changes": {
+        "backbone.blocks.0.cell.log_rate": 0.001995895290747285,
+        "backbone.blocks.0.cell.raw_threshold": 0.0020012855529785156
+      },
+      "reference_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20170,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 330,
+        "total": 20474
+      },
+      "relative_backbone_gap": 0.0027876895628902764,
+      "seed": 9201,
+      "spike_count": 456.0,
+      "task": "mnist",
+      "unique_forward_spike_values": [
+        0.0,
+        1.0
+      ],
+      "updates": [
+        {
+          "forward_spike_count": 189.0,
+          "loss": 2.3142471313476562,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 4.912302756565623e-05,
+            "backbone.blocks.0.cell.raw_threshold": 0.0005047847516834736
+          },
+          "step": 1
+        },
+        {
+          "forward_spike_count": 267.0,
+          "loss": 2.304123878479004,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 7.393796840915456e-05,
+            "backbone.blocks.0.cell.raw_threshold": 0.000719724630471319
+          },
+          "step": 2
+        }
+      ]
+    },
+    {
+      "access_log": [
+        {
+          "event": "load_split",
+          "samples": 1024,
+          "split": "train"
+        }
+      ],
+      "common_initialization_equal": true,
+      "counts": {
+        "backbone": 17886,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 79,
+          "n_parameters": 17886,
+          "parameter_padding": false,
+          "relative_gap": 0.0027876895628902764,
+          "target_parameters": 17936
+        },
+        "readout": 330,
+        "total": 20424
+      },
+      "input_shape": [
+        1024,
+        32,
+        64
+      ],
+      "maximum_train_dt": 4.9575514793396,
+      "physical_gradient_max": {
+        "backbone.blocks.0.cell.log_rate": 0.0008250553510151803,
+        "backbone.blocks.0.cell.raw_threshold": 0.0017943870043382049
+      },
+      "physical_parameter_max_changes": {
+        "backbone.blocks.0.cell.log_rate": 0.0019992347806692123,
+        "backbone.blocks.0.cell.raw_threshold": 0.0020006895065307617
+      },
+      "reference_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20170,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 330,
+        "total": 20474
+      },
+      "relative_backbone_gap": 0.0027876895628902764,
+      "seed": 9202,
+      "spike_count": 436.0,
+      "task": "mnist",
+      "unique_forward_spike_values": [
+        0.0,
+        1.0
+      ],
+      "updates": [
+        {
+          "forward_spike_count": 207.0,
+          "loss": 2.2979323863983154,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 0.0002654380223248154,
+            "backbone.blocks.0.cell.raw_threshold": 0.0011758515611290932
+          },
+          "step": 1
+        },
+        {
+          "forward_spike_count": 229.0,
+          "loss": 2.340481758117676,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 0.0008250553510151803,
+            "backbone.blocks.0.cell.raw_threshold": 0.0017943870043382049
+          },
+          "step": 2
+        }
+      ]
+    },
+    {
+      "access_log": [
+        {
+          "event": "load_split",
+          "samples": 1024,
+          "split": "train"
+        }
+      ],
+      "common_initialization_equal": true,
+      "counts": {
+        "backbone": 17886,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 79,
+          "n_parameters": 17886,
+          "parameter_padding": false,
+          "relative_gap": 0.0027876895628902764,
+          "target_parameters": 17936
+        },
+        "readout": 330,
+        "total": 20424
+      },
+      "input_shape": [
+        1024,
+        32,
+        64
+      ],
+      "maximum_train_dt": 4.9575514793396,
+      "physical_gradient_max": {
+        "backbone.blocks.0.cell.log_rate": 0.00035082499380223453,
+        "backbone.blocks.0.cell.raw_threshold": 0.0015134230488911271
+      },
+      "physical_parameter_max_changes": {
+        "backbone.blocks.0.cell.log_rate": 0.001999408006668091,
+        "backbone.blocks.0.cell.raw_threshold": 0.0019986331462860107
+      },
+      "reference_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20170,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 330,
+        "total": 20474
+      },
+      "relative_backbone_gap": 0.0027876895628902764,
+      "seed": 9203,
+      "spike_count": 414.0,
+      "task": "mnist",
+      "unique_forward_spike_values": [
+        0.0,
+        1.0
+      ],
+      "updates": [
+        {
+          "forward_spike_count": 177.0,
+          "loss": 2.2927069664001465,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 0.0002530232595745474,
+            "backbone.blocks.0.cell.raw_threshold": 0.0011425892589613795
+          },
+          "step": 1
+        },
+        {
+          "forward_spike_count": 237.0,
+          "loss": 2.3055145740509033,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 0.00035082499380223453,
+            "backbone.blocks.0.cell.raw_threshold": 0.0015134230488911271
+          },
+          "step": 2
+        }
+      ]
+    },
+    {
+      "access_log": [
+        {
+          "event": "load_split",
+          "samples": 1024,
+          "split": "train"
+        }
+      ],
+      "common_initialization_equal": true,
+      "counts": {
+        "backbone": 17886,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 79,
+          "n_parameters": 17886,
+          "parameter_padding": false,
+          "relative_gap": 0.0027876895628902764,
+          "target_parameters": 17936
+        },
+        "readout": 330,
+        "total": 20424
+      },
+      "input_shape": [
+        1024,
+        32,
+        64
+      ],
+      "maximum_train_dt": 4.9575514793396,
+      "physical_gradient_max": {
+        "backbone.blocks.0.cell.log_rate": 6.809925980633125e-05,
+        "backbone.blocks.0.cell.raw_threshold": 0.000749745755456388
+      },
+      "physical_parameter_max_changes": {
+        "backbone.blocks.0.cell.log_rate": 0.0019984543323516846,
+        "backbone.blocks.0.cell.raw_threshold": 0.0020011961460113525
+      },
+      "reference_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20170,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 330,
+        "total": 20474
+      },
+      "relative_backbone_gap": 0.0027876895628902764,
+      "seed": 9201,
+      "spike_count": 462.0,
+      "task": "fsdd",
+      "unique_forward_spike_values": [
+        0.0,
+        1.0
+      ],
+      "updates": [
+        {
+          "forward_spike_count": 237.0,
+          "loss": 2.3142471313476562,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 6.809925980633125e-05,
+            "backbone.blocks.0.cell.raw_threshold": 0.0004789323138538748
+          },
+          "step": 1
+        },
+        {
+          "forward_spike_count": 225.0,
+          "loss": 2.304123878479004,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 6.526061770273373e-05,
+            "backbone.blocks.0.cell.raw_threshold": 0.000749745755456388
+          },
+          "step": 2
+        }
+      ]
+    },
+    {
+      "access_log": [
+        {
+          "event": "load_split",
+          "samples": 1024,
+          "split": "train"
+        }
+      ],
+      "common_initialization_equal": true,
+      "counts": {
+        "backbone": 17886,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 79,
+          "n_parameters": 17886,
+          "parameter_padding": false,
+          "relative_gap": 0.0027876895628902764,
+          "target_parameters": 17936
+        },
+        "readout": 330,
+        "total": 20424
+      },
+      "input_shape": [
+        1024,
+        32,
+        64
+      ],
+      "maximum_train_dt": 4.9575514793396,
+      "physical_gradient_max": {
+        "backbone.blocks.0.cell.log_rate": 0.00010097674385178834,
+        "backbone.blocks.0.cell.raw_threshold": 0.0010974392062053084
+      },
+      "physical_parameter_max_changes": {
+        "backbone.blocks.0.cell.log_rate": 0.0020009970758110285,
+        "backbone.blocks.0.cell.raw_threshold": 0.002001136541366577
+      },
+      "reference_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20170,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 330,
+        "total": 20474
+      },
+      "relative_backbone_gap": 0.0027876895628902764,
+      "seed": 9202,
+      "spike_count": 1013.0,
+      "task": "fsdd",
+      "unique_forward_spike_values": [
+        0.0,
+        1.0
+      ],
+      "updates": [
+        {
+          "forward_spike_count": 560.0,
+          "loss": 2.301877975463867,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 7.005420047789812e-05,
+            "backbone.blocks.0.cell.raw_threshold": 0.0010974392062053084
+          },
+          "step": 1
+        },
+        {
+          "forward_spike_count": 453.0,
+          "loss": 2.338479995727539,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 0.00010097674385178834,
+            "backbone.blocks.0.cell.raw_threshold": 0.0008667377405799925
+          },
+          "step": 2
+        }
+      ]
+    },
+    {
+      "access_log": [
+        {
+          "event": "load_split",
+          "samples": 1024,
+          "split": "train"
+        }
+      ],
+      "common_initialization_equal": true,
+      "counts": {
+        "backbone": 17886,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 79,
+          "n_parameters": 17886,
+          "parameter_padding": false,
+          "relative_gap": 0.0027876895628902764,
+          "target_parameters": 17936
+        },
+        "readout": 330,
+        "total": 20424
+      },
+      "input_shape": [
+        1024,
+        32,
+        64
+      ],
+      "maximum_train_dt": 4.9575514793396,
+      "physical_gradient_max": {
+        "backbone.blocks.0.cell.log_rate": 0.00024549546651542187,
+        "backbone.blocks.0.cell.raw_threshold": 0.0015012272633612156
+      },
+      "physical_parameter_max_changes": {
+        "backbone.blocks.0.cell.log_rate": 0.0019967039115726948,
+        "backbone.blocks.0.cell.raw_threshold": 0.0020011961460113525
+      },
+      "reference_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20170,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 330,
+        "total": 20474
+      },
+      "relative_backbone_gap": 0.0027876895628902764,
+      "seed": 9203,
+      "spike_count": 1440.0,
+      "task": "fsdd",
+      "unique_forward_spike_values": [
+        0.0,
+        1.0
+      ],
+      "updates": [
+        {
+          "forward_spike_count": 730.0,
+          "loss": 2.291529417037964,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 0.00017609288624953479,
+            "backbone.blocks.0.cell.raw_threshold": 0.0013159691588953137
+          },
+          "step": 1
+        },
+        {
+          "forward_spike_count": 710.0,
+          "loss": 2.3078131675720215,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 0.00024549546651542187,
+            "backbone.blocks.0.cell.raw_threshold": 0.0015012272633612156
+          },
+          "step": 2
+        }
+      ]
+    },
+    {
+      "access_log": [
+        {
+          "event": "load_split",
+          "samples": 1024,
+          "split": "train"
+        }
+      ],
+      "common_initialization_equal": true,
+      "counts": {
+        "backbone": 17886,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 79,
+          "n_parameters": 17886,
+          "parameter_padding": false,
+          "relative_gap": 0.0027876895628902764,
+          "target_parameters": 17936
+        },
+        "readout": 330,
+        "total": 20424
+      },
+      "input_shape": [
+        1024,
+        32,
+        64
+      ],
+      "maximum_train_dt": 4.925058364868164,
+      "physical_gradient_max": {
+        "backbone.blocks.0.cell.log_rate": 6.288057920755818e-05,
+        "backbone.blocks.0.cell.raw_threshold": 0.0006312381010502577
+      },
+      "physical_parameter_max_changes": {
+        "backbone.blocks.0.cell.log_rate": 0.001998902764171362,
+        "backbone.blocks.0.cell.raw_threshold": 0.00200006365776062
+      },
+      "reference_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20170,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 330,
+        "total": 20474
+      },
+      "relative_backbone_gap": 0.0027876895628902764,
+      "seed": 9201,
+      "spike_count": 405.0,
+      "task": "multimodal_select",
+      "unique_forward_spike_values": [
+        0.0,
+        1.0
+      ],
+      "updates": [
+        {
+          "forward_spike_count": 216.0,
+          "loss": 2.3142471313476562,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 6.288057920755818e-05,
+            "backbone.blocks.0.cell.raw_threshold": 0.0004857571911998093
+          },
+          "step": 1
+        },
+        {
+          "forward_spike_count": 189.0,
+          "loss": 2.304123878479004,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 5.454851270769723e-05,
+            "backbone.blocks.0.cell.raw_threshold": 0.0006312381010502577
+          },
+          "step": 2
+        }
+      ]
+    },
+    {
+      "access_log": [
+        {
+          "event": "load_split",
+          "samples": 1024,
+          "split": "train"
+        }
+      ],
+      "common_initialization_equal": true,
+      "counts": {
+        "backbone": 17886,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 79,
+          "n_parameters": 17886,
+          "parameter_padding": false,
+          "relative_gap": 0.0027876895628902764,
+          "target_parameters": 17936
+        },
+        "readout": 330,
+        "total": 20424
+      },
+      "input_shape": [
+        1024,
+        32,
+        64
+      ],
+      "maximum_train_dt": 4.925058364868164,
+      "physical_gradient_max": {
+        "backbone.blocks.0.cell.log_rate": 0.0003177950857207179,
+        "backbone.blocks.0.cell.raw_threshold": 0.0010112487943843007
+      },
+      "physical_parameter_max_changes": {
+        "backbone.blocks.0.cell.log_rate": 0.002000797539949417,
+        "backbone.blocks.0.cell.raw_threshold": 0.0020012259483337402
+      },
+      "reference_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20170,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 330,
+        "total": 20474
+      },
+      "relative_backbone_gap": 0.0027876895628902764,
+      "seed": 9202,
+      "spike_count": 587.0,
+      "task": "multimodal_select",
+      "unique_forward_spike_values": [
+        0.0,
+        1.0
+      ],
+      "updates": [
+        {
+          "forward_spike_count": 317.0,
+          "loss": 2.300304412841797,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 0.0003177950857207179,
+            "backbone.blocks.0.cell.raw_threshold": 0.0010112487943843007
+          },
+          "step": 1
+        },
+        {
+          "forward_spike_count": 270.0,
+          "loss": 2.339271068572998,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 0.00018900692521128803,
+            "backbone.blocks.0.cell.raw_threshold": 0.0009872136870399117
+          },
+          "step": 2
+        }
+      ]
+    },
+    {
+      "access_log": [
+        {
+          "event": "load_split",
+          "samples": 1024,
+          "split": "train"
+        }
+      ],
+      "common_initialization_equal": true,
+      "counts": {
+        "backbone": 17886,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 79,
+          "n_parameters": 17886,
+          "parameter_padding": false,
+          "relative_gap": 0.0027876895628902764,
+          "target_parameters": 17936
+        },
+        "readout": 330,
+        "total": 20424
+      },
+      "input_shape": [
+        1024,
+        32,
+        64
+      ],
+      "maximum_train_dt": 4.925058364868164,
+      "physical_gradient_max": {
+        "backbone.blocks.0.cell.log_rate": 0.00022789795184507966,
+        "backbone.blocks.0.cell.raw_threshold": 0.0014602536102756858
+      },
+      "physical_parameter_max_changes": {
+        "backbone.blocks.0.cell.log_rate": 0.002000801730901003,
+        "backbone.blocks.0.cell.raw_threshold": 0.0020007193088531494
+      },
+      "reference_counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20170,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 330,
+        "total": 20474
+      },
+      "relative_backbone_gap": 0.0027876895628902764,
+      "seed": 9203,
+      "spike_count": 638.0,
+      "task": "multimodal_select",
+      "unique_forward_spike_values": [
+        0.0,
+        1.0
+      ],
+      "updates": [
+        {
+          "forward_spike_count": 312.0,
+          "loss": 2.293764114379883,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 0.00022789795184507966,
+            "backbone.blocks.0.cell.raw_threshold": 0.0014602536102756858
+          },
+          "step": 1
+        },
+        {
+          "forward_spike_count": 326.0,
+          "loss": 2.308267831802368,
+          "physical_gradient_max": {
+            "backbone.blocks.0.cell.log_rate": 0.0001645418378757313,
+            "backbone.blocks.0.cell.raw_threshold": 0.0010238057002425194
+          },
+          "step": 2
+        }
+      ]
+    }
+  ],
+  "scheduler_real_child_probe": {
+    "child_cpu_seconds": 0.021815,
+    "nested_in_enclosing_preflight_wait4": true,
+    "started": 1,
+    "status": "aborted",
+    "unstarted": 2
+  },
+  "schema": "hcsn-lif-supplement-preflight.v1",
+  "source_files_sha256": {
+    "experiments/continuous_spiking_network/__init__.py": "192d1f289893035488c967e19332d164c1b2687c127c627ae88ad24ac9db07bc",
+    "experiments/continuous_spiking_network/baseline.py": "526eaf3ea650d67188cbf898e8a246e7511b196ee2b0b50e7a6063c9ab1583f8",
+    "experiments/continuous_spiking_network/cell.py": "486b9f86ad7cdbae2f3e8a151cb500a219b87cd67a438e9a4e10c038a43ac311",
+    "experiments/continuous_spiking_network/data.py": "b8a84e49451001ee3448dd3e22bbdc0f9e153a6864056c77069052c7d048829b",
+    "experiments/continuous_spiking_network/kernels.py": "188334725b39b7e3bfdf5b17dd04cef2d3383ab6eb02c17eedad912dea21ae30",
+    "experiments/continuous_spiking_network/models.py": "5207b97fe7e3667d723c641c61132e4c96984e19c2ada07868f0074b2e4bdbaf",
+    "experiments/continuous_spiking_network/records.py": "dfea24dacbb5d56e53759ea0f0a4887d81cabd9678f3afccd1b96dbafd73e5be",
+    "experiments/hcsn_distributional_v2/content_analysis.py": "f2763843250e99d92542104d527b24d1fcd8ed541f8d199fa4f3fd62fac42809",
+    "experiments/hcsn_distributional_v2/content_domain_preflight.py": "6a9e7bc6db42f8eee6c7a3b5c5109da71d78344ec0acf5ea18edc3897d776c76",
+    "experiments/hcsn_distributional_v2/content_study.py": "51000ff027d91cb61c70469e20012524a7eaef5b17abad120d5dc78527e39df5",
+    "experiments/hcsn_distributional_v2/content_tests.py": "56baa60d970548dba57f3f885facab390aaec2d42e6202a595837e22e3a59a24",
+    "experiments/hcsn_distributional_v2/content_training.py": "dcf2a195092469e8258374c7a78217930f9f2d56e6b584178162d1de3025ed0e",
+    "experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "experiments/hcsn_distributional_v2/kernel_tests.py": "e8c9cd018a7d707ebb8f118fd2f1e297057a5c59e2dcd06c53025cf19f045add",
+    "experiments/hcsn_distributional_v2/lif_supplement.py": "9de5c2b823f6da9bd3fe0efcea64cd6f08202cd8d7f43e104b503349ce158896",
+    "experiments/hcsn_distributional_v2/lif_supplement_analysis.py": "08336eeaf202b6ebaa0c7c83be9669af01498a984806487b49b6f8871be6c435",
+    "experiments/hcsn_distributional_v2/model.py": "3eb5f6b8797475abf84b09ae5b588f3d0a253e0584578586cb081f15142a355f",
+    "experiments/hcsn_distributional_v2/model_tests.py": "a199e6989dc1aab19f74b83667355b107e550ffee8bc1546437f2c4851daf61b",
+    "experiments/hcsn_free_boundary_v1/CONTRACT.md": "4da331cf20ab5b164f9e935fe9ee4d9db698ff2a9eac53dbefa5e009f0169a0a",
+    "experiments/hcsn_free_boundary_v1/MATH.md": "fd7e0c3c635083b3d2cc1b31e29e70e600280c0e39e8a8c77e58005bd919d9de",
+    "experiments/hcsn_free_boundary_v1/PROTOCOL.json": "0b684b1f3030ff9bcdb4f673ae26eb653c1ead868ed6edf8a8803ba735af4ff2",
+    "experiments/hcsn_free_boundary_v1/benchmark_models.py": "171cee706eeba6d3e7baa725998cf88778f53b92571187e0564c96d7255b8606",
+    "experiments/hcsn_free_boundary_v1/data/study001/INDEX.json": "86b0cfe19859290aeae237ba671f6b6f376ce1180fb1b5be126acbe588da4819",
+    "experiments/hcsn_free_boundary_v1/data/study001/SOURCES.json": "34a784a3d04e0c230e3ca260b69a3d029f3bd3d24e1bc77e08fad7f396913e1f",
+    "experiments/hcsn_free_boundary_v1/data/study001/fsdd.json": "9eee62da9680390d3fb028e8afa85b8c660972b4c94324615cd485a12a973e7a",
+    "experiments/hcsn_free_boundary_v1/data/study001/fsdd.npz": "f61d0215e5224c56a2b52f1ad2ac8acb86f85a622219da8c6b9890169c5c8843",
+    "experiments/hcsn_free_boundary_v1/data/study001/irregular.json": "38ae77be00e6203751e2b6472c3aee5f26fb1b417c673adb1cb5c2e3988de38b",
+    "experiments/hcsn_free_boundary_v1/data/study001/irregular.npz": "3850c5d956e30fdd2a7215378aa8c6054dbee5f622cb8991f2120d3cb7e062f3",
+    "experiments/hcsn_free_boundary_v1/data/study001/mnist.json": "d8acee63df201e92791e02e0e7d2cb2cbd6fba981c3166d1c569408363e53729",
+    "experiments/hcsn_free_boundary_v1/data/study001/mnist.npz": "43967ccabb05540a3b6c831f3737ece02d2ddea16c79e139b46dcb14fd2a4895",
+    "experiments/hcsn_free_boundary_v1/data/study001/mqar.json": "60ca235326dc7632327907a53331d3ba1d6d465bfd13f370f45f3acf64cc2c27",
+    "experiments/hcsn_free_boundary_v1/data/study001/mqar.npz": "e6ce3616602bdbc544a687b524dea426f58e72e13c674aee8f6dadbe8a199653",
+    "experiments/hcsn_free_boundary_v1/data/study001/multimodal_select.json": "ae944964121364aaf91fe35ee3389915bc11e0f74ecf08bd66318775a3cd049b",
+    "experiments/hcsn_free_boundary_v1/data/study001/multimodal_select.npz": "88a70438b843596f2500de6345c534212597cbfd11201ed38519917a9fa56e53",
+    "experiments/hcsn_free_boundary_v1/data/study001/selective_copy.json": "e64ca5e594df2bcc9ebcaac46a015940f6a48cb8b32d7fb12971b0d9bb9aad69",
+    "experiments/hcsn_free_boundary_v1/data/study001/selective_copy.npz": "01e0b3fd4bbc4df05cddae7723d3433bc5c58d3e5263905c12d64b5b888db2f7",
+    "experiments/hcsn_free_boundary_v1/datasets.py": "f87e8f8531483313013d64a413b207c26ab14c09f82500088b506b5a682bc794",
+    "experiments/hcsn_free_boundary_v1/live_study.py": "9bcd88c449bc33fb2bbe9c45776069bce1c266229b1ca1e696ec60f72836dfce",
+    "experiments/hcsn_free_boundary_v1/model.py": "c86535bf5b37589503aada3b1d979d80b75e54eb19e6be4f3b93482066147625",
+    "experiments/hcsn_free_boundary_v1/native_bridge.py": "77d752f013cbde2cc4e1424f5e2038352e5cda9b4b241222027c2ddeae9957fd",
+    "experiments/hcsn_free_boundary_v1/oracle.py": "72f8171bb3c6121481235288033518516d25eb0644f68c9c9f7d775069eda248",
+    "experiments/hcsn_free_boundary_v1/oracle_torch.py": "c651bc1c895596d2f1ca847b0bea80eb01efc951d9392a695ff0ccc2a0c61e9a",
+    "experiments/hcsn_free_boundary_v1/restore_native.py": "918aa4570b2e5119a760cbcd69ad797d43a2a874ed065f636234c52f93d49f06",
+    "experiments/hcsn_free_boundary_v1/run_matrix.py": "3a8f2ba065a4922a18f5eb7a7a4a86ed128a111e6ed2de3ece6e629e90969323",
+    "experiments/hcsn_free_boundary_v1/run_native_live.py": "0c4055d26bbafc9c762357fdab338a2e438cf7fc5ba97cf8b60317031d177565",
+    "experiments/hcsn_free_boundary_v1/training.py": "1aab526dec037ba19a5b55fc532027d2a688212f4595ed21d5d86f35ebcbe653",
+    "experiments/hcsn_free_boundary_v1/vendor/LICENSE.ncps": "f1f53a56f8ce3de8a66a1cc960cdbdb0284e5caed2e30c51e6e7b7fb05732d17",
+    "experiments/hcsn_free_boundary_v1/vendor/PROVENANCE.json": "06e03ecf7e485e3d89a7721f6c38c13eab773df64e5a55a4a84aafaac027fb49",
+    "experiments/hcsn_free_boundary_v1/vendor/cfc_cell.py": "ae2883e58b1e315e82048e178ca87d64a0e5ebd8f476fea9e3849df9f89c94c9"
+  },
+  "train_only": true
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "hcsn-audit-setup-failure.v1",
+  "stage": "registration JSON serialization, before any model construction or numerical execution",
+  "error_type": "TypeError",
+  "message": "Object of type float32 is not JSON serializable",
+  "root_cause": "NumPy float32 constants in new audit LIMITS dictionary",
+  "source_sha256": "9898067084e6ba2a5abc976687467d24857b25644818edc0ee46697b8e4b439f",
+  "registered": false,
+  "model_execution_started": false,
+  "frozen_model_or_helper_changed": false,
+  "followup": "Cast audit tolerance literals to native float and rerun into a distinct result directory"
+}

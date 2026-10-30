@@ -1,0 +1,119 @@
+{
+  "schema": "hcsn-stable-probability-registration.v1",
+  "profile": "roundoff_unit_mass_v1",
+  "source_sha256": {
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_distributional_v2/stable_probability_tests.py": "9ddaab7745632cd88ec9a66e70d6fcb2c58f05e77450c5e674561e7a7dbc70c2",
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_distributional_v2/stable_probability.py": "d4bc918a5907a253007f8efd793ef379ab8c0e7ce9d5753af7feadcd8b836770",
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_distributional_v2/kernel_tests.py": "e8c9cd018a7d707ebb8f118fd2f1e297057a5c59e2dcd06c53025cf19f045add",
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_distributional_v2/long_horizon_audit.py": "2b14006708869f8f1f12935299ff941f8cf205b25ee4143f037e7badcb967c6e"
+  },
+  "limits": {
+    "float32_state_l1": 2e-05,
+    "float64_state_l1": 5e-10,
+    "float32_event_scaled": 5e-05,
+    "float64_event_scaled": 1e-09,
+    "float32_moving_state_l1": 2e-05,
+    "float64_moving_state_l1": 5e-10,
+    "gradient_scaled": 2e-05,
+    "gradient_absolute_floor": 1e-05,
+    "finite_difference_step": 1e-05
+  },
+  "cases": [
+    {
+      "name": "central",
+      "parameters": [
+        0.1,
+        0.45,
+        0.85,
+        -0.1,
+        0.75
+      ]
+    },
+    {
+      "name": "negative_drift",
+      "parameters": [
+        -0.28,
+        0.32,
+        1.1,
+        -0.25,
+        1.1
+      ]
+    },
+    {
+      "name": "fast_cycle",
+      "parameters": [
+        0.48,
+        0.6,
+        0.55,
+        0.05,
+        0.3
+      ]
+    },
+    {
+      "name": "rate_domain_corner",
+      "parameters": [
+        0.5,
+        0.6,
+        0.35,
+        -0.1,
+        0.3
+      ]
+    }
+  ],
+  "durations": [
+    0.07,
+    0.36,
+    0.495755147934,
+    3.2
+  ],
+  "observations": 4096,
+  "snapshots": [
+    16,
+    64,
+    256,
+    1024,
+    4096
+  ],
+  "guard_float32": {
+    "input_mass": 9.5367431640625e-07,
+    "single_step_mass": 3.0517578125e-05,
+    "cast_roundoff": 4.76837158203125e-07
+  },
+  "guard_float64": {
+    "input_mass": 1e-12,
+    "single_step_mass": 1e-12,
+    "cast_roundoff": 8.881784197001252e-16
+  },
+  "moving_steps": 128,
+  "boundary_offsets": [
+    -0.117,
+    0.223,
+    0.054
+  ],
+  "moving_durations": [
+    0.0,
+    0.19,
+    0.271,
+    0.495755147934
+  ],
+  "gradient_parameters": {
+    "mu": 0.237,
+    "sigma": 0.513,
+    "boundary": 0.8431,
+    "reset": -0.173,
+    "tau": 0.417,
+    "rho": 0.437,
+    "K": 0.413,
+    "duration_scale": 1.0
+  },
+  "prior_failure_preserved": "../sixstage_20261030_math/RESULTS.json",
+  "frozen_sources_changed": false,
+  "task_labels_read": false,
+  "limitations": [
+    "Only ordinary regenerative state is normalized; killed survival is excluded",
+    "Roundoff guard is not an IEEE forward-error proof",
+    "Finite-grid reference, not Brownian spatial exactness",
+    "Float32 cumulative count summation is a separate source of drift"
+  ]
+}

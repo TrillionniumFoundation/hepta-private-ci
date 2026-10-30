@@ -1,0 +1,277 @@
+{
+  "schema": "hcsn-sixstage-math-completion-map.v1",
+  "stage_scope": [
+    1,
+    4
+  ],
+  "task_labels_read": false,
+  "frozen_protocol_or_sources_modified": false,
+  "old_results_deleted_or_overwritten": false,
+  "gpu_or_energy_claim": false,
+  "entries": [
+    {
+      "id": "frozen_kernel_replay",
+      "status": "passed",
+      "tests": 18,
+      "result": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/kernel_replay/RESULTS.json"
+    },
+    {
+      "id": "renewal_and_stationary_occupation",
+      "status": "passed",
+      "cases": 8,
+      "reference": "Independent mean first-passage and occupation linear solves versus stationary generator equations"
+    },
+    {
+      "id": "uncorrected_long_horizon_probability",
+      "status": "failed_preserved",
+      "observations": 4096,
+      "all_mass_contracts": false,
+      "implication": "Frozen short-horizon success does not establish long-horizon unit-mass stability",
+      "result": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/RESULTS.json"
+    },
+    {
+      "id": "bounded_probability_profile",
+      "status": "passed",
+      "cases": 8,
+      "observations": 4096,
+      "float32_maximum_post_projection_mass_error": 3.241075319238007e-08,
+      "float32_maximum_final_state_l1_error": 3.8591466265163263e-07,
+      "float64_maximum_final_state_l1_error": 1.4466431524917667e-12,
+      "result": "experiments/hcsn_distributional_v2/results/sixstage_20261030_stable_probability/RESULTS.json"
+    },
+    {
+      "id": "moving_boundary_long_gradient",
+      "status": "passed",
+      "steps": 128,
+      "parameters": 8,
+      "maximum_scaled_gradient_error": 4.837575448493866e-10
+    },
+    {
+      "id": "first_event_probability_and_survival",
+      "status": "passed",
+      "dense_cases": 10,
+      "mc_cases": 5,
+      "monte_carlo_trials": 150000,
+      "gradient_parameters": 6,
+      "includes": [
+        "m0_marked_self_reset",
+        "zero_duration_boundary_shrink",
+        "zero_duration_boundary_expand",
+        "existing_refractory_phase_release",
+        "repeated_event_window"
+      ],
+      "result": "experiments/hcsn_distributional_v2/results/sixstage_20261030_risk_independent/RESULTS.json"
+    },
+    {
+      "id": "raw_monte_carlo_replay",
+      "status": "passed",
+      "all_saved_integer_counts_reproduced": true,
+      "npz": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/completion_export/independent_generators_and_raw_mc.npz",
+      "npz_sha256": "4c036eb02d9a7b8b0c6f14235ee13a827e462b5d57c9e154700d68aacaca6b52"
+    }
+  ],
+  "limitations": [
+    "The validated propagator is a finite reflecting-domain CTMC, not an exact unbounded Brownian process",
+    "The refractory law is Erlang; two phases have nonzero duration variance",
+    "Closed-form continuous boundary optimality does not imply finite-grid/task-optimal boundary selection",
+    "Boundary overlaps and upwind drift have piecewise derivatives; successful local gradients are not global smoothness",
+    "The probability correction is a separate numerical profile and cannot be applied to killed survival",
+    "Per-step roundoff guards are not complete global IEEE forward-error certificates",
+    "Float32 accumulation of many event increments retains additional error; double accumulation is separately recorded",
+    "A tiny negative risk at zero duration (about -1.38e-16) is retained as reported floating-point roundoff",
+    "No content accuracy, full multimodal scaling, energy or same-quality speed conclusion is established by these audits"
+  ],
+  "source_inventory": [
+    {
+      "path": "experiments/hcsn_distributional_v2/long_horizon_audit.py",
+      "sha256": "2b14006708869f8f1f12935299ff941f8cf205b25ee4143f037e7badcb967c6e"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/stable_probability.py",
+      "sha256": "d4bc918a5907a253007f8efd793ef379ab8c0e7ce9d5753af7feadcd8b836770"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/stable_probability_tests.py",
+      "sha256": "9ddaab7745632cd88ec9a66e70d6fcb2c58f05e77450c5e674561e7a7dbc70c2"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/risk_independent_audit.py",
+      "sha256": "e230ab62a514fe7a1cda49691a85ec4edd8f4e323416a7e9442f5c81fd0d72a7"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/math_completion_map.py",
+      "sha256": "5c159132a15cfcd2c6f541edf2e58f20e8c0b2766b9f0604af799ac8e8e1fe92"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/distribution_kernel.py",
+      "sha256": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/kernel_tests.py",
+      "sha256": "e8c9cd018a7d707ebb8f118fd2f1e297057a5c59e2dcd06c53025cf19f045add"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/MATH.md",
+      "sha256": "3899a158c856f72ba52c59de8d1f9d46f3967a9f2b8a1de2fa5e0bad97fb3a96"
+    }
+  ],
+  "artifact_inventory": [
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/REGISTRATION.json",
+      "bytes": 2236,
+      "sha256": "1007f05f0a705357a405ad741e381c7b26d243414980dd4d87b70035be10017d"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/REPORT.md",
+      "bytes": 1912,
+      "sha256": "d11d1b5dee8a8b52021ef0ec4f7933041ae19528aa182873ff01f42e8fd84b50"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/RESULTS.json",
+      "bytes": 44059,
+      "sha256": "aa9c20b1bacf4bd25ded8fa7ff8d710ebb7f372ca3091fbce676c91b1a2ebb9b"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/central_float32.npz",
+      "bytes": 162270,
+      "sha256": "6469e29fa76e91e180fc34dda14cc15b169eac90af2dad18be10d346d94d7930"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/central_float64.npz",
+      "bytes": 174287,
+      "sha256": "bbcee999f26e1f5625fd4265fc8d64367b126fb6a1f4400e9ad52ba39d123dea"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/completion_export/MONTE_CARLO_COUNTS.json",
+      "bytes": 2482,
+      "sha256": "8028d21abe26f20f31852af5cdb6341182c8f01ddd35cd458ecaec7988371680"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/completion_export/REGISTRATION.json",
+      "bytes": 416,
+      "sha256": "041a0b07aa6d285eaa780f872f8e0a48e0d65f936cc85e095ba3971b82724649"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/completion_export/independent_generators_and_raw_mc.npz",
+      "bytes": 513390,
+      "sha256": "4c036eb02d9a7b8b0c6f14235ee13a827e462b5d57c9e154700d68aacaca6b52"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/fast_cycle_float32.npz",
+      "bytes": 108964,
+      "sha256": "dbeddfc6d650d26c9211070f3a44b288007d3d9cd4a70f8f66b5e0431bc75346"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/fast_cycle_float64.npz",
+      "bytes": 162403,
+      "sha256": "73e7a5e6f7f576725e90f99362a8e39399e2a9364dc024d47bdfd8c2e745bdf2"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/kernel_replay/RESULTS.json",
+      "bytes": 36505,
+      "sha256": "80f9b3e56256d78e7bf016090e0e73c5fd355c4d2cd8e1f3ea3badbb4c84cacd"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/kernel_replay.execution.json",
+      "bytes": 657,
+      "sha256": "3b014dcb821a7cacc711bac52402ea3123b3f59e9d8bb393f27bc4b1306293d2"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/kernel_replay.process.log",
+      "bytes": 2480,
+      "sha256": "9df4e492fd5ab532c72946ab180208360d7d9a630f677a73d067550d088a55c1"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/negative_drift_float32.npz",
+      "bytes": 162262,
+      "sha256": "25e142743c9ef9cd54f505ba1331f4abce655cab55915b345c786189e8cb1196"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/negative_drift_float64.npz",
+      "bytes": 85567,
+      "sha256": "3aa99638f170f4eacf0fd88015c0cc1ef628edcdb84881ee322151b08bdc3b51"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/rate_domain_corner_float32.npz",
+      "bytes": 149482,
+      "sha256": "2c70d63a0cf363988c20071da1c1f3b6afae508097cfaf30ab436693f7a9d29f"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/rate_domain_corner_float64.npz",
+      "bytes": 88996,
+      "sha256": "fc12a9f3ecde56ab46551f3cffdc6b8d037b8e3191b8e4f48776a5ca8e58b811"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_stable_probability/REGISTRATION.json",
+      "bytes": 3128,
+      "sha256": "d434cf11d179bd7c257c37127cd249e6be09b9a8d04fe978cf93834b87a6f4fd"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_stable_probability/REPORT.md",
+      "bytes": 1977,
+      "sha256": "971b4f09402aab805da137b2716e00909433cc25478a6bdaa0a800950a5ee2cb"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_stable_probability/RESULTS.json",
+      "bytes": 43275,
+      "sha256": "78ce8b96544abb03335989ba6ebebfb5eb76ebb685f471512d8324a3d96ed7dd"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_stable_probability/long_central_float32.npz",
+      "bytes": 95447,
+      "sha256": "03275b516c6f616fb986fc83fd4b1fe6db5f9d163af57747bbdd3057b375a721"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_stable_probability/long_central_float64.npz",
+      "bytes": 101530,
+      "sha256": "c5ef698916130be0eed6fce5d89ff32ab79ea48429e90bae01936d0e4db43aea"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_stable_probability/long_fast_cycle_float32.npz",
+      "bytes": 95226,
+      "sha256": "8f953170427362e734e0e0e7c6932fc4db0ebf0d9ee78bef12077c7fe33ef321"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_stable_probability/long_fast_cycle_float64.npz",
+      "bytes": 100898,
+      "sha256": "bb9cfec898960a39854cbaafc28fc56c0c3551594f795adcc85eca46ab88d16c"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_stable_probability/long_negative_drift_float32.npz",
+      "bytes": 96786,
+      "sha256": "82f29bb74bf48b1e45090c1e9736f07fd9dcd505512435a1ea3601f33931c1f5"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_stable_probability/long_negative_drift_float64.npz",
+      "bytes": 103694,
+      "sha256": "45478211b6c12feb09662b61c82f4e4d0bec33c40fc9e8d3870b5c733fb95931"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_stable_probability/long_rate_domain_corner_float32.npz",
+      "bytes": 96076,
+      "sha256": "5ff9d9cb5e8d4e9aa929761e062b3d5780c8adda55b0e041ec817369fda2252c"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_stable_probability/long_rate_domain_corner_float64.npz",
+      "bytes": 97631,
+      "sha256": "79dd899d43b4e72d8b5097b3d33a37e23089e15e84e69060b19a94496da18633"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_risk_independent/REGISTRATION.json",
+      "bytes": 2757,
+      "sha256": "a3a96877b55a164e92173e0d6ee5ebcc1013d0f4b1b1936691c683d492171697"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_risk_independent/REPORT.md",
+      "bytes": 1865,
+      "sha256": "54f19117fb1e2413122103a17876440ab75db5b83c1550d31fdbc4fe2fc767ce"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_risk_independent/RESULTS.json",
+      "bytes": 12935,
+      "sha256": "87b6d9efac326343ebb91e1a3e1159b0dd48f127112b525aa5d00a9b85c3e030"
+    }
+  ],
+  "frozen_kernel_sha256": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+  "export_wall_seconds": 0.18359695199978887
+}

@@ -1,0 +1,1004 @@
+{
+  "access_log": [
+    {
+      "event": "load_split",
+      "samples": 1024,
+      "split": "train"
+    },
+    {
+      "event": "load_split",
+      "samples": 1024,
+      "split": "train"
+    }
+  ],
+  "body_cpu_seconds": 56.040846816999995,
+  "causal_prefix_max_error": 0.0,
+  "passed": true,
+  "records": [
+    {
+      "arm": "risk_margin",
+      "batch": 32,
+      "counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408
+      },
+      "dataset_sha256": "01e0b3fd4bbc4df05cddae7723d3433bc5c58d3e5263905c12d64b5b888db2f7",
+      "last_gradients": {
+        "boundary": {
+          "finite": true,
+          "l2": 3.317682217936742e-05,
+          "max_abs": 1.702791269053705e-05,
+          "missing_elements": 0
+        },
+        "content": {
+          "finite": true,
+          "l2": 0.8134339079154713,
+          "max_abs": 0.16580933332443237,
+          "missing_elements": 0
+        },
+        "dynamics": {
+          "finite": true,
+          "l2": 0.0010186435465933481,
+          "max_abs": 0.00018709397409111261,
+          "missing_elements": 0
+        },
+        "refractory": {
+          "finite": true,
+          "l2": 2.2818925682667293e-05,
+          "max_abs": 1.2631273420993239e-05,
+          "missing_elements": 0
+        },
+        "reset": {
+          "finite": true,
+          "l2": 1.2922816193648191e-05,
+          "max_abs": 1.1415776498324703e-05,
+          "missing_elements": 0
+        }
+      },
+      "max_first_event_probability": null,
+      "max_probability_mass_error": 1.1920928955078125e-07,
+      "max_projection_l1": 6.696601388966883e-07,
+      "physical_parameter_changes": {
+        "layers.0.mu_bias": true,
+        "layers.0.raw_K": true,
+        "layers.0.raw_refractory": true,
+        "layers.0.raw_reset": true,
+        "layers.0.raw_rho": true,
+        "layers.0.raw_sigma": true
+      },
+      "task": "selective_copy",
+      "training_loss": 2.103847026824951,
+      "update_cpu_seconds": [
+        0.7664937140000001,
+        0.9838196009999995,
+        0.9811818409999997
+      ],
+      "updates": 3
+    },
+    {
+      "arm": "risk_margin_j",
+      "batch": 32,
+      "counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408
+      },
+      "dataset_sha256": "01e0b3fd4bbc4df05cddae7723d3433bc5c58d3e5263905c12d64b5b888db2f7",
+      "last_gradients": {
+        "boundary": {
+          "finite": true,
+          "l2": 2.525096626060187e-05,
+          "max_abs": 1.4845689292997122e-05,
+          "missing_elements": 0
+        },
+        "content": {
+          "finite": true,
+          "l2": 0.813655533266889,
+          "max_abs": 0.16565822064876556,
+          "missing_elements": 0
+        },
+        "dynamics": {
+          "finite": true,
+          "l2": 0.0007830775364382976,
+          "max_abs": 0.0001454101875424385,
+          "missing_elements": 0
+        },
+        "refractory": {
+          "finite": true,
+          "l2": 2.2922031786221514e-05,
+          "max_abs": 1.3153271538612898e-05,
+          "missing_elements": 0
+        },
+        "reset": {
+          "finite": true,
+          "l2": 1.124143615278118e-05,
+          "max_abs": 7.813053343852516e-06,
+          "missing_elements": 0
+        }
+      },
+      "max_first_event_probability": null,
+      "max_probability_mass_error": 1.1920928955078125e-07,
+      "max_projection_l1": 6.709747992772463e-07,
+      "physical_parameter_changes": {
+        "layers.0.mu_bias": true,
+        "layers.0.raw_K": true,
+        "layers.0.raw_refractory": true,
+        "layers.0.raw_reset": true,
+        "layers.0.raw_rho": true,
+        "layers.0.raw_sigma": true
+      },
+      "task": "selective_copy",
+      "training_loss": 2.103971004486084,
+      "update_cpu_seconds": [
+        0.9636459400000001,
+        1.162742583,
+        0.5662232899999999
+      ],
+      "updates": 3
+    },
+    {
+      "arm": "risk_margin_j_risk",
+      "batch": 32,
+      "counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408
+      },
+      "dataset_sha256": "01e0b3fd4bbc4df05cddae7723d3433bc5c58d3e5263905c12d64b5b888db2f7",
+      "last_gradients": {
+        "boundary": {
+          "finite": true,
+          "l2": 2.2011571185198125e-05,
+          "max_abs": 1.4458517398452386e-05,
+          "missing_elements": 0
+        },
+        "content": {
+          "finite": true,
+          "l2": 0.8131209019934871,
+          "max_abs": 0.16518425941467285,
+          "missing_elements": 0
+        },
+        "dynamics": {
+          "finite": true,
+          "l2": 0.000708507841633363,
+          "max_abs": 0.0001354323758278042,
+          "missing_elements": 0
+        },
+        "refractory": {
+          "finite": true,
+          "l2": 1.9929876946857764e-05,
+          "max_abs": 1.205885382660199e-05,
+          "missing_elements": 0
+        },
+        "reset": {
+          "finite": true,
+          "l2": 1.1620913963035015e-05,
+          "max_abs": 7.6192227425053716e-06,
+          "missing_elements": 0
+        }
+      },
+      "max_first_event_probability": 0.10183815658092499,
+      "max_probability_mass_error": 1.1920928955078125e-07,
+      "max_projection_l1": 6.875737028622098e-07,
+      "physical_parameter_changes": {
+        "layers.0.mu_bias": true,
+        "layers.0.raw_K": true,
+        "layers.0.raw_refractory": true,
+        "layers.0.raw_reset": true,
+        "layers.0.raw_rho": true,
+        "layers.0.raw_sigma": true
+      },
+      "task": "selective_copy",
+      "training_loss": 2.103942632675171,
+      "update_cpu_seconds": [
+        1.7098958210000008,
+        2.1924256480000004,
+        1.6876301160000011
+      ],
+      "updates": 3
+    },
+    {
+      "arm": "risk_ordinary_two_gates",
+      "batch": 32,
+      "counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408
+      },
+      "dataset_sha256": "01e0b3fd4bbc4df05cddae7723d3433bc5c58d3e5263905c12d64b5b888db2f7",
+      "last_gradients": {
+        "boundary": {
+          "finite": true,
+          "l2": 3.179612066094863e-05,
+          "max_abs": 1.6741851140977815e-05,
+          "missing_elements": 0
+        },
+        "content": {
+          "finite": true,
+          "l2": 0.8134215852775394,
+          "max_abs": 0.16684912145137787,
+          "missing_elements": 0
+        },
+        "dynamics": {
+          "finite": true,
+          "l2": 0.0011497405662389366,
+          "max_abs": 0.0002690459950827062,
+          "missing_elements": 0
+        },
+        "refractory": {
+          "finite": true,
+          "l2": 3.550403744703789e-05,
+          "max_abs": 1.8431574062560685e-05,
+          "missing_elements": 0
+        },
+        "reset": {
+          "finite": true,
+          "l2": 1.867757501795902e-05,
+          "max_abs": 9.48607521422673e-06,
+          "missing_elements": 0
+        }
+      },
+      "max_first_event_probability": null,
+      "max_probability_mass_error": 1.1920928955078125e-07,
+      "max_projection_l1": 6.56299562251661e-07,
+      "physical_parameter_changes": {
+        "layers.0.mu_bias": true,
+        "layers.0.raw_K": true,
+        "layers.0.raw_refractory": true,
+        "layers.0.raw_reset": true,
+        "layers.0.raw_rho": true,
+        "layers.0.raw_sigma": true
+      },
+      "task": "selective_copy",
+      "training_loss": 2.1038410663604736,
+      "update_cpu_seconds": [
+        0.9290079200000001,
+        1.0215759389999999,
+        0.672069583999999
+      ],
+      "updates": 3
+    },
+    {
+      "arm": "risk_fixed_full",
+      "batch": 32,
+      "counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408
+      },
+      "dataset_sha256": "01e0b3fd4bbc4df05cddae7723d3433bc5c58d3e5263905c12d64b5b888db2f7",
+      "last_gradients": {
+        "boundary": {
+          "finite": true,
+          "l2": 2.076959293014499e-05,
+          "max_abs": 1.1748484212148469e-05,
+          "missing_elements": 0
+        },
+        "content": {
+          "finite": true,
+          "l2": 0.8130783280862777,
+          "max_abs": 0.16526122391223907,
+          "missing_elements": 0
+        },
+        "dynamics": {
+          "finite": true,
+          "l2": 0.0004992105320635474,
+          "max_abs": 8.685635111760348e-05,
+          "missing_elements": 0
+        },
+        "refractory": {
+          "finite": true,
+          "l2": 1.9721320922239768e-05,
+          "max_abs": 1.2931015589856543e-05,
+          "missing_elements": 0
+        },
+        "reset": {
+          "finite": true,
+          "l2": 9.34638290114889e-06,
+          "max_abs": 7.345399808400543e-06,
+          "missing_elements": 0
+        }
+      },
+      "max_first_event_probability": 0.03894960507750511,
+      "max_probability_mass_error": 1.1920928955078125e-07,
+      "max_projection_l1": 3.3783726394176483e-07,
+      "physical_parameter_changes": {
+        "layers.0.mu_bias": true,
+        "layers.0.raw_K": true,
+        "layers.0.raw_refractory": true,
+        "layers.0.raw_reset": true,
+        "layers.0.raw_rho": true,
+        "layers.0.raw_sigma": true
+      },
+      "task": "selective_copy",
+      "training_loss": 2.1038997173309326,
+      "update_cpu_seconds": [
+        1.695039394000002,
+        1.7477771840000003,
+        1.703958410000002
+      ],
+      "updates": 3
+    },
+    {
+      "arm": "risk_direct_full",
+      "batch": 32,
+      "counts": {
+        "backbone": 17944,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 16,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20416
+      },
+      "dataset_sha256": "01e0b3fd4bbc4df05cddae7723d3433bc5c58d3e5263905c12d64b5b888db2f7",
+      "last_gradients": {
+        "boundary": {
+          "finite": true,
+          "l2": 0.00011910165131216673,
+          "max_abs": 7.731417281320319e-05,
+          "missing_elements": 0
+        },
+        "content": {
+          "finite": true,
+          "l2": 0.8130786505458918,
+          "max_abs": 0.16526328027248383,
+          "missing_elements": 0
+        },
+        "dynamics": {
+          "finite": true,
+          "l2": 0.0004993421004554227,
+          "max_abs": 8.684523345436901e-05,
+          "missing_elements": 0
+        },
+        "refractory": {
+          "finite": true,
+          "l2": 1.9725788877079954e-05,
+          "max_abs": 1.2932867321069352e-05,
+          "missing_elements": 0
+        },
+        "reset": {
+          "finite": true,
+          "l2": 9.342520803321762e-06,
+          "max_abs": 7.347673545154976e-06,
+          "missing_elements": 0
+        }
+      },
+      "max_first_event_probability": 0.03897475078701973,
+      "max_probability_mass_error": 1.1920928955078125e-07,
+      "max_projection_l1": 4.148637344769668e-07,
+      "physical_parameter_changes": {
+        "layers.0.mu_bias": true,
+        "layers.0.raw_K": true,
+        "layers.0.raw_boundary_gap": true,
+        "layers.0.raw_refractory": true,
+        "layers.0.raw_reset": true,
+        "layers.0.raw_rho": true,
+        "layers.0.raw_sigma": true
+      },
+      "task": "selective_copy",
+      "training_loss": 2.1038999557495117,
+      "update_cpu_seconds": [
+        1.7287820170000003,
+        1.800064442,
+        2.0980182149999997
+      ],
+      "updates": 3
+    },
+    {
+      "arm": "risk_conditional_full",
+      "batch": 32,
+      "counts": {
+        "backbone": 17952,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 24,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20424
+      },
+      "dataset_sha256": "01e0b3fd4bbc4df05cddae7723d3433bc5c58d3e5263905c12d64b5b888db2f7",
+      "last_gradients": {
+        "boundary": {
+          "finite": true,
+          "l2": 0.0001249811449458131,
+          "max_abs": 7.731612276984379e-05,
+          "missing_elements": 0
+        },
+        "content": {
+          "finite": true,
+          "l2": 0.8130788167724539,
+          "max_abs": 0.16526344418525696,
+          "missing_elements": 0
+        },
+        "dynamics": {
+          "finite": true,
+          "l2": 0.0004990674332180332,
+          "max_abs": 8.674782293383032e-05,
+          "missing_elements": 0
+        },
+        "refractory": {
+          "finite": true,
+          "l2": 1.973252829703038e-05,
+          "max_abs": 1.2936235179950017e-05,
+          "missing_elements": 0
+        },
+        "reset": {
+          "finite": true,
+          "l2": 9.341702659431502e-06,
+          "max_abs": 7.348833150899736e-06,
+          "missing_elements": 0
+        }
+      },
+      "max_first_event_probability": 0.03899217024445534,
+      "max_probability_mass_error": 1.1920928955078125e-07,
+      "max_projection_l1": 4.029645879199961e-07,
+      "physical_parameter_changes": {
+        "layers.0.mu_bias": true,
+        "layers.0.raw_K": true,
+        "layers.0.raw_boundary_gap": true,
+        "layers.0.raw_boundary_slope": true,
+        "layers.0.raw_refractory": true,
+        "layers.0.raw_reset": true,
+        "layers.0.raw_rho": true,
+        "layers.0.raw_sigma": true
+      },
+      "task": "selective_copy",
+      "training_loss": 2.1038999557495117,
+      "update_cpu_seconds": [
+        1.4727203050000028,
+        1.5695786480000002,
+        1.8151838980000008
+      ],
+      "updates": 3
+    },
+    {
+      "arm": "risk_margin",
+      "batch": 32,
+      "counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408
+      },
+      "dataset_sha256": "e6ce3616602bdbc544a687b524dea426f58e72e13c674aee8f6dadbe8a199653",
+      "last_gradients": {
+        "boundary": {
+          "finite": true,
+          "l2": 1.9092094970904164e-05,
+          "max_abs": 1.2511132808867842e-05,
+          "missing_elements": 0
+        },
+        "content": {
+          "finite": true,
+          "l2": 0.39081852151327423,
+          "max_abs": 0.0805303305387497,
+          "missing_elements": 0
+        },
+        "dynamics": {
+          "finite": true,
+          "l2": 0.0008364554548831899,
+          "max_abs": 0.00017391788423992693,
+          "missing_elements": 0
+        },
+        "refractory": {
+          "finite": true,
+          "l2": 3.0332840839991255e-05,
+          "max_abs": 1.6835358110256493e-05,
+          "missing_elements": 0
+        },
+        "reset": {
+          "finite": true,
+          "l2": 1.751245061818254e-05,
+          "max_abs": 1.2652672921831254e-05,
+          "missing_elements": 0
+        }
+      },
+      "max_first_event_probability": null,
+      "max_probability_mass_error": 1.1920928955078125e-07,
+      "max_projection_l1": 7.03201550322774e-07,
+      "physical_parameter_changes": {
+        "layers.0.mu_bias": true,
+        "layers.0.raw_K": true,
+        "layers.0.raw_refractory": true,
+        "layers.0.raw_reset": true,
+        "layers.0.raw_rho": true,
+        "layers.0.raw_sigma": true
+      },
+      "task": "mqar",
+      "training_loss": 2.088946580886841,
+      "update_cpu_seconds": [
+        0.8077535499999975,
+        1.0145824080000025,
+        0.7967605840000047
+      ],
+      "updates": 3
+    },
+    {
+      "arm": "risk_margin_j",
+      "batch": 32,
+      "counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408
+      },
+      "dataset_sha256": "e6ce3616602bdbc544a687b524dea426f58e72e13c674aee8f6dadbe8a199653",
+      "last_gradients": {
+        "boundary": {
+          "finite": true,
+          "l2": 1.3985213124432491e-05,
+          "max_abs": 8.596086445322726e-06,
+          "missing_elements": 0
+        },
+        "content": {
+          "finite": true,
+          "l2": 0.39344404568196634,
+          "max_abs": 0.08156891912221909,
+          "missing_elements": 0
+        },
+        "dynamics": {
+          "finite": true,
+          "l2": 0.0005927250866312058,
+          "max_abs": 0.00012008911289740354,
+          "missing_elements": 0
+        },
+        "refractory": {
+          "finite": true,
+          "l2": 3.1050156754703594e-05,
+          "max_abs": 1.6357627828256227e-05,
+          "missing_elements": 0
+        },
+        "reset": {
+          "finite": true,
+          "l2": 1.6063563214273303e-05,
+          "max_abs": 1.1037740478059277e-05,
+          "missing_elements": 0
+        }
+      },
+      "max_first_event_probability": null,
+      "max_probability_mass_error": 1.1920928955078125e-07,
+      "max_projection_l1": 7.03201550322774e-07,
+      "physical_parameter_changes": {
+        "layers.0.mu_bias": true,
+        "layers.0.raw_K": true,
+        "layers.0.raw_refractory": true,
+        "layers.0.raw_reset": true,
+        "layers.0.raw_rho": true,
+        "layers.0.raw_sigma": true
+      },
+      "task": "mqar",
+      "training_loss": 2.089228868484497,
+      "update_cpu_seconds": [
+        0.8227507280000026,
+        0.8165409320000023,
+        0.8713532130000061
+      ],
+      "updates": 3
+    },
+    {
+      "arm": "risk_margin_j_risk",
+      "batch": 32,
+      "counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408
+      },
+      "dataset_sha256": "e6ce3616602bdbc544a687b524dea426f58e72e13c674aee8f6dadbe8a199653",
+      "last_gradients": {
+        "boundary": {
+          "finite": true,
+          "l2": 1.58002556936996e-05,
+          "max_abs": 9.855119060375728e-06,
+          "missing_elements": 0
+        },
+        "content": {
+          "finite": true,
+          "l2": 0.39401803237561234,
+          "max_abs": 0.08137382566928864,
+          "missing_elements": 0
+        },
+        "dynamics": {
+          "finite": true,
+          "l2": 0.0005766620198791121,
+          "max_abs": 0.00011841160448966548,
+          "missing_elements": 0
+        },
+        "refractory": {
+          "finite": true,
+          "l2": 3.0216920631332684e-05,
+          "max_abs": 1.5723699107184075e-05,
+          "missing_elements": 0
+        },
+        "reset": {
+          "finite": true,
+          "l2": 1.6596453840970408e-05,
+          "max_abs": 1.2010465070488863e-05,
+          "missing_elements": 0
+        }
+      },
+      "max_first_event_probability": 0.11104757338762283,
+      "max_probability_mass_error": 1.1920928955078125e-07,
+      "max_projection_l1": 7.202746417078743e-07,
+      "physical_parameter_changes": {
+        "layers.0.mu_bias": true,
+        "layers.0.raw_K": true,
+        "layers.0.raw_refractory": true,
+        "layers.0.raw_reset": true,
+        "layers.0.raw_rho": true,
+        "layers.0.raw_sigma": true
+      },
+      "task": "mqar",
+      "training_loss": 2.0891072750091553,
+      "update_cpu_seconds": [
+        1.123895302000001,
+        1.3840120939999991,
+        1.5721209689999966
+      ],
+      "updates": 3
+    },
+    {
+      "arm": "risk_ordinary_two_gates",
+      "batch": 32,
+      "counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408
+      },
+      "dataset_sha256": "e6ce3616602bdbc544a687b524dea426f58e72e13c674aee8f6dadbe8a199653",
+      "last_gradients": {
+        "boundary": {
+          "finite": true,
+          "l2": 1.9462727023015013e-05,
+          "max_abs": 1.191931551147718e-05,
+          "missing_elements": 0
+        },
+        "content": {
+          "finite": true,
+          "l2": 0.3963562899933864,
+          "max_abs": 0.08403000235557556,
+          "missing_elements": 0
+        },
+        "dynamics": {
+          "finite": true,
+          "l2": 0.0006347631077502303,
+          "max_abs": 0.00015983558841980994,
+          "missing_elements": 0
+        },
+        "refractory": {
+          "finite": true,
+          "l2": 4.032800585483121e-05,
+          "max_abs": 2.446036523906514e-05,
+          "missing_elements": 0
+        },
+        "reset": {
+          "finite": true,
+          "l2": 1.8921061514478194e-05,
+          "max_abs": 1.4495010873361025e-05,
+          "missing_elements": 0
+        }
+      },
+      "max_first_event_probability": null,
+      "max_probability_mass_error": 1.1920928955078125e-07,
+      "max_projection_l1": 7.03201550322774e-07,
+      "physical_parameter_changes": {
+        "layers.0.mu_bias": true,
+        "layers.0.raw_K": true,
+        "layers.0.raw_refractory": true,
+        "layers.0.raw_reset": true,
+        "layers.0.raw_rho": true,
+        "layers.0.raw_sigma": true
+      },
+      "task": "mqar",
+      "training_loss": 2.089431047439575,
+      "update_cpu_seconds": [
+        0.9665526,
+        0.6691622860000024,
+        0.5773446700000022
+      ],
+      "updates": 3
+    },
+    {
+      "arm": "risk_fixed_full",
+      "batch": 32,
+      "counts": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408
+      },
+      "dataset_sha256": "e6ce3616602bdbc544a687b524dea426f58e72e13c674aee8f6dadbe8a199653",
+      "last_gradients": {
+        "boundary": {
+          "finite": true,
+          "l2": 1.0911032511403855e-05,
+          "max_abs": 7.806957910361234e-06,
+          "missing_elements": 0
+        },
+        "content": {
+          "finite": true,
+          "l2": 0.39396092493959944,
+          "max_abs": 0.08153076469898224,
+          "missing_elements": 0
+        },
+        "dynamics": {
+          "finite": true,
+          "l2": 0.0005075827908850172,
+          "max_abs": 9.481683082412928e-05,
+          "missing_elements": 0
+        },
+        "refractory": {
+          "finite": true,
+          "l2": 2.9450507170325645e-05,
+          "max_abs": 1.6999389117700048e-05,
+          "missing_elements": 0
+        },
+        "reset": {
+          "finite": true,
+          "l2": 1.7092882267986975e-05,
+          "max_abs": 1.1685195204336196e-05,
+          "missing_elements": 0
+        }
+      },
+      "max_first_event_probability": 0.03832434490323067,
+      "max_probability_mass_error": 1.1920928955078125e-07,
+      "max_projection_l1": 3.7462450563907623e-07,
+      "physical_parameter_changes": {
+        "layers.0.mu_bias": true,
+        "layers.0.raw_K": true,
+        "layers.0.raw_refractory": true,
+        "layers.0.raw_reset": true,
+        "layers.0.raw_rho": true,
+        "layers.0.raw_sigma": true
+      },
+      "task": "mqar",
+      "training_loss": 2.0890955924987793,
+      "update_cpu_seconds": [
+        1.2391862099999997,
+        1.3936860539999998,
+        1.3520071930000057
+      ],
+      "updates": 3
+    },
+    {
+      "arm": "risk_direct_full",
+      "batch": 32,
+      "counts": {
+        "backbone": 17944,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 16,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20416
+      },
+      "dataset_sha256": "e6ce3616602bdbc544a687b524dea426f58e72e13c674aee8f6dadbe8a199653",
+      "last_gradients": {
+        "boundary": {
+          "finite": true,
+          "l2": 9.238667357863774e-05,
+          "max_abs": 6.028739153407514e-05,
+          "missing_elements": 0
+        },
+        "content": {
+          "finite": true,
+          "l2": 0.39395742320810073,
+          "max_abs": 0.081529900431633,
+          "missing_elements": 0
+        },
+        "dynamics": {
+          "finite": true,
+          "l2": 0.0005073813304323995,
+          "max_abs": 9.482468158239499e-05,
+          "missing_elements": 0
+        },
+        "refractory": {
+          "finite": true,
+          "l2": 2.9442551833579412e-05,
+          "max_abs": 1.6991010852507316e-05,
+          "missing_elements": 0
+        },
+        "reset": {
+          "finite": true,
+          "l2": 1.7086834945526162e-05,
+          "max_abs": 1.1683195225486998e-05,
+          "missing_elements": 0
+        }
+      },
+      "max_first_event_probability": 0.0383421964943409,
+      "max_probability_mass_error": 1.1920928955078125e-07,
+      "max_projection_l1": 4.3158615881111473e-07,
+      "physical_parameter_changes": {
+        "layers.0.mu_bias": true,
+        "layers.0.raw_K": true,
+        "layers.0.raw_boundary_gap": true,
+        "layers.0.raw_refractory": true,
+        "layers.0.raw_reset": true,
+        "layers.0.raw_rho": true,
+        "layers.0.raw_sigma": true
+      },
+      "task": "mqar",
+      "training_loss": 2.089095115661621,
+      "update_cpu_seconds": [
+        1.6278832100000002,
+        1.5642356069999934,
+        1.6238504760000012
+      ],
+      "updates": 3
+    },
+    {
+      "arm": "risk_conditional_full",
+      "batch": 32,
+      "counts": {
+        "backbone": 17952,
+        "frontend": 2208,
+        "groups": {
+          "boundary": 24,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20424
+      },
+      "dataset_sha256": "e6ce3616602bdbc544a687b524dea426f58e72e13c674aee8f6dadbe8a199653",
+      "last_gradients": {
+        "boundary": {
+          "finite": true,
+          "l2": 9.594431732274641e-05,
+          "max_abs": 6.027091876603663e-05,
+          "missing_elements": 0
+        },
+        "content": {
+          "finite": true,
+          "l2": 0.39395646400098056,
+          "max_abs": 0.08152955770492554,
+          "missing_elements": 0
+        },
+        "dynamics": {
+          "finite": true,
+          "l2": 0.0005074136093869287,
+          "max_abs": 9.482868335908279e-05,
+          "missing_elements": 0
+        },
+        "refractory": {
+          "finite": true,
+          "l2": 2.943918242102708e-05,
+          "max_abs": 1.6987778508337215e-05,
+          "missing_elements": 0
+        },
+        "reset": {
+          "finite": true,
+          "l2": 1.7085210484639128e-05,
+          "max_abs": 1.168421204056358e-05,
+          "missing_elements": 0
+        }
+      },
+      "max_first_event_probability": 0.03833572566509247,
+      "max_probability_mass_error": 1.1920928955078125e-07,
+      "max_projection_l1": 4.51251253252849e-07,
+      "physical_parameter_changes": {
+        "layers.0.mu_bias": true,
+        "layers.0.raw_K": true,
+        "layers.0.raw_boundary_gap": true,
+        "layers.0.raw_boundary_slope": true,
+        "layers.0.raw_refractory": true,
+        "layers.0.raw_reset": true,
+        "layers.0.raw_rho": true,
+        "layers.0.raw_sigma": true
+      },
+      "task": "mqar",
+      "training_loss": 2.089095115661621,
+      "update_cpu_seconds": [
+        1.547893768999998,
+        1.7195853690000007,
+        1.858018156
+      ],
+      "updates": 3
+    }
+  ],
+  "restored_state_max_error": 5.960464477539063e-08,
+  "schema": "hcsn-risk-train-only-preflight.v1",
+  "scope": "3 updates per arm/task are gradient and budget diagnostics, not a quality study",
+  "source_files_sha256": {
+    "experiments/hcsn_distributional_v2/stable_probability.py": "d4bc918a5907a253007f8efd793ef379ab8c0e7ce9d5753af7feadcd8b836770",
+    "experiments/hcsn_risk_ablation_v1/analysis.py": "6712df4b9f6d22553dd23d5e2480e05b4fdd5b13f1fcf8f51dcbbbd2e02b189b",
+    "experiments/hcsn_risk_ablation_v1/model.py": "4bccacfabd1b63874dd92b12db3a91c8c8d881f6c3c48fbbb9fc6c714f8c868a",
+    "experiments/hcsn_risk_ablation_v1/preflight.py": "c21e26cf9632c8f395557a6f575d5e896907c73d7d11e28e663805bb1f12f592",
+    "experiments/hcsn_risk_ablation_v1/risk_kernel.py": "a69eda0e0727e87fcd8462ba145aac4799514541b1aa71bbc17fe8a988b4c2e9",
+    "experiments/hcsn_risk_ablation_v1/study.py": "9fa4e61f5625507df599a48f7229fa75fafde4270af96a642c9cc917d93da68e"
+  },
+  "streaming_max_error": 8.940696716308594e-08,
+  "train_only": true
+}

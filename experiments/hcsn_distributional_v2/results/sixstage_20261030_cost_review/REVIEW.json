@@ -1,0 +1,33 @@
+{
+  "schema": "hcsn-cost-readonly-review.v1",
+  "source_sha256": {
+    "experiments/hcsn_cost_scaling_v1/study.py": "e57ce1b814ea17640ac553d8578e4917aa48d444f62296498ae4bd2c0455b572",
+    "experiments/hcsn_cost_scaling_v1/analyze.py": "455a71e76445a0196f0bf853583ad3b950be70fc87836bfa2eeaa79ffafa7611"
+  },
+  "review_type": "Static independent review, not execution of the 72-job study",
+  "modified_reviewed_source": false,
+  "core_design_review": "passed",
+  "verified_features": [
+    "Selection and quality operating points are written before test split loading",
+    "15/20 CPU selection checkpoints with fixed128 excluded",
+    "72 jobs from 2 tasks x 4 models x 3 scales x 3 seeds",
+    "B1/B32 complete sequence forward includes boundary and grid/value construction",
+    "Full worker wait4 includes imports setup training validation evaluation timing and I/O",
+    "Child cost recorded centrally before requiring per-worker directory",
+    "Quality gates are machine applied for both test targets and at most 2 percentage point paired difference across all three seeds",
+    "Raw prediction coordinates labels argmax and cross entropy recomputed",
+    "Checkpoint hashes and four-sample selected checkpoint inference replayed"
+  ],
+  "resolved_issue": "A child killed before creating its directory can now still have wait4 cost preserved",
+  "remaining_limits": [
+    "Shared-host CPU pilot with one warmup and five timings per batch; repeats are not independent training seeds",
+    "No GPU memory or energy measurement",
+    "Peak RSS includes entire worker and model matching setup; not model-only allocation",
+    "20-second training and two eligible checkpoints provide coarse operating points",
+    "Post-baseline exploratory use of existing synthetic tasks, not unseen-task confirmation",
+    "Analyzer trusts the registered source and access order log for the pre-test lock; it does not separately reread QUALITY_SELECTION.json",
+    "Analyzer does not independently recompute timing medians from raw repetitions",
+    "Final claims must require integrity_passed and all_registered_jobs_completed"
+  ],
+  "new_source_changes_requested": false
+}

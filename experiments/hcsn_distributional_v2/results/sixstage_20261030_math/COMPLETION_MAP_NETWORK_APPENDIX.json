@@ -1,0 +1,39 @@
+{
+  "schema": "hcsn-math-completion-full-network-appendix.v1",
+  "all_numerical_evidence_complete": true,
+  "previous_failed_attempt_preserved": true,
+  "frozen_sources_changed": false,
+  "full_network_forward_audit": {
+    "observations": 4096,
+    "seed": 9401,
+    "batch": 1,
+    "width": 32,
+    "arm": "risk_margin_j_risk",
+    "passed": true,
+    "trained": false,
+    "long_gradients_measured": false,
+    "state_restore_bitwise_equal": true
+  },
+  "artifacts": [
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/COMPLETION_MAP_FINAL.json",
+      "sha256": "1f708b84423823c8c14d4bceb59a9614f9e4a9636ceaf7e13dc0d9119ddbadc5"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_network_long_stream002/REGISTRATION.json",
+      "sha256": "c6e7f7e548f254498bc93dd645398b00b562a97de4488c9f16b450b8d7b9edb1"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_network_long_stream002/RESULTS.json",
+      "sha256": "1592c07a82f1767ed349181bc80f7b91f0ec51fc6558544040058f968adef798"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_network_long_stream002/REPORT.md",
+      "sha256": "aff6fe04e922d7e267313cf8db5e4f59434622962711c097833212b4093e3130"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_equal_updates_review/CONCURRENCY_REVISION_REVIEW.json",
+      "sha256": "74b22812c35509aa11ceda48d1bd5969ee1029c5239a5fcd38ee43d3e87f15f1"
+    }
+  ]
+}

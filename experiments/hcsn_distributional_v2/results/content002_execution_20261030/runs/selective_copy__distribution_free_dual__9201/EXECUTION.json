@@ -1,0 +1,33 @@
+{
+  "child_peak_rss_kib_linux": 826752,
+  "child_system_cpu_seconds": 20.447187,
+  "child_total_cpu_seconds": 162.35694999999998,
+  "child_user_cpu_seconds": 141.909763,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_distributional_v2.content_study",
+    "worker",
+    "--protocol",
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_distributional_v2/CONTENT002_PROTOCOL.json",
+    "--output",
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_distributional_v2/results/content002_execution_20261030/runs/selective_copy__distribution_free_dual__9201",
+    "--task",
+    "selective_copy",
+    "--model",
+    "distribution_free_dual",
+    "--seed",
+    "9201"
+  ],
+  "job": {
+    "model": "distribution_free_dual",
+    "seed": 9201,
+    "task": "selective_copy"
+  },
+  "measurement": "os.wait4 complete isolated worker; training CPU is a nested component",
+  "output": "runs/selective_copy__distribution_free_dual__9201",
+  "protocol_sha256": "03070eb0d3fc264ace436f25a06c989bb898f3c33caba83936f5040c660e6b9c",
+  "returncode": 0,
+  "stdout_sha256": "95b06bc193faaea84d628f3cea036168fafc6c88e0f687ebe3be008ac94c3926",
+  "wall_seconds": 341.6728949999997
+}

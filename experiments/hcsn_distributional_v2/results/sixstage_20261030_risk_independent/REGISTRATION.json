@@ -1,0 +1,101 @@
+{
+  "schema": "hcsn-first-event-independent-registration.v1",
+  "cases": [
+    {
+      "name": "phase_mixture",
+      "phases": 2,
+      "parameters": [
+        0.237,
+        0.513,
+        0.8431,
+        -0.173,
+        0.417
+      ],
+      "old_boundary": 1.137,
+      "duration": 0.495755147934
+    },
+    {
+      "name": "repeated_event_window",
+      "phases": 2,
+      "parameters": [
+        0.48,
+        0.6,
+        0.55,
+        0.05,
+        0.3
+      ],
+      "old_boundary": 0.55,
+      "duration": 7.31
+    },
+    {
+      "name": "self_reset",
+      "phases": 0,
+      "parameters": [
+        0.2,
+        0.45,
+        0.85,
+        0.65,
+        0.75
+      ],
+      "old_boundary": 0.85,
+      "duration": 3.2
+    },
+    {
+      "name": "zero_duration_shrink",
+      "phases": 2,
+      "parameters": [
+        0.237,
+        0.513,
+        0.431,
+        -0.173,
+        0.417
+      ],
+      "old_boundary": 1.17,
+      "duration": 0.0
+    },
+    {
+      "name": "zero_duration_expand",
+      "phases": 2,
+      "parameters": [
+        0.237,
+        0.513,
+        1.17,
+        -0.173,
+        0.417
+      ],
+      "old_boundary": 0.431,
+      "duration": 0.0
+    }
+  ],
+  "monte_carlo_samples": 30000,
+  "monte_carlo_seed": 103011,
+  "gradient_parameters": [
+    0.237,
+    0.513,
+    0.8431,
+    -0.173,
+    0.417,
+    0.495755147934
+  ],
+  "limits": {
+    "generator_max": 3e-14,
+    "survival_l1_extra_roundoff": 2e-12,
+    "remap_max": 3e-15,
+    "finite_difference_step": 1e-05,
+    "gradient_scaled": 2e-05,
+    "monte_carlo_standard_errors": 5.0,
+    "monte_carlo_absolute_slack": 0.0002,
+    "phase_and_reset_independence_gradient": 1e-13
+  },
+  "source_sha256": {
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_distributional_v2/risk_independent_audit.py": "e230ab62a514fe7a1cda49691a85ec4edd8f4e323416a7e9442f5c81fd0d72a7",
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_risk_ablation_v1/risk_kernel.py": "a69eda0e0727e87fcd8462ba145aac4799514541b1aa71bbc17fe8a988b4c2e9",
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_distributional_v2/kernel_tests.py": "e8c9cd018a7d707ebb8f118fd2f1e297057a5c59e2dcd06c53025cf19f045add",
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_distributional_v2/stable_probability_tests.py": "9ddaab7745632cd88ec9a66e70d6fcb2c58f05e77450c5e674561e7a7dbc70c2"
+  },
+  "generator_convention": "Q columns; survival transitions rows",
+  "identity": "risk + surviving_mass = incoming_mass",
+  "task_labels_read": false,
+  "frozen_sources_changed": false
+}
