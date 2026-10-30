@@ -1,0 +1,391 @@
+{
+  "schema": "pn-integration-ci-followup-evidence-v1",
+  "recorded_at": "2026-10-30T09:31:51.946811+00:00",
+  "base_source": "daa0209d9235ff6a6ff06d130e7f03b1253e9fbf",
+  "base_tree": "f40e4652007304ad30201a1c8a2aacb77c023c95",
+  "observed_ordered_merge": "18cf2d2e3cfbebdd953f3fe49bd8d25c2ad86a83",
+  "sources": [
+    {
+      "path": ".bazelrc",
+      "bytes": 13888,
+      "sha256": "c7ec3e0de1ed96fde1ab7d773f4140d70f119d4032f81af851b53637414835b3",
+      "git_blob": "046a3fe59f5dec3a6f8d86a223056230964b8583"
+    },
+    {
+      "path": "README.md",
+      "bytes": 154,
+      "sha256": "04c18cec35c53aafdef78691b1ce506338d0b6b9dd3575621897e942467c7c24",
+      "git_blob": "de57cf7c953a91b40c927bca335a5727990f1fac"
+    },
+    {
+      "path": ".github/workflows/hepta-windows-delete-boundary.yml",
+      "bytes": 56262,
+      "sha256": "8e1c11614c36c46ad3d3e69cf3e038304b7b07d41902500bfc06926b9e2db728",
+      "git_blob": "56e3dbb763845d592d9d09c20a07553508b43e74"
+    }
+  ],
+  "archive": "integration-ci-followup.tar.gz",
+  "archive_bytes": 350709,
+  "archive_sha256": "92ad85c7df9e9d58d174020337ebbd44750cd5aa5c33e4aa20ee7df3f84c1f6d",
+  "all_members_verified": true,
+  "payload_index": {
+    "schema": "pn-integration-ci-followup-index-v1",
+    "files": [
+      {
+        "path": "macos-local-test-concurrency/after.json",
+        "bytes": 1367,
+        "sha256": "d46deec840353210ea18d526c3867b31c462438d8f723c3c227c5a581a66d15a"
+      },
+      {
+        "path": "macos-local-test-concurrency/bazelrc-after",
+        "bytes": 13888,
+        "sha256": "c7ec3e0de1ed96fde1ab7d773f4140d70f119d4032f81af851b53637414835b3"
+      },
+      {
+        "path": "macos-local-test-concurrency/bazelrc-before",
+        "bytes": 13852,
+        "sha256": "4e071f0ba7df6d27805786ae3d29988a85c89b9502ffe0eaaa0eb392d18faf36"
+      },
+      {
+        "path": "macos-local-test-concurrency/before.json",
+        "bytes": 2213,
+        "sha256": "f15b9dd09a48e53982f05a7e92b57300c6730cee7d986a954d0b6c88f5c15d75"
+      },
+      {
+        "path": "macos-local-test-concurrency/change.patch",
+        "bytes": 557,
+        "sha256": "bfa17c5293fc94ecdb5be8d277377d74b807f1aa88a1a8e42e2624971a60749b"
+      },
+      {
+        "path": "macos-local-test-concurrency/formatting-retention.json",
+        "bytes": 572,
+        "sha256": "0eec68a0b396a9fe77cc23ed8da5fb6b5adea998a0e926af71f664c7fea4ac93"
+      },
+      {
+        "path": "macos-original-red/job-123980366276.log",
+        "bytes": 111877,
+        "sha256": "aa251540f75557bc260e97c15df7ca20036e7a862347d17cce59f8ccf7d581c7"
+      },
+      {
+        "path": "readme-discovery-fix/README.after.md",
+        "bytes": 154,
+        "sha256": "04c18cec35c53aafdef78691b1ce506338d0b6b9dd3575621897e942467c7c24"
+      },
+      {
+        "path": "readme-discovery-fix/README.before.md",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "readme-discovery-fix/README.patch",
+        "bytes": 275,
+        "sha256": "3df15258ab39ef03dc12595faf3203add38f51cfd7e10de2a4c90396aca29aa9"
+      },
+      {
+        "path": "readme-discovery-fix/baseline-source.json",
+        "bytes": 1217,
+        "sha256": "7db87aaf49c9cd06073d75f2dfc1cd892abbb02ea17bd2f78fbd44d50490af96"
+      },
+      {
+        "path": "readme-discovery-fix/development-docs-green.log",
+        "bytes": 683,
+        "sha256": "079e958668a861388c9af0daaf22c4b2cc90f112ba6d715178b3d8955aa3e934"
+      },
+      {
+        "path": "readme-discovery-fix/evidence.json",
+        "bytes": 10357,
+        "sha256": "abe3fcc69ff8c0e261e68ae47beeb7f7e000ba8cf6d6dbe47137f3c9dec58aad"
+      },
+      {
+        "path": "readme-discovery-fix/green-results.json",
+        "bytes": 1669,
+        "sha256": "510172b1b929eee995c8a152ce6bc6fd1d3399d8be08b7eeebb5ad5d9b76c17e"
+      },
+      {
+        "path": "readme-discovery-fix/green-source.json",
+        "bytes": 714,
+        "sha256": "8b2f7da75cdeeac7b12a5fb3595af6cc738163f0361d38fb781852cd5f658ddb"
+      },
+      {
+        "path": "readme-discovery-fix/hosted-original-red.log",
+        "bytes": 1289432,
+        "sha256": "24c17dfeb0a780937d4b46b506f32c2b95c9cac80d34bc8d02aa514cb3bad181"
+      },
+      {
+        "path": "readme-discovery-fix/local-original-red.json",
+        "bytes": 416,
+        "sha256": "6b193c12abfdc8d976cc7ccbbbb1d5a3e4e8582e92fa5b6e4f8e6d5d5c256a8e"
+      },
+      {
+        "path": "readme-discovery-fix/local-original-red.log",
+        "bytes": 123,
+        "sha256": "e678927c9795b183b40804cf34f685756a0f058a8aec10d7b7d366c9b60c59ba"
+      },
+      {
+        "path": "readme-discovery-fix/readiness-generated-status.log",
+        "bytes": 28,
+        "sha256": "97c26bfa51c33d61354cd2f0e139700a6efd5624892287a1601c498d73874783"
+      },
+      {
+        "path": "readme-discovery-fix/readiness-self-test.log",
+        "bytes": 585,
+        "sha256": "6e06de9f912a5908f9e86366364ef2248fcdeaa02da7d3976aa73e50a6835a89"
+      },
+      {
+        "path": "readme-discovery-fix/readiness-verify.log",
+        "bytes": 479,
+        "sha256": "2d1aa6d4020249620bb28c2798092bcfab108d034b4ed1d06a447f0d17eeda39"
+      },
+      {
+        "path": "readme-discovery-fix/two-path-after-fmt.json",
+        "bytes": 1283,
+        "sha256": "41a1b5abd5617c6f2a54d3c0be26289715dc36b9f7056b37dbcebe4afa0a0142"
+      },
+      {
+        "path": "readme-discovery-fix/two-path-before-fmt.json",
+        "bytes": 503,
+        "sha256": "8088a54d93e7319fac2040ed5849fce9ee3266bcef93f380e8a65746a71ddb9a"
+      },
+      {
+        "path": "readme-discovery-fix/two-path-diff-check.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "readme-discovery-fix/two-path-final.patch",
+        "bytes": 768,
+        "sha256": "315e702b37c142ea988ba980e3dcc83d08c51f75c4a981670189d860e7eeaf5b"
+      },
+      {
+        "path": "readme-discovery-fix/two-path-fmt.log",
+        "bytes": 73,
+        "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+      },
+      {
+        "path": "windows-roster-fix/artifact-receipt.json",
+        "bytes": 481,
+        "sha256": "8e47a310e221ef243300d90babc440c1aef6ef56d449b5fc733573d4817b179b"
+      },
+      {
+        "path": "windows-roster-fix/evidence.json",
+        "bytes": 33581,
+        "sha256": "7047e340546e2c30b3a766949ce03cf57a62f87bbecc3c2af849468fb2913707"
+      },
+      {
+        "path": "windows-roster-fix/green-check.py",
+        "bytes": 34058,
+        "sha256": "df388c3a8f20c81874356a70e3752cb6531b2d72e159f21cbca0dd637c5997fc"
+      },
+      {
+        "path": "windows-roster-fix/green-replay.json",
+        "bytes": 9969,
+        "sha256": "6f1faff8f1d656d62d05ec62d85e987cdc1a7a7719101cb3284465c22fc9b710"
+      },
+      {
+        "path": "windows-roster-fix/green/original-final-use-windows/checker-output.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "windows-roster-fix/green/original-final-use-windows/windows-delete-boundary/original-final-use-windows.json",
+        "bytes": 1172,
+        "sha256": "3444b72999389c95ff44d0c9368d23614bcc13646ec055af61d67a223439855c"
+      },
+      {
+        "path": "windows-roster-fix/green/original-final-use-windows/windows-delete-boundary/original-final-use-windows.log",
+        "bytes": 16011,
+        "sha256": "41b30c1c51defe2dfd69f26d2a9e2cbf48bcba40fe80d6ffc5d5c4bb37533823"
+      },
+      {
+        "path": "windows-roster-fix/green/private-owner-descriptor/checker-output.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "windows-roster-fix/green/private-owner-descriptor/windows-delete-boundary/private-owner-descriptor.json",
+        "bytes": 5351,
+        "sha256": "b3f6f5f39d0bd18ae330231e46ec952920978d56afcacaca579daac193833338"
+      },
+      {
+        "path": "windows-roster-fix/green/private-owner-descriptor/windows-delete-boundary/private-owner-descriptor.log",
+        "bytes": 81919,
+        "sha256": "8bbafa0ec31b1e0f595ad4b86d74d2ad84ff700fe762f01d179ab8c7bab23a04"
+      },
+      {
+        "path": "windows-roster-fix/original/broad-identity-delete.json",
+        "bytes": 246,
+        "sha256": "7296681afde946f4ecaf17a771fc21c2120029eb1ec2ebab281740cb96fad0aa"
+      },
+      {
+        "path": "windows-roster-fix/original/check.py",
+        "bytes": 33842,
+        "sha256": "6cf3dfe235c24820013f5377bf7b2f852b726a59c540d2e47a829cfa3722e552"
+      },
+      {
+        "path": "windows-roster-fix/original/command-runner-terminal.json",
+        "bytes": 788,
+        "sha256": "6e13d59fb643373fe842eac095ce557654e9979c4ec6f338f5d6380c8f7dd9fd"
+      },
+      {
+        "path": "windows-roster-fix/original/legacy-delete-boundary.json",
+        "bytes": 246,
+        "sha256": "7f9ff34b004f221f7d466e3ae6b3434df61c65b9ab1a7c486491c1fd757e26ab"
+      },
+      {
+        "path": "windows-roster-fix/original/original-final-use-windows.json",
+        "bytes": 1082,
+        "sha256": "838b3b41c35b0e55e44692d73c138cf433d5f000d490640c8234075ee617bcad"
+      },
+      {
+        "path": "windows-roster-fix/original/original-final-use-windows.log",
+        "bytes": 16011,
+        "sha256": "41b30c1c51defe2dfd69f26d2a9e2cbf48bcba40fe80d6ffc5d5c4bb37533823"
+      },
+      {
+        "path": "windows-roster-fix/original/private-owner-descriptor.json",
+        "bytes": 5297,
+        "sha256": "12299726b1bec0a92667b228df9f666ab86adbba69ede3058f5b290fba75b392"
+      },
+      {
+        "path": "windows-roster-fix/original/private-owner-descriptor.log",
+        "bytes": 81919,
+        "sha256": "8bbafa0ec31b1e0f595ad4b86d74d2ad84ff700fe762f01d179ab8c7bab23a04"
+      },
+      {
+        "path": "windows-roster-fix/original/result-v2.json",
+        "bytes": 4580,
+        "sha256": "df100a106ee966f8286f2bceed8a630e245ba39b7fc1073153660c3391c5610b"
+      },
+      {
+        "path": "windows-roster-fix/original/result-v3.json",
+        "bytes": 1224,
+        "sha256": "83555dad0134218e7f755ce3f0734704f7cb48ace30543da37da770fadac3622"
+      },
+      {
+        "path": "windows-roster-fix/original/result.json",
+        "bytes": 19343,
+        "sha256": "a8d863436237b5a162dc6f27a7aa78f476ae0aef16f8877e25705fe489972542"
+      },
+      {
+        "path": "windows-roster-fix/original/source-after.json",
+        "bytes": 610,
+        "sha256": "dfe43374e7fdcf6a982870ecba2636d3fb723f7c42f81d3a859c3a55ea378cb6"
+      },
+      {
+        "path": "windows-roster-fix/original/source-before.json",
+        "bytes": 610,
+        "sha256": "dfe43374e7fdcf6a982870ecba2636d3fb723f7c42f81d3a859c3a55ea378cb6"
+      },
+      {
+        "path": "windows-roster-fix/red-check.py",
+        "bytes": 33842,
+        "sha256": "6cf3dfe235c24820013f5377bf7b2f852b726a59c540d2e47a829cfa3722e552"
+      },
+      {
+        "path": "windows-roster-fix/red-replay.json",
+        "bytes": 9722,
+        "sha256": "5888bdb228de6e25935b1cc45e8dc8dea99f935a8d98ca0d9e942043c2632694"
+      },
+      {
+        "path": "windows-roster-fix/red/original-final-use-windows/checker-output.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "windows-roster-fix/red/original-final-use-windows/windows-delete-boundary/original-final-use-windows.json",
+        "bytes": 1061,
+        "sha256": "4de1262fe0951631e893810cdaa3780a8a48a3e3c60f86d14cfc4b130924b042"
+      },
+      {
+        "path": "windows-roster-fix/red/original-final-use-windows/windows-delete-boundary/original-final-use-windows.log",
+        "bytes": 16011,
+        "sha256": "41b30c1c51defe2dfd69f26d2a9e2cbf48bcba40fe80d6ffc5d5c4bb37533823"
+      },
+      {
+        "path": "windows-roster-fix/red/private-owner-descriptor/checker-output.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "windows-roster-fix/red/private-owner-descriptor/windows-delete-boundary/private-owner-descriptor.json",
+        "bytes": 5243,
+        "sha256": "bf793c796ec0849bd1fa114ad714d861753cbf65266ba534b67ccf5b8807b7d5"
+      },
+      {
+        "path": "windows-roster-fix/red/private-owner-descriptor/windows-delete-boundary/private-owner-descriptor.log",
+        "bytes": 81919,
+        "sha256": "8bbafa0ec31b1e0f595ad4b86d74d2ad84ff700fe762f01d179ab8c7bab23a04"
+      },
+      {
+        "path": "windows-roster-fix/replay_checker.py",
+        "bytes": 7541,
+        "sha256": "18ead91db91a885f9e73dfe8aa10ca39144f476387054424791e932115605fe3"
+      },
+      {
+        "path": "windows-roster-fix/scope-invariants.json",
+        "bytes": 943,
+        "sha256": "1ca2e54365a934f9ce77cfffa38f60db5eab367ada340d7d0d943bfcb36b194f"
+      },
+      {
+        "path": "windows-roster-fix/three-path-after-fmt.json",
+        "bytes": 1234,
+        "sha256": "352ff3094f82cd236f4e064652d15c033aafb4e41b83468877d285d8f0522d7b"
+      },
+      {
+        "path": "windows-roster-fix/three-path-before-fmt.json",
+        "bytes": 552,
+        "sha256": "2f319d9c2b4b380aaa4248ce879cf1493ac3a957fef4ff59a6a37a58237ef883"
+      },
+      {
+        "path": "windows-roster-fix/three-path-diff-check.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "windows-roster-fix/three-path-final.patch",
+        "bytes": 10055,
+        "sha256": "6da430c53f35b017b3c8be0c96356d764b1caba235594b23aee172292f1edec5"
+      },
+      {
+        "path": "windows-roster-fix/three-path-fmt.log",
+        "bytes": 73,
+        "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+      },
+      {
+        "path": "windows-roster-fix/windows-daa-source-head-original.zip",
+        "bytes": 92423,
+        "sha256": "af2c881eb76d3070d8bc6b51188d81a083166aeb1cc315d8ee9b8136cd8d926a"
+      },
+      {
+        "path": "windows-roster-fix/workflow.after.yml",
+        "bytes": 56262,
+        "sha256": "8e1c11614c36c46ad3d3e69cf3e038304b7b07d41902500bfc06926b9e2db728"
+      },
+      {
+        "path": "windows-roster-fix/workflow.before.yml",
+        "bytes": 56027,
+        "sha256": "5957af19f9513b0e8c1cf335b4e94280f3e93381bbb363e28fd869ab4836fabd"
+      },
+      {
+        "path": "windows-roster-fix/workflow.patch",
+        "bytes": 9287,
+        "sha256": "f3e83e916adfb893bd40d356dba0f47fe27e0135b66517700412a53979cc97ff"
+      }
+    ],
+    "payload_members": 68,
+    "payload_bytes": 2183620
+  },
+  "local_development_docs_green": true,
+  "local_readiness_controls_green": true,
+  "macos_concurrency_hosted_effect_verified": false,
+  "complete_native_test_suite_qualified": false,
+  "production_activation": false,
+  "limits": [
+    "The full development-docs command reproduces the hosted missing README discovery-link failure and passes after adding two actual documentation links. The original checker and authority flags are unchanged.",
+    "The macOS TestRunner originally exhausts native threads and Bazel exits33 before completing its test set. Limiting local_test_jobs to8 is a proposed resource fix, not a measured unique cause or completed native acceptance.",
+    "Original remote jobs800, runner resources, deadlines, test selection and remaining config bytes are unchanged. New-source actual hosted CI remains required.",
+    "The exact Windows rosters grow from40/7 to41/8 only for the two newly observed PASS cases. Original tee bytes and actual0/0 return codes reproduce the old failures and pass the new checker. No native command, exact equality, runtime refusal, other test group or aggregate gate is changed. The original overall Windows result remains failed."
+  ],
+  "local_windows_checker_replay_green": true,
+  "native_windows_executed_locally": false
+}

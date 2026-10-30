@@ -186,6 +186,7 @@ common:ci-linux --platforms=//:rbe
 common:ci-macos --config=ci-bazel
 common:ci-macos --build_metadata=TAG_os=macos
 common:ci-macos --strategy=TestRunner=darwin-sandbox,local
+common:ci-macos --local_test_jobs=8
 
 # On Windows, use Linux remote execution for build actions but keep test actions
 # on the Windows runner so Bazel's normal test sharding and flaky-test retries
