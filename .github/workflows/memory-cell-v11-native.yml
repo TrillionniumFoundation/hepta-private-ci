@@ -22,7 +22,7 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: '0'
       CARGO_BUILD_JOBS: '2'
       CARGO_TARGET_DIR: ${{ github.workspace }}/memory-v11-native-target
-      HEPTA_MEMORY_V11_NATIVE_OUTPUT: ${{ runner.temp }}/memory-v11-native
+      HEPTA_MEMORY_V11_NATIVE_OUTPUT: /tmp/h11-native-${{ github.run_id }}-${{ github.run_attempt }}
       PYTHONDONTWRITEBYTECODE: '1'
       PYTHONUNBUFFERED: '1'
     steps:
