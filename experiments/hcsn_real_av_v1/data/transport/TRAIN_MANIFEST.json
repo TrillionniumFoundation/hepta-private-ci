@@ -1,0 +1,22 @@
+{
+  "schema": "hcsn-exact-file-parts.v1",
+  "logical_path": "experiments/hcsn_real_av_v1/data/train.npz",
+  "bytes": 14384278,
+  "sha256": "f4074f14b5d46702cb8ae293a7d6c974b9576f651377e85836566f154eac4a33",
+  "git_blob_sha": "bb07a571c35e45564e61c9ea8203e418c2d4552f",
+  "parts": [
+    {
+      "path": "experiments/hcsn_real_av_v1/data/transport/train.npz.part000",
+      "bytes": 8388608,
+      "sha256": "86a54e5079dd075b880854e6a11617251735a2bcdb3a1e25a32d78971ff943ba",
+      "git_blob_sha": "0cf936618692340a71943635d429cf1af9ef9441"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/data/transport/train.npz.part001",
+      "bytes": 5995670,
+      "sha256": "cb652f0d06ac36d1d3552f6f004854c03934fab4142d475089a6420b0b5c46de",
+      "git_blob_sha": "625fbddbb28294ae09ad9043d4631b5ea5d6422d"
+    }
+  ],
+  "reason": "MCP transport limit16MiB includes base64; byte-for-byte parts preserve the frozen dataset without reencoding"
+}
