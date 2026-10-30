@@ -12,4 +12,6 @@ codex_rust_crate(
         ],
     ),
     crate_name = "codex_skills",
+    # Cargo renames serde_norway to serde_yaml; Bazel must pass the same --extern name.
+    use_cargo_renamed_deps = True,
 )
