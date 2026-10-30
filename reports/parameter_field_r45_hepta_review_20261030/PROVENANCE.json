@@ -1,0 +1,154 @@
+{
+  "schema": "hepta.parameter-field.r45-review-publication-provenance.1",
+  "prepared_at_utc": "2026-10-30T03:19:18.293347+00:00",
+  "prepared_at_america_new_york": "2026-10-29T23:19:18.293347-04:00",
+  "scope": "Source-based theoretical comments, preregistered decision criteria and actual source-publication evidence. No new scientific result is asserted.",
+  "paper": {
+    "repository": "TrillionniumFoundation/ICLR-2027",
+    "commit": "f8df0a6075f58f3ab9431a889b773cdf8d6e771d",
+    "source_root": "revision_2026-09-26-r45",
+    "visibility_at_original_review": "private",
+    "access_basis": "Authorized GitHub connection; fixed paper links require appropriate repository access.",
+    "original_TeX_sources_copied_or_published_here": false,
+    "branch_observations_apply_only_to_original_review_time": true
+  },
+  "study": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "original_base_commit": "e38a2311c0fd3eecc7f95be00c29be970a3b7a34",
+    "source_snapshot_commit": "cbfbab1c831e9e9e4c33e0eed7091ffcb71c6208",
+    "verified_publication_commit": "51749cfc93452ba7c235543c1529568a75368f2d",
+    "verified_publication_tree": "876efbc456b07b8bdffbb055feb6ad754928dd9b",
+    "original_C1": "37b8158fc333f1eac49b7936c8d291546d99e5be",
+    "original_C2": "bf59ac45860884d770dfd437d8a447068c5ef9a9",
+    "original_C3": "e4822698613829fb1f2829ebe3e70fc5b75eb18c",
+    "original_identity_access": "Exact original Git objects restored from the actual published binary bundle; original C1/C2/C3 are not asserted to be native commits in the mirror branch history.",
+    "bundle": {
+      "publication_path": "operational/parameter_field_recovery04/publication/LOCAL_EXECUTION04_HISTORY.bundle",
+      "bytes": 131578,
+      "sha256": "96e136232f68b5eba1ec4122ecfb1aee9d263b7fd892091f19d373f37727931e",
+      "git_blob_sha": "0e4535bf1065a42890cc71d19ae3cafa304d58b4"
+    }
+  },
+  "source_working_drafts": [
+    {
+      "path": "continuation_recovery_20261030/paper_review/THEORY_TO_HEPTA_REVIEW.md",
+      "bytes": 32707,
+      "sha256": "3613623f10ed3732344434f8b5f8deea5fdacf6ceb602bd3e7cc7ebaee2cc894",
+      "git_blob_sha": "04ea0db34ea284afcf81742a1a7229546e56418a"
+    },
+    {
+      "path": "continuation_recovery_20261030/paper_review/DECISION_MATRIX_DRAFT.zh-CN.md",
+      "bytes": 30628,
+      "sha256": "d4909cd3ca8561cef4b14b252945679a333b373474389199216d7f6181b5dfe2",
+      "git_blob_sha": "d9c8e28e66aa0a5670438bf3c931d81d41c743df"
+    }
+  ],
+  "transformation": {
+    "theory_copy_byte_identical": false,
+    "matrix_operational_status_paragraphs_updated": 2,
+    "matrix_remainder_byte_identical": true,
+    "changed_paragraph_sha256": [
+      {
+        "role": "opening operational status",
+        "original": "624c7cf6251893b7c3c0896bb14dca7a3ea20401e572c1174438376b23936205",
+        "public_copy": "94f9659580c96573efffd4fe46b10cc6aa937483f19af9a45cb759ac6af3bc0a"
+      },
+      {
+        "role": "closing operational status",
+        "original": "564e16d6705ed673e8c6cce9b60c33bbd984697af896adc8007bfd122934d32d",
+        "public_copy": "176beb7234c16626879ba3db3379da9ed086524e3bd2172709580e3187f058e9"
+      }
+    ],
+    "scientific_explanations_preserved": true,
+    "thresholds_splits_action_space_and_planned_denominators_unchanged": true,
+    "theory_scientific_body_unchanged": true,
+    "theory_human_visible_review_date_adjusted": true,
+    "matrix_human_visible_compilation_date_adjusted": true,
+    "human_visible_timezone": "America/New_York",
+    "machine_timestamps_commit_dates_paths_and_episode_ids_unchanged": true,
+    "theory_date_header_change": {
+      "original": "审阅日期：2026-10-30。",
+      "public_copy": "审阅日期：2026-10-29（America/New_York；执行凭据仍使用 UTC）。",
+      "scope": "Non-scientific human-visible date display only."
+    }
+  },
+  "status_observation": {
+    "observed_at_utc": "2026-10-30T03:13:29+00:00",
+    "observed_at_america_new_york": "2026-10-29 23:13:29 America/New_York",
+    "observer": "root; exact source-publication and byte-readback receipts copied here",
+    "source_publication_prelaunch_gate_closed": true,
+    "science_workers_started": 0,
+    "current_resource_window_passed": false,
+    "shared_oom": 4,
+    "shared_oom_kill": 4,
+    "oom_cause_or_process_attribution": "not identified",
+    "all_experimental_denominators_are_planned": true,
+    "no_assertion_about_execution_after_this_observation": true
+  },
+  "import_probe": {
+    "receipt_descriptor": {
+      "path": "fullstudy_execution04_ops/prelaunch/import_gate/IMPORT_CLOSURE.json",
+      "bytes": 2228,
+      "sha256": "477b5719c790c05b5162199e76c2de2c1711852226ae7fdb2a68b2a5df63b00d"
+    },
+    "observed_at_utc": "2026-10-30T02:17:18.526531+00:00",
+    "complete": true,
+    "original_loaded_closure_check_passed": true,
+    "runtime": {
+      "numpy": "2.3.5",
+      "pillow": "12.3.0",
+      "python": "3.12.14",
+      "torch": "2.8.0+cpu"
+    },
+    "not_a_current_resource_admission_or_scientific_memory_qualification": true,
+    "summary_is_not_replacement_original_receipt_bytes": true
+  },
+  "public_files_excluding_this_provenance": [
+    {
+      "path": "THEORY_TO_HEPTA_REVIEW.md",
+      "bytes": 32757,
+      "sha256": "a3e8dcbffc5bbe4c800e6ec7d4ae867e501249c036e48604fbae45e69ada66b5",
+      "git_blob_sha": "6cae07a7f8896a2b7d7b23b9356e823572bd5748"
+    },
+    {
+      "path": "DECISION_MATRIX_DRAFT.zh-CN.md",
+      "bytes": 31618,
+      "sha256": "245d9f5282dbd8a22cb3d8f962b0b2479592876bef703ab9116cf85bc05a381d",
+      "git_blob_sha": "b90d85d4aa69791899fb1c1107e99bac744bdda0"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4469,
+      "sha256": "348f1497da01d8e8b8cc282e223f1169c48210a876b4fd223984f2c8bcc83c82",
+      "git_blob_sha": "18143f8521e22343ac26b37bc323d6f78c9398e3"
+    },
+    {
+      "path": "SOURCE_PUBLICATION_VERIFIED.json",
+      "bytes": 1937,
+      "sha256": "5acf21093bf567a8c5dbddd0a48b0977ac8cf845dd6e6aff91b09700796bad57",
+      "git_blob_sha": "d4310c619005aa5821313304940b08cdcbaf1c1c"
+    },
+    {
+      "path": "REMOTE_BYTES_VERIFIED.json",
+      "bytes": 13004,
+      "sha256": "3d0d759a9712b33ac5fe7d59ef597675ed695113f3032b4948b9f3778d808e7a",
+      "git_blob_sha": "cf357beff8801c81db6368a1004e53d79c2bf81a"
+    }
+  ],
+  "review_dimensions": [
+    "Complete optimizer state and legal guarded successor semantics",
+    "Baseline-aligned realized labels, expected advantage and deployed gated choice",
+    "Field versus full-current-state versus same-information history and hidden directions",
+    "Independent task outcomes, retention and current implementation costs",
+    "Architecture-by-controller interaction and both simple effects"
+  ],
+  "publication_scope_checks": {
+    "raw_or_endpoint_payloads_read": false,
+    "new_science_executed": false,
+    "model_or_dataset_payloads_published": false,
+    "private_paper_TeX_published": false,
+    "original_37_source_files_written": false,
+    "original_132_freeze_files_written": false,
+    "source_threshold_or_protocol_changes": false
+  }
+}

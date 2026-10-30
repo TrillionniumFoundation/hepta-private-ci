@@ -1,0 +1,230 @@
+{
+  "schema": "hepta.execution04.publication-remote-bytes-verification.1",
+  "complete": true,
+  "status": "VERIFIED_HTTP_REMOTE_BYTES",
+  "at_utc": "2026-10-30T03:12:50.106308+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "remote_publication_commit": "51749cfc93452ba7c235543c1529568a75368f2d",
+  "expected_tree_bound_by_parent_api_observation": "876efbc456b07b8bdffbb055feb6ad754928dd9b",
+  "scope": "Actual HTTPS byte downloads from this exact public GitHub commit; all seven publication files including the binary Git bundle. No original source population revalidation or bundle recovery rerun.",
+  "plan": {
+    "path": "/workspace/scratch/178ced6a501f/publication_bridge_20261030/ADDITIVE_PUBLICATION/PLAN.json",
+    "bytes": 20787,
+    "sha256": "3ede13af104c74b3fd1d7e88c902f9c56f549686807c9cdd49368a1936c8dd9c"
+  },
+  "files": [
+    {
+      "ordinal": 0,
+      "path": "operational/parameter_field_recovery04/publication/LOCAL_EXECUTION04_HISTORY.bundle",
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/51749cfc93452ba7c235543c1529568a75368f2d/operational/parameter_field_recovery04/publication/LOCAL_EXECUTION04_HISTORY.bundle",
+      "began_at_utc": "2026-10-30T03:12:48.578276+00:00",
+      "completed_at_utc": "2026-10-30T03:12:48.877161+00:00",
+      "http": {
+        "status": 200,
+        "final_url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/51749cfc93452ba7c235543c1529568a75368f2d/operational/parameter_field_recovery04/publication/LOCAL_EXECUTION04_HISTORY.bundle",
+        "content_type": "application/octet-stream",
+        "content_length": "131578",
+        "etag": "\"1d2ba51404035b2c7f21d5450f8cd5f5a95f15f632b146e14d41fc9924df71ad\"",
+        "content_encoding": null
+      },
+      "readback": {
+        "path": "/workspace/scratch/178ced6a501f/publication_bridge_20261030/remote_readback_51749cfc9345/files/operational/parameter_field_recovery04/publication/LOCAL_EXECUTION04_HISTORY.bundle",
+        "bytes": 131578,
+        "sha256": "96e136232f68b5eba1ec4122ecfb1aee9d263b7fd892091f19d373f37727931e",
+        "git_blob_sha": "0e4535bf1065a42890cc71d19ae3cafa304d58b4"
+      },
+      "expected": {
+        "bytes": 131578,
+        "sha256": "96e136232f68b5eba1ec4122ecfb1aee9d263b7fd892091f19d373f37727931e",
+        "git_blob_sha": "0e4535bf1065a42890cc71d19ae3cafa304d58b4"
+      },
+      "all_identity_checks_match": true,
+      "distinct_from_original_file_identity": true,
+      "binary_download": true
+    },
+    {
+      "ordinal": 1,
+      "path": "operational/parameter_field_recovery04/publication/PUBLICATION_MANIFEST.json",
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/51749cfc93452ba7c235543c1529568a75368f2d/operational/parameter_field_recovery04/publication/PUBLICATION_MANIFEST.json",
+      "began_at_utc": "2026-10-30T03:12:48.878587+00:00",
+      "completed_at_utc": "2026-10-30T03:12:49.071442+00:00",
+      "http": {
+        "status": 200,
+        "final_url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/51749cfc93452ba7c235543c1529568a75368f2d/operational/parameter_field_recovery04/publication/PUBLICATION_MANIFEST.json",
+        "content_type": "text/plain; charset=utf-8",
+        "content_length": "5606",
+        "etag": "\"6aea8bb5de5ada6459a65fb1e0a7d3021d7af77e91a33fd92892d456b2c33a61\"",
+        "content_encoding": null
+      },
+      "readback": {
+        "path": "/workspace/scratch/178ced6a501f/publication_bridge_20261030/remote_readback_51749cfc9345/files/operational/parameter_field_recovery04/publication/PUBLICATION_MANIFEST.json",
+        "bytes": 5606,
+        "sha256": "f955ee67f83a061776e741f743aee254af8fd78341bcd004e7a5e43715d2c0bd",
+        "git_blob_sha": "5942c8bc598c46216d525af3c7c14f5fa1f8b582"
+      },
+      "expected": {
+        "bytes": 5606,
+        "sha256": "f955ee67f83a061776e741f743aee254af8fd78341bcd004e7a5e43715d2c0bd",
+        "git_blob_sha": "5942c8bc598c46216d525af3c7c14f5fa1f8b582"
+      },
+      "all_identity_checks_match": true,
+      "distinct_from_original_file_identity": true,
+      "binary_download": false
+    },
+    {
+      "ordinal": 2,
+      "path": "operational/parameter_field_recovery04/publication/README.md",
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/51749cfc93452ba7c235543c1529568a75368f2d/operational/parameter_field_recovery04/publication/README.md",
+      "began_at_utc": "2026-10-30T03:12:49.072801+00:00",
+      "completed_at_utc": "2026-10-30T03:12:49.229882+00:00",
+      "http": {
+        "status": 200,
+        "final_url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/51749cfc93452ba7c235543c1529568a75368f2d/operational/parameter_field_recovery04/publication/README.md",
+        "content_type": "text/plain; charset=utf-8",
+        "content_length": "5085",
+        "etag": "\"f87d80b999ecc61c499a11aa1c6c9fe260c758873fb59781131fbddf40cd9715\"",
+        "content_encoding": null
+      },
+      "readback": {
+        "path": "/workspace/scratch/178ced6a501f/publication_bridge_20261030/remote_readback_51749cfc9345/files/operational/parameter_field_recovery04/publication/README.md",
+        "bytes": 5085,
+        "sha256": "e7c573ef168f17ded349d8b9295fdcca7ee6ba9d9ad40de3b37d92de53fcb444",
+        "git_blob_sha": "9ffcf601c6145dde78c61ddfcb22c3c0739a60db"
+      },
+      "expected": {
+        "bytes": 5085,
+        "sha256": "e7c573ef168f17ded349d8b9295fdcca7ee6ba9d9ad40de3b37d92de53fcb444",
+        "git_blob_sha": "9ffcf601c6145dde78c61ddfcb22c3c0739a60db"
+      },
+      "all_identity_checks_match": true,
+      "distinct_from_original_file_identity": true,
+      "binary_download": false
+    },
+    {
+      "ordinal": 3,
+      "path": "operational/parameter_field_recovery04/publication/LOCAL_INVENTORY.json",
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/51749cfc93452ba7c235543c1529568a75368f2d/operational/parameter_field_recovery04/publication/LOCAL_INVENTORY.json",
+      "began_at_utc": "2026-10-30T03:12:49.230333+00:00",
+      "completed_at_utc": "2026-10-30T03:12:49.371475+00:00",
+      "http": {
+        "status": 200,
+        "final_url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/51749cfc93452ba7c235543c1529568a75368f2d/operational/parameter_field_recovery04/publication/LOCAL_INVENTORY.json",
+        "content_type": "text/plain; charset=utf-8",
+        "content_length": "28281",
+        "etag": "\"39eb498cb67f758d7b8090397c35978b281c33186e9bae2eb8c6c1ac767a2429\"",
+        "content_encoding": null
+      },
+      "readback": {
+        "path": "/workspace/scratch/178ced6a501f/publication_bridge_20261030/remote_readback_51749cfc9345/files/operational/parameter_field_recovery04/publication/LOCAL_INVENTORY.json",
+        "bytes": 28281,
+        "sha256": "3da1d1b726bb65db7c14f1ae691fb482f79ab909a6453302278601aca937bdd4",
+        "git_blob_sha": "d4cc1e65c4ad371e43e211b329b9a7b51f70343c"
+      },
+      "expected": {
+        "bytes": 28281,
+        "sha256": "3da1d1b726bb65db7c14f1ae691fb482f79ab909a6453302278601aca937bdd4",
+        "git_blob_sha": "d4cc1e65c4ad371e43e211b329b9a7b51f70343c"
+      },
+      "all_identity_checks_match": true,
+      "distinct_from_original_file_identity": true,
+      "binary_download": false
+    },
+    {
+      "ordinal": 4,
+      "path": "operational/parameter_field_recovery04/publication/bundle_verification/VALIDATION.json",
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/51749cfc93452ba7c235543c1529568a75368f2d/operational/parameter_field_recovery04/publication/bundle_verification/VALIDATION.json",
+      "began_at_utc": "2026-10-30T03:12:49.372052+00:00",
+      "completed_at_utc": "2026-10-30T03:12:49.526774+00:00",
+      "http": {
+        "status": 200,
+        "final_url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/51749cfc93452ba7c235543c1529568a75368f2d/operational/parameter_field_recovery04/publication/bundle_verification/VALIDATION.json",
+        "content_type": "text/plain; charset=utf-8",
+        "content_length": "94408",
+        "etag": "\"f661798d8f8420be72faba63da2d196edbee03b7c60311eea5efc56b70d0d021\"",
+        "content_encoding": null
+      },
+      "readback": {
+        "path": "/workspace/scratch/178ced6a501f/publication_bridge_20261030/remote_readback_51749cfc9345/files/operational/parameter_field_recovery04/publication/bundle_verification/VALIDATION.json",
+        "bytes": 94408,
+        "sha256": "2929d4ce707fceb3f5f86a97fa8527a5d1f829397b4a4a24dbc3e2aeb50906e2",
+        "git_blob_sha": "49a703def10dea519607199fe01eb3e40c98d144"
+      },
+      "expected": {
+        "bytes": 94408,
+        "sha256": "2929d4ce707fceb3f5f86a97fa8527a5d1f829397b4a4a24dbc3e2aeb50906e2",
+        "git_blob_sha": "49a703def10dea519607199fe01eb3e40c98d144"
+      },
+      "all_identity_checks_match": true,
+      "distinct_from_original_file_identity": true,
+      "binary_download": false
+    },
+    {
+      "ordinal": 5,
+      "path": "operational/parameter_field_recovery04/publication/bundle_verification/RECEIPT.json",
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/51749cfc93452ba7c235543c1529568a75368f2d/operational/parameter_field_recovery04/publication/bundle_verification/RECEIPT.json",
+      "began_at_utc": "2026-10-30T03:12:49.527318+00:00",
+      "completed_at_utc": "2026-10-30T03:12:49.702615+00:00",
+      "http": {
+        "status": 200,
+        "final_url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/51749cfc93452ba7c235543c1529568a75368f2d/operational/parameter_field_recovery04/publication/bundle_verification/RECEIPT.json",
+        "content_type": "text/plain; charset=utf-8",
+        "content_length": "883",
+        "etag": "\"94ceba3cdc2af3923a9b4988fc80682789ff9062e54dc8c0e2ccc818462a440c\"",
+        "content_encoding": null
+      },
+      "readback": {
+        "path": "/workspace/scratch/178ced6a501f/publication_bridge_20261030/remote_readback_51749cfc9345/files/operational/parameter_field_recovery04/publication/bundle_verification/RECEIPT.json",
+        "bytes": 883,
+        "sha256": "29a8f8fcccad88f851779bca3b9f329447d08a1cedef7305179886c7c471898b",
+        "git_blob_sha": "65336c7b88868d60b2994ece7aae135cb6af825b"
+      },
+      "expected": {
+        "bytes": 883,
+        "sha256": "29a8f8fcccad88f851779bca3b9f329447d08a1cedef7305179886c7c471898b",
+        "git_blob_sha": "65336c7b88868d60b2994ece7aae135cb6af825b"
+      },
+      "all_identity_checks_match": true,
+      "distinct_from_original_file_identity": true,
+      "binary_download": false
+    },
+    {
+      "ordinal": 6,
+      "path": "operational/parameter_field_recovery04/publication/bundle_verification/COMMANDS.log",
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/51749cfc93452ba7c235543c1529568a75368f2d/operational/parameter_field_recovery04/publication/bundle_verification/COMMANDS.log",
+      "began_at_utc": "2026-10-30T03:12:49.703064+00:00",
+      "completed_at_utc": "2026-10-30T03:12:50.105611+00:00",
+      "http": {
+        "status": 200,
+        "final_url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/51749cfc93452ba7c235543c1529568a75368f2d/operational/parameter_field_recovery04/publication/bundle_verification/COMMANDS.log",
+        "content_type": "text/plain; charset=utf-8",
+        "content_length": "106075",
+        "etag": "\"8a22abebd228ff1a3ee11914df78d77d7d7e2c01bf3dde88038ec4133442b3b0\"",
+        "content_encoding": null
+      },
+      "readback": {
+        "path": "/workspace/scratch/178ced6a501f/publication_bridge_20261030/remote_readback_51749cfc9345/files/operational/parameter_field_recovery04/publication/bundle_verification/COMMANDS.log",
+        "bytes": 106075,
+        "sha256": "93e98923229d2c913e753e0a890754e87b71395dc55756a4591e0d8f278ff4ed",
+        "git_blob_sha": "fe9728275474a9f88e802afb8a21206583c90bd3"
+      },
+      "expected": {
+        "bytes": 106075,
+        "sha256": "93e98923229d2c913e753e0a890754e87b71395dc55756a4591e0d8f278ff4ed",
+        "git_blob_sha": "fe9728275474a9f88e802afb8a21206583c90bd3"
+      },
+      "all_identity_checks_match": true,
+      "distinct_from_original_file_identity": true,
+      "binary_download": false
+    }
+  ],
+  "verified_files": 7,
+  "verified_bytes": 371916,
+  "binary_bundle_actually_downloaded_and_verified": true,
+  "git_or_github_writes_performed": false,
+  "science_workers_started": 0,
+  "proxy_tls_or_credentials_modified": false,
+  "credentials_supplied_by_script": false,
+  "wall_seconds": 1.5335027879991685,
+  "own_cpu_seconds": 0.04244886399999999,
+  "cost_scope": "This inline downloader's measured interval. The external_step wait4 receipt separately measures the full child; do not add these nested costs twice."
+}
