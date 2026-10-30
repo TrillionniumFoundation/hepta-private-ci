@@ -1011,6 +1011,16 @@ mod tests {
                 .accept()
                 .await
                 .expect("registry request should connect");
+            // Hyper rejects a response that arrives before it has sent a request.
+            let mut request = [0_u8; 1024];
+            assert!(
+                stream
+                    .read(&mut request)
+                    .await
+                    .expect("registry request should read")
+                    > 0,
+                "request must arrive before the response"
+            );
             stream
                 .write_all(
                     b"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: 256\r\n\r\n{",

@@ -28,6 +28,18 @@ pub(crate) struct FileSystemContext {
     pub(crate) file_system: Arc<dyn ExecutorFileSystem>,
     _helper_paths: Option<TestCodexHelperPaths>,
     _server: Option<ExecServerHarness>,
+    _environment: Option<Environment>,
+}
+
+impl FileSystemContext {
+    #[cfg(unix)]
+    pub(crate) async fn supports_bounded_authorized_read(&self) -> Result<bool> {
+        let info = match &self._environment {
+            Some(environment) => environment.info().await?,
+            None => codex_exec_server::local_environment_info(),
+        };
+        Ok(info.capabilities.stable_handle_authorized_read)
+    }
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -59,6 +71,7 @@ pub(crate) async fn create_file_system_context(
                 file_system: Arc::new(LocalFileSystem::with_runtime_paths(runtime_paths)),
                 _helper_paths: Some(helper_paths),
                 _server: None,
+                _environment: None,
             })
         }
         FileSystemImplementation::Remote => {
@@ -69,6 +82,7 @@ pub(crate) async fn create_file_system_context(
                 file_system: environment.get_filesystem(),
                 _helper_paths: None,
                 _server: Some(server),
+                _environment: Some(environment),
             })
         }
     }

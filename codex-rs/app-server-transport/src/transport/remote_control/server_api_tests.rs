@@ -3,6 +3,7 @@ use crate::transport::remote_control::protocol::normalize_remote_control_url;
 use pretty_assertions::assert_eq;
 use serde_json::json;
 use std::time::SystemTime;
+use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::net::TcpListener;
 use tokio::sync::oneshot;
@@ -43,6 +44,16 @@ async fn timed_out_request(partial_response: Option<&'static [u8]>) -> io::Error
     let server_task = tokio::spawn(async move {
         let (mut stream, _) = listener.accept().await.expect("request should connect");
         if let Some(partial_response) = partial_response {
+            // Hyper rejects a response that arrives before it has sent a request.
+            let mut request = [0_u8; 1024];
+            assert!(
+                stream
+                    .read(&mut request)
+                    .await
+                    .expect("request should read")
+                    > 0,
+                "request must arrive before the response"
+            );
             stream
                 .write_all(partial_response)
                 .await
