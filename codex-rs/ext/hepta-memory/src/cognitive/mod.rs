@@ -46,6 +46,7 @@ use codex_hepta_memory::RetrievalChannel;
 use codex_hepta_memory::RetrievalRequest;
 use codex_hepta_memory::RevalidationStatus;
 use codex_hepta_memory::SourceRevalidationBinding;
+use codex_hepta_memory::canonical_workspace_binding;
 use codex_protocol::user_input::UserInput;
 use serde::Serialize;
 use sha2::Digest;
@@ -381,9 +382,10 @@ impl CognitiveExtension {
             return None;
         }
         let prepared = input.turn_store.get::<PreparedCognitiveAttachment>()?;
+        let workspace = canonical_workspace_binding(input.cwd).ok()??;
         if prepared.thread_id != input.thread_id
             || prepared.turn_id != input.turn_id
-            || path_identity_bytes(prepared.workspace.as_path()) != path_identity_bytes(input.cwd)
+            || path_identity_bytes(prepared.workspace.as_path()) != path_identity_bytes(&workspace)
         {
             return None;
         }
@@ -400,7 +402,7 @@ impl CognitiveExtension {
         let store = self.store()?;
         let access = CognitiveAccess::workspace_private(
             store.owner_agent_id().clone(),
-            workspace_digest(input.cwd),
+            workspace_digest(workspace.as_path()),
         );
         let explanations = self
             .revalidate_bindings(&access, &prepared.bindings, now)
@@ -410,7 +412,7 @@ impl CognitiveExtension {
         let source_binding_sha256 = cognitive_source_binding(
             input.thread_id,
             input.turn_id,
-            input.cwd,
+            workspace.as_path(),
             &prepared.query_sha256,
             &prepared.bindings,
             &content_sha256,
@@ -468,6 +470,9 @@ impl TurnInputContributor for CognitiveExtension {
             if !workspace.is_absolute() {
                 return Vec::new();
             }
+            let Ok(Some(workspace)) = canonical_workspace_binding(&workspace) else {
+                return Vec::new();
+            };
             let capture = capture_directive(&input.user_input);
             let witness = ExactDirectiveWitness {
                 turn_id: input.turn_id.clone(),
@@ -579,10 +584,13 @@ impl EphemeralModelInputContributor for CognitiveExtension {
             let Some(prepared) = input.turn_store.get::<PreparedCognitiveAttachment>() else {
                 return Ok(None);
             };
+            let Ok(Some(workspace)) = canonical_workspace_binding(input.cwd) else {
+                return Ok(None);
+            };
             if prepared.thread_id != input.thread_id
                 || prepared.turn_id != input.turn_id
                 || path_identity_bytes(prepared.workspace.as_path())
-                    != path_identity_bytes(input.cwd)
+                    != path_identity_bytes(&workspace)
             {
                 return Ok(None);
             }
@@ -606,7 +614,7 @@ impl EphemeralModelInputContributor for CognitiveExtension {
             };
             let access = CognitiveAccess::workspace_private(
                 store.owner_agent_id().clone(),
-                workspace_digest(input.cwd),
+                workspace_digest(workspace.as_path()),
             );
             let Some(explanations) = self
                 .revalidate_bindings(&access, &prepared.bindings, now)
@@ -621,7 +629,7 @@ impl EphemeralModelInputContributor for CognitiveExtension {
             let source_binding_sha256 = cognitive_source_binding(
                 input.thread_id,
                 input.turn_id,
-                input.cwd,
+                workspace.as_path(),
                 &prepared.query_sha256,
                 &prepared.bindings,
                 &content_sha256,

@@ -1,0 +1,36 @@
+{
+  "schema": "Bazel93-captured-schema-source-metadata-append-only-correction-v1",
+  "utc": "2026-10-29T01:42:53.500274+00:00",
+  "original_reader": {
+    "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/all-three-complete-original-execution-record-readers.json",
+    "bytes": 3663,
+    "sha256": "347ac4c999359c4ebcf0c5b43f61b9ac9e7ec567b0cb4774e25846d3046f76b4",
+    "recorded_invalid33hex": "19f68f22a4d62c4fd1c7c0217aa6a7cb0",
+    "original_bytes_unchanged": true
+  },
+  "delivered_schema": {
+    "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/bazel93-official-spawn.proto",
+    "bytes": 15858,
+    "sha256": "c617dd0040b3f5ad9f02f8fa6bb5e04bd0d03b037de791b08ccf792ec8dfa05a",
+    "actual_content_Git_blob": "538a621d05f44987380f8cf1c24d7325a6d994e6"
+  },
+  "actual_primary_source_retrieval": {
+    "connector": "GitHub fetch_file read-only",
+    "repository": "bazelbuild/bazel",
+    "ref": "9.3.0",
+    "path": "src/main/protobuf/spawn.proto",
+    "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/protobuf/spawn.proto",
+    "reported_and_recomputed_Git_blob": "19f68f22a4d62c4fd1aa28fd1c7c0217aa6a7cb0",
+    "bytes": 15857,
+    "sha256": "110f4b5e020b72fe3d51f6aa69d6ecc31d6f20ee57c194827da48a8184675e7a",
+    "metadata": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/bazel93-schema-provenance-correction-20261029-011/official-file-fetch-metadata.json"
+  },
+  "exact_relation": "Delivered bytes equal actual official-tag bytes plus one extra final LF; all message definitions and field numbers are exact, not a different schema. Retain raw delivered bytes/hash separately, do not label its538a blob as the official19f blob.",
+  "correction": "Official file Git blob is19f68f22a4d62c4fd1aa28fd1c7c0217aa6a7cb0, rather than the malformed33hex field. Delivered local file content blob is538a621d05f44987380f8cf1c24d7325a6d994e6.",
+  "impact": "Append-only source provenance correction; no original archive/reader/results changed. Independent wireparse269340frames/25failedspawns/14targets remains scoped record parsing, not25tests/OSwait/native/security acceptance.",
+  "new_compact_parse_or_CI_retry": false,
+  "APPLY_to_repositories": false,
+  "COMMITTED": false,
+  "PUBLISHED": false,
+  "acceptance": "NO_GO"
+}

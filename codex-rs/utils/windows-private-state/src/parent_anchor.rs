@@ -120,6 +120,8 @@ pub struct ParentAnchor {
 
 impl ParentAnchor {
     /// Traverse the actual volume root and at most 31 literal child components.
+    /// Both disk spellings (including std canonicalize's verbatim disk prefix)
+    /// use the same native volume/held-ancestor checks; UNC/devices stay refused.
     /// Every open is synchronous, non-inherited, no-reparse and denies delete
     /// sharing; every held descriptor is checked against the ancestor policy.
     pub fn for_create_only(path: &Path) -> Result<Self, ValidationError> {
@@ -128,7 +130,11 @@ impl ParentAnchor {
         }
         let mut components = path.components();
         let prefix = match components.next() {
-            Some(Component::Prefix(prefix)) if matches!(prefix.kind(), Prefix::Disk(_)) => prefix,
+            Some(Component::Prefix(prefix))
+                if matches!(prefix.kind(), Prefix::Disk(_) | Prefix::VerbatimDisk(_)) =>
+            {
+                prefix
+            }
             _ => return Err(ValidationError::UnsafeObject),
         };
         if components.next() != Some(Component::RootDir) {

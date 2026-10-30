@@ -42,7 +42,7 @@ use crate::PromptRegistryV2Error;
 use crate::PromptRoleV2;
 use crate::RealizationDeliveryV2;
 use crate::RegistryReceipt;
-#[cfg(test)]
+#[cfg(all(test, unix))]
 use crate::VerifiedAdmission;
 use crate::admission::map_final_use_error;
 use crate::final_use_realization_binding;
@@ -114,29 +114,43 @@ impl DurablePromptRegistry {
         Ok(&self.registry)
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     fn diagnostic_registry(&self) -> &PromptRegistry {
         &self.registry
     }
 
+    #[cfg(not(windows))]
     #[must_use]
     pub const fn requires_reopen(&self) -> bool {
         self.poisoned
+    }
+
+    /// Also probe the same retained Windows owner; native refusal is sticky.
+    /// This diagnostic does not replace the per-operation admission barrier.
+    #[cfg(windows)]
+    #[must_use]
+    pub fn requires_reopen(&self) -> bool {
+        self.poisoned || self.store.root.revalidate_shared().is_err()
     }
 
     fn ensure_available(&self) -> Result<(), DurableRegistryError> {
         if self.poisoned {
             return Err(DurableRegistryError::ReopenRequired);
         }
+        #[cfg(windows)]
+        self.store
+            .root
+            .revalidate_shared()
+            .map_err(|_| DurableRegistryError::ReopenRequired)?;
         Ok(())
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     fn fail_directory_sync_after_rename_once(&self) {
         self.store.fail_directory_sync_after_rename_once.set(true);
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     fn fail_storage_full_before_rename_once(&self) {
         self.store.fail_storage_full_before_rename_once.set(true);
     }
@@ -148,7 +162,7 @@ impl DurablePromptRegistry {
         self.commit(|registry| registry.register_factor(factor))
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     pub(crate) fn admit_factor_verified(
         &mut self,
         admission: VerifiedAdmission,
@@ -185,7 +199,7 @@ impl DurablePromptRegistry {
             .map_err(DurableRegistryError::Admission)?
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     pub(crate) fn register_realization_payload_v2(
         &mut self,
         binding: PromptRealizationBindingV2,
@@ -248,7 +262,7 @@ impl DurablePromptRegistry {
             .map_err(DurableRegistryError::Admission)?
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     pub(crate) fn retire_factor(
         &mut self,
         factor_id: &StableId,
@@ -262,7 +276,7 @@ impl DurablePromptRegistry {
         })
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     pub(crate) fn revoke_factor(
         &mut self,
         factor_id: &StableId,
@@ -412,9 +426,7 @@ impl DurablePromptRegistry {
         &mut self,
         mutation: impl FnOnce(&mut PromptRegistry) -> Result<RegistryReceipt, Error>,
     ) -> Result<RegistryReceipt, DurableRegistryError> {
-        if self.poisoned {
-            return Err(DurableRegistryError::ReopenRequired);
-        }
+        self.ensure_available()?;
         let mut next = self.registry.clone();
         let receipt = mutation(&mut next).map_err(DurableRegistryError::Core)?;
         if receipt.disposition != crate::MutationDisposition::Unchanged {
@@ -424,7 +436,13 @@ impl DurablePromptRegistry {
                     self.poisoned = true;
                     return Err(DurableRegistryError::IndeterminateDurability);
                 }
-                Err(error) => return Err(error),
+                Err(error) => {
+                    #[cfg(windows)]
+                    if self.store.root.revalidate_shared().is_err() {
+                        self.poisoned = true;
+                    }
+                    return Err(error);
+                }
             }
         }
         Ok(receipt)
@@ -555,7 +573,7 @@ struct StoredLifecycleEvent {
     event_digest: [u8; 32],
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 fn stored_v2(registry: &PromptRegistry) -> StoredV2 {
     let mut stored = stored_metadata(registry);
     stored.payloads = registry

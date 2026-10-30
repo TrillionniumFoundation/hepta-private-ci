@@ -1,0 +1,457 @@
+{
+  "schema": "revision004-agentd-peer-and-per-poll-independent-source-review-v1",
+  "created_utc": "2026-10-29T00:29:40.495859+00:00",
+  "reviewer": "/root/e153_windows_raw_review",
+  "reviewed_final_revision": "004",
+  "candidate": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/d328-agentd-consumed-peer-gate-source-candidate-20261028-007/revision-004-per-poll",
+  "manifest_sha256": "c243be8ced8a02ab0b873db69f2eb909fe93a2916044b09169ce63f85884cc0d",
+  "full_patch": {
+    "path": "d328-peer-gate-and-per-poll-deadline.patch",
+    "bytes": 11005,
+    "sha256": "29e36831b5b092ae218c21f43f7503ec7b91dfd40a71fb77c4de9ef72ee74293",
+    "added_lines": 242,
+    "removed_lines": 10
+  },
+  "incrementals": {
+    "from87f9": {
+      "path": "peer-gate87f9-to-per-poll-deadline.patch",
+      "bytes": 10055,
+      "sha256": "3a959e7f25fe1a3c05daedcfec93c9d416240307ae38354cb2fa1b1ec59c1030",
+      "added_lines": 230,
+      "removed_lines": 10
+    },
+    "from003": {
+      "path": "revision003-to004-test-import-public-entry.patch",
+      "bytes": 1125,
+      "sha256": "cfcd6d623d6730871c22eee5cf1b4814459f8ba4629a2f862ccd191065fdcae2",
+      "added_lines": 14,
+      "removed_lines": 0
+    }
+  },
+  "base_head": "d3284e385e2b6037dd86752ddd246b616144a87c",
+  "base_tree": "eed42a952ac5a713fc733b29707b4be3c20e00b2",
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/control.rs",
+      "before_present": true,
+      "before_bytes": 8231,
+      "before_sha256": "c0a338c105a621632e0823273ded807e83aaefdab4f57f06470d73a8c0376651",
+      "before_git_blob": "9d376e5f1d79ca01126d567cf9f2bc5f778ef2d2",
+      "after_bytes": 8924,
+      "after_sha256": "a5cab59312c1b0cfdee7b3b2f07c6240b85d11c13592682e60e246614de1953b",
+      "after_git_blob": "d43aa74d2be93960b7be7b49472513edebd422e5",
+      "after_lines": 266,
+      "emitted_hunk_replay": "EXACT_AFTER_BYTES"
+    },
+    {
+      "path": "codex-rs/uds/src/deadline_guard.rs",
+      "before_present": false,
+      "before_bytes": 0,
+      "before_sha256": null,
+      "before_git_blob": null,
+      "after_bytes": 1608,
+      "after_sha256": "7905e7c432bf7ba0716e31bd7edc5890319d4a782d45f9e01958d6a18e0efdf5",
+      "after_git_blob": "8567a79b6b9c4e7959533ec125e4225fc925396d",
+      "after_lines": 51,
+      "emitted_hunk_replay": "EXACT_AFTER_BYTES"
+    },
+    {
+      "path": "codex-rs/uds/src/deadline_guard_tests.rs",
+      "before_present": false,
+      "before_bytes": 0,
+      "before_sha256": null,
+      "before_git_blob": null,
+      "after_bytes": 5147,
+      "after_sha256": "c1deefa46140cb02eb05c5728f4e5e18a1a945b48eb6bfd431271cf796dfdcf4",
+      "after_git_blob": "bcde3cdc04f210db4fb12ce3885a45fcad90e0bd",
+      "after_lines": 163,
+      "emitted_hunk_replay": "EXACT_AFTER_BYTES"
+    },
+    {
+      "path": "codex-rs/uds/src/lib.rs",
+      "before_present": true,
+      "before_bytes": 14398,
+      "before_sha256": "b81907ec7757b85cce001328f272c9d1c3467e42b8772d667b09b17a7d455c75",
+      "before_git_blob": "9fe8556c9681be665fa7606a5978fd7b35ed7e42",
+      "after_bytes": 14473,
+      "after_sha256": "23751dd9128234b4e5f19a8ae54806a491ddbec9865cdeff390c3217ae09f645",
+      "after_git_blob": "d3e9a91efa8f647d216f6c7fd890584ec6cafad6",
+      "after_lines": 449,
+      "emitted_hunk_replay": "EXACT_AFTER_BYTES"
+    }
+  ],
+  "READ": true,
+  "REVIEW": "COMPLETE_FOR_FROZEN004_SOURCE_PLUS_EXISTING_ORIGINAL_COMPONENT_RESULT_READBACK",
+  "reviewer_APPLY": false,
+  "root_actual_apply_receipt": {
+    "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/rog-agentd-peer-deadline-validation-20261028-008/actual-source-apply.json",
+    "bytes": 2478,
+    "sha256": "ee59752f3d8612e895f9f0daf32fe507b4455dd4a3713ea64b8035ae08db14fc",
+    "actual_owner_applied": true,
+    "does_not_imply_Agentd_runtime": true
+  },
+  "reviewer_scope": "Read-only exact frozen003 production/fullsource review plus final004 import-and-public-test delta, immutable actual locald328/bf36 existing preimages, all68 original Agentd tests and protected pins. Existing raw/terminals and fmt readback only. Reviewer executes no Rust/tests/fmt/native/CI/network/VM, edits no source/mirrors/index/refs and resets no budget; writes only this report.",
+  "historical_reviews_not_reused_as_new_source_qualification": {
+    "original87f9_R01_blocked_report": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/d328-agentd-consumed-peer-gate-independent-source-20261028-007.json",
+    "original_report_sha256": "1ae71961671a85b90207dc8bd7914000846e0b44b1583ec097503684ede376cb",
+    "original87f9_patch_sha256": "87f973d85129af474ffa55ce8e4ef2eed795c447de4471f52e63a24bf2907af8",
+    "frozen003_manifest_sha256": "b20bbecef510644363d051ee67074124d5899e5e186570e238182db0ecce8a5e",
+    "frozen003_patch_sha256": "2e341daefadc5af9514cc4e22d0246173a3da53eb02f0600ccd88d362e9646cf",
+    "meaning": "Old R01/source and original003 preserved. This is a fresh004 review, not relabeling old report."
+  },
+  "mechanical_binding": {
+    "both_existing_preimages_equal_actual_d328_and_bf36": true,
+    "four_after_size_SHA_match_manifest": true,
+    "four_consolidated_hunks_and_both_incremental_routes_replayed_in_memory_exact": true,
+    "other_three_source_bytes_exact003": true,
+    "old5newtest_bodies_exact_after_removing_only_pretty_import": true,
+    "new_public_test_is_appended_only": true,
+    "existing_pretty_assertions_dev_dependency_no_manifest_change": true,
+    "uds_lib_only_new_module_reexport_other_platform_logic_exact": true,
+    "serve_connection_and_entire_suffix": {
+      "bytes": 4823,
+      "sha256": "0aeca89aec9cc2d455c064d3d0199f5bc1bf3fc3b0eb2cd86d84e0b3a4516b48",
+      "exact": true
+    },
+    "all68_original_agentd_tests": {
+      "inventory_sha256": "4849b04bcd3b3b0cae36f901c649c6d7fe3daae50851d31ff74f4d019130c915",
+      "count": 68,
+      "bytes": 1015604,
+      "d328_size_SHA_and_bf36_blob_OIDs_verified": true
+    },
+    "protected_source_pins": [
+      {
+        "path": "codex-rs/uds/src/lib_tests.rs",
+        "bytes": 5638,
+        "sha256": "a5e437bb409156b954b989dad6d3928038088cd8deba9a54b06dd315d883e3d4",
+        "git_blob": "9c2d25cd72fdfbbb74b04705d0bd69872570f01b",
+        "patch_excludes_path": true
+      },
+      {
+        "path": "codex-rs/uds/Cargo.toml",
+        "bytes": 684,
+        "sha256": "4da6aa32dd7c36fd520c4e9787f1354cbf3421b669e88a8e1237a6cbc2381e13",
+        "git_blob": "66ba1d9d2d915dae795b2cda4eef7d2d4bd91539",
+        "patch_excludes_path": true
+      },
+      {
+        "path": "codex-rs/uds/BUILD.bazel",
+        "bytes": 109,
+        "sha256": "8d63234480ab3da7a82e1754fcc10d988ff2e3f38344f9fe086914985c03cebc",
+        "git_blob": "a539147dd2956ece9acf95923fb30b8963cca0c1",
+        "patch_excludes_path": true
+      },
+      {
+        "path": "codex-rs/Cargo.lock",
+        "bytes": 423615,
+        "sha256": "5a19566686df77ef3f5a0a34d346d510e5a4ee4c37fecb5a704618dc3b4966a9",
+        "git_blob": "3aa2b601b94fc53a76abf0e40e0e5219caf3a437",
+        "patch_excludes_path": true
+      },
+      {
+        "path": "MODULE.bazel.lock",
+        "bytes": 1720024,
+        "sha256": "bf33d97b2d4d7a26b2d56949a12d0244d7e0c85c23cbe44762c28111eb3a9c16",
+        "git_blob": "ecdd4a2ead73806e328f882777102430ec6d9aba",
+        "patch_excludes_path": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/client.rs",
+        "bytes": 25950,
+        "sha256": "e13456dc3678a7d0bf34614a4a69cfb430df425099ae7711b08a8e152b4b7cc6",
+        "git_blob": "cbafcfb553ee8d7a2699878e12c7eda5f91a4a95",
+        "patch_excludes_path": true
+      },
+      {
+        "path": "codex-rs/hepta-matrixd/src/control.rs",
+        "bytes": 36655,
+        "sha256": "b7b32d9968c21986be64868e632f3b4dc18a41c4e5395566032bd1923345185b",
+        "git_blob": "ee46d46b10465e65858237a040dd160c9c47fcf6",
+        "patch_excludes_path": true
+      }
+    ],
+    "original_uds_lib_tests_SHA256": "a5e437bb409156b954b989dad6d3928038088cd8deba9a54b06dd315d883e3d4",
+    "new_dependencies_features_or_Cargo_Bazel_lock_changes": false
+  },
+  "semantic_review": [
+    {
+      "area": "Accepted existing stream peer gate",
+      "result": "Existing ensure_current_user_peer runs immediately after accept, before any semaphore permit, overload write, task spawn or frame read. Err or already-expiredcontinue drops original stream naturally. Supported Unix uses original OS UID producer; Windows remains Unsupported and refuses, no PID/SID/boolean trust substitute."
+    },
+    {
+      "area": "Single original accepted deadline",
+      "result": "One std Instant deadline is captured after accept before peer check, exactly original2seconds. It feeds the existing execution context and both cleanup/admission wrappers; no fresh window after peer latency, queuing or task spawn.32capacity and frame constants unchanged."
+    },
+    {
+      "area": "Both actual production callers",
+      "result": "Overload computes min(original accepteddeadline,stdnow+original50ms) and wraps its write_all/shutdown future with per-poll guard and original outertimeout_at using that same deadline. Normal spawned branch retains execution.check before future construction and wraps original serve_connection future with per-poll guard and original outertimer. No timeout result issues authority."
+    },
+    {
+      "area": "Every poll fence",
+      "result": "Private async helper pins original F and awaits poll_fn. Each poll_fn callback first invokes clock, rejects clock>=same deadline as Ready(None) without polling F, otherwise polls F once and wraps original ready output in Some. A Tokio Timeout value-first poll after deadline therefore reaches the guard, not the expired inner F."
+    },
+    {
+      "area": "Timer wakeup retained",
+      "result": "Guard intentionally has no own timer. Both production consumers retain original timeout_at so a pending future with no I/O wakeup is still woken/cancelled at the existing deadline. External drop/timeout drops F and releases original permit/cancellation guard through original task scope."
+    },
+    {
+      "area": "No clock or trust authority",
+      "result": "Public helper always delegates to private clock helper with std Instant::now. Private injected clock is unit-test-only interface, not exported, serde or AuthorityClock provider. Existing peer/authorization/state/clock/CAS/provider paths are unchanged."
+    }
+  ],
+  "meaningful_test_source_review": [
+    {
+      "name": "expired_ready_future_is_dropped_without_being_polled",
+      "purpose": "Reject even an immediately-ready expired F before any innerpoll; assert0poll1drop."
+    },
+    {
+      "name": "pending_future_is_not_polled_again_after_deadline_and_is_dropped",
+      "purpose": "First allowed pending poll then deterministic clock reachesdeadline; no second innerpoll and drop1."
+    },
+    {
+      "name": "early_completion_preserves_the_original_result",
+      "purpose": "Unexpired ready result staysSome(37), exactlyonepoll/oneDrop."
+    },
+    {
+      "name": "early_error_result_is_not_reinterpreted_as_expiry",
+      "purpose": "Unexpired innerErr remainsSome(Err), not None/timeout conversion."
+    },
+    {
+      "name": "external_cancellation_drops_the_pending_inner_future",
+      "purpose": "Dropping wrapper afterPending drops original F once, no extrapoll; does not pretend to test real process retirement."
+    },
+    {
+      "name": "public_monotonic_entry_rejects_expired_ready_future_before_polling",
+      "purpose": "Calls actual public crate reexport with real std Instantnow deadline and ready probe, no injectedclock/sleep; assertsNone/0poll/1drop."
+    }
+  ],
+  "already_executed_component_originals_readback": [
+    {
+      "label": "Linux UDS original package",
+      "terminal": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/rog-agentd-peer-deadline-validation-20261028-008/Linux-UDS-package-terminal.json",
+      "terminal_bytes": 3138,
+      "terminal_sha256": "e15593147ddecaa6ffd5453e63bb6362888ed005c95deecb77535e4173cae6cd",
+      "raw": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/rog-agentd-peer-deadline-validation-20261028-008/Linux-UDS-package.raw.log",
+      "raw_bytes": 6048,
+      "raw_sha256": "457a308fb9fbd577fb7d93f0358bf0cb0dccb52879fc9a4872992e6d92ef114f",
+      "exit": 0,
+      "elapsed_seconds": 6.631686102016829,
+      "argv": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-uds",
+        "--lib",
+        "--success-output",
+        "immediate"
+      ],
+      "original_warnings": [
+        "warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits"
+      ]
+    },
+    {
+      "label": "Linux UDS strict",
+      "terminal": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/rog-agentd-peer-deadline-validation-20261028-008/Linux-UDS-strict-clippy-terminal.json",
+      "terminal_bytes": 3136,
+      "terminal_sha256": "7028d8335e3ec8e1581429b45e8f4968c736241d96891f15d519c61b0e7fb0d3",
+      "raw": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/rog-agentd-peer-deadline-validation-20261028-008/Linux-UDS-strict-clippy.raw.log",
+      "raw_bytes": 1759,
+      "raw_sha256": "04fd2ead6671b4aad035fa974fa5afe62381774951020510c8b349f16b9144ab",
+      "exit": 0,
+      "elapsed_seconds": 1.9008981179795228,
+      "argv": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-uds",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "original_warnings": [
+        "warning: `tokio::sync::MutexGuard` does not refer to a reachable type",
+        "warning: `tokio::sync::RwLockReadGuard` does not refer to a reachable type",
+        "warning: `tokio::sync::RwLockWriteGuard` does not refer to a reachable type"
+      ]
+    },
+    {
+      "label": "WindowsGNU UDS cfgtest strict",
+      "terminal": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/rog-agentd-peer-deadline-validation-20261028-008/Windows-GNU-UDS-cfgtest-strict-terminal.json",
+      "terminal_bytes": 3180,
+      "terminal_sha256": "875b4a520b446b6f7eeff2f22b3251dd9965726bbd5805b5440537dff3e2d80e",
+      "raw": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/rog-agentd-peer-deadline-validation-20261028-008/Windows-GNU-UDS-cfgtest-strict.raw.log",
+      "raw_bytes": 1553,
+      "raw_sha256": "281c15cd9ebfacd8b5e26a57314a4a3da27f4d4ec90575c00439b988cc0bffb3",
+      "exit": 0,
+      "elapsed_seconds": 7.547444037976675,
+      "argv": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-uds",
+        "--lib",
+        "--target",
+        "x86_64-pc-windows-gnu",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "original_warnings": []
+    },
+    {
+      "label": "final fmt",
+      "terminal": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/rog-agentd-peer-deadline-validation-20261028-008/final-fmt-terminal.json",
+      "terminal_bytes": 3039,
+      "terminal_sha256": "e4a66274123649d759bfe83b9d31c1cb60bd923dd4ddeb38a351839fdd81c1aa",
+      "raw": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/rog-agentd-peer-deadline-validation-20261028-008/final-fmt.raw.log",
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit": 0,
+      "elapsed_seconds": 0.2581493260222487,
+      "argv": [
+        "just",
+        "fmt"
+      ],
+      "original_warnings": []
+    }
+  ],
+  "Linux_actual_test_summary": {
+    "passed": 13,
+    "failed": 0,
+    "skipped": 0,
+    "names": [
+      "deadline_guard::tests::pending_future_is_not_polled_again_after_deadline_and_is_dropped",
+      "deadline_guard::tests::expired_ready_future_is_dropped_without_being_polled",
+      "deadline_guard::tests::external_cancellation_drops_the_pending_inner_future",
+      "lib_tests::bound_listener_path_is_stale_socket_path",
+      "lib_tests::prepare_private_socket_directory_sets_existing_permissions_to_owner_only",
+      "deadline_guard::tests::early_error_result_is_not_reinterpreted_as_expiry",
+      "deadline_guard::tests::public_monotonic_entry_rejects_expired_ready_future_before_polling",
+      "platform::tests::peer_uid_gate_accepts_only_the_process_owner",
+      "lib_tests::peer_identity_gate_accepts_same_user_on_supported_platforms",
+      "deadline_guard::tests::early_completion_preserves_the_original_result",
+      "lib_tests::stream_round_trips_data_between_listener_and_client",
+      "lib_tests::regular_file_path_is_not_stale_socket_path",
+      "lib_tests::prepare_private_socket_directory_creates_directory"
+    ],
+    "source_before_after_equal": true,
+    "permission_denied_early_return_audit": [
+      {
+        "test": "bound_listener_path_is_stale_socket_path",
+        "PASS_raw_line": 51,
+        "mandatory_PermissionDenied_marker": "skipping test: failed to bind unix socket:",
+        "marker_absent_from_complete_success_output": true,
+        "interpretation": "Existing PermissionDenied early-return path did not execute in this captured successful test run; original source not modified."
+      },
+      {
+        "test": "stream_round_trips_data_between_listener_and_client",
+        "PASS_raw_line": 114,
+        "mandatory_PermissionDenied_marker": "skipping test: failed to bind unix socket:",
+        "marker_absent_from_complete_success_output": true,
+        "interpretation": "Existing PermissionDenied early-return path did not execute in this captured successful test run; original source not modified."
+      }
+    ],
+    "why_not_just_summary": "--success-output immediate exposes successful test output; both original early branches unconditionallyprint mandatory skipping marker. Complete capturedraw lacks it while both tests pass."
+  },
+  "final_format_readback": {
+    "actual_root_fmt_exit": 0,
+    "actual_root_fmt_seconds": 0.2581493260222487,
+    "exact_format_delta_file": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/rog-agentd-peer-deadline-validation-20261028-008/final-fmt-only.delta.patch",
+    "format_delta_bytes": 630,
+    "format_delta_sha256": "86c64bc1259f04a45a4295e8dde741eafe258ebc18a9d6b53200d9ede0ead2d9",
+    "only_change": "control if condition compressed from3lines to1; helper/test/lib bytes unchanged.",
+    "checked_control_SHA256": "a5cab59312c1b0cfdee7b3b2f07c6240b85d11c13592682e60e246614de1953b",
+    "final_live_control_SHA256": "4340ad44f9838195f8306dc0800f2c49f9128994e44c3ba3f5f60c92662470c9",
+    "no_repeated_tests_after_fmt": true
+  },
+  "remaining_limits": [
+    "Per-poll gate cannot interrupt work already executing inside one synchronous F.poll, future construction or a blocking destructor; no hard end-to-end walltime or cleanup latency proof.",
+    "Old synchronous peer OS query is not preempted by guard; late completion is refused before protocol admission, not guaranteed socket-retirement latency.",
+    "Six tests cover future mechanism including public clock entry, not actual overload service, requesthandler effects, Tokio scheduling races or full Agentd caller.",
+    "UDS Linux13tests and scoped Linux/WindowsGNU cfg(test) Clippy do not compile hepta-agentd/control.rs or run Agentd package. Recording control SHA in receipt is source identity only, not compilation evidence.",
+    "WindowsGNU result is type/lint only, no linked binary/native execution; unsupported ordinary Windows peer and pathDACL/fullproduction chain remain open.",
+    "No root bf36 graph/V8/release/ABI/CI qualification or old310b/ACA PASS inherited; original Windows20/query/terminal, PN1, real model/I09/I10/WAN and expired budgets remain separate open gates."
+  ],
+  "blocking_findings": [],
+  "R01_disposition": "SOURCE_FIXED_BY004_EVERY_POLL_GUARD_WITH_SAME_EXISTING_TIMERS; ORIGINAL_BLOCKED87F9_HISTORY_RETAINED",
+  "disposition": "NO_NEW_STATIC_BLOCKER_IN_FINAL004_SOURCE; COMPONENT_RESULTS_SCOPED_ONLY",
+  "COMMITTED": false,
+  "PUBLISHED": false,
+  "budgets_reset": false,
+  "merge_ready": false,
+  "task_complete": false,
+  "NO_GO": true,
+  "final_readback_addendum": {
+    "utc": "2026-10-29T00:30:29.406459+00:00",
+    "final_source_scope_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/rog-agentd-peer-deadline-validation-20261028-008/final-source-scope.json",
+    "bytes": 3879,
+    "sha256": "0d14f7b473d30fcc34715a1de9bc1e98a32673c796347229f7c5a092287830b1",
+    "repo_copy_exact": true,
+    "final_actual_four_live_sources": [
+      {
+        "path": "codex-rs/hepta-agentd/src/control.rs",
+        "bytes": 8896,
+        "sha256": "4340ad44f9838195f8306dc0800f2c49f9128994e44c3ba3f5f60c92662470c9",
+        "git_blob": "bdd40109a7890ea9f3bef62f159a0320ea449382"
+      },
+      {
+        "path": "codex-rs/uds/src/deadline_guard.rs",
+        "bytes": 1608,
+        "sha256": "7905e7c432bf7ba0716e31bd7edc5890319d4a782d45f9e01958d6a18e0efdf5",
+        "git_blob": "8567a79b6b9c4e7959533ec125e4225fc925396d"
+      },
+      {
+        "path": "codex-rs/uds/src/deadline_guard_tests.rs",
+        "bytes": 5147,
+        "sha256": "c1deefa46140cb02eb05c5728f4e5e18a1a945b48eb6bfd431271cf796dfdcf4",
+        "git_blob": "bcde3cdc04f210db4fb12ce3885a45fcad90e0bd"
+      },
+      {
+        "path": "codex-rs/uds/src/lib.rs",
+        "bytes": 14473,
+        "sha256": "23751dd9128234b4e5f19a8ae54806a491ddbec9865cdeff390c3217ae09f645",
+        "git_blob": "d3e9a91efa8f647d216f6c7fd890584ec6cafad6"
+      }
+    ],
+    "new_qualification_README": {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/qualification/pn0-ci/agentd-peer-deadline-20261028/README.md",
+      "bytes": 4585,
+      "sha256": "7e8346db7244a2b9327609b4ebda87832dc98edb3ba3dd8cfab6d93169fe4dae",
+      "review": "Accurately restricts actual13PASS/Clippy to UDS component; WindowsGNU conditional compile only; states Agentd package/native/actual source tuple qualification not run, no hard realtime/accounting/clock authority, peer Unsupported and original Windows failures remain open. Existing PN0 order and NO_GO retained.",
+      "native_or_Agentd_qualification_overclaim_found": false,
+      "evidence_manifest_staging": "At read time newfolder manifest is not yet written; parent is assembling evidence with this report. README reference to final manifest must be fulfilled by publisher before final handoff; no manifest bytes were invented by this readback."
+    },
+    "prior_FinalUse_four_live_files_preserved_exact006": [
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use.rs",
+        "bytes": 39400,
+        "sha256": "0a6360b6572fc24001ac12a8686dbe2018a6c4484024d8742e1205cfe619f865",
+        "same_final006": true
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_live_owner.rs",
+        "bytes": 1009,
+        "sha256": "750f2902c607cb8bb5663f72ab37785aa1571173b2ae620a93551feffa3ac19f",
+        "same_final006": true
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+        "bytes": 15637,
+        "sha256": "39a69d36a99aaa569eec1cd5b0d0bb10cc94ab570256612dbdfe0f9814e518e8",
+        "same_final006": true
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
+        "bytes": 12897,
+        "sha256": "cfc56ebac8e77cf4c362d7f63d9e5f1640a43616b9eed758929921ae7b63a79b",
+        "same_final006": true
+      }
+    ],
+    "other_prior_FinalUse_tests_budgets_not_reexecuted_by_reviewer": true,
+    "reviewer_no_further_source_or_runtime_actions": true
+  }
+}

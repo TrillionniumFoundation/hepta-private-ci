@@ -1,0 +1,10 @@
+{
+  "schema": "hepta-upstream-crate-native-report-storage-v1",
+  "recorded_utc": "2026-10-28T12:23:30.985106+00:00",
+  "original_generated_report_retained_on_disk": true,
+  "original_report_SHA256": "db54ae875c1854986b66d1c3c1bf90481a65b93e2ac600e6c772f8da64aeb09f",
+  "archive": "root-native-junit.xml.gz",
+  "archive_SHA256": "3871ebe79c1599e6760c99be5c9b037e3b29eeb62216b1345a1958cb541df9e7",
+  "reason": "Nested upstream workspace emitted JUnit under its own target directory, distinct from compiler CARGO_TARGET_DIR. Preserve raw report and archive bytes while excluding generated build output from vendored source; test selection, assertions and runtime unchanged.",
+  "no_native_tests_after_fmt": true
+}

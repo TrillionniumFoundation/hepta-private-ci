@@ -83,6 +83,16 @@ pub(super) struct Store {
 }
 
 impl Store {
+    /// Probe the actual retained Windows namespace and original owner marker.
+    /// The caller holds the authority state lock and permanently fences state
+    /// on any refusal; this never reopens or manufactures store authority.
+    #[cfg(windows)]
+    pub(super) fn revalidate_owner(&self) -> Result<(), FinalUseError> {
+        self.root
+            .revalidate_shared()
+            .map_err(|_| FinalUseError::Unavailable)
+    }
+
     pub(super) fn open(
         root: &Path,
         signer_id: &str,

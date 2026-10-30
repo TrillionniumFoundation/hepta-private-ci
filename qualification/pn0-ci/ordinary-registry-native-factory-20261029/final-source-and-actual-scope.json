@@ -1,0 +1,851 @@
+{
+  "schema": "ordinary-registry-actual-component-observations-v1",
+  "recorded_utc": "2026-10-29T04:04:21.857951+00:00",
+  "head": "d3284e385e2b6037dd86752ddd246b616144a87c",
+  "tree": "eed42a952ac5a713fc733b29707b4be3c20e00b2",
+  "branch": "fix/hepta-final-use-live-owner-20261028",
+  "new_five_source_pins": [
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-prompt-registry/src/durable_store_platform.rs",
+      "bytes": 6985,
+      "sha256": "b9d6f00f4fb7d12e50093dff0d0a3c6557d33705e84ed8b71df720e7a118777c",
+      "git_blob": "8bc0aa27fbeea3786c9d1366cb86bb4ea534508b",
+      "repo_path": "codex-rs/hepta-prompt-registry/src/durable_store_platform.rs"
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-agentd/src/prompt_runtime.rs",
+      "bytes": 47437,
+      "sha256": "f96d1d44d97c6fe50bd1d972503c46fdeab692dc96378a662dc760b641794b98",
+      "git_blob": "97670dd83b602435d919d066687f4192b9457a3c",
+      "repo_path": "codex-rs/hepta-agentd/src/prompt_runtime.rs"
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-agentd/src/prompt_runtime_windows.rs",
+      "bytes": 6397,
+      "sha256": "8181d1891f3ffaedd5f88a503674c1654db32fc145a2c01296401b3bb8b8080a",
+      "git_blob": "d0d73dbf81e974bbc51d83cd5f8463651e89a4bf",
+      "repo_path": "codex-rs/hepta-agentd/src/prompt_runtime_windows.rs"
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-prompt-registry/src/ordinary_windows_factory_tests.rs",
+      "bytes": 5068,
+      "sha256": "c536200c281c58766f70022d7502825055904706fae193ff647ed23f633abbb9",
+      "git_blob": "e0b2cff1cf81909f27877869db0a3ad07c6f06bb",
+      "repo_path": "codex-rs/hepta-prompt-registry/src/ordinary_windows_factory_tests.rs"
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-prompt-registry/src/durable.rs",
+      "bytes": 110683,
+      "sha256": "9a3a60ee02b2f1abadb06e22f15c12014257b5c1d1f239fd93ac63ec86ab6b84",
+      "git_blob": "f397ce7274c6b693bb66982f5c5268f45ca7b787",
+      "repo_path": "codex-rs/hepta-prompt-registry/src/durable.rs"
+    }
+  ],
+  "new_source_state": "APPLIED_TO_ROG_WIP_ONLY; COMMITTED=false; PUBLISHED=false",
+  "commands": [
+    {
+      "start_utc": "2026-10-29T02:10:01.159382+00:00",
+      "end_utc": "2026-10-29T02:10:03.594572+00:00",
+      "argv": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-prompt-registry",
+        "--lib"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 2.4352121769916266,
+      "raw_bytes": 8494,
+      "raw_sha256": "52b62d90e738ebddcd0c62a02ea4f9f059459cab5fe145c343946c9d19ce13f6",
+      "source_unchanged": true,
+      "label": "Linux-registry-package-helper-cfg"
+    },
+    {
+      "start_utc": "2026-10-29T02:00:12.410993+00:00",
+      "end_utc": "2026-10-29T02:00:21.411157+00:00",
+      "argv": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-prompt-registry",
+        "--lib"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 9.0001855790033,
+      "raw_bytes": 9118,
+      "raw_sha256": "9d593884dbc61d41c1d88ba5bc4d3dbafa63a605c355ff84d2c7de5fbbc50d97",
+      "source_unchanged": true,
+      "label": "Linux-registry-package"
+    },
+    {
+      "start_utc": "2026-10-29T02:01:36.409555+00:00",
+      "end_utc": "2026-10-29T02:01:41.881686+00:00",
+      "argv": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-hepta-prompt-registry",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.4721549590467475,
+      "raw_bytes": 873,
+      "raw_sha256": "78c28ef573ea214f76c5ee2d1e891be1ce634197251975e06962e2cedd8773f5",
+      "source_unchanged": true,
+      "label": "Linux-registry-strict-clippy"
+    },
+    {
+      "start_utc": "2026-10-29T02:12:20.750978+00:00",
+      "end_utc": "2026-10-29T02:12:21.551818+00:00",
+      "argv": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-hepta-prompt-registry",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.8008643250213936,
+      "raw_bytes": 308,
+      "raw_sha256": "d6a543e40532ee7e31463b623d03cf832725c8390b3207844b7b5b9aba2328b7",
+      "source_unchanged": true,
+      "label": "Linux-registry-strict-helper-cfg"
+    },
+    {
+      "start_utc": "2026-10-29T02:02:16.432981+00:00",
+      "end_utc": "2026-10-29T02:02:23.136062+00:00",
+      "argv": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-hepta-prompt-registry",
+        "--lib",
+        "--target",
+        "x86_64-pc-windows-gnu",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 101,
+      "elapsed_seconds": 6.70310016599251,
+      "raw_bytes": 2147,
+      "raw_sha256": "e0fb2dabc6a3f93be49bc4f87edaa3f306974fbe0dbbe09648cf0d08123d4273",
+      "source_unchanged": true,
+      "label": "Windows-GNU-registry-cfgtest-strict"
+    },
+    {
+      "start_utc": "2026-10-29T02:12:28.155398+00:00",
+      "end_utc": "2026-10-29T02:12:29.303126+00:00",
+      "argv": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-hepta-prompt-registry",
+        "--lib",
+        "--target",
+        "x86_64-pc-windows-gnu",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.1477495210128836,
+      "raw_bytes": 308,
+      "raw_sha256": "e81ddcfe5a6f0272cbb7dec0eba0cb9e74c4be43b4de068bf1ec80291dadb8fd",
+      "source_unchanged": true,
+      "label": "Windows-GNU-registry-strict-helper-cfg"
+    },
+    {
+      "start_utc": "2026-10-29T02:14:12.966816+00:00",
+      "end_utc": "2026-10-29T02:14:13.339477+00:00",
+      "argv": [
+        "just",
+        "fmt"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.37268739799037576,
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_unchanged": false,
+      "label": "final-fmt"
+    }
+  ],
+  "compressed_raw_readbacks": [
+    {
+      "stored": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/qualification/pn0-ci/ordinary-registry-native-factory-20261029/Linux-registry-package-helper-cfg.raw.log.gz",
+        "bytes": 2113,
+        "sha256": "28122584ff8955d91162def817a1b9c9d6d77beed5dd6ea82c415fee863de2d1",
+        "git_blob": "2f828c2f7fa0fea11a4c44bd88bea8929ce223c9"
+      },
+      "exact_original": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/rog-ordinary-registry-validation-20261029-011/Linux-registry-package-helper-cfg.raw.log",
+        "bytes": 8494,
+        "sha256": "52b62d90e738ebddcd0c62a02ea4f9f059459cab5fe145c343946c9d19ce13f6",
+        "git_blob": "034a4967ca7cecb6577a88ab8e56685eff6d215d"
+      },
+      "decoded_readback_equal": true
+    },
+    {
+      "stored": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/qualification/pn0-ci/ordinary-registry-native-factory-20261029/Linux-registry-package.raw.log.gz",
+        "bytes": 2219,
+        "sha256": "8ded490e69bed1f376a4bea0f251df212106c7b6cfda0aba5bbcd68d3c45bf1d",
+        "git_blob": "c7eb1f1b57b7383394bad7b3b7e9aef55744ff7e"
+      },
+      "exact_original": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/rog-ordinary-registry-validation-20261029-011/Linux-registry-package.raw.log",
+        "bytes": 9118,
+        "sha256": "9d593884dbc61d41c1d88ba5bc4d3dbafa63a605c355ff84d2c7de5fbbc50d97",
+        "git_blob": "a25bd78e98428f7e989572801325c081aa065e9a"
+      },
+      "decoded_readback_equal": true
+    },
+    {
+      "stored": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/qualification/pn0-ci/ordinary-registry-native-factory-20261029/Linux-registry-strict-clippy.raw.log.gz",
+        "bytes": 333,
+        "sha256": "3d778ea0c76d32d5a3d6e811e2293eefcb64ba68e5152bb758c935da3c4f2032",
+        "git_blob": "fdd2c8e2ca76253fd0015dd9d9bcf2626ca94a30"
+      },
+      "exact_original": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/rog-ordinary-registry-validation-20261029-011/Linux-registry-strict-clippy.raw.log",
+        "bytes": 873,
+        "sha256": "78c28ef573ea214f76c5ee2d1e891be1ce634197251975e06962e2cedd8773f5",
+        "git_blob": "a46d3e38cb8e635e4cdf78d7400c2a562c7b41f9"
+      },
+      "decoded_readback_equal": true
+    },
+    {
+      "stored": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/qualification/pn0-ci/ordinary-registry-native-factory-20261029/Linux-registry-strict-helper-cfg.raw.log.gz",
+        "bytes": 237,
+        "sha256": "df5b3353a960bbea15d14b352af715f1104acbecb1e97e15444079d99de432e3",
+        "git_blob": "8931a81963d94d00733344157fab3148c11af127"
+      },
+      "exact_original": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/rog-ordinary-registry-validation-20261029-011/Linux-registry-strict-helper-cfg.raw.log",
+        "bytes": 308,
+        "sha256": "d6a543e40532ee7e31463b623d03cf832725c8390b3207844b7b5b9aba2328b7",
+        "git_blob": "4e0a3d536afcba26083540ecc8b49b8d07ee10e2"
+      },
+      "decoded_readback_equal": true
+    },
+    {
+      "stored": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/qualification/pn0-ci/ordinary-registry-native-factory-20261029/Windows-GNU-registry-cfgtest-strict.raw.log.gz",
+        "bytes": 750,
+        "sha256": "4d0562c19361d146a2caacd869f02de3dad8e45b02daeee2ed87ada5a079e12c",
+        "git_blob": "11f233513f795e9a0d249dde6251f6d31723d651"
+      },
+      "exact_original": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/rog-ordinary-registry-validation-20261029-011/Windows-GNU-registry-cfgtest-strict.raw.log",
+        "bytes": 2147,
+        "sha256": "e0fb2dabc6a3f93be49bc4f87edaa3f306974fbe0dbbe09648cf0d08123d4273",
+        "git_blob": "072a7339c7b4ff1a40609bdeeadfa33791ca2202"
+      },
+      "decoded_readback_equal": true
+    },
+    {
+      "stored": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/qualification/pn0-ci/ordinary-registry-native-factory-20261029/Windows-GNU-registry-strict-helper-cfg.raw.log.gz",
+        "bytes": 238,
+        "sha256": "fc6edf7089d768142c80a1e5c64d3f3d5993f78bcc0f7b79f2d4f363fd49e3a3",
+        "git_blob": "c5d30101dfc25516d33bb0a65995899da884c819"
+      },
+      "exact_original": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/rog-ordinary-registry-validation-20261029-011/Windows-GNU-registry-strict-helper-cfg.raw.log",
+        "bytes": 308,
+        "sha256": "e81ddcfe5a6f0272cbb7dec0eba0cb9e74c4be43b4de068bf1ec80291dadb8fd",
+        "git_blob": "c067eb01d38e95d90cc827e0ceeec51bc254528a"
+      },
+      "decoded_readback_equal": true
+    },
+    {
+      "stored": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/qualification/pn0-ci/ordinary-registry-native-factory-20261029/final-fmt.raw.log.gz",
+        "bytes": 20,
+        "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+        "git_blob": "86e43ea3218b5890302b754bbf8927f94e79f7ee"
+      },
+      "exact_original": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/rog-ordinary-registry-validation-20261029-011/final-fmt.raw.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "decoded_readback_equal": true
+    }
+  ],
+  "same_fifty_named_tests_across_two_source_stages": [
+    {
+      "label": "Linux-registry-package",
+      "names": [
+        "codex-hepta-prompt-registry durable::payload_tests::failed_manifest_publication_never_selects_new_payload_bytes",
+        "codex-hepta-prompt-registry durable::payload_tests::incomplete_unselected_payload_tail_is_discarded_only_after_semantic_validation",
+        "codex-hepta-prompt-registry durable::payload_tests::malformed_extent_manifests_cannot_reinterpret_or_trim_committed_bytes",
+        "codex-hepta-prompt-registry durable::payload_tests::metadata_changes_never_rewrite_old_payloads_and_reopen_never_rewrites_manifest",
+        "codex-hepta-prompt-registry durable::payload_tests::metadata_mutation_rejects_a_missing_committed_extent_file",
+        "codex-hepta-prompt-registry durable::payload_tests::missing_truncated_or_modified_committed_payload_is_never_repaired",
+        "codex-hepta-prompt-registry durable::payload_tests::post_rename_unknown_commit_keeps_new_payload_and_requires_reopen",
+        "codex-hepta-prompt-registry durable::payload_tests::v2_migration_preserves_payloads_frontiers_and_semantic_identity",
+        "codex-hepta-prompt-registry durable::tests::concurrent_writer_is_rejected_by_owner_lock",
+        "codex-hepta-prompt-registry durable::tests::exact_state_backup_restores_without_resurrection_or_digest_drift",
+        "codex-hepta-prompt-registry durable::tests::failed_v1_migration_does_not_overwrite_predecessor_bytes",
+        "codex-hepta-prompt-registry durable::tests::final_use_admission_is_scope_bound_single_use_and_revocation_aware",
+        "codex-hepta-prompt-registry durable::tests::final_use_revocation_binds_actor_reason_cutoff_and_persists_lineage",
+        "codex-hepta-prompt-registry durable::tests::pilot_capacity_fixture_reports_bounded_owner_costs",
+        "codex-hepta-prompt-registry durable::tests::poisoned_writer_rejects_before_consuming_final_use_grant",
+        "codex-hepta-prompt-registry durable::tests::post_rename_sync_failure_poison_writer_until_reopen",
+        "codex-hepta-prompt-registry durable::tests::reopen_rejects_resource_policy_drift",
+        "codex-hepta-prompt-registry durable::tests::restart_preserves_active_payload_backed_realization",
+        "codex-hepta-prompt-registry durable::tests::restart_preserves_revocation_payload_and_admission_lineage",
+        "codex-hepta-prompt-registry durable::tests::restore_validator_rejects_orphan_payload_and_lifecycle_drift",
+        "codex-hepta-prompt-registry durable::tests::schema_v1_migrates_without_resurrecting_state",
+        "codex-hepta-prompt-registry durable::tests::schema_v1_migration_preserves_older_revocation_frontier_after_later_mutation",
+        "codex-hepta-prompt-registry durable::tests::storage_full_before_rename_keeps_predecessor_live_and_reopenable",
+        "codex-hepta-prompt-registry durable::tests::truncated_state_fails_closed_on_reopen",
+        "codex-hepta-prompt-registry protocol::tests::prompt_factor_v1_rejects_noncanonical_dimension_order",
+        "codex-hepta-prompt-registry protocol::tests::prompt_factor_v1_round_trips_canonical_json_and_rejects_unknown_fields",
+        "codex-hepta-prompt-registry protocol::tests::prompt_realization_v1_round_trips_digest_fields",
+        "codex-hepta-prompt-registry tests::conflicting_identity_is_rejected",
+        "codex-hepta-prompt-registry tests::exhausted_revision_keeps_factor_insertion_and_admission_atomic",
+        "codex-hepta-prompt-registry tests::exhausted_revision_preserves_realizations_during_retirement_and_revocation",
+        "codex-hepta-prompt-registry tests::external_material_cannot_admit_itself",
+        "codex-hepta-prompt-registry tests::factor_relation_requires_live_governed_canonical_endpoints",
+        "codex-hepta-prompt-registry tests::governed_factor_relations_are_owner_bound_and_rebuildable",
+        "codex-hepta-prompt-registry tests::independent_admission_enables_realization_registration",
+        "codex-hepta-prompt-registry tests::proposer_cannot_self_review",
+        "codex-hepta-prompt-registry tests::record_capacity_rejects_atomically",
+        "codex-hepta-prompt-registry tests::revocation_cascades_and_is_terminal",
+        "codex-hepta-prompt-registry tests::signed_admission_persists_scope_evidence_and_grant_lineage",
+        "codex-hepta-prompt-registry tests::verified_admission_cannot_be_used_after_expiry",
+        "codex-hepta-prompt-registry tests::verified_admission_rejects_clock_rollback_between_verify_and_commit",
+        "codex-hepta-prompt-registry v2::tests::active_realization_profile_requires_explicit_supersession",
+        "codex-hepta-prompt-registry v2::tests::equivalent_required_factor_order_has_one_canonical_digest",
+        "codex-hepta-prompt-registry v2::tests::every_state_change_allocates_one_revision_and_identical_retry_does_not",
+        "codex-hepta-prompt-registry v2::tests::exact_model_tuple_and_frozen_snapshot_gate_delivery",
+        "codex-hepta-prompt-registry v2::tests::expired_or_missing_required_realization_fails_closed",
+        "codex-hepta-prompt-registry v2::tests::payload_ceiling_rejects_atomically",
+        "codex-hepta-prompt-registry v2::tests::payload_registration_supersedes_and_dereferences_exact_bytes",
+        "codex-hepta-prompt-registry v2::tests::required_factors_are_not_starved_by_other_roles",
+        "codex-hepta-prompt-registry v2::tests::revocation_invalidates_old_snapshot_and_disables_realization",
+        "codex-hepta-prompt-registry v2::tests::untrusted_external_factor_cannot_obtain_v2_realization"
+      ]
+    },
+    {
+      "label": "Linux-registry-package-helper-cfg",
+      "names": [
+        "codex-hepta-prompt-registry durable::payload_tests::failed_manifest_publication_never_selects_new_payload_bytes",
+        "codex-hepta-prompt-registry durable::payload_tests::incomplete_unselected_payload_tail_is_discarded_only_after_semantic_validation",
+        "codex-hepta-prompt-registry durable::payload_tests::malformed_extent_manifests_cannot_reinterpret_or_trim_committed_bytes",
+        "codex-hepta-prompt-registry durable::payload_tests::metadata_changes_never_rewrite_old_payloads_and_reopen_never_rewrites_manifest",
+        "codex-hepta-prompt-registry durable::payload_tests::metadata_mutation_rejects_a_missing_committed_extent_file",
+        "codex-hepta-prompt-registry durable::payload_tests::missing_truncated_or_modified_committed_payload_is_never_repaired",
+        "codex-hepta-prompt-registry durable::payload_tests::post_rename_unknown_commit_keeps_new_payload_and_requires_reopen",
+        "codex-hepta-prompt-registry durable::payload_tests::v2_migration_preserves_payloads_frontiers_and_semantic_identity",
+        "codex-hepta-prompt-registry durable::tests::concurrent_writer_is_rejected_by_owner_lock",
+        "codex-hepta-prompt-registry durable::tests::exact_state_backup_restores_without_resurrection_or_digest_drift",
+        "codex-hepta-prompt-registry durable::tests::failed_v1_migration_does_not_overwrite_predecessor_bytes",
+        "codex-hepta-prompt-registry durable::tests::final_use_admission_is_scope_bound_single_use_and_revocation_aware",
+        "codex-hepta-prompt-registry durable::tests::final_use_revocation_binds_actor_reason_cutoff_and_persists_lineage",
+        "codex-hepta-prompt-registry durable::tests::pilot_capacity_fixture_reports_bounded_owner_costs",
+        "codex-hepta-prompt-registry durable::tests::poisoned_writer_rejects_before_consuming_final_use_grant",
+        "codex-hepta-prompt-registry durable::tests::post_rename_sync_failure_poison_writer_until_reopen",
+        "codex-hepta-prompt-registry durable::tests::reopen_rejects_resource_policy_drift",
+        "codex-hepta-prompt-registry durable::tests::restart_preserves_active_payload_backed_realization",
+        "codex-hepta-prompt-registry durable::tests::restart_preserves_revocation_payload_and_admission_lineage",
+        "codex-hepta-prompt-registry durable::tests::restore_validator_rejects_orphan_payload_and_lifecycle_drift",
+        "codex-hepta-prompt-registry durable::tests::schema_v1_migrates_without_resurrecting_state",
+        "codex-hepta-prompt-registry durable::tests::schema_v1_migration_preserves_older_revocation_frontier_after_later_mutation",
+        "codex-hepta-prompt-registry durable::tests::storage_full_before_rename_keeps_predecessor_live_and_reopenable",
+        "codex-hepta-prompt-registry durable::tests::truncated_state_fails_closed_on_reopen",
+        "codex-hepta-prompt-registry protocol::tests::prompt_factor_v1_rejects_noncanonical_dimension_order",
+        "codex-hepta-prompt-registry protocol::tests::prompt_factor_v1_round_trips_canonical_json_and_rejects_unknown_fields",
+        "codex-hepta-prompt-registry protocol::tests::prompt_realization_v1_round_trips_digest_fields",
+        "codex-hepta-prompt-registry tests::conflicting_identity_is_rejected",
+        "codex-hepta-prompt-registry tests::exhausted_revision_keeps_factor_insertion_and_admission_atomic",
+        "codex-hepta-prompt-registry tests::exhausted_revision_preserves_realizations_during_retirement_and_revocation",
+        "codex-hepta-prompt-registry tests::external_material_cannot_admit_itself",
+        "codex-hepta-prompt-registry tests::factor_relation_requires_live_governed_canonical_endpoints",
+        "codex-hepta-prompt-registry tests::governed_factor_relations_are_owner_bound_and_rebuildable",
+        "codex-hepta-prompt-registry tests::independent_admission_enables_realization_registration",
+        "codex-hepta-prompt-registry tests::proposer_cannot_self_review",
+        "codex-hepta-prompt-registry tests::record_capacity_rejects_atomically",
+        "codex-hepta-prompt-registry tests::revocation_cascades_and_is_terminal",
+        "codex-hepta-prompt-registry tests::signed_admission_persists_scope_evidence_and_grant_lineage",
+        "codex-hepta-prompt-registry tests::verified_admission_cannot_be_used_after_expiry",
+        "codex-hepta-prompt-registry tests::verified_admission_rejects_clock_rollback_between_verify_and_commit",
+        "codex-hepta-prompt-registry v2::tests::active_realization_profile_requires_explicit_supersession",
+        "codex-hepta-prompt-registry v2::tests::equivalent_required_factor_order_has_one_canonical_digest",
+        "codex-hepta-prompt-registry v2::tests::every_state_change_allocates_one_revision_and_identical_retry_does_not",
+        "codex-hepta-prompt-registry v2::tests::exact_model_tuple_and_frozen_snapshot_gate_delivery",
+        "codex-hepta-prompt-registry v2::tests::expired_or_missing_required_realization_fails_closed",
+        "codex-hepta-prompt-registry v2::tests::payload_ceiling_rejects_atomically",
+        "codex-hepta-prompt-registry v2::tests::payload_registration_supersedes_and_dereferences_exact_bytes",
+        "codex-hepta-prompt-registry v2::tests::required_factors_are_not_starved_by_other_roles",
+        "codex-hepta-prompt-registry v2::tests::revocation_invalidates_old_snapshot_and_disables_realization",
+        "codex-hepta-prompt-registry v2::tests::untrusted_external_factor_cannot_obtain_v2_realization"
+      ]
+    }
+  ],
+  "strictness": "Both Clippy target commands retained -- -D warnings; actual first Windows101 retained; helper attrs fixed rather than lint waiver",
+  "cfg_helper_change": "Only9 cfg attributes on an unused Windows test import and8 helpers; existing Unix-only test consumers/module guards and all bodies/entries preserved",
+  "final_fmt": "Only wrapping in new native test file; pre-fmt SHA4ccc183... and final SHA c536200... distinguished; no tests repeated after fmt",
+  "prior81_handoff_paths": {
+    "codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs": {
+      "previous_git_blob": "575d35d362271a250d76d702ea88bee726a6a606",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "codex-rs/hepta-agentd/src/control.rs": {
+      "previous_git_blob": "bdd40109a7890ea9f3bef62f159a0320ea449382",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "codex-rs/uds/src/lib.rs": {
+      "previous_git_blob": "d3e9a91efa8f647d216f6c7fd890584ec6cafad6",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "codex-rs/uds/src/deadline_guard.rs": {
+      "previous_git_blob": "8567a79b6b9c4e7959533ec125e4225fc925396d",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "codex-rs/uds/src/deadline_guard_tests.rs": {
+      "previous_git_blob": "bcde3cdc04f210db4fb12ce3885a45fcad90e0bd",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "codex-rs/hepta-contracts/src/final_use.rs": {
+      "previous_git_blob": "0385b5546a636b9062d99047fe306c6b0594ea08",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "codex-rs/hepta-contracts/src/final_use_live_owner.rs": {
+      "previous_git_blob": "e7e44bb748f3de84e7ae6ab0c5cce01027c1d410",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "codex-rs/hepta-contracts/src/final_use_store.rs": {
+      "previous_git_blob": "78e2ea64c2169340441b758272d21ca1a88b8d78",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "codex-rs/hepta-contracts/src/final_use_windows_tests.rs": {
+      "previous_git_blob": "2e408e4024518f0256d20dc0822d8fb680b53b0a",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "docs/DEVELOPMENT.md": {
+      "previous_git_blob": "9a0b7f5531d91f893db564d2c6221731d568880a",
+      "exact": false,
+      "old_document_prefix_preserved": true
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/Linux-original-package.raw.log": {
+      "previous_git_blob": "614d20aaf7fd4bfbb77aa619c0e84f89ed267467",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/Linux-started.json": {
+      "previous_git_blob": "61b9b44ca44e92aa8210643c7b300d81aea26fae",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/Linux-strict-clippy-started.json": {
+      "previous_git_blob": "9188a2e0a2395e469e84a92666af5ddf01444f45",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/Linux-strict-clippy-terminal.json": {
+      "previous_git_blob": "d453f2df9f086740a76fda2efbf69a1014f758a2",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/Linux-strict-clippy.raw.log": {
+      "previous_git_blob": "c0799e324b93e769dd8d410078a81463bd74e3e3",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/Linux-terminal.json": {
+      "previous_git_blob": "51d3d34c7a484d4fa92896448445c5c2f61f2461",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/README.md": {
+      "previous_git_blob": "24cb3132b3c31b27cd2f5dd4a4fd2e0dfec19df1",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/Windows-GNU-cfgtest-strict-clippy-started.json": {
+      "previous_git_blob": "e64ea150da4fd491748c9fd834441f541ef23028",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/Windows-GNU-cfgtest-strict-clippy-terminal.json": {
+      "previous_git_blob": "a7a1d103e5d8d0873e8fc6ddedcb27888f37da77",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/Windows-GNU-cfgtest-strict-clippy.raw.log": {
+      "previous_git_blob": "c6091f037ef9376f4dcf1e331a584f179dd69913",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/actual-argument-comment-only-change.json": {
+      "previous_git_blob": "675e57a843ca3da811f7aafeee0e0dcfa677cf6a",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/current310b-original-Windows-failures-review.json": {
+      "previous_git_blob": "dde81c46f1c1eacdb6ef2ea0018a713c297f34ae",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/evidence-manifest.json": {
+      "previous_git_blob": "de0182592067fc428b4d985ac9b0b704426ae4ab",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/final-fmt-only.delta.patch.gz": {
+      "previous_git_blob": "52df6d47e30ce44b16b113552e00cd9603eb27a9",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/final-fmt-terminal.json": {
+      "previous_git_blob": "e054e0eef79da11f712582b5c460437a500e5e32",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/final-fmt.raw.log": {
+      "previous_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/final-source-scope.json": {
+      "previous_git_blob": "9d2a6cf7393381e61d3df436c2e8ed85f6c8a212",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/historical-early-source-admission.json": {
+      "previous_git_blob": "0e03f6b1eb6a41055c1e91ab26afc031ea6ec189",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/implementation-source-review.json": {
+      "previous_git_blob": "4618edd2e5bfd8f196c68d2e6a3ef46a9334e759",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/independent-source-review.json": {
+      "previous_git_blob": "0183a0c8fd7b2b414f7fbab4b7b0b79ae3297ef2",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/original-reviewed-source.patch.gz": {
+      "previous_git_blob": "6560a14142b12fc1435f07b1e23f8de7a3fd0d6d",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/original-source-manifest.json": {
+      "previous_git_blob": "3fb290c667faebf1f47663ad298398a4f300b79b",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/final-use-retained-owner-20261028/pinned-atomic-parameter-source.json": {
+      "previous_git_blob": "dd17ece3a94b8081c27e4e1cfa540ef6a2107834",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/Linux-UDS-package-started.json": {
+      "previous_git_blob": "e7e179e3b407e96f4aff05365d3c6e5a64d2a7b7",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/Linux-UDS-package-terminal.json": {
+      "previous_git_blob": "e752146e696822066584412de28ef96616691e55",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/Linux-UDS-package.raw.log": {
+      "previous_git_blob": "009c3af3308d15cee8f1f89131d824c5df338791",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/Linux-UDS-strict-clippy-started.json": {
+      "previous_git_blob": "2fefcc19b43f9689ef830d3ab9c7ada82018c7f6",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/Linux-UDS-strict-clippy-terminal.json": {
+      "previous_git_blob": "c418f1a11e82dc7cd177d6acf76443bf30c1b530",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/Linux-UDS-strict-clippy.raw.log": {
+      "previous_git_blob": "f275505138e4fee8a0aedfc1a4ba472b4cfe0369",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/README.md": {
+      "previous_git_blob": "40615c038a83baa1226f0bed5d3ecfd36a5d10b8",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/Windows-GNU-UDS-cfgtest-strict-started.json": {
+      "previous_git_blob": "baf34a7984afc463e4bfae4f6db342d5baeb2782",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/Windows-GNU-UDS-cfgtest-strict-terminal.json": {
+      "previous_git_blob": "65a20d99a90ec210a24e39d57edcc29318913ab1",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/Windows-GNU-UDS-cfgtest-strict.raw.log": {
+      "previous_git_blob": "b45c4405f3eef8668c8d2ad0558c7f08eee3afd6",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/actual-source-apply.json": {
+      "previous_git_blob": "94446e7640e4f02e1232a87f8a869a333dd806ac",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/final-fmt-only.delta.patch.gz": {
+      "previous_git_blob": "9bb9114095f60b096c849fc11a206b295a3b5022",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/final-fmt-started.json": {
+      "previous_git_blob": "cac3b79a4741cd8ae50b5e136c539097fea339f7",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/final-fmt-terminal.json": {
+      "previous_git_blob": "579f860dd93eda73a1651240ec6986ceec044668",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/final-fmt.raw.log": {
+      "previous_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/final-source-scope.json": {
+      "previous_git_blob": "cc2454cc6e668291a3dbec1da2fba60ef100a830",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/independent-final-source-and-result-readback.json": {
+      "previous_git_blob": "b2bf7e13bbf43da75bde397ccd443a8b051cf4ab",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/manifest.json": {
+      "previous_git_blob": "e02488459a6e759ccb16b00da9b790260c960605",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/original-68-Agentd-test-resource-pins.json": {
+      "previous_git_blob": "709bcd47142f7f430fe62be7a90b4537ea72b0ad",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/original-peer-gate-source-review-blocker.json": {
+      "previous_git_blob": "179d190cba8331963cfee3e197998f4476e00f2b",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/original-peer-gate-source.patch.gz": {
+      "previous_git_blob": "e3ba49509ee4850714fec2ffa831d7f7784f8cd0",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/reviewed-revision004-source-manifest.json": {
+      "previous_git_blob": "bd36d7ebe03ff002d5935bbd158f9f29badcebf1",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/agentd-peer-deadline-20261028/reviewed-revision004-source.patch.gz": {
+      "previous_git_blob": "28e4dd742cab93fec3b207f62548f99012061b75",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/README.md": {
+      "previous_git_blob": "6e5f18a0433eb92327974955df619e453ac673f9",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/Windows-GNU-runner-cfgtest-clippy-started.json": {
+      "previous_git_blob": "b47d342c97301cc805803379b52f288dba61c121",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/Windows-GNU-runner-cfgtest-clippy-terminal.json": {
+      "previous_git_blob": "b5622fd7677bfc7e352bff213c044d53a237beba",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/Windows-GNU-runner-cfgtest-clippy-tool-ready-started.json": {
+      "previous_git_blob": "5b9c2187c474defe3bffe3988f5a912e72c43302",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/Windows-GNU-runner-cfgtest-clippy-tool-ready-terminal.json": {
+      "previous_git_blob": "c08fefd494d6c76e7dd1e9969603524ea10c8999",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/Windows-GNU-runner-cfgtest-clippy-tool-ready.raw.log": {
+      "previous_git_blob": "e129b9a935b4cd340807cbffc2d2066f81342338",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/Windows-GNU-runner-cfgtest-clippy.raw.log": {
+      "previous_git_blob": "b00dbbff6745d56f225be533e1c317b0dcd75ada",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/actual-local-tool-preparation.json": {
+      "previous_git_blob": "688dcb58608da758539ab1c6efa98cf9bd838198",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/actual-source-apply.json": {
+      "previous_git_blob": "247fddf74a2833239704c0bbc47b89427fc98049",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/apt-download.raw.log": {
+      "previous_git_blob": "c1f4fde0eb99a01ced0a98c005d67f33938c83f9",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/compiler-probe.raw.log": {
+      "previous_git_blob": "513cd633d3c92563acc3cbe2f2c5d61924b180a1",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/current-bf36-native-originals-ROG-READ-ACK.json": {
+      "previous_git_blob": "b3ae6b9385e536675dc485537dd963bdbc5743a4",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/current-bf36-native-originals-independent-read.json": {
+      "previous_git_blob": "dbfa178dc4f56c54c42d705c91a755f05df7a456",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/final-fmt-started.json": {
+      "previous_git_blob": "e5e3d30b82c8ef95c370208b9296d4e6cf08e35c",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/final-fmt-terminal.json": {
+      "previous_git_blob": "6ecaac95b03168dc67dde4cf921a0fde43b5c742",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/final-fmt.raw.log": {
+      "previous_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/final-source-scope.json": {
+      "previous_git_blob": "d3bb24d59df7166e40357b44f393b745e8e4f442",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/independent-source-review.json": {
+      "previous_git_blob": "a97b8ef500f26191be39dea15cf838befbab6489",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/manifest.json": {
+      "previous_git_blob": "60bb1a3d63c6698e6f39b82927bfaf9d889d6de7",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/original113-Windows-subtree-pins.json": {
+      "previous_git_blob": "f5942edee9adbba079f2fb1d383cbb521eb1a4cb",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/protected39-source-pins.json": {
+      "previous_git_blob": "295e2e3b5d084b52062e7ddd198c668cf83b2453",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/reviewed-source-candidate-manifest.json": {
+      "previous_git_blob": "7112e9ae9121c182c2c64ec2616ff9cc99fabc25",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/reviewed-source.patch.gz": {
+      "previous_git_blob": "2fe181466693e4df6fd9c11e45d8b5534fde7cf4",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/source-mechanical-verification.json": {
+      "previous_git_blob": "431c3d7af5542b94426033fc783c8f466ec231f0",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    },
+    "qualification/pn0-ci/runner-owned-handles-20261029/source-ownership-and-open-boundaries.json": {
+      "previous_git_blob": "9e2e55a290061ec52430acd386c5fdb4d498a651",
+      "exact": true,
+      "old_document_prefix_preserved": null
+    }
+  },
+  "original182_test_inventory": {
+    "whole_original_match_count": 181,
+    "exceptions": [
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
+        "original_pin_sha256": "fd028a28e8425b031f4065517b66a57531c77896b85a9a95b8086dc6351d7829",
+        "current_sha256": "cfc56ebac8e77cf4c362d7f63d9e5f1640a43616b9eed758929921ae7b63a79b"
+      }
+    ],
+    "exception_reason": "Previously delivered006 FinalUse append WIP exact same old010 SHA; 011 does not modify it. Original v1/v2 statements are retained and clarified, not overwritten."
+  },
+  "root_intake": {
+    "reported_HEAD": "42e8701fb92a65f8bd5b4c45df932ce08489e4e7",
+    "reported_tree": "d79f56ac93befb5c09a2b5efc602bab651c7c375",
+    "scope": "Intake packet and9 source/capture mappings actually read; actual root Git objects, author/parent headers and new test/publication state not independently queried. Do not inherit component PASS to root tuple.",
+    "source_action": "Do not reapply prior9WIP/71files; consume only new5delta after original preimage check; preserve root concurrent docs."
+  },
+  "qualification_not_run": [
+    "Windows native new3 and original3 Registry",
+    "Agentd complete package compile/tests",
+    "Original fourlane16+4/query/terminal at this source",
+    "protected-clock/external-frontier FinalUse composition",
+    "AF_UNIX peer provider",
+    "core lifecycle fix",
+    "model/genesis/I09/I10/three ordinary upgrade rounds",
+    "release/ABI/fullCI/PN1/independent WAN"
+  ],
+  "omissions": [
+    "376 original Bazel packet files, officialZIPs and fullcompact streams stay at separately recorded local archive paths/hashes; no claim all bytes in this qualification directory",
+    "Large FinalUse coverage tables remain at independent inventory report paths; source-read coverage is not compile/native proof",
+    "Compiler packages/toolchain/native caches and Git object database are not bundled"
+  ],
+  "budget": "New isolated Registry component only; no original worker/model900/SDK1200/supervisor900/PN1/native/full-resource budget reset; no CI action, global service/driver/ACL or production activation",
+  "cross_error_created_custody": "OPEN: RAII handles close but public factory Err does not transfer retained Created custody or prove deletion/repair/refund",
+  "task_complete": false,
+  "merge_ready": false,
+  "NO_GO": true
+}

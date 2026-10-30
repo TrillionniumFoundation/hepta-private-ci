@@ -1,0 +1,28 @@
+{
+  "base_head": "d3284e385e2b6037dd86752ddd246b616144a87c",
+  "base_tree": "eed42a952ac5a713fc733b29707b4be3c20e00b2",
+  "base_resolution_note": "d328 shorthand ambiguous; exact d3284e385 docs(pn0) commit used; no refs changed",
+  "scope": "before/after mirrors only; no worktree/index/ref writes",
+  "changed_production_files": [
+    "codex-rs/hepta-contracts/src/final_use.rs",
+    "codex-rs/hepta-contracts/src/final_use_store.rs",
+    "codex-rs/hepta-contracts/src/final_use_live_owner.rs"
+  ],
+  "consumer_count": 10,
+  "consumers": [
+    "pub fn enter(self,",
+    "pub fn frontier(&self)",
+    "pub fn capacity(&self)",
+    "pub fn revocation_head(&self)",
+    "pub fn update_revocations(&self,",
+    "pub fn check_unclaimed_grant(",
+    "pub fn claim(",
+    "fn enter_verified_effect(",
+    "fn validate_token_live_witness(",
+    "fn with_dispatch_boundary_witness<T>("
+  ],
+  "new_native_tests": "NOT_ADDED: existing full-file marker lock makes external write/truncate disturbance unproven; no authorized non-ACL/non-private-helper disturbance proven and native execution prohibited",
+  "source_edit_attempt_history": "First generator stopped on missing generic<T> in textual witness function selector before any source mirror edit; before/after existing files remained identical base. Selector corrected; this was a generator lookup error, not Rust/native test output.",
+  "fmt_build_test_native": "NOT_RUN",
+  "source_frozen_for_review": false
+}

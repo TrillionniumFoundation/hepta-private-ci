@@ -1,0 +1,100 @@
+{
+  "schema": "pn0-cognitive-workspace-component-evidence-v1",
+  "created_utc": "2026-10-28T15:33:01.449362+00:00",
+  "base_source": "aca32e0df184a4a0b1c094918d1cf3dbd20e4588",
+  "base_tree": "a2fe6bc41eb50fcc764c9d0770b133b34c893201",
+  "scope": "actual dirty two-file source candidate on ACA; not a published-head/PR-preview/Windows execution receipt",
+  "linux_tests": {
+    "passed": 100,
+    "failed": 0,
+    "skipped": 0,
+    "exit_code": 0
+  },
+  "Windows_native": "NOT_RUN",
+  "historical_Windows_failures": "OPEN; no causal closure asserted",
+  "task_complete": false,
+  "merge_ready": false,
+  "members": [
+    {
+      "name": "test.raw.log",
+      "bytes": 105220,
+      "sha256": "850258e577b65c20ec037f67e9c8cb55519616a217c26cf0cf7b06c1058d6b25",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-cognitive-workspace-package-verification-20261028-003/test.raw.log"
+    },
+    {
+      "name": "test-source-and-terminal.json",
+      "bytes": 925,
+      "sha256": "adb92bb43ae540076ac168497af5ce4a81acaeeb86b38024ff08a76dda794b92",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-cognitive-workspace-package-verification-20261028-003/terminal.json"
+    },
+    {
+      "name": "test-started.json",
+      "bytes": 1022,
+      "sha256": "a92526bf1978f885115b1203cd87d686b5de5faf13f52740da03569a6c0cd0bd",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-cognitive-workspace-package-verification-20261028-003/started.json"
+    },
+    {
+      "name": "independent-source-review.json",
+      "bytes": 15147,
+      "sha256": "6e671a3e62f3cc81926ca398625309883f899a4127e4d2e96ee189a64cae7c88",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/aca-local-cognitive-workspace-four-consumer-independent-20261028-003.json"
+    },
+    {
+      "name": "candidate.patch",
+      "bytes": 5172,
+      "sha256": "f3f73371f5f79b48e1657cf5ec786e04af53e6e025401365e6406682aabb0d7a",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-local-cognitive-workspace-four-consumer-candidate-20261028-003/05-aca-two-source-candidate.patch"
+    },
+    {
+      "name": "clippy.raw.log",
+      "bytes": 48724,
+      "sha256": "ca227eb14289b6f4dfeaae6e42d178cb066e4c848619948d8d796f03d9149961",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-cognitive-workspace-package-verification-20261028-003/clippy.raw.log"
+    },
+    {
+      "name": "clippy-started.json",
+      "bytes": 380,
+      "sha256": "b23669912ed44b9a9ea1df56d870a6fa916895c7e8127f46e8ba5fd00ae56ac1",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-cognitive-workspace-package-verification-20261028-003/clippy-started.json"
+    },
+    {
+      "name": "clippy-terminal.json",
+      "bytes": 412,
+      "sha256": "5f375ceaebda54fd61febfa57ad300f04a305ea264a67e0bb9d87387bf258de9",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-cognitive-workspace-package-verification-20261028-003/clippy-terminal.json"
+    },
+    {
+      "name": "fmt.raw.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-cognitive-workspace-package-verification-20261028-003/fmt.raw.log"
+    },
+    {
+      "name": "fmt-terminal.json",
+      "bytes": 926,
+      "sha256": "dd946fbd51948b0cd96f2fa6a590cfd533d58b4388f9b04e9d94048c0da168e7",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-cognitive-workspace-package-verification-20261028-003/fmt-terminal.json"
+    }
+  ],
+  "strict_clippy": {
+    "argv": [
+      "just",
+      "clippy",
+      "--locked",
+      "-p",
+      "codex-hepta-memory-extension",
+      "--lib",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 158.89896074298304
+  },
+  "final_fmt": {
+    "exit_code": 0,
+    "elapsed_seconds": 0.13347989897010848,
+    "source_byte_unchanged": true,
+    "tests_after_fmt": "NOT_REPEATED per repository instructions"
+  }
+}

@@ -27,7 +27,7 @@ use codex_login::default_client::default_headers;
 use codex_model_provider::AgentIdentitySessionFallback;
 use codex_model_provider::ProviderAuthScope;
 use codex_model_provider::SharedModelProvider;
-use codex_model_provider_info::provider_accepts_internal_chat_message_metadata;
+use codex_model_provider_info::InternalChatMessageMetadataPolicy;
 use codex_protocol::ThreadId;
 use codex_protocol::error::CodexErr;
 use codex_protocol::models::ContentItem;
@@ -129,10 +129,9 @@ struct PooledConnection {
     thread_id: String,
     expires_at: Instant,
     auth_changes: Option<tokio::sync::watch::Receiver<u64>>,
-    /// Whether local item metadata must be removed before using this socket.
-    /// This is bound to the resolved provider URL when the connection opens,
-    /// rather than the provider's friendly display name.
-    strip_internal_chat_message_metadata: bool,
+    /// Field policy bound to the resolved provider URL when this socket opens.
+    /// A provider's friendly name cannot authorize any internal wire fields.
+    internal_metadata_policy: InternalChatMessageMetadataPolicy,
 }
 
 struct ConnectionLease {
@@ -221,8 +220,11 @@ impl LunaSampler {
             .api_provider()
             .await
             .map_err(LunaSamplerError::Provider)?;
-        let strip_internal_chat_message_metadata =
-            !provider_accepts_internal_chat_message_metadata(&provider.base_url);
+        let internal_metadata_policy = self
+            .config
+            .provider
+            .info()
+            .internal_chat_message_metadata_policy(&provider.base_url);
         let auth_manager = self.config.provider.auth_manager();
         let auth_changes = auth_manager.map(|manager| manager.auth_change_receiver());
         let auth = self
@@ -315,7 +317,7 @@ impl LunaSampler {
             thread_id,
             expires_at: Instant::now() + MAX_WEBSOCKET_AGE,
             auth_changes,
-            strip_internal_chat_message_metadata,
+            internal_metadata_policy,
         })
     }
 
@@ -543,13 +545,10 @@ impl LunaSampler {
                     return Err(error);
                 }
             };
-            if lease.connection.strip_internal_chat_message_metadata {
-                // `request` is a per-attempt wire copy. The source transcript
-                // and caller-owned compaction remain untouched, while local
-                // metadata is kept off ChatGPT/custom-provider wires.
-                for item in &mut request.input {
-                    item.clear_internal_chat_message_metadata_passthrough();
-                }
+            // `request` is a per-attempt wire copy; apply this socket's exact
+            // endpoint policy without changing caller-owned compaction/history.
+            for item in &mut request.input {
+                lease.connection.internal_metadata_policy.apply(item);
             }
             let thread_id = &lease.connection.thread_id;
             let turn_metadata = json!({

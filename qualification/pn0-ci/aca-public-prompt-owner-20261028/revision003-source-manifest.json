@@ -1,0 +1,363 @@
+{
+  "schema": "aca-public-prompt-owner-mirrored-source-candidate-v1",
+  "base_head": "aca32e0df184a4a0b1c094918d1cf3dbd20e4588",
+  "base_tree": "a2fe6bc41eb50fcc764c9d0770b133b34c893201",
+  "phase": "REVISION_003_FROZEN_ONLY_BOXED_COLLISION_OWNER_STATIC_REVIEW",
+  "created_utc": "2026-10-28T15:48:40.867860+00:00",
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+      "before_present": true,
+      "before_bytes": 46059,
+      "before_sha256": "ee55c15436b1646f6feca8de0aa531e2e0c5f05c440c8cf22ec3891a2695e4db",
+      "before_git_blob": "a4a755a5adc6005cd917b3e8ccc3995d6d34fd67",
+      "after_bytes": 47584,
+      "after_sha256": "f64077547cf54cdd18a27c69cf7de83af4986bb6e5c971df2da4b6c99a34a2f5",
+      "after_git_blob": "18393f7ed8c7e5e4495c3646c2298c0a3705f475",
+      "after_lines": 1292,
+      "added_lines": 52,
+      "removed_lines": 5,
+      "pure_text_unified_hunk_replay": "EXACT_BYTES_EQUAL"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime_windows.rs",
+      "before_present": false,
+      "before_bytes": 0,
+      "before_sha256": null,
+      "before_git_blob": null,
+      "after_bytes": 6844,
+      "after_sha256": "0196a4ced20e9ab83e2c25d678e4711d6aa10fa737687bd46b87aed3d932e80a",
+      "after_git_blob": "871653d4ead485319f9f04c598db029aa22659bb",
+      "after_lines": 159,
+      "added_lines": 159,
+      "removed_lines": 0,
+      "pure_text_unified_hunk_replay": "EXACT_BYTES_EQUAL"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "before_present": true,
+      "before_bytes": 109938,
+      "before_sha256": "836c494f4998bd507604c1e49d6071c24dff4dddc4f9f7d2ffeb40e091af7638",
+      "before_git_blob": "3e7a9f2e33730e1cf40efcfc62fd35418597a4ed",
+      "after_bytes": 110584,
+      "after_sha256": "ab226b6bd30f4089f6599748662de3b1a011ce03d67aaff05d0ba5bfc21c07a6",
+      "after_git_blob": "98a81268cdcdf91f4d861a52088ae5cb81a943a8",
+      "after_lines": 2892,
+      "added_lines": 22,
+      "removed_lines": 4,
+      "pure_text_unified_hunk_replay": "EXACT_BYTES_EQUAL"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/fresh_private_directory.rs",
+      "before_present": true,
+      "before_bytes": 9983,
+      "before_sha256": "a7131dc59d7aaa3d50bb7609d27e52cac37aecc0a5b1128e791cdab441dbeaeb",
+      "before_git_blob": "ca9b656d7fb9ab6cb6af08feb5f7349a45673c13",
+      "after_bytes": 12197,
+      "after_sha256": "99bd2f7a256c90fdae8c54de80cf08b63c2d70b7e2fcd7bb535be6047a856e4e",
+      "after_git_blob": "4321fff3afdc5defff90bec9ab2feefc3bcfe22c",
+      "after_lines": 335,
+      "added_lines": 59,
+      "removed_lines": 6,
+      "pure_text_unified_hunk_replay": "EXACT_BYTES_EQUAL"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/parent_anchor.rs",
+      "before_present": true,
+      "before_bytes": 8458,
+      "before_sha256": "f5d9e518cd97d1847ed282abfe1863917a803126ead3651a5811c8047b9369f2",
+      "before_git_blob": "7818640160415fcd42dae5061baea1bf334f4c8a",
+      "after_bytes": 8706,
+      "after_sha256": "790b4ac7105d585fa07793b584426cd919ac50a1f2e07170236aef91e49e0bf2",
+      "after_git_blob": "d4aa5488310694442c4173be20ae26d03834becb",
+      "after_lines": 239,
+      "added_lines": 7,
+      "removed_lines": 1,
+      "pure_text_unified_hunk_replay": "EXACT_BYTES_EQUAL"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/parent_anchor_tests.rs",
+      "before_present": true,
+      "before_bytes": 6821,
+      "before_sha256": "b80336930cd939919831bc13d700de81d1e13a3331c989d000deb0158ecce46b",
+      "before_git_blob": "b8c729b81f1d58a39e7437429cc914d6293bd77e",
+      "after_bytes": 8221,
+      "after_sha256": "39bca83ff00d4744669e856724bf5451df063499c703f36cf6d01ff1e96c5341",
+      "after_git_blob": "05025b7cbc56ea7a8bb8ca9cb2a7e031a82c77da",
+      "after_lines": 213,
+      "added_lines": 36,
+      "removed_lines": 0,
+      "pure_text_unified_hunk_replay": "EXACT_BYTES_EQUAL"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/private_owner_lock.rs",
+      "before_present": true,
+      "before_bytes": 7489,
+      "before_sha256": "dabd1859af978a048a299beb861df93ac06074f2923d7e9ea8db961dc072109b",
+      "before_git_blob": "6da66fa2978e622189efd8e11cf246fb32792b7a",
+      "after_bytes": 7825,
+      "after_sha256": "9f6ef5f7ac348bf2ebac9c3872b19df16776ea88c47b2009aab05ca3f91f1c82",
+      "after_git_blob": "3a1e76616c2e3d2cb4efea47902debd537d74a79",
+      "after_lines": 226,
+      "added_lines": 7,
+      "removed_lines": 0,
+      "pure_text_unified_hunk_replay": "EXACT_BYTES_EQUAL"
+    }
+  ],
+  "patch": {
+    "path": "aca-atomic-public-prompt-owner-v3.patch",
+    "bytes": 23628,
+    "sha256": "d66688a3affa853d00be05edd8e8f74c216e8acf541debc3d5d991f4838c053f",
+    "added_lines": 342,
+    "removed_lines": 16
+  },
+  "mechanical_source_check": "all emitted unified hunks independently replayed in memory from exact before bytes to exact after bytes; no Rust source execution",
+  "protected_source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "git_blob": "7f787dccb9318399b1a940aaac5e940dd5dbf029",
+      "bytes": 33646,
+      "sha256": "e0d3dfcc84fbeaacf5dd0fb23a584363f4a602fc3e913241fe07bfc8a4d35ee2",
+      "lines": "79-155",
+      "meaning": "Original AgentdState::new creates prompt-registry underhome and prompt-runtime underrun and calls public open_state_dirs beforeState publication"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "git_blob": "dfba6f9599d2736f977a84ad36482f8a0319935b",
+      "bytes": 26084,
+      "sha256": "3f5fe2640e6ffaa08ac09f7bc4e386b6976d07103b42c9def17409ae3a459b31",
+      "lines": "159-175",
+      "meaning": "compose_runtime is in-memory identity/digest/capacity validation; no FinalUse store"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+      "git_blob": "32b9ecb144e075cce5f48f2490fb629dcf6d7e7d",
+      "bytes": 28882,
+      "sha256": "0724d395f98ceb1f64259036c94157f8f8ece37b3725670befd5dd85b26c981a",
+      "lines": "249-502;505-535;755-760",
+      "meaning": "Four original durable runtime controls; named pipeline calls FinalUse after pipeline init"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "git_blob": "3aba66f280ab69f6755e8ca31523915f8e41e27b",
+      "bytes": 24207,
+      "sha256": "fcac8f2ae9dedc4e4fdc792715ccaf3febb15c077d8c1f371ca43d0fdcd10d85",
+      "lines": "131-195",
+      "meaning": "Identity roots checked against supervisor record, but paths are not namespace authority"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/durable_store_platform.rs",
+      "git_blob": "43a48b18d2f7f24b508ca242b335d12339d59910",
+      "bytes": 5319,
+      "sha256": "977d167aff7b707480e731190affcece1afe3fc2ef8e270194079989d6b66c46",
+      "lines": "1-50;54-116;118-151",
+      "meaning": "Windows ordinarypath guard and genuine private backend"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/durable_payloads.rs",
+      "git_blob": "5ebe7ffd5600586b01a19b94ccd1ad35a63b9f5b",
+      "bytes": 9935,
+      "sha256": "e8588537f70a261b8c5c858178935768d63c5a3b82ff48a0371cbff69cbd7d5b",
+      "lines": "28-30;77-139;150-241",
+      "meaning": "Original32MiB payload archive, immutable selected extents and only validated orphan-tail recovery"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/durable_windows_tests.rs",
+      "git_blob": "5158a5f603374ba881cf2fe8f1ccd4360f6da72a",
+      "bytes": 4469,
+      "sha256": "f5c8a67d4107fdea4fb9d6ec685e031aefc5e7f8d3fee2f5869ed768b37e406a",
+      "lines": "23-40;60-115",
+      "meaning": "Existing native controlled registry mechanism; not public Agentd path"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/original_store_file.rs",
+      "git_blob": "095a06221359d69b485d710acaff339b5735a227",
+      "bytes": 4746,
+      "sha256": "7f9736a7d4e3358db91b7503ba86820ff6381711053d0ff1dad2c0b9ef8eb06f",
+      "lines": "19-37;40-103",
+      "meaning": "Opaquefresh/existing directory, realinitial namespaceflush, held original I/O"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/owner_read.rs",
+      "git_blob": "6625adf8d07c3efdfdb29906f6420791df075815",
+      "bytes": 4722,
+      "sha256": "9e04ffef37dcbb11db05aa8b2e6487222326c9ef4c4d245b257fad2342911ad1",
+      "lines": "20;40-70;73-127",
+      "meaning": "Exactnative missing discriminator and boundedheldfile reads"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/owner_file.rs",
+      "git_blob": "c364268846c7d34ea9d9d765407ba71882f701f5",
+      "bytes": 9937,
+      "sha256": "99d81a5498b44ca7f608f1784ee4c54eae27da7956f17ecdffe8fdf4e08e7d96",
+      "lines": "20-44;46-143;149-269",
+      "meaning": "Real protected original files,64MiB ceiling and per-file suppliedbound, stickyI/O"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/owner_stage.rs",
+      "git_blob": "3d74c7b325a01acab06cd5e975e847a4a0fe3946",
+      "bytes": 5053,
+      "sha256": "9f7e2bbcc5a46f60c73f767eb33f0a7fdd891469506c11e631ecb8905158b651",
+      "lines": "14-39;40-69;92-134",
+      "meaning": "Exact stage handle atomic replace, before/afterpublication errors, separate native directoryflush"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/primary_owner.rs",
+      "git_blob": "dec686d52d0a348e9f613c8d6d5316204fa2ce66",
+      "bytes": 8630,
+      "sha256": "0841e4ee2fa052b493492b320f8aa78cea40dce84599a9890b207d2b05645f91",
+      "lines": "173-188;196-235",
+      "meaning": "Requires actualelevatedunrestrictedprimaryadministrator, noimpersonation/fabricatedSID"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/namespace_acl.rs",
+      "git_blob": "a593f48f32cd009381744b9103ce503caafe0d45",
+      "bytes": 6586,
+      "sha256": "706200e85277bcddb5d09a3971118bcc3ce7663d1693916c9c2b5ee757c3177d",
+      "lines": "60-61;64-145;149-163",
+      "meaning": "Actualtrustedowner/ACEbounded policy; broadforeignmutators refused, noACLrepair"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/mechanism.rs",
+      "git_blob": "6ed18e9bd88b85a642e4869961143d714adb6712",
+      "bytes": 13614,
+      "sha256": "9e28f32ab08012b4d858f90e5bfb802819932a2c0983594eee1cbdf00763fd1f",
+      "lines": "93-127;136-208",
+      "meaning": "ExactNTSTATUS+information from held-relative opens, ownedhandle beforecallback"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/lib.rs",
+      "git_blob": "bbcfb796e1ced50f7758e8bb2e5ec6453cf05c0c",
+      "bytes": 13655,
+      "sha256": "31f0868f63647a54f653c53f0e2154b51c1ea4a75af9783033a16477195c2b3c",
+      "lines": "324-325",
+      "meaning": "Already reexports private-owner module; Agentd already depends on contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store_io.rs",
+      "git_blob": "5dc155c4d3a26b09c75a0660a4514a22c0182aef",
+      "bytes": 8066,
+      "sha256": "febde7c29b947473a77e215937f4c9e4a7de9dc877c488da1fe32157dd33bd93",
+      "lines": "Windows prepare/open guards",
+      "meaning": "Independent FinalUse path factory remains closed; do not change for init"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/fresh_private_directory_tests.rs",
+      "sha256": "76a2725625539ad77bda2265c2867155dc52288157b6c5ef7eb919452bd5ca04",
+      "bytes": 7941,
+      "scope": "read-only; excluded from patch"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/private_owner_lock_tests.rs",
+      "sha256": "ecb2b2a345785799c8fb4a7e7e1d75f962d1e2e843d03b473b059a071f0cb0ed",
+      "bytes": 1783,
+      "scope": "read-only; excluded from patch"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/original_store_file_tests.rs",
+      "sha256": "48d656419546fe396cb415f40913195b3483916f4cf7ce28cab167e4d6738c30",
+      "bytes": 1705,
+      "scope": "read-only; excluded from patch"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs",
+      "sha256": "8af986770a28d2f6d4423d921b4d5d3f26e874cab87b3d8e6b828bc8bdc8d0d3",
+      "bytes": 27578,
+      "scope": "read-only; excluded from patch"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win/process_observation.rs",
+      "sha256": "842988628199ca90030f95ae4c9874f4b7e708e8a8c063360d5a8cc832f4613f",
+      "bytes": 1571,
+      "scope": "read-only; excluded from patch"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win/process_observation_tests.rs",
+      "sha256": "459d1a9f8b20a6c6b07b604d196469c21be13e3c29bd1ad4e57d6ef067bddf49",
+      "bytes": 7760,
+      "scope": "read-only; excluded from patch"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "sha256": "f010ed35aae729fdd80ae31723c1c57d34a52a1710344d2499cec620a1817151",
+      "bytes": 5298,
+      "scope": "read-only; excluded from patch"
+    },
+    {
+      "path": "defs.bzl",
+      "sha256": "f8495f7c1fe8e340efdd16d972e3e522dff1b4db5a4830f3a36a28e62524f618",
+      "bytes": 32777,
+      "scope": "read-only; excluded from patch"
+    }
+  ],
+  "prohibited_actions_performed": [],
+  "format_build_tests_native_CI": "NOT_RUN",
+  "worktree_head_observed_after": "aca32e0df184a4a0b1c094918d1cf3dbd20e4588",
+  "worktree_status_observed_after": " M codex-rs/ext/hepta-memory/src/cognitive/mod.rs\n M codex-rs/ext/hepta-memory/src/cognitive/tools.rs\n M docs/DEVELOPMENT.md\n?? qualification/pn0-ci/aca-local-cognitive-workspace-20261028/\n",
+  "source_worktrees_ref_index_mutated_by_this_agent": false,
+  "merge_ready": false,
+  "task_complete": false,
+  "NO_GO": true,
+  "original_frozen_revision": {
+    "patch": "../aca-atomic-public-prompt-owner.patch",
+    "sha256": "22f41466a1a721f0b77f6723546c6448ea5bdedf1dc6f5311c9045e632feb903",
+    "manifest_sha256": "27d40326f2279cc172d54f69e0c797f4dd4bea1c14f80b2c92dbbb9a6f4603c1"
+  },
+  "new_native_test_source": "ParentAnchor canonical fixture genuine same ancestry/producer/fresh marker/collision existing marker appended; NOT_RUN",
+  "OwnerLock_public_revalidate": "original &mut self preserved; new revalidate_shared(&self) immediately consumed",
+  "source_parent_anchor_prefix_support": "Disk|VerbatimDisk only; unchanged full remaining native/namespace/primary checks",
+  "delta_from_frozen_revision002": {
+    "path": "revision002-to-003-collision-owner-box.patch",
+    "bytes": 1488,
+    "sha256": "a38c5611904e31064144c6ff984be733643f96641ef096eb5c2a80aef1b95546",
+    "added_lines": 3,
+    "removed_lines": 3
+  },
+  "only_delta_path": "codex-rs/utils/windows-private-state/src/fresh_private_directory.rs",
+  "six_other_after_sources_unchanged": [
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+      "sha256": "f64077547cf54cdd18a27c69cf7de83af4986bb6e5c971df2da4b6c99a34a2f5",
+      "v2_v3_exact_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime_windows.rs",
+      "sha256": "0196a4ced20e9ab83e2c25d678e4711d6aa10fa737687bd46b87aed3d932e80a",
+      "v2_v3_exact_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "sha256": "ab226b6bd30f4089f6599748662de3b1a011ce03d67aaff05d0ba5bfc21c07a6",
+      "v2_v3_exact_equal": true
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/parent_anchor.rs",
+      "sha256": "790b4ac7105d585fa07793b584426cd919ac50a1f2e07170236aef91e49e0bf2",
+      "v2_v3_exact_equal": true
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/parent_anchor_tests.rs",
+      "sha256": "39bca83ff00d4744669e856724bf5451df063499c703f36cf6d01ff1e96c5341",
+      "v2_v3_exact_equal": true
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/private_owner_lock.rs",
+      "sha256": "9f6ef5f7ac348bf2ebac9c3872b19df16776ea88c47b2009aab05ca3f91f1c82",
+      "v2_v3_exact_equal": true
+    }
+  ],
+  "v2_preserved": {
+    "patch_sha256": "5c0c4005c6067e0415c1428109813bd2daa4cf9407d4262d29fcfe204069fb8f",
+    "manifest_sha256": "252b95a234fc8b51f9229142b2d8ad1764eee229ae87505bf064eedfb69a9221"
+  },
+  "actual_prior_root_validation": {
+    "terminal_path": "work/coordination/aca-public-prompt-owner-validation-20261028-002/terminal.json",
+    "terminal_sha256": "d84c00ee5e79e75221aeefd02f7b89df5244048aa433d969b5af78746d9c54b3",
+    "raw_log_path": "work/coordination/aca-public-prompt-owner-validation-20261028-002/Windows-GNU-clippy.raw.log",
+    "raw_sha256": "c1d821c8093da51ed7d603f38eda508e9cfac3678cd98a8254b8c2a64c623ea9",
+    "exit_code": 101,
+    "scope": "Windows GNU strict Clippy private-state lib/libtest; large_enum_variant actual RED; not linked/native; agentd not checked",
+    "retained_original_bytes": true
+  },
+  "new_revision_compile_fmt_native": "NOT_RUN"
+}

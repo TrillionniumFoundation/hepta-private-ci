@@ -1,0 +1,63 @@
+{
+  "utc": "2026-10-29T00:56:00.782123+00:00",
+  "source": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+  "tree": "803e1e9b12efa4dd236ecd99333a717b5d52b033",
+  "preview": "c4f58e535d69a8748484df722743e279cbb1dea5",
+  "ordered_preview_parents": [
+    "c38e7727220f32c7410f59083c5ea7878bbae078",
+    "bf36d10a54db1d9453409a432cb4641c9fbe38e8"
+  ],
+  "run": 40789310118,
+  "attempt": 1,
+  "READ": true,
+  "REVIEW": true,
+  "executed_checker_or_archive_code": false,
+  "independent_readback": {
+    "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/Hepta-bf36-four-native-Windows-original-read-20261029-001.json",
+    "bytes": 102437,
+    "sha256": "a77d8aa26394facf1621f26530813af54a39918628e321183a7655e07b2c2145"
+  },
+  "actual_scope": {
+    "outer_payloads": 6,
+    "archive_regular_members": 908,
+    "archive_decoded_bytes": 43646736,
+    "official_ZIPs": 4,
+    "official_ZIP_total_bytes": 369059,
+    "ZIP_members": 220,
+    "complete_job_logs_total_bytes": 8115051,
+    "original_case_groups_bound": 88
+  },
+  "per_route": {
+    "original20": {
+      "passed": 18,
+      "failed": 2,
+      "failed_names": [
+        "broad-identity-delete",
+        "legacy-delete-boundary"
+      ]
+    },
+    "query_existing": {
+      "passed": 6,
+      "failed": 0
+    },
+    "command_runner_terminal": {
+      "passed": 1,
+      "failed": 2,
+      "nested_FAILED": "2 distinct original cases times2attempts, not4distinct tests"
+    }
+  },
+  "root_cause_limits": [
+    "Actual outside file and directory deletion success plus parent FILE_DELETE_CHILD64 allowed remains a real isolation failure. Legacy production guard refusal is preserved, not relabelled functional PASS.",
+    "Original full handle observation and Child try_wait/wait all actualexit1; first0/7 assertions fail, reduced-rights and subsequent7/259 not reached. Imagequery31 UNKNOWN, builderargs not childargv/image proof; no guessed CMD/exe/API rootcause."
+  ],
+  "source_fix_next_stage": "One actual production runner_client.rs pipe/duplicated connectthread handle ownership fix is applied only to ROG WIP; source review narrowPASS, firstGNUClippy actual101 missing crossgcc retained, tasklocal real crosscompiler now supplied and same original command validating. No claim this causes or closes native deletion/terminal failures.",
+  "APPLY_of_evidence_to_production": false,
+  "new_native_test": false,
+  "CI_push_dispatch_retry_cancel": false,
+  "COMMITTED": false,
+  "PUBLISHED": false,
+  "all_original_PN0_PN6_gates": "OPEN",
+  "task_complete": false,
+  "merge_ready": false,
+  "NO_GO": true
+}

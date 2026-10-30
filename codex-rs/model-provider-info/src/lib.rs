@@ -12,6 +12,7 @@ use codex_protocol::config_types::ModelProviderAuthInfo;
 use codex_protocol::error::CodexErr;
 use codex_protocol::error::EnvVarError;
 use codex_protocol::error::Result as CodexResult;
+use codex_protocol::models::ResponseItem;
 use codex_utils_redacted_string::RedactedString;
 use http::HeaderMap;
 use http::header::HeaderName;
@@ -76,6 +77,70 @@ pub fn provider_accepts_internal_chat_message_metadata(base_url: &str) -> bool {
         .eq_ignore_ascii_case(OPENAI_API_BASE_URL)
 }
 
+/// Owner-declared support for the `content_item_kinds` wire field at one exact endpoint.
+///
+/// This grants no other internal metadata fields. The binding is checked again against the
+/// resolved endpoint after authentication selection; it is never inferred from a provider name.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, JsonSchema)]
+#[serde(deny_unknown_fields)]
+#[schemars(deny_unknown_fields)]
+pub struct ContentItemKindsCapability {
+    /// Exact HTTP(S) provider base URL authorized to receive content classifications.
+    pub endpoint: String,
+}
+
+impl ContentItemKindsCapability {
+    fn is_valid(&self) -> bool {
+        let Ok(endpoint) = self.endpoint.parse::<http::Uri>() else {
+            return false;
+        };
+        let Some(authority) = endpoint.authority() else {
+            return false;
+        };
+        matches!(endpoint.scheme_str(), Some("http" | "https"))
+            && !authority.host().is_empty()
+            && !authority.as_str().contains('@')
+            && !authority.host().ends_with('.')
+            && !authority.host().contains('%')
+            // Opt-in API bases must survive HTTP and WebSocket URL parsing without
+            // path decoding or dot-segment normalization. Reject all path escapes
+            // rather than maintaining a second percent decoder here.
+            && !endpoint
+                .path()
+                .bytes()
+                .any(|byte| matches!(byte, b'%' | b'\\'))
+            && !endpoint
+                .path()
+                .split('/')
+                .any(|segment| matches!(segment, "." | ".."))
+            && endpoint.query().is_none()
+            && !self.endpoint.contains('#')
+            && !authority.host().eq_ignore_ascii_case("chatgpt.com")
+    }
+}
+
+/// Fields allowed on one provider-specific request copy.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum InternalChatMessageMetadataPolicy {
+    /// Preserve the existing first-party OpenAI wire contract.
+    All,
+    /// Preserve only explicitly authorized content classifications.
+    ContentItemKindsOnly,
+    /// Remove every internal metadata field.
+    None,
+}
+
+impl InternalChatMessageMetadataPolicy {
+    /// Filters a wire copy without mutating the durable history item.
+    pub fn apply(self, item: &mut ResponseItem) {
+        match self {
+            Self::All => {}
+            Self::ContentItemKindsOnly => item.retain_only_content_item_kinds(),
+            Self::None => item.clear_internal_chat_message_metadata_passthrough(),
+        }
+    }
+}
+
 /// Wire protocol that the provider speaks.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, JsonSchema)]
 #[serde(rename_all = "lowercase")]
@@ -117,6 +182,10 @@ pub struct ModelProviderInfo {
     pub name: String,
     /// Base URL for the provider's OpenAI-compatible API.
     pub base_url: Option<String>,
+    /// Explicit support for content classifications at one exact configured and resolved endpoint.
+    /// Other internal fields remain private, and omission retains the strict endpoint policy.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub content_item_kinds_capability: Option<ContentItemKindsCapability>,
     /// Environment variable that stores the user's API key for this provider.
     pub env_key: Option<String>,
 
@@ -208,7 +277,34 @@ fn default_aws_auth_refresh_timeout_ms() -> NonZeroU64 {
 }
 
 impl ModelProviderInfo {
+    /// Resolves the wire field policy for the effective provider endpoint.
+    pub fn internal_chat_message_metadata_policy(
+        &self,
+        resolved_endpoint: &str,
+    ) -> InternalChatMessageMetadataPolicy {
+        if provider_accepts_internal_chat_message_metadata(resolved_endpoint) {
+            return InternalChatMessageMetadataPolicy::All;
+        }
+        if let Some(capability) = &self.content_item_kinds_capability
+            && capability.is_valid()
+            && self.base_url.as_deref() == Some(capability.endpoint.as_str())
+            && resolved_endpoint == capability.endpoint
+        {
+            return InternalChatMessageMetadataPolicy::ContentItemKindsOnly;
+        }
+        InternalChatMessageMetadataPolicy::None
+    }
+
     pub fn validate(&self) -> std::result::Result<(), String> {
+        if let Some(capability) = &self.content_item_kinds_capability
+            && (!capability.is_valid()
+                || self.base_url.as_deref() != Some(capability.endpoint.as_str()))
+        {
+            return Err(
+                "content_item_kinds_capability requires a valid exact explicit base_url binding"
+                    .to_string(),
+            );
+        }
         if self.aws.is_some() {
             if self.supports_websockets {
                 // TODO(celia-oai): Support AWS SigV4 signing for WebSocket
@@ -435,6 +531,7 @@ impl ModelProviderInfo {
             requires_openai_auth: true,
             supports_websockets: true,
             supports_standalone_web_search: true,
+            content_item_kinds_capability: None,
         }
     }
 
@@ -470,6 +567,7 @@ impl ModelProviderInfo {
             requires_openai_auth: false,
             supports_websockets: false,
             supports_standalone_web_search: false,
+            content_item_kinds_capability: None,
         }
     }
 
@@ -637,6 +735,7 @@ pub fn create_oss_provider_with_base_url(base_url: &str, wire_api: WireApi) -> M
         requires_openai_auth: false,
         supports_websockets: false,
         supports_standalone_web_search: false,
+        content_item_kinds_capability: None,
     }
 }
 

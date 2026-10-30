@@ -1,0 +1,171 @@
+{
+  "schema": "d328-final-use-retained-owner-barrier-implementation-v1",
+  "created_utc": "2026-10-28T18:09:43.056463+00:00",
+  "state": "FROZEN_SOURCE_MIRRORS_ONLY_FOR_FINAL_INDEPENDENT_REVIEW",
+  "base_head": "d3284e385e2b6037dd86752ddd246b616144a87c",
+  "base_tree": "eed42a952ac5a713fc733b29707b4be3c20e00b2",
+  "patch": {
+    "path": "d328-final-use-retained-owner-barrier.patch",
+    "bytes": 12029,
+    "sha256": "63d32a9ab3f69bf4ce8f5a79fa356b7bd3a4a9533b7155a497d4eb281bbbb5e2",
+    "added_lines": 165,
+    "removed_lines": 32
+  },
+  "manifest_sha256": "d57ae49b0bef21470f3a10e5ee2f2d39cf216aef42a580af36661bcaaf3946c8",
+  "actual_safety_change": "Within existing FinalUse explicit-trust/compat owners, ten existing live-state boundaries revalidate the SAME retained Windows native owner under the SAME original state Mutex. A native refusal sets shared State.failed before returning existing Unavailable. It adds no constructor, issuer, provider or authority source and opens no closed path factory.",
+  "scope": [
+    "codex-rs/hepta-contracts/src/final_use.rs",
+    "codex-rs/hepta-contracts/src/final_use_live_owner.rs",
+    "codex-rs/hepta-contracts/src/final_use_store.rs",
+    "codex-rs/hepta-contracts/src/final_use_windows_tests.rs"
+  ],
+  "private_implementation": {
+    "final_use_live_owner.rs": "New34line private sibling impl Inner::ensure_live_state<state>(&self,MutexGuard<state,State>)->Result<same guard,FinalUseError>. Already-failed refuses first. Windows branch mutably owns exact original guard, calls Store::revalidate_owner, marks state.failed=true on any error then ErrUnavailable. Other platforms return the unmodified same guard after original failed check; no dummy native/permission Ok provider.",
+    "final_use_store.rs": "One cfgWindows pub(super) revalidate_owner bridge to private original root.revalidate_shared, map to original Unavailable. Needed to respect Store root privacy; no root handle or field exposed, no clone/reopen/native access added. It is consumed by private barrier, which is consumed by all ten real boundaries.",
+    "final_use.rs": "Only add sibling wiring, replace ten original failure-check blocks with matching Inner guard handoff, and transfer existing mutability after that check for update_revocations/claim. Mechanical inverse restored entire original file exactly, proving constructor/signature/clock/CAS/nonce/effect/assert code unchanged."
+  },
+  "consumer_proofs": [
+    {
+      "function": "pub fn enter(self,",
+      "matching_inner": "self.owner",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 326
+    },
+    {
+      "function": "pub fn frontier(&self)",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 493
+    },
+    {
+      "function": "pub fn capacity(&self)",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 507
+    },
+    {
+      "function": "pub fn revocation_head(&self)",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 526
+    },
+    {
+      "function": "pub fn update_revocations(&self,",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": true,
+      "after_helper_line": 538
+    },
+    {
+      "function": "pub fn check_unclaimed_grant(",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 576
+    },
+    {
+      "function": "pub fn claim(",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": true,
+      "after_helper_line": 623
+    },
+    {
+      "function": "fn enter_verified_effect(",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 765
+    },
+    {
+      "function": "fn validate_token_live_witness(",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 807
+    },
+    {
+      "function": "fn with_dispatch_boundary_witness<T>(",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 835
+    }
+  ],
+  "lifetime_lock_cache_proof": {
+    "owner_identity": "Token.enter uses self.owner; other nine checks use self.0. All guards originate immediately above from that exact Inner.state. No guard from another owner, path/raw handle or serialized input enters.",
+    "guard_continuity": "Taking/returning the same MutexGuard preserves continuous original lock ownership and same lifetime. No unlock/reacquire, early successful drop or second cache inserted. Explicit guard lifetime prevents return lifetime accidentally tying to temporary self borrow.",
+    "lock_order": "Original authority StateMutex -> native held contextMutex. Native revalidate_shared uses no callback and returns/drops context guard before original clock, external CAS or consumer/effect callback. No reverse state-lock edge located in retained-owner implementation.",
+    "shared_failure": "FinalUseAuthority clones, preclaimed VerifiedUseToken, EnteredUseToken owner facts and ActiveDispatchGuard already retain Arc<Inner> -> sameStore -> OwnerLock. Native failure makes original State.failed sticky for all later live entrypoints; a later ACL/attribute/primary recovery cannot revive the same cache.",
+    "no_error_carrier_expansion": "No new error variant/custody carrier/Clone-Eq change. Native failure conservatively uses original Unavailable. Existing poisoned stateMutex fails before handoff; native context poison propagates through same owner probe. No fallback.",
+    "preserved_prior_checks": "Original invalid signer/signature/binding early errors retain ordering. Valid grants/tokens still undergo original time/head/nonce/CAS/persistence checks after native handoff. Mutation current-state assignment/no-refund and external-frontier-before-local-write ordering unchanged.",
+    "not_new_admission": "shares_owner/issuer_key_ids and existing EnteredUseToken.matches/witness accessors expose identity/historical entry facts, not new live grant entry; remain unchanged. ActiveDispatchGuard.drop remains unconditional atomic fence release.",
+    "point_in_time_limit": "This samples native owner validity at existing operation/admission boundaries. It is not a continuous lock over external ACL writers, a claim that already-entered effects stop, or crossprocess/runner-death/Unknown custody closure. Original mutex/callback fence semantics stay unchanged."
+  },
+  "native_regression_SOURCE_ONLY": {
+    "original_prefix": {
+      "bytes": 8503,
+      "sha256": "fd028a28e8425b031f4065517b66a57531c77896b85a9a95b8086dc6351d7829",
+      "exact_original_prefix_preserved": true
+    },
+    "test": "native_retained_owner_drift_fences_preclaimed_entries_and_stays_failed",
+    "five_cases": "Independent real fixture per Token.enter, revocation_head read, consumer-entry callback, active-effect callback and dispatch-boundary callback. Each uses original open+signed claim before disturbance.",
+    "disturbance": "Original owned authority.lock path stays bound by held no-delete-share marker/ancestry. Safe Rust fs::Permissions.set_readonly(true) + fs::set_permissions changes FILE_ATTRIBUTE_READONLY on Windows (not ACL and no byte content writes). Success is required; metadata readonly must read back true before checking barrier. Real cached mechanism::Identity includes attributes and full Eq.",
+    "original_fixture_scope": "Reuses existing Fixture, existing explicitly test-only in-memory Frontier, existing SystemAuthorityClock and signing material. No new frontier/provider implementation or attestation claim. This fixture is not a production clock/CAS source and does not close ordinary caller factory.",
+    "actual_observations_asserted": "Outcome must be typed FinalUseError::Unavailable; actual original consumer/effect/dispatch closures increment AtomicUsize if entered and count must remain0. State.failed is only read/observed under its lock; never assigned, stubbed or forced by test. Restoring original permissions then public frontier stillUnavailable proves continued refusal.",
+    "restore": "RestoreOwnedMarkerPermissions created before mutation, scoped solely to exactowned marker and original Permissions; normal explicit restore? + metadata verifies false, Drop also invokes same restore on normal/panic/earlyErr. OS restore errors remain explicit (normal Err, bounded Drop diagnostic), not an absolute OS-success promise. No global ACL/driver/service/other-file repair.",
+    "known_NOT_RUN": "Actual Windows setter compatibility under original full-file lock, every assert/callback/state observation and cleanup outcome are NOT_RUN. Setter failure is ordinary test failure, not skip/pass. Original20/terminal/isolation/model controls not replaced.",
+    "history": "Initial3-file source-admission.json documented unproven contentwrite disturbance and no newtest. Root then supplied safe read-only-attribute option and authorized appending this actual-owner source test; initial record retained as history, finalmanifest is four files."
+  },
+  "protected_and_unmodified": {
+    "public_factory_guard": "final_use_store_io.rs Windows lock_directory remains unconditional UnsafeStateDirectory; all four public constructor bodies unchanged by inverse check; existing open_windows_private trust constructors unchanged.",
+    "authority_inputs": "No clock/CAS/frontier/issuer/revocationfeed/default provider manufactured. Genuine production provider, ordinary Windows config/peer trust and actual caller composition remain OPEN from prior310b design report.",
+    "original_protocols": "Schemas V1/V2/V3; original authority.json/authority.claims40byte frames, MAX_CLAIMS1,048,576, MAX_REVOKED16,384, MAX_LIFETIME300000ms and max8issuer ring unchanged. No writer cap expansion, migration/reset or state cleanup.",
+    "original_assertions_and_resources": "All original test bodies, assertions, workflow guards, 8sec/other deadlines/caps/budgets unchanged. Only append one test. New scope has no dependency/CI/guard/token/ACL/desktop/Job/CMD changes.",
+    "build_wiring": "hepta-contracts default codex_rust_crate uses existing defs.bzl src/**/*.rs glob; qualification target also glob. Private sibling is included by original build definition. No BUILD edit required."
+  },
+  "mechanical_checks_not_tests": {
+    "emitted_unified_hunks_replayed": true,
+    "final_use_exact_wiring_inverted_to_base_bytes": true,
+    "native_tests_original_bytes_are_exact_prefix": true,
+    "native_tests_original_prefix_bytes": 8503,
+    "native_tests_original_prefix_sha256": "fd028a28e8425b031f4065517b66a57531c77896b85a9a95b8086dc6351d7829",
+    "native_tests_appended_bytes": 4210,
+    "NOT_RUNTIME_OR_RUST_TESTS": true
+  },
+  "independent_subagent_source_review": {
+    "state": "NO_STATIC_BLOCKER_FOUND_SOURCE_ONLY",
+    "production_pins_confirmed": true,
+    "test_privacy_types_enum_token_single_consumption_restore_order_confirmed": true,
+    "note": "This is source review by child agent, not compiler/libtest/native/CI qualification; parent assigned final independent review remains pending."
+  },
+  "validation": {
+    "fmt": "NOT_RUN",
+    "Rust_compile_or_Clippy": "NOT_RUN",
+    "tests": "NOT_RUN",
+    "Windows_native": "NOT_RUN",
+    "VM": "NOT_RUN",
+    "CI_dispatch": "NOT_RUN",
+    "budgets_started_or_reset": false
+  },
+  "actions": {
+    "before_after_mirror_and_report_writes_only": true,
+    "active_worktrees_refs_index_changed": false,
+    "commit_push_remote_operations": false,
+    "source_frozen_stop_writing": true
+  },
+  "OPEN": [
+    "Ordinary Windows factory remains closed; real protected clock, durable external CAS frontier and host config/peer/caller composition missing.",
+    "Windows destructive deletion/legacy boundaries, token/ACL/PE-DLL/namespace/desktop/stdio/Job/terminal full chain and all prior failures remain OPEN.",
+    "New exactsource compile/native/attribute/fault behavior NOT_RUN; prior source/CI passes cannot qualify this source.",
+    "Already-entered remote effects, Unknown/crosspublicerrorcustody and runnerdeath containment not closed by sampled barrier.",
+    "Ordinary real-model three-round install/readback/benefit, release/Cellloader/I09-I10/WAN still OPEN."
+  ],
+  "merge_ready": false,
+  "task_complete": false,
+  "NO_GO": true
+}

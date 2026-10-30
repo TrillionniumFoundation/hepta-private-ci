@@ -1,0 +1,117 @@
+{
+  "schema": "pn0-runner-pipe-owner-source-proof-v1",
+  "scope": "source mechanical verification only; no Rust, native, formatting, test, CI or runtime execution",
+  "base": {
+    "head": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+    "tree": "803e1e9b12efa4dd236ecd99333a717b5d52b033",
+    "compatible_d328": "d3284e385e2b6037dd86752ddd246b616144a87c",
+    "Windows_subtree_equal": true
+  },
+  "before_actual_Git_blob": true,
+  "single_changed_path": "codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+  "unified_hunk_exact_replay": {
+    "result": "PASS_SOURCE_ONLY",
+    "hunks": [
+      {
+        "old_start_1based": 26,
+        "old_lines": 6,
+        "new_lines": 7
+      },
+      {
+        "old_start_1based": 243,
+        "old_lines": 10,
+        "new_lines": 15
+      },
+      {
+        "old_start_1based": 295,
+        "old_lines": 8,
+        "new_lines": 10
+      },
+      {
+        "old_start_1based": 309,
+        "old_lines": 7,
+        "new_lines": 7
+      },
+      {
+        "old_start_1based": 320,
+        "old_lines": 12,
+        "new_lines": 13
+      },
+      {
+        "old_start_1based": 335,
+        "old_lines": 7,
+        "new_lines": 7
+      },
+      {
+        "old_start_1based": 364,
+        "old_lines": 13,
+        "new_lines": 7
+      },
+      {
+        "old_start_1based": 412,
+        "old_lines": 8,
+        "new_lines": 10
+      },
+      {
+        "old_start_1based": 463,
+        "old_lines": 10,
+        "new_lines": 8
+      },
+      {
+        "old_start_1based": 513,
+        "old_lines": 8,
+        "new_lines": 16
+      },
+      {
+        "old_start_1based": 535,
+        "old_lines": 18,
+        "new_lines": 18
+      }
+    ],
+    "after": {
+      "bytes": 26328,
+      "sha256": "1a48ca220fdec6c2f555fc0237ffa28216c2876ab6c3284145dc24556b0e5720"
+    }
+  },
+  "protected_same_file": {
+    "original_cfg_test_tail": {
+      "bytes": 2541,
+      "sha256": "7186657f2ec7e5576b4cb197b96a95f5f9637ef7a2cca431de93514f34582310"
+    },
+    "original_timeout_flags_constants": {
+      "bytes": 303,
+      "sha256": "d0b7a02f766d8bd42a246940f1530cce1bd384079507931078dc77e79aa86cd5"
+    },
+    "original_process_and_native_regions": {
+      "create_process_and_error_mode": {
+        "bytes": 855,
+        "sha256": "acc0c889a4214952dcaed68b1474b76f717faf3d2c4df7d9346226b941192914"
+      },
+      "thread_pi_cleanup": {
+        "bytes": 96,
+        "sha256": "2c7b0935631fdd67afc680cc58d74d12913d3cb4f7c9f08ab34ab281b3fd1d84"
+      },
+      "startup_and_final_process_cleanup": {
+        "bytes": 1074,
+        "sha256": "cfbf29260eb1e2304db92ad56bdc76a0216a9197972b601ff2bf9b4fca13472b"
+      },
+      "connection_worker_native_duplicate": {
+        "bytes": 842,
+        "sha256": "18153daf17aad34cd9b15a87d07ff8a7c00071a2c8db28221380cd378f2e3e86"
+      }
+    }
+  },
+  "all_Windows_subtree_original_paths": 113,
+  "unchanged_safety_and_test_pin_records": 39,
+  "raw_handle_uses": "raw-handle-owner-use-inventory.json",
+  "literal_comments": "only changed wait call keeps original zero and adds existing Windows dwmilliseconds parameter comment; no constant/time value changed",
+  "checks_NOT_RUN": [
+    "rustfmt",
+    "cargo or just compile/test",
+    "Clippy",
+    "Windows native",
+    "GitHub CI",
+    "Bazel",
+    "any old budget"
+  ]
+}

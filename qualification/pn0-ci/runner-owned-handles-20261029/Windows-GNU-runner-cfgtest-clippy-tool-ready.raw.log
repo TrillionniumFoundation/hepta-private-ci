@@ -1,0 +1,699 @@
+cargo clippy --tests {args}
+   Compiling aws-lc-sys v0.45.0
+    Checking getrandom v0.2.17
+    Checking ppv-lite86 v0.2.21
+    Checking regex v1.13.1
+   Compiling ring v0.17.14
+    Checking sync_wrapper v1.0.2
+   Compiling aws-lc-rs v1.18.1
+   Compiling icu_normalizer_data v2.2.0
+   Compiling libc v0.2.186
+    Checking either v1.15.0
+    Checking mime v0.3.17
+   Compiling icu_properties_data v2.2.0
+   Compiling crossbeam-utils v0.8.21
+    Checking crypto-common v0.1.7
+    Checking block-buffer v0.10.4
+    Checking http-body-util v0.1.3
+    Checking digest v0.10.7
+    Checking rustls-pki-types v1.14.0
+    Checking rand_core v0.9.5
+    Checking form_urlencoded v1.2.2
+   Compiling unicode-xid v0.2.6
+   Compiling httparse v1.10.1
+    Checking untrusted v0.9.0
+    Checking untrusted v0.7.1
+    Checking rand_chacha v0.9.0
+    Checking icu_properties v2.2.0
+    Checking icu_normalizer v2.2.0
+    Checking futures-executor v0.3.34
+    Checking bitflags v2.13.2
+    Checking psl-types v2.0.11
+    Checking idna_adapter v1.2.1
+    Checking rand v0.9.3
+    Checking spin v0.9.8
+   Compiling time-core v0.1.9
+   Compiling num-conv v0.2.2
+   Compiling time-macros v0.2.32
+    Checking idna v1.1.0
+   Compiling rustls v0.23.46
+    Checking deranged v0.5.8
+    Checking atomic-waker v1.1.2
+   Compiling equivalent v1.0.2
+    Checking powerfmt v0.2.0
+    Checking cpufeatures v0.3.0
+   Compiling hashbrown v0.17.1
+    Checking try-lock v0.2.5
+    Checking time v0.3.55
+    Checking want v0.3.1
+   Compiling indexmap v2.14.2
+   Compiling toml_parser v1.1.3+spec-1.1.0
+    Checking itertools v0.14.0
+    Checking schannel v0.1.28
+   Compiling async-trait v0.1.92
+   Compiling winnow v0.7.14
+   Compiling toml_datetime v0.7.5+spec-1.1.0
+   Compiling crossbeam-epoch v0.9.20
+   Compiling anyhow v1.0.103
+   Compiling toml_edit v0.23.10+spec-1.0.0
+    Checking chacha20 v0.10.0
+    Checking h2 v0.4.16
+    Checking url v2.5.8
+    Checking futures v0.3.31
+    Checking nibble_vec v0.1.0
+   Compiling unicase v2.9.0
+   Compiling mime_guess v2.0.5
+    Checking rand v0.10.3
+   Compiling proc-macro-crate v3.4.0
+   Compiling const_format_proc_macros v0.2.34
+    Checking windows-sys v0.52.0
+    Checking uuid v1.26.1
+   Compiling ahash v0.8.12
+    Checking lazy_static v1.5.0
+    Checking tower-service v0.3.3
+    Checking const_format v0.2.35
+   Compiling rama-macros v0.3.0-alpha.4
+    Checking sha2 v0.10.9
+    Checking wildcard v0.3.0
+    Checking windows-result v0.4.1
+    Checking windows-strings v0.5.1
+    Checking pin-utils v0.1.0
+    Checking smol_str v0.3.5
+    Checking fastrand v2.3.0
+    Checking data-encoding v2.10.0
+    Checking rama-utils v0.3.0-alpha.4
+    Checking hyper v1.8.1
+    Checking windows-registry v0.6.1
+    Checking rustls-native-certs v0.8.3
+    Checking tokio-graceful v0.2.2
+    Checking asynk-strim v0.1.5
+    Checking rama-error v0.3.0-alpha.4
+    Checking ryu v1.0.22
+    Checking rama-core v0.3.0-alpha.4
+    Checking hyper-util v0.1.20
+    Checking num-integer v0.1.46
+    Checking nom v8.0.0
+    Checking endian-type v0.2.0
+   Compiling regex-syntax v0.8.11
+   Compiling windows_x86_64_gnu v0.48.5
+    Checking radix_trie v0.3.0
+    Checking rama-http-types v0.3.0-alpha.4
+    Checking num-bigint v0.4.6
+    Checking flume v0.12.0
+    Checking psl v2.1.184
+    Checking sha1 v0.10.6
+    Checking md5 v0.8.0
+    Checking byteorder v1.5.0
+   Compiling fnv v1.0.7
+    Checking tower-layer v0.3.3
+    Checking hex v0.4.3
+    Checking minimal-lexical v0.2.1
+    Checking iri-string v0.7.10
+    Checking nom v7.1.3
+    Checking rama-net v0.3.0-alpha.4
+    Checking tower v0.5.3
+   Compiling serde_core v1.0.229
+   Compiling native-tls v0.2.14
+    Checking windows-targets v0.48.5
+    Checking webpki-roots v1.0.10
+    Checking hybrid-array v0.4.15
+    Checking opentelemetry v0.31.0
+   Compiling cookie v0.18.1
+    Checking tokio-stream v0.1.19
+   Compiling serde_derive_internals v0.29.1
+   Compiling schemars v0.8.22
+    Checking httpdate v1.0.3
+    Checking simd-adler32 v0.3.8
+   Compiling syn v1.0.109
+   Compiling rayon-core v1.13.0
+   Compiling crc32fast v1.5.0
+    Checking tinyvec_macros v0.1.1
+    Checking tinyvec v1.10.0
+   Compiling schemars_derive v0.8.22
+    Checking windows-sys v0.48.0
+   Compiling aho-corasick v1.1.4
+   Compiling heapless v0.7.17
+    Checking crossbeam-channel v0.5.15
+    Checking prefix-trie v0.8.4
+    Checking env_filter v1.0.0
+   Compiling zstd-sys v2.1.2+zstd.1.5.7
+   Compiling zmij v1.0.19
+   Compiling dupe_derive v0.9.1
+   Compiling bytemuck_derive v1.10.2
+   Compiling termcolor v1.4.1
+   Compiling typeid v1.0.3
+    Checking rustls-webpki v0.103.16
+    Checking dyn-clone v1.0.20
+   Compiling ipconfig v0.3.2
+    Checking adler2 v2.0.1
+   Compiling litrs v1.0.0
+   Compiling serde v1.0.229
+   Compiling ref-cast v1.0.25
+    Checking cmov v0.5.4
+    Checking option-ext v0.2.0
+    Checking dirs-sys v0.5.0
+   Compiling serde_json v1.0.151
+    Checking ctutils v0.4.6
+   Compiling document-features v0.2.12
+    Checking miniz_oxide v0.8.9
+   Compiling ts-rs-macros v11.1.0
+    Checking tokio-rustls v0.26.4
+    Checking bytemuck v1.25.0
+    Checking env_logger v0.11.9
+    Checking hickory-proto v0.26.3
+   Compiling regex-automata v0.4.18
+    Checking tokio-native-tls v0.3.1
+    Checking winreg v0.50.0
+    Checking block-buffer v0.12.0
+    Checking crypto-common v0.2.2
+    Checking rusticata-macros v4.1.0
+    Checking hash32 v0.2.1
+   Compiling logos-codegen v0.15.1
+    Checking sharded-slab v0.1.7
+    Checking socket2 v0.5.10
+    Checking crossbeam-deque v0.8.6
+    Checking publicsuffix v2.3.0
+    Checking tracing-log v0.2.0
+   Compiling asn1-rs-derive v0.6.0
+   Compiling blake3 v1.8.7
+    Checking nu-ansi-term v0.50.3
+    Checking thread_local v1.1.9
+    Checking encoding_rs v0.8.35
+   Compiling ref-cast-impl v1.0.25
+   Compiling asn1-rs-impl v0.2.0
+    Checking link-section v0.17.2
+   Compiling allocative v0.3.6
+   Compiling erased-serde v0.4.10
+    Checking bitflags v1.3.2
+    Checking widestring v1.2.1
+    Checking atomic v0.5.3
+    Checking tagptr v0.2.0
+   Compiling linktime-proc-macro v0.1.0
+    Checking bit-vec v0.8.0
+    Checking zlib-rs v0.5.5
+    Checking crc-catalog v2.4.0
+    Checking flate2 v1.1.8
+    Checking crc v3.4.0
+    Checking bit-set v0.8.0
+    Checking ctor v1.0.6
+    Checking moka v0.12.13
+    Checking lock_free_hashtable v0.1.4
+    Checking asn1-rs v0.7.1
+    Checking tracing-subscriber v0.3.23
+    Checking cookie_store v0.22.1
+    Checking digest v0.11.3
+    Checking hyper-tls v0.6.0
+    Checking hickory-net v0.26.3
+    Checking quickcheck v1.1.0
+    Checking ts-rs v11.1.0
+    Checking hyper-rustls v0.27.7
+    Checking dirs v6.0.0
+    Checking tower-http v0.6.8
+    Checking serde_urlencoded v0.7.1
+    Checking hashbrown v0.16.1
+    Checking cobs v0.3.0
+   Compiling strong_hash_derive v0.1.0
+   Compiling allocative_derive v0.3.6
+   Compiling serde_repr v0.1.20
+    Checking unicode-width v0.1.14
+    Checking arrayvec v0.7.8
+    Checking constant_time_eq v0.4.2
+    Checking resolv-conf v0.7.6
+    Checking utf8parse v0.2.2
+   Compiling rama-http-headers v0.3.0-alpha.4
+    Checking bumpalo v3.19.1
+   Compiling winapi v0.3.9
+   Compiling zstd-safe v8.2.0
+    Checking once_cell_polyfill v1.70.2
+    Checking hashbrown v0.14.5
+   Compiling oid-registry v0.8.1
+    Checking dunce v1.0.5
+   Compiling unicode-segmentation v1.12.0
+   Compiling beef v0.5.2
+   Compiling convert_case v0.6.0
+    Checking codex-utils-absolute-path v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/utils/absolute-path)
+    Checking dashmap v6.1.0
+    Checking anstyle-wincon v3.0.11
+    Checking hickory-resolver v0.26.3
+    Checking anstyle-parse v0.2.7
+    Checking strong_hash v0.1.0
+    Checking postcard v1.1.3
+    Checking reqwest v0.12.28
+   Compiling schemafy_core v0.5.2
+    Checking sorted_vector_map v0.2.1
+   Compiling Inflector v0.11.4
+    Checking static_interner v0.1.2
+    Checking fancy-regex v0.16.2
+    Checking dupe v0.9.1
+    Checking chrono v0.4.43
+    Checking triomphe v0.1.15
+    Checking anstyle-query v1.1.5
+    Checking csv-core v0.1.13
+   Compiling pagable_derive v0.4.2
+   Compiling ident_case v1.0.1
+   Compiling heck v0.5.0
+    Checking take_mut v0.2.2
+   Compiling starlark_map v0.14.2
+    Checking is_terminal_polyfill v1.70.2
+   Compiling strsim v0.11.1
+    Checking inventory v0.3.24
+    Checking colorchoice v1.0.4
+    Checking static_assertions v1.1.0
+    Checking sequence_trie v0.3.6
+    Checking pagable v0.4.2
+   Compiling darling_core v0.21.3
+    Checking anstream v0.6.21
+    Checking csv v1.4.0
+   Compiling schemafy_lib v0.5.2
+    Checking rama-dns v0.3.0-alpha.4 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/third_party/rama-dns-0.3.0-alpha.4)
+   Compiling logos-derive v0.15.1
+   Compiling derive_more-impl v1.0.0
+    Checking der-parser v10.0.0
+    Checking fluent-uri v0.1.4
+    Checking codex-utils-rustls-provider v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/utils/rustls-provider)
+    Checking fxhash v0.2.1
+    Checking serde_html_form v0.3.2
+    Checking windows-sys v0.59.0
+    Checking bstr v1.12.1
+    Checking error-code v3.3.2
+   Compiling icu_locale_data v2.2.0
+    Checking http-range-header v0.4.2
+    Checking clap_lex v1.0.0
+    Checking matchit v0.9.1
+   Compiling paste v1.0.15
+    Checking endian-type v0.1.2
+    Checking radix_trie v0.2.1
+    Checking rama-http v0.3.0-alpha.4
+    Checking derive_more v1.0.0
+    Checking clap_builder v4.5.58
+   Compiling itertools v0.13.0
+    Checking clipboard-win v5.4.1
+    Checking fd-lock v4.0.4
+    Checking lsp-types v0.97.0
+    Checking x509-parser v0.18.1
+    Checking rama-tcp v0.3.0-alpha.4
+    Checking logos v0.15.1
+   Compiling schemafy v0.5.2
+   Compiling darling_macro v0.21.3
+    Checking zstd v0.14.3
+   Compiling clap_derive v4.5.55
+    Checking annotate-snippets v0.9.2
+    Checking tracing-opentelemetry v0.32.1
+   Compiling derivative v2.2.0
+    Checking fdeflate v0.3.7
+    Checking tokio-test v0.4.5
+    Checking yasna v0.5.2
+    Checking pem v3.0.6
+    Checking pxfm v0.1.27
+    Checking headers-core v0.3.0
+    Checking home v0.5.12
+   Compiling pin-project-internal v1.1.10
+    Checking zune-core v0.5.1
+   Compiling icu_decimal_data v2.2.0
+    Checking weezl v0.1.12
+    Checking color_quant v1.1.0
+    Checking indenter v0.3.4
+    Checking quick-error v2.0.1
+   Compiling starlark v0.14.2 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/third_party/starlark-0.14.2)
+    Checking byteorder-lite v0.1.0
+    Checking image-webp v0.2.4
+    Checking display_container v0.9.0
+    Checking gif v0.14.1
+    Checking rustyline v14.0.0
+    Checking moxcms v0.7.11
+    Checking zune-jpeg v0.5.12
+    Checking pin-project v1.1.10
+    Checking headers v0.4.1
+    Checking rcgen v0.14.7
+    Checking rama-http-core v0.3.0-alpha.4
+    Checking starlark_syntax v0.14.2
+    Checking png v0.18.0
+   Compiling starlark_derive v0.14.2
+    Checking codex-http-client v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/http-client)
+    Checking clap v4.5.58
+   Compiling darling v0.21.3
+    Checking debugserver-types v0.5.0
+   Compiling prost-derive v0.14.4
+    Checking textwrap v0.11.0
+    Checking rama-udp v0.3.0-alpha.4
+    Checking hyper-timeout v0.5.2
+    Checking lru v0.18.2
+    Checking erased-serde v0.3.31
+    Checking maplit v1.0.2
+    Checking strsim v0.10.0
+   Compiling cfg_aliases v0.1.1
+    Checking cmp_any v0.8.1
+   Compiling thiserror v1.0.69
+    Checking utf-8 v0.7.6
+    Checking tungstenite v0.27.0 (https://github.com/openai-oss-forks/tungstenite-rs?rev=4fffad30fe373adbdcffab9545e9e9bf4f2fc19f#4fffad30)
+   Compiling nix v0.28.0
+    Checking event-listener v5.4.2
+    Checking codex-utils-cache v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/utils/cache)
+    Checking tonic v0.14.3
+    Checking rama-socks5 v0.3.0-alpha.4
+    Checking icu_locale v2.2.0
+    Checking prost v0.14.4
+   Compiling serde_with_macros v3.17.0
+    Checking rama-http-backend v0.3.0-alpha.4
+    Checking image v0.25.9
+    Checking rama-tls-rustls v0.3.0-alpha.4
+    Checking globset v0.4.18
+    Checking codex-utils-home-dir v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/utils/home-dir)
+    Checking tempfile v3.27.0
+    Checking fixed_decimal v0.7.2
+    Checking multimap v0.10.1
+   Compiling thiserror-impl v1.0.69
+   Compiling winreg v0.10.1
+    Checking regex-lite v0.1.8
+    Checking shlex v1.3.0
+    Checking urlencoding v2.1.3
+    Checking codex-utils-path-uri v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/utils/path-uri)
+    Checking codex-utils-string v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/utils/string)
+    Checking icu_decimal v2.2.0
+    Checking codex-network-proxy v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/network-proxy)
+    Checking codex-execpolicy v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/execpolicy)
+    Checking codex-utils-image v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/utils/image)
+    Checking serde_with v3.17.0
+    Checking tonic-prost v0.14.3
+    Checking event-listener-strategy v0.5.4
+    Checking tokio-tungstenite v0.28.0 (https://github.com/openai-oss-forks/tokio-tungstenite?rev=0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186#0e5b2d73)
+   Compiling strum_macros v0.28.0
+    Checking codex-extension-items v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/ext/items)
+    Checking chardetng v0.1.17
+    Checking codex-utils-redacted-string v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/utils/redacted-string)
+    Checking opentelemetry_sdk v0.31.0
+    Checking eventsource-stream v0.2.3
+    Checking concurrent-queue v2.5.0
+    Checking windows-result v0.2.0
+    Checking const-hex v1.17.0
+    Checking codex-async-utils v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/async-utils)
+    Checking quick-xml v0.41.0
+    Checking wildmatch v2.6.1
+    Checking sys-locale v0.3.2
+    Checking strum v0.27.2
+    Checking opentelemetry-proto v0.31.0
+    Checking codex-protocol v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/protocol)
+    Checking windows-strings v0.1.0
+    Checking async-channel v2.5.0
+    Checking codex-client v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/codex-client)
+    Checking codex-websocket-client v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/websocket-client)
+    Checking filedescriptor v0.8.3
+    Checking serial2 v0.2.33
+    Checking opentelemetry-http v0.31.0
+    Checking shared_library v0.1.9
+    Checking rand_core v0.6.4
+   Compiling windows-implement v0.58.0
+   Compiling windows-interface v0.58.0
+    Checking shell-words v1.1.1
+    Checking downcast-rs v1.2.1
+    Checking portable-pty v0.9.0
+    Checking windows-core v0.58.0
+    Checking rand_chacha v0.3.1
+    Checking opentelemetry-otlp v0.31.0
+    Checking dirs-sys-next v0.1.2
+    Checking opentelemetry-appender-tracing v0.31.1
+    Checking os_info v3.14.0
+    Checking gethostname v1.1.0
+   Compiling codex-windows-sandbox v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/windows-sandbox-rs)
+    Checking opentelemetry-semantic-conventions v0.31.0
+    Checking assert_cmd v2.1.2
+    Checking dirs-next v2.0.0
+    Checking rand v0.8.6
+    Checking windows v0.58.0
+    Checking codex-utils-pty v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/utils/pty)
+    Checking tracing-appender v0.2.4
+    Checking glob v0.3.3
+    Checking codex-utils-cargo-bin v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/utils/cargo-bin)
+    Checking codex-utils-windows-private-state v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/utils/windows-private-state)
+    Checking codex-api v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/codex-api)
+    Checking codex-otel v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/otel)
+warning: function `ensure_filesystem_mutation_deny` is never used
+   --> windows-sandbox-rs/src/acl.rs:626:15
+    |
+626 | pub unsafe fn ensure_filesystem_mutation_deny(path: &Path, psid: *mut c_void) -> Result<bool> {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: variant `FilesystemMutation` is never constructed
+   --> windows-sandbox-rs/src/acl.rs:634:5
+    |
+631 | enum DenyAceKind {
+    |      ----------- variant in this enum
+...
+634 |     FilesystemMutation,
+    |     ^^^^^^^^^^^^^^^^^^
+    |
+    = note: `DenyAceKind` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+
+warning: constant `DESKTOP_PROCESS_ACCESS` is never used
+  --> windows-sandbox-rs/src/desktop.rs:56:7
+   |
+56 | const DESKTOP_PROCESS_ACCESS: u32 = DESKTOP_READOBJECTS
+   |       ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: associated function `prepare_for_capability` is never used
+  --> windows-sandbox-rs/src/desktop.rs:71:19
+   |
+68 | impl LaunchDesktop {
+   | ------------------ associated function in this implementation
+...
+71 |     pub(crate) fn prepare_for_capability(
+   |                   ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `DesktopCapability` is never constructed
+  --> windows-sandbox-rs/src/desktop_capability.rs:10:12
+   |
+10 | pub struct DesktopCapability {
+   |            ^^^^^^^^^^^^^^^^^
+
+warning: associated items `create` and `as_sid` are never used
+  --> windows-sandbox-rs/src/desktop_capability.rs:16:12
+   |
+14 | impl DesktopCapability {
+   | ---------------------- associated items in this implementation
+15 |     /// Generates an independent 128-bit session identity from the OS CSPRNG.
+16 |     pub fn create() -> Result<Self> {
+   |            ^^^^^^
+...
+33 |     pub fn as_sid(&self) -> &LocalSid {
+   |            ^^^^^^
+
+warning: constant `QUERY` is never used
+  --> windows-sandbox-rs/src/prepared_filesystem.rs:65:7
+   |
+65 | const QUERY: u32 = READ_CONTROL | FILE_READ_ATTRIBUTES | SYNCHRONIZE;
+   |       ^^^^^
+
+warning: function `grant` is never used
+   --> windows-sandbox-rs/src/prepared_filesystem.rs:171:4
+    |
+171 | fn grant(file: &File, subject: &LocalSid, mask: u32) -> Result<()> {
+    |    ^^^^^
+
+warning: function `require_bounded_grant` is never used
+   --> windows-sandbox-rs/src/prepared_filesystem.rs:231:4
+    |
+231 | fn require_bounded_grant(file: &File, subject: &LocalSid, maximum: u32) -> Result<()> {
+    |    ^^^^^^^^^^^^^^^^^^^^^
+
+warning: associated items `prepare`, `filesystem_sids`, and `require_token_access` are never used
+   --> windows-sandbox-rs/src/prepared_filesystem.rs:312:19
+    |
+311 | impl PreparedFilesystemAclContext {
+    | --------------------------------- associated items in this implementation
+312 |     pub(crate) fn prepare(
+    |                   ^^^^^^^
+...
+371 |     pub(crate) fn filesystem_sids(&self) -> Result<Vec<LocalSid>> {
+    |                   ^^^^^^^^^^^^^^^
+...
+424 |     pub(crate) fn require_token_access(&mut self, token: BorrowedHandle<'_>) -> Result<()> {
+    |                   ^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `PreparedCreatedProcess` is never constructed
+  --> windows-sandbox-rs/src/process.rs:47:19
+   |
+47 | pub(crate) struct PreparedCreatedProcess {
+   |                   ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `create_process_as_user_prepared` is never used
+   --> windows-sandbox-rs/src/process.rs:118:22
+    |
+118 | pub(crate) unsafe fn create_process_as_user_prepared(
+    |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `PreparedPipeSpawnHandles` is never constructed
+   --> windows-sandbox-rs/src/process.rs:249:19
+    |
+249 | pub(crate) struct PreparedPipeSpawnHandles {
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: method `handles` is never used
+   --> windows-sandbox-rs/src/process.rs:255:19
+    |
+254 | impl PreparedPipeSpawnHandles {
+    | ----------------------------- method in this implementation
+255 |     pub(crate) fn handles(&self) -> &PipeSpawnHandles {
+    |                   ^^^^^^^
+
+warning: function `spawn_process_with_pipes_prepared` is never used
+   --> windows-sandbox-rs/src/process.rs:305:15
+    |
+305 | pub(crate) fn spawn_process_with_pipes_prepared(
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `PreparedFilesystemOwners` is never constructed
+  --> windows-sandbox-rs/src/prepared_process_context.rs:22:19
+   |
+22 | pub(crate) struct PreparedFilesystemOwners {
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: method `revalidate` is never used
+  --> windows-sandbox-rs/src/prepared_process_context.rs:29:8
+   |
+28 | impl PreparedFilesystemOwners {
+   | ----------------------------- method in this implementation
+29 |     fn revalidate(&mut self) -> Result<()> {
+   |        ^^^^^^^^^^
+
+warning: struct `PreparedProcessContext` is never constructed
+  --> windows-sandbox-rs/src/prepared_process_context.rs:42:12
+   |
+42 | pub struct PreparedProcessContext {
+   |            ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: associated items `prepare` and `into_parts` are never used
+  --> windows-sandbox-rs/src/prepared_process_context.rs:53:19
+   |
+49 | impl PreparedProcessContext {
+   | --------------------------- associated items in this implementation
+...
+53 |     pub(crate) fn prepare(
+   |                   ^^^^^^^
+...
+85 |     pub(crate) fn into_parts(
+   |                   ^^^^^^^^^^
+
+warning: function `token_version` is never used
+  --> windows-sandbox-rs/src/prepared_process_context.rs:97:4
+   |
+97 | fn token_version(token: HANDLE) -> Result<[u32; 4]> {
+   |    ^^^^^^^^^^^^^
+
+warning: type alias `TokenVersion` is never used
+  --> windows-sandbox-rs/src/token_prepared_filesystem.rs:29:6
+   |
+29 | type TokenVersion = (u32, i32, u32, i32);
+   |      ^^^^^^^^^^^^
+
+warning: struct `PreparedFilesystemToken` is never constructed
+  --> windows-sandbox-rs/src/token_prepared_filesystem.rs:36:19
+   |
+36 | pub(crate) struct PreparedFilesystemToken {
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `require_noninheritable` is never used
+  --> windows-sandbox-rs/src/token_prepared_filesystem.rs:44:4
+   |
+44 | fn require_noninheritable(handle: BorrowedHandle<'_>) -> Result<()> {
+   |    ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `retain_source` is never used
+  --> windows-sandbox-rs/src/token_prepared_filesystem.rs:57:4
+   |
+57 | fn retain_source(base: BorrowedHandle<'_>) -> Result<OwnedHandle> {
+   |    ^^^^^^^^^^^^^
+
+warning: function `require_no_reenableable_privileges` is never used
+  --> windows-sandbox-rs/src/token_prepared_filesystem.rs:82:4
+   |
+82 | fn require_no_reenableable_privileges(token: BorrowedHandle<'_>) -> Result<()> {
+   |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `create_full_filesystem_token_from` is never used
+   --> windows-sandbox-rs/src/token_prepared_filesystem.rs:115:15
+    |
+115 | pub(crate) fn create_full_filesystem_token_from(
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: method `revalidate` is never used
+   --> windows-sandbox-rs/src/token_prepared_filesystem.rs:153:19
+    |
+150 | impl PreparedFilesystemToken {
+    | ---------------------------- method in this implementation
+...
+153 |     pub(crate) fn revalidate(&mut self, prepared: &mut PreparedFilesystemAclContext) -> Result<()> {
+    |                   ^^^^^^^^^^
+
+warning: struct `PreparedConptyInstance` is never constructed
+  --> windows-sandbox-rs/src/conpty/mod.rs:52:19
+   |
+52 | pub(crate) struct PreparedConptyInstance {
+   |                   ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: methods `raw_handle`, `take_input_write`, `take_output_read`, and `job` are never used
+  --> windows-sandbox-rs/src/conpty/mod.rs:58:19
+   |
+57 | impl PreparedConptyInstance {
+   | --------------------------- methods in this implementation
+58 |     pub(crate) fn raw_handle(&self) -> Option<HANDLE> {
+   |                   ^^^^^^^^^^
+...
+62 |     pub(crate) fn take_input_write(&mut self) -> HANDLE {
+   |                   ^^^^^^^^^^^^^^^^
+...
+66 |     pub(crate) fn take_output_read(&mut self) -> HANDLE {
+   |                   ^^^^^^^^^^^^^^^^
+...
+70 |     pub(crate) fn job(&self) -> Option<Arc<JobObject>> {
+   |                   ^^^
+
+warning: function `spawn_conpty_process_prepared` is never used
+   --> windows-sandbox-rs/src/conpty/mod.rs:156:15
+    |
+156 | pub(crate) fn spawn_conpty_process_prepared(
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `codex-windows-sandbox` (lib) generated 30 warnings
+warning: struct `PreparedCreatedProcess` is never constructed
+  --> windows-sandbox-rs/src/process.rs:47:19
+   |
+47 | pub(crate) struct PreparedCreatedProcess {
+   |                   ^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: very complex type used. Consider factoring parts into `type` definitions
+  --> windows-sandbox-rs/src/token_tests.rs:31:6
+   |
+31 | ) -> Result<Vec<(u8, u8, Option<u32>, bool)>> {
+   |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#type_complexity
+   = note: `#[warn(clippy::type_complexity)]` on by default
+
+warning: using `write!()` with a format string that ends in a single newline
+   --> windows-sandbox-rs/src/bin/command_runner/win/process_observation_tests.rs:104:25
+    |
+104 |   ...   let formatted = write!(
+    |  _______________________^
+105 | | ...       diagnostic,
+106 | | ...       "owned observation failure truncated=0: pre_cleanup={pre_cleanup:?} cleanup_kill={cleanup_kill:?} wait={reaped:?} image...
+107 | | ...       command.get_program(),
+108 | | ...       command.get_args().collect::<Vec<_>>(),
+109 | | ...   );
+    | |_______^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#write_with_newline
+    = note: `#[warn(clippy::write_with_newline)]` on by default
+help: use `writeln!` instead
+    |
+104 ~         let formatted = writeln!(
+105 |             diagnostic,
+106 ~             "owned observation failure truncated=0: pre_cleanup={pre_cleanup:?} cleanup_kill={cleanup_kill:?} wait={reaped:?} image_state={image_state} actual_image={actual_image:?} image_error={image_error:?} parent_program={:?} parent_args_not_wire={:?}",
+    |
+
+warning: `codex-windows-sandbox` (bin "codex-command-runner" test) generated 1 warning (run `cargo clippy --fix --bin "codex-command-runner" -p codex-windows-sandbox --tests -- ` to apply 1 suggestion)
+warning: `codex-windows-sandbox` (lib test) generated 14 warnings (12 duplicates)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1m 26s

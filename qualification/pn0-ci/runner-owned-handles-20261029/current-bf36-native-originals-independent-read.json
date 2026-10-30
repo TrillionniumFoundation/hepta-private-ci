@@ -1,0 +1,2091 @@
+{
+  "schema": "bf36-current-four-native-Windows-originals-independent-read-v1",
+  "reviewed_utc": "2026-10-29T00:47:54.968243+00:00",
+  "reviewer": "/root/e153_windows_raw_review",
+  "run": 40789310118,
+  "attempt": 1,
+  "scope": "This packet only: four exact bf36/c4f58 native Windows original diagnostics routes. Local archive/ZIP bytes, captured metadata, raw case/job logs, original checker and immutable local source read. No packet scripts/tests/build/fmt/CI/network/VM executed.",
+  "READ": "COMPLETE_LOCAL_BYTES_AND_RELEVANT_ORIGINAL_FAILURE_CONTENT",
+  "transport_vs_REVIEW": "Delivery and queue receipt prove transport only. This report provides new independent content-review ACK; it is not APPLY/COMMIT/PUSH/native pass/gate closure.",
+  "outer_packet_files": [
+    {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-Windows-originals-20261029-001/actual-current-source-preview-and-main-qualification.json",
+      "bytes": 2931,
+      "sha256": "f55b8f3b2b148813f7118f6c938fa84696b102e6adee5f8f5726b4c5f8f80aad"
+    },
+    {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-Windows-originals-20261029-001/actual-existing-thread-queue.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-Windows-originals-20261029-001/actual-existing-thread-queue.stdout.original",
+      "bytes": 101,
+      "sha256": "4a7512f417270f7177fcbacb96d15f563519509cca747f8616ff22f1008b94f2"
+    },
+    {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-Windows-originals-20261029-001/actual-independent-native-source-log-reader.json",
+      "bytes": 75486,
+      "sha256": "64ce1a911527204355cd4c951ca217bd48b54d25bc8e8896a39eac3aa07b4105"
+    },
+    {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-Windows-originals-20261029-001/actual-queue-and-delivery-receipt.json",
+      "bytes": 1879,
+      "sha256": "93088422111b82f05926a4846c6bf9d2d2641940d323531ad68a02e29a0b46f2"
+    },
+    {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-Windows-originals-20261029-001/actual-queue-owner-start.json",
+      "bytes": 857,
+      "sha256": "5d9d3e39416d2d294edc584ce70838af25ff2b36f03764ecd616dd9205428167"
+    },
+    {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-Windows-originals-20261029-001/both-existing-PR-body-independent-readbacks.json",
+      "bytes": 75622,
+      "sha256": "b9b987a26e5c4feb8b855c0d358cb14b48a89f5806d940f566cb1aba07958a03"
+    },
+    {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-Windows-originals-20261029-001/complete-originals-and-source-gates.tar.xz",
+      "bytes": 1310384,
+      "sha256": "e1ea8b49145f04ce194ef57a6ab275602f0347756ca04c0113b9ba55dbe61421"
+    },
+    {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-Windows-originals-20261029-001/current-bf36-four-original-Windows-failures.json",
+      "bytes": 90452,
+      "sha256": "242f27a6bb55297b1da3b3827ea03aec21a68c0bc66f2d034a4bd2a0dbe375a0"
+    },
+    {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-Windows-originals-20261029-001/full-archive-member-hashes.json",
+      "bytes": 259282,
+      "sha256": "718da402ea31db21fe119aaa95490bbbddece27781ff577873d1f93922a9a431"
+    }
+  ],
+  "delivery_receipt": {
+    "pin": {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-Windows-originals-20261029-001/actual-queue-and-delivery-receipt.json",
+      "bytes": 1879,
+      "sha256": "93088422111b82f05926a4846c6bf9d2d2641940d323531ad68a02e29a0b46f2"
+    },
+    "all6_payload_sizes_SHA_match": true
+  },
+  "archive": {
+    "pin": {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-Windows-originals-20261029-001/complete-originals-and-source-gates.tar.xz",
+      "bytes": 1310384,
+      "sha256": "e1ea8b49145f04ce194ef57a6ab275602f0347756ca04c0113b9ba55dbe61421"
+    },
+    "inventory": {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-Windows-originals-20261029-001/full-archive-member-hashes.json",
+      "bytes": 259282,
+      "sha256": "718da402ea31db21fe119aaa95490bbbddece27781ff577873d1f93922a9a431"
+    },
+    "members": 908,
+    "uncompressed_regular_bytes": 43646736,
+    "max_member_bytes": 2197549,
+    "all908_size_SHA_readbacks": true,
+    "evidence_root": "work/coordination/reviews/bf36-native-originals-20261029-001-evidence",
+    "extraction_rules": "New isolated evidence directory, validated unique relative POSIX regular members only, no absolute/dotdot/backslash/links/special/sparse names,0600 files; no script execution.",
+    "reader_caps": {
+      "member_count": 1024,
+      "single_bytes": 8388608,
+      "total_bytes": 67108864
+    },
+    "caps_scope": "Evidence parser safety only, not project acceptance/resource changes.",
+    "partial_transports": "Original partial/empty attempts retained. Only final complete ZIP/log copies matching official captured size/digest counted."
+  },
+  "actual_local_Git_objects": {
+    "head": {
+      "sha": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "tree": "803e1e9b12efa4dd236ecd99333a717b5d52b033",
+      "ordered_parents": [
+        "310b5369bad666367f17a6e005d29ada9d123cd7"
+      ]
+    },
+    "preview": {
+      "sha": "c4f58e535d69a8748484df722743e279cbb1dea5",
+      "tree": "803e1e9b12efa4dd236ecd99333a717b5d52b033",
+      "ordered_parents": [
+        "c38e7727220f32c7410f59083c5ea7878bbae078",
+        "bf36d10a54db1d9453409a432cb4641c9fbe38e8"
+      ]
+    }
+  },
+  "captured_primary_API_object_join": [
+    {
+      "path": "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/PN0-d67e-Hepta-bf36-four-Windows-originals-closing-current-source-gate-20261029-048/hepta-head-commit.original.json",
+      "bytes": 1243,
+      "sha256": "dfb0fc463e785f4895099e3fc679ecd26cc3579393bd28e2bce24a0473379769"
+    },
+    {
+      "path": "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/PN0-d67e-Hepta-bf36-four-Windows-originals-closing-current-source-gate-20261029-048/hepta-actual-preview-commit.original.json",
+      "bytes": 2798,
+      "sha256": "e6dfd7ac0102aaa8d8dba5d666202cf284201eebd5c633112046cfab6dd38f23"
+    }
+  ],
+  "source_state_before": {
+    "head": "d3284e385e2b6037dd86752ddd246b616144a87c",
+    "tree": "eed42a952ac5a713fc733b29707b4be3c20e00b2",
+    "branch": "fix/hepta-final-use-live-owner-20261028",
+    "index_sha256": "a880022fabef27c670c8de21da6801e2d1808b17a93ef856d6d611902c445ac9",
+    "status_sha256": "7152712832e92a5f5de49a8fd8622afa290c48cee7e3914e0a41c56f71275ea4",
+    "status_bytes": 3748
+  },
+  "source_state_after": {
+    "head": "d3284e385e2b6037dd86752ddd246b616144a87c",
+    "tree": "eed42a952ac5a713fc733b29707b4be3c20e00b2",
+    "branch": "fix/hepta-final-use-live-owner-20261028",
+    "index_sha256": "a880022fabef27c670c8de21da6801e2d1808b17a93ef856d6d611902c445ac9",
+    "status_sha256": "7152712832e92a5f5de49a8fd8622afa290c48cee7e3914e0a41c56f71275ea4",
+    "status_bytes": 3748
+  },
+  "source_worktree_index_refs_unchanged": true,
+  "relevant_exact_source_pins": [
+    {
+      "source_commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": ".github/workflows/hepta-windows-delete-boundary.yml",
+      "bytes": 56027,
+      "sha256": "5957af19f9513b0e8c1cf335b4e94280f3e93381bbb363e28fd869ab4836fabd",
+      "git_blob": "90609e61ceb7c5c9f5c8564795d0084ed2188de1"
+    },
+    {
+      "source_commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "scripts/hepta_ci_exec.py",
+      "bytes": 21192,
+      "sha256": "e5e18bbfd9e2a855cb6911dcd40183770a13cd9414bf988f3a50cae9509652cc",
+      "git_blob": "a3ddefca06e527a3756e5bbeef86de1cf79d77a0"
+    },
+    {
+      "source_commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win/process_observation_tests.rs",
+      "bytes": 7760,
+      "sha256": "459d1a9f8b20a6c6b07b604d196469c21be13e3c29bd1ad4e57d6ef067bddf49",
+      "git_blob": "b8473287426c968288de061b8cd409d09ebd20e3"
+    },
+    {
+      "source_commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win/process_observation.rs",
+      "bytes": 1571,
+      "sha256": "842988628199ca90030f95ae4c9874f4b7e708e8a8c063360d5a8cc832f4613f",
+      "git_blob": "5f748887f3f4f2ecec5523c76d93c6730550a72d"
+    },
+    {
+      "source_commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "bytes": 19991,
+      "sha256": "a597a32a4c01fa0c5b10c0cf21ff23293436062089becd77ae61fe8d19dab47a",
+      "git_blob": "4a07e762c86aaa2cac0a02dfc672320f175e2a66"
+    },
+    {
+      "source_commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+      "bytes": 41867,
+      "sha256": "1c433d36d0099a33d1e96570b77a753ade76bdfa3f1dec1e91197895c3b3715e",
+      "git_blob": "3571fed975ef0821053bf1db110a6b6dc20ad453"
+    }
+  ],
+  "checker_from_actual_workflow_here_doc": {
+    "bytes": 33842,
+    "sha256": "6cf3dfe235c24820013f5377bf7b2f852b726a59c540d2e47a829cfa3722e552",
+    "all4_zip_exact": true,
+    "AST_only_no_execution": true,
+    "original_timeout_minutes": 60
+  },
+  "source_preservation": "Entire Windows-sandbox directory/workflow/hepta_ci_exec diff310b→bf36 is empty. This does not inherit old native results; current bf36 raw was independently read.",
+  "whole_source_manifest_limit": "All4 source-before/after snapshots agree with immutable Git head/tree/orderedparents and native rustc host. Package does not include entire10296-file source checkout; whole tracked-bytes digest not independently recomputed by reviewer. Exact checker source was bound and inspected, not rerun.",
+  "captured_jobs_artifacts": {
+    "metadata": {
+      "path": "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/Hepta-bf36-Windows-current-original-failures-20261028-001/all-current-jobs-and-artifacts.json",
+      "bytes": 48830,
+      "sha256": "385cf5598ddfc4607afc9100f37847ef79c4d4c318a75105154c7f8633fce6d2"
+    },
+    "all_pages_complete_at_capture": true,
+    "jobs": 4,
+    "artifacts": 4,
+    "all4_completed_failure": true,
+    "official_ZIP_bytes": 369059,
+    "ZIP_members_CRC_size_SHA_verified": 220,
+    "complete_job_log_bytes": 8115051
+  },
+  "four_routes": [
+    {
+      "artifact_id": 12862170077,
+      "job_id": 123170269199,
+      "name": "hepta-windows-delete-boundary-windows-11-arm-base-merge-40789310118-1",
+      "job_API_status_conclusion": [
+        "completed",
+        "failure"
+      ],
+      "job_started": "2026-10-28T23:43:33Z",
+      "job_completed": "2026-10-28T23:57:23Z",
+      "ZIP": {
+        "path": "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/Hepta-bf36-Windows-current-original-failures-20261028-001/actual-primary-connector-file-artifact-recovery-003/artifact12862170077-official-full-zip/official-complete-decoded.stdout.original",
+        "bytes": 92285,
+        "sha256": "8212fb6d37583531918a626de31e096d46b3a4d56b0b4b412021799729b30af1"
+      },
+      "other_identical_copy_paths": [],
+      "captured_official_digest": "sha256:8212fb6d37583531918a626de31e096d46b3a4d56b0b4b412021799729b30af1",
+      "official_bytes": 92285,
+      "transfer_receipt": {
+        "path": "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/Hepta-bf36-Windows-current-original-failures-20261028-001/actual-primary-connector-file-artifact-recovery-003/artifact12862170077-official-full-zip/actual-full-transfer-receipt.json",
+        "bytes": 12034,
+        "sha256": "64e26aaa2193fa4cb5c8dd1068559e540e7652d59957bbe301443011b22fe291"
+      },
+      "ZIP_members": 55,
+      "ZIP_expanded_bytes": 542072,
+      "all_CRC_size_SHA_equal_tar_extracted_members": true,
+      "member_inventory_sha256": "9f232c51cf1b632325f029a8cdaa1f28e6c156047c489fb509cdc264cc8f435d",
+      "source_before_after": {
+        "base_sha": "c38e7727220f32c7410f59083c5ea7878bbae078",
+        "lane": "base-merge",
+        "native": {
+          "runner": "windows-11-arm",
+          "runner_arch": "ARM64",
+          "target": "aarch64-pc-windows-msvc"
+        },
+        "parents": [
+          "c38e7727220f32c7410f59083c5ea7878bbae078",
+          "bf36d10a54db1d9453409a432cb4641c9fbe38e8"
+        ],
+        "source_sha": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+        "symlink_placeholders": 0,
+        "tested_sha": "c4f58e535d69a8748484df722743e279cbb1dea5",
+        "tracked_bytes_sha256": "47d696ca8fe72e358bf99e4ac282dbd2c00417fa98a7c024b3f45ff32b207dc5",
+        "tracked_files": 10296,
+        "tree": "803e1e9b12efa4dd236ecd99333a717b5d52b033"
+      },
+      "source_receipt_SHA256": [
+        "9370641ceb2858dc4d06cbd0fd3289aeeda986031e6aa12493d978dc49941992",
+        "9370641ceb2858dc4d06cbd0fd3289aeeda986031e6aa12493d978dc49941992"
+      ],
+      "checker_exact_source_workflow": {
+        "bytes": 33842,
+        "sha256": "6cf3dfe235c24820013f5377bf7b2f852b726a59c540d2e47a829cfa3722e552",
+        "parsed_not_executed": true
+      },
+      "v3_v2_original_and_receipt_chain_SHA256": {
+        "result.json": "f4962babb39f53f7499c9acf00f18c9005ec6dca32eeadb047537c3b7d81e7fe",
+        "result-v2.json": "aae7243306aeb9962ae111ef4817c7f2660609f04ce509f1f02f6fb896b2587b",
+        "result-v3.json": "3941b647ea09aaf12c536c24f03ca78453a87922f32ccee61a30842b1fd623e2",
+        "query-existing-readback.json": "26c77a85f4dbf91f59d85e7faa9440910e6ec0aef2de165f191f62cf80ba7900",
+        "command-runner-terminal.json": "9ead09e38c2a21a4b63d48d75f595bec2778bcd03e96ce6b999da09354da70ab"
+      },
+      "case_joins": [
+        {
+          "case": "acl-unit-controls",
+          "status": "passed",
+          "pass": 8,
+          "fail": 0,
+          "receipt_sha256": "da187b81c1d36c47fd91787afef17562cf925566bdcac390baebe3bb1531857b",
+          "log_sha256": "e206d6cf5fc769dea6e97eea4eb9620c509c03313cff1a865aa31933f858af55",
+          "log_bytes": 20350,
+          "summary_filtered_skips": 217
+        },
+        {
+          "case": "bounded-filesystem-preparation",
+          "status": "passed",
+          "pass": 2,
+          "fail": 0,
+          "receipt_sha256": "7950ef65f2f8b2f4a7e3a9f2d7694d7af71ea5f8af27b8d30d77daa248849c47",
+          "log_sha256": "c0ab8aa76bac91f576f3f28a89cceedba1b2bce18f3566379e5fc5c2e2fc7a6a",
+          "log_bytes": 17407,
+          "summary_filtered_skips": 223
+        },
+        {
+          "case": "broad-identity-delete",
+          "status": "failed",
+          "pass": 0,
+          "fail": 1,
+          "receipt_sha256": "a638cc44e96bf37729990236639395905b51e7b92014e4e70f813ac7c2db32c3",
+          "log_sha256": "aef4f97920487e4c6d5db272a5f14833c745aaa9ca4774e20e89d23a36d2559c",
+          "log_bytes": 21204,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "controlled-job",
+          "status": "passed",
+          "pass": 2,
+          "fail": 0,
+          "receipt_sha256": "b1438167b4164ef3ccfaedab55b9f780edb325103e002c5ff1b51c886ab9b0c2",
+          "log_sha256": "12ed23c5a5639856726947c72ff2a97e850a7086d5c5d322d1a63e8617bb47e7",
+          "log_bytes": 3724,
+          "summary_filtered_skips": 21
+        },
+        {
+          "case": "explicit-stdio",
+          "status": "passed",
+          "pass": 2,
+          "fail": 0,
+          "receipt_sha256": "65632a9423991c6be0492200b12814b970b9b77d84717d5484e11d5aba9e82e4",
+          "log_sha256": "c7590b922c38172ac56b2bf996e2693c68d4352b4de251701e6e3091da135700",
+          "log_bytes": 17314,
+          "summary_filtered_skips": 223
+        },
+        {
+          "case": "full-restriction-candidate",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "ca73724d64a0da7ea663e90f05f3596a1c2396f56c2da143223ade7c4755ceaa",
+          "log_sha256": "2c56969fb34425d5ebd7931e79d9c746e2ea191e54368aebee9f420078c2a957",
+          "log_bytes": 62338,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "held-read-acl",
+          "status": "passed",
+          "pass": 3,
+          "fail": 0,
+          "receipt_sha256": "e1ac1285a5debd839d93f3ae50c169cd99e3de2d0a4f60006c74666c5815eab5",
+          "log_sha256": "99b7b0513eb6660d0b16f42e33dcf26bfc8134fce6b4ab738dcc2716894c4d6a",
+          "log_bytes": 17978,
+          "summary_filtered_skips": 222
+        },
+        {
+          "case": "legacy-delete-boundary",
+          "status": "failed",
+          "pass": 0,
+          "fail": 1,
+          "receipt_sha256": "94c37bc89f82ff979cf87e02d0fdb2035caf5edefcd677c4b77ebb75ad0f28da",
+          "log_sha256": "0862026d31a62d543ae42672cea5962e9975137add3333479bca2e5898ae8dbd",
+          "log_bytes": 18464,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "original-final-use-windows",
+          "status": "passed",
+          "pass": 7,
+          "fail": 0,
+          "receipt_sha256": "cf2af0ae6e00ea0a8c682dc5baa09f81222b94bb98a3a37385b11d094ab2f91e",
+          "log_sha256": "9bdce694d66ef068d1017c414f873777d9a267b0f48954a28b3bcb216579fa89",
+          "log_bytes": 13784,
+          "summary_filtered_skips": 127
+        },
+        {
+          "case": "original-registry-windows",
+          "status": "passed",
+          "pass": 3,
+          "fail": 0,
+          "receipt_sha256": "8171c9d456b54e7ea837331f6fd84e49c747653ec78733fe236614ec08e9c2a5",
+          "log_sha256": "0f07acb369b380382afbb45890df7043ea91a6aa3725a6684df9a57848bfcffb",
+          "log_bytes": 7082,
+          "summary_filtered_skips": 26
+        },
+        {
+          "case": "partial-delete-deny",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "6b1374d64d7fc521edbdd399d440d718e49339ef9b3cdede72a638d1f15948a9",
+          "log_sha256": "67eb98e09b1181e172033949ae9aeb8004f135af5567c835f7e5e93ac2835451",
+          "log_bytes": 16618,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "private-held-sharing",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "c8efedfb6ca2bc3c38651072df551cd7e98771cc9fc1185be5db8af3f49326b9",
+          "log_sha256": "05edefc5debc5cc5052511812f829a2a12b959d89c0590585dbb34e8b60bcd6a",
+          "log_bytes": 20142,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "private-local-ntfs",
+          "status": "passed",
+          "pass": 4,
+          "fail": 0,
+          "receipt_sha256": "2e9d4f74f05a0d29325af660a73d8e36043f8b8dbb6af412e6fe35cd0c21d2f4",
+          "log_sha256": "b9263f97b0db2b04d571c690b71e672bb9b1cd6579882672fee128589ddcd9e4",
+          "log_bytes": 10441,
+          "summary_filtered_skips": 0
+        },
+        {
+          "case": "private-native-flush",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "978ad1db5f9b099074d0f59b9391f053dffda229b29d3ee1ff33697fb0076005",
+          "log_sha256": "688eb8b83bf8a0d960c3b15eb92424545d28821fc942f6c3c33c2267e17ce0cb",
+          "log_bytes": 19140,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "private-no-reparse",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "fd71538f2a3e1050be092178b1015baa405638745334cc43511ae3d8bfc8e863",
+          "log_sha256": "fd67b8a2b7ff80edb823c45f5e2b84ee2319e77db82cfd5f595dab2d0f8fc8fc",
+          "log_bytes": 21006,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "private-owner-descriptor",
+          "status": "passed",
+          "pass": 40,
+          "fail": 0,
+          "receipt_sha256": "49d41c571c3042f1b24da3bb667dde1e83b00780d389bf36757a2959acd73eb0",
+          "log_sha256": "bb2b95cbc48de93b83ed9837b943f3ddcf08834ce895338d4a70d0e50005485d",
+          "log_bytes": 80866,
+          "summary_filtered_skips": 0
+        },
+        {
+          "case": "private-owner-lock",
+          "status": "passed",
+          "pass": 4,
+          "fail": 0,
+          "receipt_sha256": "bfa5d40ec4ba2e85620b2ffdcb964ba273e173092c93685ade16d563c7f7a3b1",
+          "log_sha256": "900eb2ed55bf58cf940b242382bc8bdd54e3132b3ebc79be4c7b121cd5fcbdfe",
+          "log_bytes": 3137,
+          "summary_filtered_skips": 0
+        },
+        {
+          "case": "private-principal-continuity",
+          "status": "passed",
+          "pass": 4,
+          "fail": 0,
+          "receipt_sha256": "8b9a1a52a3a03b37dcf5bee2a731f94dfa5e7b103de5590222c4ec7e5491a0e9",
+          "log_sha256": "987ce74fb292a5637441a9a2498b4f6205cf235a81b314ef5d61d2c866a730f5",
+          "log_bytes": 3287,
+          "summary_filtered_skips": 0
+        },
+        {
+          "case": "private-relative-rename",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "6164fab1fe54782f15821a605f36a24148d4d8f6b2ba78521bfe5e002c012ec1",
+          "log_sha256": "2457b1e288c0ee798dd4092fc5b0b8799fcdf530604d0e85c086a38eff3b4f32",
+          "log_bytes": 18893,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "session-desktop",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "96d7c152009741542f2cfc9409d4eed15e8d3179a6aa2fc99e92ff3e80681937",
+          "log_sha256": "258d95efa5ce253b72687865d60ee298dcf4b3afeb9385fd00c29a7501c93795",
+          "log_bytes": 16705,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "query-existing-readback",
+          "status": "passed",
+          "pass": 6,
+          "fail": 0,
+          "receipt_sha256": "26c77a85f4dbf91f59d85e7faa9440910e6ec0aef2de165f191f62cf80ba7900",
+          "log_sha256": "ba5c7b80bfd7ca58c5022095510c278ef3500bff72c424e463c7e4c81a3eedee",
+          "log_bytes": 20081,
+          "summary_filtered_skips": 219
+        },
+        {
+          "case": "command-runner-terminal",
+          "status": "failed",
+          "pass": 1,
+          "fail": 2,
+          "receipt_sha256": "9ead09e38c2a21a4b63d48d75f595bec2778bcd03e96ce6b999da09354da70ab",
+          "log_sha256": "da0789cd86e2de6bdd3c5882aed38b12307c4b8c7ef043c02241a4dfc40e90b3",
+          "log_bytes": 30943,
+          "summary_filtered_skips": 1
+        }
+      ],
+      "original20": {
+        "pass": 18,
+        "fail": 2
+      },
+      "query6": {
+        "pass": 6,
+        "fail": 0
+      },
+      "terminal3": {
+        "pass": 1,
+        "fail": 2
+      },
+      "nested_libtest_FAILED_lines": {
+        "lines": 4,
+        "unique_case_names": 2,
+        "two_nextest_attempts_each": true,
+        "four_independent_cases": false
+      },
+      "original_case_raw": {
+        "members_root": "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/Hepta-bf36-Windows-current-original-failures-20261028-001/actual-primary-connector-file-artifact-recovery-003/artifact12862170077-official-full-zip/members",
+        "broad_first_assert": {
+          "start_line": 175,
+          "end_line": 175,
+          "lines": [
+            "assertion failed: `(left == right)`: restricting (cap_a, cap_b, logon, everyone)=(true, true, false, false); actual outside (parent, file, directory) ACL=([(0, 3, Some(1245631), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false)], [(0, 16, Some(1245631), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false)], [(0, 19, Some(1245631), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false)]); per-descriptor AccessCheck (label, desired, result(allowed, granted, privileges))=[(\"outside file DELETE\", 65536, Ok((false, 0, 0))), (\"outside directory DELETE\", 65536, Ok((false, 0, 0))), (\"outside parent FILE_DELETE_CHILD\", 64, Ok((true, 64, 0))), (\"outside file FILE_WRITE_DATA\", 2, Ok((false, 0, 0))), (\"outside file FILE_READ_DATA\", 1, Ok((true, 1, 0))), (\"authorized file DELETE\", 65536, Ok((true, 65536, 0)))]"
+          ]
+        },
+        "broad_first_diff": {
+          "start_line": 177,
+          "end_line": 193,
+          "lines": [
+            "Diff < left / right > :",
+            " [",
+            "     Some(",
+            "         PermissionDenied,",
+            "     ),",
+            "     Some(",
+            "         PermissionDenied,",
+            "     ),",
+            "<    None,",
+            "<    None,",
+            ">    Some(",
+            ">        PermissionDenied,",
+            ">    ),",
+            ">    Some(",
+            ">        PermissionDenied,",
+            ">    ),",
+            " ]"
+          ]
+        },
+        "legacy_refusal": {
+          "start_line": 174,
+          "end_line": 176,
+          "lines": [
+            "thread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (2320) panicked at windows-sandbox-rs\\src\\unified_exec\\tests.rs:769:10:",
+            "spawn legacy delete session: Windows filesystem isolation is unavailable: neither the direct token nor the account broker is qualified",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+          ]
+        },
+        "terminal_first_rights_assert": {
+          "start_line": 311,
+          "end_line": 322,
+          "lines": [
+            "thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (4596) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:171:9:",
+            "assertion failed: `(left == right)`",
+            "",
+            "Diff < left / right > :",
+            " Exited(",
+            "<    1,",
+            ">    7,",
+            " )",
+            "",
+            "",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 7\"]"
+          ]
+        },
+        "terminal_first_zero_assert": {
+          "start_line": 363,
+          "end_line": 374,
+          "lines": [
+            "thread 'win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query' (2372) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:158:13:",
+            "assertion failed: `(left == right)`",
+            "",
+            "Diff < left / right > :",
+            " Exited(",
+            "<    1,",
+            ">    0,",
+            " )",
+            "",
+            "",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 0\"]"
+          ]
+        },
+        "original_Child_diagnostics": [
+          {
+            "line": 322,
+            "text": "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 7\"]"
+          },
+          {
+            "line": 348,
+            "text": "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 7\"]"
+          },
+          {
+            "line": 374,
+            "text": "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 0\"]"
+          },
+          {
+            "line": 400,
+            "text": "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 0\"]"
+          }
+        ]
+      },
+      "complete_job_raw": {
+        "path": "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/Hepta-bf36-Windows-current-original-failures-20261028-001/job123170269199.complete-decoded-connector-log.original.txt",
+        "bytes": 2029964,
+        "sha256": "c2f0e9ed82a0cf0d6ca11567d8b981767f106b8974227b610777205025cece2b"
+      },
+      "full_job_line_joins": {
+        "broad": [
+          {
+            "line": 10792,
+            "text": "2026-10-28T23:56:08.3892972Z thread 'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces' (10540) panicked at windows-sandbox-rs\\src\\token_tests.rs:486:5:"
+          },
+          {
+            "line": 10829,
+            "text": "2026-10-28T23:56:08.4230072Z thread 'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces' (3064) panicked at windows-sandbox-rs\\src\\token_tests.rs:486:5:"
+          }
+        ],
+        "legacy": [
+          {
+            "line": 11068,
+            "text": "2026-10-28T23:56:11.4184072Z spawn legacy delete session: Windows filesystem isolation is unavailable: neither the direct token nor the account broker is qualified"
+          },
+          {
+            "line": 11085,
+            "text": "2026-10-28T23:56:11.4498167Z spawn legacy delete session: Windows filesystem isolation is unavailable: neither the direct token nor the account broker is qualified"
+          }
+        ],
+        "rights": [
+          {
+            "line": 13536,
+            "text": "2026-10-28T23:57:08.6453856Z thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (4596) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:171:9:"
+          },
+          {
+            "line": 13562,
+            "text": "2026-10-28T23:57:08.6934877Z thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (4568) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:171:9:"
+          }
+        ],
+        "zero": [
+          {
+            "line": 13588,
+            "text": "2026-10-28T23:57:08.7249084Z thread 'win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query' (2372) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:158:13:"
+          },
+          {
+            "line": 13614,
+            "text": "2026-10-28T23:57:08.7727325Z thread 'win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query' (6012) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:158:13:"
+          }
+        ],
+        "Child_diagnostic_line_numbers": [
+          13547,
+          13573,
+          13599,
+          13625
+        ]
+      },
+      "guard_flags": {
+        "production_sandbox_admitted": false,
+        "windows_private_state_owners_supported": false,
+        "power_loss_qualified": false
+      }
+    },
+    {
+      "artifact_id": 12861795632,
+      "job_id": 123170269189,
+      "name": "hepta-windows-delete-boundary-windows-latest-source-head-40789310118-1",
+      "job_API_status_conclusion": [
+        "completed",
+        "failure"
+      ],
+      "job_started": "2026-10-28T23:43:33Z",
+      "job_completed": "2026-10-28T23:53:57Z",
+      "ZIP": {
+        "path": "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/Hepta-bf36-Windows-current-original-failures-20261028-001/actual-primary-connector-file-artifact-recovery-003/artifact12861795632-official-full-zip/official-complete-decoded.stdout.original",
+        "bytes": 92216,
+        "sha256": "b301598412f2348d11f084802c182d71dea54f5d70369bddadd841f905f204f5"
+      },
+      "other_identical_copy_paths": [],
+      "captured_official_digest": "sha256:b301598412f2348d11f084802c182d71dea54f5d70369bddadd841f905f204f5",
+      "official_bytes": 92216,
+      "transfer_receipt": {
+        "path": "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/Hepta-bf36-Windows-current-original-failures-20261028-001/actual-primary-connector-file-artifact-recovery-003/artifact12861795632-official-full-zip/actual-full-transfer-receipt.json",
+        "bytes": 12040,
+        "sha256": "5ed51cb49ebe6430ed3242cef6e51c622e78f9a6640274102c505fea8ec19a73"
+      },
+      "ZIP_members": 55,
+      "ZIP_expanded_bytes": 541936,
+      "all_CRC_size_SHA_equal_tar_extracted_members": true,
+      "member_inventory_sha256": "5dd931fb2598d1d5733cc95ca1ca00916dbbfef7b59edcd94fae2fdc27542f77",
+      "source_before_after": {
+        "base_sha": "c38e7727220f32c7410f59083c5ea7878bbae078",
+        "lane": "source-head",
+        "native": {
+          "runner": "windows-latest",
+          "runner_arch": "X64",
+          "target": "x86_64-pc-windows-msvc"
+        },
+        "parents": [
+          "310b5369bad666367f17a6e005d29ada9d123cd7"
+        ],
+        "source_sha": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+        "symlink_placeholders": 0,
+        "tested_sha": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+        "tracked_bytes_sha256": "47d696ca8fe72e358bf99e4ac282dbd2c00417fa98a7c024b3f45ff32b207dc5",
+        "tracked_files": 10296,
+        "tree": "803e1e9b12efa4dd236ecd99333a717b5d52b033"
+      },
+      "source_receipt_SHA256": [
+        "0be62c656acaa94be33c9e575141ea43f665a06b6bcad67fd41776b1abbf6438",
+        "0be62c656acaa94be33c9e575141ea43f665a06b6bcad67fd41776b1abbf6438"
+      ],
+      "checker_exact_source_workflow": {
+        "bytes": 33842,
+        "sha256": "6cf3dfe235c24820013f5377bf7b2f852b726a59c540d2e47a829cfa3722e552",
+        "parsed_not_executed": true
+      },
+      "v3_v2_original_and_receipt_chain_SHA256": {
+        "result.json": "d18e77e611a9cfb5abf59d1828061aaf9503050b73ad4117efc35260e2f5a637",
+        "result-v2.json": "0ae634f4c78b657c7776c03155638ac61b5f0963f6d1d9dae4f5aeefdac3dc52",
+        "result-v3.json": "2b7363329ef8ad3cf231a715dde6cd01c4966f3441e807403bcf93c7a1d732e7",
+        "query-existing-readback.json": "d889f76e14efd764630aafe42e8809bf7e5524db115baaecd216223d522c77c8",
+        "command-runner-terminal.json": "c3ada0a6935eb4148f7a6e79a8e3aa467b27a88e5f8f5774bf41707ed05229c5"
+      },
+      "case_joins": [
+        {
+          "case": "acl-unit-controls",
+          "status": "passed",
+          "pass": 8,
+          "fail": 0,
+          "receipt_sha256": "6e29d6fd5de8b5ddb96979a9c7f944bc6fadc5e7331562715bda810b21c4341c",
+          "log_sha256": "4f35e4dc6a301d54db0cbbf4ffa7f578ccb9ac64cff7808a9c185386b49cf527",
+          "log_bytes": 20348,
+          "summary_filtered_skips": 217
+        },
+        {
+          "case": "bounded-filesystem-preparation",
+          "status": "passed",
+          "pass": 2,
+          "fail": 0,
+          "receipt_sha256": "028a5a31da14f0f0c21fd85b26c88596a0eb85d4fd5b1eb1b5ef925553c360c6",
+          "log_sha256": "b8b90796e5069daef8b7878cfc2e3e930cec187885790b1c7f3528a49b7e3381",
+          "log_bytes": 17405,
+          "summary_filtered_skips": 223
+        },
+        {
+          "case": "broad-identity-delete",
+          "status": "failed",
+          "pass": 0,
+          "fail": 1,
+          "receipt_sha256": "96db5796a7f79dd629050d632510c8b1c921ed3851de9e04b431ba00c24f10fa",
+          "log_sha256": "b22c35ffab771701f909a1bd1ed686f872d1709d4739805cebb131b040c4b1ee",
+          "log_bytes": 21201,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "controlled-job",
+          "status": "passed",
+          "pass": 2,
+          "fail": 0,
+          "receipt_sha256": "2bf6c907f3fd506b7eb9499735e3ba9bec88deee40f24d70627f03cb95d12942",
+          "log_sha256": "34ebffabdd119de59d3f961d66bd767f9cb57a227f4d7ff97aa6543ebddc06ab",
+          "log_bytes": 3724,
+          "summary_filtered_skips": 21
+        },
+        {
+          "case": "explicit-stdio",
+          "status": "passed",
+          "pass": 2,
+          "fail": 0,
+          "receipt_sha256": "00ecb264970416d78bfc398b1abb3726ab384faa109c8f5c91cb98d9a613b8bc",
+          "log_sha256": "dcb68e897c636a4c9103304ec3b0d800567543da28dd03797b33775dc22e7f6d",
+          "log_bytes": 17312,
+          "summary_filtered_skips": 223
+        },
+        {
+          "case": "full-restriction-candidate",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "2caf76088974cf02fbd1a034b19248878880965466049a885fc2f0363dc99c74",
+          "log_sha256": "8ebd8ae0a2926c158b78b0cace5a448c308fd742f9150001dddbbe9e44254e78",
+          "log_bytes": 62423,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "held-read-acl",
+          "status": "passed",
+          "pass": 3,
+          "fail": 0,
+          "receipt_sha256": "5b681041f54e503d8df994a22567e00997634cdbea13f939f01a79670b371585",
+          "log_sha256": "cc083e6f3e610518e50f20139b82fac48396f91bc75aede72cb1c395234d161e",
+          "log_bytes": 17976,
+          "summary_filtered_skips": 222
+        },
+        {
+          "case": "legacy-delete-boundary",
+          "status": "failed",
+          "pass": 0,
+          "fail": 1,
+          "receipt_sha256": "8afb718ef7183034e769205d07d15939e2843b8f5627f3cda2c3e7a30d0b3d00",
+          "log_sha256": "e635ca9495c7dcd81d1343f020fe29a956890dee52da5e3e1e2b165b33b40f73",
+          "log_bytes": 18462,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "original-final-use-windows",
+          "status": "passed",
+          "pass": 7,
+          "fail": 0,
+          "receipt_sha256": "c2499e390e7ac53222f3194ed5cc6d35dbd59c8b2a1a498b188938b7ae6b5486",
+          "log_sha256": "53aaf1552d3f0daaf11b299dfb9f8b8fe134471bc558354deca3f07ac2e0dbe0",
+          "log_bytes": 13897,
+          "summary_filtered_skips": 127
+        },
+        {
+          "case": "original-registry-windows",
+          "status": "passed",
+          "pass": 3,
+          "fail": 0,
+          "receipt_sha256": "b7655dff4fc9c606124953fe6b6a4a11fbc1446e0c716ec37dd0c4cb45f323eb",
+          "log_sha256": "db16692e9f0ba2a72439558c60413b94054beeee8a270f01a13376067f95458f",
+          "log_bytes": 6994,
+          "summary_filtered_skips": 26
+        },
+        {
+          "case": "partial-delete-deny",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "97c96f5f6f9dbd708cac5f9602ec8a6c92e76464e0351d3c0703b50167bb4f42",
+          "log_sha256": "063b5e19d9094183f0af1c0088a2c1e63c7d40a18a09f02156140625903f0d71",
+          "log_bytes": 16616,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "private-held-sharing",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "94085a31b55fe68f5efbffd5a97614c6e5565a600557979166bdc6bc28ddfdfe",
+          "log_sha256": "0e1d962deb8436a1b9ec6c4c2467a654350ef05b573efbf898e5a9efb80e8f0b",
+          "log_bytes": 20140,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "private-local-ntfs",
+          "status": "passed",
+          "pass": 4,
+          "fail": 0,
+          "receipt_sha256": "303682c414e3ee08c467e549d78c97b2b69dd43909fb4967e876e2cd3fa00c9c",
+          "log_sha256": "e9396b5ec49c1ae45e32a7b9e467f502810bc385295b560b32eb0c88102a3ded",
+          "log_bytes": 10440,
+          "summary_filtered_skips": 0
+        },
+        {
+          "case": "private-native-flush",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "8323c21172b0f6ec10485f123d976e5e1e9f7f7da294830aaad332786c4abdf8",
+          "log_sha256": "dcf0df96fefa0b9c80dcf4bdb254564fe902874c0c462cdff4d8dcc889bacdd2",
+          "log_bytes": 19137,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "private-no-reparse",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "c3e87eccddadbe01a3473656fcc37253861367d1a5306358a7a3e30d310607af",
+          "log_sha256": "01d7747b526266cb643173e58dee4066c5f3e25ec878245f9dc497accd9dc434",
+          "log_bytes": 21004,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "private-owner-descriptor",
+          "status": "passed",
+          "pass": 40,
+          "fail": 0,
+          "receipt_sha256": "48de39e23d499ecf8fe01303ff9285ed82f1985603a1259161dc6758385b7080",
+          "log_sha256": "d809d1e834adf27cbcc5fed9089b1b6078192db9a4d853de25e31a8810713cfc",
+          "log_bytes": 80863,
+          "summary_filtered_skips": 0
+        },
+        {
+          "case": "private-owner-lock",
+          "status": "passed",
+          "pass": 4,
+          "fail": 0,
+          "receipt_sha256": "8842a491d237e0da918ae28fb29b8200c0ca3b4781c8caa2b62f6e5bbd7e326f",
+          "log_sha256": "e6b85097310850c980eb3e9e8b800d531a667eb93d884918b8543f4a98e03515",
+          "log_bytes": 3136,
+          "summary_filtered_skips": 0
+        },
+        {
+          "case": "private-principal-continuity",
+          "status": "passed",
+          "pass": 4,
+          "fail": 0,
+          "receipt_sha256": "a624decd4287800483301db36d810ccf2139bab9b713c2c81e3c99b8117993e0",
+          "log_sha256": "53238083984fb67c6003131b9979529d1b03d56c97350222a1e7b0bec73fc436",
+          "log_bytes": 3286,
+          "summary_filtered_skips": 0
+        },
+        {
+          "case": "private-relative-rename",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "241c7b0b6eba7a5a9574fe49183f4d1834324930f6efcbad832ca97a117f1c12",
+          "log_sha256": "13ed2bef9851d9670aec110d3ff6332d318f8cd9bc72070b7d58d84a7e1632f5",
+          "log_bytes": 18891,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "session-desktop",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "ad218a54a59f85aa21cd15b23f87327d21b292f31a44f612512f6d232ddf8fcb",
+          "log_sha256": "5425b9a771424f828268f2ad7442af141909d555cb2ca92a54cab62a229c73de",
+          "log_bytes": 16703,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "query-existing-readback",
+          "status": "passed",
+          "pass": 6,
+          "fail": 0,
+          "receipt_sha256": "d889f76e14efd764630aafe42e8809bf7e5524db115baaecd216223d522c77c8",
+          "log_sha256": "2575783500264515529870fcca655daaed5c95ab473585ee5a403c0264386ca5",
+          "log_bytes": 20079,
+          "summary_filtered_skips": 219
+        },
+        {
+          "case": "command-runner-terminal",
+          "status": "failed",
+          "pass": 1,
+          "fail": 2,
+          "receipt_sha256": "c3ada0a6935eb4148f7a6e79a8e3aa467b27a88e5f8f5774bf41707ed05229c5",
+          "log_sha256": "0168ae0b536f248692dfd74c9fd61f4ae69dea5999c7502da63dd02c3a5a1c74",
+          "log_bytes": 30940,
+          "summary_filtered_skips": 1
+        }
+      ],
+      "original20": {
+        "pass": 18,
+        "fail": 2
+      },
+      "query6": {
+        "pass": 6,
+        "fail": 0
+      },
+      "terminal3": {
+        "pass": 1,
+        "fail": 2
+      },
+      "nested_libtest_FAILED_lines": {
+        "lines": 4,
+        "unique_case_names": 2,
+        "two_nextest_attempts_each": true,
+        "four_independent_cases": false
+      },
+      "original_case_raw": {
+        "members_root": "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/Hepta-bf36-Windows-current-original-failures-20261028-001/actual-primary-connector-file-artifact-recovery-003/artifact12861795632-official-full-zip/members",
+        "broad_first_assert": {
+          "start_line": 175,
+          "end_line": 175,
+          "lines": [
+            "assertion failed: `(left == right)`: restricting (cap_a, cap_b, logon, everyone)=(true, true, false, false); actual outside (parent, file, directory) ACL=([(0, 3, Some(1245631), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false)], [(0, 16, Some(1245631), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false)], [(0, 19, Some(1245631), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false)]); per-descriptor AccessCheck (label, desired, result(allowed, granted, privileges))=[(\"outside file DELETE\", 65536, Ok((false, 0, 0))), (\"outside directory DELETE\", 65536, Ok((false, 0, 0))), (\"outside parent FILE_DELETE_CHILD\", 64, Ok((true, 64, 0))), (\"outside file FILE_WRITE_DATA\", 2, Ok((false, 0, 0))), (\"outside file FILE_READ_DATA\", 1, Ok((true, 1, 0))), (\"authorized file DELETE\", 65536, Ok((true, 65536, 0)))]"
+          ]
+        },
+        "broad_first_diff": {
+          "start_line": 177,
+          "end_line": 193,
+          "lines": [
+            "Diff < left / right > :",
+            " [",
+            "     Some(",
+            "         PermissionDenied,",
+            "     ),",
+            "     Some(",
+            "         PermissionDenied,",
+            "     ),",
+            "<    None,",
+            "<    None,",
+            ">    Some(",
+            ">        PermissionDenied,",
+            ">    ),",
+            ">    Some(",
+            ">        PermissionDenied,",
+            ">    ),",
+            " ]"
+          ]
+        },
+        "legacy_refusal": {
+          "start_line": 174,
+          "end_line": 176,
+          "lines": [
+            "thread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (6528) panicked at windows-sandbox-rs\\src\\unified_exec\\tests.rs:769:10:",
+            "spawn legacy delete session: Windows filesystem isolation is unavailable: neither the direct token nor the account broker is qualified",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+          ]
+        },
+        "terminal_first_rights_assert": {
+          "start_line": 311,
+          "end_line": 322,
+          "lines": [
+            "thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (3736) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:171:9:",
+            "assertion failed: `(left == right)`",
+            "",
+            "Diff < left / right > :",
+            " Exited(",
+            "<    1,",
+            ">    7,",
+            " )",
+            "",
+            "",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 7\"]"
+          ]
+        },
+        "terminal_first_zero_assert": {
+          "start_line": 363,
+          "end_line": 374,
+          "lines": [
+            "thread 'win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query' (6952) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:158:13:",
+            "assertion failed: `(left == right)`",
+            "",
+            "Diff < left / right > :",
+            " Exited(",
+            "<    1,",
+            ">    0,",
+            " )",
+            "",
+            "",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 0\"]"
+          ]
+        },
+        "original_Child_diagnostics": [
+          {
+            "line": 322,
+            "text": "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 7\"]"
+          },
+          {
+            "line": 348,
+            "text": "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 7\"]"
+          },
+          {
+            "line": 374,
+            "text": "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 0\"]"
+          },
+          {
+            "line": 400,
+            "text": "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 0\"]"
+          }
+        ]
+      },
+      "complete_job_raw": {
+        "path": "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/Hepta-bf36-Windows-current-original-failures-20261028-001/job123170269189.complete-decoded-connector-log.original.txt",
+        "bytes": 2027463,
+        "sha256": "59e9feefcebe9d4936782210713e41174bf143af33b875fb778b049f3886935a"
+      },
+      "full_job_line_joins": {
+        "broad": [
+          {
+            "line": 10757,
+            "text": "2026-10-28T23:53:04.0514494Z thread 'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces' (2536) panicked at windows-sandbox-rs\\src\\token_tests.rs:486:5:"
+          },
+          {
+            "line": 10794,
+            "text": "2026-10-28T23:53:04.0673212Z thread 'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces' (6956) panicked at windows-sandbox-rs\\src\\token_tests.rs:486:5:"
+          }
+        ],
+        "legacy": [
+          {
+            "line": 11033,
+            "text": "2026-10-28T23:53:06.3019867Z spawn legacy delete session: Windows filesystem isolation is unavailable: neither the direct token nor the account broker is qualified"
+          },
+          {
+            "line": 11050,
+            "text": "2026-10-28T23:53:06.3183873Z spawn legacy delete session: Windows filesystem isolation is unavailable: neither the direct token nor the account broker is qualified"
+          }
+        ],
+        "rights": [
+          {
+            "line": 13501,
+            "text": "2026-10-28T23:53:49.2958761Z thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (3736) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:171:9:"
+          },
+          {
+            "line": 13527,
+            "text": "2026-10-28T23:53:49.3116784Z thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (6856) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:171:9:"
+          }
+        ],
+        "zero": [
+          {
+            "line": 13553,
+            "text": "2026-10-28T23:53:49.3272995Z thread 'win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query' (6952) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:158:13:"
+          },
+          {
+            "line": 13579,
+            "text": "2026-10-28T23:53:49.3587060Z thread 'win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query' (6264) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:158:13:"
+          }
+        ],
+        "Child_diagnostic_line_numbers": [
+          13512,
+          13538,
+          13564,
+          13590
+        ]
+      },
+      "guard_flags": {
+        "production_sandbox_admitted": false,
+        "windows_private_state_owners_supported": false,
+        "power_loss_qualified": false
+      }
+    },
+    {
+      "artifact_id": 12861591753,
+      "job_id": 123170269266,
+      "name": "hepta-windows-delete-boundary-windows-11-arm-source-head-40789310118-1",
+      "job_API_status_conclusion": [
+        "completed",
+        "failure"
+      ],
+      "job_started": "2026-10-28T23:43:32Z",
+      "job_completed": "2026-10-28T23:57:38Z",
+      "ZIP": {
+        "path": "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/Hepta-bf36-Windows-current-original-failures-20261028-001/actual-complete-transfer-resume-after-read-reset-001/artifact12861591753-official-full-zip/official-complete-entity.body.original",
+        "bytes": 92270,
+        "sha256": "83bcbe1f59fbdb8f5d04edc0c709e637a3830bf359b37cc87bad352c0846033d"
+      },
+      "other_identical_copy_paths": [
+        "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/Hepta-bf36-Windows-current-original-failures-20261028-001/actual-complete-transfer-resume-after-read-reset-001/artifact12861591753-official-full-zip/official-complete-decoded.stdout.original",
+        "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/Hepta-bf36-Windows-current-original-failures-20261028-001/actual-complete-transfer-resume-after-read-reset-001/artifact12861591753-official-full-zip/range-0-92269.body.original"
+      ],
+      "captured_official_digest": "sha256:83bcbe1f59fbdb8f5d04edc0c709e637a3830bf359b37cc87bad352c0846033d",
+      "official_bytes": 92270,
+      "transfer_receipt": {
+        "path": "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/Hepta-bf36-Windows-current-original-failures-20261028-001/actual-complete-transfer-resume-after-read-reset-001/artifact12861591753-official-full-zip/actual-full-transfer-receipt.json",
+        "bytes": 12210,
+        "sha256": "ce51cf8c3ddcf715796d8b791844b98d4b0abe1b27850baa312129e9711852ba"
+      },
+      "ZIP_members": 55,
+      "ZIP_expanded_bytes": 541877,
+      "all_CRC_size_SHA_equal_tar_extracted_members": true,
+      "member_inventory_sha256": "4305b390be45ad40ba64e2c4ec6bca5005159e57ade21ad11d25ba7e9e6fde21",
+      "source_before_after": {
+        "base_sha": "c38e7727220f32c7410f59083c5ea7878bbae078",
+        "lane": "source-head",
+        "native": {
+          "runner": "windows-11-arm",
+          "runner_arch": "ARM64",
+          "target": "aarch64-pc-windows-msvc"
+        },
+        "parents": [
+          "310b5369bad666367f17a6e005d29ada9d123cd7"
+        ],
+        "source_sha": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+        "symlink_placeholders": 0,
+        "tested_sha": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+        "tracked_bytes_sha256": "47d696ca8fe72e358bf99e4ac282dbd2c00417fa98a7c024b3f45ff32b207dc5",
+        "tracked_files": 10296,
+        "tree": "803e1e9b12efa4dd236ecd99333a717b5d52b033"
+      },
+      "source_receipt_SHA256": [
+        "9feeb588db39055e21a35a5bc7b53aaee06bc14f5250c042a04d161b05809ed2",
+        "9feeb588db39055e21a35a5bc7b53aaee06bc14f5250c042a04d161b05809ed2"
+      ],
+      "checker_exact_source_workflow": {
+        "bytes": 33842,
+        "sha256": "6cf3dfe235c24820013f5377bf7b2f852b726a59c540d2e47a829cfa3722e552",
+        "parsed_not_executed": true
+      },
+      "v3_v2_original_and_receipt_chain_SHA256": {
+        "result.json": "cfc91d76636317841bc2c65681a641104d5caaf9ee2d543ee2d84f155417b62a",
+        "result-v2.json": "00b42cf859689f28b205b491349c08640179a5ad46db6c73ae35647e883a3c2c",
+        "result-v3.json": "df40387b1c7bced9765d2c57cfedb908fb7c57ed64940855a87a039801adb9cd",
+        "query-existing-readback.json": "86c055c526880cc264590947e12aa3446acdf993f0f9c9862e353c5c0e36c03d",
+        "command-runner-terminal.json": "4ba624a43a60a92596a3d58dc48142ef21769a58fc7b0b0fc0b70140d42f8955"
+      },
+      "case_joins": [
+        {
+          "case": "acl-unit-controls",
+          "status": "passed",
+          "pass": 8,
+          "fail": 0,
+          "receipt_sha256": "ebfb171b82dd196d6b9d8ec072e7cf29163acb0e42d78a0dd9aebbdb69f77e8d",
+          "log_sha256": "985ff26aefc21794e4687d4e4ab088978675859cc2bef1784f2d0e7e79fdea79",
+          "log_bytes": 20350,
+          "summary_filtered_skips": 217
+        },
+        {
+          "case": "bounded-filesystem-preparation",
+          "status": "passed",
+          "pass": 2,
+          "fail": 0,
+          "receipt_sha256": "654d4677e2c4727c3574d767f31d6409042978ef0d97a473791df5b114e7dcc7",
+          "log_sha256": "d5ec97f33818ea6dd1ce7643d2ac7aa9b60f02a5d092b627cd5f88297d09ed63",
+          "log_bytes": 17407,
+          "summary_filtered_skips": 223
+        },
+        {
+          "case": "broad-identity-delete",
+          "status": "failed",
+          "pass": 0,
+          "fail": 1,
+          "receipt_sha256": "9354900c65602e8abf49cec75226b6f6528948c133f61bde802fa4601fdab215",
+          "log_sha256": "d7e951d436412d79ac41eeae7d04000280821c30c72b5153ede51a8fec4e6218",
+          "log_bytes": 21203,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "controlled-job",
+          "status": "passed",
+          "pass": 2,
+          "fail": 0,
+          "receipt_sha256": "00d597128ffa43b312f3258b1fe6d38e8987d1559bad12462dce740ad461ef3f",
+          "log_sha256": "69bcff5c83b3daf540df1434bd86a5bf2bca424996cbd0cd274ff479e42614c4",
+          "log_bytes": 3724,
+          "summary_filtered_skips": 21
+        },
+        {
+          "case": "explicit-stdio",
+          "status": "passed",
+          "pass": 2,
+          "fail": 0,
+          "receipt_sha256": "d85cb695e2a9dd0a2485c99355d4383517c0d13d355eaf3515ca82ab040209b1",
+          "log_sha256": "81f177a2bb64c9d8015dcdd5d6c7f285d643291660d22612d661af8eec24d974",
+          "log_bytes": 17314,
+          "summary_filtered_skips": 223
+        },
+        {
+          "case": "full-restriction-candidate",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "977154c80488c7548e506e0f26028036920fdd76917aa2795f58b73df0d42c6b",
+          "log_sha256": "7a0eff6f4842be42467f3843141bc494f6f761998bb94650ad77408cb629036d",
+          "log_bytes": 62338,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "held-read-acl",
+          "status": "passed",
+          "pass": 3,
+          "fail": 0,
+          "receipt_sha256": "3ed07c924708ab78fe6c8583b3c6413168aad005c5391658de177d33e7b0dbaa",
+          "log_sha256": "4fc249fcdf3648cdce51e9a3b662bccf6e559ca46dc6dd67aa6bb96253439e74",
+          "log_bytes": 17978,
+          "summary_filtered_skips": 222
+        },
+        {
+          "case": "legacy-delete-boundary",
+          "status": "failed",
+          "pass": 0,
+          "fail": 1,
+          "receipt_sha256": "51dc93d686c92e498cc8df892f0fb8ef71da6be29088bc1e87c2686bfd33d06a",
+          "log_sha256": "162468eb0d6fe4580812382ceb6938cacbc5d623c63e01959177a442eb112c37",
+          "log_bytes": 18465,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "original-final-use-windows",
+          "status": "passed",
+          "pass": 7,
+          "fail": 0,
+          "receipt_sha256": "ce9eac79ae87e2eac34fe20f365c93daf273e1d7f37f72fc7013b5f7545bf077",
+          "log_sha256": "d526129fd1a3e931951aa4dfe958f3bb3fe2f4e2f72671e8ad7c6550030a1d81",
+          "log_bytes": 13784,
+          "summary_filtered_skips": 127
+        },
+        {
+          "case": "original-registry-windows",
+          "status": "passed",
+          "pass": 3,
+          "fail": 0,
+          "receipt_sha256": "418238a8741b8f5f159fb2c636a839f57e6c0b8e18ce3c24c95753c142ffc8bd",
+          "log_sha256": "756c307a03e60ed19c754a7656b6c6f6aa705cd0e346fc61bf2dea2b00506bad",
+          "log_bytes": 7082,
+          "summary_filtered_skips": 26
+        },
+        {
+          "case": "partial-delete-deny",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "463208d8fabac7bc8e2800ac3ad28905b003dc8ad75a5d853ab972f34c2906ec",
+          "log_sha256": "b9b0ac0cd6e32a44621c614c33f38a34cb791bb8895424cbdd87d89588ffd3f2",
+          "log_bytes": 16618,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "private-held-sharing",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "3d24012041707a66f731f12e557258426bb2b388a384acf4690162477f8d9005",
+          "log_sha256": "ae0321f6351e6d1d94a60e40be1d71b01a099bfc710d5f101c8c46f02c257bad",
+          "log_bytes": 20142,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "private-local-ntfs",
+          "status": "passed",
+          "pass": 4,
+          "fail": 0,
+          "receipt_sha256": "479d4f1a86845b9eeac5a5096e703337d662b6392d3bd9855bf43c62aa27583e",
+          "log_sha256": "070a01273f92f7cec8c4116cc13a29be3e44d38383ecaad0c07d95b69f5de790",
+          "log_bytes": 10441,
+          "summary_filtered_skips": 0
+        },
+        {
+          "case": "private-native-flush",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "9ee089d5db9a438557abc1422dd5bd783ee385064af87658eb7e7e08f8037c08",
+          "log_sha256": "d80760976cd1e80a3e337a245ee62577af104229c05d32b642618c5e46737347",
+          "log_bytes": 19140,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "private-no-reparse",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "dc95b6d900d67206a2d9e7ad732305ce688b3238d4eeb8d8b0d124067e3d1654",
+          "log_sha256": "780b33f1ea2f2a27a4aa003f42a4b88583b8b8f0ca4bd44c7bc1c7ecbccb78be",
+          "log_bytes": 21006,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "private-owner-descriptor",
+          "status": "passed",
+          "pass": 40,
+          "fail": 0,
+          "receipt_sha256": "09f71e978e9361777e05c447ca99cce3c6bb5ec1f9ed8048381612786605a831",
+          "log_sha256": "4c7c3f9e7912e7832a2e57196abf8b293d0a61dd2efa1e8e430ae7e3fb7b3504",
+          "log_bytes": 80866,
+          "summary_filtered_skips": 0
+        },
+        {
+          "case": "private-owner-lock",
+          "status": "passed",
+          "pass": 4,
+          "fail": 0,
+          "receipt_sha256": "ebbdf4fedc8bffb156f86b6d426e8fbc9df8e466655958f80b975d52bca54ccc",
+          "log_sha256": "e00a1dce0950f5d382478584e461fcda92f1f95de2c932c31244a5535b0027cc",
+          "log_bytes": 3137,
+          "summary_filtered_skips": 0
+        },
+        {
+          "case": "private-principal-continuity",
+          "status": "passed",
+          "pass": 4,
+          "fail": 0,
+          "receipt_sha256": "d8a796cdc846e8e0fd90541afba9ba43405bbba139ab25105c537a2e10df56a3",
+          "log_sha256": "4185b8812577dba476db8009ccd251a159b28afec6393418ff1521e4cef4c71a",
+          "log_bytes": 3287,
+          "summary_filtered_skips": 0
+        },
+        {
+          "case": "private-relative-rename",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "d6bdac3b552b1e7f496f8199d73bee1f0915814fbfc01343440cfe91946f1e89",
+          "log_sha256": "34fd76f31473191f2b73651022ca0408aa01f77e2567c920380ed325598f35ea",
+          "log_bytes": 18893,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "session-desktop",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "52b211d065312635220afcb4de0b1251708b01307f88c37788531163d3e84695",
+          "log_sha256": "983b55c7da010141e057016318fa35ea210e9a24afbc5a41de4495cd7612ffb6",
+          "log_bytes": 16705,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "query-existing-readback",
+          "status": "passed",
+          "pass": 6,
+          "fail": 0,
+          "receipt_sha256": "86c055c526880cc264590947e12aa3446acdf993f0f9c9862e353c5c0e36c03d",
+          "log_sha256": "ea40156949abbb23effb31e7619f0cb9820511e88d0f4d4596c7eaeda18aff81",
+          "log_bytes": 20081,
+          "summary_filtered_skips": 219
+        },
+        {
+          "case": "command-runner-terminal",
+          "status": "failed",
+          "pass": 1,
+          "fail": 2,
+          "receipt_sha256": "4ba624a43a60a92596a3d58dc48142ef21769a58fc7b0b0fc0b70140d42f8955",
+          "log_sha256": "b33b837048c423890c45044af0b89525def80656e8bd6f85d721691e0047ba7e",
+          "log_bytes": 30944,
+          "summary_filtered_skips": 1
+        }
+      ],
+      "original20": {
+        "pass": 18,
+        "fail": 2
+      },
+      "query6": {
+        "pass": 6,
+        "fail": 0
+      },
+      "terminal3": {
+        "pass": 1,
+        "fail": 2
+      },
+      "nested_libtest_FAILED_lines": {
+        "lines": 4,
+        "unique_case_names": 2,
+        "two_nextest_attempts_each": true,
+        "four_independent_cases": false
+      },
+      "original_case_raw": {
+        "members_root": "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/Hepta-bf36-Windows-current-original-failures-20261028-001/actual-complete-transfer-resume-after-read-reset-001/artifact12861591753-official-full-zip/members",
+        "broad_first_assert": {
+          "start_line": 175,
+          "end_line": 175,
+          "lines": [
+            "assertion failed: `(left == right)`: restricting (cap_a, cap_b, logon, everyone)=(true, true, false, false); actual outside (parent, file, directory) ACL=([(0, 3, Some(1245631), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false)], [(0, 16, Some(1245631), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false)], [(0, 19, Some(1245631), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false)]); per-descriptor AccessCheck (label, desired, result(allowed, granted, privileges))=[(\"outside file DELETE\", 65536, Ok((false, 0, 0))), (\"outside directory DELETE\", 65536, Ok((false, 0, 0))), (\"outside parent FILE_DELETE_CHILD\", 64, Ok((true, 64, 0))), (\"outside file FILE_WRITE_DATA\", 2, Ok((false, 0, 0))), (\"outside file FILE_READ_DATA\", 1, Ok((true, 1, 0))), (\"authorized file DELETE\", 65536, Ok((true, 65536, 0)))]"
+          ]
+        },
+        "broad_first_diff": {
+          "start_line": 177,
+          "end_line": 193,
+          "lines": [
+            "Diff < left / right > :",
+            " [",
+            "     Some(",
+            "         PermissionDenied,",
+            "     ),",
+            "     Some(",
+            "         PermissionDenied,",
+            "     ),",
+            "<    None,",
+            "<    None,",
+            ">    Some(",
+            ">        PermissionDenied,",
+            ">    ),",
+            ">    Some(",
+            ">        PermissionDenied,",
+            ">    ),",
+            " ]"
+          ]
+        },
+        "legacy_refusal": {
+          "start_line": 174,
+          "end_line": 176,
+          "lines": [
+            "thread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (1588) panicked at windows-sandbox-rs\\src\\unified_exec\\tests.rs:769:10:",
+            "spawn legacy delete session: Windows filesystem isolation is unavailable: neither the direct token nor the account broker is qualified",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+          ]
+        },
+        "terminal_first_rights_assert": {
+          "start_line": 311,
+          "end_line": 322,
+          "lines": [
+            "thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (7324) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:171:9:",
+            "assertion failed: `(left == right)`",
+            "",
+            "Diff < left / right > :",
+            " Exited(",
+            "<    1,",
+            ">    7,",
+            " )",
+            "",
+            "",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 7\"]"
+          ]
+        },
+        "terminal_first_zero_assert": {
+          "start_line": 363,
+          "end_line": 374,
+          "lines": [
+            "thread 'win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query' (5236) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:158:13:",
+            "assertion failed: `(left == right)`",
+            "",
+            "Diff < left / right > :",
+            " Exited(",
+            "<    1,",
+            ">    0,",
+            " )",
+            "",
+            "",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 0\"]"
+          ]
+        },
+        "original_Child_diagnostics": [
+          {
+            "line": 322,
+            "text": "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 7\"]"
+          },
+          {
+            "line": 348,
+            "text": "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 7\"]"
+          },
+          {
+            "line": 374,
+            "text": "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 0\"]"
+          },
+          {
+            "line": 400,
+            "text": "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 0\"]"
+          }
+        ]
+      },
+      "complete_job_raw": {
+        "path": "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/Hepta-bf36-Windows-current-original-failures-20261028-001/actual-complete-transfer-resume-after-read-reset-001/job123170269266-full-log/official-complete-decoded.stdout.original",
+        "bytes": 2029328,
+        "sha256": "4e46e31b0b4ea1e03bd149c2f23d1c663b407db0c36676d0eea1fcbeb02aa322"
+      },
+      "full_job_line_joins": {
+        "broad": [
+          {
+            "line": 10785,
+            "text": "2026-10-28T23:56:17.3811054Z thread 'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces' (1260) panicked at windows-sandbox-rs\\src\\token_tests.rs:486:5:"
+          },
+          {
+            "line": 10822,
+            "text": "2026-10-28T23:56:17.4132077Z thread 'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces' (7544) panicked at windows-sandbox-rs\\src\\token_tests.rs:486:5:"
+          }
+        ],
+        "legacy": [
+          {
+            "line": 11061,
+            "text": "2026-10-28T23:56:20.8520952Z spawn legacy delete session: Windows filesystem isolation is unavailable: neither the direct token nor the account broker is qualified"
+          },
+          {
+            "line": 11078,
+            "text": "2026-10-28T23:56:20.8836730Z spawn legacy delete session: Windows filesystem isolation is unavailable: neither the direct token nor the account broker is qualified"
+          }
+        ],
+        "rights": [
+          {
+            "line": 13529,
+            "text": "2026-10-28T23:57:26.1232679Z thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (7324) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:171:9:"
+          },
+          {
+            "line": 13555,
+            "text": "2026-10-28T23:57:26.1709347Z thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (2152) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:171:9:"
+          }
+        ],
+        "zero": [
+          {
+            "line": 13581,
+            "text": "2026-10-28T23:57:26.2340119Z thread 'win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query' (5236) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:158:13:"
+          },
+          {
+            "line": 13607,
+            "text": "2026-10-28T23:57:26.2807871Z thread 'win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query' (10272) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:158:13:"
+          }
+        ],
+        "Child_diagnostic_line_numbers": [
+          13540,
+          13566,
+          13592,
+          13618
+        ]
+      },
+      "guard_flags": {
+        "production_sandbox_admitted": false,
+        "windows_private_state_owners_supported": false,
+        "power_loss_qualified": false
+      }
+    },
+    {
+      "artifact_id": 12860913226,
+      "job_id": 123170268894,
+      "name": "hepta-windows-delete-boundary-windows-latest-base-merge-40789310118-1",
+      "job_API_status_conclusion": [
+        "completed",
+        "failure"
+      ],
+      "job_started": "2026-10-28T23:43:32Z",
+      "job_completed": "2026-10-28T23:55:26Z",
+      "ZIP": {
+        "path": "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/Hepta-bf36-Windows-current-original-failures-20261028-001/actual-complete-transfer-resume-after-read-reset-001/artifact12860913226-official-full-zip/official-complete-entity.body.original",
+        "bytes": 92288,
+        "sha256": "1538f686df9286dff349686e61b62ba72deb815ee2715a848b6946c058acaf24"
+      },
+      "other_identical_copy_paths": [
+        "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/Hepta-bf36-Windows-current-original-failures-20261028-001/actual-complete-transfer-resume-after-read-reset-001/artifact12860913226-official-full-zip/range-0-92287.body.original",
+        "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/Hepta-bf36-Windows-current-original-failures-20261028-001/actual-complete-transfer-resume-after-read-reset-001/artifact12860913226-official-full-zip/official-complete-decoded.stdout.original"
+      ],
+      "captured_official_digest": "sha256:1538f686df9286dff349686e61b62ba72deb815ee2715a848b6946c058acaf24",
+      "official_bytes": 92288,
+      "transfer_receipt": {
+        "path": "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/Hepta-bf36-Windows-current-original-failures-20261028-001/actual-complete-transfer-resume-after-read-reset-001/artifact12860913226-official-full-zip/actual-full-transfer-receipt.json",
+        "bytes": 12210,
+        "sha256": "c4d315b814e3259b376599015a37fd03a57d160a014bcbb97ae3b1d08ead3bd0"
+      },
+      "ZIP_members": 55,
+      "ZIP_expanded_bytes": 542134,
+      "all_CRC_size_SHA_equal_tar_extracted_members": true,
+      "member_inventory_sha256": "564e76990f7c0f0332a378109348017d15437f001dc06090c97de2199bf5019f",
+      "source_before_after": {
+        "base_sha": "c38e7727220f32c7410f59083c5ea7878bbae078",
+        "lane": "base-merge",
+        "native": {
+          "runner": "windows-latest",
+          "runner_arch": "X64",
+          "target": "x86_64-pc-windows-msvc"
+        },
+        "parents": [
+          "c38e7727220f32c7410f59083c5ea7878bbae078",
+          "bf36d10a54db1d9453409a432cb4641c9fbe38e8"
+        ],
+        "source_sha": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+        "symlink_placeholders": 0,
+        "tested_sha": "c4f58e535d69a8748484df722743e279cbb1dea5",
+        "tracked_bytes_sha256": "47d696ca8fe72e358bf99e4ac282dbd2c00417fa98a7c024b3f45ff32b207dc5",
+        "tracked_files": 10296,
+        "tree": "803e1e9b12efa4dd236ecd99333a717b5d52b033"
+      },
+      "source_receipt_SHA256": [
+        "42869722d69d5f1dbdb7e3de42e62f9870df8d652d8fc71260a2a6244203e1f2",
+        "42869722d69d5f1dbdb7e3de42e62f9870df8d652d8fc71260a2a6244203e1f2"
+      ],
+      "checker_exact_source_workflow": {
+        "bytes": 33842,
+        "sha256": "6cf3dfe235c24820013f5377bf7b2f852b726a59c540d2e47a829cfa3722e552",
+        "parsed_not_executed": true
+      },
+      "v3_v2_original_and_receipt_chain_SHA256": {
+        "result.json": "d1a15ad945038b54c655c92984d8bdc81742f3a4fce86f6efdb5fcaedcdb9c26",
+        "result-v2.json": "9758bae08efd1de3cd59efa36f8363c4803ecdbb29e718b29dc5026f12c194d6",
+        "result-v3.json": "1bad2086e2541e562f7517ee9e6b7ca78b85783fd1fcacad1c1202ccc4348763",
+        "query-existing-readback.json": "021d25cfd298861b6d1266b1ee5f6e85b9b1b0330237b8b74a8a6355222eeb06",
+        "command-runner-terminal.json": "9b6f444db736049465be979d37450d1e38c77d5af8dc2d71564d847a775d3bf3"
+      },
+      "case_joins": [
+        {
+          "case": "acl-unit-controls",
+          "status": "passed",
+          "pass": 8,
+          "fail": 0,
+          "receipt_sha256": "7deccb189a0bb16f290f4e7c281d6d9cc7583ff1f3a5d086cd2fe7fb434b2ccb",
+          "log_sha256": "51b6f087b111e2b4ea2ba6e4e0b903774a7b96a503a06366deb2c9174c9e0bc5",
+          "log_bytes": 20348,
+          "summary_filtered_skips": 217
+        },
+        {
+          "case": "bounded-filesystem-preparation",
+          "status": "passed",
+          "pass": 2,
+          "fail": 0,
+          "receipt_sha256": "e41dcb32e17cfa054056bec9a532a4339b9641a11997fa523a9e39ca1715285a",
+          "log_sha256": "da0fa5afdea61b62385ca9c74aec95c45213e1f9b4c1a16aa5df1a12a40a481c",
+          "log_bytes": 17405,
+          "summary_filtered_skips": 223
+        },
+        {
+          "case": "broad-identity-delete",
+          "status": "failed",
+          "pass": 0,
+          "fail": 1,
+          "receipt_sha256": "5f3fadee7ddb0f73b176f9e65c00038e509fc9e3d3cb605143851879cc549e25",
+          "log_sha256": "7c4dbe48320b080e2d8ede49a5088205f66cf00e22897251c3ab1c71afcc83cf",
+          "log_bytes": 21201,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "controlled-job",
+          "status": "passed",
+          "pass": 2,
+          "fail": 0,
+          "receipt_sha256": "546ff2bff66ea6007c4c7accf68c9054ee7cc0f344402f42bd9ac128d03d792b",
+          "log_sha256": "31ca5fc1215694fa94bb89bc7f591a41c2fe2f9441fdbc14a6dbd7068fa4ce09",
+          "log_bytes": 3724,
+          "summary_filtered_skips": 21
+        },
+        {
+          "case": "explicit-stdio",
+          "status": "passed",
+          "pass": 2,
+          "fail": 0,
+          "receipt_sha256": "87422cea76c268d4fa43b31f35ff3239515390d00884ca78ee864a0c3c8b1b01",
+          "log_sha256": "50080ec3512c27a5ed36ad15aeb14d4cd38c6c7a72a44841f221bc65314aed69",
+          "log_bytes": 17312,
+          "summary_filtered_skips": 223
+        },
+        {
+          "case": "full-restriction-candidate",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "99da96aad9177e64e82e0c63817c4a5d23a396d3455f5215e50c801218a466a2",
+          "log_sha256": "67c33a93fd908c97c8ba6544b36d84de0223c30dbf4c92db4ace5c912b69b966",
+          "log_bytes": 62423,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "held-read-acl",
+          "status": "passed",
+          "pass": 3,
+          "fail": 0,
+          "receipt_sha256": "f939b464405196161aad3fa750b5c750b1964b922000a31608268af87c5b9198",
+          "log_sha256": "0b407edf6d302ccf457fa8669c3e88aea44a30d6e7ff0496d7ade367e804af3c",
+          "log_bytes": 17976,
+          "summary_filtered_skips": 222
+        },
+        {
+          "case": "legacy-delete-boundary",
+          "status": "failed",
+          "pass": 0,
+          "fail": 1,
+          "receipt_sha256": "2aba37d2d3b5540015d67f3bcb0ec011a27ab36900c8fe6f3ec6347c90bece0e",
+          "log_sha256": "31d250145afbc107a61cec9f31a1cbc52e487c1a1c49600e671bee277c7fad35",
+          "log_bytes": 18462,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "original-final-use-windows",
+          "status": "passed",
+          "pass": 7,
+          "fail": 0,
+          "receipt_sha256": "eff7f004259bf4591a486aa14e13b20e6f4b959b0a8eda7b089fa24026f7a2da",
+          "log_sha256": "b2c9b9527aa01d59014fba6cfed82da6ba665e358f042ca1ffcf3b14d50d0480",
+          "log_bytes": 13897,
+          "summary_filtered_skips": 127
+        },
+        {
+          "case": "original-registry-windows",
+          "status": "passed",
+          "pass": 3,
+          "fail": 0,
+          "receipt_sha256": "9b3aa8e25303c3a5884b780af6d9897d2c90ea912a75be8baa86426d77ae9fb9",
+          "log_sha256": "d8998e506720ec143493d233c75bea86d4296d1e3d5703cd890ae2d10b62dccc",
+          "log_bytes": 6994,
+          "summary_filtered_skips": 26
+        },
+        {
+          "case": "partial-delete-deny",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "56b05c7ecd35ba90460294597678330dafd2a7f7e60183ba5b5428fc8a65a87d",
+          "log_sha256": "144c114ee21278df36b1bb66b14f232ba6285db3c113b95f749e5f5c6685dba8",
+          "log_bytes": 16616,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "private-held-sharing",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "ded32e9a0dbf708addbd47cf34ca250eb4e02e2a7161a1c0a6705f660c63efb5",
+          "log_sha256": "3454a9034a2bef43c0967da681b16fd79c9c460933f245924aa324f82d3cb487",
+          "log_bytes": 20140,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "private-local-ntfs",
+          "status": "passed",
+          "pass": 4,
+          "fail": 0,
+          "receipt_sha256": "bb3cfbf7851e3fbd71a0fd78d85146d16ccf2f22ac657af0f44f401fbacaf858",
+          "log_sha256": "8668664b071bec5db49606345c91a06383b383d8992331e933625eafb4eef522",
+          "log_bytes": 10440,
+          "summary_filtered_skips": 0
+        },
+        {
+          "case": "private-native-flush",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "92a5fcfe9d78b2468e734540a2edad4a4a95072231fc80506b2cea455f0ded6b",
+          "log_sha256": "1198ba9a59d7c9b5bacb4d927f94d2c9a54b66973a5963cd285b43909b5f3700",
+          "log_bytes": 19137,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "private-no-reparse",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "8303e7af14efd25350cf7c0449e4fec1ac52218cdaafcb69e6a430ca940d5026",
+          "log_sha256": "fb361dfd7492b371a003bf81f963f5f166ec8e93e89b76be8fdb325921cc6074",
+          "log_bytes": 21004,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "private-owner-descriptor",
+          "status": "passed",
+          "pass": 40,
+          "fail": 0,
+          "receipt_sha256": "1117908dc4bdec947662d700451bc1536971678bbc04a9d9b20232fed2049a5d",
+          "log_sha256": "7867e71ff64f6198ae399c213d4d704bfcaa46780cde7cbef3e5d205360589b0",
+          "log_bytes": 80864,
+          "summary_filtered_skips": 0
+        },
+        {
+          "case": "private-owner-lock",
+          "status": "passed",
+          "pass": 4,
+          "fail": 0,
+          "receipt_sha256": "d9e402c1be469035bced1d4cd5cbb43bfe7678fe164e5f18a0a1e409ffe7daaa",
+          "log_sha256": "b7b471060daa40534369ee798368adf0cd885f3e35e3479d2d01fc15e194fbfb",
+          "log_bytes": 3136,
+          "summary_filtered_skips": 0
+        },
+        {
+          "case": "private-principal-continuity",
+          "status": "passed",
+          "pass": 4,
+          "fail": 0,
+          "receipt_sha256": "48ffd18909b15b4f74a40552f3edcff9edaa5036a10ab6166baa3cdcc9496489",
+          "log_sha256": "6aa950e58d6f15f6d1d590676944e7da7ac06641e6cc8ac1d88e595898af70ec",
+          "log_bytes": 3286,
+          "summary_filtered_skips": 0
+        },
+        {
+          "case": "private-relative-rename",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "305d2338d8f1dd33c817a0571574a1a0d7e700feac7ad427fc2f2db40f7fdb41",
+          "log_sha256": "f0970b52f2d66b0bc115d4afc47e15cb8f54afd35558f26ad9718ef0d1a85851",
+          "log_bytes": 18891,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "session-desktop",
+          "status": "passed",
+          "pass": 1,
+          "fail": 0,
+          "receipt_sha256": "05df7efab64fc770429d4cc681b4124e8b150484f177b31f6a9c8f1c864009e5",
+          "log_sha256": "a2bf79ddfdf9470b587fb0ada4af21bab75a2d4962a51176d55ed3be8e48a168",
+          "log_bytes": 16703,
+          "summary_filtered_skips": 224
+        },
+        {
+          "case": "query-existing-readback",
+          "status": "passed",
+          "pass": 6,
+          "fail": 0,
+          "receipt_sha256": "021d25cfd298861b6d1266b1ee5f6e85b9b1b0330237b8b74a8a6355222eeb06",
+          "log_sha256": "8b1044fda6bcb6a9ab0be800aee21c3f20c7d5da883a9f49e1abf5a423ad2e7a",
+          "log_bytes": 20079,
+          "summary_filtered_skips": 219
+        },
+        {
+          "case": "command-runner-terminal",
+          "status": "failed",
+          "pass": 1,
+          "fail": 2,
+          "receipt_sha256": "9b6f444db736049465be979d37450d1e38c77d5af8dc2d71564d847a775d3bf3",
+          "log_sha256": "fd8e660b0bcd2036803711fda971e05db580987f2c4570111ac927b2a1376240",
+          "log_bytes": 30941,
+          "summary_filtered_skips": 1
+        }
+      ],
+      "original20": {
+        "pass": 18,
+        "fail": 2
+      },
+      "query6": {
+        "pass": 6,
+        "fail": 0
+      },
+      "terminal3": {
+        "pass": 1,
+        "fail": 2
+      },
+      "nested_libtest_FAILED_lines": {
+        "lines": 4,
+        "unique_case_names": 2,
+        "two_nextest_attempts_each": true,
+        "four_independent_cases": false
+      },
+      "original_case_raw": {
+        "members_root": "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/Hepta-bf36-Windows-current-original-failures-20261028-001/actual-complete-transfer-resume-after-read-reset-001/artifact12860913226-official-full-zip/members",
+        "broad_first_assert": {
+          "start_line": 175,
+          "end_line": 175,
+          "lines": [
+            "assertion failed: `(left == right)`: restricting (cap_a, cap_b, logon, everyone)=(true, true, false, false); actual outside (parent, file, directory) ACL=([(0, 3, Some(1245631), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false)], [(0, 16, Some(1245631), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false), (0, 16, Some(2032127), false)], [(0, 19, Some(1245631), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false), (0, 19, Some(2032127), false)]); per-descriptor AccessCheck (label, desired, result(allowed, granted, privileges))=[(\"outside file DELETE\", 65536, Ok((false, 0, 0))), (\"outside directory DELETE\", 65536, Ok((false, 0, 0))), (\"outside parent FILE_DELETE_CHILD\", 64, Ok((true, 64, 0))), (\"outside file FILE_WRITE_DATA\", 2, Ok((false, 0, 0))), (\"outside file FILE_READ_DATA\", 1, Ok((true, 1, 0))), (\"authorized file DELETE\", 65536, Ok((true, 65536, 0)))]"
+          ]
+        },
+        "broad_first_diff": {
+          "start_line": 177,
+          "end_line": 193,
+          "lines": [
+            "Diff < left / right > :",
+            " [",
+            "     Some(",
+            "         PermissionDenied,",
+            "     ),",
+            "     Some(",
+            "         PermissionDenied,",
+            "     ),",
+            "<    None,",
+            "<    None,",
+            ">    Some(",
+            ">        PermissionDenied,",
+            ">    ),",
+            ">    Some(",
+            ">        PermissionDenied,",
+            ">    ),",
+            " ]"
+          ]
+        },
+        "legacy_refusal": {
+          "start_line": 174,
+          "end_line": 176,
+          "lines": [
+            "thread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (6560) panicked at windows-sandbox-rs\\src\\unified_exec\\tests.rs:769:10:",
+            "spawn legacy delete session: Windows filesystem isolation is unavailable: neither the direct token nor the account broker is qualified",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+          ]
+        },
+        "terminal_first_rights_assert": {
+          "start_line": 311,
+          "end_line": 322,
+          "lines": [
+            "thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (4692) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:171:9:",
+            "assertion failed: `(left == right)`",
+            "",
+            "Diff < left / right > :",
+            " Exited(",
+            "<    1,",
+            ">    7,",
+            " )",
+            "",
+            "",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 7\"]"
+          ]
+        },
+        "terminal_first_zero_assert": {
+          "start_line": 363,
+          "end_line": 374,
+          "lines": [
+            "thread 'win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query' (5256) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:158:13:",
+            "assertion failed: `(left == right)`",
+            "",
+            "Diff < left / right > :",
+            " Exited(",
+            "<    1,",
+            ">    0,",
+            " )",
+            "",
+            "",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 0\"]"
+          ]
+        },
+        "original_Child_diagnostics": [
+          {
+            "line": 322,
+            "text": "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 7\"]"
+          },
+          {
+            "line": 348,
+            "text": "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 7\"]"
+          },
+          {
+            "line": 374,
+            "text": "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 0\"]"
+          },
+          {
+            "line": 400,
+            "text": "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 0\"]"
+          }
+        ]
+      },
+      "complete_job_raw": {
+        "path": "work/coordination/reviews/bf36-native-originals-20261029-001-evidence/work/ci-follow/Hepta-bf36-Windows-current-original-failures-20261028-001/job123170268894.complete-decoded-connector-log.original.txt",
+        "bytes": 2028296,
+        "sha256": "e7908ffc8b62189f0431dec217a3558d30ce5976f1ac9067cb66205912bd42e2"
+      },
+      "full_job_line_joins": {
+        "broad": [
+          {
+            "line": 10767,
+            "text": "2026-10-28T23:54:26.6607421Z thread 'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces' (6804) panicked at windows-sandbox-rs\\src\\token_tests.rs:486:5:"
+          },
+          {
+            "line": 10804,
+            "text": "2026-10-28T23:54:26.6922344Z thread 'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces' (9676) panicked at windows-sandbox-rs\\src\\token_tests.rs:486:5:"
+          }
+        ],
+        "legacy": [
+          {
+            "line": 11043,
+            "text": "2026-10-28T23:54:29.3722245Z spawn legacy delete session: Windows filesystem isolation is unavailable: neither the direct token nor the account broker is qualified"
+          },
+          {
+            "line": 11060,
+            "text": "2026-10-28T23:54:29.4040223Z spawn legacy delete session: Windows filesystem isolation is unavailable: neither the direct token nor the account broker is qualified"
+          }
+        ],
+        "rights": [
+          {
+            "line": 13511,
+            "text": "2026-10-28T23:55:19.4233931Z thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (4692) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:171:9:"
+          },
+          {
+            "line": 13537,
+            "text": "2026-10-28T23:55:19.4552618Z thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (9416) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:171:9:"
+          }
+        ],
+        "zero": [
+          {
+            "line": 13563,
+            "text": "2026-10-28T23:55:19.4710785Z thread 'win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query' (5256) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:158:13:"
+          },
+          {
+            "line": 13589,
+            "text": "2026-10-28T23:55:19.5027685Z thread 'win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query' (1576) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:158:13:"
+          }
+        ],
+        "Child_diagnostic_line_numbers": [
+          13522,
+          13548,
+          13574,
+          13600
+        ]
+      },
+      "guard_flags": {
+        "production_sandbox_admitted": false,
+        "windows_private_state_owners_supported": false,
+        "power_loss_qualified": false
+      }
+    }
+  ],
+  "findings": [
+    {
+      "id": "BF36-PN0-BROAD-DELETE",
+      "severity": "P0",
+      "status": "ACTUAL_NATIVE_FAIL",
+      "detail": "Each route first original broad assertion follows actual outside remove_file and remove_dir success (two None error-kind entries); outside writes denied. Parent FILE_DELETE_CHILD64 AccessCheck allowed, child file/directory DELETE denied. Real deletion remains an isolation failure. These observations do not establish full root cause or qualify another token.",
+      "source": "token_tests.rs:469-488",
+      "required_next": "Complete real token/namespace/ACL/caller chain while preserving ambient read, allowed operations and all four original denial assertions; keep production guard closed."
+    },
+    {
+      "id": "BF36-PN0-LEGACY",
+      "severity": "P0",
+      "status": "ACTUAL_NATIVE_FAIL_CORRECT_GUARD_REFUSAL",
+      "detail": "Positive legacy path stops at spawn: direct token and account broker unqualified. Production fail-closed refusal is correct; subsequent delete-boundary checks not reached.",
+      "source": "unified_exec/tests.rs:769",
+      "required_next": "Qualify genuine production caller isolation without weakening/removing refusal or replacing original test."
+    },
+    {
+      "id": "BF36-PN0-TERMINAL",
+      "severity": "P0",
+      "status": "ACTUAL_NATIVE_FAIL_CAUSE_UNKNOWN",
+      "detail": "Original full child handle observes Exited1. Actual Child.try_wait and wait also return ExitStatus1, cleanup_kill=None. Rights case expects7 at its first assertion; reduced-rights loop not reached.0/7/259 case fails first0; later7/259 assertions not reached. Post-wait image query31 remains UNKNOWN; parent builder arguments are not wire argv/image proof. No demonstrated AccessDenied on reduced handles,259 misclassification,CMD quote/path cause or observer repair.",
+      "source": "process_observation_tests.rs:155-183",
+      "required_next": "Preserve scripts, all assertions, null stdout/stderr,8-second bound, exact Child/wait/cleanup; authorized owner establishes cause and validates new native source normally, without budget reset."
+    }
+  ],
+  "counting": {
+    "per_route_original20": "18P2F broad+legacy",
+    "per_route_query6": "6P0F",
+    "per_route_terminal3": "1P2F live-stdin-close passes",
+    "terminal_nested4FAILED": "2case names×2nextestattempts, not4 independent failures; repeated finalTRY2 tail lines not new tests.",
+    "filtered_skips": "Raw summaries include unselected tests (terminal1skipped etc). Original required names unchanged; no filter/skip policy modified by reviewer.",
+    "across_routes": "80original route/groups72P8F;24query controls PASS;12terminal route/cases4P8F. Counts retain four independent source/architecture routes."
+  },
+  "qualification_boundary": {
+    "reviewer_native_or_test_run": "NOT_RUN",
+    "APPLY_COMMIT_PUBLISH": "NOT_DONE",
+    "CI_retry_dispatch_cancel": "NOT_DONE",
+    "API_network": "NOT_DONE",
+    "source_guard_permissions_changes": "NOT_DONE",
+    "old_budgets_reset": false,
+    "original_complete_Windows_chain": "OPEN",
+    "genesis_model_three_round_I09_I10_Cell_release_PN1_WAN": "OPEN",
+    "pair56_112_and_mainqualification_execution": "OUT_OF_THIS_FOUR_ROUTE_REVIEW",
+    "task_complete": false,
+    "merge_ready": false,
+    "production_sandbox_admitted": false,
+    "NO_GO": true
+  }
+}

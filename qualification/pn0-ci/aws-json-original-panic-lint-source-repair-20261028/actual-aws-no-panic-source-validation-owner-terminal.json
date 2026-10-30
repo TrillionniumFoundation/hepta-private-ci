@@ -1,0 +1,125 @@
+{
+  "started_utc": "2026-10-28T14:17:56.266401+00:00",
+  "pid": 3056024,
+  "proc_stat": "3056024 (python3) R 2069 3056024 3056024 0 -1 4194304 2312 0 0 0 4 1 0 0 30 10 1 0 27474218 28676096 4139 18446744073709551615 4325376 7352253 140731134940288 0 0 0 0 16781312 2 0 0 0 17 20 0 0 0 0 0 10653128 12216448 468262912 140731134949244 140731134949492 140731134949492 140731134951399 0\n",
+  "scope": "New actual CI failure and new production source only. All original nonignored library tests then production-library Clippy with original Bazel unwrap/expect deny flags. No test/lint/guard/resource weakening, no tests after later finalfmt; not original entire hosted CI/Windows/release/public qualification or old budget reset.",
+  "source_before": {
+    "src/serialize.rs": "be02303d33aababd1fcc9d60a8cc014421bdc90a8a4a71ea2294efcc8529d204",
+    "src/deserialize.rs": "d257346f7a63005142c11002195e6ca654da55c6e1c4675eba7ebd257f64c065",
+    "src/lib.rs": "c88d250ad1d85be1dfa3e4c48505f31e9e006a053447b7ab329f867dc778eaa1",
+    "src/escape.rs": "21c7e4bb594b1fd70b9c40c9b1687e8ea18f5aef172da4cece5d988d5ed61bce",
+    "src/deserialize/token.rs": "f9e3e46784ebdd489b7de07011d97adcfd58ea832e013213b87c667b4e06fd79",
+    "src/deserialize/error.rs": "79d11db3cf2e6ac373842e13e8762de90a07ea994ef1ff1a16b09fa18c7faac1",
+    "Cargo.toml": "56ce3714b07d359467f68959214ab1ef7e0dc6cc1ca15fd7c39955255fc198b0",
+    "Cargo.lock": "14601b8520c16171a31416d720567ed36dc31ad938cf01491f36fc4b8dbba923",
+    ".config/nextest.toml": "433b30fe42b42139f4d01d6785a98152d3fdeb7e65dd27daf15b948c8702eb97"
+  },
+  "finished_utc": "2026-10-28T14:18:01.712870+00:00",
+  "actual_wait": 0,
+  "steps": [
+    {
+      "role": "original-full-library-tests",
+      "started_utc": "2026-10-28T14:17:56.266817+00:00",
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "aws-smithy-json",
+        "--manifest-path",
+        "/home/qian-qi/Documents/Codex/2026-10-25/github-trillionnium-chain-https-github-com/work/root-hepta-integration-20261026/codex-rs/third_party/aws-smithy-json-0.61.9/Cargo.toml",
+        "--locked",
+        "--lib"
+      ],
+      "source_before": {
+        "src/serialize.rs": "be02303d33aababd1fcc9d60a8cc014421bdc90a8a4a71ea2294efcc8529d204",
+        "src/deserialize.rs": "d257346f7a63005142c11002195e6ca654da55c6e1c4675eba7ebd257f64c065",
+        "src/lib.rs": "c88d250ad1d85be1dfa3e4c48505f31e9e006a053447b7ab329f867dc778eaa1",
+        "src/escape.rs": "21c7e4bb594b1fd70b9c40c9b1687e8ea18f5aef172da4cece5d988d5ed61bce",
+        "src/deserialize/token.rs": "f9e3e46784ebdd489b7de07011d97adcfd58ea832e013213b87c667b4e06fd79",
+        "src/deserialize/error.rs": "79d11db3cf2e6ac373842e13e8762de90a07ea994ef1ff1a16b09fa18c7faac1",
+        "Cargo.toml": "56ce3714b07d359467f68959214ab1ef7e0dc6cc1ca15fd7c39955255fc198b0",
+        "Cargo.lock": "14601b8520c16171a31416d720567ed36dc31ad938cf01491f36fc4b8dbba923",
+        ".config/nextest.toml": "433b30fe42b42139f4d01d6785a98152d3fdeb7e65dd27daf15b948c8702eb97"
+      },
+      "pid": 3056026,
+      "proc_stat": "3056026 (just) R 3056024 3056024 3056024 0 -1 4194304 4 0 0 0 0 0 0 0 30 10 1 0 27474226 5181440 0 18446744073709551615 0 0 140729266505239 0 0 0 0 0 0 0 0 0 17 14 0 0 0 0 0 0 0 0 140729266505239 0 0 0 0\n",
+      "finished_utc": "2026-10-28T14:18:00.968643+00:00",
+      "actual_wait": 0,
+      "seconds": 4.701855800987687,
+      "source_after": {
+        "src/serialize.rs": "be02303d33aababd1fcc9d60a8cc014421bdc90a8a4a71ea2294efcc8529d204",
+        "src/deserialize.rs": "d257346f7a63005142c11002195e6ca654da55c6e1c4675eba7ebd257f64c065",
+        "src/lib.rs": "c88d250ad1d85be1dfa3e4c48505f31e9e006a053447b7ab329f867dc778eaa1",
+        "src/escape.rs": "21c7e4bb594b1fd70b9c40c9b1687e8ea18f5aef172da4cece5d988d5ed61bce",
+        "src/deserialize/token.rs": "f9e3e46784ebdd489b7de07011d97adcfd58ea832e013213b87c667b4e06fd79",
+        "src/deserialize/error.rs": "79d11db3cf2e6ac373842e13e8762de90a07ea994ef1ff1a16b09fa18c7faac1",
+        "Cargo.toml": "56ce3714b07d359467f68959214ab1ef7e0dc6cc1ca15fd7c39955255fc198b0",
+        "Cargo.lock": "14601b8520c16171a31416d720567ed36dc31ad938cf01491f36fc4b8dbba923",
+        ".config/nextest.toml": "433b30fe42b42139f4d01d6785a98152d3fdeb7e65dd27daf15b948c8702eb97"
+      }
+    },
+    {
+      "role": "production-original-restriction-lints",
+      "started_utc": "2026-10-28T14:18:00.971191+00:00",
+      "command": [
+        "cargo",
+        "clippy",
+        "--manifest-path",
+        "/home/qian-qi/Documents/Codex/2026-10-25/github-trillionnium-chain-https-github-com/work/root-hepta-integration-20261026/codex-rs/third_party/aws-smithy-json-0.61.9/Cargo.toml",
+        "--locked",
+        "--lib",
+        "--",
+        "-D",
+        "warnings",
+        "-D",
+        "clippy::correctness",
+        "-D",
+        "clippy::unwrap_used",
+        "-D",
+        "clippy::expect_used",
+        "-W",
+        "clippy::redundant_closure_for_method_calls"
+      ],
+      "source_before": {
+        "src/serialize.rs": "be02303d33aababd1fcc9d60a8cc014421bdc90a8a4a71ea2294efcc8529d204",
+        "src/deserialize.rs": "d257346f7a63005142c11002195e6ca654da55c6e1c4675eba7ebd257f64c065",
+        "src/lib.rs": "c88d250ad1d85be1dfa3e4c48505f31e9e006a053447b7ab329f867dc778eaa1",
+        "src/escape.rs": "21c7e4bb594b1fd70b9c40c9b1687e8ea18f5aef172da4cece5d988d5ed61bce",
+        "src/deserialize/token.rs": "f9e3e46784ebdd489b7de07011d97adcfd58ea832e013213b87c667b4e06fd79",
+        "src/deserialize/error.rs": "79d11db3cf2e6ac373842e13e8762de90a07ea994ef1ff1a16b09fa18c7faac1",
+        "Cargo.toml": "56ce3714b07d359467f68959214ab1ef7e0dc6cc1ca15fd7c39955255fc198b0",
+        "Cargo.lock": "14601b8520c16171a31416d720567ed36dc31ad938cf01491f36fc4b8dbba923",
+        ".config/nextest.toml": "433b30fe42b42139f4d01d6785a98152d3fdeb7e65dd27daf15b948c8702eb97"
+      },
+      "pid": 3056436,
+      "proc_stat": "3056436 (cargo) R 3056024 3056024 3056024 0 -1 4194304 11 0 0 0 0 0 0 0 30 10 1 0 27474696 18915328 0 18446744073709551615 106411415568384 106411433037996 140735676896512 0 0 0 0 0 0 0 0 0 17 1 0 0 0 0 0 106411435135904 106411436147620 106411742060544 140735676900772 140735676901122 140735676901122 140735676903385 0\n",
+      "finished_utc": "2026-10-28T14:18:01.708891+00:00",
+      "actual_wait": 0,
+      "seconds": 0.7377467000042088,
+      "source_after": {
+        "src/serialize.rs": "be02303d33aababd1fcc9d60a8cc014421bdc90a8a4a71ea2294efcc8529d204",
+        "src/deserialize.rs": "d257346f7a63005142c11002195e6ca654da55c6e1c4675eba7ebd257f64c065",
+        "src/lib.rs": "c88d250ad1d85be1dfa3e4c48505f31e9e006a053447b7ab329f867dc778eaa1",
+        "src/escape.rs": "21c7e4bb594b1fd70b9c40c9b1687e8ea18f5aef172da4cece5d988d5ed61bce",
+        "src/deserialize/token.rs": "f9e3e46784ebdd489b7de07011d97adcfd58ea832e013213b87c667b4e06fd79",
+        "src/deserialize/error.rs": "79d11db3cf2e6ac373842e13e8762de90a07ea994ef1ff1a16b09fa18c7faac1",
+        "Cargo.toml": "56ce3714b07d359467f68959214ab1ef7e0dc6cc1ca15fd7c39955255fc198b0",
+        "Cargo.lock": "14601b8520c16171a31416d720567ed36dc31ad938cf01491f36fc4b8dbba923",
+        ".config/nextest.toml": "433b30fe42b42139f4d01d6785a98152d3fdeb7e65dd27daf15b948c8702eb97"
+      }
+    }
+  ],
+  "source_after": {
+    "src/serialize.rs": "be02303d33aababd1fcc9d60a8cc014421bdc90a8a4a71ea2294efcc8529d204",
+    "src/deserialize.rs": "d257346f7a63005142c11002195e6ca654da55c6e1c4675eba7ebd257f64c065",
+    "src/lib.rs": "c88d250ad1d85be1dfa3e4c48505f31e9e006a053447b7ab329f867dc778eaa1",
+    "src/escape.rs": "21c7e4bb594b1fd70b9c40c9b1687e8ea18f5aef172da4cece5d988d5ed61bce",
+    "src/deserialize/token.rs": "f9e3e46784ebdd489b7de07011d97adcfd58ea832e013213b87c667b4e06fd79",
+    "src/deserialize/error.rs": "79d11db3cf2e6ac373842e13e8762de90a07ea994ef1ff1a16b09fa18c7faac1",
+    "Cargo.toml": "56ce3714b07d359467f68959214ab1ef7e0dc6cc1ca15fd7c39955255fc198b0",
+    "Cargo.lock": "14601b8520c16171a31416d720567ed36dc31ad938cf01491f36fc4b8dbba923",
+    ".config/nextest.toml": "433b30fe42b42139f4d01d6785a98152d3fdeb7e65dd27daf15b948c8702eb97"
+  },
+  "task_complete": false,
+  "merge_ready": false
+}

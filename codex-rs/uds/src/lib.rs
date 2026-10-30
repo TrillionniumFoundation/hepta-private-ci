@@ -10,6 +10,9 @@ use tokio::io::AsyncRead;
 use tokio::io::AsyncWrite;
 use tokio::io::ReadBuf;
 
+mod deadline_guard;
+pub use deadline_guard::guard_future_before_deadline;
+
 /// Creates `socket_dir` if needed and restricts it to the current user where
 /// the platform exposes Unix permissions.
 pub async fn prepare_private_socket_directory(socket_dir: impl AsRef<Path>) -> IoResult<()> {

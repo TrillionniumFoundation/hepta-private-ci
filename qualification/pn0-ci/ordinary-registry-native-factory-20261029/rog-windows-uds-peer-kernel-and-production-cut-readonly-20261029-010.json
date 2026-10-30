@@ -1,0 +1,459 @@
+{
+  "schema": "Windows-UDS-peer-kernel-API-and-existing-production-cut-readonly-v1",
+  "utc": "2026-10-29T01:32:47.002663+00:00",
+  "state": "NO_EXISTING_GENERIC_GENUINE_PEER_TOKEN_PRODUCER_FOUND; KEEP_AF_UNIX_FAIL_CLOSED",
+  "source": {
+    "workspace": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024",
+    "head": "d3284e385e2b6037dd86752ddd246b616144a87c",
+    "tree": "eed42a952ac5a713fc733b29707b4be3c20e00b2",
+    "published_input_read": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+    "scope": "Read-only source/immutable published preimages, primary API browsing and791B officialheader evidence only. Root current peer/deadline/runner/FinalUse WIP was not modified."
+  },
+  "primary_API_sources": [
+    {
+      "url": "https://raw.githubusercontent.com/microsoft/win32metadata/main/generation/WinSDK/RecompiledIdlHeaders/shared/afunix.h",
+      "fact": "Current Microsoft SDK source comment documents SIO_AF_UNIX_GETPEERPID output as an ULONG process identifier only. This establishes no returned TokenUser or connection-time access-token object.",
+      "raw_receipt": {
+        "utc": "2026-10-29T01:30:29.311830+00:00",
+        "url": "https://raw.githubusercontent.com/microsoft/win32metadata/main/generation/WinSDK/RecompiledIdlHeaders/shared/afunix.h",
+        "ref": "main observed at read, not a pinned source release qualification",
+        "bytes": 791,
+        "sha256": "cecca66c4f80dad3c77ec1405b8ba963bff1bb7d8ce8b83d57b3365d68fb906c",
+        "response_headers": {
+          "Content-Length": "791",
+          "Content-Type": "text/plain; charset=utf-8",
+          "ETag": "\"59ed43137002cd78d75d41753bd27daf8d68463218e008fa2179ae4bebf54fa2\""
+        },
+        "raw_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/windows-uds-primary-API-20261029-010/microsoft-shared-afunix.h.original",
+        "api_fact": "SIO_AF_UNIX_GETPEERPID comment says returns ULONG PID of connected peer process; no token credential return advertised by this definition"
+      }
+    },
+    {
+      "url": "https://devblogs.microsoft.com/commandline/af_unix-comes-to-windows/",
+      "fact": "Historical2017 implementation announcement says ancillary credentials/file-descriptor passing were unsupported. This historical note alone is not a proof about every futureWindows build."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-wsaquerysocketsecurity",
+      "fact": "The documented token-returning secure-socket query requires AF_INET or AF_INET6 and SOCK_STREAM/SOCK_DGRAM. It is not a documented AF_UNIX token-credential path."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-wsaimpersonatesocketpeer",
+      "fact": "Likewise requires AF_INET/AF_INET6 and blocking non-overlapped socket; user token may be unavailable and computer token fallback is documented. It cannot be assumed as AF_UNIX same-user proof."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/winsock/winsock-secure-socket-extensions",
+      "fact": "Documented secure-socket extensions currently support IPsec, not a generic authenticated local AF_UNIX transport."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/namedpipeapi/nf-namedpipeapi-impersonatenamedpipeclient",
+      "fact": "The server can acquire the security context of the last message read from that exact named-pipe instance. Return value must be checked; failure leaves server context active and must never authorize a request. SecurityIdentification is an allowed level."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-openthreadtoken",
+      "fact": "Opens the thread token; OpenAsSelf permits querying an Identification token. Anonymous token cannot be opened. Querying this actual impersonated token is distinct from reopening a process by numericPID."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-reverttoself",
+      "fact": "Must restore thread identity after impersonation; documented advice on failure is process shutdown because continuing in client context is unsafe."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/namedpipeapi/nf-namedpipeapi-createnamedpipew",
+      "fact": "Documents explicit security descriptor, FIRST_PIPE_INSTANCE, overlapped operations, REJECT_REMOTE_CLIENTS and bounded maximum instances. Default descriptor grants Everyone/anonymous read; buffer sizes are advisory and do not by themselves constitute a physical-memory quota."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/ipc/named-pipe-security-and-access-rights",
+      "fact": "Kernel checks pipe DACL for clients and server instances. FILE_GENERIC_WRITE includes FILE_CREATE_PIPE_INSTANCE; use precise role-specific rights rather than blindly inheriting resource or broad generic ACL. No recommendation here to add logon SID to restriction list."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getnamedpipeclientprocessid",
+      "fact": "Returns a process identifier, not the peer TokenUser snapshot."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getnamedpipeserverprocessid",
+      "fact": "Returns a process identifier; not a direct authenticated TokenUser credential API."
+    }
+  ],
+  "conclusions": [
+    "The SDK exposes AF_UNIX peerPID. PID ->OpenProcess ->OpenProcessToken observes whichever process is successfully opened at that later time; the reviewed API contract does not bind that token to the exact socket connect-time security context. Rechecking the same numeric PID is still not a credential snapshot. Do not returnOk from ensure_current_user_peer based on that alone.",
+    "The reviewed Microsoft token-returning socket APIs explicitly apply to IPv4/IPv6 secure sockets, not this AF_UNIX adapter. No supported AF_UNIX TokenUser producer satisfying this contract was established in this review. This is not an impossibility claim for all future kernels/APIs.",
+    "Current Windows codex_uds peer gate and original unsupported test must remain exact. Current matrixd consumes it before frame decode; root Agentd WIP now consumes it before permit/overload traffic. These correct refusals cannot be removed or substituted by directory-exists/PID/user-suppliedSID checks.",
+    "The elevated runner helpers have a different narrow producer: parent creates randomized pipes, applies sandbox-user ACL and compares to its freshly spawned runner identity. Their guarantees must be reviewed with the held-child owner; they are not a generic incoming-client TokenUser factory for unrelated Agentd/matrixd callers.",
+    "IDE pipe client validates a server process token using a returned serverPID and limits SQOS to Identification. Its test reads a real message then impersonates and observes Identification, but that is test-source only, not an existing general production server peer identity issuer.",
+    "CapturedPrincipal and CapturedPrimaryOwner are resource-owning roles and intentionally reject Identification (and all impersonation for primary owner). They must not be loosened to make a peer-observation role pass; a future peer observation must be distinct, non-convertible and non-authorizing."
+  ],
+  "smallest_real_production_direction_not_implemented": {
+    "transport": "Explicit versioned Windows owner-local named-pipe transport consumed by both ends of existing ordinary control callers; preserve current AF_UNIX UnixStream API and unsupported test unchanged. Do not silently reinterpret old UnixStream as authenticated or replace its negative test fixture.",
+    "producer": "Actual server pipe instance with explicit owner-scoped noninherited security descriptor, remote clients rejected, first-instance collision refused, retained kernel handle and reviewed namespace/rendezvous binding. Exact endpoint identity must bind verified layout/owner/generation; no path string or metadata file alone grants authority.",
+    "identity_step": "Before any business JSON/overload response/effect, consume only a fixed bounded non-business authentication prelude on the same instance under the original total deadline. On one synchronous native thread and without await/callback, ImpersonateNamedPipeClient ->direct OpenThreadToken(TOKEN_QUERY,OpenAsSelf) with no process fallback ->bounded kernel TokenUser comparison to captured real server owner ->restore and revalidate original thread identity. Client must specify SQOS Identification, not default unrestricted impersonation; Anonymous/Unsupported/query errors refuse.",
+    "typed_result": "Fresh private peer-observation role constructed solely from exact live instance+real token result. No caller-supplied PID/SID/DTO constructor, Clone/Serde, no conversion to CapturedPrincipal/primary owner/FinalUse/model/resource grant. A successful historical identity observation does not authorize arbitrary protocol methods.",
+    "scope_restore": "No async continuation or business code may run impersonated. Revert failure must enter a reviewed fail-stop/unknown-owner path, not become an ordinaryErr returned to a reused Tokio worker. Error/drop/timeout/owner cancellation paths retain exact handles and prove terminal completion; cleanup must not be claimed from merely requestingCancelIoEx.",
+    "actual_consumers": "Versioned transport must wire MatrixdControlServer, real matrix supervisor/client on supported platforms, AgentdControlServer, AgentdClient and their live/stale/discovery cleanup. Located supervisor matrix control sender is in cfg(unix) module, so a Windows ordinary caller still needs a genuine producer+consumer implementation, not a new listener alone.",
+    "resource_order": "Authentication must remain inside original accepted-operation2s window and original32 admitted connection limit; no detached/unbounded preauth workers or an extra unaudited instance/queue allowance. Retain original per-poll deadline gate and overload50ms where that operation exists. The exact slot/accept ordering and instance count require design/native validation, not an inferred PASS.",
+    "rendezvous": "Keep caller-facing path/layout generation binding explicit. Pipe objects do not use NTFS stale socket deletion semantics; new ownertype must refuse collisions/foreign instances and retain qualified private discovery/namespace owner. Current create_dir_all/non-Unix ACL no-ops cannot supply it.",
+    "mutual_scope": "Named-pipe server impersonation authenticates its incoming client. It does not by itself authenticate the server to a client. Client connection must validate the independently protected endpoint/creator ownership and exact generation; if the contract requires mutual live token identity, add a reviewed genuine mutual authenticated transport rather than claiming PID lookup suffices. This outstanding decision prevents a narrow drop-in implementation here.",
+    "why_no_mirror_source": "No current generic producer satisfies same-instance token observation, protected rendezvous, bounded cancellation/restore and both ordinary callers. Writing a PID-onlyOk or an unconsumed newpeer factory would weaken the actual guard. This review therefore creates no source candidate."
+  },
+  "existing_primitives_reuse_limits": {
+    "CurrentUser": "Existing bounded TokenUser parser can be reused inside a new distinct module only with an actual impersonated thread token; generic open_effective_token ERROR_NO_TOKEN fallback must not be accepted as successfulpeer proof.",
+    "CapturedPrincipal": "Use only to retain/revalidate the actual server resource context before/after peer inspection; never use it as peer credential or lower its impersonation policy.",
+    "ParentAnchor": "Existing NTFS parent owner is a create-only disk namespace proof; it is not authority over\\.\\pipe namespace or arbitrary pipe handles.",
+    "ProtectedDescriptor": "Currently includes file/resource full rights; new pipe-specific ACL must be reviewed against FILE_CREATE_PIPE_INSTANCE overlap, not copied as a proof of pipe safety.",
+    "runner_pipe": "Preserve root runner ownership work and its exact role. Its name/PID inputs cannot be relabeled as current-user authenticated local IPC."
+  },
+  "required_future_native_evidence_NOT_RUN": [
+    "Original AF_UNIX unsupported test unchanged; genuine named-pipe same-user success and distinct-user failure using independently owned real Windows tokens, no synthetic SID or peer DTO.",
+    "Anonymous/Identification SQOS behavior, failed impersonation/query/restore, peer exit/PID reuse, handle duplication/inheritance/transfer, replacement or foreign first instance, spoofed endpoint metadata/generation and mismatched owner must refuse without business effects.",
+    "Actual Windows ordinary Agentd+matrixd clients and servers consume the new peer result, not only a native helper fixture. No fakeprivate ctor/prepared/fullguard.",
+    "All auth/read/write/cancel/reap/cleanup under original2s, original32 limit/frame bounds and original Nice10/resource assertions where applicable. No named-pipe advisory buffer size used as physical quota proof.",
+    "Retain all broad-identity-delete/legacy refusal and unknown terminal failures; this transport stage cannot qualify token isolation/PE-DLL/desktop/stdio/Job/model/installation."
+  ],
+  "source_pins": [
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/uds/src/lib.rs",
+      "relative": "codex-rs/uds/src/lib.rs",
+      "bytes": 14473,
+      "sha256": "23751dd9128234b4e5f19a8ae54806a491ddbec9865cdeff390c3217ae09f645",
+      "actual_git_blob": "d3e9a91efa8f647d216f6c7fd890584ec6cafad6",
+      "lines": [
+        277,
+        335
+      ],
+      "purpose": "actual Windows AF_UNIX adapter and Unsupported peer gate",
+      "actual_bf36_blob": "9fe8556c9681be665fa7606a5978fd7b35ed7e42",
+      "bf36_bytes": 14398,
+      "bf36_sha256": "b81907ec7757b85cce001328f272c9d1c3467e42b8772d667b09b17a7d455c75",
+      "live_bytes_equal_bf36": false,
+      "Windows_adapter_and_tests_suffix_byte_equal_bf36": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/uds/src/lib_tests.rs",
+      "relative": "codex-rs/uds/src/lib_tests.rs",
+      "bytes": 5638,
+      "sha256": "a5e437bb409156b954b989dad6d3928038088cd8deba9a54b06dd315d883e3d4",
+      "actual_git_blob": "9c2d25cd72fdfbbb74b04705d0bd69872570f01b",
+      "lines": [
+        150,
+        169
+      ],
+      "purpose": "original unsupported peer test unchanged",
+      "actual_bf36_blob": "9c2d25cd72fdfbbb74b04705d0bd69872570f01b",
+      "bf36_bytes": 5638,
+      "bf36_sha256": "a5e437bb409156b954b989dad6d3928038088cd8deba9a54b06dd315d883e3d4",
+      "live_bytes_equal_bf36": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/uds/Cargo.toml",
+      "relative": "codex-rs/uds/Cargo.toml",
+      "bytes": 684,
+      "sha256": "4da6aa32dd7c36fd520c4e9787f1354cbf3421b669e88a8e1237a6cbc2381e13",
+      "actual_git_blob": "66ba1d9d2d915dae795b2cda4eef7d2d4bd91539",
+      "lines": [
+        1,
+        38
+      ],
+      "purpose": "actual Windows dependencies, no peer-token producer",
+      "actual_bf36_blob": "66ba1d9d2d915dae795b2cda4eef7d2d4bd91539",
+      "bf36_bytes": 684,
+      "bf36_sha256": "4da6aa32dd7c36fd520c4e9787f1354cbf3421b669e88a8e1237a6cbc2381e13",
+      "live_bytes_equal_bf36": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-matrixd/src/control.rs",
+      "relative": "codex-rs/hepta-matrixd/src/control.rs",
+      "bytes": 36655,
+      "sha256": "b7b32d9968c21986be64868e632f3b4dc18a41c4e5395566032bd1923345185b",
+      "actual_git_blob": "ee46d46b10465e65858237a040dd160c9c47fcf6",
+      "lines": [
+        408,
+        434
+      ],
+      "purpose": "actual ordinary server refuses Unsupported before JSON read",
+      "actual_bf36_blob": "ee46d46b10465e65858237a040dd160c9c47fcf6",
+      "bf36_bytes": 36655,
+      "bf36_sha256": "b7b32d9968c21986be64868e632f3b4dc18a41c4e5395566032bd1923345185b",
+      "live_bytes_equal_bf36": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-matrixd/src/control.rs",
+      "relative": "codex-rs/hepta-matrixd/src/control.rs",
+      "bytes": 36655,
+      "sha256": "b7b32d9968c21986be64868e632f3b4dc18a41c4e5395566032bd1923345185b",
+      "actual_git_blob": "ee46d46b10465e65858237a040dd160c9c47fcf6",
+      "lines": [
+        437,
+        488
+      ],
+      "purpose": "actual rendezvous path handling; non-Unix set_owner_only no-op",
+      "actual_bf36_blob": "ee46d46b10465e65858237a040dd160c9c47fcf6",
+      "bf36_bytes": 36655,
+      "bf36_sha256": "b7b32d9968c21986be64868e632f3b4dc18a41c4e5395566032bd1923345185b",
+      "live_bytes_equal_bf36": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-agentd/src/control.rs",
+      "relative": "codex-rs/hepta-agentd/src/control.rs",
+      "bytes": 8896,
+      "sha256": "4340ad44f9838195f8306dc0800f2c49f9128994e44c3ba3f5f60c92662470c9",
+      "actual_git_blob": "bdd40109a7890ea9f3bef62f159a0320ea449382",
+      "lines": [
+        57,
+        110
+      ],
+      "purpose": "root-owned WIP existing gate consumed before permit/overload; no source edits here",
+      "actual_bf36_blob": "9d376e5f1d79ca01126d567cf9f2bc5f778ef2d2",
+      "bf36_bytes": 8231,
+      "bf36_sha256": "c0a338c105a621632e0823273ded807e83aaefdab4f57f06470d73a8c0376651",
+      "live_bytes_equal_bf36": false
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-agentd/src/control.rs",
+      "relative": "codex-rs/hepta-agentd/src/control.rs",
+      "bytes": 8896,
+      "sha256": "4340ad44f9838195f8306dc0800f2c49f9128994e44c3ba3f5f60c92662470c9",
+      "actual_git_blob": "bdd40109a7890ea9f3bef62f159a0320ea449382",
+      "lines": [
+        198,
+        264
+      ],
+      "purpose": "ordinary agentd rendezvous handling and non-Unix no-op ACL",
+      "actual_bf36_blob": "9d376e5f1d79ca01126d567cf9f2bc5f778ef2d2",
+      "bf36_bytes": 8231,
+      "bf36_sha256": "c0a338c105a621632e0823273ded807e83aaefdab4f57f06470d73a8c0376651",
+      "live_bytes_equal_bf36": false
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-agentd/src/client.rs",
+      "relative": "codex-rs/hepta-agentd/src/client.rs",
+      "bytes": 25950,
+      "sha256": "e13456dc3678a7d0bf34614a4a69cfb430df425099ae7711b08a8e152b4b7cc6",
+      "actual_git_blob": "cbafcfb553ee8d7a2699878e12c7eda5f91a4a95",
+      "lines": [
+        718,
+        749
+      ],
+      "purpose": "real ordinary client currently consumes codex_uds stream",
+      "actual_bf36_blob": "cbafcfb553ee8d7a2699878e12c7eda5f91a4a95",
+      "bf36_bytes": 25950,
+      "bf36_sha256": "e13456dc3678a7d0bf34614a4a69cfb430df425099ae7711b08a8e152b4b7cc6",
+      "live_bytes_equal_bf36": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/windows-sandbox-rs/src/elevated/runner_pipe.rs",
+      "relative": "codex-rs/windows-sandbox-rs/src/elevated/runner_pipe.rs",
+      "bytes": 5321,
+      "sha256": "fa1fd3c5822c10303421a895cbe76ab3dd368c645c831ffc1c003bba626925db",
+      "actual_git_blob": "c8ae092c4a00fc3e029be48cb77cc78db4580d87",
+      "lines": [
+        42,
+        139
+      ],
+      "purpose": "special parent-created fresh runner pipe ACL+expected-child PID check, not generic peer-user factory",
+      "actual_bf36_blob": "c8ae092c4a00fc3e029be48cb77cc78db4580d87",
+      "bf36_bytes": 5321,
+      "bf36_sha256": "fa1fd3c5822c10303421a895cbe76ab3dd368c645c831ffc1c003bba626925db",
+      "live_bytes_equal_bf36": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/tui/src/ide_context/windows_pipe.rs",
+      "relative": "codex-rs/tui/src/ide_context/windows_pipe.rs",
+      "bytes": 11221,
+      "sha256": "9205b42b2c3eb37e1fb86cc84f4d6d417db1bdfa26f094824058064570eaca87",
+      "actual_git_blob": "584e87ffd4aa16d23c5675cdf58458ce8c367503",
+      "lines": [
+        57,
+        83
+      ],
+      "purpose": "real IDE pipe client SQOS Identification",
+      "actual_bf36_blob": "584e87ffd4aa16d23c5675cdf58458ce8c367503",
+      "bf36_bytes": 11221,
+      "bf36_sha256": "9205b42b2c3eb37e1fb86cc84f4d6d417db1bdfa26f094824058064570eaca87",
+      "live_bytes_equal_bf36": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/tui/src/ide_context/windows_pipe.rs",
+      "relative": "codex-rs/tui/src/ide_context/windows_pipe.rs",
+      "bytes": 11221,
+      "sha256": "9205b42b2c3eb37e1fb86cc84f4d6d417db1bdfa26f094824058064570eaca87",
+      "actual_git_blob": "584e87ffd4aa16d23c5675cdf58458ce8c367503",
+      "lines": [
+        268,
+        301
+      ],
+      "purpose": "IDE current-process-token-by-server-PID owner check only",
+      "actual_bf36_blob": "584e87ffd4aa16d23c5675cdf58458ce8c367503",
+      "bf36_bytes": 11221,
+      "bf36_sha256": "9205b42b2c3eb37e1fb86cc84f4d6d417db1bdfa26f094824058064570eaca87",
+      "live_bytes_equal_bf36": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/tui/src/ide_context/windows_pipe_tests.rs",
+      "relative": "codex-rs/tui/src/ide_context/windows_pipe_tests.rs",
+      "bytes": 3429,
+      "sha256": "495d5e9c2bf0f687e160714558df5ca2134ca81aef2896d11acd121b58f2211d",
+      "actual_git_blob": "123a47198e97d570b545a77cd031439b74873627",
+      "lines": [
+        18,
+        108
+      ],
+      "purpose": "native test source demonstrates Identification after actual message; not an executed result here",
+      "actual_bf36_blob": "123a47198e97d570b545a77cd031439b74873627",
+      "bf36_bytes": 3429,
+      "bf36_sha256": "495d5e9c2bf0f687e160714558df5ca2134ca81aef2896d11acd121b58f2211d",
+      "live_bytes_equal_bf36": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/utils/windows-private-state/src/security.rs",
+      "relative": "codex-rs/utils/windows-private-state/src/security.rs",
+      "bytes": 14623,
+      "sha256": "4d6afbd2aa1f7d91498277bdd2ad0b69919bdaafcfc809b95586c3631ce04dca",
+      "actual_git_blob": "631c87d94d5288a272c5dd486920010c16f997ac",
+      "lines": [
+        116,
+        184
+      ],
+      "purpose": "kernel TokenUser bounded parser, distinct role from owner proof",
+      "actual_bf36_blob": "631c87d94d5288a272c5dd486920010c16f997ac",
+      "bf36_bytes": 14623,
+      "bf36_sha256": "4d6afbd2aa1f7d91498277bdd2ad0b69919bdaafcfc809b95586c3631ce04dca",
+      "live_bytes_equal_bf36": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/utils/windows-private-state/src/security.rs",
+      "relative": "codex-rs/utils/windows-private-state/src/security.rs",
+      "bytes": 14623,
+      "sha256": "4d6afbd2aa1f7d91498277bdd2ad0b69919bdaafcfc809b95586c3631ce04dca",
+      "actual_git_blob": "631c87d94d5288a272c5dd486920010c16f997ac",
+      "lines": [
+        187,
+        222
+      ],
+      "purpose": "generic effective token opener falls back only ERROR_NO_TOKEN; must not be peer-token proof fallback",
+      "actual_bf36_blob": "631c87d94d5288a272c5dd486920010c16f997ac",
+      "bf36_bytes": 14623,
+      "bf36_sha256": "4d6afbd2aa1f7d91498277bdd2ad0b69919bdaafcfc809b95586c3631ce04dca",
+      "live_bytes_equal_bf36": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/utils/windows-private-state/src/principal.rs",
+      "relative": "codex-rs/utils/windows-private-state/src/principal.rs",
+      "bytes": 5708,
+      "sha256": "24b308f26ad6658dbd9554224e6125ea322eb8300c6bd11d53acca2c0d632be8",
+      "actual_git_blob": "667952d3abc4a31f734820ec33073b93cbce423c",
+      "lines": [
+        31,
+        69
+      ],
+      "purpose": "resource principal rejects Identification/Anonymous impersonation intentionally",
+      "actual_bf36_blob": "667952d3abc4a31f734820ec33073b93cbce423c",
+      "bf36_bytes": 5708,
+      "bf36_sha256": "24b308f26ad6658dbd9554224e6125ea322eb8300c6bd11d53acca2c0d632be8",
+      "live_bytes_equal_bf36": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/utils/windows-private-state/src/principal.rs",
+      "relative": "codex-rs/utils/windows-private-state/src/principal.rs",
+      "bytes": 5708,
+      "sha256": "24b308f26ad6658dbd9554224e6125ea322eb8300c6bd11d53acca2c0d632be8",
+      "actual_git_blob": "667952d3abc4a31f734820ec33073b93cbce423c",
+      "lines": [
+        111,
+        174
+      ],
+      "purpose": "held resource principal continuity, cannot convert to peer identity",
+      "actual_bf36_blob": "667952d3abc4a31f734820ec33073b93cbce423c",
+      "bf36_bytes": 5708,
+      "bf36_sha256": "24b308f26ad6658dbd9554224e6125ea322eb8300c6bd11d53acca2c0d632be8",
+      "live_bytes_equal_bf36": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/utils/windows-private-state/src/primary_owner.rs",
+      "relative": "codex-rs/utils/windows-private-state/src/primary_owner.rs",
+      "bytes": 8630,
+      "sha256": "0841e4ee2fa052b493492b320f8aa78cea40dce84599a9890b207d2b05645f91",
+      "actual_git_blob": "dec686d52d0a348e9f613c8d6d5316204fa2ce66",
+      "lines": [
+        196,
+        235
+      ],
+      "purpose": "actual primary-admin prerequisite, not arbitrary peer role",
+      "actual_bf36_blob": "dec686d52d0a348e9f613c8d6d5316204fa2ce66",
+      "bf36_bytes": 8630,
+      "bf36_sha256": "0841e4ee2fa052b493492b320f8aa78cea40dce84599a9890b207d2b05645f91",
+      "live_bytes_equal_bf36": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/utils/windows-private-state/src/protected_descriptor.rs",
+      "relative": "codex-rs/utils/windows-private-state/src/protected_descriptor.rs",
+      "bytes": 1835,
+      "sha256": "046b3c670be42d6b4942851fcfa716e51a4431a999d721f25d21ab9f1f48046b",
+      "actual_git_blob": "bb7e1671f50e5c3954b928da241ba6ebb3e3828c",
+      "lines": [
+        12,
+        52
+      ],
+      "purpose": "resource descriptor includes full rights and must not blindly be pipe policy",
+      "actual_bf36_blob": "bb7e1671f50e5c3954b928da241ba6ebb3e3828c",
+      "bf36_bytes": 1835,
+      "bf36_sha256": "046b3c670be42d6b4942851fcfa716e51a4431a999d721f25d21ab9f1f48046b",
+      "live_bytes_equal_bf36": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/utils/windows-private-state/src/parent_anchor.rs",
+      "relative": "codex-rs/utils/windows-private-state/src/parent_anchor.rs",
+      "bytes": 8706,
+      "sha256": "790b4ac7105d585fa07793b584426cd919ac50a1f2e07170236aef91e49e0bf2",
+      "actual_git_blob": "d4aa5488310694442c4173be20ae26d03834becb",
+      "lines": [
+        113,
+        190
+      ],
+      "purpose": "actual create-only held NTFS parent owner, not named-pipe namespace ownership",
+      "actual_bf36_blob": "7818640160415fcd42dae5061baea1bf334f4c8a",
+      "bf36_bytes": 8458,
+      "bf36_sha256": "f5d9e518cd97d1847ed282abfe1863917a803126ead3651a5811c8047b9369f2",
+      "live_bytes_equal_bf36": false
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-supervisor/src/lib.rs",
+      "relative": "codex-rs/hepta-supervisor/src/lib.rs",
+      "bytes": 7947,
+      "sha256": "00c3f7815c40c1c3e4343b7b941763fe017a8806471d77a1f0be8dc87bf00d82",
+      "actual_git_blob": "d5af3cabf38ec9162b7e9dbca5edda96c9815100",
+      "lines": [
+        34,
+        40
+      ],
+      "purpose": "existing supervisor unix production module is cfg unix",
+      "actual_bf36_blob": "d5af3cabf38ec9162b7e9dbca5edda96c9815100",
+      "bf36_bytes": 7947,
+      "bf36_sha256": "00c3f7815c40c1c3e4343b7b941763fe017a8806471d77a1f0be8dc87bf00d82",
+      "live_bytes_equal_bf36": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-supervisor/src/unix.rs",
+      "relative": "codex-rs/hepta-supervisor/src/unix.rs",
+      "bytes": 31602,
+      "sha256": "6d25f074cf050bc94b39a60634ac42a7c2a73fd096aab931ce3846a5577fba99",
+      "actual_git_blob": "d02b9b9b02af2b03f3904277f5028e1fb52672b4",
+      "lines": [
+        700,
+        730
+      ],
+      "purpose": "located matrixd supervisor production caller is Unix-specific",
+      "actual_bf36_blob": "d02b9b9b02af2b03f3904277f5028e1fb52672b4",
+      "bf36_bytes": 31602,
+      "bf36_sha256": "6d25f074cf050bc94b39a60634ac42a7c2a73fd096aab931ce3846a5577fba99",
+      "live_bytes_equal_bf36": true
+    }
+  ],
+  "limits": "No build/test/native/CI/driver/service/globalACL/production/VM action; no source or branch mutation. Primary docs support stated API facts only, not native current-host qualification. No SDK/model/worker/supervisor/PN1 budget reset, no originalassert/resource/Nice10/2s/32/frame/ACL/guard weakening.",
+  "READ": true,
+  "SOURCE_MIRROR_CREATED": false,
+  "APPLY": false,
+  "COMMITTED": false,
+  "PUBLISHED": false,
+  "BUILD_TEST_NATIVE_CI": "NOT_RUN",
+  "task_complete": false,
+  "merge_ready": false,
+  "NO_GO": true
+}

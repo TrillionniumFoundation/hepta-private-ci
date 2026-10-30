@@ -1,0 +1,141 @@
+{
+  "schema": "aca-public-prompt-owner-revision-003-independent-static-review-v1",
+  "created_utc": "2026-10-28T15:49:44.850810+00:00",
+  "reviewer": "/root/e153_windows_raw_review",
+  "candidate": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-public-prompt-owner-source-candidate-20261028-002/revision-003",
+  "base_head": "aca32e0df184a4a0b1c094918d1cf3dbd20e4588",
+  "base_tree": "a2fe6bc41eb50fcc764c9d0770b133b34c893201",
+  "manifest_sha256": "a9346ab0982a54ceb804d22088286bb4702da1f4ecf825787152067a14c1658e",
+  "patch": {
+    "path": "aca-atomic-public-prompt-owner-v3.patch",
+    "bytes": 23628,
+    "sha256": "d66688a3affa853d00be05edd8e8f74c216e8acf541debc3d5d991f4838c053f",
+    "added_lines": 342,
+    "removed_lines": 16
+  },
+  "delta_from_v2": {
+    "path": "revision002-to-003-collision-owner-box.patch",
+    "bytes": 1488,
+    "sha256": "a38c5611904e31064144c6ff984be733643f96641ef096eb5c2a80aef1b95546",
+    "added_lines": 3,
+    "removed_lines": 3
+  },
+  "read": true,
+  "content_review": "COMPLETE_FOR_FROZEN_REVISION_003_SOURCE",
+  "applied": false,
+  "committed": false,
+  "published": false,
+  "scope": "Independent read-only review of the exact three-line collision-owner boxing delta and byte equality of all other reviewed source. No compiler, lint, tests, formatter, native execution, CI, network, source/mirror/ref/index edits or budget reset.",
+  "prior_v2_review": {
+    "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/aca-public-prompt-owner-independent-source-revision-002-20261028-002.json",
+    "bytes": 25967,
+    "sha256": "fe5aa4934bdb27d3bbefc983efde349fdc06228cee2750159d8e37feba51970a",
+    "source_only_scope_preserved": true
+  },
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+      "bytes": 47584,
+      "sha256": "f64077547cf54cdd18a27c69cf7de83af4986bb6e5c971df2da4b6c99a34a2f5",
+      "unchanged_from_reviewed_v2": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime_windows.rs",
+      "bytes": 6844,
+      "sha256": "0196a4ced20e9ab83e2c25d678e4711d6aa10fa737687bd46b87aed3d932e80a",
+      "unchanged_from_reviewed_v2": true
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "bytes": 110584,
+      "sha256": "ab226b6bd30f4089f6599748662de3b1a011ce03d67aaff05d0ba5bfc21c07a6",
+      "unchanged_from_reviewed_v2": true
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/fresh_private_directory.rs",
+      "bytes": 12197,
+      "sha256": "99bd2f7a256c90fdae8c54de80cf08b63c2d70b7e2fcd7bb535be6047a856e4e",
+      "unchanged_from_reviewed_v2": false
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/parent_anchor.rs",
+      "bytes": 8706,
+      "sha256": "790b4ac7105d585fa07793b584426cd919ac50a1f2e07170236aef91e49e0bf2",
+      "unchanged_from_reviewed_v2": true
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/parent_anchor_tests.rs",
+      "bytes": 8221,
+      "sha256": "39bca83ff00d4744669e856724bf5451df063499c703f36cf6d01ff1e96c5341",
+      "unchanged_from_reviewed_v2": true
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/private_owner_lock.rs",
+      "bytes": 7825,
+      "sha256": "9f6ef5f7ac348bf2ebac9c3872b19df16776ea88c47b2009aab05ca3f91f1c82",
+      "unchanged_from_reviewed_v2": true
+    }
+  ],
+  "mechanical_binding": {
+    "seven_consolidated_hunks_in_memory_replay_equal": true,
+    "one_delta_hunk_file_in_memory_replay_equal": true,
+    "six_other_after_sources_exact_equal": true,
+    "all_six_existing_before_sources_match_reviewed_v2_and_actual_ACA_admission": true,
+    "original_tests_and_new_v2_canonical_test_unchanged": true
+  },
+  "preserved_actual_v2_failure": {
+    "raw": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-public-prompt-owner-validation-20261028-002/Windows-GNU-clippy.raw.log",
+    "raw_bytes": 1756,
+    "raw_sha256": "c1d821c8093da51ed7d603f38eda508e9cfac3678cd98a8254b8c2a64c623ea9",
+    "terminal": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-public-prompt-owner-validation-20261028-002/terminal.json",
+    "terminal_sha256": "d84c00ee5e79e75221aeefd02f7b89df5244048aa433d969b5af78746d9c54b3",
+    "exit_code": 101,
+    "elapsed_seconds": 11.516034478030633,
+    "reason": "Actual strict WindowsGNU Clippy large_enum_variant: Collision at least264B vs Created8B; both lib and libtest rejected under original -D warnings.",
+    "compiler_scope": "Pure private-state WindowsGNU compile/lint only; native and Agentd package not checked.",
+    "failure_preserved": true,
+    "v3_retest_status": "NOT_RUN_BY_THIS_REVIEW"
+  },
+  "semantic_review": [
+    {
+      "property": "Same actual ParentAnchor, no recapture",
+      "finding": "The exact pre-existing self value moves into Box::new(self) only after the original observed held-relative FILE_CREATE NTSTATUS_OBJECT_NAME_COLLISION predicate. Box allocation neither clones native handles nor captures a new principal/path/owner."
+    },
+    {
+      "property": "Same owner lifetime across collision",
+      "finding": "The Box owns the entire original ParentAnchor, including retained ancestors, primary owner and continuity. The enum keeps sole custody until either the create-only API refuses or the existing-store path consumes it."
+    },
+    {
+      "property": "Original create-only refusal/drop",
+      "finding": "create_private_directory still matches Collision { error, .. } and returns NotAdmitted. Dropping the boxed anchor closes the same resources as dropping the old inline anchor, with original ParentAnchor field drop order; no deletion, repair, retry or adoption."
+    },
+    {
+      "property": "Consume exact parent",
+      "finding": "prepare_private_store_directory consumes (*parent) into the same original open_existing_candidate(leaf) method, moving the owned ParentAnchor out of its unique Box. The Box allocation is released; captured native handles and principal are moved, not copied/reopened/recaptured."
+    },
+    {
+      "property": "No access or admission expansion",
+      "finding": "Collision predicate, leaf checks, ancestry/current-principal/NTFS/descriptor checks, TypedCreated branch, public errors, no-delete sharing, schema/marker recovery and sticky refusal are byte unchanged from reviewed v2."
+    },
+    {
+      "property": "Layout fix only",
+      "finding": "Only parent field type, collision construction and consuming dereference changed (3 added/3 removed). No lint allow, warning suppression, assertion/resource/deadline changes or test edits."
+    }
+  ],
+  "blocking_findings": [],
+  "disposition": "NO_NEW_STATIC_BLOCKER_IN_REVIEWED_REVISION_003_DELTA",
+  "qualification": {
+    "source_review": "NO_NEW_STATIC_BLOCKER_ONLY",
+    "compile_or_lint_v3": "NOT_RUN_BY_THIS_REVIEW",
+    "Windows_native": "NOT_RUN",
+    "Agentd_ordinary_factory": "NOT_QUALIFIED",
+    "original_Windows_deletion_and_terminal_failures": "OPEN",
+    "model_three_round_I09_I10": "OPEN",
+    "full_PN0": "NOT_QUALIFIED",
+    "merge_ready": false
+  },
+  "original_failure_history_preserved": true,
+  "budgets_reset": false,
+  "task_complete": false,
+  "NO_GO": true
+}

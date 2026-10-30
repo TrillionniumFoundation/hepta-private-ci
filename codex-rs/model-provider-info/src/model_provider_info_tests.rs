@@ -30,6 +30,7 @@ base_url = "http://localhost:11434/v1"
         requires_openai_auth: false,
         supports_websockets: false,
         supports_standalone_web_search: false,
+        content_item_kinds_capability: None,
     };
 
     let provider: ModelProviderInfo = toml::from_str(azure_provider_toml).unwrap();
@@ -65,6 +66,7 @@ query_params = { api-version = "2025-04-01-preview" }
         requires_openai_auth: false,
         supports_websockets: false,
         supports_standalone_web_search: false,
+        content_item_kinds_capability: None,
     };
 
     let provider: ModelProviderInfo = toml::from_str(azure_provider_toml).unwrap();
@@ -104,6 +106,7 @@ supports_standalone_web_search = true
         requires_openai_auth: false,
         supports_websockets: false,
         supports_standalone_web_search: true,
+        content_item_kinds_capability: None,
     };
 
     let provider: ModelProviderInfo = toml::from_str(azure_provider_toml).unwrap();
@@ -284,6 +287,7 @@ fn test_create_amazon_bedrock_provider() {
             requires_openai_auth: false,
             supports_websockets: false,
             supports_standalone_web_search: false,
+            content_item_kinds_capability: None,
         }
     );
 }
@@ -666,4 +670,268 @@ refresh_interval_ms = 0
     let auth = provider.auth.expect("auth config should deserialize");
     assert_eq!(auth.refresh_interval_ms, 0);
     assert_eq!(auth.refresh_interval(), None);
+}
+
+#[test]
+fn content_item_kinds_capability_requires_the_exact_configured_and_resolved_endpoint() {
+    let endpoint = "https://receiver.example/v1";
+    let provider = ModelProviderInfo {
+        base_url: Some(endpoint.to_string()),
+        content_item_kinds_capability: Some(ContentItemKindsCapability {
+            endpoint: endpoint.to_string(),
+        }),
+        ..ModelProviderInfo::default()
+    };
+    assert_eq!(provider.validate(), Ok(()));
+    assert_eq!(
+        provider.internal_chat_message_metadata_policy(endpoint),
+        InternalChatMessageMetadataPolicy::ContentItemKindsOnly,
+    );
+
+    for resolved in [
+        "http://receiver.example/v1",
+        "https://other.example/v1",
+        "https://receiver.example:8443/v1",
+        "https://receiver.example/other",
+        "https://receiver.example/v1/",
+        "https://receiver.example/v1?key=value",
+        CHATGPT_CODEX_BASE_URL,
+    ] {
+        assert_eq!(
+            provider.internal_chat_message_metadata_policy(resolved),
+            InternalChatMessageMetadataPolicy::None,
+            "a capability must not migrate to {resolved}",
+        );
+    }
+
+    let mut changed_configuration = provider;
+    changed_configuration.base_url = Some("https://other.example/v1".to_string());
+    assert!(changed_configuration.validate().is_err());
+    assert_eq!(
+        changed_configuration.internal_chat_message_metadata_policy(endpoint),
+        InternalChatMessageMetadataPolicy::None,
+    );
+    changed_configuration.base_url = None;
+    assert!(changed_configuration.validate().is_err());
+    assert_eq!(
+        changed_configuration.internal_chat_message_metadata_policy(endpoint),
+        InternalChatMessageMetadataPolicy::None,
+    );
+}
+
+#[test]
+fn content_item_kinds_capability_does_not_trust_provider_names_or_loopback() {
+    for endpoint in [
+        "http://127.0.0.1:39001/v1",
+        "http://localhost:39001/v1",
+        "https://proxy.example/v1",
+        CHATGPT_CODEX_BASE_URL,
+    ] {
+        let mut provider = ModelProviderInfo {
+            name: "OpenAI".to_string(),
+            base_url: Some(endpoint.to_string()),
+            ..ModelProviderInfo::default()
+        };
+        assert_eq!(
+            provider.internal_chat_message_metadata_policy(endpoint),
+            InternalChatMessageMetadataPolicy::None,
+        );
+        provider.content_item_kinds_capability = Some(ContentItemKindsCapability {
+            endpoint: endpoint.to_string(),
+        });
+        let expected = if endpoint == CHATGPT_CODEX_BASE_URL {
+            InternalChatMessageMetadataPolicy::None
+        } else {
+            InternalChatMessageMetadataPolicy::ContentItemKindsOnly
+        };
+        assert_eq!(
+            provider.internal_chat_message_metadata_policy(endpoint),
+            expected
+        );
+    }
+
+    for endpoint in [
+        "file:///tmp/provider",
+        "receiver.example/v1",
+        "https://user:password@receiver.example/v1",
+        "https://receiver.example/v1?key=value",
+        "https://receiver.example/v1#fragment",
+        "https://CHATGPT.COM/backend-api/codex",
+        "https://chatgpt.com:443/backend-api/codex",
+        "https://chatgpt.com./backend-api/codex",
+        "https://chatgpt%2ecom/backend-api/codex",
+    ] {
+        let provider = ModelProviderInfo {
+            base_url: Some(endpoint.to_string()),
+            content_item_kinds_capability: Some(ContentItemKindsCapability {
+                endpoint: endpoint.to_string(),
+            }),
+            ..ModelProviderInfo::default()
+        };
+        assert!(provider.validate().is_err(), "must reject {endpoint}");
+        assert_eq!(
+            provider.internal_chat_message_metadata_policy(endpoint),
+            InternalChatMessageMetadataPolicy::None,
+        );
+    }
+}
+
+#[test]
+fn content_item_kinds_capability_forwards_no_other_internal_fields() {
+    use codex_protocol::models::ContentItem;
+    use codex_protocol::models::ContentItemKind;
+    use codex_protocol::models::InternalChatMessageMetadataPassthrough;
+    use codex_protocol::models::ResponseItem;
+
+    let durable = ResponseItem::Message {
+        id: None,
+        role: "user".to_string(),
+        content: vec![ContentItem::InputAudio {
+            audio_url: "data:audio/wav;base64,AAAA".to_string(),
+        }],
+        phase: None,
+        internal_chat_message_metadata_passthrough: Some(InternalChatMessageMetadataPassthrough {
+            turn_id: Some("private-turn-id".to_string()),
+            create_time: Some(12.into()),
+            content_item_kinds: Some(vec![ContentItemKind("user.audio".to_string())]),
+            executed_tool_calls: Some(vec![]),
+        }),
+    };
+    let mut wire = durable.clone();
+    InternalChatMessageMetadataPolicy::ContentItemKindsOnly.apply(&mut wire);
+    let expected = ResponseItem::Message {
+        id: None,
+        role: "user".to_string(),
+        content: vec![ContentItem::InputAudio {
+            audio_url: "data:audio/wav;base64,AAAA".to_string(),
+        }],
+        phase: None,
+        internal_chat_message_metadata_passthrough: Some(InternalChatMessageMetadataPassthrough {
+            content_item_kinds: Some(vec![ContentItemKind("user.audio".to_string())]),
+            ..Default::default()
+        }),
+    };
+    assert_eq!(wire, expected);
+
+    let mut first_party_wire = durable.clone();
+    InternalChatMessageMetadataPolicy::All.apply(&mut first_party_wire);
+    assert_eq!(first_party_wire, durable);
+
+    let mut unknown_wire = durable;
+    InternalChatMessageMetadataPolicy::None.apply(&mut unknown_wire);
+    let mut no_metadata = expected;
+    no_metadata.clear_internal_chat_message_metadata_passthrough();
+    assert_eq!(unknown_wire, no_metadata);
+
+    let mut no_kinds = ResponseItem::Message {
+        id: None,
+        role: "user".to_string(),
+        content: vec![ContentItem::InputAudio {
+            audio_url: "data:audio/wav;base64,AAAA".to_string(),
+        }],
+        phase: None,
+        internal_chat_message_metadata_passthrough: Some(InternalChatMessageMetadataPassthrough {
+            turn_id: Some("private-turn-id".to_string()),
+            create_time: Some(12.into()),
+            content_item_kinds: None,
+            executed_tool_calls: Some(vec![]),
+        }),
+    };
+    InternalChatMessageMetadataPolicy::ContentItemKindsOnly.apply(&mut no_kinds);
+    assert_eq!(no_kinds, no_metadata);
+}
+
+#[test]
+fn content_item_kinds_capability_configuration_is_explicit_and_field_limited() {
+    let provider: ModelProviderInfo = toml::from_str(
+        r#"
+base_url = "https://receiver.example/v1"
+[content_item_kinds_capability]
+endpoint = "https://receiver.example/v1"
+"#,
+    )
+    .expect("the owner can explicitly declare this receiver's field capability");
+    let expected = ModelProviderInfo {
+        base_url: Some("https://receiver.example/v1".to_string()),
+        content_item_kinds_capability: Some(ContentItemKindsCapability {
+            endpoint: "https://receiver.example/v1".to_string(),
+        }),
+        ..ModelProviderInfo::default()
+    };
+    assert_eq!(provider, expected);
+    assert_eq!(provider.validate(), Ok(()));
+    assert!(
+        !toml::to_string(&ModelProviderInfo::default())
+            .expect("default provider serializes")
+            .contains("content_item_kinds_capability")
+    );
+    assert!(
+        toml::from_str::<ModelProviderInfo>(
+            r#"
+base_url = "https://receiver.example/v1"
+[content_item_kinds_capability]
+endpoint = "https://receiver.example/v1"
+turn_id = true
+"#,
+        )
+        .is_err()
+    );
+}
+
+#[test]
+fn content_item_kinds_capability_rejects_api_base_path_normalization() {
+    for endpoint in [
+        "https://receiver.example/allowed/./other",
+        "https://receiver.example/allowed/../other",
+        "https://receiver.example/allowed/.",
+        "https://receiver.example/allowed/..",
+        "https://receiver.example/allowed/%2e%2e/other",
+        "https://receiver.example/allowed/%2E/other",
+        "https://receiver.example/allowed/.%2e/other",
+        "https://receiver.example/allowed/%2e./other",
+        "https://receiver.example/allowed/%5cother",
+        "https://receiver.example/allowed/%5Cother",
+        "https://receiver.example/allowed\\other",
+        "https://receiver.example/allowed/%2fother",
+        "https://receiver.example/allowed/%252e%252e/other",
+        "https://receiver.example/release%20name/v1",
+    ] {
+        let provider = ModelProviderInfo {
+            base_url: Some(endpoint.to_string()),
+            content_item_kinds_capability: Some(ContentItemKindsCapability {
+                endpoint: endpoint.to_string(),
+            }),
+            ..ModelProviderInfo::default()
+        };
+        assert!(provider.validate().is_err(), "must reject {endpoint}");
+        assert_eq!(
+            provider.internal_chat_message_metadata_policy(endpoint),
+            InternalChatMessageMetadataPolicy::None,
+        );
+    }
+
+    for endpoint in [
+        "https://receiver.example/v1",
+        "https://receiver.example/allowed/provider-v2",
+        "https://receiver.example/allowed/provider.v2",
+        "https://receiver.example/allowed/.well-known/api",
+        "https://receiver.example/allowed/v1/",
+        "http://127.0.0.1:39001/v1",
+    ] {
+        let provider = ModelProviderInfo {
+            base_url: Some(endpoint.to_string()),
+            content_item_kinds_capability: Some(ContentItemKindsCapability {
+                endpoint: endpoint.to_string(),
+            }),
+            query_params: Some(maplit::hashmap! {
+                "api-version".to_string() => "2026-10-27".into(),
+            }),
+            ..ModelProviderInfo::default()
+        };
+        assert_eq!(provider.validate(), Ok(()));
+        assert_eq!(
+            provider.internal_chat_message_metadata_policy(endpoint),
+            InternalChatMessageMetadataPolicy::ContentItemKindsOnly,
+        );
+    }
 }

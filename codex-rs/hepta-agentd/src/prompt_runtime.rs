@@ -10,11 +10,16 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::collections::VecDeque;
 use std::fmt;
+#[cfg(not(windows))]
 use std::fs::File;
+#[cfg(not(windows))]
 use std::fs::OpenOptions;
+#[cfg(not(windows))]
 use std::io::Read;
+#[cfg(not(windows))]
 use std::io::Write;
 use std::path::Path;
+#[cfg(not(windows))]
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -60,6 +65,10 @@ const PROMPT_RUNTIME_SCHEMA: u32 = 1;
 const STATE_FILE: &str = "prompt-runtime.json";
 const NEXT_FILE: &str = "prompt-runtime.next";
 const LOCK_FILE: &str = "prompt-runtime.lock";
+
+#[cfg(windows)]
+#[path = "prompt_runtime_windows.rs"]
+mod windows;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum PromptRuntimeStageDisposition {
@@ -164,7 +173,14 @@ impl AgentdPromptRuntimeOwner {
 
     #[must_use]
     pub fn requires_reopen(&self) -> bool {
-        self.poisoned.load(Ordering::Acquire)
+        #[cfg(windows)]
+        {
+            self.ensure_available().is_err()
+        }
+        #[cfg(not(windows))]
+        {
+            self.poisoned.load(Ordering::Acquire)
+        }
     }
 
     /// Stage one exact optimizer-exercised/registry-dereferenced context for a
@@ -332,6 +348,13 @@ impl AgentdPromptRuntimeOwner {
         if self.poisoned.load(Ordering::Acquire) {
             return Err(AgentdPromptRuntimeError::ReopenRequired);
         }
+        #[cfg(windows)]
+        if let Some(store) = &self.store
+            && store.root.revalidate_shared().is_err()
+        {
+            self.poisoned.store(true, Ordering::Release);
+            return Err(AgentdPromptRuntimeError::ReopenRequired);
+        }
         Ok(())
     }
 
@@ -355,7 +378,13 @@ impl AgentdPromptRuntimeOwner {
                         self.poisoned.store(true, Ordering::Release);
                         return Err(AgentdPromptRuntimeError::IndeterminateDurability);
                     }
-                    Err(error) => return Err(error),
+                    Err(error) => {
+                        #[cfg(windows)]
+                        if error == AgentdPromptRuntimeError::ReopenRequired {
+                            self.poisoned.store(true, Ordering::Release);
+                        }
+                        return Err(error);
+                    }
                 }
             }
             *current = next;
@@ -537,6 +566,15 @@ impl AgentdPromptPipelineOwner {
                 .map_err(|error| AgentdPromptPipelineError::RegistryOpen(error.to_string()))?;
         let runtime = AgentdPromptRuntimeOwner::open_state_dir(runtime_directory)
             .map_err(AgentdPromptPipelineError::RuntimeOpen)?;
+        #[cfg(windows)]
+        {
+            registry
+                .registry()
+                .map_err(|error| AgentdPromptPipelineError::RegistryOpen(error.to_string()))?;
+            runtime
+                .ensure_available()
+                .map_err(AgentdPromptPipelineError::RuntimeOpen)?;
+        }
         Ok(Self {
             registry: Mutex::new(registry),
             runtime: Arc::new(runtime),
@@ -825,12 +863,17 @@ struct StoredObservation {
 }
 
 struct PromptRuntimeStore {
+    #[cfg(not(windows))]
     root: PathBuf,
+    #[cfg(not(windows))]
     _lock: File,
+    #[cfg(windows)]
+    root: codex_hepta_contracts::windows_private_owner::OwnerLock,
     #[cfg(test)]
     fail_directory_sync_after_rename_once: AtomicBool,
 }
 
+#[cfg(not(windows))]
 impl PromptRuntimeStore {
     fn open(directory: &Path) -> Result<(Self, PromptRuntimeState), AgentdPromptRuntimeError> {
         prepare_state_directory(directory)?;
@@ -1165,6 +1208,7 @@ fn parse_id(value: String) -> Result<StableId, AgentdPromptRuntimeError> {
     StableId::new(value).map_err(|_| AgentdPromptRuntimeError::CorruptState)
 }
 
+#[cfg(not(windows))]
 fn prepare_state_directory(path: &Path) -> Result<(), AgentdPromptRuntimeError> {
     if let Err(error) = std::fs::create_dir(path)
         && error.kind() != std::io::ErrorKind::AlreadyExists
@@ -1186,7 +1230,7 @@ fn set_private_directory_permissions(path: &Path) -> Result<(), AgentdPromptRunt
         .map_err(|_| AgentdPromptRuntimeError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn set_private_directory_permissions(_path: &Path) -> Result<(), AgentdPromptRuntimeError> {
     Ok(())
 }
@@ -1198,7 +1242,7 @@ fn set_private_file_permissions(path: &Path) -> Result<(), AgentdPromptRuntimeEr
         .map_err(|_| AgentdPromptRuntimeError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn set_private_file_permissions(_path: &Path) -> Result<(), AgentdPromptRuntimeError> {
     Ok(())
 }
@@ -1210,7 +1254,7 @@ fn sync_state_directory(path: &Path) -> Result<(), AgentdPromptRuntimeError> {
         .map_err(|_| AgentdPromptRuntimeError::IndeterminateDurability)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn sync_state_directory(_path: &Path) -> Result<(), AgentdPromptRuntimeError> {
     Ok(())
 }

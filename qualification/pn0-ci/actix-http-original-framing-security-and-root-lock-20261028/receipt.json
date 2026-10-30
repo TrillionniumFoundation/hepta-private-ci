@@ -1,0 +1,194 @@
+{
+  "schema": "Actix-original-security-source-and-full-component-native-results-v1",
+  "recorded_utc": "2026-10-28T15:04:16.671975+00:00",
+  "advisory": "GHSA-xhj4-vrgc-hr34",
+  "scope": "Official Actix3.11.2 original parser security regressions versus exact official3.12.1 full original project/allfeatures in original upstream self-patch development context. Root application graph/Bazel/native ABI/release qualification remains separate.",
+  "old_native_actual_result": "actual100,2run0pass2fail; original retry retained;179nonmatching cases are not tested. Both functions fail at first malformed variant, not all variants executed on old source.",
+  "old_native_full_source_adjudication": "All original production/test/manifest/profile inputs exact; only generated JUnit appended to raw source maps, separately readback. Earlier helper assertion failed before any fixed test and is retained.",
+  "fixed_native_actual_result": {
+    "actual_wait": 0,
+    "passed": 279,
+    "original_source_ignored": 1,
+    "binaries": 7,
+    "whole_command_seconds": 179.1720630970085,
+    "source_inputs_before_after_equal": true,
+    "both_original_security_test_functions_PASS": true,
+    "original_official_members": 98,
+    "only_changed_official_member": "Development Cargo.lock: actual Cargo local self-reference patch matches exact official upstream workspace; original anyhow1.0.102 retained.",
+    "all_source_and_tests_and_normalized_manifest_members_byteexact": true,
+    "test_filter_or_lib_only_added": false,
+    "upstream_perf_exclusion_added": false,
+    "profile_caps_retries_and_timeouts_unchanged": true
+  },
+  "earlier_fixed_failures_retained": [
+    "Default full project101 before tests: missing original http2 feature",
+    "Allfeatures full project101 before tests: two self-crate versions produce18 WebSocket E0308 errors; original upstream self-patch restored through Cargo config, tests unchanged."
+  ],
+  "ordinary_development_caps": "Nice10/1GiB/noSwap/CPU100%/Tasks128/core0; not publicPN1/Nice10+2s wholewriter qualification or old budget reset.",
+  "official_crates": [
+    {
+      "path": "actix-http-3.11.2.original.crate",
+      "bytes": 168165,
+      "sha256": "7926860314cbe2fb5d1f13731e387ab43bd32bca224e82e6e2db85de0a3dba49"
+    },
+    {
+      "path": "actix-http-3.12.1.original.crate",
+      "bytes": 172208,
+      "sha256": "93acb4a42f64936f9b8cae4a433b237599dd6eb6ed06124eb67132ef8cc90662"
+    }
+  ],
+  "original_records_archive": {
+    "path": "original-component-inputs-native-results-and-failures.tar.gz",
+    "bytes": 96658,
+    "sha256": "65f318b1d0c576fce06cbc96431977704c6003f2c99454840ea82dcb40ac2206",
+    "all_members_readback_SHA_verified": true,
+    "members": [
+      {
+        "path": "actual-official-old-fixed-crate-integrity-and-source.json",
+        "bytes": 35125,
+        "sha256": "71784b10f38a9ef52971b323eb0a4f68a0466abb907fbbcbf2c566c2c5405cfa"
+      },
+      {
+        "path": "actual-official-source-match-and-original-RED-preparation.json",
+        "bytes": 1711,
+        "sha256": "917d013c8a098bb235f45abe22af0b222b9dc3e2b8178f3ae6aaf546c660d1dc"
+      },
+      {
+        "path": "actual-original-production-upstream-security-RED-terminal.json",
+        "bytes": 20587,
+        "sha256": "2122b76a5b5475b38a19b5453d5f930ab60572632c3005f2c2c2d9633de0bf82"
+      },
+      {
+        "path": "original-production-upstream-security-RED.stderr.original",
+        "bytes": 7695,
+        "sha256": "4a8b0c3016e1713b009451b3742e5a4f1a58606141cffe5f638a97ab40e4e6b0"
+      },
+      {
+        "path": "actual-original-production-upstream-security-RED-exact-package-terminal.json",
+        "bytes": 20814,
+        "sha256": "6359f6724a4ec45b920863d9f002d9862c5b066bd6e79c2ff322bcc935afccff"
+      },
+      {
+        "path": "original-production-upstream-security-RED-exact-package.stderr.original",
+        "bytes": 10526,
+        "sha256": "410a5c16be2af92bc7886192c9c56e378b688dec36cf52a65c3999b37d30c32f"
+      },
+      {
+        "path": "actual-original-RED-source-and-generated-report-adjudication.json",
+        "bytes": 1020,
+        "sha256": "b5bfb6c37f82cdfc3b84bdec2c6fc22758ae43fe1da29d558979a9ff33621064"
+      },
+      {
+        "path": "hepta-actix-http-fixed-independent-full-project-20261028-002.service.final-journal.original.jsonl",
+        "bytes": 12375,
+        "sha256": "214334d51f3edd53dccd9ebfef0f9973e95a5150257bd36d898db5b618832081"
+      },
+      {
+        "path": "actual-fixed-independent-full-project-terminal.json",
+        "bytes": 20766,
+        "sha256": "f02f4fd60b2c39ceb6981e8d78ce861e3dc296648add5bde4836c0bb230354a3"
+      },
+      {
+        "path": "fixed-independent-full-project.stderr.original",
+        "bytes": 10053,
+        "sha256": "03f138caed22161623f588e502eb72c5b291b7bfbab8f0873253f5afe0bfd8bd"
+      },
+      {
+        "path": "actual-fixed-full-project-compiler-root-cause-and-upstream-feature-admission.json",
+        "bytes": 890,
+        "sha256": "ef2b2d212625614677f9d1c34a122163e147f50d47a938fb3304639e19c0caf8"
+      },
+      {
+        "path": "actual-fixed-independent-all-features-full-project-terminal.json",
+        "bytes": 20793,
+        "sha256": "292068ac49bf6c54b047632c1654dbd9a8e97a26dde561ab8d71891a20dd85dd"
+      },
+      {
+        "path": "fixed-independent-all-features-full-project.stderr.original",
+        "bytes": 23012,
+        "sha256": "530024e325633d7a5c8595df2155700f362d233415fa6535fc00b13527983e63"
+      },
+      {
+        "path": "actual-fixed-development-self-reference-update-terminal.json",
+        "bytes": 2393,
+        "sha256": "e38842c073df344f12af739348d3dcbcb111b855b7b000a5accbf2db102ca6d3"
+      },
+      {
+        "path": "fixed-development-self-reference-update.stderr.original",
+        "bytes": 333,
+        "sha256": "fd8c45f5707ba649f4c753e0cc02bdd6e3da07efd2091a811752f362403528d4"
+      },
+      {
+        "path": "actual-fixed-development-original-reference-preservation.json",
+        "bytes": 973,
+        "sha256": "e4a4f6b9a7a4f25a6d274db0b0061a91ce7a092c33a889ed27f1d176177d047d"
+      },
+      {
+        "path": "actual-fixed-original-self-reference-all-features-terminal.json",
+        "bytes": 21237,
+        "sha256": "ca02b0959062b9bf5fd2bd2a6fc7a8a898cf436b6ec0bb6d3b3656a0b49902e9"
+      },
+      {
+        "path": "fixed-original-self-reference-all-features.stderr.original",
+        "bytes": 25000,
+        "sha256": "c4c8ca3c38951f983415bee2b08a2c60585cf0b5b7d5fae7e76939e722a3034a"
+      },
+      {
+        "path": "actual-independent-fixed-full-native-original-source-reader.json",
+        "bytes": 28534,
+        "sha256": "9669e32a3bde91af16d6e9f61430b0e2a28c65b47888f8e481617c7712269854"
+      },
+      {
+        "path": "official-fixed-development-Cargo.lock.before-self-reference-patch.original",
+        "bytes": 73960,
+        "sha256": "5d4f41497bfa085cfcd6afc25c2aef6019b476af053d13c689993a2cdccc02af"
+      },
+      {
+        "path": "official-fixed-source-justfile.raw.original",
+        "bytes": 5398,
+        "sha256": "40dfbe9034dd04c7fb81950ff9ba5014091b90e3bb4cb80f1fc96800440992cc"
+      },
+      {
+        "path": "official-fixed-source-workspace.raw.original.toml",
+        "bytes": 1660,
+        "sha256": "0bf8e09d3b75fce6b88e1007c52f6d00fea62124420d0575650e8409c1feb09d"
+      },
+      {
+        "path": "official-fixed-source-CI-workflow.raw.original.yml",
+        "bytes": 3963,
+        "sha256": "8a0a33968030a54b4b12b7b782e0a2d67c05a9eb566bdd7edbc986e2c4e4801c"
+      },
+      {
+        "path": "original-production-with-only-upstream-new-regressions/src/h1/decoder.rs",
+        "bytes": 39858,
+        "sha256": "9d2e343be81ba030f45c431aac48833e5c408b8921f6e13967df41effc2cb59f"
+      },
+      {
+        "path": "official-3.12.1/Cargo.lock",
+        "bytes": 71793,
+        "sha256": "480c15a2e72e81fd7f29311e2ad9d0fb67b4eff4c2b74b03119d191f64eb052f"
+      },
+      {
+        "path": "official-3.12.1/.config/nextest.toml",
+        "bytes": 2625,
+        "sha256": "433b30fe42b42139f4d01d6785a98152d3fdeb7e65dd27daf15b948c8702eb97"
+      }
+    ]
+  },
+  "root_new_graph_ABI_release_Windows_public_PN1_model_WAN_qualified": false,
+  "task_complete": false,
+  "merge_ready": false,
+  "original_failures_preserved": true,
+  "actual_root_source_resolution_and_required_lock_generator": {
+    "root_locked_metadata_actual_wait": 0,
+    "packages": 1538,
+    "root_Actix_features": [
+      "default"
+    ],
+    "original_required_generator_actual_wait": 0,
+    "review": "actual-independent-root-lock-and-original-generator-review.json",
+    "original_generator_success_records": "original-required-Bazel-generator-and-input-terminals.json",
+    "original_first_generator37_records": "original-root-locked-graph-and-generator-failure-records.json",
+    "native_ABI_release_or_full_Windows_qualified": false
+  }
+}
