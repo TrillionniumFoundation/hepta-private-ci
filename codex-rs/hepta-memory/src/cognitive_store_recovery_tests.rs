@@ -149,7 +149,7 @@ async fn exact_current_cut_recovers_writable_generation_and_persists_activation(
         serde_json::from_slice(&serialized).expect("retained witness");
     assert_eq!(retained, anchor);
     let original = store.path().to_path_buf();
-    store.pool.close().await;
+    store.close().await;
     drop(store);
 
     let authority = recovery_authority(&owner);
@@ -184,7 +184,7 @@ async fn exact_current_cut_recovers_writable_generation_and_persists_activation(
         .expect("advanced current witness");
     assert_ne!(advanced, retained);
     let recovered_path = recovered.path().to_path_buf();
-    recovered.pool.close().await;
+    recovered.close().await;
     drop(recovered);
 
     let reopened = CognitiveStore::open(&layout(&temp, &owner))

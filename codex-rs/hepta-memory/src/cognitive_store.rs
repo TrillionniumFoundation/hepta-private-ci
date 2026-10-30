@@ -296,6 +296,14 @@ impl CognitiveStoreOpenGuard {
 }
 
 impl CognitiveStore {
+    /// Close the shared connection pool before a descriptor-bound recovery.
+    /// This waits for all pooled connections, including those held by clones,
+    /// to close while the store's open guard is still held. Drop every store
+    /// handle after this completes to release the guard before reopening.
+    pub async fn close(&self) {
+        self.pool.close().await;
+    }
+
     pub(crate) fn from_read_only_pool(
         pool: SqlitePool,
         owner_agent_id: AgentId,

@@ -273,7 +273,21 @@ async fn exec_resume_last_repairs_rollout_missing_from_state_db() -> anyhow::Res
     let state_db = init_state_db(&config)
         .await
         .expect("state DB should initialize");
-    assert_eq!(state_db.delete_thread(thread_id).await?, 1);
+    // Simulate a missing index row without permanently closing the thread's
+    // queue admission fence through the production deletion API.
+    let pool = config
+        .sqlite_config()
+        .open_read_write_pool(&config.sqlite_config().state_db_path())
+        .await?;
+    assert_eq!(
+        sqlx::query("DELETE FROM threads WHERE id = ?")
+            .bind(thread_id.to_string())
+            .execute(&pool)
+            .await?
+            .rows_affected(),
+        1
+    );
+    pool.close().await;
     state_db
         .mark_backfill_complete(/*last_watermark*/ None)
         .await?;
@@ -336,7 +350,20 @@ async fn exec_resume_last_trusts_usable_state_db_candidate() -> anyhow::Result<(
     let state_db = init_state_db(&config)
         .await
         .expect("state DB should initialize");
-    assert_eq!(state_db.delete_thread(newer_thread_id).await?, 1);
+    // Preserve the live queue fence while removing only the recoverable index.
+    let pool = config
+        .sqlite_config()
+        .open_read_write_pool(&config.sqlite_config().state_db_path())
+        .await?;
+    assert_eq!(
+        sqlx::query("DELETE FROM threads WHERE id = ?")
+            .bind(newer_thread_id.to_string())
+            .execute(&pool)
+            .await?
+            .rows_affected(),
+        1
+    );
+    pool.close().await;
     state_db
         .mark_backfill_complete(/*last_watermark*/ None)
         .await?;
