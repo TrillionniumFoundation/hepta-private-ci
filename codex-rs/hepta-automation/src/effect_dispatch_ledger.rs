@@ -114,6 +114,8 @@ pub(crate) struct EffectDispatchAttempt {
     pub(crate) grant_nonce_digest: Sha256Digest,
     pub(crate) record_command_id: String,
     pub(crate) started_at_ms: u64,
+    /// Zero identifies a pre-v22 attempt; missing typed history stays unknown.
+    pub(crate) append_profile_version: u32,
     pub(crate) observation: Option<EffectDispatchObservation>,
     pub(crate) provider_binding: Option<ProviderReceiptV1>,
     pub(crate) provider_binding_attempt: Option<u32>,
@@ -270,8 +272,8 @@ impl AutomationStore {
                 owner_agent_id, run_id, step_id, attempt, intent_digest,
                 payload_digest, provider_effect_key, wire_payload, binding_digest,
                 destination_id, authority_epoch, grant_id, grant_nonce_digest,
-                record_command_id, started_at_ms
-             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                record_command_id, started_at_ms, append_profile_version
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)",
         )
         .bind(owner)
         .bind(run_id)
@@ -394,6 +396,7 @@ impl AutomationStore {
         run_id: &str,
         step_id: &str,
         attempt: u32,
+        fence: &TaskFlowFence,
         kind: EffectDispatchObservationKind,
         evidence_digest: &Sha256Digest,
         observed_at_ms: u64,
@@ -410,6 +413,19 @@ impl AutomationStore {
             .ok_or_else(|| {
                 TaskFlowError::Conflict("effect dispatch attempt is missing".to_string())
             })?;
+        let step = self
+            .read_verified_step_tx(&mut transaction, run_id, step_id, attempt, Some(fence))
+            .await?
+            .ok_or_else(|| {
+                TaskFlowError::Conflict("effect observation has no durable step".to_string())
+            })?;
+        if current.intent_digest != step.intent_digest
+            || current.payload_digest != step.payload_digest
+        {
+            return Err(TaskFlowError::Conflict(
+                "effect observation differs from the durable step".to_string(),
+            ));
+        }
         let provider_json = bind_provider_receipt(
             &mut transaction,
             owner,
@@ -451,13 +467,13 @@ impl AutomationStore {
             }
             "INSERT INTO taskflow_effect_dispatch_reconciliations
              (owner_agent_id, run_id, step_id, attempt, observation,
-              evidence_digest, observed_at_ms, provider_receipt_json)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+              evidence_digest, observed_at_ms, provider_receipt_json, append_profile_version)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)"
         } else {
             "INSERT INTO taskflow_effect_dispatch_observations
              (owner_agent_id, run_id, step_id, attempt, observation,
-              evidence_digest, observed_at_ms, provider_receipt_json)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+              evidence_digest, observed_at_ms, provider_receipt_json, append_profile_version)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)"
         };
         sqlx::query(statement)
             .bind(owner)
@@ -621,6 +637,14 @@ pub(crate) fn effect_attempt_from_row(
             row.try_get("started_at_ms")
                 .map_err(|_| TaskFlowError::Corrupt("effect start timestamp".to_string()))?,
         )?,
+        append_profile_version: match row
+            .try_get::<i64, _>("append_profile_version")
+            .map_err(|_| TaskFlowError::Corrupt("effect append profile column".to_string()))?
+        {
+            0 => 0,
+            1 => 1,
+            _ => return Err(TaskFlowError::Corrupt("effect append profile".to_string())),
+        },
         observation,
         provider_binding: None,
         provider_binding_attempt: row
@@ -819,6 +843,7 @@ mod tests {
                 "effect-run",
                 "work",
                 1,
+                &fence,
                 EffectDispatchObservationKind::Indeterminate,
                 &unknown,
                 25,
@@ -862,6 +887,7 @@ mod tests {
                 "effect-run",
                 "work",
                 1,
+                &fence,
                 EffectDispatchObservationKind::Succeeded,
                 &terminal,
                 30,
@@ -893,6 +919,7 @@ mod tests {
                 "effect-run",
                 "work",
                 1,
+                &fence,
                 EffectDispatchObservationKind::Succeeded,
                 &terminal,
                 31,
@@ -907,6 +934,7 @@ mod tests {
                     "effect-run",
                     "work",
                     1,
+                    &fence,
                     EffectDispatchObservationKind::Failed,
                     &Sha256Digest::for_bytes(b"different-terminal"),
                     32,
@@ -981,6 +1009,7 @@ mod tests {
                 "effect-run",
                 "work",
                 1,
+                &fence,
                 EffectDispatchObservationKind::ProvenAbsent,
                 &Sha256Digest::for_bytes(b"actual-before-contact-proof"),
                 25,

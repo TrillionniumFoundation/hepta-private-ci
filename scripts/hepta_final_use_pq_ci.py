@@ -17,6 +17,8 @@ import tempfile
 import hepta_ci_exec as owner
 
 BRANCH = "fix/hepta-final-use-mldsa65-v2-20261029"
+CONTINUATION_BRANCH = "fix/hepta-provider-operation-binding-20261030"
+OBSERVATION_BRANCHES = (BRANCH, CONTINUATION_BRANCH)
 LOCK = "MODULE.bazel.lock"
 BUILD_COMMAND = [
     "cargo",
@@ -41,6 +43,8 @@ HOST_CASES = (
     "maximum_pq_signature_carrier_and_grant_fit_original_transport_limits",
     "final_use_authorizer::ml_dsa65_v2::tests::"
     "v2_configuration_rejects_unknown_schema_and_classical_key_before_opening_an_owner",
+    "final_use_authorizer::ml_dsa65_v2::tests::"
+    "v2_configuration_refuses_fifo_without_waiting_for_a_writer",
     "native_app_server::tests::pq_final_use::"
     "real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant",
 )
@@ -51,7 +55,7 @@ def pr_source():
     head = event["pull_request"]["head"]
     if (
         os.environ.get("GITHUB_EVENT_NAME") != "pull_request"
-        or head["ref"] != BRANCH
+        or head["ref"] not in OBSERVATION_BRANCHES
         or head["repo"]["full_name"] != os.environ.get("GITHUB_REPOSITORY")
     ):
         raise ValueError(

@@ -230,10 +230,10 @@ async fn taskflow_provider_identity_mixed_history_is_rejected_before_lookup_and_
         "INSERT INTO taskflow_effect_dispatch_attempts
          (owner_agent_id, run_id, step_id, attempt, intent_digest, payload_digest, binding_digest,
           destination_id, authority_epoch, grant_id, grant_nonce_digest, record_command_id,
-          started_at_ms, provider_effect_key, wire_payload)
+          started_at_ms, provider_effect_key, wire_payload, append_profile_version)
          SELECT owner_agent_id, run_id, step_id, 2, intent_digest, payload_digest, binding_digest,
                 destination_id, authority_epoch, 'imported-second-attempt', ?, 'imported-second-attempt',
-                started_at_ms, ?, wire_payload FROM taskflow_effect_dispatch_attempts WHERE attempt=1"
+                started_at_ms, ?, wire_payload, 1 FROM taskflow_effect_dispatch_attempts WHERE attempt=1"
     ).bind(Sha256Digest::for_bytes(b"independent-imported-nonce").as_str())
         .bind(legacy_key.as_str()).execute(&pool).await.expect("import contradictory historical row");
     pool.close().await;

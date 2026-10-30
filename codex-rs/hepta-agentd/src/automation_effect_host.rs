@@ -1207,7 +1207,7 @@ impl AgentdAutomationEffectHost {
             .ok_or_else(|| {
                 AgentdError::Invalid("effect TaskFlow run does not exist".to_string())
             })?;
-        let fence = self.current_fence(&run, now_ms)?;
+        let fence = self.owner_fence(&run)?;
         if let Some(local) = store
             .settle_authorized_taskflow_effect_observation(run_id, step_id, attempt, &fence)
             .await
@@ -1371,17 +1371,27 @@ impl AgentdAutomationEffectHost {
         run: &codex_hepta_automation::TaskFlowRun,
         now_ms: u64,
     ) -> Result<TaskFlowFence, AgentdError> {
-        if run.owner_agent_id != self.agent_id {
-            return Err(AgentdError::GenerationFenced(
-                "TaskFlow run is owned by a different Agent".to_string(),
-            ));
-        }
+        let fence = self.owner_fence(run)?;
         if run
             .lease_expires_at_ms
             .is_none_or(|expires_at| expires_at <= now_ms)
         {
             return Err(AgentdError::Protocol(
                 "TaskFlow owner lease is not current".to_string(),
+            ));
+        }
+        Ok(fence)
+    }
+
+    // Observation may outlive the lease. The store checks this existing tuple
+    // against the immutable original step before persisting any provider fact.
+    fn owner_fence(
+        &self,
+        run: &codex_hepta_automation::TaskFlowRun,
+    ) -> Result<TaskFlowFence, AgentdError> {
+        if run.owner_agent_id != self.agent_id {
+            return Err(AgentdError::GenerationFenced(
+                "TaskFlow run is owned by a different Agent".to_string(),
             ));
         }
         TaskFlowFence::new(
@@ -1679,6 +1689,10 @@ fn hex_nibble(value: u8) -> Option<u8> {
 #[cfg(all(test, unix))]
 #[path = "automation_effect_host_identity_tests.rs"]
 mod identity_tests;
+
+#[cfg(all(test, unix))]
+#[path = "automation_effect_host_recovery_tests.rs"]
+mod recovery_tests;
 
 #[cfg(all(test, unix))]
 mod tests {

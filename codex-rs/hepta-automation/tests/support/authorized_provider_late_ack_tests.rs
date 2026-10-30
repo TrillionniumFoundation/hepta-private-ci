@@ -428,15 +428,15 @@ async fn taskflow_provider_receipt_late_dispatch_reopen_requires_binding_from_sa
         "INSERT INTO taskflow_effect_dispatch_attempts
          (owner_agent_id, run_id, step_id, attempt, intent_digest, payload_digest, binding_digest,
           destination_id, authority_epoch, grant_id, grant_nonce_digest, record_command_id,
-          started_at_ms, provider_effect_key, wire_payload)
+          started_at_ms, provider_effect_key, wire_payload, append_profile_version)
          SELECT owner_agent_id, run_id, step_id, 2, intent_digest, payload_digest, binding_digest,
                 destination_id, authority_epoch, 'later-import', ?, 'later-import',
-                started_at_ms, provider_effect_key, wire_payload FROM taskflow_effect_dispatch_attempts WHERE attempt=1"
+                started_at_ms, provider_effect_key, wire_payload, 1 FROM taskflow_effect_dispatch_attempts WHERE attempt=1"
     ).bind(Sha256Digest::for_bytes(b"different-attempt-nonce").as_str()).execute(&pool).await.expect("import later historical attempt");
     sqlx::query(
         "INSERT INTO taskflow_effect_dispatch_observations
-         (owner_agent_id, run_id, step_id, attempt, observation, evidence_digest, observed_at_ms)
-         SELECT owner_agent_id, run_id, step_id, 2, observation, evidence_digest, observed_at_ms
+         (owner_agent_id, run_id, step_id, attempt, observation, evidence_digest, observed_at_ms, append_profile_version)
+         SELECT owner_agent_id, run_id, step_id, 2, observation, evidence_digest, observed_at_ms, 1
          FROM taskflow_effect_dispatch_observations WHERE attempt=1",
     )
     .execute(&pool)
@@ -465,8 +465,8 @@ async fn taskflow_provider_receipt_late_dispatch_reopen_requires_binding_from_sa
     );
     sqlx::query(
         "INSERT INTO taskflow_effect_dispatch_reconciliations
-         (owner_agent_id, run_id, step_id, attempt, observation, evidence_digest, observed_at_ms, provider_receipt_json)
-         SELECT owner_agent_id, run_id, step_id, 2, 'succeeded', ?, 50, ?
+         (owner_agent_id, run_id, step_id, attempt, observation, evidence_digest, observed_at_ms, provider_receipt_json, append_profile_version)
+         SELECT owner_agent_id, run_id, step_id, 2, 'succeeded', ?, 50, ?, 1
          FROM taskflow_effect_dispatch_attempts WHERE attempt=1"
     ).bind(evidence.as_str()).bind(json).execute(&pool).await.expect("import same-ID receipt from wrong attempt");
     pool.close().await;

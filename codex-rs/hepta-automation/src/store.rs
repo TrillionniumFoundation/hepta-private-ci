@@ -1380,5 +1380,9 @@ async fn reconcile_legacy_migration_ids(pool: &SqlitePool) -> Result<(), Automat
 }
 
 #[cfg(test)]
+#[path = "provider_append_migration_tests.rs"]
+mod provider_append_migration_tests;
+
+#[cfg(test)]
 #[path = "migration_convergence_tests.rs"]
 mod migration_convergence_tests;

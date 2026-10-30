@@ -609,12 +609,32 @@ impl AutomationStore {
         }
         ensure_step_schema(self).await?;
         let mut tx = self.begin_step_tx().await?;
-        let run = load_run(&mut tx, self, run_id).await?;
-        let definition = load_definition(&mut tx, self, &run).await?;
+        let receipt = self
+            .read_verified_step_tx(&mut tx, run_id, step_id, attempt, fence)
+            .await?;
+        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+        Ok(receipt)
+    }
+
+    /// Share the immutable step and current owner checks with evidence appends
+    /// so an owner change cannot commit between verification and persistence.
+    pub(crate) async fn read_verified_step_tx(
+        &self,
+        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+        fence: Option<&TaskFlowFence>,
+    ) -> Result<Option<TaskFlowStepReceipt>, TaskFlowError> {
+        validate_common_without_digests(run_id, step_id, attempt, "read")?;
+        if let Some(fence) = fence {
+            validate_fence(self, fence)?;
+        }
+        let run = load_run(tx, self, run_id).await?;
+        let definition = load_definition(tx, self, &run).await?;
         validate_step_node(&definition, step_id)?;
-        let events = load_step_events(&mut tx, self, run_id, step_id, attempt).await?;
+        let events = load_step_events(tx, self, run_id, step_id, attempt).await?;
         if events.is_empty() {
-            tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
             return Ok(None);
         }
         let receipt = reconstruct_step(
@@ -664,11 +684,9 @@ impl AutomationStore {
                     TaskFlowStepState::Recorded | TaskFlowStepState::Reconciled
                 )
             {
-                tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
                 return Ok(None);
             }
         }
-        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
         Ok(Some(receipt))
     }
 

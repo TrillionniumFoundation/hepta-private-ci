@@ -16,6 +16,76 @@ concurrency:
   # Keep an executing source's observations; a successor waits in this group.
   cancel-in-progress: false
 jobs:
+  effect-recovery:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'fix/hepta-provider-operation-binding-20261030'
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+        lane: [source-head, base-merge]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+      RUSTUP_TOOLCHAIN: "1.96.0"
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ env.TESTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind the actual effect-owner source and merge tree
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/effect-recovery"
+          python3 scripts/hepta_ci_candidate.py --source "$SOURCE_SHA" --tested "$TESTED_SHA" --base "$BASE_SHA" --lane "$HEPTA_CI_LANE" > "$RUNNER_TEMP/effect-recovery/candidate-tuple.json"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/effect-recovery/source-identity.txt"
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev
+          rustup toolchain install 1.96.0 --profile minimal --component clippy --component rustfmt --component rust-src
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve the original checksum-verified V8 inputs
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Fetch the unchanged locked native dependency set
+        env:
+          CARGO_NET_RETRY: "5"
+          CARGO_HTTP_TIMEOUT: "60"
+          CARGO_HTTP_MULTIPLEXING: "false"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/effect-recovery/dependency-fetch.json" --timeout-seconds 600 -- cargo fetch --locked --manifest-path codex-rs/Cargo.toml
+      - name: Execute every AutomationStore control
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/effect-recovery/automation-complete.json" --minimum-tests 134 -- just test --locked -p codex-hepta-automation --no-capture
+      - name: Execute each actual HTTP owner and recovery control
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          set -euo pipefail
+          for selector in automation_effect_host::tests::host_dispatches_exact_wire_payload_once automation_effect_host::tests::host_provider_receipt_survives_unknown_and_rejects_operation_substitution automation_effect_host::identity_tests::host_provider_identity_legacy_http_queries_original_occurrence_and_retains_terminal_fact automation_effect_host::identity_tests::host_provider_identity_terminal_execute_uses_store_owner_not_shared_subject automation_effect_host::recovery_tests::host_provider_recovery_observes_original_ack_after_lease_expiry_and_restart automation_effect_host::recovery_tests::host_provider_recovery_does_not_authorize_new_dispatch_with_an_expired_lease; do
+            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/effect-recovery/${selector//:/_}.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E "test(=$selector)" --no-capture
+          done
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-effect-recovery-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/effect-recovery
+          if-no-files-found: error
+          retention-days: 14
   pair:
     strategy:
       fail-fast: false
@@ -111,6 +181,10 @@ jobs:
       - name: Require complete bounded native input and original pipe controls
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-bounded-process.json" --minimum-tests 26 -- python3 ../chain/formal/pon-nakamoto-v1/test_bounded_process.py -v
+      - name: Require durable PQ replay ownership on the continuation pair
+        if: github.head_ref == 'fix/hepta-provider-operation-binding-20261030'
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-pq-owner.json" --minimum-tests 14 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib pq_authority:: -- --show-output --test-threads=1
       - name: Require complete bounded W1 collector and cross-architecture report controls
         run: |
           set -euo pipefail
@@ -354,7 +428,7 @@ jobs:
         env:
           CARGO_NET_OFFLINE: "true"
         run: |
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/automation-complete.json" --minimum-tests 128 -- just test --locked -p codex-hepta-automation --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/automation-complete.json" --minimum-tests 134 -- just test --locked -p codex-hepta-automation --no-capture
       - name: Require each original-owner late acknowledgement control
         env:
           CARGO_NET_OFFLINE: "true"
@@ -370,6 +444,14 @@ jobs:
           set -euo pipefail
           for selector in host_dispatches_exact_wire_payload_once host_provider_receipt_survives_unknown_and_rejects_operation_substitution host_provider_identity_legacy_http_queries_original_occurrence_and_retains_terminal_fact host_provider_identity_terminal_execute_uses_store_owner_not_shared_subject; do
             python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E "test($selector)" --no-capture
+          done
+      - name: Require expired-lease recovery without a new physical dispatch
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          set -euo pipefail
+          for selector in host_provider_recovery_observes_original_ack_after_lease_expiry_and_restart host_provider_recovery_does_not_authorize_new_dispatch_with_an_expired_lease; do
+            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E "test(=automation_effect_host::recovery_tests::$selector)" --no-capture
           done
       - name: Compile complete Agentd and run subprocess and observation regressions
         env:

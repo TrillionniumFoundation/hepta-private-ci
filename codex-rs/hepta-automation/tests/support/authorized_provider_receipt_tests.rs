@@ -333,6 +333,19 @@ async fn taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurr
         .await
         .expect("pending");
     assert_eq!(pending[0].provider_ack, Some(accepted));
+    started.driver.adapter_mut().lookup_result = ProviderEffectLookup::Unknown;
+    assert!(matches!(
+        started.driver.lookup(&pending[0]).await,
+        AuthorizedProviderEffectLookup::Unresolved
+    ));
+    assert_eq!(
+        started
+            .store
+            .pending_authorized_taskflow_effects(8)
+            .await
+            .expect("retained Accepted after Unknown"),
+        pending
+    );
 
     let correct = AuthorizedEffectProviderReceipt::from_provider_ack(
         provider_ack(
@@ -395,10 +408,11 @@ async fn taskflow_provider_receipt_reopen_rejects_canonical_substitution() {
     .await
     .expect("complete");
     let pool = database(&started.store).await;
+    let mut transaction = pool.begin().await.expect("fault injection transaction");
     let original: String = sqlx::query_scalar(
         "SELECT provider_receipt_json FROM taskflow_effect_dispatch_reconciliations",
     )
-    .fetch_one(&pool)
+    .fetch_one(&mut *transaction)
     .await
     .expect("original receipt JSON");
     let other = provider_ack(
@@ -418,24 +432,28 @@ async fn taskflow_provider_receipt_reopen_rejects_canonical_substitution() {
     assert!(
         sqlx::query("UPDATE taskflow_effect_dispatch_reconciliations SET provider_receipt_json=?")
             .bind(&modified)
-            .execute(&pool)
+            .execute(&mut *transaction)
             .await
             .is_err()
     );
     sqlx::query("DROP TRIGGER taskflow_effect_dispatch_reconciliations_no_update")
-        .execute(&pool)
+        .execute(&mut *transaction)
         .await
         .expect("fault injection");
     sqlx::query("UPDATE taskflow_effect_dispatch_reconciliations SET provider_receipt_json=?, evidence_digest=?")
-        .bind(modified).bind(digest.as_str()).execute(&pool).await.expect("canonical imported substitution");
+        .bind(modified).bind(digest.as_str()).execute(&mut *transaction).await.expect("canonical imported substitution");
     sqlx::query(
         "CREATE TRIGGER taskflow_effect_dispatch_reconciliations_no_update
         BEFORE UPDATE ON taskflow_effect_dispatch_reconciliations
         BEGIN SELECT RAISE(ABORT, 'TaskFlow effect reconciliations are immutable'); END",
     )
-    .execute(&pool)
+    .execute(&mut *transaction)
     .await
     .expect("restore original schema");
+    transaction
+        .commit()
+        .await
+        .expect("publish imported substitution");
     pool.close().await;
     started.store.close().await;
     assert!(matches!(

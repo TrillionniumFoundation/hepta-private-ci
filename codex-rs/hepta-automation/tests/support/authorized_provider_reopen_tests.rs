@@ -215,6 +215,10 @@ async fn taskflow_provider_receipt_reopen_requires_all_append_only_guards() {
         "DROP TRIGGER taskflow_effect_dispatch_reconciliations_no_delete",
         "DROP TRIGGER taskflow_effect_provider_bindings_no_update",
         "DROP TRIGGER taskflow_effect_provider_bindings_no_delete",
+        "DROP TRIGGER taskflow_effect_dispatch_attempts_require_append_profile",
+        "DROP TRIGGER taskflow_effect_provider_bindings_require_append_profile",
+        "DROP TRIGGER taskflow_effect_dispatch_observations_require_append_profile",
+        "DROP TRIGGER taskflow_effect_dispatch_reconciliations_require_append_profile",
     ] {
         let fixture = Fixture::new();
         let store = AutomationStore::open(&fixture.layout)
@@ -258,8 +262,8 @@ async fn taskflow_provider_receipt_reopen_rejects_terminal_binding_without_obser
         let pool = database(&started.store).await;
         sqlx::query(
             "INSERT INTO taskflow_effect_provider_bindings
-             (owner_agent_id, run_id, step_id, attempt, receipt_json, receipt_digest, observed_at_ms)
-             SELECT owner_agent_id, run_id, step_id, attempt, ?, ?, 40
+             (owner_agent_id, run_id, step_id, attempt, receipt_json, receipt_digest, observed_at_ms, append_profile_version)
+             SELECT owner_agent_id, run_id, step_id, attempt, ?, ?, 40, 1
              FROM taskflow_effect_dispatch_attempts"
         ).bind(json).bind(digest.as_str()).execute(&pool).await
             .expect("import canonical terminal binding without its observation");
@@ -295,8 +299,8 @@ async fn taskflow_provider_receipt_reopen_rejects_reconciliation_without_uncerta
     .expect("restore original guard");
     sqlx::query(
         "INSERT INTO taskflow_effect_dispatch_reconciliations
-         (owner_agent_id, run_id, step_id, attempt, observation, evidence_digest, observed_at_ms)
-         SELECT owner_agent_id, run_id, step_id, attempt, 'failed', evidence_digest, 40
+         (owner_agent_id, run_id, step_id, attempt, observation, evidence_digest, observed_at_ms, append_profile_version)
+         SELECT owner_agent_id, run_id, step_id, attempt, 'failed', evidence_digest, 40, 1
          FROM taskflow_effect_dispatch_observations",
     )
     .execute(&pool)
@@ -324,10 +328,17 @@ async fn taskflow_provider_receipt_migration_preserves_legacy_recovery_material(
         let pool = database(&started.store).await;
         let mut transaction = pool.begin().await.expect("legacy fixture transaction");
         for statement in [
+            "DROP TRIGGER taskflow_effect_dispatch_attempts_require_append_profile",
+            "DROP TRIGGER taskflow_effect_provider_bindings_require_append_profile",
+            "DROP TRIGGER taskflow_effect_dispatch_observations_require_append_profile",
+            "DROP TRIGGER taskflow_effect_dispatch_reconciliations_require_append_profile",
+            "ALTER TABLE taskflow_effect_dispatch_attempts DROP COLUMN append_profile_version",
+            "ALTER TABLE taskflow_effect_dispatch_observations DROP COLUMN append_profile_version",
+            "ALTER TABLE taskflow_effect_dispatch_reconciliations DROP COLUMN append_profile_version",
             "DROP TABLE taskflow_effect_provider_bindings",
             "ALTER TABLE taskflow_effect_dispatch_observations DROP COLUMN provider_receipt_json",
             "ALTER TABLE taskflow_effect_dispatch_reconciliations DROP COLUMN provider_receipt_json",
-            "DELETE FROM _sqlx_migrations WHERE version=21",
+            "DELETE FROM _sqlx_migrations WHERE version>=21",
             "DROP TRIGGER automation_meta_no_update",
             "UPDATE automation_meta SET schema_version=20 WHERE singleton=1",
             "CREATE TRIGGER automation_meta_no_update BEFORE UPDATE ON automation_meta
@@ -358,7 +369,7 @@ async fn taskflow_provider_receipt_migration_preserves_legacy_recovery_material(
         pool.close().await;
         started.store = AutomationStore::open(&fixture.layout)
             .await
-            .expect("actual v20 to v21 migration");
+            .expect("actual v20 to latest migration");
         let after = started
             .store
             .pending_authorized_taskflow_effects(8)
@@ -381,9 +392,10 @@ async fn taskflow_provider_receipt_migration_preserves_legacy_recovery_material(
             let AuthorizedProviderEffectLookup::Observed(receipt) = lookup else {
                 panic!("exact legacy key must remain queryable");
             };
-            recover(&started, receipt)
-                .await
-                .expect("bind recovered legacy ACK");
+            assert!(
+                recover(&started, receipt).await.is_err(),
+                "exact key and wire bytes cannot reconstruct a lost original operation"
+            );
         } else {
             assert!(matches!(lookup, AuthorizedProviderEffectLookup::Unresolved));
         }
@@ -410,8 +422,8 @@ async fn taskflow_provider_receipt_storage_rejects_oversized_binding_without_par
     let oversized = "x".repeat(1025);
     let result = sqlx::query(
         "INSERT INTO taskflow_effect_provider_bindings
-         (owner_agent_id, run_id, step_id, attempt, receipt_json, receipt_digest, observed_at_ms)
-         SELECT owner_agent_id, run_id, step_id, attempt, ?, ?, 40
+         (owner_agent_id, run_id, step_id, attempt, receipt_json, receipt_digest, observed_at_ms, append_profile_version)
+         SELECT owner_agent_id, run_id, step_id, attempt, ?, ?, 40, 1
          FROM taskflow_effect_dispatch_attempts",
     )
     .bind(oversized)

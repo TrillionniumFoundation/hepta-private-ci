@@ -92,6 +92,9 @@ class FinalUsePqRunnerTests(unittest.TestCase):
             (pq.BRANCH + "-different", "owner/repository", "pull_request"),
             (pq.BRANCH, "fork/repository", "pull_request"),
             (pq.BRANCH, "owner/repository", "pull_request_target"),
+            (pq.CONTINUATION_BRANCH + "-different", "owner/repository", "pull_request"),
+            (pq.CONTINUATION_BRANCH, "fork/repository", "pull_request"),
+            (pq.CONTINUATION_BRANCH, "owner/repository", "pull_request_target"),
         ):
             event["pull_request"]["head"].update(
                 ref=branch, repo={"full_name": repository}
@@ -122,6 +125,30 @@ class FinalUsePqRunnerTests(unittest.TestCase):
                 self.assertRaises(ValueError),
             ):
                 pq.selection(phase, source, workflow)
+
+    def test_provider_recovery_continuation_keeps_the_original_pq_observation(self):
+        event = {
+            "pull_request": {
+                "head": {
+                    "sha": self.source,
+                    "ref": "fix/hepta-provider-operation-binding-20261030",
+                    "repo": {"full_name": "owner/repository"},
+                }
+            }
+        }
+        event_path = self.base / "continuation-event.json"
+        event_path.write_text(json.dumps(event))
+        with mock.patch.dict(
+            os.environ,
+            {
+                "GITHUB_EVENT_PATH": str(event_path),
+                "GITHUB_EVENT_NAME": "pull_request",
+                "GITHUB_REPOSITORY": "owner/repository",
+            },
+        ):
+            source = pq.pr_source()
+            self.assertEqual(source, self.source)
+            pq.selection("native", source, self.source)
 
     def test_actual_artifact_selection_ignores_unrelated_compiler_records(self):
         unrelated = copy.deepcopy(self.artifact)
@@ -288,7 +315,7 @@ class FinalUsePqRunnerTests(unittest.TestCase):
         ):
             self.assertEqual(pq.native(self.root, output, self.record_path), 0)
         calls = run.call_args_list
-        self.assertEqual(len(calls), 8)
+        self.assertEqual(len(calls), 9)
         for call, selector in zip(calls[2:], pq.HOST_CASES, strict=True):
             self.assertEqual(call.kwargs["minimum_tests"], 1)
             command = call.args[1]
@@ -308,14 +335,14 @@ class FinalUsePqRunnerTests(unittest.TestCase):
         with (
             mock.patch.object(pq, "build_binding", return_value=binding),
             mock.patch.object(
-                pq.owner, "run", side_effect=[0, 0, 1, 0, 0, 0, 0, 0]
+                pq.owner, "run", side_effect=[0, 0, 1, 0, 0, 0, 0, 0, 0]
             ) as run,
             mock.patch.dict(
                 os.environ, {"CARGO_TARGET_DIR": str(self.target)}, clear=True
             ),
         ):
             self.assertEqual(pq.native(self.root, output, self.record_path), 1)
-        self.assertEqual(run.call_count, 8)
+        self.assertEqual(run.call_count, 9)
         self.assertEqual(
             json.loads((output / "result.json").read_text())["status"], "failed"
         )

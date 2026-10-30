@@ -7,6 +7,7 @@ use codex_hepta_contracts::encode_ml_dsa65_final_use_signature_v2;
 use ml_dsa::Keypair;
 use ml_dsa::MlDsa65;
 use ml_dsa::SigningKey;
+use std::os::unix::fs::FileTypeExt;
 use std::os::unix::fs::PermissionsExt;
 use std::sync::Mutex;
 use std::time::SystemTime;
@@ -336,5 +337,89 @@ fn v2_configuration_rejects_unknown_schema_and_classical_key_before_opening_an_o
             return Err("cross-profile configuration opened an owner".into());
         }
     }
+    Ok(())
+}
+
+#[test]
+fn v2_configuration_refuses_fifo_without_waiting_for_a_writer() -> Result<()> {
+    const CHILD_PATH: &str = "HEPTA_TEST_V2_FINAL_USE_FIFO_PATH";
+    const TEST_NAME: &str = "final_use_authorizer::ml_dsa65_v2::tests::v2_configuration_refuses_fifo_without_waiting_for_a_writer";
+    const REFUSED: &str = "V2 final-use FIFO configuration refused before owner open";
+
+    if let Some(path) = std::env::var_os(CHILD_PATH) {
+        let head = FinalUseRevocations {
+            authority_epoch: 9,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        };
+        let frontier = Arc::new(Frontier(Mutex::new(FinalUseFrontier::for_initial_head(
+            &head,
+        )?)));
+        return match UnixFinalUseAuthorizer::open_ml_dsa65_v2(
+            &PathBuf::from(path),
+            Arc::new(SystemAuthorityClock),
+            frontier,
+        ) {
+            Err(error)
+                if error.to_string()
+                    == "final-use authority config must be a protected root/owner regular file" =>
+            {
+                println!("{REFUSED}");
+                Ok(())
+            }
+            Err(error) => Err(format!("unexpected FIFO configuration refusal: {error}").into()),
+            Ok(_) => Err("FIFO configuration opened a final-use owner".into()),
+        };
+    }
+
+    let root = tempfile::tempdir()?;
+    let fifo = root.path().join("pq-config.fifo");
+    let created = std::process::Command::new("mkfifo")
+        .args(["-m", "600"])
+        .arg(&fifo)
+        .status()?;
+    assert!(created.success());
+    assert!(std::fs::symlink_metadata(&fifo)?.file_type().is_fifo());
+
+    // Isolate the actual constructor so the blocking-open regression can be
+    // terminated and reaped without leaving a blocked thread in the test host.
+    let mut child = std::process::Command::new(std::env::current_exe()?)
+        .args(["--exact", TEST_NAME, "--nocapture"])
+        .env(CHILD_PATH, &fifo)
+        .stdin(std::process::Stdio::null())
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
+        .spawn()?;
+    let deadline = std::time::Instant::now() + Duration::from_secs(5);
+    let mut completed = false;
+    let poll_error = loop {
+        match child.try_wait() {
+            Ok(Some(_)) => {
+                completed = true;
+                break None;
+            }
+            Ok(None) if std::time::Instant::now() < deadline => {
+                std::thread::sleep(Duration::from_millis(10));
+            }
+            Ok(None) => break None,
+            Err(error) => break Some(error.to_string()),
+        }
+    };
+    let kill_error = if completed {
+        None
+    } else {
+        child.kill().err().map(|error| error.to_string())
+    };
+    let output = child.wait_with_output()?;
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        completed
+            && output.status.success()
+            && stdout.contains(REFUSED)
+            && stdout.contains("1 passed; 0 failed"),
+        "FIFO configuration must be refused without a writer; completed={completed}, poll_error={poll_error:?}, kill_error={kill_error:?}, status={}; stdout={stdout}; stderr={stderr}",
+        output.status,
+    );
     Ok(())
 }

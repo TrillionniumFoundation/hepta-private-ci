@@ -83,17 +83,17 @@ class ExecutionSourceTests(unittest.TestCase):
         ):
             self.enterContext(patch.object(execution, name, value))
         self.repin(self.manifest)
-        # Imports use the workflow's selected profile. Keep both selections
+        # Imports use the workflow's selected profile. Keep every selection
         # inside this temporary source fixture without clearing the environment.
-        v2_path = self.profiles / execution.MANIFEST_NAME_V2
-        v2_path.write_text(
-            json.dumps(dict(self.manifest, profile=execution.PROFILE_V2))
-        )
-        for name, value in (
-            ("CHAIN_COMMIT_V2", head),
-            ("MANIFEST_SHA256_V2", execution.digest(v2_path.read_bytes())),
-        ):
-            self.enterContext(patch.object(execution, name, value))
+        for version in ("V2", "V3"):
+            path = self.profiles / getattr(execution, f"MANIFEST_NAME_{version}")
+            profile = getattr(execution, f"PROFILE_{version}")
+            path.write_text(json.dumps(dict(self.manifest, profile=profile)))
+            for name, value in (
+                (f"CHAIN_COMMIT_{version}", head),
+                (f"MANIFEST_SHA256_{version}", execution.digest(path.read_bytes())),
+            ):
+                self.enterContext(patch.object(execution, name, value))
 
     def git(self, *args):
         return subprocess.check_output(

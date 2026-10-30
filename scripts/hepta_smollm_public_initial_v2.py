@@ -198,6 +198,7 @@ def main():
         choices=[
             "hepta-integrated-chain-execution-v1",
             "hepta-integrated-chain-execution-v2",
+            "hepta-integrated-chain-execution-v3",
         ],
         help="explicit audited execution source; preserves the historical V2 model profile",
     )
