@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.vendor-compatibility-patch.v1",
+  "source_archive_sha256": "9062e866918dc4c9701c98ac99f7f4fa9e4b3b4edce306e147393bc75458c4fc",
+  "scope": {
+    "reason": "Resolve the Matrix0.19.1 blake3>=1.8.7 requirement against Starlark exact1.8.2 while preserving Starlark runtime implementation.",
+    "production_changes": [
+      "Update normalized and original blake3 requirement to exact1.8.7 with existing default/rayon/std/traits-preview features"
+    ],
+    "tests": [
+      "pagable::heap_ref_id::compatibility_tests::blake3_adapter_preserves_known_digest_and_chunked_writes"
+    ],
+    "independent_vector_source": "https://raw.githubusercontent.com/BLAKE3-team/BLAKE3/1.8.7/test_vectors/test_vectors.json",
+    "independent_vector_sha256": "dcb91ea8accc77e6d6e632af7cdc1a99a9f3ae78cf648da595c7d064db32f624"
+  },
+  "modified_files": {
+    "Cargo.toml": {
+      "upstream": {
+        "sha256": "da0a213bcc2d3e26994aef3a952f5dc6bb044771341ba88de90f42134f8b1901",
+        "bytes": 3401
+      },
+      "patched": {
+        "sha256": "abdd0c39609dcfec0f2d5057587bab53a48dae717ebe5360c85d5e43b030cfd5",
+        "bytes": 3401
+      }
+    },
+    "Cargo.toml.orig": {
+      "upstream": {
+        "sha256": "9537cffa190efd99bf83bb410488d7527997e3e96c95c1bd441648e8637b6b89",
+        "bytes": 2007
+      },
+      "patched": {
+        "sha256": "b2f5e64daa9ebdd7839ee0f9983bc17c693b327ec672309347e200197f78e225",
+        "bytes": 2067
+      }
+    },
+    "src/pagable/heap_ref_id.rs": {
+      "upstream": {
+        "sha256": "49a0188f13ce90f6509db689cb29949a33c2870945c5120e79f16bc517cac858",
+        "bytes": 2911
+      },
+      "patched": {
+        "sha256": "dfc9c1210c3d8a59d16cbbe03db57036a9a962fe3b22186536f8918bc8387551",
+        "bytes": 2997
+      }
+    }
+  },
+  "added_files": {
+    "src/pagable/heap_ref_id_compatibility_tests.rs": {
+      "sha256": "08626a3f5852039c8f899ef55dc535dd69f54b178e11139932a4fb76187dd70f",
+      "bytes": 963
+    }
+  },
+  "removed_files": [],
+  "unchanged_original_file_count": 682,
+  "runtime_tests_executed": false,
+  "status": "restored source; fresh focused Rust execution required"
+}
