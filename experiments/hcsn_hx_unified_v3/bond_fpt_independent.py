@@ -154,13 +154,26 @@ def reflected_passage(x: float, *, drift: float, sigma: float,
     s2=sigma*sigma
     u=sigma*math.sqrt(horizon)
     z=math.hypot(drift,math.sqrt(2*discount)*sigma)
+    # For small discount relative to drift**2/sigma**2, z-|drift|
+    # is a tiny positive difference of nearly equal f64 numbers. Directly
+    # computing (-drift-z) for negative drift (or -drift+z for positive
+    # drift) loses the Laplace exponent and yields a false discrepancy with
+    # the *more accurate* density quadrature. Rationalize that difference:
+    # (z-|drift|)*(z+|drift|)=2*discount*sigma**2.
+    delta=2*discount*s2/(z+abs(drift))
+    if drift < 0:
+        exponent_first=(z-drift)*x/s2
+        exponent_second=-delta*x/s2
+    else:
+        exponent_first=delta*x/s2
+        exponent_second=-(z+drift)*x/s2
     def tail(expo,arg):
         y=expo+float(log_ndtr(arg))
         if y > 709:
             raise ArithmeticError('Normal-tail multiplication overflows')
         return 0. if y < -745 else math.exp(y)
     f=tail(0,(-x-drift*horizon)/u)+tail(-2*drift*x/s2,(-x+drift*horizon)/u)
-    g=tail((-drift+z)*x/s2,(-x-z*horizon)/u)+tail((-drift-z)*x/s2,(-x+z*horizon)/u)
+    g=tail(exponent_first,(-x-z*horizon)/u)+tail(exponent_second,(-x+z*horizon)/u)
     return Passage(f,g,0.)
 
 
