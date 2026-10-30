@@ -68,6 +68,35 @@ class QuantizedBarrierTests(unittest.TestCase):
             count+=1
         self.assertEqual(count,80)
 
+    def test_seeded_1500_guard_decisions(self):
+        # Bounded adversarial probe across fp32 exponent ranges. This does
+        # not make the numerical brackets formally interval-certified.
+        rng=random.Random(98720261030)
+        checked=ambiguous=0
+        for _ in range(1500):
+            b=10**rng.uniform(-20,20)
+            a=b*(1+10**rng.uniform(-8,1.2))
+            drift=rng.uniform(-.8,.8)
+            sigma=10**rng.uniform(-1.8,.1)
+            q=10**rng.uniform(-7,.4)
+            horizon=10**rng.uniform(-3,1.4)
+            order,bracket=guarded_fp32_passage(
+                a,b,drift=drift,sigma=sigma,discount=q,horizon=horizon)
+            if order.status=='AMBIGUOUS':
+                self.assertIsNone(bracket)
+                ambiguous+=1
+                continue
+            self.assertEqual(order.status,'ABOVE')
+            exact=reflected_passage(math.log(a/b),drift=drift,
+                                    sigma=sigma,discount=q,horizon=horizon)
+            self.assertLessEqual(bracket.lower_f-exact.probability,3e-11)
+            self.assertLessEqual(exact.probability-bracket.upper_f,3e-11)
+            self.assertLessEqual(bracket.lower_g-exact.discounted,3e-11)
+            self.assertLessEqual(exact.discounted-bracket.upper_g,3e-11)
+            checked+=1
+        self.assertGreater(checked,1000)
+        self.assertGreater(ambiguous,100)
+
     def test_invalid_encodings_refused(self):
         for val in (0.,-1.,float('nan'),float('inf'),1e-80,1e100):
             with self.subTest(value=val),self.assertRaises(ValueError):
