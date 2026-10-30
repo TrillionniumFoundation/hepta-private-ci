@@ -192,7 +192,7 @@ mod tests {
         }
     }
 
-    fn ledger() -> LeaseLedger {
+    fn ledger() -> Result<LeaseLedger, LeaseLedgerError> {
         let mut ledger = LeaseLedger::new();
         ledger
             .admit_host(HostObservation {
@@ -207,12 +207,12 @@ mod tests {
                     accelerator_millis: 1_000,
                 },
             })
-            .expect("fixture host observation is valid for the fleet ledger");
-        ledger
+            ?;
+        Ok(ledger)
     }
 
     #[test]
-    fn allocation_issue_consumes_exact_live_kernel_authority_lease() {
+    fn allocation_issue_consumes_exact_live_kernel_authority_lease() -> Result<(), LeaseLedgerError> {
         let directory = tempfile::tempdir().unwrap();
         std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
         let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
@@ -239,7 +239,7 @@ mod tests {
             )
             .unwrap();
         let port = FleetAuthorityPort::new(registry.verifier());
-        let mut ledger = ledger();
+        let mut ledger = ledger()?;
         let (receipt, witness) = port
             .issue_with_witness(&mut ledger, "fleet-issue-one", 1, 2_000, grant.clone())
             .unwrap();
@@ -262,6 +262,7 @@ mod tests {
                 .unwrap_err(),
             FleetAuthorityError::Authority(AuthorityLeaseError::Revoked)
         );
+        Ok(())
     }
 
     #[test]
