@@ -104,6 +104,10 @@ python third/encoder/runtime.py
 
 主要文件为 `protocol.json`、`freeze.json`、两个 `*_manifest.json`、
 两个 `*_results.json`、`analysis.json`、`audit.json`、`runtime.json`。
+两份精确特征缓存也已分为 43 块交付（合计 32937900 字节），无需重新下载
+编码器即可重放现有 Head。运行 `python third/encoder/restore_features.py`
+可按完整 SHA256 验证后原子恢复缓存；独立临时目录的实际恢复检查已通过。
+最终发布回执为 `feature_delivery_root.json`，准备阶段回执另行归档。
 `checkpoints/` 保留全部 100 个选中权重、对应 validation/test/corrupted logits，
 以及两份全局线性权重。六个候选 checkpoint 的选择历史保存在每条 run；
 本脚本只持久化最终选中的参数，不声称保存未选中的参数快照。
