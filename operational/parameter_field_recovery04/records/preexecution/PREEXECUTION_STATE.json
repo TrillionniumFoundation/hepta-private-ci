@@ -1,0 +1,368 @@
+{
+  "at_utc": "2026-10-30T01:41:16.280857+00:00",
+  "checks": {
+    "build_initial": {
+      "actual_result": {
+        "pipeline_config": {
+          "bytes": 5259,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/registrations/initial/PIPELINE_CONFIG.json",
+          "sha256": "c1a541cd8fca9e43c710cfd5ccf1cb76793a28712d66eed65a238f158de0e57e"
+        },
+        "registration_config": {
+          "bytes": 5735,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/registrations/initial/REGISTRATION_CONFIG.json",
+          "sha256": "d8d0c11239f30a375265200ad3949dcb8248eb6243e262a59d2363677649a6dd"
+        },
+        "status": "INITIAL_REGISTRATION_CREATED_ONLY",
+        "workers_started": 0
+      },
+      "measurement": {
+        "at_utc": "2026-10-30T01:39:13.145872+00:00",
+        "child": {
+          "exit_code": 0,
+          "identity": {
+            "pid": 126042,
+            "process_group": 126042,
+            "session": 126042,
+            "start_ticks": "356880",
+            "state": "R"
+          },
+          "peak_rss_bytes": 15466496,
+          "scope": "this child and descendants it waited for; includes nested phase/driver costs",
+          "system_cpu_seconds": 0.212307,
+          "total_cpu_seconds": 1.094059,
+          "unwaited_orphan_costs_unknown_if_failure": false,
+          "user_cpu_seconds": 0.881752,
+          "wait_status": 0,
+          "wall_seconds": 2.536256434999814
+        },
+        "command_success": true,
+        "complete": true,
+        "intent": {
+          "bytes": 547,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/root_steps/build_initial/INTENT.json",
+          "sha256": "2024c5c8651531a1a5d675c0bde2323ec9af0c572fc1c225a5f1e98cb6813803"
+        },
+        "measuring_parent_cpu_seconds": 0.0060716130000000035,
+        "schema": "hepta.execution04.root-engineering-wait4.1",
+        "scope": "Local helper and waited descendants; excludes remote service compute and other root commands",
+        "service_outcome_requires_reading_actual_tool_result": true,
+        "stderr": {
+          "bytes": 0,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/root_steps/build_initial/helper.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 530,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/root_steps/build_initial/helper.stdout.log",
+          "sha256": "d68848d3fabb285bce1324f1c358eb9022a9574999d5a34ade3202beb8d0a4c3"
+        },
+        "unknown_write_outcome_must_be_reconciled_before_retry": true,
+        "wall_seconds": 2.546275256000172
+      }
+    },
+    "original_static_validators": {
+      "actual_result": {
+        "jobs": [
+          "A-17",
+          "A-29",
+          "A-43",
+          "C"
+        ],
+        "raw_still_empty": true,
+        "source_files": 132,
+        "status": "ORIGINAL_VALIDATORS_PASSED",
+        "torch_imported": false,
+        "workers_started": 0
+      },
+      "measurement": {
+        "at_utc": "2026-10-30T01:40:36.326262+00:00",
+        "child": {
+          "exit_code": 0,
+          "identity": {
+            "pid": 127688,
+            "process_group": 127688,
+            "session": 127688,
+            "start_ticks": "365359",
+            "state": "R"
+          },
+          "peak_rss_bytes": 15466496,
+          "scope": "this child and descendants it waited for; includes nested phase/driver costs",
+          "system_cpu_seconds": 0.055055,
+          "total_cpu_seconds": 0.34038,
+          "unwaited_orphan_costs_unknown_if_failure": false,
+          "user_cpu_seconds": 0.285325,
+          "wait_status": 0,
+          "wall_seconds": 0.9082921119997991
+        },
+        "command_success": true,
+        "complete": true,
+        "intent": {
+          "bytes": 1950,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/root_steps/original_static_validators/INTENT.json",
+          "sha256": "03b8920944d356490916b74ea6b102f3169ac79ea6c8402c2a80ef79c52a87f9"
+        },
+        "measuring_parent_cpu_seconds": 0.0037804370000000045,
+        "schema": "hepta.execution04.root-engineering-wait4.1",
+        "scope": "Local helper and waited descendants; excludes remote service compute and other root commands",
+        "service_outcome_requires_reading_actual_tool_result": true,
+        "stderr": {
+          "bytes": 0,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/root_steps/original_static_validators/helper.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 173,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/root_steps/original_static_validators/helper.stdout.log",
+          "sha256": "b0dcc98cd6f4b0852008cc0cec9cc2301b90d45b88cf199718ac195dc214741b"
+        },
+        "unknown_write_outcome_must_be_reconciled_before_retry": true,
+        "wall_seconds": 0.9296853850000844
+      }
+    },
+    "prepare_amendment": {
+      "actual_result": {
+        "amendment": {
+          "bytes": 16497,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_git/operational/parameter_field_recovery04/registrations/OPS_EXECUTION04_DURABLE.json",
+          "sha256": "30a8e41c8fa8692cfb6a79f1dfcf3a10c5f2cda1c7cdd4259e874d156c22ca7e"
+        },
+        "operational_code_commit": "37b8158fc333f1eac49b7936c8d291546d99e5be",
+        "status": "AMENDMENT_PREPARED_REQUIRES_ITS_OWN_COMMIT",
+        "workers_started": 0
+      },
+      "measurement": {
+        "at_utc": "2026-10-30T01:38:30.288404+00:00",
+        "child": {
+          "exit_code": 0,
+          "identity": {
+            "pid": 124882,
+            "process_group": 124882,
+            "session": 124882,
+            "start_ticks": "352676",
+            "state": "R"
+          },
+          "peak_rss_bytes": 15466496,
+          "scope": "this child and descendants it waited for; includes nested phase/driver costs",
+          "system_cpu_seconds": 0.14127399999999998,
+          "total_cpu_seconds": 0.6278079999999999,
+          "unwaited_orphan_costs_unknown_if_failure": false,
+          "user_cpu_seconds": 0.48653399999999997,
+          "wait_status": 0,
+          "wall_seconds": 1.7158429780001825
+        },
+        "command_success": true,
+        "complete": true,
+        "intent": {
+          "bytes": 559,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/root_steps/prepare_amendment/INTENT.json",
+          "sha256": "c0814fac2d9b6b3756b29ccfeb590edb169926e0cb849958504337d978817d02"
+        },
+        "measuring_parent_cpu_seconds": 0.004246306000000005,
+        "schema": "hepta.execution04.root-engineering-wait4.1",
+        "scope": "Local helper and waited descendants; excludes remote service compute and other root commands",
+        "service_outcome_requires_reading_actual_tool_result": true,
+        "stderr": {
+          "bytes": 0,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/root_steps/prepare_amendment/helper.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 398,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/root_steps/prepare_amendment/helper.stdout.log",
+          "sha256": "2d8481a8268d3e4fae17d448f3b74de61f3d8284b5a829c3a9f3683d1b3de19b"
+        },
+        "unknown_write_outcome_must_be_reconciled_before_retry": true,
+        "wall_seconds": 1.721366393000153
+      }
+    },
+    "static_history": {
+      "actual_result": {
+        "history_mode": "preregistered_public_summary_projection",
+        "native_episode_lower_bounds": {
+          "episode02": 576,
+          "episode03": 78336
+        },
+        "original_preflight_bytes_missing": true,
+        "status": "HISTORY_METADATA_VERIFIED_ONLY",
+        "workers_started": 0
+      },
+      "measurement": {
+        "at_utc": "2026-10-30T01:40:03.015234+00:00",
+        "child": {
+          "exit_code": 0,
+          "identity": {
+            "pid": 127248,
+            "process_group": 127248,
+            "session": 127248,
+            "start_ticks": "362089",
+            "state": "R"
+          },
+          "peak_rss_bytes": 15466496,
+          "scope": "this child and descendants it waited for; includes nested phase/driver costs",
+          "system_cpu_seconds": 0.015674,
+          "total_cpu_seconds": 0.09401699999999999,
+          "unwaited_orphan_costs_unknown_if_failure": false,
+          "user_cpu_seconds": 0.078343,
+          "wait_status": 0,
+          "wall_seconds": 0.31344280099983735
+        },
+        "command_success": true,
+        "complete": true,
+        "intent": {
+          "bytes": 776,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/root_steps/static_history/INTENT.json",
+          "sha256": "75be2741a27bac4bf1672f73197c3d8679c413fb37ea13e9ee46eece309449c7"
+        },
+        "measuring_parent_cpu_seconds": 0.005454051999999987,
+        "schema": "hepta.execution04.root-engineering-wait4.1",
+        "scope": "Local helper and waited descendants; excludes remote service compute and other root commands",
+        "service_outcome_requires_reading_actual_tool_result": true,
+        "stderr": {
+          "bytes": 0,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/root_steps/static_history/helper.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 239,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/root_steps/static_history/helper.stdout.log",
+          "sha256": "efbc636ab6501c4843b77579029feff43bb66d3128cbc46eea4bfe18f08f6cc9"
+        },
+        "unknown_write_outcome_must_be_reconciled_before_retry": true,
+        "wall_seconds": 0.3252832580001268
+      }
+    },
+    "static_supervisor": {
+      "actual_result": {
+        "config": {
+          "bytes": 5259,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/registrations/initial/PIPELINE_CONFIG.json",
+          "sha256": "c1a541cd8fca9e43c710cfd5ccf1cb76793a28712d66eed65a238f158de0e57e"
+        },
+        "status": "CONFIG_AND_COMMITTED_ADAPTER_BYTES_VERIFIED_ONLY",
+        "uploads_started": 0,
+        "workers_started": 0
+      },
+      "measurement": {
+        "at_utc": "2026-10-30T01:39:58.677995+00:00",
+        "child": {
+          "exit_code": 0,
+          "identity": {
+            "pid": 127170,
+            "process_group": 127170,
+            "session": 127170,
+            "start_ticks": "361655",
+            "state": "R"
+          },
+          "peak_rss_bytes": 15466496,
+          "scope": "this child and descendants it waited for; includes nested phase/driver costs",
+          "system_cpu_seconds": 0.018005,
+          "total_cpu_seconds": 0.11440700000000001,
+          "unwaited_orphan_costs_unknown_if_failure": false,
+          "user_cpu_seconds": 0.096402,
+          "wait_status": 0,
+          "wall_seconds": 0.31353818099978525
+        },
+        "command_success": true,
+        "complete": true,
+        "intent": {
+          "bytes": 711,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/root_steps/static_supervisor/INTENT.json",
+          "sha256": "0d05dfe5f61f83323a81bd1ddbe8f9e1edbfc7f9840d7bc8ffb0448e07be3858"
+        },
+        "measuring_parent_cpu_seconds": 0.004950304000000003,
+        "schema": "hepta.execution04.root-engineering-wait4.1",
+        "scope": "Local helper and waited descendants; excludes remote service compute and other root commands",
+        "service_outcome_requires_reading_actual_tool_result": true,
+        "stderr": {
+          "bytes": 0,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/root_steps/static_supervisor/helper.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 324,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/root_steps/static_supervisor/helper.stdout.log",
+          "sha256": "abb5fc18e46193807a0bbdaa939ec65e90c1898b786988c55ebf5b655159a4cb"
+        },
+        "unknown_write_outcome_must_be_reconciled_before_retry": true,
+        "wall_seconds": 0.3244192910001402
+      }
+    }
+  },
+  "copies": [
+    {
+      "bytes": 21478,
+      "repository_path": "operational/parameter_field_recovery04/records/preexecution/A_SOURCE_FREEZE.json",
+      "sha256": "6cad1806689a4f5b6e7527139a5755b54cef16e921a093bb714cfc9c3bdec182",
+      "source_path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/registrations/initial/A_SOURCE_FREEZE.json"
+    },
+    {
+      "bytes": 20576,
+      "repository_path": "operational/parameter_field_recovery04/records/preexecution/CWD_POLICY.json",
+      "sha256": "1df758dfe17a32255bd0e43ccf689be80d34b570c93e39dfb637d7709545de8f",
+      "source_path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/registrations/initial/CWD_POLICY.json"
+    },
+    {
+      "bytes": 21478,
+      "repository_path": "operational/parameter_field_recovery04/records/preexecution/C_SOURCE_FREEZE.json",
+      "sha256": "cbfa47cae2941e0750c90ea191f5bd76a044ca20ad2f4f3a0b1e5b9c6bc99277",
+      "source_path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/registrations/initial/C_SOURCE_FREEZE.json"
+    },
+    {
+      "bytes": 546,
+      "repository_path": "operational/parameter_field_recovery04/records/preexecution/INITIALIZATION.json",
+      "sha256": "902f982eff1de4a57fa9e1503c19821ddc4623778b931e6730729c879e676da0",
+      "source_path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/registrations/initial/INITIALIZATION.json"
+    },
+    {
+      "bytes": 21000,
+      "repository_path": "operational/parameter_field_recovery04/records/preexecution/OPS_CORE_SOURCE_FREEZE.json",
+      "sha256": "b7921e6395b7ccab31ea281e96205f874c4c222153793c40f76482166eb1c9c6",
+      "source_path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/registrations/initial/OPS_CORE_SOURCE_FREEZE.json"
+    },
+    {
+      "bytes": 21510,
+      "repository_path": "operational/parameter_field_recovery04/records/preexecution/OPS_ENVELOPE_SOURCE_FREEZE.json",
+      "sha256": "4c8da8392d3dd3e35ade2de843bcadc105b9e94e4ae4018b07f021cd56477691",
+      "source_path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/registrations/initial/OPS_ENVELOPE_SOURCE_FREEZE.json"
+    },
+    {
+      "bytes": 5259,
+      "repository_path": "operational/parameter_field_recovery04/records/preexecution/PIPELINE_CONFIG.json",
+      "sha256": "c1a541cd8fca9e43c710cfd5ccf1cb76793a28712d66eed65a238f158de0e57e",
+      "source_path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/registrations/initial/PIPELINE_CONFIG.json"
+    },
+    {
+      "bytes": 4994,
+      "repository_path": "operational/parameter_field_recovery04/records/preexecution/QUEUE_INITIAL.json",
+      "sha256": "703497d3289e103a6f16eeb9d7c90f831106c79051bf3233b5e919a204fb855a",
+      "source_path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/registrations/initial/QUEUE_INITIAL.json"
+    },
+    {
+      "bytes": 5735,
+      "repository_path": "operational/parameter_field_recovery04/records/preexecution/REGISTRATION_CONFIG.json",
+      "sha256": "d8d0c11239f30a375265200ad3949dcb8248eb6243e262a59d2363677649a6dd",
+      "source_path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/registrations/initial/REGISTRATION_CONFIG.json"
+    }
+  ],
+  "current_frozen_source_files": 132,
+  "endpoints_opened_in_new_episode": false,
+  "execution_episode": "execution04_durable_20261030",
+  "historical_cost_known_lower_microsteps": 182096,
+  "historical_total_upper_bound_unknown": true,
+  "operational_code_commit": "37b8158fc333f1eac49b7936c8d291546d99e5be",
+  "original_source_files_preserved": 98,
+  "raw_empty": true,
+  "remaining_execution_gates": [
+    "real import closure in registered empty cwd",
+    "original stable memory/disk admission",
+    "fourteen original jobs with durable stage ACKs",
+    "original aggregate and literal finalization",
+    "preregistered supplement and terminal durable closure"
+  ],
+  "requires_new_user_authorization": false,
+  "schema": "hepta.fullstudy.preexecution-state.4",
+  "scientific_source_commit": "bf59ac45860884d770dfd437d8a447068c5ef9a9",
+  "scientific_workers_started": 0,
+  "status": "REGISTERED_PENDING_REAL_IMPORT_AND_RESOURCE_ADMISSION"
+}

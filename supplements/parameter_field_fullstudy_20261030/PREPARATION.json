@@ -1,0 +1,33 @@
+{
+  "at_utc": "2026-10-30T01:19:09.360670+00:00",
+  "execution_episode": "execution04_durable_20261030",
+  "implementation": {
+    "bytes": 45470,
+    "path": "supplements/parameter_field_fullstudy_20261030/postseal_supplement.py",
+    "sha256": "1b705285b99fc7185c20155fa85f3a5d370b473196eaf59c8ae1d6bb2941a633"
+  },
+  "models_instantiated": 0,
+  "new_endpoint_calls": 0,
+  "new_implementation_not_recovered_old_bytes": true,
+  "original_phase_source_union_count": 86,
+  "original_scientific_files_modified": false,
+  "plan": {
+    "bytes": 9337,
+    "path": "supplements/parameter_field_fullstudy_20261030/PRE_ENDPOINT_PLAN.json",
+    "sha256": "cfd35051e481c5c1d070fec88f933e191b6368655325857079e3505fd195f8b1"
+  },
+  "public_publication_claimed": false,
+  "schema": "hepta.fullstudy.postseal-preparation.2",
+  "scientific_payloads_opened": 0,
+  "scientific_runner_calls": 0,
+  "source_hash_validation_only": true,
+  "source_verification_wall_seconds": 0.03968090399985158,
+  "synthetic_test_observation": {
+    "command": "env PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python -B supplements/parameter_field_fullstudy_20261030/test_semantics.py -v",
+    "fixture": "Invented metadata and vectors only; source inventory mocked in synthetic gate; actual source hashes independently checked here",
+    "observed_pass_count": 8,
+    "unittest_reported_seconds": 0.103
+  },
+  "torch_imported": false,
+  "verified_source_union_with_diagnostic_modules": 91
+}

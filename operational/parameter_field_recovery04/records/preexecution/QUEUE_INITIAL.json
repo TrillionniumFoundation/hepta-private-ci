@@ -1,0 +1,136 @@
+{
+  "attempt_id": "attempt02",
+  "execution_episode": "execution04_durable_20261030",
+  "finalize": false,
+  "jobs": [
+    {
+      "argv": [
+        "-B",
+        "-m",
+        "experiments.parameter_field_fullstudy_20261029.run_v2",
+        "--phase",
+        "A",
+        "--seed",
+        "17",
+        "--freeze",
+        "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/registrations/initial/A_SOURCE_FREEZE.json",
+        "--assets",
+        "/workspace/scratch/178ced6a501f/assets_original",
+        "--root",
+        "/workspace/scratch/178ced6a501f/fullstudy_execution04_durable_raw",
+        "--amendment",
+        "/workspace/scratch/178ced6a501f/fullstudy_git/operational/parameter_field_recovery04/registrations/OPS_EXECUTION04_DURABLE.json",
+        "--amendment-sha256",
+        "30a8e41c8fa8692cfb6a79f1dfcf3a10c5f2cda1c7cdd4259e874d156c22ca7e",
+        "--protocol",
+        "/workspace/scratch/178ced6a501f/fullstudy_git/experiments/parameter_field_fullstudy_20261029/PROTOCOL.json",
+        "--execute"
+      ],
+      "completion": "operations/A-seed-17.COMPLETE.json",
+      "freeze_sha256": "6cad1806689a4f5b6e7527139a5755b54cef16e921a093bb714cfc9c3bdec182",
+      "group": "training",
+      "id": "A-17",
+      "phase": "A",
+      "requires": [],
+      "seed": 17
+    },
+    {
+      "argv": [
+        "-B",
+        "-m",
+        "experiments.parameter_field_fullstudy_20261029.run_v2",
+        "--phase",
+        "A",
+        "--seed",
+        "29",
+        "--freeze",
+        "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/registrations/initial/A_SOURCE_FREEZE.json",
+        "--assets",
+        "/workspace/scratch/178ced6a501f/assets_original",
+        "--root",
+        "/workspace/scratch/178ced6a501f/fullstudy_execution04_durable_raw",
+        "--amendment",
+        "/workspace/scratch/178ced6a501f/fullstudy_git/operational/parameter_field_recovery04/registrations/OPS_EXECUTION04_DURABLE.json",
+        "--amendment-sha256",
+        "30a8e41c8fa8692cfb6a79f1dfcf3a10c5f2cda1c7cdd4259e874d156c22ca7e",
+        "--protocol",
+        "/workspace/scratch/178ced6a501f/fullstudy_git/experiments/parameter_field_fullstudy_20261029/PROTOCOL.json",
+        "--execute"
+      ],
+      "completion": "operations/A-seed-29.COMPLETE.json",
+      "freeze_sha256": "6cad1806689a4f5b6e7527139a5755b54cef16e921a093bb714cfc9c3bdec182",
+      "group": "training",
+      "id": "A-29",
+      "phase": "A",
+      "requires": [
+        "A-17"
+      ],
+      "seed": 29
+    },
+    {
+      "argv": [
+        "-B",
+        "-m",
+        "experiments.parameter_field_fullstudy_20261029.run_v2",
+        "--phase",
+        "A",
+        "--seed",
+        "43",
+        "--freeze",
+        "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/registrations/initial/A_SOURCE_FREEZE.json",
+        "--assets",
+        "/workspace/scratch/178ced6a501f/assets_original",
+        "--root",
+        "/workspace/scratch/178ced6a501f/fullstudy_execution04_durable_raw",
+        "--amendment",
+        "/workspace/scratch/178ced6a501f/fullstudy_git/operational/parameter_field_recovery04/registrations/OPS_EXECUTION04_DURABLE.json",
+        "--amendment-sha256",
+        "30a8e41c8fa8692cfb6a79f1dfcf3a10c5f2cda1c7cdd4259e874d156c22ca7e",
+        "--protocol",
+        "/workspace/scratch/178ced6a501f/fullstudy_git/experiments/parameter_field_fullstudy_20261029/PROTOCOL.json",
+        "--execute"
+      ],
+      "completion": "operations/A-seed-43.COMPLETE.json",
+      "freeze_sha256": "6cad1806689a4f5b6e7527139a5755b54cef16e921a093bb714cfc9c3bdec182",
+      "group": "training",
+      "id": "A-43",
+      "phase": "A",
+      "requires": [
+        "A-29"
+      ],
+      "seed": 43
+    },
+    {
+      "argv": [
+        "-B",
+        "-m",
+        "experiments.parameter_field_fullstudy_20261029.architecture_run_v2",
+        "--freeze",
+        "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/registrations/initial/C_SOURCE_FREEZE.json",
+        "--reference-root",
+        "/workspace/scratch/178ced6a501f/fullstudy_git",
+        "--assets",
+        "/workspace/scratch/178ced6a501f/assets_original",
+        "--root",
+        "/workspace/scratch/178ced6a501f/fullstudy_execution04_durable_raw",
+        "--amendment",
+        "/workspace/scratch/178ced6a501f/fullstudy_git/operational/parameter_field_recovery04/registrations/OPS_EXECUTION04_DURABLE.json",
+        "--amendment-sha256",
+        "30a8e41c8fa8692cfb6a79f1dfcf3a10c5f2cda1c7cdd4259e874d156c22ca7e",
+        "--protocol",
+        "/workspace/scratch/178ced6a501f/fullstudy_git/experiments/parameter_field_fullstudy_20261029/PROTOCOL.json",
+        "--execute"
+      ],
+      "completion": "operations/C-all.COMPLETE.json",
+      "freeze_sha256": "cbfa47cae2941e0750c90ea191f5bd76a044ca20ad2f4f3a0b1e5b9c6bc99277",
+      "group": "training",
+      "id": "C",
+      "phase": "C",
+      "requires": [
+        "A-43"
+      ],
+      "seed": null
+    }
+  ],
+  "schema": "hepta.fullstudy.queue.2"
+}

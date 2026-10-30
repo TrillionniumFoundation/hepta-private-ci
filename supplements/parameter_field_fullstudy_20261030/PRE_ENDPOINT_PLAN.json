@@ -1,0 +1,238 @@
+{
+  "analyses": {
+    "A_equal_first_dynamics": {
+      "actions_per_parent": 4,
+      "any_inconsistency_is_integrity_issue": true,
+      "arithmetic_checks": [
+        "branch.value equals action_values[action]",
+        "advantages equal action_values minus baseline value",
+        "stored float64 values_reward mean equals action value"
+      ],
+      "container_hash_is_input_identity_not_output_equivalence": true,
+      "equal_fields": [
+        "first.components",
+        "terminal.dynamics",
+        "action_values",
+        "stored output_sha256 vectors",
+        "source_ids and conditions row identities"
+      ],
+      "group_within_parent_by": "branches[action].first.dynamics",
+      "parents_per_seed": 48,
+      "seeds": [
+        17,
+        29,
+        43
+      ]
+    },
+    "A_gated_calibration": {
+      "calibration_parent_slots_per_seed": 12,
+      "choice": "Exact pinned heads.predict/choose ASTs; no scientific module import",
+      "dimensions": {
+        "field12": 12,
+        "full_current_state": 54740,
+        "history6": 114
+      },
+      "fit_parent_slots_per_seed": 36,
+      "head_mode_rows": 108,
+      "metrics": [
+        "gated selection regret",
+        "rowwise ungated regret",
+        "optimal-set accuracy",
+        "chosen advantage",
+        "mean gated regret / mean attainable gain",
+        "override count",
+        "maximum-score ties",
+        "fallback counts",
+        "outside-fit-norm count"
+      ],
+      "modes": [
+        "field12",
+        "full_current_state",
+        "history6"
+      ],
+      "new_independent_samples": 0,
+      "new_threshold": false,
+      "original_batched_ungated_diagnostics_retained": true,
+      "outside_fit_norm_forces_fallback": false,
+      "refit": false,
+      "registered_calibration_parent_slots": 36,
+      "same_dependent_parents_used_to_select_tau": true,
+      "uniform_error_certificate": false
+    },
+    "A_successor_differences": {
+      "A_B_resolution": "48 microstep transaction boundary",
+      "C_contract": "Unchanged macro16/horizon96; no added C diagnostic",
+      "checkpoint_reload_or_tensor_recomputation": false,
+      "components": [
+        "parameters",
+        "momentum",
+        "gradients",
+        "buffers"
+      ],
+      "measures": [
+        "l2",
+        "max_abs"
+      ],
+      "per_parent_action_details_retained": true,
+      "source": "first_legal_successor_differences",
+      "subsets": [
+        "all_actions",
+        "nonbaseline_actions"
+      ],
+      "summaries": [
+        "n",
+        "zero_count",
+        "nonzero_count",
+        "minimum",
+        "median",
+        "mean",
+        "maximum"
+      ],
+      "zero_momentum_norm_with_optimizer_hash_difference_count": true,
+      "zero_norm_first_different_tensor_retained": true
+    },
+    "W_common_action_regret": {
+      "all_field_policy_lower_bound": false,
+      "common_deterministic_action_restriction": true,
+      "metrics": [
+        "intersection of original/reflected optimal sets",
+        "min_a max(r_original(a),r_reflected(a))",
+        "min_a (r_original(a)+r_reflected(a))/2",
+        "recorded head choices equal or different"
+      ],
+      "mixture_weights": [
+        0.5,
+        0.5
+      ],
+      "near_H12_not_identical_input": true,
+      "parent": {
+        "clock": 48,
+        "prefix": "baseline",
+        "schedule": 6000
+      },
+      "reachable_occupancy_claim": false,
+      "regret": "r_s(a)=max_b V_s(b)-V_s(a)",
+      "seeds": [
+        17,
+        29,
+        43
+      ]
+    }
+  },
+  "attempt_id": "attempt02",
+  "declaration_scope": "New implementation prospectively registered for execution04; preparation reads sources and synthetic fixtures only. It makes no claim about unseen continuation or endpoint access in the inaccessible execution03.",
+  "declared_at": "2026-10-30T01:19:09.359889+00:00",
+  "documentation": {
+    "bytes": 9849,
+    "path": "supplements/parameter_field_fullstudy_20261030/README.md",
+    "sha256": "5f0e044c2df81ac5a5b6aa1b65722f1da15e37dfe62f10b6b7936fe92d2a9cf3"
+  },
+  "execution_context": {
+    "operations_root": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops",
+    "raw_root": "/workspace/scratch/178ced6a501f/fullstudy_execution04_durable_raw",
+    "source_root": "/workspace/scratch/178ced6a501f/fullstudy_git"
+  },
+  "execution_episode": "execution04_durable_20261030",
+  "forbidden": [
+    "training",
+    "checkpoint restore",
+    "new endpoint scoring",
+    "pre-gate scientific payload reads",
+    "head refit",
+    "real-data self-test during preparation",
+    "RAW/CAS/source/registration writes",
+    "posthoc numerical tolerance changes",
+    "promoting calibration rows to independent samples"
+  ],
+  "frozen_sources": {
+    "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/learning.py": "97c3baabe208fd8d5e8ac9beb5ae4a244b3c8d6aac565e727fd64eed8c1371b7",
+    "experiments/parameter_field_fullstudy_20261029/analysis.py": "46ace84fa720026daa2f0b9de95b8c446f4e87ae6f1873ba43e9bceaca3f73e2",
+    "experiments/parameter_field_fullstudy_20261029/analysis_launch_v2.py": "708003e123a97dbf17f8ba1fd2f7086ec70fc52f2f6a1dc41bf88c6882d4fdbb",
+    "experiments/parameter_field_fullstudy_20261029/bank.py": "710a9a069f2d8bdbb208e16db62bc55fb1a07cbd3f9686546b46056673402653",
+    "experiments/parameter_field_fullstudy_20261029/branching.py": "3825744797572e8a28aedec57fb0e6ed924586ea4b3c0f49accb0bf7bfbeee79",
+    "experiments/parameter_field_fullstudy_20261029/finalize_v2.py": "6fbf4a7a994120b6c0ae577a10d9ba992ad483d253ff0afb9aea42af8bb705ac",
+    "experiments/parameter_field_fullstudy_20261029/heads.py": "19254959a30e3719024841dc91376d1ecdfa018c30427b962a265e3b3d4647f7",
+    "experiments/parameter_field_fullstudy_20261029/register_summary_v2.py": "b20351ee0a242bf25352d67a912af3a3dcb6d7503c8e38f9973a437bb3d20184",
+    "experiments/parameter_field_fullstudy_20261029/report_results.py": "ccfe0f9fa555906f9cda0834424a5396c7146f523a47a4cd8696134d007e614f",
+    "experiments/parameter_field_fullstudy_20261029/run.py": "46f437e8756c83ae1abfedb7b36544f71a86093098363a8730b18357bf36c1c3",
+    "experiments/parameter_field_fullstudy_20261029/witness.py": "7f81ff7660e3bb4a99e9b7b4addf2705b2f55bffd3e80c6d47ef5737278f7f08"
+  },
+  "implementation": {
+    "bytes": 45470,
+    "path": "supplements/parameter_field_fullstudy_20261030/postseal_supplement.py",
+    "sha256": "1b705285b99fc7185c20155fa85f3a5d370b473196eaf59c8ae1d6bb2941a633"
+  },
+  "input_gate": {
+    "complete_controller_jobs": 14,
+    "external_sha256_required": [
+      "plan",
+      "pipeline_COMPLETE",
+      "VERIFIED",
+      "MANIFEST",
+      "finalizer_source_freeze"
+    ],
+    "failure_markers_override_completed_interpretation": true,
+    "literal_restore_every_logical_manifest_path": true,
+    "no_latest_discovery": true,
+    "no_output_directory_before_full_gate": true,
+    "original_A_C_source_closures_and_diagnostic_pins_exact": true,
+    "scientific_controller_seals": 26,
+    "stdlib_only_until_full_gate": true,
+    "with_aggregate_seals": 30
+  },
+  "new_implementation_not_recovered_old_bytes": true,
+  "original_phase_freezes": {
+    "A": "2a5219147d38ebb6514059bd69e2d3489bf7d69d213cd01343455f63a08a53d2",
+    "C": "5f427c8a8cebe8c96a2a0d81318e22d286dc0aaa8b3dbf4d5844df2177949c6d"
+  },
+  "output_policy": {
+    "exit_0": "Complete descriptive diagnostics; no scientific success implied",
+    "exit_2": "Blocked/failed; pre-gate failure to stderr, post-gate partial output retained",
+    "exit_3": "Complete with explicit integrity issues; unqualified interpretation prohibited",
+    "input_and_output_sha256": true,
+    "new_directory_outside_RAW_CAS_source_registrations": true,
+    "overwrite": false,
+    "receipt_cost_scope": "Cost snapshot excludes serialization/write of its own final receipt; do not add to an overlapping inclusive wrapper observation.",
+    "separate_wall_CPU_peak_RSS_costs": true,
+    "zero_new_training_scoring_fitting_samples": true
+  },
+  "pipeline_interface": {
+    "artifacts_keys": [
+      "verified",
+      "manifest",
+      "aggregate_results",
+      "finalizer_freeze"
+    ],
+    "complete": true,
+    "descriptor_keys": [
+      "path",
+      "bytes",
+      "sha256"
+    ],
+    "execution_episode": "execution04_durable_20261030",
+    "explicit_artifacts_not_nested_note_search": true,
+    "schema": "hepta.fullstudy.pipeline-completion.4",
+    "scope": "Primary14 jobs plus aggregate and literal verification; excludes this supplement and scientific benefit."
+  },
+  "preparation_state": "SOURCE_AND_SYNTHETIC_TESTS_ONLY_NO_REAL_ANALYSIS",
+  "protocol_sha256": "2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55",
+  "schema": "hepta.fullstudy.postseal-plan.2",
+  "scientific_payloads_opened_during_preparation": false,
+  "semantic_tests": {
+    "bytes": 14012,
+    "path": "supplements/parameter_field_fullstudy_20261030/test_semantics.py",
+    "sha256": "267745e30f874740c8c739ea7b761ba3de580e75c4c20aee956a6fd8d25d0956"
+  },
+  "status": "PRE_ENDPOINT",
+  "unchanged": [
+    "main scientific protocol",
+    "primary source bytes",
+    "actions and baselines",
+    "guard and rollback",
+    "source/sample allocation",
+    "fit/calibration partitions",
+    "tau and tie rules",
+    "primary statistical tests and acceptance rules",
+    "historical failure and unknown-cost records"
+  ]
+}

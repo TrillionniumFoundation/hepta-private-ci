@@ -1,0 +1,31 @@
+{
+  "actual_attempt_id": "attempt02",
+  "created_at_utc": "2026-10-30T01:09:39.523039+00:00",
+  "engineering_microsteps_included": 0,
+  "execution_episode": "execution02_resource_failure_20261029",
+  "new_scientific_samples_added": 0,
+  "observation_basis": "Literal recovered episode02 trace-work audit and failed monitor; original partial gzip traces retained unchanged. The additional unflushed work remains unknown.",
+  "original_receipt_impersonation": false,
+  "scheduled_microsteps_lower_bound": 576,
+  "schema": "hepta.fullstudy.explicit-historical-cost-facts.1",
+  "status": "RESOURCE_FAILURE_WITH_PARTIAL_WORK",
+  "supporting_evidence": [
+    {
+      "bytes": 10263,
+      "path": "/workspace/scratch/178ced6a501f/recovered_originals/episode02/audit/TRACE_WORK_LOWER_BOUND.json",
+      "sha256": "c73ae3a928bda8fc1742cd5e17baa865900bdbb9844f4e1ec45381c2a642e39f"
+    },
+    {
+      "bytes": 4107,
+      "path": "/workspace/scratch/178ced6a501f/recovered_originals/episode02/monitor/FAILED.json",
+      "sha256": "1b22b23baf4488d2e5ced3d7756c1b789f09f19dc43c531f0131811a09505fc8"
+    },
+    {
+      "bytes": 1330213,
+      "path": "/workspace/scratch/178ced6a501f/recovered_originals/hepta_field_episode02_partial_evidence_20261029.tar.gz",
+      "sha256": "085dde38f4f61c28b106243493844e737a9ef3a033f53f63eb07dc767305772c"
+    }
+  ],
+  "underlying_evidence_available_now": true,
+  "unknown_additional_work": true
+}

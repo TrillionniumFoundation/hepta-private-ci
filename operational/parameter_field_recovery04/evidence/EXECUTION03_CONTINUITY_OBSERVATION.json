@@ -1,0 +1,64 @@
+{
+  "A29_previously_read_metadata": {
+    "interpretation": "Previously observed expected identities; original bytes must be recovered before verification now",
+    "process_peak_rss_bytes": 476086272,
+    "root_verification_receipt_sha256": "1ce1ac069dd9e43adab85b67c0e0039fbdd4d1bf8d970af3d76fbe194c8d49c1",
+    "scientific_complete": {
+      "bytes": 5776,
+      "path": "stage_A/seed-29/COMPLETE.json",
+      "sha256": "49c101b3ae2fe7cb933dbe073d53be228923ec6b249e3fa0e47691664ef09783"
+    },
+    "wall_seconds": 1779.8858396620053
+  },
+  "cause": "Not established; current checks do not prove OOM, deletion, termination, or migration",
+  "current_evidence": {
+    "current_filesystem_id": "11483390529375479896",
+    "known_prior_paths_present": {
+      "/dev/shm/hepta-field-fullstudy-20261029": false,
+      "/workspace/scratch/178ced6a501f/fullstudy_execution03_serial_raw": false,
+      "/workspace/scratch/178ced6a501f/fullstudy_serial_recovery03_20261029": false
+    },
+    "known_prior_pids_visible": {
+      "737515": false,
+      "737517": false,
+      "737548": false,
+      "739274": false
+    },
+    "previous_filesystem_id": "2812879962665809419"
+  },
+  "episode": "execution03_serial_20261029",
+  "historically_observed_scientific_work_lower_bound_microsteps": 78336,
+  "last_observation_utc": "2026-10-29T19:14:39.910648+00:00",
+  "last_observed_A43_parent_file_count": 4,
+  "last_observed_completed_jobs": [
+    "A-17",
+    "A-29"
+  ],
+  "last_observed_completion_checks": [
+    "controller complete=true and exit_code=0",
+    "operation and scientific COMPLETE hash/length bindings",
+    "source freeze and commit binding"
+  ],
+  "last_observed_running_job": "A-43",
+  "new_run_rule": "A distinct fixed-design execution episode; repeated seeds are not new independent samples, prior unknown work is never zero-filled",
+  "old_instance_existence": "unknown",
+  "original_execution03_raw_recovered": false,
+  "original_execution_receipts_available_now": false,
+  "original_receipts_reconstructed_or_replaced": false,
+  "record_kind": "New incident statement from prior conversation observations and current environment checks; not an original execution receipt",
+  "recorded_at_user_time": "2026-10-29T21:08:38.516932-04:00",
+  "recorded_at_utc": "2026-10-30T01:08:38.516932+00:00",
+  "schema": "hepta.fullstudy.environment-continuity-incident.1",
+  "scientific_result_admission": false,
+  "status": "ENVIRONMENT_CONTINUITY_INTERRUPTED_EXECUTION_AND_EVIDENCE_STATE_UNKNOWN",
+  "subsequent_endpoint_execution_or_access": "unknown",
+  "subsequent_execution_outcome": "unknown",
+  "unknown_additional_work": true,
+  "whole_episode_cpu_seconds": "unknown",
+  "work_basis": {
+    "A43_file_count_used_to_infer_extra_work": false,
+    "completed_A_seeds_observed": 2,
+    "fixed_work_per_A_seed": 39168,
+    "original_receipts_currently_byte_reverifiable": false
+  }
+}
