@@ -1,0 +1,1074 @@
+{
+  "archive": {
+    "bytes": 197494,
+    "index_sha256": "68e12ff88ea36f6d28db22ff11a459a44624b0ac6326c54bc56fd9f5f9861c2b",
+    "member_count": 79,
+    "path": "pn-owner-recovery-20261030.tar.gz",
+    "sha256": "bce002660d5684eec8fa3fcfab1262c66b3dfcd13f0ff56f27a1b70af7d7ad36"
+  },
+  "baseline_adopted": {
+    "commit": "f874d948a38c119e57b1368adab79437956acd78",
+    "tree": "54c15dd602094d62005b02256046d9f3ca9178a4"
+  },
+  "claims": {
+    "cross_environment_binary_reproduction_qualified": false,
+    "current_binary_hash_capture": "Inventory JSON only; hashes were read after the recorded GREEN runs, not captured as historical in-run attestations.",
+    "evidence_kind": "local component regression evidence only",
+    "final_publication_receipt": null,
+    "historical_red_executable_preservation_claimed": false,
+    "native_executable_bytes_included": false,
+    "pn1_through_pn6_qualified": false,
+    "production_qualified": false,
+    "published_branch_receipt_included": false,
+    "whole_chain_post_quantum_qualified": false
+  },
+  "evidence_date": "2026-10-30",
+  "files": [
+    {
+      "archive_path": "derived/git-source-objects.json",
+      "bytes": 19995,
+      "sha256": "4aec47b7ae2c95ea9c5f7c9f57665640d9da4fc83dc79c5c2bbd81cdf66f3e4b",
+      "source_kind": "derived-post-run-git-read",
+      "stage": "source-object-inventory"
+    },
+    {
+      "archive_path": "drafts/stage-b-column-metadata/baseline.json",
+      "bytes": 280,
+      "origin_path": "/tmp/hepta-stageb-schema-default/baseline.json",
+      "sha256": "a83f435827aac108e19e23eb5e6671a6baf8970bc404f9b36addf042551dbac1",
+      "source_kind": "earlier-draft-not-final-test-authority",
+      "stage": "stage-b-column-metadata"
+    },
+    {
+      "archive_path": "drafts/stage-b-schema22/baseline.json",
+      "bytes": 1430,
+      "origin_path": "/tmp/hepta-stageb-00012a4/baseline.json",
+      "sha256": "c21696b731057a13b2d38aa561e691b19decca596f5397409f199e3451463c68",
+      "source_kind": "earlier-draft-not-final-test-authority",
+      "stage": "stage-b-schema22"
+    },
+    {
+      "archive_path": "drafts/stage-b-schema22/stageb-complete.patch",
+      "bytes": 40626,
+      "origin_path": "/tmp/hepta-stageb-00012a4/stageb-complete.patch",
+      "sha256": "1263a3c488a7697b258494a0e9291b12c6e594d05dcf4c827c30460c3296c119",
+      "source_kind": "earlier-draft-not-final-test-authority",
+      "stage": "stage-b-schema22"
+    },
+    {
+      "archive_path": "drafts/stage-b-schema22/stageb-green.patch",
+      "bytes": 23007,
+      "origin_path": "/tmp/hepta-stageb-00012a4/stageb-green.patch",
+      "sha256": "72af31e73756f085c21c53b37fb85ccaa7c2742300738ea02bd3299b444ffca5",
+      "source_kind": "earlier-draft-not-final-test-authority",
+      "stage": "stage-b-schema22"
+    },
+    {
+      "archive_path": "drafts/stage-b-schema22/stageb-red.patch",
+      "bytes": 18926,
+      "origin_path": "/tmp/hepta-stageb-00012a4/stageb-red.patch",
+      "sha256": "9b62070d27a81acf499a012f8734058f578fbbf6761f64bde70b571c6d843a93",
+      "source_kind": "earlier-draft-not-final-test-authority",
+      "stage": "stage-b-schema22"
+    },
+    {
+      "archive_path": "drafts/stage-c-agentd-expiry/baseline.json",
+      "bytes": 202,
+      "origin_path": "/tmp/hepta-stagec-expiry/baseline.json",
+      "sha256": "0799571e13cdebebd64c0f19c3562717ed806dc7e5074384485401881099aeca",
+      "source_kind": "earlier-draft-not-final-test-authority",
+      "stage": "stage-c-agentd-expiry"
+    },
+    {
+      "archive_path": "raw/binary-inventory-only/hepta-pn-native-current-binaries.json",
+      "bytes": 6708,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-pn-native-current-binaries.json",
+      "sha256": "b1fbfcb66f76bdbfcb379eb644f6f54d02b1925b385540202af5c883d3e18975",
+      "source_kind": "raw-retained",
+      "stage": "binary-inventory-only"
+    },
+    {
+      "archive_path": "raw/fifo-config/build-attempt-1-enospc.log",
+      "bytes": 47285,
+      "origin_path": "/tmp/hepta-final-use-fifo-20261030/build-attempt-1-enospc.log",
+      "raw_errors": [
+        "error: couldn't create a temp dir: No space left on device (os error 28) at path \"/workspace/scratch/cedd7bc74ace/hepta-target/dev-small/deps/rmetatdIazb\"",
+        "error: could not compile `codex-extension-api` (lib) due to 1 previous error",
+        "error: command `/tmp/pn-installed-toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-infer-worker-host --lib --profile dev-small --locked` exited with code 101",
+        "error: recipe `test` failed on line 89 with exit code 101"
+      ],
+      "raw_run_ids": [],
+      "raw_summaries": [],
+      "sha256": "4d37a00c0ec96082481160f17d317219c067fc0793beeb10953d9926e7d5fec9",
+      "source_kind": "raw-retained",
+      "stage": "fifo-config"
+    },
+    {
+      "archive_path": "raw/fifo-config/build-attempt-1.json",
+      "bytes": 651,
+      "origin_path": "/tmp/hepta-final-use-fifo-20261030/build-attempt-1.json",
+      "sha256": "731742bd107dd8e906f89091000100908d5fbad17ffc38976dd9158a0659c201",
+      "source_kind": "raw-retained",
+      "stage": "fifo-config"
+    },
+    {
+      "archive_path": "raw/fifo-config/evidence.json",
+      "bytes": 14099,
+      "origin_path": "/tmp/hepta-final-use-fifo-20261030/evidence.json",
+      "sha256": "5f0b635c367422e2342ebaf6f4ec28fadbc077e28037431b2f07aace9de8fd58",
+      "source_kind": "raw-retained",
+      "stage": "fifo-config"
+    },
+    {
+      "archive_path": "raw/fifo-config/fix-native.log",
+      "bytes": 45301,
+      "origin_path": "/tmp/hepta-final-use-fifo-20261030/fix-native.log",
+      "raw_errors": [],
+      "raw_run_ids": [],
+      "raw_summaries": [],
+      "sha256": "7c7111494fbd148ff98651e3f07f63bf6bd3b1d9141caa97e9e9b3a8a3bd81cf",
+      "source_kind": "raw-retained",
+      "stage": "fifo-config"
+    },
+    {
+      "archive_path": "raw/fifo-config/fix.log",
+      "bytes": 209,
+      "origin_path": "/tmp/hepta-final-use-fifo-20261030/fix.log",
+      "raw_errors": [
+        "error: failed to bind TCP listener to manage locking",
+        "error: recipe `fix` failed on line 58 with exit code 101"
+      ],
+      "raw_run_ids": [],
+      "raw_summaries": [],
+      "sha256": "6bb10e993781fcfafa03cdc3bb9385d58a4125ed406243f1ca86f8aa893f5afd",
+      "source_kind": "raw-retained",
+      "stage": "fifo-config"
+    },
+    {
+      "archive_path": "raw/fifo-config/fmt-cache.log",
+      "bytes": 0,
+      "origin_path": "/tmp/hepta-final-use-fifo-20261030/fmt-cache.log",
+      "raw_errors": [],
+      "raw_run_ids": [],
+      "raw_summaries": [],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_kind": "raw-retained",
+      "stage": "fifo-config"
+    },
+    {
+      "archive_path": "raw/fifo-config/fmt.log",
+      "bytes": 598,
+      "origin_path": "/tmp/hepta-final-use-fifo-20261030/fmt.log",
+      "raw_errors": [
+        "error: Failed to initialize cache at `/home/agent/.cache/uv`",
+        "error: recipe `fmt` failed on line 51 with exit code 1"
+      ],
+      "raw_run_ids": [],
+      "raw_summaries": [],
+      "sha256": "34edeb62ebc04bba494bfff9464fcbcd28b8efa02dcc6f7a55d5c12037fe9fd1",
+      "source_kind": "raw-retained",
+      "stage": "fifo-config"
+    },
+    {
+      "archive_path": "raw/fifo-config/green-final_use_authorizer.rs",
+      "bytes": 10546,
+      "origin_path": "/tmp/hepta-final-use-fifo-20261030/green-final_use_authorizer.rs",
+      "sha256": "e59683305e474cc8118125d661e3a7634723ef37b2e6e6a1a9fc2abd82a14156",
+      "source_kind": "raw-retained",
+      "stage": "fifo-config"
+    },
+    {
+      "archive_path": "raw/fifo-config/green-final_use_authorizer_ml_dsa65_v2_tests.rs",
+      "bytes": 16527,
+      "origin_path": "/tmp/hepta-final-use-fifo-20261030/green-final_use_authorizer_ml_dsa65_v2_tests.rs",
+      "sha256": "ac57de0ef2442be033e794778f5bad40a351778c7d42d86109439ca9960696e8",
+      "source_kind": "raw-retained",
+      "stage": "fifo-config"
+    },
+    {
+      "archive_path": "raw/fifo-config/green-source.json",
+      "bytes": 515,
+      "origin_path": "/tmp/hepta-final-use-fifo-20261030/green-source.json",
+      "sha256": "ff51ca6da04ee530050d6ec00c79bfeb54572be3213c542c00dc7f87cbc18014",
+      "source_kind": "raw-retained",
+      "stage": "fifo-config"
+    },
+    {
+      "archive_path": "raw/fifo-config/green.log",
+      "bytes": 27060,
+      "origin_path": "/tmp/hepta-final-use-fifo-20261030/green.log",
+      "raw_errors": [],
+      "raw_run_ids": [
+        "b949c233-b58b-45f6-b1b4-5291396bc83a"
+      ],
+      "raw_summaries": [
+        "Summary [   0.177s] 6 tests run: 6 passed, 153 skipped"
+      ],
+      "sha256": "b33db88d0066627282b9e5566aacb1cb751a429745a8cbf508f52560cbefce7f",
+      "source_kind": "raw-retained",
+      "stage": "fifo-config"
+    },
+    {
+      "archive_path": "raw/fifo-config/owned-change.patch",
+      "bytes": 4852,
+      "origin_path": "/tmp/hepta-final-use-fifo-20261030/owned-change.patch",
+      "sha256": "0d5218035148cb81de33c0cf8b8043c473e8f74329fbc1a4da2ba8410d156b03",
+      "source_kind": "raw-retained",
+      "stage": "fifo-config"
+    },
+    {
+      "archive_path": "raw/fifo-config/red-final_use_authorizer.rs",
+      "bytes": 10527,
+      "origin_path": "/tmp/hepta-final-use-fifo-20261030/red-final_use_authorizer.rs",
+      "sha256": "b71d6dbbf6feea68a4aa2c143b28245ab79411781df7acb0d4f260bef5b63ea1",
+      "source_kind": "raw-retained",
+      "stage": "fifo-config"
+    },
+    {
+      "archive_path": "raw/fifo-config/red-final_use_authorizer_ml_dsa65_v2_tests.rs",
+      "bytes": 16527,
+      "origin_path": "/tmp/hepta-final-use-fifo-20261030/red-final_use_authorizer_ml_dsa65_v2_tests.rs",
+      "sha256": "ac57de0ef2442be033e794778f5bad40a351778c7d42d86109439ca9960696e8",
+      "source_kind": "raw-retained",
+      "stage": "fifo-config"
+    },
+    {
+      "archive_path": "raw/fifo-config/red-retry-source.json",
+      "bytes": 655,
+      "origin_path": "/tmp/hepta-final-use-fifo-20261030/red-retry-source.json",
+      "sha256": "114d24de0e633a9c3ca0a8578eca1a38c07ceef21dc04c381c425db8cbe528fc",
+      "source_kind": "raw-retained",
+      "stage": "fifo-config"
+    },
+    {
+      "archive_path": "raw/fifo-config/red-retry.log",
+      "bytes": 41753,
+      "origin_path": "/tmp/hepta-final-use-fifo-20261030/red-retry.log",
+      "raw_errors": [
+        "error: test run failed",
+        "error: recipe `test` failed on line 89 with exit code 100"
+      ],
+      "raw_run_ids": [
+        "66fce7a4-1bbc-4936-81c7-9b8f3e8e5d5d"
+      ],
+      "raw_summaries": [
+        "Summary [  10.065s] 6 tests run: 5 passed, 1 failed, 153 skipped"
+      ],
+      "sha256": "438152a92defad3202f5c42b77fd57088fa023090a0c65bf9eea0852b9093857",
+      "source_kind": "raw-retained",
+      "stage": "fifo-config"
+    },
+    {
+      "archive_path": "raw/fifo-config/red-source.json",
+      "bytes": 483,
+      "origin_path": "/tmp/hepta-final-use-fifo-20261030/red-source.json",
+      "sha256": "299609a7dc0ad9bf123348488ae6b819b4736260633c7f920d9e68e879f1099e",
+      "source_kind": "raw-retained",
+      "stage": "fifo-config"
+    },
+    {
+      "archive_path": "raw/fifo-config/red-tests.patch",
+      "bytes": 4174,
+      "origin_path": "/tmp/hepta-final-use-fifo-20261030/red-tests.patch",
+      "sha256": "c96ae227742ea0ff0cdfe23f85e77018fbc03750c4ef974047d4dfe81f52bf3f",
+      "source_kind": "raw-retained",
+      "stage": "fifo-config"
+    },
+    {
+      "archive_path": "raw/fifo-config/red.log",
+      "bytes": 47285,
+      "origin_path": "/tmp/hepta-final-use-fifo-20261030/red.log",
+      "raw_errors": [
+        "error: couldn't create a temp dir: No space left on device (os error 28) at path \"/workspace/scratch/cedd7bc74ace/hepta-target/dev-small/deps/rmetatdIazb\"",
+        "error: could not compile `codex-extension-api` (lib) due to 1 previous error",
+        "error: command `/tmp/pn-installed-toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-infer-worker-host --lib --profile dev-small --locked` exited with code 101",
+        "error: recipe `test` failed on line 89 with exit code 101"
+      ],
+      "raw_run_ids": [],
+      "raw_summaries": [],
+      "sha256": "4d37a00c0ec96082481160f17d317219c067fc0793beeb10953d9926e7d5fec9",
+      "source_kind": "raw-retained",
+      "stage": "fifo-config"
+    },
+    {
+      "archive_path": "raw/fifo-config/toolchain.json",
+      "bytes": 753,
+      "origin_path": "/tmp/hepta-final-use-fifo-20261030/toolchain.json",
+      "sha256": "19a6a342021728d9ae0a54a88889945411f7550b8cf7cf0840b57c96915e72f8",
+      "source_kind": "raw-retained",
+      "stage": "fifo-config"
+    },
+    {
+      "archive_path": "raw/initial-685-superseded/hepta-owner-recovery-fix.log",
+      "bytes": 29722,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-owner-recovery-fix.log",
+      "raw_errors": [],
+      "raw_run_ids": [],
+      "raw_summaries": [],
+      "sha256": "3e541b9ce8affd32a930236309a86929da2f101893345d3b6e9c8f0d3bff9873",
+      "source_kind": "raw-retained",
+      "stage": "initial-685-superseded"
+    },
+    {
+      "archive_path": "raw/initial-685-superseded/hepta-owner-recovery-fmt.log",
+      "bytes": 0,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-owner-recovery-fmt.log",
+      "raw_errors": [],
+      "raw_run_ids": [],
+      "raw_summaries": [],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_kind": "raw-retained",
+      "stage": "initial-685-superseded"
+    },
+    {
+      "archive_path": "raw/initial-685-superseded/hepta-owner-recovery-green.log",
+      "bytes": 35822,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-owner-recovery-green.log",
+      "raw_errors": [],
+      "raw_run_ids": [
+        "38bbf20d-26a0-479d-ad1e-ace1068629f5"
+      ],
+      "raw_summaries": [
+        "Summary [   1.605s] 103 tests run: 103 passed, 0 skipped"
+      ],
+      "sha256": "592d1f3631fb5c03e419805d65dba45a85ffaddd52ccba94ca99f1280d7f5578",
+      "source_kind": "raw-retained",
+      "stage": "initial-685-superseded"
+    },
+    {
+      "archive_path": "raw/initial-685-superseded/hepta-owner-recovery-red.txt",
+      "bytes": 15051,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-owner-recovery-red.txt",
+      "raw_errors": [
+        "error: test run failed",
+        "error: recipe `test` failed on line 89 with exit code 100"
+      ],
+      "raw_run_ids": [
+        "cb5736d9-eb9a-41b6-8966-c62b8f440a76"
+      ],
+      "raw_summaries": [
+        "Summary [   0.199s] 1 test run: 0 passed, 1 failed, 10 skipped"
+      ],
+      "sha256": "02d0a9b27fe7a64916ca92c09e6583d2cfca94ec3257aa055cf4c61e3136c9d1",
+      "source_kind": "raw-retained",
+      "stage": "initial-685-superseded"
+    },
+    {
+      "archive_path": "raw/initial-685-superseded/hepta-owner-recovery-stage1.patch",
+      "bytes": 22415,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-owner-recovery-stage1.patch",
+      "sha256": "01ec07521c3359f5a65a10634ed27aadaca4c7f8c6d2def5e335f02b6c17f6ff",
+      "source_kind": "raw-retained",
+      "stage": "initial-685-superseded"
+    },
+    {
+      "archive_path": "raw/initial-685-superseded/hepta-provider-ack-first-green.log",
+      "bytes": 22767,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-provider-ack-first-green.log",
+      "raw_errors": [],
+      "raw_run_ids": [
+        "f5d228e4-23e6-4ac9-a455-20e7b36ad7bb"
+      ],
+      "raw_summaries": [
+        "Summary [   0.086s] 1 test run: 1 passed, 11 skipped"
+      ],
+      "sha256": "58b98c8e14a824d46cf3e24bccefe411937472cc87ff2cdc7e667b31f4e6b086",
+      "source_kind": "raw-retained",
+      "stage": "initial-685-superseded"
+    },
+    {
+      "archive_path": "raw/initial-685-superseded/hepta-provider-ack-fix.log",
+      "bytes": 12418,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-provider-ack-fix.log",
+      "raw_errors": [],
+      "raw_run_ids": [],
+      "raw_summaries": [],
+      "sha256": "d7175a9b6a2a694d640ef006a9250e1400a35cfa48706fbe6e7dcf7761ce0170",
+      "source_kind": "raw-retained",
+      "stage": "initial-685-superseded"
+    },
+    {
+      "archive_path": "raw/initial-685-superseded/hepta-provider-ack-fmt.log",
+      "bytes": 0,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-provider-ack-fmt.log",
+      "raw_errors": [],
+      "raw_run_ids": [],
+      "raw_summaries": [],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_kind": "raw-retained",
+      "stage": "initial-685-superseded"
+    },
+    {
+      "archive_path": "raw/initial-685-superseded/hepta-provider-ack-green.log",
+      "bytes": 36129,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-provider-ack-green.log",
+      "raw_errors": [],
+      "raw_run_ids": [
+        "a59038d6-79e2-40a9-8184-c954f2fb7601"
+      ],
+      "raw_summaries": [
+        "Summary [   1.495s] 105 tests run: 105 passed, 0 skipped"
+      ],
+      "sha256": "0794dcecaa5afd7a284eae17763e044f34979798cb721a7cc7eeaffa811ee8f6",
+      "source_kind": "raw-retained",
+      "stage": "initial-685-superseded"
+    },
+    {
+      "archive_path": "raw/initial-685-superseded/hepta-provider-ack-red-test.rs",
+      "bytes": 2795,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-provider-ack-red-test.rs",
+      "sha256": "06712dc421d47854be83fc7bec8f11cdfe9d7a5f873569779e021c5602ad46e6",
+      "source_kind": "raw-retained",
+      "stage": "initial-685-superseded"
+    },
+    {
+      "archive_path": "raw/initial-685-superseded/hepta-provider-ack-red.log",
+      "bytes": 25250,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-provider-ack-red.log",
+      "raw_errors": [
+        "error: test run failed",
+        "error: recipe `test` failed on line 89 with exit code 100"
+      ],
+      "raw_run_ids": [
+        "c2e2abea-f4f2-4aa0-80ed-968073e8f636"
+      ],
+      "raw_summaries": [
+        "Summary [   0.179s] 1 test run: 0 passed, 1 failed, 11 skipped"
+      ],
+      "sha256": "6c4653b10fbd9434b931434c4f9c7b25e430ab9cecb3f0415014708180767c17",
+      "source_kind": "raw-retained",
+      "stage": "initial-685-superseded"
+    },
+    {
+      "archive_path": "raw/initial-685-superseded/hepta-provider-ack-stage2.patch",
+      "bytes": 56504,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-provider-ack-stage2.patch",
+      "sha256": "30deaeed8018ebc588fdfbf3ba965baa2f70ac1eef7b4821e64260419053572a",
+      "source_kind": "raw-retained",
+      "stage": "initial-685-superseded"
+    },
+    {
+      "archive_path": "raw/initial-685-superseded/hepta-provider-ack-v1-fixture-red.log",
+      "bytes": 38787,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-provider-ack-v1-fixture-red.log",
+      "raw_errors": [
+        "error: test run failed",
+        "error: recipe `test` failed on line 89 with exit code 100"
+      ],
+      "raw_run_ids": [
+        "73fd43f6-db3b-4dfb-86db-ce2e9d0a747e"
+      ],
+      "raw_summaries": [
+        "Summary [   1.645s] 105 tests run: 104 passed, 1 failed, 0 skipped"
+      ],
+      "sha256": "96307daab01ce70af58823031a3684d7fd3b321bee3607334715d78aa06c0d9b",
+      "source_kind": "raw-retained",
+      "stage": "initial-685-superseded"
+    },
+    {
+      "archive_path": "raw/stage-a-f874/hepta-owner-recovery-f874-fix.log",
+      "bytes": 12876,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-owner-recovery-f874-fix.log",
+      "raw_errors": [],
+      "raw_run_ids": [],
+      "raw_summaries": [],
+      "sha256": "a10fe28aa88c4820c7033f4dad207d9dac1350ed5c17cb25f2173f5547b6f7a5",
+      "source_kind": "raw-retained",
+      "stage": "stage-a-f874"
+    },
+    {
+      "archive_path": "raw/stage-a-f874/hepta-owner-recovery-f874-fmt.log",
+      "bytes": 0,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-owner-recovery-f874-fmt.log",
+      "raw_errors": [],
+      "raw_run_ids": [],
+      "raw_summaries": [],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_kind": "raw-retained",
+      "stage": "stage-a-f874"
+    },
+    {
+      "archive_path": "raw/stage-a-f874/hepta-owner-recovery-f874-green-final.log",
+      "bytes": 40515,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-owner-recovery-f874-green-final.log",
+      "raw_errors": [],
+      "raw_run_ids": [
+        "b626a485-a0f9-483c-9960-a2ae204b6286"
+      ],
+      "raw_summaries": [
+        "Summary [   2.539s] 129 tests run: 129 passed, 0 skipped"
+      ],
+      "sha256": "3df8527ff17730004298afd2c609814cbb4d5f619e7f2aa690a38ae51cfe48d6",
+      "source_kind": "raw-retained",
+      "stage": "stage-a-f874"
+    },
+    {
+      "archive_path": "raw/stage-a-f874/hepta-owner-recovery-f874-green.log",
+      "bytes": 41818,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-owner-recovery-f874-green.log",
+      "raw_errors": [],
+      "raw_run_ids": [
+        "bcc54240-0246-48ac-b0f7-c77d56974b4f"
+      ],
+      "raw_summaries": [
+        "Summary [   2.513s] 129 tests run: 129 passed (1 flaky), 0 skipped"
+      ],
+      "sha256": "82ecef74bf518661dd3363316d85e8c7195202436ab7fffb744f1bb08014b08e",
+      "source_kind": "raw-retained",
+      "stage": "stage-a-f874"
+    },
+    {
+      "archive_path": "raw/stage-a-f874/hepta-owner-recovery-f874-prefmt.json",
+      "bytes": 2280,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-owner-recovery-f874-prefmt.json",
+      "sha256": "081a5195f3d0087b5df2b12736827027d1169085d742572195bd3e289f4e4a87",
+      "source_kind": "raw-retained",
+      "stage": "stage-a-f874"
+    },
+    {
+      "archive_path": "raw/stage-a-f874/hepta-owner-recovery-f874-red.log",
+      "bytes": 28346,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-owner-recovery-f874-red.log",
+      "raw_errors": [
+        "error: test run failed",
+        "error: recipe `test` failed on line 89 with exit code 100"
+      ],
+      "raw_run_ids": [
+        "25ec8c24-51ab-4d4c-a797-9333586d3090"
+      ],
+      "raw_summaries": [
+        "Summary [   0.176s] 1 test run: 0 passed, 1 failed, 128 skipped"
+      ],
+      "sha256": "72052a25680d5d1183d796527028b7834e752b3d6c8a0fe31e28f2fc23e7a012",
+      "source_kind": "raw-retained",
+      "stage": "stage-a-f874"
+    },
+    {
+      "archive_path": "raw/stage-a-f874/hepta-owner-recovery-f874-stageA.patch",
+      "bytes": 14960,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-owner-recovery-f874-stageA.patch",
+      "sha256": "21088bd03adf0e89286cb52a309940aadf0ed4ea8f5a9390a9b4b58f7d3641c0",
+      "source_kind": "raw-retained",
+      "stage": "stage-a-f874"
+    },
+    {
+      "archive_path": "raw/stage-b-column-metadata/hepta-append-profile-schema-default-final-source.json",
+      "bytes": 3906,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-append-profile-schema-default-final-source.json",
+      "sha256": "99a0c4428743e47fc05dc14ef895f9dbf7894270228d9e980f285f3a73802d09",
+      "source_kind": "raw-retained",
+      "stage": "stage-b-column-metadata"
+    },
+    {
+      "archive_path": "raw/stage-b-column-metadata/hepta-append-profile-schema-default-first-red.log",
+      "bytes": 25204,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-append-profile-schema-default-first-red.log",
+      "raw_errors": [
+        "error: test run failed",
+        "error: recipe `test` failed on line 89 with exit code 100"
+      ],
+      "raw_run_ids": [
+        "299d24e4-526c-4f7c-ab7e-f40838183e91"
+      ],
+      "raw_summaries": [
+        "Summary [   0.168s] 1 test run: 0 passed, 1 failed, 30 skipped"
+      ],
+      "sha256": "c5b5012e8a0f4347f8ff7672563a599103c547aa1301f1f63ecbd35518d8c4d0",
+      "source_kind": "raw-retained",
+      "stage": "stage-b-column-metadata"
+    },
+    {
+      "archive_path": "raw/stage-b-column-metadata/hepta-append-profile-schema-default-fix.log",
+      "bytes": 12418,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-append-profile-schema-default-fix.log",
+      "raw_errors": [],
+      "raw_run_ids": [],
+      "raw_summaries": [],
+      "sha256": "c9bd95fa4e066003d0fe9686faeebdba9abbb205014b2e73dae8a2a341672844",
+      "source_kind": "raw-retained",
+      "stage": "stage-b-column-metadata"
+    },
+    {
+      "archive_path": "raw/stage-b-column-metadata/hepta-append-profile-schema-default-fmt.log",
+      "bytes": 0,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-append-profile-schema-default-fmt.log",
+      "raw_errors": [],
+      "raw_run_ids": [],
+      "raw_summaries": [],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_kind": "raw-retained",
+      "stage": "stage-b-column-metadata"
+    },
+    {
+      "archive_path": "raw/stage-b-column-metadata/hepta-append-profile-schema-default-followup.patch",
+      "bytes": 3945,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-append-profile-schema-default-followup.patch",
+      "sha256": "172601648eaf3290bb90853be0d0756e0a943c40eb953c7e70f27b87151ebbbf",
+      "source_kind": "raw-retained",
+      "stage": "stage-b-column-metadata"
+    },
+    {
+      "archive_path": "raw/stage-b-column-metadata/hepta-append-profile-schema-default-green.log",
+      "bytes": 41327,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-append-profile-schema-default-green.log",
+      "raw_errors": [],
+      "raw_run_ids": [
+        "4c84f5d1-9853-467d-a60d-982f3d4ac21e"
+      ],
+      "raw_summaries": [
+        "Summary [   2.982s] 134 tests run: 134 passed, 0 skipped"
+      ],
+      "sha256": "467567c60c16b7be7c28b3edc77d95380e13a9c6e34167244f82cdb351eb40dd",
+      "source_kind": "raw-retained",
+      "stage": "stage-b-column-metadata"
+    },
+    {
+      "archive_path": "raw/stage-b-column-metadata/hepta-append-profile-schema-default-red-test.rs",
+      "bytes": 2307,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-append-profile-schema-default-red-test.rs",
+      "sha256": "31e7dba9ab3a102b3f141a735a7d9b22a2631daf8d68af793b4d5f895726732f",
+      "source_kind": "raw-retained",
+      "stage": "stage-b-column-metadata"
+    },
+    {
+      "archive_path": "raw/stage-b-column-metadata/hepta-append-profile-schema-default-red.log",
+      "bytes": 25218,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-append-profile-schema-default-red.log",
+      "raw_errors": [
+        "error: test run failed",
+        "error: recipe `test` failed on line 89 with exit code 100"
+      ],
+      "raw_run_ids": [
+        "bcbe0128-7359-401f-bae9-5595a43f6bbd"
+      ],
+      "raw_summaries": [
+        "Summary [   0.183s] 1 test run: 0 passed, 1 failed, 30 skipped"
+      ],
+      "sha256": "ece69720c3fd6111becf75ea2803077b3ddf40af236987ab27dbcbe06634876f",
+      "source_kind": "raw-retained",
+      "stage": "stage-b-column-metadata"
+    },
+    {
+      "archive_path": "raw/stage-b-column-metadata/hepta-append-profile-schema-default-tested-source.json",
+      "bytes": 3080,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-append-profile-schema-default-tested-source.json",
+      "sha256": "a093647e9be051961f6186cb22173608f3f91c29771a0c0fb30dfa85114d9916",
+      "source_kind": "raw-retained",
+      "stage": "stage-b-column-metadata"
+    },
+    {
+      "archive_path": "raw/stage-b-schema22/hepta-append-profile-v22-final-source.json",
+      "bytes": 3716,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-append-profile-v22-final-source.json",
+      "sha256": "e640ff1d7dfa1e7ff44428136817f202703ea94f7f51fc2e9b574bc63bdf7bfd",
+      "source_kind": "raw-retained",
+      "stage": "stage-b-schema22"
+    },
+    {
+      "archive_path": "raw/stage-b-schema22/hepta-append-profile-v22-fix.log",
+      "bytes": 12418,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-append-profile-v22-fix.log",
+      "raw_errors": [],
+      "raw_run_ids": [],
+      "raw_summaries": [],
+      "sha256": "b0071fafbb59b9ed125b7ce589aaefda397ab17303164ae3fc2213bf2340be84",
+      "source_kind": "raw-retained",
+      "stage": "stage-b-schema22"
+    },
+    {
+      "archive_path": "raw/stage-b-schema22/hepta-append-profile-v22-fmt.log",
+      "bytes": 0,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-append-profile-v22-fmt.log",
+      "raw_errors": [],
+      "raw_run_ids": [],
+      "raw_summaries": [],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_kind": "raw-retained",
+      "stage": "stage-b-schema22"
+    },
+    {
+      "archive_path": "raw/stage-b-schema22/hepta-append-profile-v22-green.log",
+      "bytes": 41144,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-append-profile-v22-green.log",
+      "raw_errors": [],
+      "raw_run_ids": [
+        "8fc48d9b-d4c9-4f43-91b4-ded27c6401d4"
+      ],
+      "raw_summaries": [
+        "Summary [   3.403s] 133 tests run: 133 passed, 0 skipped"
+      ],
+      "sha256": "ec714f8d66d8e3189da5272d060c398465f0fbb9a0475934b07fff84724bcdb8",
+      "source_kind": "raw-retained",
+      "stage": "stage-b-schema22"
+    },
+    {
+      "archive_path": "raw/stage-b-schema22/hepta-append-profile-v22-prefmt.json",
+      "bytes": 2945,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-append-profile-v22-prefmt.json",
+      "sha256": "b60294e18cbe01d8119177e42113227231f278d9c6d1a65b55f8cb0e3e15ce84",
+      "source_kind": "raw-retained",
+      "stage": "stage-b-schema22"
+    },
+    {
+      "archive_path": "raw/stage-b-schema22/hepta-append-profile-v22-red-build-error-source.json",
+      "bytes": 921,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-append-profile-v22-red-build-error-source.json",
+      "sha256": "a3b341859764cdcd8919542f92f074fbfd758a7273280e494a94fdc8627edd96",
+      "source_kind": "raw-retained",
+      "stage": "stage-b-schema22"
+    },
+    {
+      "archive_path": "raw/stage-b-schema22/hepta-append-profile-v22-red-build-error.log",
+      "bytes": 13507,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-append-profile-v22-red-build-error.log",
+      "raw_errors": [
+        "error[E0308]: mismatched types",
+        "error: could not compile `codex-hepta-automation` (lib test) due to 1 previous error",
+        "error: command `/tmp/pn-installed-toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-automation --lib --profile dev-small --locked` exited with code 101",
+        "error: recipe `test` failed on line 89 with exit code 101"
+      ],
+      "raw_run_ids": [],
+      "raw_summaries": [],
+      "sha256": "b51f686b1116fc08a816d349a11471140ac476bd1ea9e5ceed25158b5a66eb71",
+      "source_kind": "raw-retained",
+      "stage": "stage-b-schema22"
+    },
+    {
+      "archive_path": "raw/stage-b-schema22/hepta-append-profile-v22-red-source.json",
+      "bytes": 921,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-append-profile-v22-red-source.json",
+      "sha256": "b4a2e031e9d6455e0aab9f1badbd254aefc40db83950eac86210c740cefbbc32",
+      "source_kind": "raw-retained",
+      "stage": "stage-b-schema22"
+    },
+    {
+      "archive_path": "raw/stage-b-schema22/hepta-append-profile-v22-red.log",
+      "bytes": 27893,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-append-profile-v22-red.log",
+      "raw_errors": [
+        "error: test run failed",
+        "error: recipe `test` failed on line 89 with exit code 100"
+      ],
+      "raw_run_ids": [
+        "10f48fd9-1875-42c0-ab2a-0a0433a8b141"
+      ],
+      "raw_summaries": [
+        "Summary [   0.217s] 4 tests run: 2 passed, 2 failed, 26 skipped"
+      ],
+      "sha256": "c6bf0646b71fe852964cf49078a709f787918e7ec807fa75806a751c6d29c560",
+      "source_kind": "raw-retained",
+      "stage": "stage-b-schema22"
+    },
+    {
+      "archive_path": "raw/stage-b-schema22/hepta-append-profile-v22-stageB.patch",
+      "bytes": 45632,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-append-profile-v22-stageB.patch",
+      "sha256": "284c535b665628fefaa148641ad96a1f5542340a8904091ae82f1df86bf8cff8",
+      "source_kind": "raw-retained",
+      "stage": "stage-b-schema22"
+    },
+    {
+      "archive_path": "raw/stage-c-agentd-expiry/hepta-agentd-expiry-final-source.json",
+      "bytes": 2455,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-agentd-expiry-final-source.json",
+      "sha256": "d0ea45a82adc1c4a24e34aa0c61710f0296e01783286df2582ef8b06f8c71569",
+      "source_kind": "raw-retained",
+      "stage": "stage-c-agentd-expiry"
+    },
+    {
+      "archive_path": "raw/stage-c-agentd-expiry/hepta-agentd-expiry-fix.log",
+      "bytes": 14753,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-agentd-expiry-fix.log",
+      "raw_errors": [],
+      "raw_run_ids": [],
+      "raw_summaries": [],
+      "sha256": "0442eec02ec5271320347389ef679a03fa9157d1aa80bda3ee1edfa407d75fce",
+      "source_kind": "raw-retained",
+      "stage": "stage-c-agentd-expiry"
+    },
+    {
+      "archive_path": "raw/stage-c-agentd-expiry/hepta-agentd-expiry-fmt.log",
+      "bytes": 0,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-agentd-expiry-fmt.log",
+      "raw_errors": [],
+      "raw_run_ids": [],
+      "raw_summaries": [],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_kind": "raw-retained",
+      "stage": "stage-c-agentd-expiry"
+    },
+    {
+      "archive_path": "raw/stage-c-agentd-expiry/hepta-agentd-expiry-green.log",
+      "bytes": 27068,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-agentd-expiry-green.log",
+      "raw_errors": [],
+      "raw_run_ids": [
+        "8d373499-db7f-4d9b-aed8-9a1e4cf4988f"
+      ],
+      "raw_summaries": [
+        "Summary [   0.469s] 6 tests run: 6 passed, 220 skipped"
+      ],
+      "sha256": "f6f0b00ddc5a3cf8da68a60600ff6d57ee54556aa6907943ab7cecea478858b8",
+      "source_kind": "raw-retained",
+      "stage": "stage-c-agentd-expiry"
+    },
+    {
+      "archive_path": "raw/stage-c-agentd-expiry/hepta-agentd-expiry-lint-final.log",
+      "bytes": 29992,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-agentd-expiry-lint-final.log",
+      "raw_errors": [],
+      "raw_run_ids": [],
+      "raw_summaries": [],
+      "sha256": "b395f7395a6ed307c4e74d7ef112a742f9b8be989d6b8c0ef1a84c5ed45ee0d5",
+      "source_kind": "raw-retained",
+      "stage": "stage-c-agentd-expiry"
+    },
+    {
+      "archive_path": "raw/stage-c-agentd-expiry/hepta-agentd-expiry-prefmt.json",
+      "bytes": 1596,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-agentd-expiry-prefmt.json",
+      "sha256": "b2e93dc5f21e8b14b1a2c06622231a4028c9c3b8ca75e668dd69c646252bc39a",
+      "source_kind": "raw-retained",
+      "stage": "stage-c-agentd-expiry"
+    },
+    {
+      "archive_path": "raw/stage-c-agentd-expiry/hepta-agentd-expiry-red-source.json",
+      "bytes": 407,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-agentd-expiry-red-source.json",
+      "sha256": "e2b0f11065962b8cd5385884988f695a8375aa5e188b84e76122d5bb016ae806",
+      "source_kind": "raw-retained",
+      "stage": "stage-c-agentd-expiry"
+    },
+    {
+      "archive_path": "raw/stage-c-agentd-expiry/hepta-agentd-expiry-red-test.rs",
+      "bytes": 5701,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-agentd-expiry-red-test.rs",
+      "sha256": "fc36acae788e3894c0a6edb233e0bb5b65c63eed180b8a557a49935cb416714b",
+      "source_kind": "raw-retained",
+      "stage": "stage-c-agentd-expiry"
+    },
+    {
+      "archive_path": "raw/stage-c-agentd-expiry/hepta-agentd-expiry-red.log",
+      "bytes": 29611,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-agentd-expiry-red.log",
+      "raw_errors": [
+        "error: test run failed",
+        "error: recipe `test` failed on line 89 with exit code 100"
+      ],
+      "raw_run_ids": [
+        "aefa688b-d8d8-4465-b819-67a5dd126fc2"
+      ],
+      "raw_summaries": [
+        "Summary [   0.355s] 2 tests run: 1 passed, 1 failed, 224 skipped"
+      ],
+      "sha256": "0530421de18984442ae92a95bfcd5d7e16731707216c6a71e71cce7e9ab62dd0",
+      "source_kind": "raw-retained",
+      "stage": "stage-c-agentd-expiry"
+    },
+    {
+      "archive_path": "raw/stage-c-agentd-expiry/hepta-agentd-expiry-stageC.patch",
+      "bytes": 9358,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-agentd-expiry-stageC.patch",
+      "sha256": "4fd8bd0c9a79de38ab816f54e98bff03941f8b33336409403ae241d393eb7ff9",
+      "source_kind": "raw-retained",
+      "stage": "stage-c-agentd-expiry"
+    },
+    {
+      "archive_path": "raw/stage-c-agentd-expiry/hepta-agentd-expiry-tested-source.json",
+      "bytes": 487,
+      "origin_path": "/workspace/scratch/cedd7bc74ace/hepta-agentd-expiry-tested-source.json",
+      "sha256": "f5c6ab7230a6548fe5ed882f12a7e3b6d6775b30cc36b11939944fa9d368f942",
+      "source_kind": "raw-retained",
+      "stage": "stage-c-agentd-expiry"
+    }
+  ],
+  "independent_packaging_review": {
+    "archive_sha256_verified": "bce002660d5684eec8fa3fcfab1262c66b3dfcd13f0ff56f27a1b70af7d7ad36",
+    "claim_boundaries_verified": true,
+    "internal_index_verified": true,
+    "native_commands_executed": false,
+    "original_fifo_files_byte_verified": 20,
+    "payload_entries_verified": 78,
+    "result": "passed; no blocker",
+    "reviewer": "consensus_quantum"
+  },
+  "limitations": [
+    "AutomationStore final total is 134, not 129 + 133 + 134. Earlier suites overlap and belong to earlier source stages.",
+    "Initial 685 work, including the competing migration21, is superseded by adopted f874 and later schema22. Its 103/105 results are historical only.",
+    "Agentd HTTP6 includes AutomationStore SQLite close/reopen, not a whole-Agentd process restart; 220 unrelated tests were excluded.",
+    "Typed ProviderEffectAck has no provider signature. Canonical content and source-sensitive digest preserve adapter observations; endpoint/provider authentication remains outside this storage proof.",
+    "An older unresolved unbound attempt remains recovery-only/Unknown. Later Completed(B), opaque terminal evidence, or ProvenAbsent cannot invent the lost original operation binding.",
+    "An existing fully typed v21 binding may continue the same operation, but cannot prove that no historical ACK was lost. Schema version, key version, and timestamps cannot reconstruct vanished evidence.",
+    "FIFO initial ENOSPC and schema22 E0308 are build blockers before tests, not vulnerability RED. FIFO sandbox-fix and cache-format failures remain recorded.",
+    "The first f874 GREEN contained one flaky result. Both it and the later clean 129-result run are retained; the first result is not silently relabeled.",
+    "Tested and final formatted source hashes are separate. Agentd final helper-only Result cleanup was compiled by scoped Clippy after native6 GREEN; no native test rerun solely after fmt is claimed.",
+    "FIFO GREEN covers six selected local V2 cases. The additional Agentd/AppServer case in its seven-case CI roster was not executed by that local filter.",
+    "Prepared GitHub commits are object mappings supplied by root. This bundle contains no branch-update receipt and does not establish publication or an independent deployment."
+  ],
+  "local_to_prepared": [
+    {
+      "commit": "00012a4b64cade759833b24eedc6390d170777e2",
+      "prepared_github_commit": "63ef06334387a07d8c47777c73c2e8582b7fe846",
+      "prepared_tree_equality": "Reported verified by root; local tree and blobs read independently for this bundle.",
+      "publication_receipt_included": false,
+      "stage": "stage-a-f874",
+      "tree": "f2bf3e9f8af17619fd56f94e35f7429475dd0fe4"
+    },
+    {
+      "commit": "434e7486c640bb01b9a6e0124209e913a377a136",
+      "prepared_github_commit": "089312b1d1d95cb72e601ffd53aa643834b13829",
+      "prepared_tree_equality": "Reported verified by root; local tree and blobs read independently for this bundle.",
+      "publication_receipt_included": false,
+      "stage": "fifo-config",
+      "tree": "4a0ae56092ca4cecd3686f01212d16fed28affe9"
+    },
+    {
+      "commit": "0fa93fd32557a340901e15836bdf471b369dd5d1",
+      "prepared_github_commit": "d6818075db79f6a95f667670e22d9e290d09236f",
+      "prepared_tree_equality": "Reported verified by root; local tree and blobs read independently for this bundle.",
+      "publication_receipt_included": false,
+      "stage": "stage-b-schema22",
+      "tree": "10ca0f98540906224c1a97265d88198576f32215"
+    },
+    {
+      "commit": "ef886ca57b79e031031238cee892bcc0c434dbc6",
+      "prepared_github_commit": "6b62e8dde5de2a34e1e9714147089fc155b5fd04",
+      "prepared_tree_equality": "Reported verified by root; local tree and blobs read independently for this bundle.",
+      "publication_receipt_included": false,
+      "stage": "stage-b-column-metadata",
+      "tree": "ec209535097c2f38ab04160a8a5283a39cf6f77f"
+    },
+    {
+      "commit": "098c1a85b40dcc27d1d51c5dbefa6c0ebe474402",
+      "prepared_github_commit": "ea929be38b582360d1fa985d16577684f804e435",
+      "prepared_tree_equality": "Reported verified by root; local tree and blobs read independently for this bundle.",
+      "publication_receipt_included": false,
+      "stage": "stage-c-agentd-expiry",
+      "tree": "320f9b28b459fe475ca91359fc7ee91821a76503"
+    }
+  ],
+  "packaging_validation": {
+    "all_members_match_original_bytes": true,
+    "all_members_regular_files": true,
+    "fixed_tar_metadata_verified": true,
+    "native_commands_executed_for_packaging": false,
+    "source_checks": [
+      {
+        "local_commit": "0fa93fd32557a340901e15836bdf471b369dd5d1",
+        "manifest": "hepta-append-profile-v22-final-source.json",
+        "source_files_verified": 12
+      },
+      {
+        "local_commit": "ef886ca57b79e031031238cee892bcc0c434dbc6",
+        "manifest": "hepta-append-profile-schema-default-final-source.json",
+        "source_files_verified": 13
+      },
+      {
+        "local_commit": "098c1a85b40dcc27d1d51c5dbefa6c0ebe474402",
+        "manifest": "hepta-agentd-expiry-final-source.json",
+        "source_files_verified": 2
+      },
+      {
+        "local_commit": "434e7486c640bb01b9a6e0124209e913a377a136",
+        "manifest": "fifo-config/evidence.json",
+        "source_files_verified": 2
+      }
+    ],
+    "two_rebuilds_byte_identical": true
+  },
+  "readme_sha256": "c540b7589649a5ead3f0440229042b41f9856f90bb240d911c74ace4feccd22a",
+  "readme_terminology_note": "The seventh HOST_CASES entry is the separate CLI-bound native_app_server control, as named by scripts/hepta_final_use_pq_ci.py. Original archive evidence bytes remain unchanged.",
+  "retained_file_count": 78,
+  "retained_uncompressed_bytes": 1227359,
+  "schema": "hepta-owner-recovery-small-evidence-v1",
+  "source_manifest_git_checks": [
+    {
+      "local_commit": "0fa93fd32557a340901e15836bdf471b369dd5d1",
+      "manifest": "hepta-append-profile-v22-final-source.json",
+      "source_files_verified": 12
+    },
+    {
+      "local_commit": "ef886ca57b79e031031238cee892bcc0c434dbc6",
+      "manifest": "hepta-append-profile-schema-default-final-source.json",
+      "source_files_verified": 13
+    },
+    {
+      "local_commit": "098c1a85b40dcc27d1d51c5dbefa6c0ebe474402",
+      "manifest": "hepta-agentd-expiry-final-source.json",
+      "source_files_verified": 2
+    },
+    {
+      "local_commit": "434e7486c640bb01b9a6e0124209e913a377a136",
+      "manifest": "fifo-config/evidence.json",
+      "source_files_verified": 2
+    }
+  ],
+  "source_object_index": "derived/git-source-objects.json",
+  "stage_results": [
+    {
+      "raw_prefixes": [
+        "hepta-owner-recovery-",
+        "hepta-provider-ack-"
+      ],
+      "results": [
+        "owner RED 0/1; owner GREEN 103/103",
+        "typed ACK RED 0/1; selected GREEN 1/1",
+        "legacy fixture intermediate 104 passed/1 failed",
+        "typed ACK final historical GREEN 105/105"
+      ],
+      "stage": "initial-685-superseded",
+      "status": "superseded"
+    },
+    {
+      "final_run_id": "b626a485-a0f9-483c-9960-a2ae204b6286",
+      "results": [
+        "stale-owner RED 0/1",
+        "first GREEN 129 passed with 1 flaky",
+        "final GREEN 129/129 with no flaky"
+      ],
+      "stage": "stage-a-f874",
+      "status": "retained-local-fix"
+    },
+    {
+      "final_run_id": "b949c233-b58b-45f6-b1b4-5291396bc83a",
+      "results": [
+        "initial ENOSPC: no tests",
+        "actual RED 5 passed/1 failed; both FIFO child attempts bounded and reaped",
+        "GREEN 6/6 with no flaky",
+        "sandbox fix failure and default-cache fmt failure retained; corrected commands succeeded"
+      ],
+      "stage": "fifo-config",
+      "status": "retained-local-fix"
+    },
+    {
+      "final_run_id": "8fc48d9b-d4c9-4f43-91b4-ded27c6401d4",
+      "results": [
+        "initial SQLx prepare API E0308: no tests",
+        "actual RED 2 passed/2 failed",
+        "GREEN 133/133 with no flaky"
+      ],
+      "stage": "stage-b-schema22",
+      "status": "retained-local-fix"
+    },
+    {
+      "final_run_id": "4c84f5d1-9853-467d-a60d-982f3d4ac21e",
+      "results": [
+        "first RED retained",
+        "definitive changed-default reopen RED 0/1",
+        "GREEN 134/134 with no flaky"
+      ],
+      "stage": "stage-b-column-metadata",
+      "status": "final-automation-component-evidence"
+    },
+    {
+      "final_run_id": "8d373499-db7f-4d9b-aed8-9a1e4cf4988f",
+      "results": [
+        "RED 1 passed/1 failed",
+        "HTTP GREEN 6/6 with no flaky; 220 excluded",
+        "fix/fmt and final scoped Clippy succeeded"
+      ],
+      "stage": "stage-c-agentd-expiry",
+      "status": "final-agentd-component-evidence"
+    }
+  ]
+}
