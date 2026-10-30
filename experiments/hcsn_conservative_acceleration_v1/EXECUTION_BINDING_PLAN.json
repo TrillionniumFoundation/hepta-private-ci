@@ -1,0 +1,15 @@
+{
+  "schema": "hcsn-trained-execution-binding-plan.v1",
+  "declared_before_formal_training": true,
+  "checkpoint_rule": "Use the validation-selected checkpoint of fixed/selective_copy/hcsn_accelerated/seed98031. This is the first registered primary seed, not the best test result.",
+  "required_job": {"family": "fixed", "task": "selective_copy", "model": "hcsn_accelerated", "seed": 98031},
+  "model_config": {"name": "distribution_free_dual", "input_dim": 64, "output_dim": 8, "width": 32, "depth": 1, "seed": 98031},
+  "backend": "accelerated",
+  "profile": "stable",
+  "audits": ["stream", "native", "native-causal"],
+  "stream": {"length": 128, "cut": 37, "batch": 2, "input_rule": "The existing runtime.stream_check fixed-seed unlabeled panel; independent interpreter recovery; no content-accuracy claim"},
+  "native_binary_sha256": "1dc702aea6a448ad84407aeb71dc8f23066205fab79fe7c6859fc02c55e6f7a5",
+  "native_causal_rule": "The registered native_causal.py fixed-seed unlabeled panel and midpoint algorithm; all cases share external budget, fee, owner prefix and other message slots. Natural values and crossed message interventions test the value-message-to-action path.",
+  "cost_scope": "Wrap each complete runtime command in measured_child wait4; includes imports and waited-for subprocesses. Never add nested native/resume costs to this outer total.",
+  "claims_excluded": ["task-optimal stopping", "learned owner utility improvement", "heldout content accuracy on the calibration panel", "GPU or measured energy advantage"]
+}

@@ -1,0 +1,123 @@
+{
+  "schema": "hcsn-exact-av-cache-recovery.v1",
+  "source_commit": "63fd568b177c0456ddd8b590e3ac77d35307c0c4",
+  "source_av_tree": "fab002c0273e63ae92fd7595e82b39061951eaac",
+  "source_index_git_blob_sha": "c32e955be03e2d8206070eac436534c1c28c2ee8",
+  "source_index_sha256": "11f9f3cbe619d0385a5fb3b1577b89f5e2bfe3fe5157d22784ac3603f7755e4b",
+  "subset_index_sha256": "87d90de21bb09ec57a926fcb4125e3f121c51bd5cd3b99f5f0a773e913b62b2c",
+  "maximum_git_blob_bytes": 512000,
+  "largest_retrieved_part_bytes": 491521,
+  "parts_verified": 60,
+  "metadata_verified": [
+    {
+      "path": "experiments/hcsn_real_av_v1/data/ACQUISITION.json",
+      "bytes": 64957,
+      "git_blob_sha": "3b997549b70acd9ff23f6e1cc44c03e75685976e",
+      "sha256": "0db8ead7833a99e5ccccc6ec0658972aceb0add663bee71e2da4d17c91f3e736"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/data/COHORT_PLAN.json",
+      "bytes": 2098,
+      "git_blob_sha": "f4b19a36f6e19876fdb368bd146f9ff8ed68dabe",
+      "sha256": "ac896bfb2643f22234c9917794347e2aa443836122b5950541335fdc002e3874"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/data/CREMA_D_LICENSE.txt",
+      "bytes": 312,
+      "git_blob_sha": "941b7e9eb2ccbc86efb34d5d2f94a1e744d2e56a",
+      "sha256": "e76747a4efa4b338914bb3f930b5d3d3c3ac15b886bbabf897f6a19731f987f8"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/data/DATASET.json",
+      "bytes": 1886,
+      "git_blob_sha": "c653426ac9fd9f36dd8176ae0bb2b058b30e62e1",
+      "sha256": "858890284600dba4897f1eab7bb8668706185d9bf567199e6ea902f10dd02cbc"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/data/DECODE.json",
+      "bytes": 234139,
+      "git_blob_sha": "d6a960aba8c0b80c43ef52ff94d315781e797a32",
+      "sha256": "176ae39f66bd76c22054cfeab26dd853c73b6f0c875a4c400d75d12408f24eec"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/data/MANIFEST.json",
+      "bytes": 396783,
+      "git_blob_sha": "0b34d46299961e8c06ad60896b9d02856400ff46",
+      "sha256": "982367fca163d49022c02deadbaa2ccd07c9f1ec4203320a1302e89771add0b8"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/data/PREPARATION_COST.json",
+      "bytes": 645,
+      "git_blob_sha": "db78a2cf307cf88faf8c19a9bf34e60648e4511c",
+      "sha256": "5cd4768496e5c781a114ef610ac453fc9a209750142472e15315ba1143ac0410"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/data/normalization.npz",
+      "bytes": 4437,
+      "git_blob_sha": "dfeb2c8c1ea6f350b0a3c6454706ca8a07d58cf4",
+      "sha256": "3817a7b6ab57999b782e968124e2d7666909b22b96cc9a12c16dde747c035247"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/data/transport/TRAIN_MANIFEST.json",
+      "bytes": 939,
+      "git_blob_sha": "020f06a3c5a89d454c4c3678230d9944226d5167",
+      "sha256": "00bb2e1b59d57b8d68cca38d50f91bf8a37a65c1569066bbee4ed1bef41cba1d"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/data/transport/TRANSPORT_VALIDATION.json",
+      "bytes": 362,
+      "git_blob_sha": "13949151a86654cadada645a94f07e60c321c07a",
+      "sha256": "c34cdb2ca1ef60347e2cc8695a5f95c671815e6d464fa82079a5feb62c219ba1"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/data/transport/restore_train.py",
+      "bytes": 2424,
+      "git_blob_sha": "75083a1b48957ff07a1bffcde8da58773101ddb0",
+      "sha256": "5214b243050d5c8abaa419e97449144d5347e0ac553051d63d785ed74a1d2483"
+    }
+  ],
+  "bounded_restore": {
+    "schema": "hcsn-bounded-transport-verification.v1",
+    "index_sha256": "87d90de21bb09ec57a926fcb4125e3f121c51bd5cd3b99f5f0a773e913b62b2c",
+    "restored": 4,
+    "already_identical": 0,
+    "files": 4,
+    "logical_bytes": 21580725
+  },
+  "training_restore": {
+    "status": "restored_exact",
+    "path": "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_real_av_v1/data/train.npz",
+    "bytes": 14384278,
+    "sha256": "f4074f14b5d46702cb8ae293a7d6c974b9576f651377e85836566f154eac4a33"
+  },
+  "dataset_manifest_sha256": "858890284600dba4897f1eab7bb8668706185d9bf567199e6ea902f10dd02cbc",
+  "files": [
+    {
+      "split": "test",
+      "path": "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_real_av_v1/data/test.npz",
+      "bytes": 3596130,
+      "sha256": "5d041d12b134ab31586d9dc768b8e6d3dec391ab373f6b1c88d11d25739d86d7",
+      "git_blob_sha": "0331c700ad03ab460e984e548866f8d553952fbb"
+    },
+    {
+      "split": "train",
+      "path": "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_real_av_v1/data/train.npz",
+      "bytes": 14384278,
+      "sha256": "f4074f14b5d46702cb8ae293a7d6c974b9576f651377e85836566f154eac4a33",
+      "git_blob_sha": "bb07a571c35e45564e61c9ea8203e418c2d4552f"
+    },
+    {
+      "split": "validation",
+      "path": "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_real_av_v1/data/validation.npz",
+      "bytes": 3600317,
+      "sha256": "1c2206425d32e4166d4cd44a2b5d3199e4a5da50c1258e405a62ad84e31be906",
+      "git_blob_sha": "cbe0529de905ce48e6d88d2c700cfef56144ffd6"
+    }
+  ],
+  "heldout_arrays_decoded": false,
+  "media_downloaded": false,
+  "canonical_restore_and_identity_check_cpu_seconds": 0.27741051299999997,
+  "canonical_restore_and_identity_check_wall_seconds": 0.4643942569982755,
+  "timing_scope": "Canonical local reassembly plus final identity checks only; connector retrieval and staging are excluded.",
+  "passed": true
+}
