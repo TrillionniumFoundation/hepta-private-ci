@@ -1,0 +1,574 @@
+{
+  "run": "retrieval/47/memory_fixed",
+  "reason": "Conservative working-set headroom below1.5GB",
+  "pause_seconds": 200.05028352399677,
+  "observations": [
+    {
+      "raw_current_bytes": 8443568128,
+      "cgroup_limit_bytes": 8589934592,
+      "clean_inactive_estimate_bytes": 465436672,
+      "conservative_working_set_bytes": 7978131456,
+      "estimated_headroom_bytes": 611803136,
+      "components": {
+        "anon": 1367289856,
+        "file": 6370783232,
+        "shmem": 4864319488,
+        "inactive_file": 465678336,
+        "active_file": 1040728064,
+        "file_dirty": 241664,
+        "file_writeback": 0,
+        "slab_reclaimable": 540530072,
+        "slab_unreclaimable": 151433944
+      },
+      "oom_events": {
+        "low": 0,
+        "high": 0,
+        "max": 2599446,
+        "oom": 94,
+        "oom_kill": 2,
+        "oom_group_kill": 0
+      },
+      "utc": "2026-10-30T06:39:31.004233+00:00"
+    },
+    {
+      "raw_current_bytes": 7718318080,
+      "cgroup_limit_bytes": 8589934592,
+      "clean_inactive_estimate_bytes": 140853248,
+      "conservative_working_set_bytes": 7577464832,
+      "estimated_headroom_bytes": 1012469760,
+      "components": {
+        "anon": 683188224,
+        "file": 6328999936,
+        "shmem": 5114019840,
+        "inactive_file": 141312000,
+        "active_file": 1073668096,
+        "file_dirty": 458752,
+        "file_writeback": 0,
+        "slab_reclaimable": 541604896,
+        "slab_unreclaimable": 156025656
+      },
+      "oom_events": {
+        "low": 0,
+        "high": 0,
+        "max": 2601221,
+        "oom": 94,
+        "oom_kill": 2,
+        "oom_group_kill": 0
+      },
+      "utc": "2026-10-30T06:39:41.006079+00:00"
+    },
+    {
+      "raw_current_bytes": 7716737024,
+      "cgroup_limit_bytes": 8589934592,
+      "clean_inactive_estimate_bytes": 140697600,
+      "conservative_working_set_bytes": 7576039424,
+      "estimated_headroom_bytes": 1013895168,
+      "components": {
+        "anon": 682041344,
+        "file": 6329028608,
+        "shmem": 5114019840,
+        "inactive_file": 141295616,
+        "active_file": 1073713152,
+        "file_dirty": 598016,
+        "file_writeback": 0,
+        "slab_reclaimable": 541609024,
+        "slab_unreclaimable": 156048552
+      },
+      "oom_events": {
+        "low": 0,
+        "high": 0,
+        "max": 2601221,
+        "oom": 94,
+        "oom_kill": 2,
+        "oom_group_kill": 0
+      },
+      "utc": "2026-10-30T06:39:51.008465+00:00"
+    },
+    {
+      "raw_current_bytes": 7721775104,
+      "cgroup_limit_bytes": 8589934592,
+      "clean_inactive_estimate_bytes": 140509184,
+      "conservative_working_set_bytes": 7581265920,
+      "estimated_headroom_bytes": 1008668672,
+      "components": {
+        "anon": 686723072,
+        "file": 6329311232,
+        "shmem": 5114019840,
+        "inactive_file": 141287424,
+        "active_file": 1074003968,
+        "file_dirty": 778240,
+        "file_writeback": 0,
+        "slab_reclaimable": 541749160,
+        "slab_unreclaimable": 156062576
+      },
+      "oom_events": {
+        "low": 0,
+        "high": 0,
+        "max": 2601221,
+        "oom": 94,
+        "oom_kill": 2,
+        "oom_group_kill": 0
+      },
+      "utc": "2026-10-30T06:40:01.011808+00:00"
+    },
+    {
+      "raw_current_bytes": 7797198848,
+      "cgroup_limit_bytes": 8589934592,
+      "clean_inactive_estimate_bytes": 142282752,
+      "conservative_working_set_bytes": 7654916096,
+      "estimated_headroom_bytes": 935018496,
+      "components": {
+        "anon": 750833664,
+        "file": 6339661824,
+        "shmem": 5114019840,
+        "inactive_file": 143257600,
+        "active_file": 1082322944,
+        "file_dirty": 974848,
+        "file_writeback": 0,
+        "slab_reclaimable": 542016352,
+        "slab_unreclaimable": 154743720
+      },
+      "oom_events": {
+        "low": 0,
+        "high": 0,
+        "max": 2601221,
+        "oom": 94,
+        "oom_kill": 2,
+        "oom_group_kill": 0
+      },
+      "utc": "2026-10-30T06:40:11.014578+00:00"
+    },
+    {
+      "raw_current_bytes": 8199319552,
+      "cgroup_limit_bytes": 8589934592,
+      "clean_inactive_estimate_bytes": 467357696,
+      "conservative_working_set_bytes": 7731961856,
+      "estimated_headroom_bytes": 857972736,
+      "components": {
+        "anon": 784998400,
+        "file": 6707142656,
+        "shmem": 5114019840,
+        "inactive_file": 472465408,
+        "active_file": 1120665600,
+        "file_dirty": 5107712,
+        "file_writeback": 0,
+        "slab_reclaimable": 542324088,
+        "slab_unreclaimable": 154757472
+      },
+      "oom_events": {
+        "low": 0,
+        "high": 0,
+        "max": 2601221,
+        "oom": 94,
+        "oom_kill": 2,
+        "oom_group_kill": 0
+      },
+      "utc": "2026-10-30T06:40:21.017065+00:00"
+    },
+    {
+      "raw_current_bytes": 8119799808,
+      "cgroup_limit_bytes": 8589934592,
+      "clean_inactive_estimate_bytes": 352833536,
+      "conservative_working_set_bytes": 7766966272,
+      "estimated_headroom_bytes": 822968320,
+      "components": {
+        "anon": 701714432,
+        "file": 6711201792,
+        "shmem": 5114019840,
+        "inactive_file": 361914368,
+        "active_file": 1235267584,
+        "file_dirty": 9080832,
+        "file_writeback": 0,
+        "slab_reclaimable": 542583712,
+        "slab_unreclaimable": 155429920
+      },
+      "oom_events": {
+        "low": 0,
+        "high": 0,
+        "max": 2601221,
+        "oom": 94,
+        "oom_kill": 2,
+        "oom_group_kill": 0
+      },
+      "utc": "2026-10-30T06:40:31.019173+00:00"
+    },
+    {
+      "raw_current_bytes": 8220184576,
+      "cgroup_limit_bytes": 8589934592,
+      "clean_inactive_estimate_bytes": 347447296,
+      "conservative_working_set_bytes": 7872737280,
+      "estimated_headroom_bytes": 717197312,
+      "components": {
+        "anon": 796848128,
+        "file": 6715420672,
+        "shmem": 5114019840,
+        "inactive_file": 360767488,
+        "active_file": 1240633344,
+        "file_dirty": 13320192,
+        "file_writeback": 0,
+        "slab_reclaimable": 542775344,
+        "slab_unreclaimable": 154737496
+      },
+      "oom_events": {
+        "low": 0,
+        "high": 0,
+        "max": 2601221,
+        "oom": 94,
+        "oom_kill": 2,
+        "oom_group_kill": 0
+      },
+      "utc": "2026-10-30T06:40:41.021724+00:00"
+    },
+    {
+      "raw_current_bytes": 8148307968,
+      "cgroup_limit_bytes": 8589934592,
+      "clean_inactive_estimate_bytes": 347148288,
+      "conservative_working_set_bytes": 7801159680,
+      "estimated_headroom_bytes": 788774912,
+      "components": {
+        "anon": 726372352,
+        "file": 6716006400,
+        "shmem": 5114019840,
+        "inactive_file": 360726528,
+        "active_file": 1241260032,
+        "file_dirty": 13578240,
+        "file_writeback": 0,
+        "slab_reclaimable": 542799752,
+        "slab_unreclaimable": 154360616
+      },
+      "oom_events": {
+        "low": 0,
+        "high": 0,
+        "max": 2601221,
+        "oom": 94,
+        "oom_kill": 2,
+        "oom_group_kill": 0
+      },
+      "utc": "2026-10-30T06:40:51.023867+00:00"
+    },
+    {
+      "raw_current_bytes": 8221609984,
+      "cgroup_limit_bytes": 8589934592,
+      "clean_inactive_estimate_bytes": 347074560,
+      "conservative_working_set_bytes": 7874535424,
+      "estimated_headroom_bytes": 715399168,
+      "components": {
+        "anon": 795717632,
+        "file": 6716162048,
+        "shmem": 5114019840,
+        "inactive_file": 360833024,
+        "active_file": 1241309184,
+        "file_dirty": 13758464,
+        "file_writeback": 0,
+        "slab_reclaimable": 542874240,
+        "slab_unreclaimable": 156563056
+      },
+      "oom_events": {
+        "low": 0,
+        "high": 0,
+        "max": 2601221,
+        "oom": 94,
+        "oom_kill": 2,
+        "oom_group_kill": 0
+      },
+      "utc": "2026-10-30T06:41:01.026122+00:00"
+    },
+    {
+      "raw_current_bytes": 8231079936,
+      "cgroup_limit_bytes": 8589934592,
+      "clean_inactive_estimate_bytes": 347205632,
+      "conservative_working_set_bytes": 7883874304,
+      "estimated_headroom_bytes": 706060288,
+      "components": {
+        "anon": 806580224,
+        "file": 6716391424,
+        "shmem": 5114019840,
+        "inactive_file": 360931328,
+        "active_file": 1241448448,
+        "file_dirty": 13725696,
+        "file_writeback": 0,
+        "slab_reclaimable": 542936288,
+        "slab_unreclaimable": 154743464
+      },
+      "oom_events": {
+        "low": 0,
+        "high": 0,
+        "max": 2601221,
+        "oom": 94,
+        "oom_kill": 2,
+        "oom_group_kill": 0
+      },
+      "utc": "2026-10-30T06:41:11.028867+00:00"
+    },
+    {
+      "raw_current_bytes": 8220176384,
+      "cgroup_limit_bytes": 8589934592,
+      "clean_inactive_estimate_bytes": 346980352,
+      "conservative_working_set_bytes": 7873196032,
+      "estimated_headroom_bytes": 716738560,
+      "components": {
+        "anon": 794308608,
+        "file": 6716514304,
+        "shmem": 5114019840,
+        "inactive_file": 360910848,
+        "active_file": 1241583616,
+        "file_dirty": 13930496,
+        "file_writeback": 0,
+        "slab_reclaimable": 543012928,
+        "slab_unreclaimable": 155037288
+      },
+      "oom_events": {
+        "low": 0,
+        "high": 0,
+        "max": 2601221,
+        "oom": 94,
+        "oom_kill": 2,
+        "oom_group_kill": 0
+      },
+      "utc": "2026-10-30T06:41:21.031057+00:00"
+    },
+    {
+      "raw_current_bytes": 8233730048,
+      "cgroup_limit_bytes": 8589934592,
+      "clean_inactive_estimate_bytes": 348938240,
+      "conservative_working_set_bytes": 7884791808,
+      "estimated_headroom_bytes": 705142784,
+      "components": {
+        "anon": 808996864,
+        "file": 6716698624,
+        "shmem": 5114019840,
+        "inactive_file": 362168320,
+        "active_file": 1240510464,
+        "file_dirty": 13230080,
+        "file_writeback": 0,
+        "slab_reclaimable": 543008880,
+        "slab_unreclaimable": 154809064
+      },
+      "oom_events": {
+        "low": 0,
+        "high": 0,
+        "max": 2601221,
+        "oom": 94,
+        "oom_kill": 2,
+        "oom_group_kill": 0
+      },
+      "utc": "2026-10-30T06:41:31.033320+00:00"
+    },
+    {
+      "raw_current_bytes": 8223236096,
+      "cgroup_limit_bytes": 8589934592,
+      "clean_inactive_estimate_bytes": 348557312,
+      "conservative_working_set_bytes": 7874678784,
+      "estimated_headroom_bytes": 715255808,
+      "components": {
+        "anon": 797528064,
+        "file": 6716710912,
+        "shmem": 5114019840,
+        "inactive_file": 362123264,
+        "active_file": 1240567808,
+        "file_dirty": 13565952,
+        "file_writeback": 0,
+        "slab_reclaimable": 543009696,
+        "slab_unreclaimable": 156531288
+      },
+      "oom_events": {
+        "low": 0,
+        "high": 0,
+        "max": 2601221,
+        "oom": 94,
+        "oom_kill": 2,
+        "oom_group_kill": 0
+      },
+      "utc": "2026-10-30T06:41:41.035404+00:00"
+    },
+    {
+      "raw_current_bytes": 8198934528,
+      "cgroup_limit_bytes": 8589934592,
+      "clean_inactive_estimate_bytes": 348696576,
+      "conservative_working_set_bytes": 7850237952,
+      "estimated_headroom_bytes": 739696640,
+      "components": {
+        "anon": 774856704,
+        "file": 6716833792,
+        "shmem": 5114019840,
+        "inactive_file": 362295296,
+        "active_file": 1240526848,
+        "file_dirty": 13598720,
+        "file_writeback": 0,
+        "slab_reclaimable": 543069240,
+        "slab_unreclaimable": 154660528
+      },
+      "oom_events": {
+        "low": 0,
+        "high": 0,
+        "max": 2601221,
+        "oom": 94,
+        "oom_kill": 2,
+        "oom_group_kill": 0
+      },
+      "utc": "2026-10-30T06:41:51.037783+00:00"
+    },
+    {
+      "raw_current_bytes": 8205430784,
+      "cgroup_limit_bytes": 8589934592,
+      "clean_inactive_estimate_bytes": 348442624,
+      "conservative_working_set_bytes": 7856988160,
+      "estimated_headroom_bytes": 732946432,
+      "components": {
+        "anon": 780595200,
+        "file": 6716841984,
+        "shmem": 5114019840,
+        "inactive_file": 362119168,
+        "active_file": 1240702976,
+        "file_dirty": 13676544,
+        "file_writeback": 0,
+        "slab_reclaimable": 543074584,
+        "slab_unreclaimable": 154516408
+      },
+      "oom_events": {
+        "low": 0,
+        "high": 0,
+        "max": 2601221,
+        "oom": 94,
+        "oom_kill": 2,
+        "oom_group_kill": 0
+      },
+      "utc": "2026-10-30T06:42:01.040438+00:00"
+    },
+    {
+      "raw_current_bytes": 8209158144,
+      "cgroup_limit_bytes": 8589934592,
+      "clean_inactive_estimate_bytes": 348200960,
+      "conservative_working_set_bytes": 7860957184,
+      "estimated_headroom_bytes": 728977408,
+      "components": {
+        "anon": 783888384,
+        "file": 6716858368,
+        "shmem": 5114019840,
+        "inactive_file": 362057728,
+        "active_file": 1240780800,
+        "file_dirty": 13856768,
+        "file_writeback": 0,
+        "slab_reclaimable": 543074624,
+        "slab_unreclaimable": 156352504
+      },
+      "oom_events": {
+        "low": 0,
+        "high": 0,
+        "max": 2601221,
+        "oom": 94,
+        "oom_kill": 2,
+        "oom_group_kill": 0
+      },
+      "utc": "2026-10-30T06:42:11.042878+00:00"
+    },
+    {
+      "raw_current_bytes": 8209465344,
+      "cgroup_limit_bytes": 8589934592,
+      "clean_inactive_estimate_bytes": 348508160,
+      "conservative_working_set_bytes": 7860957184,
+      "estimated_headroom_bytes": 728977408,
+      "components": {
+        "anon": 782987264,
+        "file": 6717067264,
+        "shmem": 5114019840,
+        "inactive_file": 362196992,
+        "active_file": 1240850432,
+        "file_dirty": 13688832,
+        "file_writeback": 0,
+        "slab_reclaimable": 543170544,
+        "slab_unreclaimable": 155609056
+      },
+      "oom_events": {
+        "low": 0,
+        "high": 0,
+        "max": 2601221,
+        "oom": 94,
+        "oom_kill": 2,
+        "oom_group_kill": 0
+      },
+      "utc": "2026-10-30T06:42:21.045694+00:00"
+    },
+    {
+      "raw_current_bytes": 8203157504,
+      "cgroup_limit_bytes": 8589934592,
+      "clean_inactive_estimate_bytes": 356245504,
+      "conservative_working_set_bytes": 7846912000,
+      "estimated_headroom_bytes": 743022592,
+      "components": {
+        "anon": 777682944,
+        "file": 6717120512,
+        "shmem": 5114019840,
+        "inactive_file": 362078208,
+        "active_file": 1241022464,
+        "file_dirty": 5832704,
+        "file_writeback": 0,
+        "slab_reclaimable": 543220304,
+        "slab_unreclaimable": 154766648
+      },
+      "oom_events": {
+        "low": 0,
+        "high": 0,
+        "max": 2601221,
+        "oom": 94,
+        "oom_kill": 2,
+        "oom_group_kill": 0
+      },
+      "utc": "2026-10-30T06:42:31.048500+00:00"
+    },
+    {
+      "raw_current_bytes": 8187527168,
+      "cgroup_limit_bytes": 8589934592,
+      "clean_inactive_estimate_bytes": 356077568,
+      "conservative_working_set_bytes": 7831449600,
+      "estimated_headroom_bytes": 758484992,
+      "components": {
+        "anon": 762626048,
+        "file": 6717128704,
+        "shmem": 5114019840,
+        "inactive_file": 362074112,
+        "active_file": 1241034752,
+        "file_dirty": 5996544,
+        "file_writeback": 0,
+        "slab_reclaimable": 543191560,
+        "slab_unreclaimable": 154542256
+      },
+      "oom_events": {
+        "low": 0,
+        "high": 0,
+        "max": 2601221,
+        "oom": 94,
+        "oom_kill": 2,
+        "oom_group_kill": 0
+      },
+      "utc": "2026-10-30T06:42:41.051373+00:00"
+    },
+    {
+      "raw_current_bytes": 8184651776,
+      "cgroup_limit_bytes": 8589934592,
+      "clean_inactive_estimate_bytes": 355938304,
+      "conservative_working_set_bytes": 7828713472,
+      "estimated_headroom_bytes": 761221120,
+      "components": {
+        "anon": 758337536,
+        "file": 6717132800,
+        "shmem": 5114019840,
+        "inactive_file": 362070016,
+        "active_file": 1241042944,
+        "file_dirty": 6131712,
+        "file_writeback": 0,
+        "slab_reclaimable": 543178688,
+        "slab_unreclaimable": 156335632
+      },
+      "oom_events": {
+        "low": 0,
+        "high": 0,
+        "max": 2601221,
+        "oom": 94,
+        "oom_kill": 2,
+        "oom_group_kill": 0
+      },
+      "utc": "2026-10-30T06:42:51.054238+00:00"
+    }
+  ]
+}

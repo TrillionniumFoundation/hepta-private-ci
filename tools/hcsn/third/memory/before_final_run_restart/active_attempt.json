@@ -1,0 +1,44 @@
+{
+  "task": "retrieval",
+  "seed": 47,
+  "variant": "c1_mass",
+  "status": "completed",
+  "started_epoch_seconds": 1793342342.2333126,
+  "memory_current_bytes": 7966105600,
+  "operational_driver": {
+    "amendment_sha256": "aef28861e3e9acfe394fd11475ee2eeb092b562af443321c41c9e483c3ea2d25",
+    "driver_sha256": "f3b2bcf1047a8a59c652930b2cc0da5b74a6a36fe2646c7368e37b48dfe9cfa5",
+    "applies_after_completed_runs": 1,
+    "mathematical_sources_changed": false,
+    "scientific_protocol_changed": false
+  },
+  "resources_observed": {
+    "raw_current_bytes": 8425627648,
+    "cgroup_limit_bytes": 8589934592,
+    "clean_inactive_estimate_bytes": 465448960,
+    "conservative_working_set_bytes": 7960178688,
+    "estimated_headroom_bytes": 629755904,
+    "components": {
+      "anon": 1369116672,
+      "file": 6350929920,
+      "shmem": 4844527616,
+      "inactive_file": 465674240,
+      "active_file": 1040728064,
+      "file_dirty": 225280,
+      "file_writeback": 0,
+      "slab_reclaimable": 540304112,
+      "slab_unreclaimable": 151319232
+    },
+    "oom_events": {
+      "low": 0,
+      "high": 0,
+      "max": 2599446,
+      "oom": 94,
+      "oom_kill": 2,
+      "oom_group_kill": 0
+    },
+    "utc": "2026-10-30T06:39:30.782942+00:00"
+  },
+  "elapsed_seconds": 28.549324989318848,
+  "memory_after_bytes": 8425627648
+}

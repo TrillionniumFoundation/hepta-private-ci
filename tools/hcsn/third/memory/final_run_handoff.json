@@ -1,0 +1,68 @@
+{
+  "utc": "2026-10-30T06:42:54.326617+00:00",
+  "process_pid": 298454,
+  "completed_runs": 47,
+  "reason": "Release idle JAX resident caches while preserving all finished runs and unchanged1.5GB admission guard",
+  "active_attempt": {
+    "task": "retrieval",
+    "seed": 47,
+    "variant": "c1_mass",
+    "status": "completed",
+    "started_epoch_seconds": 1793342342.2333126,
+    "memory_current_bytes": 7966105600,
+    "operational_driver": {
+      "amendment_sha256": "aef28861e3e9acfe394fd11475ee2eeb092b562af443321c41c9e483c3ea2d25",
+      "driver_sha256": "f3b2bcf1047a8a59c652930b2cc0da5b74a6a36fe2646c7368e37b48dfe9cfa5",
+      "applies_after_completed_runs": 1,
+      "mathematical_sources_changed": false,
+      "scientific_protocol_changed": false
+    },
+    "resources_observed": {
+      "raw_current_bytes": 8425627648,
+      "cgroup_limit_bytes": 8589934592,
+      "clean_inactive_estimate_bytes": 465448960,
+      "conservative_working_set_bytes": 7960178688,
+      "estimated_headroom_bytes": 629755904,
+      "components": {
+        "anon": 1369116672,
+        "file": 6350929920,
+        "shmem": 4844527616,
+        "inactive_file": 465674240,
+        "active_file": 1040728064,
+        "file_dirty": 225280,
+        "file_writeback": 0,
+        "slab_reclaimable": 540304112,
+        "slab_unreclaimable": 151319232
+      },
+      "oom_events": {
+        "low": 0,
+        "high": 0,
+        "max": 2599446,
+        "oom": 94,
+        "oom_kill": 2,
+        "oom_group_kill": 0
+      },
+      "utc": "2026-10-30T06:39:30.782942+00:00"
+    },
+    "elapsed_seconds": 28.549324989318848,
+    "memory_after_bytes": 8425627648
+  },
+  "scientific_source_changed": false,
+  "driver_changed": false,
+  "threshold_changed": false,
+  "training_interrupted": false,
+  "saved_result_file": "before_final_run_restart/development_results.json",
+  "driver_sha256": "f3b2bcf1047a8a59c652930b2cc0da5b74a6a36fe2646c7368e37b48dfe9cfa5",
+  "preserved_sha256": {
+    "development_results.json": "541b1f838491b8de707182c094236c211d90d43b4b39ad9ec2f20f2433164276",
+    "operational_development.log": "bc70b89f291576c9e147ff0c88e969fda7fc21768192d0d9add7c4628480310a",
+    "operational_resource_pause.json": "19fa10b9fd0fccc82a648ed17ad71fcfcd1613080c3662a885668136c8697f23",
+    "active_attempt.json": "b8c2b622ab7365746460a61ffaec03602ce723d74165ea3588263870ae50b4cc"
+  },
+  "resource_snapshot": {
+    "memory.current": "8214540288\n",
+    "memory.stat": "anon 788058112\nfile 6718025728\nkernel 707149824\nkernel_stack 1654784\npagetables 7315456\nsec_pagetables 0\npercpu 11880\nsock 0\nvmalloc 8192\nshmem 5114019840\nfile_mapped 93024256\nfile_dirty 6508544\nfile_writeback 0\nswapcached 0\nanon_thp 44040192\nfile_thp 2097152\nshmem_thp 0\ninactive_anon 4346388480\nactive_anon 1555161088\ninactive_file 362975232\nactive_file 1241030656\nunevictable 0\nslab_reclaimable 543296640\nslab_unreclaimable 154808120\nslab 698104760\nworkingset_refault_anon 0\nworkingset_refault_file 121758350\nworkingset_activate_anon 0\nworkingset_activate_file 61361174\nworkingset_restore_anon 0\nworkingset_restore_file 46465748\nworkingset_nodereclaim 0\npgdemote_kswapd 0\npgdemote_direct 0\npgdemote_khugepaged 0\npgdemote_proactive 0\npgscan 220868734\npgsteal 132417329\npswpin 0\npswpout 0\npgscan_kswapd 1680089\npgscan_direct 219185893\npgscan_khugepaged 2752\npgscan_proactive 0\npgsteal_kswapd 1672588\npgsteal_direct 130741989\npgsteal_khugepaged 2752\npgsteal_proactive 0\npgfault 600466318\npgmajfault 74670\npgrefill 71092384\npgactivate 26200060\npgdeactivate 70595739\npglazyfree 707\npglazyfreed 0\nswpin_zero 0\nswpout_zero 0\nthp_fault_alloc 2297\nthp_collapse_alloc 228\nthp_swpout 0\nthp_swpout_fallback 0\n",
+    "memory.events": "low 0\nhigh 0\nmax 2601221\noom 94\noom_kill 2\noom_group_kill 0\n",
+    "memory.max": "8589934592\n"
+  }
+}

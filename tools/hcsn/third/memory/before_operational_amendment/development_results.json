@@ -1,0 +1,629 @@
+{
+  "protocol": {
+    "schema": "hcsn.memory.mechanism.development.v2",
+    "status": "Frozen before new development data construction or training",
+    "execution_revision": "First implementation and failed FP32 high-condition adjoint stress retained in revision1. Revision2 changes all branches to FP64 matrix construction/solve with read cast to original state dtype, adds condition-times-solver-epsilon gate and atomic resource-aware execution; no gradient tolerance, data, architecture, update budget or quality gate relaxed.",
+    "hypothesis": "Scaling normalized-statistic ridge by inverse write mass removes pure normalization dilution, while potentially increasing conditioning costs; this need not benefit classification or financial gates specifically.",
+    "variants": [
+      "full_fixed",
+      "full_mass",
+      "sigmoid_fixed",
+      "sigmoid_mass",
+      "c1_fixed",
+      "c1_mass",
+      "memory_fixed",
+      "memory_mass"
+    ],
+    "tasks": [
+      "memory",
+      "retrieval"
+    ],
+    "seeds": [
+      11,
+      29,
+      47
+    ],
+    "data_seed_base": 3900000,
+    "initialization_seed_base": 43000,
+    "optimizer_seed_base": 44000,
+    "training_lengths": [
+      8,
+      16,
+      32
+    ],
+    "training_examples_per_length": 2048,
+    "validation_examples": 512,
+    "diagnostic_examples": 512,
+    "training_updates": 600,
+    "batch_size": 32,
+    "learning_rate": 0.003,
+    "parameter_target": 6200,
+    "ridge": 0.01,
+    "checkpoint_selection": "Lowest length32 development validation cross entropy, every50 updates; no diagnostic-length model selection",
+    "gate_definitions": {
+      "full": "Original next/full_kernel compiled FullHX risk and Call; finance parameters fixed",
+      "sigmoid": "sigmoid(2z) risk, retaining exactly the same compiled FullHX Call; this differs deliberately from the old v4 sigmoid control",
+      "c1": "q=.5+.5*z*abs(z)/(1+z*z), a=relu(-z)^2/(1+relu(-z)^2); stable extreme branches, no financial table",
+      "memory": "No fast/slow dynamics; original learned generic key/value/write projections",
+      "fixed": "Read with symmetrized G+.01I",
+      "mass": "Read with symmetrized G+.01*r*I; no numerical ridge floor or detached mass gradient"
+    },
+    "precision": "State and learned parameters remain float32. G,H,r,query cast to float64 before matrix construction/solve in ALL branches; read cast back to state dtype. JAX x64 configuration required and checked. State-rounding sensitivity remains separately reported.",
+    "comparison": "Identical initial parameters and widths across all three dynamic families and ridge modes; pure-memory width chosen to match parameter target. Persistent state and FLOPs reported, not matched.",
+    "development_gate": {
+      "numerical_validation_required": true,
+      "full_mass_every_seed_memory128_min": 0.95,
+      "full_mass_every_seed_retrieval128_min": 0.9,
+      "full_mass_minus_full_fixed_mean_memory512_min": 0.02,
+      "full_mass_minus_full_fixed_mean_retrieval512_min": -0.01,
+      "maximum_solve_relative_residual": 5e-05,
+      "meaning": "Candidate-mechanism screen only. Passing authorizes a separate frozen confirmation protocol; it does not establish financial-gate superiority or authorize backbone pretraining."
+    },
+    "numerical_standards": {
+      "float64_directional_error": 2e-05,
+      "float32_directional_error": 0.005,
+      "float64_difference_steps": [
+        0.0001,
+        3e-05
+      ],
+      "float32_difference_steps": [
+        0.003,
+        0.001
+      ],
+      "condition_bound_relative_tolerance": 0.001,
+      "maximum_condition_times_solver_epsilon": 0.001,
+      "numpy_jax_logit_error": 5e-05
+    },
+    "freshness": "New development RNG bases and initialization seeds; input fingerprints and exact development-evaluation overlap against all old v3/v4 train/evaluation inputs at matching lengths checked before training. No new confirmation set is constructed.",
+    "limits": [
+      "Old-checkpoint counterfactuals are exploratory and never count as new confirmation success",
+      "Condition<=101 applies only to fixed mode; mass mode has bound1+sum(w)/.01 in exact arithmetic",
+      "Single final-query solve is sequence-to-one, not token-by-token language decoding",
+      "No extra HPO, failed-seed replacement, or threshold changes after development outcomes",
+      "Synthetic tasks do not establish multimodal or large-backbone advantages"
+    ]
+  },
+  "freeze_sha256": "be352590d34de0eaf127b4566a89bb80e8a295799aebfa72febaee295f5db432",
+  "source_sha256": {
+    "third/memory/audit_development.py": "bf6f4585523f292eb41dd9bcd03dbedcf866ed2d65d5c3ebadeb3521489b42e2",
+    "third/memory/data.py": "105de5ab92bb05df45c00229ed3504cdbe4ee6acf2283e98dbc874a5d3a5850a",
+    "third/memory/development.py": "79210d7cb9233d8d1dee056483243bb039f80d4d6e68c3cc71dd305c062ca071",
+    "third/memory/diagnose.py": "c2fa7069708bf85ea8eee0bec6b021cd669341864efb97ee60f8f76f9becd640",
+    "third/memory/execution.py": "114d35b7911b5d9497a96c00475de58b67a1451565cda29e1a254d1b6be61195",
+    "third/memory/freeze.py": "5dbe390b146f31607b38a3c7e8c7e4055fe88b80ac58c6221ff6cfb4fd24b567",
+    "third/memory/models.py": "e1cce0a5b815d081a321949077a7236b24bef6389ad46d5967e3153332183311",
+    "third/memory/reference.py": "eb9ae19aa3fb6c17d4a69e585f1b7789ae6c95b5f84283db498094cf3db6b47e",
+    "third/memory/validate.py": "475204153fcb0695dd54a84b610fd762ef4c0263b9f1be9800245ed428c00f82",
+    "third/memory/protocol.json": "71aa7d0c70e73d49b22cfbf1c4c181608989eec5ceed05303b25ef9cc276746a",
+    "next/ridge/models.py": "faced710339290ada09bea51630e921dc7edb21c53472e43425cef481dccaf82",
+    "next/common.py": "27a6b807db7a2a0d0ad3f49dbc34b1d2850dcf8bdab00cedb928a153489ac565",
+    "benchmarks/data.py": "7f086e58eb04429de723fb0383b8731cc1fc50eff643fd5e78993cf32fd0f63d",
+    "benchmarks/models.py": "212d0ed0c06bb9168c91363529fa30c25fa3668b1927ddc53483af8884ad5b88",
+    "benchmarks/snn_models.py": "34d08455bba4cf57b6aa19ec981fdef98a8ac63a647a262b80130b00688cc1c4",
+    "next/sequence/challenge.py": "f6ffee8342ce495a9cd07089633b96adcaba32680fbfb1d4a5a5c62e2e04c2e8",
+    "next/full_kernel/__init__.py": "ebb6e03110e823bf4366537c150e3a67d1adcbd79bb8bd98b0b98473ad85c0e8",
+    "next/full_kernel/kernel.py": "8b3142a4122c75b871f8969fd43a956780392b162ac99f4ac0d8a5a81bc50110",
+    "next/full_kernel/baseline_table.npz": "c77e407162061c06a9a34c5822b8751ebb2a71b1a5ff2a584c60e6b6ec63e764"
+  },
+  "freshness": {
+    "passed": true,
+    "checks": [
+      {
+        "task": "memory",
+        "seed": 11,
+        "split": "validation32",
+        "sha256": "18a141725db35f841095ac597eb46513de961315111c6d7b6aafbda7caa9bd5b",
+        "exact_input_overlap": 0
+      },
+      {
+        "task": "memory",
+        "seed": 11,
+        "split": "diagnostic128",
+        "sha256": "a874b182309c3663d87c037ba0dc07b748d9a3943625345853a1f2972c7ca2ca",
+        "exact_input_overlap": 0
+      },
+      {
+        "task": "memory",
+        "seed": 11,
+        "split": "diagnostic512",
+        "sha256": "cbff5439317f000dd0a7b0acdea39efeda586174b9d120b294fff302a8a0bd4e",
+        "exact_input_overlap": 0
+      },
+      {
+        "task": "memory",
+        "seed": 29,
+        "split": "validation32",
+        "sha256": "3f3f9b75e1a4975368ef4681ba72d3d988fa872c18faafe3bdf38496dcf039e7",
+        "exact_input_overlap": 0
+      },
+      {
+        "task": "memory",
+        "seed": 29,
+        "split": "diagnostic128",
+        "sha256": "14992abaa4508fbe9b23d2cfc1b23ae5dea71b5414d494edfd6a727a9095a7a7",
+        "exact_input_overlap": 0
+      },
+      {
+        "task": "memory",
+        "seed": 29,
+        "split": "diagnostic512",
+        "sha256": "3ddc562238657472269c1cc2effa415c2a8e45898e3a18cc2c01934467c3ff89",
+        "exact_input_overlap": 0
+      },
+      {
+        "task": "memory",
+        "seed": 47,
+        "split": "validation32",
+        "sha256": "b705debf6628b813db885d59e6b33cbc2119cfb9e72e6ef34bbc8801315c0d4b",
+        "exact_input_overlap": 0
+      },
+      {
+        "task": "memory",
+        "seed": 47,
+        "split": "diagnostic128",
+        "sha256": "85598f0b7960875aa5b5c01da16a6b3393e279c13abacb67d0b54ffad2b774ad",
+        "exact_input_overlap": 0
+      },
+      {
+        "task": "memory",
+        "seed": 47,
+        "split": "diagnostic512",
+        "sha256": "650a08f28fd2097c99cc0328c275aff2ff275a4e88a3a73cd7c81dd1c4a33b4c",
+        "exact_input_overlap": 0
+      },
+      {
+        "task": "retrieval",
+        "seed": 11,
+        "split": "validation32",
+        "sha256": "093993c67d88c2de6d92c8df672ac91086d596236237e4c8a5947ed93604dda1",
+        "exact_input_overlap": 0
+      },
+      {
+        "task": "retrieval",
+        "seed": 11,
+        "split": "diagnostic128",
+        "sha256": "32268bf99678af02dd4fe55088dc3047dda48e598f440c0c02745a39dc04d179",
+        "exact_input_overlap": 0
+      },
+      {
+        "task": "retrieval",
+        "seed": 11,
+        "split": "diagnostic512",
+        "sha256": "0eb40bd43dc1a47c89ca4b782c331d62bf99791c682ee41cc3b8c80f4d0ec323",
+        "exact_input_overlap": 0
+      },
+      {
+        "task": "retrieval",
+        "seed": 29,
+        "split": "validation32",
+        "sha256": "4bd883cbf5fcc672a84ceaa69586ff242ad8fc7e5e3be8860405991a66cf6e47",
+        "exact_input_overlap": 0
+      },
+      {
+        "task": "retrieval",
+        "seed": 29,
+        "split": "diagnostic128",
+        "sha256": "0d3ff06bdacb37e4db485ef440bd33a80d85f545d32677c26c1ea2c33e7163f3",
+        "exact_input_overlap": 0
+      },
+      {
+        "task": "retrieval",
+        "seed": 29,
+        "split": "diagnostic512",
+        "sha256": "720fb4af00d4a9a4d50d79c204f7b871fde09d657268044104995088ba677eff",
+        "exact_input_overlap": 0
+      },
+      {
+        "task": "retrieval",
+        "seed": 47,
+        "split": "validation32",
+        "sha256": "94b3d827beb2404dc8167d0975c9c5f8c354cc3114ad7a7264e9d29c7603cecd",
+        "exact_input_overlap": 0
+      },
+      {
+        "task": "retrieval",
+        "seed": 47,
+        "split": "diagnostic128",
+        "sha256": "39f21f11912542aea515af73ac86a0f038409dc7f08ff5eea973e15d23509856",
+        "exact_input_overlap": 0
+      },
+      {
+        "task": "retrieval",
+        "seed": 47,
+        "split": "diagnostic512",
+        "sha256": "dc4de72ef294cd68f09922616b63a766dcf97b9943e47f80795268a27cfc67bd",
+        "exact_input_overlap": 0
+      }
+    ],
+    "scope": "Development evaluations against old v3/v4 train/evaluation/challenge inputs, all new matching-length training and other development evaluations. Short finite-vocabulary training samples themselves can repeat."
+  },
+  "runs": [
+    {
+      "task": "memory",
+      "seed": 11,
+      "variant": "sigmoid_mass",
+      "width": 62,
+      "parameters": 6217,
+      "resources": {
+        "persistent_state_scalars": 1373,
+        "shared_fixed_operator_bytes": 131128
+      },
+      "initial_parameters_sha256": "f7cd1a4bcf221dd5233e067d18655c6a6df43bc03990f50aa591bf26f891ee58",
+      "data_sha256": {
+        "train8": "c0fe96222d42ff9e707afc8ffe5560189d55a44205ae8d3ce68f85fcd9e95b4c",
+        "train16": "a23a5b6f862ebe332d4ffe84d5cda0731176da7d8d1f16243c4513f3d2bd200a",
+        "train32": "5f063dcb1663e372330cf8355c42da68b8a1fadea51b06e248048293b59389c1",
+        "validation32": "18a141725db35f841095ac597eb46513de961315111c6d7b6aafbda7caa9bd5b",
+        "diagnostic128": "a874b182309c3663d87c037ba0dc07b748d9a3943625345853a1f2972c7ca2ca",
+        "diagnostic512": "cbff5439317f000dd0a7b0acdea39efeda586174b9d120b294fff302a8a0bd4e"
+      },
+      "metrics": {
+        "validation32": {
+          "loss": 0.00020519316680744568,
+          "accuracy": 1.0,
+          "brier": 7.538512965665345e-08,
+          "ece": 0.00020516729410124945
+        },
+        "diagnostic128": {
+          "loss": 0.00033721204898570084,
+          "accuracy": 1.0,
+          "brier": 2.548543194050794e-07,
+          "ece": 0.00033713355365572184
+        },
+        "diagnostic512": {
+          "loss": 0.00048199378038643256,
+          "accuracy": 1.0,
+          "brier": 5.949327537388707e-07,
+          "ece": 0.0004818182473456112
+        }
+      },
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 0.20911668241024017,
+          "validation": {
+            "loss": 0.19145037950711574,
+            "accuracy": 1.0,
+            "brier": 0.05415485184553296,
+            "ece": 0.16839475433216605
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.011179090477526188,
+          "validation": {
+            "loss": 0.004014189124947021,
+            "accuracy": 1.0,
+            "brier": 2.449640694093131e-05,
+            "ece": 0.00400578028464027
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.002014163415879011,
+          "validation": {
+            "loss": 0.0019430812579255483,
+            "accuracy": 1.0,
+            "brier": 5.794930930527527e-06,
+            "ece": 0.0019410988118330197
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.001522907055914402,
+          "validation": {
+            "loss": 0.0013823240797640347,
+            "accuracy": 1.0,
+            "brier": 3.2489325946876703e-06,
+            "ece": 0.0013812039514621288
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.0017760343616828322,
+          "validation": {
+            "loss": 0.0010006911872251778,
+            "accuracy": 1.0,
+            "brier": 1.748245586921565e-06,
+            "ece": 0.0010000878826728066
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.0006393214571289718,
+          "validation": {
+            "loss": 0.0006728754058380089,
+            "accuracy": 1.0,
+            "brier": 7.744719263640691e-07,
+            "ece": 0.0006726117826210132
+          }
+        },
+        {
+          "step": 350,
+          "train_minibatch_loss": 0.00045647419756278396,
+          "validation": {
+            "loss": 0.0005056766076516252,
+            "accuracy": 1.0,
+            "brier": 4.3490879552110165e-07,
+            "ece": 0.000505528437564351
+          }
+        },
+        {
+          "step": 400,
+          "train_minibatch_loss": 0.0007064426317811012,
+          "validation": {
+            "loss": 0.0005028231681410405,
+            "accuracy": 1.0,
+            "brier": 4.82522166136602e-07,
+            "ece": 0.0005026527264340164
+          }
+        },
+        {
+          "step": 450,
+          "train_minibatch_loss": 0.0003733505727723241,
+          "validation": {
+            "loss": 0.0003684801537357195,
+            "accuracy": 1.0,
+            "brier": 2.46009006385064e-07,
+            "ece": 0.00036839519832077006
+          }
+        },
+        {
+          "step": 500,
+          "train_minibatch_loss": 0.00027434469666332006,
+          "validation": {
+            "loss": 0.00029228148819776013,
+            "accuracy": 1.0,
+            "brier": 1.5350248823187703e-07,
+            "ece": 0.0002922287695266146
+          }
+        },
+        {
+          "step": 550,
+          "train_minibatch_loss": 0.0005903707351535559,
+          "validation": {
+            "loss": 0.00024244377641686327,
+            "accuracy": 1.0,
+            "brier": 1.0612432050048922e-07,
+            "ece": 0.00024240721856982894
+          }
+        },
+        {
+          "step": 600,
+          "train_minibatch_loss": 0.0001930654252646491,
+          "validation": {
+            "loss": 0.00020519316680744568,
+            "accuracy": 1.0,
+            "brier": 7.538512965665345e-08,
+            "ece": 0.00020516729410124945
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 600,
+        "steps": 600,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 19200,
+        "compilation_seconds": 16.203257558998303,
+        "optimizer_execution_seconds": 4.169539835056639,
+        "optimizer_update_median_ms": 5.744048998167273,
+        "optimizer_update_p95_ms": 11.58699720072036,
+        "validation_seconds": 2.421576819011534,
+        "host_batch_seconds": 0.40423532701970544,
+        "total_train_call_seconds": 23.38905261799664,
+        "first_three_optimizer_update_seconds": [
+          0.03370232800079975,
+          0.013200030996813439,
+          0.02276418000110425
+        ],
+        "compiled_training_shapes": 3,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 1.5850363969802856,
+        "mean_unclipped_gradient_norm": 0.092302982028923,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      },
+      "resource_pause": {
+        "seconds": 160.0389755149954,
+        "observations": [
+          {
+            "run": "memory/11/sigmoid_mass",
+            "status": "paused_before_training",
+            "reason": "Shared cgroup memory exceeds7.5GB",
+            "memory_current_bytes": 7672307712,
+            "utc": "2026-10-30T06:07:30.433765+00:00",
+            "pause_seconds": 0.00010152100003324449
+          },
+          {
+            "run": "memory/11/sigmoid_mass",
+            "status": "paused_before_training",
+            "reason": "Shared cgroup memory exceeds7.5GB",
+            "memory_current_bytes": 7688146944,
+            "utc": "2026-10-30T06:07:40.435255+00:00",
+            "pause_seconds": 10.00159723199613
+          },
+          {
+            "run": "memory/11/sigmoid_mass",
+            "status": "paused_before_training",
+            "reason": "Shared cgroup memory exceeds7.5GB",
+            "memory_current_bytes": 7676465152,
+            "utc": "2026-10-30T06:07:50.438206+00:00",
+            "pause_seconds": 20.004543561997707
+          },
+          {
+            "run": "memory/11/sigmoid_mass",
+            "status": "paused_before_training",
+            "reason": "Shared cgroup memory exceeds7.5GB",
+            "memory_current_bytes": 7682666496,
+            "utc": "2026-10-30T06:08:00.439849+00:00",
+            "pause_seconds": 30.006189443993208
+          },
+          {
+            "run": "memory/11/sigmoid_mass",
+            "status": "paused_before_training",
+            "reason": "Shared cgroup memory exceeds7.5GB",
+            "memory_current_bytes": 8263163904,
+            "utc": "2026-10-30T06:08:10.442398+00:00",
+            "pause_seconds": 40.00873827599571
+          },
+          {
+            "run": "memory/11/sigmoid_mass",
+            "status": "paused_before_training",
+            "reason": "Shared cgroup memory exceeds7.5GB",
+            "memory_current_bytes": 8400871424,
+            "utc": "2026-10-30T06:08:20.444454+00:00",
+            "pause_seconds": 50.010790783999255
+          },
+          {
+            "run": "memory/11/sigmoid_mass",
+            "status": "paused_before_training",
+            "reason": "Shared cgroup memory exceeds7.5GB",
+            "memory_current_bytes": 8589819904,
+            "utc": "2026-10-30T06:08:30.445947+00:00",
+            "pause_seconds": 60.0122861359996
+          },
+          {
+            "run": "memory/11/sigmoid_mass",
+            "status": "paused_before_training",
+            "reason": "Shared cgroup memory exceeds7.5GB",
+            "memory_current_bytes": 8539877376,
+            "utc": "2026-10-30T06:08:40.450352+00:00",
+            "pause_seconds": 70.01669057099934
+          },
+          {
+            "run": "memory/11/sigmoid_mass",
+            "status": "paused_before_training",
+            "reason": "Shared cgroup memory exceeds7.5GB",
+            "memory_current_bytes": 7989956608,
+            "utc": "2026-10-30T06:08:50.453551+00:00",
+            "pause_seconds": 80.01988949399674
+          },
+          {
+            "run": "memory/11/sigmoid_mass",
+            "status": "paused_before_training",
+            "reason": "Shared cgroup memory exceeds7.5GB",
+            "memory_current_bytes": 7874768896,
+            "utc": "2026-10-30T06:09:00.455308+00:00",
+            "pause_seconds": 90.02164734199323
+          },
+          {
+            "run": "memory/11/sigmoid_mass",
+            "status": "paused_before_training",
+            "reason": "Shared cgroup memory exceeds7.5GB",
+            "memory_current_bytes": 7894978560,
+            "utc": "2026-10-30T06:09:10.457137+00:00",
+            "pause_seconds": 100.02347718099918
+          },
+          {
+            "run": "memory/11/sigmoid_mass",
+            "status": "paused_before_training",
+            "reason": "Shared cgroup memory exceeds7.5GB",
+            "memory_current_bytes": 7907840000,
+            "utc": "2026-10-30T06:09:20.460129+00:00",
+            "pause_seconds": 110.02646948099573
+          },
+          {
+            "run": "memory/11/sigmoid_mass",
+            "status": "paused_before_training",
+            "reason": "Shared cgroup memory exceeds7.5GB",
+            "memory_current_bytes": 7905345536,
+            "utc": "2026-10-30T06:09:30.463175+00:00",
+            "pause_seconds": 120.02951350199874
+          },
+          {
+            "run": "memory/11/sigmoid_mass",
+            "status": "paused_before_training",
+            "reason": "Shared cgroup memory exceeds7.5GB",
+            "memory_current_bytes": 7902175232,
+            "utc": "2026-10-30T06:09:40.465144+00:00",
+            "pause_seconds": 130.0314814089943
+          },
+          {
+            "run": "memory/11/sigmoid_mass",
+            "status": "paused_before_training",
+            "reason": "Shared cgroup memory exceeds7.5GB",
+            "memory_current_bytes": 7971790848,
+            "utc": "2026-10-30T06:09:50.466829+00:00",
+            "pause_seconds": 140.03316864699445
+          },
+          {
+            "run": "memory/11/sigmoid_mass",
+            "status": "paused_before_training",
+            "reason": "Shared cgroup memory exceeds7.5GB",
+            "memory_current_bytes": 7906586624,
+            "utc": "2026-10-30T06:10:00.468828+00:00",
+            "pause_seconds": 150.03516688799573
+          }
+        ],
+        "memory_at_start_bytes": 7493353472
+      },
+      "solve_diagnostics": {
+        "diagnostic128": {
+          "maximum_condition": 338.35957851519834,
+          "maximum_relative_residual": 2.2607285350888444e-16,
+          "maximum_read": 1.557228684425354,
+          "maximum_write_mass": 46.688114166259766,
+          "maximum_condition_times_solver_epsilon": 7.513091893400733e-14,
+          "maximum_condition_times_state_epsilon": 4.033560496749858e-05,
+          "all_finite": true,
+          "condition_bound_satisfied": true,
+          "matrix_dtype": "float64"
+        },
+        "diagnostic512": {
+          "maximum_condition": 1232.4037852606398,
+          "maximum_relative_residual": 2.2634239560044277e-16,
+          "maximum_read": 1.6230452060699463,
+          "maximum_write_mass": 181.4735565185547,
+          "maximum_condition_times_solver_epsilon": 2.736486116063119e-13,
+          "maximum_condition_times_state_epsilon": 0.00014691397968061445,
+          "all_finite": true,
+          "condition_bound_satisfied": true,
+          "matrix_dtype": "float64"
+        }
+      },
+      "checkpoint_file": "checkpoints/memory_sigmoid_mass_seed11.npz",
+      "checkpoint_sha256": "73d66138045ec30b9a165eeac743fa6eb9370c0a885a8a20795fd5f004b8f2e4",
+      "latency_batch32": {
+        "batch_size": 32,
+        "median_ms": 4.2271349993825424,
+        "p95_ms": 4.643347201272263,
+        "p99_ms": 4.860102239690605,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      },
+      "process_peak_rss_bytes": 580304896
+    }
+  ],
+  "complete": false,
+  "jax": "0.4.38",
+  "numpy": "2.3.5",
+  "cpu_affinity": [
+    2,
+    3
+  ],
+  "platform": "linux",
+  "elapsed_seconds": 193.80660591299966,
+  "no_confirmation_data_constructed": true,
+  "development_gate": {
+    "passed": false,
+    "checks": {
+      "matrix_complete": false,
+      "memory128_every_seed": false,
+      "retrieval128_every_seed": false,
+      "memory512_delta": false,
+      "retrieval512_delta": false,
+      "all_numerical": true
+    },
+    "mean512_deltas": {
+      "memory": null,
+      "retrieval": null
+    },
+    "next_action": "Separate frozen confirmation only if passed; no backbone authorization",
+    "financial_shape_superiority_established": false,
+    "confirmation_data_constructed": false
+  }
+}
