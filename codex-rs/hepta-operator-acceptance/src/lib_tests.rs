@@ -222,8 +222,8 @@ fn durable_time_watermark_refuses_forward_commit_without_directory_flush() {
     })
     .expect("canonical fixture watermark");
     write_fixture_file(&path, &bytes).expect("seed existing test watermark");
-    assert!(advance_time_watermark(&sidecar, 99, &policy_sha256).is_err());
-    let error = advance_time_watermark(&sidecar, 101, &policy_sha256)
+    assert!(advance_time_watermark(&sidecar, /*observed*/ 99, &policy_sha256).is_err());
+    let error = advance_time_watermark(&sidecar, /*observed*/ 101, &policy_sha256)
         .expect_err("unqualified directory flush must not commit");
     assert!(matches!(
         error,

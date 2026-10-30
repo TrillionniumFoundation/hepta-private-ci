@@ -59,7 +59,7 @@ fn exact_signature_transport_refuses_windows_and_assessment_cannot_grant_authori
         write_fixture_file(&signature, packet.as_bytes()).expect("signature fixture");
         let before = fixture.snapshot();
         let assessed = fixture
-            .assess(&challenge, G5SignatureInput::Detached(&signature), 1_001)
+            .assess(&challenge, G5SignatureInput::Detached(&signature), /*time*/ 1_001)
             .expect("failed verification assessment");
         assert_eq!(assessed.status, ASSESSMENT_STATUS_SIGNATURE_INVALID);
         assert!(!assessed.signature_verified);
@@ -104,7 +104,7 @@ fn expiry_is_half_open_and_never_creates_acceptance() {
     let challenge = fixture.seed_challenge();
     let before = fixture.snapshot();
     let assessed = fixture
-        .assess(&challenge, G5SignatureInput::Absent, 1_120)
+        .assess(&challenge, G5SignatureInput::Absent, /*time*/ 1_120)
         .expect("expired assessment");
     assert_eq!(assessed.status, ASSESSMENT_STATUS_EXPIRED);
     assert!(!assessed.signature_verified);
@@ -146,7 +146,7 @@ fn revocation_digest_change_invalidates_existing_challenge() {
     let before = fixture.snapshot();
     assert!(
         fixture
-            .assess(&challenge, G5SignatureInput::Absent, 1_001)
+            .assess(&challenge, G5SignatureInput::Absent, /*time*/ 1_001)
             .is_err()
     );
     assert_eq!(fixture.snapshot(), before);

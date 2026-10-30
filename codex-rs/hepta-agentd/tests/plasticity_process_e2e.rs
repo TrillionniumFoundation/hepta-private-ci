@@ -72,7 +72,7 @@ fn policy_manifest(
     Ok(ArtifactManifest {
         artifact_id: id(artifact_id)?,
         kind: ArtifactKind::Policy,
-        generation: generation(1)?,
+        generation: generation(/*value*/ 1)?,
         predecessor_id: None,
         content_digest,
         objective_digest,
@@ -112,7 +112,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
 
     let ledger_path = root.join("learning-ledger");
     let ledger_binding = digest("plasticity-process-ledger-binding");
-    let mut ledger = DurableLedger::create(new_rw(&ledger_path)?, ledger_binding, 32)?;
+    let mut ledger = DurableLedger::create(new_rw(&ledger_path)?, ledger_binding, /*max_records*/ 32)?;
     ledger.append_qualification(
         Digest32::ZERO,
         LedgerEvent::Decision(EpisodeDecision {
@@ -176,7 +176,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
             ArtifactManifest {
                 artifact_id: id("artifact:baseline")?,
                 kind: ArtifactKind::Model,
-                generation: generation(1)?,
+                generation: generation(/*value*/ 1)?,
                 predecessor_id: None,
                 content_digest: selected_artifact_digest,
                 objective_digest,
@@ -253,7 +253,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
     let neuron_config = SparseConfig {
         model_digest: selected_artifact_digest,
         normalization_digest: digest("plasticity-process-normalization"),
-        generation: generation(1)?,
+        generation: generation(/*value*/ 1)?,
         width: 5,
         top_k: 1,
         temporal_decay_q24: Q24 / 2,

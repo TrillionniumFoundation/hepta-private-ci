@@ -196,7 +196,7 @@ fn dropping_store_releases_lock_while_duplicate_descriptor_is_open() {
         .unwrap_or_else(|error| panic!("duplicate store descriptor: {error}"));
     let store = LockedFileFinalHoldoutCasStoreV1::create(file, digest("binding"))
         .unwrap_or_else(|error| panic!("create store: {error}"));
-    let first = owner(store, None);
+    let first = owner(store, /*minimum*/ None);
     let anchor = first.anchor();
 
     assert_eq!(

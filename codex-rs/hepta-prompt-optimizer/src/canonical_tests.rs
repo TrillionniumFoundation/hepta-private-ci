@@ -354,7 +354,7 @@ fn unsupported_final_use_authority_cannot_make_a_draft_factor_selectable()
     let temp = tempfile::tempdir()?;
     let root = temp.path().join("registry");
     let authority_root = temp.path().join("authority");
-    let mut registry = DurablePromptRegistry::open_state_dir(&root, 64)?;
+    let mut registry = DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64)?;
     let factor = PromptFactor {
         factor_id: id("factor:unadmitted"),
         proposer_id: id("proposer:1"),
@@ -414,7 +414,7 @@ fn unsupported_final_use_authority_cannot_make_a_draft_factor_selectable()
         Some(&factor)
     );
     drop(registry);
-    let reopened = DurablePromptRegistry::open_state_dir(&root, 64)?;
+    let reopened = DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64)?;
     assert_eq!(reopened.registry()?.snapshot_digest(), before);
     assert_eq!(
         reopened.registry()?.factor(&factor.factor_id),

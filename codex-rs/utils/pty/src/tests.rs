@@ -25,6 +25,19 @@ fn find_python() -> Option<String> {
             .output()
             && output.status.success()
         {
+            let stdout = String::from_utf8_lossy(&output.stdout);
+            let version = stdout
+                .trim()
+                .strip_prefix("Python ")
+                .filter(|version| {
+                    version.len() <= 32
+                        && version
+                            .chars()
+                            .all(|value| value.is_ascii_digit() || ".abrc".contains(value))
+                })
+                .unwrap_or("unrecognized");
+            // Only the existing probe's bounded version token is reported.
+            eprintln!("PTY interpreter: candidate={candidate}; version={version}");
             return Some(candidate.to_string());
         }
     }

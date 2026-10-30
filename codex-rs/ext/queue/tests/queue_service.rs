@@ -2233,7 +2233,7 @@ async fn registered_queue_waits_for_terminalization_and_dispatches_once() -> any
     assert_eq!(queue.list(thread_id).await?, vec![queued.clone()]);
     assert!(matches!(
         queue
-            .start(test.codex.as_ref(), Some(queued.id.clone()), None)
+            .start(test.codex.as_ref(), Some(queued.id.clone()), /*trace*/ None)
             .await?,
         StartIfIdleSubmission::NotSubmitted {
             reason: NotSubmittedReason::NotIdle
@@ -2299,7 +2299,7 @@ async fn deferred_queue_dispatch_does_not_bypass_shutdown() -> anyhow::Result<()
     assert_eq!(queue.list(thread_id).await?, vec![queued.clone()]);
     assert!(
         queue
-            .start(test.codex.as_ref(), Some(queued.id), None)
+            .start(test.codex.as_ref(), Some(queued.id), /*trace*/ None)
             .await
             .is_err()
     );

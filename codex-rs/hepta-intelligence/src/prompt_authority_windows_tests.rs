@@ -19,7 +19,7 @@ fn unsupported_authority_leaves_no_admitted_prompt_or_deliverable_payload()
     let temp = tempfile::tempdir()?;
     let root = temp.path().join("registry");
     let authority_root = temp.path().join("authority");
-    let mut registry = DurablePromptRegistry::open_state_dir(&root, 64)?;
+    let mut registry = DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64)?;
     let factor = PromptFactor {
         factor_id: StableId::new("factor:unadmitted")?,
         proposer_id: StableId::new("proposer:1")?,
@@ -58,7 +58,7 @@ fn unsupported_authority_leaves_no_admitted_prompt_or_deliverable_payload()
     };
     let generation = Digest32::of_bytes(b"generation-vector");
     let snapshot = registry.snapshot_v2(generation, &tuple)?;
-    let available = registry.read_compatible_v2(&snapshot, generation, &tuple, 100, vec![], 8)?;
+    let available = registry.read_compatible_v2(&snapshot, generation, &tuple, /*now_unix_ms*/ 100, vec![], /*maximum_results*/ 8)?;
     assert!(available.bindings.is_empty());
     assert!(!available.authority.grants_any());
     assert!(matches!(
@@ -66,9 +66,9 @@ fn unsupported_authority_leaves_no_admitted_prompt_or_deliverable_payload()
             &snapshot,
             generation,
             &tuple,
-            100,
+            /*now_unix_ms*/ 100,
             vec![factor.factor_id.clone()],
-            8,
+            /*maximum_results*/ 8,
         ),
         Err(DurableRegistryError::Read(
             PromptRegistryV2Error::RequiredFactorUnavailable
@@ -80,7 +80,7 @@ fn unsupported_authority_leaves_no_admitted_prompt_or_deliverable_payload()
             &snapshot,
             generation,
             &tuple,
-            100,
+            /*now_unix_ms*/ 100,
         ),
         Err(DurableRegistryError::Read(
             PromptRegistryV2Error::PayloadUnavailable
@@ -92,7 +92,7 @@ fn unsupported_authority_leaves_no_admitted_prompt_or_deliverable_payload()
         Some(&factor)
     );
     drop(registry);
-    let reopened = DurablePromptRegistry::open_state_dir(&root, 64)?;
+    let reopened = DurablePromptRegistry::open_state_dir(&root, /*maximum_records*/ 64)?;
     assert_eq!(reopened.registry()?.snapshot_digest(), before);
     assert_eq!(
         reopened.registry()?.factor(&factor.factor_id),
