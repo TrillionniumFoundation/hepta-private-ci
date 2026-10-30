@@ -1,0 +1,65 @@
+name: Hepta P0-P7 research evidence gate
+
+on:
+  pull_request:
+    paths:
+      - qa/hepta-p0-p7/**
+      - .github/workflows/hepta-p0-p7-audit.yml
+  push:
+    paths:
+      - qa/hepta-p0-p7/**
+      - .github/workflows/hepta-p0-p7-audit.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-p0-p7-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  audit-contract-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Execute all contract and negative tests
+        run: |
+          set -euo pipefail
+          python -m unittest discover -v -s qa/hepta-p0-p7 -p 'test_*.py'
+          python -m compileall -q qa/hepta-p0-p7
+      - name: Assert absent evidence fails closed
+        run: |
+          set -euo pipefail
+          set +e
+          python qa/hepta-p0-p7/qualification.py \
+            --protocol /tmp/not-present \
+            --protocol-sha256 0000000000000000000000000000000000000000000000000000000000000000 \
+            --sources /tmp/not-present --history /tmp/not-present \
+            --episodes /tmp/not-present --artifacts-root /tmp \
+            > "$RUNNER_TEMP/hepta-no-evidence.json"
+          result=$?
+          set -e
+          if [ "$result" -ne 3 ]; then
+            echo "Unexpected admission with missing evidence: $result" >&2
+            exit 1
+          fi
+          python - "$RUNNER_TEMP/hepta-no-evidence.json" <<'PY'
+          import json, sys
+          report = json.load(open(sys.argv[1], encoding='utf-8'))
+          assert report['model_promotion_authorized'] is False
+          assert report['authority'] == 'DENY_ALL'
+          assert set(report['stage_status'].values()) == {'HOLD_NO_GO'}
+          PY
+      - name: Scope disclaimer
+        if: always()
+        run: |
+          echo 'Contract tests do not run pretrained models, close P0-P7 capability gates, or authorize deployment.' >> "$GITHUB_STEP_SUMMARY"
