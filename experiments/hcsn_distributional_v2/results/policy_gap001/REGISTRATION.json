@@ -1,0 +1,66 @@
+{
+  "schema": "hcsn-v2-policy-gap-registration.v1",
+  "cases": [
+    {
+      "name": "central",
+      "mu": 0.1,
+      "sigma": 0.45,
+      "rho": 0.45,
+      "K": 0.525,
+      "r": -0.1,
+      "tau": 0.75
+    },
+    {
+      "name": "negative_drift",
+      "mu": -0.28,
+      "sigma": 0.32,
+      "rho": 0.7,
+      "K": 0.65,
+      "r": -0.25,
+      "tau": 1.1
+    },
+    {
+      "name": "positive_low_discount",
+      "mu": 0.48,
+      "sigma": 0.32,
+      "rho": 0.17,
+      "K": 0.38,
+      "r": -0.25,
+      "tau": 0.35
+    },
+    {
+      "name": "large_noise",
+      "mu": 0.3,
+      "sigma": 0.58,
+      "rho": 0.2,
+      "K": 0.38,
+      "r": 0.05,
+      "tau": 0.35
+    },
+    {
+      "name": "negative_high_noise",
+      "mu": -0.28,
+      "sigma": 0.58,
+      "rho": 0.2,
+      "K": 0.65,
+      "r": 0.05,
+      "tau": 1.1
+    }
+  ],
+  "cells": [
+    8,
+    32,
+    128
+  ],
+  "sampled_boundaries": 257,
+  "boundary_interval": "K+0.02 through K+2/kappa; analytic boundary appended exactly",
+  "initial_pressure": 0.0,
+  "lower": -2.0,
+  "refractory_stages": 2,
+  "source": {
+    "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/policy_gap_audit.py": "e78534f5bbd160e2917c52d5956b418b03de72eab30e8f5266e623e4ba43e0cf",
+    "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/distribution_kernel.py": "f272aa0808c2d497d4647dfb46fdc261ee481522affe0963b957d13b94f7f752",
+    "experiments/hcsn_free_boundary_v1/oracle_torch.py": "c651bc1c895596d2f1ca847b0bea80eb01efc951d9392a695ff0ccc2a0c61e9a"
+  },
+  "content_labels_accessed": false
+}
