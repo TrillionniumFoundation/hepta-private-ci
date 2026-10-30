@@ -369,9 +369,11 @@ struct InheritedPipe;
 #[cfg(not(unix))]
 impl InheritedPipe {
     fn new(_bytes: &[u8]) -> Result<Self, AcceptanceError> {
-        Err(invalid(
+        Err(std::io::Error::new(
+            std::io::ErrorKind::Unsupported,
             "OpenSSH SSHSIG verification requires Unix inherited descriptors",
-        ))
+        )
+        .into())
     }
 
     fn child_path(&self) -> String {

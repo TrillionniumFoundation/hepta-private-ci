@@ -879,7 +879,11 @@ fn verify_sshsig_bytes(
             principal,
             namespace,
         );
-        Err(invalid("G5 SSHSIG verification requires Unix"))
+        Err(std::io::Error::new(
+            std::io::ErrorKind::Unsupported,
+            "G5 SSHSIG verification requires Unix",
+        )
+        .into())
     }
 }
 

@@ -25,6 +25,8 @@ use security::OwnerSecurity;
 #[derive(Clone, Copy)]
 pub enum StateFileAccess {
     Read,
+    /// Open a file for mutation without creating an absent journal.
+    WriteExisting,
     Create,
 }
 
@@ -56,6 +58,7 @@ impl PrivateStateDirectory {
     pub fn open_file(&self, name: &str, access: StateFileAccess) -> io::Result<File> {
         let access = match access {
             StateFileAccess::Read => nt::Access::Read,
+            StateFileAccess::WriteExisting => nt::Access::WriteExisting,
             StateFileAccess::Create => nt::Access::Create,
         };
         self.open_child(name, access)

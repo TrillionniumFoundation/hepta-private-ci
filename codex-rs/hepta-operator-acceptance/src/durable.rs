@@ -200,7 +200,7 @@ pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), Accepta
     if parent_after.file_type().is_symlink() || !same_file_identity(&parent_before, &parent_after) {
         return Err(invalid("sidecar parent changed during durable write"));
     }
-    File::open(parent)?.sync_all()?;
+    sync_directory(parent)?;
     Ok(())
 }
 
@@ -238,7 +238,33 @@ pub(crate) fn write_private_atomic_replace(
     if persisted != bytes {
         return Err(invalid("atomic sidecar artifact differs after persistence"));
     }
-    File::open(parent)?.sync_all()?;
+    sync_directory(parent)?;
+    Ok(())
+}
+
+fn sync_directory(path: &Path) -> Result<(), AcceptanceError> {
+    let mut options = OpenOptions::new();
+    options.read(true);
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt;
+        // Open the actual directory without following its final reparse point.
+        // FlushFileBuffers requires a writable directory handle.
+        options.write(true).custom_flags(0x0200_0000 | 0x0020_0000);
+    }
+    let directory = options.open(path)?;
+    let metadata = directory.metadata()?;
+    if !metadata.is_dir() || metadata.file_type().is_symlink() {
+        return Err(invalid("sidecar flush requires a directory without links"));
+    }
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::MetadataExt;
+        if metadata.file_attributes() & 0x0400 != 0 {
+            return Err(invalid("sidecar flush rejects reparse directories"));
+        }
+    }
+    directory.sync_all()?;
     Ok(())
 }
 

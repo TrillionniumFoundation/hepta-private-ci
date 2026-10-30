@@ -7,6 +7,8 @@
 #![forbid(unsafe_code)]
 
 mod canonical;
+#[cfg(test)]
+mod durable_test_support;
 
 pub use canonical::AdvisoryDecisionReceiptV1;
 pub use canonical::AdvisoryDecisionV1;
