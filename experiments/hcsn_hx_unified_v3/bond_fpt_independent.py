@@ -164,7 +164,30 @@ def independent_bond(*, x: float, drift: float, sigma: float, discount: float,
                            discount=discount,horizon=horizon)
     survival=1-fp.probability
     terminal=math.exp(-discount*horizon)*survival
-    coupon_pv=coupon_per_bond*(1-fp.discounted-terminal)/discount
+    # Split the stopped coupon annuity into the survival contribution and
+    # the default contribution. The original 1-G-terminal subtraction
+    # silently produced a zero coupon for tiny positive q, even when no
+    # default was possible at f64 precision. expm1 retains the survival
+    # annuity as q -> 0 without subtracting nearly equal unit values.
+    coupon_pv=0.
+    if coupon_per_bond:
+        default_duration_num=fp.probability-fp.discounted
+        # F-G is still a difference of separate quadrature estimates; its
+        # cancellation cannot be repaired with expm1. Refuse an unresolved
+        # default-time contribution rather than pretending the coupon is
+        # zero. The SciPy error is a diagnostic estimate, NOT a certified
+        # interval enclosure; this is a conservative fail-closed check.
+        # A far-tail F below 1e-9 contributes at most 1e-9 of the
+        # undiscounted horizon to the coupon and may round F-G to zero.
+        # Do not reject that negligible tail solely due to the common
+        # absolute quadrature tolerance; the guard targets material mass.
+        if fp.probability > 1e-9 and default_duration_num <= 16*max(
+                fp.absolute_error_bound, math.ulp(fp.probability),
+                math.ulp(fp.discounted)):
+            raise ArithmeticError('First-passage coupon duration unresolved in f64')
+        survival_annuity=-math.expm1(-discount*horizon)/discount
+        coupon_pv=coupon_per_bond*(
+            survival*survival_annuity+default_duration_num/discount)
     bond=coupon_pv+principal_per_bond*terminal+recovery_per_bond*fp.discounted
     if not math.isfinite(bond) or bond < -2*fp.absolute_error_bound*sum(vals)/discount:
         raise ArithmeticError('Invalid discounted bond cash flow')
