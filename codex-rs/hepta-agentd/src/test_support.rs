@@ -78,6 +78,43 @@ impl CognitiveTestHost {
         model: &str,
         provider_base_url: &str,
     ) -> TestResult<Self> {
+        Self::start_inner(root, agent_id, model, provider_base_url, Arg0DispatchPaths::default())
+            .await
+    }
+
+    /// Start a real App Server with an explicit CLI for cross-crate test runs.
+    /// Never use the libtest harness executable for Codex helper re-execution.
+    pub async fn start_with_codex_cli(
+        root: PathBuf,
+        agent_id: AgentId,
+        model: &str,
+        provider_base_url: &str,
+        codex_cli: PathBuf,
+    ) -> TestResult<Self> {
+        let codex_cli = codex_cli.canonicalize()?;
+        if !codex_cli.is_file() {
+            return Err("Codex CLI runfile must be a regular file".into());
+        }
+        Self::start_inner(
+            root,
+            agent_id,
+            model,
+            provider_base_url,
+            Arg0DispatchPaths {
+                codex_self_exe: Some(codex_cli),
+                ..Arg0DispatchPaths::default()
+            },
+        )
+        .await
+    }
+
+    async fn start_inner(
+        root: PathBuf,
+        agent_id: AgentId,
+        model: &str,
+        provider_base_url: &str,
+        arg0_paths: Arg0DispatchPaths,
+    ) -> TestResult<Self> {
         validate_config_scalar(model, "model")?;
         validate_config_scalar(provider_base_url, "provider base URL")?;
         std::fs::create_dir_all(&root)?;
@@ -133,7 +170,7 @@ impl CognitiveTestHost {
         let control_task = tokio::spawn(control.run());
         let app_server_task = tokio::spawn(run_app_server(
             identity.clone(),
-            Arg0DispatchPaths::default(),
+            arg0_paths,
             CognitiveRuntime::Available(Arc::clone(&store)),
             Arc::clone(&state),
             /*production_writer_host*/ None,

@@ -454,8 +454,18 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let short_fixture = tempfile::Builder::new().prefix("hcn-").tempdir_in("/tmp")?;
     let root = short_fixture.path().canonicalize()?;
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    // Bazel binds the genuine Codex CLI as an executable runfile. The
+    // libtest harness cannot serve as codex_self_exe for helper re-exec.
+    let codex_cli = std::env::var_os("CARGO_BIN_EXE_codex")
+        .ok_or("real Codex CLI runfile missing for cognitive App Server E2E")?;
+    let host = CognitiveTestHost::start_with_codex_cli(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        std::path::PathBuf::from(codex_cli),
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;

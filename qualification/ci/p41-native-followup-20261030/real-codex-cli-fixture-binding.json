@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.p41-native-followup.real-codex-cli-fixture-binding.v1",
+  "date_utc": "2026-10-30",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 4184,
+  "parent_head": "94a55a5db9553a75237e7a4e96a8764216bb62bf",
+  "parent_tree": "18f5767ea573d8700d146a3d0387aa8d8759bc60",
+  "source_error": "InvalidInput: Codex executable path is not configured",
+  "original_run": 41041337159,
+  "owning_jobs": {
+    "gnu": 124015120178,
+    "musl": 124015123303,
+    "macos_intel": 124015120259
+  },
+  "source_cause": "CognitiveTestHost used Arg0DispatchPaths::default and the real AppServer requires codex_self_exe.",
+  "change": [
+    "Default-empty opt-in Bazel unit-test executable runfile environment",
+    "Bind genuine //codex-rs/cli:codex into infer worker host unit-test runfiles",
+    "Pass explicit canonical CLI path via test-support helper, never current_exe",
+    "Preserve source P39 cohort, original positive/negative FinalUse assertions and production runtime gates"
+  ],
+  "preflight": {
+    "exact_source_replacements": true,
+    "original_assertion_strings_retained": true,
+    "no_harness_current_exe_fallback": true,
+    "real_runfile_label_used": true
+  },
+  "owning_validation": "NOT_YET_VERIFIED on new head; must run platform Bazel/rustfmt/buildifier, cargo-deny and all required gates",
+  "cargo_owning_requirement": "Provide real Codex CLI executable when running this unit-test under Cargo, not the libtest harness.",
+  "no_dependency_or_lock_changes": true,
+  "mode": "SHADOW_ONLY",
+  "authority": "DENY_ALL",
+  "promotion": "HOLD_NO_GO",
+  "all_blockers_closed": false
+}
