@@ -1,0 +1,64 @@
+{
+  "schema": "hepta.phase2-value-recovery.v1",
+  "base_commit": "c71bdb0583d3265b931b31579d6bf3a9b85691d3",
+  "lost_environment": "/dev/shm/hepta_phase2_20261029",
+  "status": "reconstructing; no reconstructed-code test pass claimed",
+  "source_of_reconstruction": [
+    "retained task summary",
+    "surviving remote base source",
+    "checksum-verified official crate archives"
+  ],
+  "lost_artifacts": [
+    "unpublished 1455-file final candidate manifest and payload",
+    "unpublished source patches not on c71b",
+    "local native/isolated test logs and evidence indexes not on c71b"
+  ],
+  "surviving_science": "Remote c71b confirmed by coordinator; original research source and confirmation data are outside this repair scope.",
+  "historical_results_policy": "Prior session logs are unavailable. Historical summaries do not validate reconstructed source. New test commands, source hashes and full outputs must be stored in this repository.",
+  "stages": [
+    {
+      "name": "coalescer",
+      "scope": [
+        "codex-rs/async-utils/src/coalescing_wake.rs",
+        "codex-rs/async-utils/src/coalescing_wake_tests.rs",
+        "codex-rs/async-utils/src/lib.rs"
+      ],
+      "contract": "Serialize synchronous barrier capture with registration. Retain latest pending snapshot while a worker awaits or admits; atomically end only when no snapshot remains. No admission authority."
+    },
+    {
+      "name": "idle_consumers",
+      "scope": [
+        "codex-rs/ext/queue",
+        "codex-rs/ext/goal",
+        "codex-rs/app-server/tests/suite/v2/turn_completion_admission.rs"
+      ],
+      "contract": "Await observations, reread durable work, use ordinary admission. Goal fails closed on pending-user query errors. Identical typed hook rejection suppresses only automatic retry in same runtime; explicit starts remain allowed."
+    },
+    {
+      "name": "vendors",
+      "scope": [
+        "codex-rs/third_party/aws-config-1.8.12",
+        "codex-rs/third_party/matrix-sdk-0.19.1",
+        "codex-rs/third_party/matrix-sdk-sqlite-0.19.1"
+      ],
+      "contract": "Verify official archive hashes, record source inventory, apply narrow compatibility patches with tests. Root manifests/lock are CI-agent owned."
+    },
+    {
+      "name": "vendor_diagnostics",
+      "scope": [
+        "scripts/run_hepta_vendor_compatibility.py",
+        "scripts/test_run_hepta_vendor_compatibility.py",
+        "scripts/check_hepta_vendor_bazel.py"
+      ],
+      "contract": "Independent exact-source vendor tests through original just test, explicit isolated manifest/lock and source hashes; keep root consumer results separate; audit actual generated Bazel features/includes rather than defaults."
+    }
+  ],
+  "validation_required": [
+    "native coalescer tests",
+    "queue/goal/app-server public continuation, user-priority, FIFO and rejection regressions",
+    "six isolated vendor focused tests",
+    "root consumers",
+    "canonical Bazel graph/lock and compiler checks"
+  ],
+  "publication": "Coordinator only. Small reviewable source/evidence checkpoints; no change to scientific freeze."
+}
