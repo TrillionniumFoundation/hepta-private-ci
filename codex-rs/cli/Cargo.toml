@@ -4,11 +4,13 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 build = "build.rs"
+# Both CLI bins have explicit crate roots for Rust async query-depth limits.
+autobins = false
 default-run = "codex"
 
 [[bin]]
 name = "codex"
-path = "src/main.rs"
+path = "src/codex.rs"
 
 [[bin]]
 name = "hepta"
