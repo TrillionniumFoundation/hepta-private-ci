@@ -1,7 +1,7 @@
 use crate::RewriteProfile;
 use crate::invalid_data_error;
 use crate::scope::is_redirected_destination;
-use serde_yaml::Value as YamlValue;
+use noyalib_serde_yaml::Value as YamlValue;
 use std::collections::BTreeMap;
 use std::fs;
 use std::io;
@@ -164,7 +164,7 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
 fn parse_frontmatter(
     raw_frontmatter: &str,
 ) -> (BTreeMap<String, FrontmatterValue>, Option<String>) {
-    let parsed: YamlValue = match serde_yaml::from_str(raw_frontmatter) {
+    let parsed: YamlValue = match noyalib_serde_yaml::from_str(raw_frontmatter) {
         Ok(parsed) => parsed,
         Err(err) => return (BTreeMap::new(), Some(err.to_string())),
     };
@@ -177,9 +177,10 @@ fn parse_frontmatter(
 
     let mut frontmatter = BTreeMap::new();
     for (key, value) in mapping {
-        let Some(key) = key.as_str().map(str::trim).filter(|key| !key.is_empty()) else {
+        let key = key.trim();
+        if key.is_empty() {
             continue;
-        };
+        }
         frontmatter.insert(key.to_string(), frontmatter_value_from_yaml(value));
     }
 

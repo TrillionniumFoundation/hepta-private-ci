@@ -1,10 +1,10 @@
 mod plugin;
 mod render;
 
+use noyalib_serde_yaml::Value as YamlValue;
 use render::rewrite_terms;
 use render::slugify_name;
 use render::yaml_string;
-use serde_yaml::Value as YamlValue;
 use std::collections::BTreeMap;
 use std::fs;
 use std::io;
@@ -314,10 +314,10 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
 }
 
 fn parse_command_description(raw_frontmatter: &str) -> Option<String> {
-    let parsed: YamlValue = serde_yaml::from_str(raw_frontmatter).ok()?;
+    let parsed: YamlValue = noyalib_serde_yaml::from_str(raw_frontmatter).ok()?;
     let mapping = parsed.as_mapping()?;
     mapping.iter().find_map(|(key, value)| {
-        if key.as_str()?.trim() == "description" {
+        if key.trim() == "description" {
             yaml_scalar(value)
         } else {
             None

@@ -33,7 +33,7 @@ pub enum SkillParseError {
     #[error("missing YAML frontmatter delimited by ---")]
     MissingFrontmatter,
     #[error("invalid YAML: {0}")]
-    InvalidYaml(#[source] serde_yaml::Error),
+    InvalidYaml(#[source] noyalib_serde_yaml::Error),
     #[error("missing field `{0}`")]
     MissingField(&'static str),
     #[error("invalid {field}: {reason}")]
@@ -47,14 +47,14 @@ pub fn parse_skill_frontmatter_metadata(
 ) -> Result<ParsedSkillFrontmatter, SkillParseError> {
     let frontmatter = extract_frontmatter(contents).ok_or(SkillParseError::MissingFrontmatter)?;
 
-    let parsed: SkillFrontmatter = match serde_yaml::from_str(&frontmatter) {
+    let parsed: SkillFrontmatter = match noyalib_serde_yaml::from_str(&frontmatter) {
         Ok(parsed) => Ok(parsed),
         Err(original_error) => match repair_frontmatter_scalar_fields(&frontmatter) {
             // Some third-party skills use prose like `description: Build for AWS: ECS`
             // or `argument-hint: <duration: e.g. 7d>`. Keep the repair line-oriented
             // so unrelated invalid YAML still surfaces.
             Some(repaired_frontmatter) => {
-                serde_yaml::from_str(&repaired_frontmatter).map_err(|_| original_error)
+                noyalib_serde_yaml::from_str(&repaired_frontmatter).map_err(|_| original_error)
             }
             None => Err(original_error),
         },
@@ -165,7 +165,7 @@ fn repair_frontmatter_scalar_fields(frontmatter: &str) -> Option<String> {
             }
         }
         let invalid_flow_like_scalar = matches!(first_char, '[' | '{' | '@' | '`')
-            && serde_yaml::from_str::<serde_yaml::Value>(scalar).is_err();
+            && noyalib_serde_yaml::from_str::<noyalib_serde_yaml::Value>(scalar).is_err();
         if !has_colon_separator && !invalid_flow_like_scalar {
             repaired_lines.push(line.to_string());
             continue;

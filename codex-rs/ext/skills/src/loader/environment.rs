@@ -268,7 +268,7 @@ pub fn load_environment_skills_from_discovery(
             .metadata
             .as_ref()
             .and_then(|metadata| {
-                serde_yaml::from_str::<SkillMetadataFile>(&metadata.contents)
+                noyalib_serde_yaml::from_str::<SkillMetadataFile>(&metadata.contents)
                     .map_err(|error| {
                         tracing::warn!(
                             path = %metadata.path,
@@ -378,7 +378,7 @@ async fn read_skill_metadata(
             return (None, None);
         }
     };
-    let parsed: SkillMetadataFile = match serde_yaml::from_str(&contents) {
+    let parsed: SkillMetadataFile = match noyalib_serde_yaml::from_str(&contents) {
         Ok(parsed) => parsed,
         Err(error) => {
             tracing::warn!("ignoring {metadata_path}: invalid metadata: {error}");

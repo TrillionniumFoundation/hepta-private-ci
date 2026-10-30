@@ -6,7 +6,7 @@ on:
     branches: [main]
 
 concurrency:
-  group: blocking-ci-${{ github.event.pull_request.head.ref || github.ref_name }}
+  group: blocking-ci-${{ github.event.pull_request.number || github.ref_name }}-${{ github.event.pull_request.head.sha || 'main' }}
   cancel-in-progress: true
 
 permissions:
@@ -15,7 +15,7 @@ permissions:
 jobs:
   scope:
     name: Select blocking CI scope
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
     outputs:
       inference: ${{ steps.scope.outputs.inference }}
@@ -183,7 +183,7 @@ jobs:
     name: Lightweight prose and derived checks
     needs: scope
     if: needs.scope.outputs.native != 'true' && needs.scope.outputs.full_repo != 'true'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 15
     steps:
       - name: Checkout exact candidate
@@ -220,7 +220,7 @@ jobs:
       - sdk
       - hepta-scoped
       - lightweight
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
