@@ -1,0 +1,285 @@
+{
+  "actual_wait4": {
+    "exit_code": 0,
+    "parent_cpu_seconds_until_receipt_separate": 0.0016090059999999962,
+    "peak_rss_bytes": 16072704,
+    "pid": 226571,
+    "scope": "This independent metadata audit child and waited read-only Git commands; separate from prior audit scopes, no science or production supervisor",
+    "system_cpu_seconds": 0.11631799999999999,
+    "total_cpu_seconds_inclusive": 0.766355,
+    "user_cpu_seconds": 0.650037,
+    "wait_status": 0,
+    "wall_seconds": 0.7685387290002836
+  },
+  "at_utc": "2026-10-30T12:44:00.392492+00:00",
+  "checks": {
+    "cwd_policy": {
+      "capacity_wait_seconds": 300,
+      "descriptor": {
+        "bytes": 25040,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/registrations/initial/CWD_POLICY.json",
+        "sha256": "0f47dc0dc9300c9c7d12ece3e94c34a34eb46be1aba7429bc505b557752af44e"
+      },
+      "empty_cwd_verified": true,
+      "passed": true,
+      "source_files": 163
+    },
+    "git": {
+      "C2_changed_paths": [
+        "operational/parameter_field_recovery05/evidence/preregistration/C1_SOURCE_PUBLICATION_VERIFIED.json",
+        "operational/parameter_field_recovery05/evidence/preregistration/prepare_amendment/INTENT.json",
+        "operational/parameter_field_recovery05/evidence/preregistration/prepare_amendment/WAIT4.json",
+        "operational/parameter_field_recovery05/evidence/preregistration/prepare_amendment/helper.stderr.log",
+        "operational/parameter_field_recovery05/evidence/preregistration/prepare_amendment/helper.stdout.log",
+        "operational/parameter_field_recovery05/registrations/OPS_EXECUTION05_BACKPRESSURE.json"
+      ],
+      "head": "7544b0a57a3b5624f3f2190449efeb84854b414d",
+      "head_reverified_here": true,
+      "original_actual_git_check_receipt": {
+        "bytes": 8382,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/INDEPENDENT_ACTUAL_ADMISSION_02.json",
+        "sha256": "2e6a6c397b1e2b2324170ce9006bd53cc68bf1400155aadc7cf3e90112d624fe"
+      },
+      "parent": "b4bc796dbdbb96ba2d290da53e9b8587ac9a2e7a",
+      "tracked_worktree_matches_C2": true
+    },
+    "immutability": {
+      "CAS_identity_and_metadata_unchanged": true,
+      "RAW_all_paths_stat_before_equals_after": true,
+      "RAW_snapshot_sha256": "6bbaa9513b6847ad594920a612b1a2522a25499d7d4bf8b99a1d1ace6356042b",
+      "frozen_source_metadata_unchanged": true,
+      "no_numerical_packages_imported": true,
+      "protected_write_guard_enforced": true
+    },
+    "imported_layout": {
+      "CAS_preexisted_and_empty": true,
+      "import_auxiliary_files": 2,
+      "initial_raw_files": 286,
+      "materialized_files": 284,
+      "new_controller_started": false,
+      "new_scientific_workers": 0,
+      "only_imported_job": "A-17",
+      "passed": true,
+      "production_start_paths_absent": true
+    },
+    "initial_jobs": {
+      "A17_old_profile_only_at_import_gate": true,
+      "fresh_jobs_reverified_here": [
+        "A-29",
+        "A-43",
+        "C"
+      ],
+      "full_fixed_order": [
+        "A-17",
+        "A-29",
+        "A-43",
+        "C",
+        "B-17",
+        "B-29",
+        "B-43",
+        "W",
+        "R-17",
+        "R-29",
+        "R-43",
+        "A_endpoint",
+        "B_endpoint",
+        "C_endpoint"
+      ],
+      "initial_finalize": false,
+      "jobs": [
+        {
+          "freeze_sha256": "6cad1806689a4f5b6e7527139a5755b54cef16e921a093bb714cfc9c3bdec182",
+          "id": "A-17",
+          "requires": []
+        },
+        {
+          "freeze_sha256": "04ad218753c54e06e554629acba27d0aff0b8a4dc204d0f6fc8bcf4de14aaa58",
+          "id": "A-29",
+          "requires": [
+            "A-17"
+          ]
+        },
+        {
+          "freeze_sha256": "04ad218753c54e06e554629acba27d0aff0b8a4dc204d0f6fc8bcf4de14aaa58",
+          "id": "A-43",
+          "requires": [
+            "A-29"
+          ]
+        },
+        {
+          "freeze_sha256": "32b9f928ccc3011d77ecb16cc4a66915a71d784a8964f7bffd13ab70882da8f2",
+          "id": "C",
+          "requires": [
+            "A-43"
+          ]
+        }
+      ],
+      "passed": true
+    },
+    "load_config": {
+      "import_receipt": {
+        "bytes": 116921,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_durable_raw/imports/execution04/A-17/IMPORT_RECEIPT.json",
+        "sha256": "3b071dbaf2fc9468f3adbca069bb8ea297bdb2d2764d649dee8e21e54dad9fdd"
+      },
+      "passed": true,
+      "pipeline_config": {
+        "bytes": 7581,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/registrations/initial/PIPELINE_CONFIG.json",
+        "sha256": "2d0b13dbd02812f0e056fcc252fbdec8f0f0ed5935ef38692b3af4ae96c8c801"
+      },
+      "registration_config": {
+        "bytes": 6651,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/registrations/initial/REGISTRATION_CONFIG.json",
+        "sha256": "034046a4f0f76a1c43a131b9fc75e87a666ecefe13854a1357915c788d8a33ad"
+      }
+    },
+    "prospective_postseal_plan": {
+      "contracts": {
+        "C_SCOPE.json": {
+          "bytes": 5091,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/postseal/C_SCOPE.json",
+          "sha256": "efb98b613a6ce9a71291ca209eaff8d29439d8c075c3789d2a39455393f1f675"
+        },
+        "FIELD_MAP.json": {
+          "bytes": 14950,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/postseal/FIELD_MAP.json",
+          "sha256": "c8304880a8b98dd514bb352ec6e604b5953255f183c6cf5aa0b7e3b2a2dafde6"
+        },
+        "FINAL_CONCLUSION_TEMPLATE.zh-CN.md": {
+          "bytes": 12186,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/postseal/FINAL_CONCLUSION_TEMPLATE.zh-CN.md",
+          "sha256": "b5f5557c23e866af5d4239ccae10255876338b1c2624cf5d357a4ac0d66871d9"
+        }
+      },
+      "descriptor": {
+        "bytes": 12903,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/registrations/initial/PRE_ENDPOINT_PLAN05.json",
+        "sha256": "dd3249739efd60198d110c26b2493af66c695f50f6949a2a9fcfe29de57042be"
+      },
+      "passed": true,
+      "review_sources": {
+        "prepare_pins.py": {
+          "bytes": 14764,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/postseal/prepare_pins.py",
+          "sha256": "86b25152eb2b51f61243c084a88c57621cf71e34d0b000f1c4e31c000e77fbd9"
+        },
+        "prepare_plan.py": {
+          "bytes": 7003,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/postseal/prepare_plan.py",
+          "sha256": "7dada7fc3b121e38740563d3d856880c0e791edca463a2b53c3c4beac461fd0b"
+        },
+        "review.py": {
+          "bytes": 28185,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/postseal/review.py",
+          "sha256": "dd006b74ebc9189b7c39c04859138762077345a5fcecd323d35d6570f8336c09"
+        },
+        "run_supplement.py": {
+          "bytes": 2007,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/postseal/run_supplement.py",
+          "sha256": "f72a58799e206e1b7b075ec16b3b04651d6f228ac82587328606a6dea92f8ae2"
+        },
+        "test_review.py": {
+          "bytes": 25120,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/postseal/test_review.py",
+          "sha256": "079888b3060d3ad637430308f889136cf458c1768f11ff57ad8b985d247075cb"
+        }
+      },
+      "scientific_payloads_opened_during_preparation": false
+    },
+    "source_freezes": {
+      "all_source_files_and_freezes_rehashed_here": true,
+      "all_source_files_match_disk_and_C2": true,
+      "freezes": [
+        {
+          "allowed_phases": [
+            "A"
+          ],
+          "descriptor": {
+            "bytes": 26086,
+            "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/registrations/initial/A_SOURCE_FREEZE.json",
+            "sha256": "04ad218753c54e06e554629acba27d0aff0b8a4dc204d0f6fc8bcf4de14aaa58"
+          },
+          "execution_kind": "training",
+          "source_files": 163
+        },
+        {
+          "allowed_phases": [
+            "C"
+          ],
+          "descriptor": {
+            "bytes": 26086,
+            "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/registrations/initial/C_SOURCE_FREEZE.json",
+            "sha256": "32b9f928ccc3011d77ecb16cc4a66915a71d784a8964f7bffd13ab70882da8f2"
+          },
+          "execution_kind": "training",
+          "source_files": 163
+        },
+        {
+          "allowed_phases": [
+            "OPS"
+          ],
+          "descriptor": {
+            "bytes": 26616,
+            "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/registrations/initial/OPS_ENVELOPE_SOURCE_FREEZE.json",
+            "sha256": "0f430a8fe279c5b964163bb6aeeaa34f7d567b457e34f396876d843cd5f6a6e8"
+          },
+          "execution_kind": "controller",
+          "source_files": 163
+        },
+        {
+          "allowed_phases": [
+            "OPS"
+          ],
+          "descriptor": {
+            "bytes": 26106,
+            "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/registrations/initial/OPS_CORE_SOURCE_FREEZE.json",
+            "sha256": "5bca629734bd39b1dea21d333aa7081449e197fadef133fa44efd961c3e304d8"
+          },
+          "execution_kind": "controller",
+          "source_files": 163
+        }
+      ],
+      "original_actual_git_blob_check_receipt": {
+        "bytes": 8382,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/INDEPENDENT_ACTUAL_ADMISSION_02.json",
+        "sha256": "2e6a6c397b1e2b2324170ce9006bd53cc68bf1400155aadc7cf3e90112d624fe"
+      },
+      "passed": true,
+      "source_map_sha256": "30a71bdf855cd816debae2a2fb3f96fa0b4efdd4f76b81121170da793dac4ecf",
+      "unique_source_files": 163
+    }
+  },
+  "complete": true,
+  "full_production_readiness_claimed": false,
+  "prior_audit_attempts": [
+    {
+      "classification": "Audit-only overstrict expectation excluding five actual C2 engineering evidence files; preserved",
+      "receipt": {
+        "bytes": 1249,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/INDEPENDENT_ACTUAL_ADMISSION.json",
+        "sha256": "6f8f983314efb62387b2c83433e2197356b6e64ff2c0b52201d25d7bcff95c3b"
+      }
+    },
+    {
+      "classification": "Six real production metadata checks passed; audit-only subprocess guard then rejected read-only git -C SOURCE show; preserved",
+      "receipt": {
+        "bytes": 8382,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/INDEPENDENT_ACTUAL_ADMISSION_02.json",
+        "sha256": "2e6a6c397b1e2b2324170ce9006bd53cc68bf1400155aadc7cf3e90112d624fe"
+      }
+    }
+  ],
+  "production_science_started": false,
+  "production_supervisor_started": false,
+  "read_only_git_subprocess_count": 19,
+  "schema": "hepta.execution05.independent-actual-admission.1",
+  "scope": "Actual read-only source/config/import/layout verification; no supervisor/worker execution or scientific result interpretation",
+  "separate_history_recovery_receipt": {
+    "bytes": 1236,
+    "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/HISTORY_DEPENDENCIES_RESTORED.json",
+    "sha256": "d4d25b363cd1337722d85a2c14b502e9b74ae22dbf7145048503f59fea3979c8"
+  },
+  "separate_production_import_probe_required": true,
+  "status": "PASSED_READ_ONLY_SOURCE_CONFIG_IMPORT_LAYOUT"
+}

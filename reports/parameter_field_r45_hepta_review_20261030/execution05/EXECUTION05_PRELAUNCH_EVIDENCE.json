@@ -1,0 +1,1175 @@
+{
+  "actual_startup": {
+    "automatic_retry": false,
+    "capacity_admission": {
+      "first_sample_waited_for_capacity": true,
+      "later_appends_not_claimed_or_pinned": true,
+      "passed_utc": "2026-10-30T12:58:25.972942+00:00",
+      "prefix_bytes": 1189,
+      "prefix_sha256": "024e5f426af95a2b38d1ba492bc1ff4a339e41d543fab6e999f46f17f20114f5",
+      "records": [
+        {
+          "available_inodes": 1612188,
+          "clean_inactive_file": 1483264000,
+          "consecutive": 0,
+          "disk_available": 5502201856,
+          "effective_available": 1540227072,
+          "memory_current": 8532971520,
+          "memory_limit": 8589934592,
+          "oom": 0,
+          "oom_kill": 0,
+          "phase": "initial_capacity_admission",
+          "unix": 1793365075.9155788,
+          "utc_from_unix": "2026-10-30T12:57:55.915579+00:00"
+        },
+        {
+          "available_inodes": 1612122,
+          "clean_inactive_file": 1606107136,
+          "consecutive": 1,
+          "disk_available": 5501952000,
+          "effective_available": 2273832960,
+          "memory_current": 7922208768,
+          "memory_limit": 8589934592,
+          "oom": 0,
+          "oom_kill": 0,
+          "phase": "initial_capacity_admission",
+          "unix": 1793365085.9394164,
+          "utc_from_unix": "2026-10-30T12:58:05.939416+00:00"
+        },
+        {
+          "available_inodes": 1612098,
+          "clean_inactive_file": 1605406720,
+          "consecutive": 2,
+          "disk_available": 5501800448,
+          "effective_available": 2813517824,
+          "memory_current": 7381823488,
+          "memory_limit": 8589934592,
+          "oom": 0,
+          "oom_kill": 0,
+          "phase": "initial_capacity_admission",
+          "unix": 1793365095.95637,
+          "utc_from_unix": "2026-10-30T12:58:15.956370+00:00"
+        },
+        {
+          "available_inodes": 1612098,
+          "clean_inactive_file": 1613430784,
+          "consecutive": 3,
+          "disk_available": 5501800448,
+          "effective_available": 2704252928,
+          "memory_current": 7499112448,
+          "memory_limit": 8589934592,
+          "oom": 0,
+          "oom_kill": 0,
+          "phase": "initial_capacity_admission",
+          "unix": 1793365105.972942,
+          "utc_from_unix": "2026-10-30T12:58:25.972942+00:00"
+        }
+      ],
+      "scope": "Actual initial capacity gate; no claim about future capacity or final scientific completion.",
+      "source_kind": "first_four_complete_jsonl_records_only",
+      "source_path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/supervisor_run/ADMISSION.jsonl",
+      "thresholds_from_frozen_source": {
+        "consecutive_passing_samples_required": 3,
+        "disk_gate_bytes": 2415919104,
+        "ram_gate_bytes": 1879048192
+      }
+    },
+    "complete_scientific_study_asserted": false,
+    "controller_identity": {
+      "pid": 273933,
+      "process_group": 273933,
+      "session": 273933,
+      "start_ticks": "1819746",
+      "state": "R"
+    },
+    "controller_start": {
+      "bytes": 1431,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/supervisor_run/children/controller.START.json",
+      "sha256": "84b3d0bf9fae76f3ad31091f0eb75e2245c0699662d0f01d471608257b790ae5"
+    },
+    "controller_started_utc": "2026-10-30T12:58:25.981167+00:00",
+    "launcher_identity": {
+      "parent_pid": 835,
+      "pgid": 273439,
+      "pid": 273439,
+      "sid": 273439,
+      "start_ticks": 1816672
+    },
+    "new_environment_oom_baseline": {
+      "oom": 0,
+      "oom_kill": 0
+    },
+    "original_execution04_oom_history_redefined": false,
+    "outer_deadline_window_seconds": 43200.0,
+    "outer_final_wait4_at_snapshot": null,
+    "outer_intent": {
+      "bytes": 1021,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/wait4_launcher/INTENT.json",
+      "sha256": "5b85e2230c64d7adfa99bc3eea5654bba94d3a3bcf5b68aa2b4421818e99a03c"
+    },
+    "outer_start": {
+      "bytes": 1019,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/wait4_launcher/START.json",
+      "sha256": "3380fb5e437c8d1e3e6a8bbe074b5f47ca4c07ffd7e57f5c1e169dd220d88538"
+    },
+    "positive_scientific_effect_asserted": false,
+    "primary_complete_at_snapshot": null,
+    "supervisor_identity": {
+      "parent_pid": 273439,
+      "pgid": 273442,
+      "pid": 273442,
+      "sid": 273442,
+      "start_ticks": 1816684
+    },
+    "supervisor_start_policy": {
+      "bytes": 873,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/supervisor_run/START_POLICY.json",
+      "sha256": "17367dc4db5220d05ceefaf7910e4b6a7725933190b979a06977f38573512d91"
+    },
+    "supervisor_started_utc": "2026-10-30T12:57:55.365094+00:00"
+  },
+  "additional_standard_recovery_prelaunch_receipts": [
+    {
+      "category": "additional_recovery_prelaunch",
+      "child_identity": {
+        "pid": 219739,
+        "start_ticks": "1712113"
+      },
+      "child_wait4_cpu_seconds": 0.165468,
+      "command_success": true,
+      "completed_at_utc": "2026-10-30T12:40:33.564324+00:00",
+      "exit_code": 0,
+      "id": "recovery:episode02_download_wait4/WAIT4.json",
+      "measurement_wall_seconds": 3.9191618650002056,
+      "measuring_parent_cpu_seconds": 0.0047350349999999986,
+      "nonoverlapping_cpu_seconds": 0.170203035,
+      "peak_child_rss_bytes": 27238400,
+      "receipt": {
+        "bytes": 1734,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/episode02_download_wait4/WAIT4.json",
+        "sha256": "0d0909b0112016dd845a26fcc0345b8f15892f6a3c44739fbd24aabb7564a3c9"
+      },
+      "scope": "Independent root helper and its waited descendants, plus the separately measured parent interval; before the execution05 supervisor starts.",
+      "started_at_utc": "2026-10-30T12:40:29.645230+00:00",
+      "stdout_stderr_payloads_copied_into_report": false,
+      "supporting_metadata": {
+        "intent": {
+          "bytes": 650,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/episode02_download_wait4/INTENT.json",
+          "sha256": "e8cab391884d49207d5f043256e4253c7e18ecbc9c9a1abbc8006610ef7bd154"
+        },
+        "stderr": {
+          "bytes": 0,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/episode02_download_wait4/helper.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 249,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/episode02_download_wait4/helper.stdout.log",
+          "sha256": "99c512b7e29fc4e984620e856db2871f03c293a573f65a404c76a8434323f626"
+        }
+      },
+      "unwaited_work_complete_coverage_claimed": false
+    },
+    {
+      "category": "additional_recovery_prelaunch",
+      "child_identity": {
+        "pid": 187068,
+        "start_ticks": "1682559"
+      },
+      "child_wait4_cpu_seconds": 0.28881999999999997,
+      "command_success": true,
+      "completed_at_utc": "2026-10-30T12:35:34.518146+00:00",
+      "exit_code": 0,
+      "id": "recovery:format_wait4/WAIT4.json",
+      "measurement_wall_seconds": 0.41657554599805735,
+      "measuring_parent_cpu_seconds": 0.003867816000000003,
+      "nonoverlapping_cpu_seconds": 0.292687816,
+      "peak_child_rss_bytes": 15466496,
+      "receipt": {
+        "bytes": 1719,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/format_wait4/WAIT4.json",
+        "sha256": "d192c4349371762f3c63767f0b21c2486518ca196101d961cb76330d00c1a628"
+      },
+      "scope": "Independent root helper and its waited descendants, plus the separately measured parent interval; before the execution05 supervisor starts.",
+      "started_at_utc": "2026-10-30T12:35:34.101646+00:00",
+      "stdout_stderr_payloads_copied_into_report": false,
+      "supporting_metadata": {
+        "intent": {
+          "bytes": 370,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/format_wait4/INTENT.json",
+          "sha256": "b94d7f86fa97ff44fd69342030c95b32353ff2e7292fae9c42e0283fc4c9d02d"
+        },
+        "stderr": {
+          "bytes": 0,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/format_wait4/helper.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 73,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/format_wait4/helper.stdout.log",
+          "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+        }
+      },
+      "unwaited_work_complete_coverage_claimed": false
+    },
+    {
+      "category": "additional_recovery_prelaunch",
+      "child_identity": {
+        "pid": 210917,
+        "start_ticks": "1696677"
+      },
+      "child_wait4_cpu_seconds": 3.839966,
+      "command_success": true,
+      "completed_at_utc": "2026-10-30T12:38:00.556284+00:00",
+      "exit_code": 0,
+      "id": "recovery:initialize_build_wait4/WAIT4.json",
+      "measurement_wall_seconds": 5.2740314449984,
+      "measuring_parent_cpu_seconds": 0.007387753999999996,
+      "nonoverlapping_cpu_seconds": 3.847353754,
+      "peak_child_rss_bytes": 23785472,
+      "receipt": {
+        "bytes": 1732,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/initialize_build_wait4/WAIT4.json",
+        "sha256": "a847550b56d3f9355d7520afc366fc2b3e7efddfc8c50fee0ee20bf4662b9dc3"
+      },
+      "scope": "Independent root helper and its waited descendants, plus the separately measured parent interval; before the execution05 supervisor starts.",
+      "started_at_utc": "2026-10-30T12:37:55.282330+00:00",
+      "stdout_stderr_payloads_copied_into_report": false,
+      "supporting_metadata": {
+        "intent": {
+          "bytes": 809,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/initialize_build_wait4/INTENT.json",
+          "sha256": "ba5d9286494728c9843bd24c57291d24bfd10f0b1158cd0684c54e00640f40ad"
+        },
+        "stderr": {
+          "bytes": 0,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/initialize_build_wait4/helper.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 787,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/initialize_build_wait4/helper.stdout.log",
+          "sha256": "bb3d73aea9e2281547c15907b8c8d42e3e69153695fcabede7104f889e27aa34"
+        }
+      },
+      "unwaited_work_complete_coverage_claimed": false
+    },
+    {
+      "category": "additional_recovery_prelaunch",
+      "child_identity": {
+        "pid": 199380,
+        "start_ticks": "1689640"
+      },
+      "child_wait4_cpu_seconds": 1.6421029999999999,
+      "command_success": true,
+      "completed_at_utc": "2026-10-30T12:36:47.233437+00:00",
+      "exit_code": 0,
+      "id": "recovery:initialize_prepare_amendment_wait4/WAIT4.json",
+      "measurement_wall_seconds": 2.3284936210002343,
+      "measuring_parent_cpu_seconds": 0.006085906000000002,
+      "nonoverlapping_cpu_seconds": 1.648188906,
+      "peak_child_rss_bytes": 21897216,
+      "receipt": {
+        "bytes": 1774,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/initialize_prepare_amendment_wait4/WAIT4.json",
+        "sha256": "8eadaa08cbcf34d2e68ad177bfbfe96a64766465317df67b2b81c152b9d1dc53"
+      },
+      "scope": "Independent root helper and its waited descendants, plus the separately measured parent interval; before the execution05 supervisor starts.",
+      "started_at_utc": "2026-10-30T12:36:44.905013+00:00",
+      "stdout_stderr_payloads_copied_into_report": false,
+      "supporting_metadata": {
+        "intent": {
+          "bytes": 821,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/initialize_prepare_amendment_wait4/INTENT.json",
+          "sha256": "32a76fa1ce7130bb0f15c2be0a563a4501b4af18611623e4fc278269c2580bcc"
+        },
+        "stderr": {
+          "bytes": 0,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/initialize_prepare_amendment_wait4/helper.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 414,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/initialize_prepare_amendment_wait4/helper.stdout.log",
+          "sha256": "3df1ec38662fd580439e3a1092ad9cbbf2adbd94638416d18b1efc1a1a0f1f2a"
+        }
+      },
+      "unwaited_work_complete_coverage_claimed": false
+    },
+    {
+      "category": "additional_recovery_prelaunch",
+      "child_identity": {
+        "pid": 258519,
+        "start_ticks": "1764389"
+      },
+      "child_wait4_cpu_seconds": 0.14018599999999998,
+      "command_success": true,
+      "completed_at_utc": "2026-10-30T12:49:12.612753+00:00",
+      "exit_code": 0,
+      "id": "recovery:preregistration_checkpoint_20261030T124756Z/readback_steps/0/WAIT4.json",
+      "measurement_wall_seconds": 0.2084757240008912,
+      "measuring_parent_cpu_seconds": 0.0037222059999999987,
+      "nonoverlapping_cpu_seconds": 0.143908206,
+      "peak_child_rss_bytes": 20578304,
+      "receipt": {
+        "bytes": 1877,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/preregistration_checkpoint_20261030T124756Z/readback_steps/0/WAIT4.json",
+        "sha256": "7d9a1a46ede15f2bc683ae9374836d893bdb328756a0b825afed3df42105c6de"
+      },
+      "scope": "Independent root helper and its waited descendants, plus the separately measured parent interval; before the execution05 supervisor starts.",
+      "started_at_utc": "2026-10-30T12:49:12.404372+00:00",
+      "stdout_stderr_payloads_copied_into_report": false,
+      "supporting_metadata": {
+        "intent": {
+          "bytes": 960,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/preregistration_checkpoint_20261030T124756Z/readback_steps/0/INTENT.json",
+          "sha256": "bdc9ec54b62e22c12e6a02be4e6b86cf85efb493e2401451739ab9f00f668442"
+        },
+        "stderr": {
+          "bytes": 0,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/preregistration_checkpoint_20261030T124756Z/readback_steps/0/helper.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 182,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/preregistration_checkpoint_20261030T124756Z/readback_steps/0/helper.stdout.log",
+          "sha256": "9543dd00f5eafcb8497f8d508176c9180ee8ea32e6ee50f65e1bab7ce4f2f852"
+        }
+      },
+      "unwaited_work_complete_coverage_claimed": false
+    },
+    {
+      "category": "additional_recovery_prelaunch",
+      "child_identity": {
+        "pid": 258588,
+        "start_ticks": "1764418"
+      },
+      "child_wait4_cpu_seconds": 0.127551,
+      "command_success": true,
+      "completed_at_utc": "2026-10-30T12:49:12.903695+00:00",
+      "exit_code": 0,
+      "id": "recovery:preregistration_checkpoint_20261030T124756Z/readback_steps/1/WAIT4.json",
+      "measurement_wall_seconds": 0.21095662899824674,
+      "measuring_parent_cpu_seconds": 0.003102687,
+      "nonoverlapping_cpu_seconds": 0.130653687,
+      "peak_child_rss_bytes": 20578304,
+      "receipt": {
+        "bytes": 1834,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/preregistration_checkpoint_20261030T124756Z/readback_steps/1/WAIT4.json",
+        "sha256": "07980424f07b29b915c13eb6771076c49b18a6a6c0437e4b2690d7ed35dfcf6f"
+      },
+      "scope": "Independent root helper and its waited descendants, plus the separately measured parent interval; before the execution05 supervisor starts.",
+      "started_at_utc": "2026-10-30T12:49:12.692829+00:00",
+      "stdout_stderr_payloads_copied_into_report": false,
+      "supporting_metadata": {
+        "intent": {
+          "bytes": 967,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/preregistration_checkpoint_20261030T124756Z/readback_steps/1/INTENT.json",
+          "sha256": "b5da70ab61e7501900b6a48e780d325b596c5e1dfa3d2c5e6edd9c96c292d4f8"
+        },
+        "stderr": {
+          "bytes": 0,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/preregistration_checkpoint_20261030T124756Z/readback_steps/1/helper.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 189,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/preregistration_checkpoint_20261030T124756Z/readback_steps/1/helper.stdout.log",
+          "sha256": "a3848e55dc3cff6e59f36c0b5e91f889d6e697461a825909c9c729a8d97d9209"
+        }
+      },
+      "unwaited_work_complete_coverage_claimed": false
+    },
+    {
+      "category": "additional_recovery_prelaunch",
+      "child_identity": {
+        "pid": 254460,
+        "start_ticks": "1758350"
+      },
+      "child_wait4_cpu_seconds": 0.207391,
+      "command_success": true,
+      "completed_at_utc": "2026-10-30T12:48:16.640062+00:00",
+      "exit_code": 0,
+      "id": "recovery:preregistration_checkpoint_20261030T124756Z/upload_wait4/WAIT4.json",
+      "measurement_wall_seconds": 4.626492721999966,
+      "measuring_parent_cpu_seconds": 0.007569956000000003,
+      "nonoverlapping_cpu_seconds": 0.214960956,
+      "peak_child_rss_bytes": 26570752,
+      "receipt": {
+        "bytes": 1830,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/preregistration_checkpoint_20261030T124756Z/upload_wait4/WAIT4.json",
+        "sha256": "cf7b05c47e49615c17c7589da011813b41253ceb2b87a6639bd520bcc19918d6"
+      },
+      "scope": "Independent root helper and its waited descendants, plus the separately measured parent interval; before the execution05 supervisor starts.",
+      "started_at_utc": "2026-10-30T12:48:12.014421+00:00",
+      "stdout_stderr_payloads_copied_into_report": false,
+      "supporting_metadata": {
+        "intent": {
+          "bytes": 737,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/preregistration_checkpoint_20261030T124756Z/upload_wait4/INTENT.json",
+          "sha256": "7d65ef734fd2cdc545f5810b59b8043badff6860596f0132d86cc0d8378559e0"
+        },
+        "stderr": {
+          "bytes": 681,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/preregistration_checkpoint_20261030T124756Z/upload_wait4/helper.stderr.log",
+          "sha256": "62011cfd4c2909b6f952a383b188f0fc08be51da200c53307f91816657dd629a"
+        },
+        "stdout": {
+          "bytes": 1209,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/preregistration_checkpoint_20261030T124756Z/upload_wait4/helper.stdout.log",
+          "sha256": "d3d9933c86e59e2f4549bfb840fc78deecfd0947d6f5da9295996d47f3c8680c"
+        }
+      },
+      "unwaited_work_complete_coverage_claimed": false
+    },
+    {
+      "category": "additional_recovery_prelaunch",
+      "child_identity": {
+        "pid": 107283,
+        "start_ticks": "1589640"
+      },
+      "child_wait4_cpu_seconds": 0.20058399999999998,
+      "command_success": true,
+      "completed_at_utc": "2026-10-30T12:20:10.041131+00:00",
+      "exit_code": 0,
+      "id": "recovery:recovery_checkpoint/library_upload_wait4/WAIT4.json",
+      "measurement_wall_seconds": 5.130436890998681,
+      "measuring_parent_cpu_seconds": 0.006631325000000007,
+      "nonoverlapping_cpu_seconds": 0.207215325,
+      "peak_child_rss_bytes": 26460160,
+      "receipt": {
+        "bytes": 1793,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/recovery_checkpoint/library_upload_wait4/WAIT4.json",
+        "sha256": "940a78369a99cecf0a2fcf0d7eb5c1d1188f6d8b777dc022a2ac1e08f27015c1"
+      },
+      "scope": "Independent root helper and its waited descendants, plus the separately measured parent interval; before the execution05 supervisor starts.",
+      "started_at_utc": "2026-10-30T12:20:04.910910+00:00",
+      "stdout_stderr_payloads_copied_into_report": false,
+      "supporting_metadata": {
+        "intent": {
+          "bytes": 717,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/recovery_checkpoint/library_upload_wait4/INTENT.json",
+          "sha256": "df1cffa75de28c3b7f2106890893a7441e84140b11005df32402c5a488c05ed4"
+        },
+        "stderr": {
+          "bytes": 645,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/recovery_checkpoint/library_upload_wait4/helper.stderr.log",
+          "sha256": "20ebfc942431d89ac10e5e6b483a8cc03919275fe5bb3605693bdd1f6080168a"
+        },
+        "stdout": {
+          "bytes": 1197,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/recovery_checkpoint/library_upload_wait4/helper.stdout.log",
+          "sha256": "80c8dd954d019930d0924d3203bc460ec24e8106cbf9e809a8bdcc6e9fb15d6a"
+        }
+      },
+      "unwaited_work_complete_coverage_claimed": false
+    },
+    {
+      "category": "additional_recovery_prelaunch",
+      "child_identity": {
+        "pid": 120496,
+        "start_ticks": "1622816"
+      },
+      "child_wait4_cpu_seconds": 0.137213,
+      "command_success": true,
+      "completed_at_utc": "2026-10-30T12:25:36.880583+00:00",
+      "exit_code": 0,
+      "id": "recovery:recovery_checkpoint/readback_steps/000/WAIT4.json",
+      "measurement_wall_seconds": 0.20629734500107588,
+      "measuring_parent_cpu_seconds": 0.0025161750000000024,
+      "nonoverlapping_cpu_seconds": 0.139729175,
+      "peak_child_rss_bytes": 20578304,
+      "receipt": {
+        "bytes": 1789,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/recovery_checkpoint/readback_steps/000/WAIT4.json",
+        "sha256": "751e8f22366e9178900f27df6647c3529e4d97e72b9ad48cba7e6899a02aa00a"
+      },
+      "scope": "Independent root helper and its waited descendants, plus the separately measured parent interval; before the execution05 supervisor starts.",
+      "started_at_utc": "2026-10-30T12:25:36.674353+00:00",
+      "stdout_stderr_payloads_copied_into_report": false,
+      "supporting_metadata": {
+        "intent": {
+          "bytes": 924,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/recovery_checkpoint/readback_steps/000/INTENT.json",
+          "sha256": "d1102fb4a744a3d546d46a5bf3772c1e0092b53528fbc89ec6543fd2ce508cdf"
+        },
+        "stderr": {
+          "bytes": 0,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/recovery_checkpoint/readback_steps/000/helper.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 164,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/recovery_checkpoint/readback_steps/000/helper.stdout.log",
+          "sha256": "2837526a36f24c7f027beb17b703fd2613b74fbc3ad7e16511bc6250682b2544"
+        }
+      },
+      "unwaited_work_complete_coverage_claimed": false
+    },
+    {
+      "category": "additional_recovery_prelaunch",
+      "child_identity": {
+        "pid": 120508,
+        "start_ticks": "1622842"
+      },
+      "child_wait4_cpu_seconds": 0.127551,
+      "command_success": true,
+      "completed_at_utc": "2026-10-30T12:25:37.139276+00:00",
+      "exit_code": 0,
+      "id": "recovery:recovery_checkpoint/readback_steps/001/WAIT4.json",
+      "measurement_wall_seconds": 0.2068358319993422,
+      "measuring_parent_cpu_seconds": 0.003022915000000001,
+      "nonoverlapping_cpu_seconds": 0.130573915,
+      "peak_child_rss_bytes": 20578304,
+      "receipt": {
+        "bytes": 1777,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/recovery_checkpoint/readback_steps/001/WAIT4.json",
+        "sha256": "9230e24cf761ac3fb570f7d87d45886629a40db19012286f0ea98caca93572a0"
+      },
+      "scope": "Independent root helper and its waited descendants, plus the separately measured parent interval; before the execution05 supervisor starts.",
+      "started_at_utc": "2026-10-30T12:25:36.932508+00:00",
+      "stdout_stderr_payloads_copied_into_report": false,
+      "supporting_metadata": {
+        "intent": {
+          "bytes": 931,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/recovery_checkpoint/readback_steps/001/INTENT.json",
+          "sha256": "f6922ebc21ea28d55b7c9fddd3c7e563f84beb9e940e73e221acf0d9ed59be63"
+        },
+        "stderr": {
+          "bytes": 0,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/recovery_checkpoint/readback_steps/001/helper.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 171,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/recovery_checkpoint/readback_steps/001/helper.stdout.log",
+          "sha256": "d953085e86ac845a3cd7fab291dafb0135902255eeaae8815e6acbcfba9ea105"
+        }
+      },
+      "unwaited_work_complete_coverage_claimed": false
+    },
+    {
+      "category": "additional_recovery_prelaunch",
+      "child_identity": {
+        "pid": 35305,
+        "start_ticks": "1508227"
+      },
+      "child_wait4_cpu_seconds": 2.1257349999999997,
+      "command_success": true,
+      "completed_at_utc": "2026-10-30T12:06:32.605128+00:00",
+      "exit_code": 0,
+      "id": "recovery:runtime_probe_wait4/WAIT4.json",
+      "measurement_wall_seconds": 1.8194116879985813,
+      "measuring_parent_cpu_seconds": 0.004232863000000003,
+      "nonoverlapping_cpu_seconds": 2.129967863,
+      "peak_child_rss_bytes": 218750976,
+      "receipt": {
+        "bytes": 1737,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/runtime_probe_wait4/WAIT4.json",
+        "sha256": "47ab776201dc6200c4aebdc31449a6cb08b49126cf746669a5d55d8c0c87ccef"
+      },
+      "scope": "Independent root helper and its waited descendants, plus the separately measured parent interval; before the execution05 supervisor starts.",
+      "started_at_utc": "2026-10-30T12:06:30.785783+00:00",
+      "stdout_stderr_payloads_copied_into_report": false,
+      "supporting_metadata": {
+        "intent": {
+          "bytes": 615,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/runtime_probe_wait4/INTENT.json",
+          "sha256": "622d006b03cc2ccdf3d4126c8b02691572c7986fd445d0aafb0feaadae8ff8eb"
+        },
+        "stderr": {
+          "bytes": 0,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/runtime_probe_wait4/helper.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 246,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/runtime_probe_wait4/helper.stdout.log",
+          "sha256": "0066d75065968c236010d20160b81db49e3895418ea4a836e2664a3079b261fe"
+        }
+      },
+      "unwaited_work_complete_coverage_claimed": false
+    }
+  ],
+  "at_utc": "2026-10-30T13:07:44.197575+00:00",
+  "cost_scope_audit": {
+    "additional_eleven_standard_recovery_cpu_seconds_lower_bound": 9.055442638,
+    "all_eighteen_finished_before_supervisor_start": true,
+    "combined_does_not_mean_total_campaign_cpu": true,
+    "combined_eighteen_registered_receipt_cpu_seconds_lower_bound": 19.566871246,
+    "current_implementation_rules": [
+      "Use the final execution05 outer wait4 as an inclusive supervisor-and-waited-descendants observation.",
+      "Do not add stage, driver, controller, supervisor, archive, nested report or nested probe CPU to an inclusive envelope that already includes them.",
+      "Add separately scoped external root helper intervals only when outside the outer descendant tree and not otherwise counted.",
+      "These 18 prelaunch scopes finish before the supervisor begins, so they are outside the execution05 outer interval.",
+      "The launcher measuring parent is separate from the final waited supervisor; its completed receipt is not yet available.",
+      "The imported A17 original scientific execution belongs to execution04 and is counted once in the complete logical study; it is excluded from execution05 outer CPU.",
+      "The original execution04 inclusive outer contains A17 and is a non-additive historical observation; never add it wholesale to a ledger already containing A17.",
+      "Nonzero exits preserve their measured cost.",
+      "Do not sum peak RSS values or wall durations into a campaign memory/elapsed-time total."
+    ],
+    "distinct_recorded_child_pids": 18,
+    "focused_seven_cpu_seconds_lower_bound": 10.511428608,
+    "old_schema_reused_without_relabeling": "hepta.execution04.root-engineering-wait4.1 is the unchanged helper receipt schema; paths/times identify these execution05 preparation commands.",
+    "outer_execution05_inclusive_cpu_seconds": null,
+    "outer_total_pending": true,
+    "remaining_unquantified_or_separate_scopes": [
+      "Nine compact recovery receipts are listed separately without inventing scope or parent CPU.",
+      "Earlier reconstruction, tests, downloads, cleanup, restoration, root commands and this report preparation are not comprehensively covered by the 18-receipt subtotal.",
+      "Current and future external upload/readback helpers require their own completed, deduplicated local wait4 receipts; remote service compute is not measured.",
+      "The running execution05 outer envelope, final launcher-parent CPU, and any future failed/unwaited work have no completed total at this snapshot.",
+      "Historical stage/engineering lower bounds remain in the frozen historical cost adapter; they are not replaced or merged here."
+    ]
+  },
+  "execution_episode": "execution05_backpressure_20261030",
+  "failure_evidence": [
+    {
+      "classification": "FAILED_MISSING_HISTORICAL_EVIDENCE",
+      "exception_type": "FileNotFoundError",
+      "id": "production_probe01",
+      "public_explanation": "原历史证据目录缺失；FileNotFoundError。",
+      "support": {
+        "bytes": 2321,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/production_import_probe/helper.stderr.log",
+        "sha256": "a3059945de052ebf0d73de292d2934121b0b7b2ab3409d42f848bcfffc1fd285"
+      }
+    },
+    {
+      "classification": "FAILED_PHYSICAL_RESERVE_CHECK",
+      "exception_type": "ValueError",
+      "id": "production_probe02",
+      "public_explanation": "背压日志创建触发已登记的物理磁盘保留空间守卫。",
+      "support": {
+        "bytes": 1421,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/production_import_probe02/helper.stderr.log",
+        "sha256": "82c2ee8e85482cc44645fda901b1727a61c99f6cb19d16e763a0e4af807aff1a"
+      }
+    }
+  ],
+  "focused_prelaunch_receipts": [
+    {
+      "category": "focused_prelaunch",
+      "child_identity": {
+        "pid": 214102,
+        "start_ticks": "1701813"
+      },
+      "child_wait4_cpu_seconds": 2.3411519999999997,
+      "command_success": false,
+      "completed_at_utc": "2026-10-30T12:38:48.785409+00:00",
+      "exit_code": 1,
+      "id": "production_probe01",
+      "interpretation_zh_cn": "原历史证据目录缺失；FileNotFoundError。",
+      "measurement_wall_seconds": 2.1356426310012466,
+      "measuring_parent_cpu_seconds": 0.004313193999999999,
+      "nonoverlapping_cpu_seconds": 2.345465194,
+      "outcome": "FAILED_MISSING_HISTORICAL_EVIDENCE",
+      "peak_child_rss_bytes": 213090304,
+      "receipt": {
+        "bytes": 1772,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/production_import_probe/WAIT4.json",
+        "sha256": "22eb1e036548f1a021e8864b4ae22604ca951efdc96d95b36d8b1392c6cf54c4"
+      },
+      "scope": "Independent root helper and its waited descendants, plus the separately measured parent interval; before the execution05 supervisor starts.",
+      "started_at_utc": "2026-10-30T12:38:46.649837+00:00",
+      "stdout_stderr_payloads_copied_into_report": false,
+      "supporting_metadata": {
+        "intent": {
+          "bytes": 1319,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/production_import_probe/INTENT.json",
+          "sha256": "bb5cb7abcdbbcb5041ef1475504405b92b6fcc75dcf5efb59b0cc8b10ff87aa0"
+        },
+        "stderr": {
+          "bytes": 2321,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/production_import_probe/helper.stderr.log",
+          "sha256": "a3059945de052ebf0d73de292d2934121b0b7b2ab3409d42f848bcfffc1fd285"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/production_import_probe/helper.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "unwaited_work_complete_coverage_claimed": false
+    },
+    {
+      "category": "focused_prelaunch",
+      "check_groups": [],
+      "child_identity": {
+        "pid": 222683,
+        "start_ticks": null
+      },
+      "child_wait4_cpu_seconds": 0.028187999999999998,
+      "completed_at_utc": "2026-10-30T12:41:19.741633+00:00",
+      "error_message": "C2 contains more than the registered amendment",
+      "error_type": "ValueError",
+      "exit_code": 1,
+      "id": "independent_admission_01",
+      "identity_limitation": "Original audit receipt records PID but not start_ticks; no start_ticks is invented.",
+      "later_preserved_classification": "Audit-only overstrict expectation excluding five actual C2 engineering evidence files; preserved",
+      "measurement_wall_seconds": 0.029087699997035088,
+      "measuring_parent_cpu_seconds": 0.0008125060000000045,
+      "nonoverlapping_cpu_seconds": 0.029000506,
+      "outcome": "FAILED_READ_ONLY_ADMISSION_AUDIT",
+      "peak_child_rss_bytes": 9338880,
+      "production_science_started": false,
+      "production_supervisor_started": false,
+      "read_only_git_subprocess_count": 3,
+      "receipt": {
+        "bytes": 1249,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/INDEPENDENT_ACTUAL_ADMISSION.json",
+        "sha256": "6f8f983314efb62387b2c83433e2197356b6e64ff2c0b52201d25d7bcff95c3b"
+      },
+      "scope": "Separately measured read-only audit child including its waited Git commands, plus measuring-parent CPU; before the production supervisor."
+    },
+    {
+      "category": "focused_prelaunch",
+      "check_groups": [
+        "cwd_policy",
+        "git",
+        "imported_layout",
+        "initial_jobs",
+        "load_config",
+        "source_freezes"
+      ],
+      "child_identity": {
+        "pid": 224185,
+        "start_ticks": null
+      },
+      "child_wait4_cpu_seconds": 1.047531,
+      "completed_at_utc": "2026-10-30T12:42:39.266183+00:00",
+      "error_message": "Only read-only git subprocesses allowed",
+      "error_type": "ValueError",
+      "exit_code": 1,
+      "id": "independent_admission_02",
+      "identity_limitation": "Original audit receipt records PID but not start_ticks; no start_ticks is invented.",
+      "later_preserved_classification": "Six real production metadata checks passed; audit-only subprocess guard then rejected read-only git -C SOURCE show; preserved",
+      "measurement_wall_seconds": 1.0420475249993615,
+      "measuring_parent_cpu_seconds": 0.001104852,
+      "nonoverlapping_cpu_seconds": 1.048635852,
+      "outcome": "FAILED_READ_ONLY_ADMISSION_AUDIT",
+      "peak_child_rss_bytes": 17010688,
+      "production_science_started": false,
+      "production_supervisor_started": false,
+      "read_only_git_subprocess_count": 177,
+      "receipt": {
+        "bytes": 8382,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/INDEPENDENT_ACTUAL_ADMISSION_02.json",
+        "sha256": "2e6a6c397b1e2b2324170ce9006bd53cc68bf1400155aadc7cf3e90112d624fe"
+      },
+      "scope": "Separately measured read-only audit child including its waited Git commands, plus measuring-parent CPU; before the production supervisor."
+    },
+    {
+      "category": "focused_prelaunch",
+      "child_identity": {
+        "pid": 224678,
+        "start_ticks": "1725899"
+      },
+      "child_wait4_cpu_seconds": 2.709295,
+      "command_success": false,
+      "completed_at_utc": "2026-10-30T12:42:49.816443+00:00",
+      "exit_code": 1,
+      "id": "production_probe02",
+      "interpretation_zh_cn": "背压日志创建触发已登记的物理磁盘保留空间守卫。",
+      "measurement_wall_seconds": 2.313497622999421,
+      "measuring_parent_cpu_seconds": 0.005103649000000002,
+      "nonoverlapping_cpu_seconds": 2.714398649,
+      "outcome": "FAILED_PHYSICAL_RESERVE_CHECK",
+      "peak_child_rss_bytes": 213139456,
+      "receipt": {
+        "bytes": 1767,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/production_import_probe02/WAIT4.json",
+        "sha256": "73b4c9e42e360e7d542113d315b276db29dcf3b5eb64b5a27decaab70644fe22"
+      },
+      "scope": "Independent root helper and its waited descendants, plus the separately measured parent interval; before the execution05 supervisor starts.",
+      "started_at_utc": "2026-10-30T12:42:47.503056+00:00",
+      "stdout_stderr_payloads_copied_into_report": false,
+      "supporting_metadata": {
+        "intent": {
+          "bytes": 1321,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/production_import_probe02/INTENT.json",
+          "sha256": "82490daef181f8897585fe1c2f66c44d260658574aef71d46b9cbc61bd3e3a9a"
+        },
+        "stderr": {
+          "bytes": 1421,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/production_import_probe02/helper.stderr.log",
+          "sha256": "82c2ee8e85482cc44645fda901b1727a61c99f6cb19d16e763a0e4af807aff1a"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/production_import_probe02/helper.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "unwaited_work_complete_coverage_claimed": false
+    },
+    {
+      "category": "focused_prelaunch",
+      "check_groups": [
+        "cwd_policy",
+        "git",
+        "immutability",
+        "imported_layout",
+        "initial_jobs",
+        "load_config",
+        "prospective_postseal_plan",
+        "source_freezes"
+      ],
+      "child_identity": {
+        "pid": 226571,
+        "start_ticks": null
+      },
+      "child_wait4_cpu_seconds": 0.766355,
+      "completed_at_utc": "2026-10-30T12:44:00.392492+00:00",
+      "error_message": null,
+      "error_type": null,
+      "exit_code": 0,
+      "id": "independent_admission_03",
+      "identity_limitation": "Original audit receipt records PID but not start_ticks; no start_ticks is invented.",
+      "measurement_wall_seconds": 0.7685387290002836,
+      "measuring_parent_cpu_seconds": 0.0016090059999999962,
+      "nonoverlapping_cpu_seconds": 0.767964006,
+      "outcome": "PASSED_READ_ONLY_SOURCE_CONFIG_IMPORT_LAYOUT",
+      "peak_child_rss_bytes": 16072704,
+      "production_science_started": false,
+      "production_supervisor_started": false,
+      "read_only_git_subprocess_count": 19,
+      "receipt": {
+        "bytes": 11786,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/INDEPENDENT_ACTUAL_ADMISSION_03.json",
+        "sha256": "52061da9c19401c8c9e192390531d0bf84372150080857907d5c3b49190df7de"
+      },
+      "scope": "Separately measured read-only audit child including its waited Git commands, plus measuring-parent CPU; before the production supervisor."
+    },
+    {
+      "category": "focused_prelaunch",
+      "child_identity": {
+        "pid": 266584,
+        "start_ticks": "1799741"
+      },
+      "child_wait4_cpu_seconds": 3.4888959999999996,
+      "command_success": true,
+      "completed_at_utc": "2026-10-30T12:55:08.941275+00:00",
+      "exit_code": 0,
+      "id": "production_probe03",
+      "interpretation_zh_cn": "实际导入闭合、登记与资源别名检查通过；未执行科学工作。",
+      "measurement_wall_seconds": 3.018225051000627,
+      "measuring_parent_cpu_seconds": 0.004990955000000005,
+      "nonoverlapping_cpu_seconds": 3.493886955,
+      "outcome": "PASS_IMPORT_METADATA_CLOSURE",
+      "peak_child_rss_bytes": 214106112,
+      "receipt": {
+        "bytes": 1774,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/production_import_probe03/WAIT4.json",
+        "sha256": "67b95a752eecca2506e49e34fa360980e6dc60aadfbbee5dbef03b13f1450986"
+      },
+      "scope": "Independent root helper and its waited descendants, plus the separately measured parent interval; before the execution05 supervisor starts.",
+      "started_at_utc": "2026-10-30T12:55:05.923391+00:00",
+      "stdout_stderr_payloads_copied_into_report": false,
+      "supporting_metadata": {
+        "intent": {
+          "bytes": 1321,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/production_import_probe03/INTENT.json",
+          "sha256": "53118ca07c68ddf097ee76b2c84f6bdf205ca746d5218569becc711bd665cde6"
+        },
+        "stderr": {
+          "bytes": 0,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/production_import_probe03/helper.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 294,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/production_import_probe03/helper.stdout.log",
+          "sha256": "32731eb2daa72247bcc33261fe60eab7a5680195fa1783da4c93cd67aba8b74c"
+        }
+      },
+      "unwaited_work_complete_coverage_claimed": false
+    },
+    {
+      "category": "focused_prelaunch",
+      "child_identity": {
+        "pid": 273080,
+        "start_ticks": "1813432"
+      },
+      "child_wait4_cpu_seconds": 0.10682,
+      "command_success": true,
+      "completed_at_utc": "2026-10-30T12:57:22.960449+00:00",
+      "exit_code": 0,
+      "id": "launcher_prepare",
+      "interpretation_zh_cn": "仅校验并打印待执行命令；此步骤未启动 supervisor。",
+      "measurement_wall_seconds": 0.12194441700194147,
+      "measuring_parent_cpu_seconds": 0.005257445999999999,
+      "nonoverlapping_cpu_seconds": 0.112077446,
+      "outcome": "PREPARED_ONLY",
+      "peak_child_rss_bytes": 15466496,
+      "receipt": {
+        "bytes": 1726,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/launcher_prepare/WAIT4.json",
+        "sha256": "2ed3e58b3cb06d5aa961ec3d99204d035ccaae3f1fae8ccf2cd5727e95fd5a39"
+      },
+      "scope": "Independent root helper and its waited descendants, plus the separately measured parent interval; before the execution05 supervisor starts.",
+      "started_at_utc": "2026-10-30T12:57:22.838584+00:00",
+      "stdout_stderr_payloads_copied_into_report": false,
+      "supporting_metadata": {
+        "intent": {
+          "bytes": 726,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/launcher_prepare/INTENT.json",
+          "sha256": "cc22a6ed8a6c1c5ff68d87d8771960bbb02ddac84eec5f72a1d7f5828d730d73"
+        },
+        "stderr": {
+          "bytes": 0,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/launcher_prepare/helper.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 519,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/launcher_prepare/helper.stdout.log",
+          "sha256": "f9670dc2acee5db901eeaf2e296a5ca54fb492d1fc2f5529c26aa535573efce4"
+        }
+      },
+      "unwaited_work_complete_coverage_claimed": false
+    }
+  ],
+  "frozen_source_changed": false,
+  "frozen_source_references": {
+    "external_step.py": {
+      "bytes": 4382,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery04/external_step.py",
+      "sha256": "fb238cd0f28e331a2e9d4ada5950f436a2d31e579fa9fbd8c36cce70404c2b21"
+    },
+    "historical_costs.py": {
+      "bytes": 38532,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/historical_costs.py",
+      "sha256": "035d6aed995e705bcde6af7bce9b4edb498d682d095e4578cbea00fbd1e238fe"
+    },
+    "import_probe.py": {
+      "bytes": 16538,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/import_probe.py",
+      "sha256": "b53c09b12d5e4e09825bed2ed375e7a6d83ad741ccc6a51c241e6b1ffa1483b1"
+    },
+    "supervisor.py": {
+      "bytes": 51312,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/supervisor.py",
+      "sha256": "e91ddc38e374f37c379618cbf89bb05a46e265a5e9865afbe3d47a585934661b"
+    },
+    "wait4_launcher.py": {
+      "bytes": 8800,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/wait4_launcher.py",
+      "sha256": "7d3b8aff586a31c02de29199c09f9e1990f8fe71c7cd3bbb6dae01d202f702b3"
+    }
+  },
+  "history_dependency_restoration": {
+    "bytes": 1236,
+    "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/HISTORY_DEPENDENCIES_RESTORED.json",
+    "sha256": "d4d25b363cd1337722d85a2c14b502e9b74ae22dbf7145048503f59fea3979c8"
+  },
+  "independent03_status": {
+    "check_groups": [
+      "cwd_policy",
+      "git",
+      "immutability",
+      "imported_layout",
+      "initial_jobs",
+      "load_config",
+      "prospective_postseal_plan",
+      "source_freezes"
+    ],
+    "full_production_readiness_claimed": false,
+    "prior_audit_failures_preserved": true,
+    "receipt": {
+      "bytes": 11786,
+      "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/INDEPENDENT_ACTUAL_ADMISSION_03.json",
+      "sha256": "52061da9c19401c8c9e192390531d0bf84372150080857907d5c3b49190df7de"
+    },
+    "separate_production_import_probe_required": true,
+    "status": "PASSED_READ_ONLY_SOURCE_CONFIG_IMPORT_LAYOUT"
+  },
+  "limited_scope_recovery_cost_observations_not_merged": [
+    {
+      "included_in_additive_subtotals": false,
+      "reason_not_merged": "Compact historical recovery receipt does not carry the complete measurement/ancestry fields used for the scoped root ledger; values are preserved without guessing omitted parent/overlap coverage.",
+      "receipt": {
+        "bytes": 92,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/A17_recovery_steps/0/WAIT4.json",
+        "sha256": "41453b5d1f338a8861d0a1292f752d2c3d2bb1dcd9b3cfecaa2c558c559708b4"
+      },
+      "recorded_child_cpu_seconds": 0.089054,
+      "recorded_exit_code": 0,
+      "recorded_pid": 14789,
+      "recorded_wall_seconds": 0.11985290299890039
+    },
+    {
+      "included_in_additive_subtotals": false,
+      "reason_not_merged": "Compact historical recovery receipt does not carry the complete measurement/ancestry fields used for the scoped root ledger; values are preserved without guessing omitted parent/overlap coverage.",
+      "receipt": {
+        "bytes": 103,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/A17_recovery_steps/1/WAIT4.json",
+        "sha256": "b2b6c4bcc35067baa604ac999ecf38ffff6431362206e5fabfed52b6d42713df"
+      },
+      "recorded_child_cpu_seconds": 0.07386899999999999,
+      "recorded_exit_code": 0,
+      "recorded_pid": 14803,
+      "recorded_wall_seconds": 0.11281244999918272
+    },
+    {
+      "included_in_additive_subtotals": false,
+      "reason_not_merged": "Compact historical recovery receipt does not carry the complete measurement/ancestry fields used for the scoped root ledger; values are preserved without guessing omitted parent/overlap coverage.",
+      "receipt": {
+        "bytes": 75,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/ASSET_DOWNLOAD_WAIT4.json",
+        "sha256": "cb750538534af305b1301b538e0fa7afb7925d0071d32ba4ad94487e16d88b4d"
+      },
+      "recorded_child_cpu_seconds": 0.11077,
+      "recorded_exit_code": 0,
+      "recorded_pid": null,
+      "recorded_wall_seconds": 6.130822570999953
+    },
+    {
+      "included_in_additive_subtotals": false,
+      "reason_not_merged": "Compact historical recovery receipt does not carry the complete measurement/ancestry fields used for the scoped root ledger; values are preserved without guessing omitted parent/overlap coverage.",
+      "receipt": {
+        "bytes": 77,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/PREEXEC_DOWNLOAD_WAIT4.json",
+        "sha256": "90e39b1f60253c13fbecd0cf9540c7a56cd9654361a7516237e0d35963bb384c"
+      },
+      "recorded_child_cpu_seconds": 0.112562,
+      "recorded_exit_code": 0,
+      "recorded_pid": null,
+      "recorded_wall_seconds": 2.5551694379992114
+    },
+    {
+      "included_in_additive_subtotals": false,
+      "reason_not_merged": "Compact historical recovery receipt does not carry the complete measurement/ancestry fields used for the scoped root ledger; values are preserved without guessing omitted parent/overlap coverage.",
+      "receipt": {
+        "bytes": 143,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/runtime_install_pinned/WAIT4.json",
+        "sha256": "b80167619249351ce9eacec8159111c4e01fcba8472aff945a037c5204c6b9fc"
+      },
+      "recorded_child_cpu_seconds": 20.697266000000003,
+      "recorded_exit_code": 0,
+      "recorded_pid": 23651,
+      "recorded_wall_seconds": 24.697676585999943
+    },
+    {
+      "included_in_additive_subtotals": false,
+      "reason_not_merged": "Compact historical recovery receipt does not carry the complete measurement/ancestry fields used for the scoped root ledger; values are preserved without guessing omitted parent/overlap coverage.",
+      "receipt": {
+        "bytes": 132,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/steps/0/WAIT4.json",
+        "sha256": "fcb546002ebd15e8cf755ff835c50db137930dbb80fed38949a3f089b53a8a8f"
+      },
+      "recorded_child_cpu_seconds": 0.090959,
+      "recorded_exit_code": 0,
+      "recorded_pid": 4524,
+      "recorded_wall_seconds": 0.11896050699942862
+    },
+    {
+      "included_in_additive_subtotals": false,
+      "reason_not_merged": "Compact historical recovery receipt does not carry the complete measurement/ancestry fields used for the scoped root ledger; values are preserved without guessing omitted parent/overlap coverage.",
+      "receipt": {
+        "bytes": 132,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/steps/1/WAIT4.json",
+        "sha256": "f41e09a372494a39e99a6c3ba55cd78c6d173a4940f0644985045d8971c4250e"
+      },
+      "recorded_child_cpu_seconds": 0.077655,
+      "recorded_exit_code": 0,
+      "recorded_pid": 4539,
+      "recorded_wall_seconds": 0.09711636500105669
+    },
+    {
+      "included_in_additive_subtotals": false,
+      "reason_not_merged": "Compact historical recovery receipt does not carry the complete measurement/ancestry fields used for the scoped root ledger; values are preserved without guessing omitted parent/overlap coverage.",
+      "receipt": {
+        "bytes": 132,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/steps/2/WAIT4.json",
+        "sha256": "836b21212d05e0e1f56dc567d5a1195560ec1981a3b5be29c050a097ff6318e1"
+      },
+      "recorded_child_cpu_seconds": 0.082897,
+      "recorded_exit_code": 0,
+      "recorded_pid": 4541,
+      "recorded_wall_seconds": 0.10442246100137709
+    },
+    {
+      "included_in_additive_subtotals": false,
+      "reason_not_merged": "Compact historical recovery receipt does not carry the complete measurement/ancestry fields used for the scoped root ledger; values are preserved without guessing omitted parent/overlap coverage.",
+      "receipt": {
+        "bytes": 132,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/steps/3/WAIT4.json",
+        "sha256": "221cd3960912b77326f678973c934280e3cc3703d672548a8edd0f66aa0ce773"
+      },
+      "recorded_child_cpu_seconds": 0.075157,
+      "recorded_exit_code": 0,
+      "recorded_pid": 4555,
+      "recorded_wall_seconds": 0.09282627500033414
+    }
+  ],
+  "production_probe03": {
+    "admission": {
+      "allowed": true,
+      "clean_inactive_file": 930996224,
+      "current": 6166937600,
+      "effective_current": 5235941376,
+      "file_dirty": 387080192,
+      "file_writeback": 0,
+      "inactive_file": 1318076416,
+      "limit": 8589934592,
+      "oom": 0,
+      "oom_kill": 0,
+      "required_headroom": 1879048192
+    },
+    "at_utc": "2026-10-30T12:55:08.456169+00:00",
+    "checkpoints_decoded": 0,
+    "dataset_values_read": 0,
+    "model_instances_created": 0,
+    "nested_cpu_observations_do_not_add_to_probe03_wait4": {
+      "own_cpu_seconds": 3.017627273,
+      "process_cpu_seconds_total": 3.056687757
+    },
+    "not_a_successful_scientific_resource_qualification": true,
+    "original_loaded_closure_check_passed": true,
+    "original_registration_checks": {
+      "a29_a43_original_training_freeze_checks": true,
+      "c_original_training_freeze_check": true,
+      "imported_A17_original_profile_verified": true,
+      "initial_queue_job_metadata_verified": 4,
+      "original_controller_envelope_check": true
+    },
+    "raw_file_identities_unchanged": true,
+    "raw_inventory_entries": 295,
+    "receipt": {
+      "bytes": 10390,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/import_probe/IMPORT_CLOSURE03.json",
+      "sha256": "6a52850d6fb498274073630c74d3b18f33b0fd9fd285b8776054c017fc977c2c"
+    },
+    "resources_after": {
+      "clean_inactive_file": 1288441856,
+      "current": 6693978112,
+      "effective_current": 5405536256,
+      "file_dirty": 388788224,
+      "file_writeback": 0,
+      "inactive_file": 1677230080,
+      "limit": 8589934592,
+      "oom": 0,
+      "oom_kill": 0
+    },
+    "runtime": {
+      "numpy": "2.3.5",
+      "pillow": "12.3.0",
+      "python": "3.12.14",
+      "torch": "2.8.0+cpu"
+    },
+    "scheduled_gradient_microsteps": 0,
+    "source_commit": "7544b0a57a3b5624f3f2190449efeb84854b414d",
+    "status": "PASS_IMPORT_AND_METADATA_ONLY",
+    "verified_execution04_root_support_receipts": 96,
+    "verified_execution04_root_wait4_receipts": 32,
+    "verified_history_file_bindings": 146,
+    "workers_started": 0
+  },
+  "projection_note": "Publication copy of the reviewed metadata projection. Original receipts remain authoritative; their schemas, seals, hashes and outcomes are unchanged.",
+  "schema": "hepta.execution05.prelaunch-public-evidence.1",
+  "scope": "Read-only operational metadata projection and cost-scope audit. No scientific values or model/data payloads are copied.",
+  "source_commit": "7544b0a57a3b5624f3f2190449efeb84854b414d",
+  "status": "ACTUAL_PRELAUNCH_EVIDENCE_PUBLICATION_COPY",
+  "projection_generation_performed_archive_upload_ack_actions": false
+}

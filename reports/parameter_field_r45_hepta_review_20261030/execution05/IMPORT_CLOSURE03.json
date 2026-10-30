@@ -1,0 +1,248 @@
+{
+  "admission": {
+    "allowed": true,
+    "clean_inactive_file": 930996224,
+    "current": 6166937600,
+    "effective_current": 5235941376,
+    "file_dirty": 387080192,
+    "file_writeback": 0,
+    "inactive_file": 1318076416,
+    "limit": 8589934592,
+    "oom": 0,
+    "oom_kill": 0,
+    "required_headroom": 1879048192
+  },
+  "at_utc": "2026-10-30T12:55:08.456169+00:00",
+  "backpressure_probe_journal": {
+    "bytes": 2022,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/import_probe/IMPORT_CLOSURE03_BACKPRESSURE/CAPACITY_EVENTS.jsonl",
+    "sha256": "ec13d761f926171d64472148e348de36db4d74012b48e7bd0ee0a80e31ae91ef"
+  },
+  "checkpoints_decoded": 0,
+  "complete": true,
+  "cwd": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/empty_cwd",
+  "dataset_values_read": 0,
+  "execution_episode": "execution05_backpressure_20261030",
+  "freeze": {
+    "bytes": 26086,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/registrations/initial/A_SOURCE_FREEZE.json",
+    "sha256": "04ad218753c54e06e554629acba27d0aff0b8a4dc204d0f6fc8bcf4de14aaa58"
+  },
+  "model_instances_created": 0,
+  "modules_imported": [
+    "run",
+    "architecture_run",
+    "endpoint_v2",
+    "endpoints",
+    "architecture_endpoints",
+    "replay_terminals",
+    "witness",
+    "analysis_launch_v2",
+    "report_results"
+  ],
+  "not_a_successful_scientific_resource_qualification": true,
+  "original_loaded_closure_check_passed": true,
+  "original_registration_checks": {
+    "a29_a43_original_training_freeze_checks": true,
+    "c_original_training_freeze_check": true,
+    "imported_A17_original_profile_verified": true,
+    "initial_queue_job_metadata_verified": 4,
+    "original_controller_envelope_check": true
+  },
+  "own_cpu_seconds": 3.017627273,
+  "peak_rss_bytes": 213975040,
+  "pinned_hcsn_modules_imported_without_instantiation": true,
+  "policy": {
+    "bytes": 25040,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/registrations/initial/CWD_POLICY.json",
+    "sha256": "0f47dc0dc9300c9c7d12ece3e94c34a34eb46be1aba7429bc505b557752af44e"
+  },
+  "probe_deadline_monotonic": 18297.451281616,
+  "probe_deadline_scope": "Import-only 300 second window; execution05 supervisor has not started its separate 12 hour window.",
+  "process_cpu_seconds_total": 3.056687757,
+  "producer_config": {
+    "bytes": 1656,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/registrations/initial/PRODUCER_CONFIG.json",
+    "sha256": "efe45dc500de760a89d081d9cd516f4f74f3df47c6f45b8b2b71d590dee5e69c"
+  },
+  "producer_factories": {
+    "for_analysis_launcher": {
+      "factory_constructed": true,
+      "metadata_rewrites": {
+        "child": {
+          "metadata_expressions_replaced": 1,
+          "original_source_sha256": "708003e123a97dbf17f8ba1fd2f7086ec70fc52f2f6a1dc41bf88c6882d4fdbb"
+        }
+      },
+      "module": "experiments.parameter_field_fullstudy_20261029.analysis_launch_v2",
+      "scientific_entrypoint_called": false,
+      "source": {
+        "bytes": 17115,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/analysis_launch_v2.py",
+        "sha256": "708003e123a97dbf17f8ba1fd2f7086ec70fc52f2f6a1dc41bf88c6882d4fdbb"
+      }
+    },
+    "for_endpoint": {
+      "factory_constructed": true,
+      "metadata_rewrites": {},
+      "module": "experiments.parameter_field_fullstudy_20261029.endpoint_v2",
+      "scientific_entrypoint_called": false,
+      "source": {
+        "bytes": 24853,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/endpoint_v2.py",
+        "sha256": "0780cf261944dbdb6a47597c1294f4f9c9f761e3131d4a76e51b634cf7f15da2"
+      }
+    },
+    "for_finalizer": {
+      "factory_constructed": true,
+      "metadata_rewrites": {},
+      "module": "experiments.parameter_field_fullstudy_20261029.finalize_v2",
+      "scientific_entrypoint_called": false,
+      "source": {
+        "bytes": 15490,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/finalize_v2.py",
+        "sha256": "6fbf4a7a994120b6c0ae577a10d9ba992ad483d253ff0afb9aea42af8bb705ac"
+      }
+    },
+    "for_followups": {
+      "factory_constructed": true,
+      "metadata_rewrites": {
+        "diagnostic_population": {
+          "metadata_expressions_replaced": 1,
+          "original_source_sha256": "915e7a012b321add3db081367796c0d8eb22555a5bd429da8ebc8c99828b9112"
+        },
+        "register": {
+          "metadata_expressions_replaced": 2,
+          "original_source_sha256": "915e7a012b321add3db081367796c0d8eb22555a5bd429da8ebc8c99828b9112"
+        }
+      },
+      "module": "experiments.parameter_field_fullstudy_20261029.register_followups_v2",
+      "scientific_entrypoint_called": false,
+      "source": {
+        "bytes": 27198,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/register_followups_v2.py",
+        "sha256": "915e7a012b321add3db081367796c0d8eb22555a5bd429da8ebc8c99828b9112"
+      }
+    },
+    "for_postseal": {
+      "factory_constructed": true,
+      "metadata_rewrites": {
+        "gate": {
+          "metadata_expressions_replaced": 1,
+          "original_source_sha256": "1b705285b99fc7185c20155fa85f3a5d370b473196eaf59c8ae1d6bb2941a633"
+        }
+      },
+      "module": "supplements.parameter_field_fullstudy_20261030.postseal_supplement",
+      "scientific_entrypoint_called": false,
+      "source": {
+        "bytes": 45470,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/supplements/parameter_field_fullstudy_20261030/postseal_supplement.py",
+        "sha256": "1b705285b99fc7185c20155fa85f3a5d370b473196eaf59c8ae1d6bb2941a633"
+      }
+    },
+    "for_report": {
+      "factory_constructed": true,
+      "metadata_rewrites": {
+        "assemble": {
+          "metadata_expressions_replaced": 1,
+          "original_source_sha256": "ccfe0f9fa555906f9cda0834424a5396c7146f523a47a4cd8696134d007e614f"
+        }
+      },
+      "module": "experiments.parameter_field_fullstudy_20261029.report_results",
+      "scientific_entrypoint_called": false,
+      "source": {
+        "bytes": 28615,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/report_results.py",
+        "sha256": "ccfe0f9fa555906f9cda0834424a5396c7146f523a47a4cd8696134d007e614f"
+      }
+    },
+    "for_runner": {
+      "factory_constructed": true,
+      "metadata_rewrites": {},
+      "module": "experiments.parameter_field_fullstudy_20261029.run_v2",
+      "scientific_entrypoint_called": false,
+      "source": {
+        "bytes": 12641,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/run_v2.py",
+        "sha256": "291218547484a01ac0213c06f1b6bbd16104955348b818014a66f4d3a0ce3561"
+      }
+    },
+    "for_summary": {
+      "factory_constructed": true,
+      "metadata_rewrites": {
+        "collect": {
+          "metadata_expressions_replaced": 3,
+          "original_source_sha256": "b20351ee0a242bf25352d67a912af3a3dcb6d7503c8e38f9973a437bb3d20184"
+        },
+        "source_closure": {
+          "metadata_expressions_replaced": 1,
+          "original_source_sha256": "b20351ee0a242bf25352d67a912af3a3dcb6d7503c8e38f9973a437bb3d20184"
+        }
+      },
+      "module": "experiments.parameter_field_fullstudy_20261029.register_summary_v2",
+      "scientific_entrypoint_called": false,
+      "source": {
+        "bytes": 25312,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/register_summary_v2.py",
+        "sha256": "b20351ee0a242bf25352d67a912af3a3dcb6d7503c8e38f9973a437bb3d20184"
+      }
+    }
+  },
+  "producer_factories_constructed_after_resource_installation": true,
+  "python_executable": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+  "raw_file_identities_unchanged": true,
+  "raw_identity_inventory_sha256": "6259dc277e6fc865de01877d8f26dc9ebe1cbc83d785d70dd8cabe7757f98b52",
+  "raw_inventory_entries": 295,
+  "registration_config": {
+    "bytes": 6651,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/registrations/initial/REGISTRATION_CONFIG.json",
+    "sha256": "034046a4f0f76a1c43a131b9fc75e87a666ecefe13854a1357915c788d8a33ad"
+  },
+  "registration_metadata": {
+    "execution04_a29_failed_gradient_microsteps": 14784,
+    "execution04_cost_facts": {
+      "bytes": 11268,
+      "path": "/workspace/scratch/178ced6a501f/execution05_preregistration_inputs/EXECUTION04_COST_FACTS.json",
+      "sha256": "779e4cc90c49919ba8d84c7c965777f548b7561e4241529634585ba794f0e2f3"
+    },
+    "execution04_inclusive_outer_cpu_added": false,
+    "execution04_root_disjoint_cpu_seconds_lower_bound": 13.075601269,
+    "history_adapter_source": {
+      "bytes": 38532,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/historical_costs.py",
+      "sha256": "035d6aed995e705bcde6af7bce9b4edb498d682d095e4578cbea00fbd1e238fe"
+    },
+    "imported_A17_counted_once_in_current_scientific_rows": true,
+    "registration_config": {
+      "bytes": 6651,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/registrations/initial/REGISTRATION_CONFIG.json",
+      "sha256": "034046a4f0f76a1c43a131b9fc75e87a666ecefe13854a1357915c788d8a33ad"
+    },
+    "source_commit": "7544b0a57a3b5624f3f2190449efeb84854b414d",
+    "verified_execution04_root_support_receipts": 96,
+    "verified_execution04_root_wait4_receipts": 32,
+    "verified_history_file_bindings": 146
+  },
+  "resource_aliases_restored_after_probe": true,
+  "resources_after": {
+    "clean_inactive_file": 1288441856,
+    "current": 6693978112,
+    "effective_current": 5405536256,
+    "file_dirty": 388788224,
+    "file_writeback": 0,
+    "inactive_file": 1677230080,
+    "limit": 8589934592,
+    "oom": 0,
+    "oom_kill": 0
+  },
+  "runtime": {
+    "numpy": "2.3.5",
+    "pillow": "12.3.0",
+    "python": "3.12.14",
+    "torch": "2.8.0+cpu"
+  },
+  "scheduled_gradient_microsteps": 0,
+  "schema": "hepta.fullstudy.import-closure-probe.5",
+  "wall_seconds": 2.490613818001293,
+  "workers_started": 0
+}

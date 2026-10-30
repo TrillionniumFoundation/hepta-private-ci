@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.execution05.public-durable-acceptance.1",
+  "observed_at_utc": "2026-10-30T13:10:18.629282+00:00",
+  "episode": "execution05_backpressure_20261030",
+  "registered_source_commit": "7544b0a57a3b5624f3f2190449efeb84854b414d",
+  "stage": "A-17",
+  "inherited_not_retrained": true,
+  "new_scientific_gradient_steps_for_A17": 0,
+  "items_verified": 5,
+  "independent_readback_bytes_verified": true,
+  "actual_supervisor_acceptance": true,
+  "binding": {
+    "completed_jobs": [
+      "A-17"
+    ],
+    "execution_episode": "execution05_backpressure_20261030",
+    "label": "A-17",
+    "pipeline_config": {
+      "bytes": 7581,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/registrations/initial/PIPELINE_CONFIG.json",
+      "sha256": "2d0b13dbd02812f0e056fcc252fbdec8f0f0ed5935ef38692b3af4ae96c8c801"
+    },
+    "previous_ack": null,
+    "sequence": 1
+  },
+  "original_receipts": [
+    {
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/durable/01_A-17/REQUEST.json",
+      "bytes": 2320,
+      "sha256": "6448f1f3f8a2ca36f98f9e25d4e31b006be333036f43c6ac2a246377e9f54f1c"
+    },
+    {
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/durable/01_A-17/ACK.json",
+      "bytes": 15212,
+      "sha256": "9fd91e32707868db3aca149aed712840622c488ad334ccab12ecc5e84b2a69d5"
+    },
+    {
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/durable/01_A-17/ACK_VERIFIED.json",
+      "bytes": 1341,
+      "sha256": "cedd9c674802b994926b1a27beff672036c68f710592e010ec3b0583e8fc3fc4"
+    },
+    {
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/durable/01_A-17/MANIFEST.json",
+      "bytes": 258939,
+      "sha256": "f80ffded99b49fa57c0941009458069dcb8408056c20fdff69e9317ee69a26be"
+    },
+    {
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/durable/01_A-17/VERIFIED.json",
+      "bytes": 1046,
+      "sha256": "481b0d25e6dbe1da48447cecd6095bb5b57846ccd20f73ce915c48f2e707c1db"
+    },
+    {
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/durable/01_A-17/ARCHIVE_COST.json",
+      "bytes": 854,
+      "sha256": "faf317329fc67b35339d12a67ac7ec185a900addca234982d1a31f8772944c3e"
+    }
+  ],
+  "current_status_projection": {
+    "phase": "science_A-29",
+    "completed_jobs": [
+      "A-17"
+    ],
+    "durable_acks": 1,
+    "elapsed_seconds": 737.7103779690005
+  },
+  "scope": "Only the first of seventeen actual durable barriers has closed. This is not primary completion, final closure, postseal completion or a positive scientific conclusion. Private remote identities remain in the original receipts."
+}

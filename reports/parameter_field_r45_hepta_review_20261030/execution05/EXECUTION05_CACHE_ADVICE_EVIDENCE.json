@@ -1,0 +1,88 @@
+{
+  "schema": "hepta.execution05.public-cache-advice.1",
+  "scope": "Read-only POSIX_FADV_DONTNEED hints on preserved archive/cache files during actual resource wait. No file was deleted, no scientific state or gate was changed. Before/after samples do not establish exclusive causal attribution under concurrent environment activity. Actual resource admission remains the frozen guard decision.",
+  "receipts": [
+    {
+      "original": {
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/capacity_cleanup/ARCHIVE_CACHE_RELEASE01.json",
+        "bytes": 7193,
+        "sha256": "a2eb1c4fea8780daee0ce0dd7ec9391a12a6a2cee14139c7a7360e063a71c820"
+      },
+      "wait4": {
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/advisory_archive_cache_release01/WAIT4.json",
+        "bytes": 1775,
+        "sha256": "ea26ba432b1e99c21df82eefafd7a726068ac9a6c5638f952a4ab3554caa4fd0"
+      },
+      "before": {
+        "current": 8339247104,
+        "limit": 8589934592,
+        "anon": 381870080,
+        "file": 6743732224,
+        "kernel": 1212493824,
+        "active_file": 5691269120,
+        "inactive_file": 841654272,
+        "file_dirty": 57298944,
+        "file_writeback": 0,
+        "slab_reclaimable": 1204153440
+      },
+      "after": {
+        "current": 8072912896,
+        "limit": 8589934592,
+        "anon": 381915136,
+        "file": 6484320256,
+        "kernel": 1205432320,
+        "active_file": 5431861248,
+        "inactive_file": 841650176,
+        "file_dirty": 57298944,
+        "file_writeback": 0,
+        "slab_reclaimable": 1197100328
+      },
+      "items": 13,
+      "advised_files": 12,
+      "deleted_files": 0,
+      "changed_thresholds": false,
+      "kernel_hint_only": true
+    },
+    {
+      "original": {
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/capacity_cleanup/CACHE_ARCHIVE_ADVICE02.json",
+        "bytes": 210813,
+        "sha256": "3a766e8dbba72647f097b16f7df99df2581a1c0eb575d98fd7799514ea5e028e"
+      },
+      "wait4": {
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/advisory_cache_release02/WAIT4.json",
+        "bytes": 1763,
+        "sha256": "75c519534b465efcd59c31919f53ad9f379b5f51332da00b6c3bf6dbe9002edf"
+      },
+      "before": {
+        "current": 7922044928,
+        "limit": 8589934592,
+        "anon": 483082240,
+        "file": 6229602304,
+        "kernel": 1208442880,
+        "active_file": 5298581504,
+        "inactive_file": 720211968,
+        "file_dirty": 78286848,
+        "file_writeback": 0,
+        "slab_reclaimable": 1199739288
+      },
+      "after": {
+        "current": 7922302976,
+        "limit": 8589934592,
+        "anon": 483082240,
+        "file": 6229602304,
+        "kernel": 1208442880,
+        "active_file": 5298581504,
+        "inactive_file": 720211968,
+        "file_dirty": 78286848,
+        "file_writeback": 0,
+        "slab_reclaimable": 1199739288
+      },
+      "items": 396,
+      "advised_files": 396,
+      "deleted_files": 0,
+      "changed_thresholds": false,
+      "kernel_hint_only": true
+    }
+  ]
+}
