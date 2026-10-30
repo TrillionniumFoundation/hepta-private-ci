@@ -95,8 +95,12 @@ def guarded_fp32_passage(asset: float, boundary: float, *,
         # Already on the stopped side for every real represented value.
         return ordering, ProbabilityBracket(1.,1.,1.,1.,0.)
     a, b = ordering.asset, ordering.boundary
-    nearest_x = math.log(a.lower)-math.log(b.upper)
-    farthest_x = math.log(a.upper)-math.log(b.lower)
+    # x=log(asset/boundary) is tiny near a barrier. Subtracting two
+    # rounded log(asset) values loses significant digits and can move
+    # true rounding-cell extrema beyond the returned F/G estimates.
+    # log1p of the relative gap retains precision near unity.
+    nearest_x = math.log1p((a.lower-b.upper)/b.upper)
+    farthest_x = math.log1p((a.upper-b.lower)/b.lower)
     if not (0 < nearest_x <= farthest_x):
         # Do not trust subtraction of logarithms in a degenerate f64 region.
         return BarrierOrdering('AMBIGUOUS',a,b), None
