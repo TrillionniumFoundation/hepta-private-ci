@@ -1,0 +1,89 @@
+--- before-fixture-fix/codex-rs/exec-server/tests/authorized_read_rpc.rs
++++ after-fixture-fix/codex-rs/exec-server/tests/authorized_read_rpc.rs
+@@ -54,8 +54,10 @@
+     .await?;
+ 
+     let temp = tempfile::tempdir()?;
+-    let allowed_dir = temp.path().join("allowed");
+-    let denied_dir = temp.path().join("denied");
++    // Match the physical path returned by the retained-handle backend on macOS.
++    let temp_root = temp.path().canonicalize()?;
++    let allowed_dir = temp_root.join("allowed");
++    let denied_dir = temp_root.join("denied");
+     std::fs::create_dir_all(&allowed_dir)?;
+     std::fs::create_dir_all(&denied_dir)?;
+     let allowed_file = allowed_dir.join("allowed.txt");
+--- before-fixture-fix/codex-rs/exec-server/src/local_file_system_authorized_read_tests.rs
++++ after-fixture-fix/codex-rs/exec-server/src/local_file_system_authorized_read_tests.rs
+@@ -81,15 +81,16 @@
+         return Ok(());
+     }
+     let temp_dir = tempfile::tempdir()?;
+-    let allowed_dir = temp_dir.path().join("allowed");
+-    let denied_dir = temp_dir.path().join("denied");
++    let temp_root = temp_dir.path().canonicalize()?;
++    let allowed_dir = temp_root.join("allowed");
++    let denied_dir = temp_root.join("denied");
+     std::fs::create_dir_all(&allowed_dir)?;
+     std::fs::create_dir_all(&denied_dir)?;
+     let allowed_file = allowed_dir.join("allowed.txt");
+     let secret_file = denied_dir.join("secret.txt");
+     std::fs::write(&allowed_file, b"allowed")?;
+     std::fs::write(&secret_file, b"secret")?;
+-    let allowed_link = temp_dir.path().join("allowed-link");
++    let allowed_link = temp_root.join("allowed-link");
+     let denied_link = allowed_dir.join("denied-link");
+     symlink(&allowed_file, &allowed_link)?;
+     symlink(&secret_file, &denied_link)?;
+@@ -251,8 +252,9 @@
+         return Ok(());
+     }
+     let temp_dir = tempfile::tempdir()?;
+-    let allowed_dir = temp_dir.path().join("allowed");
+-    let denied_dir = temp_dir.path().join("denied");
++    let temp_root = temp_dir.path().canonicalize()?;
++    let allowed_dir = temp_root.join("allowed");
++    let denied_dir = temp_root.join("denied");
+     std::fs::create_dir_all(&allowed_dir)?;
+     std::fs::create_dir_all(&denied_dir)?;
+     let path = allowed_dir.join("allowed.txt");
+@@ -335,11 +337,12 @@
+         return Ok(());
+     }
+     let temp_dir = tempfile::tempdir()?;
+-    let exact = temp_dir.path().join("exact.txt");
+-    let oversized = temp_dir.path().join("oversized.txt");
++    let temp_root = temp_dir.path().canonicalize()?;
++    let exact = temp_root.join("exact.txt");
++    let oversized = temp_root.join("oversized.txt");
+     std::fs::write(&exact, b"12345678")?;
+     std::fs::write(&oversized, b"123456789")?;
+-    let sandbox = read_sandbox(temp_dir.path())?;
++    let sandbox = read_sandbox(&temp_root)?;
+     let file_system = LocalFileSystem::unsandboxed();
+ 
+     assert_eq!(
+--- before-fixture-fix/codex-rs/exec-server/tests/file_system_unix.rs
++++ after-fixture-fix/codex-rs/exec-server/tests/file_system_unix.rs
+@@ -1112,7 +1112,8 @@
+     let file_system = context.file_system;
+ 
+     let tmp = TempDir::new()?;
+-    let root = tmp.path().join("allowed");
++    let temp_root = tmp.path().canonicalize()?;
++    let root = temp_root.join("allowed");
+     std::fs::create_dir_all(&root)?;
+     let exact_path = root.join("exact.txt");
+     let oversized_path = root.join("oversized.txt");
+@@ -1166,8 +1167,9 @@
+     let file_system = context.file_system;
+ 
+     let tmp = TempDir::new()?;
+-    let allowed_dir = tmp.path().join("allowed");
+-    let outside_dir = tmp.path().join("outside");
++    let temp_root = tmp.path().canonicalize()?;
++    let allowed_dir = temp_root.join("allowed");
++    let outside_dir = temp_root.join("outside");
+     std::fs::create_dir_all(&allowed_dir)?;
+     std::fs::create_dir_all(&outside_dir)?;
+     let secret = outside_dir.join("secret.txt");

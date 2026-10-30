@@ -81,15 +81,16 @@ async fn stable_handle_read_authorizes_resolved_symlink_target() -> io::Result<(
         return Ok(());
     }
     let temp_dir = tempfile::tempdir()?;
-    let allowed_dir = temp_dir.path().join("allowed");
-    let denied_dir = temp_dir.path().join("denied");
+    let temp_root = temp_dir.path().canonicalize()?;
+    let allowed_dir = temp_root.join("allowed");
+    let denied_dir = temp_root.join("denied");
     std::fs::create_dir_all(&allowed_dir)?;
     std::fs::create_dir_all(&denied_dir)?;
     let allowed_file = allowed_dir.join("allowed.txt");
     let secret_file = denied_dir.join("secret.txt");
     std::fs::write(&allowed_file, b"allowed")?;
     std::fs::write(&secret_file, b"secret")?;
-    let allowed_link = temp_dir.path().join("allowed-link");
+    let allowed_link = temp_root.join("allowed-link");
     let denied_link = allowed_dir.join("denied-link");
     symlink(&allowed_file, &allowed_link)?;
     symlink(&secret_file, &denied_link)?;
@@ -251,8 +252,9 @@ async fn stable_handle_read_keeps_authorized_handle_after_later_hardlink() -> io
         return Ok(());
     }
     let temp_dir = tempfile::tempdir()?;
-    let allowed_dir = temp_dir.path().join("allowed");
-    let denied_dir = temp_dir.path().join("denied");
+    let temp_root = temp_dir.path().canonicalize()?;
+    let allowed_dir = temp_root.join("allowed");
+    let denied_dir = temp_root.join("denied");
     std::fs::create_dir_all(&allowed_dir)?;
     std::fs::create_dir_all(&denied_dir)?;
     let path = allowed_dir.join("allowed.txt");
@@ -335,11 +337,12 @@ async fn stable_handle_bounded_read_never_returns_oversize_prefix() -> io::Resul
         return Ok(());
     }
     let temp_dir = tempfile::tempdir()?;
-    let exact = temp_dir.path().join("exact.txt");
-    let oversized = temp_dir.path().join("oversized.txt");
+    let temp_root = temp_dir.path().canonicalize()?;
+    let exact = temp_root.join("exact.txt");
+    let oversized = temp_root.join("oversized.txt");
     std::fs::write(&exact, b"12345678")?;
     std::fs::write(&oversized, b"123456789")?;
-    let sandbox = read_sandbox(temp_dir.path())?;
+    let sandbox = read_sandbox(&temp_root)?;
     let file_system = LocalFileSystem::unsandboxed();
 
     assert_eq!(

@@ -1,0 +1,37 @@
+[
+  {
+    "case": "authorized_read_rpc_is_capability_gated_and_denies_outside_root",
+    "original_log_line": 9617,
+    "stdout": "thread 'authorized_read_rpc_is_capability_gated_and_denies_outside_root' (61886) panicked at exec-server/tests/authorized_read_rpc.rs:76:5:\nassertion `left == right` failed: capability advertisement must match a valid authorized-read RPC\n  left: true\n right: false\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+  },
+  {
+    "case": "local_file_system::authorized_read_tests::stable_handle_bounded_read_never_returns_oversize_prefix",
+    "original_log_line": 11409,
+    "stdout": "Error: Custom { kind: PermissionDenied, error: \"Permission denied\" }"
+  },
+  {
+    "case": "local_file_system::authorized_read_tests::stable_handle_read_authorizes_resolved_symlink_target",
+    "original_log_line": 11412,
+    "stdout": "Error: Custom { kind: PermissionDenied, error: \"Permission denied\" }"
+  },
+  {
+    "case": "local_file_system::authorized_read_tests::stable_handle_read_keeps_authorized_handle_after_later_hardlink",
+    "original_log_line": 11415,
+    "stdout": "Error: Custom { kind: PermissionDenied, error: \"Permission denied\" }"
+  },
+  {
+    "case": "file_system_bounded_authorized_read_enforces_limit_without_prefix::local",
+    "original_log_line": 9792,
+    "stdout": "Error: mode=local, exact bound\n\nCaused by:\n    Permission denied"
+  },
+  {
+    "case": "file_system_bounded_authorized_read_enforces_limit_without_prefix::remote",
+    "original_log_line": 9798,
+    "stdout": "Error: mode=remote, exact bound\n\nCaused by:\n    remote authorized file read was rejected"
+  },
+  {
+    "case": "file_system_bounded_authorized_read_rejects_symlink_and_parent_escape::remote",
+    "original_log_line": 9804,
+    "stdout": "thread 'file_system_bounded_authorized_read_rejects_symlink_and_parent_escape::remote' (69158) panicked at exec-server/tests/file_system_unix.rs:74:13:\nunexpected sandbox error message: remote authorized file read was rejected\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+  }
+]

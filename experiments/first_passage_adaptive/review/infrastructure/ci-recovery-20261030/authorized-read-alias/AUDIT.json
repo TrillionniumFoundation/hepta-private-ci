@@ -1,0 +1,54 @@
+{
+  "schema": "hepta_ci_authorized_read_fixture_alias_audit_v1",
+  "base_head": "9b71cf4e65194593d5e0fb2a507026d21527a740",
+  "original_failure": {
+    "job_id": 123485500602,
+    "log_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40883692430/job/123485500602",
+    "raw_gzip_sha256": "efd7d9d4df212cffe8cb28ff4b44bf855eaed3780285aad184686f49b4542275"
+  },
+  "source": [
+    {
+      "path": "codex-rs/exec-server/tests/authorized_read_rpc.rs",
+      "sha256": "fc68396bbbe3bd1bf430aa9c85e07f9a6309f8dba4b2fd8528393c3759fcf7ce",
+      "before_this_fixture_patch_sha256": "e90844ada44b4f0f7d52818284d705bdd88d15f401420ecd26ba2852505c884b",
+      "before_identity_method": "inverse of the recorded narrow fixture edit; existing sibling Unsupported-branch changes retained",
+      "fixtures": [
+        "authorized_read_rpc_is_capability_gated_and_denies_outside_root"
+      ]
+    },
+    {
+      "path": "codex-rs/exec-server/src/local_file_system_authorized_read_tests.rs",
+      "sha256": "f02f87b489854f4de938c13dace46173abffeb52ae155d6958ef32770f5ff0a0",
+      "before_this_fixture_patch_sha256": "cbbc67a65b73deffe5798e0f197ade1f9c3e01687a624c19b57cd6fffbb571fd",
+      "before_identity_method": "inverse of the recorded narrow fixture edit; existing sibling Unsupported-branch changes retained",
+      "fixtures": [
+        "stable_handle_read_authorizes_resolved_symlink_target",
+        "stable_handle_read_keeps_authorized_handle_after_later_hardlink",
+        "stable_handle_bounded_read_never_returns_oversize_prefix"
+      ]
+    },
+    {
+      "path": "codex-rs/exec-server/tests/file_system_unix.rs",
+      "sha256": "8c13ba26b5a8e374a1c0bd1573c44e9892cd6ea5d58a310e282cdff8a6d21339",
+      "before_this_fixture_patch_sha256": "c32ba261e5600ea75c273687957d15a7008481a7350d48402e911d0aa3eb9889",
+      "before_identity_method": "inverse of the recorded narrow fixture edit; existing sibling Unsupported-branch changes retained",
+      "fixtures": [
+        "file_system_bounded_authorized_read_enforces_limit_without_prefix",
+        "file_system_bounded_authorized_read_rejects_symlink_and_parent_escape"
+      ]
+    }
+  ],
+  "production": {
+    "path": "codex-rs/exec-server/src/local_file_system.rs",
+    "unchanged_from_base": true,
+    "sha256": "1177f9b38386517cbf99ab4503db35eee2f160e914f72aa586be256ce98d2675"
+  },
+  "source_match": {
+    "stable_path": "local_file_system.rs stable_file_path_from_raw_fd uses macOS F_GETPATH",
+    "authorization": "authorize_stable_file_path evaluates the resolved handle path against the declared sandbox policy",
+    "fixture_mismatch": "fixture policies and requested paths previously used TempDir logical aliases; canonicalizing only the private fixture root aligns those with physical handle paths",
+    "wrapper_coverage": "all codex_rust_crate unit tests use workspace_root_test; unsharded native integration tests use direct rust_test and do not receive its canonical TMPDIR",
+    "preserved": "all allow/deny/size/redaction/capability assertions; deliberate symlinks and hardlinks; Unsupported branches; shared sandbox constructors; production authorization"
+  },
+  "validation_scope": "source audit, git diff --check exit 0, and independent Linux path/inode spelling demonstration only. No Rust compile or test executed for this patch. Native macOS CI remains required."
+}
