@@ -1,0 +1,155 @@
+{
+  "recorded_utc": "2026-10-30T13:00:34.932598+00:00",
+  "baseline_commit": "b1934022821f3fdafd509b43cf0c4d7d45852e6e",
+  "integrity_passed": true,
+  "checks": [
+    {
+      "name": "historical_files_unchanged",
+      "files": 1025,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "name": "flow_snapshot_attempt001",
+      "files": 6,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "name": "flow_snapshot_attempt002",
+      "files": 6,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "name": "flow_current_matches_final_audit",
+      "files": 6,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "name": "memory_scientific_freeze",
+      "files": 32,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "name": "control_scientific_freeze",
+      "files": 9,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "name": "control_inherited_content",
+      "files": 4,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "name": "control_v2_scientific_freeze",
+      "files": 8,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "name": "control_v2_preserves_original_trial",
+      "files": 14,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "name": "control_v2_inherited_content",
+      "files": 4,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "name": "memory_delivery_manifest",
+      "files": 48,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "name": "control_archive_bytes",
+      "files": 2,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "name": "control_v2_archive_bytes",
+      "files": 4,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "name": "control_v2_delivery_manifest",
+      "files": 43,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "name": "python_syntax_and_repository_import_rule",
+      "files": 57,
+      "syntax_errors": [],
+      "future_imports": [],
+      "passed": true
+    },
+    {
+      "name": "memory_completed_unique_matrix",
+      "passed": true
+    },
+    {
+      "name": "memory_all_evidence_invariants",
+      "passed": true
+    },
+    {
+      "name": "memory_summary_bound_to_raw_audit",
+      "passed": true
+    },
+    {
+      "name": "control_integrity_and_real_actions",
+      "passed": true
+    },
+    {
+      "name": "control_v2_original_integrity",
+      "passed": true
+    },
+    {
+      "name": "control_v2_independent_rewards_and_files",
+      "passed": true
+    },
+    {
+      "name": "all_raw_archives_restored",
+      "passed": true
+    }
+  ],
+  "receipt_sha256": {
+    "control/audit.json": "0761251518fd60e896bd4b1daf383e5854816e0d26188b473ecf1563680fdd1f",
+    "control/restoration_validation.json": "9f2efcf99bb7e7b14e7e486e4aa67e7ff7633382d10bfdb962dff00208260ec4",
+    "memory/audit.json": "d0420f878fa1a5655c124097fa4fc4b60597a527eba3ac3da8e94f7c92a259c1",
+    "memory/archive_validation.json": "f841f891834c675817150bfea2d5c32b44859f3121c6c7227a0b7239cb7fb4f0",
+    "memory/replay_diagnosis.json": "8ba532aa3c700f9b6301f9a22fdc8b29bd8691c5cb8a519306c916f3be61b464",
+    "control_v2/audit.json": "d16c9382902ad9751c9c7433e18da16e8c238404db4ad7bbfe679b517281954a",
+    "control_v2/delivery_audit.json": "b23355935e13c140c57eab470f828a57159cd607d5bddf23df5ad39d8f24ebc5",
+    "control_v2/restoration_validation.json": "d0b5a78930f673ec5ce94693d586f1d159763460168a99ce2720027ed39f3cf6"
+  },
+  "numerical_and_scientific_verdicts": {
+    "flow_fp64_finite_model_passed": true,
+    "flow_checks": 28,
+    "memory_strict_replay_passed": false,
+    "memory_strict_replay_conditions": 135,
+    "memory_strict_replay_failed": 11,
+    "memory_joint_quality_passed": false,
+    "financial_shape_positive_gates": 0,
+    "control_v1_benefit_passed": false,
+    "control_v2_development_passed": true,
+    "control_v2_heldout_benefit_passed": false
+  },
+  "formatter": {
+    "original_command": "cd codex-rs && just fmt",
+    "original_status": "unavailable_in_sparse_checkout",
+    "observed_exit": 1,
+    "reason": "codex-rs is absent; just and Rust are not on the task PATH; no Rust files changed"
+  },
+  "scope": "Identity and delivery verification only. A successful receipt audit does not override any false numerical or scientific verdict."
+}
