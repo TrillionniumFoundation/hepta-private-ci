@@ -162,6 +162,8 @@ mod tests {
     use std::os::unix::fs::PermissionsExt;
     use std::sync::Arc;
 
+    type FleetTestResult = Result<(), LeaseLedgerError>;
+
     #[derive(Debug)]
     struct FixedClock(u64);
 
@@ -211,7 +213,7 @@ mod tests {
     }
 
     #[test]
-    fn allocation_issue_consumes_exact_live_kernel_authority_lease() -> Result<(), LeaseLedgerError> {
+    fn allocation_issue_consumes_exact_live_kernel_authority_lease() -> FleetTestResult {
         let directory = tempfile::tempdir().unwrap();
         std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
         let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
