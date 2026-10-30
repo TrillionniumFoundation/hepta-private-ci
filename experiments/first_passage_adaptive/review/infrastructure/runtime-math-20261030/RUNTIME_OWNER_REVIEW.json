@@ -1,0 +1,119 @@
+{
+  "base_commit": "9b71cf4e65194593d5e0fb2a507026d21527a740",
+  "conclusion": "No blocking compilation, capability, lifecycle or cross-platform defect found in the reviewed changes.",
+  "date": "2026-10-30",
+  "findings": [
+    {
+      "finding": "The migration-ledger expectation now includes 0015_shared_experience_use.sql, which exists in the unchanged migrator input. The preserved-memory, citation, head, and revoked-projection assertions remain intact.",
+      "paths": [
+        "codex-rs/hepta-memory/src/cognitive_store_tests.rs"
+      ]
+    },
+    {
+      "finding": "The v1 downgrade fixture removes migration 0018 timer lifecycle and 0017 destination dedupe before earlier causal objects in the existing transaction. Their table-local triggers disappear with the tables; real forward migration and original task/outcome assertions remain active.",
+      "paths": [
+        "codex-rs/hepta-automation/tests/automation.rs"
+      ]
+    },
+    {
+      "finding": "The new close method awaits the shared SQLx pool while self and its optional open guard remain alive. Recovery call sites then drop the store before seeking the exclusive recovery guard. SQLx 0.9 documents waiting for checked-out connections, and its SQLite graceful close awaits worker shutdown. No fence or authority check is bypassed.",
+      "paths": [
+        "codex-rs/hepta-memory/src/cognitive_store.rs",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+        "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs"
+      ]
+    },
+    {
+      "finding": "The fixture gives its immutable seeded attempt 10 seconds to record H7 evidence, then waits until one wall-clock second beyond its actual expiry. The error and ExpiredActive-head assertions are unchanged. This preserves the expiry contract; it does not eliminate all wall-clock or extreme-load sensitivity.",
+      "paths": [
+        "codex-rs/hepta-agentd/src/runtime_tests.rs"
+      ]
+    },
+    {
+      "finding": "The two resume fixtures now remove only the recoverable threads index row. The production delete_thread implementation intentionally seals thread queues permanently, so it is unsuitable for simulating an absent index. Both SQL writes are parameterized, assert exactly one affected row, and close the auxiliary pool. sqlx is a dev dependency, and the Bazel integration macro includes normal_dev crate dependencies.",
+      "paths": [
+        "codex-rs/exec/Cargo.toml",
+        "codex-rs/exec/tests/suite/resume.rs"
+      ]
+    }
+  ],
+  "fleet_publication_review": {
+    "review_sha256": "c39438e67ea2e0859d4845f686a940e090ebdea0af9c8362f35422ee961234d5",
+    "same_source_hashes_as_previously_reviewed": true,
+    "source_files": {
+      "codex-rs/hepta-fleet/src/release.rs": {
+        "bytes": 49092,
+        "sha256": "8e1591168d4b92e28e40418e4da5a18d6be45d015f035d039549012d34d30e35"
+      },
+      "codex-rs/hepta-fleet/src/release_copy_tests.rs": {
+        "bytes": 3642,
+        "sha256": "cc4729bf22feb738781b7c84bfc198041f9e318848d2b191ca23e9c357007954"
+      }
+    }
+  },
+  "git_diff_check_exit_code": 0,
+  "limits": [
+    "A source audit does not replace owner tests or exact-head CI; native macOS and Windows execution is not claimed.",
+    "Pool closure retains SQLx graceful-close semantics and may wait for a caller that keeps a connection checked out; the recovery fixtures have completed their operations before closing.",
+    "The lease-expiry fixture still relies on a functioning wall clock and completion of its seeded writes within the 10-second budget.",
+    "Source hashes identify the reviewed snapshot before the parent final formatter and linter pass."
+  ],
+  "review_type": "Read-only current-source review. No new compilation, process-owner test, training or scientific confirmation was run for this review.",
+  "schema": "hepta.independent-runtime-owner-review.v1",
+  "source_files": [
+    {
+      "bytes": 40711,
+      "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+      "sha256": "abb813f058c24c4b36beefc60f60c507d8896368e22553787de3eed6be48315e"
+    },
+    {
+      "bytes": 54435,
+      "path": "codex-rs/hepta-automation/tests/automation.rs",
+      "sha256": "aaccdf091d08bcec203645bba0b61f2299c5884ba6a28a51449ef05f04e4e9b2"
+    },
+    {
+      "bytes": 70545,
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "sha256": "3d44f18963bef06de9bac289f366b07b7c87160a9bc028bac5112c1bd3cd30c4"
+    },
+    {
+      "bytes": 19694,
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+      "sha256": "fd8149875c74ff6f98b5c81124b35a97f6f18e0e5fce85f6f738731e9fe2b9e8"
+    },
+    {
+      "bytes": 16831,
+      "path": "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
+      "sha256": "2d06b022bcb9539d2a01aa5095b36a5aa2c27e7d13833e2e3b29b04712682556"
+    },
+    {
+      "bytes": 37170,
+      "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "sha256": "9c0fa04d708a6572fdf173be29769fbd6254c6887f395c2da0c6ce4a4553da2c"
+    },
+    {
+      "bytes": 2194,
+      "path": "codex-rs/exec/Cargo.toml",
+      "sha256": "5e335b1b617fdf4b59aadf3d70e3296758f85757e9bc374abf80f4a9767f32ac"
+    },
+    {
+      "bytes": 37512,
+      "path": "codex-rs/exec/tests/suite/resume.rs",
+      "sha256": "c8fbcdde772ada09d7b9576348c25a74c5f54faaf6718da317b1ff395d05d7d5"
+    }
+  ],
+  "supporting_registry_source_sha256": {
+    "sqlx-core-0.9.0/src/pool/mod.rs": "ff4b2a9c91c80e7bcf5228883c7d4aec5f423520a790cefe1332a6b35d1ebcdb",
+    "sqlx-sqlite-0.9.0/src/connection/mod.rs": "a20c2e51a1505e298fd897b378f9032c89b82850838aa6e5d9409f612fb1e7fd"
+  },
+  "supporting_repository_source_sha256": {
+    "MODULE.bazel.lock": "36e52d219967278c1c1d29bf760a41a4c0af5a01dd7f91a5410c89ae552c1e94",
+    "codex-rs/Cargo.lock": "d76c461efa4ed6c2ad930ed56e37b7790ef6c02046280c83fa2357346c93ed38",
+    "codex-rs/hepta-automation/migrations/0017_kernel_operation_dedupe.sql": "7e45ec9876fa96a7aa15ae97bc14aff66e603fe8ec631db636dd6cfed8467749",
+    "codex-rs/hepta-automation/migrations/0018_timer_lifecycle.sql": "3f8855f356a401e5295020444477901db38e8e4d812c8aab663d4eb0e7dfadf1",
+    "codex-rs/hepta-memory/migrations/0015_shared_experience_use.sql": "315941f36c22815c3fd8874783e90cc7d0e104ff988b973462353e53e22bb59b",
+    "codex-rs/state/src/runtime/threads.rs": "4981e73e509ed394472ba7c559c458b42311419fda44b03381ed1b562c803766",
+    "codex-rs/state/src/sqlite.rs": "2de55524f4ac31174770d961883921183a17de8a6199b1105bf145026b4136c0",
+    "defs.bzl": "3046174c3b79cef6cf678c80d101a625004a9505808be0b68cd4736d33da174a"
+  }
+}
