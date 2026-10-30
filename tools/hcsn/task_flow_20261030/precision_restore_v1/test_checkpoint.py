@@ -115,6 +115,38 @@ class PrecisionRestoreContract(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "fields"):
             load_checked(self.path, expected_precision="float64")
 
+    def test_save_extra_parameter_rejected_without_output(self):
+        p, s = fixture(np.float64)
+        p["unexpected"] = np.asarray(1., dtype=np.float64)
+        with self.assertRaisesRegex(ValueError, "fields"):
+            save_v2(self.path, p, s, precision="float64")
+        self.assertFalse(self.path.exists())
+        self.assertEqual(list(self.path.parent.iterdir()), [])
+
+    def test_save_extra_state_rejected_without_output(self):
+        p, s = fixture(np.float64)
+        s["unexpected"] = np.asarray(1., dtype=np.float64)
+        with self.assertRaisesRegex(ValueError, "fields"):
+            save_v2(self.path, p, s, precision="float64")
+        self.assertFalse(self.path.exists())
+        self.assertEqual(list(self.path.parent.iterdir()), [])
+
+    def test_save_missing_parameter_rejected_without_output(self):
+        p, s = fixture(np.float64)
+        del p["bias"]
+        with self.assertRaisesRegex(ValueError, "fields"):
+            save_v2(self.path, p, s, precision="float64")
+        self.assertFalse(self.path.exists())
+        self.assertEqual(list(self.path.parent.iterdir()), [])
+
+    def test_save_missing_state_rejected_without_output(self):
+        p, s = fixture(np.float64)
+        del s["physical"]
+        with self.assertRaisesRegex(ValueError, "fields"):
+            save_v2(self.path, p, s, precision="float64")
+        self.assertFalse(self.path.exists())
+        self.assertEqual(list(self.path.parent.iterdir()), [])
+
     def test_nonfinite_parameter_rejected(self):
         p, s = fixture(np.float64)
         p["input"][0, 0] = np.nan
