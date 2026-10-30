@@ -1,0 +1,112 @@
+{
+  "causal_chain": [
+    "The original fixture opens an empty owner store and retains its exact-current-cut before creating a production writer lease.",
+    "AgentdProductionWriterHost::open_with_recovery first calls CognitiveStore::open_with_recovery, which requires exact logical-cut equality both before and after checkpoint/reopen.",
+    "The host then calls ProductionDurableWriter::open_with_live_verifier. Its open implementation sees the missing test lease and calls acquire_host_bound_lease.",
+    "The Missing branch appends the first active row through append_lease INSERT INTO cognitive_local_leases.",
+    "cognitive_local_leases is a required schema table. Recovery capture hashes every column and complete logical row count/content of that table, so this admitted lease advances the state digest.",
+    "The observed assertion compares the post-admission writer state with the pre-admission empty state. Exact equality is incompatible with the documented append-only admission behavior."
+  ],
+  "changed_lines": {
+    "added": 24,
+    "removed": 7
+  },
+  "changed_test": {
+    "bytes": 17644,
+    "path": "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
+    "sha256": "d234179ab5ba7bb6b63f29c3248d29099635cd3bb9561e38efdd80e599fc8778"
+  },
+  "ci_merge_commit": "663d78b7c0a1ca0d5a97ff61bc2b63dfda9c99c7",
+  "evidence_files": [
+    {
+      "bytes": 1071,
+      "path": "experiments/first_passage_operator/ci_evidence/recovery_738a/agentd_exact_cut/FAILURE_EXCERPT.log.gz",
+      "sha256": "307f46ab527feb75466e43abea7eab71d05b6a6f7a1dc1a5b6a1e8244db8341b"
+    },
+    {
+      "bytes": 877,
+      "path": "experiments/first_passage_operator/ci_evidence/recovery_738a/agentd_exact_cut/SOURCE_CHANGES.diff.gz",
+      "sha256": "b3e5b98ec3d43ca58bd75b8e09d0714424715754ca38ba87725780a7b3835bd8"
+    }
+  ],
+  "job_id": 124198476692,
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41092882861/job/124198476692",
+  "native_validation": {
+    "formatting": {
+      "command": "just fmt",
+      "cwd": "codex-rs",
+      "exit_code": 127,
+      "formatting_executed": false,
+      "reason": "just: command not found"
+    },
+    "pending": "Required native integration run and repository formatter; static review does not close the runtime gate.",
+    "test": {
+      "command": "just test -p codex-hepta-agentd --test cognitive_store_product_writer --locked",
+      "cwd": "codex-rs",
+      "exit_code": 127,
+      "reason": "just: command not found",
+      "tests_executed": 0
+    }
+  },
+  "observed": {
+    "assertion": "assert_eq!(recovered_anchor, expected)",
+    "failed": 1,
+    "ignored": 0,
+    "left_state_digest": "9b46457e25faf6a92596d81d3d2b2aeb9cbbc8ea9a16dee138c8e71a41c063a2",
+    "original_line": 189,
+    "passed": 0,
+    "right_state_digest": "00830859d56f20a11e27a44f8a5f936775e51e85fe9dddc420b5e2d9eb5a078c",
+    "schema_digest": "046f23bab5d4c779735c762159c79e61cfe3a6a8a35e18ff8ec4f40e5c4e2be2",
+    "seconds": 0.18,
+    "tests": 1
+  },
+  "original_research_results_changed": false,
+  "original_test": {
+    "bytes": 16993,
+    "sha256": "6ac081be69ba3b321ee9f80829e495bdf3532c622b11e249ddd4220f7aa8a192"
+  },
+  "platform": "x86_64-unknown-linux-musl",
+  "preserved_suffix_bytes": 9646,
+  "production_sources_verified_equal_to_exact_head": [
+    {
+      "bytes": 26664,
+      "exact_remote_equal": true,
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "sha256": "0ce1dd6a1f73bd7c82c778fd85fc70e8f237d2c1309f1c5aa13cb8aa1fe83deb"
+    },
+    {
+      "bytes": 147537,
+      "exact_remote_equal": true,
+      "path": "codex-rs/hepta-memory/src/production_writer.rs",
+      "sha256": "08c2287099423ffa221bcabee8fc5f028b6c307ea8833f16faaa4936894fb714"
+    },
+    {
+      "bytes": 206199,
+      "exact_remote_equal": true,
+      "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+      "sha256": "9fa0589a3445387eec2f3ea26cc91dc98fb131da3d929a321b7879f0854cdfcf"
+    },
+    {
+      "bytes": 71181,
+      "exact_remote_equal": true,
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "sha256": "2ab8e294ce29846d895be1889df5eb7c6c11d8f901c63449114190198cbfd7bf"
+    }
+  ],
+  "remedy": [
+    "Create the initial active writer using the same authority, retained live verifier, lease id, and generation that recovery will reopen.",
+    "Assert that initial admission changes the full anchor, then capture the expected full cut from that active writer.",
+    "Await shared SQLite pool closure while both owner handles retain fences, then drop both handles without appending a release.",
+    "Recover the same exact cut. The Active reopen_bound branch only verifies the existing head and child journals and returns its handle.",
+    "Keep the original recovered full-anchor equality and all later semantic writes, rollback, revocation and reopen checks unchanged."
+  ],
+  "research_paths_modified": false,
+  "schema": "hepta.agentd-exact-cut-fixture-review.v1",
+  "scope": "One integration fixture only. No production owner, recovery digest, authority, lease, tolerance, timing budget or maintenance behavior is changed.",
+  "source_commit": "738a00959b869a4cdd4730109b4ff60c9340f106",
+  "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive_store_product_writer-test",
+  "test_at_head_equals_test_at_merge": true,
+  "uncertainty": "The job did not retain the underlying database rows; the precise observed digest bytes cannot be independently reconstructed. The deterministic source path establishes the fixture phase mismatch. Native validation of the revised fixture remains pending.",
+  "utc_reviewed": "2026-10-30T17:40:56.914400+00:00",
+  "workflow_run": 41092882861
+}

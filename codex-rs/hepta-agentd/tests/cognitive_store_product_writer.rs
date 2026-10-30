@@ -25,6 +25,7 @@ use codex_hepta_cognitive_store::MemoryVerification;
 use codex_hepta_cognitive_store::ProductionAuthorityLease;
 use codex_hepta_cognitive_store::ProductionAuthorityToken;
 use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
+use codex_hepta_cognitive_store::ProductionDurableWriter;
 use codex_hepta_cognitive_store::SourceDraft;
 use codex_hepta_cognitive_store::bind_canonical_event_to_durable_receipt;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
@@ -141,13 +142,6 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         workspace,
     )?;
 
-    let store = DurableCognitiveStore::open(&config.identity().layout).await?;
-    let expected = store.recovery_anchor().await?;
-    // Quiesce SQLite while the owner fence is still held. Dropping a pool alone
-    // can leave its asynchronous close/checkpoint racing the recovery snapshot.
-    store.close().await;
-    drop(store);
-
     let authority = ProductionAuthorityLease::from_verified_parts(
         owner.clone(),
         Sha256Digest::for_bytes(b"agentd-product-recovery-test-grant"),
@@ -175,6 +169,29 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
             Ok(())
         },
     );
+
+    let store = DurableCognitiveStore::open(&config.identity().layout).await?;
+    let before_lease = store.recovery_anchor().await?;
+    let original_writer = ProductionDurableWriter::open_with_live_verifier(
+        store.clone(),
+        authority.clone(),
+        Arc::clone(&verifier),
+        "agentd-product-recovery-test",
+        /*generation*/ 1,
+    )
+    .await?;
+    let expected = original_writer.recovery_anchor().await?;
+    assert_ne!(
+        expected, before_lease,
+        "initial writer admission must append its lease to the owner cut"
+    );
+    // Retain a cut that already includes the active writer lease. Recovery
+    // must reopen that exact lease; first acquisition would advance the cut.
+    // Quiesce SQLite while both owner handles still retain their fences, then
+    // drop the handles without appending a lease release.
+    store.close().await;
+    drop(original_writer);
+    drop(store);
 
     let host = AgentdProductionWriterHost::open_with_recovery(
         &config,
