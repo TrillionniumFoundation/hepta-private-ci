@@ -1,0 +1,182 @@
+{
+  "benchmark": {
+    "benchmark": {
+      "alternating_order": true,
+      "bitwise_timed_pairs_passed": 5,
+      "cached_over_reference_median_ratio": 0.6672269730259194,
+      "compile_CPU_seconds": 0.0,
+      "compile_break_even_1008row_batches": 0,
+      "compile_destination_calls": 72,
+      "fixed_rows": 1008,
+      "generation_profile_key_unchanged": true,
+      "internal_law_tables_per_serving_output": 2,
+      "load_CPU_seconds": 0.003997228999999991,
+      "load_break_even_1008row_batches": 1,
+      "median_CPU_seconds": {
+        "cached": 0.023949083999999954,
+        "reference": 0.035893459000000016
+      },
+      "paired_repeats": 5,
+      "performance_gate": true,
+      "scope": "literal same-law batch/profile benchmark; compile/binding amortization explicit, not endtoendmodel speed or quality improvement",
+      "serialization_CPU_seconds": 0.0,
+      "timed_CPU_seconds": {
+        "cached": [
+          0.02394932399999994,
+          0.023948481999999993,
+          0.023949083999999954,
+          0.023955452000000044,
+          0.023943515000000026
+        ],
+        "reference": [
+          0.035893459000000016,
+          0.03588335500000006,
+          0.03589430100000002,
+          0.03589484199999993,
+          0.035890736000000034
+        ]
+      },
+      "timed_output_tables_each": 5040,
+      "warmup_CPU_seconds": 0.059869693,
+      "warmup_output_tables_each": 1008,
+      "warmups_each": 1
+    },
+    "dataset_rows": 0,
+    "literal_tests": {
+      "errors": 0,
+      "failures": 0,
+      "run": 6
+    },
+    "measurements": {
+      "bitwise_literal_output_rows": 3135,
+      "literal_paired_sampler_checks": 15,
+      "maximum_table_difference": 0.0
+    },
+    "model_restores": 0,
+    "scope": "same-law cache literal/parity/performance only; unchanged scientific gates, no model/data/generation quality claim",
+    "source_freeze_sha256": "61b7a7b62585e0965f62a29f49abad567f8cf9dd40f89706b35f44a63474fc4d",
+    "status": "COMPLETE_PAYLOAD_FREE_TEMPERATURE_CACHE_BENCHMARK",
+    "training_updates": 0
+  },
+  "benchmark_wait4": {
+    "automatic_retry": false,
+    "complete_wait": true,
+    "exit_code": 0,
+    "limits": {
+      "AS_bytes": 536870912,
+      "CPU_seconds": 5,
+      "affinity": [
+        0
+      ],
+      "file_bytes": 4194304,
+      "numerical_threads": 1,
+      "wall_seconds": 30
+    },
+    "max_rss_kib": 44928,
+    "new_synthetic_only_shared_lock": true,
+    "not_original_digit_lock": true,
+    "preparation_review_and_shared_upstream_costs": "OUTSIDE_CHILD_NOT_ZERO",
+    "raw_wait_status": 0,
+    "result_sha256": "c414bd55499d38d54336f2c41deea3f3c5ad41de63dd85059b44a50c759ecc14",
+    "source_freeze_sha256": "61b7a7b62585e0965f62a29f49abad567f8cf9dd40f89706b35f44a63474fc4d",
+    "status": "COMPLETE_PAYLOAD_FREE_TEMPERATURE_CACHE_BENCHMARK",
+    "supervisor_CPU_observed_prefix_seconds": 0.0037233139999999984,
+    "supervisor_final_tail": "UNKNOWN_NOT_ZERO",
+    "system_CPU_seconds": 0.064344,
+    "timed_out": false,
+    "user_CPU_seconds": 0.710939,
+    "wall_seconds": 0.7901473620004253,
+    "whole_child_CPU_seconds": 0.7752829999999999
+  },
+  "explicit_supplementary_counts": {
+    "compile_setup_destination_calls": 4608,
+    "load_setup_destination_calls": 4608,
+    "original_load_destination_calls": 72,
+    "post_setup_identity_dumps": 128
+  },
+  "interpretation": "Same successful numerical law / unchanged generation identity. 6 literaltests and 5paired bitwisecomparisons pass; fixedliteral service CPU ratio.667227. Singlecompile/serialize0 observations censored, originalbreak_even0 notcredible. Separatefixed64setup positive; notendtoend orqualityclaim.",
+  "setup_accounting": {
+    "CPU": {
+      "compile": {
+        "batch_CPU_ns": 91688269,
+        "censored_unresolved": false,
+        "estimated_break_even_1008row_batches": 1,
+        "mean_instance_CPU_seconds": 0.001432629203125
+      },
+      "load": {
+        "batch_CPU_ns": 183582080,
+        "censored_unresolved": false,
+        "estimated_break_even_1008row_batches": 1,
+        "mean_instance_CPU_seconds": 0.00286847
+      },
+      "serialize": {
+        "batch_CPU_ns": 39786575,
+        "censored_unresolved": false,
+        "mean_instance_CPU_seconds": 0.000621665234375
+      }
+    },
+    "batch_wall_ns": {
+      "compile": 92605453,
+      "load": 183662325,
+      "serialize": 40267505
+    },
+    "clock_info": {
+      "perf_counter": {
+        "implementation": "clock_gettime(CLOCK_MONOTONIC)",
+        "monotonic": true,
+        "resolution": 1e-09
+      },
+      "process_time": {
+        "implementation": "clock_gettime(CLOCK_PROCESS_CPUTIME_ID)",
+        "monotonic": true,
+        "resolution": 1e-09
+      }
+    },
+    "counts": {
+      "compile_destination_calls": 4608,
+      "load_destination_calls": 4608
+    },
+    "dataset_rows": 0,
+    "fixed_instances_per_stage": 64,
+    "model_restores": 0,
+    "original_result_sha256": "c414bd55499d38d54336f2c41deea3f3c5ad41de63dd85059b44a50c759ecc14",
+    "original_saved_CPU_per_1008rows": 0.011944375000000063,
+    "prior_child_CPU_seconds": 0.7752829999999999,
+    "scope": "Fixed repeated fresh-object setup accounting in one warm interpreter, not64coldprocesses; estimates use historical serving medians, no concurrent paired performance claim. Instrumented map counts add overhead. Zero remains censored; no adaptive repeat or gate tuning.",
+    "serving_retimed": false,
+    "source_freeze_sha256": "21e0b679e6347c9d9ee6df7beae942088717931f5e7691167a8c1b2e94705c7b",
+    "status": "COMPLETE_FIXED_CACHE_SETUP_ACCOUNTING",
+    "training_updates": 0
+  },
+  "setup_wait4": {
+    "automatic_retry": false,
+    "complete_wait": true,
+    "exit_code": 0,
+    "limits": {
+      "AS_bytes": 536870912,
+      "CPU_seconds": 3,
+      "affinity": [
+        0
+      ],
+      "file_bytes": 4194304,
+      "numerical_threads": 1,
+      "wall_seconds": 20
+    },
+    "max_rss_kib": 27920,
+    "new_synthetic_only_shared_lock": true,
+    "not_original_digit_lock": true,
+    "preparation_review_and_shared_upstream_costs": "OUTSIDE_CHILD_NOT_ZERO",
+    "raw_wait_status": 0,
+    "result_sha256": "75b58e61fe621ae3809e747e43b9164b49110bfcfac1595212dd295f69358f08",
+    "source_freeze_sha256": "21e0b679e6347c9d9ee6df7beae942088717931f5e7691167a8c1b2e94705c7b",
+    "status": "COMPLETE_FIXED_CACHE_SETUP_ACCOUNTING",
+    "supervisor_CPU_observed_prefix_seconds": 0.003373484999999999,
+    "supervisor_final_tail": "UNKNOWN_NOT_ZERO",
+    "system_CPU_seconds": 0.015125,
+    "timed_out": false,
+    "user_CPU_seconds": 0.562757,
+    "wall_seconds": 0.5885710410002503,
+    "whole_child_CPU_seconds": 0.577882
+  },
+  "zero_observation_interpretation": "Original singlecompile_CPU=0 andserialize_CPU=0 remain unmodified; treat as censored/notcredible zero truecost. Original compilebreak-even0 is superseded as an interpretation by fixedaggregateaccounting,not deleted."
+}
