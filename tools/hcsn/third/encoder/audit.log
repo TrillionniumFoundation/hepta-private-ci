@@ -1,0 +1,75 @@
+{
+  "passed": true,
+  "checked_runs": 100,
+  "maximum_recomputed_metric_error": 0.0,
+  "datasets": {
+    "ag_news": {
+      "runs": 50,
+      "historical_excluded": 7299,
+      "new_clean_examples": 3500,
+      "manifest_sha256": "786522f3f92dc065c29c356f28e74fa6f786d43689387113ac31f54c558078f0",
+      "result_sha256": "adc78a034b2e14c1ea4ff4a6535851c5813cc9fdaf7fec060495d95ffa4fd4ba",
+      "feature_sha256": "f6a4a1a2ff584c4fec7e10da6a8668f22531bac872c0c8aa9cd1b69b57246899",
+      "linear_sha256": "4c66c750cdc36ceca22008d960aed3f1d6321550cbdccc618b778083a9c9207d",
+      "preparation_wall_seconds": 73.51837017498474,
+      "head_run_cpu_seconds": 276.291738407,
+      "head_run_wall_seconds": 230.80471727803524,
+      "linear_fit_and_evaluation_cpu_seconds": 0.026281646999999797
+    },
+    "cifar10": {
+      "runs": 50,
+      "historical_excluded": 4500,
+      "new_clean_examples": 3500,
+      "manifest_sha256": "1c6e876ebb80d0f6561e9073fea52e36891585a93935c196ec0dd88938522e1c",
+      "result_sha256": "8b26d97ce7ccd58283772a722c20b41c682f9c2beb933f91a7e36118c28e1566",
+      "feature_sha256": "96feacafd26c8e82971b94729be1fd7bc91de4d71ad7d1863503251a91d1733d",
+      "linear_sha256": "1b414d87ef01de09edb3293a8284658d4645037d34ef75f1fd2b9780df2f13a9",
+      "preparation_wall_seconds": 50.2895961859831,
+      "head_run_cpu_seconds": 285.181974317,
+      "head_run_wall_seconds": 239.26364507797553,
+      "linear_fit_and_evaluation_cpu_seconds": 0.04700170899997147
+    }
+  },
+  "source_freeze_sha256": "050d05e69471f4580561b8ceee8a46df128c28c33eee5176bf728a5b664b078f",
+  "analysis_sha256": "c63a33369871db323bbd6cb20d428ca90ffe4ec3166ad1f67f988c85d3990c56",
+  "kernel_cost": {
+    "source_numeric_float64_bytes": 262256,
+    "runtime_numeric_float32_table_bytes": 131128,
+    "compressed_file_bytes": 253216,
+    "offline_build_measurements": [
+      {
+        "wall_seconds": 0.006811961000494193,
+        "cpu_seconds": 0.0068121979999999915
+      },
+      {
+        "wall_seconds": 0.0058206480025546625,
+        "cpu_seconds": 0.005823433000000211
+      },
+      {
+        "wall_seconds": 0.0059591139943222515,
+        "cpu_seconds": 0.005961697999999682
+      }
+    ],
+    "rebuilt_source_max_differences": {
+      "call_coeff": 0.0,
+      "call_step": 0.0,
+      "call_limit": 0.0,
+      "call_distance_limit": 0.0,
+      "call_end": 0.0,
+      "call_tail_rate": 0.0,
+      "risk_coeff": 0.0,
+      "risk_step": 0.0,
+      "risk_limit": 0.0,
+      "risk_end": 0.0,
+      "risk_tail_rate": 0.0,
+      "diffusion_scale": 0.0,
+      "epsilon_scaled": 0.0,
+      "patch_A": 0.0,
+      "patch_B": 0.0,
+      "boundary": 0.0
+    },
+    "original_result_field": "fixed_operator_bytes records source numeric float64 table, not executable size or measured process memory"
+  },
+  "scope": "Independent saved-logit/label, checkpoint, split, freeze and cost-accounting audit; no model selection or extra training",
+  "cost_limits": "Head-run totals omit startup, model loading, feature preparation and separate numerical/development work; preparation is wall time, not CPU or energy"
+}

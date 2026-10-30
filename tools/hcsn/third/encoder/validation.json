@@ -1,0 +1,52 @@
+{
+  "passed": true,
+  "full_hx_old_recurrence_max_error": 2.7755575615628914e-17,
+  "directional_gradients": [
+    {
+      "kind": "full_hx",
+      "autodiff": -0.10413049656038911,
+      "central_difference": -0.10413049648383409,
+      "scaled_error": 6.933512519668195e-11
+    },
+    {
+      "kind": "same_call_sigmoid",
+      "autodiff": -0.10580640633864805,
+      "central_difference": -0.1058064062593733,
+      "scaled_error": 7.168952820482317e-11
+    },
+    {
+      "kind": "ordinary_c1",
+      "autodiff": -0.16011233094463498,
+      "central_difference": -0.16011233093804478,
+      "scaled_error": 5.680657322312376e-12
+    }
+  ],
+  "ordinary_c1_join": {
+    "z": [
+      -1e-06,
+      0.0,
+      1e-06
+    ],
+    "q": [
+      0.4999999999995,
+      0.5,
+      0.5000000000005
+    ],
+    "a": [
+      9.99999999999e-13,
+      0.0,
+      0.0
+    ],
+    "dq": [
+      9.999999999980001e-07,
+      0.0,
+      9.999999999980001e-07
+    ],
+    "da": [
+      -1.9999999999960002e-06,
+      -0.0,
+      -0.0
+    ]
+  },
+  "scope": "Numerical local directions and exact recurrence comparison; not a long-time stability proof"
+}
