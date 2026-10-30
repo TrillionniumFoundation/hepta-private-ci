@@ -68,7 +68,7 @@ At the stacked repository branch, with Python, NumPy and SciPy:
 
     python -m unittest -v experiments.hcsn_hx_unified_v3.test_obstacle
 
-During local development, five tests passed on Python 3.13.5,
+During local development, six tests passed on Python 3.13.5,
 NumPy 2.3.5, SciPy 1.17.0. The local fixture replicated the needed
 upstream HX reference functions, **not** a byte-identical Git checkout.
 Remote exact-head integration and independently measured runtime have
@@ -78,7 +78,7 @@ Tests cover: (a) an unrelated analytic perpetual abandonment solution
 with refined meshes, (b) all 128 finite policies of a nine-node upwind
 problem versus Howard iteration, (c) invalid domains, (d) the retained
 HX negative-equity counterexample, and (e) HX finite-grid convergence
-with the correct finite-maturity upper asymptote.
+with the correct finite-maturity upper asymptote, and (f) zero-payout, zero-liquidity-hazard and extreme-liquidity degeneracy checks.
 
 Selected *local diagnostic* values (not global proofs):
 
