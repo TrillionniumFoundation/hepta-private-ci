@@ -175,7 +175,9 @@ async fn cognitive_fixture() -> CognitiveFixture {
         .agent(&agent_id);
     let workspace = temp.path().join("workspace");
     std::fs::create_dir_all(&workspace).expect("workspace");
-    let workspace = workspace.canonicalize().expect("canonical fixture workspace");
+    let workspace = workspace
+        .canonicalize()
+        .expect("canonical fixture workspace");
     let store = Arc::new(
         CognitiveStore::open(&layout)
             .await

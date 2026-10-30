@@ -21,6 +21,10 @@ mod repl_probe_tests;
 #[path = "windows_ctrl_c_diagnostic.rs"]
 mod windows_ctrl_c_diagnostic;
 
+#[cfg(windows)]
+#[path = "windows_ctrl_c_test_fixture.rs"]
+mod windows_ctrl_c_test_fixture;
+
 #[path = "windows_python_fixture.rs"]
 mod windows_python_fixture;
 

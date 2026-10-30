@@ -517,9 +517,7 @@ fn persist(path: &Path, state: &StoredRegistryV1) -> Result<(), LeaseRegistryErr
         use std::os::windows::fs::OpenOptionsExt;
         const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
         // Windows requires a writable directory handle for FlushFileBuffers.
-        options
-            .write(true)
-            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS);
+        options.write(true).custom_flags(FILE_FLAG_BACKUP_SEMANTICS);
     }
     let directory = options
         .open(parent)

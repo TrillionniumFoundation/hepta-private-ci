@@ -349,7 +349,8 @@ async fn bound_trajectory_is_append_only_causal_and_reopenable() {
             .join("fleet")
             .canonicalize()
             .expect("canonical fixture fleet root"),
-    ).expect("fleet reopen");
+    )
+    .expect("fleet reopen");
     let reopened = CognitiveStore::open(&fleet.layout().agent(&owner))
         .await
         .expect("reopen store");
@@ -512,7 +513,8 @@ async fn head_scoped_expired_terminal_gate_survives_store_reopen() {
             .join("fleet")
             .canonicalize()
             .expect("canonical fixture fleet root"),
-    ).expect("reopen fleet");
+    )
+    .expect("reopen fleet");
     let reopened = CognitiveStore::open(&fleet.layout().agent(&owner))
         .await
         .expect("reopen store");

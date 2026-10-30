@@ -1,0 +1,137 @@
+{
+  "schema": 1,
+  "kind": "read-only investigation, not native test evidence",
+  "historical_head": "6396bc013fdb16a955cced8a746e27279311361c",
+  "current_root_remote": "738a00959b869a4cdd4730109b4ff60c9340f106",
+  "logs": {
+    "mac-intel.log.gz": {
+      "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/mac-intel.log.gz",
+      "gzip_sha256": "0584e31bc6979f3f73fb4a2098bddc8a5a8ec0f81a4dfced3df394c6de956dc4",
+      "raw_sha256": "31dd6a135c97ea0fee76460736764f8405a0d00865c1af96ae5bf08d1ef6aa21",
+      "deduplicated_scoped_failures": {
+        "release::copy_tests::readonly_source_is_copied_synced_and_preserved_on_duplicate_install": "errno13 PermissionDenied",
+        "release::tests::catalog_resolves_only_digest_bound_per_agent_allowances": "errno13 PermissionDenied",
+        "release::tests::program_mutation_is_detected_and_release_state_survives_reopen": "errno13 PermissionDenied",
+        "release::tests::schema_v2_bundle_binds_both_exact_programs_and_closed_world": "errno13 PermissionDenied",
+        "restart_budget_survives_repeated_supervisord_recovery": "errno13 PermissionDenied",
+        "https_consumer::tests::authbus_product_path_reserves_fences_final_use_and_settles_observed_cost": "UnsafeCheckpoint",
+        "https_consumer::tests::authbus_timeout_keeps_quota_held_as_indeterminate": "UnsafeCheckpoint",
+        "supervisor::tests::failed_spawn_and_failed_health_each_auto_rollback_once": "errno13 PermissionDenied",
+        "supervisor::tests::kill_supersedes_inflight_paired_restart_without_replacement": "errno13 PermissionDenied",
+        "supervisor::tests::live_but_unhealthy_matrix_is_bounded_and_restarted_without_peer_churn": "errno13 PermissionDenied",
+        "supervisor::tests::paired_companions_stop_before_agent_restart_and_fail_independently": "errno13 PermissionDenied",
+        "supervisor::tests::process_recovery_fault_does_not_hide_signed_recovery_required": "errno13 PermissionDenied",
+        "supervisor::tests::recovered_running_restart_settles_pending_budget_before_next_claim": "errno13 PermissionDenied",
+        "supervisor::tests::recovery_closes_running_release_state_crash_window": "errno13 PermissionDenied",
+        "supervisor::tests::recovery_does_not_infer_signed_commit_from_matching_target_only": "errno13 PermissionDenied",
+        "supervisor::tests::recovery_fences_current_release_revoked_while_supervisor_is_down": "errno13 PermissionDenied",
+        "supervisor::tests::recovery_ignores_revoked_previous_release_and_adopts_current": "errno13 PermissionDenied",
+        "supervisor::tests::recovery_reconciles_signed_upgrade_automatic_rollback_to_source": "errno13 PermissionDenied",
+        "supervisor::tests::recovery_reconciles_terminal_release_transaction_into_signed_intent": "errno13 PermissionDenied",
+        "supervisor::tests::recovery_reconciles_terminal_signed_rollback_to_target": "errno13 PermissionDenied",
+        "supervisor::tests::recovery_required_unsigned_source_is_terminalized_as_aborted": "errno13 PermissionDenied",
+        "supervisor::tests::recovery_reuses_restart_claim_persisted_before_exit_finalize": "errno13 PermissionDenied",
+        "supervisor::tests::recovery_terminalizes_unsigned_target_from_exact_release_state_cas": "errno13 PermissionDenied",
+        "supervisor::tests::stale_deferred_drain_is_generation_fenced_from_replacement_starting": "errno13 PermissionDenied",
+        "supervisor::tests::stop_supersedes_inflight_paired_restart_after_matrix_exits": "errno13 PermissionDenied",
+        "supervisor::tests::successful_upgrade_and_explicit_rollback_change_only_target_agent": "errno13 PermissionDenied"
+      }
+    },
+    "mac-arm.log.gz": {
+      "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/ci/remote_6396/blocking/mac-arm.log.gz",
+      "gzip_sha256": "c631742a08deade94b76ae854a2d9cb5a51e018246dc35d83ef23c3fc3db3d23",
+      "raw_sha256": "5b0f5a437b033dc3f0317ec5b7057f84f8e839149a4868c4d89cb6b73773c4bd",
+      "deduplicated_scoped_failures": {
+        "fenced_holdout_file::tests::locked_file_store_replays_takeover_and_rejects_backup_rollback": "Busy before expected recovery/rollback decision",
+        "fenced_holdout_file::tests::longer_divergent_history_cannot_skip_the_retained_minimum_prefix": "Busy before expected recovery/rollback decision",
+        "release::copy_tests::readonly_source_is_copied_synced_and_preserved_on_duplicate_install": "errno13 PermissionDenied",
+        "release::tests::program_mutation_is_detected_and_release_state_survives_reopen": "errno13 PermissionDenied",
+        "release::tests::catalog_resolves_only_digest_bound_per_agent_allowances": "errno13 PermissionDenied",
+        "release::tests::schema_v2_bundle_binds_both_exact_programs_and_closed_world": "errno13 PermissionDenied",
+        "https_consumer::tests::authbus_product_path_reserves_fences_final_use_and_settles_observed_cost": "UnsafeCheckpoint",
+        "https_consumer::tests::authbus_timeout_keeps_quota_held_as_indeterminate": "UnsafeCheckpoint",
+        "restart_budget_survives_repeated_supervisord_recovery": "errno13 PermissionDenied",
+        "supervisor::tests::failed_spawn_and_failed_health_each_auto_rollback_once": "errno13 PermissionDenied",
+        "supervisor::tests::kill_supersedes_inflight_paired_restart_without_replacement": "errno13 PermissionDenied",
+        "supervisor::tests::live_but_unhealthy_matrix_is_bounded_and_restarted_without_peer_churn": "errno13 PermissionDenied",
+        "supervisor::tests::paired_companions_stop_before_agent_restart_and_fail_independently": "errno13 PermissionDenied",
+        "supervisor::tests::process_recovery_fault_does_not_hide_signed_recovery_required": "errno13 PermissionDenied",
+        "supervisor::tests::recovered_running_restart_settles_pending_budget_before_next_claim": "errno13 PermissionDenied",
+        "supervisor::tests::recovery_does_not_infer_signed_commit_from_matching_target_only": "errno13 PermissionDenied",
+        "supervisor::tests::recovery_closes_running_release_state_crash_window": "errno13 PermissionDenied",
+        "supervisor::tests::recovery_fences_current_release_revoked_while_supervisor_is_down": "errno13 PermissionDenied",
+        "supervisor::tests::recovery_ignores_revoked_previous_release_and_adopts_current": "errno13 PermissionDenied",
+        "supervisor::tests::recovery_reconciles_signed_upgrade_automatic_rollback_to_source": "errno13 PermissionDenied",
+        "supervisor::tests::recovery_reconciles_terminal_release_transaction_into_signed_intent": "errno13 PermissionDenied",
+        "supervisor::tests::recovery_reconciles_terminal_signed_rollback_to_target": "errno13 PermissionDenied",
+        "supervisor::tests::recovery_required_unsigned_source_is_terminalized_as_aborted": "errno13 PermissionDenied",
+        "supervisor::tests::recovery_reuses_restart_claim_persisted_before_exit_finalize": "errno13 PermissionDenied",
+        "supervisor::tests::recovery_terminalizes_unsigned_target_from_exact_release_state_cas": "errno13 PermissionDenied",
+        "supervisor::tests::stale_deferred_drain_is_generation_fenced_from_replacement_starting": "errno13 PermissionDenied",
+        "supervisor::tests::stop_supersedes_inflight_paired_restart_after_matrix_exits": "errno13 PermissionDenied",
+        "supervisor::tests::successful_upgrade_and_explicit_rollback_change_only_target_agent": "errno13 PermissionDenied"
+      }
+    }
+  },
+  "primary_sources": [
+    {
+      "name": "rust_unix_fs",
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/1.96.0/library/std/src/sys/fs/unix.rs",
+      "retrieved_sha256": "a25523228b0ba0dbf53aaa478b52e42021513d6563df033a34896ed31a20c3a5"
+    },
+    {
+      "name": "rust_spawn",
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/1.96.0/library/std/src/sys/process/unix/unix.rs",
+      "retrieved_sha256": "ed56cd95b0b9ce5c6c4ad554246aed451a1d5b3736b47ed080cd854352845b15"
+    },
+    {
+      "name": "xnu_vfs",
+      "url": "https://raw.githubusercontent.com/apple-oss-distributions/xnu/main/bsd/vfs/vfs_syscalls.c",
+      "retrieved_sha256": "b30d68fb85f34b864b5e71e3127541c2674e0fb52e59d6ee072c8b0ecbb46a4f"
+    },
+    {
+      "name": "xnu_fcntl",
+      "url": "https://raw.githubusercontent.com/apple-oss-distributions/xnu/main/bsd/kern/kern_descrip.c",
+      "retrieved_sha256": "480cfed4e987be874bd71fb6933c254adf9fb1f36de8496dee8f351b18da13b1"
+    }
+  ],
+  "findings": {
+    "bao": "Fixture passed raw temporary paths to a validator that explicitly rejects noncanonical checkpoint spelling. Only owned test roots were normalized; original production guard and both tests remain. Exact historical failing path was not printed.",
+    "fleet": "Rust1.96 Apple sync_all directly invokes F_FULLFSYNC, without an ordinary fsync fallback. The historical errno13 messages do not identify the failing operation; existing cfg(test) release-install stage instrumentation is needed. No permission or ordering change made.",
+    "holdout": "Apple File::try_lock uses flock(LOCK_EX|LOCK_NB). The two failures immediately follow store drop while other tests in the same library harness spawn subprocesses. Inherited open-file descriptions are a possible cause, not an observed cause. No unconditional Drop.unlock added.",
+    "acceptance_difference": "Original MacARM failures used one Bazel library process with multiple parallel tests. A nextest per-test-process pass alone would not disprove a cross-test spawn-inheritance failure."
+  },
+  "source_files_reviewed": [
+    {
+      "path": "codex-rs/hepta-authbus/src/host.rs",
+      "bytes": 18672,
+      "sha256": "66686ca7ad0efe6d041d3c521e11fbda64988a26685f981f4d5d2160c77b6ca0"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/release.rs",
+      "bytes": 51611,
+      "sha256": "3bebc2c2f2b644d9566a8107448d6ba969c1595439ee3c8fb9bb1056c29cbe19"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/registry.rs",
+      "bytes": 21262,
+      "sha256": "714b160817bf07b71d11af569a6849769395df00b3769988898e7aff29880753"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+      "bytes": 16743,
+      "sha256": "a7479c120352470003245c8b557340cc9406818c57d345ad603c7e3b812ebfda"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_tests.rs",
+      "bytes": 10243,
+      "sha256": "45a09d23dada6bd3d0c9e424f9552dd538ea929bc3128b830c1361c3bf4fa280"
+    },
+    {
+      "path": "codex-rs/utils/pty/src/windows_ctrl_c_diagnostic.rs",
+      "bytes": 6074,
+      "sha256": "09c25d5052afd99b163ce6c9455e9c8561ddb60dc4ffeb2b41899f95874745a3"
+    }
+  ],
+  "native_execution": "not performed; no Rust/toolchain installation or build"
+}

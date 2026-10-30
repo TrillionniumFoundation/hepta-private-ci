@@ -19,18 +19,37 @@ fn known_authorized_read_failures_preserve_local_error_contract() {
             code,
             message: message.to_string(),
         });
-        assert_eq!((error.kind(), error.to_string()), (expected_kind, message.to_string()));
+        assert_eq!(
+            (error.kind(), error.to_string()),
+            (expected_kind, message.to_string())
+        );
     }
 }
 
 #[test]
 fn remote_diagnostics_with_private_details_remain_redacted() {
     let cases = [
-        (-32600, "Permission denied: /private/secret", ErrorKind::InvalidInput),
-        (-32603, "authorized file read exceeds bound: /private/secret", ErrorKind::Other),
-        (-32004, "No such file or directory: /private/secret", ErrorKind::NotFound),
+        (
+            -32600,
+            "Permission denied: /private/secret",
+            ErrorKind::InvalidInput,
+        ),
+        (
+            -32603,
+            "authorized file read exceeds bound: /private/secret",
+            ErrorKind::Other,
+        ),
+        (
+            -32004,
+            "No such file or directory: /private/secret",
+            ErrorKind::NotFound,
+        ),
         (-32603, "Permission denied", ErrorKind::Other),
-        (-32600, "authorized file read exceeds bound", ErrorKind::InvalidInput),
+        (
+            -32600,
+            "authorized file read exceeds bound",
+            ErrorKind::InvalidInput,
+        ),
     ];
     for (code, message, expected_kind) in cases {
         let error = map_authorized_read_remote_error(ExecServerError::Server {

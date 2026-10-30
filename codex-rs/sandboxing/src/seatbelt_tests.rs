@@ -92,9 +92,15 @@ fn writable_root_exclusions(args: &[String], root_index: usize) -> Vec<String> {
         .collect::<Vec<_>>();
     bindings.sort_unstable_by_key(|(index, _)| *index);
     for (expected_index, (index, _)) in bindings.iter().enumerate() {
-        assert_eq!(*index, expected_index, "exclusion bindings must be contiguous");
+        assert_eq!(
+            *index, expected_index,
+            "exclusion bindings must be contiguous"
+        );
     }
-    let mut paths = bindings.into_iter().map(|(_, path)| path).collect::<Vec<_>>();
+    let mut paths = bindings
+        .into_iter()
+        .map(|(_, path)| path)
+        .collect::<Vec<_>>();
     paths.sort();
     paths
 }
@@ -1576,7 +1582,10 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
     );
 
     let expected_roots = [
-        format!("-DWRITABLE_ROOT_0={}", cwd.canonicalize().expect("canonicalize cwd").display()),
+        format!(
+            "-DWRITABLE_ROOT_0={}",
+            cwd.canonicalize().expect("canonicalize cwd").display()
+        ),
         format!("-DWRITABLE_ROOT_1={}", vulnerable_root_canonical.display()),
         format!("-DWRITABLE_ROOT_2={}", empty_root_canonical.display()),
     ];
@@ -1585,7 +1594,10 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
         .filter(|arg| arg.starts_with("-DWRITABLE_ROOT_") && !arg.contains("_EXCLUDED_"))
         .cloned()
         .collect::<Vec<_>>();
-    assert_eq!(writable_roots, expected_roots, "unexpected writable roots in {args:#?}");
+    assert_eq!(
+        writable_roots, expected_roots,
+        "unexpected writable roots in {args:#?}"
+    );
     // Exclusion order is not a permission boundary. Require every exact path,
     // including multiplicity, while checking generated indices are contiguous.
     let canonical_cwd = cwd.canonicalize().expect("canonicalize cwd");
@@ -1595,14 +1607,23 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
         canonical_cwd.join(".codex").display().to_string(),
     ];
     expected_cwd_exclusions.sort();
-    assert_eq!(writable_root_exclusions(&args, /*root_index*/ 0), expected_cwd_exclusions);
+    assert_eq!(
+        writable_root_exclusions(&args, /*root_index*/ 0),
+        expected_cwd_exclusions
+    );
     let mut expected_root_exclusions = vec![
         dot_git_canonical.display().to_string(),
         dot_codex_canonical.display().to_string(),
     ];
     expected_root_exclusions.sort();
-    assert_eq!(writable_root_exclusions(&args, /*root_index*/ 1), expected_root_exclusions);
-    assert_eq!(writable_root_exclusions(&args, /*root_index*/ 2), Vec::<String>::new());
+    assert_eq!(
+        writable_root_exclusions(&args, /*root_index*/ 1),
+        expected_root_exclusions
+    );
+    assert_eq!(
+        writable_root_exclusions(&args, /*root_index*/ 2),
+        Vec::<String>::new()
+    );
     let command_index = args
         .iter()
         .position(|arg| arg == "--")

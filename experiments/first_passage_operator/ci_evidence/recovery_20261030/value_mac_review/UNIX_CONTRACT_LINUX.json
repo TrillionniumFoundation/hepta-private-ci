@@ -1,0 +1,425 @@
+{
+  "schema": "hepta.unix-file-contract-observation.v1",
+  "utc": "2026-10-30T17:08:42.427880+00:00",
+  "command": [
+    "scripts/diagnose_hepta_unix_file_contracts.py",
+    "--output",
+    "experiments/first_passage_operator/ci_evidence/recovery_20261030/value_mac_review/UNIX_CONTRACT_LINUX.json",
+    "--timeout-seconds",
+    "5"
+  ],
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "python": "3.12.14",
+  "uid": 0,
+  "pid": 2,
+  "script_sha256": "ffc94a2a121e862e1290c991e94bfa0cb7cb0244072d9334a407064ac5bf2326",
+  "diagnostic_only": true,
+  "limits": [
+    "Own temporary fixtures only; no production state or permissions changed.",
+    "Filesystem errors are recorded individually; subsequent independent observations may continue.",
+    "Ordinary fsync is a separately labeled comparison, not a fallback for F_FULLFSYNC.",
+    "The fork experiment demonstrates this process's OS contract, not the cause of an earlier Rust test failure.",
+    "A runner observation is not a Bazel sandbox observation unless executed in that same context.",
+    "Original Fleet/holdout functional gates remain required."
+  ],
+  "fixture_root": {
+    "requested": "/tmp/hepta-unix-contract-r_4soya8",
+    "canonical": "/tmp/hepta-unix-contract-r_4soya8"
+  },
+  "filesystem": {
+    "status": "observations_complete",
+    "continues_after_sync_errors_for_observation": true
+  },
+  "fork_lock": {
+    "status": "observations_complete",
+    "timeout_seconds_per_wait": 5.0,
+    "cleanup_signals": [],
+    "owner_descriptor": {
+      "device": 27,
+      "inode": 1507720,
+      "mode": "0o600",
+      "size": 0,
+      "open_flags": 32770,
+      "close_on_exec": true
+    },
+    "child_pid": 6,
+    "ready_received": true,
+    "parent_owner_closed": true,
+    "while_child_retains_description": {
+      "outcome": "would_block",
+      "errno": 11,
+      "message": "[Errno 11] Resource temporarily unavailable"
+    },
+    "child_status": {
+      "reaped": true,
+      "exit_code": 0
+    },
+    "child_reaped": true,
+    "inherited_lock_observation_valid": true,
+    "after_child_exit": {
+      "outcome": "acquired_and_released"
+    }
+  },
+  "status": "observations_complete",
+  "operations": [
+    {
+      "operation": "write owned source",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/source-program",
+      "status": "ok",
+      "result": 36,
+      "seconds": 4.48179998784326e-05
+    },
+    {
+      "operation": "chmod source 0555",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/source-program",
+      "status": "ok",
+      "result": null,
+      "seconds": 1.6083999071270227e-05
+    },
+    {
+      "operation": "create staging",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging",
+      "status": "ok",
+      "result": null,
+      "seconds": 2.7471003704704344e-05
+    },
+    {
+      "operation": "create bin",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging/bin",
+      "status": "ok",
+      "result": null,
+      "seconds": 1.712599623715505e-05
+    },
+    {
+      "operation": "open descriptor",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/source-program",
+      "status": "ok",
+      "result": 3,
+      "seconds": 3.465000190772116e-06
+    },
+    {
+      "operation": "open descriptor",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging/bin/program",
+      "status": "ok",
+      "result": 4,
+      "seconds": 1.538399374112487e-05
+    },
+    {
+      "operation": "copy program bytes",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging/bin/program",
+      "status": "ok",
+      "result": 36,
+      "seconds": 9.363997378386557e-06
+    },
+    {
+      "operation": "chmod copied program 0555",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging/bin/program",
+      "status": "ok",
+      "result": null,
+      "seconds": 3.2950047170743346e-06
+    },
+    {
+      "operation": "copied program retained writer: descriptor state",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging/bin/program",
+      "status": "ok",
+      "result": {
+        "device": 27,
+        "inode": 1507719,
+        "mode": "0o555",
+        "size": 36,
+        "open_flags": 32769,
+        "close_on_exec": true
+      },
+      "seconds": 1.695600076345727e-05
+    },
+    {
+      "operation": "copied program retained writer: F_FULLFSYNC",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging/bin/program",
+      "status": "not_applicable",
+      "reason": "Requires Darwin and its Python fcntl.F_FULLFSYNC constant"
+    },
+    {
+      "operation": "copied program retained writer: ordinary fsync comparison",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging/bin/program",
+      "status": "ok",
+      "result": null,
+      "seconds": 0.0014938059975975193
+    },
+    {
+      "operation": "close descriptor",
+      "status": "ok",
+      "result": null,
+      "seconds": 6.590002158191055e-06
+    },
+    {
+      "operation": "close descriptor",
+      "status": "ok",
+      "result": null,
+      "seconds": 2.3940010578371584e-06
+    },
+    {
+      "operation": "open descriptor",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging/bin/program",
+      "status": "ok",
+      "result": 3,
+      "seconds": 9.333998605143279e-06
+    },
+    {
+      "operation": "copied program reopened reader comparison: descriptor state",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging/bin/program",
+      "status": "ok",
+      "result": {
+        "device": 27,
+        "inode": 1507719,
+        "mode": "0o555",
+        "size": 36,
+        "open_flags": 32768,
+        "close_on_exec": true
+      },
+      "seconds": 1.0996001947205514e-05
+    },
+    {
+      "operation": "copied program reopened reader comparison: F_FULLFSYNC",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging/bin/program",
+      "status": "not_applicable",
+      "reason": "Requires Darwin and its Python fcntl.F_FULLFSYNC constant"
+    },
+    {
+      "operation": "copied program reopened reader comparison: ordinary fsync comparison",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging/bin/program",
+      "status": "ok",
+      "result": null,
+      "seconds": 0.0003228470013709739
+    },
+    {
+      "operation": "close descriptor",
+      "status": "ok",
+      "result": null,
+      "seconds": 4.3959953472949564e-06
+    },
+    {
+      "operation": "open descriptor",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging/release.json",
+      "status": "ok",
+      "result": 3,
+      "seconds": 4.429699765751138e-05
+    },
+    {
+      "operation": "write manifest",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging/release.json",
+      "status": "ok",
+      "result": 3,
+      "seconds": 1.0356001439504325e-05
+    },
+    {
+      "operation": "manifest retained writer: descriptor state",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging/release.json",
+      "status": "ok",
+      "result": {
+        "device": 27,
+        "inode": 1507648,
+        "mode": "0o644",
+        "size": 3,
+        "open_flags": 32769,
+        "close_on_exec": true
+      },
+      "seconds": 6.520000169984996e-06
+    },
+    {
+      "operation": "manifest retained writer: F_FULLFSYNC",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging/release.json",
+      "status": "not_applicable",
+      "reason": "Requires Darwin and its Python fcntl.F_FULLFSYNC constant"
+    },
+    {
+      "operation": "manifest retained writer: ordinary fsync comparison",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging/release.json",
+      "status": "ok",
+      "result": null,
+      "seconds": 0.0006954279961064458
+    },
+    {
+      "operation": "close descriptor",
+      "status": "ok",
+      "result": null,
+      "seconds": 4.036999598611146e-06
+    },
+    {
+      "operation": "chmod manifest 0444",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging/release.json",
+      "status": "ok",
+      "result": null,
+      "seconds": 8.962997526396066e-06
+    },
+    {
+      "operation": "chmod bin 0555",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging/bin",
+      "status": "ok",
+      "result": null,
+      "seconds": 3.3949982025660574e-06
+    },
+    {
+      "operation": "open descriptor",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging/bin",
+      "status": "ok",
+      "result": 3,
+      "seconds": 3.445995389483869e-06
+    },
+    {
+      "operation": "readonly bin directory: descriptor state",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging/bin",
+      "status": "ok",
+      "result": {
+        "device": 27,
+        "inode": 1507718,
+        "mode": "0o555",
+        "size": 4096,
+        "open_flags": 32768,
+        "close_on_exec": true
+      },
+      "seconds": 8.854003681335598e-06
+    },
+    {
+      "operation": "readonly bin directory: F_FULLFSYNC",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging/bin",
+      "status": "not_applicable",
+      "reason": "Requires Darwin and its Python fcntl.F_FULLFSYNC constant"
+    },
+    {
+      "operation": "readonly bin directory: ordinary fsync comparison",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging/bin",
+      "status": "ok",
+      "result": null,
+      "seconds": 0.0001509280045866035
+    },
+    {
+      "operation": "close descriptor",
+      "status": "ok",
+      "result": null,
+      "seconds": 1.9229992176406085e-06
+    },
+    {
+      "operation": "open descriptor",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging",
+      "status": "ok",
+      "result": 3,
+      "seconds": 3.2139942049980164e-06
+    },
+    {
+      "operation": "writable staging directory: descriptor state",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging",
+      "status": "ok",
+      "result": {
+        "device": 27,
+        "inode": 1507717,
+        "mode": "0o755",
+        "size": 4096,
+        "open_flags": 32768,
+        "close_on_exec": true
+      },
+      "seconds": 3.7760037230327725e-06
+    },
+    {
+      "operation": "writable staging directory: F_FULLFSYNC",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging",
+      "status": "not_applicable",
+      "reason": "Requires Darwin and its Python fcntl.F_FULLFSYNC constant"
+    },
+    {
+      "operation": "writable staging directory: ordinary fsync comparison",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging",
+      "status": "ok",
+      "result": null,
+      "seconds": 5.642500036628917e-05
+    },
+    {
+      "operation": "close descriptor",
+      "status": "ok",
+      "result": null,
+      "seconds": 1.0020012268796563e-06
+    },
+    {
+      "operation": "chmod staging 0555",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/staging",
+      "status": "ok",
+      "result": null,
+      "seconds": 3.465000190772116e-06
+    },
+    {
+      "operation": "rename staging within same parent",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/published",
+      "status": "ok",
+      "result": null,
+      "seconds": 4.9403999582864344e-05
+    },
+    {
+      "operation": "open descriptor",
+      "path": "/tmp/hepta-unix-contract-r_4soya8",
+      "status": "ok",
+      "result": 3,
+      "seconds": 2.644002961460501e-06
+    },
+    {
+      "operation": "publication parent directory: descriptor state",
+      "path": "/tmp/hepta-unix-contract-r_4soya8",
+      "status": "ok",
+      "result": {
+        "device": 27,
+        "inode": 1507647,
+        "mode": "0o700",
+        "size": 4096,
+        "open_flags": 32768,
+        "close_on_exec": true
+      },
+      "seconds": 3.915993147529662e-06
+    },
+    {
+      "operation": "publication parent directory: F_FULLFSYNC",
+      "path": "/tmp/hepta-unix-contract-r_4soya8",
+      "status": "not_applicable",
+      "reason": "Requires Darwin and its Python fcntl.F_FULLFSYNC constant"
+    },
+    {
+      "operation": "publication parent directory: ordinary fsync comparison",
+      "path": "/tmp/hepta-unix-contract-r_4soya8",
+      "status": "ok",
+      "result": null,
+      "seconds": 0.0002205319979111664
+    },
+    {
+      "operation": "close descriptor",
+      "status": "ok",
+      "result": null,
+      "seconds": 1.7830025171861053e-06
+    },
+    {
+      "operation": "verify published and source bytes",
+      "path": "/tmp/hepta-unix-contract-r_4soya8/published",
+      "status": "ok",
+      "result": {
+        "published_matches": true,
+        "source_matches": true
+      },
+      "seconds": 0.0001185689980047755
+    },
+    {
+      "operation": "close parent fork descriptor",
+      "status": "ok",
+      "result": null,
+      "seconds": 1.0515999747440219e-05
+    },
+    {
+      "operation": "restore owned fixture cleanup modes",
+      "status": "ok",
+      "result": null,
+      "seconds": 0.00045790000149281695
+    },
+    {
+      "operation": "remove owned fixture tree",
+      "status": "ok",
+      "result": null,
+      "seconds": 0.00015351100591942668
+    }
+  ],
+  "infrastructure_failure": false
+}

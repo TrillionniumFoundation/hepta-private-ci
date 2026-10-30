@@ -2,12 +2,12 @@
 //! with synthetic signed qualification inputs from the existing test fixture.
 //! No production selection.
 use super::*;
-use std::fs;
 use codex_hepta_learning_ledger::LedgerSegmentLimits;
 use codex_hepta_learning_ledger::LedgerWitnessStore;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::SegmentedLedger;
 use pretty_assertions::assert_eq;
+use std::fs;
 
 fn open(root: &std::path::Path, name: &str, create: bool) -> std::fs::File {
     OpenOptions::new()

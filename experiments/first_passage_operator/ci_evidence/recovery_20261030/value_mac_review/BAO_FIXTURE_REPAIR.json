@@ -1,0 +1,22 @@
+{
+  "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+  "before_sha256": "6a550539e42d5624717b8d35d079519f1b3b8674b49aa75142f50dfeadaa28ff",
+  "before_git_blob": "82d4eb7cf7df7dc8181ecfbb6c06473f8b156d8a",
+  "after_sha256": "fc7729553f4ca2ea1951aab70127c9c3d08dcdcee11b9316a4cfbe5f3cc403aa",
+  "after_git_blob": "6ad6ae9e3bad34d05bf05960eecfa52321e718e0",
+  "bytes": 25070,
+  "production_host_sha256": "66686ca7ad0efe6d041d3c521e11fbda64988a26685f981f4d5d2160c77b6ca0",
+  "write_status": "atomically replaced",
+  "scope": "Test fixture paths only; native verification pending",
+  "root_remote_at_start": "738a00959b869a4cdd4730109b4ff60c9340f106",
+  "tests": [
+    "https_consumer::tests::authbus_product_path_reserves_fences_final_use_and_settles_observed_cost",
+    "https_consumer::tests::authbus_timeout_keeps_quota_held_as_indeterminate"
+  ],
+  "reason": "The fixture used raw TempDir roots, while the production checkpoint validator requires canonical spelling. Resolve only the two fixture-owned roots before creating database/checkpoint paths.",
+  "limits": [
+    "Historical Mac logs show UnsafeCheckpoint but do not include the exact rejected path or guard branch.",
+    "This source fix has not been executed natively in the recovery workspace.",
+    "Production checkpoint validation, private modes, and original test assertions are unchanged."
+  ]
+}

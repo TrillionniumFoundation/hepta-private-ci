@@ -30,7 +30,9 @@ async fn test_runtime(directive: &str) -> (TempDir, Arc<CognitiveStore>, ExactDi
         .agent(&agent_id);
     let workspace = temp.path().join("workspace");
     std::fs::create_dir_all(&workspace).expect("workspace");
-    let workspace = workspace.canonicalize().expect("canonical fixture workspace");
+    let workspace = workspace
+        .canonicalize()
+        .expect("canonical fixture workspace");
     let store = Arc::new(
         CognitiveStore::open(&layout)
             .await

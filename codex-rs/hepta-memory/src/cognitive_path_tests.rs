@@ -125,14 +125,22 @@ async fn canonical_fixture_accepts_owned_temp_root_but_rejects_its_parent_alias(
         CognitiveStore::open(&requested).await,
         Err(crate::CognitiveStoreError::Invalid(_))
     ));
-    assert!(!requested.cognitive_root().join("cognitive_1.sqlite3").exists());
+    assert!(
+        !requested
+            .cognitive_root()
+            .join("cognitive_1.sqlite3")
+            .exists()
+    );
 
     let store = CognitiveStore::open(&fixture)
         .await
         .expect("open canonical test-owned fixture");
     assert_eq!(
         store.path(),
-        store.path().canonicalize().expect("canonical fixture database")
+        store
+            .path()
+            .canonicalize()
+            .expect("canonical fixture database")
     );
     assert_eq!(
         canonical_path_without_redirection(requested.cognitive_root())

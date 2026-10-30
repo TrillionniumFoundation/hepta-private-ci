@@ -1,0 +1,70 @@
+{
+  "changes": [
+    {
+      "change": "Match only the exact redacted server string under -32603. Keep client-side overflow messages and all generic remote redaction branches unchanged.",
+      "finding": "The remote mapping compared the server diagnostic with the client overflow diagnostic; actual source tests and native integration both require the local server message.",
+      "path": "codex-rs/exec-server/src/remote_file_system.rs"
+    },
+    {
+      "change": "Give the inserted fixture a preview while preserving the expected row, alias-retarget rejection, missing-alias rejection and untouched sentinel checks.",
+      "finding": "Both list APIs intentionally filter empty previews; the inserted alias regression fixture used the default empty preview.",
+      "path": "codex-rs/rollout/src/state_db_alias_tests.rs"
+    },
+    {
+      "change": "Use a let Err pattern and explicit failure; preserve the precise CoreSubmissionError and InvalidRequest assertions.",
+      "finding": "Actual Linux Clippy rejects expect_err in the prompt-hook test.",
+      "path": "codex-rs/ext/queue/tests/suite/queue_hook_rejection_tests.rs"
+    },
+    {
+      "change": "Use the compiler-recommended crate recursion limit 256. No runtime control flow or sandbox flag changes.",
+      "finding": "Actual Linux Clippy/musl compiler reports query depth 130 at the boxed cli_main async entry, exceeding default depth 128.",
+      "path": "codex-rs/cli/src/main.rs"
+    }
+  ],
+  "evidence_job_urls": [
+    "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41092882861/job/124198476991",
+    "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41092882861/job/124198476692"
+  ],
+  "local_rust_attempts": [
+    {
+      "argv": [
+        "just",
+        "fmt"
+      ],
+      "error": "[Errno 2] No such file or directory: 'just'",
+      "exit": 127
+    },
+    {
+      "argv": [
+        "just",
+        "test",
+        "-p",
+        "codex-exec-server",
+        "--lib",
+        "--locked"
+      ],
+      "error": "[Errno 2] No such file or directory: 'just'",
+      "exit": 127
+    },
+    {
+      "argv": [
+        "just",
+        "fix",
+        "-p",
+        "codex-exec-server",
+        "-p",
+        "codex-rollout",
+        "-p",
+        "codex-cli",
+        "-p",
+        "codex-queue",
+        "--locked"
+      ],
+      "error": "[Errno 2] No such file or directory: 'just'",
+      "exit": 127
+    }
+  ],
+  "schema": "hepta.root-native-fixes.v1",
+  "source_parent": "738a00959b869a4cdd4730109b4ff60c9340f106",
+  "validation": "Exact new-source Rust formatting, native regression tests and compiler checks are pending CI; no local compile or all-green claim."
+}

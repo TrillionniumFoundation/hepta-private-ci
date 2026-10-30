@@ -384,9 +384,14 @@ async fn conpty_delivers_input_to_foreground_children() -> anyhow::Result<()> {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn conpty_ctrl_c_interrupts_powershell_foreground_child() -> anyhow::Result<()> {
-    let Some(program) = find_powershell() else {
-        return Ok(());
-    };
+    use super::windows_ctrl_c_test_fixture::Invocation;
+
+    match super::windows_ctrl_c_test_fixture::prepare().await? {
+        Invocation::ParentVerified => return Ok(()),
+        Invocation::OriginalChild => {}
+    }
+    let program = find_powershell()
+        .ok_or_else(|| anyhow::anyhow!("PowerShell is required for the Ctrl-C integration test"))?;
     let args = vec!["-NoLogo".to_string(), "-NoProfile".to_string()];
     let env: HashMap<String, String> = std::env::vars().collect();
     let ctrl_c_diagnostics =

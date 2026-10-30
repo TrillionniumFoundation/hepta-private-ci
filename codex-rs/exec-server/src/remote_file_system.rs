@@ -43,6 +43,7 @@ const NOT_FOUND_ERROR_CODE: i64 = -32004;
 const INVALID_READ_BOUND: &str =
     "authorized file read bound must leave room for an overflow sentinel";
 const READ_EXCEEDED: &str = "remote authorized file read exceeded its bound";
+const SERVER_READ_EXCEEDED: &str = "authorized file read exceeds bound";
 
 #[path = "remote_file_stream.rs"]
 mod file_stream;
@@ -524,7 +525,7 @@ fn map_authorized_read_remote_error(error: ExecServerError) -> io::Error {
         ExecServerError::Server {
             code: -32603,
             message,
-        } if message == READ_EXCEEDED => invalid_authorized_read_data(READ_EXCEEDED),
+        } if message == SERVER_READ_EXCEEDED => invalid_authorized_read_data(SERVER_READ_EXCEEDED),
         ExecServerError::Server {
             code: NOT_FOUND_ERROR_CODE,
             message,

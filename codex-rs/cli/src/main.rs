@@ -1,3 +1,5 @@
+#![recursion_limit = "256"]
+
 use clap::Args;
 use clap::CommandFactory;
 use clap::FromArgMatches;
@@ -4981,3 +4983,4 @@ mod tests {
             .expect_err("feature should be rejected")
     }
 }
+

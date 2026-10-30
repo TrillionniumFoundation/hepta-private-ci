@@ -11,6 +11,7 @@ on:
       - "experiments/first_passage_operator/requirements.txt"
       - "experiments/first_passage_deadline/**/*.py"
       - "experiments/first_passage_deadline/requirements.txt"
+      - "experiments/first_passage_readout_risk/**"
       - "codex-rs/**"
       - "bazel/**"
       - "tools/**"
@@ -239,9 +240,9 @@ jobs:
                    "--lib", "--locked"],
                   ["just", "test", "-p", "codex-v8-poc", "--lib",
                    "--features", "sandbox", "--locked"],
+                  ["just", "test", "-p", "codex-windows-sandbox", "--test", "helper_manifest", "--locked"],
                   ["just", "test", "-p", "codex-windows-sandbox", "-p", "codex-code-mode-runtime",
                    "--lib", "--locked"],
-                  ["just", "test", "-p", "codex-windows-sandbox", "--test", "helper_manifest", "--locked"],
                   ["just", "test", "-p", "codex-exec-server", "--test", "file_system_windows", "--locked"],
                   ["just", "fix", "-p", "codex-hepta-contracts", "-p", "codex-hepta-intelligence",
                    "-p", "codex-hepta-operator-acceptance", "-p", "codex-hepta-shadow-qualification",
@@ -279,6 +280,9 @@ jobs:
               "mac-native-consumers": [
                   [sys.executable, "scripts/diagnose_hepta_fixture_paths.py",
                    "--output", str(output / "fixture-path-observation.json")],
+                  [sys.executable, "scripts/diagnose_hepta_unix_file_contracts.py",
+                   "--output", str(output / "unix-file-contract-observation.json"),
+                   "--timeout-seconds", "5"],
                   ["just", "test", "-p", "codex-hepta-fleet", "-p", "codex-utils-pty",
                    "-p", "codex-shell-escalation", "-p", "codex-sandboxing",
                    "-p", "codex-exec-server", "--lib", "--locked", "--success-output", "immediate"],
@@ -419,5 +423,135 @@ jobs:
         with:
           name: hepta-operator-${{ matrix.lane }}-${{ github.event.pull_request.head.sha }}
           path: ${{ runner.temp }}/hepta-operator-diagnostics
+          if-no-files-found: error
+          retention-days: 30
+
+  readout-risk-v2:
+    name: "Readout-risk v2 frozen experiment"
+    if: >-
+      github.event.action == 'synchronize' && github.run_attempt == 1 &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.head_ref == 'research/first-passage-operator-20261029'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+    env:
+      PYTHONUNBUFFERED: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      NUMEXPR_NUM_THREADS: "1"
+      VECLIB_MAXIMUM_THREADS: "1"
+      BLIS_NUM_THREADS: "1"
+    steps:
+      - name: Checkout the exact execution request and frozen parent
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Admit only the explicit one-shot research request
+        id: request
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if head != os.environ["EXPECTED_HEAD"]:
+              raise SystemExit("execution checkout differs from the requested head")
+          subject = subprocess.check_output(["git", "show", "-s", "--format=%s", "HEAD"], text=True).strip()
+          requested = subject == "research: execute frozen readout-risk v2"
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"requested={str(requested).lower()}\n")
+              if requested:
+                  request_path = Path("experiments/first_passage_readout_risk/RUN_REQUEST.json")
+                  request = json.loads(request_path.read_text())
+                  commit = request["freeze_commit"]
+                  if re.fullmatch(r"[0-9a-f]{40}", commit) is None:
+                      raise SystemExit("invalid frozen parent identity")
+                  parents = subprocess.check_output(["git", "show", "-s", "--format=%P", "HEAD"], text=True).split()
+                  if parents != [commit]:
+                      raise SystemExit("execution request must have the frozen commit as its sole parent")
+                  changed = subprocess.check_output(["git", "diff", "--name-only", commit, head], text=True).splitlines()
+                  if changed != [str(request_path)]:
+                      raise SystemExit("execution commit may only add the one-shot run request")
+                  evidence = Path(os.environ["RUNNER_TEMP"]) / "hepta-readout-risk-v2"
+                  evidence.mkdir()
+                  (evidence / "RUN_REQUEST.json").write_bytes(request_path.read_bytes())
+                  provenance = {
+                      "source_head": head, "freeze_commit": commit,
+                      "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+                      "freeze_sha256": hashlib.sha256(Path("experiments/first_passage_readout_risk/FREEZE.json").read_bytes()).hexdigest(),
+                      "run_id": os.environ["GITHUB_RUN_ID"], "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+                      "scope": "One registered diagnostic-head experiment; original multilayer confirmation remains 0/6.",
+                  }
+                  (evidence / "source-provenance.json").write_text(json.dumps(provenance, indent=2) + "\n")
+                  output.write(f"freeze_commit={commit}\n")
+          PY
+
+      - name: Set up the registered Python version
+        if: steps.request.outputs.requested == 'true'
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12.14"
+
+      - name: Install and record the registered numerical dependencies
+        if: steps.request.outputs.requested == 'true'
+        run: |
+          python -m pip install --requirement experiments/first_passage_readout_risk/requirements.txt \
+            --report "$RUNNER_TEMP/hepta-readout-risk-v2/pip-install-report.json"
+
+      - name: Check the registered risk calculations before opening data
+        if: steps.request.outputs.requested == 'true'
+        run: python -m unittest experiments.first_passage_readout_risk.test_math -v
+
+      - name: Execute the frozen design once and retain its scientific result
+        if: steps.request.outputs.requested == 'true'
+        env:
+          FREEZE_COMMIT: ${{ steps.request.outputs.freeze_commit }}
+        run: |
+          python -m experiments.first_passage_readout_risk.study execute \
+            --freeze-commit "$FREEZE_COMMIT" \
+            --output "$RUNNER_TEMP/hepta-readout-risk-v2/run" \
+            2>&1 | tee "$RUNNER_TEMP/hepta-readout-risk-v2/execute.log"
+
+      - name: Preserve the exact experiment artifact identities
+        if: always() && steps.request.outputs.requested == 'true'
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path(os.environ["RUNNER_TEMP"]) / "hepta-readout-risk-v2"
+          if not root.is_dir():
+              raise SystemExit("the requested experiment has no provenance directory")
+          manifest = {
+              str(path.relative_to(root)): {
+                  "bytes": path.stat().st_size,
+                  "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+              }
+              for path in sorted(root.rglob("*")) if path.is_file()
+          }
+          (root / "artifact-manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+          PY
+
+      - name: Upload the frozen experiment including failures
+        if: always() && steps.request.outputs.requested == 'true'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hepta-readout-risk-v2-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/hepta-readout-risk-v2
           if-no-files-found: error
           retention-days: 30

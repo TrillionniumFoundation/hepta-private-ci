@@ -45,7 +45,10 @@ async fn query_ids(
         /*search_term*/ None,
     )
     .await;
-    (ids, page.map(|page| page.items.into_iter().map(|item| item.id).collect()))
+    (
+        ids,
+        page.map(|page| page.items.into_iter().map(|item| item.id).collect()),
+    )
 }
 
 #[tokio::test]
@@ -64,8 +67,9 @@ async fn sqlite_home_alias_queries_the_bound_runtime_and_retargeting_is_rejected
     let rollout = root.path().join("rollout.jsonl");
     std::fs::write(&rollout, b"")?;
     let thread_id = ThreadId::new();
-    let metadata = ThreadMetadataBuilder::new(thread_id, rollout, Utc::now(), SessionSource::Cli)
+    let mut metadata = ThreadMetadataBuilder::new(thread_id, rollout, Utc::now(), SessionSource::Cli)
         .build("test-provider");
+    metadata.preview = Some("alias regression".to_string());
     runtime.upsert_thread(&metadata).await?;
     assert_eq!(
         query_ids(runtime.as_ref(), &requested).await,
