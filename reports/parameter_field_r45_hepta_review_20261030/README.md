@@ -35,3 +35,7 @@
 ## 后续执行时点
 
 [Execution04 续报：2026-10-30 00:24:34 EDT](CONTINUATION_STATUS_20261030.md)（[JSON](CONTINUATION_STATUS_20261030.json)）记录正式 launcher 已启动、supervisor 仍在初始资源准入、科学完成 0/14 与阶段 ACK 0/17，以及清理重现和自有文件驻留页排查。它是有明确时点的后续操作记录；本 README 上方及原评论/矩阵的历史观察时间、科学正文和判定规则保留。343,808 microsteps 仍是计划数，尚无本轮科学结果。
+
+## 终止与恢复续报
+
+[Execution04 终止记录（2026-10-30 01:47 EDT）](EXECUTION04_TERMINAL_FAILURE_20261030.md)（[JSON](EXECUTION04_TERMINAL_FAILURE_20261030.json)）记录实际完成 A-17、A-29 的原资源 guard 失败、1/14 任务和 1/17 阶段 ACK、完整失败归档的真实远端读回，以及独立 execution05 恢复边界。此前“0/14、初始准入”的段落是历史时点；最新状态以这份终止记录为准。P1–P5 全量结论仍待完成。

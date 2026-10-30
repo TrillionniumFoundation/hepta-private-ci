@@ -1,0 +1,72 @@
+{
+  "A17_gradient_microsteps": 39168,
+  "A29_failed_gradient_microsteps": 14784,
+  "A29_failed_optimizer_steps": 13728,
+  "accepted_stage_acks": 1,
+  "all_blockers_closed": false,
+  "commitments": {
+    "A17_ACK": "d7e9bcb25e6c665269980622fa7cff4e454134ef63699add94a5261c60d0e480",
+    "A17_ACK_VERIFIED": "e89c99e65a0723b46cacf18183f860b12e8c7d23ff8ccfd0c52126bbed354e57",
+    "A29_FAILED": "eedb52e2cc05c5fdcc8ed295f27954952730038cdc2851ca4d7e110562f7e0ec",
+    "forensics": "3aa1b9038061c26a7a39a7a4a83bb5b88cea28a9b9be4c4d6bb27a6350c718c5",
+    "outer_WAIT4": "1938e9d28ab7403a567f6359186afe25f9bd71024af71307cc293bacf89cea3d",
+    "supervisor_FAILED": "cf453c8e1a8e55d17b78834835f235a30f35875e665dca1b72d504372e924a24"
+  },
+  "completed_jobs": [
+    "A-17"
+  ],
+  "controller_exit_code": 1,
+  "controller_wait_status": 256,
+  "cost": {
+    "A29_unwaited_failed_stage_cpu_seconds": 1270.110275912,
+    "nested_costs_must_not_be_added_again": true,
+    "nonoverlapping_known_cpu_lower_bound": 4560.319171912,
+    "outer_waited_tree_cpu_seconds": 3290.208896,
+    "outer_wall_seconds": 6375.233694451,
+    "root_io_excluded": true,
+    "unmeasured_additional_costs_remain": true
+  },
+  "durable_failure_archive": {
+    "actual_remote_readback_bytes": 173153524,
+    "actual_remote_readback_items": 4,
+    "archive_bytes": 172768632,
+    "archive_sha256": "9e8a1e2eaacff1d6e0aefc8672f98a6a70c99a3186f0aae13573f095cee4fddb",
+    "logical_files": 720,
+    "readback_receipt_sha256": "2eff6678e6929b512214a18f12054df0b8f181ea461bb448529d8181d1fbb724"
+  },
+  "episode": "execution04_durable_20261030",
+  "error_message": "Registered cgroup margin/pending-growth reserve exhausted",
+  "error_type": "MemoryError",
+  "event_utc": "2026-10-30T05:47:05Z",
+  "is_primary_completion": false,
+  "known_episode_gradient_microsteps": 53952,
+  "next_episode": {
+    "A29_whole_job_rerun_required": true,
+    "identity": "execution05_backpressure_20261030",
+    "old_scientific_thresholds_unchanged": true,
+    "planned_imported_jobs": [
+      "A-17"
+    ],
+    "planned_remaining_microsteps": 304640,
+    "science_started": false,
+    "scientific_retry_automatic": false,
+    "source_freeze_complete": false
+  },
+  "oom_before_and_after": 4,
+  "oom_kill_before_and_after": 4,
+  "original_owned_processes_absent": true,
+  "planned_jobs": 14,
+  "planned_stage_acks": 17,
+  "schema": "hepta.public.execution04-terminal-failure.1",
+  "status": "FAILED",
+  "executor_continuity": {
+    "observation_utc": "2026-10-30T11:52:45Z",
+    "prior_workspace_unavailable": true,
+    "source_commit_restored": "6b9353d8fd5ba2d05346afb0772dc49daa6038bd",
+    "failure_archive_files_actually_restored": 4,
+    "restored_bytes": 173153524,
+    "all_four_original_hashes_match": true,
+    "unpublished_code_requires_reconstruction_and_retesting": true,
+    "science_started_after_interruption": false
+  }
+}
