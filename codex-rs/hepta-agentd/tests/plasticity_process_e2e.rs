@@ -42,7 +42,7 @@ use support::fleet::FleetHarness;
 const Q24: i64 = 1_i64 << 24;
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("stable id")
+    StableId::new(value).unwrap_or_else(|error| panic!("stable id {value}: {error:?}"))
 }
 
 fn digest(value: &str) -> Digest32 {
@@ -50,7 +50,7 @@ fn digest(value: &str) -> Digest32 {
 }
 
 fn generation(value: u64) -> Generation {
-    Generation::new(value).expect("generation")
+    Generation::new(value).unwrap_or_else(|error| panic!("generation {value}: {error:?}"))
 }
 
 fn new_rw(path: &Path) -> std::fs::File {
@@ -59,7 +59,7 @@ fn new_rw(path: &Path) -> std::fs::File {
         .read(true)
         .write(true)
         .open(path)
-        .expect("create owner file")
+        .unwrap_or_else(|error| panic!("create owner file {}: {error:?}", path.display()))
 }
 
 fn policy_manifest(

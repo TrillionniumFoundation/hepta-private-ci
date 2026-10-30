@@ -51,6 +51,15 @@ pub(crate) struct FleetHarness {
 
 impl FleetHarness {
     pub(crate) fn new() -> Result<Self> {
+        // Product tests bind real Unix sockets. Darwin's default temporary
+        // path can exhaust SUN_LEN before the compact control name is added.
+        #[cfg(unix)]
+        let temporary_parent = std::fs::canonicalize("/tmp")?;
+        #[cfg(unix)]
+        let temp = tempfile::Builder::new()
+            .prefix("haf-")
+            .tempdir_in(temporary_parent)?;
+        #[cfg(not(unix))]
         let temp = tempfile::tempdir()?;
         let root = temp.path().canonicalize()?;
         let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;

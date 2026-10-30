@@ -1,0 +1,32 @@
+{
+  "schema": "hepta.agentd-integration-fixtures.v1",
+  "evidence_commit": "738a00959b869a4cdd4730109b4ff60c9340f106",
+  "evidence_job": 124198476695,
+  "evidence_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41092882861/job/124198476695",
+  "actual_failures": [
+    "Many real-agent integration cases stop before intended oracle with path must be shorter than SUN_LEN at actual control-socket bind under canonical /private/var/folders temporary roots.",
+    "Both signed kernel recovery cases also refuse noncanonical external frontier files.",
+    "AuthBus product case refuses the noncanonical external replay checkpoint parent.",
+    "clean_agent_recall_replay_training_load_and_source_withdrawal opens a CognitiveStore using an uncanonicalized TempDir root and fails the canonical-owner guard."
+  ],
+  "changes": [
+    "FleetHarness chooses a short physical parent by canonicalizing /tmp before allocating its owned TempDir on Unix. The same TempDir remains retained by the harness. Non-Unix uses the existing default TempDir. Real binaries, control sockets and process ownership behavior are unchanged.",
+    "write_recovery_frontier canonicalizes its existing external directory before writing signed frontier and trust files. It does not change signatures, evidence anchor, rollback checks or directory permissions.",
+    "AuthBus checkpoint path canonicalizes its existing private parent before appending the filename.",
+    "The terminal-cell fixture canonicalizes its existing TempDir before constructing a fleet layout. No neuron training/model/result change."
+  ],
+  "validation": {
+    "just_fmt": 127,
+    "just_test_affected_integrations": 127,
+    "just_fix_hepta_agentd": 127,
+    "reason": "just executable unavailable",
+    "native": "pending exact new-source CI"
+  },
+  "unchanged_contracts": [
+    "All lifecycle/readiness and negative security assertions.",
+    "All test timeouts, retry policies, ignore flags and native executable choice.",
+    "Production canonical-path validation and SUN_LEN behavior.",
+    "Original scientific confirmations."
+  ],
+  "remaining": "These fixes allow intended product oracles to execute. They do not certify those oracles in advance or address independent cognitive writer anchor mismatches."
+}

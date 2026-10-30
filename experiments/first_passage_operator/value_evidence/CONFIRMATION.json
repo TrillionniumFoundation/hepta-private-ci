@@ -1,0 +1,58 @@
+{
+  "schema": "hepta.value-learning.confirmation.v1",
+  "freeze_sha256": "901f5e7e315e6786897af21da45370f290aa9e287d1055e40d8dde765190b685",
+  "rows": 1024,
+  "reference_files": [
+    {
+      "path": "value_evidence/confirmation/part-000.npz",
+      "sha256": "ef8a599998d116648e1baac921eb2082c34dcac10bb00e34adc427182e08c78e",
+      "bytes": 135785
+    },
+    {
+      "path": "value_evidence/confirmation/part-001.npz",
+      "sha256": "23e88f2902061f707fd00b52c79cb6b6b71548f3599f042c706dbccdd7e43193",
+      "bytes": 135234
+    }
+  ],
+  "max_reference_mass_quadrature_defect": 2.220446049250313e-16,
+  "results": [
+    {
+      "seed": 3109,
+      "moment_rmse": 0.01821201323718602,
+      "maximum_absolute_moment_error": 0.26825687193633474,
+      "value_rmse_unit_l2_payoff": 0.018972245955844003,
+      "maximum_absolute_value_error": 0.31235077033973213,
+      "max_discounted_mass_defect": 1.1102230246251565e-16,
+      "mean_transition_total_variation": 0.045502631826365866,
+      "maximum_transition_total_variation": 0.5101403805583358,
+      "finite_outputs": true,
+      "gate_passed": true
+    },
+    {
+      "seed": 3119,
+      "moment_rmse": 0.02002736391169894,
+      "maximum_absolute_moment_error": 0.3223948134793428,
+      "value_rmse_unit_l2_payoff": 0.021917160401239737,
+      "maximum_absolute_value_error": 0.3950929404391349,
+      "max_discounted_mass_defect": 2.220446049250313e-16,
+      "mean_transition_total_variation": 0.051702893701154495,
+      "maximum_transition_total_variation": 0.5864147462710965,
+      "finite_outputs": true,
+      "gate_passed": true
+    },
+    {
+      "seed": 3121,
+      "moment_rmse": 0.019987064044423034,
+      "maximum_absolute_moment_error": 0.2882902401859062,
+      "value_rmse_unit_l2_payoff": 0.020914082680608053,
+      "maximum_absolute_value_error": 0.3259848049987578,
+      "max_discounted_mass_defect": 2.220446049250313e-16,
+      "mean_transition_total_variation": 0.046629581817030114,
+      "maximum_transition_total_variation": 0.5365728080562211,
+      "finite_outputs": true,
+      "gate_passed": true
+    }
+  ],
+  "all_passed": true,
+  "scope": "Heldout finite context domain; positivity/mass constraints do not prove learned semigroup or Bellman convergence."
+}

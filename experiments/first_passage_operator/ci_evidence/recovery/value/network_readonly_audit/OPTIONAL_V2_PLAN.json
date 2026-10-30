@@ -1,0 +1,97 @@
+{
+  "schema": "hepta.readout-risk.v2-proposal.v1",
+  "status": "proposal_only_not_registered_not_executed",
+  "authorization": "No data generation, feature extraction, model execution, head fitting, confirmation access or additional sweep is authorized merely by this proposal file.",
+  "relationship_to_original": "The original confirmation remains 0/6. Reusing all three frozen order-task encoders is deliberate conditioning, not three new training replications. Original source, weights, data, metrics and results remain unchanged.",
+  "one_mechanism": "The effect of fitting a linear diagnostic head to mean noisy features rather than to the mean single-rollout binary cross entropy on the same cached noisy features.",
+  "why_limited": "Jensen convexity explains why the two objectives differ but does not guarantee out-of-sample improvement after fitting. The native head already used a single-rollout BCE objective during joint training; this proposal therefore tests a diagnostic explanation, not a correction of the original native-head objective or upstream surrogate.",
+  "frozen_encoder_checkpoints": [
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_order_first_passage_3109.json",
+      "sha256": "4c5fb914b29c0777c8ae9f8bfc00509b954c98c658494ee21a75c715f5bc5445",
+      "seed": 3109
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_order_first_passage_3163.json",
+      "sha256": "a48c572cded49d7d2a82884fac9fbdd1d9b6cbbc3f8e8f94775c01b9c939ef78",
+      "seed": 3163
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_order_first_passage_3203.json",
+      "sha256": "dd28b55b5c3a229e9bff441bad1a1c19c455be34202b51a8753ac069befdaa50",
+      "seed": 3203
+    }
+  ],
+  "before_any_execution": [
+    "Publish a separate immutable protocol, implementation/source/dependency hashes, exact numeric settings, input generator contract and output path manifest.",
+    "Generate no new train/development/confirmation identities until that freeze exists. Use the new namespace below and record SHA-derived stream seeds and dataset/trace hashes.",
+    "Retain all three encoders; select none based on new or old confirmation. The v2 implementation must read their weights without modifying them.",
+    "Verify cached final three-dimensional traces reproduce the original network's final affine score on fixed diagnostic inputs; this is an implementation check, not a parameter-selection step."
+  ],
+  "identity_namespace": "hepta.network.readout-risk.v2.20261030",
+  "identity_keys": "SHA256(namespace | role | encoder_seed | example_index | rollout_index); roles distinguish train/development/confirmation and input/trajectory randomness. Never use original study data or original named RNG streams.",
+  "task": "order only, using the frozen task distribution and explicit one-segment transmission contract",
+  "features": "Final second-layer 3-dimensional decaying count trace from each frozen encoder; no extra trajectory-history inputs, membrane readout, feature engineering, state aggregation at deployment or encoder adaptation.",
+  "budget": {
+    "encoders": 3,
+    "heads_per_encoder": 2,
+    "parameters_per_head": 4,
+    "train_examples_per_encoder": 256,
+    "train_rollouts_per_example": 16,
+    "development_examples_per_encoder": 128,
+    "development_rollouts_per_example": 16,
+    "confirmation_examples_per_encoder": 256,
+    "confirmation_rollouts_per_example": 32,
+    "total_encoder_trajectory_evaluations": 43008,
+    "total_deterministic_head_fits": 6,
+    "development_role": "Descriptive diagnostics only; no early stopping, head selection, hyperparameter tuning or confirmation promotion."
+  },
+  "shared_preprocessing": {
+    "fit_scope": "For each encoder, pool only its cached training examples and rollouts.",
+    "location": "Per-feature mean of pooled training traces.",
+    "scale": "max(per-feature population standard deviation of pooled training traces, 1e-8).",
+    "same_for_both_heads": true
+  },
+  "arms": [
+    {
+      "name": "mean_feature_head",
+      "objective": "mean_i BCE(y_i, w^T mean_r Z_ir + b) + (0.001/2)*||w||_2^2"
+    },
+    {
+      "name": "single_rollout_risk_head",
+      "objective": "mean_i mean_r BCE(y_i, w^T Z_ir + b) + (0.001/2)*||w||_2^2"
+    }
+  ],
+  "optimizer_proposal": {
+    "method": "float64 deterministic L-BFGS-B with analytic gradients",
+    "initial_parameters": "all four coefficients zero",
+    "maxiter": 200,
+    "maxls": 40,
+    "maxfun": 10000,
+    "gtol": 1e-08,
+    "ftol": 1e-12,
+    "regularization": "Same coefficient 0.001 on three standardized-feature weights; intercept unpenalized.",
+    "stable_loss": "logaddexp(0,score) - label*score; no prediction clipping changes to the target risk.",
+    "numerical_acceptance": "Each final objective and gradient is finite and infinity-norm gradient <= 1e-6. If an arm fails, retain the failure and mark the mechanistic comparison numerically incomplete; do not increase the cap after seeing confirmation.",
+    "version_rule": "Exact Python/NumPy/SciPy versions and BLAS thread count must be fixed in the execution protocol before any feature generation. This proposal selects no versions or fitted parameters."
+  },
+  "confirmation": {
+    "primary_estimand": "Expected single-rollout BCE of the mean-feature-fitted head minus that of the risk-fitted head, averaged equally across the three frozen encoders.",
+    "paired_observations": "Both heads are evaluated on identical cached confirmation traces and labels. Average 32 losses within an example before inference; do not treat the 32 rollouts as independent examples.",
+    "bootstrap": "4000 registered replicas: sample three encoder indices with replacement, then paired complete examples within each selected encoder. Preserve all within-example repeats.",
+    "bootstrap_seed_namespace": "hepta.network.readout-risk.v2.20261030|bootstrap",
+    "empirical_lower_quantile": 0.05,
+    "proposed_practical_margin_nats": 0.02,
+    "single_gate": "Empirical lower endpoint exceeds 0.02 and all three encoder-specific means are positive.",
+    "coverage_limit": "An empirical resampling summary conditional on three already-selected frozen encoders; not a population coverage guarantee, new training-seed robustness result or universal superiority statement.",
+    "descriptive_only": "The original native head may be evaluated on the same fresh traces as a predeclared reference, with no additional gate or post-hoc selection."
+  },
+  "cost_accounting": "Cache generation is shared by both arms; report its measured wall time/event counts separately from optimizer iterations and head fitting time. Deployed prediction uses one trajectory. Confirmation repeats estimate expected risk; they are not an ensemble policy.",
+  "claims_allowed_if_passed": "For these three frozen order-task representations and this bounded fresh-data experiment, fitting the diagnostic head to single-rollout risk improved that risk relative to fitting to mean features by the proposed margin.",
+  "claims_not_allowed": [
+    "The original native network was repaired or original confirmation gates now pass.",
+    "The upstream straight-through estimator is unbiased or the encoder learned optimally.",
+    "The method beats LIF/RNN across tasks, is compute-optimal, or has optimal coupled-neuron firing boundaries."
+  ],
+  "finite_stop_rule": "Run the frozen design once. Report pass, negative result or numerical incompleteness with all six heads and all three encoders. Do not add repeats, choose a subset of encoders, lower the margin, switch to ensemble loss or start a width/optimizer sweep to obtain a pass. Any subsequent study is a distinct research question with fresh preregistration."
+}

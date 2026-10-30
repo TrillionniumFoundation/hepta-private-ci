@@ -1,0 +1,52 @@
+{
+  "additional_checks": [
+    "Exact refractory hold, release and remaining duration",
+    "Immediate absorption before zero-duration terminal observation",
+    "Infinite active-tail mass retained",
+    "Coarse-bin probabilities equal sums of refined bins"
+  ],
+  "findings": [
+    {
+      "finding": "At distance=0,horizon=0 the initial branch returned active first bin before dispatching absorption.",
+      "repair": "Dispatch immediate absorption before zero-horizon observation; terminal state is reset with full refractory clock.",
+      "verification": "Failing regression reproduced before repair; exact state equality passes after repair."
+    },
+    {
+      "finding": "Malformed partitions and negative standalone bin states lacked deliberate validation.",
+      "repair": "Require one-dimensional finite strictly increasing partitions with full active infinite tail and refractory [0,1] coverage; validate nonnegative distance and legal finite clock.",
+      "verification": "Five malformed partitions and two invalid clock/state examples rejected."
+    },
+    {
+      "finding": "Per-bin tolerance allowed cumulative negative-roundoff removal above the advertised row budget; comment called these negative zeros.",
+      "repair": "Bound total removed negative mass by2e-10, do not normalize, and require final row-mass deviation<=4e-10.",
+      "verification": "Independent valid cases have nonnegative probabilities and unit mass within1e-11."
+    }
+  ],
+  "independent_integration": {
+    "active_edges": [
+      0,
+      0.2,
+      0.5,
+      1,
+      2,
+      "infinity"
+    ],
+    "cases": 4,
+    "reference": "Direct event-time integration of independent normal killed-CDF expressions, rather than the production strong-Markov difference. Inverse-Gaussian event tails give a total omitted reference bound below1e-12.",
+    "refractory_edges": [
+      0,
+      0.25,
+      0.5,
+      1
+    ],
+    "result": "passed",
+    "tolerance": {
+      "absolute": 2e-10,
+      "relative": 2e-08
+    }
+  },
+  "label_impact": "Registered train/development states have positive distance and positive horizon; valid-input formulas and probabilities are unchanged. No source-frozen first_passage_cell file was edited.",
+  "schema": "hepta.regenerative-operator.markov-independent-audit.v1",
+  "source_sha256": "596f73c070a1b837b630608a5c079f83f4329977d576a4a5e3b0f536f8be4968",
+  "test_sha256": "3d5b89f1091f5aad7230fc1a65f8a431bd6bfccbbb852f8f6fee6766660b0e90"
+}

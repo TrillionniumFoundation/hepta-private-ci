@@ -1,0 +1,27 @@
+test_keyed_cross_query_and_payload_do_not_select_native_cc (test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_keyed_cross_query_and_payload_do_not_select_native_cc) ... ok
+test_keyed_native_defaults_precede_explicit_compiler_override (test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_keyed_native_defaults_precede_explicit_compiler_override) ... ERROR
+test_keyed_native_msvc_uses_matching_cc_and_preserves_remote_cache (test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_keyed_native_msvc_uses_matching_cc_and_preserves_remote_cache) ... FAIL
+test_native_msvc_does_not_duplicate_explicit_toolchain_flags (test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_native_msvc_does_not_duplicate_explicit_toolchain_flags) ... ok
+test_native_msvc_keeps_target_and_injects_matching_cc_toolchain (test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_native_msvc_keeps_target_and_injects_matching_cc_toolchain) ... ok
+
+======================================================================
+ERROR: test_keyed_native_defaults_precede_explicit_compiler_override (test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_keyed_native_defaults_precede_explicit_compiler_override)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/.github/scripts/test_run_bazel_native_msvc_toolchain.py", line 44, in test_keyed_native_defaults_precede_explicit_compiler_override
+    args.index("--extra_toolchains=//:local_windows_msvc_cc_toolchain"),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: '--extra_toolchains=//:local_windows_msvc_cc_toolchain' is not in list
+
+======================================================================
+FAIL: test_keyed_native_msvc_uses_matching_cc_and_preserves_remote_cache (test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_keyed_native_msvc_uses_matching_cc_and_preserves_remote_cache)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/.github/scripts/test_run_bazel_native_msvc_toolchain.py", line 26, in test_keyed_native_msvc_uses_matching_cc_and_preserves_remote_cache
+    self.assertIn("--extra_toolchains=//:local_windows_msvc_cc_toolchain", args)
+AssertionError: '--extra_toolchains=//:local_windows_msvc_cc_toolchain' not found in ['--output_user_root=C:/bazel-cache', 'test', '--config=buildbuddy-generic', '--remote_header=x-buildbuddy-api-key=test-only-token', '--config=ci-windows', '--host_platform=//:local_windows_msvc', '--platforms=//:windows_x86_64_msvc', '--', '//fake:target']
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.001s
+
+FAILED (failures=1, errors=1)

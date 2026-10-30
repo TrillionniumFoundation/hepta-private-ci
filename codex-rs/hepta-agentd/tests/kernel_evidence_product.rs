@@ -680,7 +680,8 @@ fn base_evidence(
 ) -> QualificationEvidenceEnvelopeV1 {
     QualificationEvidenceEnvelopeV1 {
         schema_version: 1,
-        evidence_id: EvidenceId::parse(id).expect("evidence id"),
+        evidence_id: EvidenceId::parse(id)
+            .unwrap_or_else(|error| panic!("evidence id {id}: {error:?}")),
         candidate,
         claim_class,
         receipt_kind: EvidenceReceiptKindV1::Evidence,
@@ -724,7 +725,8 @@ fn independent_decision(
         issuer_role,
         observed,
         Some(expires),
-        serde_json::to_value(receipt).expect("decision payload"),
+        serde_json::to_value(receipt)
+            .unwrap_or_else(|error| panic!("decision payload {id}: {error:?}")),
     )
 }
 
@@ -801,6 +803,7 @@ fn write_recovery_frontier(
     store_id: &str,
     snapshot: codex_hepta_evidence::EvidenceRecoverySnapshotV1,
 ) -> Result<(std::path::PathBuf, std::path::PathBuf)> {
+    let directory = directory.canonicalize()?;
     let signer_key = SigningKey::from_bytes(&[63; 32]);
     let mut frontier = EvidenceRecoveryFrontierV1 {
         schema_version: 1,

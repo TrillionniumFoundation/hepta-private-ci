@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.native-test-receipt.v1",
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-async-utils",
+    "--lib",
+    "--locked"
+  ],
+  "cwd": "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs",
+  "claim": "Fresh reconstructed source test; no result inherited from the lost environment.",
+  "status": "completed",
+  "source_sha256": {
+    "codex-rs/async-utils/Cargo.toml": "719b0705bd3b6530c146da4b91d1decb08f12167d328053eea7884283de4e5f2",
+    "codex-rs/async-utils/src/lib.rs": "a47c6a7eaf527e65655ff77ccbf640338425f8901746d2889ee6088b4f9add9e",
+    "codex-rs/async-utils/src/coalescing_wake.rs": "71bad337212896a43874423981df4a80011f013629afd85f56f5104be9714073",
+    "codex-rs/async-utils/src/coalescing_wake_tests.rs": "f4ae97e7967a677704ebd04fc5380020498f645d17d1958c92d593143f044272",
+    "codex-rs/Cargo.toml": "0e3fc0b7dc3ec907e02059a1bc79579077c8e5d1a0ac936b4f1bd984e94afdb4",
+    "codex-rs/Cargo.lock": "a3e787d1e6608e1479c4a2402490ebc4073df86e877aba2603f294b1edd78982",
+    "justfile": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+    "scripts/run-nextest.py": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+  },
+  "exit_code": 0,
+  "elapsed_seconds": 11.31167147899987,
+  "root_lock_after_sha256": "a3e787d1e6608e1479c4a2402490ebc4073df86e877aba2603f294b1edd78982",
+  "log_sha256": "7f6202121773645402e1873f7fb3483145d5f32368aea348694a67a55cc23cb7"
+}

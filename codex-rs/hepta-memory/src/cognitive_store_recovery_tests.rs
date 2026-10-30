@@ -258,6 +258,80 @@ async fn writable_recovery_requires_exclusive_store_fence() {
 }
 
 #[tokio::test]
+async fn close_drains_sqlite_but_keeps_live_clone_fence_until_drop() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(/*suffix*/ 89);
+    let (store, _, _) = seeded(&temp, &owner).await;
+    let anchor = store.recovery_anchor().await.expect("current witness");
+    let recovery_layout = codex_hepta_paths::HeptaFleetRoot::parse(
+        temp.path()
+            .join("fleet")
+            .canonicalize()
+            .expect("canonical fleet"),
+    )
+    .expect("fleet identity")
+    .layout()
+    .agent(&owner);
+    let surviving = store.clone();
+    let connection = store
+        .pool
+        .acquire()
+        .await
+        .expect("active SQLite connection");
+    {
+        let close = store.close();
+        tokio::pin!(close);
+        assert!(
+            futures::poll!(close.as_mut()).is_pending(),
+            "close must wait for a checked-out connection"
+        );
+        drop(connection);
+        close.await;
+    }
+    assert!(surviving.pool.is_closed());
+    drop(store);
+
+    let authority = recovery_authority(&owner);
+    assert!(matches!(
+        CognitiveStore::open_with_recovery(
+            &recovery_layout,
+            CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+            &authority,
+            &RecoveryVerifier,
+        )
+        .await,
+        Err(CognitiveRecoveryError::Unavailable(message))
+            if message.contains("cannot fence active store handles")
+    ));
+    drop(surviving);
+
+    let recovery = CognitiveStore::open_with_recovery(
+        &recovery_layout,
+        CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+        &authority,
+        &RecoveryVerifier,
+    )
+    .await;
+    #[cfg(unix)]
+    {
+        let recovered = recovery.expect("drained store with no live owner handle can recover");
+        assert_eq!(
+            recovered
+                .recovery_anchor()
+                .await
+                .expect("recovered witness"),
+            anchor
+        );
+        recovered.close().await;
+    }
+    #[cfg(not(unix))]
+    assert!(
+        matches!(recovery, Err(CognitiveRecoveryError::Indeterminate(_))),
+        "draining does not add descriptor-bound recovery on an unsupported platform"
+    );
+}
+
+#[tokio::test]
 async fn predecessor_witness_is_rejected_and_current_witness_recovers() {
     let temp = TempDir::new().expect("temp dir");
     let owner = agent_id(92);

@@ -1,6 +1,9 @@
 use std::future::Future;
 use tokio_util::sync::CancellationToken;
 
+mod coalescing_wake;
+pub use coalescing_wake::CoalescingWake;
+
 #[derive(Debug, PartialEq, Eq)]
 pub enum CancelErr {
     Cancelled,

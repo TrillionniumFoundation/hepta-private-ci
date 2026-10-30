@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "kind": "fresh read-only source/metadata inspection, not build or runtime validation",
+  "historical_head": "6396bc013fdb16a955cced8a746e27279311361c",
+  "historical_metadata_sha256": "4f550b1d1a3e9892e9dc84d0505b1bfcfa3a305a873a90c57adce7b83288ca05",
+  "historical_external_package_aliases": [
+    {
+      "package": "codex-core-plugins",
+      "dependency": "serde_norway",
+      "rename": "serde_yaml",
+      "kind": null,
+      "target": null,
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "package": "codex-skills",
+      "dependency": "serde_norway",
+      "rename": "serde_yaml",
+      "kind": null,
+      "target": null,
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "package": "codex-skills-extension",
+      "dependency": "serde_norway",
+      "rename": "serde_yaml",
+      "kind": null,
+      "target": null,
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "package": "codex-external-agent-migration",
+      "dependency": "serde_norway",
+      "rename": "serde_yaml",
+      "kind": null,
+      "target": null,
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    }
+  ],
+  "generated_six_vendor_graph_sha256": "b9fa427f3319a757118d66bf20df6561006d28ea5b7c1eb3e0a92b8655739810",
+  "generated_six_vendor_graph_verified": true,
+  "source_change": "Forward generated alias mappings only for labels in the unconditional normal external dependency bucket; no build/dev/target bucket or first-party replacement injection.",
+  "reconstructed_defs_sha256": "c0eb2bb588465f817764d201565338d521b01679d34ef1c37636b22ec1a775e1",
+  "limitations": [
+    "No new Bazel analysis, Rust compilation, or native Mac/Windows test was performed.",
+    "The recovered vendor graph does not contain the new first-party rule instantiations.",
+    "New CI must validate the alias repair and path fixtures."
+  ]
+}

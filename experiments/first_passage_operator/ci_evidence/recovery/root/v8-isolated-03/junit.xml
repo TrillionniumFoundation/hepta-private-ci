@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="7" failures="0" errors="0" uuid="1a6df837-b99c-4223-98bc-bbb6591d688a" timestamp="2026-10-30T10:26:17.258+09:00" time="0.052">
+    <testsuite name="codex-v8-poc" tests="7" disabled="0" errors="0" failures="0">
+        <testcase name="tests::exposes_embedded_v8_version" classname="codex-v8-poc" timestamp="2026-10-30T10:26:17.261+09:00" time="0.012">
+        </testcase>
+        <testcase name="tests::parses_crdtp_dispatchable_messages" classname="codex-v8-poc" timestamp="2026-10-30T10:26:17.261+09:00" time="0.016">
+        </testcase>
+        <testcase name="tests::exposes_expected_bazel_target" classname="codex-v8-poc" timestamp="2026-10-30T10:26:17.261+09:00" time="0.016">
+        </testcase>
+        <testcase name="tests::sandbox_feature_matches_linked_v8" classname="codex-v8-poc" timestamp="2026-10-30T10:26:17.261+09:00" time="0.017">
+        </testcase>
+        <testcase name="tests::evaluates_string_concatenation" classname="codex-v8-poc" timestamp="2026-10-30T10:26:17.261+09:00" time="0.028">
+        </testcase>
+        <testcase name="tests::evaluates_integer_addition" classname="codex-v8-poc" timestamp="2026-10-30T10:26:17.261+09:00" time="0.031">
+        </testcase>
+        <testcase name="parallel_initialization_tests::parallel_isolates_allocate_backing_stores_after_initialization" classname="codex-v8-poc" timestamp="2026-10-30T10:26:17.261+09:00" time="0.048">
+        </testcase>
+    </testsuite>
+</testsuites>

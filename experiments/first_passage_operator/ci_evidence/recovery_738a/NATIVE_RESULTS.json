@@ -1,0 +1,609 @@
+{
+  "archives": [
+    {
+      "artifact_id": 12994881537,
+      "bytes": 64624,
+      "commands": [
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-utils-path",
+            "-p",
+            "codex-hepta-prompt-registry",
+            "-p",
+            "codex-hepta-contracts",
+            "--lib",
+            "--locked"
+          ],
+          "exit_code": 0,
+          "log": "command-1.log"
+        },
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-utils-pty",
+            "--lib",
+            "--locked",
+            "--success-output",
+            "immediate"
+          ],
+          "exit_code": 1,
+          "log": "command-2.log"
+        },
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-intelligence",
+            "-p",
+            "codex-hepta-prompt-optimizer",
+            "-p",
+            "codex-hepta-operator-acceptance",
+            "-p",
+            "codex-hepta-shadow-qualification",
+            "--lib",
+            "--locked"
+          ],
+          "exit_code": 0,
+          "log": "command-3.log"
+        },
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-v8-poc",
+            "--lib",
+            "--features",
+            "sandbox",
+            "--locked"
+          ],
+          "exit_code": 0,
+          "log": "command-4.log"
+        },
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-windows-sandbox",
+            "-p",
+            "codex-code-mode-runtime",
+            "--lib",
+            "--locked"
+          ],
+          "exit_code": 1,
+          "log": "command-5.log"
+        },
+        {
+          "argv": [
+            "just",
+            "fix",
+            "-p",
+            "codex-hepta-contracts",
+            "-p",
+            "codex-hepta-intelligence",
+            "-p",
+            "codex-hepta-operator-acceptance",
+            "-p",
+            "codex-hepta-shadow-qualification",
+            "-p",
+            "codex-v8-poc",
+            "-p",
+            "codex-windows-sandbox",
+            "-p",
+            "codex-code-mode-runtime",
+            "--features",
+            "codex-v8-poc/sandbox",
+            "--locked",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exit_code": 0,
+          "log": "command-6.log"
+        }
+      ],
+      "junit_reports": [
+        {
+          "errors": 0,
+          "failed_case_names": [],
+          "failures": 0,
+          "member": "command-1-junit/0/local/junit.xml",
+          "skipped_cases_in_xml": 0,
+          "suite": "codex-hepta-contracts",
+          "tests": 129
+        },
+        {
+          "errors": 0,
+          "failed_case_names": [],
+          "failures": 0,
+          "member": "command-1-junit/0/local/junit.xml",
+          "skipped_cases_in_xml": 0,
+          "suite": "codex-hepta-prompt-registry",
+          "tests": 30
+        },
+        {
+          "errors": 0,
+          "failed_case_names": [],
+          "failures": 0,
+          "member": "command-1-junit/0/local/junit.xml",
+          "skipped_cases_in_xml": 0,
+          "suite": "codex-utils-path",
+          "tests": 11
+        },
+        {
+          "errors": 0,
+          "failed_case_names": [
+            "tests::windows_tests::conpty_ctrl_c_interrupts_powershell_foreground_child"
+          ],
+          "failures": 1,
+          "member": "command-2-junit/0/local/junit.xml",
+          "skipped_cases_in_xml": 0,
+          "suite": "codex-utils-pty",
+          "tests": 25
+        },
+        {
+          "errors": 0,
+          "failed_case_names": [],
+          "failures": 0,
+          "member": "command-3-junit/0/local/junit.xml",
+          "skipped_cases_in_xml": 0,
+          "suite": "codex-hepta-intelligence",
+          "tests": 78
+        },
+        {
+          "errors": 0,
+          "failed_case_names": [],
+          "failures": 0,
+          "member": "command-3-junit/0/local/junit.xml",
+          "skipped_cases_in_xml": 0,
+          "suite": "codex-hepta-operator-acceptance",
+          "tests": 26
+        },
+        {
+          "errors": 0,
+          "failed_case_names": [],
+          "failures": 0,
+          "member": "command-3-junit/0/local/junit.xml",
+          "skipped_cases_in_xml": 0,
+          "suite": "codex-hepta-prompt-optimizer",
+          "tests": 32
+        },
+        {
+          "errors": 0,
+          "failed_case_names": [],
+          "failures": 0,
+          "member": "command-3-junit/0/local/junit.xml",
+          "skipped_cases_in_xml": 0,
+          "suite": "codex-hepta-shadow-qualification",
+          "tests": 33
+        },
+        {
+          "errors": 0,
+          "failed_case_names": [],
+          "failures": 0,
+          "member": "command-4-junit/0/local/junit.xml",
+          "skipped_cases_in_xml": 0,
+          "suite": "codex-v8-poc",
+          "tests": 7
+        },
+        {
+          "errors": 0,
+          "failed_case_names": [],
+          "failures": 0,
+          "member": "command-5-junit/0/local/junit.xml",
+          "skipped_cases_in_xml": 0,
+          "suite": "codex-code-mode-runtime",
+          "tests": 68
+        },
+        {
+          "errors": 0,
+          "failed_case_names": [
+            "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+            "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+            "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+            "unified_exec::tests::legacy_capture_cancellation_terminates_descendants_without_timeout",
+            "unified_exec::tests::legacy_capture_emits_output_and_preserves_descendant_after_normal_exit",
+            "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+            "unified_exec::tests::legacy_non_tty_powershell_interrupt_terminates_process",
+            "unified_exec::tests::legacy_tty_job_terminates_and_preserves_descendants",
+            "unified_exec::tests::legacy_tty_powershell_emits_output_and_accepts_input",
+            "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
+          ],
+          "failures": 10,
+          "member": "command-5-junit/0/local/junit.xml",
+          "skipped_cases_in_xml": 0,
+          "suite": "codex-windows-sandbox",
+          "tests": 152
+        }
+      ],
+      "manifest_members_verified": 16,
+      "path": "experiments/first_passage_operator/ci_evidence/recovery_738a/windows35c9.original.zip",
+      "source_provenance": {
+        "input_sha256": {
+          ".bazelversion": "0de84bea2c72a4e54444f9fdf93e84d046f78d3af33f44cf01ae433634369980",
+          ".github/workflows/hepta-operator-diagnostics.yml": "8b62ef1e459495dc1105de95a9aaf271233f9362fafeb832748e829453299ef9",
+          "MODULE.bazel": "62feac95cd51985e9b00087e8803e9aa292a8c9e28b735c78a6fabca5de4188a",
+          "MODULE.bazel.lock": "12da0026d5f27c355aa4c2e5257afca5d2f96e282ea1bff63a471fa8590852f6",
+          "codex-rs/Cargo.lock": "7e97d9e53fcd41f1646b4fadce4674b357edefd6b4f38cfa691d46e0c74768c4",
+          "codex-rs/Cargo.toml": "b61ebbb5fe5dbff5ee166e29802626520ee7b49ba8598f664798b3094674b40f",
+          "codex-rs/deny.toml": "c07ae3102c69cb0b4de756ae7e21a90f30acf483c75a3366f7142099c20e40ce",
+          "experiments/first_passage_deadline/requirements.txt": "fdf15f8e56a3349c4cf3a05e4d073f03512a65deff2383767a4eaed1c445310f",
+          "experiments/first_passage_operator/requirements.txt": "af0f6cd0ed1192b5c1eb55269c6cc3a92618cabd43a663a0cf32c7a5a59e7c72",
+          "justfile": "325e27adeb9034ffbabf4a7c6245447fc65c496365ddacc16eb1c80ca4636b3e"
+        },
+        "lane": "windows-private-state",
+        "research_command_scope": "unit tests only; no confirmation run",
+        "run_attempt": "1",
+        "run_id": "41089406109",
+        "source_head": "35c9ff15f6759b024459a14eaa39a5e5a3a65edf",
+        "source_tree": "e8581cdcaef7af64e7eeef1e56482410a7808fc0"
+      },
+      "zip_sha256": "8bd766c8f03fc5f8f91522d009f118b38377731a68bb840a8bcdc748760da39f"
+    },
+    {
+      "artifact_id": 12994985006,
+      "bytes": 5305,
+      "commands": [
+        {
+          "argv": [
+            "just",
+            "fmt",
+            "--all"
+          ],
+          "exit_code": 0,
+          "log": "command-1.log"
+        }
+      ],
+      "junit_reports": [],
+      "manifest_members_verified": 5,
+      "path": "experiments/first_passage_operator/ci_evidence/recovery_738a/formatter35c9.original.zip",
+      "source_provenance": {
+        "input_sha256": {
+          ".bazelversion": "cdecb300baad839a6f62791229f551a4fa33f3cbdca08e378dc976466354e778",
+          ".github/workflows/hepta-operator-diagnostics.yml": "7ed40b07453bed36f30e4e9c94dc73c1f3f566afcd969f5d40de08c31d383a5a",
+          "MODULE.bazel": "595a1ddad96510295e70bf2e04427da8b2a5536559d08e0ddd6c98b779a6ddf0",
+          "MODULE.bazel.lock": "6cd33cd619de9103e3df32fd75eb55324482a2c8609620c6b3598f1cb6e99902",
+          "codex-rs/Cargo.lock": "7cd3ac48f8a03093674bf8e54ffa8b86dcbeaac64d535b1d8c59b21e5dd327e3",
+          "codex-rs/Cargo.toml": "aeb40915f2fb553a1292cebd78906c910d1d28596cca42e0ddf60d07bef02976",
+          "codex-rs/deny.toml": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352",
+          "experiments/first_passage_deadline/requirements.txt": "1668a3152e33680d94637b13421c15e68bd97cd8701f7f555c691f5bc5c0b9f3",
+          "experiments/first_passage_operator/requirements.txt": "1932538fc4cbd9d2cb2f9d08373d91de1578218a936786fea175e2c7d6bd1a23",
+          "justfile": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+        },
+        "lane": "canonical-format",
+        "research_command_scope": "unit tests only; no confirmation run",
+        "run_attempt": "1",
+        "run_id": "41089406109",
+        "source_head": "35c9ff15f6759b024459a14eaa39a5e5a3a65edf",
+        "source_tree": "e8581cdcaef7af64e7eeef1e56482410a7808fc0"
+      },
+      "zip_sha256": "61110582262ae91f59abab374d7bd57a5fa8b36afd5f1333061d3ba6277f1922"
+    },
+    {
+      "artifact_id": 12995610644,
+      "bytes": 6520,
+      "commands": [
+        {
+          "argv": [
+            "just",
+            "fmt",
+            "--all"
+          ],
+          "exit_code": 0,
+          "log": "command-1.log"
+        }
+      ],
+      "junit_reports": [],
+      "manifest_members_verified": 5,
+      "path": "experiments/first_passage_operator/ci_evidence/recovery_738a/formatter738a.original.zip",
+      "source_provenance": {
+        "input_sha256": {
+          ".bazelversion": "cdecb300baad839a6f62791229f551a4fa33f3cbdca08e378dc976466354e778",
+          ".github/workflows/hepta-operator-diagnostics.yml": "a7ef83f6deaea0f94aeb8495f1da215cec433c2dedd70153ce1b46e97c464418",
+          "MODULE.bazel": "595a1ddad96510295e70bf2e04427da8b2a5536559d08e0ddd6c98b779a6ddf0",
+          "MODULE.bazel.lock": "6cd33cd619de9103e3df32fd75eb55324482a2c8609620c6b3598f1cb6e99902",
+          "codex-rs/Cargo.lock": "b07d974847eded24b53d7b765849846238164d6b7aaa9bf0ca34e4341d8b7e1b",
+          "codex-rs/Cargo.toml": "aeb40915f2fb553a1292cebd78906c910d1d28596cca42e0ddf60d07bef02976",
+          "codex-rs/deny.toml": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352",
+          "experiments/first_passage_deadline/requirements.txt": "1668a3152e33680d94637b13421c15e68bd97cd8701f7f555c691f5bc5c0b9f3",
+          "experiments/first_passage_operator/requirements.txt": "1932538fc4cbd9d2cb2f9d08373d91de1578218a936786fea175e2c7d6bd1a23",
+          "justfile": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+        },
+        "lane": "canonical-format",
+        "research_command_scope": "unit tests only; no confirmation run",
+        "run_attempt": "1",
+        "run_id": "41092882733",
+        "source_head": "738a00959b869a4cdd4730109b4ff60c9340f106",
+        "source_tree": "a36b87b3932a1a9eca3907c760d6fbb934ec2839"
+      },
+      "zip_sha256": "43fa957e443a3dbcbd6b8c8a3aeaaddf4675ace9cf870ecc9f44a5e5f8b0ca20"
+    },
+    {
+      "artifact_id": 12996360834,
+      "bytes": 4462,
+      "commands": [
+        {
+          "argv": [
+            "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+            "-m",
+            "pip",
+            "install",
+            "--requirement",
+            "experiments/first_passage_operator/requirements.txt"
+          ],
+          "exit_code": 0,
+          "log": "command-1.log"
+        },
+        {
+          "argv": [
+            "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "experiments/first_passage_operator/tests",
+            "-v"
+          ],
+          "exit_code": 0,
+          "log": "command-2.log"
+        },
+        {
+          "argv": [
+            "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "experiments/first_passage_deadline/tests",
+            "-v"
+          ],
+          "exit_code": 0,
+          "log": "command-3.log"
+        }
+      ],
+      "junit_reports": [],
+      "manifest_members_verified": 7,
+      "path": "experiments/first_passage_operator/ci_evidence/recovery_738a/research738a.original.zip",
+      "source_provenance": {
+        "input_sha256": {
+          ".bazelversion": "cdecb300baad839a6f62791229f551a4fa33f3cbdca08e378dc976466354e778",
+          ".github/workflows/hepta-operator-diagnostics.yml": "a7ef83f6deaea0f94aeb8495f1da215cec433c2dedd70153ce1b46e97c464418",
+          "MODULE.bazel": "595a1ddad96510295e70bf2e04427da8b2a5536559d08e0ddd6c98b779a6ddf0",
+          "MODULE.bazel.lock": "6cd33cd619de9103e3df32fd75eb55324482a2c8609620c6b3598f1cb6e99902",
+          "codex-rs/Cargo.lock": "b07d974847eded24b53d7b765849846238164d6b7aaa9bf0ca34e4341d8b7e1b",
+          "codex-rs/Cargo.toml": "aeb40915f2fb553a1292cebd78906c910d1d28596cca42e0ddf60d07bef02976",
+          "codex-rs/deny.toml": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352",
+          "experiments/first_passage_deadline/requirements.txt": "1668a3152e33680d94637b13421c15e68bd97cd8701f7f555c691f5bc5c0b9f3",
+          "experiments/first_passage_operator/requirements.txt": "1932538fc4cbd9d2cb2f9d08373d91de1578218a936786fea175e2c7d6bd1a23",
+          "justfile": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+        },
+        "lane": "research-unit-tests",
+        "research_command_scope": "unit tests only; no confirmation run",
+        "run_attempt": "1",
+        "run_id": "41092882733",
+        "source_head": "738a00959b869a4cdd4730109b4ff60c9340f106",
+        "source_tree": "a36b87b3932a1a9eca3907c760d6fbb934ec2839"
+      },
+      "zip_sha256": "1c8529bf7767ae0f96678b480d0c83981339459e20eae151e803b244f141d38b"
+    },
+    {
+      "artifact_id": 12995687412,
+      "bytes": 55049,
+      "commands": [
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-aws-auth",
+            "-p",
+            "codex-hepta-matrix-sdk",
+            "-p",
+            "codex-secrets",
+            "-p",
+            "codex-execpolicy",
+            "--lib",
+            "--locked"
+          ],
+          "exit_code": 0,
+          "log": "command-1.log"
+        },
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-core-plugins",
+            "--lib",
+            "--locked"
+          ],
+          "exit_code": 0,
+          "log": "command-2.log"
+        },
+        {
+          "argv": [
+            "just",
+            "fix",
+            "-p",
+            "codex-hepta-matrix-sdk",
+            "-p",
+            "codex-core-plugins",
+            "--locked",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exit_code": 0,
+          "log": "command-3.log"
+        }
+      ],
+      "junit_reports": [
+        {
+          "errors": 0,
+          "failed_case_names": [],
+          "failures": 0,
+          "member": "command-1-junit/0/local/junit.xml",
+          "skipped_cases_in_xml": 0,
+          "suite": "codex-aws-auth",
+          "tests": 5
+        },
+        {
+          "errors": 0,
+          "failed_case_names": [],
+          "failures": 0,
+          "member": "command-1-junit/0/local/junit.xml",
+          "skipped_cases_in_xml": 0,
+          "suite": "codex-execpolicy",
+          "tests": 7
+        },
+        {
+          "errors": 0,
+          "failed_case_names": [],
+          "failures": 0,
+          "member": "command-1-junit/0/local/junit.xml",
+          "skipped_cases_in_xml": 0,
+          "suite": "codex-hepta-matrix-sdk",
+          "tests": 22
+        },
+        {
+          "errors": 0,
+          "failed_case_names": [],
+          "failures": 0,
+          "member": "command-1-junit/0/local/junit.xml",
+          "skipped_cases_in_xml": 0,
+          "suite": "codex-secrets",
+          "tests": 9
+        },
+        {
+          "errors": 0,
+          "failed_case_names": [],
+          "failures": 0,
+          "member": "command-2-junit/0/local/junit.xml",
+          "skipped_cases_in_xml": 0,
+          "suite": "codex-core-plugins",
+          "tests": 420
+        }
+      ],
+      "manifest_members_verified": 10,
+      "path": "experiments/first_passage_operator/ci_evidence/recovery_738a/security738a.original.zip",
+      "source_provenance": {
+        "input_sha256": {
+          ".bazelversion": "cdecb300baad839a6f62791229f551a4fa33f3cbdca08e378dc976466354e778",
+          ".github/workflows/hepta-operator-diagnostics.yml": "a7ef83f6deaea0f94aeb8495f1da215cec433c2dedd70153ce1b46e97c464418",
+          "MODULE.bazel": "595a1ddad96510295e70bf2e04427da8b2a5536559d08e0ddd6c98b779a6ddf0",
+          "MODULE.bazel.lock": "6cd33cd619de9103e3df32fd75eb55324482a2c8609620c6b3598f1cb6e99902",
+          "codex-rs/Cargo.lock": "b07d974847eded24b53d7b765849846238164d6b7aaa9bf0ca34e4341d8b7e1b",
+          "codex-rs/Cargo.toml": "aeb40915f2fb553a1292cebd78906c910d1d28596cca42e0ddf60d07bef02976",
+          "codex-rs/deny.toml": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352",
+          "experiments/first_passage_deadline/requirements.txt": "1668a3152e33680d94637b13421c15e68bd97cd8701f7f555c691f5bc5c0b9f3",
+          "experiments/first_passage_operator/requirements.txt": "1932538fc4cbd9d2cb2f9d08373d91de1578218a936786fea175e2c7d6bd1a23",
+          "justfile": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+        },
+        "lane": "security-consumers",
+        "research_command_scope": "unit tests only; no confirmation run",
+        "run_attempt": "1",
+        "run_id": "41092882733",
+        "source_head": "738a00959b869a4cdd4730109b4ff60c9340f106",
+        "source_tree": "a36b87b3932a1a9eca3907c760d6fbb934ec2839"
+      },
+      "zip_sha256": "0670ae569aeb7682b59f12f1e85e74fc43df3ccdeb7f25baa131452d625f9fbe"
+    },
+    {
+      "artifact_id": 12995861512,
+      "bytes": 150526,
+      "commands": [
+        {
+          "argv": [
+            "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+            "scripts/run_hepta_vendor_compatibility.py",
+            "--repo",
+            "/home/runner/work/hepta-private-ci/hepta-private-ci",
+            "--work",
+            "/home/runner/work/_temp/hepta-vendor-work",
+            "--output",
+            "/home/runner/work/_temp/hepta-operator-diagnostics/vendor-compatibility"
+          ],
+          "exit_code": 0,
+          "log": "command-1.log"
+        }
+      ],
+      "junit_reports": [
+        {
+          "errors": 0,
+          "failed_case_names": [],
+          "failures": 0,
+          "member": "vendor-compatibility/aws-config.junit.xml",
+          "skipped_cases_in_xml": 0,
+          "suite": "aws-config",
+          "tests": 1
+        },
+        {
+          "errors": 0,
+          "failed_case_names": [],
+          "failures": 0,
+          "member": "vendor-compatibility/i18n-config.junit.xml",
+          "skipped_cases_in_xml": 0,
+          "suite": "i18n-config",
+          "tests": 3
+        },
+        {
+          "errors": 0,
+          "failed_case_names": [],
+          "failures": 0,
+          "member": "vendor-compatibility/matrix-sdk.junit.xml",
+          "skipped_cases_in_xml": 0,
+          "suite": "matrix-sdk",
+          "tests": 1
+        },
+        {
+          "errors": 0,
+          "failed_case_names": [],
+          "failures": 0,
+          "member": "vendor-compatibility/starlark.junit.xml",
+          "skipped_cases_in_xml": 0,
+          "suite": "starlark",
+          "tests": 1
+        }
+      ],
+      "manifest_members_verified": 31,
+      "path": "experiments/first_passage_operator/ci_evidence/recovery_738a/vendor738a.original.zip",
+      "source_provenance": {
+        "input_sha256": {
+          ".bazelversion": "cdecb300baad839a6f62791229f551a4fa33f3cbdca08e378dc976466354e778",
+          ".github/workflows/hepta-operator-diagnostics.yml": "a7ef83f6deaea0f94aeb8495f1da215cec433c2dedd70153ce1b46e97c464418",
+          "MODULE.bazel": "595a1ddad96510295e70bf2e04427da8b2a5536559d08e0ddd6c98b779a6ddf0",
+          "MODULE.bazel.lock": "6cd33cd619de9103e3df32fd75eb55324482a2c8609620c6b3598f1cb6e99902",
+          "codex-rs/Cargo.lock": "b07d974847eded24b53d7b765849846238164d6b7aaa9bf0ca34e4341d8b7e1b",
+          "codex-rs/Cargo.toml": "aeb40915f2fb553a1292cebd78906c910d1d28596cca42e0ddf60d07bef02976",
+          "codex-rs/deny.toml": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352",
+          "experiments/first_passage_deadline/requirements.txt": "1668a3152e33680d94637b13421c15e68bd97cd8701f7f555c691f5bc5c0b9f3",
+          "experiments/first_passage_operator/requirements.txt": "1932538fc4cbd9d2cb2f9d08373d91de1578218a936786fea175e2c7d6bd1a23",
+          "justfile": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+        },
+        "lane": "vendor-compatibility",
+        "research_command_scope": "unit tests only; no confirmation run",
+        "run_attempt": "1",
+        "run_id": "41092882733",
+        "source_head": "738a00959b869a4cdd4730109b4ff60c9340f106",
+        "source_tree": "a36b87b3932a1a9eca3907c760d6fbb934ec2839"
+      },
+      "zip_sha256": "f144e055a844d2a75092bd1339a878d0d97807d55dbd8075314ab271db914460"
+    }
+  ],
+  "interpretation": {
+    "formatting": "Both exact just fmt --all commands exited zero; clean-worktree gates failed because they generated formatting edits. Reviewed format-only edits applied; newer unformatted source additions still require their own formatter run.",
+    "lint": "Windows just fix exited zero and emitted a redundant-closure patch, but expect_used and large_enum_variant warnings remained. Security-consumer just fix exited zero; vendored i18n-config lifetime warnings remained. These command results are not strict warning-free certificates.",
+    "research738a": "30 operator tests plus 8 finite-deadline tests passed. Frozen multilayer confirmation remains 0/6; finite-deadline primary validation remains 91/92.",
+    "vendor738a": "Six native compatibility tests passed across four isolated packages; dependency resolution exited zero.",
+    "windows35c9": "Runtime 68/68, contracts/path/registry 170/170, intelligence/optimizer/acceptance/qualification 169/169, V8 sandbox 7/7. PTY 24/25. Windows sandbox 142/152 with two pre-existing ignored tests outside these JUnit cases. Five public-admission tests passed, but subsequent read-only capability audit identified an uncovered admission gap; this does not certify the original restricted-token path. Two native ACL and eight missing-helper cases remain failures."
+  },
+  "schema": "hepta.fresh-native-evidence.v1",
+  "scope": "Exact source-scoped CI artifacts; formatter and lint command success is distinct from a clean worktree or warning-free result. No scientific confirmation is rerun."
+}

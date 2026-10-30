@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.checkpoint.paths.v1",
+  "utc": "2026-10-30T17:11:04.806237+00:00",
+  "scope": "Independent private-fixture Unix OS contract observer; diagnostic only.",
+  "files": [
+    {
+      "path": "scripts/diagnose_hepta_unix_file_contracts.py",
+      "bytes": 14796,
+      "sha256": "ffc94a2a121e862e1290c991e94bfa0cb7cb0244072d9334a407064ac5bf2326",
+      "git_blob_sha1": "e6356988844c5c5c2abe71fa63daed9ae7b2559b"
+    },
+    {
+      "path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/value_mac_review/UNIX_CONTRACT_LINUX.json",
+      "bytes": 12782,
+      "sha256": "53002196e6d8c018d8052147d8ce3c3a3b6ceac61657e83382e0c7e5ca8f4dc2",
+      "git_blob_sha1": "c053081eff83eed1b22d584ac648748d2154a275"
+    }
+  ],
+  "validation": {
+    "native_platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "linux_receipt_status": "observations_complete",
+    "fixture_cleaned": true,
+    "child_reaped": true,
+    "darwin_execution": "pending",
+    "source_format": "Python standard-library source; no formatter run",
+    "functional_gates": "Original Fleet and holdout Rust/Bazel tests remain required; this observer does not replace them."
+  },
+  "cli": [
+    "python",
+    "scripts/diagnose_hepta_unix_file_contracts.py",
+    "--output",
+    "<new-json-path>",
+    "--timeout-seconds",
+    "5"
+  ],
+  "optional_cli": [
+    "--work-parent",
+    "<existing-owned-parent-directory>"
+  ]
+}

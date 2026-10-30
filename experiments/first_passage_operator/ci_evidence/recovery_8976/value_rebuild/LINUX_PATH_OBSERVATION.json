@@ -1,0 +1,120 @@
+{
+  "schema": "hepta.fixture-path-observation.v1",
+  "utc": "2026-10-30T16:22:30.366418+00:00",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "python": "3.12.14",
+  "command": [
+    "scripts/diagnose_hepta_fixture_paths.py",
+    "--output",
+    "experiments/first_passage_operator/ci_evidence/recovery_8976/value_rebuild/LINUX_PATH_OBSERVATION.json",
+    "--path",
+    "codex-rs/hepta-memory"
+  ],
+  "script_sha256": "5e482ce9c3f6801d1afa14ee4488abbb79b00cfd3f7cd8726bce828bbae1d418",
+  "scope": "Read-only requested/resolved path, ancestor symlink and actual errno observations; no Rust tests executed.",
+  "observations": [
+    {
+      "source": "cwd",
+      "requested": "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci",
+      "absolute_spelling": "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci",
+      "resolution": {
+        "canonical": "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci",
+        "same_spelling": true
+      },
+      "ancestors": [
+        {
+          "path": "/",
+          "mode": "0o755",
+          "is_symlink": false
+        },
+        {
+          "path": "/workspace",
+          "mode": "0o777",
+          "is_symlink": false
+        },
+        {
+          "path": "/workspace/scratch",
+          "mode": "0o700",
+          "is_symlink": false
+        },
+        {
+          "path": "/workspace/scratch/8b9f3e9fd04d",
+          "mode": "0o755",
+          "is_symlink": false
+        },
+        {
+          "path": "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci",
+          "mode": "0o755",
+          "is_symlink": false
+        }
+      ]
+    },
+    {
+      "source": "tempfile.gettempdir",
+      "requested": "/tmp",
+      "absolute_spelling": "/tmp",
+      "resolution": {
+        "canonical": "/tmp",
+        "same_spelling": true
+      },
+      "ancestors": [
+        {
+          "path": "/",
+          "mode": "0o755",
+          "is_symlink": false
+        },
+        {
+          "path": "/tmp",
+          "mode": "0o1777",
+          "is_symlink": false
+        }
+      ]
+    },
+    {
+      "source": "explicit",
+      "requested": "codex-rs/hepta-memory",
+      "absolute_spelling": "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-memory",
+      "resolution": {
+        "canonical": "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-memory",
+        "same_spelling": true
+      },
+      "ancestors": [
+        {
+          "path": "/",
+          "mode": "0o755",
+          "is_symlink": false
+        },
+        {
+          "path": "/workspace",
+          "mode": "0o777",
+          "is_symlink": false
+        },
+        {
+          "path": "/workspace/scratch",
+          "mode": "0o700",
+          "is_symlink": false
+        },
+        {
+          "path": "/workspace/scratch/8b9f3e9fd04d",
+          "mode": "0o755",
+          "is_symlink": false
+        },
+        {
+          "path": "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci",
+          "mode": "0o755",
+          "is_symlink": false
+        },
+        {
+          "path": "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs",
+          "mode": "0o755",
+          "is_symlink": false
+        },
+        {
+          "path": "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-memory",
+          "mode": "0o755",
+          "is_symlink": false
+        }
+      ]
+    }
+  ]
+}

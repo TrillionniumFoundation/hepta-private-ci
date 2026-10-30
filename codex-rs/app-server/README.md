@@ -2437,6 +2437,10 @@ requests. This limitation will be addressed in a follow-up.
 
 These experimental methods require the client to initialize with `experimentalApi: true`.
 
+Both methods use the account authentication owner. Discovery takes its shared read
+lock, while setup serializes with login and logout. The setup handler checks login
+policy, region, and credential selection before writing provider configuration.
+
 Discover AWS profiles and credentials already visible to the app-server process:
 
 ```json

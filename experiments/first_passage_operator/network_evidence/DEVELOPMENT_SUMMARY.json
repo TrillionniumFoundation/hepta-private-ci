@@ -1,0 +1,187 @@
+{
+  "by_task": {
+    "delayed_match": {
+      "first_passage": {
+        "development_loss": 0.6916348695093912,
+        "fit_wall_seconds": 80.72644625300018,
+        "initial_train_loss": 0.7835876791317272,
+        "seed_development_losses": [
+          0.6919935674185352,
+          0.6937289311565462,
+          0.6891821099530921
+        ],
+        "selected_epochs": [
+          50,
+          10,
+          30
+        ],
+        "selected_train_loss": 0.6903354116185995
+      },
+      "lif": {
+        "development_loss": 0.6911873526596001,
+        "fit_wall_seconds": 141.18321077199653,
+        "initial_train_loss": 0.7389592440256925,
+        "seed_development_losses": [
+          0.694812037203797,
+          0.6955103032955129,
+          0.6832397174794906
+        ],
+        "selected_epochs": [
+          20,
+          60,
+          70
+        ],
+        "selected_train_loss": 0.6917156232056202
+      },
+      "rnn": {
+        "development_loss": 0.4044816368563044,
+        "fit_wall_seconds": 3.826810086000478,
+        "initial_train_loss": 0.6941813783500507,
+        "seed_development_losses": [
+          0.3879251328583532,
+          0.3937399404624439,
+          0.43177983724811597
+        ],
+        "selected_epochs": [
+          80,
+          80,
+          80
+        ],
+        "selected_train_loss": 0.3580764578862001
+      }
+    },
+    "evidence": {
+      "first_passage": {
+        "development_loss": 0.024775992645747213,
+        "fit_wall_seconds": 86.10802429599426,
+        "initial_train_loss": 0.7729045861559944,
+        "seed_development_losses": [
+          0.044245824463625856,
+          0.016595931020663115,
+          0.013486222452952673
+        ],
+        "selected_epochs": [
+          70,
+          80,
+          70
+        ],
+        "selected_train_loss": 0.02738434125138664
+      },
+      "lif": {
+        "development_loss": 0.03829140052965274,
+        "fit_wall_seconds": 113.62858553300612,
+        "initial_train_loss": 0.7248941434467279,
+        "seed_development_losses": [
+          0.08907931556525991,
+          0.015778559120169747,
+          0.010016326903528558
+        ],
+        "selected_epochs": [
+          80,
+          80,
+          60
+        ],
+        "selected_train_loss": 0.03033610618968524
+      },
+      "rnn": {
+        "development_loss": 0.05743136904908717,
+        "fit_wall_seconds": 3.698200769991672,
+        "initial_train_loss": 0.6691121216652133,
+        "seed_development_losses": [
+          0.052929630462743266,
+          0.03599166178472889,
+          0.08337281489978936
+        ],
+        "selected_epochs": [
+          80,
+          80,
+          80
+        ],
+        "selected_train_loss": 0.021207464312157597
+      }
+    },
+    "order": {
+      "first_passage": {
+        "development_loss": 0.5540366815910086,
+        "fit_wall_seconds": 80.22443265499169,
+        "initial_train_loss": 0.7904497894916238,
+        "seed_development_losses": [
+          0.4998536464073239,
+          0.6725886669405505,
+          0.4896677314251515
+        ],
+        "selected_epochs": [
+          80,
+          80,
+          70
+        ],
+        "selected_train_loss": 0.5530569914659206
+      },
+      "lif": {
+        "development_loss": 0.022473136313442332,
+        "fit_wall_seconds": 111.14753482599917,
+        "initial_train_loss": 0.747820604448643,
+        "seed_development_losses": [
+          0.012208085084275545,
+          0.01848566972842941,
+          0.03672565412762205
+        ],
+        "selected_epochs": [
+          80,
+          80,
+          80
+        ],
+        "selected_train_loss": 0.021080864681236062
+      },
+      "rnn": {
+        "development_loss": 0.0069406696576780535,
+        "fit_wall_seconds": 2.726830510000582,
+        "initial_train_loss": 0.6977526285918115,
+        "seed_development_losses": [
+          0.008298678638879096,
+          0.005172196847447015,
+          0.007351133486708049
+        ],
+        "selected_epochs": [
+          80,
+          80,
+          80
+        ],
+        "selected_train_loss": 0.007142010208590184
+      }
+    }
+  },
+  "confirmation_opened": false,
+  "dataset_sha256": {
+    "delayed_match/development/3109": "178cee46158da6017833bd5aefd397c5fac3e3c92e466475e5e93f4663ddbc0c",
+    "delayed_match/development/3163": "932c0b107a0b2c39db82fe16a5a1935da3394dfeac0287aa4b55c43da48460c4",
+    "delayed_match/development/3203": "ec9a9f4ac9e3cb6fcb7f6a2b06488e0fc3a4206cd0e57fc670a006c06c540502",
+    "delayed_match/train/3109": "f6690bf7a77e353d2c0e85fa12ea8be3968f2bbc6bebe9331159fc67512cea8d",
+    "delayed_match/train/3163": "948382771c61d823e29b5aedd92fce141ee4a11ef3f13810cbe35bf408a451e3",
+    "delayed_match/train/3203": "fc555f5127f3093d162393cb88ad740a2172a24f5752906db1eb181488327a71",
+    "evidence/development/3109": "3aa93ca3d2bafaf014c2882f690e7f97db24a8cc846f765ebf4a4ba6127f03a8",
+    "evidence/development/3163": "ec2c8dc1f9e3995e56ab6bae0b7ce177fadb76580891b8f4a402fecd93466d3d",
+    "evidence/development/3203": "ec8d54eb580cba6aa6469478700d77b0248784e8f3398513c15d8f6ae2d648a2",
+    "evidence/train/3109": "1a7b4769287108589e63b186e956bd66296408fd8eb908e98367f9853c2d8c48",
+    "evidence/train/3163": "3d59dea7899787a1d32988710e2ad8c977af5858442172c56bee9652cbccc4a8",
+    "evidence/train/3203": "97d53ef21799ae916cae73f2e8552d8948180164c657f947bc0a0b086f96266d",
+    "order/development/3109": "78677bbbe96d73fe6fca9fc2df2ea9b3e3efbd46f16a87b678e2d060c01c1d4b",
+    "order/development/3163": "fa51e30e6b4cb06105628504e86aeccceb161327cb9777a251ef8f789b68b03c",
+    "order/development/3203": "ab0c0d9ac93d2bb45c50f4948923bd69023c557ef5ac3cf13491e128784f01b0",
+    "order/train/3109": "08b6cf11d57c0635442570f7db715495b300369b7ee81fb982cdaa91617479b6",
+    "order/train/3163": "f328df2e44844f4983b6a94ff5ece9105fc2df6c579838934206bd1194c104ce",
+    "order/train/3203": "53ff7fb9d1b2d766c2d8ae55ddba22d7a4a42fb065275648dfbee0cba65c3fa7"
+  },
+  "fits": 27,
+  "optimizer_updates_per_fit": 320,
+  "parameters_changed_in_every_fit": 55,
+  "schema": "hepta.renewal-network.development-summary.v1",
+  "source_sha256": {
+    "NETWORK_PROTOCOL.json": "b2d139a9d1b81e1cbf52906856754fc50b7e0ab3e7f117e0c94736484baffc03",
+    "network.py": "29710433a7d704ae3d87938495719185c24039551b31b583a165107f75d2ea95",
+    "tasks.py": "79f11d7b23e055da8709972817f5cb62051cb167125dff36af4454dfcb0a81f4",
+    "train_network.py": "d25fd29c2614f94ae206fbbcc8007b5bab1b95a40f82f4c6fe6d90c1874ec50d"
+  },
+  "total_fit_wall_seconds": 623.2700757009807,
+  "total_optimizer_updates": 8640
+}

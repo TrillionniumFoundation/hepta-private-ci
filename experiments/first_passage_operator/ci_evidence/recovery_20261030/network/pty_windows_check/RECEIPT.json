@@ -1,0 +1,43 @@
+{
+  "started_utc": "2026-10-30T01:28:15.912221+00:00",
+  "command": [
+    "cargo",
+    "check",
+    "-p",
+    "codex-utils-pty",
+    "--tests",
+    "--target",
+    "x86_64-pc-windows-gnu",
+    "--locked"
+  ],
+  "cwd": "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs",
+  "lock_sha256": "7cd3ac48f8a03093674bf8e54ffa8b86dcbeaac64d535b1d8c59b21e5dd327e3",
+  "source_sha256_before_format": {
+    "codex-rs/utils/pty/src/lib.rs": "92475acd26e972bad0f9e0010fe970f19529ed968e12f305393d39082cfe8310",
+    "codex-rs/utils/pty/src/pipe.rs": "ce78d972bb162d5a54c47214aa4c83777f895dd316f6b32b75493c608e0654ab",
+    "codex-rs/utils/pty/src/pipe_tests.rs": "f9a8fc8902a869b49687d3b295abf956d7f326569b1058e3fca4d6d125cc47d4",
+    "codex-rs/utils/pty/src/process.rs": "f6dca08eec90266e43c7bebe9d1e651611d8d074614bae9df707c11c1c64d71c",
+    "codex-rs/utils/pty/src/process_group.rs": "4c9c062f990c9bfef8c61641956765379586c4f4bb8fc61db67cf1a515d084d3",
+    "codex-rs/utils/pty/src/process_group_tests.rs": "f28f56e7923869e73adbe30728362b14fcc7cbd5088a52e0a7cf63629879b000",
+    "codex-rs/utils/pty/src/pty.rs": "25d04fce155c670bef1098d26d2940883ad784528dd0c796ef468d3a9a38a5f2",
+    "codex-rs/utils/pty/src/tests.rs": "de43c610eda6bc4c30af95f1ef5854a2fe88b30dc248d1196081394e51f3cc2d",
+    "codex-rs/utils/pty/src/unix_io.rs": "8c5c543f48aca6f231e99ca69d660612c0174a495e0e7fcc11619eacbcdccef8",
+    "codex-rs/utils/pty/src/win/conpty.rs": "0dc2739c7df7f84dafe65658db3802d917dd719afa1dfa40663e5ae9609aa8d0",
+    "codex-rs/utils/pty/src/win/job.rs": "3c904bcd4ac33719bb843639c30be39ca6e9ceda350be311f970aaf3d748a476",
+    "codex-rs/utils/pty/src/win/mod.rs": "4f355ebc286683984158ff5b3cc3994c55e8b4eaea39775da905d91fd1fbbb14",
+    "codex-rs/utils/pty/src/win/procthreadattr.rs": "f143dff9ff9ce080e617e6bae2e1864e7f59b6f83569eae18fd7f02e997a1956",
+    "codex-rs/utils/pty/src/win/psuedocon.rs": "919099dfdc4962c5bd47c58393d9441f034f2a080907d960be6f6a96ed51e60c",
+    "codex-rs/utils/pty/src/windows_input.rs": "bac4b55825fe7becafb532c00d98188cd253a0ce07525f6474f8c76ad3681bad",
+    "codex-rs/utils/pty/src/windows_input_tests.rs": "dca6cc92c081ca7a3bfdaaec13cc7bbf32185e3c0b343e6def76d2039a2a6921",
+    "codex-rs/utils/pty/src/windows_python_fixture.rs": "f1650712131798aa5d937fb1c0a2db0cb479219b4e24dc19433ab66ad6c21f0b",
+    "codex-rs/utils/pty/src/windows_python_fixture_tests.rs": "25c2e238b0f96249a7ee902f59acf84a989fa4051d186b6b95932e1b621c37d5",
+    "codex-rs/utils/pty/src/windows_tests.rs": "58f468808ab389ba2cae70bb862984a52452cd4e7179c4b5d012ce7bbf73d911"
+  },
+  "validation_scope": "Actual workspace complete Windows PTY sources and tests cross-checked with Windows GNU target. This is compile validation only; no native Windows ConPTY execution.",
+  "status": "passed",
+  "exit_code": 0,
+  "wall_seconds": 33.00391090899984,
+  "finished_utc": "2026-10-30T01:28:48.925902+00:00",
+  "log": "check.log.gz",
+  "log_sha256": "52e36e226bec20f3df2bca2e748c5898541719806d32877a8b854a0477955d85"
+}

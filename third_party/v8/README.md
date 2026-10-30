@@ -3,18 +3,19 @@
 This directory wires the `v8` crate to exact-version Bazel inputs.
 Bazel consumer builds use:
 
-- upstream `denoland/rusty_v8` release archives on Windows MSVC
+- matching Codex sandbox-enabled release archives and bindings on Windows MSVC
 - source-built V8 archives on Darwin, GNU Linux, musl Linux, and Windows GNU
 
 Local Cargo builds still use upstream prebuilt `rusty_v8` archives by default.
 Selected Cargo CI, release, and package builds override
 `RUSTY_V8_ARCHIVE`/`RUSTY_V8_SRC_BINDING_PATH` with Codex release assets. Bazel
-sets those variables independently in `MODULE.bazel` to select source-built
-local archives and bindings for its consumer builds.
+sets those variables independently in `MODULE.bazel` to select matching archives
+and bindings for its consumer builds.
 
 The Bazel `v8` crate feature selection enables V8's in-process sandbox for
-Darwin, Linux, and Windows GNU. Windows MSVC remains on upstream non-sandboxed
-prebuilts.
+Darwin, Linux, Windows GNU, and Windows MSVC. The MSVC bindings come from the
+same sandbox-enabled Codex release as their archives; the crate's bundled
+non-sandboxed bindings are not compatible with those archives.
 
 Current pinned versions:
 
@@ -112,5 +113,6 @@ assets directly. We do not use `RUSTY_V8_MIRROR` because the upstream `v8` crate
 hardcodes a `v<crate_version>` tag layout, while our artifacts are published
 under `rusty-v8-v<crate_version>`.
 
-Do not mix artifacts across crate versions. The archive and binding must match
-the exact resolved `v8` crate version in `codex-rs/Cargo.lock`.
+Do not mix artifacts across crate versions or feature configurations. The archive
+and binding must match the exact resolved `v8` crate version in
+`codex-rs/Cargo.lock` and the selected sandbox and pointer-compression features.

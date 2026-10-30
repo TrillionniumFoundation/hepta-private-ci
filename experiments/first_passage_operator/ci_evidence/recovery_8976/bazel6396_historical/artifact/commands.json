@@ -1,0 +1,22 @@
+[
+  {
+    "argv": [
+      "just",
+      "bazel-lock-update"
+    ],
+    "exit_code": 0,
+    "log": "command-1.log"
+  },
+  {
+    "argv": [
+      "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+      "scripts/check_hepta_vendor_bazel.py",
+      "--repo",
+      "/home/runner/work/hepta-private-ci/hepta-private-ci",
+      "--output",
+      "/home/runner/work/_temp/hepta-operator-diagnostics/vendor-bazel"
+    ],
+    "exit_code": 0,
+    "log": "command-2.log"
+  }
+]

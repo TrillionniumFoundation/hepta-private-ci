@@ -1,0 +1,34 @@
+{
+  "completed_fit_wall_seconds": 186.63072501100396,
+  "completed_fits": [
+    "fit_order_first_passage_3109.json",
+    "fit_delayed_match_first_passage_3109.json",
+    "fit_evidence_first_passage_3109.json",
+    "fit_delayed_match_first_passage_3163.json",
+    "fit_order_first_passage_3163.json",
+    "fit_evidence_first_passage_3163.json"
+  ],
+  "completed_optimizer_updates": 1920,
+  "confirmation_opened": false,
+  "files": {
+    "NETWORK_PROTOCOL.json": "95b7e9c6df9401d62fa414dd817d8c62f422ac85ee6df68d3d8aa8c77acda6fa",
+    "delayed_match.log": "cac33b479013cd3d16e05e0f5dbb1a3507e28d2c5b05db5ed05b75dc6ca31596",
+    "evidence.log": "92090d7f5b2d3a864f2da2e6dd57302a64b0e6bb4158e7aa2d1740dc8b3a74e7",
+    "fit_delayed_match_first_passage_3109.json": "0d0711208305977496e2f5bfeac2d014fc60f557e67b3700fe2231e34096c821",
+    "fit_delayed_match_first_passage_3163.json": "8a91dde108c1e3fc9d61efbde2ef485b7863b3d2473360ef2ef09a53120d880c",
+    "fit_evidence_first_passage_3109.json": "5d76bf468b205a5c1804fa3da34b165ad209d5b454f7e2f37dce2cd583be0cd7",
+    "fit_evidence_first_passage_3163.json": "af1368304d313012c92e277796c97047cca68873a26c66a848742dca3a9b94b7",
+    "fit_order_first_passage_3109.json": "fdaa0ac8473d6f5d0ad81ee7996791b78f5259d03360814cf10403ee04147ff7",
+    "fit_order_first_passage_3163.json": "9fbafced44f0b9514a89425f7bc837bdd052a07b29a949609a6a5721f09d777a",
+    "network.py": "728795817bae71627a46b67b282ad184385c0e1fd1153f80abfc92626a6f4eff",
+    "order.log": "9a86b876941329184ae2c68d0eaefe40a49e240511fb90645d1422dc1b3f38f2",
+    "tasks.py": "c12bf6a932c60270bf01aea0712aeb4822469d1780ad74f841ed088523949f53",
+    "train_network.py": "5abc72303e70243579eb6b6e14883cdb9e8787f3ee278bce1d73b4227f4f3b7f"
+  },
+  "interrupted_work": "Three additional seed3203 development fits were interrupted; their partial weights were not retained and their incomplete optimizer-step count is unknown.",
+  "new_query_slot": 6,
+  "no_model_selection_from_confirmation": true,
+  "old_query_slot": 7,
+  "reason": "Final-slot query was causally unavailable to layer2 under the declared one-segment delay. Move it to slot6 and leave slot7 for communication.",
+  "schema": "hepta.renewal-network.development-repair.v1"
+}

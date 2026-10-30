@@ -292,7 +292,8 @@ async fn drive_until_request_count(
                 drain_active_thread_events(app);
             }
             () = &mut timeout => {
-                panic!("expected {expected_request_count} Responses API requests");
+                let received = server.requests().await.len();
+                panic!("expected {expected_request_count} Responses API requests, received {received}");
             }
         }
     }

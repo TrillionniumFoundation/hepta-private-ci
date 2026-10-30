@@ -1,0 +1,62 @@
+{
+  "scope": "lossless archival only; no native test re-execution",
+  "original_payloads": "Nine retained publication payloads plus two freshly verified Actions artifact members; original Git blob and SHA256 identities recomputed",
+  "all_passed": true,
+  "checks": [
+    {
+      "original_path": "experiments/first_passage_operator/ci_evidence/recovery/security/LOCK_DELTA.json",
+      "restored_sha256": "c904800cef6b8bfc30d461b6e07adacd6a435b478f61dc92c3b56f17396986bb",
+      "byte_exact_round_trip": true
+    },
+    {
+      "original_path": "experiments/first_passage_operator/ci_evidence/recovery/security/resolve-01.log",
+      "restored_sha256": "beb12333f25c99039e171758e04c209af5ed38f0a07a24e9f4cee2092d3629ae",
+      "byte_exact_round_trip": true
+    },
+    {
+      "original_path": "experiments/first_passage_operator/ci_evidence/recovery/value/vendor_native_01/metadata.json",
+      "restored_sha256": "83dcb4c4ad9feafd1d0ef4aff9978c09f04efb4171977cf61eff4e22bcdafe29",
+      "byte_exact_round_trip": true
+    },
+    {
+      "original_path": "experiments/first_passage_operator/ci_evidence/recovery/value/vendor_native_01/resolve.log",
+      "restored_sha256": "55801ba5031932ec1f4c0e7a6b7589e00bec28b2c4a71a512e91f63b2cfbe179",
+      "byte_exact_round_trip": true
+    },
+    {
+      "original_path": "experiments/first_passage_operator/ci_evidence/recovery/value/vendor_native_01/starlark-0.14.2.source.json",
+      "restored_sha256": "c7395456249644e019a46191c07db03001132855b6d6972bdd9cf772ded20ac7",
+      "byte_exact_round_trip": true
+    },
+    {
+      "original_path": "experiments/first_passage_operator/ci_evidence/recovery/value/vendor_prepare_02/starlark-0.14.2.source.json",
+      "restored_sha256": "c7395456249644e019a46191c07db03001132855b6d6972bdd9cf772ded20ac7",
+      "byte_exact_round_trip": true
+    },
+    {
+      "original_path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/network/compatibility_run_01/offline.log",
+      "restored_sha256": "267df63664fffa48751ee92c142482bc8aa972886925719a3a4e3c577e77d6c9",
+      "byte_exact_round_trip": true
+    },
+    {
+      "original_path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/network/compatibility_run_01/old-create.log",
+      "restored_sha256": "1574306d4ef7aaca0a7aaa333b41d34eff3a319d54c6c761ca6cec33ecdb5d1f",
+      "byte_exact_round_trip": true
+    },
+    {
+      "original_path": "experiments/first_passage_operator/ci_evidence/recovery_20261030/network/offline_compat/test.log",
+      "restored_sha256": "f9afbc04dafc08f7b2e2c6c792b233d329ed569b21725b4c166e3031dda928a3",
+      "byte_exact_round_trip": true
+    },
+    {
+      "original_path": "experiments/first_passage_operator/ci_evidence/recovery_8976/vendor6396_historical/artifact/vendor-compatibility/metadata.json",
+      "restored_sha256": "4589958c1e0947a3aa64398937e492c067884537d833d3171a6d09609e450718",
+      "byte_exact_round_trip": true
+    },
+    {
+      "original_path": "experiments/first_passage_operator/ci_evidence/recovery_8976/vendor6396_historical/artifact/vendor-compatibility/starlark-0.14.2.source.json",
+      "restored_sha256": "c7395456249644e019a46191c07db03001132855b6d6972bdd9cf772ded20ac7",
+      "byte_exact_round_trip": true
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.helper-test.v1",
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "scripts",
+    "-p",
+    "test_run_hepta_vendor_compatibility.py",
+    "-v"
+  ],
+  "exit_code": 0,
+  "seconds": 0.09215040200024305,
+  "source_sha256": {
+    "scripts/run_hepta_vendor_compatibility.py": "4e1c3651705a960d2687fef20f81ced76fe3f3a487f413635f70e46d4c78339c",
+    "scripts/test_run_hepta_vendor_compatibility.py": "88e05ae9a0655c00bbf0936ec8917b3abeb8d6b7a8e60765770feaf7384519b9"
+  },
+  "log_sha256": "1bbd900687243b44130f6225427fac040a5a183302459d79f326a74b322d5314",
+  "scope": "Fresh Python helper integrity tests, not vendor/native consumer execution."
+}

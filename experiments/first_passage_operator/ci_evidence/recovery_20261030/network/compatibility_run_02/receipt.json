@@ -1,0 +1,222 @@
+{
+  "mode": "all",
+  "source_head": "c71bdb0583d3265b931b31579d6bf3a9b85691d3",
+  "source_sha256": {
+    "codex-rs/keyring-store/src/lib.rs": "8e345522aa87967a0ce36e6f58c09f5cbc2cd775fbccd7dd5fba2ab0e35b76ba",
+    "codex-rs/keyring-store/tests/provider_compatibility.rs": "dc233f82da5a513f1685605cb8d8734eda1e73f07861fa38736039d52eafe91c",
+    "codex-rs/skills/src/parser.rs": "f3532df1cc16f4da423b8e5c813269940c90317bcd211b6659cad449fd877e89",
+    "codex-rs/skills/src/parser_tests.rs": "89bf58eb2bd97c47bcefcdc605914bc5b3b023e30a8504fa93e2040ae1913b57",
+    "codex-rs/skills/tests/yaml_compatibility.rs": "da25154f69dd7e1451107a3a43a4c6c3d0f0afe5b95703e8cc9b0f1144c0593b",
+    "scripts/fixtures/keyring_transport_roundtrip.rs": "4be640b1750162bc836aa6fd8de68e187511d4782f3f3cb0b4b7ec7e2398fed2",
+    "scripts/fixtures/yaml_compatibility_differential.rs": "177bbb812502e67dd81e47ee604945f7e5164faa7b6c87bef0e9d76f0b6df6f8",
+    "scripts/run_hepta_keyring_compatibility.py": "2859e7332772e4efc1f9b7f3a368ae50dd899a66663b31f6230ff669dafc8577"
+  },
+  "workspace_lock_sha256": "a3e787d1e6608e1479c4a2402490ebc4073df86e877aba2603f294b1edd78982",
+  "comparison_versions": {
+    "anyhow": "1.0.103",
+    "keyring": "3.6.3",
+    "pretty_assertions": "1.4.1",
+    "serde": "1.0.228",
+    "thiserror": "2.0.18",
+    "tracing": "0.1.44"
+  },
+  "commands": [
+    {
+      "command": [
+        "cargo",
+        "generate-lockfile",
+        "--manifest-path",
+        "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/full_compat/offline/Cargo.toml"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.7942192179998528,
+      "log": "offline-resolve.log.gz"
+    },
+    {
+      "command": [
+        "cargo",
+        "tree",
+        "--manifest-path",
+        "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/full_compat/offline/Cargo.toml",
+        "--locked",
+        "--edges",
+        "normal",
+        "--prefix",
+        "none",
+        "--format",
+        "{p} {f}"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.11818976600034148,
+      "log": "offline-activated-graph.log.gz"
+    },
+    {
+      "command": [
+        "cargo",
+        "generate-lockfile",
+        "--manifest-path",
+        "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/full_compat/old/Cargo.toml"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.6325942690000375,
+      "log": "old-resolve.log.gz"
+    },
+    {
+      "command": [
+        "cargo",
+        "tree",
+        "--manifest-path",
+        "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/full_compat/old/Cargo.toml",
+        "--locked",
+        "--edges",
+        "normal",
+        "--prefix",
+        "none",
+        "--format",
+        "{p} {f}"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.08025926700020136,
+      "log": "old-activated-graph.log.gz"
+    },
+    {
+      "command": [
+        "cargo",
+        "generate-lockfile",
+        "--manifest-path",
+        "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/full_compat/new/Cargo.toml"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.509858185000212,
+      "log": "new-resolve.log.gz"
+    },
+    {
+      "command": [
+        "cargo",
+        "tree",
+        "--manifest-path",
+        "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/full_compat/new/Cargo.toml",
+        "--locked",
+        "--edges",
+        "normal",
+        "--prefix",
+        "none",
+        "--format",
+        "{p} {f}"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.0792927019997478,
+      "log": "new-activated-graph.log.gz"
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--manifest-path",
+        "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/full_compat/offline/Cargo.toml",
+        "--config-file",
+        "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/full_compat/offline/nextest.toml",
+        "--locked",
+        "--success-output",
+        "immediate",
+        "--lib"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.7223731839999346,
+      "log": "offline.log.gz"
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--manifest-path",
+        "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/full_compat/old/Cargo.toml",
+        "--config-file",
+        "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/full_compat/old/nextest.toml",
+        "--locked",
+        "--success-output",
+        "immediate",
+        "--test",
+        "transport_roundtrip"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 1.2181700460000684,
+      "log": "old-create.log.gz"
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--manifest-path",
+        "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/full_compat/new/Cargo.toml",
+        "--config-file",
+        "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/full_compat/new/nextest.toml",
+        "--locked",
+        "--success-output",
+        "immediate",
+        "--test",
+        "transport_roundtrip"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 1.4966430259996741,
+      "log": "new-read-update.log.gz"
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--manifest-path",
+        "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/full_compat/old/Cargo.toml",
+        "--config-file",
+        "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/full_compat/old/nextest.toml",
+        "--locked",
+        "--success-output",
+        "immediate",
+        "--test",
+        "transport_roundtrip"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.888679565000075,
+      "log": "old-read-update.log.gz"
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--manifest-path",
+        "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/full_compat/new/Cargo.toml",
+        "--config-file",
+        "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/full_compat/new/nextest.toml",
+        "--locked",
+        "--success-output",
+        "immediate",
+        "--test",
+        "transport_roundtrip"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.7328282779999427,
+      "log": "new-read-delete.log.gz"
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--manifest-path",
+        "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/full_compat/old/Cargo.toml",
+        "--config-file",
+        "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/full_compat/old/nextest.toml",
+        "--locked",
+        "--success-output",
+        "immediate",
+        "--test",
+        "transport_roundtrip"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.45212547399978575,
+      "log": "old-missing.log.gz"
+    }
+  ],
+  "passed": true,
+  "scope": "isolated exact-source comparison; does not certify full workspace or native Windows",
+  "free_bytes_at_finish": 36700090368
+}

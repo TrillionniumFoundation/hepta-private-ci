@@ -713,23 +713,35 @@ mod tests {
 
     impl Fixture {
         async fn new() -> Self {
-            let temp = tempfile::tempdir().expect("temp root");
-            let root = temp.path().canonicalize().expect("canonical temp root");
+            let temp = tempfile::tempdir().unwrap_or_else(|error| panic!("temp root: {error:?}"));
+            let root = temp
+                .path()
+                .canonicalize()
+                .unwrap_or_else(|error| panic!("canonical temp root: {error:?}"));
             let fleet_path = root.join("fleet");
-            let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).expect("fleet root");
-            let registry = FleetRegistry::initialize(fleet_root.clone()).expect("fleet registry");
+            let fleet_root = HeptaFleetRoot::parse(fleet_path.clone())
+                .unwrap_or_else(|error| panic!("fleet root: {error:?}"));
+            let registry = FleetRegistry::initialize(fleet_root.clone())
+                .unwrap_or_else(|error| panic!("fleet registry: {error:?}"));
             let workspace = root.join("workspace");
-            fs::create_dir(&workspace).expect("workspace");
-            let workspace = workspace.canonicalize().expect("canonical workspace");
-            let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID).expect("agent id");
+            fs::create_dir(&workspace).unwrap_or_else(|error| panic!("workspace: {error:?}"));
+            let workspace = workspace
+                .canonicalize()
+                .unwrap_or_else(|error| panic!("canonical workspace: {error:?}"));
+            let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)
+                .unwrap_or_else(|error| panic!("agent id: {error:?}"));
             let resources = ResourceBudget::local_default();
             let manifest = AgentManifest::new(
                 agent_id.clone(),
-                WorkspaceBinding::new(workspace.clone(), &fleet_root).expect("workspace binding"),
+                WorkspaceBinding::new(workspace.clone(), &fleet_root)
+                    .unwrap_or_else(|error| panic!("workspace binding: {error:?}")),
                 resources.clone(),
             )
-            .expect("manifest");
-            let layout = registry.register(manifest).expect("register agent").layout;
+            .unwrap_or_else(|error| panic!("manifest: {error:?}"));
+            let layout = registry
+                .register(manifest)
+                .unwrap_or_else(|error| panic!("register agent: {error:?}"))
+                .layout;
             let identity = AgentdIdentity {
                 agent_id: agent_id.clone(),
                 layout: layout.clone(),
@@ -744,7 +756,7 @@ mod tests {
             };
             let store = AutomationStore::open(&layout)
                 .await
-                .expect("automation store");
+                .unwrap_or_else(|error| panic!("automation store: {error:?}"));
             Self {
                 _temp: temp,
                 identity,
@@ -770,7 +782,7 @@ mod tests {
             vec!["provider.deliver".to_string()],
             Sha256Digest::for_bytes(b"agentd-product-effect-policy"),
         )
-        .expect("definition")
+        .unwrap_or_else(|error| panic!("definition: {error:?}"))
     }
 
     fn effect_intent(scope: &Sha256Digest) -> AuthorizedEffectIntent {
@@ -803,12 +815,12 @@ mod tests {
             1,
             "agentd-product-effect-fence",
         )
-        .expect("fence");
+        .unwrap_or_else(|error| panic!("fence: {error:?}"));
         fixture
             .store
             .register_taskflow_definition(&definition, &fence, now_ms)
             .await
-            .expect("register definition");
+            .unwrap_or_else(|error| panic!("register definition: {error:?}"));
         fixture
             .store
             .create_taskflow_run(
@@ -820,12 +832,12 @@ mod tests {
                 now_ms,
             )
             .await
-            .expect("create run");
+            .unwrap_or_else(|error| panic!("create run: {error:?}"));
         let claimed = fixture
             .store
             .claim_taskflow_run(&intent.run_id, &fence, now_ms + 1, 60_000)
             .await
-            .expect("claim run");
+            .unwrap_or_else(|error| panic!("claim run: {error:?}"));
         fixture
             .store
             .apply_taskflow_command(
@@ -837,11 +849,13 @@ mod tests {
                     TaskFlowTransition::Start,
                     now_ms + 2,
                 )
-                .expect("start command"),
+                .unwrap_or_else(|error| panic!("start command: {error:?}")),
             )
             .await
-            .expect("start run");
-        let digest = intent.digest().expect("intent digest");
+            .unwrap_or_else(|error| panic!("start run: {error:?}"));
+        let digest = intent
+            .digest()
+            .unwrap_or_else(|error| panic!("intent digest: {error:?}"));
         fixture
             .store
             .prepare_taskflow_step(
@@ -855,7 +869,7 @@ mod tests {
                 now_ms + 3,
             )
             .await
-            .expect("prepare step");
+            .unwrap_or_else(|error| panic!("prepare step: {error:?}"));
         fixture
             .store
             .claim_taskflow_step(
@@ -869,7 +883,7 @@ mod tests {
                 now_ms + 4,
             )
             .await
-            .expect("claim step");
+            .unwrap_or_else(|error| panic!("claim step: {error:?}"));
         fence
     }
 
@@ -878,7 +892,9 @@ mod tests {
         now_ms: u64,
         signing_key: &SigningKey,
     ) -> SignedFinalUseGrant {
-        let binding = intent.final_use_binding().expect("final-use binding");
+        let binding = intent
+            .final_use_binding()
+            .unwrap_or_else(|error| panic!("final-use binding: {error:?}"));
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "automation-security-owner".to_string(),
@@ -890,14 +906,19 @@ mod tests {
             expires_at_unix_ms: now_ms + 30_000,
         };
         let signature = signing_key
-            .sign(&grant.signing_bytes().expect("signing bytes"))
+            .sign(
+                &grant
+                    .signing_bytes()
+                    .unwrap_or_else(|error| panic!("signing bytes: {error:?}")),
+            )
             .to_bytes()
             .to_vec();
         SignedFinalUseGrant { grant, signature }
     }
 
     fn digest_bytes_for_test(digest: &Sha256Digest) -> [u8; 32] {
-        decode_hex_array::<32>(digest.as_str(), "digest").expect("digest bytes")
+        decode_hex_array::<32>(digest.as_str(), "digest")
+            .unwrap_or_else(|error| panic!("digest bytes: {error:?}"))
     }
 
     fn hex(bytes: &[u8]) -> String {

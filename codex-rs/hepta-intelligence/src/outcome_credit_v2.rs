@@ -375,7 +375,7 @@ mod tests {
         }
 
         fn directory(&self) -> File {
-            File::open(self._temp.path()).expect("directory")
+            crate::durable_test_support::open_directory(self._temp.path())
         }
 
         fn writer(&self) -> LedgerWriter {

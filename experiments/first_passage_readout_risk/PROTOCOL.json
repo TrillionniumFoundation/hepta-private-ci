@@ -1,0 +1,246 @@
+{
+  "schema": "hepta.readout-risk.v2-protocol.v1",
+  "namespace": "hepta.network.readout-risk.v2.20261030",
+  "status": "implementation_preregistered_before_any_new_identity_data_encoder_execution_or_fit",
+  "proposal": {
+    "path": "experiments/first_passage_operator/ci_evidence/recovery/value/network_readonly_audit/OPTIONAL_V2_PLAN.json",
+    "sha256": "8531f2d53f607a1be055200433a7765dd629f21bf9e2ddf3c86a7141b274e718"
+  },
+  "mechanism": "The effect of fitting a linear diagnostic head to mean noisy features rather than to the mean single-rollout binary cross entropy on the same cached noisy features.",
+  "original_study": "The original confirmation remains 0/6. Reusing all three frozen order-task encoders is deliberate conditioning, not three new training replications. Original source, weights, data, metrics and results remain unchanged.",
+  "encoders": [
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_order_first_passage_3109.json",
+      "sha256": "4c5fb914b29c0777c8ae9f8bfc00509b954c98c658494ee21a75c715f5bc5445",
+      "seed": 3109
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_order_first_passage_3163.json",
+      "sha256": "a48c572cded49d7d2a82884fac9fbdd1d9b6cbbc3f8e8f94775c01b9c939ef78",
+      "seed": 3163
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_order_first_passage_3203.json",
+      "sha256": "dd28b55b5c3a229e9bff441bad1a1c19c455be34202b51a8753ac069befdaa50",
+      "seed": 3203
+    }
+  ],
+  "source_paths": [
+    ".github/workflows/hepta-operator-diagnostics.yml",
+    "experiments/first_passage_readout_risk/__init__.py",
+    "experiments/first_passage_readout_risk/artifacts.py",
+    "experiments/first_passage_readout_risk/features.py",
+    "experiments/first_passage_readout_risk/risk.py",
+    "experiments/first_passage_readout_risk/study.py",
+    "experiments/first_passage_readout_risk/test_math.py",
+    "experiments/first_passage_readout_risk/PROTOCOL.json",
+    "experiments/first_passage_readout_risk/requirements.txt",
+    "experiments/first_passage_readout_risk/README.md",
+    "experiments/first_passage_operator/__init__.py",
+    "experiments/first_passage_operator/network.py",
+    "experiments/first_passage_operator/tasks.py",
+    "experiments/first_passage_operator/train_network.py",
+    "experiments/first_passage_operator/NETWORK_PROTOCOL.json",
+    "experiments/first_passage_operator/requirements.txt",
+    "experiments/first_passage_cell/__init__.py",
+    "experiments/first_passage_cell/cell.py",
+    "experiments/first_passage_cell/kernels.py",
+    "experiments/first_passage_operator/ci_evidence/recovery/value/network_readonly_audit/OPTIONAL_V2_PLAN.json"
+  ],
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "torch": "2.15.0+cpu",
+    "dtype": "float64",
+    "device": "cpu",
+    "thread_environment": [
+      "OMP_NUM_THREADS",
+      "OPENBLAS_NUM_THREADS",
+      "MKL_NUM_THREADS",
+      "NUMEXPR_NUM_THREADS",
+      "VECLIB_MAXIMUM_THREADS",
+      "BLIS_NUM_THREADS"
+    ],
+    "torch_intraop_threads": 1,
+    "torch_interop_threads": 1,
+    "torch_deterministic_algorithms": true,
+    "dependency_receipt": "Exact requirements bytes are frozen; runtime retains installed METADATA/RECORD SHA256 and NumPy/Torch build details. CI must also retain its pip installation report. No wheel-bit or cross-hardware bitwise identity claim follows solely from a version."
+  },
+  "splits": {
+    "train": [
+      256,
+      16
+    ],
+    "development": [
+      128,
+      16
+    ],
+    "confirmation": [
+      256,
+      32
+    ]
+  },
+  "budget": {
+    "encoders": 3,
+    "heads_per_encoder": 2,
+    "parameters_per_head": 4,
+    "train_examples_per_encoder": 256,
+    "train_rollouts_per_example": 16,
+    "development_examples_per_encoder": 128,
+    "development_rollouts_per_example": 16,
+    "confirmation_examples_per_encoder": 256,
+    "confirmation_rollouts_per_example": 32,
+    "total_encoder_trajectory_evaluations": 43008,
+    "total_deterministic_head_fits": 6,
+    "development_role": "Descriptive diagnostics only; no early stopping, head selection, hyperparameter tuning or confirmation promotion."
+  },
+  "input_distribution": {
+    "task": "order",
+    "segments": 8,
+    "channels": 2,
+    "segment_seconds": 0.25,
+    "label": "Independent Bernoulli(1/2) per example, drawn first.",
+    "noise": "After label, draw normal(0,0.12,size=(1,8,2)); take index0.",
+    "pulse_times": "Then independent early=int(integers(1,3)), late=int(integers(5,7)).",
+    "pulse_channels": "Add2.5 at (early,label) and (late,1-label).",
+    "frozen_reference": "Same distribution as first_passage_operator/tasks.py order branch; never call its old namespace or load original examples. Each encoder has its own registered fresh examples."
+  },
+  "streams": {
+    "encoding": "UTF-8, no spaces or terminal newline; decimal integers without padding.",
+    "key": "namespace|role|encoder_seed|example_index|rollout_index",
+    "roles": [
+      "train/input",
+      "train/trajectory",
+      "development/input",
+      "development/trajectory",
+      "confirmation/input",
+      "confirmation/trajectory"
+    ],
+    "input_rollout_index": -1,
+    "example_indices": "0..examples-1 for each encoder and split",
+    "trajectory_rollout_indices": "0..rollouts-1",
+    "seed": "Full32-byte SHA256 digest interpreted as unsigned little-endian integer; decimal seed and full key/digest recorded.",
+    "generator": "numpy.random.Generator(numpy.random.PCG64(seed)); original native forward uses pinned NumPy default_rng(seed), whose bit generator is PCG64.",
+    "bootstrap_key": "hepta.network.readout-risk.v2.20261030|bootstrap",
+    "bootstrap_seed": "Same SHA256/full256-bit/little-endian conversion, with the exact bootstrap_key only.",
+    "input_stream_count": 1920,
+    "trajectory_stream_count": 43008,
+    "bootstrap_stream_count": 1,
+    "constructor_randomness": "Original RenewalNetwork constructor uses its local Torch generator seeded by the frozen encoder seed; every parameter is immediately overwritten and checked before forward. It is invoked twice per encoder; no constructor output is used as data or fit initialization.",
+    "independence_claim": "Named pseudorandom streams; no mathematical independence or common Brownian paths across encoders claimed."
+  },
+  "extraction": {
+    "forward": "Use unmodified RenewalNetwork(kind=first_passage).forward with batch1, capture=True, torch.no_grad and all requires_grad False.",
+    "features": "Final second-layer3-dimensional decaying count trace only, reconstructed from native captured counts with the same Torch float64 decay recurrence.",
+    "affine_verification": "Every one of43008 cached trajectories must reproduce its original native affine score at rtol=atol=1e-12; no extra diagnostic encoder evaluations.",
+    "weights": "Strict restore and byte-canonical comparison of all55 parameters; check unchanged after each split.",
+    "logs": "Per-split manifest plus64-example NPZ shards include input,label,feature,native logit,event counts and affine error. Native event list length must equal count at each of16 layer-segments.",
+    "native_reference": "Evaluate original native head on same fresh traces descriptively; no additional gate."
+  },
+  "preprocessing": {
+    "fit_scope": "For each encoder, pool only its cached training examples and rollouts.",
+    "location": "Per-feature mean of pooled training traces.",
+    "scale": "max(per-feature population standard deviation of pooled training traces, 1e-8).",
+    "same_for_both_heads": true
+  },
+  "arms": [
+    {
+      "name": "mean_feature_head",
+      "objective": "mean_i BCE(y_i, w^T mean_r Z_ir + b) + (0.001/2)*||w||_2^2"
+    },
+    {
+      "name": "single_rollout_risk_head",
+      "objective": "mean_i mean_r BCE(y_i, w^T Z_ir + b) + (0.001/2)*||w||_2^2"
+    }
+  ],
+  "optimizer": {
+    "method": "L-BFGS-B",
+    "initial_parameters": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "options": {
+      "maxiter": 200,
+      "maxls": 40,
+      "maxfun": 10000,
+      "gtol": 1e-08,
+      "ftol": 1e-12
+    },
+    "regularization": "Same coefficient 0.001 on three standardized-feature weights; intercept unpenalized.",
+    "stable_loss": "logaddexp(0,score) - label*score; no prediction clipping changes to the target risk.",
+    "numerical_acceptance": "Final four coefficients, objective and analytic gradient finite; gradient infinity norm<=1e-6. Retain optimizer success/status independently. No cap change, restart or replacement fit.",
+    "exception_policy": "Each attempted fit is recorded, including exceptions/nonconvergence. Complete the six attempts if cache generation is valid. Finite heads can be evaluated even if the numeric acceptance fails; the scientific gate must then remain numerically incomplete."
+  },
+  "phase_order": [
+    "Verify published parent, exact freeze bytes, dependency versions and threads.",
+    "Generate training cache, fit each fixed pair, generate descriptive development cache; retain all three encoders.",
+    "Write six-head hash freeze before opening any confirmation identity.",
+    "Generate exactly the confirmation budget; evaluate each head on each single trajectory, then average losses within example.",
+    "Run the one registered paired bootstrap, report result, costs and immutable artifact manifest."
+  ],
+  "confirmation": {
+    "primary_estimand": "Expected single-rollout BCE of the mean-feature-fitted head minus that of the risk-fitted head, averaged equally across the three frozen encoders.",
+    "paired_observations": "Both heads are evaluated on identical cached confirmation traces and labels. Average 32 losses within an example before inference; do not treat the 32 rollouts as independent examples.",
+    "bootstrap": "4000 registered replicas: sample three encoder indices with replacement, then paired complete examples within each selected encoder. Preserve all within-example repeats.",
+    "bootstrap_seed_namespace": "hepta.network.readout-risk.v2.20261030|bootstrap",
+    "empirical_lower_quantile": 0.05,
+    "proposed_practical_margin_nats": 0.02,
+    "single_gate": "Empirical lower endpoint exceeds 0.02 and all three encoder-specific means are positive.",
+    "coverage_limit": "An empirical resampling summary conditional on three already-selected frozen encoders; not a population coverage guarantee, new training-seed robustness result or universal superiority statement.",
+    "descriptive_only": "The original native head may be evaluated on the same fresh traces as a predeclared reference, with no additional gate or post-hoc selection.",
+    "quantile_method": "numpy.quantile(method=linear)",
+    "successful_execution_is_not_a_scientific_pass": true
+  },
+  "claims": {
+    "if_passed": "For these three frozen order-task representations and this bounded fresh-data experiment, fitting the diagnostic head to single-rollout risk improved that risk relative to fitting to mean features by the proposed margin.",
+    "not_allowed": [
+      "The original native network was repaired or original confirmation gates now pass.",
+      "The upstream straight-through estimator is unbiased or the encoder learned optimally.",
+      "The method beats LIF/RNN across tasks, is compute-optimal, or has optimal coupled-neuron firing boundaries."
+    ],
+    "coverage_limit": "An empirical resampling summary conditional on three already-selected frozen encoders; not a population coverage guarantee, new training-seed robustness result or universal superiority statement.",
+    "native_head_warning": "Jensen convexity explains why the two objectives differ but does not guarantee out-of-sample improvement after fitting. The native head already used a single-rollout BCE objective during joint training; this proposal therefore tests a diagnostic explanation, not a correction of the original native-head objective or upstream surrogate."
+  },
+  "cost_accounting": "Cache generation is shared by both arms; report its measured wall time/event counts separately from optimizer iterations and head fitting time. Deployed prediction uses one trajectory. Confirmation repeats estimate expected risk; they are not an ensemble policy.",
+  "stop_rule": "Run the frozen design once. Report pass, negative result or numerical incompleteness with all six heads and all three encoders. Do not add repeats, choose a subset of encoders, lower the margin, switch to ensemble loss or start a width/optimizer sweep to obtain a pass. Any subsequent study is a distinct research question with fresh preregistration.",
+  "execution_guard": {
+    "commit_subject": "research: execute frozen readout-risk v2",
+    "parent": "Exactly one parent; equal CLI --freeze-commit and RUN_REQUEST.freeze_commit. The only parent-to-HEAD change must be addition of RUN_REQUEST.json; no source, workflow or result change is admitted.",
+    "request_schema": "hepta.readout-risk.v2-run-request.v1",
+    "request_fields": [
+      "schema",
+      "namespace",
+      "freeze_commit",
+      "one_shot"
+    ],
+    "one_shot": true,
+    "ci_guard": "Root-maintained CI must require pull_request.synchronize, exact subject and run_attempt=1; no later source-fix commit triggers execution. Script requires a wholly new output directory and has no resume/retry option."
+  },
+  "output_contract": {
+    "maximum_blob_bytes_exclusive": 480000,
+    "shard_examples": 64,
+    "expected_streams": "Every used input/trajectory key, full digest and decimal seed in per-shard streams.jsonl.gz; bootstrap stream separately.",
+    "paths": [
+      "RUN_STARTED.json",
+      "SOURCE_FREEZE.json",
+      "PROTOCOL.json",
+      "cache/{seed}/{split}_{start:04d}.npz",
+      "cache/{seed}/{split}_{start:04d}.streams.jsonl.gz",
+      "cache/{seed}/{split}.json",
+      "heads/{seed}/{arm}.json",
+      "development/{seed}.json",
+      "HEADS_FROZEN.json",
+      "confirmation/{seed}.json",
+      "BOOTSTRAP_STREAM.json",
+      "bootstrap_replicates.npz (if finite comparison)",
+      "COMPARISON.json",
+      "COST.json",
+      "RUN_FINISHED.json or FAILURE.json",
+      "ARTIFACT_MANIFEST.json"
+    ],
+    "reproduction": "Verify retained source freeze and the six-head pre-confirmation freeze. Read retained caches and heads only. Recompute the same descriptive losses and same4000 bootstrap replicas; do not run an encoder, generate new inputs or refit. Compare numeric output at rtol=atol=1e-12 and decisions exactly."
+  }
+}

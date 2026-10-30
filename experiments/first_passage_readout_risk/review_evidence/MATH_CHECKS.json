@@ -1,0 +1,77 @@
+{
+  "schema": "hepta.readout-risk.v2-source-review.v1",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "-v",
+    "experiments.first_passage_readout_risk.test_math"
+  ],
+  "utc_started": "2026-10-30T17:24:48.055588+00:00",
+  "exit_code": 0,
+  "source_files": [
+    {
+      "path": "experiments/first_passage_readout_risk/PROTOCOL.json",
+      "bytes": 14262,
+      "sha256": "3ec488f148fcc6339d3463b40b4de3438772ec40c6ba2747693f0c21c10ba188"
+    },
+    {
+      "path": "experiments/first_passage_readout_risk/README.md",
+      "bytes": 4290,
+      "sha256": "d1cdae9650fa3d335e685058e435e23b89de21d6f450e8d0b79adb41f3a36a66"
+    },
+    {
+      "path": "experiments/first_passage_readout_risk/__init__.py",
+      "bytes": 80,
+      "sha256": "47c34b6493bb79412340df1877f72a953b8c05af81d0c979fd95a504ed0bd62b"
+    },
+    {
+      "path": "experiments/first_passage_readout_risk/artifacts.py",
+      "bytes": 5258,
+      "sha256": "6408992c9bade364913aec51ff6c414a286075169d01580858175bd3fa5c824d"
+    },
+    {
+      "path": "experiments/first_passage_readout_risk/features.py",
+      "bytes": 10087,
+      "sha256": "b42e66f95c03b8b68a7a369c10851199ed94a0cd2079e1e3b4dab38345d53834"
+    },
+    {
+      "path": "experiments/first_passage_readout_risk/requirements.txt",
+      "bytes": 100,
+      "sha256": "1932538fc4cbd9d2cb2f9d08373d91de1578218a936786fea175e2c7d6bd1a23"
+    },
+    {
+      "path": "experiments/first_passage_readout_risk/risk.py",
+      "bytes": 4589,
+      "sha256": "d95861b5781b29f1c1c6731cbfdee9110fe9e5be65c80d0cfa8cdc116a08fbe2"
+    },
+    {
+      "path": "experiments/first_passage_readout_risk/study.py",
+      "bytes": 10478,
+      "sha256": "702f20b981f18f3ab1471f0fb19a84027df49d2e4643b99775a003860fbd7516"
+    },
+    {
+      "path": "experiments/first_passage_readout_risk/test_math.py",
+      "bytes": 2704,
+      "sha256": "5b3b4e201f3d3bd97e092d9022f736e15f96fec5bc5c3bcc59d90c79c3e8e38c"
+    }
+  ],
+  "thread_environment": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "VECLIB_MAXIMUM_THREADS": "1",
+    "BLIS_NUM_THREADS": "1"
+  },
+  "log": {
+    "path": "experiments/first_passage_readout_risk/review_evidence/math_checks.log",
+    "bytes": 721,
+    "sha256": "71b1799fe38a0109f39faecb029ffab172525e46e5fc96a60cc8cd7ae815799b"
+  },
+  "scope": "Three deterministic small-array mathematical unit checks only. No RNG calls, new study identities/data, native encoder execution or optimizer fits. Not validation of the unexecuted native extraction/complete study.",
+  "native_encoder_executions": 0,
+  "head_fits": 0,
+  "new_study_identities": 0,
+  "local_torch": "not installed; no installation requested"
+}

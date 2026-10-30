@@ -1,0 +1,80 @@
+{
+  "recorded_utc": "2026-10-29T07:23:53.383557+00:00",
+  "phase": "source_repairs_before_root_final_format_and_native_ci",
+  "baseline_commit": "2abafe82a99d6def2132e605e57af183e3080194",
+  "source_sha256": {
+    "MODULE.bazel": "3db1f24fe88d5a910c005b58cf48ea57c4e2d835363b4344ac309b4283c7f25e",
+    "third_party/v8/BUILD.bazel": "56146ae44f10f152eaf8e943613c3d4f69c207ac0e7344cf9b2950c56eb59931",
+    "third_party/v8/README.md": "e91b95f8be5c578608990564a66b16f121a10b3c329c1445ca97c8b108e333f9",
+    "third_party/v8/rusty_v8_150_4_0.sha256": "0a1d099ca554154fc9f3c28ededbafab0f6f9274f55d04cb407bde0ac14c572d",
+    "codex-rs/v8-poc/BUILD.bazel": "dce521145ae5c0f6981ab732a0f63cd8e17d7a6cfe595b477216369b9cac3b3e",
+    ".github/scripts/test_rusty_v8_msvc_pair.py": "962c1656ef8b8b90373c95d697612806b96d0e0fa88762930e41ef5a2eed0c8e",
+    "codex-rs/exec-server/src/local_file_system.rs": "1177f9b38386517cbf99ab4503db35eee2f160e914f72aa586be256ce98d2675",
+    "codex-rs/exec-server/src/local_file_system_path_uri_tests.rs": "0b0142972c6d3e4223af98e1537719a6f1bb98acd974116511aa568f187bf501",
+    "codex-rs/git-utils/src/git_process_tests.rs": "1a73f5d4ee79b57befab30ea72014a09797202cc8166ba9fe63e9d2a31964dac",
+    "codex-rs/ext/queue/tests/queue_service.rs": "b070af5609ef4c7e8b429205dab4c735889e637628aba9adaec51f0a7c068863"
+  },
+  "repairs": {
+    "v8_msvc_abi_pair": {
+      "observed": "MODULE selects sandbox-enabled MSVC archives and v8 crate sandbox feature, but third_party selector used bundled non-sandbox bindings and v8-poc disabled sandbox on MSVC. Original Windows logs contain native configurable-pool initialization fatal; no standalone Rust sandbox left/right assertion.",
+      "change": "Pin matching published sandbox bindings for both MSVC architectures, use them in consumer selectors, and enable v8-poc sandbox feature.",
+      "release": "https://github.com/openai/codex/releases/tag/rusty-v8-v150.4.0",
+      "verified_binding_sha256": "dabf78ba1faac127660db9862b1d0354175c71b8db2d4fcb5bacbd9c93576b16",
+      "verification": "Downloaded both 40354-byte bindings and both published checksum manifests; digests agree with GitHub release metadata. Canonical checksum gate and 13 artifact tests pass.",
+      "remaining": "Native Windows v8-poc and code-mode-host tests; no claim the native fatal is closed yet."
+    },
+    "authorized_read_capability": {
+      "observed": "LocalFileSystem advertises stable-handle authorized reads unavailable on non-macOS, but inherited the generic stream default; Windows RPC returned PermissionDenied/InvalidRequest instead of Unsupported/InternalError.",
+      "change": "Explicit non-macOS owner override returns Unsupported before inspecting a path. Regression exercises both readable and absent paths. Existing authorized_read_rpc assertions unchanged.",
+      "remaining": "Compile and run original owner/RPC tests on native target."
+    },
+    "git_process_tree_fixture": {
+      "observed": "Original Windows tests timed out waiting for descendant readiness; logs provided no PowerShell stderr.",
+      "change": "Self-spawn the original Rust test executable for Windows wrapper and child roles, preserving inherited stdout/stderr, production Job Object containment, 100ms timeout, and 3s survival assertion. Add early-exit/readiness diagnostics. No ignored or skipped tests.",
+      "remaining": "Native Windows run required; original shell launch root cause was not proven."
+    },
+    "queue_hook_fixture": {
+      "observed": "Fixtures used unquoted python3 commands on Windows; hook errors were not included in original failure log.",
+      "change": "Use Windows python and quoted script path; quote Unix python3 path including apostrophes. Hook authorization fixes are owned separately by CI agent.",
+      "remaining": "Native hook integration run; Python launch defect is not claimed as proven sole root cause."
+    },
+    "app_server_schema": {
+      "observed": "Original JSON fixtures and stable/experimental precomputed export contracts failed; current source contains TurnRecover and ThreadQueueReconcile types absent from stale exports.",
+      "change": "No hand-edited generated fixtures. Root arranging canonical remote regeneration because local storage cannot hold a full build.",
+      "commands": [
+        "just write-app-server-schema",
+        "just write-app-server-schema --experimental",
+        "just test -p codex-app-server-protocol --lib"
+      ],
+      "bazel_target": "//codex-rs/app-server-protocol:app-server-protocol-unit-tests",
+      "capture_subtree": "codex-rs/app-server-protocol/schema",
+      "remaining": "Regenerate, retrieve exact schema outputs, and pass original fixture gates."
+    }
+  },
+  "local_validation": [
+    {
+      "command": "python3 .github/scripts/rusty_v8_bazel.py check-module-bazel",
+      "status": "passed"
+    },
+    {
+      "command": "python3 -m unittest discover -s .github/scripts -p 'test_rusty_v8*.py' -v",
+      "status": "passed",
+      "tests": 13
+    },
+    {
+      "command": "rustfmt --check --edition 2024 edited Rust files",
+      "status": "syntax parsed; final Git fixture has formatting-only wrapping differences; root owns canonical final just fmt",
+      "limitations": "Not a Rust compile or native runtime test."
+    },
+    {
+      "command": "git diff --check (final scoped source files)",
+      "status": "passed"
+    },
+    {
+      "command": "MSVC pairing regression against original HEAD MODULE/BUILD contents",
+      "status": "both architecture subtests correctly fail; repaired sources pass",
+      "baseline_failures": 2
+    }
+  ],
+  "publication": "Root owns all GitHub actions and final canonical format; no remote mutations by this agent."
+}

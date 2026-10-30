@@ -861,7 +861,32 @@ impl CodexThread {
     }
 
     pub async fn next_event(&self) -> CodexResult<Event> {
-        self.io.next_event().await
+        let (event, _completion) = self.next_event_with_completion().await?;
+        Ok(event)
+    }
+
+    /// Receives an event with the exact completion owners captured when Core
+    /// published it. Terminal events precede persistence/lifecycle cleanup, so
+    /// clients must await this read-only barrier before advertising readiness.
+    /// Nonterminal events have an immediately ready barrier. Later recovery of
+    /// the same logical turn id cannot attach a new owner to the received event.
+    pub async fn next_event_with_completion(
+        &self,
+    ) -> CodexResult<(
+        Event,
+        impl std::future::Future<Output = ()> + Send + 'static + use<>,
+    )> {
+        self.session.receive_event_with_completion(&self.io).await
+    }
+
+    /// Captures the owners still fencing the current idle callback. Defer
+    /// automatic work until this future completes, then use ordinary admission:
+    /// a completed barrier does not prove the thread is still idle or authorize
+    /// a start after shutdown. Do not await it inside the owner's callback.
+    pub fn current_turn_completion_barrier(
+        &self,
+    ) -> impl std::future::Future<Output = ()> + Send + 'static + use<> {
+        self.session.turn_completion_barrier(None)
     }
 
     pub async fn agent_status(&self) -> AgentStatus {

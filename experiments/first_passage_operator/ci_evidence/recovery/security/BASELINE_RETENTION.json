@@ -1,0 +1,319 @@
+{
+  "purpose": "Evidence of why old shared versions cannot be retained after the approved security migrations",
+  "claims_limited_to": "Cargo resolver constraints, not native compatibility or security tests",
+  "baseline_checks": [
+    {
+      "name": "arrayvec",
+      "baseline_version": "0.7.6",
+      "log_sha256": "67afb1e5bea7207e3cd5b5556f67d127e3d396b53464fd60a8eb5b4bf33280a6",
+      "cargo_error": "error: failed to select a version for the requirement `arrayvec = \"^0.7.8\"`\ncandidate versions found which didn't match: 0.7.6\nlocation searched: crates.io index\nrequired by package `vodozemac v0.11.1`\n    ... which satisfies dependency `vodozemac = \"^0.11.0\"` (locked to 0.11.1) of package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrixd v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrixd)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "async-trait",
+      "baseline_version": "0.1.89",
+      "log_sha256": "378e02ed987966c9683e069f052de50eb94abc700b8c48050ca01d7e428f3b36",
+      "cargo_error": "error: failed to select a version for the requirement `async-trait = \"^0.1.92\"`\ncandidate versions found which didn't match: 0.1.89\nlocation searched: crates.io index\nrequired by package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrix-sdk v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrix-sdk)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "base64",
+      "baseline_version": "0.23.0",
+      "log_sha256": "96886dc77fbb32d5864afafa040ea8b498055b256e6d942e5a8430460bb16343",
+      "cargo_error": "error: failed to select a version for the requirement `base64 = \"^0.23.1\"`\ncandidate versions found which didn't match: 0.23.0\nlocation searched: crates.io index\nrequired by package `matrix-sdk-indexeddb v0.19.1`\n    ... which satisfies dependency `matrix-sdk-indexeddb = \"^0.19.1\"` (locked to 0.19.1) of package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrixd v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrixd)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "bitflags",
+      "baseline_version": "2.13.1",
+      "log_sha256": "82948dccf8661877a1d39078bb5acdc53d2b56c705ac1fea1aaa3676779b8a73",
+      "cargo_error": "error: failed to select a version for the requirement `bitflags = \"^2.13.2\"`\ncandidate versions found which didn't match: 2.13.1\nlocation searched: crates.io index\nrequired by package `matrix-sdk-base v0.19.1`\n    ... which satisfies dependency `matrix-sdk-base = \"^0.19.1\"` (locked to 0.19.1) of package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrixd v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrixd)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "bytes",
+      "baseline_version": "1.11.1",
+      "log_sha256": "2cc967e2e13f16d1076a724b9238a81fea9d4a1e54b6119b4cda7caa7d09d7be",
+      "cargo_error": "error: failed to select a version for the requirement `bytes = \"^1.12.1\"`\ncandidate versions found which didn't match: 1.11.1\nlocation searched: crates.io index\nrequired by package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrix-sdk v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrix-sdk)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "bytesize",
+      "baseline_version": "2.3.0",
+      "log_sha256": "42b96123c04d389f13209f8be20dce1402c16d6f39842a3e5a903842961c934c",
+      "cargo_error": "error: failed to select a version for the requirement `bytesize = \"^2.7.0\"`\ncandidate versions found which didn't match: 2.3.0\nlocation searched: crates.io index\nrequired by package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrix-sdk v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrix-sdk)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "cmov",
+      "baseline_version": "0.5.3",
+      "log_sha256": "fa1bc67202fbc4c87d45c026287b5d224a1cbc1789d65c67930ae44717b718fa",
+      "cargo_error": "error: failed to select a version for the requirement `cmov = \"^0.5.4\"`\ncandidate versions found which didn't match: 0.5.3\nlocation searched: crates.io index\nrequired by package `ctutils v0.4.7`\n    ... which satisfies dependency `ctutils = \"^0.4\"` (locked to 0.4.7) of package `digest v0.11.3`\n    ... which satisfies dependency `digest = \"^0.11\"` (locked to 0.11.3) of package `sha2 v0.11.0`\n    ... which satisfies dependency `sha2 = \"^0.11.0\"` (locked to 0.11.0) of package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrixd v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrixd)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "deranged",
+      "baseline_version": "0.5.5",
+      "log_sha256": "fd50f252642fce5ac59641b1c118f8a0ab0b37ec508e84af6c472604fe40fa49",
+      "cargo_error": "error: failed to select a version for the requirement `deranged = \"^0.5.8\"`\ncandidate versions found which didn't match: 0.5.5\nlocation searched: crates.io index\nrequired by package `time v0.3.55`\n    ... which satisfies dependency `time = \"^0.3.47\"` (locked to 0.3.55) of package `codex-network-proxy v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/network-proxy)`\n    ... which satisfies path dependency `codex-network-proxy` (locked to 0.0.0) of package `codex-protocol v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/protocol)`\n    ... which satisfies path dependency `codex-protocol` (locked to 0.0.0) of package `codex-analytics v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/analytics)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "futures-channel",
+      "baseline_version": "0.3.32",
+      "log_sha256": "b866da1d6e9b9b641e687c89ec8dbf9acc0f5ea56ae7ce60e9915055e1708700",
+      "cargo_error": "error: failed to select a version for the requirement `futures-channel = \"^0.3.34\"`\ncandidate versions found which didn't match: 0.3.32\nlocation searched: crates.io index\nrequired by package `futures-util v0.3.34`\n    ... which satisfies dependency `futures-util = \"^0.3.31\"` (locked to 0.3.34) of package `futures v0.3.31`\n    ... which satisfies dependency `futures = \"^0.3\"` (locked to 0.3.31) of package `codex-cli v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/cli)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "futures-core",
+      "baseline_version": "0.3.32",
+      "log_sha256": "8f5d9353c25b6b1bc45179579a5a4a6d047ba3b861542146be3f4fced9c5af1c",
+      "cargo_error": "error: failed to select a version for the requirement `futures-core = \"^0.3.34\"`\ncandidate versions found which didn't match: 0.3.32\nlocation searched: crates.io index\nrequired by package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrix-sdk v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrix-sdk)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "futures-executor",
+      "baseline_version": "0.3.32",
+      "log_sha256": "c2c079f88eae3d03c6b37ef27816d9980effaac8325a79f4785be444e8dc9a2d",
+      "cargo_error": "error: failed to select a version for the requirement `futures-executor = \"^0.3.34\"`\ncandidate versions found which didn't match: 0.3.32\nlocation searched: crates.io index\nrequired by package `matrix-sdk-common v0.19.1`\n    ... which satisfies dependency `matrix-sdk-common = \"^0.19.1\"` (locked to 0.19.1) of package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrixd v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrixd)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "futures-io",
+      "baseline_version": "0.3.32",
+      "log_sha256": "850aa9177fb30e2a9e5eb68c654a8686153abeacc91dd50e56cc15f2c27a7b66",
+      "cargo_error": "error: failed to select a version for the requirement `futures-io = \"^0.3.34\"`\ncandidate versions found which didn't match: 0.3.32\nlocation searched: crates.io index\nrequired by package `futures-util v0.3.34`\n    ... which satisfies dependency `futures-util = \"^0.3.31\"` (locked to 0.3.34) of package `futures v0.3.31`\n    ... which satisfies dependency `futures = \"^0.3\"` (locked to 0.3.31) of package `codex-cli v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/cli)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "futures-macro",
+      "baseline_version": "0.3.32",
+      "log_sha256": "62875e7629e4a87031c26a7abc4e000cb359c96d67d77d1a2e3da97f282985dc",
+      "cargo_error": "error: failed to select a version for the requirement `futures-macro = \"=0.3.34\"`\ncandidate versions found which didn't match: 0.3.32\nlocation searched: crates.io index\nrequired by package `futures-util v0.3.34`\n    ... which satisfies dependency `futures-util = \"^0.3.31\"` (locked to 0.3.34) of package `futures v0.3.31`\n    ... which satisfies dependency `futures = \"^0.3\"` (locked to 0.3.31) of package `codex-cli v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/cli)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "futures-sink",
+      "baseline_version": "0.3.32",
+      "log_sha256": "98f22bfa4fed6d9fcb57bb63b402db66e35c84420de8b2c431c18276600f8539",
+      "cargo_error": "error: failed to select a version for the requirement `futures-sink = \"^0.3.34\"`\ncandidate versions found which didn't match: 0.3.32\nlocation searched: crates.io index\nrequired by package `futures-channel v0.3.34`\n    ... which satisfies dependency `futures-channel = \"^0.3.31\"` (locked to 0.3.34) of package `futures v0.3.31`\n    ... which satisfies dependency `futures = \"^0.3\"` (locked to 0.3.31) of package `codex-cli v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/cli)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "futures-task",
+      "baseline_version": "0.3.32",
+      "log_sha256": "b6128e912ec5c9005db6709b1c17326b9da9349c930e9225bf09485e999df63c",
+      "cargo_error": "error: failed to select a version for the requirement `futures-task = \"^0.3.34\"`\ncandidate versions found which didn't match: 0.3.32\nlocation searched: crates.io index\nrequired by package `futures-util v0.3.34`\n    ... which satisfies dependency `futures-util = \"^0.3.31\"` (locked to 0.3.34) of package `futures v0.3.31`\n    ... which satisfies dependency `futures = \"^0.3\"` (locked to 0.3.31) of package `codex-cli v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/cli)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "futures-util",
+      "baseline_version": "0.3.32",
+      "log_sha256": "a98922a0a3786afa7cbf91cde0f998cf27476b3faf05a0dd696a6675f83861a1",
+      "cargo_error": "error: failed to select a version for the requirement `futures-util = \"^0.3.34\"`\ncandidate versions found which didn't match: 0.3.32\nlocation searched: crates.io index\nrequired by package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrix-sdk v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrix-sdk)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "getrandom",
+      "baseline_version": "0.4.2",
+      "log_sha256": "ffade1e90f2e541fccde928803bf46ec1341278cddb87089d064001fa7cb3fc2",
+      "cargo_error": "error: failed to select a version for the requirement `getrandom = \"^0.4.3\"`\ncandidate versions found which didn't match: 0.4.2\nlocation searched: crates.io index\nrequired by package `matrix-sdk-indexeddb v0.19.1`\n    ... which satisfies dependency `matrix-sdk-indexeddb = \"^0.19.1\"` (locked to 0.19.1) of package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrixd v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrixd)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "http",
+      "baseline_version": "1.4.0",
+      "log_sha256": "7a212ae2370371afc29433b5c994d9734c4601d033d0bdbeb9e379e9f0aec6e8",
+      "cargo_error": "error: failed to select a version for the requirement `http = \"^1.5.0\"`\ncandidate versions found which didn't match: 1.4.0\nlocation searched: crates.io index\nrequired by package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrix-sdk v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrix-sdk)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "hybrid-array",
+      "baseline_version": "0.4.12",
+      "log_sha256": "433e2f380c6cf29e1a768ed0290a551f0ad822de819192352a1eee1b770763a6",
+      "cargo_error": "error: failed to select a version for the requirement `hybrid-array = \"^0.4.13\"`\ncandidate versions found which didn't match: 0.4.12\nlocation searched: crates.io index\nrequired by package `elliptic-curve v0.14.3`\n    ... which satisfies dependency `elliptic-curve = \"^0.14.1\"` (locked to 0.14.3) of package `p256 v0.14.0`\n    ... which satisfies dependency `p256 = \"^0.14.0\"` (locked to 0.14.0) of package `aws-config v1.8.12 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/aws-config-1.8.12)`\n    ... which satisfies dependency `aws-config = \"=1.8.12\"` (locked to 1.8.12) of package `codex-aws-auth v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/aws-auth)`\n    ... which satisfies path dependency `codex-aws-auth` (locked to 0.0.0) of package `codex-app-server v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/app-server)`\n    ... which satisfies path dependency `codex-app-server` (locked to 0.0.0) of package `codex-cli v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/cli)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "indexmap",
+      "baseline_version": "2.14.0",
+      "log_sha256": "b056574cc94d07105d53ba9d315e1a7f74a12009f1bc0135c5e76d881bb113ff",
+      "cargo_error": "error: failed to select a version for the requirement `indexmap = \"^2.14.2\"`\ncandidate versions found which didn't match: 2.14.0\nlocation searched: crates.io index\nrequired by package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrix-sdk v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrix-sdk)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "js-sys",
+      "baseline_version": "0.3.85",
+      "log_sha256": "bd607a41678160926c041a4dccfd38be1d7aa6b44f9c6b4a25ff33cedd3ad152",
+      "cargo_error": "error: failed to select a version for the requirement `js-sys = \"=0.3.106\"`\ncandidate versions found which didn't match: 0.3.85\nlocation searched: crates.io index\nrequired by package `wasm-bindgen-futures v0.4.79`\n    ... which satisfies dependency `wasm-bindgen-futures = \"^0.4.18\"` (locked to 0.4.79) of package `reqwest v0.12.28`\n    ... which satisfies dependency `reqwest = \"^0.12\"` (locked to 0.12.28) of package `codex-hepta-matrixd v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrixd)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "num-conv",
+      "baseline_version": "0.2.0",
+      "log_sha256": "662f09e690505107b4b488b5c6ed2c2213afccefa1c94e54282e6a260a81156c",
+      "cargo_error": "error: failed to select a version for the requirement `num-conv = \"^0.2.2\"`\ncandidate versions found which didn't match: 0.2.0\nlocation searched: crates.io index\nrequired by package `time v0.3.55`\n    ... which satisfies dependency `time = \"^0.3.47\"` (locked to 0.3.55) of package `codex-network-proxy v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/network-proxy)`\n    ... which satisfies path dependency `codex-network-proxy` (locked to 0.0.0) of package `codex-protocol v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/protocol)`\n    ... which satisfies path dependency `codex-protocol` (locked to 0.0.0) of package `codex-analytics v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/analytics)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "pin-project-lite",
+      "baseline_version": "0.2.16",
+      "log_sha256": "edf28f7dc4569fd75ce561fa391abd7f3816fcb4aa9d2ca9232dd86b5656d211",
+      "cargo_error": "error: failed to select a version for the requirement `pin-project-lite = \"^0.2.17\"`\ncandidate versions found which didn't match: 0.2.16\nlocation searched: crates.io index\nrequired by package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrix-sdk v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrix-sdk)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "prost",
+      "baseline_version": "0.14.3",
+      "log_sha256": "cb7d1b5f4dd8f458b7f103bfc35231c993dc60d061d310a1c88653dea8de62f5",
+      "cargo_error": "error: failed to select a version for the requirement `prost = \"^0.14.4\"`\ncandidate versions found which didn't match: 0.14.3\nlocation searched: crates.io index\nrequired by package `vodozemac v0.11.1`\n    ... which satisfies dependency `vodozemac = \"^0.11.0\"` (locked to 0.11.1) of package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrixd v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrixd)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "prost-derive",
+      "baseline_version": "0.14.3",
+      "log_sha256": "33c104726352fbeed54e51904d9d9e6a3b3476caece41632791d1991a9f05ddd",
+      "cargo_error": "error: failed to select a version for the requirement `prost-derive = \"^0.14.4\"`\ncandidate versions found which didn't match: 0.14.3\nlocation searched: crates.io index\nrequired by package `prost v0.14.4`\n    ... which satisfies dependency `prost = \"^0.14.3\"` (locked to 0.14.4) of package `codex-config v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/config)`\n    ... which satisfies path dependency `codex-config` (locked to 0.0.0) of package `codex-login v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/login)`\n    ... which satisfies path dependency `codex-login` (locked to 0.0.0) of package `codex-analytics v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/analytics)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "rand",
+      "baseline_version": "0.10.1",
+      "log_sha256": "8f4746f38900b5867bccb6433536110f047ab2c7e2a69f390d2850bc09a4d2e4",
+      "cargo_error": "error: failed to select a version for the requirement `rand = \"^0.10.2\"`\ncandidate versions found which didn't match: 0.10.1\nlocation searched: crates.io index\nrequired by package `vodozemac v0.11.1`\n    ... which satisfies dependency `vodozemac = \"^0.11.0\"` (locked to 0.11.1) of package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrixd v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrixd)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "regex",
+      "baseline_version": "1.12.3",
+      "log_sha256": "a350fe61252f77cf3544dbf416ce386990de3e471aeb3b17a25d2060ca7f375c",
+      "cargo_error": "    Blocking waiting for file lock on package cache\nerror: failed to select a version for the requirement `regex = \"^1.13.1\"`\ncandidate versions found which didn't match: 1.12.3\nlocation searched: crates.io index\nrequired by package `matrix-sdk-base v0.19.1`\n    ... which satisfies dependency `matrix-sdk-base = \"^0.19.1\"` (locked to 0.19.1) of package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrixd v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrixd)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "regex-automata",
+      "baseline_version": "0.4.13",
+      "log_sha256": "8ae4c146febfafcccf7cd4dd0fea9383d85bf6427af25c6310d9840227049456",
+      "cargo_error": "error: failed to select a version for the requirement `regex-automata = \"^0.4.16\"`\ncandidate versions found which didn't match: 0.4.13\nlocation searched: crates.io index\nrequired by package `regex v1.13.1`\n    ... which satisfies dependency `regex = \"^1.12.3\"` (locked to 1.13.1) of package `codex-rollout v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/rollout)`\n    ... which satisfies path dependency `codex-rollout` (locked to 0.0.0) of package `codex-app-server-protocol v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/app-server-protocol)`\n    ... which satisfies path dependency `codex-app-server-protocol` (locked to 0.0.0) of package `codex-analytics v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/analytics)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "regex-syntax",
+      "baseline_version": "0.8.8",
+      "log_sha256": "25133f1a940705d7c81d317b5c6571e48c91bce0acee84e2d87c9b1e1be77a8c",
+      "cargo_error": "error: failed to select a version for the requirement `regex-syntax = \"^0.8.11\"`\ncandidate versions found which didn't match: 0.8.8\nlocation searched: crates.io index\nrequired by package `regex v1.13.1`\n    ... which satisfies dependency `regex = \"^1.12.3\"` (locked to 1.13.1) of package `codex-rollout v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/rollout)`\n    ... which satisfies path dependency `codex-rollout` (locked to 0.0.0) of package `codex-app-server-protocol v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/app-server-protocol)`\n    ... which satisfies path dependency `codex-app-server-protocol` (locked to 0.0.0) of package `codex-analytics v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/analytics)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "reqwest",
+      "baseline_version": "0.13.4",
+      "log_sha256": "5e5ac7ebc0c99f1ec9a5a8359da5b1dc4beb78084517d97c08145a1aa8ac6f14",
+      "cargo_error": "error: failed to select a version for the requirement `reqwest = \"^0.13.5\"`\ncandidate versions found which didn't match: 0.13.4\nlocation searched: crates.io index\nrequired by package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrix-sdk v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrix-sdk)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "serde",
+      "baseline_version": "1.0.228",
+      "log_sha256": "5cbb0188666ecdf1977c93d727468595ac84021c50a08e3690aa7cab4a1a4276",
+      "cargo_error": "error: failed to select a version for the requirement `serde = \"^1.0.229\"`\ncandidate versions found which didn't match: 1.0.228\nlocation searched: crates.io index\nrequired by package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrix-sdk v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrix-sdk)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "serde_core",
+      "baseline_version": "1.0.228",
+      "log_sha256": "d462c2c429d113aa44138356685b8e51a76a807966691eb3ee8fd510f04da1f6",
+      "cargo_error": "error: failed to select a version for the requirement `serde_core = \"=1.0.229\"`\ncandidate versions found which didn't match: 1.0.228\nlocation searched: crates.io index\nrequired by package `serde v1.0.229`\n    ... which satisfies dependency `serde = \"^1\"` (locked to 1.0.229) of package `codex-analytics v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/analytics)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "serde_derive",
+      "baseline_version": "1.0.228",
+      "log_sha256": "598a7c07687b16e818f83c4b8f593586a25810936bc7704fc6bf5c6978c6e4bd",
+      "cargo_error": "error: failed to select a version for the requirement `serde_derive = \"=1.0.229\"`\ncandidate versions found which didn't match: 1.0.228\nlocation searched: crates.io index\nrequired by package `serde_core v1.0.229`\n    ... which satisfies dependency `serde_core = \"=1.0.229\"` (locked to 1.0.229) of package `serde v1.0.229`\n    ... which satisfies dependency `serde = \"^1\"` (locked to 1.0.229) of package `codex-build-info v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/build-info)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "serde_json",
+      "baseline_version": "1.0.149",
+      "log_sha256": "6872fdbb6c04ef0ca65a0adb4ddc4fa9016ee8c4d97642abce2bf556bf84fe38",
+      "cargo_error": "error: failed to select a version for the requirement `serde_json = \"^1.0.151\"`\ncandidate versions found which didn't match: 1.0.149\nlocation searched: crates.io index\nrequired by package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrix-sdk v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrix-sdk)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "thiserror",
+      "baseline_version": "2.0.18",
+      "log_sha256": "242a088409aaa27f9b7c044bbb945fbbe9c249b440cd70c4a16d83f21671756f",
+      "cargo_error": "error: failed to select a version for the requirement `thiserror = \"^2.0.20\"`\ncandidate versions found which didn't match: 2.0.18\nlocation searched: crates.io index\nrequired by package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrix-sdk v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrix-sdk)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "thiserror-impl",
+      "baseline_version": "2.0.18",
+      "log_sha256": "81858cdae5a710e496602a9369b9e0fba305aa51b81f47f0a91503e0f758e2b4",
+      "cargo_error": "error: failed to select a version for the requirement `thiserror-impl = \"=2.0.21\"`\ncandidate versions found which didn't match: 2.0.18\nlocation searched: crates.io index\nrequired by package `thiserror v2.0.21`\n    ... which satisfies dependency `thiserror = \"^2.0.17\"` (locked to 2.0.21) of package `codex-aws-auth v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/aws-auth)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "time",
+      "baseline_version": "0.3.47",
+      "log_sha256": "3c7df2ece92384854a15a2a49c8efccb2f3b6ec94af3b7039f8b50cb63676a94",
+      "cargo_error": "error: failed to select a version for the requirement `time = \"^0.3.55\"`\ncandidate versions found which didn't match: 0.3.47\nlocation searched: crates.io index\nrequired by package `matrix-sdk-crypto v0.19.1`\n    ... which satisfies dependency `matrix-sdk-crypto = \"^0.19.1\"` (locked to 0.19.1) of package `matrix-sdk-base v0.19.1`\n    ... which satisfies dependency `matrix-sdk-base = \"^0.19.1\"` (locked to 0.19.1) of package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrixd v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrixd)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "time-core",
+      "baseline_version": "0.1.8",
+      "log_sha256": "ff0b85025421a7f574b78e77ba0c41aee21e41e00dd6c55074482aaf77fc7002",
+      "cargo_error": "error: failed to select a version for the requirement `time-core = \"=0.1.9\"`\ncandidate versions found which didn't match: 0.1.8\nlocation searched: crates.io index\nrequired by package `time v0.3.55`\n    ... which satisfies dependency `time = \"^0.3.47\"` (locked to 0.3.55) of package `codex-network-proxy v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/network-proxy)`\n    ... which satisfies path dependency `codex-network-proxy` (locked to 0.0.0) of package `codex-protocol v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/protocol)`\n    ... which satisfies path dependency `codex-protocol` (locked to 0.0.0) of package `codex-analytics v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/analytics)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "time-macros",
+      "baseline_version": "0.2.27",
+      "log_sha256": "b71772eb4fe05aab0dabcfab379463eb49e45db614b6bc65fc2d9ae1a19e2d9c",
+      "cargo_error": "error: failed to select a version for the requirement `time-macros = \"=0.2.32\"`\ncandidate versions found which didn't match: 0.2.27\nlocation searched: crates.io index\nrequired by package `time v0.3.55`\n    ... which satisfies dependency `time = \"^0.3.47\"` (locked to 0.3.55) of package `codex-network-proxy v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/network-proxy)`\n    ... which satisfies path dependency `codex-network-proxy` (locked to 0.0.0) of package `codex-protocol v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/protocol)`\n    ... which satisfies path dependency `codex-protocol` (locked to 0.0.0) of package `codex-analytics v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/analytics)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "tokio",
+      "baseline_version": "1.52.3",
+      "log_sha256": "d7d5bc1f46f9774a19beeff182cb4480e4d7210340370f1fc9ee990fa7ccfc07",
+      "cargo_error": "error: failed to select a version for the requirement `tokio = \"^1.53.1\"`\ncandidate versions found which didn't match: 1.52.3\nlocation searched: crates.io index\nrequired by package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrix-sdk v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrix-sdk)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "tokio-stream",
+      "baseline_version": "0.1.18",
+      "log_sha256": "1f8bcc8f1fe869a28b1546e2ff55bf7cbb29f4afbbb2b4fbece493ef3ce33d94",
+      "cargo_error": "error: failed to select a version for the requirement `tokio-stream = \"^0.1.19\"`\ncandidate versions found which didn't match: 0.1.18\nlocation searched: crates.io index\nrequired by package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrix-sdk v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrix-sdk)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "tokio-util",
+      "baseline_version": "0.7.18",
+      "log_sha256": "3103f4c8356badafb3a35827cce082c574d2e8e183f43eb28e1f540eb43beda9",
+      "cargo_error": "error: failed to select a version for the requirement `tokio-util = \"^0.7.19\"`\ncandidate versions found which didn't match: 0.7.18\nlocation searched: crates.io index\nrequired by package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrix-sdk v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrix-sdk)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "tracing-subscriber",
+      "baseline_version": "0.3.22",
+      "log_sha256": "24012428154a3810a3b2e68d34965a531855fad928d2b04c40456ca3b943270b",
+      "cargo_error": "    Blocking waiting for file lock on package cache\nerror: failed to select a version for the requirement `tracing-subscriber = \"^0.3.23\"`\ncandidate versions found which didn't match: 0.3.22\nlocation searched: crates.io index\nrequired by package `matrix-sdk-common v0.19.1`\n    ... which satisfies dependency `matrix-sdk-common = \"^0.19.1\"` (locked to 0.19.1) of package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrixd v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrixd)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "uuid",
+      "baseline_version": "1.20.0",
+      "log_sha256": "229fe1931827043d9da0f87efbdc00136e49264827cf731089f4e561dc335d29",
+      "cargo_error": "error: failed to select a version for the requirement `uuid = \"^1.26.1\"`\ncandidate versions found which didn't match: 1.20.0\nlocation searched: crates.io index\nrequired by package `matrix-sdk-indexeddb v0.19.1`\n    ... which satisfies dependency `matrix-sdk-indexeddb = \"^0.19.1\"` (locked to 0.19.1) of package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrixd v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrixd)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "wasm-bindgen",
+      "baseline_version": "0.2.108",
+      "log_sha256": "bfbfc9018c12290efd88814ae9b870d8bde095a8d3e59801b5095c45a862f29c",
+      "cargo_error": "error: failed to select a version for the requirement `wasm-bindgen = \"=0.2.129\"`\ncandidate versions found which didn't match: 0.2.108\nlocation searched: crates.io index\nrequired by package `js-sys v0.3.106`\n    ... which satisfies dependency `js-sys = \"^0.3\"` (locked to 0.3.106) of package `uuid v1.29.0`\n    ... which satisfies dependency `uuid = \"^1\"` (locked to 1.29.0) of package `codex-code-mode-host v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/code-mode-host)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "wasm-bindgen-futures",
+      "baseline_version": "0.4.58",
+      "log_sha256": "bdf548b7488e9194668ec409e5c6185eb08743e8a6f738796e9d83c563f165e2",
+      "cargo_error": "error: failed to select a version for `js-sys`.\n    ... required by package `wasm-bindgen-futures v0.4.58`\n    ... which satisfies dependency `wasm-bindgen-futures = \"^0.4.18\"` of package `reqwest v0.12.28`\n    ... which satisfies dependency `reqwest = \"^0.12\"` (locked to 0.12.28) of package `codex-hepta-matrixd v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrixd)`\nversions that meet the requirements `=0.3.85` are: 0.3.85\n\nall possible versions conflict with previously selected packages\n\n  previously selected package `js-sys v0.3.106`\n    ... which satisfies dependency `js-sys = \"^0.3\"` of package `chrono v0.4.43`\n    ... which satisfies dependency `chrono = \"^0.4.43\"` (locked to 0.4.43) of package `codex-cli v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/cli)`\n\nfailed to select a version for `js-sys` which could resolve this conflict\n"
+    },
+    {
+      "name": "wasm-bindgen-macro",
+      "baseline_version": "0.2.108",
+      "log_sha256": "c72cd4f4c700370dcf25003eeee63b373d900efc778731ad019fd1e91057cb92",
+      "cargo_error": "error: failed to select a version for the requirement `wasm-bindgen-macro = \"=0.2.129\"`\ncandidate versions found which didn't match: 0.2.108\nlocation searched: crates.io index\nrequired by package `wasm-bindgen v0.2.129`\n    ... which satisfies dependency `wasm-bindgen = \"^0.2\"` (locked to 0.2.129) of package `uuid v1.29.0`\n    ... which satisfies dependency `uuid = \"^1\"` (locked to 1.29.0) of package `codex-code-mode-host v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/code-mode-host)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "wasm-bindgen-macro-support",
+      "baseline_version": "0.2.108",
+      "log_sha256": "83fc0f77b69b808de102976d36638ad034f0adb6c25c859e34e6258370d1bbec",
+      "cargo_error": "error: failed to select a version for the requirement `wasm-bindgen-macro-support = \"=0.2.129\"`\ncandidate versions found which didn't match: 0.2.108\nlocation searched: crates.io index\nrequired by package `wasm-bindgen-macro v0.2.129`\n    ... which satisfies dependency `wasm-bindgen-macro = \"=0.2.129\"` (locked to 0.2.129) of package `wasm-bindgen v0.2.129`\n    ... which satisfies dependency `wasm-bindgen = \"^0.2\"` (locked to 0.2.129) of package `chrono v0.4.43`\n    ... which satisfies dependency `chrono = \"^0.4.43\"` (locked to 0.4.43) of package `codex-cli v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/cli)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "wasm-bindgen-shared",
+      "baseline_version": "0.2.108",
+      "log_sha256": "633912cb3c139922aad36678a831c6fc2cf3e98118779c60fd18078760408278",
+      "cargo_error": "error: failed to select a version for the requirement `wasm-bindgen-shared = \"=0.2.129\"`\ncandidate versions found which didn't match: 0.2.108\nlocation searched: crates.io index\nrequired by package `wasm-bindgen v0.2.129`\n    ... which satisfies dependency `wasm-bindgen = \"^0.2\"` (locked to 0.2.129) of package `uuid v1.29.0`\n    ... which satisfies dependency `uuid = \"^1\"` (locked to 1.29.0) of package `codex-code-mode-host v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/code-mode-host)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "web-sys",
+      "baseline_version": "0.3.85",
+      "log_sha256": "4d5c326fdc0161b2d699264f00afc56856bb3f869ca4f80c6f5f99154b6c8b9e",
+      "cargo_error": "error: failed to select a version for the requirement `web-sys = \"^0.3.105\"`\ncandidate versions found which didn't match: 0.3.85\nlocation searched: crates.io index\nrequired by package `matrix-sdk-common v0.19.1`\n    ... which satisfies dependency `matrix-sdk-common = \"^0.19.1\"` (locked to 0.19.1) of package `matrix-sdk v0.19.1 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1)`\n    ... which satisfies dependency `matrix-sdk = \"^0.19.1\"` (locked to 0.19.1) of package `codex-hepta-matrixd v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-matrixd)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "zeroize",
+      "baseline_version": "1.8.2",
+      "log_sha256": "b2e87342865a7d85c76c77e7fd9ff71ba583ea9a200e12c13a377edfafe7444e",
+      "cargo_error": "error: failed to select a version for the requirement `zeroize = \"^1.9\"`\ncandidate versions found which didn't match: 1.8.2\nlocation searched: crates.io index\nrequired by package `zip v9.1.3 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/zip-9.1.3)`\n    ... which satisfies dependency `zip = \"^9.1.3\"` (locked to 9.1.3) of package `codex-core-plugins v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/core-plugins)`\n    ... which satisfies path dependency `codex-core-plugins` (locked to 0.0.0) of package `codex-core v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/core)`\n    ... which satisfies path dependency `codex-core` (locked to 0.0.0) of package `codex-linux-sandbox v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/linux-sandbox)`\n    ... which satisfies path dependency `codex-linux-sandbox` (locked to 0.0.0) of package `codex-arg0 v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/arg0)`\n    ... which satisfies path dependency `codex-arg0` (locked to 0.0.0) of package `codex-test-binary-support v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/test-binary-support)`\n    ... which satisfies path dependency `codex-test-binary-support` (locked to 0.0.0) of package `codex-exec-server v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/exec-server)`\n    ... which satisfies path dependency `codex-exec-server` (locked to 0.0.0) of package `codex-utils-plugins v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/utils/plugins)`\n    ... which satisfies path dependency `codex-utils-plugins` (locked to 0.0.0) of package `codex-plugin v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/plugin)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    },
+    {
+      "name": "zeroize_derive",
+      "baseline_version": "1.4.3",
+      "log_sha256": "8bfc52950d6ea1c68ce53d41ae3bfdabddcd3f5a84f819b0d667dfa056808b2d",
+      "cargo_error": "error: failed to select a version for the requirement `zeroize_derive = \"^1.5\"`\ncandidate versions found which didn't match: 1.4.3\nlocation searched: crates.io index\nrequired by package `zeroize v1.9.1`\n    ... which satisfies dependency `zeroize = \"^1.8.2\"` (locked to 1.9.1) of package `codex-hepta-bao-adapter v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-bao-adapter)`\nnote: offline mode (via `--offline`) can sometimes cause surprising resolution failures\nhelp: if this error is too confusing you may wish to retry without `--offline`\n"
+    }
+  ],
+  "tokio_minimized_to": "1.53.3"
+}

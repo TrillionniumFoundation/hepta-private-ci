@@ -60,7 +60,7 @@ async fn regular_file_path_is_not_stale_socket_path() {
 async fn bound_listener_path_is_stale_socket_path() {
     let temp_dir = tempfile::TempDir::new().expect("temp dir");
     let socket_path = temp_dir.path().join("socket");
-    let _listener = match UnixListener::bind(&socket_path).await {
+    let listener = match UnixListener::bind(&socket_path).await {
         Ok(listener) => listener,
         Err(err) if err.kind() == ErrorKind::PermissionDenied => {
             eprintln!("skipping test: failed to bind unix socket: {err}");
@@ -73,6 +73,21 @@ async fn bound_listener_path_is_stale_socket_path() {
         is_stale_socket_path(&socket_path)
             .await
             .expect("stale socket check should succeed")
+    );
+    drop(listener);
+    assert!(
+        is_stale_socket_path(&socket_path)
+            .await
+            .expect("closed listener rendezvous remains detectable")
+    );
+    tokio::fs::remove_file(&socket_path)
+        .await
+        .expect("remove stale rendezvous");
+    #[cfg(windows)]
+    assert!(
+        !is_stale_socket_path(&socket_path)
+            .await
+            .expect("removed rendezvous is absent")
     );
 }
 

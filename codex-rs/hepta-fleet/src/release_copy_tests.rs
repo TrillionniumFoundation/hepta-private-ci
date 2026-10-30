@@ -25,6 +25,25 @@ fn readonly_source_is_copied_synced_and_preserved_on_duplicate_install()
         assert_eq!(std::fs::read(path)?, content);
         validate_immutable_regular_file(path, /*executable*/ true)?;
     }
+    let release_root = registry.layout().releases_root().join(release_id.as_str());
+    validate_physical_directory(&release_root, /*immutable*/ true)?;
+    validate_physical_directory(&release_root.join("bin"), /*immutable*/ true)?;
+    assert_eq!(
+        directory_names(registry.layout().releases_root())?,
+        BTreeSet::from([release_id.as_str().to_string()])
+    );
+    // Model the final-name-visible, seal-not-complete phase. Resolution must
+    // reject it even though the manifest and programs are already immutable.
+    set_mode(&release_root, /*mode*/ 0o755)?;
+    assert!(matches!(
+        resolve_catalog_release(registry.layout().releases_root(), &release_id),
+        Err(FleetRegistryError::Corrupt(_))
+    ));
+    set_mode(&release_root, /*mode*/ 0o555)?;
+    assert_eq!(
+        resolve_catalog_release(registry.layout().releases_root(), &release_id)?,
+        installed
+    );
     let reopened = FleetRegistry::open_existing(root)?;
     assert!(matches!(
         reopened.install_release(release_id, &source, Vec::new()),

@@ -1,0 +1,34 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+ Downloading crates ...
+  Downloaded futures-sink v0.3.32
+  Downloaded futures-core v0.3.32
+  Downloaded tokio-util v0.7.18
+   Compiling proc-macro2 v1.0.106
+   Compiling quote v1.0.45
+   Compiling unicode-ident v1.0.22
+   Compiling pin-project-lite v0.2.16
+   Compiling diff v0.1.13
+   Compiling yansi v1.0.1
+   Compiling bytes v1.11.1
+   Compiling futures-core v0.3.32
+   Compiling futures-sink v0.3.32
+   Compiling pretty_assertions v1.4.1
+   Compiling syn v2.0.117
+   Compiling tokio-macros v2.7.0
+   Compiling tokio v1.52.3
+   Compiling tokio-util v0.7.18
+   Compiling codex-async-utils v0.0.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/async-utils)
+    Finished `test` profile [unoptimized] target(s) in 10.52s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID d1e74972-550f-48f4-b49c-7713653bd836 with nextest profile: local
+    Starting 5 tests across 1 binary
+        PASS [   0.008s] codex-async-utils coalescing_wake::tests::newer_owner_is_not_lost_after_old_barrier_completes_before_admission
+        PASS [   0.012s] codex-async-utils tests::returns_ok_when_future_completes_first
+        PASS [   0.014s] codex-async-utils tests::returns_err_when_token_already_cancelled
+        PASS [   0.017s] codex-async-utils coalescing_wake::tests::capture_order_cannot_overwrite_a_newer_pending_owner
+        PASS [   0.023s] codex-async-utils tests::returns_err_when_token_cancelled_first
+────────────
+     Summary [   0.028s] 5 tests run: 5 passed, 0 skipped

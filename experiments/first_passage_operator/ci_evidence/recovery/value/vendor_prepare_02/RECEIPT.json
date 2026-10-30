@@ -1,0 +1,92 @@
+{
+  "schema": "hepta.vendor-compatibility.v2",
+  "repo": "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci",
+  "work": "/workspace/scratch/8b9f3e9fd04d/recovery_value/vendor_prepare_02",
+  "status": "prepared_only; no tests executed",
+  "expected_tests": {
+    "aws-config": [
+      "login::dpop::compatibility_tests::dpop_proof_preserves_es256_header_payload_and_signature"
+    ],
+    "matrix-sdk": [
+      "event_handler::compatibility_tests::event_context_clone_preserves_type_isolation_and_send_sync"
+    ],
+    "i18n-config": [
+      "compatibility_tests::public_crate_loader_preserves_package_and_language_config",
+      "compatibility_tests::public_config_loader_preserves_defaults_and_unicode",
+      "compatibility_tests::public_parse_errors_keep_path_and_diagnostic"
+    ],
+    "starlark": [
+      "pagable::heap_ref_id::compatibility_tests::blake3_adapter_preserves_known_digest_and_chunked_writes"
+    ]
+  },
+  "feature_arguments": {
+    "aws-config": [
+      "--features",
+      "credentials-login"
+    ],
+    "matrix-sdk": [
+      "--no-default-features",
+      "--features",
+      "e2e-encryption,sqlite"
+    ],
+    "i18n-config": [],
+    "starlark": []
+  },
+  "root_lock_before_sha256": "a3e787d1e6608e1479c4a2402490ebc4073df86e877aba2603f294b1edd78982",
+  "entrypoint_sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+  "nextest_wrapper_sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127",
+  "helper_sha256": "4e1c3651705a960d2687fef20f81ced76fe3f3a487f413635f70e46d4c78339c",
+  "scope": "Independent exact-source vendor tests; root consumer compilation and behavior require separate evidence.",
+  "commands": [],
+  "vendors": {
+    "aws-config": {
+      "directory": "aws-config-1.8.12",
+      "files": 74,
+      "source_inventory": "aws-config-1.8.12.source.json",
+      "source_manifest_sha256": "67f53abcc8dc7701ab2685b8957163b9bbdca1f16de8357bff9c306d91acf669",
+      "copied_manifest_sha256": "67f53abcc8dc7701ab2685b8957163b9bbdca1f16de8357bff9c306d91acf669",
+      "manifest_transformation": "none; only the independent workspace root is generated"
+    },
+    "matrix-sdk": {
+      "directory": "matrix-sdk-0.19.1",
+      "files": 211,
+      "source_inventory": "matrix-sdk-0.19.1.source.json",
+      "source_manifest_sha256": "c5898fe086c2e408715036a0799a503afb9cc0b786c1efd2a60bfd58120a4151",
+      "copied_manifest_sha256": "c5898fe086c2e408715036a0799a503afb9cc0b786c1efd2a60bfd58120a4151",
+      "manifest_transformation": "none; only the independent workspace root is generated"
+    },
+    "matrix-sdk-sqlite": {
+      "directory": "matrix-sdk-sqlite-0.19.1",
+      "files": 72,
+      "source_inventory": "matrix-sdk-sqlite-0.19.1.source.json",
+      "source_manifest_sha256": "21e25ca585ec01e11b39bfcdb7425d3103261fdda86aedef422078d2f8b02931",
+      "copied_manifest_sha256": "21e25ca585ec01e11b39bfcdb7425d3103261fdda86aedef422078d2f8b02931",
+      "manifest_transformation": "none; only the independent workspace root is generated"
+    },
+    "i18n-config": {
+      "directory": "i18n-config-0.4.8",
+      "files": 14,
+      "source_inventory": "i18n-config-0.4.8.source.json",
+      "source_manifest_sha256": "fa9af23aa873dffb238e36ca60c26b7cc01023741ab5037b8d793928f63fe1fa",
+      "copied_manifest_sha256": "fa9af23aa873dffb238e36ca60c26b7cc01023741ab5037b8d793928f63fe1fa",
+      "manifest_transformation": "none; only the independent workspace root is generated"
+    },
+    "starlark": {
+      "directory": "starlark-0.14.2",
+      "files": 688,
+      "source_inventory": "starlark-0.14.2.source.json",
+      "source_manifest_sha256": "abdd0c39609dcfec0f2d5057587bab53a48dae717ebe5360c85d5e43b030cfd5",
+      "copied_manifest_sha256": "abdd0c39609dcfec0f2d5057587bab53a48dae717ebe5360c85d5e43b030cfd5",
+      "manifest_transformation": "none; only the independent workspace root is generated"
+    },
+    "zip": {
+      "directory": "zip-9.1.3",
+      "files": 68,
+      "source_inventory": "zip-9.1.3.source.json",
+      "source_manifest_sha256": "ecb707a9125e995ce36040e211c4b6321ced0d5365c621bbbc7fc76fd3f6d7b6",
+      "copied_manifest_sha256": "ecb707a9125e995ce36040e211c4b6321ced0d5365c621bbbc7fc76fd3f6d7b6",
+      "manifest_transformation": "none; only the independent workspace root is generated"
+    }
+  },
+  "root_lock_after_sha256": "a3e787d1e6608e1479c4a2402490ebc4073df86e877aba2603f294b1edd78982"
+}

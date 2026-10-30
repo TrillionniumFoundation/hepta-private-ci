@@ -49,6 +49,9 @@ fn initialize_v8_with_mode(jit_mode: V8JitMode) -> Result<V8Initialization, Stri
     let platform = v8::new_default_platform(0, false).make_shared();
     v8::V8::initialize_platform(platform.clone());
     v8::V8::initialize();
+    // The first isolate lazily initializes the process-wide backing-store pool.
+    // Finish that initialization while OnceLock still excludes parallel callers.
+    drop(v8::Isolate::new(v8::CreateParams::default()));
     Ok(V8Initialization {
         _platform: platform,
         jit_mode,

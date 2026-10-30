@@ -1,0 +1,13 @@
+[package]
+name = "hepta-pty-probe-recovery"
+version = "0.1.0"
+edition = "2024"
+[workspace]
+[lib]
+path = "loader.rs"
+[dependencies]
+anyhow = "=1.0.103"
+[dev-dependencies]
+pretty_assertions = "=1.4.1"
+[profile.dev]
+debug = 0

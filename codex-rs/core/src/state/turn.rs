@@ -68,16 +68,22 @@ pub(crate) struct StartReservation {
 /// publication until the exact transition's terminalizer has finished (or
 /// failed closed without signalling this fence).
 pub(crate) struct StartTransitionCompletion {
+    turn_id: String,
     done: AtomicBool,
     notify: Notify,
 }
 
 impl StartTransitionCompletion {
-    pub(crate) fn new() -> Arc<Self> {
+    pub(crate) fn new(turn_id: String) -> Arc<Self> {
         Arc::new(Self {
+            turn_id,
             done: AtomicBool::new(false),
             notify: Notify::new(),
         })
+    }
+
+    pub(crate) fn turn_id(&self) -> &str {
+        &self.turn_id
     }
 
     pub(crate) fn complete(&self) {
@@ -159,9 +165,9 @@ impl StartTransition {
     pub(crate) fn new(turn_id: String, identity: Arc<()>) -> Self {
         Self {
             identity,
+            completion: StartTransitionCompletion::new(turn_id.clone()),
             turn_id,
             abort_reason: None,
-            completion: StartTransitionCompletion::new(),
             deferred_idle_cause: None,
         }
     }
@@ -169,9 +175,9 @@ impl StartTransition {
     fn from_reservation(reservation: StartReservation) -> Self {
         Self {
             identity: reservation.identity,
+            completion: StartTransitionCompletion::new(reservation.turn_id.clone()),
             turn_id: reservation.turn_id,
             abort_reason: reservation.abort_reason,
-            completion: StartTransitionCompletion::new(),
             deferred_idle_cause: None,
         }
     }
@@ -577,7 +583,7 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
     async fn start_transition_completion_wakes_all_waiters() {
-        let completion = StartTransitionCompletion::new();
+        let completion = StartTransitionCompletion::new("turn-1".to_string());
         let first = {
             let completion = Arc::clone(&completion);
             tokio::spawn(async move { completion.wait().await })

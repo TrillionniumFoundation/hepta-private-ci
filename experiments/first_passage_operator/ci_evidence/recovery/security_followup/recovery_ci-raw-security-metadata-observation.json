@@ -1,0 +1,104 @@
+{
+  "root_lock_sha256": "7cd3ac48f8a03093674bf8e54ffa8b86dcbeaac64d535b1d8c59b21e5dd327e3",
+  "metadata_all_features": true,
+  "metadata_target_filter": null,
+  "packages": [
+    {
+      "name": "secret-service",
+      "locked_versions": [
+        "4.0.0"
+      ],
+      "present_in_raw_metadata_resolve_nodes": true
+    },
+    {
+      "name": "zbus",
+      "locked_versions": [
+        "4.4.0"
+      ],
+      "present_in_raw_metadata_resolve_nodes": true
+    },
+    {
+      "name": "zbus_names",
+      "locked_versions": [
+        "3.0.0"
+      ],
+      "present_in_raw_metadata_resolve_nodes": true
+    },
+    {
+      "name": "zvariant",
+      "locked_versions": [
+        "4.2.0"
+      ],
+      "present_in_raw_metadata_resolve_nodes": true
+    },
+    {
+      "name": "zvariant_derive",
+      "locked_versions": [
+        "4.2.0"
+      ],
+      "present_in_raw_metadata_resolve_nodes": true
+    },
+    {
+      "name": "openssl",
+      "locked_versions": [
+        "0.10.75"
+      ],
+      "present_in_raw_metadata_resolve_nodes": true
+    },
+    {
+      "name": "openssl-sys",
+      "locked_versions": [
+        "0.9.111"
+      ],
+      "present_in_raw_metadata_resolve_nodes": true
+    },
+    {
+      "name": "anymap2",
+      "locked_versions": [],
+      "present_in_raw_metadata_resolve_nodes": false
+    },
+    {
+      "name": "basic-toml",
+      "locked_versions": [],
+      "present_in_raw_metadata_resolve_nodes": false
+    },
+    {
+      "name": "unsafe-libyaml",
+      "locked_versions": [],
+      "present_in_raw_metadata_resolve_nodes": false
+    },
+    {
+      "name": "serde_yaml",
+      "locked_versions": [],
+      "present_in_raw_metadata_resolve_nodes": false
+    }
+  ],
+  "status": "Raw Cargo metadata includes weak optional dependency nodes. These observations do not establish that a package is enabled; cargo tree feature traversal and the actual audit determine the enabled graph.",
+  "raw_keyring_metadata_node": [
+    {
+      "package": "keyring",
+      "version": "3.6.3",
+      "features": [
+        "apple-native",
+        "crypto-rust",
+        "linux-native",
+        "linux-native-sync-persistent",
+        "sync-secret-service",
+        "vendored",
+        "windows-native"
+      ],
+      "direct_dependencies": [
+        "byteorder",
+        "dbus-secret-service",
+        "linux-keyutils",
+        "log",
+        "openssl",
+        "secret-service",
+        "security-framework",
+        "security-framework",
+        "windows-sys",
+        "zeroize"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,360 @@
+{
+  "mode": "read-only diagnosis; no repository source, lock, ACL, threshold, sandbox flag or environment changes; no builds",
+  "recorded_at_utc": "2026-10-30T16:31:44.741284+00:00",
+  "original_run": {
+    "head_sha": "6396bc013fdb16a955cced8a746e27279311361c",
+    "tested_merge_sha": "6ab5ce1169f5ffa35ba937ecc8f147b72cf9cd34",
+    "run_id": 40990854635,
+    "job_id": 123853058007,
+    "log_path": "/workspace/scratch/8b9f3e9fd04d/recovery_ci/remote_6396/blocking/win-shard2.log.gz",
+    "gzip_sha256": "b5705252de1ea55500d4f232eeb9a5ae22ef3d42c39619d8ce8b717f0221018b",
+    "decoded_sha256": "5676020b330692d30d7d924df1f75afa228a533b44ffcc86c4dd0bcde3e1fc1e",
+    "decoded_line_count": 4806,
+    "deduplicated_failure_count": 6
+  },
+  "current_review": {
+    "base_head": "8976aee9209c353131ce3cf67d8318bd6a9e2de2",
+    "includes_uncommitted_canonical_fixture_fixes": true,
+    "source_identities": [
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_path.rs",
+        "sha256": "cf9e8bed3cfe7d8f8169fa6f8f0563973efc1844870cbafa798c240b58c493be",
+        "bytes": 2134
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_test_support.rs",
+        "sha256": "a9820b0e929aaedf8948f8ffc21346e0b483051d91b65c64a1f9abb80a44a5a8",
+        "bytes": 1798
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+        "sha256": "5b16090059597b362631056883367b974ff4a218ddd042de8eedabf5e128da3e",
+        "bytes": 70703
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+        "sha256": "0ce1dd6a1f73bd7c82c778fd85fc70e8f237d2c1309f1c5aa13cb8aa1fe83deb",
+        "bytes": 26664
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+        "sha256": "ab9b7468a18da26321e3c97216deb9f17816ed78ba657339455fd1fef58fa81e",
+        "bytes": 21940
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/local_compact_executor_tests.rs",
+        "sha256": "1f989654f7b3d67f61f6ffa59404fdee141ad6ac6f973155f6500216316ccb33",
+        "bytes": 75958
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/local_compact_executor.rs",
+        "sha256": "816d9207a2ccf66bf66c70383c5c0756aa7ae995232cd04a296748096159ada0",
+        "bytes": 47668
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+        "sha256": "9fa0589a3445387eec2f3ea26cc91dc98fb131da3d929a321b7879f0854cdfcf",
+        "bytes": 206199
+      }
+    ]
+  },
+  "failures": [
+    {
+      "test": "cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation",
+      "log_lines": [
+        3538,
+        3542
+      ],
+      "observed": "descriptor-bound writable recovery: Indeterminate(\"cognitive recovery root is redirected\")",
+      "test_source_line": 163,
+      "classification": "canonical fixture removes the observed spelling rejection, but cannot provide the missing non-Unix descriptor binding",
+      "covered_by_current_canonical_fixture": "root spelling only; positive recovery remains unsupported",
+      "recommendation": "Preserve the positive recovery contract on supported descriptor-binding platforms. For Windows, exercise the actual typed Indeterminate/no-access/no-publication contract unless a real descriptor-bound Windows implementation is separately delivered.",
+      "raw_excerpt": [
+        {
+          "line": 3538,
+          "text": "2026-10-30T02:33:59.7704011Z ---- cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation stdout ----"
+        },
+        {
+          "line": 3539,
+          "text": "2026-10-30T02:33:59.7705307Z "
+        },
+        {
+          "line": 3540,
+          "text": "2026-10-30T02:33:59.7706810Z thread 'cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation' (8360) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:163:6:"
+        },
+        {
+          "line": 3541,
+          "text": "2026-10-30T02:33:59.7708781Z descriptor-bound writable recovery: Indeterminate(\"cognitive recovery root is redirected\")"
+        },
+        {
+          "line": 3542,
+          "text": "2026-10-30T02:33:59.7710051Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        }
+      ]
+    },
+    {
+      "test": "cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate",
+      "log_lines": [
+        3544,
+        3547
+      ],
+      "observed": "pointer rename: Unavailable(\"Access is denied. (os error 5)\")",
+      "test_source_line": 214,
+      "classification": "independent pointer publication I/O failure; operation stage not printed",
+      "covered_by_current_canonical_fixture": "no: this test derives root from the already canonical store.path()",
+      "recommendation": "Add operation-specific error context or native probes around temporary create/write/sync/rename/directory-open/directory-sync. File::open(root) uses a regular-file open rather than a Windows directory handle, a concrete source-level incompatibility. Preserve durability errors and the possibly-active-candidate retention assertion. Do not attribute this to SQLite or open-database lifecycle without evidence.",
+      "raw_excerpt": [
+        {
+          "line": 3544,
+          "text": "2026-10-30T02:33:59.7712823Z ---- cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate stdout ----"
+        },
+        {
+          "line": 3545,
+          "text": "2026-10-30T02:33:59.7713956Z "
+        },
+        {
+          "line": 3546,
+          "text": "2026-10-30T02:33:59.7715199Z thread 'cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate' (8256) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:214:48:"
+        },
+        {
+          "line": 3547,
+          "text": "2026-10-30T02:33:59.7717050Z pointer rename: Unavailable(\"Access is denied. (os error 5)\")"
+        }
+      ]
+    },
+    {
+      "test": "cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers",
+      "log_lines": [
+        3549,
+        3554
+      ],
+      "observed": "assertion expecting AccessDenied for predecessor witness failed; actual variant was not printed",
+      "test_source_line": 365,
+      "classification": "current-cut content authentication requires unsupported non-Unix descriptor binding after canonical fixture repair",
+      "covered_by_current_canonical_fixture": "not sufficient; exact current-cut positive path and predecessor authentication cannot execute past bind on Windows",
+      "recommendation": "Keep genuine predecessor rejection and successful-current-witness assertions for the implemented capability. Add/retain native Windows typed Indeterminate and unchanged-filesystem assertions; do not substitute Indeterminate for a claim that the predecessor contents were authenticated.",
+      "raw_excerpt": [
+        {
+          "line": 3549,
+          "text": "2026-10-30T02:33:59.7718454Z ---- cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers stdout ----"
+        },
+        {
+          "line": 3550,
+          "text": "2026-10-30T02:33:59.7719415Z "
+        },
+        {
+          "line": 3551,
+          "text": "2026-10-30T02:33:59.7722397Z thread 'cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers' (7608) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:365:5:"
+        },
+        {
+          "line": 3552,
+          "text": "2026-10-30T02:33:59.7724494Z assertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),"
+        },
+        {
+          "line": 3553,
+          "text": "2026-10-30T02:33:59.7727448Z     CognitiveRecoveryRequirement::ExactCurrentCut(&predecessor), &authority,"
+        },
+        {
+          "line": 3554,
+          "text": "2026-10-30T02:33:59.7728637Z     &RecoveryVerifier,).await, Err(CognitiveRecoveryError::AccessDenied(_)))"
+        }
+      ]
+    },
+    {
+      "test": "cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission",
+      "log_lines": [
+        3556,
+        3561
+      ],
+      "observed": "assertion expecting AccessDenied for tampered state digest failed; actual variant was not printed",
+      "test_source_line": 439,
+      "classification": "early revoked/owner/profile checks run, but tampered content authentication requires unsupported descriptor binding",
+      "covered_by_current_canonical_fixture": "not sufficient for the tampered-witness branch",
+      "recommendation": "Keep revoked, owner-mismatch, unsupported-profile and no-I/O checks on every platform. Split the later witness-content assertion by actual capability, retaining Windows typed Indeterminate/no mutation coverage. Do not cfg-disable the entire combined test.",
+      "raw_excerpt": [
+        {
+          "line": 3556,
+          "text": "2026-10-30T02:33:59.7730211Z ---- cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission stdout ----"
+        },
+        {
+          "line": 3557,
+          "text": "2026-10-30T02:33:59.7731417Z "
+        },
+        {
+          "line": 3558,
+          "text": "2026-10-30T02:33:59.7732679Z thread 'cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission' (2764) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:439:5:"
+        },
+        {
+          "line": 3559,
+          "text": "2026-10-30T02:33:59.7734545Z assertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),"
+        },
+        {
+          "line": 3560,
+          "text": "2026-10-30T02:33:59.7735696Z     CognitiveRecoveryRequirement::ExactCurrentCut(&tampered), &authority,"
+        },
+        {
+          "line": 3561,
+          "text": "2026-10-30T02:33:59.7736908Z     &RecoveryVerifier,).await, Err(CognitiveRecoveryError::AccessDenied(_)))"
+        }
+      ]
+    },
+    {
+      "test": "cognitive_store::recovery::tests::writable_recovery_requires_exclusive_store_fence",
+      "log_lines": [
+        3563,
+        3568
+      ],
+      "observed": "assertion expecting Unavailable while an existing store handle is live failed; actual variant was not printed",
+      "test_source_line": 248,
+      "classification": "canonical fixture is expected to expose the existing exclusive-store fence before descriptor binding",
+      "covered_by_current_canonical_fixture": "likely covered, native rerun required",
+      "recommendation": "Retain the live store handle and the exact Unavailable assertion. The same log records close_drains_sqlite_but_keeps_live_clone_fence_until_drop passing, and that test constructs a canonical recovery layout explicitly. Do not release or weaken the fence to make this test pass.",
+      "raw_excerpt": [
+        {
+          "line": 3563,
+          "text": "2026-10-30T02:33:59.7739388Z ---- cognitive_store::recovery::tests::writable_recovery_requires_exclusive_store_fence stdout ----"
+        },
+        {
+          "line": 3564,
+          "text": "2026-10-30T02:33:59.7740288Z "
+        },
+        {
+          "line": 3565,
+          "text": "2026-10-30T02:33:59.7741593Z thread 'cognitive_store::recovery::tests::writable_recovery_requires_exclusive_store_fence' (4008) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:248:5:"
+        },
+        {
+          "line": 3566,
+          "text": "2026-10-30T02:33:59.7743401Z assertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),"
+        },
+        {
+          "line": 3567,
+          "text": "2026-10-30T02:33:59.7744579Z     CognitiveRecoveryRequirement::ExactCurrentCut(&anchor), &authority,"
+        },
+        {
+          "line": 3568,
+          "text": "2026-10-30T02:33:59.7745713Z     &RecoveryVerifier,).await, Err(CognitiveRecoveryError::Unavailable(_)))"
+        }
+      ]
+    },
+    {
+      "test": "local_compact_executor_tests::terminal_bound_lease_transitions_audit_compact_journal_atomically",
+      "log_lines": [
+        3667,
+        3671
+      ],
+      "observed": "bound executor: Lease(StaleFence(\"local lease has expired\"))",
+      "test_source_line": 136,
+      "classification": "fixture clock race before compact intent/tamper/terminal transaction, not a demonstrated SQLite lifecycle defect",
+      "covered_by_current_canonical_fixture": "no; changed local_compact fixture only affects the ignored process-soak path",
+      "recommendation": "Use the existing active bound-lease fixture duration for all three transition cases, then call existing cfg(test) expire_lease_at_unix_seconds with the exact bound expiry after tampering. Remove the wall-clock wait for this atomic-journal test. Preserve release/rollback/expire coverage and every Corrupt, row-count and active-state assertion; leave separate real-clock expiry tests and production expiry thresholds unchanged.",
+      "raw_excerpt": [
+        {
+          "line": 3667,
+          "text": "2026-10-30T02:33:59.7925643Z ---- local_compact_executor_tests::terminal_bound_lease_transitions_audit_compact_journal_atomically stdout ----"
+        },
+        {
+          "line": 3668,
+          "text": "2026-10-30T02:33:59.7926616Z "
+        },
+        {
+          "line": 3669,
+          "text": "2026-10-30T02:33:59.7927816Z thread 'local_compact_executor_tests::terminal_bound_lease_transitions_audit_compact_journal_atomically' (7664) panicked at hepta-memory/src\\local_compact_executor_tests.rs:136:10:"
+        },
+        {
+          "line": 3670,
+          "text": "2026-10-30T02:33:59.7929524Z bound executor: Lease(StaleFence(\"local lease has expired\"))"
+        },
+        {
+          "line": 3671,
+          "text": "2026-10-30T02:33:59.7930736Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        }
+      ]
+    }
+  ],
+  "descriptor_contract": {
+    "repository_path": "codex-rs/state/src/sqlite_recovery.rs",
+    "reference_ref": "8976aee9209c353131ce3cf67d8318bd6a9e2de2",
+    "git_blob_sha": "7093f94b445e0cf468f1528ceb8a827beaf2d4af",
+    "reference_copy": "/workspace/scratch/8b9f3e9fd04d/recovery_ci/windows_memory_readonly/REFERENCE_sqlite_recovery_8976.rs",
+    "reference_sha256": "5c387d97f161a4e688505de9d95763049aef569def307962653598cc33170a02",
+    "documentation_lines": {
+      "error_semantics": [
+        42,
+        47
+      ],
+      "guard_role": [
+        70,
+        74
+      ],
+      "public_bind": [
+        91,
+        104
+      ],
+      "non_unix_bind": [
+        171,
+        175
+      ]
+    },
+    "non_unix_return": "Err(SqliteRecoveryError::Indeterminate)",
+    "exact_display": "SQLite recovery is indeterminate: the complete immutable file identity was not established",
+    "memory_mapping": "cognitive_store_recovery.rs:356-363 maps this to CognitiveRecoveryError::Indeterminate; do not relabel as Unavailable or AccessDenied",
+    "open_order": [
+      "requirement/authority/fence validation",
+      "canonical-root identity",
+      "exclusive store guard",
+      "active path",
+      "retained-file binding",
+      "materialization/authentication/checkpoint/publication"
+    ],
+    "three_content_tests": [
+      "cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation",
+      "cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers",
+      "cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission"
+    ]
+  },
+  "pointer_publication": {
+    "source": "codex-rs/hepta-memory/src/cognitive_store.rs",
+    "function": "publish_active_database",
+    "operation_lines": {
+      "write_and_sync": [
+        1628,
+        1630
+      ],
+      "rename": 1631,
+      "directory_open_and_sync": [
+        1632,
+        1634
+      ]
+    },
+    "evidence_limit": "The raw error does not identify which operation produced os error 5. Directory File::open is a source-supported Windows incompatibility, not a retained native per-operation trace. The test keeps the original SQLite pool open, but publication touches a separate pointer file; no SQLite busy/locked error is present."
+  },
+  "expiry": {
+    "source": "codex-rs/hepta-memory/src/local_compact_executor_tests.rs",
+    "expires_at_line": 118,
+    "open_bound_expect_line": 136,
+    "current_transition_loop_lines": [
+      540,
+      548
+    ],
+    "clock_wait_lines": [
+      586,
+      598
+    ],
+    "scope": "E.25 requires a corrupted compact event to block every terminal lease transaction without changing lease/compact row counts or active state. It does not require a one-second physical clock deadline.",
+    "failure_order": "expiry timestamp is floor(SystemTime seconds)+offset before awaited acquisition; the one-second branch can expire before open_bound verifies the lease. The observed panic occurs before append_intent or tamper.",
+    "existing_test_clock": {
+      "source": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+      "lines": [
+        1175,
+        1194
+      ],
+      "method": "expire_lease_at_unix_seconds",
+      "delegates_to": "expire_lease_inner(Some(now))",
+      "same_transaction_and_audit": true,
+      "production_uses": "expire_lease_inner(None) -> wall clock"
+    },
+    "recommendation": "Reuse this existing test-only clock entry, not a new clock abstraction or larger production deadline."
+  },
+  "next_validation": "Native Windows rerun after separately reviewed fixes; current canonical fixture edits have not been claimed to pass this job."
+}

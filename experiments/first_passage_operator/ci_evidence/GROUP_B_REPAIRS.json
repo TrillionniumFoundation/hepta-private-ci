@@ -1,0 +1,195 @@
+{
+  "scope": "CI group B",
+  "status": "patched; Rust compilation and targeted execution pending; not closed",
+  "files": {
+    "codex-rs/app-server/src/request_processors/thread_lifecycle.rs": {
+      "sha256": "5f1e1c3d47bec61549a485e2bcbc89e9ebae568cf073a8902452b6ddf2eb63af",
+      "bytes": 34300
+    },
+    "codex-rs/app-server/tests/suite/v2/mod.rs": {
+      "sha256": "46ee06faf406d6ff556f32fe2bdbe266713b1f01bdf07e497c96c4cfd6252842",
+      "bytes": 2668
+    },
+    "codex-rs/app-server/tests/suite/v2/turn_completion_admission.rs": {
+      "sha256": "d39d9f1b9c04c79da7a0ae30ffcd6c402915908fbdccfcbc2f4d3376901262c5",
+      "bytes": 7110
+    },
+    "codex-rs/core/src/codex_thread.rs": {
+      "sha256": "0def8bfeea9440570ef0a5cbcb1f1f0b40f5a685311854739d023f1201f9f680",
+      "bytes": 48404
+    },
+    "codex-rs/core/src/environment_selection.rs": {
+      "sha256": "8208278cc7068c259dc11ed9bca5985f150a8f66fb4aafc06c24c9045f7e9d5c",
+      "bytes": 73263
+    },
+    "codex-rs/core/src/session/mod.rs": {
+      "sha256": "b1b2d21959a5afc35bffd35aa21d08c8b04875e99d0cea40a3c1813d44c5b691",
+      "bytes": 216216
+    },
+    "codex-rs/core/src/state/turn.rs": {
+      "sha256": "6ef15246bd777b20e35d9f17d798cf7bd23684d62fa4e59203be59918f97474a",
+      "bytes": 25169
+    },
+    "codex-rs/core/src/tasks/mod.rs": {
+      "sha256": "ae5f32f0efb8d95b1b74a2734e273dc2014cc031d5fc3da7a9f67431e862045d",
+      "bytes": 182772
+    },
+    "codex-rs/core/src/tasks/terminal_event_barrier_tests.rs": {
+      "sha256": "540f8779a8112db9e4704d1723f745f9d666fa1324b9c30d033d9ef551d4f439",
+      "bytes": 12421
+    },
+    "codex-rs/ext/goal/src/extension.rs": {
+      "sha256": "c35c4a5a3b84a6f2a14a5f2f48303f00c432a9eaa35bffff3c054ba959c30cbb",
+      "bytes": 17325
+    },
+    "codex-rs/ext/goal/src/runtime.rs": {
+      "sha256": "9d833de588488daede3068417490cf94dbc35ada3cad0579c18e6515173884e5",
+      "bytes": 22695
+    },
+    "codex-rs/ext/hepta-memory/src/cognitive/federation.rs": {
+      "sha256": "8517d6b89405db170771348308569a494bc6599d48c6822e6e1620ef8bec1914",
+      "bytes": 54874
+    },
+    "codex-rs/ext/hepta-memory/src/framing.rs": {
+      "sha256": "13b10d2007877bfdce5752b6273912eac8e698ed6f348686df746f3559bfe062",
+      "bytes": 2077
+    },
+    "codex-rs/ext/hepta-memory/src/framing_tests.rs": {
+      "sha256": "11df00dcc6205ed22170c7a4a77a330aaa3a8e171c09b9773309cea7c695506b",
+      "bytes": 1809
+    },
+    "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs": {
+      "sha256": "867d41d4391021e62c05ef764479265daefc058eef78adbdea32b922a633ab05",
+      "bytes": 21072
+    },
+    "codex-rs/hepta-supervisor/src/tick.rs": {
+      "sha256": "b9f0497add2675ff4612483f4fcb319aa18e07c14915e8c8f847a05d56d60b07",
+      "bytes": 13831
+    },
+    "codex-rs/hepta-supervisor/tests/restart_budget.rs": {
+      "sha256": "0cba6ebc7c8f04f51dfd0a59a4746a7cc3ea9c03d494a83827f82e2cda7b6b90",
+      "bytes": 9084
+    },
+    "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs": {
+      "sha256": "ca26052b131d6470a1a50da4c80ac24abdf13c49934ab852d52948a676f78f85",
+      "bytes": 10762
+    },
+    "codex-rs/hepta-supervisor/tests/signed_intent_recovery.rs": {
+      "sha256": "fc88a3ef55f348899570b4a7ac93c011ec5272fd9de6274c71bf1b13d2f94930",
+      "bytes": 6095
+    },
+    "codex-rs/tui/src/app/tests/background_exit_tests.rs": {
+      "sha256": "39fcc304ac63e2e7103178a524417018a38be7ed93ac14feca01fadbe557c15d",
+      "bytes": 18000
+    },
+    "codex-rs/tui/src/app/tests/safety_buffering.rs": {
+      "sha256": "39c66114c7092dcbea21375e96ceb3e2025a3de0ecdb3ed5d1ee034cad0206e4",
+      "bytes": 35791
+    },
+    "codex-rs/tui/src/resume_picker_transcript_preview_tests.rs": {
+      "sha256": "2f23e04e99804f2e72fec7ff2a812fbfe4e3d85969fd269bfed38b90276192be",
+      "bytes": 16690
+    }
+  },
+  "causes": [
+    {
+      "area": "restart budget",
+      "cause": "durable automatic restart path emitted only generic RestartQueued and omitted typed budget-exhaustion event",
+      "change": "restore typed attempts and exhaustion state/events; retain existing fault report"
+    },
+    {
+      "area": "signed recovery",
+      "cause": "test expected superseded recover-error plus unsigned directive contract",
+      "change": "assert existing readable quarantine and exact unresolved intent persistence; no unsigned recovery owner activated"
+    },
+    {
+      "area": "evidence capacity",
+      "cause": "fixture intended global capacity but filled all rows under a single issuer, hitting the stricter per-issuer quota",
+      "change": "spread synthetic rows across independent fixture issuers; retain global, terminal pruning and replay assertions"
+    },
+    {
+      "area": "Windows federation",
+      "cause": "file URI drops native canonical verbatim prefix; exact grant digest then mismatches transport reconstructed cwd",
+      "change": "restore canonical native identity only for the exact canonical path or its exact URI spelling; keep grant digest and revocation gates unchanged"
+    },
+    {
+      "area": "tracing",
+      "cause": "spawned snapshot task lacked explicit current tracing subscriber propagation",
+      "change": "attach with_current_subscriber in fixture"
+    },
+    {
+      "area": "TUI completion",
+      "cause": "public TurnCompleted and Idle published while core still retains persistence/lifecycle terminalization fence",
+      "change": "Capture exact owners under a dedicated terminal-publisher lock retained through event send; atomically receive-and-pair with that sidecar, then await it before public state tracking, terminal/Idle publication and interrupt success."
+    },
+    {
+      "area": "goal continuation",
+      "cause": "idle callback attempted ordinary admission while its own terminalization fence remained registered",
+      "change": "schedule one coalesced wake after captured completion, then reread goal state and use ordinary admission"
+    },
+    {
+      "area": "TUI exit fixture",
+      "cause": "platform-selected sleep script can finish before intended interrupt and does not prove an active model request",
+      "change": "hold real model response with a protocol gate; retain exit interrupt ordering assertions"
+    },
+    {
+      "area": "transcript fixture",
+      "cause": "accepted any turn completion",
+      "change": "match exact thread and started turn identity; no retries or deadline changes"
+    }
+  ],
+  "verification": {
+    "diff_check": "pass",
+    "rustfmt_parse_only": "pass; stdout discarded, no formatting mutation",
+    "compiled": false,
+    "executed_tests": [],
+    "new_core_regressions": [
+      "terminal_event_barrier_waits_for_real_finish_handoff",
+      "terminal_event_barrier_keeps_exact_captured_owners",
+      "queued_terminal_event_does_not_wait_for_recovered_same_id_owner",
+      "undeliverable_terminal_event_drops_only_its_observation",
+      "concurrent_terminal_publishers_keep_sidecars_in_event_order"
+    ],
+    "new_app_server_regressions": [
+      "completed_notification_allows_immediate_next_turn",
+      "goal_idle_wake_requests_continuation_after_finish_fence"
+    ]
+  },
+  "required_filters": [
+    "terminal_event_barrier_tests",
+    "turn_completion_admission",
+    "safety_retry",
+    "exit_interrupts_before_requesting_shutdown",
+    "transcript_preview",
+    "bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed",
+    "restart_budget",
+    "unresolved_intent_recovers_into_readable_quarantine",
+    "blocking_snapshot_waits_for_starting_environment",
+    "framing::tests",
+    "revoke_removes_prepared_federated_context_from_next_physical_send"
+  ],
+  "ordering_notes": [
+    "Core event channel is unbounded; listener wait cannot prevent core terminal event delivery via capacity backpressure.",
+    "Private publication-time sidecars capture immutable completion Arc identities; no wire Event or JSON schema change.",
+    "Terminal sidecar insertion and the unbounded event send share one publisher guard, preventing capture(A), capture(B), send(B), send(A) from mismatching reused logical IDs. Publisher, receiver and owner-registry locks remain distinct.",
+    "Receive-and-pair is serialized so replacement listeners cannot interchange sidecars for reused logical IDs.",
+    "Each sidecar is removed when any CodexThread reader consumes its event; failed sends remove their exact sidecar. Dropping a returned observer only releases observation references, never owner fences.",
+    "Unread sidecars live only in the current runtime private thread store and are proportional to its unread terminal events; they are discarded with that runtime.",
+    "A later same-turn-ID recovery and terminalizer registered before receipt cannot join the old event barrier.",
+    "Barrier completion is not an idle proof or start authority; subsequent ordinary admission still checks shutdown, active/pending work and every current fence.",
+    "Existing on_thread_idle-before-thread-stop shutdown ordering is retained; automatic goal wake re-reads fresh goal state after the captured callback barrier.",
+    "A legitimate successor turn can become active before clients consume the prior completion; event channel order still presents old terminal before successor TurnStarted."
+  ],
+  "limitations": [
+    "Need actual Rust/Bazel targeted tests, including Windows native canonical path roundtrip.",
+    "No generic claim that every observed Windows failure is closed until execution confirms."
+  ],
+  "source_status": "Stable for isolated CI copy; parent owns final required just fmt. No further platform source writes planned unless tests expose defects.",
+  "publication_race_review": {
+    "previous_receipt_sha256": "b66834847479d7c5548d7b1f2686b40c5497728cf939e652a0ba930d63fe3f69",
+    "cause": "Concurrent terminal publishers could reverse event order relative to sidecar insertion order.",
+    "regression": "concurrent_terminal_publishers_keep_sidecars_in_event_order",
+    "test_method": "A test-only runtime gate pauses the first real deliver_event_raw after capture, completes its old owner, registers a same-ID recovered owner, then polls a second real sender. The second must remain pending and cannot enqueue before the first; received barriers must bind the old and recovered owners respectively.",
+    "runtime_execution": "pending parent scoped Rust test; parse-only verification passed"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "kind": "recovered historical exact-head remote job log",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "head_sha": "6396bc013fdb16a955cced8a746e27279311361c",
+  "workflow_run_id": 40990854701,
+  "job_id": 123852633225,
+  "job_conclusion": "failure",
+  "recovery_source": "full decoded GitHub job log retained in functions store through execution workspace reset",
+  "recovered_utc": "2026-10-30T16:12:59.653611+00:00",
+  "raw": {
+    "bytes": 354981,
+    "sha256": "2cb06b931e3f811de8c3bba4566898f002767b29e1128dad7f93df48fdc9e084"
+  },
+  "gzip": {
+    "path": "job.log.gz",
+    "bytes": 61195,
+    "sha256": "1510350832cd23e962a5f5fad04de9e06035858214a083839ff31f0d94eb656f"
+  },
+  "observed_historical_scope": {
+    "async_utils_passed": 5,
+    "core_completion_barrier_passed": 6,
+    "app_server_admission_goal_passed": 3,
+    "queue_tests_executed": 0,
+    "queue_compile_errors": "E0659: assert_eq ambiguous due to glob import"
+  },
+  "limitations": [
+    "These results describe exact historical head 6396bc013fdb16a955cced8a746e27279311361c.",
+    "They are not fresh validation of reconstructed source at the 8976 recovery baseline.",
+    "The queue integration tests did not execute because compilation failed."
+  ]
+}

@@ -38,6 +38,7 @@ use codex_protocol::models::ImageDetail;
 use codex_protocol::models::ResponseItem;
 use codex_protocol::protocol::Event;
 use codex_protocol::protocol::EventMsg;
+use codex_protocol::protocol::Op;
 use codex_protocol::protocol::ThreadHistoryMode;
 use codex_protocol::user_input::MAX_USER_INPUT_TEXT_CHARS;
 use codex_protocol::user_input::UserInput;
@@ -71,6 +72,13 @@ use core_test_support::wait_for_event_with_timeout;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 use tokio::sync::oneshot;
+
+#[path = "suite/queue_hook_rejection_tests.rs"]
+mod queue_hook_rejection_tests;
+#[path = "suite/queue_idle_continuation.rs"]
+mod queue_idle_continuation;
+#[path = "suite/queue_settlement_support.rs"]
+mod queue_settlement_support;
 
 const TINY_PNG_BYTES: &[u8] = &[
     137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 1, 0, 0, 0, 1, 8, 6, 0,
@@ -153,6 +161,19 @@ fn install_registered_queue(
     Ok(service)
 }
 
+fn python_hook_command(script_path: &Path) -> String {
+    #[cfg(windows)]
+    {
+        // Windows runners provide python.exe; python3 can resolve to an app alias.
+        format!("python \"{}\"", script_path.display())
+    }
+    #[cfg(not(windows))]
+    {
+        let path = script_path.to_string_lossy().replace('\'', "'\\''");
+        format!("python3 '{path}'")
+    }
+}
+
 fn write_rejecting_prompt_hook(home: &Path) {
     let script_path = home.join("queue_prompt_hook.py");
     let log_path = home.join("queue_prompt_hook.log");
@@ -176,7 +197,7 @@ if payload["prompt"] == "blocked":
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": python_hook_command(&script_path),
                 }]
             }]
         }
@@ -216,7 +237,7 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": python_hook_command(&script_path),
                 }]
             }]
         }
@@ -975,7 +996,7 @@ async fn core_error_after_started_never_releases_ambiguous_dispatch() -> anyhow:
         Arc::downgrade(&test.thread_manager),
         Arc::new(NoopExtensionEventSink),
     );
-    let input = structured_user_input("delay exact rejection");
+    let input = structured_user_input("delay exact persistence");
     let TurnInput::UserInput { content, .. } = &input else {
         unreachable!("test input is user input");
     };
@@ -1006,10 +1027,14 @@ async fn core_error_after_started_never_releases_ambiguous_dispatch() -> anyhow:
     let entered = test
         .codex_home_path()
         .join("queue_blocking_prompt_hook.entered");
-    let release = test
-        .codex_home_path()
-        .join("queue_blocking_prompt_hook.release");
     wait_for_path(&entered).await?;
+    // The live hook proves Core routed this exact input but cannot yet persist it.
+    test.codex.flush_rollout().await?;
+    assert_eq!(
+        0,
+        persisted_client_message_count(test.codex.as_ref(), "stable-client-message").await?
+    );
+    assert!(response.requests().is_empty());
     tokio::time::sleep(Duration::from_millis(400)).await;
     let competing = competitor
         .start(test.codex.as_ref(), Some(item.id.clone()), None)
@@ -1020,11 +1045,36 @@ async fn core_error_after_started_never_releases_ambiguous_dispatch() -> anyhow:
         QueueServiceError::DispatchInProgress { .. }
     ));
 
-    fs::write(&release, b"release")?;
-    let error = tokio::time::timeout(Duration::from_secs(10), owner_start)
-        .await??
-        .expect_err("the delayed hook must reject the started Core task");
-    assert!(matches!(error, QueueServiceError::CoreSubmissionError(_)));
+    // Interrupt the still-blocked Core task. A hook rejection is definitive;
+    // TaskEndedBeforePersistence is the ambiguous outcome this test must cover.
+    assert!(
+        !owner_start.is_finished(),
+        "Core admission must still be pending while the hook is held"
+    );
+    test.codex.submit(Op::Interrupt).await?;
+    let result = tokio::time::timeout(Duration::from_secs(10), owner_start).await??;
+    let Err(QueueServiceError::CoreSubmissionError(error)) = result else {
+        anyhow::bail!("interrupted admission did not report a Core submission error");
+    };
+    assert!(matches!(
+        error.details(),
+        CodexErrorDetails::InternalAgentDied
+    ));
+    tokio::time::timeout(Duration::from_secs(10), async {
+        loop {
+            let (event, completion) = test.codex.next_event_with_completion().await?;
+            if matches!(event.msg, EventMsg::TurnAborted(_)) {
+                completion.await;
+                return anyhow::Ok(());
+            }
+        }
+    })
+    .await??;
+    test.codex.flush_rollout().await?;
+    assert_eq!(
+        0,
+        persisted_client_message_count(test.codex.as_ref(), "stable-client-message").await?
+    );
     assert_eq!(
         0,
         owner_store.release_count.load(Ordering::SeqCst),
@@ -1032,7 +1082,7 @@ async fn core_error_after_started_never_releases_ambiguous_dispatch() -> anyhow:
     );
     assert_eq!(vec![item.clone()], owner.list(thread_id).await?);
     assert!(response.requests().is_empty());
-    tokio::time::sleep(Duration::from_millis(400)).await;
+    // The same lease already expired before the first competing attempt.
     let competing = competitor
         .start(test.codex.as_ref(), Some(item.id.clone()), None)
         .await
@@ -1979,17 +2029,18 @@ async fn duplicate_queued_client_ids_dispatch_to_core_once() -> anyhow::Result<(
         .enqueue(thread_id, structured_user_input("same Matrix event"))
         .await?;
 
+    assert_eq!(2, staging.list(thread_id).await?.len());
+    let sink = Arc::new(queue_settlement_support::QueueSettlementSink::new(thread_id));
+    let event_sink: Arc<dyn ExtensionEventSink> = sink.clone();
     let service = QueuedItemService::new(
         queue,
         Arc::downgrade(&test.thread_manager),
-        Arc::new(NoopExtensionEventSink),
+        event_sink,
     );
     emit_idle(&service, thread_id).await;
-    wait_for_event_match(test.codex.as_ref(), |event| {
-        matches!(event, EventMsg::TurnComplete(_)).then_some(())
-    })
-    .await;
+    queue_settlement_support::wait_for_completed_turn(test.codex.as_ref()).await?;
     emit_idle(&service, thread_id).await;
+    sink.wait_for_empty(&service).await?;
 
     assert!(service.list(thread_id).await?.is_empty());
     assert_eq!(1, response.requests().len());
@@ -2362,12 +2413,13 @@ async fn rejected_queue_messages_remain_durable_and_block_followups() -> anyhow:
 
     tokio::time::timeout(Duration::from_secs(10), async {
         test.submit_text_turn("A").await?;
-        for _ in 0..2 {
-            wait_for_event_match(test.codex.as_ref(), |event| {
-                matches!(event, EventMsg::TurnComplete(_)).then_some(())
-            })
-            .await;
-        }
+        // Exactly one rejected successor completes. Its idle callback must
+        // not generate another rejection of the unchanged durable head.
+        wait_for_event_match(test.codex.as_ref(), |event| {
+            matches!(event, EventMsg::TurnComplete(_)).then_some(())
+        })
+        .await;
+        test.codex.current_turn_completion_barrier().await;
         anyhow::Ok(())
     })
     .await??;
@@ -2385,9 +2437,7 @@ async fn rejected_queue_messages_remain_durable_and_block_followups() -> anyhow:
     assert_eq!(vec!["A"], prompts);
     let hook_log = std::fs::read_to_string(test.codex_home_path().join("queue_prompt_hook.log"))?;
     let hook_lines = hook_log.lines().collect::<Vec<_>>();
-    assert_eq!(Some(&"A"), hook_lines.first());
-    assert!(hook_lines[1..].iter().all(|line| *line == "blocked"));
-    assert!(hook_lines.len() >= 2);
+    assert_eq!(vec!["A", "blocked"], hook_lines);
     assert_eq!(vec![blocked, following], queue.list(thread_id).await?);
     assert_eq!(1, responses.requests().len());
     Ok(())
@@ -2697,23 +2747,37 @@ async fn invalid_head_is_skipped_and_a_live_user_turn_is_accepted() -> anyhow::R
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn resumed_idle_dispatches_input_without_a_loaded_manager() -> anyhow::Result<()> {
     let server = start_mock_server().await;
-    responses::mount_sse_once(&server, responses::sse_completed("resumed-turn")).await;
+    let response =
+        responses::mount_sse_once(&server, responses::sse_completed("resumed-turn")).await;
     let test = test_codex().build_with_auto_env(&server).await?;
     let thread_id = test.session_configured.thread_id;
     let queue = loaded_thread_queue(&test)?;
-    QueuedItemService::new(
+    let queued = QueuedItemService::new(
         Arc::clone(&queue),
         Weak::new(),
         Arc::new(NoopExtensionEventSink),
     )
     .enqueue(thread_id, user_input("queued while unloaded"))
     .await?;
+    let sink = Arc::new(queue_settlement_support::QueueSettlementSink::new(thread_id));
+    let event_sink: Arc<dyn ExtensionEventSink> = sink.clone();
     let service = QueuedItemService::new(
         queue,
         Arc::downgrade(&test.thread_manager),
-        Arc::new(NoopExtensionEventSink),
+        event_sink,
     );
+    assert_eq!(vec![queued], service.list(thread_id).await?);
     emit_idle(&service, thread_id).await;
+    queue_settlement_support::wait_for_completed_turn(test.codex.as_ref()).await?;
+    sink.wait_for_empty(&service).await?;
     assert!(service.list(thread_id).await?.is_empty());
+    assert_eq!(
+        response
+            .single_request()
+            .message_input_texts("user")
+            .last()
+            .map(String::as_str),
+        Some("queued while unloaded")
+    );
     Ok(())
 }

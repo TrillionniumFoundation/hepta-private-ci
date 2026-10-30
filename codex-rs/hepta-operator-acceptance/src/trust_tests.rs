@@ -2,12 +2,17 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+#[cfg(unix)]
 use std::process::Command;
 
+#[cfg(unix)]
 use base64::Engine as _;
+#[cfg(unix)]
 use base64::engine::general_purpose::STANDARD;
+use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
+#[cfg(unix)]
 use super::SSHSIG_NAMESPACE;
 use super::TRUST_POLICY_SCHEMA;
 use super::TRUST_POLICY_SCOPE;
@@ -18,7 +23,9 @@ use super::validate_ed25519_blob;
 use crate::durable::canonical_json;
 use crate::durable::sha256;
 use crate::test_support::private_tempdir;
+use crate::test_support::ssh_key_fixture;
 
+#[cfg(unix)]
 #[test]
 fn sshsig_verifies_only_exact_namespace_against_pinned_policy() {
     let fixture = TrustFixture::new();
@@ -50,6 +57,22 @@ fn sshsig_verifies_only_exact_namespace_against_pinned_policy() {
 
     let wrong = fixture.sign(statement, "hepta-operator-acceptance-v1", "wrong-namespace");
     assert!(anchor.verify(statement, &wrong).is_err());
+}
+
+#[cfg(not(unix))]
+#[test]
+fn sshsig_verification_reports_typed_unsupported_without_accepting_a_signature() {
+    let fixture = TrustFixture::new();
+    let anchor = fixture.load_anchor();
+    let envelope =
+        b"-----BEGIN SSH SIGNATURE-----\nunverified-test-packet\n-----END SSH SIGNATURE-----\n";
+    match anchor.verify_bytes(b"statement", envelope) {
+        Err(crate::AcceptanceError::Io(error)) => {
+            assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
+        }
+        Err(error) => panic!("expected unsupported capability, got {error}"),
+        Ok(_) => panic!("unsupported platform must never verify an SSHSIG"),
+    }
 }
 
 #[test]
@@ -112,6 +135,7 @@ fn weak_ed25519_public_key_is_rejected_before_openssh() {
 struct TrustFixture {
     _temporary: TempDir,
     allowed_signers: PathBuf,
+    #[cfg(unix)]
     key: PathBuf,
     policy: PathBuf,
     policy_sha256: String,
@@ -126,17 +150,8 @@ impl TrustFixture {
             .path()
             .canonicalize()
             .expect("canonical trust root");
-        let key = root.join("operator-key");
-        let generated = Command::new("/usr/bin/ssh-keygen")
-            .args(["-q", "-t", "ed25519", "-N", "", "-f"])
-            .arg(&key)
-            .status()
-            .expect("start ssh-keygen");
-        assert!(generated.success(), "generate test-only Ed25519 key");
-
-        let public =
-            std::fs::read_to_string(key.with_extension("pub")).expect("read generated public key");
-        let fields = public.split_ascii_whitespace().collect::<Vec<_>>();
+        let key = ssh_key_fixture(&root);
+        let fields = key.public.split_ascii_whitespace().collect::<Vec<_>>();
         assert_eq!(fields.first().copied(), Some("ssh-ed25519"));
         let allowed_signers = root.join("allowed_signers");
         write_private(
@@ -144,24 +159,10 @@ impl TrustFixture {
             format!("operator@example {0} {1}\n", fields[0], fields[1]).as_bytes(),
         );
 
-        let fingerprint_output = Command::new("/usr/bin/ssh-keygen")
-            .args(["-E", "sha256", "-lf"])
-            .arg(key.with_extension("pub"))
-            .output()
-            .expect("fingerprint generated public key");
-        assert!(fingerprint_output.status.success());
-        let fingerprint_line =
-            std::str::from_utf8(&fingerprint_output.stdout).expect("UTF-8 fingerprint output");
-        let fingerprint = fingerprint_line
-            .split_ascii_whitespace()
-            .nth(1)
-            .expect("OpenSSH fingerprint field")
-            .to_string();
-
         let policy_value = TrustPolicy {
             acceptance_store_root: root.to_string_lossy().into_owned(),
             allowed_signers_sha256: sha256(&std::fs::read(&allowed_signers).unwrap()),
-            key_fingerprint: fingerprint,
+            key_fingerprint: key.fingerprint,
             maximum_lifetime_seconds: 900,
             principal: "operator@example".to_string(),
             schema: TRUST_POLICY_SCHEMA.to_string(),
@@ -177,7 +178,8 @@ impl TrustFixture {
         Self {
             _temporary: temporary,
             allowed_signers,
-            key,
+            #[cfg(unix)]
+            key: key.private,
             policy,
             policy_sha256,
             policy_value,
@@ -206,6 +208,7 @@ impl TrustFixture {
         self.policy_sha256 = sha256(&bytes);
     }
 
+    #[cfg(unix)]
     fn sign(&self, statement: &[u8], namespace: &str, name: &str) -> PathBuf {
         let statement_path = self.root.join(name);
         write_private(&statement_path, statement);
@@ -244,6 +247,7 @@ fn write_private(path: &Path, bytes: &[u8]) {
     file.write_all(bytes).expect("write private test file");
 }
 
+#[cfg(unix)]
 fn set_private_permissions(path: &Path) {
     #[cfg(unix)]
     {

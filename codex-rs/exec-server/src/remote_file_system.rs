@@ -43,6 +43,7 @@ const NOT_FOUND_ERROR_CODE: i64 = -32004;
 const INVALID_READ_BOUND: &str =
     "authorized file read bound must leave room for an overflow sentinel";
 const READ_EXCEEDED: &str = "remote authorized file read exceeded its bound";
+const SERVER_READ_EXCEEDED: &str = "authorized file read exceeds bound";
 
 #[path = "remote_file_stream.rs"]
 mod file_stream;
@@ -513,6 +514,24 @@ fn map_authorized_read_remote_error(error: ExecServerError) -> io::Error {
         ExecServerError::Server { code, .. } if code == METHOD_NOT_FOUND_ERROR_CODE => {
             unsupported_authorized_read()
         }
+        // Preserve the local contract only for the server's fixed, redacted
+        // diagnostics. Arbitrary remote messages must never reach the caller.
+        ExecServerError::Server {
+            code: INVALID_REQUEST_ERROR_CODE,
+            message,
+        } if message == "Permission denied" => {
+            io::Error::new(io::ErrorKind::PermissionDenied, "Permission denied")
+        }
+        ExecServerError::Server {
+            code: -32603,
+            message,
+        } if message == SERVER_READ_EXCEEDED => invalid_authorized_read_data(SERVER_READ_EXCEEDED),
+        ExecServerError::Server {
+            code: NOT_FOUND_ERROR_CODE,
+            message,
+        } if message == "No such file or directory" => {
+            io::Error::new(io::ErrorKind::NotFound, "No such file or directory")
+        }
         ExecServerError::Server {
             code: INVALID_REQUEST_ERROR_CODE | -32602,
             ..
@@ -534,6 +553,10 @@ fn map_authorized_read_remote_error(error: ExecServerError) -> io::Error {
 #[cfg(all(test, any(unix, windows)))]
 #[path = "remote_file_system_path_uri_tests.rs"]
 mod path_uri_tests;
+
+#[cfg(test)]
+#[path = "remote_file_system_authorized_error_tests.rs"]
+mod authorized_error_tests;
 
 #[cfg(test)]
 mod tests {

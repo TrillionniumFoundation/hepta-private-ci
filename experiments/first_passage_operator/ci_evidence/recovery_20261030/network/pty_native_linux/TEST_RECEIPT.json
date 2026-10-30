@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-30",
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-utils-pty",
+    "--lib",
+    "--locked"
+  ],
+  "exit_code": 0,
+  "passed": 31,
+  "skipped": 0,
+  "scope": "actual workspace Linux PTY crate tests; native Windows ConPTY not executed",
+  "lock_sha256_at_run": "a3e787d1e6608e1479c4a2402490ebc4073df86e877aba2603f294b1edd78982",
+  "source_sha256": {
+    "codex-rs/utils/pty/src/tests.rs": "de43c610eda6bc4c30af95f1ef5854a2fe88b30dc248d1196081394e51f3cc2d",
+    "codex-rs/utils/pty/src/windows_tests.rs": "58f468808ab389ba2cae70bb862984a52452cd4e7179c4b5d012ce7bbf73d911",
+    "codex-rs/utils/pty/src/windows_python_fixture.rs": "f1650712131798aa5d937fb1c0a2db0cb479219b4e24dc19433ab66ad6c21f0b",
+    "codex-rs/utils/pty/src/windows_python_fixture_tests.rs": "25c2e238b0f96249a7ee902f59acf84a989fa4051d186b6b95932e1b621c37d5"
+  },
+  "junit": "not emitted by original nextest 0.9.103 local profile; complete original log retained. No repeat was run solely to create JUnit; future profile output is repaired separately.",
+  "first_attempt": "blocked by missing keyring-store pretty_assertions lock edge; standard offline cargo update by lock owner resolved it; --locked preserved"
+}

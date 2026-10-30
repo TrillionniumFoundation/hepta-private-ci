@@ -1,0 +1,24 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+    Updating crates.io index
+     Locking 4 packages to latest Rust 1.96.0 compatible versions
+      Adding anyhow v1.0.103 (available: v1.0.104)
+ Downloading crates ...
+  Downloaded pretty_assertions v1.4.1
+  Downloaded diff v0.1.13
+  Downloaded anyhow v1.0.103
+  Downloaded yansi v1.0.1
+   Compiling anyhow v1.0.103
+   Compiling diff v0.1.13
+   Compiling yansi v1.0.1
+   Compiling pretty_assertions v1.4.1
+   Compiling hepta-pty-probe-recovery v0.1.0 (/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/pty_probe)
+    Finished `test` profile [unoptimized] target(s) in 0.76s
+────────────
+ Nextest run ID 2d22bfcd-28b9-470a-a1ac-43dfffebee94 with nextest profile: local
+    Starting 4 tests across 1 binary
+        PASS [   0.003s] hepta-pty-probe-recovery windows_python_fixture::tests::prefers_native_primary_and_preserves_resolved_unicode_path
+        PASS [   0.003s] hepta-pty-probe-recovery windows_python_fixture::tests::reports_failure_when_only_posix_runtimes_exist
+        PASS [   0.004s] hepta-pty-probe-recovery windows_python_fixture::tests::verifies_alias_only_after_primary_failure
+        PASS [   0.003s] hepta-pty-probe-recovery windows_python_fixture::tests::rejects_non_native_and_ambiguous_probe_outputs
+────────────
+     Summary [   0.004s] 4 tests run: 4 passed, 0 skipped

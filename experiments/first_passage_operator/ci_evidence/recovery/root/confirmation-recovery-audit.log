@@ -1,0 +1,33 @@
+{"audited_episodes": 384, "native_calls": 1920}
+{"audited_episodes": 768, "native_calls": 3840}
+{"audited_episodes": 1152, "native_calls": 5760}
+{"audited_episodes": 1536, "native_calls": 7680}
+{"audited_episodes": 1920, "native_calls": 9600}
+{"audited_episodes": 2304, "native_calls": 11520}
+{"audited_episodes": 2688, "native_calls": 13440}
+{"audited_episodes": 3072, "native_calls": 15360}
+{"audited_episodes": 3456, "native_calls": 17280}
+{
+  "status": "passed",
+  "freeze": {
+    "frozen_files": 64,
+    "external_dependencies": 8,
+    "freeze_sha256": "901f5e7e315e6786897af21da45370f290aa9e287d1055e40d8dde765190b685"
+  },
+  "control": {
+    "episodes": 3456,
+    "paired_scenarios": 1152,
+    "retained_parts": 216,
+    "native_calls": 17280,
+    "native_candidate_paths": 48179,
+    "replayed_transitions": 13824,
+    "maximum_actual_q32_error": 4.6409087683940697e-10,
+    "exact_out_of_domain_fallbacks": 1,
+    "scalar_choices_different_from_native_pareto_advisory": 0,
+    "replay_scope": "all recorded actions replayed with unchanged simulator; independent law validation is separate",
+    "authority": "DENY_ALL",
+    "safety_certificate": false
+  },
+  "value_passed": 3,
+  "network_passed": 0
+}

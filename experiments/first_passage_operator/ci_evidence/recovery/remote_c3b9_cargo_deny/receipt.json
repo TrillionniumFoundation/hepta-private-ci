@@ -1,0 +1,84 @@
+{
+  "schema": "hepta.exact-head.remote-audit-receipt.v1",
+  "run_id": 40987079970,
+  "job_id": 123840498827,
+  "artifact_id": 12947796225,
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40987079970",
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40987079970/job/123840498827",
+  "artifact_sha256": "c08395e28223cc06cd68d058570e4bb722ce0d4310a8a77e0694511d827c01b0",
+  "github_artifact_digest_verified": true,
+  "artifact_manifest_all_files_verified": true,
+  "source": {
+    "source_head": "c3b9adc6897e25a11a5408407ab922c137d9ff8d",
+    "source_tree": "2487eed3608899bbb196198735637c3df4f58520",
+    "lane": "cargo-deny",
+    "run_id": "40987079970",
+    "run_attempt": "1",
+    "input_sha256": {
+      ".github/workflows/hepta-operator-diagnostics.yml": "6524cec52231085447dec1db62a2663b451cddcb0e6ec323afb1370b0a423163",
+      "codex-rs/Cargo.toml": "aeb40915f2fb553a1292cebd78906c910d1d28596cca42e0ddf60d07bef02976",
+      "codex-rs/Cargo.lock": "7cd3ac48f8a03093674bf8e54ffa8b86dcbeaac64d535b1d8c59b21e5dd327e3",
+      "codex-rs/deny.toml": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352",
+      "MODULE.bazel": "595a1ddad96510295e70bf2e04427da8b2a5536559d08e0ddd6c98b779a6ddf0",
+      "MODULE.bazel.lock": "6cd33cd619de9103e3df32fd75eb55324482a2c8609620c6b3598f1cb6e99902",
+      ".bazelversion": "cdecb300baad839a6f62791229f551a4fa33f3cbdca08e378dc976466354e778",
+      "justfile": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+      "experiments/first_passage_operator/requirements.txt": "1932538fc4cbd9d2cb2f9d08373d91de1578218a936786fea175e2c7d6bd1a23"
+    },
+    "research_command_scope": "unit tests only; no confirmation run"
+  },
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "deny",
+        "--version"
+      ],
+      "exit_code": 0,
+      "log": "command-1.log"
+    },
+    {
+      "argv": [
+        "cargo",
+        "deny",
+        "--log-level",
+        "warn",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "--all-features",
+        "check"
+      ],
+      "exit_code": 0,
+      "log": "command-2.log"
+    }
+  ],
+  "all_four_audit_categories_ok": true,
+  "error_count": 0,
+  "warning_counts": {
+    "license-not-encountered": 1,
+    "duplicate": 112,
+    "unused-wrapper": 1,
+    "unmatched-source": 1,
+    "yanked": 3
+  },
+  "worktree_clean": true,
+  "archive_parts": [
+    {
+      "path": "artifact.zip.part000",
+      "bytes": 400000,
+      "sha256": "2ba4e1eddf0e51f3d69d1e5defa875184b1ff4a27d46001b5374ba8051de688b"
+    },
+    {
+      "path": "artifact.zip.part001",
+      "bytes": 400000,
+      "sha256": "f8b5615f70a96ed75997d9d17a8f6c05edda410cf4b3b3bc1064b4c13a7d4a74"
+    },
+    {
+      "path": "artifact.zip.part002",
+      "bytes": 137010,
+      "sha256": "8650ce1e115c99bf4951678d18d63486d05ea801df0ec1af252d35a748d7cd4a"
+    }
+  ],
+  "archive_parts_readback_verified": true,
+  "scope": "This is the actual c3b9 head audit, not a verdict for later source heads or native consumer behavior."
+}

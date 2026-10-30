@@ -19,6 +19,25 @@ use std::io::SeekFrom;
 use std::io::Write;
 use std::path::Path;
 
+#[cfg(windows)]
+type StateDirectory = codex_utils_path::private_state::PrivateStateDirectory;
+#[cfg(not(windows))]
+type StateDirectory = File;
+
+#[cfg(windows)]
+#[path = "final_use_store_windows.rs"]
+mod windows;
+#[cfg(windows)]
+use windows::entry_exists;
+#[cfg(windows)]
+use windows::open_private;
+#[cfg(windows)]
+use windows::prepare_directory;
+#[cfg(windows)]
+use windows::replace_claims;
+#[cfg(windows)]
+use windows::replace_state;
+
 const STATE_SCHEMA_V1: u32 = 1;
 const STATE_SCHEMA_V2: u32 = 2;
 const STATE_SCHEMA_V3: u32 = 3;
@@ -74,7 +93,7 @@ enum StoreTrust {
 }
 
 pub(super) struct Store {
-    root: File,
+    root: StateDirectory,
     signer_id: String,
     trust: StoreTrust,
     _lock: File,
@@ -364,7 +383,11 @@ impl Store {
     }
 }
 
-fn read_bounded(directory: &File, name: &str, maximum: usize) -> Result<Vec<u8>, FinalUseError> {
+fn read_bounded(
+    directory: &StateDirectory,
+    name: &str,
+    maximum: usize,
+) -> Result<Vec<u8>, FinalUseError> {
     let mut bytes = Vec::new();
     open_private(directory, name, Access::Read)?
         .take(u64::try_from(maximum).map_err(|_| FinalUseError::InvalidTrust)? + 1)
@@ -438,11 +461,11 @@ fn open_private(directory: &File, name: &str, access: Access) -> Result<File, Fi
     Ok(file)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn prepare_directory(_root: &Path) -> Result<File, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn open_private(_directory: &File, _name: &str, _access: Access) -> Result<File, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
@@ -473,15 +496,15 @@ fn replace_claims(directory: &File) -> Result<(), FinalUseError> {
     .map_err(|_| FinalUseError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn entry_exists(_directory: &File, _name: &str) -> Result<bool, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn replace_state(_directory: &File) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn replace_claims(_directory: &File) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }

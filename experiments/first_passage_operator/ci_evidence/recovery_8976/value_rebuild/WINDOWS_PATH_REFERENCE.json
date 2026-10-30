@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "source": "https://doc.rust-lang.org/std/path/struct.PathBuf.html#method.push",
+  "retrieval": "verified official Rust standard-library documentation",
+  "html_bytes": 366956,
+  "html_sha256": "c5d23912be95ec134c944fbbeb75a9266d8dc8799a4354f88311d17b110166d9",
+  "observation": "PathBuf::push documents normalization for a nonempty appended path when the existing Windows path has a verbatim prefix. Such construction can consume parent components before the function under test receives the path.",
+  "fixture_change": "Append a separator and .. directly to OsString, then assert that Path::components still contains Component::ParentDir. Production path validation is unchanged.",
+  "limitation": "Documentation and source reasoning; no native Windows execution in this recovery workspace."
+}

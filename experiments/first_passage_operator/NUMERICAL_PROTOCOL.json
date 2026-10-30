@@ -1,0 +1,103 @@
+{
+  "active_decays": [
+    0,
+    0.5,
+    1,
+    2,
+    4
+  ],
+  "boundary_cases": 24,
+  "boundary_domain": {
+    "cost_minus_reset": [
+      0.1,
+      0.9
+    ],
+    "discount": [
+      0.2,
+      0.8
+    ],
+    "mu": [
+      -0.3,
+      0.7
+    ],
+    "refractory": [
+      0.08,
+      0.3
+    ],
+    "reset": [
+      -0.2,
+      0.2
+    ],
+    "sigma": [
+      0.25,
+      0.65
+    ]
+  },
+  "boundary_gates": {
+    "bellman_max_abs_residual": 1e-09,
+    "grid_boundary_spacing_units": 3.0,
+    "grid_cases": 6,
+    "grid_spacings": [
+      0.04,
+      0.02,
+      0.01
+    ],
+    "grid_value_max_relative_error": 0.04,
+    "implicit_gradient_relative_error": 2e-06,
+    "matching_max_abs_error": 1e-10,
+    "qvi_gap_minimum": -1e-10
+  },
+  "operator_cases": 24,
+  "operator_domain": {
+    "discount": [
+      0,
+      0.05,
+      0.4
+    ],
+    "distance": [
+      0.1,
+      1.1
+    ],
+    "horizon": [
+      0.1,
+      1.2
+    ],
+    "mu": [
+      -0.8,
+      0.3
+    ],
+    "refractory": [
+      0.08,
+      0.2
+    ],
+    "reset": [
+      0.4,
+      1.0
+    ],
+    "sigma": [
+      0.25,
+      0.65
+    ]
+  },
+  "operator_gates": {
+    "event_max_abs_error": 2e-09,
+    "independent_feature_max_abs_error": 2e-06,
+    "mass_quad_max_abs_error": 2e-06,
+    "occupation_max_abs_error": 2e-08,
+    "semigroup_max_abs_error": 2e-05
+  },
+  "quadrature_orders": [
+    96,
+    192
+  ],
+  "reference": "Independent SciPy normal/inverse-Gaussian formulas and adaptive quadrature; monotone finite-difference Howard QVI iteration.",
+  "refractory_decays": [
+    0,
+    1,
+    3
+  ],
+  "schema": "hepta.regenerative-operator.numerical-protocol.v1",
+  "scope": "Numerical verification over a preregistered finite domain, not an all-floating-point certificate. Analytic QVI proof has its stated exact model assumptions.",
+  "seed": 2026102911,
+  "semigroup_cases": 4
+}

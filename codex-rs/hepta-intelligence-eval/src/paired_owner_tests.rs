@@ -297,7 +297,16 @@ fn actual_locked_file_replays_mixed_profiles_and_retains_rollback_anchor() {
     owner
         .consume(&ope("legacy", d("old cohort")))
         .expect("legacy");
+    // Windows byte-range locks reject reads through a second handle. Capture
+    // the durable backup between owners, then recover the exact same frontier.
+    let legacy_anchor = owner.anchor();
+    drop(owner);
     let backup = fs::read(&path).expect("backup");
+    let store =
+        LockedFileFinalHoldoutCasStoreV1::recover(open(), d("binding"), Some(legacy_anchor))
+            .expect("recover after backup");
+    let mut owner = FencedFinalHoldoutOwnerV1::recover(store, d("binding"), fence(1))
+        .expect("same owner frontier");
     let plan = paired("p");
     let receipt = owner.consume_paired(&plan).expect("paired");
     let anchor = owner.anchor();

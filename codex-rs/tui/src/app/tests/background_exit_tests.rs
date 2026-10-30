@@ -1,4 +1,11 @@
 use super::*;
+use app_test_support::MockResponsesConfig;
+use codex_app_server_protocol::ClientRequest;
+use codex_app_server_protocol::TurnStartParams;
+use codex_app_server_protocol::TurnStartResponse;
+use core_test_support::responses;
+use core_test_support::streaming_sse::StreamingSseChunk;
+use core_test_support::streaming_sse::start_streaming_sse_server;
 use pretty_assertions::assert_eq;
 
 fn prepare_local_daemon_thread(app: &mut App) -> Result<ThreadId> {
@@ -148,11 +155,33 @@ async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
     prepare_running_local_daemon(&mut app)?;
     app.chat_widget
         .set_feature_enabled(Feature::Goals, /*enabled*/ true);
-    let (mut app_server, mut tui) =
-        prepare_background_exit_test(&app, &mut app_event_rx, &mut op_rx).await?;
-    let started = app_server
-        .start_thread(app.chat_widget.config_ref())
+    // Hold an actual model turn open with a protocol gate. A shell sleep can
+    // terminate before the interrupt when the selected shell differs from the
+    // platform default, and does not test the exit orchestration contract.
+    let (release_response, response_gate) = tokio::sync::oneshot::channel();
+    let (server, _completions) = start_streaming_sse_server(vec![vec![
+        StreamingSseChunk {
+            gate: None,
+            body: responses::sse(vec![responses::ev_response_created("exit-response")]),
+        },
+        StreamingSseChunk {
+            gate: Some(response_gate),
+            body: responses::sse(vec![responses::ev_completed("exit-response")]),
+        },
+    ]])
+    .await;
+    let codex_home = tempdir()?;
+    MockResponsesConfig::new(server.uri())
+        .enable_feature(Feature::Goals)
+        .write(codex_home.path())?;
+    let config = ConfigBuilder::default()
+        .codex_home(codex_home.path().to_path_buf())
+        .fallback_cwd(Some(codex_home.path().to_path_buf()))
+        .build()
         .await?;
+    let mut app_server = crate::start_embedded_app_server_for_picker(&config).await?;
+    let mut tui = crate::tui::test_support::make_test_tui()?;
+    let started = app_server.start_thread(&config).await?;
     let thread_id = started.session.thread_id;
     app.active_thread_id = Some(thread_id);
     app.chat_widget
@@ -179,14 +208,23 @@ async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
         ),
         /*replay_kind*/ None,
     );
-    let command = if cfg!(windows) {
-        "Start-Sleep -Seconds 30"
-    } else {
-        "sleep 30"
-    };
-    app_server
-        .thread_shell_command(thread_id, command.to_string())
+    let _: TurnStartResponse = app_server
+        .request_handle()
+        .request_typed(ClientRequest::TurnStart {
+            request_id: AppServerRequestId::String("exit-turn-start".to_string()),
+            params: TurnStartParams {
+                thread_id: thread_id.to_string(),
+                input: vec![UserInput::Text {
+                    text: "Keep this turn running until interrupted".to_string(),
+                    text_elements: Vec::new(),
+                }],
+                ..Default::default()
+            },
+        })
         .await?;
+    time::timeout(Duration::from_secs(5), server.wait_for_request_count(1))
+        .await
+        .expect("the interrupt target must have a running model request");
     let turn_id = loop {
         let event = time::timeout(Duration::from_secs(/*secs*/ 5), app_server.next_event())
             .await
@@ -230,6 +268,9 @@ async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
         app_event_rx.try_recv(),
         Ok(AppEvent::Exit(ExitMode::ShutdownFirst))
     );
+    let _ = release_response.send(());
+    app_server.shutdown().await?;
+    server.shutdown().await;
     Ok(())
 }
 

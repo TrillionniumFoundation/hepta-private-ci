@@ -1,0 +1,18 @@
+{
+  "command": [
+    "cargo",
+    "+1.96.0",
+    "update",
+    "--manifest-path",
+    "codex-rs/Cargo.toml",
+    "-p",
+    "webpki-root-certs",
+    "--precise",
+    "1.0.10"
+  ],
+  "exit_code": 0,
+  "duration_seconds": 6.487666317000276,
+  "before_lock_sha256": "81df99769fbaae7915e2a2340a15a776fb7dcba901a968fd1202e2b998659364",
+  "after_lock_sha256": "859e8ae0771e3f9ccde99c2391ad5fd60812aff03a3b519258fee6199adbbf34",
+  "log_sha256": "bc69a9bdcfc00eecf8616037b5b943e11daa60ff0e00a22387704e53d1c9097b"
+}

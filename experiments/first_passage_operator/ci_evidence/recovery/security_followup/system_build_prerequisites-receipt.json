@@ -1,0 +1,14 @@
+{
+  "command": [
+    "apt-get",
+    "install",
+    "-y",
+    "pkg-config"
+  ],
+  "exit_code": 0,
+  "duration_seconds": 7.11503863400003,
+  "reason": "Actual openssl-sys compilation reported missing pkg-config; system OpenSSL headers, libraries and .pc were already present",
+  "log_sha256": "91d1be69f6f93138ce367c898e053b772640b0a510cef6e2e8ba46a8c55ff01a",
+  "pkg_config_version": "1.8.1",
+  "openssl_version_and_link_flags": "3.0.13"
+}

@@ -1,0 +1,11 @@
+{
+  "schema": "hepta.native-compile-repair.v1",
+  "failure_receipt": "vendor_native_01/matrix-sdk.json",
+  "failure_log": "vendor_native_01/matrix-sdk.log.gz",
+  "compiler_error": "E0603: anymap3::any is private",
+  "official_api_evidence": "anymap3 1.1.0 src/lib.rs publicly re-exports CloneAny from its private any module; official archive checksum fb5dfbc6d8d2675589ccbe4d0fd61df2419075625f8c1a62325e718e2b0049f9",
+  "change": "Use anymap3::CloneAny. No change to native CloneAny + Send + Sync or wasm CloneAny contracts, dependency manifest or locks.",
+  "source_before_sha256": "1c89b6383aea7e4b9a880343c20dc0dc86c80e5cee606acac7c652c0e4b30dd1",
+  "source_after_sha256": "e6a4159ac0802c45f0a859d394ae8ffa925fa1b3837a2b27bdf0c132a7a27bed",
+  "validation": "Targeted fresh native rerun pending; first attempt and its copied pre-repair workspace remain unchanged until it finishes."
+}

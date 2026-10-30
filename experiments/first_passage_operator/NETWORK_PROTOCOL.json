@@ -1,0 +1,63 @@
+{
+  "active_parameters_per_model": 55,
+  "advantage_gate": "all six adjusted empirical lower bounds exceed0.005 and each of three seed means is positive; failed gates stay reported",
+  "advantage_margin": 0.005,
+  "amendment": "Before confirmation, move delayed query from slot7 to slot6 so one-segment interlayer transmission completes; preserve all prior development in aborted_delayed_observability_v1. No hyperparameter changes.",
+  "architecture": "two hidden layers, three units per layer, two public input channels, one scalar readout; one-segment interlayer delay",
+  "batch_size": 64,
+  "bootstrap": "resample model seeds, then paired complete examples; stochastic repetitions stay within an example",
+  "bootstrap_replicates": 4000,
+  "bootstrap_seed": 2026102907,
+  "confirmation_access": "forbidden in development; only after explicit source and checkpoint FREEZE.json validation",
+  "confirmation_examples": 256,
+  "confirmation_repeats": 8,
+  "delayed_match_timing": "cue slot0, distractors slots1..5, query slot6, transmission slot7",
+  "development_every": 10,
+  "development_examples": 128,
+  "development_repeats": 4,
+  "diagnostic_only_seeds": [
+    1,
+    3,
+    9,
+    404,
+    97031
+  ],
+  "epochs": 80,
+  "fairness": "same train/development/confirmation identities and examples, identical update counts and learning-rate budget; no wall-time equality claimed; inference repetitions recorded",
+  "family_alpha": 0.05,
+  "first_passage_backward": "biased straight-through conditional-renewal-moment surrogate; local moments use analytic finite count sums and order8 Gauss-Legendre refractory integrals; not an unbiased objective gradient",
+  "first_passage_forward": "sample every continuous first passage, exact killed-survivor endpoint, physical reset and positive deterministic refractory; continue all remaining time",
+  "gradient_norm_clip": 5.0,
+  "learning_rate": 0.01,
+  "lif_backward": "sigmoid surrogate for threshold and refractory-release discontinuities",
+  "lif_forward": "Euler leaky integrate and fire, leak1, twenty substeps per segment, hard events, reset and refractory release quantized to substeps",
+  "limited_claim": "three-seed controlled synthetic comparison; neither universal cross-task superiority nor population coverage is established",
+  "models": [
+    "first_passage",
+    "lif",
+    "rnn"
+  ],
+  "optimizer": "Adam with default betas and epsilon; float64",
+  "parent_commit": "2abafe82a99d6def2132e605e57af183e3080194",
+  "physical_anchor": "initial membrane voltage0 in fixed observed units; threshold0.5..1.4, reset-0.2..0.2, diffusion0.08..0.4, refractory0.04..0.18",
+  "primary_comparisons": "six baseline-minus-first-passage single-rollout expected cross-entropy differences across three tasks and two baselines",
+  "randomness": "Matched example identities and named RNG seeds; adaptive samplers consume different random draws, so no common-Brownian-path coupling across model families is claimed.",
+  "registered_before_development": true,
+  "rnn": "two-layer leaky tanh recurrence with learned gains and time scales;55 active coefficients",
+  "schema": "hepta.renewal-network.protocol.v2",
+  "seeds": [
+    3109,
+    3163,
+    3203
+  ],
+  "segment_duration": 0.25,
+  "segments": 8,
+  "selection": "lowest development binary cross entropy among the eight registered epoch checkpoints",
+  "simultaneous_tail_probability": 0.004166666666666667,
+  "tasks": [
+    "evidence",
+    "order",
+    "delayed_match"
+  ],
+  "train_examples": 256
+}

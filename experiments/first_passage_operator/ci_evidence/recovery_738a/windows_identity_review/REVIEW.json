@@ -1,0 +1,238 @@
+{
+  "schema": "hepta.windows-identity-native-review.v1",
+  "recorded_at_utc": "2026-10-30T17:33:41.725798+00:00",
+  "remote_source_commit": "738a00959b869a4cdd4730109b4ff60c9340f106",
+  "diagnostic_run": 41092882733,
+  "windows_job": 124191040972,
+  "conclusion": "Account lifetime concurrency remains OPEN. A narrow patch preserves the native logon error before restoring the process error mode; it does not fix or qualify account coordination.",
+  "native_observation": {
+    "artifact_id": 12995653111,
+    "artifact_zip_sha256": "5a848e6b83f7ffcedeca2b2533fd84112690440c69d5303f61acd7b687bafff3",
+    "command": "just test -p codex-exec-server --test file_system_windows --locked",
+    "run": 57,
+    "passed": 54,
+    "flaky_in_passed": 2,
+    "failed": 3,
+    "preexisting_skipped": 2,
+    "final_failed_tests": [
+      "shared::file_system_remove_no_follow_removes_file_and_empty_directory::local_sandboxed",
+      "shared::file_system_remove_no_follow_removes_file_and_empty_directory::remote_sandboxed",
+      "shared::file_system_write_file_writes_bytes::local_sandboxed_no_follow"
+    ],
+    "observed_error": "CreateProcessWithLogonW failed: 1326",
+    "additional_observed_error": "orchestrator_helper_incomplete: setup helper exited successfully before setup completed",
+    "rotation_timeline_present": false,
+    "inference_limit": "The logs establish reported login/setup failures. They do not establish which password update, home, process or overlapping interval caused each failure, nor whether SetErrorMode changed the reported error."
+  },
+  "verified_existing_packages": [
+    {
+      "manifest": "experiments/first_passage_operator/ci_evidence/recovery_8976/windows_security_followup/SOURCE_MANIFEST.json",
+      "manifest_sha256": "c3a7cf9dbfdcc2c7faf369a79ab2761aad6d3b3092b7fb7760757dfb617a7fcd",
+      "verified_members": 16,
+      "all_bytes_and_hashes_match": true
+    },
+    {
+      "manifest": "/workspace/scratch/8b9f3e9fd04d/recovery_ci/windows_sqlite_stage1/publication-manifest.json",
+      "manifest_sha256": "20649308fa56c4b2ef1d3c805e19a657f5acb617de00daa08ee00c51b46cf7a1",
+      "verified_members": 8,
+      "all_bytes_and_hashes_match": true
+    }
+  ],
+  "source_causal_chain": [
+    {
+      "file": "codex-rs/windows-sandbox-rs/src/setup.rs",
+      "symbols": [
+        "OFFLINE_USERNAME",
+        "ONLINE_USERNAME",
+        "run_setup_singleflight",
+        "run_elevated_setup_inner",
+        "run_elevated_provisioning_setup"
+      ],
+      "observation": "Both setup entry points use fixed local machine account names. SETUP_FLIGHTS is process-local and keyed by the complete serialized payload; distinct homes/roots do not join one flight."
+    },
+    {
+      "file": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/sandbox_users.rs",
+      "symbols": [
+        "provision_sandbox_users",
+        "ensure_local_user",
+        "write_secrets"
+      ],
+      "observation": "Full provisioning generates two new passwords. NetUserAdd failure enters NetUserSetInfo level 1003; successful passwords are stored in that home with DPAPI. This changes shared local account state, not a home-scoped identity."
+    },
+    {
+      "file": "codex-rs/windows-sandbox-rs/src/identity.rs",
+      "symbols": [
+        "select_identity",
+        "refresh_logon_sandbox_creds",
+        "require_logon_sandbox_creds"
+      ],
+      "observation": "Credentials are loaded from a specific home. Refresh deletes that home credential file and requests provisioning again."
+    },
+    {
+      "file": "codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+      "symbols": [
+        "retry_runner_spawn_once",
+        "spawn_runner_transport"
+      ],
+      "observation": "An eligible logon failure refreshes and retries once. There is no authority retaining account generation from credential read/provisioning through CreateProcessWithLogonW."
+    },
+    {
+      "file": "codex-rs/exec-server/tests/common/exec_server.rs",
+      "symbols": [
+        "exec_server_with_env"
+      ],
+      "observation": "Remote exec-server harness instances have independent TempDir CODEX_HOME values. The local test caller resolves its process home via SandboxManager; it is not claimed that every local test has a fresh home."
+    },
+    {
+      "file": "codex-rs/sandboxing/src/manager.rs",
+      "symbols": [
+        "transform_for_direct_spawn",
+        "wrap_windows_sandbox_exec_request_for_direct_spawn"
+      ],
+      "observation": "The resolved host CODEX_HOME is passed through wrapper arguments before the child environment is cleared."
+    }
+  ],
+  "source_admitted_schedule_inference": [
+    "A provisions fixed account password pA and saves it in home A.",
+    "B provisions the same fixed account with a distinct password pB and saves it in home B.",
+    "A attempts a new account logon using its cached pA; there is no source-level exclusion of B between the save/read and the logon.",
+    "An A refresh can rotate to pA2, while B or a third home may rotate again before A retries.",
+    "This is a source-level possible schedule, not a claim that it was recorded during the native 738 run."
+  ],
+  "narrow_patch": {
+    "source": {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+      "sha256": "8e5b9eca764992a83faf85df80a76e31ad3f9e5fe59a6022172c9d4fa9293f21",
+      "bytes": 20392
+    },
+    "before_sha256": "8d22e6acb74148bf2d8f2b81bbeccc2fd0bdaf89310e772119f9c2f2fd9e7b0c",
+    "change": "Capture GetLastError immediately after failed CreateProcessWithLogonW and before SetErrorMode(previous_error_mode). Use the saved value after restoring the error mode.",
+    "behavior_preserved": [
+      "same credential input",
+      "same logon API flags",
+      "same retry count and refresh path",
+      "same helper pipe cleanup",
+      "same policy and ACL behavior",
+      "all existing assertions"
+    ],
+    "not_established": [
+      "native compilation",
+      "native regression pass",
+      "cause of 738 errors",
+      "cross-process or cross-home account correctness"
+    ],
+    "diff": {
+      "path": "experiments/first_passage_operator/ci_evidence/recovery_738a/windows_identity_review/SOURCE_CHANGES.diff.gz",
+      "sha256": "16701b50552a8ac64697856c8079b854f2e730c7137393936f73c39f10cc8456",
+      "bytes": 330
+    }
+  },
+  "repair_constraints": [
+    "Serializing only account provisioning leaves the credential-read-to-logon window open.",
+    "A lock only in retry_runner_spawn_once leaves direct provisioning and initial setup rotations outside the critical section.",
+    "A production coordination authority must cover all account mutations, credential loading/refresh, and successful logon; helper-process reentry must not deadlock.",
+    "A machine-wide named object needs reviewed cross-user ownership/ACL and precreation behavior. Per-home or per-process locks do not coordinate fixed machine accounts.",
+    "Sharing one test CODEX_HOME, reducing nextest concurrency or adding a test-only mutex can be a diagnostic control; it cannot establish production concurrent correctness.",
+    "Per-home account names would also require account lifecycle, firewall, desktop, migration and cleanup review; they are not a narrow credential fix.",
+    "Do not log passwords, DPAPI blobs, password hashes or password-derived fingerprints to correlate events."
+  ],
+  "next_native_discriminators": [
+    {
+      "kind": "unchanged_parallel_gate",
+      "command": "just test -p codex-exec-server --test file_system_windows --locked",
+      "interpretation": "Preserve original assertion coverage and record failures."
+    },
+    {
+      "kind": "separate_serial_control",
+      "command": "just test -p codex-exec-server --test file_system_windows --locked --test-threads=1",
+      "interpretation": "A passing control indicates scheduling sensitivity only; the parallel product blocker stays open. Do not replace the parallel gate."
+    },
+    {
+      "kind": "deterministic_two_home_native_schedule",
+      "recipe": "Use two owned homes in an isolated native test. Coordinate full provisioning and raw logon attempts with barriers: A provision/load, B provision, A logon. Follow with coordinated overlapping refresh/logon trials. Retain only operation metadata and native return codes. No test has yet been added or executed."
+    }
+  ],
+  "primary_sources": [
+    {
+      "url": "https://github.com/MicrosoftDocs/sdk-api/blob/docs/sdk-api-src/content/lmaccess/nf-lmaccess-netusersetinfo.md",
+      "supports": "NULL server selects local computer; level 1003 supplies a user password."
+    },
+    {
+      "url": "https://github.com/MicrosoftDocs/sdk-api/blob/docs/sdk-api-src/content/winbase/nf-winbase-createprocesswithlogonw.md",
+      "supports": "A zero return indicates failure; GetLastError retrieves extended information."
+    },
+    {
+      "url": "https://github.com/MicrosoftDocs/sdk-api/blob/docs/sdk-api-src/content/errhandlingapi/nf-errhandlingapi-getlasterror.md",
+      "supports": "Retrieve last-error immediately before later APIs can overwrite it."
+    }
+  ],
+  "local_validation": {
+    "scope": "static source inspection and SHA/size integrity checks only",
+    "canonical_commands_attempted": [
+      {
+        "command": "just fmt",
+        "exit_code": 127,
+        "reason": "just: command not found"
+      },
+      {
+        "command": "just test -p codex-windows-sandbox --lib --locked",
+        "exit_code": 127,
+        "reason": "just: command not found"
+      },
+      {
+        "command": "just fix -p codex-windows-sandbox --lib --locked",
+        "exit_code": 127,
+        "reason": "just: command not found"
+      }
+    ],
+    "no_local_native_compile_or_execution": true
+  },
+  "source_basis": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/setup.rs",
+      "sha256": "1fa3bfafe7eb75d3ff009bc7ed741689ee9cf25595f7a5433538c325b1254b09",
+      "bytes": 83794
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/identity.rs",
+      "sha256": "7849ccc56947c1b26b4f9e6f7795d16ff5ae09c7d670d9beff01efdb24641245",
+      "bytes": 14244
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/sandbox_users.rs",
+      "sha256": "14225925e212240291ac27138508598b09091abc7c8990b109fb8d65e50a0485",
+      "bytes": 20445
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+      "sha256": "9998482ac3ecbb420b33bbc50cfc9d87697d7a05efd786361c9deff8e7ba9e02",
+      "bytes": 12135
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated.rs",
+      "sha256": "dbaec663034a007063bf6967a10ae59e615a263378cf3f8bdb3a62a3ef660f00",
+      "bytes": 8164
+    },
+    {
+      "path": "codex-rs/exec-server/tests/common/exec_server.rs",
+      "sha256": "c468401b81e333e574dce218d27b990da1e57d1fa16da238e7ae21ebfab8903f",
+      "bytes": 14665
+    },
+    {
+      "path": "codex-rs/sandboxing/src/manager.rs",
+      "sha256": "5b8e8e46b4a6947eb2a9c7f4de656d4b144374302a49357be213933261826fe3",
+      "bytes": 28236
+    }
+  ],
+  "scientific_gates_unchanged": {
+    "original_multilayer": "0/6",
+    "finite_deadline": "91/92"
+  },
+  "closed_blockers": [],
+  "remaining_blockers": [
+    "shared account lifetime and concurrent native logon",
+    "native validation of newly staged Windows sources",
+    "existing token boundary assertions",
+    "Windows SQLite state/memory wiring after native capability validation"
+  ]
+}

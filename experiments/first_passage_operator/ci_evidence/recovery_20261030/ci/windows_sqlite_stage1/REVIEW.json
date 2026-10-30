@@ -1,0 +1,208 @@
+{
+  "schema": "hepta.windows_sqlite_capability_stage1.v2",
+  "status": "source_review_in_progress_native_compilation_and_tests_pending",
+  "baseline_commit": "6396bc013fdb16a955cced8a746e27279311361c",
+  "baseline_recheck": {
+    "reference": "research/first-passage-operator-20261029",
+    "matching_existing_source_blobs": [
+      {
+        "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+        "git_blob": "0fccacc1765c838098cfef29e1d2a2d8918e304d",
+        "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/research/first-passage-operator-20261029/codex-rs/utils/path-utils/src/private_state_windows.rs"
+      },
+      {
+        "path": "codex-rs/utils/path-utils/src/private_state_nt.rs",
+        "git_blob": "f82644554ac3707ec44f09858222efa567c0c281",
+        "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/research/first-passage-operator-20261029/codex-rs/utils/path-utils/src/private_state_nt.rs"
+      },
+      {
+        "path": "codex-rs/utils/path-utils/src/private_state_security.rs",
+        "git_blob": "9ca57dfd7fecd1851c0055be5b7d5a47c787246e",
+        "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/research/first-passage-operator-20261029/codex-rs/utils/path-utils/src/private_state_security.rs"
+      }
+    ]
+  },
+  "scope": {
+    "includes": [
+      "Additive private SQLite directory and read-only source capability in codex-utils-path.",
+      "No new dependency or Cargo/MODULE lock change.",
+      "Nine new Windows-only native tests; previous private-state tests unchanged."
+    ],
+    "excludes": [
+      "No state SQLite recovery or cognitive memory wiring.",
+      "No fallback that opens a source filename through SQLite.",
+      "No claim that historical native results validate these new bytes.",
+      "No coherent-cut, currentness, writer-authority, or whole Windows recovery qualification claim."
+    ],
+    "files": [
+      {
+        "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+        "change": "Export the additive sqlite submodule under the existing cfg(windows) private_state module."
+      },
+      {
+        "path": "codex-rs/utils/path-utils/src/private_state_nt.rs",
+        "change": "Add FILE_OPEN RetainRead, true FILE_CREATE CreateNew, explicit directory FILE_TRAVERSE, and handle-based local-disk verification. Existing three access modes retain their desired-access/disposition/sharing results."
+      },
+      {
+        "path": "codex-rs/utils/path-utils/src/private_state_security.rs",
+        "change": "Retain strict PrivateState owner/ACL policy; add purpose-specific SQLite policies and owner/group/control/full-DACL snapshots. Directory creation descriptor has one protected current-owner full-access OI/CI ACE."
+      },
+      {
+        "path": "codex-rs/utils/path-utils/src/sqlite_private_identity.rs",
+        "change": "Capture validated file/volume identity, content metadata, and security snapshots via the documented typed Windows APIs."
+      },
+      {
+        "path": "codex-rs/utils/path-utils/src/sqlite_private_windows.rs",
+        "change": "PrivateSqliteDirectory create/open/create-new-file/flush; RetainedSqliteDirectory open/retain/verify; RetainedSqliteFile bounded read and exact identity/absence checks."
+      },
+      {
+        "path": "codex-rs/utils/path-utils/src/sqlite_private_windows_tests.rs",
+        "change": "Native tests for missing roots, exclusive creation, inherited SQLite filenames, bounded reads, retention/sharing, absence changes, hard links and names, junctions, unsafe or changed DACLs."
+      }
+    ]
+  },
+  "safety_invariants": [
+    "Read-only retention always uses FILE_OPEN and a null security descriptor. It never creates, truncates, repairs an ACL, opens SQLite, or exposes a raw writable handle.",
+    "Root and child opens retain OBJ_DONT_REPARSE and FILE_OPEN_REPARSE_POINT. Child names follow the existing bounded single-component policy.",
+    "Retained regular files use FILE_SHARE_READ only. Retained directories share READ and WRITE but deny DELETE; directory metadata and path identity are revalidated during source capture.",
+    "The Windows file/mapping sharing contract is not a proof of currentness or writer authority. Bounded bytes and matching metadata still require an independent complete current-cut witness and the owner's real writer fence. The mapping behavior is documented by Microsoft; an explicit native mapped-file regression has not been run.",
+    "Snapshots bind volume serial and 128-bit file ID, creation/write/change times, attributes, allocation/length/link count/kind, and owner/group/security-control/DACL bytes. Delete-pending, reparse objects, and multiple regular-file links are rejected. Read access time is excluded; auditing SACLs are not requested.",
+    "Both the retained handle and a fresh anchored filename are compared to the initial snapshot. An absent filename is retained as an observation and must remain absent.",
+    "New directory creation first opens and retains the parent read-only, validates its type and local device, then uses parent-handle-relative FILE_CREATE. Unsupported parents are rejected before creating the final component.",
+    "New SQLite directories require a protected current-owner-only OI/CI ACL. SQLite file retention permits exactly one owner full-access ACE: either explicit protected/non-inheritable or unprotected/inherited. Foreign principals, null DACLs, additional ACEs and unrecognized flags remain errors.",
+    "CreateNew never opens or truncates an existing destination. File and directory flush errors are propagated; no unsupported-filesystem durability success is invented.",
+    "Directory metadata is stable only during source capture. Any destination creation must happen after the last source verification; this stage does not hide that deliberate directory mutation."
+  ],
+  "independent_review": {
+    "reviewer": "/root",
+    "state": "ongoing",
+    "incorporated": [
+      "Rename the local SID length variable to sid_length so it does not shadow sid_bytes().",
+      "Replace every new expect_err with an explicit Err-matching contextual test helper.",
+      "Preflight and retain the parent before creating a new directory; create relative to that parent.",
+      "Correct the mapping limitation wording against Microsoft's CreateFileW documentation: sharing does not authenticate currentness or writer authority; do not assert that pre-existing writable mappings bypass share checks.",
+      "Add FILE_TRAVERSE only to the new retained-directory mode; preserve every old access-mode mask exactly.",
+      "The foreign-principal DACL fixture keeps the valid OI/CI flags so rejection cannot be explained solely by a flag mismatch. The bounded-read fixture also checks metadata-only write drift through an attribute-only handle."
+    ]
+  },
+  "validation": {
+    "native_rust_compilation": "not_run",
+    "native_windows_tests": "not_run",
+    "cross_compile": "not_run",
+    "rustfmt": "pending_root_canonical_formatter",
+    "clippy": "pending_native_just_fix",
+    "git_diff_check": {
+      "exit_code": 128,
+      "reason": "GIT_NO_LAZY_FETCH=1: a base Cargo.toml blob is absent from the sparse promisor clone. No implicit fetch or Git mutation was performed."
+    },
+    "independent_text_diff": {
+      "source_equality": "pass",
+      "new_or_modified_files": 6,
+      "trailing_whitespace": "none",
+      "new_windows_test_count": 9,
+      "native_test_executions": 0
+    },
+    "intended_commands": [
+      "just test --locked -p codex-utils-path --lib",
+      "just fix --locked -p codex-utils-path --tests"
+    ],
+    "required_next_stage": [
+      "Native path-utils execution and independent security review.",
+      "Real SQLx-created DB/WAL/SHM/journal inheritance checks in owner integration.",
+      "Bounded retained-copy integration preserving all original current-cut, tamper, owner, fence and activation assertions.",
+      "No change to the existing source-path writer-unavailable guard."
+    ]
+  },
+  "primary_api_sources": [
+    {
+      "url": "https://github.com/rust-lang/rust/blob/1.96.0/library/std/src/os/windows/fs.rs",
+      "git_blob": "7fd46b31f7d8325672672c5437c0f926e33392c2"
+    },
+    {
+      "url": "https://github.com/MicrosoftDocs/sdk-api/blob/docs/sdk-api-src/content/winbase/nf-winbase-getfileinformationbyhandleex.md",
+      "git_blob": "72ff681abc169ae18cad06c5be9a0d049368e50f"
+    },
+    {
+      "url": "https://github.com/MicrosoftDocs/sdk-api/blob/docs/sdk-api-src/content/winbase/ns-winbase-file_id_info.md",
+      "git_blob": "9cf294833c5e127c2aee96a34b5c686c051bdb3d"
+    },
+    {
+      "url": "https://github.com/MicrosoftDocs/sdk-api/blob/docs/sdk-api-src/content/fileapi/nf-fileapi-createfilew.md",
+      "git_blob": "7bc943d438edc966f7bd735509bafb26b3a383a3"
+    },
+    {
+      "url": "https://github.com/MicrosoftDocs/windows-driver-docs-ddi/blob/staging/wdk-ddi-src/content/ntifs/nf-ntifs-ntqueryvolumeinformationfile.md",
+      "git_blob": "686bd6cf88a60d3aa71078b7706609b054d85ada"
+    },
+    {
+      "url": "https://github.com/MicrosoftDocs/windows-driver-docs-ddi/blob/staging/wdk-ddi-src/content/wdm/ns-wdm-_file_fs_device_information.md",
+      "git_blob": "511036aa0088f113c90cd78b0074854c09492562"
+    },
+    {
+      "url": "https://github.com/microsoft/windows-rs/blob/0.52.0/crates/libs/sys/src/Windows/Win32/Security/mod.rs",
+      "git_blob": "e474d1dfc62b7be1443f2b59eda8370477fdfa74"
+    },
+    {
+      "url": "https://github.com/microsoft/windows-rs/blob/0.52.0/crates/libs/sys/src/Windows/Win32/Storage/FileSystem/mod.rs",
+      "git_blob": "5cb313fe5ba69cbec6eee56b86ec13608744dae4"
+    }
+  ],
+  "supersedes_unpublished_manifest_sha256": "a914cb2f5aa1a043035b34bf8ac017936a6be6b9cff3103abd6a2095a7015518",
+  "new_test_names": [
+    "existing_only_opens_never_create_a_missing_directory",
+    "create_new_preserves_existing_files_and_directory",
+    "ordinary_sqlite_filenames_inherit_private_acl_without_repair",
+    "retention_reads_exact_offsets_and_rejects_overflow_or_metadata_drift",
+    "retained_sources_and_root_remain_pinned_until_last_owner_drops",
+    "an_existing_writer_prevents_retention_and_absence_is_not_a_missing_observation",
+    "hard_links_wrong_types_and_non_component_names_are_errors",
+    "junction_roots_are_rejected_without_creating_the_target_child",
+    "changed_null_and_foreign_dacls_are_rejected_without_repair"
+  ],
+  "created_utc": "2026-10-30T17:17:27.638611+00:00",
+  "source_files": [
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+      "before_sha256": "615b40e81af0399fe821f0be74f6275502e87ccf1a1dc4cd5baefc6e77bfc607",
+      "sha256": "6aa21fcc7a8b31d4a531e49479822b5fe92dc9c01a4a787c43768741135791f1",
+      "bytes": 5442
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_nt.rs",
+      "before_sha256": "eb12352449bb8f96f12e0026229ada9a69cd187a8e37cd627d00f5e0052c395b",
+      "sha256": "0639d0fb28165f78f13ca93a6a3e8c4bd955d871311684fde54fb6e62d80a0a2",
+      "bytes": 10963
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_security.rs",
+      "before_sha256": "5dd07f4984615ced7e9289923457a7123a7590a8554dae593c6f4b00721ff9f3",
+      "sha256": "f6824b06079d0199b60505a8895554c390b707d02e7bf6da684b08015c712ba7",
+      "bytes": 11397
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/sqlite_private_identity.rs",
+      "before_sha256": null,
+      "sha256": "d629848eeca959d77bc0c7154661d57274d2c357928a86701e48fa3c2fd15d5c",
+      "bytes": 3634
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/sqlite_private_windows.rs",
+      "before_sha256": null,
+      "sha256": "59b83c395f452dbf6f3feeee01e59d228b26fea91fceb3ce8463eb3e9f5129db",
+      "bytes": 9433
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/sqlite_private_windows_tests.rs",
+      "before_sha256": null,
+      "sha256": "a4fff8d753710a637cce431f81f08c71936a7921a047cfe798d41b22ada03aac",
+      "bytes": 10342
+    }
+  ],
+  "patch": {
+    "encoding": "deterministic gzip",
+    "original_sha256": "e552e4d7940e8b7501d19b96f14be89b00ae05366260b1bbdce196455ead2e74",
+    "original_bytes": 35475,
+    "gzip_sha256": "4779d0fbe33ca63e002f0f8d30e33f30d8c49baf41ddfd289f447b7272a6d621",
+    "gzip_bytes": 8933
+  }
+}

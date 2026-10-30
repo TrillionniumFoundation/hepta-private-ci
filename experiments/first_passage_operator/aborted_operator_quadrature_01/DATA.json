@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.value-learning.data.v1",
+  "protocol_sha256": "c8ae7b00010d9b228779777c75619e804664ecfe5a5de950944ffcb176ffb4b9",
+  "splits": {
+    "train": {
+      "files": [
+        {
+          "path": "value_evidence/train/part-000.npz",
+          "sha256": "6ce3a9ead7121cec3edc86f37cd7079ad00e910b586fa8e4117c57610848f71d",
+          "bytes": 66560
+        },
+        {
+          "path": "value_evidence/train/part-001.npz",
+          "sha256": "ddba06dd25ab968d9c2f31a46ee5c01c8332dd9a15a10b761e61f2087ac0428d",
+          "bytes": 66720
+        },
+        {
+          "path": "value_evidence/train/part-002.npz",
+          "sha256": "35cd0a09e7bbcc1cba666828d9694e30c2f6c62b494f8aee9f8ae477c3288fbc",
+          "bytes": 66532
+        },
+        {
+          "path": "value_evidence/train/part-003.npz",
+          "sha256": "c5f8e25161361ade33c56df10d4b51543e31f70ca8b92074dd53763d5bacba97",
+          "bytes": 67023
+        },
+        {
+          "path": "value_evidence/train/part-004.npz",
+          "sha256": "d58a4f695825610e46f5e370f4cd6697cff20b4c79a63f10d7e7e23d8d64338e",
+          "bytes": 66491
+        },
+        {
+          "path": "value_evidence/train/part-005.npz",
+          "sha256": "75934c35122feedc52a171913e5367837a0a8fd0f151e5cd117f8e36b4630ff1",
+          "bytes": 66783
+        },
+        {
+          "path": "value_evidence/train/part-006.npz",
+          "sha256": "34a2f33e128387ad9824dfc8107271a3e67dda9c9e482cf3647a593bf150d8f3",
+          "bytes": 66981
+        },
+        {
+          "path": "value_evidence/train/part-007.npz",
+          "sha256": "beef69a72b97262f5a2abdea464a25a8227ae9d877f251a96fe4b7cfe79079d8",
+          "bytes": 66897
+        }
+      ],
+      "rows": 4096,
+      "wall_seconds": 12.828901693006628,
+      "max_mass_quadrature_defect": 0.009451372627105048
+    },
+    "development": {
+      "files": [
+        {
+          "path": "value_evidence/development/part-000.npz",
+          "sha256": "a9783ffb7771531cd70e020c9220cc82a06c02eeed80bd74d2e4eba34720016c",
+          "bytes": 66343
+        }
+      ],
+      "rows": 512,
+      "wall_seconds": 1.3965987710034824,
+      "max_mass_quadrature_defect": 0.004743388931942816
+    }
+  }
+}

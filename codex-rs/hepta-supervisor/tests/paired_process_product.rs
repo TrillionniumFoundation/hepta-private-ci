@@ -13,9 +13,11 @@ use std::time::Instant;
 use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
+use codex_hepta_agent_protocol::AgentdMethod;
 use codex_hepta_agent_protocol::AgentdPayload;
 use codex_hepta_agent_protocol::AgentdRequest;
 use codex_hepta_agent_protocol::AgentdResponse;
+use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_agent_protocol::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
@@ -205,6 +207,8 @@ struct PairFleet {
 
 impl PairFleet {
     fn new(count: usize) -> Result<Self> {
+        let started = Instant::now();
+        eprintln!("paired-stage fixture_start pairs={count}");
         // The child fixtures bind the same compact control sockets as the
         // product.  Keep the synthetic fleet under a short root so Darwin's
         // SUN_LEN limit is exercised against production geometry, not the
@@ -226,8 +230,19 @@ impl PairFleet {
             )?)?;
             agents.push(agent_id);
         }
+        eprintln!(
+            "paired-stage registry_ready pairs={count} elapsed={:?}",
+            started.elapsed()
+        );
         let release_id = ReleaseId::parse("paired-process-fixture-v1")?;
-        let fixture_binary = std::env::current_exe()?;
+        // Bazel may launch the test through a runfiles symlink on macOS. Select
+        // its physical fixture binary before applying the release-source guard.
+        let fixture_binary = std::env::current_exe()?.canonicalize()?;
+        eprintln!(
+            "paired-stage release_install_start bytes={} elapsed={:?}",
+            std::fs::metadata(&fixture_binary)?.len(),
+            started.elapsed()
+        );
         let child_args = vec![
             "--exact".to_string(),
             "paired_child_process".to_string(),
@@ -241,10 +256,18 @@ impl PairFleet {
             Some(&fixture_binary),
             child_args,
         )?;
+        eprintln!(
+            "paired-stage release_installed elapsed={:?}",
+            started.elapsed()
+        );
         for agent_id in &agents {
             registry.allow_release(agent_id, &release_id)?;
             write_binding(&registry, agent_id)?;
         }
+        eprintln!(
+            "paired-stage release_allowed elapsed={:?}",
+            started.elapsed()
+        );
         let (supervisor, report) = Supervisor::recover(
             registry.clone(),
             UnixProcessDriver::new(64).map_err(anyhow::Error::msg)?,
@@ -252,6 +275,10 @@ impl PairFleet {
             Instant::now(),
         )?;
         assert!(report.faults.is_empty());
+        eprintln!(
+            "paired-stage initial_recovery_complete elapsed={:?}",
+            started.elapsed()
+        );
         Ok(Self {
             _temp: temp,
             registry,
@@ -295,7 +322,9 @@ impl PairFleet {
     }
 
     fn wait_agents_ready(&mut self, agents: &[AgentId], timeout: Duration) -> Result<()> {
-        let deadline = Instant::now() + timeout;
+        let started = Instant::now();
+        let deadline = started + timeout;
+        let mut pending_reported = false;
         loop {
             let supervisor = self.supervisor.as_mut().context("supervisor")?;
             let report = supervisor.tick(Instant::now());
@@ -309,6 +338,34 @@ impl PairFleet {
                 })
             }) {
                 return Ok(());
+            }
+            // Emit one bounded observation before nextest's existing deadline.
+            // Keep readiness, supervisor timeouts and all assertions unchanged.
+            if !pending_reported && started.elapsed() >= Duration::from_secs(5) {
+                pending_reported = true;
+                for agent_id in agents {
+                    if let Some(snapshot) = supervisor.snapshot(agent_id) {
+                        eprintln!(
+                            "paired-stage readiness_pending agent={agent_id} \
+                             active={} healthy={} phase={:?} spawn={:?} runtime={:?} \
+                             matrix={:?}",
+                            snapshot.active,
+                            snapshot.healthy,
+                            snapshot.runtime_phase,
+                            snapshot.spawn_generation,
+                            snapshot.runtime_generation,
+                            snapshot.matrix
+                        );
+                        for log in snapshot.logs.iter().rev().take(2) {
+                            let bounded = &log.bytes[..log.bytes.len().min(1_024)];
+                            eprintln!(
+                                "paired-child-log agent={agent_id} stream={:?} bytes={:?}",
+                                log.stream,
+                                String::from_utf8_lossy(bounded)
+                            );
+                        }
+                    }
+                }
             }
             if Instant::now() >= deadline {
                 let snapshots: Vec<_> = agents
@@ -537,6 +594,11 @@ fn run_agent_child() -> Result<()> {
         let mut bytes = Vec::new();
         reader.read_until(b'\n', &mut bytes)?;
         let request: AgentdRequest = serde_json::from_slice(&bytes)?;
+        anyhow::ensure!(
+            (request.schema_version, request.spawn_generation)
+                == (AGENTD_CONTROL_SCHEMA_VERSION, spawn_generation),
+            "fixture request did not bind the control schema and spawn generation"
+        );
         let run_root = PathBuf::from(
             std::env::var_os("HEPTA_AGENT_RUN_ROOT").context("HEPTA_AGENT_RUN_ROOT")?,
         );
@@ -545,13 +607,8 @@ fn run_agent_child() -> Result<()> {
         let workspace = std::env::current_dir()?;
         let lifecycle = latest_lifecycle(&run_root)?;
         let running = lifecycle.lifecycle == AgentLifecycle::Running;
-        let response = AgentdResponse {
-            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
-            request_id: request.request_id,
-            agent_id: agent_id.clone(),
-            spawn_generation,
-            current_generation: lifecycle.generation,
-            payload: AgentdPayload::Health(HealthSnapshot {
+        let payload = match request.method {
+            AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
                 promotion_ready: true,
                 ready: running,
                 fenced: false,
@@ -561,6 +618,30 @@ fn run_agent_child() -> Result<()> {
                 home_root,
                 run_root,
             }),
+            AgentdMethod::Drain => {
+                anyhow::ensure!(
+                    lifecycle.lifecycle == AgentLifecycle::Draining,
+                    "fixture drain request preceded the durable draining lifecycle"
+                );
+                // This controlled fixture never admits turns. Its acknowledgement
+                // still binds the actual durable lifecycle and generation.
+                AgentdPayload::Drain(DrainSnapshot {
+                    admission_closed: true,
+                    running_turns: 0,
+                    drained: true,
+                    lifecycle: lifecycle.lifecycle,
+                    fenced: false,
+                })
+            }
+            method => anyhow::bail!("unsupported fixture control method: {method:?}"),
+        };
+        let response = AgentdResponse {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: request.request_id,
+            agent_id: agent_id.clone(),
+            spawn_generation,
+            current_generation: lifecycle.generation,
+            payload,
         };
         let mut stream = reader.into_inner();
         serde_json::to_writer(&mut stream, &response)?;

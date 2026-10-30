@@ -1,0 +1,28 @@
+[
+  {
+    "argv": [
+      "cargo",
+      "generate-lockfile",
+      "--manifest-path",
+      "/workspace/scratch/8b9f3e9fd04d/recovery_build/v8-isolated/Cargo.toml"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 1.2443549109998457
+  },
+  {
+    "argv": [
+      "just",
+      "test",
+      "--manifest-path",
+      "/workspace/scratch/8b9f3e9fd04d/recovery_build/v8-isolated/Cargo.toml",
+      "-p",
+      "codex-v8-poc",
+      "--lib",
+      "--features",
+      "sandbox",
+      "--locked"
+    ],
+    "exit_code": 101,
+    "elapsed_seconds": 33.29068289199995
+  }
+]

@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.vendor-compatibility-patch.v1",
+  "source_archive_sha256": "1156b39d142a34b999c2310a50455e0cb3760bf7efad0122f796d813bee26ccb",
+  "scope": {
+    "reason": "Preserve all ZIP formats while explicitly selecting the existing bzip2 C backend, without enabling the same-named ZIP default Rust backend through strong feature forwarding.",
+    "production_changes": [
+      "Change bzip2-rs forwarding from bzip2/bzip2-sys to bzip2?/bzip2-sys in the two official manifests; dep:bzip2 still explicitly enables the dependency"
+    ],
+    "tests": [
+      "Root codex-core-plugins independent Python BZIP2 archive extraction and Unix malicious mode tests",
+      "Actual all-target feature tree for explicit C choice and upstream default control required"
+    ]
+  },
+  "modified_files": {
+    "Cargo.toml": {
+      "upstream": {
+        "sha256": "786a4b54a4fa39d8dfad6690b2010465fcc3d9bf2c8c4933e8dbfc4b1cbf26b0",
+        "bytes": 6343
+      },
+      "patched": {
+        "sha256": "ecb707a9125e995ce36040e211c4b6321ced0d5365c621bbbc7fc76fd3f6d7b6",
+        "bytes": 6344
+      }
+    },
+    "Cargo.toml.orig": {
+      "upstream": {
+        "sha256": "2c76dd6a9215e547f59302476b95b45c21ea2e4a7d325a0b9a6bc3cf61f54f0f",
+        "bytes": 6215
+      },
+      "patched": {
+        "sha256": "f2ff3c694d1f82b3efddcc6d0f90409ef3bf0d8478d450dffa37c3105b7d443e",
+        "bytes": 6216
+      }
+    }
+  },
+  "added_files": {},
+  "removed_files": [],
+  "unchanged_original_file_count": 64,
+  "runtime_tests_executed": false,
+  "status": "restored source; fresh focused Rust execution required"
+}

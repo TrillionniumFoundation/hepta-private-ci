@@ -296,7 +296,7 @@ toolchains.toolchain(
         "aarch64-pc-windows-msvc": ["-Ctarget-feature=+crt-static"],
         "x86_64-pc-windows-msvc": ["-Ctarget-feature=+crt-static"],
     },
-    version = "1.95.0",
+    version = "1.96.0",
 )
 use_repo(toolchains, "default_rust_toolchains")
 
@@ -642,6 +642,24 @@ http_file(
     sha256 = "732ec5da4243aa166799780c8519a5eea6f32f6e47657a323342794dc3c239d6",
     urls = [
         "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/rusty_v8_ptrcomp_sandbox_release_x86_64-pc-windows-msvc.lib.gz",
+    ],
+)
+
+http_file(
+    name = "rusty_v8_150_4_0_aarch64_pc_windows_msvc_binding",
+    downloaded_file_path = "src_binding_ptrcomp_sandbox_release_aarch64-pc-windows-msvc.rs",
+    sha256 = "dabf78ba1faac127660db9862b1d0354175c71b8db2d4fcb5bacbd9c93576b16",
+    urls = [
+        "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/src_binding_ptrcomp_sandbox_release_aarch64-pc-windows-msvc.rs",
+    ],
+)
+
+http_file(
+    name = "rusty_v8_150_4_0_x86_64_pc_windows_msvc_binding",
+    downloaded_file_path = "src_binding_ptrcomp_sandbox_release_x86_64-pc-windows-msvc.rs",
+    sha256 = "dabf78ba1faac127660db9862b1d0354175c71b8db2d4fcb5bacbd9c93576b16",
+    urls = [
+        "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/src_binding_ptrcomp_sandbox_release_x86_64-pc-windows-msvc.rs",
     ],
 )
 

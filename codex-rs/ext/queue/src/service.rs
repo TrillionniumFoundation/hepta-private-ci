@@ -14,12 +14,14 @@ use codex_core::StartIfIdleSubmission;
 use codex_core::ThreadManager;
 use codex_core::TurnInput;
 use codex_core::TurnInputRequest;
+use codex_core::UserMessageAdmissionError;
 use codex_extension_api::ExtensionEventSink;
 use codex_extension_api::ExtensionFuture;
 use codex_extension_api::ThreadIdleCause;
 use codex_extension_api::ThreadIdleInput;
 use codex_extension_api::ThreadLifecycleContributor;
 use codex_extension_api::ThreadResumeInput;
+use codex_extension_api::ThreadStopInput;
 use codex_history::RolloutItem;
 use codex_history::RolloutLine;
 use codex_protocol::ThreadId;
@@ -54,6 +56,9 @@ use uuid::Uuid;
 
 const DISPATCH_LEASE_DURATION_MS: i64 = 30_000;
 const UNCERTAIN_DISPATCH_POLL_MS: u64 = 20;
+
+#[path = "idle.rs"]
+mod idle;
 
 /// One user message waiting to start on its thread.
 #[derive(Clone, Debug, PartialEq)]
@@ -130,10 +135,12 @@ pub struct QueuedItemService {
     event_sink: Arc<dyn ExtensionEventSink>,
     dispatch_locks: Arc<StdMutex<HashMap<ThreadId, Weak<Mutex<()>>>>>,
     resumed_threads: Arc<StdMutex<HashSet<ThreadId>>>,
+    idle: Arc<idle::IdleQueueState>,
     dispatch_owner_id: String,
 }
 
 struct OwnedDispatchRequest {
+    queued_item_id: String,
     input: TurnInput,
     trace: Option<W3cTraceContext>,
     client_id: String,
@@ -161,6 +168,7 @@ impl QueuedItemService {
             event_sink,
             dispatch_locks: Arc::new(StdMutex::new(HashMap::new())),
             resumed_threads: Arc::new(StdMutex::new(HashSet::new())),
+            idle: Arc::new(idle::IdleQueueState::default()),
             dispatch_owner_id: Uuid::now_v7().to_string(),
         }
     }
@@ -798,6 +806,7 @@ impl QueuedItemService {
                     process_lock,
                     lease,
                     OwnedDispatchRequest {
+                        queued_item_id,
                         input,
                         trace,
                         client_id,
@@ -821,6 +830,7 @@ impl QueuedItemService {
         request: OwnedDispatchRequest,
     ) -> Result<StartIfIdleSubmission, QueueServiceError> {
         let OwnedDispatchRequest {
+            queued_item_id,
             input,
             trace,
             client_id,
@@ -841,6 +851,19 @@ impl QueuedItemService {
         .await;
         let submission = match admission {
             Ok(Ok(submission)) => submission,
+            Ok(Err(UserMessageAdmissionError::RejectedByHook)) => {
+                // Core definitively rejected before persistence. Release only
+                // this exact lease; ambiguous errors still retain their owner.
+                self.idle.record_rejection(
+                    thread.session_configured().thread_id,
+                    &queued_item_id,
+                    &payload_sha256,
+                );
+                self.queue
+                    .release_client_binding_dispatch(&process_lock, lease)
+                    .await?;
+                return Err(CodexErr::from(UserMessageAdmissionError::RejectedByHook).into());
+            }
             Ok(Err(error)) => {
                 self.spawn_uncertain_owned_dispatch(
                     thread,
@@ -1046,12 +1069,16 @@ impl QueuedItemService {
             .await?;
             return Ok(StartIfIdleSubmission::Started { turn_id });
         }
-        let submission = thread
+        let admission = thread
             .start_turn_if_idle_and_wait_for_persisted_admission(
                 TurnInputRequest::new(input).with_trace(trace),
             )
-            .await
-            .map_err(CodexErr::from)?;
+            .await;
+        if matches!(&admission, Err(UserMessageAdmissionError::RejectedByHook)) {
+            self.idle
+                .record_rejection(thread_id, &queued_item_id, payload_sha256);
+        }
+        let submission = admission.map_err(CodexErr::from)?;
         if let StartIfIdleSubmission::Started { turn_id } = &submission {
             self.finish_persisted_queue_item(
                 thread_id,
@@ -1088,6 +1115,15 @@ impl QueuedItemService {
         };
 
         loop {
+            if matches!(
+                thread.agent_status().await,
+                AgentStatus::Running
+                    | AgentStatus::Interrupted
+                    | AgentStatus::Shutdown
+                    | AgentStatus::NotFound
+            ) {
+                return Ok(());
+            }
             let Some(record) = self
                 .queue
                 .list_page(thread_id, /*offset*/ 0, /*limit*/ 1)
@@ -1111,6 +1147,17 @@ impl QueuedItemService {
                 tracing::warn!(%queued_item_id, "discarding non-user queued input");
                 self.delete_locked(thread_id, queued_item_id).await?;
                 continue;
+            }
+
+            // A rejected hook itself emits idle. Retrying the identical head
+            // there would create an unbounded rejection/idle feedback loop.
+            // Only automatic dispatch consults this runtime observation; an
+            // explicit start and a changed head/payload remain eligible.
+            if self
+                .idle
+                .rejected(thread_id, &queued_item_id, &queued_payload_sha256(&input)?)
+            {
+                return Ok(());
             }
 
             match self
@@ -1347,9 +1394,14 @@ where
                 );
                 return;
             };
-            let _guard = self.dispatch_guard(thread_id).await;
-            if let Err(error) = self.dispatch_if_idle(thread_id).await {
-                tracing::warn!(%thread_id, %error, "failed to dispatch queued user input");
+            self.schedule_idle_dispatch(thread_id).await;
+        })
+    }
+
+    fn on_thread_stop<'a>(&'a self, input: ThreadStopInput<'a>) -> ExtensionFuture<'a, ()> {
+        Box::pin(async move {
+            if let Ok(thread_id) = ThreadId::from_string(input.thread_store.level_id()) {
+                self.idle.clear(thread_id);
             }
         })
     }

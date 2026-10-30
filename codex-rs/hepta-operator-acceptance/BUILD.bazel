@@ -25,6 +25,10 @@ rust_library(
 rust_test(
     name = "hepta-operator-acceptance-tests",
     crate = ":hepta-operator-acceptance-lib",
+    # Unix verification exercises the trusted system /usr/bin/ssh-keygen and
+    # inherited descriptors. The RBE build image does not provide OpenSSH, so
+    # execute all cases on the CI host; a missing tool still fails the test.
+    local = True,
     rustc_flags = select({
         "@platforms//os:windows": [
             "-Aunused-imports",

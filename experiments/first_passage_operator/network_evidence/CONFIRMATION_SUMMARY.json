@@ -1,0 +1,97 @@
+{
+  "comparisons": [
+    {
+      "baseline": "lif",
+      "loss_improvement": 0.01128492204044374,
+      "passes_advantage_gate": false,
+      "seed_means": [
+        0.027697217411309656,
+        -0.0021923313672710222,
+        0.008349880077292591
+      ],
+      "simultaneous_empirical_interval": [
+        -0.007392013051299318,
+        0.03034278926719782
+      ],
+      "task": "evidence"
+    },
+    {
+      "baseline": "rnn",
+      "loss_improvement": 0.010424738440012293,
+      "passes_advantage_gate": false,
+      "seed_means": [
+        0.00928331569360868,
+        -0.009287916097424388,
+        0.031278815723852604
+      ],
+      "simultaneous_empirical_interval": [
+        -0.017165660337041085,
+        0.055773855817119584
+      ],
+      "task": "evidence"
+    },
+    {
+      "baseline": "lif",
+      "loss_improvement": -0.5243091546509286,
+      "passes_advantage_gate": false,
+      "seed_means": [
+        -0.4737345548865124,
+        -0.6499375484173837,
+        -0.44925536064888966
+      ],
+      "simultaneous_empirical_interval": [
+        -0.6532761008150437,
+        -0.43728603255198184
+      ],
+      "task": "order"
+    },
+    {
+      "baseline": "rnn",
+      "loss_improvement": -0.5374816324344277,
+      "passes_advantage_gate": false,
+      "seed_means": [
+        -0.4825833709208317,
+        -0.6643245221840477,
+        -0.4655370041984038
+      ],
+      "simultaneous_empirical_interval": [
+        -0.6673179830802787,
+        -0.45764925188787653
+      ],
+      "task": "order"
+    },
+    {
+      "baseline": "lif",
+      "loss_improvement": 0.0011872220529329004,
+      "passes_advantage_gate": false,
+      "seed_means": [
+        0.0020578381495949343,
+        0.0001322810087855883,
+        0.0013715470004181793
+      ],
+      "simultaneous_empirical_interval": [
+        -0.0034925663923680325,
+        0.005466883580928657
+      ],
+      "task": "delayed_match"
+    },
+    {
+      "baseline": "rnn",
+      "loss_improvement": -0.27819177363529374,
+      "passes_advantage_gate": false,
+      "seed_means": [
+        -0.2921736854727257,
+        -0.2461684248396403,
+        -0.29623321059351515
+      ],
+      "simultaneous_empirical_interval": [
+        -0.3136595781736483,
+        -0.22976512131071206
+      ],
+      "task": "delayed_match"
+    }
+  ],
+  "cross_task_advantage_established": false,
+  "interpretation": "Three training seeds; empirical simultaneous intervals, not universal superiority or population coverage guarantees.",
+  "schema": "hepta.renewal-network.comparison.v1"
+}

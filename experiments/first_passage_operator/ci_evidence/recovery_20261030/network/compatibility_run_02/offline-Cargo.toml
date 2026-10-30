@@ -1,0 +1,19 @@
+[package]
+name = "hepta-keyring-compat-offline"
+version = "0.1.0"
+edition = "2024"
+[workspace]
+[lib]
+path = "loader.rs"
+[dependencies]
+keyring = { version = "=3.6.3", default-features = false, features = ["crypto-rust", "linux-native-sync-persistent", "vendored"] }
+tracing = "=0.1.44"
+serde = { version = "=1.0.228", features = ["derive"] }
+thiserror = "=2.0.18"
+serde_yaml = { package = "serde_norway", version = "=0.9.42" }
+[dev-dependencies]
+anyhow = "=1.0.103"
+pretty_assertions = "=1.4.1"
+serde_yaml_old = { package = "serde_yaml", version = "=0.9.34" }
+[profile.dev]
+debug = 0

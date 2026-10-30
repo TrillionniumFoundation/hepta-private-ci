@@ -349,6 +349,7 @@ unsafe fn enable_single_privilege(h_token: HANDLE, name: &str) -> Result<()> {
 
 /// # Safety
 /// Caller must close the returned token handle.
+#[cfg(test)]
 pub unsafe fn create_readonly_token_with_cap(
     psid_capability: *mut c_void,
 ) -> Result<(HANDLE, *mut c_void)> {

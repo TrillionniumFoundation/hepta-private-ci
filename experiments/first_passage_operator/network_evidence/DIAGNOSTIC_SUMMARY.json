@@ -1,0 +1,98 @@
+{
+  "confirmation_opened": false,
+  "directions": 27,
+  "gradient_results": {
+    "first_passage": {
+      "comparisons": 18,
+      "descriptive_2SE_exceedances": 1,
+      "max_absolute_surrogate_minus_finite": 0.1773923704284756,
+      "max_paired_discrepancy_standard_error": 0.18230273461448346,
+      "note": "Finite-step bias persists, including deterministic RNN; 2SE counts are descriptive, not corrected inference."
+    },
+    "lif": {
+      "comparisons": 18,
+      "descriptive_2SE_exceedances": 11,
+      "max_absolute_surrogate_minus_finite": 0.09698343860957209,
+      "max_paired_discrepancy_standard_error": 0.03654699881699801,
+      "note": "Finite-step bias persists, including deterministic RNN; 2SE counts are descriptive, not corrected inference."
+    },
+    "rnn": {
+      "comparisons": 18,
+      "descriptive_2SE_exceedances": null,
+      "max_absolute_surrogate_minus_finite": 0.00016617163949766978,
+      "max_paired_discrepancy_standard_error": 0.0,
+      "note": "Finite-step bias persists, including deterministic RNN; 2SE counts are descriptive, not corrected inference."
+    }
+  },
+  "interpretation": "Development-only diagnostics; no model updates or confirmation selection. Probe gains and gradient discrepancies are task/model-specific. Finite-perturbation differences include Monte Carlo uncertainty and finite-step bias; no multiple-testing significance claim.",
+  "models": 9,
+  "original_source_and_model_hashes_unchanged": true,
+  "probe_results": [
+    {
+      "layers": [
+        {
+          "layer": 0,
+          "mean_trace_probe_accuracy": 0.9453125,
+          "mean_trace_probe_loss": 0.15219297665128134,
+          "single_rollout_probe_accuracy": 0.802734375,
+          "single_rollout_probe_loss": 0.4592540719843351
+        },
+        {
+          "layer": 1,
+          "mean_trace_probe_accuracy": 0.9453125,
+          "mean_trace_probe_loss": 0.14497487405701795,
+          "single_rollout_probe_accuracy": 0.802734375,
+          "single_rollout_probe_loss": 0.7838190858745697
+        }
+      ],
+      "native_ensemble_loss": 0.46957547793576193,
+      "native_single_rollout_loss": 0.5018245408596967,
+      "seed": 3109
+    },
+    {
+      "layers": [
+        {
+          "layer": 0,
+          "mean_trace_probe_accuracy": 0.9296875,
+          "mean_trace_probe_loss": 0.18036734539021254,
+          "single_rollout_probe_accuracy": 0.787109375,
+          "single_rollout_probe_loss": 0.680457528468341
+        },
+        {
+          "layer": 1,
+          "mean_trace_probe_accuracy": 0.75,
+          "mean_trace_probe_loss": 0.5701905506593421,
+          "single_rollout_probe_accuracy": 0.62890625,
+          "single_rollout_probe_loss": 0.7173845732301337
+        }
+      ],
+      "native_ensemble_loss": 0.6717470521229719,
+      "native_single_rollout_loss": 0.6746346962919161,
+      "seed": 3163
+    },
+    {
+      "layers": [
+        {
+          "layer": 0,
+          "mean_trace_probe_accuracy": 0.8046875,
+          "mean_trace_probe_loss": 0.4221079170995279,
+          "single_rollout_probe_accuracy": 0.71484375,
+          "single_rollout_probe_loss": 0.7123618253238759
+        },
+        {
+          "layer": 1,
+          "mean_trace_probe_accuracy": 0.9140625,
+          "mean_trace_probe_loss": 0.21029481718921217,
+          "single_rollout_probe_accuracy": 0.751953125,
+          "single_rollout_probe_loss": 0.9084217295563889
+        }
+      ],
+      "native_ensemble_loss": 0.45793613989434456,
+      "native_single_rollout_loss": 0.5080606131883584,
+      "seed": 3203
+    }
+  ],
+  "replicates_per_model_scale_direction": 64,
+  "scales_per_direction": 2,
+  "schema": "hepta.renewal-network.diagnostic-summary.v1"
+}

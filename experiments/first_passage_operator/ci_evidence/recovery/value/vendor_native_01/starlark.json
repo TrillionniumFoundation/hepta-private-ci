@@ -1,0 +1,23 @@
+{
+  "command": [
+    "just",
+    "--justfile",
+    "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/justfile",
+    "test",
+    "--manifest-path",
+    "/workspace/scratch/8b9f3e9fd04d/recovery_value/vendor_native_01/Cargo.toml",
+    "-p",
+    "starlark",
+    "--lib",
+    "--locked",
+    "-E",
+    "test(=pagable::heap_ref_id::compatibility_tests::blake3_adapter_preserves_known_digest_and_chunked_writes)"
+  ],
+  "cwd": "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci",
+  "exit_code": 0,
+  "seconds": 203.07345071600002,
+  "log": "starlark.log.gz",
+  "log_uncompressed_bytes": 9399,
+  "log_uncompressed_sha256": "8bb3c0b508bf76b1d0a1d4b892359d6ff397b447b8ee3a39ff68607e00529af8",
+  "log_gzip_sha256": "544499a5eb54b40f1028536b1b01dbc718535865863124124773b8d617e31b25"
+}

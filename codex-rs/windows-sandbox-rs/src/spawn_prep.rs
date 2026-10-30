@@ -10,6 +10,7 @@ use crate::cap::workspace_write_root_contains_path;
 use crate::cap::workspace_write_root_overlaps_path;
 use crate::cap::workspace_write_root_specificity;
 use crate::deny_read_state::sync_persistent_deny_read_acls;
+#[cfg(test)]
 use crate::env::apply_no_network_to_env;
 use crate::env::ensure_non_interactive_pager;
 use crate::env::inherit_path_env;
@@ -23,24 +24,34 @@ use crate::sandbox_utils::ensure_codex_home_exists;
 use crate::sandbox_utils::inject_git_safe_directory;
 use crate::setup::effective_write_roots_for_permissions;
 use crate::token::LocalSid;
+#[cfg(test)]
 use crate::token::create_readonly_token_with_cap;
+#[cfg(test)]
 use crate::token::create_workspace_write_token_with_caps_from;
+#[cfg(test)]
 use crate::token::get_current_token_for_restriction;
+#[cfg(test)]
 use crate::token::get_logon_sid_bytes;
 use crate::workspace_acl::is_command_cwd_root;
 use crate::workspace_acl::protect_workspace_agents_dir;
 use crate::workspace_acl::protect_workspace_codex_dir;
 use anyhow::Context;
 use anyhow::Result;
+#[cfg(test)]
 use codex_protocol::models::PermissionProfile;
+#[cfg(test)]
 use codex_utils_absolute_path::AbsolutePathBuf;
 use std::collections::HashMap;
+#[cfg(test)]
 use std::ffi::c_void;
 use std::path::Path;
 use std::path::PathBuf;
+#[cfg(test)]
 use windows_sys::Win32::Foundation::CloseHandle;
+#[cfg(test)]
 use windows_sys::Win32::Foundation::HANDLE;
 
+#[cfg(test)]
 pub(crate) struct SpawnContext {
     pub(crate) permissions: ResolvedWindowsSandboxPermissions,
     pub(crate) current_dir: PathBuf,
@@ -55,12 +66,14 @@ pub(crate) struct ElevatedSpawnContext {
     pub(crate) cap_sids: Vec<String>,
 }
 
+#[cfg(test)]
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct SpawnPrepOptions {
     pub(crate) inherit_path: bool,
     pub(crate) add_git_safe_directory: bool,
 }
 
+#[cfg(test)]
 pub(crate) struct LegacySessionSecurity {
     pub(crate) h_token: HANDLE,
     pub(crate) readonly_sid: Option<LocalSid>,
@@ -80,6 +93,7 @@ pub(crate) struct LegacyAclSids<'a> {
     pub(crate) write_root_sids: &'a [RootCapabilitySid],
 }
 
+#[cfg(test)]
 fn prepare_spawn_context_common(
     permission_profile: &PermissionProfile,
     workspace_roots: &[AbsolutePathBuf],
@@ -120,6 +134,7 @@ fn prepare_spawn_context_common(
     })
 }
 
+#[cfg(test)]
 pub(crate) fn prepare_legacy_spawn_context(
     permission_profile: &PermissionProfile,
     workspace_roots: &[AbsolutePathBuf],
@@ -144,6 +159,7 @@ pub(crate) fn prepare_legacy_spawn_context(
     Ok(common)
 }
 
+#[cfg(test)]
 pub(crate) fn prepare_legacy_session_security(
     uses_write_capabilities: bool,
     codex_home: &Path,
@@ -247,6 +263,7 @@ fn deny_root_capabilities_for_path<'a>(
     }
 }
 
+#[cfg(test)]
 pub(crate) fn allow_null_device_for_workspace_write(is_workspace_write: bool) {
     if !is_workspace_write {
         return;

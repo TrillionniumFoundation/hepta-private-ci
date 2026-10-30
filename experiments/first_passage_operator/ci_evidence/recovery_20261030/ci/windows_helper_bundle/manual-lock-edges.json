@@ -1,0 +1,16 @@
+{
+  "old_sha256": "7cd3ac48f8a03093674bf8e54ffa8b86dcbeaac64d535b1d8c59b21e5dd327e3",
+  "new_sha256": "b07d974847eded24b53d7b765849846238164d6b7aaa9bf0ca34e4341d8b7e1b",
+  "changes": [
+    {
+      "package": "codex-exec-server",
+      "added_dependency": "codex-utils-cargo-bin"
+    },
+    {
+      "package": "codex-windows-sandbox",
+      "added_dependency": "codex-utils-cargo-bin"
+    }
+  ],
+  "unchanged_package_identities_and_versions": true,
+  "method": "Exactly two manually integrated existing workspace development dependency edges; not yet regenerated or validated by Cargo metadata. Canonical just bazel-lock-update and native Cargo/Bazel validation remain required."
+}

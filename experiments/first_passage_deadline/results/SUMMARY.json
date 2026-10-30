@@ -1,0 +1,150 @@
+{
+  "schema": "hepta.deadline-deliverable-summary.v1",
+  "original_protocol_sha256": "de2169420dfac7b3d680f638a0ba44a64a8a556813b992f77679cd75a7cd779a",
+  "original_result": {
+    "status": "failed numerical gates",
+    "passed_gates": 91,
+    "total_gates": 92,
+    "failed": [
+      {
+        "name": "zero_drift.level2.expiry_boundary",
+        "observed": 0.12,
+        "limit": 0.11545941546018393,
+        "passed": false
+      }
+    ],
+    "result_sha256": "8ad61bebab99befafcefbbd48067e9b7c8c3e34d19ad377680e6facd1e1433c6",
+    "solver_source_preserved": true
+  },
+  "supplementary_protocol_sha256": "013c804281e19095bf23e95ec13ba72ba5b8e8aeb6c9e267302b65c2b6f61156",
+  "supplementary_result": {
+    "status": "passed supplementary diagnostic only",
+    "passed_gates": 30,
+    "total_gates": 30,
+    "chronology": "Proposed after observing the zero-drift endpoint failure in the original attempt_01. This is an explanatory diagnostic, not a new confirmation or a replacement of the original 91/92 result.",
+    "result_sha256": "aee88d1fa8586407f750cb2a55c1043686d897756622e8d2ed0745667a1dfc9e",
+    "original_result_not_reclassified": true,
+    "max_first_layer_value_error": 1.1102230246251565e-16,
+    "exact_lattice_boundaries": [
+      0.8,
+      0.76,
+      0.72,
+      0.695,
+      0.6749999999999999,
+      0.6575
+    ]
+  },
+  "unit_tests": {
+    "original_contract": {
+      "passed": 6,
+      "receipt": "development_01/RECEIPT.json"
+    },
+    "supplementary_oracles": {
+      "passed": 2,
+      "receipt": "expiry_development_01/RECEIPT.json"
+    },
+    "tests_executed_in_separate_attempts": true
+  },
+  "case_table": [
+    {
+      "case": "positive_drift",
+      "finest_lcp_vs_policy_probe_error": 0.0014514954044089479,
+      "last_lcp_refinement_difference": 0.000482388812954794,
+      "fixed_policy_refinement_difference": 0.0006443542056612239,
+      "quadrature_order_difference": 5.384581669432009e-15,
+      "boundary_samples": {
+        "0": 0.6,
+        "0.005": 1.22,
+        "0.1": 1.29,
+        "0.2": 1.32,
+        "0.4": 1.37,
+        "0.8": 1.36,
+        "1.2": 1.35
+      },
+      "first_positive_time_boundary": 1.22
+    },
+    {
+      "case": "zero_drift",
+      "finest_lcp_vs_policy_probe_error": 0.001537192624698619,
+      "last_lcp_refinement_difference": 0.0004940180659980392,
+      "fixed_policy_refinement_difference": 0.0006969729374445288,
+      "quadrature_order_difference": 1.27675647831893e-15,
+      "boundary_samples": {
+        "0": 0.6,
+        "0.005": 0.72,
+        "0.1": 0.9,
+        "0.2": 0.97,
+        "0.4": 1.04,
+        "0.8": 1.1,
+        "1.2": 1.12
+      },
+      "first_positive_time_boundary": 0.72
+    },
+    {
+      "case": "negative_drift",
+      "finest_lcp_vs_policy_probe_error": 0.0014662891319660865,
+      "last_lcp_refinement_difference": 0.0005334993634911259,
+      "fixed_policy_refinement_difference": 0.0006744270125331187,
+      "quadrature_order_difference": 8.049116928532385e-16,
+      "boundary_samples": {
+        "0": 0.6,
+        "0.005": 0.68,
+        "0.1": 0.8200000000000001,
+        "0.2": 0.87,
+        "0.4": 0.92,
+        "0.8": 0.96,
+        "1.2": 0.98
+      },
+      "first_positive_time_boundary": 0.68
+    },
+    {
+      "case": "reset_at_cost",
+      "finest_lcp_vs_policy_probe_error": 0.0020058009101365237,
+      "last_lcp_refinement_difference": 0.001010656980356156,
+      "fixed_policy_refinement_difference": 0.0008983972380301464,
+      "quadrature_order_difference": 2.3314683517128287e-15,
+      "boundary_samples": {
+        "0": 0.6,
+        "0.005": 1.22,
+        "0.1": 1.29,
+        "0.2": 1.3199999999999998,
+        "0.4": 0.83,
+        "0.8": 0.85,
+        "1.2": 0.85
+      },
+      "first_positive_time_boundary": 1.22
+    }
+  ],
+  "maximum_lcp_complementarity_residual": 2.6645352591003757e-15,
+  "maximum_raw_killed_mass_defect": 3.097522238704187e-14,
+  "implementation": "Monotone implicit scalar LCP; independently evaluated piecewise constant thresholds with exact Brownian first-hit/discounted-hit moments, positive killed-density quadrature and explicitly quantified projections. Includes initial refractory state, partial release segments and immediate atoms after boundary lowering.",
+  "scope_limits": [
+    "No old first_passage_cell or first_passage_operator scientific source changed.",
+    "The first implicit-layer oracle explains a discretization boundary, not the exact finite-horizon boundary at that positive time.",
+    "The lower-domain loss bound is not a bound on finite differences, interpolation, quadrature, or total continuous optimality error.",
+    "No training, confirmation reuse, multidimensional neural optimality, differentiable finite-horizon boundary layer, or cross-task advantage claim."
+  ],
+  "reproduce": [
+    {
+      "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python3 -m unittest discover -s experiments/first_passage_deadline/tests -v",
+      "expected": "8 tests across the two already separately validated modules"
+    },
+    {
+      "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python3 -m experiments.first_passage_deadline.validate --output /tmp/hepta-deadline-new-attempt",
+      "expected_exit": 1,
+      "expected": "Original 91/92 result, including the retained failed endpoint envelope; output directory must be new."
+    },
+    {
+      "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python3 -m experiments.first_passage_deadline.validate_expiry --output /tmp/hepta-expiry-new-attempt",
+      "expected_exit": 0,
+      "expected": "Supplementary exact-oracle diagnostic only; output directory must be new."
+    }
+  ],
+  "figures": {
+    "svg": "deadline_numerical_checks.svg",
+    "png": "deadline_numerical_checks.png",
+    "renderer": "render_figures.py",
+    "matplotlib": "3.10.8",
+    "scope": "Only renders recorded results; no simulation or extra case selection."
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "command": [
+    "just",
+    "--justfile",
+    "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/justfile",
+    "test",
+    "--manifest-path",
+    "/workspace/scratch/8b9f3e9fd04d/recovery_value/vendor_native_01/Cargo.toml",
+    "-p",
+    "aws-config",
+    "--lib",
+    "--locked",
+    "--features",
+    "credentials-login",
+    "-E",
+    "test(=login::dpop::compatibility_tests::dpop_proof_preserves_es256_header_payload_and_signature)"
+  ],
+  "cwd": "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci",
+  "exit_code": 0,
+  "seconds": 225.93214191000015,
+  "log": "aws-config.log.gz",
+  "log_uncompressed_bytes": 12439,
+  "log_uncompressed_sha256": "026454995f138531e1567cfea39804124710da89080e8c460e4aeb7dcb09cfcb",
+  "log_gzip_sha256": "d76fa1752b47243a75ab756afe8d055e21686459c8db64b5a057adbd5ccddb3c"
+}

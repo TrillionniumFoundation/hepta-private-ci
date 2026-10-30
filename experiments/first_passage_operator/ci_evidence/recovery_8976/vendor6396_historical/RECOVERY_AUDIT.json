@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "kind": "historical remote artifact integrity audit; no test execution",
+  "head_sha": "6396bc013fdb16a955cced8a746e27279311361c",
+  "workflow_run_id": 40990854701,
+  "artifact_id": 12949765079,
+  "archive_sha256": "34a4cb7dcf62317d8948da6ca14c20b52fdbd92eaf02d1585ce66aceda09e592",
+  "manifest_members_verified": 31,
+  "full_log_commands_verified": 5,
+  "historical_tests": {
+    "aws-config": {
+      "passed": 1,
+      "skipped": 0,
+      "names": [
+        "login::dpop::compatibility_tests::dpop_proof_preserves_es256_header_payload_and_signature"
+      ]
+    },
+    "matrix-sdk": {
+      "passed": 1,
+      "skipped": 0,
+      "names": [
+        "event_handler::compatibility_tests::event_context_clone_preserves_type_isolation_and_send_sync"
+      ]
+    },
+    "i18n-config": {
+      "passed": 3,
+      "skipped": 0,
+      "names": [
+        "compatibility_tests::public_crate_loader_preserves_package_and_language_config",
+        "compatibility_tests::public_config_loader_preserves_defaults_and_unicode",
+        "compatibility_tests::public_parse_errors_keep_path_and_diagnostic"
+      ]
+    },
+    "starlark": {
+      "passed": 1,
+      "skipped": 0,
+      "names": [
+        "pagable::heap_ref_id::compatibility_tests::blake3_adapter_preserves_known_digest_and_chunked_writes"
+      ]
+    }
+  },
+  "source_inventory": {
+    "aws-config": {
+      "historical_files": 74,
+      "materialized_matching": 0,
+      "materialized_different": [],
+      "not_materialized": 74
+    },
+    "matrix-sdk": {
+      "historical_files": 211,
+      "materialized_matching": 0,
+      "materialized_different": [],
+      "not_materialized": 211
+    },
+    "matrix-sdk-sqlite": {
+      "historical_files": 72,
+      "materialized_matching": 0,
+      "materialized_different": [],
+      "not_materialized": 72
+    },
+    "i18n-config": {
+      "historical_files": 14,
+      "materialized_matching": 0,
+      "materialized_different": [],
+      "not_materialized": 14
+    },
+    "starlark": {
+      "historical_files": 688,
+      "materialized_matching": 0,
+      "materialized_different": [],
+      "not_materialized": 688
+    },
+    "zip": {
+      "historical_files": 68,
+      "materialized_matching": 0,
+      "materialized_different": [],
+      "not_materialized": 68
+    }
+  },
+  "historical_source_file_count": 1127,
+  "audit_script_sha256": "d8b3fc7979826ec394b1b7b1383360e53cfec393bece57ba12fb0a56aa646c16",
+  "limitations": [
+    "This is the exact historical 6396 artifact, not a fresh test run.",
+    "Missing vendor files in a sparse recovery checkout cannot be compared locally.",
+    "These isolated vendor tests do not establish root consumer or Bazel build success.",
+    "Reconstructed alias, macro-import, and path-fixture changes need fresh validation."
+  ]
+}

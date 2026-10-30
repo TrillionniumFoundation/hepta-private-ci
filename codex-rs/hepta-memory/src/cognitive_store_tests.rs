@@ -1091,13 +1091,25 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
                 .expect("legacy projection revoked");
         assert_eq!(count, 0, "legacy {table} rows must be revoked");
     }
+    // Bind the full applied identities, not a hand-maintained version count.
+    // A partially applied or modified migration must still fail this oracle.
+    let applied: Vec<(i64, Vec<u8>, bool)> =
+        sqlx::query_as("SELECT version, checksum, success FROM _sqlx_migrations ORDER BY version")
+            .fetch_all(&migrated.pool)
+            .await
+            .expect("migration ledger identities");
+    let expected: Vec<_> = sqlx::migrate!("./migrations")
+        .iter()
+        .map(|migration| (migration.version, migration.checksum.to_vec(), true))
+        .collect();
+    assert_eq!(applied, expected);
     assert_eq!(
-        sqlx::query_scalar::<_, String>(
-            "SELECT group_concat(version, ',') FROM _sqlx_migrations ORDER BY version",
-        )
-        .fetch_one(&migrated.pool)
-        .await
-        .expect("migration ledger"),
-        "1,2,3,4,5,6,7,8,9,10,11,12,13,14"
+        sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM shared_experience_use_events")
+            .fetch_one(&migrated.pool)
+            .await
+            .expect("new sharing-policy history"),
+        0,
+        "migration must preserve old memories without minting sharing authority"
     );
+    migrated.pool.close().await;
 }

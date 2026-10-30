@@ -1,0 +1,48 @@
+{
+  "source_changes": [
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "before_sha256": "5b16090059597b362631056883367b974ff4a218ddd042de8eedabf5e128da3e",
+      "after_sha256": "2ab8e294ce29846d895be1889df5eb7c6c11d8f901c63449114190198cbfd7bf",
+      "bytes": 71181
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_compact_executor_tests.rs",
+      "before_sha256": "1f989654f7b3d67f61f6ffa59404fdee141ad6ac6f973155f6500216316ccb33",
+      "after_sha256": "a1ec706c1a930bf422e079f02fc967f3988f9128df227e780a2bb1a14104633a",
+      "bytes": 75791
+    }
+  ],
+  "source_status": "New source only, pending canonical formatting and native CI. No new Rust execution claimed.",
+  "failure_source": {
+    "run_id": 40990854635,
+    "job_id": 123853058007,
+    "head": "6396bc013fdb16a955cced8a746e27279311361c",
+    "tested_merge": "6ab5ce1169f5ffa35ba937ecc8f147b72cf9cd34"
+  },
+  "pre_change_identity": {
+    "cognitive_store": "Matches retained 8976 Git content.",
+    "local_compact_executor_tests": "Captured before editing; byte-for-byte equality independently checked against the authenticated GitHub file at published35c9ff15f6759b024459a14eaa39a5e5a3a65edf, blob6875cba186bbd862ecc1e231b563605e31945370. Includes the already accepted canonical fixture repair; it was not overwritten."
+  },
+  "repairs": [
+    {
+      "area": "Cognitive pointer publication",
+      "change": "Open the Windows parent directory with write access and FILE_FLAG_BACKUP_SEMANTICS before sync_all. Unix open semantics remain read-only. The temporary write, file flush, rename, directory flush order and every error propagation remain unchanged.",
+      "evidence_limit": "The original log reports AccessDenied from the whole publish operation and does not expose its exact failing syscall; the directory open incompatibility is established by source review. Native validation is still required."
+    },
+    {
+      "area": "E.25 compact corruption transaction fixture",
+      "change": "Prepare the same active lease fixture used by release and rollback, then call the existing test-only expiry transaction entry with the exact persisted binding deadline. Remove the unrelated wall-clock wait. Production expire_lease and thresholds, the separate real-clock expiry tests, and the full Corrupt/count/state assertion block remain unchanged.",
+      "preserved_assertion_tail_sha256": "94ed9997ad97e9daa19e1f7d81a231fb36acb1ef8e81785722023719aa3ec1ed"
+    }
+  ],
+  "static_validation": [
+    "git diff --check passed for the two paths.",
+    "The complete E.25 assertion block following the terminal result is byte-identical to the pre-change source."
+  ],
+  "pending_native_commands": [
+    "just test --locked -p codex-hepta-memory --lib -E test(post_rename_publication_failure_is_indeterminate_and_retains_candidate)",
+    "just test --locked -p codex-hepta-memory --lib -E test(terminal_bound_lease_transitions_audit_compact_journal_atomically)"
+  ],
+  "unclosed_capability": "Three positive/content-authentication Windows recovery cases still require a real retained-handle Windows implementation. No assertion was weakened, no case was skipped or disabled, and accepting Indeterminate as a green result was explicitly rejected."
+}

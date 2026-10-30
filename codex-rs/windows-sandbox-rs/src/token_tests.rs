@@ -1,4 +1,5 @@
 use super::*;
+use crate::acl_test_support::trace_acl;
 use crate::acl::add_deny_write_ace;
 use crate::acl::ensure_allow_mask_aces;
 use crate::acl::ensure_allow_write_aces;
@@ -172,6 +173,8 @@ fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()
         code
     };
     anyhow::ensure!(code == ERROR_SUCCESS, "seed partial delete deny: {code}");
+    trace_acl("partial-directory", fixture.path(), &capability)?;
+    trace_acl("partial-file", &existing, &capability)?;
     // SAFETY: the base token stays owned until restricted-token creation completes.
     let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
     // SAFETY: the owned base token and validated capability SID are live; the
@@ -186,14 +189,18 @@ fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()
     }
     // SAFETY: the fixture and validated capability SID are live for the repair.
     let repaired = unsafe { add_deny_write_ace(fixture.path(), capability.as_ptr())? };
+    trace_acl("repaired-directory", fixture.path(), &capability)?;
+    trace_acl("inherited-repair-file", &existing, &capability)?;
     // SAFETY: the same objects remain live. Check native directory and file
     // storage retains the constructor's complete mask and inheritance scope.
     let repeated_repairs = unsafe {
-        (
-            add_deny_write_ace(fixture.path(), capability.as_ptr())?,
-            add_deny_write_ace(&existing, capability.as_ptr())?,
-            add_deny_write_ace(&existing, capability.as_ptr())?,
-        )
+        let directory = add_deny_write_ace(fixture.path(), capability.as_ptr())?;
+        trace_acl("repeated-directory", fixture.path(), &capability)?;
+        let file = add_deny_write_ace(&existing, capability.as_ptr())?;
+        trace_acl("explicit-file-repair", &existing, &capability)?;
+        let repeated_file = add_deny_write_ace(&existing, capability.as_ptr())?;
+        trace_acl("repeated-file-repair", &existing, &capability)?;
+        (directory, file, repeated_file)
     };
     let (read, denied) = {
         // SAFETY: token remains owned throughout this impersonation scope.
@@ -257,6 +264,9 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
     }
     std::fs::write(outside.join("keep.txt"), "outside")?;
     std::fs::create_dir(outside.join("keep-dir"))?;
+    trace_acl("outside-parent", &outside, &cap_a)?;
+    trace_acl("outside-file", &outside.join("keep.txt"), &cap_a)?;
+    trace_acl("outside-directory", &outside.join("keep-dir"), &cap_a)?;
     let token = OwnedToken(unsafe {
         create_workspace_write_token_with_caps_from(base.0, &[cap_a.as_ptr(), cap_b.as_ptr()])?
     });

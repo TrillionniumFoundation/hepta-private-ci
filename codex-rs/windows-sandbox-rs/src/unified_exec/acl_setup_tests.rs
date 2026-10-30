@@ -2,10 +2,10 @@ use super::collect_stdout_and_exit;
 use super::current_thread_runtime;
 use super::legacy_process_test_guard;
 use super::sandbox_cwd;
-use super::spawn_windows_sandbox_session_legacy;
 use super::workspace_roots_for;
-use crate::run_windows_sandbox_capture_with_filesystem_overrides;
 use crate::token::LocalSid;
+use crate::unified_exec::backends::legacy::spawn_windows_sandbox_session_legacy;
+use crate::windows_impl::run_windows_sandbox_capture_restricted;
 use crate::winutil::to_wide;
 use codex_protocol::models::PermissionProfile;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -57,6 +57,10 @@ use windows_sys::Win32::System::Threading::GetCurrentThread;
 use windows_sys::Win32::System::Threading::OpenProcessToken;
 use windows_sys::Win32::System::Threading::OpenThreadToken;
 use windows_sys::Win32::System::Threading::SetThreadToken;
+
+// Exercise the private legacy ACL setup mechanics directly. Public entry points
+// now delegate these write-capable profiles to the elevated broker; their
+// fail-closed admission behavior is covered in public_admission_tests.rs.
 
 struct PrivilegeRestrictedCaller {
     previous_token: Option<OwnedHandle>,
@@ -404,7 +408,7 @@ fn legacy_capture_rejects_deny_acl_setup_failure_before_spawn() {
     let _guard = legacy_process_test_guard();
     let _caller = PrivilegeRestrictedCaller::enter();
     let fixture = AclSetupFailureFixture::new();
-    let result = run_windows_sandbox_capture_with_filesystem_overrides(
+    let result = run_windows_sandbox_capture_restricted(
         &PermissionProfile::workspace_write(),
         &workspace_roots_for(&fixture.workspace),
         &fixture.codex_home,

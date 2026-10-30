@@ -1,0 +1,131 @@
+{
+  "schema": "hepta.first-passage-deadline-protocol.v1",
+  "created_utc": "2026-10-30T01:54:49.986012+00:00",
+  "status": "Frozen before implementation and numerical case evaluation. No training or use of previous confirmation data.",
+  "model": {
+    "active": "dX=mu dt+sigma dW",
+    "spike_reward": "X-c",
+    "reset": "fixed r<=c",
+    "mandatory_refractory": "a>0, frozen at r, no rewards while refractory",
+    "discount": "q>0",
+    "terminal_active_payoff": "max(X-c,0), counted once as terminal liquidation",
+    "terminal_refractory_payoff": 0
+  },
+  "cases": [
+    {
+      "name": "positive_drift",
+      "mu": 0.12,
+      "sigma": 0.45,
+      "reset": 0.0,
+      "refractory": 0.2,
+      "discount": 0.2,
+      "spike_cost": 0.6,
+      "horizon": 1.2
+    },
+    {
+      "name": "zero_drift",
+      "mu": 0.0,
+      "sigma": 0.45,
+      "reset": 0.0,
+      "refractory": 0.2,
+      "discount": 0.2,
+      "spike_cost": 0.6,
+      "horizon": 1.2
+    },
+    {
+      "name": "negative_drift",
+      "mu": -0.12,
+      "sigma": 0.45,
+      "reset": 0.0,
+      "refractory": 0.2,
+      "discount": 0.2,
+      "spike_cost": 0.6,
+      "horizon": 1.2
+    },
+    {
+      "name": "reset_at_cost",
+      "mu": 0.12,
+      "sigma": 0.45,
+      "reset": 0.6,
+      "refractory": 0.2,
+      "discount": 0.2,
+      "spike_cost": 0.6,
+      "horizon": 1.2
+    }
+  ],
+  "refinements": [
+    {
+      "dt": 0.02,
+      "dx": 0.04
+    },
+    {
+      "dt": 0.01,
+      "dx": 0.02
+    },
+    {
+      "dt": 0.005,
+      "dx": 0.01
+    }
+  ],
+  "lower_truncation_value_bound": 1e-08,
+  "upper_domain": "At least c+1/lambda+2dx; exact immediate-spike boundary by single-stopping comparison.",
+  "quadrature": {
+    "primary_gauss_legendre_order": 8,
+    "audit_order": 16,
+    "gaussian_band_standard_deviations": 12,
+    "normalization": "No row normalization. Report raw killed-mass defects and omitted lower-tail mass separately."
+  },
+  "policy_crosscheck": "Extract the LCP upper-ray boundary on each time interval; evaluate exactly the same schedule using positive killed-density quadrature, analytic H and discounted first-hit time moment. Only spatial interpolation and delayed reset-value time interpolation remain. dt<a and a/dt integer.",
+  "fixed_policy_refinement": "On each finest-grid policy, halve evaluation dt and dx, repeat each existing threshold twice, and use order16; never optimize the refined evaluator policy.",
+  "probes": {
+    "horizons": [
+      0.1,
+      0.2,
+      0.4,
+      0.8,
+      1.2
+    ],
+    "state_offsets_from_cost": [
+      -0.6,
+      -0.2,
+      0.0,
+      0.3,
+      0.6
+    ],
+    "also_probe": "reset and c+1/lambda+.1",
+    "pending_refractory": [
+      0.073,
+      0.2
+    ],
+    "deadline_pending_example": {
+      "horizon": 0.05,
+      "pending": 0.1
+    }
+  },
+  "gates": {
+    "lcp_complementarity_residual_max": 5e-10,
+    "killed_mass_defect_max": 2e-09,
+    "quadrature_order_value_difference_max": 1e-09,
+    "finest_lcp_vs_policy_probe_error_max": 0.006,
+    "fixed_policy_refinement_probe_error_max": 0.002,
+    "last_lcp_refinement_probe_difference_max": 0.004,
+    "expiry_boundary_tolerance": "3*sigma*sqrt(dt)+2*dx against c+max(mu,0)/q on first positive time layer",
+    "upper_ray": "required at every positive time layer",
+    "pending_release": "must use actual remaining horizon and current threshold schedule; no event while held"
+  },
+  "verification_limits": [
+    "LCP residual certifies the discrete complementarity system only.",
+    "Neither refinement differences nor policy-vs-LCP agreement are a rigorous continuous optimality-gap certificate.",
+    "The infinite-horizon bound certifies only lower spatial truncation loss.",
+    "Global model scope is one constant-coefficient scalar diffusion with fixed reset, linear spike reward and positive mandatory refractory time; no multi-neuron, learned-dynamics or cross-task superiority claim."
+  ],
+  "failure_policy": "Preserve failed source hash, full log and result before numerical bug repair. Do not change cases or thresholds to make a failure pass.",
+  "commands": [
+    "python3 -m unittest discover -s experiments/first_passage_deadline/tests -v",
+    "python3 -m experiments.first_passage_deadline.validate --output experiments/first_passage_deadline/results/attempt_01"
+  ],
+  "dependencies": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  }
+}

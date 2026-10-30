@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.expiry-failed-gate-explanation.v1",
+  "origin": "Post-failure mathematical analysis; neither original solver nor gate changed.",
+  "notation": {
+    "m": "1+q*Delta",
+    "kappa": "sqrt(2*m/(sigma^2*Delta))",
+    "y": "x-c",
+    "z": "kappa*(b-c)"
+  },
+  "continuum_solution": {
+    "y_negative": "u=A*exp(kappa*y)",
+    "0_to_boundary": "u=y/m+B*exp(kappa*y)+C*exp(-kappa*y)",
+    "stopping": "u=y",
+    "matching_at_strike": "C=1/(2*kappa*m), A=B+C",
+    "matching_at_boundary": "u(b)=b-c and u_x(b-)=1 imply exp(-z)=q*Delta*(z-1)",
+    "unique_root": "z=1+W(1/(e*q*Delta))",
+    "consequence": "b-c ~ sigma*sqrt(Delta/2)*log(1/Delta); this tends to zero, while (b-c)/sqrt(Delta) diverges. The fixed constant sqrt(Delta) envelope was invalid."
+  },
+  "lattice_solution": {
+    "a": "sigma^2*Delta/(2*dx^2)",
+    "theta": "acosh(1+m/(2*a))",
+    "rho": "exp(theta)",
+    "constant_c": "dx/(m*(rho-1/rho))",
+    "b_times_rho_J": "q*Delta*J*dx/m - C*rho^(-J)",
+    "index_condition": "J is the least integer with rho^(-J)<=q*Delta*(J*(rho-1)-1)",
+    "classification": "The stopping inequality at J and failed inequality at J-1 are the discrete complementarity conditions.",
+    "lower_endpoint_bound": "The infinite-lattice first-layer value at L equals A*rho^((L-c)/dx). The discrete maximum principle bounds the finite-lower solution difference by this boundary value. Log comparison of strict classification margins accounts for its residual effect."
+  },
+  "result": "All six independently predeclared supplementary rows match the original LCP stopping index exactly; maximum first-layer value error is 1.1102230246251565e-16. Original 91/92 result remains unchanged."
+}

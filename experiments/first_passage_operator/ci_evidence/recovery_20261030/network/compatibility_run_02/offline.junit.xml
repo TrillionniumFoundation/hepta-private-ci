@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="13" failures="0" errors="0" uuid="4f1d49e7-3838-4157-8b0e-ce8707a2a767" timestamp="2026-10-30T10:15:10.249+09:00" time="0.015">
+    <testsuite name="hepta-keyring-compat-offline" tests="13" disabled="0" errors="0" failures="0">
+        <testcase name="provider_compatibility::service_user_and_target_namespace_remain_compatible" classname="hepta-keyring-compat-offline" timestamp="2026-10-30T10:15:10.250+09:00" time="0.004">
+        </testcase>
+        <testcase name="parser::tests::parses_repairs_and_sanitizes_frontmatter" classname="hepta-keyring-compat-offline" timestamp="2026-10-30T10:15:10.249+09:00" time="0.005">
+        </testcase>
+        <testcase name="parser::tests::preserves_block_scalar_bodies_while_repairing_other_fields" classname="hepta-keyring-compat-offline" timestamp="2026-10-30T10:15:10.251+09:00" time="0.006">
+        </testcase>
+        <testcase name="provider_compatibility::persistent_builder_retains_existing_secret_service_credential" classname="hepta-keyring-compat-offline" timestamp="2026-10-30T10:15:10.249+09:00" time="0.009">
+        </testcase>
+        <testcase name="parser::tests::repairs_short_descriptions_containing_colons_and_apostrophes" classname="hepta-keyring-compat-offline" timestamp="2026-10-30T10:15:10.249+09:00" time="0.009">
+        </testcase>
+        <testcase name="parser::tests::uses_default_name_and_requires_description" classname="hepta-keyring-compat-offline" timestamp="2026-10-30T10:15:10.250+09:00" time="0.011">
+        </testcase>
+        <testcase name="yaml_compatibility::scalar_repair_and_block_text_keep_their_meaning" classname="hepta-keyring-compat-offline" timestamp="2026-10-30T10:15:10.257+09:00" time="0.004">
+        </testcase>
+        <testcase name="parser::tests::preserves_overlong_descriptions_and_short_descriptions" classname="hepta-keyring-compat-offline" timestamp="2026-10-30T10:15:10.251+09:00" time="0.010">
+        </testcase>
+        <testcase name="yaml_compatibility::tagged_values_and_quoted_scalars_round_trip" classname="hepta-keyring-compat-offline" timestamp="2026-10-30T10:15:10.259+09:00" time="0.004">
+        </testcase>
+        <testcase name="yaml_differential::old_and_replacement_typed_yaml_agree_on_corpus" classname="hepta-keyring-compat-offline" timestamp="2026-10-30T10:15:10.259+09:00" time="0.004">
+        </testcase>
+        <testcase name="yaml_compatibility::anchors_and_unicode_preserve_skill_frontmatter" classname="hepta-keyring-compat-offline" timestamp="2026-10-30T10:15:10.255+09:00" time="0.009">
+        </testcase>
+        <testcase name="parser::tests::repairs_unrecognized_frontmatter_fields_that_need_quotes" classname="hepta-keyring-compat-offline" timestamp="2026-10-30T10:15:10.250+09:00" time="0.014">
+        </testcase>
+        <testcase name="yaml_compatibility::duplicate_fields_and_malformed_documents_remain_errors" classname="hepta-keyring-compat-offline" timestamp="2026-10-30T10:15:10.256+09:00" time="0.008">
+        </testcase>
+    </testsuite>
+</testsuites>

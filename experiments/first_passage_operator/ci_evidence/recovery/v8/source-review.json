@@ -1,0 +1,25 @@
+{
+  "crate": "v8=150.4.0",
+  "crate_sha256": "42a978ff11f15b24e5c05a7123cf2b68f41e763546699781a924ef4e2cf43a49",
+  "source_files": [
+    {
+      "crate_path": "v8/src/init/isolate-group.cc",
+      "sha256": "c266acf65dedeaaca42d127f2304f17566c2b02f299315bcb8a531a7dd9d042e"
+    },
+    {
+      "crate_path": "v8/src/api/api.cc",
+      "sha256": "28c17ea3a6895b392dd8176f09fa90c53b1c03f04a4f7455e9da54aadaf2f685"
+    },
+    {
+      "crate_path": "src/array_buffer.rs",
+      "sha256": "2f0b5a6d72e4b95bec79905ddefda7fa9b597cfaab6e936df9b564ba406c017a"
+    },
+    {
+      "crate_path": "src/isolate_create_params.rs",
+      "sha256": "1dac78dee81685d13e065a2e750685403c7c2dcf3271e0c250ded4f5804d8dd1"
+    }
+  ],
+  "mechanism": "PABackedSandboxedArrayBufferAllocator::LazyInitialize uses an unsynchronized impl_ guard before InitConfigurablePool. Prime a default isolate inside the existing process-wide Once before any parallel evaluator can construct allocators.",
+  "native_windows_regression_status": "pending exact reconstructed head CI",
+  "sandbox_enabled": true
+}

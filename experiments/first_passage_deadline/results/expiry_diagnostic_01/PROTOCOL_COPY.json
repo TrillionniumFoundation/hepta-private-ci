@@ -1,0 +1,73 @@
+{
+  "schema": "hepta.deadline-expiry-diagnostic-protocol.v1",
+  "created_utc": "2026-10-30T02:11:03.985967+00:00",
+  "chronology": "Proposed after observing the zero-drift endpoint failure in the original attempt_01. This is an explanatory diagnostic, not a new confirmation or a replacement of the original 91/92 result.",
+  "original_protocol_sha256": "de2169420dfac7b3d680f638a0ba44a64a8a556813b992f77679cd75a7cd779a",
+  "original_failed_gate": {
+    "name": "zero_drift.level2.expiry_boundary",
+    "observed": 0.12,
+    "limit": 0.11545941546018393
+  },
+  "scope": "mu=0, one implicit Euler step dt<a, c exactly on the state lattice. No training or change to the original solver/cases/gates.",
+  "spec": {
+    "mu": 0.0,
+    "sigma": 0.45,
+    "reset": 0.0,
+    "refractory": 0.2,
+    "discount": 0.2,
+    "spike_cost": 0.6
+  },
+  "grids": [
+    {
+      "dt": 0.02,
+      "dx": 0.04
+    },
+    {
+      "dt": 0.01,
+      "dx": 0.02
+    },
+    {
+      "dt": 0.005,
+      "dx": 0.01
+    },
+    {
+      "dt": 0.0025,
+      "dx": 0.005
+    },
+    {
+      "dt": 0.00125,
+      "dx": 0.0025
+    },
+    {
+      "dt": 0.000625,
+      "dx": 0.00125
+    }
+  ],
+  "continuum_oracle": {
+    "m": "1+q*dt",
+    "kappa": "sqrt(2*m/(sigma^2*dt))",
+    "z": "1+LambertW(1/(e*q*dt))",
+    "boundary": "c+z/kappa",
+    "root_equation": "exp(-z)=q*dt*(z-1)",
+    "rate": "sqrt(dt)*log(1/dt), tending to zero but not bounded by a fixed multiple of sqrt(dt)"
+  },
+  "lattice_oracle": {
+    "a": "sigma^2*dt/(2*dx^2)",
+    "rho": "positive root >1 of rho+1/rho=2+(1+q*dt)/a",
+    "J": "least positive integer satisfying rho^(-J)<=q*dt*(J*(rho-1)-1)",
+    "boundary": "c+J*dx",
+    "finite_lower": "First-layer value perturbation is bounded by A*rho^((L-c)/dx); retain its log and compare strict discrete classification margins."
+  },
+  "gates": {
+    "lcp_boundary_integer_difference": 0,
+    "lcp_first_layer_value_error_max": 1e-09,
+    "oracle_lattice_complementarity_residual_max": 1e-10,
+    "continuum_root_residual_max": 1e-12,
+    "finite_lower_classification_margin": "must exceed the conservative (m+4*a) times lower-value perturbation bound, checked in logs"
+  },
+  "limit_check": "The exact continuum formula and its analytic log bound establish convergence to c. Six finite rows only illustrate it; they do not estimate a universal rate from fitted data.",
+  "commands": [
+    "python3 -m unittest discover -s experiments/first_passage_deadline/tests -p test_expiry.py -v",
+    "python3 -m experiments.first_passage_deadline.validate_expiry --output experiments/first_passage_deadline/results/expiry_diagnostic_01"
+  ]
+}

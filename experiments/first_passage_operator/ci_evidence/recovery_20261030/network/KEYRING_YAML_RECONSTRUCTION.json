@@ -1,0 +1,78 @@
+{
+  "date": "2026-10-30",
+  "status": "reconstructed source, new isolated compatibility run passed",
+  "old_filesystem_evidence": "lost; not counted as new verification",
+  "root_dependency_owner": "phase2_ci, serde_yaml alias to serde_norway0.9.42 pending coordinated root security graph",
+  "sources": {
+    "codex-rs/keyring-store/Cargo.toml": "b1e28c81a03b7d75f5ecf2239f0dba3b289d19d23197306eac8e2bdc6a8409e4",
+    "codex-rs/rmcp-client/Cargo.toml": "9ec2be95c6623fda1ae4a0b05cbbf502307e4b6c2deacf6a40447ae788020593",
+    "codex-rs/rmcp-client/src/oauth.rs": "fd34becf354004536758f55f5af19dc0e6920ecb510e63b7640d6ccc3739f41a",
+    "codex-rs/keyring-store/tests/provider_compatibility.rs": "dc233f82da5a513f1685605cb8d8734eda1e73f07861fa38736039d52eafe91c",
+    "codex-rs/skills/tests/yaml_compatibility.rs": "da25154f69dd7e1451107a3a43a4c6c3d0f0afe5b95703e8cc9b0f1144c0593b",
+    "scripts/fixtures/keyring_transport_roundtrip.rs": "4be640b1750162bc836aa6fd8de68e187511d4782f3f3cb0b4b7ec7e2398fed2",
+    "scripts/fixtures/yaml_compatibility_differential.rs": "177bbb812502e67dd81e47ee604945f7e5164faa7b6c87bef0e9d76f0b6df6f8",
+    "scripts/run_hepta_keyring_compatibility.py": "2859e7332772e4efc1f9b7f3a368ae50dd899a66663b31f6230ff669dafc8577",
+    ".github/workflows/hepta-keyring-compatibility.yml": "30bcf7147df4e5fbf81dc2b0e86c753e335edd12bb2203bf780dc3d32d382a45"
+  },
+  "official_references": [
+    "https://docs.rs/keyring/3.6.3/src/keyring/keyutils_persistent.rs.html",
+    "https://docs.rs/keyring/3.6.3/src/keyring/secret_service.rs.html",
+    "https://docs.rs/serde_norway/0.9.42/serde_norway/"
+  ],
+  "provider_contract": "Preserve observed keyring3.6.3 persistent builder SsCredential; retain service/user/default target and crypto-rust; select sync persistent transport and vendored libdbus; no kernel-cache semantic expansion",
+  "comparison_graph": "old async and old YAML readers are isolated test dependencies only; new active transport graph has no zbus/zvariant/zbus_names/secret-service",
+  "new_tests": [
+    {
+      "file": "new-read-delete.junit.xml",
+      "passed": 1,
+      "skipped": 0
+    },
+    {
+      "file": "new-read-update.junit.xml",
+      "passed": 1,
+      "skipped": 0
+    },
+    {
+      "file": "offline.junit.xml",
+      "passed": 13,
+      "skipped": 0
+    },
+    {
+      "file": "old-create.junit.xml",
+      "passed": 1,
+      "skipped": 0
+    },
+    {
+      "file": "old-missing.junit.xml",
+      "passed": 1,
+      "skipped": 0
+    },
+    {
+      "file": "old-read-update.junit.xml",
+      "passed": 1,
+      "skipped": 0
+    }
+  ],
+  "live_cleanup": {
+    "daemon": {
+      "pid": 56506,
+      "exit_code": 0,
+      "terminated": true
+    },
+    "bus": {
+      "pid": 56496,
+      "exit_code": 0,
+      "terminated": true
+    },
+    "private_root": "/tmp/hepta-keyring-5fwca90_",
+    "private_root_removed": true
+  },
+  "failed_attempt": "compatibility_run_01 first create/read succeeded, exact metadata expectation lacked GNOME xdg:schema; full failed log/JUnit and strict assertion correction retained",
+  "full_workspace_and_native_windows": "not certified by isolated tests",
+  "cli": "python3 scripts/run_hepta_keyring_compatibility.py --output-dir <fresh output> [--work-dir <scratch>] [--mode offline|live|all] [--daemon <path>]",
+  "required_gates_remaining": [
+    "coordinated workspace lock/security scan",
+    "canonical Bazel lock update",
+    "new head native CI"
+  ]
+}

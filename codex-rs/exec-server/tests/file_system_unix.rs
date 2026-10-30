@@ -43,6 +43,7 @@ use codex_exec_server::WalkEntryKind;
 use codex_exec_server::WalkOptions;
 use codex_exec_server::WalkOutcome;
 use codex_exec_server::WriteFileOptions;
+use codex_exec_server::local_environment_info;
 use codex_protocol::models::PermissionProfile;
 use codex_protocol::permissions::FileSystemAccessMode;
 use codex_protocol::permissions::FileSystemPath;
@@ -107,6 +108,20 @@ fn assert_normalized_path_rejected(error: &std::io::Error) {
         }
         other => panic!("unexpected normalized-path error kind: {other:?}: {error:?}"),
     }
+}
+
+fn assert_authorized_read_unavailable(
+    error: &std::io::Error,
+    implementation: FileSystemImplementation,
+) {
+    let expected_message = match implementation {
+        FileSystemImplementation::Local => "bounded authorized file reads are unsupported",
+        FileSystemImplementation::Remote => {
+            "remote exec-server does not support stable-handle authorized reads"
+        }
+    };
+    assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
+    assert_eq!(error.to_string(), expected_message);
 }
 
 fn alias_root_candidate() -> Result<Option<PathBuf>> {
@@ -1109,8 +1124,13 @@ async fn file_system_bounded_authorized_read_enforces_limit_without_prefix(
 ) -> Result<()> {
     let context = create_file_system_context(implementation).await?;
     let file_system = context.file_system;
+    // Both fixtures execute on this host. An unavailable stable-handle primitive
+    // must fail explicitly for every request, without falling back to a stream.
+    let available = local_environment_info()
+        .capabilities
+        .stable_handle_authorized_read;
 
-    let tmp = TempDir::new()?;
+    let tmp = TempDir::new_in(std::env::temp_dir().canonicalize()?)?;
     let root = tmp.path().join("allowed");
     std::fs::create_dir_all(&root)?;
     let exact_path = root.join("exact.txt");
@@ -1121,9 +1141,18 @@ async fn file_system_bounded_authorized_read_enforces_limit_without_prefix(
 
     let exact = file_system
         .read_file_bounded_authorized(&PathUri::from_host_native_path(&exact_path)?, &sandbox, 8)
-        .await
-        .with_context(|| format!("mode={implementation}, exact bound"))?;
-    assert_eq!(exact, b"12345678");
+        .await;
+    if available {
+        assert_eq!(
+            exact.with_context(|| format!("mode={implementation}, exact bound"))?,
+            b"12345678"
+        );
+    } else {
+        assert_authorized_read_unavailable(
+            &exact.expect_err("an unavailable capability must not return a generic file read"),
+            implementation,
+        );
+    }
 
     let error = file_system
         .read_file_bounded_authorized(
@@ -1133,8 +1162,12 @@ async fn file_system_bounded_authorized_read_enforces_limit_without_prefix(
         )
         .await
         .expect_err("a file larger than the bound must fail closed");
-    assert_eq!(error.kind(), std::io::ErrorKind::InvalidData);
-    assert_eq!(error.to_string(), "authorized file read exceeds bound");
+    if available {
+        assert_eq!(error.kind(), std::io::ErrorKind::InvalidData);
+        assert_eq!(error.to_string(), "authorized file read exceeds bound");
+    } else {
+        assert_authorized_read_unavailable(&error, implementation);
+    }
 
     Ok(())
 }
@@ -1147,8 +1180,11 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
 ) -> Result<()> {
     let context = create_file_system_context(implementation).await?;
     let file_system = context.file_system;
+    let available = local_environment_info()
+        .capabilities
+        .stable_handle_authorized_read;
 
-    let tmp = TempDir::new()?;
+    let tmp = TempDir::new_in(std::env::temp_dir().canonicalize()?)?;
     let allowed_dir = tmp.path().join("allowed");
     let outside_dir = tmp.path().join("outside");
     std::fs::create_dir_all(&allowed_dir)?;
@@ -1167,7 +1203,11 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
         )
         .await
         .expect_err("a symlink escaping the readable root must fail closed");
-    assert_sandbox_denied(&error);
+    if available {
+        assert_sandbox_denied(&error);
+    } else {
+        assert_authorized_read_unavailable(&error, implementation);
+    }
 
     let parent_escape = allowed_dir
         .join("nested")
@@ -1183,7 +1223,11 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
         )
         .await
         .expect_err("a parent traversal escaping the readable root must fail closed");
-    assert_normalized_path_rejected(&error);
+    if available {
+        assert_normalized_path_rejected(&error);
+    } else {
+        assert_authorized_read_unavailable(&error, implementation);
+    }
 
     Ok(())
 }

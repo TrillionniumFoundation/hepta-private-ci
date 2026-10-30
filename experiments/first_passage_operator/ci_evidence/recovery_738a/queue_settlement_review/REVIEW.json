@@ -1,0 +1,151 @@
+{
+  "schema": "hepta.queue-native-settlement-review.v1",
+  "recorded_at_utc": "2026-10-30T17:41:05.744086+00:00",
+  "remote_source_commit": "738a00959b869a4cdd4730109b4ff60c9340f106",
+  "baseline_exactly_matches_remote": true,
+  "baseline_sha256": "93b5ea1bf361524cf1f0c06ee86b8b90000282b7de43894a063d92a0d113fb28",
+  "baseline_git_blob": "319a5b6f715f80360221e5d7ea14c8417425f5ca",
+  "native_failure": {
+    "run_id": 41092882861,
+    "job_id": 124198476692,
+    "target": "//codex-rs/ext/queue:queue-queue_service-test",
+    "platform": "Linux musl / Bazel native test binary",
+    "run": 38,
+    "passed": 35,
+    "failed": 3,
+    "ignored": 0,
+    "failed_tests": [
+      {
+        "name": "core_error_after_started_never_releases_ambiguous_dispatch",
+        "line": 1046,
+        "observation": "Expected release_count 0, observed 1 after definitive hook rejection."
+      },
+      {
+        "name": "duplicate_queued_client_ids_dispatch_to_core_once",
+        "line": 2012,
+        "observation": "The immediate queue list after scheduling idle was not empty."
+      },
+      {
+        "name": "resumed_idle_dispatches_input_without_a_loaded_manager",
+        "line": 2734,
+        "observation": "The immediate queue list after scheduling idle was not empty."
+      }
+    ],
+    "raw_excerpt": {
+      "path": "experiments/first_passage_operator/ci_evidence/recovery_738a/queue_settlement_review/NATIVE_FAILURES.log.gz",
+      "sha256": "0bd5586c60aa2e98a8aea82df9292552c9fef74dd4b497ca447006042d03653a",
+      "bytes": 585
+    },
+    "excerpt_scope": "Exact first failure section from decoded native job logs, ending at queue binary summary. The job logs repeat this section in the final Bazel log tail; it is not counted as a second execution."
+  },
+  "root_cause_scope": [
+    {
+      "tests": [
+        "duplicate_queued_client_ids_dispatch_to_core_once",
+        "resumed_idle_dispatches_input_without_a_loaded_manager"
+      ],
+      "source_contract": "schedule_idle_dispatch registers a coalesced wake, spawns a task and returns. That task waits for the captured Core completion barrier before dispatch/settlement. on_thread_idle completion is not queue completion.",
+      "defect": "The tests asserted a durable empty queue immediately after scheduling asynchronous work; the old raw TurnComplete receipt also did not retire its completion owner."
+    },
+    {
+      "tests": [
+        "core_error_after_started_never_releases_ambiguous_dispatch"
+      ],
+      "source_contract": "run_owned_dispatch releases only the exact lease on typed RejectedByHook; other admission errors or panics keep an uncertain owner fence.",
+      "defect": "The test called a deliberate hook rejection an ambiguous Core error. Typed definitive rejection correctly called release, contradicting its old fixture."
+    }
+  ],
+  "changes": [
+    {
+      "file": "codex-rs/ext/queue/tests/queue_service.rs",
+      "scope": "Three existing tests plus Op import and support-module registration.",
+      "ambiguous_case": [
+        "Use the existing held persistence hook and wait for its entered marker in the owned home.",
+        "Flush/read the rollout and require zero matching durable client messages; require zero HTTP requests while the hook is held.",
+        "Preserve the first competing-owner DispatchInProgress assertion after the existing 400ms expiry check for the 250ms test lease.",
+        "Require owner_start still pending, then send the real public Op::Interrupt.",
+        "Require CoreSubmissionError with CodexErrorDetails::InternalAgentDied, the conversion of TaskEndedBeforePersistence. A generic Core error cannot pass.",
+        "Observe TurnAborted and await its completion barrier; flush/read again and require zero persisted matching client messages.",
+        "Preserve release_count == 0, the identical durable queue row, no HTTP request, and the second competing-owner DispatchInProgress assertion after lease expiry.",
+        "Remove the second redundant 400ms sleep; no new fixed delay was added."
+      ],
+      "asynchronous_cases": [
+        "Retain the returned ResponseMock in the resumed case and assert its single actual model request contains queued while unloaded.",
+        "Assert the intended staged queue exists before emitting idle (two duplicate rows or the exact queued row).",
+        "Receive TurnComplete with its completion handle and await actual owner retirement.",
+        "Wait for at least one matching-thread ThreadQueueChanged event and an actual empty durable queue, then retain the original explicit empty-queue assertion.",
+        "Preserve duplicate case assertions: exactly one model request and one durable client message."
+      ]
+    },
+    {
+      "file": "codex-rs/ext/queue/tests/suite/queue_settlement_support.rs",
+      "scope": "Small test-only support module.",
+      "contract": [
+        "QueueSettlementSink binds to one ThreadId and ignores changes for other threads.",
+        "wait_for_empty requires a matching event plus a successful durable queue read; errors propagate.",
+        "Register Notified before checking the predicate, preventing a lost transition between the read and await.",
+        "Use bounded 10s timeouts and explicit completion/notification waits; no polling sleeps, skips, assertions removed or production API added."
+      ]
+    }
+  ],
+  "unchanged": {
+    "production_queue_sources": true,
+    "core_admission_and_barrier_sources": true,
+    "existing_async_test_names_preserved": true,
+    "queue_hook_rejection_tests_rs_not_modified_by_this_change": true,
+    "windows14_and_sqlite8_not_modified": true,
+    "scientific_confirmation_results": {
+      "original_multilayer": "0/6",
+      "finite_deadline": "91/92"
+    }
+  },
+  "source_basis": [
+    {
+      "path": "codex-rs/ext/queue/src/idle.rs",
+      "sha256": "623fc52a80c50596ca2cfd4bec37aedfecd39ba1d310801bb56e27c684404dc7",
+      "bytes": 3385
+    },
+    {
+      "path": "codex-rs/ext/queue/src/service.rs",
+      "sha256": "5d432a0300fe313d48db69e407f30b692e76f51e46f8e04bb0a5c78763f5003b",
+      "bytes": 84296
+    },
+    {
+      "path": "codex-rs/core/src/user_message_admission.rs",
+      "sha256": "18191490faef5ab2ef29f3bc17f17b4c23b0d27316fec2069c77d569c296c135",
+      "bytes": 10550
+    },
+    {
+      "path": "codex-rs/core/src/codex_thread.rs",
+      "sha256": "0def8bfeea9440570ef0a5cbcb1f1f0b40f5a685311854739d023f1201f9f680",
+      "bytes": 48404
+    },
+    {
+      "path": "codex-rs/core/src/tasks/mod.rs",
+      "sha256": "c1a991f56a9f35e61c67d5163a9900ec9f633182a8e13d06137a5c141668a2fc",
+      "bytes": 183347
+    }
+  ],
+  "validation": {
+    "static_diff_review": true,
+    "native_validation": "PENDING on the new exact source. The historical 738 result remains failed.",
+    "attempted_local_commands": [
+      {
+        "command": "just fmt",
+        "exit_code": 127,
+        "reason": "just: command not found"
+      },
+      {
+        "command": "just test -p codex-queue-extension --test queue_service --locked",
+        "exit_code": 127,
+        "reason": "just: command not found"
+      },
+      {
+        "command": "just fix -p codex-queue-extension --tests --locked",
+        "exit_code": 127,
+        "reason": "just: command not found"
+      }
+    ],
+    "no_native_tests_claimed": true
+  }
+}

@@ -31,6 +31,7 @@ REMOTE_EXECUTION_CONFIGS = {
 LOCAL_WINDOWS_MSVC_EXEC_PLATFORM = "//:windows_x86_64_msvc"
 LOCAL_WINDOWS_MSVC_CC_TOOLCHAIN = "//:local_windows_msvc_cc_toolchain"
 LOCAL_WINDOWS_GNULLVM_TEST_TOOLCHAIN = "//:windows_gnullvm_tests_on_msvc_host_toolchain"
+CONFIGURED_COMMANDS = {"build", "test", "run", "coverage", "cquery", "aquery", "info"}
 # Honor either explicit setting so the wrapper never overrides the caller's
 # choice when it supplies the CI default below.
 REMOTE_REPO_CONTENTS_CACHE_STARTUP_OPTIONS = {
@@ -137,6 +138,18 @@ def option_contains_value(args: Sequence[str], option: str, value: str) -> bool:
     return False
 
 
+def local_windows_msvc_cc_args(args: Sequence[str]) -> list[str]:
+    """Keep native C archives on the ABI of the MSVC Rust linker."""
+    return [
+        f"{option}={value}"
+        for option, value in (
+            ("--extra_toolchains", LOCAL_WINDOWS_MSVC_CC_TOOLCHAIN),
+            ("--repo_env", "BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0"),
+        )
+        if not option_contains_value(args, option, value)
+    ]
+
+
 def bazel_args_without_remote_execution(
     args: Sequence[str], env: Mapping[str, str]
 ) -> list[str]:
@@ -171,15 +184,7 @@ def bazel_args_without_remote_execution(
     )
     # Queries and administrative commands do not configure build actions.
     # Do not inject CI build options or runtime skip filters into those calls.
-    if command_idx is None or prefix[command_idx] not in {
-        "build",
-        "test",
-        "run",
-        "coverage",
-        "cquery",
-        "aquery",
-        "info",
-    }:
+    if command_idx is None or prefix[command_idx] not in CONFIGURED_COMMANDS:
         return [*prefix, *suffix]
 
     injected_args: list[str] = []
@@ -206,12 +211,7 @@ def bazel_args_without_remote_execution(
         # Keep native archives on the same ABI as the Rust action that links
         # them. Without this bounded override, globally registered hermetic
         # LLVM can produce MinGW objects for an MSVC Rust target.
-        for option, value in (
-            ("--extra_toolchains", LOCAL_WINDOWS_MSVC_CC_TOOLCHAIN),
-            ("--repo_env", "BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0"),
-        ):
-            if not option_contains_value(prefix, option, value):
-                injected_args.append(f"{option}={value}")
+        injected_args.extend(local_windows_msvc_cc_args(prefix))
 
     # Put defaults before caller options so a CI config cannot override an
     # explicit per-job cache path (or other later command-line setting).
@@ -244,6 +244,20 @@ def bazel_args_with_remote_config(
             f"--config={config}",
             f"--remote_header=x-buildbuddy-api-key={api_key}",
         ]
+        try:
+            separator_idx = args.index("--")
+        except ValueError:
+            separator_idx = len(args)
+        prefix = args[:separator_idx]
+        if (
+            env.get("RUNNER_OS") == "Windows"
+            and args[command_idx] in CONFIGURED_COMMANDS
+            and not uses_remote_execution(prefix)
+            and option_contains_value(prefix, "--platforms", "//:windows_x86_64_msvc")
+        ):
+            # Authentication selects cache access, not the native target ABI.
+            # Keep the bounded compiler default before explicit caller options.
+            remote_args.extend(local_windows_msvc_cc_args(prefix))
 
         # Insert immediately after the Bazel command. This keeps wrapper-added
         # options out of positional payloads and lets later CI configs override

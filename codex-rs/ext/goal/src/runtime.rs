@@ -3,6 +3,7 @@ use std::sync::Weak;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
+use codex_async_utils::CoalescingWake;
 use codex_core::StartIfIdleSubmission;
 use codex_core::ThreadManager;
 use codex_core::TurnInput;
@@ -50,6 +51,7 @@ struct GoalRuntimeInner {
     enabled: AtomicBool,
     tools_available_for_thread: bool,
     goal_state_lock: Semaphore,
+    idle_continuation: CoalescingWake,
 }
 
 pub(crate) struct AccountedGoalProgress {
@@ -102,6 +104,7 @@ impl GoalRuntimeHandle {
                 enabled: AtomicBool::new(config.enabled),
                 tools_available_for_thread: config.tools_available_for_thread,
                 goal_state_lock: Semaphore::new(/*permits*/ 1),
+                idle_continuation: CoalescingWake::default(),
             }),
         }
     }
@@ -359,6 +362,42 @@ impl GoalRuntimeHandle {
         Ok(())
     }
 
+    /// Idle callbacks run before their owner's completion fence is retired.
+    /// Capture that fence now and wake once afterward, without granting this
+    /// extension privileged admission or blocking the callback on itself.
+    pub(crate) async fn schedule_idle_continuation(&self) {
+        if !self.tools_visible() {
+            return;
+        }
+        let Some(thread_manager) = self.inner.thread_manager.upgrade() else {
+            return;
+        };
+        let Ok(thread) = thread_manager.get_thread(self.inner.thread_id).await else {
+            return;
+        };
+        if !self
+            .inner
+            .idle_continuation
+            .register_with(|| thread.current_turn_completion_barrier())
+        {
+            return;
+        }
+        let runtime = self.clone();
+        tokio::spawn(async move {
+            while let Some(completion) = runtime.inner.idle_continuation.next_barrier() {
+                completion.await;
+                // A successor callback can register while this worker awaits
+                // or attempts ordinary admission; its observation is retained.
+                if let Err(err) = runtime.continue_if_idle().await {
+                    tracing::warn!(
+                        "failed to continue active goal for idle thread {}: {err}",
+                        runtime.thread_id()
+                    );
+                }
+            }
+        });
+    }
+
     pub(crate) async fn continue_if_idle(&self) -> Result<(), String> {
         if !self.tools_visible() {
             self.inner.accounting_state.clear_active_goal();
@@ -367,6 +406,22 @@ impl GoalRuntimeHandle {
         // Hold this through the read/start window so external set/clear cannot
         // change the goal after we read it but before the continuation launches.
         let _goal_state_permit = self.goal_state_permit().await?;
+
+        // Durable queued user work has priority over automatic goal work.
+        // These rows are pending submissions, not completed history. Fail
+        // closed on a read error. A concurrent new enqueue is still ordered by
+        // ordinary Core admission; this read is not a cross-database lock.
+        if !self
+            .inner
+            .state_dbs
+            .thread_queue()
+            .list_page(self.thread_id(), /*offset*/ 0, /*limit*/ 1)
+            .await
+            .map_err(|err| err.to_string())?
+            .is_empty()
+        {
+            return Ok(());
+        }
 
         if self
             .inner

@@ -304,14 +304,25 @@ pub(super) async fn ensure_listener_task_running(
                     )
                     .await;
                 }
-                event = conversation.next_event() => {
-                    let event = match event {
-                        Ok(event) => event,
+                event = conversation.next_event_with_completion() => {
+                    let (event, completion) = match event {
+                        Ok(received) => received,
                         Err(err) => {
                             tracing::warn!("thread.next_event() failed with: {err}");
                             break;
                         }
                     };
+
+                    // Core's terminal event is published before its exact
+                    // persistence/lifecycle owner retires the admission fence.
+                    // Await the publication-time sidecar before tracking public
+                    // completion or replying to interrupts. Event delivery is
+                    // unbounded and Core does not await this listener's reply.
+                    tokio::select! {
+                        biased;
+                        _ = &mut cancel_rx => break,
+                        () = completion => {}
+                    }
 
                     if let Some(worker) = &turn_cost_worker {
                         worker.observe_event(

@@ -1,0 +1,66 @@
+{
+  "base_head": "8976aee9209c353131ce3cf67d8318bd6a9e2de2",
+  "status": "reconstructed source; native validation and canonical formatting pending",
+  "scientific_protocols_changed": false,
+  "changes": {
+    "v8_init": "warm initial isolate inside existing OnceLock to serialize lazy backing-store pool initialization; full Windows runtime still requires native validation",
+    "robrix": "bind resource path String before find_resource macro borrows it",
+    "seatbelt": "compare complete exclusion path multiset and contiguous binding indices rather than assuming semantically irrelevant index ordering; actual sandbox denial checks retained",
+    "authorized_read_fixtures": "create self-owned temp roots under canonical system temp directory; no production path authorization changes",
+    "authorized_read_errors": "preserve PermissionDenied, bound overflow InvalidData and NotFound only for exact fixed server diagnostics; arbitrary remote messages remain redacted",
+    "workflow": "add finite-deadline unit tests, native Mac consumers, Windows public admission/runtime, canonical just fmt, scoped just fix and full generated patch capture"
+  },
+  "verification": {
+    "embedded_workflow_python": "AST parse succeeded",
+    "workflow_yaml": "safe_load succeeded",
+    "native_rust": "not run: local toolchain absent; constrained disk and memory; exact source remote workflow required",
+    "formatter": "not run yet; diagnostic lane invokes original just fmt --all"
+  },
+  "files": [
+    {
+      "path": ".github/workflows/hepta-operator-diagnostics.yml",
+      "sha256": "7ed40b07453bed36f30e4e9c94dc73c1f3f566afcd969f5d40de08c31d383a5a",
+      "bytes": 19475
+    },
+    {
+      "path": "codex-rs/code-mode-runtime/src/v8_init.rs",
+      "sha256": "f5af54cdc0793e08c0f9012f3ea5ef8b74914b99822cc6f6a764ab0efccc2248",
+      "bytes": 2461
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/robrix_control_projection.rs",
+      "sha256": "e221b6526e020ff777b3eecc1e32f05719f8ea7b883fd9779005a13aee7dba22",
+      "bytes": 13203
+    },
+    {
+      "path": "codex-rs/sandboxing/src/seatbelt_tests.rs",
+      "sha256": "cd29b399cbba678613d054edd91f1aaddaf7204906bdbb249e3e7983526a672a",
+      "bytes": 96910
+    },
+    {
+      "path": "codex-rs/exec-server/src/local_file_system_authorized_read_tests.rs",
+      "sha256": "8a72a1eb12662d643cea3c49f2dbdda898d1f64c3d01aef314ca52002c6f2176",
+      "bytes": 14115
+    },
+    {
+      "path": "codex-rs/exec-server/tests/authorized_read_rpc.rs",
+      "sha256": "299a4ce4a24f19d1c73154733319575435340b930f154d1c8e43d2686a2cbbf4",
+      "bytes": 4148
+    },
+    {
+      "path": "codex-rs/exec-server/tests/file_system_unix.rs",
+      "sha256": "318d4db8c78dc0af10a9e2b0df8e903dc096d2d03c98499abc919612f75a645f",
+      "bytes": 60600
+    },
+    {
+      "path": "codex-rs/exec-server/src/remote_file_system.rs",
+      "sha256": "224093de88abc38523f79566e1bd6f26ef14e9699b545dedaae9b6d5a37ad94f",
+      "bytes": 23011
+    },
+    {
+      "path": "codex-rs/exec-server/src/remote_file_system_authorized_error_tests.rs",
+      "sha256": "35a394f8f4685e0c13d741c32990860b2f1e1d24bbcc8b9d102c1102a7b2f966",
+      "bytes": 1661
+    }
+  ]
+}

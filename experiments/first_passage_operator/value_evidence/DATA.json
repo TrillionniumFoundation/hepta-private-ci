@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.value-learning.data.v1",
+  "protocol_sha256": "93437ea83a0801834484c27d442cfbe58b21df11b54aacdcbd1c17dd8c7f184c",
+  "splits": {
+    "train": {
+      "files": [
+        {
+          "path": "value_evidence/train/part-000.npz",
+          "sha256": "253cf6f5ea4eb164e8f4a24cc04dd225cdae39a10f89977a08c542302a43a49c",
+          "bytes": 135006
+        },
+        {
+          "path": "value_evidence/train/part-001.npz",
+          "sha256": "38871f860092647639ec3e431a16923ed64e6f901c8d0708e7725d9de5ab90d3",
+          "bytes": 135508
+        },
+        {
+          "path": "value_evidence/train/part-002.npz",
+          "sha256": "a9ef592c6ace5815b0302781530a7cdb9e98c3dc89484e30d7acc6ad0699ed4b",
+          "bytes": 135280
+        },
+        {
+          "path": "value_evidence/train/part-003.npz",
+          "sha256": "c369f000e4749facf0289cdbdf1a0aa427ee28c9336ea7a49e4a52a1ae51d789",
+          "bytes": 136287
+        },
+        {
+          "path": "value_evidence/train/part-004.npz",
+          "sha256": "d77c7b2b42daa20dde6c558d506be0e433ad66514751ac1e75cabbe2e9b834dc",
+          "bytes": 135072
+        },
+        {
+          "path": "value_evidence/train/part-005.npz",
+          "sha256": "cb6b94843f91f31fff94b4d54f5f8924c381d4c08803580b868f671e679a740d",
+          "bytes": 136089
+        },
+        {
+          "path": "value_evidence/train/part-006.npz",
+          "sha256": "54a1d7c503613380edd2efa00a94816d90485cb12ca6cca1bf05491a642ec4db",
+          "bytes": 136088
+        },
+        {
+          "path": "value_evidence/train/part-007.npz",
+          "sha256": "9bbdb6e7fb18ef66a81b2ef3bec9830737b72a8ac5f24e5e49debf11615dbe74",
+          "bytes": 135691
+        }
+      ],
+      "rows": 4096,
+      "wall_seconds": 117.46375747999991,
+      "max_mass_quadrature_defect": 2.220446049250313e-16
+    },
+    "development": {
+      "files": [
+        {
+          "path": "value_evidence/development/part-000.npz",
+          "sha256": "acce2231afba4036022dd76131e251e46be8693c5a758ec31a7bc847ab163664",
+          "bytes": 134492
+        }
+      ],
+      "rows": 512,
+      "wall_seconds": 14.635976987003232,
+      "max_mass_quadrature_defect": 2.220446049250313e-16
+    }
+  }
+}

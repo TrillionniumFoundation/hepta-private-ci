@@ -1,0 +1,61 @@
+{
+  "source_paths": [
+    "codex-rs/core/src/tasks/mod.rs",
+    "codex-rs/core/src/tasks/terminal_event_barrier_tests.rs",
+    "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_schema_tests.rs",
+    "codex-rs/hepta-memory/src/production_writer.rs",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+    "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+    "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs",
+    "codex-rs/hepta-agentd/BUILD.bazel",
+    "defs.bzl",
+    "codex-rs/utils/pty/src/tests.rs",
+    "codex-rs/utils/pty/src/windows_tests.rs",
+    "codex-rs/utils/pty/src/windows_python_fixture.rs",
+    "codex-rs/utils/pty/src/windows_python_fixture_tests.rs"
+  ],
+  "evidence_paths": [
+    "experiments/first_passage_operator/ci_evidence/recovery_20261030/network/PTY_RECONSTRUCTION.json",
+    "experiments/first_passage_operator/ci_evidence/recovery_20261030/network/RECOVERY_PLAN.md",
+    "experiments/first_passage_operator/ci_evidence/recovery_20261030/network/NATIVE_COMPILE_RECONSTRUCTION.json",
+    "experiments/first_passage_operator/ci_evidence/recovery_20261030/network/pty_probe/junit.xml",
+    "experiments/first_passage_operator/ci_evidence/recovery_20261030/network/pty_probe/Cargo.toml",
+    "experiments/first_passage_operator/ci_evidence/recovery_20261030/network/pty_probe/test.log",
+    "experiments/first_passage_operator/ci_evidence/recovery_20261030/network/pty_probe/Cargo.lock",
+    "experiments/first_passage_operator/ci_evidence/recovery_20261030/network/pty_probe/nextest.toml",
+    "experiments/first_passage_operator/ci_evidence/recovery_20261030/network/pty_probe/TEST_RECEIPT.json"
+  ],
+  "all_sha256": {
+    "codex-rs/core/src/tasks/mod.rs": "d6d708823b58e5910acaba35cc7584f508c8ec0601330826e9140f55869148f7",
+    "codex-rs/core/src/tasks/terminal_event_barrier_tests.rs": "ac61574730dd3559add65a8b05b813edfe3c0f5fb009465462a6b46915f2bc53",
+    "codex-rs/hepta-automation/src/migration_convergence_tests.rs": "24ee17b4f52051adf5867542abf75355fb02c1acab08ce2352fef30cea180985",
+    "codex-rs/hepta-memory/src/cognitive_schema_tests.rs": "c91623867b07423016db6b714774161324339bde1e7930cd01b0c8ad74598044",
+    "codex-rs/hepta-memory/src/production_writer.rs": "f24a6ed391399743a6588979e3d10c9cb188f6415b097b67a0eba86d1e46a325",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs": "3b082d771837cb5a01bce364d91ebdd1e71e7c70a3047da3f523d8d94c82e971",
+    "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs": "76f363cbfd424abfacdb9a47a74cf42a4708ac4457dfd309e1463e9515c7baaf",
+    "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs": "45d919060cd366e47310cd42ae4ba188620e5fe94954189f4826ce75a4dc38eb",
+    "codex-rs/hepta-agentd/BUILD.bazel": "c2b1e20de18f87680ab3339fd515b444a27219ec14fdffcb265a15dc52b7e3bf",
+    "defs.bzl": "2f86cd54378153d10f22e832c82ca8d71410bb41279e5be290dbf7a4b0761d51",
+    "codex-rs/utils/pty/src/tests.rs": "de43c610eda6bc4c30af95f1ef5854a2fe88b30dc248d1196081394e51f3cc2d",
+    "codex-rs/utils/pty/src/windows_tests.rs": "58f468808ab389ba2cae70bb862984a52452cd4e7179c4b5d012ce7bbf73d911",
+    "codex-rs/utils/pty/src/windows_python_fixture.rs": "f1650712131798aa5d937fb1c0a2db0cb479219b4e24dc19433ab66ad6c21f0b",
+    "codex-rs/utils/pty/src/windows_python_fixture_tests.rs": "25c2e238b0f96249a7ee902f59acf84a989fa4051d186b6b95932e1b621c37d5",
+    "experiments/first_passage_operator/ci_evidence/recovery_20261030/network/PTY_RECONSTRUCTION.json": "2be1544171dd96118c8d0665d3a9acc005870f7545dc01e18ba5812dcdef6a26",
+    "experiments/first_passage_operator/ci_evidence/recovery_20261030/network/RECOVERY_PLAN.md": "9fdbe6240a72e3044ab4c9c7dbeea5fe70d29724486a239b856a9ca2b4582529",
+    "experiments/first_passage_operator/ci_evidence/recovery_20261030/network/NATIVE_COMPILE_RECONSTRUCTION.json": "daf301eada4398e7268ce4ec1ee30fd60fb880f39df893da90ab80a487bdcb62",
+    "experiments/first_passage_operator/ci_evidence/recovery_20261030/network/pty_probe/junit.xml": "f45c756fd6159a7786daa2e2e8a97e45b83b1264247cdc35f8486e8ad95fb445",
+    "experiments/first_passage_operator/ci_evidence/recovery_20261030/network/pty_probe/Cargo.toml": "3499c7f0d85c77028ef7ac3ea0cfab61bdcb9c6612457ceabb55ab2504d99ba7",
+    "experiments/first_passage_operator/ci_evidence/recovery_20261030/network/pty_probe/test.log": "09ecae31947eaae004ff990cb1871a3e7e35fadadff09ca0c563cc33f40e0198",
+    "experiments/first_passage_operator/ci_evidence/recovery_20261030/network/pty_probe/Cargo.lock": "238257a68026d50d9dac2f5f77c34f89a5507f9878957343a0b3d80945410bf2",
+    "experiments/first_passage_operator/ci_evidence/recovery_20261030/network/pty_probe/nextest.toml": "4ee0e3241e978d68c96725fece5f8936e4b791cf20ba13f1ddf6952623c50f57",
+    "experiments/first_passage_operator/ci_evidence/recovery_20261030/network/pty_probe/TEST_RECEIPT.json": "003073130887c4c8591c757ee76e99ff4273bb3ef8238419471f4a6996bf06ce"
+  },
+  "ignore_notice": "*.log files need force-add to preserve referenced evidence; do not stage root Cargo manifests in this batch",
+  "old_evidence_recovered": false,
+  "new_pty_probe": {
+    "passed": 4,
+    "skipped": 0
+  },
+  "native_windows_execution": "pending"
+}

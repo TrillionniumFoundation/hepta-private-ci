@@ -340,7 +340,7 @@ fn duplicate_or_null_scope_fields_are_rejected_in_both_raw_page_vectors() {
 }
 
 #[test]
-fn sdk_bundled_metadata_is_dropped_instead_of_retained_outside_raw_bounds() {
+fn sdk_push_metadata_is_dropped_instead_of_retained_outside_raw_bounds() {
     let mut baseline = GapFillAccumulator::new(plan()).expect("plan");
     append(
         &mut baseline,
@@ -358,14 +358,18 @@ fn sdk_bundled_metadata_is_dropped_instead_of_retained_outside_raw_bounds() {
         vec![event("$visible")],
         vec![],
     );
-    let mut large = event("$bundled");
-    large["content"]["body"] = json!("x".repeat(MAX_BYTES + 1));
-    let bundled = page("unused", /*end*/ None, vec![large], vec![])
-        .chunk
-        .pop()
-        .expect("bundle");
-    assert!(bundled.raw().json().get().len() > MAX_BYTES);
-    enriched.chunk[0].bundled_latest_thread_event = Some(Box::new(bundled));
+    enriched.chunk[0].set_push_actions(
+        serde_json::from_value(json!([{
+            "set_tweak": "sound", "value": "x".repeat(MAX_BYTES + 1)
+        }]))
+        .expect("SDK push actions"),
+    );
+    assert!(
+        serde_json::to_vec(enriched.chunk[0].push_actions().expect("push actions"))
+            .expect("push metadata JSON")
+            .len()
+            > MAX_BYTES
+    );
     let mut accumulator = GapFillAccumulator::new(plan()).expect("plan");
     assert_eq!(
         append(&mut accumulator, enriched),
@@ -376,6 +380,34 @@ fn sdk_bundled_metadata_is_dropped_instead_of_retained_outside_raw_bounds() {
         accumulator.pages[0].chunk[0].json().get().len(),
         accumulator.observation.event_bytes
     );
+}
+
+#[test]
+fn sdk_bundled_thread_event_is_counted_inside_raw_bounds() {
+    let mut large = event("$bundled");
+    large["content"]["body"] = json!("x".repeat(MAX_BYTES + 1));
+    let mut visible = event("$visible");
+    visible["unsigned"] = json!({"m.relations": {"m.thread": {
+        "latest_event": large, "count": 1, "current_user_participated": false
+    }}});
+    let enriched = page("s-source", Some("t-target"), vec![visible], vec![]);
+    assert!(
+        enriched.chunk[0]
+            .bundled_latest_thread_event()
+            .expect("SDK bundled thread event")
+            .raw()
+            .json()
+            .get()
+            .len()
+            > MAX_BYTES
+    );
+    let mut accumulator = GapFillAccumulator::new(plan()).expect("plan");
+    let before = snapshot(&accumulator);
+    assert_eq!(
+        append(&mut accumulator, enriched),
+        Err(GapFillError::Bounds)
+    );
+    assert_eq!(snapshot(&accumulator), before);
 }
 
 #[test]

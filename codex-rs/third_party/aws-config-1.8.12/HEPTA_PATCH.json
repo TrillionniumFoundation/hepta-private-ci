@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.vendor-patch.v1",
+  "package": "aws-config",
+  "version": "1.8.12",
+  "upstream_archive_sha256": "96571e6996817bf3d58f6b569e4b9fd2e9d2fcf9f7424eed07b2ce9bb87535e5",
+  "rationale": "Preserve credentials-login and existing default features while moving p256 to ^0.14.0 and rand to ^0.10.0 with sys_rng; propagate OS entropy/signing errors through the existing LoginTokenError instead of panicking. Preserve DPoP ES256 wire shape.",
+  "modified_files": [
+    {
+      "path": "Cargo.toml",
+      "upstream_sha256": "4608381f2cb65065306fbcab80d31c9526fa1521631135ba034cf6f105d0441f",
+      "patched_sha256": "67f53abcc8dc7701ab2685b8957163b9bbdca1f16de8357bff9c306d91acf669",
+      "bytes": 4903
+    },
+    {
+      "path": "Cargo.toml.orig",
+      "upstream_sha256": "81719efb68459169be6cd60062eaffcca722fb51aebfd48fecf5fe89e2e76389",
+      "patched_sha256": "1d18e099a284a5d557b8dbf09c75173f7cb6e556cdddf1a1044e9e657377719b",
+      "bytes": 4409
+    },
+    {
+      "path": "src/login/dpop.rs",
+      "upstream_sha256": "193b7f82596039443f000001f76bf1c74fc9ae78d5f74d2b6c266953a20da4e7",
+      "patched_sha256": "8ff87a1ccfd6803aae283355693acadd74dc11a0f888d427488590f4c583c466",
+      "bytes": 11071
+    }
+  ],
+  "added_files": [
+    {
+      "path": "src/login/dpop_compatibility_tests.rs",
+      "sha256": "8aa5a3d21d7cb7bcac04693ee0c5209663b1bfd87d7f4a5c8786dee12b11a618",
+      "bytes": 1988
+    }
+  ],
+  "excluded_files": [
+    "Cargo.lock"
+  ],
+  "test_status": "pending fresh execution after reconstruction; old lost logs do not validate this source",
+  "source_api_references": [
+    "https://docs.rs/p256/0.14.0/p256/",
+    "https://docs.rs/rand/0.10.0/rand/",
+    "https://docs.rs/anymap3/1.1.0/anymap3/"
+  ]
+}

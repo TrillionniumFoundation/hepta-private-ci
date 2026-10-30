@@ -41,6 +41,30 @@ const MAX_RELEASE_ARGUMENT_BYTES: usize = 65_536;
 const MAX_ALLOWED_RELEASES: usize = 256;
 static RELEASE_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
+// Preserve the original error and operation order while identifying which
+// filesystem operation failed in native release-install tests.
+#[cfg(test)]
+macro_rules! release_install_step {
+    ($operation:literal, $path:expr, $result:expr) => {{
+        let result = $result;
+        if let Err(error) = &result {
+            eprintln!(
+                "release install operation={} path={} error={error:?}",
+                $operation,
+                ($path).display(),
+            );
+        }
+        result
+    }};
+}
+
+#[cfg(not(test))]
+macro_rules! release_install_step {
+    ($operation:literal, $path:expr, $result:expr) => {
+        $result
+    };
+}
+
 /// Opaque identity of one administrator-installed immutable agentd release.
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct ReleaseId(String);
@@ -242,8 +266,19 @@ impl FleetRegistry {
                 "matrixd arguments require a matrixd release program".to_string(),
             ));
         }
-        let source_agentd = validate_source_program(source_agentd)?;
-        let source_matrixd = source_matrixd.map(validate_source_program).transpose()?;
+        let source_agentd = release_install_step!(
+            "validate agentd source",
+            source_agentd,
+            validate_source_program(source_agentd)
+        )?;
+        let source_matrixd = match source_matrixd {
+            Some(source) => Some(release_install_step!(
+                "validate matrixd source",
+                source,
+                validate_source_program(source)
+            )?),
+            None => None,
+        };
         let final_root = self.layout().releases_root().join(release_id.as_str());
         if final_root.exists() {
             return Err(FleetRegistryError::Invalid(format!(
@@ -255,10 +290,10 @@ impl FleetRegistry {
             std::process::id(),
             RELEASE_SEQUENCE.fetch_add(1, Ordering::Relaxed)
         ));
-        std::fs::create_dir(&staging)?;
+        release_install_step!("create staging", &staging, std::fs::create_dir(&staging))?;
         let result = (|| {
             let bin_root = staging.join("bin");
-            std::fs::create_dir(&bin_root)?;
+            release_install_step!("create bin", &bin_root, std::fs::create_dir(&bin_root))?;
             let agentd_program = staging.join(AGENTD_RELEASE_PROGRAM);
             copy_immutable_program(&source_agentd, &agentd_program)?;
             let matrixd = source_matrixd
@@ -269,8 +304,17 @@ impl FleetRegistry {
                         copy_immutable_program(source, &matrixd_program)?;
                         Ok(ReleaseProgramMetadata {
                             program_relative_path: PathBuf::from(MATRIXD_RELEASE_PROGRAM),
-                            program_sha256: sha256_file(&matrixd_program)?,
-                            program_size_bytes: std::fs::metadata(&matrixd_program)?.len(),
+                            program_sha256: release_install_step!(
+                                "hash matrixd",
+                                &matrixd_program,
+                                sha256_file(&matrixd_program)
+                            )?,
+                            program_size_bytes: release_install_step!(
+                                "stat matrixd",
+                                &matrixd_program,
+                                std::fs::metadata(&matrixd_program)
+                            )?
+                            .len(),
                             args: matrixd_args,
                         })
                     },
@@ -281,29 +325,68 @@ impl FleetRegistry {
                 release_id: release_id.clone(),
                 agentd: ReleaseProgramMetadata {
                     program_relative_path: PathBuf::from(AGENTD_RELEASE_PROGRAM),
-                    program_sha256: sha256_file(&agentd_program)?,
-                    program_size_bytes: std::fs::metadata(&agentd_program)?.len(),
+                    program_sha256: release_install_step!(
+                        "hash agentd",
+                        &agentd_program,
+                        sha256_file(&agentd_program)
+                    )?,
+                    program_size_bytes: release_install_step!(
+                        "stat agentd",
+                        &agentd_program,
+                        std::fs::metadata(&agentd_program)
+                    )?
+                    .len(),
                     args: agentd_args,
                 },
                 matrixd,
             };
             let manifest = staging.join(RELEASE_MANIFEST_FILE);
             write_new_json(&manifest, &metadata)?;
-            set_mode(&manifest, /*mode*/ 0o444)?;
-            set_mode(&bin_root, /*mode*/ 0o555)?;
+            release_install_step!(
+                "make manifest immutable",
+                &manifest,
+                set_mode(&manifest, /*mode*/ 0o444)
+            )?;
+            release_install_step!(
+                "make bin immutable",
+                &bin_root,
+                set_mode(&bin_root, /*mode*/ 0o555)
+            )?;
             sync_directory(&bin_root)?;
             sync_directory(&staging)?;
-            set_mode(&staging, /*mode*/ 0o555)?;
-            std::fs::rename(&staging, &final_root)?;
+            // Darwin authorizes directory rename with ADD_SUBDIRECTORY on the
+            // source itself, including renames within one parent. Keep only
+            // this outer directory writable until its final name is installed.
+            // Readers reject that directory until the immutable-mode check in
+            // resolve_catalog_release succeeds; all contents are already sealed.
+            release_install_step!(
+                "publish staging",
+                &final_root,
+                std::fs::rename(&staging, &final_root)
+            )?;
+            release_install_step!(
+                "make published root immutable",
+                &final_root,
+                set_mode(&final_root, /*mode*/ 0o555)
+            )?;
+            sync_directory(&final_root)?;
             sync_directory(self.layout().releases_root())?;
             Ok(())
         })();
         if let Err(error) = result {
+            // After rename, a seal or sync error is still an install failure.
+            // Do not delete the final name through a path that could have been
+            // replaced. A writable residual root remains inadmissible and the
+            // existing-name guard requires explicit recovery before a retry.
             make_tree_removable(&staging);
             let _ = std::fs::remove_dir_all(&staging);
             return Err(error);
         }
-        resolve_catalog_release(self.layout().releases_root(), &release_id)
+        release_install_step!(
+            "resolve installed release",
+            &final_root,
+            resolve_catalog_release(self.layout().releases_root(), &release_id)
+        )
     }
 
     /// Allows one registered agent to use an already installed release. The
@@ -892,9 +975,13 @@ fn write_new_json<T: Serialize>(path: &Path, value: &T) -> Result<(), FleetRegis
     let mut bytes = serde_json::to_vec(value)
         .map_err(|error| FleetRegistryError::Corrupt(format!("encode release state: {error}")))?;
     bytes.push(b'\n');
-    let mut file = OpenOptions::new().write(true).create_new(true).open(path)?;
-    file.write_all(&bytes)?;
-    file.sync_all()?;
+    let mut file = release_install_step!(
+        "create JSON",
+        path,
+        OpenOptions::new().write(true).create_new(true).open(path)
+    )?;
+    release_install_step!("write JSON", path, file.write_all(&bytes))?;
+    release_install_step!("sync JSON", path, file.sync_all())?;
     Ok(())
 }
 
@@ -917,16 +1004,28 @@ fn read_bounded_json<T: for<'de> Deserialize<'de>>(
 }
 
 fn copy_immutable_program(source: &Path, destination: &Path) -> Result<(), FleetRegistryError> {
-    let mut input = File::open(source)?;
-    let mut output = OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(destination)?;
-    std::io::copy(&mut input, &mut output)?;
-    set_mode(destination, /*mode*/ 0o555)?;
+    let mut input = release_install_step!("open source program", source, File::open(source))?;
+    let mut output = release_install_step!(
+        "create copied program",
+        destination,
+        OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(destination)
+    )?;
+    release_install_step!(
+        "copy program bytes",
+        destination,
+        std::io::copy(&mut input, &mut output)
+    )?;
+    release_install_step!(
+        "make copied program immutable",
+        destination,
+        set_mode(destination, /*mode*/ 0o555)
+    )?;
     // Flush through the writing handle retained across the mode change.
     // Windows cannot FlushFileBuffers on a separately opened read-only handle.
-    output.sync_all()?;
+    release_install_step!("sync copied program", destination, output.sync_all())?;
     Ok(())
 }
 
@@ -1050,7 +1149,8 @@ fn make_tree_removable(path: &Path) {
 
 #[cfg(unix)]
 fn sync_directory(path: &Path) -> Result<(), FleetRegistryError> {
-    File::open(path)?.sync_all()?;
+    let directory = release_install_step!("open directory for sync", path, File::open(path))?;
+    release_install_step!("sync directory", path, directory.sync_all())?;
     Ok(())
 }
 

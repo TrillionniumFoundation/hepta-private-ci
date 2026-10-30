@@ -1,0 +1,557 @@
+name: Hepta operator diagnostics
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - ".github/workflows/hepta-operator-diagnostics.yml"
+      - ".github/actions/**"
+      - ".github/scripts/**"
+      - "experiments/first_passage_operator/**/*.py"
+      - "experiments/first_passage_operator/requirements.txt"
+      - "experiments/first_passage_deadline/**/*.py"
+      - "experiments/first_passage_deadline/requirements.txt"
+      - "experiments/first_passage_readout_risk/**"
+      - "codex-rs/**"
+      - "bazel/**"
+      - "tools/**"
+      - "scripts/**"
+      - "MODULE.bazel"
+      - "MODULE.bazel.lock"
+      - ".bazelversion"
+      - ".bazelrc"
+      - "justfile"
+
+permissions:
+  contents: read
+
+# These additive jobs preserve failures and generated evidence. They do not
+# replace any existing required CI job or write back to the pull request.
+jobs:
+  diagnostic:
+    name: "Operator diagnostic: ${{ matrix.lane }}"
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.head_ref == 'research/first-passage-operator-20261029'
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: ${{ matrix.timeout_minutes }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - lane: cargo-deny
+            runner: ubuntu-24.04
+            timeout_minutes: 40
+          - lane: protocol-schema
+            runner: ubuntu-24.04
+            timeout_minutes: 90
+          - lane: bazel-lock
+            runner: ubuntu-24.04
+            timeout_minutes: 90
+          - lane: windows-private-state
+            runner: windows-2025
+            timeout_minutes: 90
+          - lane: vendor-compatibility
+            runner: ubuntu-24.04
+            timeout_minutes: 90
+          - lane: security-consumers
+            runner: ubuntu-24.04
+            timeout_minutes: 120
+          - lane: idle-consumers
+            runner: ubuntu-24.04
+            timeout_minutes: 120
+          - lane: canonical-format
+            runner: macos-15-intel
+            timeout_minutes: 30
+          - lane: mac-native-consumers
+            runner: macos-15-intel
+            timeout_minutes: 90
+          - lane: research-unit-tests
+            runner: ubuntu-24.04
+            timeout_minutes: 30
+    env:
+      HEPTA_DIAGNOSTIC_LANE: ${{ matrix.lane }}
+      HEPTA_EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      CARGO_TERM_COLOR: never
+      PYTHONUNBUFFERED: "1"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout exact pull request head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Record source provenance
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          root = Path.cwd()
+          output = Path(os.environ["RUNNER_TEMP"]) / "hepta-operator-diagnostics"
+          output.mkdir(parents=True, exist_ok=True)
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if head != os.environ["HEPTA_EXPECTED_HEAD"]:
+              raise SystemExit("checkout does not match the requested source head")
+          paths = [
+              ".github/workflows/hepta-operator-diagnostics.yml",
+              "codex-rs/Cargo.toml", "codex-rs/Cargo.lock", "codex-rs/deny.toml",
+              "MODULE.bazel", "MODULE.bazel.lock", ".bazelversion", "justfile",
+              "experiments/first_passage_operator/requirements.txt",
+              "experiments/first_passage_deadline/requirements.txt",
+          ]
+          inputs = {
+              name: hashlib.sha256((root / name).read_bytes()).hexdigest()
+              for name in paths if (root / name).is_file()
+          }
+          receipt = {
+              "source_head": head,
+              "source_tree": subprocess.check_output(
+                  ["git", "rev-parse", "HEAD^{tree}"], text=True
+              ).strip(),
+              "lane": os.environ["HEPTA_DIAGNOSTIC_LANE"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "input_sha256": inputs,
+              "research_command_scope": "unit tests only; no confirmation run",
+          }
+          (output / "source-provenance.json").write_text(
+              json.dumps(receipt, indent=2) + "\n", encoding="utf-8"
+          )
+          PY
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: ${{ runner.os == 'Linux' && '3.12.14' || '3.13.17' }}
+
+      - name: Prepare native CI build paths
+        if: matrix.lane != 'research-unit-tests' && matrix.lane != 'bazel-lock'
+        uses: ./.github/actions/setup-ci-build
+
+      - name: Install native CI tools
+        if: matrix.lane != 'research-unit-tests' && matrix.lane != 'bazel-lock'
+        uses: ./.github/actions/setup-ci-tools
+
+      - name: Prepare Bazel
+        if: matrix.lane == 'bazel-lock'
+        uses: ./.github/actions/setup-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+
+      - name: Install Rust toolchain
+        if: matrix.lane != 'research-unit-tests'
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+        with:
+          components: clippy, rustfmt
+
+      - name: Install formatter Python tools
+        if: matrix.lane == 'canonical-format'
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.11.3"
+
+      - name: Install exact audit tool
+        if: matrix.lane == 'cargo-deny'
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: cargo-deny@0.19.0
+
+      - name: Install exact native test runner
+        if: matrix.lane == 'protocol-schema' || matrix.lane == 'windows-private-state' || matrix.lane == 'vendor-compatibility' || matrix.lane == 'security-consumers' || matrix.lane == 'idle-consumers' || matrix.lane == 'mac-native-consumers'
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: nextest@0.9.103
+
+      - name: Resolve verified V8 archive and bindings
+        if: matrix.lane == 'windows-private-state' || matrix.lane == 'security-consumers' || matrix.lane == 'idle-consumers'
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: |
+          python scripts/hepta_ci_v8.py
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          allowed = {"RUSTY_V8_ARCHIVE", "RUSTY_V8_SRC_BINDING_PATH"}
+          paths = {}
+          for line in Path(os.environ["GITHUB_ENV"]).read_text(encoding="utf-8").splitlines():
+              name, separator, value = line.partition("=")
+              if separator and name in allowed:
+                  paths[name] = value
+          if set(paths) != allowed:
+              raise SystemExit("verified V8 archive and binding must be supplied together")
+          artifacts = {
+              name: {"filename": Path(value).name,
+                     "bytes": Path(value).stat().st_size,
+                     "sha256": hashlib.sha256(Path(value).read_bytes()).hexdigest()}
+              for name, value in paths.items()
+          }
+          output = Path(os.environ["RUNNER_TEMP"]) / "hepta-operator-diagnostics"
+          (output / "v8-artifact-provenance.json").write_text(
+              json.dumps(artifacts, indent=2) + "\n", encoding="utf-8"
+          )
+          PY
+
+      - name: Run canonical diagnostic commands
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import shutil
+          import subprocess
+          import sys
+
+          lane = os.environ["HEPTA_DIAGNOSTIC_LANE"]
+          output = Path(os.environ["RUNNER_TEMP"]) / "hepta-operator-diagnostics"
+          commands = {
+              "cargo-deny": [
+                  ["cargo", "deny", "--version"],
+                  ["cargo", "deny", "--log-level", "warn", "--manifest-path",
+                   "codex-rs/Cargo.toml", "--all-features", "check"],
+              ],
+              "protocol-schema": [
+                  ["just", "write-app-server-schema"],
+                  ["just", "write-app-server-schema", "--experimental"],
+                  ["just", "test", "-p", "codex-app-server-protocol", "--lib"],
+              ],
+              "bazel-lock": [
+                  ["just", "bazel-lock-update"],
+                  [sys.executable, "scripts/check_hepta_vendor_bazel.py", "--repo", str(Path.cwd()),
+                   "--output", str(output / "vendor-bazel")],
+              ],
+              "windows-private-state": [
+                  ["just", "test", "-p", "codex-utils-path",
+                   "-p", "codex-hepta-prompt-registry", "-p", "codex-hepta-contracts", "--lib", "--locked"],
+                  ["just", "test", "-p", "codex-utils-pty", "--lib", "--locked",
+                   "--success-output", "immediate"],
+                  ["just", "test", "-p", "codex-hepta-intelligence", "-p", "codex-hepta-prompt-optimizer",
+                   "-p", "codex-hepta-operator-acceptance", "-p", "codex-hepta-shadow-qualification",
+                   "--lib", "--locked"],
+                  ["just", "test", "-p", "codex-v8-poc", "--lib",
+                   "--features", "sandbox", "--locked"],
+                  ["just", "test", "-p", "codex-windows-sandbox", "--test", "helper_manifest", "--locked"],
+                  ["just", "test", "-p", "codex-windows-sandbox", "-p", "codex-code-mode-runtime",
+                   "--lib", "--locked"],
+                  ["just", "test", "-p", "codex-exec-server", "--test", "file_system_windows", "--locked"],
+                  ["just", "fix", "-p", "codex-hepta-contracts", "-p", "codex-hepta-intelligence",
+                   "-p", "codex-hepta-operator-acceptance", "-p", "codex-hepta-shadow-qualification",
+                   "-p", "codex-v8-poc", "-p", "codex-windows-sandbox", "-p", "codex-code-mode-runtime",
+                   "-p", "codex-exec-server",
+                   "--features", "codex-v8-poc/sandbox", "--locked", "--", "-D", "warnings"],
+              ],
+              "vendor-compatibility": [
+                  [sys.executable, "scripts/run_hepta_vendor_compatibility.py", "--repo", str(Path.cwd()),
+                   "--work", str(Path(os.environ["RUNNER_TEMP"]) / "hepta-vendor-work"),
+                   "--output", str(output / "vendor-compatibility")],
+              ],
+              "security-consumers": [
+                  ["just", "test", "-p", "codex-aws-auth", "-p", "codex-hepta-matrix-sdk",
+                   "-p", "codex-secrets", "-p", "codex-execpolicy", "--lib", "--locked"],
+                  ["just", "test", "-p", "codex-core-plugins", "--lib", "--locked"],
+                  ["just", "fix", "-p", "codex-hepta-matrix-sdk", "-p", "codex-core-plugins",
+                   "--locked", "--", "-D", "warnings"],
+              ],
+              "idle-consumers": [
+                  ["just", "test", "-p", "codex-async-utils", "--lib", "--locked"],
+                  ["just", "test", "-p", "codex-core", "--lib", "--locked", "-E", "test(terminal_event_barrier_tests::)"],
+                  ["just", "test", "-p", "codex-queue-extension", "--test", "queue_service", "--locked", "-E",
+                   "test(queue_idle_continuation::) | test(queue_hook_rejection_tests::) | test(registered_queue_lifecycle_starts_messages_in_fifo_order) | test(rejected_queue_messages_remain_durable_and_block_followups)"],
+                  ["just", "test", "-p", "codex-app-server", "--test", "all", "--locked", "-E", "test(turn_completion_admission::)"],
+                  ["just", "test", "-p", "codex-hepta-supervisor", "--test", "robrix_control_projection", "--locked"],
+                  ["just", "test", "-p", "codex-hepta-supervisor", "--test", "paired_process_product", "--locked"],
+                  ["just", "fix", "-p", "codex-core", "-p", "codex-queue-extension",
+                   "-p", "codex-app-server", "-p", "codex-hepta-memory", "-p", "codex-hepta-supervisor",
+                   "--locked", "--", "-D", "warnings"],
+              ],
+              "canonical-format": [
+                  ["just", "fmt", "--all"],
+              ],
+              "mac-native-consumers": [
+                  [sys.executable, "scripts/diagnose_hepta_fixture_paths.py",
+                   "--output", str(output / "fixture-path-observation.json")],
+                  [sys.executable, "scripts/diagnose_hepta_unix_file_contracts.py",
+                   "--output", str(output / "unix-file-contract-observation.json"),
+                   "--timeout-seconds", "5"],
+                  ["just", "test", "-p", "codex-hepta-fleet", "-p", "codex-utils-pty",
+                   "-p", "codex-shell-escalation", "-p", "codex-sandboxing",
+                   "-p", "codex-exec-server", "--lib", "--locked", "--success-output", "immediate"],
+                  ["just", "test", "-p", "codex-exec-server", "--test", "file_system_unix",
+                   "--test", "authorized_read_rpc", "--locked"],
+                  ["just", "test", "-p", "codex-hepta-supervisor", "--test", "paired_process_product", "--locked"],
+                  ["just", "test", "-p", "codex-state", "-p", "codex-rollout",
+                   "-p", "codex-thread-store", "--lib", "--locked"],
+                  ["just", "fix", "-p", "codex-hepta-fleet", "-p", "codex-utils-pty",
+                   "-p", "codex-shell-escalation", "-p", "codex-sandboxing", "-p", "codex-exec-server",
+                   "-p", "codex-state", "-p", "codex-rollout", "-p", "codex-thread-store",
+                   "--locked", "--", "-D", "warnings"],
+              ],
+              "research-unit-tests": [
+                  [sys.executable, "-m", "pip", "install", "--requirement",
+                   "experiments/first_passage_operator/requirements.txt"],
+                  [sys.executable, "-m", "unittest", "discover", "-s",
+                   "experiments/first_passage_operator/tests", "-v"],
+                  [sys.executable, "-m", "unittest", "discover", "-s",
+                   "experiments/first_passage_deadline/tests", "-v"],
+              ],
+          }[lane]
+          receipts = []
+          result = 0
+          for index, command in enumerate(commands, start=1):
+              log = output / f"command-{index}.log"
+              # Snapshot each command's reports before the next invocation can
+              # replace them. Remove only old report files, not build outputs.
+              report_roots = [Path.cwd() / "codex-rs/target/nextest"]
+              if "CARGO_TARGET_DIR" in os.environ:
+                  report_roots.append(Path(os.environ["CARGO_TARGET_DIR"]) / "nextest")
+              report_roots = list(dict.fromkeys(path.resolve() for path in report_roots))
+              for report_root in report_roots:
+                  if report_root.is_dir():
+                      for report in report_root.rglob("junit.xml"):
+                          report.unlink()
+              print(f"Running {command!r}", flush=True)
+              with log.open("wb") as handle:
+                  try:
+                      process = subprocess.Popen(
+                          command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+                      )
+                      assert process.stdout is not None
+                      for block in iter(lambda: process.stdout.read(8192), b""):
+                          handle.write(block)
+                          handle.flush()
+                          sys.stdout.buffer.write(block)
+                          sys.stdout.buffer.flush()
+                      code = process.wait()
+                  except OSError as error:
+                      handle.write(str(error).encode("utf-8"))
+                      code = 127
+              for root_index, report_root in enumerate(report_roots):
+                  if report_root.is_dir():
+                      for report in report_root.rglob("junit.xml"):
+                          destination = output / f"command-{index}-junit" / str(root_index) / report.relative_to(report_root)
+                          destination.parent.mkdir(parents=True, exist_ok=True)
+                          shutil.copy2(report, destination)
+              receipts.append({"argv": command, "exit_code": code, "log": log.name})
+              (output / "commands.json").write_text(
+                  json.dumps(receipts, indent=2) + "\n", encoding="utf-8"
+              )
+              if code != 0:
+                  result = code if code > 0 else 1
+          raise SystemExit(result)
+          PY
+
+      - name: Collect generated outputs and failure evidence
+        if: always()
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import shutil
+          import subprocess
+
+          root = Path.cwd()
+          output = Path(os.environ["RUNNER_TEMP"]) / "hepta-operator-diagnostics"
+          output.mkdir(parents=True, exist_ok=True)
+          lane = os.environ["HEPTA_DIAGNOSTIC_LANE"]
+          paths = ["."]
+          if lane == "protocol-schema":
+              schema = root / "codex-rs/app-server-protocol/schema"
+              if schema.is_dir():
+                  shutil.copytree(schema, output / "schema", dirs_exist_ok=True)
+              paths.append("codex-rs/app-server-protocol/schema")
+          if lane == "bazel-lock":
+              lock = root / "MODULE.bazel.lock"
+              if lock.is_file():
+                  shutil.copy2(lock, output / lock.name)
+              paths.append("MODULE.bazel.lock")
+          if lane == "windows-private-state" and "CARGO_TARGET_DIR" in os.environ:
+              nextest = Path(os.environ["CARGO_TARGET_DIR"]) / "nextest"
+              if nextest.is_dir():
+                  for report in nextest.rglob("junit.xml"):
+                      destination = output / "nextest" / report.relative_to(nextest)
+                      destination.parent.mkdir(parents=True, exist_ok=True)
+                      shutil.copy2(report, destination)
+          patch = subprocess.check_output(["git", "diff", "--binary", "HEAD", "--", *paths])
+          untracked = subprocess.check_output(
+              ["git", "ls-files", "--others", "--exclude-standard", "-z", "--", *paths]
+          )
+          for name in untracked.decode("utf-8").split("\0"):
+              if not name:
+                  continue
+              difference = subprocess.run(
+                  ["git", "diff", "--no-index", "--binary", "--", "/dev/null", name],
+                  stdout=subprocess.PIPE, check=False,
+              )
+              if difference.returncode not in (0, 1):
+                  raise SystemExit(difference.returncode)
+              patch += difference.stdout
+          (output / "generated.patch").write_bytes(patch)
+          (output / "worktree-status.txt").write_bytes(subprocess.check_output(
+              ["git", "status", "--porcelain=v1", "--untracked-files=normal"]
+          ))
+          manifest = {
+              str(path.relative_to(output)): {
+                  "bytes": path.stat().st_size,
+                  "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+              }
+              for path in sorted(output.rglob("*")) if path.is_file()
+          }
+          (output / "artifact-manifest.json").write_text(
+              json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+          )
+          PY
+
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
+
+      - name: Upload diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hepta-operator-${{ matrix.lane }}-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/hepta-operator-diagnostics
+          if-no-files-found: error
+          retention-days: 30
+
+  readout-risk-v2:
+    name: "Readout-risk v2 frozen experiment"
+    if: >-
+      github.event.action == 'synchronize' && github.run_attempt == 1 &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.head_ref == 'research/first-passage-operator-20261029'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+    env:
+      PYTHONUNBUFFERED: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      NUMEXPR_NUM_THREADS: "1"
+      VECLIB_MAXIMUM_THREADS: "1"
+      BLIS_NUM_THREADS: "1"
+    steps:
+      - name: Checkout the exact execution request and frozen parent
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Admit only the explicit one-shot research request
+        id: request
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if head != os.environ["EXPECTED_HEAD"]:
+              raise SystemExit("execution checkout differs from the requested head")
+          subject = subprocess.check_output(["git", "show", "-s", "--format=%s", "HEAD"], text=True).strip()
+          requested = subject == "research: execute frozen readout-risk v2"
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"requested={str(requested).lower()}\n")
+              if requested:
+                  request_path = Path("experiments/first_passage_readout_risk/RUN_REQUEST.json")
+                  request = json.loads(request_path.read_text())
+                  commit = request["freeze_commit"]
+                  if re.fullmatch(r"[0-9a-f]{40}", commit) is None:
+                      raise SystemExit("invalid frozen parent identity")
+                  parents = subprocess.check_output(["git", "show", "-s", "--format=%P", "HEAD"], text=True).split()
+                  if parents != [commit]:
+                      raise SystemExit("execution request must have the frozen commit as its sole parent")
+                  changed = subprocess.check_output(["git", "diff", "--name-only", commit, head], text=True).splitlines()
+                  if changed != [str(request_path)]:
+                      raise SystemExit("execution commit may only add the one-shot run request")
+                  evidence = Path(os.environ["RUNNER_TEMP"]) / "hepta-readout-risk-v2"
+                  evidence.mkdir()
+                  (evidence / "RUN_REQUEST.json").write_bytes(request_path.read_bytes())
+                  provenance = {
+                      "source_head": head, "freeze_commit": commit,
+                      "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+                      "freeze_sha256": hashlib.sha256(Path("experiments/first_passage_readout_risk/FREEZE.json").read_bytes()).hexdigest(),
+                      "run_id": os.environ["GITHUB_RUN_ID"], "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+                      "scope": "One registered diagnostic-head experiment; original multilayer confirmation remains 0/6.",
+                  }
+                  (evidence / "source-provenance.json").write_text(json.dumps(provenance, indent=2) + "\n")
+                  output.write(f"freeze_commit={commit}\n")
+          PY
+
+      - name: Set up the registered Python version
+        if: steps.request.outputs.requested == 'true'
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12.14"
+
+      - name: Install and record the registered numerical dependencies
+        if: steps.request.outputs.requested == 'true'
+        run: |
+          python -m pip install --requirement experiments/first_passage_readout_risk/requirements.txt \
+            --report "$RUNNER_TEMP/hepta-readout-risk-v2/pip-install-report.json"
+
+      - name: Check the registered risk calculations before opening data
+        if: steps.request.outputs.requested == 'true'
+        run: python -m unittest experiments.first_passage_readout_risk.test_math -v
+
+      - name: Execute the frozen design once and retain its scientific result
+        if: steps.request.outputs.requested == 'true'
+        env:
+          FREEZE_COMMIT: ${{ steps.request.outputs.freeze_commit }}
+        run: |
+          python -m experiments.first_passage_readout_risk.study execute \
+            --freeze-commit "$FREEZE_COMMIT" \
+            --output "$RUNNER_TEMP/hepta-readout-risk-v2/run" \
+            2>&1 | tee "$RUNNER_TEMP/hepta-readout-risk-v2/execute.log"
+
+      - name: Preserve the exact experiment artifact identities
+        if: always() && steps.request.outputs.requested == 'true'
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path(os.environ["RUNNER_TEMP"]) / "hepta-readout-risk-v2"
+          if not root.is_dir():
+              raise SystemExit("the requested experiment has no provenance directory")
+          manifest = {
+              str(path.relative_to(root)): {
+                  "bytes": path.stat().st_size,
+                  "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+              }
+              for path in sorted(root.rglob("*")) if path.is_file()
+          }
+          (root / "artifact-manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+          PY
+
+      - name: Upload the frozen experiment including failures
+        if: always() && steps.request.outputs.requested == 'true'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hepta-readout-risk-v2-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/hepta-readout-risk-v2
+          if-no-files-found: error
+          retention-days: 30

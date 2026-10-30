@@ -17,6 +17,7 @@ use serde::Serialize;
 
 use super::Access;
 use super::DurableRegistryError;
+use super::StateDirectory;
 use super::StoredPayload;
 use super::StoredV2;
 use super::map_precommit_io;
@@ -75,7 +76,7 @@ impl PayloadState {
     }
 
     pub fn hydrate(
-        directory: &File,
+        directory: &StateDirectory,
         mut stored: StoredV3,
     ) -> Result<(Self, StoredV2), DurableRegistryError> {
         if stored.schema != 3
@@ -135,7 +136,10 @@ impl PayloadState {
     /// Only called after full V2 semantic/configuration validation succeeded.
     /// The selected manifest already proves the prefix; shortening that prefix
     /// is never recovery. No committed record or revoked payload is collected.
-    pub fn discard_unselected_tail(&self, directory: &File) -> Result<(), DurableRegistryError> {
+    pub fn discard_unselected_tail(
+        &self,
+        directory: &StateDirectory,
+    ) -> Result<(), DurableRegistryError> {
         let file = open_private(directory, FILE_NAME, Access::Create)?;
         let length = file.metadata().map_err(map_precommit_io)?.len();
         if length < self.committed_end {
@@ -198,7 +202,7 @@ impl PayloadState {
         &self,
         successor: &Self,
         registry: &PromptRegistry,
-        directory: &File,
+        directory: &StateDirectory,
     ) -> Result<(), DurableRegistryError> {
         if self.initialized && successor.committed_end == self.committed_end {
             let mut file = open_private(directory, FILE_NAME, Access::Read)?;

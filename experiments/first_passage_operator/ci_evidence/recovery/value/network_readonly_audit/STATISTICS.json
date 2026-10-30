@@ -1,0 +1,708 @@
+{
+  "schema": "hepta.network-readonly-audit.v1",
+  "scope": "No model execution, training, new example generation or new hypothesis test. Reproduces recorded statistics from retained confirmation arrays with the original named bootstrap seed.",
+  "source_freeze_matches": true,
+  "fit_hashes_match": 27,
+  "all_recorded_dynamics_and_readout_parameters_changed": true,
+  "all_updates_per_fit": 320,
+  "comparisons": [
+    {
+      "task": "evidence",
+      "baseline": "lif",
+      "mean_improvement": 0.01128492204044374,
+      "seed_means": [
+        0.027697217411309653,
+        -0.002192331367271023,
+        0.008349880077292588
+      ],
+      "empirical_interval": [
+        -0.007392013051299321,
+        0.03034278926719782
+      ],
+      "passes": false,
+      "reproduction_error": 2.6020852139652106e-18
+    },
+    {
+      "task": "evidence",
+      "baseline": "rnn",
+      "mean_improvement": 0.010424738440012295,
+      "seed_means": [
+        0.009283315693608678,
+        -0.009287916097424386,
+        0.031278815723852604
+      ],
+      "empirical_interval": [
+        -0.017165660337041085,
+        0.055773855817119584
+      ],
+      "passes": false,
+      "reproduction_error": 0.0
+    },
+    {
+      "task": "order",
+      "baseline": "lif",
+      "mean_improvement": -0.5243091546509286,
+      "seed_means": [
+        -0.4737345548865124,
+        -0.6499375484173837,
+        -0.44925536064888966
+      ],
+      "empirical_interval": [
+        -0.6532761008150437,
+        -0.43728603255198184
+      ],
+      "passes": false,
+      "reproduction_error": 0.0
+    },
+    {
+      "task": "order",
+      "baseline": "rnn",
+      "mean_improvement": -0.5374816324344277,
+      "seed_means": [
+        -0.4825833709208318,
+        -0.6643245221840477,
+        -0.46553700419840377
+      ],
+      "empirical_interval": [
+        -0.6673179830802789,
+        -0.45764925188787653
+      ],
+      "passes": false,
+      "reproduction_error": 2.220446049250313e-16
+    },
+    {
+      "task": "delayed_match",
+      "baseline": "lif",
+      "mean_improvement": 0.0011872220529329008,
+      "seed_means": [
+        0.002057838149594928,
+        0.00013228100878559697,
+        0.001371547000418178
+      ],
+      "empirical_interval": [
+        -0.0034925663923680264,
+        0.005466883580928659
+      ],
+      "passes": false,
+      "reproduction_error": 6.071532165918825e-18
+    },
+    {
+      "task": "delayed_match",
+      "baseline": "rnn",
+      "mean_improvement": -0.27819177363529374,
+      "seed_means": [
+        -0.2921736854727257,
+        -0.24616842483964027,
+        -0.2962332105935152
+      ],
+      "empirical_interval": [
+        -0.3136595781736483,
+        -0.22976512131071206
+      ],
+      "passes": false,
+      "reproduction_error": 0.0
+    }
+  ],
+  "cross_task_advantage_passes": 0,
+  "performance": [
+    {
+      "task": "evidence",
+      "kind": "first_passage",
+      "mean_loss": 0.03770211684168535,
+      "mean_single_rollout_accuracy": 0.9856770833333334,
+      "mean_ensemble_accuracy": 0.98828125,
+      "mean_confirmation_wall_seconds": 0.7924374856665963
+    },
+    {
+      "task": "evidence",
+      "kind": "lif",
+      "mean_loss": 0.04898703888212908,
+      "mean_single_rollout_accuracy": 0.9871419270833334,
+      "mean_ensemble_accuracy": 0.9869791666666666,
+      "mean_confirmation_wall_seconds": 0.40586845900058205
+    },
+    {
+      "task": "evidence",
+      "kind": "rnn",
+      "mean_loss": 0.04812685528169764,
+      "mean_single_rollout_accuracy": 0.9869791666666666,
+      "mean_ensemble_accuracy": 0.9869791666666666,
+      "mean_confirmation_wall_seconds": 0.008913332332061449
+    },
+    {
+      "task": "order",
+      "kind": "first_passage",
+      "mean_loss": 0.5445145746140608,
+      "mean_single_rollout_accuracy": 0.7433268229166666,
+      "mean_ensemble_accuracy": 0.8450520833333334,
+      "mean_confirmation_wall_seconds": 0.7963020089979788
+    },
+    {
+      "task": "order",
+      "kind": "lif",
+      "mean_loss": 0.020205419963132368,
+      "mean_single_rollout_accuracy": 0.9959309895833334,
+      "mean_ensemble_accuracy": 0.9973958333333334,
+      "mean_confirmation_wall_seconds": 0.4342571759989369
+    },
+    {
+      "task": "order",
+      "kind": "rnn",
+      "mean_loss": 0.007032942179633195,
+      "mean_single_rollout_accuracy": 1.0,
+      "mean_ensemble_accuracy": 1.0,
+      "mean_confirmation_wall_seconds": 0.00844530766820147
+    },
+    {
+      "task": "delayed_match",
+      "kind": "first_passage",
+      "mean_loss": 0.6934168452710542,
+      "mean_single_rollout_accuracy": 0.5126953125,
+      "mean_ensemble_accuracy": 0.4973958333333333,
+      "mean_confirmation_wall_seconds": 0.7797367033344926
+    },
+    {
+      "task": "delayed_match",
+      "kind": "lif",
+      "mean_loss": 0.6946040673239872,
+      "mean_single_rollout_accuracy": 0.5008138020833334,
+      "mean_ensemble_accuracy": 0.5169270833333334,
+      "mean_confirmation_wall_seconds": 0.4276527373343318
+    },
+    {
+      "task": "delayed_match",
+      "kind": "rnn",
+      "mean_loss": 0.41522507163576056,
+      "mean_single_rollout_accuracy": 0.7643229166666666,
+      "mean_ensemble_accuracy": 0.7643229166666666,
+      "mean_confirmation_wall_seconds": 0.012003506999462843
+    }
+  ],
+  "existing_trace_diagnostics": [
+    {
+      "seed": 3109,
+      "time_constants": [
+        [
+          0.4345614222538101,
+          0.3953084295965467,
+          0.7544268902372936
+        ],
+        [
+          1.1161752642493403,
+          0.4508690427635068,
+          0.34716587481534844
+        ]
+      ],
+      "retention_1_25_seconds": [
+        [
+          0.056333643896328105,
+          0.042337252998900086,
+          0.19073183202201263
+        ],
+        [
+          0.32631379197073335,
+          0.06251031747979914,
+          0.027307761730283642
+        ]
+      ],
+      "mean_episode_count_by_layer_unit": [
+        [
+          5.619140625,
+          1.697265625,
+          1.681640625
+        ],
+        [
+          3.8515625,
+          3.357421875,
+          4.169921875
+        ]
+      ],
+      "zero_episode_count_fraction": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "seed": 3163,
+      "time_constants": [
+        [
+          0.7884018814874001,
+          0.8309955537568354,
+          0.3859056185201749
+        ],
+        [
+          0.8224350800967966,
+          1.0465655197088306,
+          0.5830698868511295
+        ]
+      ],
+      "retention_1_25_seconds": [
+        [
+          0.20484825048690722,
+          0.22219057013616147,
+          0.03919782671128136
+        ],
+        [
+          0.21873883331690533,
+          0.3028907990002524,
+          0.11720563266579782
+        ]
+      ],
+      "mean_episode_count_by_layer_unit": [
+        [
+          2.34375,
+          3.322265625,
+          1.791015625
+        ],
+        [
+          2.94921875,
+          5.111328125,
+          1.607421875
+        ]
+      ],
+      "zero_episode_count_fraction": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.015625
+        ]
+      ]
+    },
+    {
+      "seed": 3203,
+      "time_constants": [
+        [
+          0.9168112779095419,
+          0.8473233123354957,
+          0.34692771804416334
+        ],
+        [
+          1.031410742698675,
+          0.5848608572649476,
+          0.3450540091878369
+        ]
+      ],
+      "retention_1_25_seconds": [
+        [
+          0.25578417067305775,
+          0.22872524210080072,
+          0.027240348302655693
+        ],
+        [
+          0.29762162733624203,
+          0.11797760201909402,
+          0.026712563255271205
+        ]
+      ],
+      "mean_episode_count_by_layer_unit": [
+        [
+          3.09765625,
+          2.048828125,
+          1.51953125
+        ],
+        [
+          6.8125,
+          2.603515625,
+          3.384765625
+        ]
+      ],
+      "zero_episode_count_fraction": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ]
+    }
+  ],
+  "existing_numerical_scope": {
+    "tests": {
+      "count": 6,
+      "errors": 0,
+      "failures": 0,
+      "skips": 0
+    },
+    "near_boundary_order8_max_error": {
+      "active": 0.00015100079920754572,
+      "count": 2.6978419498391304e-14,
+      "refractory": 0.00015100079920753184,
+      "voltage": 0.0007550039960375621
+    },
+    "gradient_scope": "Conditional-moment function passes autograd finite differences; the composed straight-through network estimator is biased and is not certified by this check."
+  },
+  "input_files": [
+    {
+      "path": "experiments/first_passage_operator/NETWORK_DIAGNOSTIC_PROTOCOL.json",
+      "bytes": 1806,
+      "sha256": "7c07d973b4798dc843b149675faf5d6ede1e74d75fe3fc370c3aedfdfe93580d"
+    },
+    {
+      "path": "experiments/first_passage_operator/NETWORK_PROTOCOL.json",
+      "bytes": 3498,
+      "sha256": "b2d139a9d1b81e1cbf52906856754fc50b7e0ab3e7f117e0c94736484baffc03"
+    },
+    {
+      "path": "experiments/first_passage_operator/diagnose_network.py",
+      "bytes": 8622,
+      "sha256": "5f2f9c89a7bbd3b288e234ff63c8caab4d2a9289a55623f223536c5bb1d18e78"
+    },
+    {
+      "path": "experiments/first_passage_operator/network.py",
+      "bytes": 14405,
+      "sha256": "29710433a7d704ae3d87938495719185c24039551b31b583a165107f75d2ea95"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/CONFIRMATION_SUMMARY.json",
+      "bytes": 2542,
+      "sha256": "17ba32095c0622a3d3c23adc4ab1c9584b1af5d9d52684ae569544808db87ef4"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/DEVELOPMENT_SUMMARY.json",
+      "bytes": 6554,
+      "sha256": "0b4338583688f982a2b36a9f41f6112216bd89082adee2493f0812768994339f"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/DIAGNOSTIC_SUMMARY.json",
+      "bytes": 3692,
+      "sha256": "e472c91cdf7d05788cd4469fbc00e98e70e8d5bcd395adc6f3e3373cd762d91e"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/FREEZE.json",
+      "bytes": 3377,
+      "sha256": "481d2ab2afc9993ab91c1096868d681e266cfcd07196c3a4c188aae433ac6c49"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/NUMERICAL_VALIDATION.json",
+      "bytes": 44150,
+      "sha256": "1d7f93d7a7abc489a70f49eba5b6f2f6c5fe58baf9996ac453eb9111dc8da1e9"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_arrays_delayed_match.npz",
+      "bytes": 152987,
+      "sha256": "3067eb3cfff16c800d01983580215aff6cf75d8b9c30ed44c707d5b81101d40b"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_arrays_evidence.npz",
+      "bytes": 134087,
+      "sha256": "e96dcd0e744812859652f612be7b6359e8d6300934f6b0635bcbfbc5695b06ae"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_arrays_order.npz",
+      "bytes": 138611,
+      "sha256": "38d4de18dda8923d564eb5ba2b5ec38f4fca0b533bb0b269e16b6f96505ba134"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_delayed_match_first_passage_3109.json",
+      "bytes": 15451,
+      "sha256": "182cfd11620cb637eaddda561f439b59a3732129379266a4ef1adc1c1908d3e1"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_delayed_match_first_passage_3163.json",
+      "bytes": 15423,
+      "sha256": "9f02ef7e02345880ce5f2630e4f0449fb74972cf7f1aabdf188b5768165672fd"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_delayed_match_first_passage_3203.json",
+      "bytes": 15456,
+      "sha256": "b8ba9fea5a5b704c8f7d94c53cd3ea9f368cd9358796f7cbdb7f09f9421fe323"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_delayed_match_lif_3109.json",
+      "bytes": 15511,
+      "sha256": "224073b7af5057355b8fc16d1e4e9829b62716a49aca7f705bdd6f2dc24f15ba"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_delayed_match_lif_3163.json",
+      "bytes": 15350,
+      "sha256": "c93fb957a5ba68be7aef37c238abfc9772ca73875dbf2f2d3f561f5d6f37127b"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_delayed_match_lif_3203.json",
+      "bytes": 15426,
+      "sha256": "d39d296fab8fd9ce72ba01aa58590b892f744f6b9c6a4a51422d7cc30da8e1e1"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_delayed_match_rnn_3109.json",
+      "bytes": 15384,
+      "sha256": "fe48fb7f0e4228310a43bc9a2d373e653ac24b1f577b59f15a6fb9e982a43f22"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_delayed_match_rnn_3163.json",
+      "bytes": 15222,
+      "sha256": "7dda88a70c27aee91ad7ad240c81f5dea5690e5e8c41da4f90ecde5dde85b17b"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_delayed_match_rnn_3203.json",
+      "bytes": 15271,
+      "sha256": "00f2cc4a44ab1a583ef91d9a7d670f3f7a6d932d132588b44d2ec2776902dc13"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_evidence_first_passage_3109.json",
+      "bytes": 15982,
+      "sha256": "8d37bac5b8c9d62e43035da952d4509e0da66cfa86bab0844b11adb87467583e"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_evidence_first_passage_3163.json",
+      "bytes": 16100,
+      "sha256": "8ed55fac6f3fe8bcd5b2241bac1a84690cd2b17bb384ed1f60ba351b8ce576e6"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_evidence_first_passage_3203.json",
+      "bytes": 16086,
+      "sha256": "b66b3ab95e689cad02ba0fbe855c06c5d02ac4cf23143992b41ff2c74390fe6f"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_evidence_lif_3109.json",
+      "bytes": 16026,
+      "sha256": "c92626385ae96c20ee0e3f943938199b4e902b392588df395bd6730a6cac8696"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_evidence_lif_3163.json",
+      "bytes": 16260,
+      "sha256": "2016279c6a2fb3f1f0b0251c9beafe9585f2764b9b375c8633a2b22b195ddd66"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_evidence_lif_3203.json",
+      "bytes": 16129,
+      "sha256": "f3bc095396e1627ff36ed4f1f4defdc0817b6c57534b2513f6eb27c9a688a163"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_evidence_rnn_3109.json",
+      "bytes": 15804,
+      "sha256": "2a3f63e7aea856c849851ce82ae73e250b0631b9aa7093c56c4801bd65efa205"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_evidence_rnn_3163.json",
+      "bytes": 15839,
+      "sha256": "802a97563ef4eb392181b3707e36fc423fd4b21a3e558ca1c2095e95d92edda8"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_evidence_rnn_3203.json",
+      "bytes": 15790,
+      "sha256": "ec1defc125dee33a71197c0f326936f864ea0740463330bdc8e866a83797b890"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_order_first_passage_3109.json",
+      "bytes": 15580,
+      "sha256": "3c14edb6f2597caa4bf3f44a4bba3572640e42e618444c80da0dac7b71450ea7"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_order_first_passage_3163.json",
+      "bytes": 15395,
+      "sha256": "1c066f589b3b360fdd66249ea6bbba2c4b4d826f959e9c1f98f8e6772680081e"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_order_first_passage_3203.json",
+      "bytes": 15555,
+      "sha256": "faf42b0f96b8135293adde579b65e29f5264a38cfa243510558cdd1d7ea7cb61"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_order_lif_3109.json",
+      "bytes": 16031,
+      "sha256": "77e35a60a6886329f9d1ae38d2f8ca799bf245bdfc935c3e5d8928aaf9b89fa1"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_order_lif_3163.json",
+      "bytes": 15887,
+      "sha256": "be513b33522e53d123781e88b09238a973b6157c9c1003c5188b5a7cb284e761"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_order_lif_3203.json",
+      "bytes": 16029,
+      "sha256": "80eb57e7a146d7f0134419f7fb52cbd540092b4370f81999be47e04b3f224f38"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_order_rnn_3109.json",
+      "bytes": 15823,
+      "sha256": "2826ecf78d4e878e16391f91e52f2fc40a47dbc99e1314b4751093fa9a814799"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_order_rnn_3163.json",
+      "bytes": 15852,
+      "sha256": "a332784ff999a7dc31b2b791266f07a3e8d50ac1c6ff3c4b7533c37868863f09"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/confirmation_order_rnn_3203.json",
+      "bytes": 15883,
+      "sha256": "7bd74a0cfdea580b2fd4070ce0e713d896f8ae159d9afa0d4b1f37a6947b55fd"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/diagnostic_order_first_passage_3109.json",
+      "bytes": 57319,
+      "sha256": "3c16e06ee37fde393a84aa1fce009ce71ba470dba42d58c41f298bd4f61fdb37"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/diagnostic_order_first_passage_3163.json",
+      "bytes": 58000,
+      "sha256": "9da586f715e3232ad21b91ed378b823d00b900b37a3a50007bfeac401cbca57f"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/diagnostic_order_first_passage_3203.json",
+      "bytes": 57305,
+      "sha256": "169ec8df821a9ed62a3743b184e999687788e322377673a5048700b211cbc995"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_delayed_match_first_passage_3109.json",
+      "bytes": 7906,
+      "sha256": "8667e5326230ff3260a0ea61366a82874da503297b8f27d04094c4bc85585927"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_delayed_match_first_passage_3163.json",
+      "bytes": 7921,
+      "sha256": "e2fc8593f99536255f78f15fa250527cf729e73bd1a14e467c931b29df5e230a"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_delayed_match_first_passage_3203.json",
+      "bytes": 7917,
+      "sha256": "a9859e0208e59d69a4ad0d9a6e7b10bf9caaa71d2068cba690b9dc4da9635332"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_delayed_match_lif_3109.json",
+      "bytes": 7883,
+      "sha256": "648dc2acac0d16bd3c5e0829acabfd09115d77be6d4b2d6729c517070addbe42"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_delayed_match_lif_3163.json",
+      "bytes": 7899,
+      "sha256": "7e12799696901240e2f7ed9f19f6a05aa103e16dc02753a280dcb0634ccdfd1c"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_delayed_match_lif_3203.json",
+      "bytes": 7890,
+      "sha256": "cb7191b7e21074024d85b355a13caedc6c3f179c486e32a5fb43fd63d3366c5c"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_delayed_match_rnn_3109.json",
+      "bytes": 7709,
+      "sha256": "14a380196ae9715b7c4c08469cd2c00cd04f14976a03d61a072ccdbef2790ac9"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_delayed_match_rnn_3163.json",
+      "bytes": 7709,
+      "sha256": "8de7913dcfe51afa3b100505804c2b05d49b0b79d1d9c7ea4ee81a4faf6987d9"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_delayed_match_rnn_3203.json",
+      "bytes": 7712,
+      "sha256": "3dd00beaf0d4b6140e8391d1dc0d655c18c37f4c546ca1721b07a09d03f534de"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_evidence_first_passage_3109.json",
+      "bytes": 7882,
+      "sha256": "088c99a33e745a15d39ed9be0d5cad7d0bd84c3afd6ada479a97d0b53652fdce"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_evidence_first_passage_3163.json",
+      "bytes": 7892,
+      "sha256": "77b6042cfdbe67f9e1d25b69de43f7cb33b25dba52fc9e1df3356e622fd3ac13"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_evidence_first_passage_3203.json",
+      "bytes": 7886,
+      "sha256": "b28efb257215a32693298cce0f097c942f24b7a1538c486cae8bed7f246a50bf"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_evidence_lif_3109.json",
+      "bytes": 7842,
+      "sha256": "0ca85ff4a0759dd83684c7643e054148a8cd6c9f1bf841efcb022a189c21a8fd"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_evidence_lif_3163.json",
+      "bytes": 7841,
+      "sha256": "3daec02318663c970763a012bb517f5bc4fdfbb884cff9ddafaf1c1075e646d6"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_evidence_lif_3203.json",
+      "bytes": 7835,
+      "sha256": "dc2bbf89398e2535cd36ec11a5fe2b3ba5bb81030966c7a7e61e4639b661deb8"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_evidence_rnn_3109.json",
+      "bytes": 7744,
+      "sha256": "285c679bc09b8b6060d87b9e9224397a93e782056dd1fa28b209c76214c649c8"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_evidence_rnn_3163.json",
+      "bytes": 7759,
+      "sha256": "bd12fdb3204ec22c8e7db53e933074f01e91d0c1205b66dfc8c8c843558a5741"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_evidence_rnn_3203.json",
+      "bytes": 7733,
+      "sha256": "bbbd3b96481a90e540a269edb87fb2329b7bfb7e49407a0452ee9816c8554ae8"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_order_first_passage_3109.json",
+      "bytes": 7884,
+      "sha256": "4c5fb914b29c0777c8ae9f8bfc00509b954c98c658494ee21a75c715f5bc5445"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_order_first_passage_3163.json",
+      "bytes": 7887,
+      "sha256": "a48c572cded49d7d2a82884fac9fbdd1d9b6cbbc3f8e8f94775c01b9c939ef78"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_order_first_passage_3203.json",
+      "bytes": 7866,
+      "sha256": "dd28b55b5c3a229e9bff441bad1a1c19c455be34202b51a8753ac069befdaa50"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_order_lif_3109.json",
+      "bytes": 7798,
+      "sha256": "dce951f11edcc649cf999f9a623cd12af8e3e9bc5b26c103e1cbc02fc91d0adc"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_order_lif_3163.json",
+      "bytes": 7819,
+      "sha256": "401e6348e5ec708650eadcc130d032f9b0016b4dc108c3ba943beff3e16c7e60"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_order_lif_3203.json",
+      "bytes": 7814,
+      "sha256": "71b43b0ba2402cb321af7daeff1630fb9d68986a80715c04b3a8695b97ef0b87"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_order_rnn_3109.json",
+      "bytes": 7717,
+      "sha256": "63851b05687738503fdfe825e0de507549d2a6cc2908ac55054670973d211815"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_order_rnn_3163.json",
+      "bytes": 7713,
+      "sha256": "975cc1a0fcfa058deff65cbe29aeb256dab22ffe0683652dd3b06efd7bb2142e"
+    },
+    {
+      "path": "experiments/first_passage_operator/network_evidence/fit_order_rnn_3203.json",
+      "bytes": 7704,
+      "sha256": "30b2992b6b928bc9a546e42d76ba3674bede73b4f9050336b1aadfa18af12a2f"
+    },
+    {
+      "path": "experiments/first_passage_operator/tasks.py",
+      "bytes": 1395,
+      "sha256": "79f11d7b23e055da8709972817f5cb62051cb167125dff36af4454dfcb0a81f4"
+    },
+    {
+      "path": "experiments/first_passage_operator/train_network.py",
+      "bytes": 13158,
+      "sha256": "d25fd29c2614f94ae206fbbcc8007b5bab1b95a40f82f4c6fe6d90c1874ec50d"
+    }
+  ]
+}

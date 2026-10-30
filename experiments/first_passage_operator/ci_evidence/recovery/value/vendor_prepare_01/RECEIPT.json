@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.vendor-compatibility.v2",
+  "repo": "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci",
+  "work": "/workspace/scratch/8b9f3e9fd04d/recovery_value/vendor_prepare_01",
+  "status": "failed",
+  "expected_tests": {
+    "aws-config": [
+      "login::dpop::compatibility_tests::dpop_proof_preserves_es256_header_payload_and_signature"
+    ],
+    "matrix-sdk": [
+      "event_handler::compatibility_tests::event_context_clone_preserves_type_isolation_and_send_sync"
+    ],
+    "i18n-config": [
+      "compatibility_tests::public_crate_loader_preserves_package_and_language_config",
+      "compatibility_tests::public_config_loader_preserves_defaults_and_unicode",
+      "compatibility_tests::public_parse_errors_keep_path_and_diagnostic"
+    ],
+    "starlark": [
+      "pagable::heap_ref_id::compatibility_tests::blake3_adapter_preserves_known_digest_and_chunked_writes"
+    ]
+  },
+  "feature_arguments": {
+    "aws-config": [
+      "--features",
+      "credentials-login"
+    ],
+    "matrix-sdk": [
+      "--no-default-features",
+      "--features",
+      "e2e-encryption,sqlite"
+    ],
+    "i18n-config": [],
+    "starlark": []
+  },
+  "root_lock_before_sha256": "a3e787d1e6608e1479c4a2402490ebc4073df86e877aba2603f294b1edd78982",
+  "entrypoint_sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+  "nextest_wrapper_sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127",
+  "helper_sha256": "4e1c3651705a960d2687fef20f81ced76fe3f3a487f413635f70e46d4c78339c",
+  "scope": "Independent exact-source vendor tests; root consumer compilation and behavior require separate evidence.",
+  "commands": [],
+  "error": "ValueError: missing reviewed vendor provenance: i18n-config-0.4.8",
+  "root_lock_after_sha256": "a3e787d1e6608e1479c4a2402490ebc4073df86e877aba2603f294b1edd78982"
+}

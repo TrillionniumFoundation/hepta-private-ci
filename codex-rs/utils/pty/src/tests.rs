@@ -13,6 +13,21 @@ use crate::spawn_pipe_process;
 use crate::spawn_pipe_process_no_stdin;
 use crate::spawn_pty_process;
 
+#[cfg(unix)]
+#[path = "repl_probe_tests.rs"]
+mod repl_probe_tests;
+
+#[cfg(windows)]
+#[path = "windows_ctrl_c_diagnostic.rs"]
+mod windows_ctrl_c_diagnostic;
+
+#[cfg(windows)]
+#[path = "windows_ctrl_c_test_fixture.rs"]
+mod windows_ctrl_c_test_fixture;
+
+#[path = "windows_python_fixture.rs"]
+mod windows_python_fixture;
+
 #[cfg(windows)]
 #[path = "windows_tests.rs"]
 mod windows_tests;
@@ -224,8 +239,10 @@ async fn wait_for_python_repl_ready_via_probe(
     let probe_window = tokio::time::Duration::from_millis(if cfg!(windows) { 750 } else { 250 });
 
     while tokio::time::Instant::now() < deadline {
+        // The echoed input must not contain the complete marker: only Python's
+        // execution of this expression establishes that its REPL is ready.
         writer
-            .send(format!("print('{marker}'){newline}").into_bytes())
+            .send(format!("print('__codex_' + 'pty_ready__'){newline}").into_bytes())
             .await?;
 
         let probe_deadline = tokio::time::Instant::now() + probe_window;
@@ -298,7 +315,12 @@ async fn wait_for_marker_pid(
         let remaining = deadline.saturating_duration_since(now);
         let chunk = tokio::time::timeout(remaining, output_rx.recv())
             .await
-            .map_err(|_| anyhow::anyhow!("timeout waiting for PTY output"))??;
+            .map_err(|_| {
+                anyhow::anyhow!(
+                    "timed out waiting for marker {marker:?} in PTY output: {:?}",
+                    String::from_utf8_lossy(&collected)
+                )
+            })??;
         collected.extend_from_slice(&chunk);
 
         let text = String::from_utf8_lossy(&collected);
@@ -1112,8 +1134,14 @@ async fn pty_dropped_output_receiver_keeps_draining_child() -> anyhow::Result<()
     let script =
         "import signal, sys\nsignal.alarm(10)\nsys.stdout.buffer.write(b'x' * (4 * 1024 * 1024))";
     for inherited_fds in [&[][..], &[preserved_fd.as_raw_fd()][..]] {
+        let backend = if inherited_fds.is_empty() {
+            "portable"
+        } else {
+            "preserved-fd"
+        };
+        let spawn_started = std::time::Instant::now();
         let SpawnedProcess {
-            session: _session,
+            session,
             stdout_rx,
             exit_rx,
             ..
@@ -1127,9 +1155,30 @@ async fn pty_dropped_output_receiver_keeps_draining_child() -> anyhow::Result<()
             inherited_fds,
         )
         .await?;
+        let spawn_elapsed = spawn_started.elapsed();
+        let queued_chunks = stdout_rx.len();
         drop(stdout_rx);
-        let code = tokio::time::timeout(std::time::Duration::from_secs(2), exit_rx).await??;
-        assert_eq!(code, 0, "child should finish even when output is discarded");
+        let wait_started = std::time::Instant::now();
+        let code = tokio::time::timeout(std::time::Duration::from_secs(2), exit_rx)
+            .await
+            .map_err(|error| {
+                anyhow::anyhow!(
+                    "4 MiB PTY output drain failed: {error}; backend={backend}; python={python:?}; \
+                     spawn_elapsed={spawn_elapsed:?}; queued_chunks={queued_chunks}; \
+                     wait_elapsed={:?}; has_exited={}; exit_code={:?}",
+                    wait_started.elapsed(),
+                    session.has_exited(),
+                    session.exit_code(),
+                )
+            })??;
+        assert_eq!(
+            code,
+            0,
+            "child should finish even when output is discarded; backend={backend}; \
+             python={python:?}; spawn_elapsed={spawn_elapsed:?}; \
+             queued_chunks={queued_chunks}; wait_elapsed={:?}",
+            wait_started.elapsed(),
+        );
     }
     Ok(())
 }

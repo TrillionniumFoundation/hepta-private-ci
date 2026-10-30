@@ -75,6 +75,36 @@ fn seatbelt_policy_arg(args: &[String]) -> &str {
         .expect("seatbelt args should include policy text")
 }
 
+fn writable_root_exclusions(args: &[String], root_index: usize) -> Vec<String> {
+    let prefix = format!("-DWRITABLE_ROOT_{root_index}_EXCLUDED_");
+    let mut bindings = args
+        .iter()
+        .filter_map(|argument| argument.strip_prefix(&prefix))
+        .map(|binding| {
+            let (index, path) = binding
+                .split_once('=')
+                .unwrap_or_else(|| panic!("invalid exclusion binding: {binding}"));
+            let index = index
+                .parse::<usize>()
+                .unwrap_or_else(|error| panic!("invalid exclusion index {index}: {error}"));
+            (index, path.to_string())
+        })
+        .collect::<Vec<_>>();
+    bindings.sort_unstable_by_key(|(index, _)| *index);
+    for (expected_index, (index, _)) in bindings.iter().enumerate() {
+        assert_eq!(
+            *index, expected_index,
+            "exclusion bindings must be contiguous"
+        );
+    }
+    let mut paths = bindings
+        .into_iter()
+        .map(|(_, path)| path)
+        .collect::<Vec<_>>();
+    paths.sort();
+    paths
+}
+
 #[cfg(unix)]
 fn restricted_write_policy(paths: &[&Path]) -> FileSystemSandboxPolicy {
     let mut entries = vec![FileSystemSandboxEntry::new(
@@ -1551,59 +1581,48 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
         "expected empty root metadata protection regex requirements in policy:\n{policy_text}",
     );
 
-    let expected_definitions = [
+    let expected_roots = [
         format!(
             "-DWRITABLE_ROOT_0={}",
-            cwd.canonicalize()
-                .expect("canonicalize cwd")
-                .to_string_lossy()
+            cwd.canonicalize().expect("canonicalize cwd").display()
         ),
-        format!(
-            "-DWRITABLE_ROOT_0_EXCLUDED_0={}",
-            cwd.canonicalize()
-                .expect("canonicalize cwd")
-                .join(".git")
-                .display()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_0_EXCLUDED_1={}",
-            cwd.canonicalize()
-                .expect("canonicalize cwd")
-                .join(".agents")
-                .display()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_0_EXCLUDED_2={}",
-            cwd.canonicalize()
-                .expect("canonicalize cwd")
-                .join(".codex")
-                .display()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_1={}",
-            vulnerable_root_canonical.to_string_lossy()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_1_EXCLUDED_0={}",
-            dot_git_canonical.to_string_lossy()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_1_EXCLUDED_1={}",
-            dot_codex_canonical.to_string_lossy()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_2={}",
-            empty_root_canonical.to_string_lossy()
-        ),
+        format!("-DWRITABLE_ROOT_1={}", vulnerable_root_canonical.display()),
+        format!("-DWRITABLE_ROOT_2={}", empty_root_canonical.display()),
     ];
-    let writable_definitions: Vec<String> = args
+    let writable_roots = args
         .iter()
-        .filter(|arg| arg.starts_with("-DWRITABLE_ROOT_"))
+        .filter(|arg| arg.starts_with("-DWRITABLE_ROOT_") && !arg.contains("_EXCLUDED_"))
         .cloned()
-        .collect();
+        .collect::<Vec<_>>();
     assert_eq!(
-        writable_definitions, expected_definitions,
-        "unexpected writable-root parameter definitions in {args:#?}"
+        writable_roots, expected_roots,
+        "unexpected writable roots in {args:#?}"
+    );
+    // Exclusion order is not a permission boundary. Require every exact path,
+    // including multiplicity, while checking generated indices are contiguous.
+    let canonical_cwd = cwd.canonicalize().expect("canonicalize cwd");
+    let mut expected_cwd_exclusions = vec![
+        canonical_cwd.join(".git").display().to_string(),
+        canonical_cwd.join(".agents").display().to_string(),
+        canonical_cwd.join(".codex").display().to_string(),
+    ];
+    expected_cwd_exclusions.sort();
+    assert_eq!(
+        writable_root_exclusions(&args, /*root_index*/ 0),
+        expected_cwd_exclusions
+    );
+    let mut expected_root_exclusions = vec![
+        dot_git_canonical.display().to_string(),
+        dot_codex_canonical.display().to_string(),
+    ];
+    expected_root_exclusions.sort();
+    assert_eq!(
+        writable_root_exclusions(&args, /*root_index*/ 1),
+        expected_root_exclusions
+    );
+    assert_eq!(
+        writable_root_exclusions(&args, /*root_index*/ 2),
+        Vec::<String>::new()
     );
     let command_index = args
         .iter()
@@ -2495,29 +2514,16 @@ fn create_seatbelt_args_for_cwd_as_git_repo() {
         args.contains(&expected_root),
         "missing {expected_root}: {args:#?}"
     );
-    let expected_dot_git = format!(
-        "-DWRITABLE_ROOT_0_EXCLUDED_0={}",
-        dot_git_canonical.to_string_lossy()
-    );
-    assert!(
-        args.contains(&expected_dot_git),
-        "missing {expected_dot_git}: {args:#?}"
-    );
-    let expected_dot_codex = format!(
-        "-DWRITABLE_ROOT_0_EXCLUDED_2={}",
-        dot_codex_canonical.to_string_lossy()
-    );
-    assert!(
-        args.contains(&expected_dot_codex),
-        "missing {expected_dot_codex}: {args:#?}"
-    );
-    let expected_dot_agents = format!(
-        "-DWRITABLE_ROOT_0_EXCLUDED_1={}",
-        dot_agents_canonical.to_string_lossy()
-    );
-    assert!(
-        args.contains(&expected_dot_agents),
-        "missing {expected_dot_agents}: {args:#?}"
+    let mut expected_exclusions = vec![
+        dot_git_canonical.display().to_string(),
+        dot_agents_canonical.display().to_string(),
+        dot_codex_canonical.display().to_string(),
+    ];
+    expected_exclusions.sort();
+    assert_eq!(
+        writable_root_exclusions(&args, /*root_index*/ 0),
+        expected_exclusions,
+        "unexpected cwd exclusion paths in {args:#?}"
     );
     let expected_slash_tmp = format!("-DWRITABLE_ROOT_1={}", slash_tmp.to_string_lossy());
     assert!(

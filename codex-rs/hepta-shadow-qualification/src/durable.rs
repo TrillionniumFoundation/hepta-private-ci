@@ -1,4 +1,3 @@
-use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Read;
 use std::io::Write;
@@ -118,7 +117,20 @@ pub(crate) fn verify_private_tree(root: &Path) -> Result<(), QualificationError>
 }
 
 pub(crate) fn sync_directory(path: &Path) -> Result<(), QualificationError> {
-    File::open(path)?.sync_all()?;
+    let mut options = OpenOptions::new();
+    options.read(true);
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt;
+        // FlushFileBuffers requires a writable directory handle. Do not turn
+        // unsupported filesystem or device flushes into durable acknowledgments.
+        options.write(true).custom_flags(/*flags*/ 0x0200_0000);
+    }
+    let directory = options.open(path)?;
+    if !directory.metadata()?.is_dir() {
+        return Err(invalid("directory sync target must be a directory"));
+    }
+    directory.sync_all()?;
     Ok(())
 }
 

@@ -6,6 +6,7 @@
 
 use std::collections::BTreeMap;
 use std::fs::File;
+use std::fs::OpenOptions;
 use std::io::Read;
 use std::io::Write;
 use std::path::Path;
@@ -509,8 +510,27 @@ fn persist(path: &Path, state: &StoredRegistryV1) -> Result<(), LeaseRegistryErr
         .and_then(|()| file.sync_all())
         .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
     std::fs::rename(&next, path).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    File::open(parent)
-        .and_then(|directory| directory.sync_all())
+    let mut options = OpenOptions::new();
+    options.read(true);
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt;
+        const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
+        // Windows requires a writable directory handle for FlushFileBuffers.
+        options.write(true).custom_flags(FILE_FLAG_BACKUP_SEMANTICS);
+    }
+    let directory = options
+        .open(parent)
+        .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
+    if !directory
+        .metadata()
+        .map_err(|_| LeaseRegistryErrorV1::Unavailable)?
+        .is_dir()
+    {
+        return Err(LeaseRegistryErrorV1::Unavailable);
+    }
+    directory
+        .sync_all()
         .map_err(|_| LeaseRegistryErrorV1::Unavailable)
 }
 

@@ -1,0 +1,72 @@
+{
+  "root_lock_sha256": "7cd3ac48f8a03093674bf8e54ffa8b86dcbeaac64d535b1d8c59b21e5dd327e3",
+  "records": [
+    {
+      "package": "secret-service",
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "tree",
+        "--manifest-path",
+        "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/Cargo.toml",
+        "--locked",
+        "--all-features",
+        "--target",
+        "all",
+        "-e",
+        "features",
+        "-i",
+        "secret-service"
+      ],
+      "exit_code": 0,
+      "log_sha256": "148cf8a959b404b90289bb79394228ed267c4231a068bab6904df4e0866cc728",
+      "log": "secret-service.log",
+      "nothing_to_print": true
+    },
+    {
+      "package": "zvariant",
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "tree",
+        "--manifest-path",
+        "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/Cargo.toml",
+        "--locked",
+        "--all-features",
+        "--target",
+        "all",
+        "-e",
+        "features",
+        "-i",
+        "zvariant"
+      ],
+      "exit_code": 0,
+      "log_sha256": "148cf8a959b404b90289bb79394228ed267c4231a068bab6904df4e0866cc728",
+      "log": "zvariant.log",
+      "nothing_to_print": true
+    },
+    {
+      "package": "dbus-secret-service",
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "tree",
+        "--manifest-path",
+        "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/Cargo.toml",
+        "--locked",
+        "--all-features",
+        "--target",
+        "all",
+        "-e",
+        "features",
+        "-i",
+        "dbus-secret-service"
+      ],
+      "exit_code": 0,
+      "log_sha256": "26cc52a363c9b228c71ee2c8ece0619ab7ef322056c3201c99df4340d4c9087a",
+      "log": "dbus-secret-service.log",
+      "nothing_to_print": false
+    }
+  ],
+  "raw_metadata_is_not_an_enabled_feature_graph": true
+}

@@ -1,0 +1,26 @@
+{
+  "command": [
+    "just",
+    "--justfile",
+    "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/justfile",
+    "test",
+    "--manifest-path",
+    "/workspace/scratch/8b9f3e9fd04d/recovery_value/vendor_native_01/Cargo.toml",
+    "-p",
+    "matrix-sdk",
+    "--lib",
+    "--locked",
+    "--no-default-features",
+    "--features",
+    "e2e-encryption,sqlite",
+    "-E",
+    "test(=event_handler::compatibility_tests::event_context_clone_preserves_type_isolation_and_send_sync)"
+  ],
+  "cwd": "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci",
+  "exit_code": 101,
+  "seconds": 184.30811201100005,
+  "log": "matrix-sdk.log.gz",
+  "log_uncompressed_bytes": 202798,
+  "log_uncompressed_sha256": "4d490b53958dd6f85b93acd755ff7ecb5cbef26a87223acb8f3adb6c4adb1a84",
+  "log_gzip_sha256": "6facba365e09d1deaca2f1a95eb05e83da6257b6621a61d26b67881fba046820"
+}

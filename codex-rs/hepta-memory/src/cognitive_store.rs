@@ -351,6 +351,17 @@ impl CognitiveStore {
         &self.owner_agent_id
     }
 
+    /// Drain and close the SQLite connections shared by this handle and its
+    /// clones, waiting for their close-time checkpoint work to finish.
+    ///
+    /// This does not release the owner fence: every surviving handle retains
+    /// its guard, including after the pool has closed. Drop all such handles
+    /// before requesting exclusive recovery; recovery still validates the
+    /// source identity, current-cut witness, and independent write authority.
+    pub async fn close(&self) {
+        self.pool.close().await;
+    }
+
     /// Returns whether two handles refer to the same Agent-local database and
     /// owner.  This is crate-private so composite local writers can reject a
     /// lease/executor assembled from different stores before opening a
@@ -1618,7 +1629,19 @@ pub(crate) fn publish_active_database(
         file.write_all(b"\n").map_err(unavailable)?;
         file.sync_all().map_err(unavailable)?;
         fs::rename(&temporary, &pointer).map_err(unavailable)?;
-        File::open(root)
+        let mut directory_options = OpenOptions::new();
+        directory_options.read(true);
+        #[cfg(windows)]
+        {
+            use std::os::windows::fs::OpenOptionsExt;
+            const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
+            // FlushFileBuffers needs a writable directory handle on Windows.
+            directory_options
+                .write(true)
+                .custom_flags(FILE_FLAG_BACKUP_SEMANTICS);
+        }
+        directory_options
+            .open(root)
             .and_then(|directory| directory.sync_all())
             .map_err(unavailable)?;
         Ok(())

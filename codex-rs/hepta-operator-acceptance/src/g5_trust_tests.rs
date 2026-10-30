@@ -1,5 +1,6 @@
 use std::path::Path;
 use std::path::PathBuf;
+#[cfg(unix)]
 use std::process::Command;
 
 use pretty_assertions::assert_eq;
@@ -25,6 +26,7 @@ use crate::durable::canonical_json;
 use crate::durable::sha256;
 use crate::durable::write_private_new;
 use crate::test_support::private_tempdir;
+use crate::test_support::ssh_key_fixture;
 use crate::trust::SSHSIG_NAMESPACE;
 
 #[test]
@@ -138,6 +140,7 @@ fn expiry_is_half_open_and_never_creates_acceptance() {
     assert!(!assessed.signature_verified);
 }
 
+#[cfg(unix)]
 #[test]
 fn independently_signed_challenge_is_verified_but_not_accepted() {
     let fixture = TrustFixture::new(false);
@@ -164,6 +167,25 @@ fn independently_signed_challenge_is_verified_but_not_accepted() {
     .expect("verify independent signature");
     assert_eq!(assessed.status, "SIGNATURE_VERIFIED_NO_AUTHORITY");
     assert!(assessed.signature_verified);
+}
+
+#[cfg(not(unix))]
+#[test]
+fn independent_signature_verification_reports_typed_unsupported() {
+    let error = super::verify_sshsig_bytes(
+        b"statement",
+        b"unverified-test-packet",
+        b"allowed-signers",
+        "operator@example",
+        SSHSIG_NAMESPACE,
+    )
+    .expect_err("unsupported platform must never verify an SSHSIG");
+    match error {
+        crate::AcceptanceError::Io(error) => {
+            assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
+        }
+        error => panic!("expected unsupported capability, got {error}"),
+    }
 }
 
 #[test]
@@ -256,6 +278,7 @@ fn read_assessment(path: &Path) -> (G5Assessment, Vec<u8>) {
 struct TrustFixture {
     _temporary: TempDir,
     allowed_signers: PathBuf,
+    #[cfg(unix)]
     key: PathBuf,
     policy: PathBuf,
     policy_sha256: String,
@@ -269,15 +292,8 @@ impl TrustFixture {
     fn new(revoked: bool) -> Self {
         let temporary = private_tempdir("G5 trust fixture");
         let root = temporary.path().canonicalize().expect("canonical root");
-        let key = root.join("operator-key");
-        let status = Command::new("/usr/bin/ssh-keygen")
-            .args(["-q", "-t", "ed25519", "-N", "", "-f"])
-            .arg(&key)
-            .status()
-            .expect("start test key generation");
-        assert!(status.success());
-        let public = std::fs::read_to_string(key.with_extension("pub")).expect("public key");
-        let fields = public.split_ascii_whitespace().collect::<Vec<_>>();
+        let key = ssh_key_fixture(&root);
+        let fields = key.public.split_ascii_whitespace().collect::<Vec<_>>();
         assert_eq!(fields.first().copied(), Some("ssh-ed25519"));
         let allowed_signers = root.join("allowed_signers");
         write_private_new(
@@ -285,17 +301,7 @@ impl TrustFixture {
             format!("operator@example {} {}\n", fields[0], fields[1]).as_bytes(),
         )
         .expect("write allowed signers");
-        let fingerprint_output = Command::new("/usr/bin/ssh-keygen")
-            .args(["-E", "sha256", "-lf"])
-            .arg(key.with_extension("pub"))
-            .output()
-            .expect("compute fingerprint");
-        assert!(fingerprint_output.status.success());
-        let fingerprint = String::from_utf8_lossy(&fingerprint_output.stdout)
-            .split_ascii_whitespace()
-            .nth(1)
-            .expect("fingerprint field")
-            .to_string();
+        let fingerprint = key.fingerprint;
         let revocation = G5RevocationState {
             effective_at_unix_seconds: 1,
             revoked_challenge_sha256: Vec::new(),
@@ -333,7 +339,8 @@ impl TrustFixture {
         Self {
             _temporary: temporary,
             allowed_signers,
-            key,
+            #[cfg(unix)]
+            key: key.private,
             policy,
             policy_sha256,
             revocation,
@@ -368,6 +375,7 @@ impl TrustFixture {
         self.policy_sha256 = sha256(&policy_bytes);
     }
 
+    #[cfg(unix)]
     fn sign(&self, challenge: &Path) -> PathBuf {
         let status = Command::new("/usr/bin/ssh-keygen")
             .args(["-Y", "sign", "-f"])
@@ -383,6 +391,7 @@ impl TrustFixture {
     }
 }
 
+#[cfg(unix)]
 fn set_private_permissions(path: &Path) {
     #[cfg(unix)]
     {

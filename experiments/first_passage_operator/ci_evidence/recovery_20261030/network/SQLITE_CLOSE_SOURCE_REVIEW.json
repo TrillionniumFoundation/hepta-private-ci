@@ -1,0 +1,21 @@
+{
+  "reviewed_on": "2026-10-30",
+  "primary_source": "Actual crates.io SQLx 0.9.0 source resolved by the frozen workspace lockfile",
+  "sources": {
+    "sqlx-core-0.9.0/src/pool/inner.rs": "cba56628f259270dccb2f4a0d7a351dcff34d9239f6e6e1aee187ebe0e39c539",
+    "sqlx-sqlite-0.9.0/src/connection/mod.rs": "a20c2e51a1505e298fd897b378f9032c89b82850838aa6e5d9409f612fb1e7fd",
+    "sqlx-sqlite-0.9.0/src/connection/worker.rs": "b66aafc56f0e287eac3b09111c5d4997d350ab61294c5cc576ce359bc18cebe4"
+  },
+  "findings": [
+    "PoolInner::close marks the pool closed, acquires all connection permits, awaits each raw connection close, then resets counts.",
+    "SqliteConnection::close requests worker shutdown, drops its handle, then awaits the worker response.",
+    "Command::Shutdown drops connection/shared worker state before sending the completion response.",
+    "This provides a concrete wait edge for close-time SQLite work; dropping an external store without awaiting pool close lacks that completion edge.",
+    "The wrapper does not grant recovery authority or drop the guard. Recovery must still check every retained file identity and the independently retained current witness."
+  ],
+  "public_references": [
+    "https://docs.rs/sqlx/0.9.0/sqlx/struct.Pool.html",
+    "https://docs.rs/sqlx/0.9.0/sqlx/migrate/struct.Migrator.html"
+  ],
+  "limits": "Awaiting pool closure does not certify unrelated external filesystem writers, make close errors into recovery authorization, or add a non-Unix descriptor backend."
+}

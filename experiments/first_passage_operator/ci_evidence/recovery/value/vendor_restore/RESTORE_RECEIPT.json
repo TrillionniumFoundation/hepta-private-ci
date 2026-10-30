@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.vendor-restore.v1",
+  "vendors": [
+    {
+      "directory": "aws-config-1.8.12",
+      "upstream_files": 72,
+      "excluded": [
+        "Cargo.lock"
+      ],
+      "modified": 3,
+      "unchanged": 68,
+      "added_tests": 1
+    },
+    {
+      "directory": "matrix-sdk-0.19.1",
+      "upstream_files": 209,
+      "excluded": [
+        "Cargo.lock"
+      ],
+      "modified": 3,
+      "unchanged": 205,
+      "added_tests": 1
+    },
+    {
+      "directory": "matrix-sdk-sqlite-0.19.1",
+      "upstream_files": 71,
+      "excluded": [
+        "Cargo.lock"
+      ],
+      "modified": 2,
+      "unchanged": 68,
+      "added_tests": 0
+    }
+  ],
+  "verification": "Official archive SHA and every present upstream file compared; only enumerated patches differ. No runtime test pass claimed."
+}
