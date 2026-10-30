@@ -1,0 +1,53 @@
+{
+  "artifact_integrity_passed": true,
+  "bound_artifacts": [
+    {
+      "path": "research_evidence/hepta_stable_flow_20261029/report_development/source_before_dop_summary/report_sections.py",
+      "sha256": "cd770e9c18962bbdde69cf4a3cbe5a456303b3e82ce09a99e6ef132d8c709b34"
+    },
+    {
+      "path": "experiments/call_put_stable_flow_analysis/report_sections.py",
+      "sha256": "a59b2b3958042c61828109ee7adb30b38d8a688304e697fa45245d92ccf40018"
+    },
+    {
+      "path": "research_evidence/hepta_stable_flow_20261029/report_development/dop_summary_amendment001.json",
+      "sha256": "b2a18b159d1bc33d0d20d7fc898728b0b4ab8d0b2bf86d37f49f93545b51184e"
+    },
+    {
+      "path": "research_evidence/hepta_stable_flow_20261029/independent_review/report_generator_source_audit.json",
+      "sha256": "6c755a849d2c87855aea7fe4287f05167fad52bed44e6626c87bf53c9d6aa935"
+    },
+    {
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_appendix001/protocol.json",
+      "sha256": "5d22bec38799f63e10a58b7bc8ff91feb179a4c0108ddc9272a07dbf4b1d9934"
+    },
+    {
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_appendix001/execution/summary.json",
+      "sha256": "3801ec6df4537321195880fdf1d6e20d903025f56c8b79879392fa4abd54e66d"
+    }
+  ],
+  "changed_functions": [
+    "render"
+  ],
+  "checks": {
+    "actual_resolved_state_failure_count_is_one": true,
+    "all_other_preflight_report_sources_unchanged": true,
+    "new_hash_matches_amendment": true,
+    "old_non_function_AST_unchanged": true,
+    "old_snapshot_hash_matches_prior_audit": true,
+    "only_render_function_changed": true,
+    "prior_audit_preserved": true
+  },
+  "created_unix": 1793285352.163102,
+  "displayed_result_scope": {
+    "end_to_end_fixed_mesh_passed": 24,
+    "independent_flow_DOP_failed": 1,
+    "independent_flow_DOP_passed": 7,
+    "independent_flow_reference_unresolved": 0,
+    "resolved_reference_state_gate_failures": 1
+  },
+  "formal_report_generation_may_proceed": true,
+  "review": "Only the overview derives and displays already retained independent-flow statuses and resolved-reference state failures beside end-to-end finite-mesh status. It explicitly states that end-to-end passing does not cancel a continuous-flow state failure. No criterion, checkpoint, score, raw data or other report section changed; prior source audit remains verbatim.",
+  "schema": "hepta-independent-report-presentation-amendment-audit-20261029-v1",
+  "status": "presentation_amendment_verified"
+}

@@ -78,7 +78,12 @@ def figures(data, output):
             ax.set_title(task + " | " + metric)
             ax.grid(axis="y", alpha=0.18)
             if metric == "accuracy":
-                ax.set_ylim(-0.02, 1.03)
+                highest_sd_endpoint = max(
+                    row["metrics"][metric]["mean"] + row["metrics"][metric]["sample_sd"]
+                    for row in data["score_groups"]
+                    if row["task"] == task
+                )
+                ax.set_ylim(-0.02, max(1.03, highest_sd_endpoint + 0.03))
                 ax.axhline(0.9, color="#777", ls=":", lw=1)
     axes[0, 0].legend(fontsize=8, ncol=2, loc="lower right")
     retain("task_quality", fig)

@@ -260,7 +260,7 @@ def task_results(data, images):
 5 个控制器 × 2 个任务 × 3 个种子 × 2 个学习率形成 60 个候选。每种预算分别在两个学习率与两个允许终点中，
 按最低验证 CE 选择；CPU30 可选 cpu15/cpu30，updates384 可选 update192/update384。因此“384 次预算”不代表每个选中模型都刚好更新 384 次。
 全部训练完成后才封存验证选择并读取测试分数。CPU30 是训练更新所耗进程 CPU 的上限，和总进程耗时、墙钟时间分开统计。[P]</p>
-{fig(images, "task_quality", "20 个任务×控制器×预算组。实点为三个种子，误差线为种子样本标准差；不是置信区间。两个预算分别解释。")}
+{fig(images, "task_quality", "20 个任务×控制器×预算组。实点为三个种子，误差线为均值±种子样本标准差。标准差描述样本离散程度，均值±标准差可超出[0,1]，不是概率置信区间；纵轴保留全部误差线上端。两个预算分别解释。")}
 <h3>20 组完整汇总：mean ± sample SD 与三个原始种子</h3>
 <p>原值依次为 81301 / 81302 / 81303。accuracy 与 sequence accuracy 的原值和均值均按百分数显示；
 sequence accuracy 要求同一序列全部查询正确。CE 为查询位置平均交叉熵。下表不删除低质量或未获益控制器。</p>
@@ -736,6 +736,14 @@ def render(data, images):
         for metric in ("accuracy", "cross_entropy")
     }
     nstatus = data["numerics"]["end_to_end_alias_status"]
+    flow_status = data["numerics"]["flow_alias_status"]
+    state_gate = data["numerics"]["protocol"]["independent_flow"]["thresholds"][
+        "scaled_state_max"
+    ]
+    resolved_state_failures = sum(
+        r["reference_passed"] and r["metrics"]["scaled_state_max"] > state_gate
+        for r in data["numerics"]["dop"]
+    )
     summary = f"""<section id="overview"><h2>本轮结果如何解读</h2>
 <p>这是一轮<strong>新执行的受控小模型研究</strong>：60 个训练候选、两种合成任务、五种共享解析器与关联记忆的控制器、
 两个预算口径，以及训练后独立数值与 CPU 成本附录。它将金融类比落实为可训练模型和可核查证据，
@@ -743,6 +751,9 @@ def render(data, images):
 <div class="cards"><div><b>主要比较：analytic 对 matched C1</b><strong>accuracy {main_counts["accuracy"]}/4 · CE {main_counts["cross_entropy"]}/4</strong><span>通过各自指标提升门；两个指标分别统计</span></div>
 <div><b>次要比较：sigmoid / ordinary</b><strong>accuracy {secondary["accuracy"]}/8 · CE {secondary["cross_entropy"]}/8</strong><span>探索性 n=3 配对区间，不能择指标称总优势</span></div>
 <div><b>训练后端到端数值状态</b><strong>{nstatus.get("passed", 0)} 通过 · {nstatus.get("failed", 0)} 未通过</strong><span>{nstatus.get("reference_unresolved", 0)} 个参照未解决；全部 24 别名保留</span></div></div>
+<p class="notice"><strong>独立连续 flow 的 DOP 参照：</strong>{flow_status.get("passed", 0)} 通过、{flow_status.get("failed", 0)} 未通过、
+{flow_status.get("reference_unresolved", 0)} 个参照未解决。其中 {resolved_state_failures} 项在参照稳定性已通过的情况下仍未达到状态误差门。
+端到端有限网格检查通过不能抵消独立连续状态检查的失败；两类结论的目标和参照不同，全部原始结果分别保留。</p>
 <p>analytic 与 matched C1 的主要比较保留了相同边界局部约束，因此其辨别对象主要是<strong>全局算子形状</strong>。
 即便主任务 accuracy 很高，也不能直接归因于自由边界机制；共享的因果地址解析器和 delta 关联矩阵可能承担大量任务能力。
 训练后固定探针 Call 恒零的观测、未训练参数诊断和数值失败均在下文原样呈现。</p>
