@@ -19,16 +19,16 @@ struct Fixture {
 }
 
 impl Fixture {
-    fn new() -> Self {
-        Self {
-            parent: tempfile::tempdir().expect("create final-use fixture directory"),
+    fn new() -> std::io::Result<Self> {
+        Ok(Self {
+            parent: tempfile::tempdir()?,
             issuer: SigningKey::from_bytes(&[47; 32]),
             head: FinalUseRevocations {
                 authority_epoch: 9,
                 revision: 1,
                 revoked_grant_ids: BTreeSet::new(),
             },
-        }
+        })
     }
 
     fn directory(&self) -> std::path::PathBuf {
@@ -45,7 +45,7 @@ impl Fixture {
         )
     }
 
-    fn signed(&self) -> SignedFinalUseGrant {
+    fn signed(&self) -> Result<SignedFinalUseGrant, FinalUseError> {
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "security-owner".into(),
@@ -62,25 +62,17 @@ impl Fixture {
             not_before_unix_ms: 9_000,
             expires_at_unix_ms: 20_000,
         };
-        let signature = self
-            .issuer
-            .sign(
-                &grant
-                    .signing_bytes()
-                    .expect("encode final-use fixture grant"),
-            )
-            .to_bytes()
-            .to_vec();
-        SignedFinalUseGrant { grant, signature }
+        let signature = self.issuer.sign(&grant.signing_bytes()?).to_bytes().to_vec();
+        Ok(SignedFinalUseGrant { grant, signature })
     }
 }
 
 #[test]
-fn native_owner_lock_and_claim_replay_survive_reopen() {
-    let fixture = Fixture::new();
+fn native_owner_lock_and_claim_replay_survive_reopen() -> Result<(), Box<dyn std::error::Error>> {
+    let fixture = Fixture::new()?;
     let authority = fixture.open().unwrap();
     assert_eq!(fixture.open().unwrap_err(), FinalUseError::StateLocked);
-    let signed = fixture.signed();
+    let signed = fixture.signed()?;
     drop(authority.claim(&signed, &signed.grant.binding).unwrap());
     drop(authority);
     let reopened = fixture.open().unwrap();
@@ -88,13 +80,14 @@ fn native_owner_lock_and_claim_replay_survive_reopen() {
         reopened.claim(&signed, &signed.grant.binding).unwrap_err(),
         FinalUseError::AlreadyClaimed
     );
+    Ok(())
 }
 
 #[test]
-fn native_revocation_replacement_survives_reopen_and_missing_state_fails_closed() {
-    let mut fixture = Fixture::new();
+fn native_revocation_replacement_survives_reopen_and_missing_state_fails_closed() -> Result<(), Box<dyn std::error::Error>> {
+    let mut fixture = Fixture::new()?;
     let authority = fixture.open().unwrap();
-    let signed = fixture.signed();
+    let signed = fixture.signed()?;
     fixture.head.revision += 1;
     fixture
         .head
@@ -111,13 +104,14 @@ fn native_revocation_replacement_survives_reopen_and_missing_state_fails_closed(
     drop(reopened);
     std::fs::remove_file(fixture.directory().join("authority.json")).unwrap();
     assert_eq!(fixture.open().unwrap_err(), FinalUseError::InvalidTrust);
+    Ok(())
 }
 
 #[test]
-fn native_missing_claim_journal_is_never_recreated() {
-    let fixture = Fixture::new();
+fn native_missing_claim_journal_is_never_recreated() -> Result<(), Box<dyn std::error::Error>> {
+    let fixture = Fixture::new()?;
     let authority = fixture.open().unwrap();
-    let signed = fixture.signed();
+    let signed = fixture.signed()?;
     let journal = fixture.directory().join("authority.claims");
     std::fs::remove_file(&journal).unwrap();
     assert_eq!(
@@ -127,4 +121,5 @@ fn native_missing_claim_journal_is_never_recreated() {
     assert!(!journal.exists());
     drop(authority);
     assert_eq!(fixture.open().unwrap_err(), FinalUseError::InvalidTrust);
+    Ok(())
 }
