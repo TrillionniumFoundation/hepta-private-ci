@@ -18,6 +18,13 @@ From the exact parent source checkout with numpy and scipy installed, run:
 
 Local run on 2026-10-30: 10 of 10 test methods passed, covering 36 deterministic seeded parameter samples, three models checked by both independent algorithms, mesh refinement to 1025 nodes, an advection-dominated upwind case, independently recomputed generator/obstacle QVI residuals, free-boundary slope convergence, lower-domain wall sweep, non-grid reset, long refractory one-shot limit and invalid-input rejection. This tested stopping.py against exact Git blob d165ed777990bbf8f3606b58e1b0991de59a1544.
 
+
+Run both test suites:
+
+    python -m unittest -v experiments.hcsn_hx_unified_v3.test_regenerative_grid experiments.hcsn_hx_unified_v3.test_regenerative_grid_stress
+
+The second suite ran **400 additional fixed-seed admissible samples**, with 400/400 passing: observed maximum reset-value absolute difference 0.0005464994, upper boundary absolute difference 0.04087614, and Bellman residual 5.75e-15 on their selected mesh. These are bounded sampled results, **not global-domain certification**.
+
 ## Open gates
 
 - Complete HX financial global viability (existing negative-equity counterexample retained).
