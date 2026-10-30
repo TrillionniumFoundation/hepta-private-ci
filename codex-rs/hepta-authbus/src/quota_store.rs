@@ -73,7 +73,7 @@ impl AuthBusAuthorityStore {
             }
             return Err(storage(error));
         }
-        tx.commit().await.map_err(storage)?;
+        crate::authority_store::commit_with_time(tx, &time).await?;
         Ok(QuotaSnapshot {
             quota_key: spec.quota_key,
             principal: spec.principal,
@@ -141,7 +141,7 @@ impl AuthBusAuthorityStore {
         .execute(&mut *tx)
         .await
         .map_err(storage)?;
-        tx.commit().await.map_err(storage)?;
+        crate::authority_store::commit_with_time(tx, &time).await?;
         Ok(quota)
     }
 
@@ -168,7 +168,7 @@ impl AuthBusAuthorityStore {
             load_reservation_by_operation(&mut tx, &request.operation_id).await?
         {
             if reservation_matches(&existing, decision, &request) {
-                tx.commit().await.map_err(storage)?;
+                crate::authority_store::commit_with_time(tx, &time).await?;
                 return Ok(existing);
             }
             return Err(AuthBusAuthorityError::IdempotencyConflict);
@@ -266,7 +266,7 @@ impl AuthBusAuthorityStore {
         .await
         .map_err(storage)?;
         let reservation = load_reservation(&mut tx, &reservation_id).await?;
-        tx.commit().await.map_err(storage)?;
+        crate::authority_store::commit_with_time(tx, &time).await?;
         Ok(reservation)
     }
 

@@ -17,6 +17,10 @@ const MAX_AUTHBUS_REPLAY_KEYS: i64 = 16_384;
 
 #[derive(Debug, thiserror::Error)]
 pub enum AuthBusAdmissionError {
+    #[error("AuthBus issuer does not match the persisted owner cryptographic profile")]
+    CryptoProfileMismatch,
+    #[error("AuthBus issuer epoch, key, revocation or clock is behind the durable owner floor")]
+    IssuerFloorMismatch,
     #[error("AuthBus message rejected: {0}")]
     Authentication(#[from] codex_hepta_authbus::Error),
     #[error(transparent)]
@@ -47,13 +51,24 @@ impl HeptaEvidenceStore {
             .map_err(classify_sqlx_error)?;
         // Read time after the SQLite wait; a queued message cannot outlive its
         // expiry merely because signature verification happened before a lock.
+        crate::authbus_issuer_floor::require_current_issuer(&mut transaction, issuer).await?;
         let now = u64::try_from(now_millis()?)
             .map_err(|_| EvidenceError::Unavailable("clock predates Unix epoch".into()))?;
+        crate::authbus_issuer_floor::require_bounded_deadline(
+            issuer,
+            message.claims.expires_at_ms,
+            now,
+        )?;
         if &message.claims.subject_id != expected_subject {
             return Err(codex_hepta_authbus::Error::SubjectMismatch.into());
         }
         let authenticated = message.authenticate(issuer, expected_scope, expected_payload, now)?;
         advance_replay(&mut transaction, &authenticated).await?;
+        crate::authbus_issuer_floor::require_bounded_deadline(
+            issuer,
+            message.claims.expires_at_ms,
+            u64::try_from(now_millis()?).unwrap_or(0),
+        )?;
         transaction.commit().await.map_err(classify_sqlx_error)?;
         Ok(authenticated.receipt().clone())
     }

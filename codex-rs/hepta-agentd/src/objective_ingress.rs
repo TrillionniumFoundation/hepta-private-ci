@@ -329,7 +329,7 @@ pub(crate) async fn submit(
     }
     let message = SignedMessage {
         claims: authbus_objective_claims(&state.identity().agent_id, &request)?,
-        signature: hex_bytes(&request.signature_hex)?,
+        signature: hex_bytes::<64>(&request.signature_hex)?.into(),
     };
     let status = authbus
         .evidence

@@ -12,6 +12,8 @@ use codex_hepta_authbus::ReservationRequest;
 use codex_hepta_authbus::SettlementStatus;
 use codex_hepta_authbus::SignedSettlementEvidence;
 use codex_hepta_authbus::SignedTrustedTimeAttestation;
+use codex_hepta_authbus::TrustedTimeChallenge;
+use codex_hepta_authbus::TrustedTimeSample;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::FinalUseError;
@@ -92,7 +94,12 @@ pub struct BaoAuthBusAdmission {
 /// every returned signature; the Bao adapter never owns trusted-time or
 /// settlement signing keys.
 pub trait BaoAuthBusEvidenceProvider {
-    fn trusted_time(&mut self) -> Result<SignedTrustedTimeAttestation, BaoAuthBusError>;
+    /// Echo the owner's exact challenge in the signed claims. PQ owners reject
+    /// responses without it, including a previously signed time floor.
+    fn trusted_time(
+        &mut self,
+        challenge: Option<TrustedTimeChallenge>,
+    ) -> Result<SignedTrustedTimeAttestation, BaoAuthBusError>;
 
     fn settlement_evidence(
         &mut self,
@@ -256,8 +263,7 @@ impl BaoClient {
         let scope = Digest32::from_array(binding.scope_sha256);
         let effect_digest = self.authbus_effect_digest(request, &admission.operation_id)?;
 
-        let observed = evidence.trusted_time()?;
-        let time = authbus.observe_trusted_time_attestation(&observed).await?;
+        let time = observe_provider_time(authbus, evidence).await?;
         let decision = authbus
             .authorize(
                 &principal,
@@ -285,9 +291,7 @@ impl BaoClient {
         // Re-sample authenticated time immediately before the irreversible
         // boundary. Once this transition commits, timeout/transport uncertainty
         // can never refund quota without signed terminal evidence.
-        let dispatch_time = authbus
-            .observe_trusted_time_attestation(&evidence.trusted_time()?)
-            .await?;
+        let dispatch_time = observe_provider_time(authbus, evidence).await?;
         let dispatched = authbus
             .mark_dispatch_attempted(
                 &reservation.reservation_id,
@@ -321,9 +325,7 @@ impl BaoClient {
                 ))
             }
             Err(error) if ambiguous_after_dispatch(error) => {
-                let time = authbus
-                    .observe_trusted_time_attestation(&evidence.trusted_time()?)
-                    .await;
+                let time = observe_provider_time(authbus, evidence).await;
                 match time {
                     Ok(time) => {
                         let _ = authbus
@@ -536,10 +538,7 @@ async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
     terminal_evidence_digest: Digest32,
     receipt: Option<BaoSecretReceipt>,
 ) -> Result<Option<BaoSecretReceipt>, BaoAuthBusError> {
-    let time = match authbus
-        .observe_trusted_time_attestation(&evidence.trusted_time()?)
-        .await
-    {
+    let time = match observe_provider_time(authbus, evidence).await {
         Ok(time) => time,
         Err(error) => {
             return Err(BaoAuthBusError::SettlementPending {
@@ -577,6 +576,15 @@ async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
         });
     }
     Ok(receipt)
+}
+
+async fn observe_provider_time<E: BaoAuthBusEvidenceProvider>(
+    authbus: &AuthBusAuthorityHost,
+    evidence: &mut E,
+) -> Result<TrustedTimeSample, BaoAuthBusError> {
+    let challenge = authbus.trusted_time_challenge().await?;
+    let observed = evidence.trusted_time(challenge)?;
+    Ok(authbus.observe_trusted_time_attestation(&observed).await?)
 }
 
 fn ambiguous_after_dispatch(error: BaoClientError) -> bool {

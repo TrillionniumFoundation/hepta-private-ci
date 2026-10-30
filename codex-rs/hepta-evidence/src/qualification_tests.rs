@@ -62,7 +62,7 @@ fn issuer(principal: &str, seed: u8) -> (IssuerRegistration, SigningKey) {
         IssuerRegistration {
             issuer_id: StableId::new(principal).expect("principal"),
             key_epoch: Generation::new(1).expect("epoch"),
-            verifying_key: key.verifying_key(),
+            verifying_key: key.verifying_key().into(),
             revoked: false,
         },
         key,
@@ -73,7 +73,7 @@ fn issuer_with_key(principal: &str, key: &SigningKey) -> IssuerRegistration {
     IssuerRegistration {
         issuer_id: StableId::new(principal).expect("principal"),
         key_epoch: Generation::new(1).expect("epoch"),
-        verifying_key: key.verifying_key(),
+        verifying_key: key.verifying_key().into(),
         revoked: false,
     }
 }
@@ -158,7 +158,10 @@ fn signed(
         expires_at_ms,
     };
     let signature = key.sign(&claims.signing_bytes()).to_bytes();
-    SignedMessage { claims, signature }
+    SignedMessage {
+        claims,
+        signature: signature.into(),
+    }
 }
 
 async fn append(

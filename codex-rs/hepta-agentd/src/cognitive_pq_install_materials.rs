@@ -54,6 +54,8 @@ pub(super) fn fitted(
         .iter()
         .map(|(item, _)| cognitive_action_id(item).unwrap())
         .collect();
+    let mut candidates = ids.clone();
+    candidates.push(id("abstain"));
     let sensor = cognitive_sensor_id("bootstrap").unwrap();
     let mut samples = Vec::new();
     for (index, action) in ids.iter().enumerate() {
@@ -70,7 +72,7 @@ pub(super) fn fitted(
                 run_snapshot_digest: hash("snapshot"),
                 objective_digest: trust.objective_digest,
                 policy_digest: hash("policy"),
-                candidate_ids: ids.clone(),
+                candidate_ids: candidates.clone(),
                 selected_candidate_id: action.clone(),
                 selected_propensity: ProbabilityQ32::ONE,
                 completeness: ledger::CandidateSetCompletenessReceiptV1 {
@@ -81,10 +83,10 @@ pub(super) fn fitted(
                     grammar_digest: hash("grammar"),
                     hard_filter_digest: hash("filter"),
                     truncation_digest: hash("no-truncation"),
-                    candidates_digest: ledger::candidate_ids_digest_v2(&ids),
-                    candidate_count: ids.len().try_into().unwrap(),
+                    candidates_digest: ledger::candidate_ids_digest_v2(&candidates),
+                    candidate_count: candidates.len().try_into().unwrap(),
                     omitted_count_bound: 0,
-                    canonical_order_digest: ledger::candidate_order_digest_v2(&ids),
+                    canonical_order_digest: ledger::candidate_order_digest_v2(&candidates),
                     complete_for_generator: true,
                 },
                 support_digest: hash(&episode),

@@ -261,6 +261,7 @@ async fn current(
         .begin_with("BEGIN IMMEDIATE")
         .await
         .map_err(classify_sqlx_error)?;
+    crate::authbus_issuer_floor::require_current_issuer(&mut tx, issuer).await?;
     if require_checkpoint_clear && replay_checkpoint_pending(&mut tx).await? {
         return Err(AuthBusOutboxError::Unavailable);
     }

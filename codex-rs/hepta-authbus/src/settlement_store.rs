@@ -6,6 +6,8 @@ use sqlx::Transaction;
 
 use crate::AuthBusAuthorityError;
 use crate::AuthBusAuthorityStore;
+use crate::IssuerLifecycleState;
+use crate::IssuerPurpose;
 use crate::PolicyEffect;
 use crate::QuotaReservation;
 use crate::QuotaSnapshot;
@@ -49,7 +51,7 @@ impl AuthBusAuthorityStore {
         if reservation.state == ReservationState::DispatchAttempted
             && reservation.dispatch_digest == Some(dispatch_digest)
         {
-            tx.commit().await.map_err(storage)?;
+            crate::authority_store::commit_with_time(tx, &time).await?;
             return Ok(reservation);
         }
         if reservation.revision != expected_revision {
@@ -75,7 +77,7 @@ impl AuthBusAuthorityStore {
         .execute(&mut *tx)
         .await
         .map_err(storage)?;
-        tx.commit().await.map_err(storage)?;
+        crate::authority_store::commit_with_time(tx, &time).await?;
         Ok(reservation)
     }
 
@@ -90,7 +92,7 @@ impl AuthBusAuthorityStore {
         advance_time(&mut tx, &time).await?;
         let mut reservation = load_reservation(&mut tx, reservation_id).await?;
         if reservation.state == ReservationState::Indeterminate {
-            tx.commit().await.map_err(storage)?;
+            crate::authority_store::commit_with_time(tx, &time).await?;
             return Ok(reservation);
         }
         if reservation.revision != expected_revision {
@@ -103,7 +105,7 @@ impl AuthBusAuthorityStore {
         reservation.revision = next_revision(reservation.revision)?;
         reservation.updated_at_ms = time.wall_time_ms;
         update_reservation_state(&mut tx, &reservation, "indeterminate").await?;
-        tx.commit().await.map_err(storage)?;
+        crate::authority_store::commit_with_time(tx, &time).await?;
         Ok(reservation)
     }
 
@@ -118,7 +120,7 @@ impl AuthBusAuthorityStore {
         advance_time(&mut tx, &time).await?;
         let mut reservation = load_reservation(&mut tx, reservation_id).await?;
         if reservation.state == ReservationState::Cancelled {
-            tx.commit().await.map_err(storage)?;
+            crate::authority_store::commit_with_time(tx, &time).await?;
             return Ok(reservation);
         }
         if reservation.revision != expected_revision {
@@ -134,7 +136,7 @@ impl AuthBusAuthorityStore {
         reservation.revision = next_revision(reservation.revision)?;
         reservation.updated_at_ms = time.wall_time_ms;
         update_reservation_state(&mut tx, &reservation, "cancelled").await?;
-        tx.commit().await.map_err(storage)?;
+        crate::authority_store::commit_with_time(tx, &time).await?;
         Ok(reservation)
     }
 
@@ -176,7 +178,7 @@ impl AuthBusAuthorityStore {
             | ReservationState::Expired
             | ReservationState::Cancelled => {}
         }
-        tx.commit().await.map_err(storage)?;
+        crate::authority_store::commit_with_time(tx, &time).await?;
         Ok(reservation)
     }
 
@@ -203,7 +205,7 @@ impl AuthBusAuthorityStore {
             {
                 return Err(AuthBusAuthorityError::IdempotencyConflict);
             }
-            tx.commit().await.map_err(storage)?;
+            crate::authority_store::commit_with_time(tx, &time).await?;
             return settlement_from(&reservation);
         }
         if !matches!(
@@ -212,8 +214,30 @@ impl AuthBusAuthorityStore {
         ) {
             return Err(AuthBusAuthorityError::InvalidTransition);
         }
+        // Hold the write transaction while rereading authority. A snapshot
+        // obtained before an await cannot authorize after rotation/revocation.
+        let current = crate::trust_store::load_issuer(
+            &mut tx,
+            IssuerPurpose::Settlement,
+            &evidence.claims.issuer_id,
+            evidence.claims.key_epoch,
+        )
+        .await?;
+        self.require_key(&current.verifying_key)?;
+        if issuer.issuer_id != current.issuer_id
+            || issuer.key_epoch != current.key_epoch
+            || issuer.verifying_key != current.verifying_key
+        {
+            return Err(AuthBusAuthorityError::SettlementIssuerMismatch);
+        }
+        let current = SettlementIssuerRegistration {
+            issuer_id: current.issuer_id,
+            key_epoch: current.key_epoch,
+            verifying_key: current.verifying_key,
+            revoked: issuer.revoked || current.state != IssuerLifecycleState::Active,
+        };
         let authenticated = evidence.authenticate(
-            issuer,
+            &current,
             &reservation.reservation_id,
             &reservation.operation_id,
             time.wall_time_ms,
@@ -266,7 +290,7 @@ impl AuthBusAuthorityStore {
         .execute(&mut *tx)
         .await
         .map_err(storage)?;
-        tx.commit().await.map_err(storage)?;
+        crate::authority_store::commit_with_time(tx, &time).await?;
         settlement_from(&reservation)
     }
 }

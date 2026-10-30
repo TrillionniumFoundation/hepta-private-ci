@@ -99,7 +99,7 @@ impl ObjectiveRuntimeHost {
         })
     }
 
-    pub(crate) fn reconcile(
+    pub(crate) async fn reconcile(
         &self,
         agentd: &AgentdState,
         current_generation: u64,
@@ -110,20 +110,41 @@ impl ObjectiveRuntimeHost {
         if !agentd.automation_admission_ready()? {
             return Ok(());
         }
-        let trust = authbus_ingress::attached(agentd)?.trust(agentd)?;
-        let state = self.state.lock().map_err(|_| {
-            AgentdError::Protocol("objective runtime mutex is poisoned".to_string())
-        })?;
+        let trust = authbus_ingress::attached(agentd)?.trust(agentd).await?;
         let fence = objective_fence(agentd.identity(), current_generation);
-        for record in state.journal.records().map_err(store_error)? {
-            if record.snapshot.generation != current_generation
-                || record.snapshot.fence_digest != fence
-                || record.disposition != RunStartObjectiveDispositionV1::Compiled
-                || record.admission.deadline_unix_micros.div_ceil(1_000) <= now_ms
-            {
-                continue;
-            }
-            if authentication_is_current(record, &trust, agentd.identity(), now_ms)? {
+        // Retain only bounded IDs across awaits, never a journal mutex guard
+        // or a second in-memory copy of every durable objective body.
+        let run_ids: Vec<_> = {
+            let state = self.state.lock().map_err(|_| {
+                AgentdError::Protocol("objective runtime mutex is poisoned".to_string())
+            })?;
+            state
+                .journal
+                .records()
+                .map_err(store_error)?
+                .into_iter()
+                .filter(|record| {
+                    record.snapshot.generation == current_generation
+                        && record.snapshot.fence_digest == fence
+                        && record.disposition == RunStartObjectiveDispositionV1::Compiled
+                        && record.admission.deadline_unix_micros.div_ceil(1_000) > now_ms
+                })
+                .map(|record| record.snapshot.run_id.clone())
+                .collect()
+        };
+        for run_id in run_ids {
+            let record = {
+                let state = self.state.lock().map_err(|_| {
+                    AgentdError::Protocol("objective runtime mutex is poisoned".to_string())
+                })?;
+                state
+                    .journal
+                    .get(&run_id)
+                    .map_err(store_error)?
+                    .cloned()
+                    .ok_or_else(|| invalid("durable objective publication disappeared"))?
+            };
+            if authentication_is_current(&record, &trust, agentd.identity(), now_ms)? {
                 if agentd.canonical_intelligence_enabled() {
                     // A RunStart publication predates the seven-owner handoff.
                     // Until that exact handoff is durably recovered, startup
@@ -131,7 +152,7 @@ impl ObjectiveRuntimeHost {
                     // rather than silently entering the compatibility path.
                     continue;
                 }
-                agentd.start_current_run_start(&state.journal, &record.snapshot.run_id)?;
+                agentd.start_current_run_start_record(&record).await?;
             }
         }
         Ok(())
@@ -144,19 +165,22 @@ impl ObjectiveRuntimeHost {
         current_generation: u64,
     ) -> Result<ObjectiveStartResult, AgentdError> {
         authbus_ingress::require_ready(agentd)?;
-        let now_ms = authbus_ingress::now_ms()?;
         let payload = objective_payload(agentd.identity(), &request.body, current_generation)?;
+        let authbus = authbus_ingress::attached(agentd)?;
+        let trust = authbus.trust(agentd).await?;
+        trust.require_run_start_v1()?;
+        authbus_ingress::require_ready(agentd)?;
+        let now_ms = authbus_ingress::now_ms()?;
         if request.expires_at_ms <= now_ms || request.expires_at_ms.saturating_sub(now_ms) > 300_000
         {
             return Err(invalid("objective expiry must be within five minutes"));
         }
 
-        let authbus = authbus_ingress::attached(agentd)?;
-        let trust = authbus.trust(agentd)?;
         let issuer = trust.issuer()?;
+        let signature = hex_bytes::<64>(&request.signature_hex)?;
         let message = SignedMessage {
             claims: objective_claims(agentd.identity(), &request, &payload)?,
-            signature: hex_bytes(&request.signature_hex)?,
+            signature: signature.into(),
         };
         let authenticated = message
             .authenticate(
@@ -200,7 +224,7 @@ impl ObjectiveRuntimeHost {
             expires_at_ms: authenticated.claims().expires_at_ms,
             scope_digest: authenticated.claims().scope_digest,
             signed_body_digest: authenticated.claims().payload_digest,
-            signature: message.signature,
+            signature,
         };
 
         // Durable publication and replay-frontier mutation remain serialized,
@@ -282,7 +306,7 @@ impl ObjectiveRuntimeHost {
         };
 
         authbus_ingress::require_ready(agentd)?;
-        let current = authbus.trust(agentd)?;
+        let current = authbus.trust(agentd).await?;
         if !authentication_is_current(
             &record,
             &current,
@@ -307,7 +331,7 @@ impl ObjectiveRuntimeHost {
                         "canonical_slow_path"
                     }
                     None => {
-                        agentd.start_current_run_start_record(&record)?;
+                        agentd.start_current_run_start_record(&record).await?;
                         "compiled"
                     }
                 }
@@ -535,6 +559,7 @@ fn authentication_is_current(
     identity: &AgentdIdentity,
     now_ms: u64,
 ) -> Result<bool, AgentdError> {
+    trust.require_run_start_v1()?;
     let issuer = trust.issuer()?;
     let auth = &record.authentication;
     let key_epoch = Generation::new(auth.key_epoch)
@@ -551,7 +576,7 @@ fn authentication_is_current(
             sequence: auth.sequence,
             expires_at_ms: auth.expires_at_ms,
         },
-        signature: auth.signature,
+        signature: auth.signature.into(),
     };
     match message.authenticate(
         &issuer,

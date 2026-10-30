@@ -9,6 +9,7 @@ use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
 use codex_app_server_protocol::QueuedSubmission;
+use codex_hepta_authbus::AuthBusAlgorithm;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_evidence::AuthBusDeliveryState;
 use codex_hepta_fleet::AgentLifecycle;
@@ -26,17 +27,28 @@ use crate::AuthBusTextIngress;
 use crate::authbus_ingress::authbus_text_claims;
 use crate::authbus_ingress::submit;
 
+#[path = "authbus_pq_dispatch_tests.rs"]
+mod pq;
+use pq::FixtureSigner;
+
+#[path = "authbus_lease_delay_tests.rs"]
+mod lease_delay;
+
 struct Fixture {
     _temp: tempfile::TempDir,
     state: Arc<AgentdState>,
     registry: FleetRegistry,
-    key: SigningKey,
+    key: FixtureSigner,
     trust_file: PathBuf,
     checkpoint_file: PathBuf,
 }
 
 impl Fixture {
     async fn new() -> Self {
+        Self::with_algorithm(AuthBusAlgorithm::Ed25519V1).await
+    }
+
+    async fn with_algorithm(algorithm: AuthBusAlgorithm) -> Self {
         let temp = tempfile::tempdir().unwrap();
         let root = temp.path().canonicalize().unwrap();
         std::fs::set_permissions(&root, std::fs::Permissions::from_mode(0o700)).unwrap();
@@ -92,6 +104,7 @@ impl Fixture {
         )
         .await
         .expect("evidence owner");
+        evidence.bind_authbus_profile(algorithm).await.unwrap();
         let frontier = evidence
             .authbus_replay_frontier_digest()
             .await
@@ -119,7 +132,7 @@ impl Fixture {
             _temp: temp,
             state,
             registry,
-            key: SigningKey::from_bytes(&[55; 32]),
+            key: FixtureSigner::new(55, algorithm),
             trust_file,
             checkpoint_file,
         };
@@ -143,7 +156,7 @@ impl Fixture {
             .iter()
             .map(|b| format!("{b:02x}"))
             .collect::<String>();
-        let json = serde_json::json!({"schema_version":1,"agent_id":self.state.identity().agent_id.as_str(),
+        let json = serde_json::json!({"schema_version":self.key.algorithm().schema_version(),"agent_id":self.state.identity().agent_id.as_str(),
             "issuer_id":"issuer:test","key_epoch":1,"public_key_hex":key,"revoked":revoked,"thread_ids":["thread:test"]});
         std::fs::write(&self.trust_file, serde_json::to_vec(&json).unwrap()).unwrap();
         std::fs::set_permissions(&self.trust_file, std::fs::Permissions::from_mode(0o600)).unwrap();
@@ -151,6 +164,7 @@ impl Fixture {
 
     fn request(&self, sequence: u64) -> AuthBusTextIngress {
         let mut request = AuthBusTextIngress {
+            auth_version: self.key.algorithm().schema_version(),
             issuer_id: "issuer:test".into(),
             key_epoch: 1,
             message_id: format!("message:{sequence}"),
@@ -163,21 +177,14 @@ impl Fixture {
                 text: "bounded signed text".into(),
             },
         };
-        let claims = authbus_text_claims(&self.state.identity().agent_id, &request).unwrap();
-        request.signature_hex = self
-            .key
-            .sign(&claims.signing_bytes())
-            .to_bytes()
-            .iter()
-            .map(|b| format!("{b:02x}"))
-            .collect();
+        self.key.sign(&self.state.identity().agent_id, &mut request);
         request
     }
 
     async fn claim(&self, host: &TextIngress, id: Digest32) -> AuthBusDelivery {
         host.evidence
             .claim_authbus_delivery(
-                &host.trust(&self.state).unwrap().issuer().unwrap(),
+                &host.trust(&self.state).await.unwrap().issuer().unwrap(),
                 AuthBusClaimRequest {
                     delivery_id: id,
                     subject_id: &host.subject,
@@ -306,7 +313,7 @@ async fn abandoned_first_claim_without_admission_is_quarantined_after_lookup_mis
         .parse()
         .unwrap();
     let host = attached(&fixture.state).unwrap();
-    let issuer = host.trust(&fixture.state).unwrap().issuer().unwrap();
+    let issuer = host.trust(&fixture.state).await.unwrap().issuer().unwrap();
     let first = fixture.claim(&host, id).await;
     // The owner cannot prove whether a previous claimant sent. Persist a retry
     // then require the same conservative lookup used after lease recovery.

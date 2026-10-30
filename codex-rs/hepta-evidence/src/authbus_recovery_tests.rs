@@ -1,16 +1,21 @@
+use codex_hepta_authbus::AuthBusAlgorithm;
 use codex_hepta_authbus::AuthBusAuthorityStore;
+use codex_hepta_authbus::AuthBusVerifyingKey;
 use codex_hepta_authbus::Error;
 use codex_hepta_authbus::IssuerPurpose;
 use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_authbus::IssuerSpec;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
+use codex_hepta_contracts::pq_auth::PqNativeSigningKey;
+use codex_hepta_contracts::pq_auth::ml_dsa_65_key_id_from_spki;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
 use super::*;
@@ -20,12 +25,109 @@ fn config(temp: &TempDir) -> SqliteConfig {
     SqliteConfig::new_for_testing(AbsolutePathBuf::try_from(temp.path().to_path_buf()).unwrap())
 }
 
+#[tokio::test]
+async fn unchanged_external_checkpoint_recomputes_clean_and_pending_replay_frontiers() {
+    for algorithm in [AuthBusAlgorithm::Ed25519V1, AuthBusAlgorithm::MlDsa65V2] {
+        for pending in [false, true] {
+            let temp = TempDir::new().unwrap();
+            let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
+            let (_, mut issuer, mut message) = fixture(1);
+            if algorithm == AuthBusAlgorithm::MlDsa65V2 {
+                let spki = PqNativeSigningKey::public_spki_from_seed(&[97; 32].into());
+                let key = PqNativeSigningKey::from_owned_seed(
+                    [97; 32].into(),
+                    ml_dsa_65_key_id_from_spki(&spki).unwrap(),
+                )
+                .unwrap();
+                issuer.verifying_key = AuthBusVerifyingKey::from_pq_spki(&spki).unwrap();
+                message.claims.expires_at_ms = now_millis().unwrap() as u64 + 60_000;
+                message.signature = key
+                    .sign_exact_message(&message.claims.signing_bytes_for(algorithm))
+                    .unwrap()
+                    .into();
+                store.bind_authbus_profile(algorithm).await.unwrap();
+                store.pin_authbus_issuer(&issuer).await.unwrap();
+            }
+            if !pending {
+                admit(&store, &issuer, &message).await.unwrap();
+            }
+            let external = ReplayCheckpoint {
+                generation: 1,
+                digest: store.authbus_replay_frontier_digest().await.unwrap(),
+            };
+            store
+                .initialize_authbus_restore_checkpoint(external)
+                .await
+                .unwrap();
+            if pending {
+                admit(&store, &issuer, &message).await.unwrap();
+            }
+            sqlx::query("UPDATE authbus_replay_sequences SET sequence = ?")
+                .bind(0_u64.to_be_bytes().as_slice())
+                .execute(&store.pool)
+                .await
+                .unwrap();
+            let pending_before = store.pending_authbus_restore_checkpoint().await.unwrap();
+            let drifted = store.authbus_replay_frontier_digest().await.unwrap();
+            // Reusing the original valid signature must not restore the old
+            // sequence and hide a second acceptance behind an identical digest.
+            assert!(matches!(
+                admit(&store, &issuer, &message).await,
+                Err(AuthBusAdmissionError::Storage(EvidenceError::Corrupt(_)))
+            ));
+            assert!(matches!(
+                store.pin_authbus_issuer(&issuer).await,
+                Err(AuthBusAdmissionError::Storage(EvidenceError::Corrupt(_)))
+            ));
+            assert!(
+                store
+                    .enqueue_authbus_message(
+                        &issuer,
+                        &message,
+                        &message.claims.subject_id,
+                        message.claims.scope_digest,
+                        b"payload"
+                    )
+                    .await
+                    .is_err()
+            );
+            assert!(
+                store
+                    .pending_authbus_deliveries(
+                        &message.claims.subject_id,
+                        message.claims.scope_digest,
+                        1
+                    )
+                    .await
+                    .is_err()
+            );
+            assert_eq!(
+                store.authbus_replay_frontier_digest().await.unwrap(),
+                drifted
+            );
+            assert_eq!(
+                store.pending_authbus_restore_checkpoint().await.unwrap(),
+                pending_before
+            );
+            let queued: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_outbox")
+                .fetch_one(&store.pool)
+                .await
+                .unwrap();
+            assert_eq!(queued, 0);
+            assert!(matches!(
+                store.reconcile_authbus_restore_checkpoint(external).await,
+                Err(AuthBusRecoveryError::RollbackDetected)
+            ));
+        }
+    }
+}
+
 fn fixture(sequence: u64) -> (SigningKey, IssuerRegistration, SignedMessage) {
     let key = SigningKey::from_bytes(&[77; 32]);
     let issuer = IssuerRegistration {
         issuer_id: StableId::new("issuer:rollback").unwrap(),
         key_epoch: Generation::new(7).unwrap(),
-        verifying_key: key.verifying_key(),
+        verifying_key: key.verifying_key().into(),
         revoked: false,
     };
     let claims = SignedMessageClaims {
@@ -39,7 +141,14 @@ fn fixture(sequence: u64) -> (SigningKey, IssuerRegistration, SignedMessage) {
         expires_at_ms: u64::MAX,
     };
     let signature = key.sign(&claims.signing_bytes()).to_bytes();
-    (key, issuer, SignedMessage { claims, signature })
+    (
+        key,
+        issuer,
+        SignedMessage {
+            claims,
+            signature: signature.into(),
+        },
+    )
 }
 
 async fn admit(
@@ -184,7 +293,7 @@ async fn issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resur
             IssuerSpec {
                 issuer_id: issuer.issuer_id.clone(),
                 key_epoch: issuer.key_epoch,
-                verifying_key: key.verifying_key(),
+                verifying_key: key.verifying_key().into(),
             },
         )
         .await

@@ -273,6 +273,7 @@ fn signed_text(
 ) -> Result<AuthBusTextIngress> {
     let now = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?;
     let mut request = AuthBusTextIngress {
+        auth_version: 1,
         issuer_id: ISSUER_ID.to_string(),
         key_epoch: 1,
         message_id: format!("message:native-authbus:{sequence}"),

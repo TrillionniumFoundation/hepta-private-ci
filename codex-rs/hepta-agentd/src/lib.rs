@@ -64,6 +64,7 @@ pub mod test_support;
 mod topology_plasticity_host;
 
 pub use authbus_ingress::authbus_text_claims;
+pub use authbus_ingress::sign_authbus_text_pq;
 pub use browser_servo::BrowserFinalUseInvocation;
 pub use browser_servo::BrowserServoCall;
 pub use browser_servo::BrowserServoError;

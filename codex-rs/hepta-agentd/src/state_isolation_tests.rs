@@ -593,7 +593,8 @@ async fn current_durable_run_start_requires_live_owner_trust() {
         .expect("append run start");
 
     let admitted = state
-        .start_current_run_start(&journal, &run_id)
+        .start_current_run_start_record(journal.get(&run_id).unwrap().unwrap())
+        .await
         .expect("current signed durable admission");
     assert_eq!(admitted.phase, RunPhase::Admitted);
     assert_eq!(admitted.generation, 2);
@@ -623,7 +624,12 @@ async fn current_durable_run_start_requires_live_owner_trust() {
     journal
         .append(predecessor, second)
         .expect("append revoked candidate");
-    assert!(state.start_current_run_start(&journal, &second_id).is_err());
+    assert!(
+        state
+            .start_current_run_start_record(journal.get(&second_id).unwrap().unwrap())
+            .await
+            .is_err()
+    );
     assert!(
         state
             .runs
