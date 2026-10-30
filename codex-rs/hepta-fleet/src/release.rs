@@ -255,7 +255,14 @@ impl FleetRegistry {
             std::process::id(),
             RELEASE_SEQUENCE.fetch_add(1, Ordering::Relaxed)
         ));
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::DirBuilderExt;
+            std::fs::DirBuilder::new().mode(0o700).create(&staging)?;
+        }
+        #[cfg(not(unix))]
         std::fs::create_dir(&staging)?;
+        let mut renamed = false;
         let result = (|| {
             let bin_root = staging.join("bin");
             std::fs::create_dir(&bin_root)?;
@@ -293,14 +300,19 @@ impl FleetRegistry {
             set_mode(&bin_root, /*mode*/ 0o555)?;
             sync_directory(&bin_root)?;
             sync_directory(&staging)?;
-            set_mode(&staging, /*mode*/ 0o555)?;
+            // Darwin requires write authority on a directory being renamed.
+            // Readers reject the writable root until it is sealed below.
             std::fs::rename(&staging, &final_root)?;
+            renamed = true;
+            set_mode(&final_root, /*mode*/ 0o555)?;
+            sync_directory(&final_root)?;
             sync_directory(self.layout().releases_root())?;
             Ok(())
         })();
         if let Err(error) = result {
-            make_tree_removable(&staging);
-            let _ = std::fs::remove_dir_all(&staging);
+            let incomplete_root = if renamed { &final_root } else { &staging };
+            make_tree_removable(incomplete_root);
+            let _ = std::fs::remove_dir_all(incomplete_root);
             return Err(error);
         }
         resolve_catalog_release(self.layout().releases_root(), &release_id)
