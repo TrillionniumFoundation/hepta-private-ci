@@ -3,6 +3,8 @@ use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
 
+type TestResult = Result<(), Box<dyn std::error::Error>>;
+
 #[derive(Debug)]
 struct FixedClock;
 
@@ -68,7 +70,7 @@ impl Fixture {
 }
 
 #[test]
-fn native_owner_lock_and_claim_replay_survive_reopen() -> Result<(), Box<dyn std::error::Error>> {
+fn native_owner_lock_and_claim_replay_survive_reopen() -> TestResult {
     let fixture = Fixture::new()?;
     let authority = fixture.open().unwrap();
     assert_eq!(fixture.open().unwrap_err(), FinalUseError::StateLocked);
@@ -84,7 +86,7 @@ fn native_owner_lock_and_claim_replay_survive_reopen() -> Result<(), Box<dyn std
 }
 
 #[test]
-fn native_revocation_replacement_survives_reopen_and_missing_state_fails_closed() -> Result<(), Box<dyn std::error::Error>> {
+fn native_revocation_replacement_survives_reopen_and_missing_state_fails_closed() -> TestResult {
     let mut fixture = Fixture::new()?;
     let authority = fixture.open().unwrap();
     let signed = fixture.signed()?;
@@ -108,7 +110,7 @@ fn native_revocation_replacement_survives_reopen_and_missing_state_fails_closed(
 }
 
 #[test]
-fn native_missing_claim_journal_is_never_recreated() -> Result<(), Box<dyn std::error::Error>> {
+fn native_missing_claim_journal_is_never_recreated() -> TestResult {
     let fixture = Fixture::new()?;
     let authority = fixture.open().unwrap();
     let signed = fixture.signed()?;
