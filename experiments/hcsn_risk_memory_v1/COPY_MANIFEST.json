@@ -1,0 +1,16 @@
+{
+  "schema": "hcsn-memory-profile-copy-scope.v1",
+  "original_path": "experiments/hcsn_risk_ablation_v1/model.py",
+  "original_sha256": "4bccacfabd1b63874dd92b12db3a91c8c8d881f6c3c48fbbb9fc6c714f8c868a",
+  "new_model_path": "experiments/hcsn_risk_memory_v1/model.py",
+  "new_model_sha256": "4b9e9327a02b424e2ffebb12fba97d30454b0afeee091dd631318b66713ff34a",
+  "changes": [
+    "RiskContentCell.advance: first_event_probability call replaced by vector_probability",
+    "RiskContentCell.forward: first_event_operator call replaced by first_event_vector",
+    "RiskContentCell.forward: survival_transition key replaced by survival_vector",
+    "RiskClassifier initialization: same cell constructor arguments, using the subclass with the two declared method changes",
+    "Config adds risk_operator_profile; inherited classifier forward, state, parameter groups and counts unchanged"
+  ],
+  "frozen_source_modified": false,
+  "new_survival_transition_matrix_fabricated": false
+}

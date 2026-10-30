@@ -1,0 +1,25 @@
+{
+  "blocking_findings": [],
+  "findings": [
+    "backward_jump up/down directions match Q_nohit.T",
+    "active_out retains marked event outflow including m=0 self-reset",
+    "pre-existing refractory phases advance and release with reset_weights",
+    "R_nohit applied to survival vector preserves dt=0 boundary jump",
+    "killed survival mass is never normalized",
+    "direct repeated Poisson polynomial is mathematically equivalent for <=16 chunks; matrix fallback selects only affected tokens",
+    "independent AST comparison confirms advance and forward alter risk call/keys only, constructor alters cell class and adds profile identity only"
+  ],
+  "read_only": true,
+  "received_utc": "2026-10-30",
+  "reviewer": "/root/hcsn_content_audit",
+  "schema": "hcsn-risk-vector-independent-peer-review.v1",
+  "scope_limitations": [
+    "Only risk time-propagation is O(N); physical overlap remap and original regenerative transition remain O(N^2)",
+    "Training equivalence and memory have not been audited by this peer"
+  ],
+  "source_files_sha256": {
+    "experiments/hcsn_risk_memory_v1/COPY_MANIFEST.json": "87239e1f58c3759cd8976f58a43a8b7b86f03293e4e4d948509ad39b2f2e6411",
+    "experiments/hcsn_risk_memory_v1/model.py": "4b9e9327a02b424e2ffebb12fba97d30454b0afeee091dd631318b66713ff34a",
+    "experiments/hcsn_risk_memory_v1/vector_kernel.py": "eba3980c8c4c8b91db9ea8741c76bb8bbdb84005b04c675952d095e3ec04ffc7"
+  }
+}
