@@ -48,6 +48,15 @@ jobs:
           - lane: windows-private-state
             runner: windows-2025
             timeout_minutes: 90
+          - lane: vendor-compatibility
+            runner: ubuntu-24.04
+            timeout_minutes: 90
+          - lane: security-consumers
+            runner: ubuntu-24.04
+            timeout_minutes: 120
+          - lane: idle-consumers
+            runner: ubuntu-24.04
+            timeout_minutes: 120
           - lane: research-unit-tests
             runner: ubuntu-24.04
             timeout_minutes: 30
@@ -110,7 +119,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: "3.12.14"
+          python-version: ${{ runner.os == 'Windows' && '3.13.17' || '3.12.14' }}
 
       - name: Prepare native CI build paths
         if: matrix.lane != 'research-unit-tests' && matrix.lane != 'bazel-lock'
@@ -137,7 +146,7 @@ jobs:
           tool: cargo-deny@0.19.0
 
       - name: Install exact native test runner
-        if: matrix.lane == 'protocol-schema' || matrix.lane == 'windows-private-state'
+        if: matrix.lane == 'protocol-schema' || matrix.lane == 'windows-private-state' || matrix.lane == 'vendor-compatibility' || matrix.lane == 'security-consumers' || matrix.lane == 'idle-consumers'
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         with:
           tool: nextest@0.9.103
@@ -148,6 +157,7 @@ jobs:
           import json
           import os
           from pathlib import Path
+          import shutil
           import subprocess
           import sys
 
@@ -164,10 +174,35 @@ jobs:
                   ["just", "write-app-server-schema", "--experimental"],
                   ["just", "test", "-p", "codex-app-server-protocol", "--lib"],
               ],
-              "bazel-lock": [["just", "bazel-lock-update"]],
+              "bazel-lock": [
+                  ["just", "bazel-lock-update"],
+                  [sys.executable, "scripts/check_hepta_vendor_bazel.py", "--repo", str(Path.cwd()),
+                   "--output", str(output / "vendor-bazel")],
+              ],
               "windows-private-state": [
                   ["just", "test", "-p", "codex-utils-path",
-                   "-p", "codex-hepta-prompt-registry"],
+                   "-p", "codex-hepta-prompt-registry", "-p", "codex-hepta-contracts", "--lib", "--locked"],
+                  ["just", "test", "-p", "codex-utils-pty", "-p", "codex-v8-poc",
+                   "--lib", "--features", "codex-v8-poc/sandbox", "--locked"],
+                  ["just", "test", "-p", "codex-hepta-intelligence", "-p", "codex-hepta-prompt-optimizer",
+                   "-p", "codex-hepta-operator-acceptance", "--lib", "--locked"],
+              ],
+              "vendor-compatibility": [
+                  [sys.executable, "scripts/run_hepta_vendor_compatibility.py", "--repo", str(Path.cwd()),
+                   "--work", str(Path(os.environ["RUNNER_TEMP"]) / "hepta-vendor-work"),
+                   "--output", str(output / "vendor-compatibility")],
+              ],
+              "security-consumers": [
+                  ["just", "test", "-p", "codex-aws-auth", "-p", "codex-hepta-matrix-sdk",
+                   "-p", "codex-secrets", "-p", "codex-execpolicy", "--lib", "--locked"],
+                  ["just", "test", "-p", "codex-core-plugins", "--lib", "--locked"],
+              ],
+              "idle-consumers": [
+                  ["just", "test", "-p", "codex-async-utils", "--lib", "--locked"],
+                  ["just", "test", "-p", "codex-core", "--lib", "--locked", "-E", "test(terminal_event_barrier_tests::)"],
+                  ["just", "test", "-p", "codex-queue-extension", "--test", "queue_service", "--locked", "-E",
+                   "test(queue_idle_continuation::) | test(queue_hook_rejection_tests::) | test(registered_queue_lifecycle_starts_messages_in_fifo_order) | test(rejected_queue_messages_remain_durable_and_block_followups)"],
+                  ["just", "test", "-p", "codex-app-server", "--test", "all", "--locked", "-E", "test(turn_completion_admission::)"],
               ],
               "research-unit-tests": [
                   [sys.executable, "-m", "pip", "install", "--requirement",
@@ -180,6 +215,16 @@ jobs:
           result = 0
           for index, command in enumerate(commands, start=1):
               log = output / f"command-{index}.log"
+              # Snapshot each command's reports before the next invocation can
+              # replace them. Remove only old report files, not build outputs.
+              report_roots = [Path.cwd() / "codex-rs/target/nextest"]
+              if "CARGO_TARGET_DIR" in os.environ:
+                  report_roots.append(Path(os.environ["CARGO_TARGET_DIR"]) / "nextest")
+              report_roots = list(dict.fromkeys(path.resolve() for path in report_roots))
+              for report_root in report_roots:
+                  if report_root.is_dir():
+                      for report in report_root.rglob("junit.xml"):
+                          report.unlink()
               print(f"Running {command!r}", flush=True)
               with log.open("wb") as handle:
                   try:
@@ -196,6 +241,12 @@ jobs:
                   except OSError as error:
                       handle.write(str(error).encode("utf-8"))
                       code = 127
+              for root_index, report_root in enumerate(report_roots):
+                  if report_root.is_dir():
+                      for report in report_root.rglob("junit.xml"):
+                          destination = output / f"command-{index}-junit" / str(root_index) / report.relative_to(report_root)
+                          destination.parent.mkdir(parents=True, exist_ok=True)
+                          shutil.copy2(report, destination)
               receipts.append({"argv": command, "exit_code": code, "log": log.name})
               (output / "commands.json").write_text(
                   json.dumps(receipts, indent=2) + "\n", encoding="utf-8"
