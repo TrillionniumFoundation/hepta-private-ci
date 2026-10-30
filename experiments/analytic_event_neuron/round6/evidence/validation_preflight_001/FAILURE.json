@@ -1,0 +1,45 @@
+{
+  "disk_observation": {
+    "available_bytes": 0,
+    "capacity_human": "32G",
+    "filesystem": "overlay",
+    "inode_used_percent": 27,
+    "our_workspace_human": "18M",
+    "used_percent": 100
+  },
+  "formal_confirmation_constructed": false,
+  "formal_training_started": false,
+  "full_cpu_seconds": null,
+  "full_wall_seconds": null,
+  "launch_ordering_error": "The wrapper was invoked after the failed snapshot setup because the first tool result exit code was not checked. The next attempt must require successful snapshot completion before launch.",
+  "passed": false,
+  "recorded_utc": "2026-10-30T12:31:24.764979+00:00",
+  "retained_files": {
+    "POST_FAILURE_IDENTITY.json": {
+      "bytes": 15547,
+      "sha256": "9b7875b5df0ba13189d15c9c2a44322cbc5ed9eeb44798fa7e5138ada8b33797"
+    },
+    "execution/combined_preflight_001.log": {
+      "bytes": 4096,
+      "sha256": "b4214cfead8dd325e8b497d7e1156b986eab62b55822315b99f4ea96a0942b45"
+    },
+    "execution/combined_preflight_001_STARTED.json": {
+      "bytes": 666,
+      "sha256": "ea507ec39c70ff34b76dccfda8a0ce568dc759e66948a3a46ffc37b9ec6c3e8e"
+    }
+  },
+  "schema": "hepta.acquired-feedback.preflight-operational-failure.v6",
+  "scientific_source_modification_caused_by_failure": false,
+  "source_snapshot_setup": {
+    "BEFORE_json_created": false,
+    "completed": false,
+    "failure": "OSError [Errno 28] No space left on device while creating validation_preflight_001"
+  },
+  "wrapper": {
+    "failure": "OSError [Errno 28] No space left on device during execution log flush/close",
+    "full_completion_receipt_written": false,
+    "qualified_test_result": false,
+    "returncode": 1,
+    "visible_partial_output": "Ten math tests passed, then broker and temporary-directory study tests reported errors; output recording failed before a complete test-suite result."
+  }
+}

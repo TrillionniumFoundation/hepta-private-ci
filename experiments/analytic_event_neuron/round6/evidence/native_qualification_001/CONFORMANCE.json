@@ -1,0 +1,28 @@
+{
+  "children_system_seconds": 0.037543,
+  "children_user_seconds": 1.476844,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "experiments.analytic_event_neuron.round6.test_qualifier",
+    "-v"
+  ],
+  "completed_utc": "2026-10-30T12:26:52.631290+00:00",
+  "disk_writes": false,
+  "passed": true,
+  "returncode": 0,
+  "schema": "hepta.actual-native-qualification.conformance.v6",
+  "sources_and_evidence_sha256": {
+    "experiments/analytic_event_neuron/round6/evidence/native_qualification_001/results/RESULT.json": "e23c4178106275c1af79b13253c6a52f0a653bd4a3b54dbcac4c3feae1dd5cd4",
+    "experiments/analytic_event_neuron/round6/qualifier.py": "c8ed7b89f5833e9e232635d7f66198f4e6371b3a7c6ae98b1c60944db908e061",
+    "experiments/analytic_event_neuron/round6/test_qualifier.py": "8bebd1313277a34722af8595a596c7885d431c4d3f3493fb385f6ce2018f398d"
+  },
+  "started_utc": "2026-10-30T12:26:52.101006+00:00",
+  "stderr": "test_closed_actual_evidence_inventory (experiments.analytic_event_neuron.round6.test_qualifier.ActualQualification.test_closed_actual_evidence_inventory) ... ok\ntest_extreme_tail_release_and_actual_sixteen_step_bound (experiments.analytic_event_neuron.round6.test_qualifier.ActualQualification.test_extreme_tail_release_and_actual_sixteen_step_bound) ... ok\ntest_fresh_process_continuation_and_native_accounting (experiments.analytic_event_neuron.round6.test_qualifier.ActualQualification.test_fresh_process_continuation_and_native_accounting) ... ok\ntest_full_interruption_and_refusal_matrix (experiments.analytic_event_neuron.round6.test_qualifier.ActualQualification.test_full_interruption_and_refusal_matrix) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.022s\n\nOK\n",
+  "stdout": "",
+  "wall_ns": 530282288,
+  "receipt_saved_after_disk_pause": true,
+  "evidence_reexecuted_for_storage": false
+}

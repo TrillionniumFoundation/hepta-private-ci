@@ -1,0 +1,36 @@
+{
+  "all_passed": true,
+  "data_scope": "Independent unit fixtures; no registered confirmation generated or read",
+  "execution": "python -m unittest experiments.analytic_event_neuron.round6.test_math -v",
+  "execution_working_directory": "/workspace/scratch/d831a963ef2f/hepta-analytic",
+  "full_invocation_cpu_seconds": null,
+  "full_invocation_wall_seconds": null,
+  "independent_methods": [
+    "dense multivariate Cholesky conditional law and marginal likelihood",
+    "expanding-bracket posterior mean bisection",
+    "fixed order256 and512 Gauss-Legendre continuation",
+    "separate K1 truncated-normal second moments",
+    "scaled-density numerical integration for normal tail and interval logs",
+    "fivepoint inherited probability/propagation derivative checks",
+    "supervised log-noise scale objective derivative and optimum"
+  ],
+  "interpreter": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+  "log_origin": "Exact merged command output captured in tool response for session15210; transcribed after completion, not a newly executed test invocation",
+  "log_sha256": "6bc9b9013582d5c7ce1ca1d9cf1a3880d7b5a5cb16c1311093878873b0d3318b",
+  "mathematical_review": "Positive mixture posterior derivative equals conditional variance / noise; crossing bracket and Gaussian truncation inequality valid. Quadrature estimates are not certified intervals; actual future transport/learned-readout loss is excluded from rounding bound.",
+  "numpy": "2.3.5",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "rerun_performed": false,
+  "returncode": 0,
+  "schema": "hepta.analytic-event.round6.unit-math-review.v1",
+  "scipy": "1.17.0",
+  "sources": {
+    "experiments/analytic_event_neuron/round6/continuation.py": "c1d197dca1887cae48b5551477e5719922fb875091b956ec302620ddcfd6c0e5",
+    "experiments/analytic_event_neuron/round6/reference.py": "ea279d20f2c9e5344083ba10ba94c1df213065ebe9bb142170ce1ad1e3dffc36",
+    "experiments/analytic_event_neuron/round6/test_math.py": "918f04d8cf418a9bb9e09900e83199c843e5c4b52771a7b972a5d3a65506c28f"
+  },
+  "tests_run": 10,
+  "unittest_body_seconds_only": true,
+  "unittest_reported_seconds": 4.316
+}
