@@ -1,0 +1,203 @@
+{
+  "dtype": "float64",
+  "epsilon": 1e-05,
+  "checks": [
+    {
+      "kind": "hcsn",
+      "parameter": "inp",
+      "index": [
+        0,
+        0
+      ],
+      "analytic": 0.4678695145875488,
+      "finite_difference": 0.4678695146864697,
+      "absolute_error": 9.892092700525268e-11
+    },
+    {
+      "kind": "hcsn",
+      "parameter": "recurrent",
+      "index": [
+        0,
+        0
+      ],
+      "analytic": 0.8931771653510493,
+      "finite_difference": 0.8931771653397645,
+      "absolute_error": 1.1284750911499941e-11
+    },
+    {
+      "kind": "hcsn",
+      "parameter": "boundary",
+      "index": [
+        0
+      ],
+      "analytic": -0.5479067802235842,
+      "finite_difference": -0.54790687529227,
+      "absolute_error": 9.506868581254935e-08
+    },
+    {
+      "kind": "hcsn",
+      "parameter": "tau_fast",
+      "index": [
+        0
+      ],
+      "analytic": 0.11657555829846292,
+      "finite_difference": 0.11657555827326858,
+      "absolute_error": 2.51943327311821e-11
+    },
+    {
+      "kind": "hcsn",
+      "parameter": "tau_slow",
+      "index": [
+        0
+      ],
+      "analytic": 0.16765941911727064,
+      "finite_difference": 0.16765941910357185,
+      "absolute_error": 1.3698792100669266e-11
+    },
+    {
+      "kind": "sigmoid",
+      "parameter": "inp",
+      "index": [
+        0,
+        0
+      ],
+      "analytic": 0.4472556672692699,
+      "finite_difference": 0.4472556672574512,
+      "absolute_error": 1.181871267519341e-11
+    },
+    {
+      "kind": "sigmoid",
+      "parameter": "recurrent",
+      "index": [
+        0,
+        0
+      ],
+      "analytic": 1.088879583528281,
+      "finite_difference": 1.0888795829888664,
+      "absolute_error": 5.39414513056613e-10
+    },
+    {
+      "kind": "sigmoid",
+      "parameter": "boundary",
+      "index": [
+        0
+      ],
+      "analytic": -0.5946955021593006,
+      "finite_difference": -0.5946955088376171,
+      "absolute_error": 6.678316566421927e-09
+    },
+    {
+      "kind": "sigmoid",
+      "parameter": "tau_fast",
+      "index": [
+        0
+      ],
+      "analytic": 0.11693762486423648,
+      "finite_difference": 0.11693762482778423,
+      "absolute_error": 3.645224400106173e-11
+    },
+    {
+      "kind": "sigmoid",
+      "parameter": "tau_slow",
+      "index": [
+        0
+      ],
+      "analytic": 0.19677044021516715,
+      "finite_difference": 0.1967704402083825,
+      "absolute_error": 6.7846561702111785e-12
+    },
+    {
+      "kind": "gru",
+      "parameter": "inp",
+      "index": [
+        0,
+        0
+      ],
+      "analytic": 0.06393484947019105,
+      "finite_difference": 0.06393484945910188,
+      "absolute_error": 1.1089171247924412e-11
+    },
+    {
+      "kind": "gru",
+      "parameter": "recurrent",
+      "index": [
+        0,
+        0
+      ],
+      "analytic": -0.0075072998052404805,
+      "finite_difference": -0.00750729980403264,
+      "absolute_error": 1.2078402514270614e-12
+    },
+    {
+      "kind": "transformer",
+      "parameter": "inp",
+      "index": [
+        0,
+        0
+      ],
+      "analytic": 3.1691984618832274,
+      "finite_difference": 3.1691984618387177,
+      "absolute_error": 4.4509729235642226e-11
+    },
+    {
+      "kind": "transformer",
+      "parameter": "query",
+      "index": [
+        0,
+        0
+      ],
+      "analytic": -0.6496441678052344,
+      "finite_difference": -0.6496441680159393,
+      "absolute_error": 2.1070489797381242e-10
+    }
+  ],
+  "gate_checks": [
+    {
+      "kind": "hcsn",
+      "q_gradient_at_boundary": 0.5,
+      "call_gradient_at_boundary": -0.0,
+      "boundary_neighbors": [
+        {
+          "x": -1e-06,
+          "actual": 0.49999950000025,
+          "expected": 0.49999950000025
+        },
+        {
+          "x": 0.0,
+          "actual": 0.5,
+          "expected": 0.5
+        },
+        {
+          "x": 1e-06,
+          "actual": 0.49999950000025,
+          "expected": 0.49999950000025
+        }
+      ]
+    },
+    {
+      "kind": "sigmoid",
+      "q_gradient_at_boundary": 0.5,
+      "call_gradient_at_boundary": -0.0,
+      "boundary_neighbors": [
+        {
+          "x": -1e-06,
+          "actual": 0.49999999999950007,
+          "expected": 0.49999999999950007
+        },
+        {
+          "x": 0.0,
+          "actual": 0.5,
+          "expected": 0.5
+        },
+        {
+          "x": 1e-06,
+          "actual": 0.4999999999995,
+          "expected": 0.4999999999995
+        }
+      ]
+    }
+  ],
+  "max_absolute_error": 9.506868581254935e-08,
+  "passed": true,
+  "scope": "Gradients of executed discrete update, not exact nonlinear ODE flow"
+}

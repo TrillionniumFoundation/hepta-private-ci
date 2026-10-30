@@ -1,0 +1,193 @@
+{
+  "passed": true,
+  "dtype": "float64",
+  "epsilon": 1e-05,
+  "checks": [
+    {
+      "kind": "hcsn",
+      "parameter": "inp",
+      "autodiff": 0.009833751790710953,
+      "finite_difference": 0.009833751787868827,
+      "absolute_error": 2.8421258402300253e-12
+    },
+    {
+      "kind": "hcsn",
+      "parameter": "boundary_weights",
+      "autodiff": -0.005961364451162615,
+      "finite_difference": -0.005961364447915062,
+      "absolute_error": 3.247553267970993e-12
+    },
+    {
+      "kind": "hcsn",
+      "parameter": "candidate_weights",
+      "autodiff": -9.528228136759104e-05,
+      "finite_difference": -9.528228345212496e-05,
+      "absolute_error": 2.084533920801955e-12
+    },
+    {
+      "kind": "hcsn",
+      "parameter": "boundary",
+      "autodiff": -0.1391710103271746,
+      "finite_difference": -0.1391710106046773,
+      "absolute_error": 2.7750268749571205e-10
+    },
+    {
+      "kind": "hcsn",
+      "parameter": "memory_feedback",
+      "autodiff": -0.0067168854839157535,
+      "finite_difference": -0.00671688547976279,
+      "absolute_error": 4.152963563319734e-12
+    },
+    {
+      "kind": "hcsn",
+      "parameter": "tau_fast",
+      "autodiff": 4.7476327308359666e-05,
+      "finite_difference": 4.747632564860992e-05,
+      "absolute_error": 1.6597497437846262e-12
+    },
+    {
+      "kind": "hcsn",
+      "parameter": "tau_slow",
+      "autodiff": 0.0030241650408912063,
+      "finite_difference": 0.0030241650406104266,
+      "absolute_error": 2.8077973973639203e-13
+    },
+    {
+      "kind": "sigmoid",
+      "parameter": "inp",
+      "autodiff": 0.011247787918271815,
+      "finite_difference": 0.011247787916335293,
+      "absolute_error": 1.936522123213713e-12
+    },
+    {
+      "kind": "sigmoid",
+      "parameter": "boundary_weights",
+      "autodiff": -0.008130666651462063,
+      "finite_difference": -0.008130666651062768,
+      "absolute_error": 3.992951802533895e-13
+    },
+    {
+      "kind": "sigmoid",
+      "parameter": "candidate_weights",
+      "autodiff": -0.0001125819509214033,
+      "finite_difference": -0.00011258195348196053,
+      "absolute_error": 2.5605572214404057e-12
+    },
+    {
+      "kind": "sigmoid",
+      "parameter": "boundary",
+      "autodiff": -0.17699520345253608,
+      "finite_difference": -0.17699520380581865,
+      "absolute_error": 3.532825698648878e-10
+    },
+    {
+      "kind": "sigmoid",
+      "parameter": "memory_feedback",
+      "autodiff": -0.009306269120606565,
+      "finite_difference": -0.009306269120601396,
+      "absolute_error": 5.169475958410885e-15
+    },
+    {
+      "kind": "sigmoid",
+      "parameter": "tau_fast",
+      "autodiff": 0.0010643346016059323,
+      "finite_difference": 0.0010643346051719682,
+      "absolute_error": 3.566035921415134e-12
+    },
+    {
+      "kind": "sigmoid",
+      "parameter": "tau_slow",
+      "autodiff": 0.00538438694735736,
+      "finite_difference": 0.005384386950191277,
+      "absolute_error": 2.833917128741703e-12
+    }
+  ],
+  "write_gate_checks": [
+    {
+      "kind": "hcsn",
+      "score": -10.0,
+      "value": 0.0,
+      "derivative": 0.0
+    },
+    {
+      "kind": "hcsn",
+      "score": -1.0,
+      "value": 0.0,
+      "derivative": 0.0
+    },
+    {
+      "kind": "hcsn",
+      "score": -1e-06,
+      "value": 0.0,
+      "derivative": 0.0
+    },
+    {
+      "kind": "hcsn",
+      "score": 0.0,
+      "value": 0.0,
+      "derivative": 0.0
+    },
+    {
+      "kind": "hcsn",
+      "score": 1e-06,
+      "value": 2.4996696396094304e-13,
+      "derivative": 5.00000749902459e-07
+    },
+    {
+      "kind": "hcsn",
+      "score": 1.0,
+      "value": 0.28720892777251106,
+      "derivative": 0.4675068973432812
+    },
+    {
+      "kind": "hcsn",
+      "score": 10.0,
+      "value": 0.9998865022369345,
+      "derivative": 0.00011349570153752685
+    },
+    {
+      "kind": "sigmoid",
+      "score": -10.0,
+      "value": 0.0,
+      "derivative": 0.0
+    },
+    {
+      "kind": "sigmoid",
+      "score": -1.0,
+      "value": 0.0,
+      "derivative": 0.0
+    },
+    {
+      "kind": "sigmoid",
+      "score": -1e-06,
+      "value": 0.0,
+      "derivative": 0.0
+    },
+    {
+      "kind": "sigmoid",
+      "score": 0.0,
+      "value": 0.0,
+      "derivative": 0.0
+    },
+    {
+      "kind": "sigmoid",
+      "score": 1e-06,
+      "value": 2.4996696396106805e-13,
+      "derivative": 5.00000749902709e-07
+    },
+    {
+      "kind": "sigmoid",
+      "score": 1.0,
+      "value": 0.3099927673636532,
+      "derivative": 0.5086253145090961
+    },
+    {
+      "kind": "sigmoid",
+      "score": 10.0,
+      "value": 0.9999091980796957,
+      "derivative": 9.080398070943077e-05
+    }
+  ],
+  "max_absolute_error": 3.532825698648878e-10,
+  "scope": "Executed frozen-gate discrete v2 update, not exact nonlinear ODE flow"
+}

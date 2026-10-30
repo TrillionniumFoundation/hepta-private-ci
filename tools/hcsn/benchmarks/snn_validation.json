@@ -1,0 +1,52 @@
+{
+  "passed": true,
+  "jax": "0.4.38",
+  "dtype": "float32",
+  "parameter_count": 6260,
+  "width": 68,
+  "persistent_state_scalars": 204,
+  "tested_threshold_offsets": [
+    -2.0,
+    -9.999999974752427e-07,
+    0.0,
+    9.999999974752427e-07,
+    2.0
+  ],
+  "hard_forward": [
+    0.0,
+    0.0,
+    1.0,
+    1.0,
+    1.0
+  ],
+  "backward": [
+    0.00826446246355772,
+    0.9999899864196777,
+    1.0,
+    0.9999899864196777,
+    0.00826446246355772
+  ],
+  "declared_surrogate": [
+    0.00826446246355772,
+    0.9999899864196777,
+    1.0,
+    0.9999899864196777,
+    0.00826446246355772
+  ],
+  "parameter_gradient_norms": {
+    "bias": 0.23212267458438873,
+    "inp": 0.16339221596717834,
+    "out": 0.8920583128929138,
+    "out_bias": 0.8489401936531067,
+    "recurrent": 0.27446115016937256,
+    "tau_membrane": 0.05548472702503204,
+    "tau_readout": 0.021043438464403152
+  },
+  "spike_values": [
+    0.0,
+    1.0
+  ],
+  "spike_fraction": 0.12890625,
+  "every_initial_parameter_strong_float32": true,
+  "interpretation": "Backward matches the declared surrogate; it is not the true derivative of hard forward, so finite-difference equality is not claimed"
+}

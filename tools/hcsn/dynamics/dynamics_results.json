@@ -1,0 +1,3281 @@
+{
+  "scope": "Dynamical validity and gradient checks, not representation-learning or energy benchmarks",
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "openblas_threads": "1"
+  },
+  "source_hashes": {
+    "model.py": "3abd277a1c7294fd0848ef734c6349dfcdf325df853dbff22c14e759deff9c22",
+    "gradient_check.py": "b6cb8b202c042428c34937906da757e95309a19e9eb44ec389ef4fb2a6b11c1e",
+    "run_validation.py": "5f9ab1b9056ef701fb8ebfcfd3a356f2c5c3a6241df8cafdc0499f80fd823471"
+  },
+  "parameter_scan": {
+    "protocol": "48 fixed configurations; last 50 of 150 time units classify behavior",
+    "runs": [
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 2.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 2.0
+        },
+        "current": -0.2,
+        "continuous_bound": [
+          7.2,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.375,
+        "equilibria": [
+          {
+            "state": [
+              -0.596185365282,
+              1.101818300192187
+            ],
+            "max_real_eigenvalue": -0.7003734753754829
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.2754545750481832,
+          0.2754545750481834
+        ],
+        "late_q_span": 1.6653345369377348e-16,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [],
+        "max_abs_state": 1.5,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 2.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 2.0
+        },
+        "current": 0.0,
+        "continuous_bound": [
+          7.0,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.375,
+        "equilibria": [
+          {
+            "state": [
+              -0.496701989672,
+              1.2170686126001338
+            ],
+            "max_real_eigenvalue": -0.649798029484095
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.3042671531498885,
+          0.3042671531498885
+        ],
+        "late_q_span": 0.0,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [],
+        "max_abs_state": 1.5,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 2.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 2.0
+        },
+        "current": 1.0,
+        "continuous_bound": [
+          8.0,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.5459770728852129,
+        "equilibria": [
+          {
+            "state": [
+              0.0,
+              2.0
+            ],
+            "max_real_eigenvalue": -0.25
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.4999999999987682,
+          0.5000000000027469
+        ],
+        "late_q_span": 3.9787062533491735e-12,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.8757324306252918,
+          7.610095624509786,
+          14.13468501345866,
+          20.63045155946814,
+          27.120863630066733,
+          33.61017465809765,
+          40.09925059534459,
+          46.58872885298419,
+          53.07815135834347,
+          59.56752164791076,
+          66.05683825657873,
+          72.54609869367074,
+          79.0353003645359,
+          85.52443867831018,
+          92.013526685259,
+          98.50254420393232,
+          104.9918982614871,
+          111.48212379984233,
+          117.97156004300926,
+          124.40810076276146,
+          130.72103452137662,
+          136.45402028950554
+        ],
+        "max_abs_state": 2.1839082915408516,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 2.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 2.0
+        },
+        "current": 2.0,
+        "continuous_bound": [
+          9.0,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.7499468350730245,
+        "equilibria": [
+          {
+            "state": [
+              0.56714329041,
+              2.8657134191806772
+            ],
+            "max_real_eigenvalue": -0.4664283547951693
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.7164283547951076,
+          0.7164283547951076
+        ],
+        "late_q_span": 0.0,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.31728436315722336
+        ],
+        "max_abs_state": 2.999787340292098,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 2.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 5.0
+        },
+        "current": -0.2,
+        "continuous_bound": [
+          7.2,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.375,
+        "equilibria": [
+          {
+            "state": [
+              -0.596185365282,
+              1.101818300192187
+            ],
+            "max_real_eigenvalue": -0.550373475375483
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.27545457504818316,
+          0.27545457504818316
+        ],
+        "late_q_span": 0.0,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [],
+        "max_abs_state": 1.5,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 2.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 5.0
+        },
+        "current": 0.0,
+        "continuous_bound": [
+          7.0,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.375,
+        "equilibria": [
+          {
+            "state": [
+              -0.496701989672,
+              1.2170686126001338
+            ],
+            "max_real_eigenvalue": -0.49979802948409513
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.30426715314988806,
+          0.30426715314988806
+        ],
+        "late_q_span": 0.0,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [],
+        "max_abs_state": 1.5,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 2.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 5.0
+        },
+        "current": 1.0,
+        "continuous_bound": [
+          8.0,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.5454112645135397,
+        "equilibria": [
+          {
+            "state": [
+              0.0,
+              2.0
+            ],
+            "max_real_eigenvalue": -0.09999999999999999
+          }
+        ],
+        "classification": "transient_or_unresolved",
+        "late_q_range": [
+          0.49999376545848756,
+          0.5000038607135278
+        ],
+        "late_q_span": 1.0095255040198925e-05,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.8762276444342438,
+          11.697439912417417,
+          21.87744378405234,
+          31.97436166122024,
+          42.047846761904204,
+          52.11325317566765,
+          62.17604985136558,
+          72.2378409794889,
+          82.29897240056869,
+          92.36042513293157,
+          102.42154065924501,
+          112.48266254986245,
+          122.54392546373879,
+          132.60487617358132,
+          142.66619589996608
+        ],
+        "max_abs_state": 2.181645058054159,
+        "bounded_check_passed": true,
+        "targeted_extension": {
+          "total_time": 500.0,
+          "classification": "steady",
+          "late_q_range": [
+            0.5000000000000011,
+            0.5000000000000011
+          ],
+          "late_q_span": 0.0,
+          "detected_peaks": 0,
+          "mean_interval": null,
+          "upward_boundary_crossings": [
+            152.72732925248565,
+            162.78837196936956,
+            172.84967303209564,
+            182.91067073519693,
+            192.9719172388051,
+            203.03309966307555,
+            213.0940729973863,
+            223.15541390229023,
+            233.2165041140218,
+            243.27769637191847,
+            253.3397006720049,
+            263.3987830504903,
+            273.4608649000464,
+            283.5281813248358,
+            293.61541363204475,
+            303.6929789424118,
+            314.52707882579045,
+            324.20344849830786
+          ],
+          "max_abs_state": 2.000000025444123
+        }
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 2.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 5.0
+        },
+        "current": 2.0,
+        "continuous_bound": [
+          9.0,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.7313947434678498,
+        "equilibria": [
+          {
+            "state": [
+              0.56714329041,
+              2.8657134191806772
+            ],
+            "max_real_eigenvalue": -0.3164283547951694
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.7164283547951068,
+          0.7164283547951189
+        ],
+        "late_q_span": 1.2101430968414206e-14,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.31757107686935027
+        ],
+        "max_abs_state": 2.9255789738713993,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 2.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 2.0
+        },
+        "current": -0.2,
+        "continuous_bound": [
+          9.2,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.25490247613661965,
+        "equilibria": [
+          {
+            "state": [
+              -0.819418740758,
+              1.322063201678086
+            ],
+            "max_real_eigenvalue": -0.7786547304952895
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.22034386694644106,
+          0.22034386694644106
+        ],
+        "late_q_span": 0.0,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [],
+        "max_abs_state": 1.529414856819718,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 2.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 2.0
+        },
+        "current": 0.0,
+        "continuous_bound": [
+          9.0,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.25781717035594737,
+        "equilibria": [
+          {
+            "state": [
+              -0.736529394668,
+              1.4363179991701003
+            ],
+            "max_real_eigenvalue": -0.7548422002063109
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.23938633319500202,
+          0.23938633319500202
+        ],
+        "late_q_span": 0.0,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [],
+        "max_abs_state": 1.546903022135684,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 2.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 2.0
+        },
+        "current": 1.0,
+        "continuous_bound": [
+          10.0,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.3794292323492621,
+        "equilibria": [
+          {
+            "state": [
+              -0.350405027085,
+              2.1132081892471795
+            ],
+            "max_real_eigenvalue": -0.5563332563793122
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.3522013648744411,
+          0.3522013648744411
+        ],
+        "late_q_span": 0.0,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [],
+        "max_abs_state": 2.276575394095573,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 2.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 2.0
+        },
+        "current": 2.0,
+        "continuous_bound": [
+          11.0,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.5839656912101366,
+        "equilibria": [
+          {
+            "state": [
+              0.0,
+              3.0
+            ],
+            "max_real_eigenvalue": -0.24999999999999997
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.4999999999975069,
+          0.5000000000026446
+        ],
+        "late_q_span": 5.1376680687553744e-12,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.3299985389125534,
+          6.108544218457472,
+          11.428496982531028,
+          16.6878434871252,
+          21.933713902186284,
+          27.175462761666672,
+          32.416278963633246,
+          37.65716092112256,
+          42.897183386442826,
+          48.138269079871165,
+          53.37860744078806,
+          58.61915337610638,
+          63.8598766806189,
+          69.09982810203827,
+          74.34097745313444,
+          79.58126308399555,
+          84.82189007155769,
+          90.06255291725807,
+          95.3025673910023,
+          100.54364127854257,
+          105.78398632749739,
+          111.02443387869666,
+          116.2645691124798,
+          121.49553149367507,
+          126.67042668212613,
+          131.85956004558898,
+          137.06312642360592
+        ],
+        "max_abs_state": 3.5037941472608196,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 2.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 5.0
+        },
+        "current": -0.2,
+        "continuous_bound": [
+          9.2,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.2521610376520383,
+        "equilibria": [
+          {
+            "state": [
+              -0.819418740758,
+              1.322063201678086
+            ],
+            "max_real_eigenvalue": -0.6286547304952894
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.22034386694644098,
+          0.22034386694644106
+        ],
+        "late_q_span": 8.326672684688674e-17,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [],
+        "max_abs_state": 1.5129662259122298,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 2.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 5.0
+        },
+        "current": 0.0,
+        "continuous_bound": [
+          9.0,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.2537940562061213,
+        "equilibria": [
+          {
+            "state": [
+              -0.736529394668,
+              1.4363179991701003
+            ],
+            "max_real_eigenvalue": -0.6048422002063107
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.239386333195002,
+          0.23938633319500205
+        ],
+        "late_q_span": 5.551115123125783e-17,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [],
+        "max_abs_state": 1.5227643372367277,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 2.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 5.0
+        },
+        "current": 1.0,
+        "continuous_bound": [
+          10.0,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.38718512085092693,
+        "equilibria": [
+          {
+            "state": [
+              -0.350405027085,
+              2.1132081892471795
+            ],
+            "max_real_eigenvalue": -0.4063332563793123
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.3522013648744407,
+          0.3522013648744407
+        ],
+        "late_q_span": 0.0,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          1.018871651693222
+        ],
+        "max_abs_state": 2.3231107251055616,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 2.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 5.0
+        },
+        "current": 2.0,
+        "continuous_bound": [
+          11.0,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.5666227645988936,
+        "equilibria": [
+          {
+            "state": [
+              0.0,
+              3.0
+            ],
+            "max_real_eigenvalue": -0.09999999999999998
+          }
+        ],
+        "classification": "transient_or_unresolved",
+        "late_q_range": [
+          0.4999959764458094,
+          0.5000060577395796
+        ],
+        "late_q_span": 1.0081293770225486e-05,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.32253835357050487,
+          10.027625905484172,
+          18.394412040091964,
+          26.63781526720122,
+          34.8431070574347,
+          43.03380872853034,
+          51.21839181574937,
+          59.40028051773029,
+          67.58132565007871,
+          75.76181836375261,
+          83.9420192148062,
+          92.1220398792213,
+          100.30192400223115,
+          108.48206726070924,
+          116.66217595723708,
+          124.84220705977401,
+          133.02215270998124,
+          141.20200375415402,
+          149.38213111141502
+        ],
+        "max_abs_state": 3.399736587593362,
+        "bounded_check_passed": true,
+        "targeted_extension": {
+          "total_time": 500.0,
+          "classification": "steady",
+          "late_q_range": [
+            0.5000000000000006,
+            0.5000000000000006
+          ],
+          "late_q_span": 0.0,
+          "detected_peaks": 0,
+          "mean_interval": null,
+          "upward_boundary_crossings": [
+            157.56223356727614,
+            165.74226195794972,
+            173.92220677824605,
+            182.10205770804077,
+            190.28218347825603,
+            198.46228363635043,
+            206.64230932256802,
+            214.82225531709832,
+            223.0021012774946,
+            231.18224560359272,
+            239.36245927312206,
+            247.54248142318048,
+            255.72188358151453,
+            263.900933257641,
+            272.08322988245175,
+            280.2702233307049,
+            288.4521592087069,
+            296.626685819218,
+            304.8204660942082,
+            313.0534557831229,
+            321.73456554581935,
+            329.44027577049695,
+            340.4277282312076
+          ],
+          "max_abs_state": 3.000000057449841
+        }
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 4.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 2.0
+        },
+        "current": -0.2,
+        "continuous_bound": [
+          9.2,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.5218967365284951,
+        "equilibria": [
+          {
+            "state": [
+              -0.18341250669,
+              1.6648494082890808
+            ],
+            "max_real_eigenvalue": -0.006762517619163355
+          }
+        ],
+        "classification": "oscillatory",
+        "late_q_range": [
+          0.3142831763102258,
+          0.5562227736732259
+        ],
+        "late_q_span": 0.24193959736300014,
+        "detected_peaks": 6,
+        "mean_interval": 8.459999999999999,
+        "upward_boundary_crossings": [
+          2.727702060618654,
+          11.313900033213258,
+          19.860822578808413,
+          28.38427667599331,
+          36.8930017707228,
+          45.39209333161621,
+          53.8846932367697,
+          62.37282062304531,
+          70.85781319999441,
+          79.34057511231096,
+          87.82172413214238,
+          96.30168236124587,
+          104.78115667586367,
+          113.26004102311124,
+          121.73844663238025,
+          130.21646888222858,
+          138.69428813310023,
+          147.1722094678251
+        ],
+        "max_abs_state": 2.0875869461139804,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 4.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 2.0
+        },
+        "current": 0.0,
+        "continuous_bound": [
+          9.0,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.6459125843967618,
+        "equilibria": [
+          {
+            "state": [
+              0.0,
+              2.0
+            ],
+            "max_real_eigenvalue": 0.24999999999999994
+          }
+        ],
+        "classification": "oscillatory",
+        "late_q_range": [
+          0.2953122420155862,
+          0.7190793598686225
+        ],
+        "late_q_span": 0.4237671178530363,
+        "detected_peaks": 5,
+        "mean_interval": 8.575000000000003,
+        "upward_boundary_crossings": [
+          1.331152056620038,
+          9.931956300589846,
+          18.519282197375837,
+          27.10534459127645,
+          35.690870076337255,
+          44.27620220705108,
+          52.861632188567526,
+          61.44716624259705,
+          70.03280350731686,
+          78.61853938953985,
+          87.20436615249614,
+          95.7898101019649,
+          104.37514285202815,
+          112.96057932517941,
+          121.54612078789124,
+          130.13176506646099,
+          138.71750739741216,
+          147.30334037345054
+        ],
+        "max_abs_state": 2.583650337587047,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 4.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 2.0
+        },
+        "current": 1.0,
+        "continuous_bound": [
+          10.0,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.8473951815298448,
+        "equilibria": [
+          {
+            "state": [
+              1.0,
+              3.2642411176571153
+            ],
+            "max_real_eigenvalue": -0.3821205588285577
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.8160602794142792,
+          0.8160602794142792
+        ],
+        "late_q_span": 0.0,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.36505250473691464
+        ],
+        "max_abs_state": 3.3895807261193793,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 4.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 2.0
+        },
+        "current": 2.0,
+        "continuous_bound": [
+          11.0,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.93388717538071,
+        "equilibria": [
+          {
+            "state": [
+              2.0,
+              3.7293294335267744
+            ],
+            "max_real_eigenvalue": -0.6146647167633873
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.9323323583816937,
+          0.9323323583816937
+        ],
+        "late_q_span": 0.0,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.21104218985156037
+        ],
+        "max_abs_state": 3.73554870152284,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 4.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 5.0
+        },
+        "current": -0.2,
+        "continuous_bound": [
+          9.2,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.6087714685959774,
+        "equilibria": [
+          {
+            "state": [
+              -0.18341250669,
+              1.6648494082890808
+            ],
+            "max_real_eigenvalue": 0.14323748238083664
+          }
+        ],
+        "classification": "oscillatory",
+        "late_q_range": [
+          0.18252084964106577,
+          0.7882481209440351
+        ],
+        "late_q_span": 0.6057272713029693,
+        "detected_peaks": 4,
+        "mean_interval": 14.133333333333331,
+        "upward_boundary_crossings": [
+          2.873467302277047,
+          16.927505309441656,
+          31.058499478659417,
+          45.19252210722115,
+          59.32561620383853,
+          73.45896347601949,
+          87.59306214278531,
+          101.72613476471572,
+          115.85949385825191,
+          129.9936041617912,
+          144.12665354655417
+        ],
+        "max_abs_state": 2.4350858743839097,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 4.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 5.0
+        },
+        "current": 0.0,
+        "continuous_bound": [
+          9.0,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.6637536320474859,
+        "equilibria": [
+          {
+            "state": [
+              0.0,
+              2.0
+            ],
+            "max_real_eigenvalue": 0.3999999999999999
+          }
+        ],
+        "classification": "oscillatory",
+        "late_q_range": [
+          0.1956460092991146,
+          0.8351574759256426
+        ],
+        "late_q_span": 0.639511466626528,
+        "detected_peaks": 4,
+        "mean_interval": 13.833333333333334,
+        "upward_boundary_crossings": [
+          1.3642805172854842,
+          15.272930469922283,
+          29.117626768214755,
+          42.960829661379535,
+          56.8051047873183,
+          70.64785702462582,
+          84.49209917196349,
+          98.33501702232736,
+          112.1788126929771,
+          126.02230771173068,
+          139.86565708485696
+        ],
+        "max_abs_state": 2.6550145281899438,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 4.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 5.0
+        },
+        "current": 1.0,
+        "continuous_bound": [
+          10.0,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.8297770320788193,
+        "equilibria": [
+          {
+            "state": [
+              1.0,
+              3.2642411176571153
+            ],
+            "max_real_eigenvalue": -0.23212055882855764
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.8160602793754247,
+          0.816060279423151
+        ],
+        "late_q_span": 4.772626738258623e-11,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.36577279393416173
+        ],
+        "max_abs_state": 3.319108128315277,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 4.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 5.0
+        },
+        "current": 2.0,
+        "continuous_bound": [
+          11.0,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.9323323583816929,
+        "equilibria": [
+          {
+            "state": [
+              2.0,
+              3.7293294335267744
+            ],
+            "max_real_eigenvalue": -0.33851679167225096
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.932332358381694,
+          0.9323323583816965
+        ],
+        "late_q_span": 2.4424906541753444e-15,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.21116087022054353
+        ],
+        "max_abs_state": 3.7293294335267717,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 4.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 2.0
+        },
+        "current": -0.2,
+        "continuous_bound": [
+          11.2,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.28765730493458486,
+        "equilibria": [
+          {
+            "state": [
+              -0.596185365282,
+              1.6527274502882805
+            ],
+            "max_real_eigenvalue": -0.4249189003274362
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.27545457504818316,
+          0.27545457504818316
+        ],
+        "late_q_span": 0.0,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [],
+        "max_abs_state": 1.7259438296075091,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 4.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 2.0
+        },
+        "current": 0.0,
+        "continuous_bound": [
+          11.0,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.33148012517893016,
+        "equilibria": [
+          {
+            "state": [
+              -0.496701989672,
+              1.8256029189002008
+            ],
+            "max_real_eigenvalue": -0.3455308763340616
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.3042671531498883,
+          0.3042671531498883
+        ],
+        "late_q_span": 0.0,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [],
+        "max_abs_state": 1.9888807510735809,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 4.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 2.0
+        },
+        "current": 1.0,
+        "continuous_bound": [
+          12.0,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.6707537328528179,
+        "equilibria": [
+          {
+            "state": [
+              0.0,
+              3.0
+            ],
+            "max_real_eigenvalue": 0.2500000000000001
+          }
+        ],
+        "classification": "oscillatory",
+        "late_q_range": [
+          0.29288989353666717,
+          0.7158266245597246
+        ],
+        "late_q_span": 0.4229367310230574,
+        "detected_peaks": 7,
+        "mean_interval": 6.500000000000003,
+        "upward_boundary_crossings": [
+          0.383655089359195,
+          7.215331308924386,
+          13.747391665922272,
+          20.247601573721408,
+          26.741045201061187,
+          33.23289661659108,
+          39.72438209440853,
+          46.21580067237921,
+          52.70722398915815,
+          59.19860457135737,
+          65.68967654911933,
+          72.18078573817773,
+          78.67193355218937,
+          85.16312060430067,
+          91.65434688353146,
+          98.14561178347897,
+          104.63691415345576,
+          111.128252365619,
+          117.61962413990389,
+          124.11102669850413,
+          130.60245673300687,
+          137.09362787630414,
+          143.58472010097688
+        ],
+        "max_abs_state": 4.0245223971169075,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 4.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 2.0
+        },
+        "current": 2.0,
+        "continuous_bound": [
+          13.0,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.8019729401584069,
+        "equilibria": [
+          {
+            "state": [
+              0.56714329041,
+              4.298570128771016
+            ],
+            "max_real_eigenvalue": -0.1828567095903387
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.7164283503991946,
+          0.7164283570594072
+        ],
+        "late_q_span": 6.660212603648574e-09,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.21442623958234397
+        ],
+        "max_abs_state": 4.811837640950442,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 4.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 5.0
+        },
+        "current": -0.2,
+        "continuous_bound": [
+          11.2,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.28611007000119354,
+        "equilibria": [
+          {
+            "state": [
+              -0.596185365282,
+              1.6527274502882805
+            ],
+            "max_real_eigenvalue": -0.27491890032743616
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.27545457504816295,
+          0.27545457504827475
+        ],
+        "late_q_span": 1.1179945857975326e-13,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [],
+        "max_abs_state": 1.7166604200071611,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 4.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 5.0
+        },
+        "current": 0.0,
+        "continuous_bound": [
+          11.0,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.386077248469116,
+        "equilibria": [
+          {
+            "state": [
+              -0.496701989672,
+              1.8256029189002008
+            ],
+            "max_real_eigenvalue": -0.19553087633406163
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.30426715219117423,
+          0.30426715349676337
+        ],
+        "late_q_span": 1.305589136801899e-09,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          2.1226297724763583
+        ],
+        "max_abs_state": 2.316463490814696,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 4.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 5.0
+        },
+        "current": 1.0,
+        "continuous_bound": [
+          12.0,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.6541823292645644,
+        "equilibria": [
+          {
+            "state": [
+              0.0,
+              3.0
+            ],
+            "max_real_eigenvalue": 0.4
+          }
+        ],
+        "classification": "oscillatory",
+        "late_q_range": [
+          0.19143231795513221,
+          0.8301988657141284
+        ],
+        "late_q_span": 0.6387665477589961,
+        "detected_peaks": 4,
+        "mean_interval": 10.766666666666671,
+        "upward_boundary_crossings": [
+          0.3730954490094353,
+          12.003466372730749,
+          22.793315875481213,
+          33.56833291504573,
+          44.34324974507454,
+          55.11863358533736,
+          65.89403024749186,
+          76.6684261799761,
+          87.44331635050035,
+          98.21869792790193,
+          108.9940983977512,
+          119.76849305643319,
+          130.5433822594117,
+          141.3187622068095
+        ],
+        "max_abs_state": 3.925093975587387,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 4.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 5.0
+        },
+        "current": 2.0,
+        "continuous_bound": [
+          13.0,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.7704190954409237,
+        "equilibria": [
+          {
+            "state": [
+              0.56714329041,
+              4.298570128771016
+            ],
+            "max_real_eigenvalue": -0.032856709590338734
+          }
+        ],
+        "classification": "transient_or_unresolved",
+        "late_q_range": [
+          0.7003181074757594,
+          0.7293753081633311
+        ],
+        "late_q_span": 0.02905720068757167,
+        "detected_peaks": 1,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.21250858982850995,
+          14.007701598794753,
+          25.67904734505404
+        ],
+        "max_abs_state": 4.622514572645542,
+        "bounded_check_passed": true,
+        "targeted_extension": {
+          "total_time": 500.0,
+          "classification": "steady",
+          "late_q_range": [
+            0.7164281864196397,
+            0.7164284947581911
+          ],
+          "late_q_span": 3.083385514690562e-07,
+          "detected_peaks": 0,
+          "mean_interval": null,
+          "upward_boundary_crossings": [],
+          "max_abs_state": 4.304261379470785
+        }
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 6.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 2.0
+        },
+        "current": -0.2,
+        "continuous_bound": [
+          11.2,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.9110434197291994,
+        "equilibria": [
+          {
+            "state": [
+              1.597623003961,
+              3.595246007921617
+            ],
+            "max_real_eigenvalue": -0.4464345059412127
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.8988115019803801,
+          0.8988115019803801
+        ],
+        "late_q_span": 0.0,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.5331276317369847
+        ],
+        "max_abs_state": 3.6441736789167978,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 6.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 2.0
+        },
+        "current": 0.0,
+        "continuous_bound": [
+          11.0,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.9264338976681364,
+        "equilibria": [
+          {
+            "state": [
+              1.841405660437,
+              3.6828113208739337
+            ],
+            "max_real_eigenvalue": -0.5121084906554504
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.9207028302184805,
+          0.9207028302184805
+        ],
+        "late_q_span": 0.0,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.43786320009365065
+        ],
+        "max_abs_state": 3.7057355906725458,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 6.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 2.0
+        },
+        "current": 1.0,
+        "continuous_bound": [
+          12.0,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.9737660102496014,
+        "equilibria": [
+          {
+            "state": [
+              2.947530902542,
+              3.8950618050845405
+            ],
+            "max_real_eigenvalue": -0.6712963538134051
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.9737654512711427,
+          0.9737654512711427
+        ],
+        "late_q_span": 0.0,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.23150742115092565
+        ],
+        "max_abs_state": 3.8950640409984056,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 6.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 2.0
+        },
+        "current": 2.0,
+        "continuous_bound": [
+          13.0,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.9906696854556578,
+        "equilibria": [
+          {
+            "state": [
+              3.981339370911,
+              3.9626787418226215
+            ],
+            "max_real_eigenvalue": -0.5470022221568088
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.9906696854556584,
+          0.9906696854556584
+        ],
+        "late_q_span": 0.0,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.15692162207855234
+        ],
+        "max_abs_state": 4.708002263342053,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 6.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 5.0
+        },
+        "current": -0.2,
+        "continuous_bound": [
+          11.2,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.9011210061053485,
+        "equilibria": [
+          {
+            "state": [
+              1.597623003961,
+              3.595246007921617
+            ],
+            "max_real_eigenvalue": -0.2964345059412128
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.8988115019803357,
+          0.8988115019804028
+        ],
+        "late_q_span": 6.716849298982197e-14,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.5365543891889817
+        ],
+        "max_abs_state": 3.604484024421394,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 6.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 5.0
+        },
+        "current": 0.0,
+        "continuous_bound": [
+          11.0,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.9208794896660897,
+        "equilibria": [
+          {
+            "state": [
+              1.841405660437,
+              3.6828113208739337
+            ],
+            "max_real_eigenvalue": -0.3621084906554503
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.9207028302184798,
+          0.9207028302184799
+        ],
+        "late_q_span": 1.1102230246251565e-16,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.4396535745598108
+        ],
+        "max_abs_state": 3.6835179586643587,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 6.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 5.0
+        },
+        "current": 1.0,
+        "continuous_bound": [
+          12.0,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.9737654512711414,
+        "equilibria": [
+          {
+            "state": [
+              2.947530902542,
+              3.8950618050845405
+            ],
+            "max_real_eigenvalue": -0.23451471564475096
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.9737654512711428,
+          0.9737654512806091
+        ],
+        "late_q_span": 9.466316619466397e-12,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.2316898213760551
+        ],
+        "max_abs_state": 4.392836577156238,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 6.0,
+          "recovery_gain": 4.0,
+          "recovery_time": 5.0
+        },
+        "current": 2.0,
+        "continuous_bound": [
+          13.0,
+          4.0
+        ],
+        "maximum_bound_fraction": 0.9906696854556439,
+        "equilibria": [
+          {
+            "state": [
+              3.981339370911,
+              3.9626787418226215
+            ],
+            "max_real_eigenvalue": -0.2101714043964106
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.990669685455659,
+          0.990669685482352
+        ],
+        "late_q_span": 2.6692981158760176e-11,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.15695306442098755
+        ],
+        "max_abs_state": 5.365887434916776,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 6.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 2.0
+        },
+        "current": -0.2,
+        "continuous_bound": [
+          13.2,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.7433837361598137,
+        "equilibria": [
+          {
+            "state": [
+              -0.18341250669,
+              2.497274112433621
+            ],
+            "max_real_eigenvalue": 0.40944983445310684
+          }
+        ],
+        "classification": "oscillatory",
+        "late_q_range": [
+          0.10523565113746697,
+          0.8902678826212561
+        ],
+        "late_q_span": 0.7850322314837892,
+        "detected_peaks": 6,
+        "mean_interval": 8.640000000000004,
+        "upward_boundary_crossings": [
+          0.5905751822711827,
+          9.259203362991405,
+          17.89556068349626,
+          26.5286537515062,
+          35.16269232522614,
+          43.79833202195257,
+          52.431173789294164,
+          61.065334011825335,
+          69.70095726523441,
+          78.33370237634675,
+          86.96798515181226,
+          95.60338800836205,
+          104.23623997851558,
+          112.87064542404758,
+          121.50582560324445,
+          130.13878650029673,
+          138.773314970537,
+          147.40827038403862
+        ],
+        "max_abs_state": 4.460302416958882,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 6.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 2.0
+        },
+        "current": 0.0,
+        "continuous_bound": [
+          13.0,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.7746133080281362,
+        "equilibria": [
+          {
+            "state": [
+              0.0,
+              3.0
+            ],
+            "max_real_eigenvalue": 1.0000000000000002
+          }
+        ],
+        "classification": "oscillatory",
+        "late_q_range": [
+          0.11706923498103125,
+          0.9092662649515074
+        ],
+        "late_q_span": 0.7921970299704761,
+        "detected_peaks": 5,
+        "mean_interval": 8.650000000000002,
+        "upward_boundary_crossings": [
+          0.4684978771213669,
+          9.176926883718004,
+          17.821935646857433,
+          26.465494266972687,
+          35.11029851436755,
+          43.75306699770936,
+          52.39864138313687,
+          61.040863960016246,
+          69.68565675581175,
+          78.32888075658371,
+          86.97287854542644,
+          95.61710583287145,
+          104.26031927626336,
+          112.90552153332419,
+          121.54798471238061,
+          130.19323852213378,
+          138.83587378018893,
+          147.4803373519511
+        ],
+        "max_abs_state": 4.647679848168817,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 6.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 2.0
+        },
+        "current": 1.0,
+        "continuous_bound": [
+          14.0,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.8761908531405124,
+        "equilibria": [
+          {
+            "state": [
+              1.0,
+              4.896361676485673
+            ],
+            "max_real_eigenvalue": -0.19818083824283655
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.8160602787356712,
+          0.8160602796854322
+        ],
+        "late_q_span": 9.497609365638482e-10,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.23597405182789274
+        ],
+        "max_abs_state": 5.2571451188430744,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 6.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 2.0
+        },
+        "current": 2.0,
+        "continuous_bound": [
+          15.0,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.9384130061156943,
+        "equilibria": [
+          {
+            "state": [
+              2.0,
+              5.593994150290161
+            ],
+            "max_real_eigenvalue": -0.546997075145081
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.9323323583816938,
+          0.9323323583816938
+        ],
+        "late_q_span": 0.0,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.158497043937804
+        ],
+        "max_abs_state": 5.630478036694166,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 6.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 5.0
+        },
+        "current": -0.2,
+        "continuous_bound": [
+          13.2,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.7245378650265887,
+        "equilibria": [
+          {
+            "state": [
+              -0.18341250669,
+              2.497274112433621
+            ],
+            "max_real_eigenvalue": 0.8374952058659879
+          }
+        ],
+        "classification": "oscillatory",
+        "late_q_range": [
+          0.057577689280084283,
+          0.9511484821758963
+        ],
+        "late_q_span": 0.893570792895812,
+        "detected_peaks": 3,
+        "mean_interval": 14.800000000000004,
+        "upward_boundary_crossings": [
+          0.5580330977467219,
+          15.557252983806853,
+          30.32998863305749,
+          45.103743797924345,
+          59.87476237391255,
+          74.64643157189653,
+          89.41943667062758,
+          104.19250383137484,
+          118.96336360707201,
+          133.73556964725097,
+          148.50907502052897
+        ],
+        "max_abs_state": 4.347227190159532,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 6.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 5.0
+        },
+        "current": 0.0,
+        "continuous_bound": [
+          13.0,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.7479131695241779,
+        "equilibria": [
+          {
+            "state": [
+              0.0,
+              3.0
+            ],
+            "max_real_eigenvalue": 1.6810249675906659
+          }
+        ],
+        "classification": "oscillatory",
+        "late_q_range": [
+          0.06373752212605742,
+          0.9575006360883132
+        ],
+        "late_q_span": 0.8937631139622557,
+        "detected_peaks": 3,
+        "mean_interval": 14.75,
+        "upward_boundary_crossings": [
+          0.45146775936826733,
+          15.516209986094738,
+          30.238488962301094,
+          44.96137557085646,
+          59.685198645673154,
+          74.40837592754659,
+          89.13002854032155,
+          103.85256156095694,
+          118.57603003232235,
+          133.30034911421566,
+          148.02169579101363
+        ],
+        "max_abs_state": 4.487479017145067,
+        "bounded_check_passed": true
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 6.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 5.0
+        },
+        "current": 1.0,
+        "continuous_bound": [
+          14.0,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.8504611721107529,
+        "equilibria": [
+          {
+            "state": [
+              1.0,
+              4.896361676485673
+            ],
+            "max_real_eigenvalue": -0.04818083824283653
+          }
+        ],
+        "classification": "transient_or_unresolved",
+        "late_q_range": [
+          0.8128583044722921,
+          0.818320915589758
+        ],
+        "late_q_span": 0.005462611117465821,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.233474570826063
+        ],
+        "max_abs_state": 5.102767032664517,
+        "bounded_check_passed": true,
+        "targeted_extension": {
+          "total_time": 500.0,
+          "classification": "steady",
+          "late_q_range": [
+            0.8160602792851921,
+            0.8160602795956922
+          ],
+          "late_q_span": 3.105000700998062e-10,
+          "detected_peaks": 0,
+          "mean_interval": null,
+          "upward_boundary_crossings": [],
+          "max_abs_state": 4.89701764027188
+        }
+      },
+      {
+        "parameters": {
+          "leak": 1.0,
+          "call_gain": 1.0,
+          "regen_gain": 6.0,
+          "recovery_gain": 6.0,
+          "recovery_time": 5.0
+        },
+        "current": 2.0,
+        "continuous_bound": [
+          15.0,
+          6.0
+        ],
+        "maximum_bound_fraction": 0.9324503824004261,
+        "equilibria": [
+          {
+            "state": [
+              2.0,
+              5.593994150290161
+            ],
+            "max_real_eigenvalue": -0.396997075145081
+          }
+        ],
+        "classification": "steady",
+        "late_q_range": [
+          0.9323323583816929,
+          0.9323323583816929
+        ],
+        "late_q_span": 0.0,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          0.15758809629553724
+        ],
+        "max_abs_state": 5.594702294402556,
+        "bounded_check_passed": true
+      }
+    ],
+    "class_counts": {
+      "steady": 34,
+      "oscillatory": 10,
+      "transient_or_unresolved": 4
+    },
+    "final_class_counts": {
+      "steady": 38,
+      "oscillatory": 10,
+      "transient_or_unresolved": 0
+    },
+    "all_bounds_passed": true
+  },
+  "paired_pulses": {
+    "protocol": "Two equal unit Gaussian pulses, width .5, first center 10; compare with single-pulse counterfactual; integrate both numerator and denominator over matched 14-unit windows starting at pulse center",
+    "isolated_positive_q_area": 1.1991354729748323,
+    "runs": [
+      {
+        "gap": 0.5,
+        "total_upward_crossings": [
+          9.866721132256362
+        ],
+        "second_window_incremental_positive_q_area": 0.48424505708561555,
+        "incremental_area_over_isolated": 0.40382848143445677,
+        "second_window_max_x": 1.6230619710854333,
+        "final_distance_to_rest": 5.573260569832237e-11
+      },
+      {
+        "gap": 1.0,
+        "total_upward_crossings": [
+          9.976249277792979
+        ],
+        "second_window_incremental_positive_q_area": 0.5797903864706249,
+        "incremental_area_over_isolated": 0.483506992777282,
+        "second_window_max_x": 1.5072519192095801,
+        "final_distance_to_rest": 5.668333534366934e-11
+      },
+      {
+        "gap": 2.0,
+        "total_upward_crossings": [
+          10.002687376097667
+        ],
+        "second_window_incremental_positive_q_area": 0.7526325285205807,
+        "incremental_area_over_isolated": 0.6276459545087423,
+        "second_window_max_x": 1.1399334451001528,
+        "final_distance_to_rest": 5.651516823374327e-11
+      },
+      {
+        "gap": 4.0,
+        "total_upward_crossings": [
+          10.002728532736567
+        ],
+        "second_window_incremental_positive_q_area": 0.19492177602292848,
+        "incremental_area_over_isolated": 0.162551922127167,
+        "second_window_max_x": -0.5329727681861093,
+        "final_distance_to_rest": 4.5598952698247006e-11
+      },
+      {
+        "gap": 8.0,
+        "total_upward_crossings": [
+          10.002728532736569,
+          18.45949875706221
+        ],
+        "second_window_incremental_positive_q_area": 0.8751207326025745,
+        "incremental_area_over_isolated": 0.7297930486799482,
+        "second_window_max_x": 0.2629258702033115,
+        "final_distance_to_rest": 1.904151842210777e-10
+      },
+      {
+        "gap": 16.0,
+        "total_upward_crossings": [
+          10.002728532736569,
+          26.006951235094103
+        ],
+        "second_window_incremental_positive_q_area": 1.1831372928621793,
+        "incremental_area_over_isolated": 0.9866585715515825,
+        "second_window_max_x": 0.6871740257811334,
+        "final_distance_to_rest": 3.4035156663194162e-09
+      },
+      {
+        "gap": 32.0,
+        "total_upward_crossings": [
+          10.002728532736569,
+          42.00284279529267
+        ],
+        "second_window_incremental_positive_q_area": 1.1992369400852039,
+        "incremental_area_over_isolated": 1.0000846168866306,
+        "second_window_max_x": 0.7093739446924113,
+        "final_distance_to_rest": 2.6003994595982476e-07
+      }
+    ],
+    "interpretation": "Merged responses and relative recovery can be measured; no hard absolute refractory state is implemented"
+  },
+  "sustained_input": {
+    "protocol": "Step from -0.2 to constant current at t=10; retain transients and late behavior",
+    "runs": [
+      {
+        "current": 0.3,
+        "classification": "transient_or_unresolved",
+        "late_q_range": [
+          0.348659736535096,
+          0.3563215165795282
+        ],
+        "late_q_span": 0.007661780044432187,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          11.302135626658377,
+          23.90589923185589
+        ],
+        "max_abs_state": 3.118274465716656,
+        "early_max_q": 0.7699892430474072,
+        "late_mean_q": 0.35292783146245543,
+        "late_mean_over_early_max": 0.4583542363081118,
+        "first_three_intervals": [
+          11.950000000000001,
+          10.549999999999997,
+          9.950000000000003
+        ],
+        "last_three_intervals": [
+          9.899999999999999,
+          9.900000000000006,
+          9.849999999999994
+        ],
+        "late_interval_cv": null,
+        "targeted_extension": {
+          "total_time": 500.0,
+          "classification": "steady",
+          "late_q_range": [
+            0.3529692990561086,
+            0.35296929914861275
+          ],
+          "late_q_span": 9.250417098982666e-11,
+          "detected_peaks": 0,
+          "mean_interval": null,
+          "upward_boundary_crossings": [],
+          "max_abs_state": 2.118239791139362
+        }
+      },
+      {
+        "current": 0.7,
+        "classification": "oscillatory",
+        "late_q_range": [
+          0.1797047291833146,
+          0.7812809458208289
+        ],
+        "late_q_span": 0.6015762166375143,
+        "detected_peaks": 4,
+        "mean_interval": 10.866666666666665,
+        "upward_boundary_crossings": [
+          10.677277198421717,
+          22.198788509690615,
+          33.08561482102858,
+          43.95156542377075,
+          54.816024654086085,
+          65.68055251626312,
+          76.54521568846785,
+          87.40969686122743,
+          98.27415980798384,
+          109.13876174844347,
+          120.00339027988588,
+          130.86779349423242,
+          141.73233415396325
+        ],
+        "max_abs_state": 3.6418409664787417,
+        "early_max_q": 0.8802902321569479,
+        "late_mean_q": 0.4629358166159146,
+        "late_mean_over_early_max": 0.5258899845811049,
+        "first_three_intervals": [
+          11.7,
+          10.900000000000002,
+          10.850000000000001
+        ],
+        "last_three_intervals": [
+          10.850000000000009,
+          10.899999999999991,
+          10.849999999999994
+        ],
+        "late_interval_cv": 0.001993153978790121
+      },
+      {
+        "current": 1.0,
+        "classification": "oscillatory",
+        "late_q_range": [
+          0.1914271045432751,
+          0.8302014089016236
+        ],
+        "late_q_span": 0.6387743043583485,
+        "detected_peaks": 4,
+        "mean_interval": 10.783333333333331,
+        "upward_boundary_crossings": [
+          10.502457040632983,
+          21.99514205435362,
+          32.78383906654873,
+          43.55947335866095,
+          54.33445425314236,
+          65.10952950766203,
+          75.88448855803304,
+          86.65956212768023,
+          97.43452176103834,
+          108.20959443923073,
+          118.98455479907538,
+          129.75962715664662,
+          140.5345881725902
+        ],
+        "max_abs_state": 3.9122193606045763,
+        "early_max_q": 0.9170428826958139,
+        "late_mean_q": 0.5071730674341406,
+        "late_mean_over_early_max": 0.5530527274179516,
+        "first_three_intervals": [
+          11.800000000000002,
+          10.799999999999997,
+          10.75
+        ],
+        "last_three_intervals": [
+          10.799999999999997,
+          10.750000000000014,
+          10.799999999999983
+        ],
+        "late_interval_cv": 0.00218580148743804
+      },
+      {
+        "current": 2.0,
+        "classification": "transient_or_unresolved",
+        "late_q_range": [
+          0.6930045778694305,
+          0.7349756461799979
+        ],
+        "late_q_span": 0.041971068310567405,
+        "detected_peaks": 2,
+        "mean_interval": 11.25,
+        "upward_boundary_crossings": [
+          10.271318358811047,
+          23.93123767066467,
+          35.59351752077133
+        ],
+        "max_abs_state": 4.621270084832472,
+        "early_max_q": 0.9705428032045796,
+        "late_mean_q": 0.7153368425714393,
+        "late_mean_over_early_max": 0.7370482169457231,
+        "first_three_intervals": [
+          14.45,
+          12.400000000000006,
+          11.899999999999999
+        ],
+        "last_three_intervals": [
+          11.299999999999997,
+          11.299999999999997,
+          11.25
+        ],
+        "late_interval_cv": null,
+        "targeted_extension": {
+          "total_time": 500.0,
+          "classification": "steady",
+          "late_q_range": [
+            0.7164281119348295,
+            0.7164285567097173
+          ],
+          "late_q_span": 4.447748878089186e-07,
+          "detected_peaks": 0,
+          "mean_interval": null,
+          "upward_boundary_crossings": [],
+          "max_abs_state": 4.306753201618037
+        }
+      },
+      {
+        "current": 4.0,
+        "classification": "steady",
+        "late_q_range": [
+          0.9399858805061798,
+          0.9399858805061809
+        ],
+        "late_q_span": 1.1102230246251565e-15,
+        "detected_peaks": 0,
+        "mean_interval": null,
+        "upward_boundary_crossings": [
+          10.141797942630465
+        ],
+        "max_abs_state": 5.639915283037071,
+        "early_max_q": 0.9954736693701525,
+        "late_mean_q": 0.9399858805061798,
+        "late_mean_over_early_max": 0.9442599130732605,
+        "first_three_intervals": [],
+        "last_three_intervals": [],
+        "late_interval_cv": null
+      }
+    ],
+    "limitation": "A plateau or tonic periodic response is not evidence for indefinite spike-frequency adaptation"
+  },
+  "coupled_units": {
+    "seed": 20261029,
+    "initial": "Eight phases on the isolated periodic orbit",
+    "coupling": "W @ (q(x)-0.5); diffusion uses W=k(P-I)",
+    "perturbation_note": "Finite 1e-6 perturbation, not a proof of asymptotic contraction",
+    "runs": [
+      {
+        "name": "uncoupled",
+        "units": 8,
+        "row_absolute_sums": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "current": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "maximum_bound_fraction": 0.6287245094466651,
+        "late_mean_between_unit_std": 0.24293245495692978,
+        "late_mean_within_unit_std": 0.24248168935694403,
+        "late_mean_offdiagonal_correlation": -0.14283116222894982,
+        "finite_perturbation_max_gain": 2.737558879570264,
+        "finite_perturbation_final_gain": 1.8863118056704584,
+        "bounded_check_passed": true
+      },
+      {
+        "name": "diffusive_ring_0.25",
+        "units": 8,
+        "row_absolute_sums": [
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "current": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "maximum_bound_fraction": 0.6285856799727769,
+        "late_mean_between_unit_std": 0.2423702521728527,
+        "late_mean_within_unit_std": 0.24235618902267386,
+        "late_mean_offdiagonal_correlation": -0.14285092914322098,
+        "finite_perturbation_max_gain": 1.8941490149660256,
+        "finite_perturbation_final_gain": 0.7314960853469756,
+        "bounded_check_passed": true
+      },
+      {
+        "name": "diffusive_ring_1",
+        "units": 8,
+        "row_absolute_sums": [
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0
+        ],
+        "current": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "maximum_bound_fraction": 0.6284487453033837,
+        "late_mean_between_unit_std": 0.23498738212397066,
+        "late_mean_within_unit_std": 0.23496473944428628,
+        "late_mean_offdiagonal_correlation": -0.1428536483572024,
+        "finite_perturbation_max_gain": 1.0000000000058809,
+        "finite_perturbation_final_gain": 0.11689198631190248,
+        "bounded_check_passed": true
+      },
+      {
+        "name": "diffusive_ring_4",
+        "units": 8,
+        "row_absolute_sums": [
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0
+        ],
+        "current": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "maximum_bound_fraction": 0.6287245244676858,
+        "late_mean_between_unit_std": 5.755371969121054e-10,
+        "late_mean_within_unit_std": 0.23914384754351412,
+        "late_mean_offdiagonal_correlation": 1.0,
+        "finite_perturbation_max_gain": 15.964194669934976,
+        "finite_perturbation_final_gain": 11.392050624858964,
+        "bounded_check_passed": true
+      },
+      {
+        "name": "excitatory_ring_4",
+        "units": 8,
+        "row_absolute_sums": [
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "current": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "maximum_bound_fraction": 0.7161896494600888,
+        "late_mean_between_unit_std": 0.4094702071117238,
+        "late_mean_within_unit_std": 0.4095220602947328,
+        "late_mean_offdiagonal_correlation": -0.14232435587472475,
+        "finite_perturbation_max_gain": 2.7208997380163784,
+        "finite_perturbation_final_gain": 2.0825059358251914,
+        "bounded_check_passed": true
+      },
+      {
+        "name": "mixed_signed_row_l1_4",
+        "units": 8,
+        "row_absolute_sums": [
+          4.0,
+          4.0,
+          3.999999999999999,
+          4.0,
+          4.0,
+          4.0,
+          4.000000000000001,
+          4.0
+        ],
+        "current": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "maximum_bound_fraction": 0.7216276726014726,
+        "late_mean_between_unit_std": 0.23135229883687225,
+        "late_mean_within_unit_std": 0.31932326285098833,
+        "late_mean_offdiagonal_correlation": 0.24920791486887856,
+        "finite_perturbation_max_gain": 2.505484803930071,
+        "finite_perturbation_final_gain": 0.34808932789489966,
+        "bounded_check_passed": true
+      },
+      {
+        "name": "heterogeneous_diffusive_ring",
+        "units": 8,
+        "row_absolute_sums": [
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "current": [
+          1.1435027743353832,
+          0.8991679644333844,
+          1.0655572214828277,
+          1.1180364762547539,
+          0.9764362055838466,
+          0.9178101863521323,
+          1.111864470327992,
+          1.0509274531407833
+        ],
+        "maximum_bound_fraction": 0.628336168509798,
+        "late_mean_between_unit_std": 0.2162013105403942,
+        "late_mean_within_unit_std": 0.2157070210135978,
+        "late_mean_offdiagonal_correlation": -0.1427506224742078,
+        "finite_perturbation_max_gain": 1.0000000000058809,
+        "finite_perturbation_final_gain": 0.10269685783187027,
+        "bounded_check_passed": true
+      }
+    ],
+    "all_bounds_passed": true
+  },
+  "numerical_accuracy": {
+    "reference": "DOP853 rtol=1e-11 atol=1e-13 max_step=.025, sample=.005",
+    "runs": [
+      {
+        "dtype": "float64",
+        "method": "euler",
+        "dt": 0.2,
+        "max_abs_state_error": 0.3197754995425894,
+        "empirical_halving_order": null,
+        "actual_trajectory_dtype": "float64",
+        "final_state_error": 0.0005613503482901324
+      },
+      {
+        "dtype": "float64",
+        "method": "euler",
+        "dt": 0.1,
+        "max_abs_state_error": 0.158590773615765,
+        "empirical_halving_order": 1.0117505657332717,
+        "actual_trajectory_dtype": "float64",
+        "final_state_error": 0.00023980561529423627
+      },
+      {
+        "dtype": "float64",
+        "method": "euler",
+        "dt": 0.05,
+        "max_abs_state_error": 0.0789506693637895,
+        "empirical_halving_order": 1.0062854385856654,
+        "actual_trajectory_dtype": "float64",
+        "final_state_error": 0.0001119891909236932
+      },
+      {
+        "dtype": "float64",
+        "method": "euler",
+        "dt": 0.025,
+        "max_abs_state_error": 0.039251331123077465,
+        "empirical_halving_order": 1.0082099169897054,
+        "actual_trajectory_dtype": "float64",
+        "final_state_error": 5.42131903482699e-05
+      },
+      {
+        "dtype": "float64",
+        "method": "exponential",
+        "dt": 0.2,
+        "max_abs_state_error": 0.43154422713770724,
+        "empirical_halving_order": null,
+        "actual_trajectory_dtype": "float64",
+        "final_state_error": 0.00147756999999685
+      },
+      {
+        "dtype": "float64",
+        "method": "exponential",
+        "dt": 0.1,
+        "max_abs_state_error": 0.22237955284921118,
+        "empirical_halving_order": 0.9564842801161966,
+        "actual_trajectory_dtype": "float64",
+        "final_state_error": 0.000539350454863891
+      },
+      {
+        "dtype": "float64",
+        "method": "exponential",
+        "dt": 0.05,
+        "max_abs_state_error": 0.1119389262318089,
+        "empirical_halving_order": 0.9903123286243352,
+        "actual_trajectory_dtype": "float64",
+        "final_state_error": 0.0002303122775477339
+      },
+      {
+        "dtype": "float64",
+        "method": "exponential",
+        "dt": 0.025,
+        "max_abs_state_error": 0.05606470007281095,
+        "empirical_halving_order": 0.9975472139100566,
+        "actual_trajectory_dtype": "float64",
+        "final_state_error": 0.00010650315345900408
+      },
+      {
+        "dtype": "float64",
+        "method": "rk4",
+        "dt": 0.2,
+        "max_abs_state_error": 4.674430275120045e-05,
+        "empirical_halving_order": null,
+        "actual_trajectory_dtype": "float64",
+        "final_state_error": 1.9064147352545782e-08
+      },
+      {
+        "dtype": "float64",
+        "method": "rk4",
+        "dt": 0.1,
+        "max_abs_state_error": 3.4056466786669404e-06,
+        "empirical_halving_order": 3.778789863973417,
+        "actual_trajectory_dtype": "float64",
+        "final_state_error": 2.0948276220198266e-09
+      },
+      {
+        "dtype": "float64",
+        "method": "rk4",
+        "dt": 0.05,
+        "max_abs_state_error": 1.128440896391858e-06,
+        "empirical_halving_order": 1.593597911898719,
+        "actual_trajectory_dtype": "float64",
+        "final_state_error": 5.634487727591582e-10
+      },
+      {
+        "dtype": "float64",
+        "method": "rk4",
+        "dt": 0.025,
+        "max_abs_state_error": 1.680603496367894e-07,
+        "empirical_halving_order": 2.7472795616379417,
+        "actual_trajectory_dtype": "float64",
+        "final_state_error": 9.455092829185728e-11
+      },
+      {
+        "dtype": "float32",
+        "method": "euler",
+        "dt": 0.2,
+        "max_abs_state_error": 0.31977570255124643,
+        "empirical_halving_order": null,
+        "actual_trajectory_dtype": "float32",
+        "final_state_error": 0.0005612857924056959
+      },
+      {
+        "dtype": "float32",
+        "method": "euler",
+        "dt": 0.1,
+        "max_abs_state_error": 0.15859146126351426,
+        "empirical_halving_order": 1.011745226128883,
+        "actual_trajectory_dtype": "float32",
+        "final_state_error": 0.00023975914506333746
+      },
+      {
+        "dtype": "float32",
+        "method": "euler",
+        "dt": 0.05,
+        "max_abs_state_error": 0.07895007439694474,
+        "empirical_halving_order": 1.0063025661731413,
+        "actual_trajectory_dtype": "float32",
+        "final_state_error": 0.00011175885472696432
+      },
+      {
+        "dtype": "float32",
+        "method": "euler",
+        "dt": 0.025,
+        "max_abs_state_error": 0.03925058169033435,
+        "empirical_halving_order": 1.008226590797119,
+        "actual_trajectory_dtype": "float32",
+        "final_state_error": 5.406975170225453e-05
+      },
+      {
+        "dtype": "float32",
+        "method": "exponential",
+        "dt": 0.2,
+        "max_abs_state_error": 0.43154360509239986,
+        "empirical_halving_order": null,
+        "actual_trajectory_dtype": "float32",
+        "final_state_error": 0.0014777907087770979
+      },
+      {
+        "dtype": "float32",
+        "method": "exponential",
+        "dt": 0.1,
+        "max_abs_state_error": 0.22237977583730295,
+        "empirical_halving_order": 0.956480753913468,
+        "actual_trajectory_dtype": "float32",
+        "final_state_error": 0.0005392896973825493
+      },
+      {
+        "dtype": "float32",
+        "method": "exponential",
+        "dt": 0.05,
+        "max_abs_state_error": 0.11193889913251343,
+        "empirical_halving_order": 0.9903141245286633,
+        "actual_trajectory_dtype": "float32",
+        "final_state_error": 0.00023096069357200278
+      },
+      {
+        "dtype": "float32",
+        "method": "exponential",
+        "dt": 0.025,
+        "max_abs_state_error": 0.0560713081599814,
+        "empirical_halving_order": 0.9973768308693051,
+        "actual_trajectory_dtype": "float32",
+        "final_state_error": 0.00010392747631890922
+      },
+      {
+        "dtype": "float32",
+        "method": "rk4",
+        "dt": 0.2,
+        "max_abs_state_error": 4.73840559848393e-05,
+        "empirical_halving_order": null,
+        "actual_trajectory_dtype": "float32",
+        "final_state_error": 1.455611194911233e-07
+      },
+      {
+        "dtype": "float32",
+        "method": "rk4",
+        "dt": 0.1,
+        "max_abs_state_error": 3.945909357760957e-06,
+        "empirical_halving_order": 3.5859719746774723,
+        "actual_trajectory_dtype": "float32",
+        "final_state_error": 1.2758403008077988e-07
+      },
+      {
+        "dtype": "float32",
+        "method": "rk4",
+        "dt": 0.05,
+        "max_abs_state_error": 1.8344794384395069e-06,
+        "empirical_halving_order": 1.1049870816294094,
+        "actual_trajectory_dtype": "float32",
+        "final_state_error": 1.9343824369476416e-07
+      },
+      {
+        "dtype": "float32",
+        "method": "rk4",
+        "dt": 0.025,
+        "max_abs_state_error": 1.1353395344970707e-06,
+        "empirical_halving_order": 0.6922469201489274,
+        "actual_trajectory_dtype": "float32",
+        "final_state_error": 2.3564768970705136e-07
+      }
+    ],
+    "large_step_stress": [
+      {
+        "dt": 1.0,
+        "method": "euler",
+        "maximum_bound_fraction": 0.6932160124310749,
+        "max_abs_state": 4.159296074586449,
+        "all_finite": true
+      },
+      {
+        "dt": 1.0,
+        "method": "exponential",
+        "maximum_bound_fraction": 0.6969810205695661,
+        "max_abs_state": 4.181886123417397,
+        "all_finite": true
+      },
+      {
+        "dt": 2.0,
+        "method": "euler",
+        "maximum_bound_fraction": 0.7188239355747758,
+        "max_abs_state": 4.312943613448654,
+        "all_finite": true
+      },
+      {
+        "dt": 2.0,
+        "method": "exponential",
+        "maximum_bound_fraction": 0.7508135945870539,
+        "max_abs_state": 4.5048815675223235,
+        "all_finite": true
+      },
+      {
+        "dt": 4.0,
+        "method": "euler",
+        "maximum_bound_fraction": 7250646.068924581,
+        "max_abs_state": 87007752.82709497,
+        "all_finite": true
+      },
+      {
+        "dt": 4.0,
+        "method": "exponential",
+        "maximum_bound_fraction": 0.8280222281610398,
+        "max_abs_state": 4.968133368966239,
+        "all_finite": true
+      }
+    ],
+    "stress_protocol": "Constant I=1, initial (.1,3), duration80; avoids missing a narrow pulse on a coarse grid",
+    "exponential_note": "Frozen forcing exponential Euler: invariant bounds do not mean accurate dynamics at large dt"
+  },
+  "tangent_counterexample": {
+    "interpretation": "Exact tangent flow at equilibria proves state boundedness does not bound long-horizon sensitivities",
+    "runs": [
+      {
+        "name": "stable_rest_I_minus_0.2",
+        "state": [
+          -0.596185365282,
+          1.6527274502882805
+        ],
+        "jacobian": [
+          [
+            -0.34983780065487236,
+            -1.0
+          ],
+          [
+            0.3305454900576561,
+            -0.2
+          ]
+        ],
+        "eigenvalues": [
+          "(-0.27491890032743616+0.5700286382554685j)",
+          "(-0.27491890032743616-0.5700286382554685j)"
+        ],
+        "tangent_norms": {
+          "1": 1.0453601651681883,
+          "10": 0.08858975814952899,
+          "50": 1.2270793287612627e-06,
+          "100": 1.4920693523475296e-12
+        }
+      },
+      {
+        "name": "unstable_equilibrium_I_1",
+        "state": [
+          0.0,
+          3.0
+        ],
+        "jacobian": [
+          [
+            1.0,
+            -1.0
+          ],
+          [
+            0.6,
+            -0.2
+          ]
+        ],
+        "eigenvalues": [
+          "(0.4+0.48989794855663554j)",
+          "(0.4-0.48989794855663554j)"
+        ],
+        "tangent_norms": {
+          "1": 2.6517254543251814,
+          "10": 157.45680044841632,
+          "50": 984921953.9034699,
+          "100": 6.648280825964584e+17
+        }
+      }
+    ]
+  },
+  "certified_stable_variant": {
+    "parameters": {
+      "leak": 6.0,
+      "call_gain": 1.0,
+      "regen_gain": 4.0,
+      "recovery_gain": 6.0,
+      "recovery_time": 5.0
+    },
+    "certificate": {
+      "weight": 0.3,
+      "row_l1_bound": 0.5,
+      "x_margin": 0.4166666666666665,
+      "y_margin": 0.020000000000000018,
+      "contraction_rate": 0.020000000000000018,
+      "certified": true
+    },
+    "initial_distance": 2.1591679990139294,
+    "final_distance": 1.3322676295501878e-15,
+    "maximum_distance_over_certified_envelope": 1.0,
+    "passed": true,
+    "tradeoff": "This globally contracting regime cannot preserve autonomous tonic oscillations under constant input; representation quality is untested"
+  },
+  "gradients": {
+    "method": "Exact reverse mode of a specified irregular-step Euler recurrence",
+    "scope": "Initial states, input timing and targets fixed independently of differentiated parameters",
+    "not_tested": [
+      "gradient correctness of an adaptive ODE solver",
+      "training quality",
+      "long-horizon gradient stability"
+    ],
+    "runs": [
+      {
+        "seed": 101,
+        "units": 4,
+        "steps": 350,
+        "parameters": 22,
+        "loss": 0.012330502119288994,
+        "time_step_range": [
+          0.020052839992199978,
+          0.039945260840154706
+        ],
+        "max_absolute_gradient_error": 4.7332635640801035e-11,
+        "max_relative_gradient_error": 1.4362868442398218e-08,
+        "maximum_jacobian_absolute_error": 8.22666379463044e-11,
+        "analytic_gradient": [
+          -0.004761707067594093,
+          -0.0021718130258481226,
+          -0.0032954862150826273,
+          0.005175657745387285,
+          -0.0010948748034583706,
+          0.004626946743480279,
+          -0.0004639729294952117,
+          0.00017500840016985807,
+          -0.0004017254628897236,
+          -0.0001744840471519711,
+          -0.0005363370859042988,
+          0.0012849241189015156,
+          9.823920523147162e-05,
+          -0.0012041475235167443,
+          -0.0007444386908947867,
+          0.0012157294031502404,
+          -0.000110582851010043,
+          -0.001304126386042939,
+          -0.0003687483740434875,
+          -0.0007776388659017766,
+          -0.0006916475400998137,
+          0.00036780656747048546
+        ],
+        "finite_difference_gradient": [
+          -0.0047617070708314,
+          -0.0021718130268147395,
+          -0.003295486262415263,
+          0.005175657754010026,
+          -0.0010948748037191425,
+          0.004626946736689674,
+          -0.000463972929867773,
+          0.00017500840021958394,
+          -0.00040172546305131113,
+          -0.00017448404786984947,
+          -0.000536337085594446,
+          0.001284924118494235,
+          9.823920600615653e-05,
+          -0.0012041475230990806,
+          -0.0007444386912469624,
+          0.0012157294028251886,
+          -0.00011058285086240625,
+          -0.0013041263863949881,
+          -0.0003687483735026475,
+          -0.0007776388663213728,
+          -0.0006916475392415576,
+          0.0003678065669740493
+        ],
+        "passed": true
+      },
+      {
+        "seed": 202,
+        "units": 4,
+        "steps": 350,
+        "parameters": 22,
+        "loss": 0.014425312593517205,
+        "time_step_range": [
+          0.020020592435882056,
+          0.039993457640371766
+        ],
+        "max_absolute_gradient_error": 4.009390042192251e-12,
+        "max_relative_gradient_error": 1.062166593743959e-08,
+        "maximum_jacobian_absolute_error": 1.543285499394642e-10,
+        "analytic_gradient": [
+          -0.006308270415452371,
+          -0.00238875939327215,
+          0.006088972750600184,
+          0.002455007449860866,
+          -0.0005708344571478852,
+          0.009754728716295055,
+          -0.0008892143238506421,
+          -0.0030754540785008534,
+          -0.0035747446095540395,
+          -0.002141441903334527,
+          0.00023550184668547108,
+          0.0010251072910766835,
+          9.489018539769524e-05,
+          -0.0004049279182543322,
+          0.00209182240353765,
+          4.738316797931274e-05,
+          0.0007334490584795214,
+          0.0018406417378058733,
+          0.0011327370385903403,
+          -0.0008961376174469151,
+          -0.0005846605294045166,
+          0.0005580583188684801
+        ],
+        "finite_difference_gradient": [
+          -0.006308270417317018,
+          -0.0023887593939356244,
+          0.006088972746864408,
+          0.002455007452262352,
+          -0.000570834457255115,
+          0.009754728712285665,
+          -0.0008892143242220095,
+          -0.0030754540787311653,
+          -0.0035747446108271015,
+          -0.0021414419032299292,
+          0.00023550184545528816,
+          0.001025107291934002,
+          9.489018581304574e-05,
+          -0.00040492791845286863,
+          0.0020918224033147914,
+          4.738316848260093e-05,
+          0.0007334490597331321,
+          0.0018406417378116766,
+          0.001132737039149373,
+          -0.0008961376169770717,
+          -0.000584660530406067,
+          0.0005580583192603406
+        ],
+        "passed": true
+      },
+      {
+        "seed": 303,
+        "units": 4,
+        "steps": 350,
+        "parameters": 22,
+        "loss": 0.016075615015783154,
+        "time_step_range": [
+          0.020010671166346583,
+          0.039995602090131754
+        ],
+        "max_absolute_gradient_error": 5.0656760036682513e-11,
+        "max_relative_gradient_error": 1.0946082671701535e-08,
+        "maximum_jacobian_absolute_error": 1.5393103458549717e-10,
+        "analytic_gradient": [
+          -0.0020142146256035896,
+          -0.0016792802644875517,
+          0.005072499352458116,
+          0.002653126261259244,
+          -0.0011008397905594527,
+          0.015771284843428098,
+          -0.0008996692125559745,
+          -0.0020839888970150032,
+          -0.0006284037907505842,
+          -0.001572485895102268,
+          0.00012082775017050867,
+          -0.00016899468951441128,
+          0.0002519835318494373,
+          -0.0003450798388183825,
+          -0.0006122818736497702,
+          -0.0013263003595466582,
+          -0.0005600714037725204,
+          -0.0012126726483870298,
+          0.0011606037617186652,
+          0.00019313994252347333,
+          0.0019375138274965837,
+          0.0011620189446902216
+        ],
+        "finite_difference_gradient": [
+          -0.002014214622349242,
+          -0.0016792802644965963,
+          0.005072499301801356,
+          0.0026531262701269074,
+          -0.0011008397910947099,
+          0.015771284838685118,
+          -0.0008996692127394289,
+          -0.0020839888969018117,
+          -0.0006284037904619177,
+          -0.0015724858951418617,
+          0.00012082774884791812,
+          -0.0001689946890759408,
+          0.0002519835310896279,
+          -0.00034507983918269364,
+          -0.0006122818743334313,
+          -0.001326300359295873,
+          -0.000560071403143958,
+          -0.0012126726485831019,
+          0.0011606037624012355,
+          0.00019313994188696612,
+          0.0019375138271549017,
+          0.0011620189437414052
+        ],
+        "passed": true
+      },
+      {
+        "seed": 404,
+        "units": 4,
+        "steps": 350,
+        "parameters": 22,
+        "loss": 0.013264829689127714,
+        "time_step_range": [
+          0.020036145654781734,
+          0.0398977631661559
+        ],
+        "max_absolute_gradient_error": 3.887469599700433e-11,
+        "max_relative_gradient_error": 1.564214090824573e-08,
+        "maximum_jacobian_absolute_error": 8.22666379463044e-11,
+        "analytic_gradient": [
+          0.0017439895812569293,
+          -0.001273614798569341,
+          0.006425283024966727,
+          0.0024680706740497003,
+          -0.0010657446961732239,
+          0.013717878157561867,
+          -0.000999562399415231,
+          -0.0009037632880647223,
+          -0.0009227223949590482,
+          -0.0011698232856870356,
+          -0.0010834615154500695,
+          -0.0003311756387957398,
+          -0.0007298328210485174,
+          -0.0008350119236274953,
+          -0.0007976893841286614,
+          -1.3941382901780667e-05,
+          -0.0003290817043978392,
+          -0.0005756656289062061,
+          -0.00027893470496038667,
+          0.0002429460680046769,
+          5.104980482336958e-05,
+          -0.0001690842310037829
+        ],
+        "finite_difference_gradient": [
+          0.0017439895843435191,
+          -0.0012736147975665746,
+          0.006425282986092031,
+          0.002468070683256963,
+          -0.0010657446965212092,
+          0.013717878153546302,
+          -0.000999562398996956,
+          -0.0009037632880785905,
+          -0.0009227223949324902,
+          -0.0011698232857230983,
+          -0.0010834615170318695,
+          -0.0003311756385619702,
+          -0.0007298328209143222,
+          -0.0008350119235812913,
+          -0.0007976893839044262,
+          -1.3941382683707591e-05,
+          -0.0003290817051151973,
+          -0.0005756656281004358,
+          -0.00027893470450068847,
+          0.00024294606855781994,
+          5.104980422762639e-05,
+          -0.00016908423142517057
+        ],
+        "passed": true
+      },
+      {
+        "seed": 505,
+        "units": 4,
+        "steps": 350,
+        "parameters": 22,
+        "loss": 0.014797070005447138,
+        "time_step_range": [
+          0.020050030730764945,
+          0.039984417410156056
+        ],
+        "max_absolute_gradient_error": 2.2837606632186702e-10,
+        "max_relative_gradient_error": 1.6200829560225972e-08,
+        "maximum_jacobian_absolute_error": 3.644640145239464e-10,
+        "analytic_gradient": [
+          -0.008064413125035884,
+          -0.0017053444177695042,
+          0.01409656619575483,
+          -0.0015724283022087154,
+          -4.917969813944891e-05,
+          0.020676369096217707,
+          -0.0008391071996564065,
+          -0.0031035332621121934,
+          -0.0011069042719651406,
+          -0.0019422872393699343,
+          0.002520382859966846,
+          0.0002998824181462891,
+          0.0026212273629339197,
+          0.003101140859602933,
+          0.000506796132573536,
+          -0.0024627500876877183,
+          0.00035162707345448937,
+          -1.82922425675389e-05,
+          0.0017484359440401278,
+          -0.0003651200105471908,
+          0.0017573569271395002,
+          0.0019297739537355977
+        ],
+        "finite_difference_gradient": [
+          -0.008064413121230268,
+          -0.0017053444178495578,
+          0.014096565967378764,
+          -0.0015724282771256007,
+          -4.917969828252544e-05,
+          0.02067636909143175,
+          -0.0008391071994358345,
+          -0.0031035332620672758,
+          -0.0011069042718872546,
+          -0.0019422872398963673,
+          0.002520382859447917,
+          0.00029988241785627867,
+          0.002621227362682027,
+          0.0031011408582574946,
+          0.0005067961324906056,
+          -0.002462750087629112,
+          0.0003516270719039482,
+          -1.8292242286860327e-05,
+          0.0017484359438567352,
+          -0.00036512001087493634,
+          0.001757356927079706,
+          0.0019297739536558443
+        ],
+        "passed": true
+      }
+    ],
+    "all_passed": true
+  },
+  "wall_seconds": 49.106753000000026,
+  "validation_passed": true
+}
