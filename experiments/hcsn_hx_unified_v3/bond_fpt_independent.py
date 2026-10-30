@@ -153,27 +153,72 @@ def reflected_passage(x: float, *, drift: float, sigma: float,
     _check(x,drift,sigma,discount,horizon)
     s2=sigma*sigma
     u=sigma*math.sqrt(horizon)
-    z=math.hypot(drift,math.sqrt(2*discount)*sigma)
+    twice_discount=2*discount
+    if not all(math.isfinite(v) and v>0 for v in (s2,u,twice_discount)):
+        raise ArithmeticError('Reflection scales outside resolved f64 domain')
+    z=math.hypot(drift,math.sqrt(twice_discount)*sigma)
+    denominator=z+abs(drift)
+    if not math.isfinite(denominator) or denominator<=0:
+        raise ArithmeticError('Reflection denominator outside resolved f64 domain')
+    drift_horizon=drift*horizon
+    z_horizon=z*horizon
+    # Refuse lost time products rather than pretending their normal-CDF
+    # arguments are accurate. Zero drift still has an exact zero product.
+    if (not math.isfinite(drift_horizon) or not math.isfinite(z_horizon)
+            or z_horizon<=0 or (drift!=0 and drift_horizon==0)):
+        raise ArithmeticError('Reflection time products outside resolved f64 domain')
     # For small discount relative to drift**2/sigma**2, z-|drift|
     # is a tiny positive difference of nearly equal f64 numbers. Directly
     # computing (-drift-z) for negative drift (or -drift+z for positive
     # drift) loses the Laplace exponent and yields a false discrepancy with
     # the *more accurate* density quadrature. Rationalize that difference:
     # (z-|drift|)*(z+|drift|)=2*discount*sigma**2.
-    delta=2*discount*s2/(z+abs(drift))
+    # Cancel sigma**2 symbolically BEFORE evaluation. Forming delta first
+    # can overflow 2*q*sigma**2 and silently discard a nonzero G term.
+    scaled_distance=x/denominator
+    if not math.isfinite(scaled_distance) or scaled_distance<=0:
+        raise ArithmeticError('Reflection distance outside resolved f64 domain')
+    small_exponent=twice_discount*scaled_distance
+    # Divide each factor before multiplication: denominator*x can underflow
+    # even when division by sigma**2 would recover an ordinary exponent.
+    scaled_denominator=denominator/sigma
+    scaled_asset_distance=x/sigma
+    if not all(math.isfinite(v) and v>0
+               for v in (scaled_denominator,scaled_asset_distance)):
+        raise ArithmeticError('Reflection exponent factors outside resolved f64 domain')
+    large_exponent=scaled_denominator*scaled_asset_distance
+    # Both magnitudes are strictly positive mathematically. Reject a zero
+    # product caused by underflow instead of silently dropping either term.
+    if not all(math.isfinite(v) and v>0 for v in (small_exponent,large_exponent)):
+        raise ArithmeticError('Reflection exponents outside resolved f64 domain')
+    # F has the same recoverable product-underflow risk. Use dimensionless
+    # factors and multiply by two last; zero drift legitimately has exponent 0.
+    scaled_drift=drift/sigma
+    if not math.isfinite(scaled_drift) or (drift!=0 and scaled_drift==0):
+        raise ArithmeticError('Reflection drift outside resolved f64 domain')
+    drift_product=scaled_drift*scaled_asset_distance
+    if not math.isfinite(drift_product) or (drift!=0 and drift_product==0):
+        raise ArithmeticError('Reflection drift product outside resolved f64 domain')
+    reflection_exponent=-2*drift_product
+    if not math.isfinite(reflection_exponent):
+        raise ArithmeticError('Reflection probability exponent outside resolved f64 domain')
     if drift < 0:
-        exponent_first=(z-drift)*x/s2
-        exponent_second=-delta*x/s2
+        exponent_first=large_exponent
+        exponent_second=-small_exponent
     else:
-        exponent_first=delta*x/s2
-        exponent_second=-(z+drift)*x/s2
+        exponent_first=small_exponent
+        exponent_second=-large_exponent
     def tail(expo,arg):
+        # Unsupported intermediate overflow must not become a zero tail.
+        # These guards are not certification of all finite input parameters.
+        if not math.isfinite(expo) or not math.isfinite(arg):
+            raise ArithmeticError('Reflection tail outside resolved f64 domain')
         y=expo+float(log_ndtr(arg))
         if y > 709:
             raise ArithmeticError('Normal-tail multiplication overflows')
         return 0. if y < -745 else math.exp(y)
-    f=tail(0,(-x-drift*horizon)/u)+tail(-2*drift*x/s2,(-x+drift*horizon)/u)
-    g=tail(exponent_first,(-x-z*horizon)/u)+tail(exponent_second,(-x+z*horizon)/u)
+    f=tail(0,(-x-drift_horizon)/u)+tail(reflection_exponent,(-x+drift_horizon)/u)
+    g=tail(exponent_first,(-x-z_horizon)/u)+tail(exponent_second,(-x+z_horizon)/u)
     return Passage(f,g,0.)
 
 
