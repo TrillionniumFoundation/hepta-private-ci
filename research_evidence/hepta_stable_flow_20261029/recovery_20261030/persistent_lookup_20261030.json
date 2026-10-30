@@ -1,0 +1,105 @@
+{
+  "schema": "hepta-targeted-persistent-recovery-v1",
+  "observed_at": "2026-10-30 00:55:52 UTC",
+  "task": "Locate exact Oct29 complete stable-flow archive and final audit after transient workspace reset",
+  "targets": [
+    {
+      "name": "hepta_stable_flow_complete_20261029.tar.gz",
+      "bytes": 15926965,
+      "sha256": "a8ce9dccf74ff31521e736d52a238d57b689e3431f35157b451e82b4883327d8"
+    },
+    {
+      "name": "final_scientific_audit.json",
+      "bytes": 318638,
+      "sha256": "e9cca63657c97dfbc597a8e21d20f23a203d84745c2a19bef19ac809086f98f5"
+    },
+    {
+      "name": "Hepta_New_Scientific_Report_20261029.html"
+    },
+    {
+      "name": "complete_parts_20261029"
+    }
+  ],
+  "exact_title_search": {
+    "status": "fulfilled",
+    "value": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "api_tool_source": "files/search",
+        "results": [],
+        "retrieval_title_results": [],
+        "next_cursor": null,
+        "warnings": [
+          "No search results were found. A zero-result search does not establish that the searched content lacks the answer: the query may not match indexed text, parsed text may be missing, or retrieval may have failed. Retry once with a simpler question-equivalent query or an alternate short query. If results remain empty or parsed text appears unavailable, use `files.read` to inspect page images, or use the container tool to extract, render, or otherwise process the file(s); first use `files.materialize` for any file that is not already present in the container."
+        ],
+        "external_connectors_accessed": false
+      },
+      "isError": false
+    }
+  },
+  "context_search": {
+    "status": "fulfilled",
+    "value": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Personal context is unavailable for this conversation."
+        }
+      ],
+      "isError": true
+    }
+  },
+  "library_recent_inventory": {
+    "request": {
+      "surface": "library",
+      "recursive": true,
+      "limit": 200,
+      "filters": {
+        "created_after": "2026-10-29T14:00:00Z"
+      },
+      "sort": "created_at",
+      "sort_order": "desc"
+    },
+    "response": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "surface": "library",
+        "items": [
+          {
+            "id": "file_000000009b7c81fda7ada467105648fa",
+            "kind": "file",
+            "name": "hepta_field_episode02_partial_evidence_20261029.tar.gz",
+            "path": "/hepta_field_episode02_partial_evidence_20261029.tar.gz",
+            "file_id": "file_000000009b7c81fda7ada467105648fa",
+            "library_file_id": "libfile_493e46c23f60819180afafa39a6004f5",
+            "library_artifact_type": "other",
+            "version_id": null,
+            "mime_type": "application/x-tar",
+            "size_bytes": 1330213,
+            "created_at": "2026-10-29T17:45:03.052939+00:00",
+            "modified_at": "2026-10-29T17:45:03.052939+00:00",
+            "model_generated": true,
+            "surface": "library"
+          }
+        ],
+        "next_cursor": null,
+        "warnings": [],
+        "external_connectors_accessed": false
+      },
+      "isError": false
+    }
+  },
+  "managed_environment_tools_discovered": [],
+  "outcome": "No exact target was found through available persistent-artifact retrieval. No archive bytes recovered. Empty search results are not proof that a target does not exist elsewhere.",
+  "workspace_mutations": "Only this recovery receipt; no science regeneration, deletions, Git mutations, or broad filesystem scans."
+}
