@@ -1,0 +1,1032 @@
+{
+  "jobs": [
+    {
+      "aggregate": {
+        "executed_now": 39,
+        "failed_build": 50,
+        "failed_runtime": 16,
+        "passed": 346,
+        "skipped": 164,
+        "total": 576
+      },
+      "build_target_list_incomplete": true,
+      "compiler_diagnostics": [
+        {
+          "lines": [
+            8484,
+            10789,
+            10830
+          ],
+          "message": "error[E0615]: attempted to take value of method `bundled_latest_thread_event` on type `TimelineEvent`"
+        },
+        {
+          "lines": [
+            8766,
+            10802,
+            10843
+          ],
+          "message": "error[E0599]: the method `context` exists for enum `Result<EvidenceId, std::string::String>`, but its trait bounds were not satisfied"
+        },
+        {
+          "lines": [
+            9090,
+            9122,
+            10811,
+            10820,
+            10852,
+            10861
+          ],
+          "message": "error: queries overflow the depth limit!"
+        }
+      ],
+      "decoded_utf8_bytes": 1578797,
+      "decoded_utf8_sha256": "146aa0173f22fad8a87619dc5df8ea20ede95205a944d703a7d2d7d074a31d7e",
+      "excluded_final_flaky": [
+        {
+          "detail": ", failed in 1 out of 9 in 47.7s",
+          "line": 10763,
+          "status": "FLAKY",
+          "target": "//codex-rs/core:core-unit-tests"
+        }
+      ],
+      "failed_runtime_targets": [
+        {
+          "cases": [
+            {
+              "lines": [
+                11063
+              ],
+              "name": "schema_fixtures_tests::experimental_precomputed_exports_match_generated"
+            },
+            {
+              "lines": [
+                11064
+              ],
+              "name": "schema_fixtures_tests::json_schema_fixtures_match_generated"
+            },
+            {
+              "lines": [
+                11065
+              ],
+              "name": "schema_fixtures_tests::stable_precomputed_exports_match_schema_fixtures"
+            }
+          ],
+          "detail": "in 60.2s",
+          "line": 10723,
+          "status": "FAILED",
+          "target": "//codex-rs/app-server-protocol:app-server-protocol-unit-tests"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                8839,
+                8962,
+                11125,
+                11248
+              ],
+              "name": "transport::remote_control::server_api::tests::response_body_timeout_is_transient"
+            }
+          ],
+          "detail": "in 2.9s",
+          "line": 10725,
+          "status": "FAILED",
+          "target": "//codex-rs/app-server-transport:app-server-transport-unit-tests"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                2514,
+                2658,
+                11262,
+                11406
+              ],
+              "name": "file_system_bounded_authorized_read_enforces_limit_without_prefix::local"
+            },
+            {
+              "lines": [
+                2515,
+                2659,
+                11263,
+                11407
+              ],
+              "name": "file_system_bounded_authorized_read_enforces_limit_without_prefix::remote"
+            },
+            {
+              "lines": [
+                2516,
+                2660,
+                11264,
+                11408
+              ],
+              "name": "file_system_bounded_authorized_read_rejects_symlink_and_parent_escape::local"
+            },
+            {
+              "lines": [
+                2517,
+                2661,
+                11265,
+                11409
+              ],
+              "name": "file_system_bounded_authorized_read_rejects_symlink_and_parent_escape::remote"
+            }
+          ],
+          "detail": "in 10.3s",
+          "line": 10727,
+          "status": "FAILED",
+          "target": "//codex-rs/exec-server:exec-server-file_system_unix-test"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                2429,
+                2504,
+                11536,
+                11611
+              ],
+              "name": "remote::tests::connect_environment_times_out_when_registry_response_body_stalls"
+            }
+          ],
+          "detail": "in 9.4s",
+          "line": 10729,
+          "status": "FAILED",
+          "target": "//codex-rs/exec-server:exec-server-unit-tests"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                9371,
+                9393,
+                9408,
+                9430,
+                9445,
+                9467,
+                11629,
+                11651
+              ],
+              "name": "suite::resume::exec_resume_last_repairs_rollout_missing_from_state_db"
+            }
+          ],
+          "detail": "in 3 out of 10 in 36.8s",
+          "line": 10773,
+          "status": "FAILED",
+          "target": "//codex-rs/exec:exec-all-test"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                9193,
+                9239,
+                11687,
+                11733
+              ],
+              "name": "registered_queue_lifecycle_starts_messages_in_fifo_order"
+            },
+            {
+              "lines": [
+                9194,
+                9240,
+                11688,
+                11734
+              ],
+              "name": "rejected_queue_messages_remain_durable_and_block_followups"
+            }
+          ],
+          "detail": "in 51.6s",
+          "line": 10731,
+          "status": "FAILED",
+          "target": "//codex-rs/ext/queue:queue-queue_service-test"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                9280,
+                9307,
+                11752,
+                11779
+              ],
+              "name": "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends"
+            },
+            {
+              "lines": [
+                9283,
+                9308,
+                11755,
+                11780
+              ],
+              "name": "two_real_agentd_app_servers_never_cross_recall"
+            },
+            {
+              "lines": [
+                9285,
+                9309,
+                11757,
+                11781
+              ],
+              "name": "unavailable_cognitive_store_keeps_read_tools_and_omits_write_tools"
+            }
+          ],
+          "detail": "in 69.4s",
+          "line": 10733,
+          "status": "FAILED",
+          "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                9046,
+                9059,
+                11793,
+                11806
+              ],
+              "name": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence"
+            }
+          ],
+          "detail": "in 0.3s",
+          "line": 10735,
+          "status": "FAILED",
+          "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                9333,
+                9346,
+                11830,
+                11843
+              ],
+              "name": "unavailable_cognitive_store_keeps_read_tools_and_omits_write_tools"
+            }
+          ],
+          "detail": "in 65.1s",
+          "line": 10737,
+          "status": "FAILED",
+          "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive_product_e2e-test"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                8999,
+                9008,
+                11854,
+                11863
+              ],
+              "name": "agentd_product_host_recovers_exact_cut_into_fenced_writer_generation"
+            }
+          ],
+          "detail": "in 0.1s",
+          "line": 10739,
+          "status": "FAILED",
+          "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive_store_product_writer-test"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                9836,
+                9845,
+                11876,
+                11885
+              ],
+              "name": "five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes"
+            }
+          ],
+          "detail": "in 120.1s",
+          "line": 10741,
+          "status": "FAILED",
+          "target": "//codex-rs/hepta-agentd:hepta-agentd-supervisord_product_e2e-test"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                1928,
+                1942,
+                11911,
+                11925
+              ],
+              "name": "v1_store_migrates_atomically_to_dispatch_outcome_schema"
+            }
+          ],
+          "detail": "in 0.8s",
+          "line": 10743,
+          "status": "FAILED",
+          "target": "//codex-rs/hepta-automation:hepta-automation-automation-test"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                1706,
+                1899,
+                11934,
+                12127
+              ],
+              "name": "cognitive_store_tests::v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection"
+            }
+          ],
+          "detail": "in 17.4s",
+          "line": 10745,
+          "status": "FAILED",
+          "target": "//codex-rs/hepta-memory:hepta-memory-unit-tests"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                1371,
+                1449,
+                12140,
+                12218
+              ],
+              "name": "g5_trust::tests::exact_head_and_predecessor_binding_is_required"
+            },
+            {
+              "lines": [
+                1372,
+                1450,
+                12141,
+                12219
+              ],
+              "name": "g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance"
+            },
+            {
+              "lines": [
+                1370,
+                1451,
+                12139,
+                12220
+              ],
+              "name": "g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority"
+            },
+            {
+              "lines": [
+                1373,
+                1452,
+                12142,
+                12221
+              ],
+              "name": "g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted"
+            },
+            {
+              "lines": [
+                1375,
+                1453,
+                12144,
+                12222
+              ],
+              "name": "g5_trust::tests::policy_and_revocation_files_must_be_canonical"
+            },
+            {
+              "lines": [
+                1374,
+                1454,
+                12143,
+                12223
+              ],
+              "name": "g5_trust::tests::revocation_digest_change_invalidates_existing_challenge"
+            },
+            {
+              "lines": [
+                1377,
+                1455,
+                12146,
+                12224
+              ],
+              "name": "g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance"
+            },
+            {
+              "lines": [
+                1388,
+                1456,
+                12157,
+                12225
+              ],
+              "name": "trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy"
+            },
+            {
+              "lines": [
+                1389,
+                1457,
+                12158,
+                12226
+              ],
+              "name": "trust::tests::trust_policy_digest_is_external_and_fail_closed"
+            },
+            {
+              "lines": [
+                1390,
+                1458,
+                12159,
+                12227
+              ],
+              "name": "trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers"
+            }
+          ],
+          "detail": "in 0.1s",
+          "line": 10747,
+          "status": "FAILED",
+          "target": "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                9144,
+                9153,
+                12242,
+                12251
+              ],
+              "name": "two_real_pairs_restart_one_without_peer_pid_churn"
+            }
+          ],
+          "detail": "in 98.8s",
+          "line": 10749,
+          "status": "FAILED",
+          "target": "//codex-rs/hepta-supervisor:hepta-supervisor-paired_process_product-test"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                2010,
+                2029,
+                12262,
+                12281
+              ],
+              "name": "robrix_control_v2_generated_projection_and_cross_parser_corpus"
+            },
+            {
+              "lines": [
+                2011,
+                2030,
+                12263,
+                12282
+              ],
+              "name": "writer_reproduces_the_tracked_artifact_set_byte_for_byte"
+            }
+          ],
+          "detail": "in 0.2s",
+          "line": 10751,
+          "status": "FAILED",
+          "target": "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+        }
+      ],
+      "line_count": 12414,
+      "listed_failed_build_targets": [
+        {
+          "detail": "",
+          "line": 10677,
+          "status": "FAILED TO BUILD",
+          "target": "//codex-rs/app-server:app-server-all-test"
+        },
+        {
+          "detail": "",
+          "line": 10678,
+          "status": "FAILED TO BUILD",
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "detail": "",
+          "line": 10679,
+          "status": "FAILED TO BUILD",
+          "target": "//codex-rs/cli:cli-app_server-test"
+        },
+        {
+          "detail": "",
+          "line": 10680,
+          "status": "FAILED TO BUILD",
+          "target": "//codex-rs/cli:cli-debug_clear_memories-test"
+        },
+        {
+          "detail": "",
+          "line": 10681,
+          "status": "FAILED TO BUILD",
+          "target": "//codex-rs/cli:cli-debug_models-test"
+        }
+      ],
+      "log": "job_123485500277.log.gz",
+      "observed_final_status_counts": {
+        "FAILED": 16,
+        "FAILED TO BUILD": 5,
+        "FLAKY": 1,
+        "PASSED": 345,
+        "SKIPPED": 164
+      }
+    },
+    {
+      "aggregate": {
+        "executed_now": 21,
+        "failed_build": 50,
+        "failed_runtime": 15,
+        "passed": 347,
+        "skipped": 164,
+        "total": 576
+      },
+      "build_target_list_incomplete": true,
+      "compiler_diagnostics": [
+        {
+          "lines": [
+            6392,
+            10699,
+            10740
+          ],
+          "message": "error[E0615]: attempted to take value of method `bundled_latest_thread_event` on type `TimelineEvent`"
+        },
+        {
+          "lines": [
+            8786,
+            10712,
+            10753
+          ],
+          "message": "error[E0599]: the method `context` exists for enum `Result<EvidenceId, std::string::String>`, but its trait bounds were not satisfied"
+        },
+        {
+          "lines": [
+            8830,
+            9045,
+            10721,
+            10730,
+            10762,
+            10771
+          ],
+          "message": "error: queries overflow the depth limit!"
+        }
+      ],
+      "decoded_utf8_bytes": 1571690,
+      "decoded_utf8_sha256": "569b89bbffe2ce690fe38a3b43570201924d72a87eb359de29021fe429332426",
+      "excluded_final_flaky": [
+        {
+          "detail": ", failed in 1 out of 9 in 47.7s",
+          "line": 10684,
+          "status": "FLAKY",
+          "target": "//codex-rs/core:core-unit-tests"
+        }
+      ],
+      "failed_runtime_targets": [
+        {
+          "cases": [
+            {
+              "lines": [
+                10973
+              ],
+              "name": "schema_fixtures_tests::experimental_precomputed_exports_match_generated"
+            },
+            {
+              "lines": [
+                10974
+              ],
+              "name": "schema_fixtures_tests::json_schema_fixtures_match_generated"
+            },
+            {
+              "lines": [
+                10975
+              ],
+              "name": "schema_fixtures_tests::stable_precomputed_exports_match_schema_fixtures"
+            }
+          ],
+          "detail": "in 60.2s",
+          "line": 10646,
+          "status": "FAILED",
+          "target": "//codex-rs/app-server-protocol:app-server-protocol-unit-tests"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                8891,
+                9014,
+                11035,
+                11158
+              ],
+              "name": "transport::remote_control::server_api::tests::response_body_timeout_is_transient"
+            }
+          ],
+          "detail": "in 3.6s",
+          "line": 10648,
+          "status": "FAILED",
+          "target": "//codex-rs/app-server-transport:app-server-transport-unit-tests"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                3046,
+                3190,
+                11172,
+                11316
+              ],
+              "name": "file_system_bounded_authorized_read_enforces_limit_without_prefix::local"
+            },
+            {
+              "lines": [
+                3047,
+                3191,
+                11173,
+                11317
+              ],
+              "name": "file_system_bounded_authorized_read_enforces_limit_without_prefix::remote"
+            },
+            {
+              "lines": [
+                3048,
+                3192,
+                11174,
+                11318
+              ],
+              "name": "file_system_bounded_authorized_read_rejects_symlink_and_parent_escape::local"
+            },
+            {
+              "lines": [
+                3049,
+                3193,
+                11175,
+                11319
+              ],
+              "name": "file_system_bounded_authorized_read_rejects_symlink_and_parent_escape::remote"
+            }
+          ],
+          "detail": "in 6.3s",
+          "line": 10650,
+          "status": "FAILED",
+          "target": "//codex-rs/exec-server:exec-server-file_system_unix-test"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                5870,
+                5945,
+                11446,
+                11521
+              ],
+              "name": "remote::tests::connect_environment_times_out_when_registry_response_body_stalls"
+            }
+          ],
+          "detail": "in 9.2s",
+          "line": 10652,
+          "status": "FAILED",
+          "target": "//codex-rs/exec-server:exec-server-unit-tests"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                9281,
+                9303,
+                9318,
+                9340,
+                9355,
+                9377,
+                11539,
+                11561
+              ],
+              "name": "suite::resume::exec_resume_last_repairs_rollout_missing_from_state_db"
+            }
+          ],
+          "detail": "in 3 out of 10 in 36.8s",
+          "line": 10458,
+          "status": "FAILED",
+          "target": "//codex-rs/exec:exec-all-test"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                9209,
+                9255,
+                11597,
+                11643
+              ],
+              "name": "registered_queue_lifecycle_starts_messages_in_fifo_order"
+            },
+            {
+              "lines": [
+                9210,
+                9256,
+                11598,
+                11644
+              ],
+              "name": "rejected_queue_messages_remain_durable_and_block_followups"
+            }
+          ],
+          "detail": "in 51.6s",
+          "line": 10654,
+          "status": "FAILED",
+          "target": "//codex-rs/ext/queue:queue-queue_service-test"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                9104,
+                9131,
+                11662,
+                11689
+              ],
+              "name": "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends"
+            },
+            {
+              "lines": [
+                9107,
+                9132,
+                11665,
+                11690
+              ],
+              "name": "two_real_agentd_app_servers_never_cross_recall"
+            },
+            {
+              "lines": [
+                9109,
+                9133,
+                11667,
+                11691
+              ],
+              "name": "unavailable_cognitive_store_keeps_read_tools_and_omits_write_tools"
+            }
+          ],
+          "detail": "in 69.4s",
+          "line": 10656,
+          "status": "FAILED",
+          "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                9157,
+                9170,
+                11715,
+                11728
+              ],
+              "name": "unavailable_cognitive_store_keeps_read_tools_and_omits_write_tools"
+            }
+          ],
+          "detail": "in 65.1s",
+          "line": 10658,
+          "status": "FAILED",
+          "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive_product_e2e-test"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                9059,
+                9068,
+                11739,
+                11748
+              ],
+              "name": "agentd_product_host_recovers_exact_cut_into_fenced_writer_generation"
+            }
+          ],
+          "detail": "in 0.1s",
+          "line": 10660,
+          "status": "FAILED",
+          "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive_store_product_writer-test"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                9746,
+                9755,
+                11761,
+                11770
+              ],
+              "name": "five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes"
+            }
+          ],
+          "detail": "in 120.1s",
+          "line": 10662,
+          "status": "FAILED",
+          "target": "//codex-rs/hepta-agentd:hepta-agentd-supervisord_product_e2e-test"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                1515,
+                1531,
+                11794,
+                11810
+              ],
+              "name": "v1_store_migrates_atomically_to_dispatch_outcome_schema"
+            }
+          ],
+          "detail": "in 0.8s",
+          "line": 10664,
+          "status": "FAILED",
+          "target": "//codex-rs/hepta-automation:hepta-automation-automation-test"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                1939,
+                2132,
+                11819,
+                12012
+              ],
+              "name": "cognitive_store_tests::v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection"
+            }
+          ],
+          "detail": "in 21.8s",
+          "line": 10666,
+          "status": "FAILED",
+          "target": "//codex-rs/hepta-memory:hepta-memory-unit-tests"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                1244,
+                1321,
+                12026,
+                12103
+              ],
+              "name": "g5_trust::tests::exact_head_and_predecessor_binding_is_required"
+            },
+            {
+              "lines": [
+                1242,
+                1322,
+                12024,
+                12104
+              ],
+              "name": "g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance"
+            },
+            {
+              "lines": [
+                1243,
+                1323,
+                12025,
+                12105
+              ],
+              "name": "g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority"
+            },
+            {
+              "lines": [
+                1245,
+                1324,
+                12027,
+                12106
+              ],
+              "name": "g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted"
+            },
+            {
+              "lines": [
+                1246,
+                1325,
+                12028,
+                12107
+              ],
+              "name": "g5_trust::tests::policy_and_revocation_files_must_be_canonical"
+            },
+            {
+              "lines": [
+                1248,
+                1326,
+                12030,
+                12108
+              ],
+              "name": "g5_trust::tests::revocation_digest_change_invalidates_existing_challenge"
+            },
+            {
+              "lines": [
+                1249,
+                1327,
+                12031,
+                12109
+              ],
+              "name": "g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance"
+            },
+            {
+              "lines": [
+                1260,
+                1328,
+                12042,
+                12110
+              ],
+              "name": "trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy"
+            },
+            {
+              "lines": [
+                1261,
+                1329,
+                12043,
+                12111
+              ],
+              "name": "trust::tests::trust_policy_digest_is_external_and_fail_closed"
+            },
+            {
+              "lines": [
+                1264,
+                1330,
+                12046,
+                12112
+              ],
+              "name": "trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers"
+            }
+          ],
+          "detail": "in 0.1s",
+          "line": 10668,
+          "status": "FAILED",
+          "target": "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                8460,
+                8469,
+                12127,
+                12136
+              ],
+              "name": "two_real_pairs_restart_one_without_peer_pid_churn"
+            }
+          ],
+          "detail": "in 98.8s",
+          "line": 10670,
+          "status": "FAILED",
+          "target": "//codex-rs/hepta-supervisor:hepta-supervisor-paired_process_product-test"
+        },
+        {
+          "cases": [
+            {
+              "lines": [
+                1543,
+                1562,
+                12147,
+                12166
+              ],
+              "name": "robrix_control_v2_generated_projection_and_cross_parser_corpus"
+            },
+            {
+              "lines": [
+                1544,
+                1563,
+                12148,
+                12167
+              ],
+              "name": "writer_reproduces_the_tracked_artifact_set_byte_for_byte"
+            }
+          ],
+          "detail": "in 0.2s",
+          "line": 10672,
+          "status": "FAILED",
+          "target": "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+        }
+      ],
+      "line_count": 12299,
+      "listed_failed_build_targets": [
+        {
+          "detail": "",
+          "line": 10633,
+          "status": "FAILED TO BUILD",
+          "target": "//codex-rs/app-server:app-server-all-test"
+        },
+        {
+          "detail": "",
+          "line": 10634,
+          "status": "FAILED TO BUILD",
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "detail": "",
+          "line": 10635,
+          "status": "FAILED TO BUILD",
+          "target": "//codex-rs/cli:cli-app_server-test"
+        },
+        {
+          "detail": "",
+          "line": 10636,
+          "status": "FAILED TO BUILD",
+          "target": "//codex-rs/cli:cli-debug_clear_memories-test"
+        },
+        {
+          "detail": "",
+          "line": 10637,
+          "status": "FAILED TO BUILD",
+          "target": "//codex-rs/cli:cli-debug_models-test"
+        }
+      ],
+      "log": "job_123485500391.log.gz",
+      "observed_final_status_counts": {
+        "FAILED": 15,
+        "FAILED TO BUILD": 5,
+        "FLAKY": 1,
+        "PASSED": 346,
+        "SKIPPED": 164
+      }
+    }
+  ],
+  "schema": "hepta.retained-linux-ci-inventory.v1"
+}

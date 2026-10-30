@@ -1,0 +1,14 @@
+{
+  "authorized_read": "Only fixture-owned TempDir roots are canonicalized. Allowed, denied and attack-link paths are derived from that physical root. Untrusted requests, the shared sandbox helper, production authorization and all assertions remain unchanged. Unsharded native integration targets do not use the workspace-root launcher, so their fixture change is necessary even with the separate wrapper fix.",
+  "native_limit": "Mac PTY timeout causes are not established by the diagnostics, and no native Mac pass is claimed for the path fixture changes.",
+  "pty": "The prompt marker is assigned through Python argv rather than echoed stdin. The complete reply needle is absent from the input. The outer absolute deadline covers reply and exit, and task diagnostics are cfg(test) only. Version diagnostics accept only a bounded character allowlist. No production I/O changes were found.",
+  "schema": "hepta.runtime-fixture-read-review.v1",
+  "scope": "Read-only source reviews requested during the Linux audit; no native runtime result is claimed.",
+  "source_sha256": {
+    "codex-rs/exec-server/src/local_file_system_authorized_read_tests.rs": "f02f87b489854f4de938c13dace46173abffeb52ae155d6958ef32770f5ff0a0",
+    "codex-rs/exec-server/tests/authorized_read_rpc.rs": "fc68396bbbe3bd1bf430aa9c85e07f9a6309f8dba4b2fd8528393c3759fcf7ce",
+    "codex-rs/exec-server/tests/file_system_unix.rs": "8c13ba26b5a8e374a1c0bd1573c44e9892cd6ea5d58a310e282cdff8a6d21339",
+    "codex-rs/utils/pty/src/process.rs": "fa386dfce700d138c4d1dcce0d71f7b42c1be2997637f91c31cb2aed7576adb7",
+    "codex-rs/utils/pty/src/tests.rs": "36c2d1d601ab5d2cf0daa162a1aeb95b6ad8f6f159542b75268d074026aef70d"
+  }
+}

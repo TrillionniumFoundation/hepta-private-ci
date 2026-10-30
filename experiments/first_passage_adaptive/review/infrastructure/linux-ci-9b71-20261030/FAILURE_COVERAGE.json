@@ -1,0 +1,1287 @@
+{
+  "architecture": {
+    "failed_step": "Converged authority and browser semantics",
+    "only_independent_observed_error": "kernel_evidence_product EvidenceId/String E0599",
+    "required_job": 123492981691,
+    "required_job_interpretation": "An aggregate gate failure, not another compiler or runtime error.",
+    "run_id": 40883692437,
+    "source_head_job": 123481634911,
+    "steps": [
+      {
+        "conclusion": "success",
+        "name": "Set up job",
+        "number": 1,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Check out exact candidate",
+        "number": 2,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Fetch exact qualification history",
+        "number": 3,
+        "status": "completed"
+      },
+      {
+        "conclusion": "skipped",
+        "name": "Verify GitHub prospective merge ref matches this exact candidate",
+        "number": 4,
+        "status": "completed"
+      },
+      {
+        "conclusion": "skipped",
+        "name": "Construct the canonical prospective merge",
+        "number": 5,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Bind tested identity",
+        "number": 6,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Select exact-tree native execution",
+        "number": 7,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Select affected architecture boundaries",
+        "number": 8,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Test execution-record rejection and retained diagnostics",
+        "number": 9,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Repository-control rejection regressions",
+        "number": 10,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Prepare native prerequisites",
+        "number": 11,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+        "number": 12,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Expose DotSlash for existing integration tests",
+        "number": 13,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+        "number": 14,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Resolve verified V8 artifacts",
+        "number": 15,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Verify Cargo lock resolution and print exact resolver drift",
+        "number": 16,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Inference owner regressions and streaming digest",
+        "number": 17,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Durable operation and external-effect recovery",
+        "number": 18,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Module lifecycle generations and migration rollback",
+        "number": 19,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Objective and prompt policy convergence",
+        "number": 20,
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "name": "Converged authority and browser semantics",
+        "number": 21,
+        "status": "completed"
+      },
+      {
+        "conclusion": "skipped",
+        "name": "Selected-artifact adoption and explicit rollback",
+        "number": 22,
+        "status": "completed"
+      },
+      {
+        "conclusion": "skipped",
+        "name": "Compiled service lifecycle and actual process restart",
+        "number": 23,
+        "status": "completed"
+      },
+      {
+        "conclusion": "skipped",
+        "name": "Derived-view drift",
+        "number": 24,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Retain advisory candidate Git transport observation",
+        "number": 25,
+        "status": "completed"
+      },
+      {
+        "conclusion": "skipped",
+        "name": "Verify unchanged reviewed source",
+        "number": 26,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Retain exact source input on failure for reproducible diagnosis",
+        "number": 27,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Retain command records and bounded stdout stderr",
+        "number": 28,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Post Check out exact candidate",
+        "number": 56,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Complete job",
+        "number": 57,
+        "status": "completed"
+      }
+    ],
+    "unexecuted_after_failure": [
+      "Selected-artifact adoption and explicit rollback",
+      "Compiled service lifecycle and actual process restart",
+      "Derived-view drift",
+      "Verify unchanged reviewed source"
+    ]
+  },
+  "blocking_test_checkout_note": "The blocking jobs tested the GitHub merge of candidate 9b71 into base 71b4305c6619ed9faff98062f0ff7f932f4abfd0. Architecture source-head tests the candidate itself.",
+  "blocking_test_checkout_sha": "9ad4d5a380642040aa215c0b1c4c9385ae4464d0",
+  "candidate_head_sha": "9b71cf4e65194593d5e0fb2a507026d21527a740",
+  "compiler_failure_classes": [
+    {
+      "assessment": "Discarded mutable SDK metadata and retained raw bundled-event bytes are tested separately. The full owner cargo check --tests passed; behavioral tests failed to compile after ENOSPC, before any case executed.",
+      "class": "TimelineEvent API migration",
+      "coverage_state": "source_fix_and_typecheck_present_runtime_ci_pending",
+      "diagnostic": "E0615: bundled_latest_thread_event is a method, not a mutable field",
+      "source_paths": [
+        "codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs"
+      ]
+    },
+    {
+      "assessment": "The String error is converted with anyhow::Error::msg before adding context. The same diagnostic is the only independent Architecture source-head error.",
+      "class": "String error conversion",
+      "coverage_state": "source_fix_present_requires_exact_head_ci",
+      "diagnostic": "E0599: Result<EvidenceId, String> does not satisfy anyhow::Context error bounds",
+      "source_paths": [
+        "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
+      ]
+    },
+    {
+      "assessment": "Both binary crate roots specify recursion_limit 256 and include a common body. The common body is byte-for-byte identical to the 9b71 main.rs source.",
+      "class": "CLI compiler query depth",
+      "coverage_state": "source_fix_present_requires_exact_head_ci",
+      "diagnostic": "Rust queries overflow the default depth limit; rustc reports depth 130",
+      "source_paths": [
+        "codex-rs/cli/src/main.rs",
+        "codex-rs/cli/src/hepta.rs",
+        "codex-rs/cli/src/multitool_main.rs"
+      ]
+    }
+  ],
+  "coverage_conclusion": "Every observed final Linux runtime target and independent compiler class has an assigned repair scope. This does not establish that the new candidate passes CI.",
+  "date": "2026-10-30",
+  "excluded": [
+    {
+      "case": "environment_selection::tests::blocking_snapshot_waits_for_starting_environment",
+      "reason": "The final target result is FLAKY in both jobs; it is not counted as an unresolved final failure.",
+      "target": "//codex-rs/core:core-unit-tests"
+    },
+    {
+      "platform": "musl",
+      "reason": "The final target passed; only the GNU instance failed.",
+      "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test"
+    }
+  ],
+  "known_incomplete_work": [
+    "Canonical stable and experimental schema regeneration is in progress; current intermediate generated files are not accepted as final."
+  ],
+  "limitations": [
+    "Bazel reports 50 failed-build targets but prints only the first five labels. This audit inventories the actual distinct compiler diagnostics without inventing the omitted downstream labels.",
+    "Logs may repeat a failed case in retries and retained tails. Counts are deduplicated by final target and case name, not line occurrences or executed action counts.",
+    "This audit is read-only and runs no compiler, test owner, training or scientific confirmation.",
+    "Source hashes are a review snapshot before the final parent formatter and exact-head CI."
+  ],
+  "observed_counts": {
+    "gnu": {
+      "failed_target_case_pairs": 34,
+      "final_failed_targets": 16
+    },
+    "independent_compiler_classes": 3,
+    "musl": {
+      "failed_target_case_pairs": 33,
+      "final_failed_targets": 15
+    }
+  },
+  "runtime_targets": [
+    {
+      "assessment": "Canonical stable and experimental generation is still in progress. The owner reported that the initial stable output was incomplete and included synchronization temporary files, and experimental generation did not complete after ENOSPC. Those intermediate files are not accepted as final evidence.",
+      "cases": {
+        "gnu": [
+          {
+            "lines": [
+              11063
+            ],
+            "name": "schema_fixtures_tests::experimental_precomputed_exports_match_generated"
+          },
+          {
+            "lines": [
+              11064
+            ],
+            "name": "schema_fixtures_tests::json_schema_fixtures_match_generated"
+          },
+          {
+            "lines": [
+              11065
+            ],
+            "name": "schema_fixtures_tests::stable_precomputed_exports_match_schema_fixtures"
+          }
+        ],
+        "musl": [
+          {
+            "lines": [
+              10973
+            ],
+            "name": "schema_fixtures_tests::experimental_precomputed_exports_match_generated"
+          },
+          {
+            "lines": [
+              10974
+            ],
+            "name": "schema_fixtures_tests::json_schema_fixtures_match_generated"
+          },
+          {
+            "lines": [
+              10975
+            ],
+            "name": "schema_fixtures_tests::stable_precomputed_exports_match_schema_fixtures"
+          }
+        ]
+      },
+      "coverage_state": "canonical_regeneration_in_progress_not_ready",
+      "final_summary_lines": {
+        "gnu": 10723,
+        "musl": 10646
+      },
+      "observed_failure": "Three schema fixtures disagree with generated stable or experimental exports.",
+      "owner": "holder_literature",
+      "platforms_failed": [
+        "gnu",
+        "musl"
+      ],
+      "source_paths": [],
+      "target": "//codex-rs/app-server-protocol:app-server-protocol-unit-tests"
+    },
+    {
+      "assessment": "The partial HTTP response is emitted after receipt of a nonempty request. Timeout classification and the original assertion remain unchanged.",
+      "cases": {
+        "gnu": [
+          {
+            "lines": [
+              8839,
+              8962,
+              11125,
+              11248
+            ],
+            "name": "transport::remote_control::server_api::tests::response_body_timeout_is_transient"
+          }
+        ],
+        "musl": [
+          {
+            "lines": [
+              8891,
+              9014,
+              11035,
+              11158
+            ],
+            "name": "transport::remote_control::server_api::tests::response_body_timeout_is_transient"
+          }
+        ]
+      },
+      "coverage_state": "source_fix_present_requires_exact_head_ci",
+      "final_summary_lines": {
+        "gnu": 10725,
+        "musl": 10648
+      },
+      "observed_failure": "The stalled-body fixture reported Other/None instead of TimedOut/HTTP 200.",
+      "owner": "math_audit",
+      "platforms_failed": [
+        "gnu",
+        "musl"
+      ],
+      "source_paths": [
+        "codex-rs/app-server-transport/src/transport/remote_control/server_api_tests.rs"
+      ],
+      "target": "//codex-rs/app-server-transport:app-server-transport-unit-tests"
+    },
+    {
+      "assessment": "The fixtures query the same environment capability and require Unsupported with no data when absent. Supported backends retain exact-size, oversize, symlink and traversal assertions. A subsequent native-owner change canonicalizes only the private temporary roots.",
+      "cases": {
+        "gnu": [
+          {
+            "lines": [
+              2514,
+              2658,
+              11262,
+              11406
+            ],
+            "name": "file_system_bounded_authorized_read_enforces_limit_without_prefix::local"
+          },
+          {
+            "lines": [
+              2515,
+              2659,
+              11263,
+              11407
+            ],
+            "name": "file_system_bounded_authorized_read_enforces_limit_without_prefix::remote"
+          },
+          {
+            "lines": [
+              2516,
+              2660,
+              11264,
+              11408
+            ],
+            "name": "file_system_bounded_authorized_read_rejects_symlink_and_parent_escape::local"
+          },
+          {
+            "lines": [
+              2517,
+              2661,
+              11265,
+              11409
+            ],
+            "name": "file_system_bounded_authorized_read_rejects_symlink_and_parent_escape::remote"
+          }
+        ],
+        "musl": [
+          {
+            "lines": [
+              3046,
+              3190,
+              11172,
+              11316
+            ],
+            "name": "file_system_bounded_authorized_read_enforces_limit_without_prefix::local"
+          },
+          {
+            "lines": [
+              3047,
+              3191,
+              11173,
+              11317
+            ],
+            "name": "file_system_bounded_authorized_read_enforces_limit_without_prefix::remote"
+          },
+          {
+            "lines": [
+              3048,
+              3192,
+              11174,
+              11318
+            ],
+            "name": "file_system_bounded_authorized_read_rejects_symlink_and_parent_escape::local"
+          },
+          {
+            "lines": [
+              3049,
+              3193,
+              11175,
+              11319
+            ],
+            "name": "file_system_bounded_authorized_read_rejects_symlink_and_parent_escape::remote"
+          }
+        ]
+      },
+      "coverage_state": "source_fix_present_requires_exact_head_ci",
+      "final_summary_lines": {
+        "gnu": 10727,
+        "musl": 10650
+      },
+      "observed_failure": "Four local/remote bounded-read cases require success on a backend advertising Unsupported.",
+      "owner": "math_audit and hepta_architecture",
+      "platforms_failed": [
+        "gnu",
+        "musl"
+      ],
+      "source_paths": [
+        "codex-rs/exec-server/tests/file_system/support.rs",
+        "codex-rs/exec-server/tests/file_system_unix.rs"
+      ],
+      "target": "//codex-rs/exec-server:exec-server-file_system_unix-test"
+    },
+    {
+      "assessment": "The partial response now waits for request bytes. No production timeout logic or expected error classification was changed.",
+      "cases": {
+        "gnu": [
+          {
+            "lines": [
+              2429,
+              2504,
+              11536,
+              11611
+            ],
+            "name": "remote::tests::connect_environment_times_out_when_registry_response_body_stalls"
+          }
+        ],
+        "musl": [
+          {
+            "lines": [
+              5870,
+              5945,
+              11446,
+              11521
+            ],
+            "name": "remote::tests::connect_environment_times_out_when_registry_response_body_stalls"
+          }
+        ]
+      },
+      "coverage_state": "source_fix_present_requires_exact_head_ci",
+      "final_summary_lines": {
+        "gnu": 10729,
+        "musl": 10652
+      },
+      "observed_failure": "The registry stalled-body fixture did not produce an EnvironmentRegistryRequest timeout.",
+      "owner": "math_audit",
+      "platforms_failed": [
+        "gnu",
+        "musl"
+      ],
+      "source_paths": [
+        "codex-rs/exec-server/src/remote.rs"
+      ],
+      "target": "//codex-rs/exec-server:exec-server-unit-tests"
+    },
+    {
+      "assessment": "An idle callback no longer waits on its own finish owner. Pending completion defers dispatch, then rechecks stop state and traverses normal Core admission. New deterministic lifecycle cases cover the held finish fence and shutdown. Full owner runtime validation remains pending.",
+      "cases": {
+        "gnu": [
+          {
+            "lines": [
+              9193,
+              9239,
+              11687,
+              11733
+            ],
+            "name": "registered_queue_lifecycle_starts_messages_in_fifo_order"
+          },
+          {
+            "lines": [
+              9194,
+              9240,
+              11688,
+              11734
+            ],
+            "name": "rejected_queue_messages_remain_durable_and_block_followups"
+          }
+        ],
+        "musl": [
+          {
+            "lines": [
+              9209,
+              9255,
+              11597,
+              11643
+            ],
+            "name": "registered_queue_lifecycle_starts_messages_in_fifo_order"
+          },
+          {
+            "lines": [
+              9210,
+              9256,
+              11598,
+              11644
+            ],
+            "name": "rejected_queue_messages_remain_durable_and_block_followups"
+          }
+        ]
+      },
+      "coverage_state": "source_fix_present_requires_exact_head_ci",
+      "final_summary_lines": {
+        "gnu": 10731,
+        "musl": 10654
+      },
+      "observed_failure": "Two registered lifecycle cases fail to dispatch queued followups after completion.",
+      "owner": "holder_literature",
+      "platforms_failed": [
+        "gnu",
+        "musl"
+      ],
+      "source_paths": [
+        "codex-rs/ext/queue/src/service.rs",
+        "codex-rs/ext/queue/tests/queue_service.rs"
+      ],
+      "target": "//codex-rs/ext/queue:queue-queue_service-test"
+    },
+    {
+      "assessment": "Bazel qualification library, binary and harness explicitly include both the existing production and qualification features. The unavailable-store expectation is split by the existing profile contract; read-only control is observable but readiness and session admission stay denied.",
+      "cases": {
+        "gnu": [
+          {
+            "lines": [
+              9280,
+              9307,
+              11752,
+              11779
+            ],
+            "name": "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends"
+          },
+          {
+            "lines": [
+              9283,
+              9308,
+              11755,
+              11780
+            ],
+            "name": "two_real_agentd_app_servers_never_cross_recall"
+          },
+          {
+            "lines": [
+              9285,
+              9309,
+              11757,
+              11781
+            ],
+            "name": "unavailable_cognitive_store_keeps_read_tools_and_omits_write_tools"
+          }
+        ],
+        "musl": [
+          {
+            "lines": [
+              9104,
+              9131,
+              11662,
+              11689
+            ],
+            "name": "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends"
+          },
+          {
+            "lines": [
+              9107,
+              9132,
+              11665,
+              11690
+            ],
+            "name": "two_real_agentd_app_servers_never_cross_recall"
+          },
+          {
+            "lines": [
+              9109,
+              9133,
+              11667,
+              11691
+            ],
+            "name": "unavailable_cognitive_store_keeps_read_tools_and_omits_write_tools"
+          }
+        ]
+      },
+      "coverage_state": "source_fix_present_requires_exact_head_ci",
+      "final_summary_lines": {
+        "gnu": 10733,
+        "musl": 10656
+      },
+      "observed_failure": "Remember is absent, a cognitive reply is not JSON, and the unavailable-store fixture times out.",
+      "owner": "math_audit",
+      "platforms_failed": [
+        "gnu",
+        "musl"
+      ],
+      "source_paths": [
+        "codex-rs/hepta-agentd/BUILD.bazel",
+        "defs.bzl",
+        "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs"
+      ],
+      "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test"
+    },
+    {
+      "assessment": "The fixture provides a 10-second seed budget and waits to one wall-clock second after its actual expiry before recovery. Existing rejection and ExpiredActive assertions remain. This is still a wall-clock-dependent fixture. The musl target passed and is excluded from its failure inventory.",
+      "cases": {
+        "gnu": [
+          {
+            "lines": [
+              9046,
+              9059,
+              11793,
+              11806
+            ],
+            "name": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence"
+          }
+        ]
+      },
+      "coverage_state": "source_fix_present_requires_exact_head_ci",
+      "final_summary_lines": {
+        "gnu": 10735
+      },
+      "observed_failure": "The seeded lease expires before H7 start is appended in the GNU job.",
+      "owner": "root",
+      "platforms_failed": [
+        "gnu"
+      ],
+      "source_paths": [
+        "codex-rs/hepta-agentd/src/runtime_tests.rs"
+      ],
+      "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test"
+    },
+    {
+      "assessment": "The ordinary Bazel profile is aligned with the existing Cargo production default. A separate explicit read-only suite verifies observable control, failed readiness, denied session admission and zero provider requests. Generation fences and health requirements are unchanged.",
+      "cases": {
+        "gnu": [
+          {
+            "lines": [
+              9333,
+              9346,
+              11830,
+              11843
+            ],
+            "name": "unavailable_cognitive_store_keeps_read_tools_and_omits_write_tools"
+          }
+        ],
+        "musl": [
+          {
+            "lines": [
+              9157,
+              9170,
+              11715,
+              11728
+            ],
+            "name": "unavailable_cognitive_store_keeps_read_tools_and_omits_write_tools"
+          }
+        ]
+      },
+      "coverage_state": "source_fix_present_requires_exact_head_ci",
+      "final_summary_lines": {
+        "gnu": 10737,
+        "musl": 10658
+      },
+      "observed_failure": "Unavailable cognitive storage is incorrectly expected to become healthy; the child reaches Failed generation 2.",
+      "owner": "math_audit",
+      "platforms_failed": [
+        "gnu",
+        "musl"
+      ],
+      "source_paths": [
+        "codex-rs/hepta-agentd/BUILD.bazel",
+        "defs.bzl",
+        "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs"
+      ],
+      "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive_product_e2e-test"
+    },
+    {
+      "assessment": "The old pool is gracefully closed while its store guard remains held, then the store is dropped before descriptor-bound recovery. The recovery identity check is not relaxed.",
+      "cases": {
+        "gnu": [
+          {
+            "lines": [
+              8999,
+              9008,
+              11854,
+              11863
+            ],
+            "name": "agentd_product_host_recovers_exact_cut_into_fenced_writer_generation"
+          }
+        ],
+        "musl": [
+          {
+            "lines": [
+              9059,
+              9068,
+              11739,
+              11748
+            ],
+            "name": "agentd_product_host_recovers_exact_cut_into_fenced_writer_generation"
+          }
+        ]
+      },
+      "coverage_state": "source_fix_present_requires_exact_head_ci",
+      "final_summary_lines": {
+        "gnu": 10739,
+        "musl": 10660
+      },
+      "observed_failure": "Recovery cannot establish the complete immutable SQLite file identity.",
+      "owner": "root",
+      "platforms_failed": [
+        "gnu",
+        "musl"
+      ],
+      "source_paths": [
+        "codex-rs/hepta-memory/src/cognitive_store.rs",
+        "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs"
+      ],
+      "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive_store_product_writer-test"
+    },
+    {
+      "assessment": "The release wrapper now embeds a runfiles-resolved absolute cargo_bin path rather than the compile-time relative CARGO_BIN_EXE value; a short canonical temporary root is also used. This directly repairs a source-level path defect, but the original log does not expose child stderr or an exit cause. The timeout root cause is not established solely by that log.",
+      "cases": {
+        "gnu": [
+          {
+            "lines": [
+              9836,
+              9845,
+              11876,
+              11885
+            ],
+            "name": "five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes"
+          }
+        ],
+        "musl": [
+          {
+            "lines": [
+              9746,
+              9755,
+              11761,
+              11770
+            ],
+            "name": "five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes"
+          }
+        ]
+      },
+      "coverage_state": "candidate_fix_present_root_cause_unproven_requires_ci",
+      "final_summary_lines": {
+        "gnu": 10741,
+        "musl": 10662
+      },
+      "observed_failure": "The five-agent test times out after 120 seconds with Failed generation 2 and no active child.",
+      "owner": "math_audit and hepta_architecture",
+      "platforms_failed": [
+        "gnu",
+        "musl"
+      ],
+      "source_paths": [
+        "codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs"
+      ],
+      "target": "//codex-rs/hepta-agentd:hepta-agentd-supervisord_product_e2e-test"
+    },
+    {
+      "assessment": "The rewind transaction also removes timer lifecycle and destination dedupe before running the unchanged real forward migrations.",
+      "cases": {
+        "gnu": [
+          {
+            "lines": [
+              1928,
+              1942,
+              11911,
+              11925
+            ],
+            "name": "v1_store_migrates_atomically_to_dispatch_outcome_schema"
+          }
+        ],
+        "musl": [
+          {
+            "lines": [
+              1515,
+              1531,
+              11794,
+              11810
+            ],
+            "name": "v1_store_migrates_atomically_to_dispatch_outcome_schema"
+          }
+        ]
+      },
+      "coverage_state": "source_fix_present_requires_exact_head_ci",
+      "final_summary_lines": {
+        "gnu": 10743,
+        "musl": 10664
+      },
+      "observed_failure": "The v1 migration fixture retains objects introduced by later migrations.",
+      "owner": "root",
+      "platforms_failed": [
+        "gnu",
+        "musl"
+      ],
+      "source_paths": [
+        "codex-rs/hepta-automation/tests/automation.rs"
+      ],
+      "target": "//codex-rs/hepta-automation:hepta-automation-automation-test"
+    },
+    {
+      "assessment": "The expectation includes version 15 and retains all preserved-record and revoked-projection assertions.",
+      "cases": {
+        "gnu": [
+          {
+            "lines": [
+              1706,
+              1899,
+              11934,
+              12127
+            ],
+            "name": "cognitive_store_tests::v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection"
+          }
+        ],
+        "musl": [
+          {
+            "lines": [
+              1939,
+              2132,
+              11819,
+              12012
+            ],
+            "name": "cognitive_store_tests::v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection"
+          }
+        ]
+      },
+      "coverage_state": "source_fix_present_requires_exact_head_ci",
+      "final_summary_lines": {
+        "gnu": 10745,
+        "musl": 10666
+      },
+      "observed_failure": "The migration-ledger expectation ends at 14 although migration 15 exists.",
+      "owner": "root",
+      "platforms_failed": [
+        "gnu",
+        "musl"
+      ],
+      "source_paths": [
+        "codex-rs/hepta-memory/src/cognitive_store_tests.rs"
+      ],
+      "target": "//codex-rs/hepta-memory:hepta-memory-unit-tests"
+    },
+    {
+      "assessment": "The real tests are wrapped and assigned local execution with the host tool available. Signature verification assertions are retained; no ignore or synthetic signature replaces them.",
+      "cases": {
+        "gnu": [
+          {
+            "lines": [
+              1371,
+              1449,
+              12140,
+              12218
+            ],
+            "name": "g5_trust::tests::exact_head_and_predecessor_binding_is_required"
+          },
+          {
+            "lines": [
+              1372,
+              1450,
+              12141,
+              12219
+            ],
+            "name": "g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance"
+          },
+          {
+            "lines": [
+              1370,
+              1451,
+              12139,
+              12220
+            ],
+            "name": "g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority"
+          },
+          {
+            "lines": [
+              1373,
+              1452,
+              12142,
+              12221
+            ],
+            "name": "g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted"
+          },
+          {
+            "lines": [
+              1375,
+              1453,
+              12144,
+              12222
+            ],
+            "name": "g5_trust::tests::policy_and_revocation_files_must_be_canonical"
+          },
+          {
+            "lines": [
+              1374,
+              1454,
+              12143,
+              12223
+            ],
+            "name": "g5_trust::tests::revocation_digest_change_invalidates_existing_challenge"
+          },
+          {
+            "lines": [
+              1377,
+              1455,
+              12146,
+              12224
+            ],
+            "name": "g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance"
+          },
+          {
+            "lines": [
+              1388,
+              1456,
+              12157,
+              12225
+            ],
+            "name": "trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy"
+          },
+          {
+            "lines": [
+              1389,
+              1457,
+              12158,
+              12226
+            ],
+            "name": "trust::tests::trust_policy_digest_is_external_and_fail_closed"
+          },
+          {
+            "lines": [
+              1390,
+              1458,
+              12159,
+              12227
+            ],
+            "name": "trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers"
+          }
+        ],
+        "musl": [
+          {
+            "lines": [
+              1244,
+              1321,
+              12026,
+              12103
+            ],
+            "name": "g5_trust::tests::exact_head_and_predecessor_binding_is_required"
+          },
+          {
+            "lines": [
+              1242,
+              1322,
+              12024,
+              12104
+            ],
+            "name": "g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance"
+          },
+          {
+            "lines": [
+              1243,
+              1323,
+              12025,
+              12105
+            ],
+            "name": "g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority"
+          },
+          {
+            "lines": [
+              1245,
+              1324,
+              12027,
+              12106
+            ],
+            "name": "g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted"
+          },
+          {
+            "lines": [
+              1246,
+              1325,
+              12028,
+              12107
+            ],
+            "name": "g5_trust::tests::policy_and_revocation_files_must_be_canonical"
+          },
+          {
+            "lines": [
+              1248,
+              1326,
+              12030,
+              12108
+            ],
+            "name": "g5_trust::tests::revocation_digest_change_invalidates_existing_challenge"
+          },
+          {
+            "lines": [
+              1249,
+              1327,
+              12031,
+              12109
+            ],
+            "name": "g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance"
+          },
+          {
+            "lines": [
+              1260,
+              1328,
+              12042,
+              12110
+            ],
+            "name": "trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy"
+          },
+          {
+            "lines": [
+              1261,
+              1329,
+              12043,
+              12111
+            ],
+            "name": "trust::tests::trust_policy_digest_is_external_and_fail_closed"
+          },
+          {
+            "lines": [
+              1264,
+              1330,
+              12046,
+              12112
+            ],
+            "name": "trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers"
+          }
+        ]
+      },
+      "coverage_state": "source_fix_present_requires_exact_head_ci",
+      "final_summary_lines": {
+        "gnu": 10747,
+        "musl": 10668
+      },
+      "observed_failure": "Ten signature/trust cases cannot start ssh-keygen in the remote test environment.",
+      "owner": "hepta_architecture",
+      "platforms_failed": [
+        "gnu",
+        "musl"
+      ],
+      "source_paths": [
+        "codex-rs/hepta-operator-acceptance/BUILD.bazel",
+        ".bazelrc"
+      ],
+      "target": "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests"
+    },
+    {
+      "assessment": "The child fixture handles Drain with the actual response shape, only at the matching durable Draining generation. The production driver and fence checks remain unchanged.",
+      "cases": {
+        "gnu": [
+          {
+            "lines": [
+              9144,
+              9153,
+              12242,
+              12251
+            ],
+            "name": "two_real_pairs_restart_one_without_peer_pid_churn"
+          }
+        ],
+        "musl": [
+          {
+            "lines": [
+              8460,
+              8469,
+              12127,
+              12136
+            ],
+            "name": "two_real_pairs_restart_one_without_peer_pid_churn"
+          }
+        ]
+      },
+      "coverage_state": "source_fix_present_requires_exact_head_ci",
+      "final_summary_lines": {
+        "gnu": 10749,
+        "musl": 10670
+      },
+      "observed_failure": "The controlled Agentd child returns no Drain acknowledgement.",
+      "owner": "math_audit",
+      "platforms_failed": [
+        "gnu",
+        "musl"
+      ],
+      "source_paths": [
+        "codex-rs/hepta-supervisor/tests/paired_process_product.rs"
+      ],
+      "target": "//codex-rs/hepta-supervisor:hepta-supervisor-paired_process_product-test"
+    },
+    {
+      "assessment": "The manifest is resolved through find_resource and its parent selects the fixture directory. Cargo dev dependencies and Bazel data are wired for that real resource.",
+      "cases": {
+        "gnu": [
+          {
+            "lines": [
+              2010,
+              2029,
+              12262,
+              12281
+            ],
+            "name": "robrix_control_v2_generated_projection_and_cross_parser_corpus"
+          },
+          {
+            "lines": [
+              2011,
+              2030,
+              12263,
+              12282
+            ],
+            "name": "writer_reproduces_the_tracked_artifact_set_byte_for_byte"
+          }
+        ],
+        "musl": [
+          {
+            "lines": [
+              1543,
+              1562,
+              12147,
+              12166
+            ],
+            "name": "robrix_control_v2_generated_projection_and_cross_parser_corpus"
+          },
+          {
+            "lines": [
+              1544,
+              1563,
+              12148,
+              12167
+            ],
+            "name": "writer_reproduces_the_tracked_artifact_set_byte_for_byte"
+          }
+        ]
+      },
+      "coverage_state": "source_fix_present_requires_exact_head_ci",
+      "final_summary_lines": {
+        "gnu": 10751,
+        "musl": 10672
+      },
+      "observed_failure": "Two projection cases read a nonexistent compile-time execroot fixture directory.",
+      "owner": "hepta_architecture",
+      "platforms_failed": [
+        "gnu",
+        "musl"
+      ],
+      "source_paths": [
+        "codex-rs/hepta-supervisor/tests/robrix_control_projection.rs",
+        "codex-rs/hepta-supervisor/Cargo.toml",
+        "codex-rs/hepta-supervisor/BUILD.bazel"
+      ],
+      "target": "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+    },
+    {
+      "assessment": "The fixture deletes only the recoverable threads index row through parameterized SQL and closes that auxiliary pool. Production hard-deletion fences are unchanged.",
+      "cases": {
+        "gnu": [
+          {
+            "lines": [
+              9371,
+              9393,
+              9408,
+              9430,
+              9445,
+              9467,
+              11629,
+              11651
+            ],
+            "name": "suite::resume::exec_resume_last_repairs_rollout_missing_from_state_db"
+          }
+        ],
+        "musl": [
+          {
+            "lines": [
+              9281,
+              9303,
+              9318,
+              9340,
+              9355,
+              9377,
+              11539,
+              11561
+            ],
+            "name": "suite::resume::exec_resume_last_repairs_rollout_missing_from_state_db"
+          }
+        ]
+      },
+      "coverage_state": "source_fix_present_requires_exact_head_ci",
+      "final_summary_lines": {
+        "gnu": 10773,
+        "musl": 10458
+      },
+      "observed_failure": "The resume fixture calls production hard deletion, so the thread is sealed and cannot resume.",
+      "owner": "root",
+      "platforms_failed": [
+        "gnu",
+        "musl"
+      ],
+      "source_paths": [
+        "codex-rs/exec/tests/suite/resume.rs",
+        "codex-rs/exec/Cargo.toml"
+      ],
+      "target": "//codex-rs/exec:exec-all-test"
+    }
+  ],
+  "schema": "hepta.linux-ci-failure-coverage.v1",
+  "source_sha256": {
+    ".bazelrc": "e5ee21d7040d2e466278c931674103d50a57361fa5398346a62be4837cf2be84",
+    "codex-rs/app-server-transport/src/transport/remote_control/server_api_tests.rs": "e21001626965dca1fafced1e47145ff962bc22d7209f96954a0255e2701c612a",
+    "codex-rs/cli/src/hepta.rs": "007417d32337ab694795dc994e3c8d2c144181c3b98c13da28a08c4fd15534fc",
+    "codex-rs/cli/src/main.rs": "007417d32337ab694795dc994e3c8d2c144181c3b98c13da28a08c4fd15534fc",
+    "codex-rs/cli/src/multitool_main.rs": "097ca019533619d964fa67f018e0a140645779f17a0e9a17212ad5398636a513",
+    "codex-rs/exec-server/src/remote.rs": "10e55edab8d3e67b3add99ac9e0739f7e697d0b148b7ac255496de1cbbaf3ddb",
+    "codex-rs/exec-server/tests/file_system/support.rs": "76f8fb9d6fd5e5a7758ee6020b00266da5950a87e39eebbc6e3533f6b2e955ee",
+    "codex-rs/exec-server/tests/file_system_unix.rs": "8c13ba26b5a8e374a1c0bd1573c44e9892cd6ea5d58a310e282cdff8a6d21339",
+    "codex-rs/exec/Cargo.toml": "5e335b1b617fdf4b59aadf3d70e3296758f85757e9bc374abf80f4a9767f32ac",
+    "codex-rs/exec/tests/suite/resume.rs": "c8fbcdde772ada09d7b9576348c25a74c5f54faaf6718da317b1ff395d05d7d5",
+    "codex-rs/ext/queue/src/service.rs": "399262c6a59aec6b1883920098e8d6840a8a2c02071dc3185f2ddb5088146576",
+    "codex-rs/ext/queue/tests/queue_service.rs": "7f02020502bf82c396b90302e6205ea07c8f958631547da1ab627903448a611a",
+    "codex-rs/hepta-agentd/BUILD.bazel": "7c34fc770132d291f565e09868c9e283a52cbe51d315b06dd4179cbc5ba5baf9",
+    "codex-rs/hepta-agentd/src/runtime_tests.rs": "9c0fa04d708a6572fdf173be29769fbd6254c6887f395c2da0c6ce4a4553da2c",
+    "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs": "1b4a61f593c211fbe412d6ee13dc2958445c34b65cc0a7ed25c2211d33effc34",
+    "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs": "2d06b022bcb9539d2a01aa5095b36a5aa2c27e7d13833e2e3b29b04712682556",
+    "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs": "c435c06766b29542580cfe876cf53bf6982099fc33af522f1efa2cac9e490f57",
+    "codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs": "08c2233e46bc0a32b36d57ee46c39996fbfe22a1f44eec403af4fdd33ee6e9c4",
+    "codex-rs/hepta-automation/tests/automation.rs": "aaccdf091d08bcec203645bba0b61f2299c5884ba6a28a51449ef05f04e4e9b2",
+    "codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs": "b02a254b5c4ae5c55606b436b395afb97d487381fea827b0359218bc244209e0",
+    "codex-rs/hepta-memory/src/cognitive_store.rs": "3d44f18963bef06de9bac289f366b07b7c87160a9bc028bac5112c1bd3cd30c4",
+    "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs": "fd8149875c74ff6f98b5c81124b35a97f6f18e0e5fce85f6f738731e9fe2b9e8",
+    "codex-rs/hepta-memory/src/cognitive_store_tests.rs": "abb813f058c24c4b36beefc60f60c507d8896368e22553787de3eed6be48315e",
+    "codex-rs/hepta-operator-acceptance/BUILD.bazel": "a315370043ffd5216adfaa167efd5862dcc3aaa31cdcb80ea587d862c1692100",
+    "codex-rs/hepta-supervisor/BUILD.bazel": "0211cb2236c8ec3209d94823563972007cf78796fedac39bb7bdd6ade2de657e",
+    "codex-rs/hepta-supervisor/Cargo.toml": "16c8f5bb4a0f8681198c35a14970f918a716f48d89d305d0dade7d0496df0a5c",
+    "codex-rs/hepta-supervisor/tests/paired_process_product.rs": "d6cc65e9d0954da4130f36590b994a13f1eaf6e558f4d44b88104d1fdea1b1f7",
+    "codex-rs/hepta-supervisor/tests/robrix_control_projection.rs": "c08adda8b7bd9d7b1be86b0c549230ab9a01dd80ff777f34b5b4aba1bc52465d",
+    "defs.bzl": "3046174c3b79cef6cf678c80d101a625004a9505808be0b68cd4736d33da174a"
+  },
+  "unassigned_observed_failure_classes": [],
+  "unresolved_root_causes": [
+    "The five-agent supervisord timeout has a targeted runfiles path repair, but its original child failure cause is not exposed by the log."
+  ]
+}

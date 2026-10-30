@@ -1,0 +1,373 @@
+{
+  "runs": [
+    {
+      "id": 40883692430,
+      "event": "pull_request",
+      "head_sha": "9b71cf4e65194593d5e0fb2a507026d21527a740",
+      "head_branch": "research/first-passage-adaptive-20261029",
+      "run_attempt": 1,
+      "conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40883692430"
+    },
+    {
+      "id": 40883692437,
+      "event": "pull_request",
+      "head_sha": "9b71cf4e65194593d5e0fb2a507026d21527a740",
+      "head_branch": "research/first-passage-adaptive-20261029",
+      "run_attempt": 1,
+      "conclusion": "failure",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40883692437"
+    }
+  ],
+  "blocking_jobs": [
+    {
+      "id": 123484550704,
+      "name": "Select blocking CI scope",
+      "conclusion": "success"
+    },
+    {
+      "id": 123484551248,
+      "name": "Blob size policy / Blob size policy",
+      "conclusion": "success"
+    },
+    {
+      "id": 123484551502,
+      "name": "Codespell / Check for spelling errors",
+      "conclusion": "success"
+    },
+    {
+      "id": 123485498973,
+      "name": "repo-checks / Native Hepta paths on macos-15",
+      "conclusion": "success"
+    },
+    {
+      "id": 123485498980,
+      "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+      "conclusion": "success"
+    },
+    {
+      "id": 123485499105,
+      "name": "cargo-deny / cargo-deny",
+      "conclusion": "success"
+    },
+    {
+      "id": 123485499134,
+      "name": "rust-ci / Detect changed areas",
+      "conclusion": "success"
+    },
+    {
+      "id": 123485499146,
+      "name": "sdk / sdks",
+      "conclusion": "failure"
+    },
+    {
+      "id": 123485499181,
+      "name": "repo-checks / Native Hepta paths on windows-latest",
+      "conclusion": "success"
+    },
+    {
+      "id": 123485499342,
+      "name": "sdk / python-sdk",
+      "conclusion": "success"
+    },
+    {
+      "id": 123485499377,
+      "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+      "conclusion": "success"
+    },
+    {
+      "id": 123485499430,
+      "name": "repo-checks / build-test",
+      "conclusion": "success"
+    },
+    {
+      "id": 123485499586,
+      "name": "NDU v6 neural rollout smoke / Python, native NDU, and real rollout",
+      "conclusion": "success"
+    },
+    {
+      "id": 123485499784,
+      "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+      "conclusion": "failure"
+    },
+    {
+      "id": 123485499810,
+      "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "conclusion": "failure"
+    },
+    {
+      "id": 123485499818,
+      "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "conclusion": "failure"
+    },
+    {
+      "id": 123485499839,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+      "conclusion": "failure"
+    },
+    {
+      "id": 123485499855,
+      "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+      "conclusion": "failure"
+    },
+    {
+      "id": 123485499932,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+      "conclusion": "failure"
+    },
+    {
+      "id": 123485500110,
+      "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+      "conclusion": "failure"
+    },
+    {
+      "id": 123485500112,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+      "conclusion": "failure"
+    },
+    {
+      "id": 123485500220,
+      "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+      "conclusion": "failure"
+    },
+    {
+      "id": 123485500277,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "conclusion": "failure"
+    },
+    {
+      "id": 123485500369,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+      "conclusion": "failure"
+    },
+    {
+      "id": 123485500391,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+      "conclusion": "failure"
+    },
+    {
+      "id": 123485500602,
+      "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+      "conclusion": "failure"
+    },
+    {
+      "id": 123485500821,
+      "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+      "conclusion": "failure"
+    },
+    {
+      "id": 123485501037,
+      "name": "Hepta scoped native checks",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 123485501695,
+      "name": "Lightweight prose and derived checks",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 123485504128,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+      "conclusion": "skipped"
+    }
+  ],
+  "architecture_jobs": [
+    {
+      "id": 123481634474,
+      "name": "Architecture convergence (base-merge)",
+      "conclusion": "success"
+    },
+    {
+      "id": 123481634911,
+      "name": "Architecture convergence (source-head)",
+      "conclusion": "failure"
+    },
+    {
+      "id": 123492981691,
+      "name": "Architecture required",
+      "conclusion": "failure"
+    }
+  ],
+  "architecture_source_head_steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1
+    },
+    {
+      "name": "Check out exact candidate",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2
+    },
+    {
+      "name": "Fetch exact qualification history",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3
+    },
+    {
+      "name": "Verify GitHub prospective merge ref matches this exact candidate",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 4
+    },
+    {
+      "name": "Construct the canonical prospective merge",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 5
+    },
+    {
+      "name": "Bind tested identity",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 6
+    },
+    {
+      "name": "Select exact-tree native execution",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 7
+    },
+    {
+      "name": "Select affected architecture boundaries",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 8
+    },
+    {
+      "name": "Test execution-record rejection and retained diagnostics",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 9
+    },
+    {
+      "name": "Repository-control rejection regressions",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 10
+    },
+    {
+      "name": "Prepare native prerequisites",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 11
+    },
+    {
+      "name": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 12
+    },
+    {
+      "name": "Expose DotSlash for existing integration tests",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 13
+    },
+    {
+      "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 14
+    },
+    {
+      "name": "Resolve verified V8 artifacts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 15
+    },
+    {
+      "name": "Verify Cargo lock resolution and print exact resolver drift",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 16
+    },
+    {
+      "name": "Inference owner regressions and streaming digest",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 17
+    },
+    {
+      "name": "Durable operation and external-effect recovery",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 18
+    },
+    {
+      "name": "Module lifecycle generations and migration rollback",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 19
+    },
+    {
+      "name": "Objective and prompt policy convergence",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 20
+    },
+    {
+      "name": "Converged authority and browser semantics",
+      "status": "completed",
+      "conclusion": "failure",
+      "number": 21
+    },
+    {
+      "name": "Selected-artifact adoption and explicit rollback",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 22
+    },
+    {
+      "name": "Compiled service lifecycle and actual process restart",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 23
+    },
+    {
+      "name": "Derived-view drift",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 24
+    },
+    {
+      "name": "Retain advisory candidate Git transport observation",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 25
+    },
+    {
+      "name": "Verify unchanged reviewed source",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 26
+    },
+    {
+      "name": "Retain exact source input on failure for reproducible diagnosis",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 27
+    },
+    {
+      "name": "Retain command records and bounded stdout stderr",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 28
+    },
+    {
+      "name": "Post Check out exact candidate",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 56
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 57
+    }
+  ]
+}

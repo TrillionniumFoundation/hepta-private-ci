@@ -1,0 +1,82 @@
+{
+  "files": [
+    {
+      "bytes": 1687,
+      "path": "AUXILIARY_READ_REVIEWS.json",
+      "sha256": "5088fc997e179cfdf50917f13163f8a09763525757c900c5f3c5499874cec30c"
+    },
+    {
+      "bytes": 42820,
+      "path": "FAILURE_COVERAGE.json",
+      "sha256": "b24cb1a8a0972a63d44bf2149e091cd2487d0537689fe65c118b34a1f44543e3"
+    },
+    {
+      "bytes": 28938,
+      "path": "INVENTORY.json",
+      "sha256": "fb1c31edd991fbbe1d39f04f7ec1683f4936af42d76cab7902e728e445b72de2"
+    },
+    {
+      "bytes": 4107,
+      "path": "README.md",
+      "sha256": "d7bda8ba94338bd2f31fd42db3a1e4247720b2317588297eddd6d93c05f472eb"
+    },
+    {
+      "bytes": 9871,
+      "path": "WORKFLOW_METADATA.json",
+      "sha256": "4ef9c7308a3a52e932b30c5b4ac2e812278bd387728cddbcdcb9adfeb378e530"
+    },
+    {
+      "bytes": 98398,
+      "path": "original/job_123481634911.log.gz",
+      "sha256": "4be4100f505a6603d9e29ca31f9912c4eb176133fbdb5e871f328f8792d65407"
+    },
+    {
+      "bytes": 423,
+      "path": "original/job_123481634911.manifest.json",
+      "sha256": "aa25cfe0008dae16104f036dd926476d34a9eaa063e5825c3a4d977fec8b03d4"
+    },
+    {
+      "bytes": 217106,
+      "path": "original/job_123485500277.log.gz",
+      "sha256": "679f9b772202a2ff5b3964732ed8e7c7577d7003a6bebd5839c2cecd3f749353"
+    },
+    {
+      "bytes": 425,
+      "path": "original/job_123485500277.manifest.json",
+      "sha256": "3945f6cdf904ab61a6712f06ce0016a28635eb3a5e2b5e2e45c3c24aecf51ffa"
+    },
+    {
+      "bytes": 218631,
+      "path": "original/job_123485500391.log.gz",
+      "sha256": "b9d4167c8cd774e8a8e738c32ee3b620ccf25f24e9df394cf3e33a1b306b2f93"
+    },
+    {
+      "bytes": 425,
+      "path": "original/job_123485500391.manifest.json",
+      "sha256": "57c6f36155cd60736ef0ae31579daa03f9932eabbc62cb48aeef0d9839a6ac44"
+    },
+    {
+      "bytes": 1125,
+      "path": "original/job_123492981691.log.gz",
+      "sha256": "2e312c52ac3d3eb78db9470cbf5316b41f09700177de222f1a89f5d64dafdf62"
+    },
+    {
+      "bytes": 420,
+      "path": "original/job_123492981691.manifest.json",
+      "sha256": "9cb5da13d94f03701245ee5b7118d077fd3476a7db0f68650729b3142d9f6553"
+    },
+    {
+      "bytes": 4762,
+      "path": "parse_ci_logs.py",
+      "sha256": "34099b52847001dce75e65a4e5b6263c39cc8e9c1d216b210f9de6d0b381dd1b"
+    }
+  ],
+  "schema": "hepta.linux-ci-audit-files.v1",
+  "validation": {
+    "compilation_or_test_execution": false,
+    "four_gzip_roundtrips_and_hashes": "passed",
+    "inventory_byte_for_byte_recomputation": "passed",
+    "maximum_blob_bytes": 218631,
+    "product_source_writes": false
+  }
+}
