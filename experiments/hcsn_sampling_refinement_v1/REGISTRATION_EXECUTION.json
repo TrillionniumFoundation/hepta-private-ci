@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_sampling_refinement_v1.study",
+    "register",
+    "--output",
+    "/workspace/scratch/e63ad655e095/hepta-hcsn/experiments/hcsn_sampling_refinement_v1/results/refinement001"
+  ],
+  "cpu_seconds": 0.770897,
+  "peak_rss_bytes": 95166464,
+  "returncode": 0,
+  "scope": "Complete registration process including imports, train-only semantic preflight, all source/checkpoint hashing and seal writes; no neural inference.",
+  "stdout_sha256": "ade9462e9abce6cf7c94f67d4e087789101dd1c80a82af89dd30c1aff4c9e417",
+  "system_cpu_seconds": 0.075694,
+  "user_cpu_seconds": 0.695203,
+  "wall_seconds": 0.3776407669993205
+}
