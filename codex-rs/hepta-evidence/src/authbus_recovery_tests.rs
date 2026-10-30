@@ -25,7 +25,7 @@ fn fixture(sequence: u64) -> (SigningKey, IssuerRegistration, SignedMessage) {
     let issuer = IssuerRegistration {
         issuer_id: StableId::new("issuer:rollback").unwrap(),
         key_epoch: Generation::new(7).unwrap(),
-        verifying_key: key.verifying_key(),
+        verifying_key: key.verifying_key().into(),
         revoked: false,
     };
     let claims = SignedMessageClaims {
@@ -39,7 +39,14 @@ fn fixture(sequence: u64) -> (SigningKey, IssuerRegistration, SignedMessage) {
         expires_at_ms: u64::MAX,
     };
     let signature = key.sign(&claims.signing_bytes()).to_bytes();
-    (key, issuer, SignedMessage { claims, signature })
+    (
+        key,
+        issuer,
+        SignedMessage {
+            claims,
+            signature: signature.into(),
+        },
+    )
 }
 
 async fn admit(
@@ -184,7 +191,7 @@ async fn issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resur
             IssuerSpec {
                 issuer_id: issuer.issuer_id.clone(),
                 key_epoch: issuer.key_epoch,
-                verifying_key: key.verifying_key(),
+                verifying_key: key.verifying_key().into(),
             },
         )
         .await

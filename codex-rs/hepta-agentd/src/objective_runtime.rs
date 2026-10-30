@@ -156,7 +156,7 @@ impl ObjectiveRuntimeHost {
         let issuer = trust.issuer()?;
         let message = SignedMessage {
             claims: objective_claims(agentd.identity(), &request, &payload)?,
-            signature: hex_bytes(&request.signature_hex)?,
+            signature: hex_bytes::<64>(&request.signature_hex)?.into(),
         };
         let authenticated = message
             .authenticate(
@@ -551,7 +551,7 @@ fn authentication_is_current(
             sequence: auth.sequence,
             expires_at_ms: auth.expires_at_ms,
         },
-        signature: auth.signature,
+        signature: auth.signature.into(),
     };
     match message.authenticate(
         &issuer,

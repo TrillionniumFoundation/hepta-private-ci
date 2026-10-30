@@ -147,6 +147,8 @@ impl PolicyDecision {
 
 #[derive(Debug, thiserror::Error)]
 pub enum AuthBusAuthorityError {
+    #[error("AuthBus cryptographic profile differs from the persisted owner policy")]
+    CryptoProfileMismatch,
     #[error("invalid AuthBus authority input: {0}")]
     InvalidInput(&'static str),
     #[error("corrupt AuthBus authority state: {0}")]

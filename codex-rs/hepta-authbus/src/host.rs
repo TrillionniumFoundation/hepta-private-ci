@@ -54,6 +54,24 @@ impl AuthBusAuthorityHost {
         owner_id: &str,
     ) -> Result<Self, AuthBusAuthorityError> {
         let store = AuthBusAuthorityStore::open(database_path).await?;
+        Self::open_store(store, database_path, checkpoint_path, owner_id).await
+    }
+
+    pub async fn open_pq(
+        database_path: &Path,
+        checkpoint_path: PathBuf,
+        owner_id: &str,
+    ) -> Result<Self, AuthBusAuthorityError> {
+        let store = AuthBusAuthorityStore::open_pq(database_path).await?;
+        Self::open_store(store, database_path, checkpoint_path, owner_id).await
+    }
+
+    async fn open_store(
+        store: AuthBusAuthorityStore,
+        database_path: &Path,
+        checkpoint_path: PathBuf,
+        owner_id: &str,
+    ) -> Result<Self, AuthBusAuthorityError> {
         let (checkpoint, external) =
             AuthorityCheckpointFile::open(checkpoint_path, database_path, owner_id)?;
         match store.authority_checkpoint().await? {

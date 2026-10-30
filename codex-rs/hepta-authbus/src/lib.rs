@@ -8,6 +8,12 @@
 
 #![forbid(unsafe_code)]
 
+mod crypto;
+mod crypto_profile;
+pub use crypto::AuthBusAlgorithm;
+pub use crypto::AuthBusSignature;
+pub use crypto::AuthBusVerifyingKey;
+
 mod authority;
 mod authority_schema;
 mod authority_store;

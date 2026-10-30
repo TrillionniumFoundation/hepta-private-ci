@@ -1,13 +1,14 @@
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use ed25519_dalek::VerifyingKey;
 use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::Transaction;
 use sqlx::sqlite::SqliteRow;
 
+use crate::AuthBusAlgorithm;
 use crate::AuthBusAuthorityError;
 use crate::AuthBusAuthorityStore;
+use crate::AuthBusVerifyingKey;
 use crate::IssuerLifecycleState;
 use crate::IssuerPurpose;
 use crate::IssuerRecord;
@@ -19,7 +20,6 @@ use crate::SignedTrustedTimeAttestation;
 use crate::TrustedTimeSample;
 use crate::authority_store::advance_time;
 use crate::authority_store::begin;
-use crate::authority_store::blob_array;
 use crate::authority_store::next_revision;
 use crate::authority_store::nonzero_u64;
 use crate::authority_store::stable_id;
@@ -34,6 +34,7 @@ impl AuthBusAuthorityStore {
         purpose: IssuerPurpose,
         spec: IssuerSpec,
     ) -> Result<IssuerRecord, AuthBusAuthorityError> {
+        self.require_key(&spec.verifying_key)?;
         let mut tx = begin(&self.pool).await?;
         let count: i64 = sqlx::query_scalar(
             "SELECT COUNT(*) FROM authbus_issuer_registry WHERE state != 'retired'",
@@ -69,6 +70,7 @@ impl AuthBusAuthorityStore {
         expected_epoch: Generation,
         expected_revision: u64,
     ) -> Result<IssuerRecord, AuthBusAuthorityError> {
+        self.require_key(&spec.verifying_key)?;
         let mut tx = begin(&self.pool).await?;
         let count: i64 = sqlx::query_scalar(
             "SELECT COUNT(*) FROM authbus_issuer_registry WHERE state != 'retired'",
@@ -225,13 +227,14 @@ async fn insert_issuer(
 ) -> Result<(), AuthBusAuthorityError> {
     sqlx::query(
         "INSERT INTO authbus_issuer_registry
-         (issuer_id, purpose, key_epoch, public_key, state, revision)
-         VALUES (?, ?, ?, ?, 'active', ?)",
+         (issuer_id, purpose, key_epoch, auth_version, public_key, state, revision)
+         VALUES (?, ?, ?, ?, ?, 'active', ?)",
     )
     .bind(spec.issuer_id.as_str())
     .bind(purpose_text(purpose))
     .bind(spec.key_epoch.get().to_be_bytes().as_slice())
-    .bind(spec.verifying_key.to_bytes().as_slice())
+    .bind(i64::from(spec.verifying_key.algorithm().schema_version()))
+    .bind(spec.verifying_key.as_bytes())
     .bind(u64_bytes(/*value*/ 1).as_slice())
     .execute(&mut **tx)
     .await
@@ -254,7 +257,7 @@ async fn load_active_issuer(
     issuer_id: &StableId,
 ) -> Result<IssuerRecord, AuthBusAuthorityError> {
     let row = sqlx::query(
-        "SELECT issuer_id, purpose, key_epoch, public_key, state, revision
+        "SELECT issuer_id, purpose, key_epoch, auth_version, public_key, state, revision
          FROM authbus_issuer_registry WHERE issuer_id = ? AND purpose = ? AND state = 'active'",
     )
     .bind(issuer_id.as_str())
@@ -266,14 +269,14 @@ async fn load_active_issuer(
     issuer_from_row(&row)
 }
 
-async fn load_issuer(
+pub(crate) async fn load_issuer(
     tx: &mut Transaction<'_, Sqlite>,
     purpose: IssuerPurpose,
     issuer_id: &StableId,
     key_epoch: Generation,
 ) -> Result<IssuerRecord, AuthBusAuthorityError> {
     let row = sqlx::query(
-        "SELECT issuer_id, purpose, key_epoch, public_key, state, revision
+        "SELECT issuer_id, purpose, key_epoch, auth_version, public_key, state, revision
          FROM authbus_issuer_registry WHERE issuer_id = ? AND purpose = ? AND key_epoch = ?",
     )
     .bind(issuer_id.as_str())
@@ -308,7 +311,11 @@ async fn persist_issuer_state(
 fn issuer_from_row(row: &SqliteRow) -> Result<IssuerRecord, AuthBusAuthorityError> {
     let purpose: String = row.try_get("purpose").map_err(storage)?;
     let state: String = row.try_get("state").map_err(storage)?;
-    let public_key = VerifyingKey::from_bytes(&blob_array::<32>(row, "public_key")?)
+    let version: u32 = row.try_get("auth_version").map_err(storage)?;
+    let algorithm = AuthBusAlgorithm::from_schema_version(version)
+        .map_err(|_| AuthBusAuthorityError::CorruptState("invalid issuer algorithm"))?;
+    let bytes: Vec<u8> = row.try_get("public_key").map_err(storage)?;
+    let public_key = AuthBusVerifyingKey::from_bytes(algorithm, &bytes)
         .map_err(|_| AuthBusAuthorityError::CorruptState("invalid issuer public key"))?;
     Ok(IssuerRecord {
         issuer_id: stable_id(row.try_get("issuer_id").map_err(storage)?)?,

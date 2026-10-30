@@ -130,7 +130,7 @@ impl OutboxRecord {
                 sequence: u64::from_be_bytes(blob(&row, "sequence")?),
                 expires_at_ms: u64::from_be_bytes(blob(&row, "expires_at_ms")?),
             },
-            signature: blob(&row, "signature")?,
+            signature: blob::<64>(&row, "signature")?.into(),
         };
         let state: String = row.try_get("state").map_err(classify_sqlx_error)?;
         let state = match state.as_str() {

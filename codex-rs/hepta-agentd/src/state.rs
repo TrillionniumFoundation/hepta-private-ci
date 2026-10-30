@@ -739,7 +739,7 @@ impl AgentdState {
                 sequence: authentication.sequence,
                 expires_at_ms: authentication.expires_at_ms,
             },
-            signature: authentication.signature,
+            signature: authentication.signature.into(),
         };
         message
             .authenticate(

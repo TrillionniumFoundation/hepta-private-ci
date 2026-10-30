@@ -56,7 +56,8 @@ impl TextTrust {
             key_epoch: Generation::new(self.key_epoch)
                 .map_err(|error| invalid(&error.to_string()))?,
             verifying_key: VerifyingKey::from_bytes(&hex_bytes(&self.public_key_hex)?)
-                .map_err(|_| invalid("invalid registered Ed25519 public key"))?,
+                .map_err(|_| invalid("invalid registered Ed25519 public key"))?
+                .into(),
             revoked: self.revoked,
         })
     }

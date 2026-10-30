@@ -6,6 +6,8 @@ use sqlx::Transaction;
 
 use crate::AuthBusAuthorityError;
 use crate::AuthBusAuthorityStore;
+use crate::IssuerLifecycleState;
+use crate::IssuerPurpose;
 use crate::PolicyEffect;
 use crate::QuotaReservation;
 use crate::QuotaSnapshot;
@@ -212,8 +214,30 @@ impl AuthBusAuthorityStore {
         ) {
             return Err(AuthBusAuthorityError::InvalidTransition);
         }
+        // Hold the write transaction while rereading authority. A snapshot
+        // obtained before an await cannot authorize after rotation/revocation.
+        let current = crate::trust_store::load_issuer(
+            &mut tx,
+            IssuerPurpose::Settlement,
+            &evidence.claims.issuer_id,
+            evidence.claims.key_epoch,
+        )
+        .await?;
+        self.require_key(&current.verifying_key)?;
+        if issuer.issuer_id != current.issuer_id
+            || issuer.key_epoch != current.key_epoch
+            || issuer.verifying_key != current.verifying_key
+        {
+            return Err(AuthBusAuthorityError::SettlementIssuerMismatch);
+        }
+        let current = SettlementIssuerRegistration {
+            issuer_id: current.issuer_id,
+            key_epoch: current.key_epoch,
+            verifying_key: current.verifying_key,
+            revoked: issuer.revoked || current.state != IssuerLifecycleState::Active,
+        };
         let authenticated = evidence.authenticate(
-            issuer,
+            &current,
             &reservation.reservation_id,
             &reservation.operation_id,
             time.wall_time_ms,

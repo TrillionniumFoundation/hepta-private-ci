@@ -7,6 +7,7 @@ use sqlx::Sqlite;
 use sqlx::SqlitePool;
 use sqlx::Transaction;
 
+use crate::AuthBusAlgorithm;
 use crate::AuthBusAuthorityError;
 use crate::AuthPolicy;
 use crate::PolicyDecision;
@@ -20,10 +21,18 @@ static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 #[derive(Clone)]
 pub struct AuthBusAuthorityStore {
     pub(crate) pool: SqlitePool,
+    pub(crate) algorithm: AuthBusAlgorithm,
 }
 
 impl AuthBusAuthorityStore {
     pub async fn open(path: &Path) -> Result<Self, AuthBusAuthorityError> {
+        Self::open_with_algorithm(path, AuthBusAlgorithm::Ed25519V1).await
+    }
+
+    pub(crate) async fn open_with_algorithm(
+        path: &Path,
+        algorithm: AuthBusAlgorithm,
+    ) -> Result<Self, AuthBusAuthorityError> {
         let pool = crate::sqlite::open_durable_pool(path).await?;
         let quick_check: String = sqlx::query_scalar("PRAGMA quick_check")
             .fetch_one(&pool)
@@ -43,6 +52,10 @@ impl AuthBusAuthorityStore {
             pool.close().await;
             return Err(error);
         }
+        if let Err(error) = crate::crypto_profile::bind_profile(&pool, algorithm).await {
+            pool.close().await;
+            return Err(error);
+        }
         sqlx::query(
             "UPDATE authbus_recovery_state
              SET recovery_required = (
@@ -56,7 +69,7 @@ impl AuthBusAuthorityStore {
         .execute(&pool)
         .await
         .map_err(storage)?;
-        Ok(Self { pool })
+        Ok(Self { pool, algorithm })
     }
 
     pub async fn observe_time(&self, time: TrustedTimeSample) -> Result<(), AuthBusAuthorityError> {

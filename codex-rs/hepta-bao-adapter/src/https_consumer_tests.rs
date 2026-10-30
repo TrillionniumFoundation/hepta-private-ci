@@ -500,7 +500,7 @@ impl AuthBusEvidence {
         IssuerSpec {
             issuer_id: StableId::new("issuer:bao-time").unwrap(),
             key_epoch: Generation::new(1).unwrap(),
-            verifying_key: self.time_key.verifying_key(),
+            verifying_key: self.time_key.verifying_key().into(),
         }
     }
 
@@ -508,7 +508,7 @@ impl AuthBusEvidence {
         IssuerSpec {
             issuer_id: StableId::new("issuer:bao-settlement").unwrap(),
             key_epoch: Generation::new(1).unwrap(),
-            verifying_key: self.settlement_key.verifying_key(),
+            verifying_key: self.settlement_key.verifying_key().into(),
         }
     }
 }
@@ -529,7 +529,11 @@ impl BaoAuthBusEvidenceProvider for AuthBusEvidence {
             ),
         };
         Ok(SignedTrustedTimeAttestation {
-            signature: self.time_key.sign(&claims.signing_bytes()).to_bytes(),
+            signature: self
+                .time_key
+                .sign(&claims.signing_bytes())
+                .to_bytes()
+                .into(),
             claims,
         })
     }
@@ -556,7 +560,11 @@ impl BaoAuthBusEvidenceProvider for AuthBusEvidence {
             expires_at_ms: observed_at_ms + 30_000,
         };
         Ok(SignedSettlementEvidence {
-            signature: self.settlement_key.sign(&claims.signing_bytes()).to_bytes(),
+            signature: self
+                .settlement_key
+                .sign(&claims.signing_bytes())
+                .to_bytes()
+                .into(),
             claims,
         })
     }

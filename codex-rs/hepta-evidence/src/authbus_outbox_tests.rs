@@ -22,7 +22,7 @@ fn fixture(sequence: u64, expiry: u64) -> (IssuerRegistration, SignedMessage) {
     let issuer = IssuerRegistration {
         issuer_id: StableId::new("issuer:queue").unwrap(),
         key_epoch: Generation::new(1).unwrap(),
-        verifying_key: key.verifying_key(),
+        verifying_key: key.verifying_key().into(),
         revoked: false,
     };
     let claims = SignedMessageClaims {
@@ -36,7 +36,13 @@ fn fixture(sequence: u64, expiry: u64) -> (IssuerRegistration, SignedMessage) {
         expires_at_ms: expiry,
     };
     let signature = key.sign(&claims.signing_bytes()).to_bytes();
-    (issuer, SignedMessage { claims, signature })
+    (
+        issuer,
+        SignedMessage {
+            claims,
+            signature: signature.into(),
+        },
+    )
 }
 
 fn config(path: &std::path::Path) -> SqliteConfig {
@@ -222,7 +228,8 @@ async fn payload_route_and_retained_message_identity_cannot_be_substituted() {
     replacement.claims.message_id = message.claims.message_id;
     replacement.signature = SigningKey::from_bytes(&[37; 32])
         .sign(&replacement.claims.signing_bytes())
-        .to_bytes();
+        .to_bytes()
+        .into();
     assert!(matches!(
         store
             .enqueue_authbus_message(
