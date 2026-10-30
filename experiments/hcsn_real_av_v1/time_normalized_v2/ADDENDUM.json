@@ -1,0 +1,38 @@
+{
+  "schema": "hcsn-real-av-duration-diagnostics-v1",
+  "registration": "Before the first formal fit and before any heldout model evaluation",
+  "reason": "Same-recording duration is common metadata that can support paired retrieval without audiovisual content",
+  "primary_profile": "time_normalized_v2: every model receives dt=1 at each of32 observations",
+  "diagnostics": [
+    {
+      "name": "duration_only",
+      "input": "Original heldout common-interval durations from the sealed feature cache",
+      "score": "Negative absolute pairwise duration difference; both directions and all-clips/same-actor scopes",
+      "training": "None",
+      "interpretation": "Quantifies the direct duration shortcut in the superseded unexecuted profile"
+    },
+    {
+      "name": "fixed_dt_with_content",
+      "input": "Registered time-normalized main predictions",
+      "training": "The unchanged7-model,3-seed,128-update matrix with dt=1",
+      "interpretation": "Primary result with direct per-clip duration metadata removed; ordinary visual/audio nuisance cues remain possible"
+    },
+    {
+      "name": "zero_content_original_dt",
+      "input": "All128 feature coordinates set to0, preserving original variable durations",
+      "training": "No refit; same validation-selected time-normalized checkpoint",
+      "interpretation": "Out-of-distribution clock-only counterfactual; not an estimate of original variable-duration training performance"
+    },
+    {
+      "name": "zero_content_fixed_dt",
+      "input": "All feature coordinates0 and dt=1; identical input is evaluated once and predictions are broadcast to every candidate",
+      "training": "No refit; same selected checkpoint",
+      "interpretation": "Exact input-constant null control; tied retrieval ranks are broken by registered clip index"
+    }
+  ],
+  "timing": "After all21 registered main attempts are recorded; only completed jobs with durable validation selection are diagnosed",
+  "metrics": "Unchanged bidirectional recall1,recall5,MRR with deterministic index tie breaking; recognition accuracy/CE for model counterfactuals",
+  "decisions": "No diagnostic result can change model choice, optimizer budget, checkpoint selection, test membership or primary endpoint",
+  "failures": "All incomplete main attempts and diagnostic failures are retained explicitly",
+  "cost": "Diagnostic process is measured separately by Linux wait4 and added to the study's actual execution cost; no energy estimate"
+}

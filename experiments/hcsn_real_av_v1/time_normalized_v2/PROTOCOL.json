@@ -1,0 +1,103 @@
+{
+  "base_freeze_sha256": "2f97bbdffbfd2f6ad398d7a84fd9d843eaf0e950293e497af54ab9878867744a",
+  "batch_size": 16,
+  "cohort": {
+    "clips": 720,
+    "emotions": [
+      "ANG",
+      "DIS",
+      "FEA",
+      "HAP",
+      "NEU",
+      "SAD"
+    ],
+    "intensity": "XX",
+    "paired_source": "Audio and original video decoded from the same hash-verified FLV",
+    "selection": "Thirty complete actors sorted by SHA256(hcsn-real-av-cohort-v1: + actor_id)",
+    "sentences": [
+      "DFA",
+      "IOM",
+      "ITH",
+      "IWL"
+    ],
+    "test_actors": 5,
+    "train_actors": 20,
+    "validation_actors": 5
+  },
+  "comparison_scope": "Equal 128-update fit budgets and data exposure with identical validation selection; selected weights may come from32/64/128 updates; full128-update CPU is reported; no fixed-CPU equivalence claim",
+  "cost": "All failures retained; raw process wall, CPU, peakRSS; GPU and joules null; dataset preparation measured separately",
+  "depth": 1,
+  "derangement_scope": "Within-actor derangement may change emotion and sentence; it measures general sensitivity to destroying the pair, not a specific proof of temporal synchronization",
+  "embedding_dimension": 32,
+  "expected_jobs": 21,
+  "features": {
+    "audio": "16kHz mono; 25ms Hann, 10ms hop, FFT512; 64 triangular mel bands; log floor1e-8",
+    "normalization": "Per-modality training-actor moments only; std floor1e-5",
+    "observations_per_clip": 32,
+    "sampling": "Both modalities interpolated to common-interval bin centers; concatenate 64 values and 64 backward differences",
+    "scope": "Time-normalized offline low-level encoder; no pretrained backbone, identity objective, natural-language queries or streaming claim",
+    "time_input": "dt=1 for all32 observations in allclips and allmodalities; cumulative time is identical; original clip duration is not supplied as an input",
+    "video": "Original timestamped frames; area resize16x16 grayscale; orthonormal DCT upper8x8"
+  },
+  "forbidden_changes": "No test-based retuning, omitted failed models, test-set redefinition or replacement of old protocol evidence",
+  "inference_scope": "Three training seeds are descriptive; actor is the generalization unit; no registered significance or superiority gate",
+  "learning_rate": 0.001,
+  "minibatches": "Same seeded without-replacement permutation prefix for each model/seed; no repeated clip within one batch",
+  "models": [
+    "distribution_free_dual",
+    "distribution_conditional_dual",
+    "distribution_free_ordinary",
+    "two_gates",
+    "transformer",
+    "lif_snn",
+    "mamba1"
+  ],
+  "objective": "CE(fused) + 0.25*(CE(audio)+CE(video)) + 0.5*symmetric same-clip InfoNCE",
+  "preflight": "Same eight train-only clips from the original preflight, now all dt=1; seed9401; two optimizer updates per arm; finite connected gradients and nonzero group changes; disposable checkpoints",
+  "primary_metrics": [
+    "fused acted-emotion recognition accuracy and CE",
+    "same-recording audiovisual retrieval recall1 in both directions"
+  ],
+  "probability_gate": "Every HCSN forward, training and evaluation: finite, nonnegative, max unit-mass error <=1e-4 on all 32 observations; original v2 kernel retained",
+  "registration_scope": "Supersedes the unexecuted original AV profile before any heldout scoring; original frozen inputs and receipts remain intact",
+  "resource_cap_training_cpu_seconds": 900,
+  "schema": "hcsn-real-av-time-normalized-v2",
+  "secondary_metrics": [
+    "audio-only and video-only recognition",
+    "retrieval recall5 and MRR",
+    "within-actor retrieval",
+    "fixed within-actor paired-video derangement"
+  ],
+  "seeds": [
+    9301,
+    9302,
+    9303
+  ],
+  "selection": "Minimum validation fused CE; earlier update breaks ties; no test-based model evaluation before selection lock; fixed preprocessing and integrity checks are outcome-free",
+  "selection_updates": [
+    32,
+    64,
+    128
+  ],
+  "temperature": 0.1,
+  "timing_confound": "Original same-recording duration metadata is common to modalities and can solve retrieval without content; direct duration input removed before any formal fit or heldout model evaluation",
+  "unchanged_fields": [
+    "cohort",
+    "models",
+    "seeds",
+    "width",
+    "depth",
+    "embedding_dimension",
+    "learning_rate",
+    "batch_size",
+    "updates",
+    "selection_updates",
+    "selection",
+    "temperature",
+    "objective",
+    "minibatches"
+  ],
+  "updates": 128,
+  "upstream_commit": "1658cd342dff90010aa843eaeebd53610a08b1dc",
+  "width": 32
+}
