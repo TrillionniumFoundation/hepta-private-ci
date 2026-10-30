@@ -1,0 +1,207 @@
+{
+  "actual_optimized_readout_vectors": 45,
+  "all_five_preparation_invocations_passed": true,
+  "available_bytes_after": 5136097280,
+  "completed_utc": "2026-10-30T12:53:18.367635+00:00",
+  "confirmation_constructed": false,
+  "cost_ledger_scope": "All five full preparation invocations and both preparation-manifest attempts are measured separately; operational diagnosis/preservation and waiting are explicitly retained but not assigned invented costs. This is not a fully measured end-to-end project cost.",
+  "failed_training_attempts": 0,
+  "financial_cost": null,
+  "freeze_created": false,
+  "manifest_attempts": [
+    {
+      "attempt": 1,
+      "full_child_cpu_seconds": 1.230566,
+      "full_wall_ns": 559246694,
+      "receipt_path": "execution/prepare_manifest_001_COMPLETED.json",
+      "receipt_sha256": "5c4b0f35741055cdfb8bae9cd5e352ddf60f5cfbb3b8bee10aaac5df18e68f49",
+      "returncode": 1
+    },
+    {
+      "attempt": 2,
+      "full_child_cpu_seconds": 1.683374,
+      "full_wall_ns": 638340385,
+      "receipt_path": "execution/prepare_manifest_002_COMPLETED.json",
+      "receipt_sha256": "a8775b1250c0ece19c1c4bbdc9ef8dfa190b2bf7f21a6954d0277d3f09eabc14",
+      "returncode": 0
+    }
+  ],
+  "maximum_concurrent_preparation_jobs": 2,
+  "native_energy": null,
+  "operational_records": [
+    "execution/PREPARATION_CAPACITY_PAUSE_001.json",
+    "execution/PREPARATION_RESUMED_AFTER_MIGRATION.json",
+    "execution/WORKING_RESIDUE_DIAGNOSIS_001.json",
+    "execution/preserved_working_residue_001/MOVE_STARTED.json",
+    "execution/preserved_working_residue_001/MOVE_COMPLETED.json"
+  ],
+  "parallel_and_nested_times_must_not_be_added_as_elapsed_time": true,
+  "prepared_and_native_artifact_count": 48,
+  "prepared_sha256": "01cd90245b3d024d5be8676a684266c44a2e8e608fd9d175625db979d48d688a",
+  "preparing_sha256": "9552923d2a432d772d850c9b47a2cdda8f52f7c39c6982d75cea5acda6888011",
+  "primary_source_count": 118,
+  "production_promotion": false,
+  "readout_candidate_scores": 225,
+  "schema": "hepta.acquired-feedback.preparation-batch-completed.v6",
+  "seeds": [
+    {
+      "actual_optimized_readout_vectors": 9,
+      "archive_members": 9984,
+      "cwd": "/workspace/scratch/d831a963ef2f/hepta-analytic",
+      "development_rows": 128,
+      "execution_receipt_path": "execution/prepare_seed_3407_COMPLETED.json",
+      "execution_receipt_sha256": "a8b43257144881c8c7a49a1eb1391ed7fd4a2b78f990c69af74f3b5a078baabd",
+      "finished_utc": "2026-10-30T12:41:02.159359+00:00",
+      "full_child_cpu_seconds": 27.725653,
+      "full_wall_ns": 33337135450,
+      "head_parameter_l2_changes": {
+        "analytic": 3.7165904797336387,
+        "history": 3.7428248844333276,
+        "numeric": 5.597053161789015
+      },
+      "native": {
+        "requests": 6144,
+        "roundtrip_ns": 3907306864,
+        "ticks": 10752
+      },
+      "noise_scale_final": 1.7156040358942959,
+      "prior_parameters_changed": true,
+      "readout_candidate_scores": 45,
+      "seed": 3407,
+      "started_utc": "2026-10-30T12:40:28.821195+00:00",
+      "storage_context": "original disk workspace",
+      "training_receipt_sha256": "463706a32696ab44d500516008c37d671017d5ba197abcce71c8dcbc36b89070",
+      "training_rows": 256
+    },
+    {
+      "actual_optimized_readout_vectors": 9,
+      "archive_members": 9984,
+      "cwd": "/workspace/scratch/d831a963ef2f/hepta-analytic",
+      "development_rows": 128,
+      "execution_receipt_path": "execution/prepare_seed_3613_COMPLETED.json",
+      "execution_receipt_sha256": "28f2581754fde48a6f1c7ddd15a2557a99a743836074e6b9028b4d07de7962eb",
+      "finished_utc": "2026-10-30T12:41:02.376824+00:00",
+      "full_child_cpu_seconds": 27.720445,
+      "full_wall_ns": 33559732822,
+      "head_parameter_l2_changes": {
+        "analytic": 2.4170966467647563,
+        "history": 2.4758405589008974,
+        "numeric": 11.265048545142237
+      },
+      "native": {
+        "requests": 6144,
+        "roundtrip_ns": 4278954302,
+        "ticks": 10752
+      },
+      "noise_scale_final": 1.6480751695285674,
+      "prior_parameters_changed": true,
+      "readout_candidate_scores": 45,
+      "seed": 3613,
+      "started_utc": "2026-10-30T12:40:28.815830+00:00",
+      "storage_context": "original disk workspace",
+      "training_receipt_sha256": "c8ed2df1413f57bdf1656a877ef73aaf70383ac9171d4a5a097e73b2827d99ef",
+      "training_rows": 256
+    },
+    {
+      "actual_optimized_readout_vectors": 9,
+      "archive_members": 9984,
+      "cwd": "/dev/shm/hepta-round6-d831a963ef2f/hepta-analytic",
+      "development_rows": 128,
+      "execution_receipt_path": "execution/prepare_seed_3821_COMPLETED.json",
+      "execution_receipt_sha256": "521f311809e075a07c380b13b726574a41313b567a8703def779c14bfc981925",
+      "finished_utc": "2026-10-30T12:46:27.086848+00:00",
+      "full_child_cpu_seconds": 31.322727,
+      "full_wall_ns": 31355050871,
+      "head_parameter_l2_changes": {
+        "analytic": 2.4736269906695894,
+        "history": 3.664958534110468,
+        "numeric": 6.923174551339199
+      },
+      "native": {
+        "requests": 6144,
+        "roundtrip_ns": 2345764104,
+        "ticks": 10752
+      },
+      "noise_scale_final": 1.5545878322355595,
+      "prior_parameters_changed": true,
+      "readout_candidate_scores": 45,
+      "seed": 3821,
+      "started_utc": "2026-10-30T12:45:55.731687+00:00",
+      "storage_context": "approved isolated memory-backed workspace",
+      "training_receipt_sha256": "5aa8346c15b277908bab27dfce331755a3a73b376f2cf25aa7b896ff77cb235a",
+      "training_rows": 256
+    },
+    {
+      "actual_optimized_readout_vectors": 9,
+      "archive_members": 9984,
+      "cwd": "/dev/shm/hepta-round6-d831a963ef2f/hepta-analytic",
+      "development_rows": 128,
+      "execution_receipt_path": "execution/prepare_seed_4001_COMPLETED.json",
+      "execution_receipt_sha256": "19cf7958734c024180a0474f1c3ce85fdbc3b1f644f6e3bd00ce8d7342187615",
+      "finished_utc": "2026-10-30T12:46:29.859801+00:00",
+      "full_child_cpu_seconds": 29.917116,
+      "full_wall_ns": 29939058975,
+      "head_parameter_l2_changes": {
+        "analytic": 2.98627861475504,
+        "history": 2.2870370894269914,
+        "numeric": 7.237663518393556
+      },
+      "native": {
+        "requests": 6144,
+        "roundtrip_ns": 1750707956,
+        "ticks": 10752
+      },
+      "noise_scale_final": 1.6741453588804913,
+      "prior_parameters_changed": true,
+      "readout_candidate_scores": 45,
+      "seed": 4001,
+      "started_utc": "2026-10-30T12:45:59.920641+00:00",
+      "storage_context": "approved isolated memory-backed workspace",
+      "training_receipt_sha256": "f31337d291e18d82c6cde393d5a87bb715bcc3fd47d6b2506527f2d82de0828a",
+      "training_rows": 256
+    },
+    {
+      "actual_optimized_readout_vectors": 9,
+      "archive_members": 9984,
+      "cwd": "/dev/shm/hepta-round6-d831a963ef2f/hepta-analytic",
+      "development_rows": 128,
+      "execution_receipt_path": "execution/prepare_seed_4219_COMPLETED.json",
+      "execution_receipt_sha256": "58f8318bf5a38e2755717e0a9be248172461b74e11dfc9aee9964d0f634e1659",
+      "finished_utc": "2026-10-30T12:47:37.477387+00:00",
+      "full_child_cpu_seconds": 25.912303,
+      "full_wall_ns": 25937722765,
+      "head_parameter_l2_changes": {
+        "analytic": 3.6457545655401296,
+        "history": 3.1525118359658006,
+        "numeric": 6.4773487382329975
+      },
+      "native": {
+        "requests": 6144,
+        "roundtrip_ns": 1483612210,
+        "ticks": 10752
+      },
+      "noise_scale_final": 1.7875503425551693,
+      "prior_parameters_changed": true,
+      "readout_candidate_scores": 45,
+      "seed": 4219,
+      "started_utc": "2026-10-30T12:47:11.539577+00:00",
+      "storage_context": "approved isolated memory-backed workspace",
+      "training_receipt_sha256": "42f32faa4966a5c5c6978eac5104110dc46157764ae9e32fd5ff33f8fe1cd8f6",
+      "training_rows": 256
+    }
+  ],
+  "source_map_sha256": "97498d20363ac0648e662b086418776a9c49ac7db8d2bfc55cd4bddada5e5346",
+  "sum_seed_invocation_child_cpu_seconds": 142.598244,
+  "sum_seed_invocation_wall_ns_not_elapsed_time": 154128700883,
+  "total_development_trajectories": 640,
+  "total_native_requests": 30720,
+  "total_native_roundtrip_ns": 13766345436,
+  "total_native_sparse_ticks": 53760,
+  "total_training_trajectories": 1280,
+  "total_verified_archive_members": 49920,
+  "unmetered_operational_steps": [
+    "Read-only byte-match diagnosis: no full process CPU/wall wrapper was used",
+    "Preserving already archived duplicate in operational directory: no full process CPU/wall wrapper was used",
+    "Inter-invocation coordination, capacity waiting, and tool service time"
+  ]
+}
