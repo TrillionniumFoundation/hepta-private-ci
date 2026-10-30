@@ -36,6 +36,10 @@ rust_test(
         "@crates//:pretty_assertions",
         "@crates//:tempfile",
     ],
+    # These tests invoke the real host OpenSSH binary for trust and revocation
+    # checks; the remote Bazel test image lacks /usr/bin/ssh-keygen. Keep the
+    # same assertions and run the complete test target on the native runner.
+    tags = ["no-remote"],
 )
 
 rust_binary(
