@@ -325,6 +325,9 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 mod tests;
 
 #[cfg(test)]
+mod test_directory;
+
+#[cfg(test)]
 #[path = "vertical_tests.rs"]
 mod vertical_tests;
 

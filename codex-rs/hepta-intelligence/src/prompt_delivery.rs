@@ -297,6 +297,12 @@ impl fmt::Display for PromptRegistryCompilationErrorV2 {
 
 impl std::error::Error for PromptRegistryCompilationErrorV2 {}
 
-#[cfg(test)]
+// These compositions require an admitted final-use authority, whose durable
+// store currently supports Unix. Other platforms exercise the refusal below.
+#[cfg(all(test, unix))]
 #[path = "prompt_delivery_tests.rs"]
 pub(crate) mod tests;
+
+#[cfg(all(test, windows))]
+#[path = "prompt_authority_windows_tests.rs"]
+mod windows_tests;

@@ -1,15 +1,23 @@
 use super::*;
 use codex_hepta_contracts::FinalUseAuthority;
+#[cfg(unix)]
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocations;
+#[cfg(unix)]
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_prompt_registry::DurablePromptRegistry;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::final_use_admission_binding;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::final_use_realization_binding;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::final_use_revoke_binding;
+#[cfg(unix)]
 use ed25519_dalek::Signer;
 use std::collections::BTreeSet;
+#[cfg(unix)]
 use std::time::SystemTime;
+#[cfg(unix)]
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_kg::KnowledgeEdgeIdentityV2;
@@ -339,6 +347,85 @@ fn incomplete_candidate_completeness_cannot_be_authenticated_for_pricing() {
     assert!(candidate_completeness_signing_payload_v1(&receipt).is_err());
 }
 
+#[cfg(windows)]
+#[test]
+fn unsupported_final_use_authority_cannot_make_a_draft_factor_selectable()
+-> Result<(), Box<dyn std::error::Error>> {
+    let temp = tempfile::tempdir()?;
+    let root = temp.path().join("registry");
+    let authority_root = temp.path().join("authority");
+    let mut registry = DurablePromptRegistry::open_state_dir(&root, 64)?;
+    let factor = PromptFactor {
+        factor_id: id("factor:unadmitted"),
+        proposer_id: id("proposer:1"),
+        semantic_version: id("v1"),
+        semantic_purpose: "inspect evidence before mutation".to_owned(),
+        authority_class: "registered_prompt_factor".to_owned(),
+        eligible_objective_dimensions: vec![id("dimension:truth")],
+        content_digest: digest("factor:unadmitted"),
+        source: FactorSource::GovernedInternal,
+        lifecycle: Lifecycle::Draft,
+    };
+    registry.register_factor(factor.clone())?;
+    let before = registry.registry()?.snapshot_digest();
+    let authority = FinalUseAuthority::open_state_dir(
+        &authority_root,
+        "review-authority:prompt".into(),
+        SigningKey::from_bytes(&[23; 32]).verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 1,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        },
+    );
+    assert_eq!(
+        authority.err(),
+        Some(codex_hepta_contracts::FinalUseError::UnsafeStateDirectory)
+    );
+    assert!(!authority_root.exists());
+
+    let request = PromptEnumerationRequestV1 {
+        set_id: id("set:unsupported-authority"),
+        objective_digest: digest("objective"),
+        state_digest: digest("state"),
+        generation_vector_digest: digest("generation-vector"),
+        model_tuple: model_tuple(),
+        now_unix_ms: 100,
+        required_factor_ids: Vec::new(),
+        maximum_candidates: 8,
+        selection_grammar_digest: digest("grammar"),
+    };
+    let enumerated = enumerate_factors_v1(registry.registry()?, request.clone())?;
+    assert!(enumerated.candidates.is_empty());
+    assert!(!enumerated.receipt.authority.grants_any());
+    assert!(matches!(
+        enumerate_factors_v1(
+            registry.registry()?,
+            PromptEnumerationRequestV1 {
+                required_factor_ids: vec![factor.factor_id.clone()],
+                ..request
+            },
+        ),
+        Err(CanonicalPromptError::Registry(reason)) if reason == "RequiredFactorUnavailable"
+    ));
+    assert_eq!(registry.registry()?.snapshot_digest(), before);
+    assert_eq!(
+        registry.registry()?.factor(&factor.factor_id),
+        Some(&factor)
+    );
+    drop(registry);
+    let reopened = DurablePromptRegistry::open_state_dir(&root, 64)?;
+    assert_eq!(reopened.registry()?.snapshot_digest(), before);
+    assert_eq!(
+        reopened.registry()?.factor(&factor.factor_id),
+        Some(&factor)
+    );
+    assert!(!authority_root.exists());
+    Ok(())
+}
+
+// A successful final-use admission requires the Unix authority store.
+#[cfg(unix)]
 #[test]
 fn enumeration_selects_lowest_cost_compatible_realization_per_factor() {
     let temp = tempfile::tempdir().expect("tempdir");
@@ -368,6 +455,7 @@ fn enumeration_selects_lowest_cost_compatible_realization_per_factor() {
     assert!(!enumerated.receipt.authority.grants_any());
 }
 
+#[cfg(unix)]
 #[test]
 fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
     let temp = tempfile::tempdir().expect("tempdir");
@@ -449,6 +537,7 @@ fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
     assert!(!exercise.authority.grants_any());
 }
 
+#[cfg(unix)]
 fn registry_fixture(
     root: &std::path::Path,
     costs: &[u32],
@@ -600,6 +689,7 @@ fn registry_fixture(
     (registry, tuple, authority, signing_key, now)
 }
 
+#[cfg(unix)]
 fn revoke_registry(
     registry: &mut DurablePromptRegistry,
     authority: &FinalUseAuthority,

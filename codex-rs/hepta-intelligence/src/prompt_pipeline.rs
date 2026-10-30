@@ -699,6 +699,8 @@ fn ensure_exercisable(decision: PromptExerciseActionV1) -> Result<(), PromptPipe
     }
 }
 
-#[cfg(test)]
+// The integration fixture obtains its admission through FinalUseAuthority.
+// Its non-Unix refusal is covered by prompt_delivery::windows_tests.
+#[cfg(all(test, unix))]
 #[path = "prompt_pipeline_tests.rs"]
 mod tests;

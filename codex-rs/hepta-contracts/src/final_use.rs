@@ -1025,3 +1025,7 @@ impl std::error::Error for FinalUseError {}
 #[cfg(all(test, unix))]
 #[path = "final_use_tests.rs"]
 mod tests;
+
+#[cfg(all(test, not(unix)))]
+#[path = "final_use_unsupported_tests.rs"]
+mod unsupported_tests;
