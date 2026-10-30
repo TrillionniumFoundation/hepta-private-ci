@@ -1,0 +1,10 @@
+{
+  "schema": "hepta.round6.delivery-wrapper-construction-failure.v1",
+  "recorded_utc": "2026-10-30T15:33:47.621467+00:00",
+  "phase": "wrapper source construction before any driver execution",
+  "error_type": "SyntaxError",
+  "message": "Outer raw triple-single-quoted string collided with an inner triple-single-quoted README template; the source-construction Python command failed compilation.",
+  "filesystem_changes_from_failed_command": false,
+  "sealed_source_or_scientific_execution_affected": false,
+  "resolution": "Write the driver using a quoted shell heredoc instead of nesting Python string delimiters."
+}
