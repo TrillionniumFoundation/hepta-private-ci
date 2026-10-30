@@ -1,0 +1,90 @@
+"""Independent FPT and integrated HX bond tests. No production permissions."""
+import math
+import unittest
+
+from .bond_fpt_independent import (independent_bond, integrate_passage,
+                                   reflected_passage, reference_sweep)
+
+
+class IndependentPassageTests(unittest.TestCase):
+    def test_independent_density_versus_reflection_108_cases(self):
+        report=reference_sweep()
+        self.assertEqual(report['count'],108)
+        self.assertLess(report['max_F_difference'],2e-10)
+        self.assertLess(report['max_G_difference'],2e-10)
+
+    def test_hitting_probability_domains(self):
+        for x in (.0001,.06,.2,1.,4.):
+            for drift in (-.2,0.,.02,.2):
+                fp=integrate_passage(x,drift=drift,sigma=.3,
+                                     discount=.08,horizon=2.)
+                self.assertGreaterEqual(fp.probability,0.)
+                self.assertLessEqual(fp.probability,1.)
+                self.assertGreaterEqual(fp.discounted,0.)
+                self.assertLessEqual(fp.discounted,fp.probability+1e-12)
+
+    def test_near_boundary_layer_is_resolved(self):
+        # A naive unpartitioned quad() from u0 to infinity misses O(x/sigma)
+        # when x~1e-7 and falsely reports G~=F with tiny error estimates.
+        for x in (1e-9,1e-7,1e-5,1e-3):
+            for t in (.01,1.,10.):
+                a=integrate_passage(x,drift=-.03,sigma=.25,discount=.05,horizon=t)
+                b=reflected_passage(x,drift=-.03,sigma=.25,discount=.05,horizon=t)
+                self.assertLess(abs(a.probability-b.probability),3e-11)
+                self.assertLess(abs(a.discounted-b.discounted),3e-11)
+
+    def test_discounted_default_strictly_decreases_in_q(self):
+        values=[integrate_passage(.6,drift=-.02,sigma=.3,
+                                  discount=q,horizon=2.).discounted
+                for q in (.005,.05,.5,2.)]
+        self.assertTrue(all(a>b for a,b in zip(values,values[1:])))
+
+    def test_bond_decomposition_and_invalid_values(self):
+        kwargs=dict(x=.7,drift=.01,sigma=.22,discount=.09,
+                    horizon=3.,coupon_per_bond=2.,principal_per_bond=30.,
+                    recovery_per_bond=11.)
+        value, fp=independent_bond(**kwargs)
+        self.assertGreater(value,0.)
+        self.assertLess(value,32.)
+        with self.assertRaises(ValueError):
+            independent_bond(**(kwargs | {'recovery_per_bond':-1.}))
+        for key,bad in [('x',0.),('sigma',0.),('discount',0.),
+                        ('horizon',0.),('x',float('nan'))]:
+            with self.assertRaises(ValueError):
+                independent_bond(**(kwargs | {key:bad}))
+
+    def test_quantized_boundary_discontinuity_is_not_certified(self):
+        # Float32 cannot represent arbitrarily close positive-side states.
+        import numpy as np
+        b=64.6251766753
+        asset=b*(1+1e-9)
+        self.assertGreater(asset,b)
+        self.assertEqual(np.float32(asset),np.float32(b))
+        # This is a negative precision witness, not a float32 PASS.
+
+    def test_exact_upstream_hx_f_g_and_bond_when_present(self):
+        try:
+            from .hx import HX, boundary, bond_value, default_probability, discounted_default_factor
+        except ImportError:
+            self.skipTest('Exact upstream hx.py not mounted in local reference copy')
+        for p in (HX(), HX(sale_fraction=.2), HX(payout=0),
+                  HX(sale_fraction=0), HX(maturity=.5,volatility=.36)):
+            b=boundary(p)
+            for ratio in (1.02,1.2,2.5):
+                asset=b*ratio
+                for tau in (p.maturity*.15,p.maturity):
+                    x=math.log(ratio)
+                    d,fp=independent_bond(x=x,drift=p.rate-p.payout-.5*p.volatility**2,
+                        sigma=p.volatility,discount=p.q,horizon=tau,
+                        coupon_per_bond=p.per_bond_coupon,
+                        principal_per_bond=p.per_bond_principal,
+                        recovery_per_bond=p.recovery*b/p.maturity)
+                    self.assertAlmostEqual(fp.probability,
+                        default_probability(p,asset,tau,b),delta=3e-9)
+                    self.assertAlmostEqual(fp.discounted,
+                        discounted_default_factor(p,asset,tau,b),delta=3e-9)
+                    self.assertAlmostEqual(d,bond_value(p,asset,tau,b),delta=3e-8)
+
+
+if __name__=='__main__':
+    unittest.main()

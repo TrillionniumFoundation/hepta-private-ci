@@ -1,0 +1,33 @@
+{
+  "all_blockers_closed": false,
+  "independent_vs_reflection": {
+    "count": 108,
+    "max_F_difference": 3.3306690738754696e-16,
+    "max_G_difference": 3.3306690738754696e-16,
+    "scope": "bounded numerical check; no continuum/full-domain certificate",
+    "worst": [
+      -0.12,
+      0.15,
+      0.001,
+      0.06,
+      2.0,
+      1.1102230246251565e-16,
+      3.3306690738754696e-16
+    ]
+  },
+  "local_unittest": "6 passed, 1 skipped (upstream HX not mounted)",
+  "near_boundary_points": 12,
+  "near_boundary_worst_F_error": 2.135402965564026e-12,
+  "near_boundary_worst_G_error": 1.696232043713053e-11,
+  "numpy": "2.3.5",
+  "precision": "float64 CPU; float32 barrier alias is a deliberately failing quantization witness",
+  "production_activation_allowed": false,
+  "python": "3.13.5",
+  "scipy": "1.17.0",
+  "source_base_head": "13c4e6aa2de23cb18807af189c12999b8117962e",
+  "source_sha256": {
+    "bond_fpt_independent.py": "00dc41f57f29f5714e02df4837b0c297f84a802b9bc23d87236196e51fbb40a5",
+    "test_bond_fpt_independent.py": "cea228fc0fd9010babb872da74c8bd281ee3c05a42e001e82ebebdb706ff4b0c"
+  },
+  "upstream_hx_integration": "NOT_RUN_LOCALLY"
+}
