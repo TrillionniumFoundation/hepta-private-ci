@@ -90,7 +90,7 @@ class HXTests(unittest.TestCase):
                 e=lambda t:equity_closed(p,b*math.exp(t),b)
                 y=e(x)
                 deriv=(e(x-2*dx)-8*e(x-dx)+8*e(x+dx)-e(x+2*dx))/(12*dx)
-                second=(-e(x-2*dx)+16*e(x-dx)-30*y+16*e(x+dx)-e(x-2*dx)*0-e(x+2*dx))/(12*dx*dx)
+                second=(-e(x-2*dx)+16*e(x-dx)-30*y+16*e(x+dx)-e(x+2*dx))/(12*dx*dx)
                 f=p.payout*b*math.exp(x)-(1-p.tax_shield)*p.coupon+bond_value(p,b*math.exp(x),p.maturity,b)-p.per_bond_principal
                 error=p.rate*y-(p.rate-p.payout-.5*p.volatility**2)*deriv-.5*p.volatility**2*second-f
                 self.assertLess(abs(error),2e-5*(1+abs(y)),(p,x,error))
