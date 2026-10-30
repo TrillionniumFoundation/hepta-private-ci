@@ -103,6 +103,29 @@ class ReflectionCancellationTests(unittest.TestCase):
         self.assertAlmostEqual(result.probability,.8025873486341526,delta=3e-15)
         self.assertAlmostEqual(result.discounted,.7379602182304501,delta=3e-15)
 
+    def test_roundoff_inverted_discount_order_must_refuse(self):
+        # Frozen 120-dps reference, treating supplied floats as exact:
+        # true F=0.9899303452367243973437457368407...
+        # true G=0.9899303452367243942245675062753...
+        # so F-G is positive (~3.11918e-18) yet BELOW binary64 ulp.
+        # The unguarded analytic summation returned F=0.9899303452367243,
+        # G=0.9899303452367244: physically impossible ordering and a
+        # misleading zero error estimate. Reject, never clamp or promote.
+        kwargs = dict(x=0.003757656910372328, drift=0.,
+                      sigma=1.4347739823598538,
+                      discount=7.308163668621485e-15,
+                      horizon=0.043062096140339595)
+        historical = reflected_passage(**kwargs)
+        self.assertGreater(historical.discounted, historical.probability)
+        self.assertEqual(historical.absolute_error_bound, 0.)
+        with self.assertRaisesRegex(ArithmeticError, 'ordering unresolved'):
+            reflected_passage(**kwargs, require_consistent_ordering=True)
+        # Ordinary non-degenerate case must retain the same API/values.
+        resolved = reflected_passage(
+            .1, drift=-.03, sigma=.25, discount=.05, horizon=2.,
+            require_consistent_ordering=True)
+        self.assertTrue(0 <= resolved.discounted < resolved.probability <= 1)
+
     def test_unresolved_reflection_intermediates_fail_closed(self):
         base=dict(x=1.,drift=-1.,sigma=1.,discount=1.,horizon=1.)
         changes=(

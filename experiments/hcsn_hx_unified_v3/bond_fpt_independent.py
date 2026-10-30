@@ -144,11 +144,16 @@ def independent_bond(*, x: float, drift: float, sigma: float, discount: float,
 
 
 def reflected_passage(x: float, *, drift: float, sigma: float,
-                       discount: float, horizon: float) -> Passage:
+                       discount: float, horizon: float,
+                       require_consistent_ordering: bool = False) -> Passage:
     """Independent normal-CDF route for differential validation of quadrature.
 
     The production integration target is HX.default_probability and
     HX.discounted_default_factor, not this duplicated analytic baseline.
+    `require_consistent_ordering` makes the reference explicitly reject
+    floating-point probability-order inversions instead of allowing them
+    through a quantitative gate. It does NOT provide a certified error bound.
+    The default preserves the historical research reference for comparisons.
     """
     _check(x,drift,sigma,discount,horizon)
     s2=sigma*sigma
@@ -219,6 +224,14 @@ def reflected_passage(x: float, *, drift: float, sigma: float,
         return 0. if y < -745 else math.exp(y)
     f=tail(0,(-x-drift_horizon)/u)+tail(reflection_exponent,(-x+drift_horizon)/u)
     g=tail(exponent_first,(-x-z_horizon)/u)+tail(exponent_second,(-x+z_horizon)/u)
+    # An analytic reflection expression still suffers finite-precision
+    # rounding.  Positive discount mathematically requires 0 <= G <= F <= 1;
+    # a one-ulp inversion is *unresolved*, not a reason to clamp G to F
+    # or label this diagnostic a certified interval enclosure.
+    if require_consistent_ordering and (
+            not all(math.isfinite(v) for v in (f, g))
+            or not (0. <= g <= f <= 1.)):
+        raise ArithmeticError('Reflection f64 probability ordering unresolved')
     return Passage(f,g,0.)
 
 
@@ -236,7 +249,9 @@ def reference_sweep() -> dict:
         for x in xvals:
             for horizon in horizons:
                 n=integrate_passage(x,drift=drift,sigma=sigma,discount=q,horizon=horizon)
-                a=reflected_passage(x,drift=drift,sigma=sigma,discount=q,horizon=horizon)
+                a=reflected_passage(x,drift=drift,sigma=sigma,
+                                    discount=q,horizon=horizon,
+                                    require_consistent_ordering=True)
                 ef=abs(n.probability-a.probability)
                 eg=abs(n.discounted-a.discounted)
                 if ef>maxf or eg>maxg:
