@@ -1,7 +1,6 @@
 use codex_hepta_authbus::AuthBusVerifyingKey;
 use codex_hepta_contracts::pq_auth::PqNativeSigningKey;
 use codex_hepta_contracts::pq_auth::ml_dsa_65_key_id_from_spki;
-use pretty_assertions::assert_eq;
 
 use super::*;
 
