@@ -1,0 +1,513 @@
+{
+  "schema": "chain-892-parent-active-readback-review-v1",
+  "observed_at_utc": "2026-10-30T08:02:02Z",
+  "source": {
+    "commit": "89218d818a1766c5610b64f09d75fc3d2ff6007d",
+    "parent": [
+      "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f"
+    ],
+    "tree": "bbf42409ba719d496a155317dc8b6f23666b97c2",
+    "commit_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/commit/89218d818a1766c5610b64f09d75fc3d2ff6007d",
+    "changed_files": [
+      {
+        "path": ".github/workflows/pon-recent-batch-acceptance.yml",
+        "git_blob": "3f764ee36c3f236cb6add354ec7d944a8b8061fd",
+        "status": "modified",
+        "additions": 6,
+        "deletions": 4
+      },
+      {
+        "path": "docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md",
+        "git_blob": "2c1caa2b6d85cb3696b403dde53b4528d5ca539a",
+        "status": "modified",
+        "additions": 134,
+        "deletions": 0
+      },
+      {
+        "path": "evidence/pn-owner-recovery-20261030/parent-active-readback/README.md",
+        "git_blob": "bcc6379b8e3c908e2c6bae03ad296f234ba9c200",
+        "status": "added",
+        "additions": 110,
+        "deletions": 0
+      },
+      {
+        "path": "evidence/pn-owner-recovery-20261030/parent-active-readback/manifest.json",
+        "git_blob": "690407ea83455cf6385dd8861e9b3944dc0602f3",
+        "status": "added",
+        "additions": 300,
+        "deletions": 0
+      },
+      {
+        "path": "evidence/pn-owner-recovery-20261030/parent-active-readback/parent-active-readback.tar.gz",
+        "git_blob": "26337be5f37127060842a10816d7310f27b42e81",
+        "status": "added",
+        "additions": 0,
+        "deletions": 0
+      },
+      {
+        "path": "trillionnium/crates/trnm-pon-node/examples/support/distributed_source_inventory.rs",
+        "git_blob": "47b14285c098adf06d3c0f1a1b2144b06963e4ee",
+        "status": "modified",
+        "additions": 7,
+        "deletions": 0
+      },
+      {
+        "path": "trillionnium/crates/trnm-pon-node/src/store.rs",
+        "git_blob": "49abda1f828fe6a284e2d1244e13be223081ba0c",
+        "status": "modified",
+        "additions": 64,
+        "deletions": 12
+      },
+      {
+        "path": "trillionnium/crates/trnm-pon-node/src/store/native_authenticated.rs",
+        "git_blob": "916fb7573eaf6141caf5ebf364730e75ccff7f5c",
+        "status": "modified",
+        "additions": 30,
+        "deletions": 9
+      },
+      {
+        "path": "trillionnium/crates/trnm-pon-node/src/store/native_authenticated/post_write_parent_readback_tests.rs",
+        "git_blob": "dbb9b6f071cf82a5c42c9b2a3ed5787ae0fc8b56",
+        "status": "added",
+        "additions": 316,
+        "deletions": 0
+      },
+      {
+        "path": "trillionnium/crates/trnm-pon-node/src/store/native_authenticated/post_write_readback_tests.rs",
+        "git_blob": "48737068edfcc210dfb7f0b4b418d38f03eb60be",
+        "status": "modified",
+        "additions": 5,
+        "deletions": 1
+      }
+    ],
+    "prospective_merge": {
+      "commit": "bfd6b6a6a8d3b32ca130d179f6e8d80655f1c83f",
+      "parents": [
+        "1d11f875493f8125e36b9adceacb342df108e5e5",
+        "89218d818a1766c5610b64f09d75fc3d2ff6007d"
+      ],
+      "tree": "bbf42409ba719d496a155317dc8b6f23666b97c2"
+    }
+  },
+  "archive": {
+    "bytes": 193644,
+    "path": "parent-active-readback.tar.gz",
+    "sha256": "504e50c86bab35b26ceaad8bb50794156bd662523d8607c1d49535cf729ba8d6",
+    "verified_members": 57,
+    "actual_members": 57,
+    "all_member_bytes_and_sha256_match": true,
+    "large_binary_bytes_excluded": "Three native executable gzip files are retained separately in the complete evidence bundle and identified by original and compressed SHA256 in the included receipts."
+  },
+  "component_tests": [
+    {
+      "label": "qualified_baseline_red",
+      "command": "bash /tmp/chain-pn2-parent-readback-20261030/cargo-canonical.sh test --locked --offline --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_authenticated::post_write_parent_readback_tests:: --jobs 1 -- --show-output --test-threads=1",
+      "exit_code": 101,
+      "passed": 1,
+      "failed": 2,
+      "ignored": 0,
+      "filtered_out": 901,
+      "test_seconds": 0.42,
+      "archive_member": "red-canonical-retry.log",
+      "sha256": "2111930543b11689387a1077d97ab6f0fb043b66b135144046fbcb6c4b9f1e0f",
+      "actual_log_result": {
+        "line": 35,
+        "text": "test result: FAILED. 1 passed; 2 failed; 0 ignored; 0 measured; 901 filtered out; finished in 0.42s"
+      }
+    },
+    {
+      "label": "new_regressions_green",
+      "command": "bash /tmp/chain-pn2-parent-readback-20261030/cargo-canonical.sh test --locked --offline --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_authenticated::post_write_parent_readback_tests:: --jobs 1 -- --show-output --test-threads=1",
+      "exit_code": 0,
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "filtered_out": 901,
+      "test_seconds": 0.42,
+      "archive_member": "green.log",
+      "sha256": "8d35f4c553d4b17a2068904ca7d220bc6574bd4c27f096006e6f29ac449c474c",
+      "actual_log_result": {
+        "line": 17,
+        "text": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 901 filtered out; finished in 0.42s"
+      }
+    },
+    {
+      "label": "original_authenticated_functional",
+      "command": "bash /tmp/chain-pn2-parent-readback-20261030/cargo-canonical.sh test --locked --offline --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_authenticated:: --jobs 1 -- --show-output --test-threads=1",
+      "exit_code": 0,
+      "passed": 76,
+      "failed": 0,
+      "ignored": 1,
+      "filtered_out": 827,
+      "test_seconds": 10.0,
+      "archive_member": "native-authenticated-functional.log",
+      "sha256": "90f5cb030408699f63de4031f2d7ad41009b166eaa52ce4119e2ebb729d91ab7",
+      "actual_log_result": {
+        "line": 181,
+        "text": "test result: ok. 76 passed; 0 failed; 1 ignored; 0 measured; 827 filtered out; finished in 10.00s"
+      }
+    },
+    {
+      "label": "original_native_owner_snapshot",
+      "command": "bash /tmp/chain-pn2-parent-readback-20261030/cargo-canonical.sh test --locked --offline --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_authenticated_tests:: --jobs 1 -- --show-output --test-threads=1",
+      "exit_code": 0,
+      "passed": 22,
+      "failed": 0,
+      "ignored": 0,
+      "filtered_out": 882,
+      "test_seconds": 24.43,
+      "archive_member": "native-owner-snapshot-functional.log",
+      "sha256": "ccb752cd29b09177c31fa896afc7118493c22fdf2bb1f53481de6deeeff26355",
+      "actual_log_result": {
+        "line": 61,
+        "text": "test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 882 filtered out; finished in 24.43s"
+      }
+    },
+    {
+      "label": "pq_owner_current_source",
+      "command": "bash /tmp/chain-pn2-parent-readback-20261030/cargo-canonical.sh test --locked --offline --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib pq_authority:: --jobs 1 -- --show-output --test-threads=1",
+      "exit_code": 0,
+      "passed": 14,
+      "failed": 0,
+      "ignored": 0,
+      "filtered_out": 890,
+      "test_seconds": 0.31,
+      "archive_member": "pq-owner-current-source.log",
+      "sha256": "5b8794c2408b766f12236cb16d6ff3c9c4791689b545ca2de7e7d5f05d448742",
+      "actual_log_result": {
+        "line": 38,
+        "text": "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 890 filtered out; finished in 0.31s"
+      }
+    },
+    {
+      "label": "original_release_including_cost",
+      "command": "TRNM_RETAINED_DELTA_COST_PATH=/tmp/chain-pn2-parent-readback-20261030/retained-delta-cost-release.jsonl bash /tmp/chain-pn2-parent-readback-20261030/cargo-canonical.sh test --release --locked --offline --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_authenticated:: --jobs 1 -- --include-ignored --show-output --test-threads=1",
+      "exit_code": 0,
+      "passed": 77,
+      "failed": 0,
+      "ignored": 0,
+      "filtered_out": 827,
+      "test_seconds": 7.23,
+      "archive_member": "native-authenticated-release-including-cost.log",
+      "sha256": "213543df5e3f4d123d23a2d652dbb9ca0c88a3af26ed425a664dc4ec657f62a7",
+      "actual_log_result": {
+        "line": 271,
+        "text": "test result: ok. 77 passed; 0 failed; 0 ignored; 0 measured; 827 filtered out; finished in 7.23s"
+      }
+    }
+  ],
+  "test_roster": {
+    "original": 74,
+    "added": 3,
+    "total": 77,
+    "red_green_roster_byte_identical": true,
+    "new_tests": [
+      "store::native_authenticated::post_write_parent_readback_tests::active_read_mutation_before_or_after_consumption_rolls_back_actual_state",
+      "store::native_authenticated::post_write_parent_readback_tests::actual_parent_and_active_reuse_preserves_signed_state_and_cold_reopen",
+      "store::native_authenticated::post_write_parent_readback_tests::unrelated_fifth_root_never_acquires_a_parent_or_active_receipt"
+    ],
+    "scope": "store::native_authenticated::; not whole workspace"
+  },
+  "final_tested_source_identity": {
+    "base_commit": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+    "four_library_files_plus_generated_inventory": [
+      {
+        "path": "trillionnium/crates/trnm-pon-node/src/store.rs",
+        "bytes": 342355,
+        "sha256": "94031f2dc1fb7a0302806e7ffe4cedb87bb299c65192c1cc8f39fae33f907c09",
+        "lines": 8370,
+        "git_blob": "49abda1f828fe6a284e2d1244e13be223081ba0c",
+        "tested_native_library_source_unchanged_since_GREEN": true
+      },
+      {
+        "path": "trillionnium/crates/trnm-pon-node/src/store/native_authenticated.rs",
+        "bytes": 101809,
+        "sha256": "526f8290caa749735ff66b2994e73726c3fbec8a0467d98730cf1844b191033a",
+        "lines": 2651,
+        "git_blob": "916fb7573eaf6141caf5ebf364730e75ccff7f5c",
+        "tested_native_library_source_unchanged_since_GREEN": true
+      },
+      {
+        "path": "trillionnium/crates/trnm-pon-node/src/store/native_authenticated/post_write_readback_tests.rs",
+        "bytes": 23786,
+        "sha256": "2aec1e36c1a73f956bffd83e55af30503236f3ed4fc61bb966da00a6a0c74b6b",
+        "lines": 727,
+        "git_blob": "48737068edfcc210dfb7f0b4b418d38f03eb60be",
+        "tested_native_library_source_unchanged_since_GREEN": true
+      },
+      {
+        "path": "trillionnium/crates/trnm-pon-node/src/store/native_authenticated/post_write_parent_readback_tests.rs",
+        "bytes": 10312,
+        "sha256": "0b6079b40ad1536331a9d11f602509d14cb8cdace1179d00c5d09898b74877eb",
+        "lines": 316,
+        "git_blob": "dbb9b6f071cf82a5c42c9b2a3ed5787ae0fc8b56",
+        "tested_native_library_source_unchanged_since_GREEN": true
+      },
+      {
+        "path": "trillionnium/crates/trnm-pon-node/examples/support/distributed_source_inventory.rs",
+        "bytes": 342061,
+        "lines": 8585,
+        "sha256": "2208d856384e478ad5fdb38db78d27e4750962c2f43836929cb43923e89624b6",
+        "git_blob": "47b14285c098adf06d3c0f1a1b2144b06963e4ee",
+        "scope": "Official generated example inventory; exactly one added source entry, refreshed after lib tests and before all-targets Clippy."
+      }
+    ],
+    "all_manifest_git_blobs_match_published_commit": true,
+    "limits": "Original candidate/ archive files describe an earlier pre-format stage; final ownership manifest and final-five-path.patch are the final reviewed source record. The example-only generated inventory was refreshed after lib tests, before final Clippy. Native binaries were not downloaded or reexecuted here."
+  },
+  "test_count_gate": {
+    "workflow": ".github/workflows/pon-recent-batch-acceptance.yml",
+    "previous_exact_count": 74,
+    "new_exact_count": 77,
+    "pattern": "^test result: ok\\. 77 passed; 0 failed; 0 ignored;",
+    "new_source_path_in_trigger_and_literal_pin": true,
+    "generic_relaxation": false
+  },
+  "scope_review": {
+    "basis": "Published immutable diff and retained tests; independent complete code review assigned to quantum_security. No fresh execution by this reviewer.",
+    "same_original_connection_transaction_schema_and_write_epoch_required": true,
+    "named_roles": [
+      "child",
+      "genesis",
+      "fully verified child parent",
+      "existing Node active tip"
+    ],
+    "nomination_mints_graph_receipt": false,
+    "fifth_unrelated_root_retained": false,
+    "original_complete_state_record_parent_delta_checks_retained": true,
+    "active_final_callback_then_tip_generation_slot_compare_then_validate_consumed_before_publish": true,
+    "existing_final_admission_consumed_check_before_effect_marker_retained": true,
+    "shared_and_no_receipt_paths_keep_original_behavior": true,
+    "transaction_scope_owner_implementation_modified": false,
+    "schema_consensus_budgets_deadlines_or_resource_profiles_modified": false,
+    "limited_static_blocker_found": false,
+    "no_system_qualification_inferred": true
+  },
+  "original_other_checks": [
+    {
+      "label": "strict_package_clippy",
+      "command": "bash /tmp/chain-pn2-parent-readback-20261030/cargo-canonical.sh clippy --locked --offline --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --all-targets --all-features --jobs 1 -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": "/tmp/chain-pn2-parent-readback-20261030/clippy-all-targets-all-features.log",
+        "bytes": 323,
+        "sha256": "67e1c6232ce060bce3d49c1cda8dee56f40e6d4853b7c21626a2463ad7b710b2"
+      }
+    },
+    {
+      "label": "five_owned_rustfmt",
+      "command": "/tmp/pn-installed-toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustfmt --edition 2021 --check --config skip_children=true trillionnium/crates/trnm-pon-node/src/store.rs trillionnium/crates/trnm-pon-node/src/store/native_authenticated.rs trillionnium/crates/trnm-pon-node/src/store/native_authenticated/post_write_readback_tests.rs trillionnium/crates/trnm-pon-node/src/store/native_authenticated/post_write_parent_readback_tests.rs trillionnium/crates/trnm-pon-node/examples/support/distributed_source_inventory.rs",
+      "exit_code": 0,
+      "log": {
+        "path": "/tmp/chain-pn2-parent-readback-20261030/rustfmt-five-owned-check.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "five_owned_diff",
+      "command": "git diff --check a38d770966c65ad34c9d5e55f3c2917c2e3bda0f -- trillionnium/crates/trnm-pon-node/src/store.rs trillionnium/crates/trnm-pon-node/src/store/native_authenticated.rs trillionnium/crates/trnm-pon-node/src/store/native_authenticated/post_write_readback_tests.rs trillionnium/crates/trnm-pon-node/src/store/native_authenticated/post_write_parent_readback_tests.rs trillionnium/crates/trnm-pon-node/examples/support/distributed_source_inventory.rs",
+      "exit_code": 0,
+      "log": {
+        "path": "/tmp/chain-pn2-parent-readback-20261030/diff-five-owned-check.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "final_patch_readback",
+      "command": "git apply --reverse --check /tmp/chain-pn2-parent-readback-20261030/final-five-path.patch",
+      "exit_code": 0,
+      "log": {
+        "path": "/tmp/chain-pn2-parent-readback-20261030/final-patch-readback-check.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "generated_inventory_check",
+      "command": "python3 scripts/refresh_distributed_source_inventory.py --check",
+      "exit_code": 0,
+      "log": {
+        "path": "/tmp/chain-pn2-parent-readback-20261030/inventory-check.log",
+        "bytes": 35,
+        "sha256": "8bd8670851048e151182dd0f0bc26834d54e151f39ca53f06c98e06c4479c51a"
+      }
+    },
+    {
+      "label": "implementation_registry_check_only",
+      "command": "python3 scripts/ci/report_current_implementation.py --check",
+      "exit_code": 0,
+      "log": {
+        "path": "/tmp/chain-pn2-parent-readback-20261030/current-implementation-check.log",
+        "bytes": 71,
+        "sha256": "431e373353829a7aa76abab6c3a606519c90290e2dc0909202c9a9f4cab92be3"
+      }
+    }
+  ],
+  "native_sqlite_boundary": {
+    "unchanged_guard": "sqlite-3.51.3-normal-native-linux-layout-v3",
+    "debug_build_output": {
+      "path": "/tmp/chain-pn2-parent-readback-20261030/canonical-build-script-output.log",
+      "bytes": 4896,
+      "sha256": "cea75ffca74e74539319bdbb995b3e5df6c57eac069bad0629daaaf0e1848172"
+    },
+    "release_build_output": {
+      "path": "/tmp/chain-pn2-parent-readback-20261030/release-canonical-build-script-output.log",
+      "bytes": 4898,
+      "sha256": "eddedddf39a3c8f1e2662851078c5e2d78d65ad018f152e7165aebea2d65f3cc"
+    },
+    "qualification_scope": "Canonical native compiler/loader/target and SQLite layout witness; not full physical I/O/service/WAN qualification."
+  },
+  "cost_control": {
+    "raw_jsonl_rows": 34,
+    "observations": 32,
+    "pairs": 16,
+    "actual_release_test_ran": true,
+    "measurement_scope": "Original unchanged in-memory delta-stream equivalence/cost observation. No parent/active optimization speed threshold, throughput measurement or fixed-host claim."
+  },
+  "preserved_nonfinal_observations": [
+    {
+      "log": {
+        "path": "/tmp/chain-pn2-parent-readback-20261030/red.log",
+        "bytes": 12657,
+        "sha256": "953d62c76a42c40e63df1530ade96a9b589dab120b05eddac17592eff3327336"
+      },
+      "classification": "Initial exploratory UNQUALIFIED invocation. Included graph5-versus4 failure and an incorrect cold-reopen fixture expectation later corrected. Not the accepted qualified RED."
+    },
+    {
+      "log": {
+        "path": "/tmp/chain-pn2-parent-readback-20261030/red-canonical.log",
+        "bytes": 2729,
+        "sha256": "74e2dcdd9f6fc630911cc634628a4177765dd6953529f0d492f311013b836670"
+      },
+      "classification": "Canonical guard qualified, but rustc received SIGKILL before tests. Infrastructure/build failure, not a regression result."
+    },
+    {
+      "log": {
+        "path": "/tmp/chain-pn2-parent-readback-20261030/red-canonical-retry.log",
+        "bytes": 7032,
+        "sha256": "2111930543b11689387a1077d97ab6f0fb043b66b135144046fbcb6c4b9f1e0f"
+      },
+      "classification": "Identical canonical native retry after resource repair reached actual RED: fifth graph and stale active read after controlled callback write; not claimed as a public-chain exploit."
+    }
+  ],
+  "qualification": {
+    "manifest_qualified": false,
+    "production_activation": false,
+    "whole_pn2": false,
+    "throughput": false,
+    "current_ci_terminal_results": "pending"
+  },
+  "current_ci": [
+    {
+      "label": "raw_history",
+      "run_id": 41022997034,
+      "head_sha": "89218d818a1766c5610b64f09d75fc3d2ff6007d",
+      "attempt": 1,
+      "observed_at_utc": "2026-10-30T08:02:02Z",
+      "jobs": [
+        {
+          "id": 123954458839,
+          "name": "pure raw History (strict-every-native-checkpoint-v1, x64, head, release)",
+          "status": "in_progress",
+          "conclusion": null,
+          "active_or_failed_steps": [
+            {
+              "number": 13,
+              "name": "Run three original campaigns under verified actual limits",
+              "status": "in_progress",
+              "conclusion": null
+            }
+          ]
+        },
+        {
+          "id": 123954459308,
+          "name": "pure raw History (history-account-graph-resource-fence-v1, x64, head, release)",
+          "status": "in_progress",
+          "conclusion": null,
+          "active_or_failed_steps": [
+            {
+              "number": 13,
+              "name": "Run three original campaigns under verified actual limits",
+              "status": "in_progress",
+              "conclusion": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "recent_batch",
+      "run_id": 41022997071,
+      "head_sha": "89218d818a1766c5610b64f09d75fc3d2ff6007d",
+      "attempt": 1,
+      "observed_at_utc": "2026-10-30T08:02:02Z",
+      "jobs": [
+        {
+          "id": 123954458415,
+          "name": "recent batch (ubuntu-24.04-arm, head)",
+          "status": "in_progress",
+          "conclusion": null,
+          "active_or_failed_steps": [
+            {
+              "number": 14,
+              "name": "Require V6 prepaid effects, actual unknown-window crash recovery and validation facts",
+              "status": "in_progress",
+              "conclusion": null
+            }
+          ]
+        },
+        {
+          "id": 123954458631,
+          "name": "recent batch (ubuntu-24.04, prospective-merge)",
+          "status": "in_progress",
+          "conclusion": null,
+          "active_or_failed_steps": [
+            {
+              "number": 14,
+              "name": "Require V6 prepaid effects, actual unknown-window crash recovery and validation facts",
+              "status": "in_progress",
+              "conclusion": null
+            }
+          ]
+        },
+        {
+          "id": 123954458691,
+          "name": "recent batch (ubuntu-24.04-arm, prospective-merge)",
+          "status": "in_progress",
+          "conclusion": null,
+          "active_or_failed_steps": [
+            {
+              "number": 14,
+              "name": "Require V6 prepaid effects, actual unknown-window crash recovery and validation facts",
+              "status": "in_progress",
+              "conclusion": null
+            }
+          ]
+        },
+        {
+          "id": 123954458763,
+          "name": "recent batch (ubuntu-24.04, head)",
+          "status": "in_progress",
+          "conclusion": null,
+          "active_or_failed_steps": [
+            {
+              "number": 14,
+              "name": "Require V6 prepaid effects, actual unknown-window crash recovery and validation facts",
+              "status": "in_progress",
+              "conclusion": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "historical_a38_results_reused_as_892_execution": false,
+  "activities": {
+    "project_source_executed": false,
+    "builds_or_tests_executed": false,
+    "repositories_or_remotes_modified": false,
+    "large_artifacts_downloaded": false
+  }
+}

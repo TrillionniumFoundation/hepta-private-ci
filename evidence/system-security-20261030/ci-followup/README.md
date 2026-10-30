@@ -13,7 +13,7 @@ and configuration identities, not assertions about a later remote HEAD or a
 final cross-repository pair. Original source identities inside receipts are
 never replaced with a newer commit.
 
-The follow-up configuration points to Chain source
+The earlier prepared follow-up configuration pointed to Chain source
 `a38d770966c65ad34c9d5e55f3c2917c2e3bda0f` and merge
 `52a3c9d614281897dd5a6adeb3576a8acfb1ee82`. This configuration is recorded
 separately from the older artifact executions. No retained 24b/db139 or f874
@@ -157,3 +157,15 @@ CI observations read after the source fix was frozen. Both raw profiles have
 actual full-state failures; the older 24b depletion-only classification is not
 retargeted. Its separate byte index and original artifacts retain the precise
 source and execution scopes.
+
+## Selected pair after concurrent parent/active optimization
+
+The subsequent pairing commit selects Chain `89218d818a1766c5610b64f09d75fc3d2ff6007d`
+and its actual ordered merge `bfd6b6a6a8d3b32ca130d179f6e8d80655f1c83f`, with base
+`1d11f875493f8125e36b9adceacb342df108e5e5`. The existing full native SQL selection
+now requires at least 77 tests, including all three new parent/active controls.
+The original deadlines, budgets, commands and other profile selections remain
+unchanged. `selected-pair-892/` retains the source identity, final formatter
+record and independent static review. Previous a38 and 24b runtime observations
+do not qualify this new pair. The immutable selected tuple remains explicit
+even if another branch moves after publication.

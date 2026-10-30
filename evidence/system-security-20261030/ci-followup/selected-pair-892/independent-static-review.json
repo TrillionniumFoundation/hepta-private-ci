@@ -1,0 +1,103 @@
+{
+  "schema": "independent-static-parent-active-readback-review-v1",
+  "source": "89218d818a1766c5610b64f09d75fc3d2ff6007d",
+  "parent": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+  "source_tree": "bbf42409ba719d496a155317dc8b6f23666b97c2",
+  "merge": "bfd6b6a6a8d3b32ca130d179f6e8d80655f1c83f",
+  "merge_tree": "bbf42409ba719d496a155317dc8b6f23666b97c2",
+  "merge_ordered_parents": [
+    "1d11f875493f8125e36b9adceacb342df108e5e5",
+    "89218d818a1766c5610b64f09d75fc3d2ff6007d"
+  ],
+  "method": "Read immutable GitHub commit/source/evidence only. No worktree read/edit, no Rust/Bazel, no CI rerun or remote mutation. Only this scratch review is written.",
+  "authority_granted": false,
+  "static_release_blockers_found": [],
+  "source_files": [
+    {
+      "path": "trillionnium/crates/trnm-pon-node/src/store.rs",
+      "git_blob": "49abda1f828fe6a284e2d1244e13be223081ba0c",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/89218d818a1766c5610b64f09d75fc3d2ff6007d/trillionnium/crates/trnm-pon-node/src/store.rs"
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/src/store/native_authenticated.rs",
+      "git_blob": "916fb7573eaf6141caf5ebf364730e75ccff7f5c",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/89218d818a1766c5610b64f09d75fc3d2ff6007d/trillionnium/crates/trnm-pon-node/src/store/native_authenticated.rs"
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/src/store/native_authenticated/post_write_parent_readback_tests.rs",
+      "git_blob": "dbb9b6f071cf82a5c42c9b2a3ed5787ae0fc8b56",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/89218d818a1766c5610b64f09d75fc3d2ff6007d/trillionnium/crates/trnm-pon-node/src/store/native_authenticated/post_write_parent_readback_tests.rs"
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/src/store/native_authenticated/post_write_readback_tests.rs",
+      "git_blob": "48737068edfcc210dfb7f0b4b418d38f03eb60be",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/89218d818a1766c5610b64f09d75fc3d2ff6007d/trillionnium/crates/trnm-pon-node/src/store/native_authenticated/post_write_readback_tests.rs"
+    },
+    {
+      "path": ".github/workflows/pon-recent-batch-acceptance.yml",
+      "git_blob": "3f764ee36c3f236cb6add354ec7d944a8b8061fd",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/89218d818a1766c5610b64f09d75fc3d2ff6007d/.github/workflows/pon-recent-batch-acceptance.yml"
+    }
+  ],
+  "checks": [
+    {
+      "subject": "Original read_active wrapper guards",
+      "result": "No lost reachable shared-layout guard found.",
+      "evidence": "store.rs:3070-3091 branches into shared_snapshot only when storage_layout.is_shared(); nonshared already delegates directly to current-snapshot. New Some(scope) branch at 3484-3491 is reached from state_at_with_post_write_readback, whose 3456-3460 gate still requires AuthenticatedV1 and !shared. Other state_at entry paths supply None. Admission creates original_readback_owner only for that same backend/layout at 4705-4711."
+    },
+    {
+      "subject": "Fresh State and native records",
+      "result": "Still required on every hit.",
+      "evidence": "native_authenticated.rs:890-906 retains boundary callback, current scope, load_observed, verify_record and complete(settings,current full State) equality before matches. Only verify_account_graph at 911-913 can be omitted for an already verified exact Record within the same write scope. Native history still walks records/parent heights/deltas and verifies genesis at 1006-1033. No cached State is returned."
+    },
+    {
+      "subject": "Bounded four roles",
+      "result": "Four fixed optional slots; no fifth graph retention.",
+      "evidence": "native_authenticated.rs:138-139 fixed arrays; child/genesis initialized at 198-199. Parent nominated only from the successfully verified child's Record in remember at 260-268. Active nominated by existing Node active read and never replaced at 235-239. remember updates all matching duplicate slots, so child/genesis/parent/active aliases do not create a first-match empty-slot bypass; exact Record still matches."
+    },
+    {
+      "subject": "Callback after consumption",
+      "result": "Final reader callback cannot publish consumed stale State.",
+      "evidence": "store.rs:3148-3159 retains final checkpoint and tip/generation/slot check, then validates consumed scope before publish_commitment. state_at wrapper repeats validation at 3464. check_active_before_commit validates at 2601 after history and generation checks. Admission validates after final BeforeCommit/resource callbacks at 4856-4865 and drops receipt before effect marker write."
+    },
+    {
+      "subject": "Original write-scope and rollback",
+      "result": "Same original connection/transaction remains required; ordinary failed admissions unwind before commit.",
+      "evidence": "Admission captures original owner immediately after BEGIN IMMEDIATE at 4698-4711; same_write_snapshot is checked on successful and failed transaction results at 4871-4885, before tx.commit. Receipt current() retains write-epoch/schema invalidation and sticky refusal after consumption at native_authenticated.rs:207-225. The change does not extend reuse across SharedAccounts writes or the marker.",
+      "limit": "As already documented in source, observing callback COMMIT/BEGIN replacement is not a COMMIT veto and cannot undo facts that a malicious callback already committed. No stronger rollback claim is made."
+    },
+    {
+      "subject": "Error order and guards",
+      "result": "Existing normal read/verification order and None path preserved; new scope errors remain fail-closed.",
+      "evidence": "check_persisted_state remains a None wrapper; original continuity/PQ/root checks precede native verification. Parent nomination adds no earlier parent SQL lookup. Actual remaining graph traversals retain original native progress path; boundary callbacks remain on hits.",
+      "limit": "A newly invalidated scope may be rejected earlier by nominate_active/current. This review does not claim identical first error for every combination of corruption and scope replacement."
+    },
+    {
+      "subject": "Three new controls and suite floor",
+      "result": "74 to 77 matches exactly three unconditional new #[test] functions under existing cfg(test) module.",
+      "tests": [
+        "actual_parent_and_active_reuse_preserves_signed_state_and_cold_reopen",
+        "active_read_mutation_before_or_after_consumption_rolls_back_actual_state",
+        "unrelated_fifth_root_never_acquires_a_parent_or_active_receipt"
+      ],
+      "evidence": "new test file:130,212,288; module declared native_authenticated.rs:27. Workflow 217-226 retains --release, --include-ignored and exact 77 passed/0 failed/0 ignored. New parent test file and both changed production blobs have matching literal pins. Existing post_write_readback_tests change adjusts the former two-slot assertion without removing a test."
+    }
+  ],
+  "test_review": {
+    "positive": "Uses distinct actual active, parent, child plus genesis; requires four first graph traversals, then four receipt hits, retaining original callbacks/full states and cold reopening.",
+    "negative": "Mutation test observes a real KV INSERT before or at final callback after consumption; the latter requires NATIVE_POST_WRITE_CHANGED and a hit. Explicit rollback restores original live State, and subsequent legitimate activation/cold reopen checks preserved data. Fifth unrelated root must traverse twice and produce zero hits.",
+    "limit": "The new fixture tests call the same private owner helpers inside explicit real SQLite transactions; they are not a new independent-host campaign or a measurement of public throughput."
+  },
+  "verification_scope": {
+    "local_native_executed": false,
+    "hosted892_result_claimed": false,
+    "old_a38_results_rebound": false,
+    "evidence_readme_reports": {
+      "new_red": "1 pass / 2 fail",
+      "new_green": "3 pass",
+      "debug_module": "76 pass / 1 ignored",
+      "release_module": "77 pass / 0 ignored"
+    },
+    "evidence_claim_limit": "README declarations were read. This review does not replace archive/log validation performed separately or the exact-source hosted gates."
+  }
+}
