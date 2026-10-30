@@ -2502,7 +2502,7 @@ fn create_seatbelt_args_for_cwd_as_git_repo() {
 // missing, duplicated or extra exclusions are still rejected.
 fn assert_root_exclusions(args: &[String], root: usize, expected: &[PathBuf]) {
     let prefix = format!("-DWRITABLE_ROOT_{root}_EXCLUDED_");
-    let total = args.iter().filter(|arg| arg.starts_with(&prefix)).count();
+    let total = args.iter().filter(|arg| arg.starts_with(prefix.as_str())).count();
     assert_eq!(total, expected.len(), "wrong exclusion count in {args:#?}");
 
     let mut actual_paths = (0..expected.len())
@@ -2510,7 +2510,7 @@ fn assert_root_exclusions(args: &[String], root: usize, expected: &[PathBuf]) {
             let key = format!("{prefix}{index}=");
             let matches = args
                 .iter()
-                .filter_map(|arg| arg.strip_prefix(&key))
+                .filter_map(|arg| arg.strip_prefix(key.as_str()))
                 .collect::<Vec<_>>();
             assert_eq!(matches.len(), 1, "missing or duplicated {key} in {args:#?}");
             matches[0].to_owned()
