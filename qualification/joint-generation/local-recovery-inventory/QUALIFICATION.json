@@ -1,0 +1,33 @@
+{
+  "actual_complete_child_wait": true,
+  "actual_complete_test_child_cpu_seconds": "0.161116999999999998",
+  "actual_max_rss_kib": 19848,
+  "actual_wall_ns": 162813162,
+  "fake_fixture_costs_are_not_measurements": true,
+  "historical_benchmark_lock_available": false,
+  "independent_saved_review": "PASS, source/manifest/bound identity/exact wait/log joins",
+  "limits": {
+    "address_space_bytes": 134217728,
+    "cpu_seconds": 3,
+    "wall_seconds": 20
+  },
+  "local_qualification_sha256": "4f8087715f43ae34a9b2e263da7301431887cfa5162bec04c3164c9bd5a033a5",
+  "local_raw_wait_sha256": "72b3c276005ca9b8e980deb50a1f1050199e98d4e7a7898e058642b6f6756923",
+  "observer_and_authoring_tail": "additional unmeasured/unknown, not zero",
+  "qualification_lock": "independent synthetic-only lock; not scientific admission",
+  "raw_local_process_identity_and_private_receipts_published": false,
+  "schema": "PORTABLE-RECOVERY-INVENTORY-QUALIFICATION-v1",
+  "scientific_execution": false,
+  "source_files": {
+    "qualification/joint-generation/local-accounting-batch/support.py": "38f886ba9ef875e3b249750202ba893b86b1aa9a70ce38cd4397437ecdce94d0",
+    "qualification/joint-generation/local-recovery-inventory/README.md": "0a1e0234a237d16a09077583367d1442284123ec4941448dcddf7f13030fd1be",
+    "qualification/joint-generation/local-recovery-inventory/inventory.py": "b3d19c7907df2e19157dff1a140b10e29e4ad4b4ed00fc3f825582a179a5fcd6",
+    "qualification/joint-generation/local-recovery-inventory/qualify.py": "238ddbc353ae3d70f43552d80d60e1bcf2ee1fd0c050a6806587c20359024c2f",
+    "qualification/joint-generation/local-recovery-inventory/test_inventory.py": "453e6c10cac302e451380827b116018eaec8a776e471f11076cc91f8b19f8b14"
+  },
+  "status": "PASS",
+  "stderr_sha256": "e91919d11455cedf88ff9eb2dd4f27d4cc9914482aff853135adaae26b9a3fc2",
+  "stdout_sha256": "d2af73233caacb6ed7518dcde14a5bb8d514ba1a98744b98e8a9ac2e62acf5a6",
+  "test_cases": 19,
+  "test_scope": "handmade metadata only; one actual test interpreter, no fixture subprocesses"
+}

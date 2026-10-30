@@ -1,0 +1,27 @@
+{
+  "base_repository_commit": "9ee8f693dbfe5c5707647164ad43110422ea79f0",
+  "base_tree_sha": "a6640924bea0222dd0112e5e5533bbf9558d6cc7",
+  "format_check": {
+    "exact_repository_recipe": "python3 -I -B scripts/format.py",
+    "just": "not installed; no toolchain installed or permission changed",
+    "result": "exit0; no owning formatter for qualification Python; reviewed bytes unchanged"
+  },
+  "new_scientific_run": false,
+  "private_models_data_checkpoints_or_experiment_receipts_published": false,
+  "publication_files": {
+    "QUALIFICATION.json": "c3da22dd5ef693737a52132b39bfb8071841b717f279e8426ee75f6840afcaf8",
+    "README.md": "0a1e0234a237d16a09077583367d1442284123ec4941448dcddf7f13030fd1be",
+    "inventory.py": "b3d19c7907df2e19157dff1a140b10e29e4ad4b4ed00fc3f825582a179a5fcd6",
+    "qualify.py": "238ddbc353ae3d70f43552d80d60e1bcf2ee1fd0c050a6806587c20359024c2f",
+    "test_inventory.py": "453e6c10cac302e451380827b116018eaec8a776e471f11076cc91f8b19f8b14"
+  },
+  "schema": "RECOVERY-INVENTORY-SOURCE-PUBLICATION-v1",
+  "scope": "read-only local receipt consistency; not authenticated execution, payload recovery, complete parent cost or replay authority",
+  "source_review_map_sha256": "37ff0fe71910aa5f95cdb13c75a30db999ff43c466f0af1f3152d4335c635b2a",
+  "target_branch": "research/dot-recovery-inventory-20261030",
+  "unchanged_accounting_formula_and_original_cost_history": true,
+  "unchanged_dependency": {
+    "path": "qualification/joint-generation/local-accounting-batch/support.py",
+    "sha256": "38f886ba9ef875e3b249750202ba893b86b1aa9a70ce38cd4397437ecdce94d0"
+  }
+}
