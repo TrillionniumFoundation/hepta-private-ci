@@ -1,0 +1,77 @@
+{
+  "schema": "hepta.joint-generation.controller-v2.protocol.v1",
+  "purpose": "development_only; no confirmation or natural qualification",
+  "ancestor_head": "00b85f9646aa39f86592c20f14f01397b55ff759",
+  "seeds": [
+    17,
+    29
+  ],
+  "widths": [
+    32,
+    64
+  ],
+  "depth": 1,
+  "train_namespace": "controller-v2-train",
+  "development_namespace": "controller-v2-development",
+  "distillation_namespace": "controller-v2-distillation",
+  "train_sources": 256,
+  "development_sources": 32,
+  "evaluation_draws_per_source": 2,
+  "pretraining_updates": 384,
+  "pretraining_batch": 32,
+  "pretraining_lr": 0.001,
+  "pretraining_prefixes": "supervise initial state and every prefix within each independent uniform 1..6 sampled legal continuation schedule; not exhaustive schedule enumeration",
+  "joint_updates": 64,
+  "joint_batch": 8,
+  "supervised_weight_during_joint": 0.05,
+  "generator_lr": 1e-05,
+  "actor_lr": 0.001,
+  "critic_lr": 0.003,
+  "clip_each_parameter_group": 5.0,
+  "baseline_log_bound": 12.0,
+  "baseline": "pre-draw conditional log-moment control variate plus independent-other-episode initial residual LOO",
+  "mean_baseline": "gamma2 critic CE is an arbitrary detached control variate, not a conditional mean estimate",
+  "baseline_only_clipping": "clips pre-draw baseline log value only; no target moment or return clipping",
+  "risk_training_objective": "unnormalised E[expm1(-2R)/2], same as v1",
+  "physical_timing_direct_parameter_derivative_modelled": false,
+  "arms": [
+    "ordinary_fixed_mean",
+    "ordinary_dynamic_mean",
+    "hepta_fixed_mean",
+    "hepta_dynamic_mean",
+    "hepta_dynamic_risk",
+    "hepta_dynamic_risk_actor_only",
+    "ordinary_dynamic_risk",
+    "hepta_fixed_risk"
+  ],
+  "paired_comparisons": [
+    [
+      "hepta_dynamic_risk",
+      "hepta_dynamic_mean",
+      "NDU risk preference"
+    ],
+    [
+      "hepta_dynamic_risk",
+      "hepta_fixed_risk",
+      "dynamic allocation at matched risk objective"
+    ],
+    [
+      "hepta_dynamic_risk",
+      "ordinary_dynamic_risk",
+      "Hepta operator at matched risk objective"
+    ],
+    [
+      "hepta_dynamic_risk",
+      "hepta_dynamic_risk_actor_only",
+      "joint generator training"
+    ]
+  ],
+  "bootstrap_replicates": 1000,
+  "distillation_rounds": 3,
+  "distillation_sources_per_round": 12,
+  "distillation_updates_per_round": 64,
+  "distillation_lr": 0.002,
+  "distillation_teacher": "frozen one-step critic planner queried at student-visited states",
+  "distillation_generation_frozen": true,
+  "qualification": "always false at development stage; independent preregistered confirmation required"
+}

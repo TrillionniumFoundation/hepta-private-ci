@@ -6,7 +6,7 @@ Closing the audit JSON is separately reported; it cannot charge its own write
 recursively. Training/setup and cold model loading are reported by the runner.
 """
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 import hashlib
 import json
 import math
@@ -68,6 +68,20 @@ def make_profile(dataset="mechanism", *, audio_rate=2048, frame_ms=120):
 
 
 @dataclass
+class ScoreTerm:
+    """One sampled conditional score and information available before its draw.
+
+    The log-moment prediction uses the current, not-yet-updated critic. Prefix
+    cost excludes the current draw's execution and all future work. Baselines
+    may use this information with their gradients stopped, never later returns.
+    """
+    kind: str
+    log_probability: torch.Tensor
+    prior_log_moment: torch.Tensor
+    prefix_cost: float
+
+
+@dataclass
 class Episode:
     record: dict
     net_return: float
@@ -76,6 +90,7 @@ class Episode:
     suffix_returns: list
     terminal_state: object
     teacher_examples: list
+    score_terms: list = field(default_factory=list)
 
 
 def _probabilities(log_law):
@@ -121,7 +136,8 @@ def planner_action(model, state, public, remaining, profile):
 def execute(model, public, observe, directory, *, seed, context_id, source_id,
             profile=None, strategy="dynamic", fixed_actions=("shared", "image", "audio", "video", "text", "stop"),
             prefix=(), feedback_override=None, deterministic_emission=False,
-            native_factory=None, native_reopen_at=None, audio_rate=2048, frame_ms=120):
+            native_factory=None, native_reopen_at=None, audio_rate=2048, frame_ms=120,
+            collect_planner_labels=False):
     """Execute a frozen parameter snapshot; ``observe`` runs only after STOP.
 
     ``observe`` is the external readback observer. It may close over labels; the
@@ -141,12 +157,14 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
     model_sha, input_sha = tensor_digest(model.state_dict()), tensor_digest(public)
     policy_sha = digest({"model": model_sha, "strategy": strategy, "fixed_actions": fixed_actions,
                          "prefix": prefix, "horizon": HORIZON,
+                         "collect_planner_labels": collect_planner_labels,
                          "feedback_intervention": tensor_digest(feedback_override) if feedback_override is not None else None})
     state = model.encode(public)
     native = native_factory(model_sha, profile.digest, directory / "native") if native_factory else None
     generation = {m: 0 for m in MODALITIES}
     budget, costs, events, states, action_log, critics, teacher = INITIAL_BUDGET, [], [], [], [], [], []
     tensor_checkpoints = []
+    score_terms = []
     episode_anchor = {"schema": "hepta.joint-generation.episode-anchor.v1",
                       "parameter_snapshot_sha256": model_sha, "input_sha256": input_sha,
                       "profile_sha256": profile.digest}
@@ -182,6 +200,8 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
         log_law, critic = model.policy(state, budget / INITIAL_BUDGET, HORIZON)
         critics.append(critic[0])
         features = model.features(state, budget / INITIAL_BUDGET).detach()
+        planner_label = (planner_action(model, state, public, budget / INITIAL_BUDGET, profile)
+                         if collect_planner_labels else None)
         forced = index < len(prefix) or strategy == "fixed" or index == HORIZON
         if index == HORIZON:
             selected = ACTIONS.index("stop")
@@ -202,7 +222,9 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
         law = _probabilities(log_law) if stochastic else tuple((a, float(i == selected)) for i, a in enumerate(ACTIONS))
         if stochastic:
             total_log_probability = total_log_probability + log_law[0, selected]
-        teacher.append((features, selected))
+            score_terms.append(ScoreTerm("action", log_law[0, selected], critic[0].detach(),
+                                         sum(c.amount for c in costs)))
+        teacher.append((features, selected if planner_label is None else planner_label))
         before = tensor_digest(state.tensors())
         trace = {"step": index, "profile_sha256": profile.digest, "model_sha256": model_sha,
                  "state_sha256": before, "action": action, "joint_action_probabilities": law}
@@ -264,6 +286,8 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
             sampled, _, emission_score = model.sample(state, emission_rng, deterministic=deterministic_emission)
             if not deterministic_emission:
                 total_log_probability = total_log_probability + emission_score[0]
+                score_terms.append(ScoreTerm("emission", emission_score[0], critics[-1].detach(),
+                                             sum(c.amount for c in costs)))
 
             def deliver():
                 nonlocal artifacts, observed, raw_observed
@@ -316,6 +340,11 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
             "parameter_snapshot_sha256": model_sha, "source_id": source_id, "seed": seed,
             "policy_snapshot_sha256": policy_sha,
             "strategy": strategy, "emission_law": "degenerate_mean_argmax" if deterministic_emission else "stochastic",
+            "planner_labels_collected": collect_planner_labels,
+            "sampled_score_terms": [{"kind": term.kind, "prefix_cost": term.prefix_cost,
+                                     "prior_log_moment": float(term.prior_log_moment),
+                                     "log_probability": float(term.log_probability.detach())}
+                                    for term in score_terms],
             "contract_validated": True, "native_receipt": native.receipt() if native else None,
             "tensor_checkpoint_restores": tensor_checkpoints,
             "native_integration_executed": native is not None,
@@ -327,4 +356,4 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
     audit_wall, audit_cpu = time.perf_counter() - previous_wall, cpu_seconds() - previous_cpu
     data["audit_close_wall_seconds"], data["audit_close_cpu_seconds"] = audit_wall, audit_cpu
     data["net_with_audit_close"] = net - TARIFF["cpu_second"] * audit_cpu - TARIFF["wall_second"] * audit_wall
-    return Episode(data, net, total_log_probability, critics, suffix, state, teacher)
+    return Episode(data, net, total_log_probability, critics, suffix, state, teacher, score_terms)
