@@ -1,0 +1,24 @@
+{
+  "schema": "hepta.paired-process-diagnostic.v1",
+  "parent_head": "738a00959b869a4cdd4730109b4ff60c9340f106",
+  "reason": "Both Linux cases timed out at60s twice on35c9 and738a. Existing first marker occurs after warm-pair completion; no marker does not identify setup versus readiness.",
+  "change": "Only controlled integration-test diagnostics: stage markers around registry, release copy/hash, allowlist and recovery; report fixture-binary byte count; after5s of pending readiness emit one snapshot summary and last2 child-log chunks clipped to1024 bytes each per agent. Existing agent set is bounded to5.",
+  "preserved": [
+    "Both product scenarios and all assertions.",
+    "60-second readiness/restart deadlines, health timeout, nextest timeout, retries and child arguments.",
+    "Production supervisor, health-probe matching, process ownership and signal policies.",
+    "Existing ignored child fixture is still spawned only by exact argument; no new ignore or skip."
+  ],
+  "not_claimed": [
+    "No cause or fix for the Linux timeout is asserted.",
+    "No passing native result or compiler validation.",
+    "Process-local mutex is not inter-process exclusion under nextest."
+  ],
+  "local_validation": {
+    "just_fmt": 127,
+    "just_test": 127,
+    "just_fix": 127,
+    "reason": "just executable not present"
+  },
+  "required_evidence": "New native CI stage output will distinguish large copied test-binary cost, lifecycle readiness mismatch and later restart/adoption stages. Do not extend deadline before evidence."
+}

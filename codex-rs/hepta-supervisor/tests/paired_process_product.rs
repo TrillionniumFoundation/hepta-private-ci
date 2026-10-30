@@ -207,6 +207,8 @@ struct PairFleet {
 
 impl PairFleet {
     fn new(count: usize) -> Result<Self> {
+        let started = Instant::now();
+        eprintln!("paired-stage fixture_start pairs={count}");
         // The child fixtures bind the same compact control sockets as the
         // product.  Keep the synthetic fleet under a short root so Darwin's
         // SUN_LEN limit is exercised against production geometry, not the
@@ -228,10 +230,19 @@ impl PairFleet {
             )?)?;
             agents.push(agent_id);
         }
+        eprintln!(
+            "paired-stage registry_ready pairs={count} elapsed={:?}",
+            started.elapsed()
+        );
         let release_id = ReleaseId::parse("paired-process-fixture-v1")?;
         // Bazel may launch the test through a runfiles symlink on macOS. Select
         // its physical fixture binary before applying the release-source guard.
         let fixture_binary = std::env::current_exe()?.canonicalize()?;
+        eprintln!(
+            "paired-stage release_install_start bytes={} elapsed={:?}",
+            std::fs::metadata(&fixture_binary)?.len(),
+            started.elapsed()
+        );
         let child_args = vec![
             "--exact".to_string(),
             "paired_child_process".to_string(),
@@ -245,10 +256,18 @@ impl PairFleet {
             Some(&fixture_binary),
             child_args,
         )?;
+        eprintln!(
+            "paired-stage release_installed elapsed={:?}",
+            started.elapsed()
+        );
         for agent_id in &agents {
             registry.allow_release(agent_id, &release_id)?;
             write_binding(&registry, agent_id)?;
         }
+        eprintln!(
+            "paired-stage release_allowed elapsed={:?}",
+            started.elapsed()
+        );
         let (supervisor, report) = Supervisor::recover(
             registry.clone(),
             UnixProcessDriver::new(64).map_err(anyhow::Error::msg)?,
@@ -256,6 +275,10 @@ impl PairFleet {
             Instant::now(),
         )?;
         assert!(report.faults.is_empty());
+        eprintln!(
+            "paired-stage initial_recovery_complete elapsed={:?}",
+            started.elapsed()
+        );
         Ok(Self {
             _temp: temp,
             registry,
@@ -299,7 +322,9 @@ impl PairFleet {
     }
 
     fn wait_agents_ready(&mut self, agents: &[AgentId], timeout: Duration) -> Result<()> {
-        let deadline = Instant::now() + timeout;
+        let started = Instant::now();
+        let deadline = started + timeout;
+        let mut pending_reported = false;
         loop {
             let supervisor = self.supervisor.as_mut().context("supervisor")?;
             let report = supervisor.tick(Instant::now());
@@ -313,6 +338,34 @@ impl PairFleet {
                 })
             }) {
                 return Ok(());
+            }
+            // Emit one bounded observation before nextest's existing deadline.
+            // Keep readiness, supervisor timeouts and all assertions unchanged.
+            if !pending_reported && started.elapsed() >= Duration::from_secs(5) {
+                pending_reported = true;
+                for agent_id in agents {
+                    if let Some(snapshot) = supervisor.snapshot(agent_id) {
+                        eprintln!(
+                            "paired-stage readiness_pending agent={agent_id} \
+                             active={} healthy={} phase={:?} spawn={:?} runtime={:?} \
+                             matrix={:?}",
+                            snapshot.active,
+                            snapshot.healthy,
+                            snapshot.runtime_phase,
+                            snapshot.spawn_generation,
+                            snapshot.runtime_generation,
+                            snapshot.matrix
+                        );
+                        for log in snapshot.logs.iter().rev().take(2) {
+                            let bounded = &log.bytes[..log.bytes.len().min(1_024)];
+                            eprintln!(
+                                "paired-child-log agent={agent_id} stream={:?} bytes={:?}",
+                                log.stream,
+                                String::from_utf8_lossy(bounded)
+                            );
+                        }
+                    }
+                }
             }
             if Instant::now() >= deadline {
                 let snapshots: Vec<_> = agents

@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.fleet-publish-review.v1",
+  "source_parent": "738a00959b869a4cdd4730109b4ff60c9340f106",
+  "primary_reference": "https://github.com/apple-oss-distributions/xnu/blob/f6217f891ac0bb64f3d375211650a4c1ff8ca1ea/bsd/vfs/vfs_subr.c",
+  "primary_function": "vn_authorize_renamex_with_paths, non-swap source-directory branch",
+  "primary_finding": "The source directory authorization requests KAUTH_VNODE_DELETE | KAUTH_VNODE_ADD_SUBDIRECTORY even with the same parent. This source evidence is consistent with the actual EACCES at rename on a 0555 source root. Exact runner kernel version was not matched.",
+  "change": "Leave outer staging directory writable through rename, then seal final root to0555, sync it and parent. Contents remain sealed before rename. No sync fallback, ACL relaxation or test skip.",
+  "reader_audit": "resolve_catalog_release validates release_root and bin immutable before manifest/program reads. allow_release and resolve_release pass through that validator. The final name can be briefly visible but readers reject the writable root. This is not atomic ready publication.",
+  "failure_semantics": [
+    "Rename failure retains old staging cleanup.",
+    "Post-rename seal failure returns error and may leave a writable final root which readers reject. Existing-name guard requires explicit recovery; no overwrite retry or blind deletion of final name.",
+    "Post-seal sync failure returns error and may leave an admissible complete tree, as with prior post-rename sync failures. No success or durability claim is made.",
+    "This patch does not certify concurrent installer ownership, adversarial same-owner mutation, or replace the existing path-based filesystem threat model."
+  ],
+  "regression": "Existing read-only-source+duplicate-install test retained. Added immutable root/bin checks, no staging residue comparison, explicit writable final-root rejection and successful restored sealed resolution equality.",
+  "local_validation": {
+    "just_fmt": "not executed: bash just command not found (127)",
+    "just_test": "not executed: bash just command not found (127)",
+    "just_fix": "not executed: bash just command not found (127)"
+  },
+  "native_validation": "pending exact new-source CI"
+}

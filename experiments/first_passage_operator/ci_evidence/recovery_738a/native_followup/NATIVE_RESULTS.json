@@ -1,0 +1,406 @@
+{
+  "schema": "hepta.native-followup.738a.v1",
+  "artifacts": [
+    {
+      "name": "mac",
+      "artifact_id": 12997480951,
+      "source_head": "738a00959b869a4cdd4730109b4ff60c9340f106",
+      "workflow_run": 41092882733,
+      "archive": "experiments/first_passage_operator/ci_evidence/recovery_738a/native_followup/mac738a.original.zip",
+      "sha256": "b98dc8b8bf7eb424311d2efc69caba5880711f7534fae7d3213a22747d8b57c2",
+      "bytes": 100735,
+      "verified_manifest_members": 15,
+      "suites": [
+        {
+          "path": "command-2-junit/0/local/junit.xml",
+          "attributes": {
+            "name": "nextest-run",
+            "tests": "467",
+            "failures": "5",
+            "errors": "0",
+            "uuid": "22c089ba-abbc-47a1-ac2c-0c70e24fa773",
+            "timestamp": "2026-10-30T17:02:26.013+00:00",
+            "time": "12.159"
+          },
+          "failures": [
+            "remote_file_system::authorized_error_tests::known_authorized_read_failures_preserve_local_error_contract",
+            "release::copy_tests::readonly_source_is_copied_synced_and_preserved_on_duplicate_install",
+            "release::tests::catalog_resolves_only_digest_bound_per_agent_allowances",
+            "release::tests::program_mutation_is_detected_and_release_state_survives_reopen",
+            "release::tests::schema_v2_bundle_binds_both_exact_programs_and_closed_world"
+          ],
+          "flaky": []
+        },
+        {
+          "path": "command-3-junit/0/local/junit.xml",
+          "attributes": {
+            "name": "nextest-run",
+            "tests": "106",
+            "failures": "1",
+            "errors": "0",
+            "uuid": "f7abc3a0-3d3d-450f-8095-591654c05e16",
+            "timestamp": "2026-10-30T17:04:51.311+00:00",
+            "time": "4.504"
+          },
+          "failures": [
+            "file_system_bounded_authorized_read_enforces_limit_without_prefix::remote"
+          ],
+          "flaky": []
+        },
+        {
+          "path": "command-4-junit/0/local/junit.xml",
+          "attributes": {
+            "name": "nextest-run",
+            "tests": "2",
+            "failures": "2",
+            "errors": "0",
+            "uuid": "670853c8-a693-4855-8a25-d906e999ef1d",
+            "timestamp": "2026-10-30T17:09:30.509+00:00",
+            "time": "11.522"
+          },
+          "failures": [
+            "two_real_pairs_restart_one_without_peer_pid_churn",
+            "five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash"
+          ],
+          "flaky": []
+        },
+        {
+          "path": "command-5-junit/0/local/junit.xml",
+          "attributes": {
+            "name": "nextest-run",
+            "tests": "566",
+            "failures": "1",
+            "errors": "0",
+            "uuid": "3e1af8b9-5cce-41bb-ac73-5baf5eda5ae6",
+            "timestamp": "2026-10-30T17:16:03.569+00:00",
+            "time": "39.029"
+          },
+          "failures": [
+            "state_db::alias_tests::sqlite_home_alias_queries_the_bound_runtime_and_retargeting_is_rejected"
+          ],
+          "flaky": [
+            "runtime::backfill::tests::get_backfill_state_succeeds_while_another_connection_holds_writer_slot"
+          ]
+        }
+      ],
+      "commands": [
+        {
+          "argv": [
+            "/Library/Frameworks/Python.framework/Versions/3.13/bin/python",
+            "scripts/diagnose_hepta_fixture_paths.py",
+            "--output",
+            "/Users/runner/work/_temp/hepta-operator-diagnostics/fixture-path-observation.json"
+          ],
+          "exit_code": 0,
+          "log": "command-1.log"
+        },
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-fleet",
+            "-p",
+            "codex-utils-pty",
+            "-p",
+            "codex-shell-escalation",
+            "-p",
+            "codex-sandboxing",
+            "-p",
+            "codex-exec-server",
+            "--lib",
+            "--locked",
+            "--success-output",
+            "immediate"
+          ],
+          "exit_code": 100,
+          "log": "command-2.log"
+        },
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-exec-server",
+            "--test",
+            "file_system_unix",
+            "--test",
+            "authorized_read_rpc",
+            "--locked"
+          ],
+          "exit_code": 100,
+          "log": "command-3.log"
+        },
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-supervisor",
+            "--test",
+            "paired_process_product",
+            "--locked"
+          ],
+          "exit_code": 100,
+          "log": "command-4.log"
+        },
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-state",
+            "-p",
+            "codex-rollout",
+            "-p",
+            "codex-thread-store",
+            "--lib",
+            "--locked"
+          ],
+          "exit_code": 100,
+          "log": "command-5.log"
+        },
+        {
+          "argv": [
+            "just",
+            "fix",
+            "-p",
+            "codex-hepta-fleet",
+            "-p",
+            "codex-utils-pty",
+            "-p",
+            "codex-shell-escalation",
+            "-p",
+            "codex-sandboxing",
+            "-p",
+            "codex-exec-server",
+            "-p",
+            "codex-state",
+            "-p",
+            "codex-rollout",
+            "-p",
+            "codex-thread-store",
+            "--locked",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exit_code": 0,
+          "log": "command-6.log"
+        }
+      ]
+    },
+    {
+      "name": "idle",
+      "artifact_id": 12997268083,
+      "source_head": "738a00959b869a4cdd4730109b4ff60c9340f106",
+      "workflow_run": 41092882733,
+      "archive": "experiments/first_passage_operator/ci_evidence/recovery_738a/native_followup/idle738a.original.zip",
+      "sha256": "75ebcb6f40c1f11d2cf46edec2a8e081b599e1dd91d6ebbf3800eecbddb0dc32",
+      "bytes": 49722,
+      "verified_manifest_members": 18,
+      "suites": [
+        {
+          "path": "command-1-junit/0/local/junit.xml",
+          "attributes": {
+            "name": "nextest-run",
+            "tests": "5",
+            "failures": "0",
+            "errors": "0",
+            "uuid": "07177b18-ee41-4871-a063-8f0688eedc2d",
+            "timestamp": "2026-10-30T17:05:14.796+00:00",
+            "time": "0.016"
+          },
+          "failures": [],
+          "flaky": []
+        },
+        {
+          "path": "command-2-junit/0/local/junit.xml",
+          "attributes": {
+            "name": "nextest-run",
+            "tests": "6",
+            "failures": "0",
+            "errors": "0",
+            "uuid": "7d853c68-2630-49e5-92bf-1dc01ec30268",
+            "timestamp": "2026-10-30T17:13:01.015+00:00",
+            "time": "0.155"
+          },
+          "failures": [],
+          "flaky": []
+        },
+        {
+          "path": "command-3-junit/0/local/junit.xml",
+          "attributes": {
+            "name": "nextest-run",
+            "tests": "5",
+            "failures": "0",
+            "errors": "0",
+            "uuid": "e66a6eeb-9ca4-443a-a227-4eda62d59264",
+            "timestamp": "2026-10-30T17:15:36.474+00:00",
+            "time": "1.167"
+          },
+          "failures": [],
+          "flaky": []
+        },
+        {
+          "path": "command-4-junit/0/local/junit.xml",
+          "attributes": {
+            "name": "nextest-run",
+            "tests": "3",
+            "failures": "0",
+            "errors": "0",
+            "uuid": "83fda6a1-0da3-478d-a0ec-59e0c6cb85e2",
+            "timestamp": "2026-10-30T17:20:12.873+00:00",
+            "time": "1.669"
+          },
+          "failures": [],
+          "flaky": []
+        },
+        {
+          "path": "command-5-junit/0/local/junit.xml",
+          "attributes": {
+            "name": "nextest-run",
+            "tests": "2",
+            "failures": "0",
+            "errors": "0",
+            "uuid": "ded3fb98-80c4-48c4-b9b8-fdacf6389322",
+            "timestamp": "2026-10-30T17:22:25.700+00:00",
+            "time": "1.107"
+          },
+          "failures": [],
+          "flaky": []
+        },
+        {
+          "path": "command-6-junit/0/local/junit.xml",
+          "attributes": {
+            "name": "nextest-run",
+            "tests": "2",
+            "failures": "2",
+            "errors": "0",
+            "uuid": "996c553f-391e-4290-8f08-2bd6304b30f5",
+            "timestamp": "2026-10-30T17:22:31.062+00:00",
+            "time": "120.007"
+          },
+          "failures": [
+            "five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash",
+            "two_real_pairs_restart_one_without_peer_pid_churn"
+          ],
+          "flaky": []
+        }
+      ],
+      "commands": [
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-async-utils",
+            "--lib",
+            "--locked"
+          ],
+          "exit_code": 0,
+          "log": "command-1.log"
+        },
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-core",
+            "--lib",
+            "--locked",
+            "-E",
+            "test(terminal_event_barrier_tests::)"
+          ],
+          "exit_code": 0,
+          "log": "command-2.log"
+        },
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-queue-extension",
+            "--test",
+            "queue_service",
+            "--locked",
+            "-E",
+            "test(queue_idle_continuation::) | test(queue_hook_rejection_tests::) | test(registered_queue_lifecycle_starts_messages_in_fifo_order) | test(rejected_queue_messages_remain_durable_and_block_followups)"
+          ],
+          "exit_code": 0,
+          "log": "command-3.log"
+        },
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-app-server",
+            "--test",
+            "all",
+            "--locked",
+            "-E",
+            "test(turn_completion_admission::)"
+          ],
+          "exit_code": 0,
+          "log": "command-4.log"
+        },
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-supervisor",
+            "--test",
+            "robrix_control_projection",
+            "--locked"
+          ],
+          "exit_code": 0,
+          "log": "command-5.log"
+        },
+        {
+          "argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-supervisor",
+            "--test",
+            "paired_process_product",
+            "--locked"
+          ],
+          "exit_code": 100,
+          "log": "command-6.log"
+        },
+        {
+          "argv": [
+            "just",
+            "fix",
+            "-p",
+            "codex-core",
+            "-p",
+            "codex-queue-extension",
+            "-p",
+            "codex-app-server",
+            "-p",
+            "codex-hepta-memory",
+            "-p",
+            "codex-hepta-supervisor",
+            "--locked",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exit_code": 0,
+          "log": "command-7.log"
+        }
+      ]
+    }
+  ],
+  "findings": {
+    "mac_fleet": "4 lib failures. Test-only operation diagnostics pin the error to publish staging / std::fs::rename, not copy or sync. The source directory had already been chmod 0555. Integration paired-process tests fail with errno13 before any existing paired-stage output; no phase diagnostic is compiled into the dependency there, so their exact failure operation is inferred rather than observed.",
+    "linux_pairs": "738a repeats 35c9: both product cases timed out at 60s on both attempts, no paired-stage stderr. Cause remains unresolved; the fixture/process-local mutex does not serialize nextest separate processes. No timeout extension or skipped assertion is proposed.",
+    "mac_exec_server": "Authorized bounded-read remote error loses InvalidData contract; root agent owns repair.",
+    "mac_rollout": "Both alias and direct query in new fixture returned Some([]); root agent owns repair.",
+    "scope": "Native evidence only. Original multilayer confirmation 0/6 and finite-deadline 91/92 remain unchanged."
+  }
+}

@@ -354,20 +354,30 @@ impl FleetRegistry {
             )?;
             sync_directory(&bin_root)?;
             sync_directory(&staging)?;
-            release_install_step!(
-                "make staging immutable",
-                &staging,
-                set_mode(&staging, /*mode*/ 0o555)
-            )?;
+            // Darwin authorizes directory rename with ADD_SUBDIRECTORY on the
+            // source itself, including renames within one parent. Keep only
+            // this outer directory writable until its final name is installed.
+            // Readers reject that directory until the immutable-mode check in
+            // resolve_catalog_release succeeds; all contents are already sealed.
             release_install_step!(
                 "publish staging",
                 &final_root,
                 std::fs::rename(&staging, &final_root)
             )?;
+            release_install_step!(
+                "make published root immutable",
+                &final_root,
+                set_mode(&final_root, /*mode*/ 0o555)
+            )?;
+            sync_directory(&final_root)?;
             sync_directory(self.layout().releases_root())?;
             Ok(())
         })();
         if let Err(error) = result {
+            // After rename, a seal or sync error is still an install failure.
+            // Do not delete the final name through a path that could have been
+            // replaced. A writable residual root remains inadmissible and the
+            // existing-name guard requires explicit recovery before a retry.
             make_tree_removable(&staging);
             let _ = std::fs::remove_dir_all(&staging);
             return Err(error);
