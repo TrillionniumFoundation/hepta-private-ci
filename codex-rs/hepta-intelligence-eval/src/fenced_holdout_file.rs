@@ -68,6 +68,14 @@ pub struct LockedFileFinalHoldoutCasStoreV1 {
     poisoned: bool,
 }
 
+impl Drop for LockedFileFinalHoldoutCasStoreV1 {
+    fn drop(&mut self) {
+        // Release ownership before closing: a duplicated or fork-inherited
+        // descriptor must not prolong this store's exclusive lock.
+        let _ = self.file.unlock();
+    }
+}
+
 impl LockedFileFinalHoldoutCasStoreV1 {
     pub fn create(mut file: File, binding: Digest32) -> Result<Self, LockedFileCasErrorV1> {
         acquire(&file, binding)?;

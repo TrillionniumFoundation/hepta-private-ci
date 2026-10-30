@@ -188,6 +188,32 @@ fn locked_file_store_replays_takeover_and_rejects_backup_rollback() {
 }
 
 #[test]
+fn dropping_store_releases_lock_while_duplicate_descriptor_is_open() {
+    let temp = TempFile::new();
+    let file = temp.create();
+    let duplicate = file
+        .try_clone()
+        .unwrap_or_else(|error| panic!("duplicate store descriptor: {error}"));
+    let store = LockedFileFinalHoldoutCasStoreV1::create(file, digest("binding"))
+        .unwrap_or_else(|error| panic!("create store: {error}"));
+    let first = owner(store, None);
+    let anchor = first.anchor();
+
+    assert_eq!(
+        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), Some(anchor))
+            .err(),
+        Some(LockedFileCasErrorV1::Busy)
+    );
+    drop(first.into_store());
+
+    let recovered =
+        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), Some(anchor))
+            .unwrap_or_else(|error| panic!("recover after store drop: {error}"));
+    assert_eq!(recovered.anchor(), Some(anchor));
+    drop(duplicate);
+}
+
+#[test]
 fn child_process_observes_lock_then_recovers_after_owner_exit() {
     if let Ok(path) = std::env::var("HEPTA_FENCED_CAS_CHILD") {
         let file = match OpenOptions::new().read(true).write(true).open(path) {
