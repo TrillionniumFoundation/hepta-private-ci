@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::path::Path;
 
+use anyhow::Context;
 use pretty_assertions::assert_eq;
 
 use crate::ProcessDriver;
@@ -212,58 +213,6 @@ async fn wait_for_python_repl_ready(
 }
 
 #[cfg(unix)]
-async fn wait_for_python_repl_ready_via_probe(
-    writer: &tokio::sync::mpsc::Sender<Vec<u8>>,
-    output_rx: &mut tokio::sync::broadcast::Receiver<Vec<u8>>,
-    timeout_ms: u64,
-    newline: &str,
-) -> anyhow::Result<Vec<u8>> {
-    let mut collected = Vec::new();
-    let marker = "__codex_pty_ready__";
-    let deadline = tokio::time::Instant::now() + tokio::time::Duration::from_millis(timeout_ms);
-    let probe_window = tokio::time::Duration::from_millis(if cfg!(windows) { 750 } else { 250 });
-
-    while tokio::time::Instant::now() < deadline {
-        writer
-            .send(format!("print('{marker}'){newline}").into_bytes())
-            .await?;
-
-        let probe_deadline = tokio::time::Instant::now() + probe_window;
-        loop {
-            let now = tokio::time::Instant::now();
-            if now >= deadline || now >= probe_deadline {
-                break;
-            }
-            let remaining = std::cmp::min(
-                deadline.saturating_duration_since(now),
-                probe_deadline.saturating_duration_since(now),
-            );
-            match tokio::time::timeout(remaining, output_rx.recv()).await {
-                Ok(Ok(chunk)) => {
-                    collected.extend_from_slice(&chunk);
-                    if String::from_utf8_lossy(&collected).contains(marker) {
-                        return Ok(collected);
-                    }
-                }
-                Ok(Err(tokio::sync::broadcast::error::RecvError::Lagged(_))) => continue,
-                Ok(Err(tokio::sync::broadcast::error::RecvError::Closed)) => {
-                    anyhow::bail!(
-                        "PTY output closed while waiting for Python REPL readiness: {:?}",
-                        String::from_utf8_lossy(&collected)
-                    );
-                }
-                Err(_) => break,
-            }
-        }
-    }
-
-    anyhow::bail!(
-        "timed out waiting for Python REPL readiness in PTY: {:?}",
-        String::from_utf8_lossy(&collected)
-    );
-}
-
-#[cfg(unix)]
 fn process_exists(pid: i32) -> anyhow::Result<bool> {
     let result = unsafe { libc::kill(pid, 0) };
     if result == 0 {
@@ -352,7 +301,9 @@ async fn pty_python_repl_emits_output_and_exits() -> anyhow::Result<()> {
         "-i".to_string(),
         "-q".to_string(),
         "-c".to_string(),
-        format!("print('{ready_marker}')"),
+        // A startup print precedes interactive initialization. A prompt set
+        // through -c cannot be confused with echoed commands sent over stdin.
+        format!("import sys; sys.ps1 = '{ready_marker}'"),
     ];
     let env_map: HashMap<String, String> = std::env::vars().collect();
     let spawned = spawn_pty_process(
@@ -369,15 +320,35 @@ async fn pty_python_repl_emits_output_and_exits() -> anyhow::Result<()> {
     let writer = session.writer_sender();
     let newline = if cfg!(windows) { "\r\n" } else { "\n" };
     let startup_timeout_ms = if cfg!(windows) { 10_000 } else { 5_000 };
-    let mut output =
-        wait_for_python_repl_ready(&mut output_rx, startup_timeout_ms, ready_marker).await?;
-    writer
-        .send(format!("print('hello from pty'){newline}").into_bytes())
-        .await?;
-    writer.send(format!("exit(){newline}").into_bytes()).await?;
-
+    let mut output = wait_for_python_repl_ready(&mut output_rx, startup_timeout_ms, ready_marker)
+        .await
+        .with_context(|| format!("portable REPL prompt: {}", session.test_task_status()))?;
     let timeout_ms = if cfg!(windows) { 10_000 } else { 5_000 };
-    let (remaining_output, code) = collect_output_until_exit(output_rx, exit_rx, timeout_ms).await;
+    let interaction_deadline =
+        tokio::time::Instant::now() + tokio::time::Duration::from_millis(timeout_ms);
+    let (reply, remaining_output, code) = tokio::time::timeout_at(interaction_deadline, async {
+        writer
+            .send(format!("print('hello' + ' from pty'){newline}").into_bytes())
+            .await?;
+        // The complete needle is absent from the input, so terminal echo
+        // cannot satisfy this acknowledgement. The outer timeout retains
+        // one absolute deadline for the reply and subsequent exit.
+        let reply = wait_for_output_contains(&mut output_rx, "hello from pty", timeout_ms)
+            .await
+            .with_context(|| format!("portable REPL reply: {}", session.test_task_status()))?;
+        writer.send(format!("exit(){newline}").into_bytes()).await?;
+        let (remaining_output, code) =
+            collect_output_until_exit(output_rx, exit_rx, timeout_ms).await;
+        Ok::<_, anyhow::Error>((reply, remaining_output, code))
+    })
+    .await
+    .with_context(|| {
+        format!(
+            "portable REPL interaction deadline: {}",
+            session.test_task_status()
+        )
+    })??;
+    output.extend_from_slice(&reply);
     output.extend_from_slice(&remaining_output);
     let text = String::from_utf8_lossy(&output);
 
@@ -385,7 +356,12 @@ async fn pty_python_repl_emits_output_and_exits() -> anyhow::Result<()> {
         text.contains("hello from pty"),
         "expected python output in PTY: {text:?}"
     );
-    assert_eq!(code, 0, "expected python to exit cleanly");
+    assert_eq!(
+        code,
+        0,
+        "expected python to exit cleanly; {}",
+        session.test_task_status()
+    );
 
     Ok(())
 }
@@ -1041,6 +1017,11 @@ fn pty_terminate_allows_runtime_shutdown_with_full_output_channel() -> anyhow::R
     };
     let preserved_fd = std::fs::File::open("/dev/null")?;
     for inherited_fds in [&[][..], &[preserved_fd.as_raw_fd()][..]] {
+        let backend = if inherited_fds.is_empty() {
+            "portable"
+        } else {
+            "preserved-fds"
+        };
         let runtime = tokio::runtime::Builder::new_current_thread()
             .enable_all()
             .build()?;
@@ -1068,10 +1049,25 @@ fn pty_terminate_allows_runtime_shutdown_with_full_output_channel() -> anyhow::R
                     tokio::time::sleep(std::time::Duration::from_millis(10)).await;
                 }
             })
-            .await?;
+            .await
+            .with_context(|| {
+                format!(
+                    "{backend} filling PTY output channel: queued={}/{}; {}",
+                    stdout_rx.len(),
+                    stdout_rx.max_capacity(),
+                    session.test_task_status(),
+                )
+            })?;
             tokio::time::sleep(std::time::Duration::from_millis(20)).await;
             session.terminate();
-            tokio::time::timeout(std::time::Duration::from_secs(2), exit_rx).await??;
+            tokio::time::timeout(std::time::Duration::from_secs(2), exit_rx)
+                .await
+                .with_context(|| {
+                    format!(
+                        "{backend} reaping terminated PTY child: {}",
+                        session.test_task_status()
+                    )
+                })??;
             Ok::<_, anyhow::Error>((session, stdout_rx))
         })?;
 
@@ -1113,7 +1109,7 @@ async fn pty_dropped_output_receiver_keeps_draining_child() -> anyhow::Result<()
         "import signal, sys\nsignal.alarm(10)\nsys.stdout.buffer.write(b'x' * (4 * 1024 * 1024))";
     for inherited_fds in [&[][..], &[preserved_fd.as_raw_fd()][..]] {
         let SpawnedProcess {
-            session: _session,
+            session,
             stdout_rx,
             exit_rx,
             ..
@@ -1128,7 +1124,15 @@ async fn pty_dropped_output_receiver_keeps_draining_child() -> anyhow::Result<()
         )
         .await?;
         drop(stdout_rx);
-        let code = tokio::time::timeout(std::time::Duration::from_secs(2), exit_rx).await??;
+        let code = tokio::time::timeout(std::time::Duration::from_secs(2), exit_rx)
+            .await
+            .with_context(|| {
+                format!(
+                    "draining discarded PTY output; preserved_fds={}; {}",
+                    inherited_fds.len(),
+                    session.test_task_status(),
+                )
+            })??;
         assert_eq!(code, 0, "child should finish even when output is discarded");
     }
     Ok(())
@@ -1176,7 +1180,9 @@ print('__complete__', flush=True)
     let (output, code) = collect_output_until_exit(output_rx, exit_rx, /*timeout_ms*/ 5_000).await;
     assert_eq!(
         (code, String::from_utf8_lossy(&output).trim()),
-        (0, "__complete__")
+        (0, "__complete__"),
+        "portable PTY input drain and EOF: {}",
+        session.test_task_status()
     );
     Ok(())
 }
@@ -1396,9 +1402,16 @@ async fn pty_preserving_inherited_fds_keeps_python_repl_running() -> anyhow::Res
         preserved_fd.as_raw_fd().to_string(),
     );
 
+    let ready_marker = "__codex_pty_ready__";
+    let args = vec![
+        "-i".to_string(),
+        "-q".to_string(),
+        "-c".to_string(),
+        format!("import sys; sys.ps1 = '{ready_marker}'"),
+    ];
     let spawned = spawn_pty_process(
         &python,
-        &[],
+        &args,
         Path::new("."),
         &env_map,
         &None,
@@ -1412,13 +1425,12 @@ async fn pty_preserving_inherited_fds_keeps_python_repl_running() -> anyhow::Res
     let (session, mut output_rx, exit_rx) = combine_spawned_output(spawned);
     let writer = session.writer_sender();
     let newline = "\n";
-    let mut output = wait_for_python_repl_ready_via_probe(
-        &writer,
-        &mut output_rx,
-        /*timeout_ms*/ 5_000,
-        newline,
-    )
-    .await?;
+    let mut output =
+        wait_for_python_repl_ready(&mut output_rx, /*timeout_ms*/ 5_000, ready_marker)
+            .await
+            .with_context(|| {
+                format!("preserved-fds REPL prompt: {}", session.test_task_status())
+            })?;
     let marker = "__codex_preserved_py_pid:";
     writer
         .send(format!("import os; print('{marker}' + str(os.getpid())){newline}").into_bytes())
@@ -1427,6 +1439,10 @@ async fn pty_preserving_inherited_fds_keeps_python_repl_running() -> anyhow::Res
     let python_pid = match wait_for_marker_pid(&mut output_rx, marker, /*timeout_ms*/ 2_000).await {
         Ok(pid) => pid,
         Err(err) => {
+            let err = err.context(format!(
+                "preserved-fds REPL PID reply: {}",
+                session.test_task_status()
+            ));
             session.terminate();
             return Err(err);
         }
@@ -1441,7 +1457,12 @@ async fn pty_preserving_inherited_fds_keeps_python_repl_running() -> anyhow::Res
         collect_output_until_exit(output_rx, exit_rx, /*timeout_ms*/ 5_000).await;
     output.extend_from_slice(&remaining_output);
 
-    assert_eq!(code, 0, "expected python to exit cleanly");
+    assert_eq!(
+        code,
+        0,
+        "expected preserved-fds python to exit cleanly; {}",
+        session.test_task_status()
+    );
 
     Ok(())
 }

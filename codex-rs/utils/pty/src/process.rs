@@ -182,6 +182,31 @@ impl ProcessHandle {
         self.exit_code.lock().ok().and_then(|guard| *guard)
     }
 
+    #[cfg(test)]
+    pub(crate) fn test_task_status(&self) -> String {
+        let reader = self
+            .reader_handle
+            .lock()
+            .ok()
+            .map(|handle| handle.as_ref().map(JoinHandle::is_finished));
+        let writer = self
+            .writer_handle
+            .lock()
+            .ok()
+            .map(|handle| handle.as_ref().map(JoinHandle::is_finished));
+        let waiter = self
+            .wait_handle
+            .lock()
+            .ok()
+            .map(|handle| handle.as_ref().map(JoinHandle::is_finished));
+        format!(
+            "child_exited={}; exit_code={:?}; reader_finished={reader:?}; \
+             writer_finished={writer:?}; waiter_finished={waiter:?}",
+            self.has_exited(),
+            self.exit_code(),
+        )
+    }
+
     /// Resize the PTY in character cells.
     pub fn resize(&self, size: TerminalSize) -> anyhow::Result<()> {
         {
