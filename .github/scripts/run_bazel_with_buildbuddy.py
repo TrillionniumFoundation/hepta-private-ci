@@ -137,6 +137,18 @@ def option_contains_value(args: Sequence[str], option: str, value: str) -> bool:
     return False
 
 
+def local_windows_msvc_cc_args(args: Sequence[str]) -> list[str]:
+    """Keep native C archives on the ABI of the Rust action linking them."""
+    return [
+        f"{option}={value}"
+        for option, value in (
+            ("--extra_toolchains", LOCAL_WINDOWS_MSVC_CC_TOOLCHAIN),
+            ("--repo_env", "BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0"),
+        )
+        if not option_contains_value(args, option, value)
+    ]
+
+
 def bazel_args_without_remote_execution(
     args: Sequence[str], env: Mapping[str, str]
 ) -> list[str]:
@@ -206,12 +218,7 @@ def bazel_args_without_remote_execution(
         # Keep native archives on the same ABI as the Rust action that links
         # them. Without this bounded override, globally registered hermetic
         # LLVM can produce MinGW objects for an MSVC Rust target.
-        for option, value in (
-            ("--extra_toolchains", LOCAL_WINDOWS_MSVC_CC_TOOLCHAIN),
-            ("--repo_env", "BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0"),
-        ):
-            if not option_contains_value(prefix, option, value):
-                injected_args.append(f"{option}={value}")
+        injected_args.extend(local_windows_msvc_cc_args(prefix))
 
     # Put defaults before caller options so a CI config cannot override an
     # explicit per-job cache path (or other later command-line setting).
@@ -244,6 +251,20 @@ def bazel_args_with_remote_config(
             f"--config={config}",
             f"--remote_header=x-buildbuddy-api-key={api_key}",
         ]
+
+        # Cache credentials do not change the local native compiler ABI. The
+        # keyless path already selects MSVC for these actions; cache-only runs
+        # must make the same choice. True RBE cross builds retain their existing
+        # hermetic toolchain, and caller options still follow these defaults.
+        prefix = args[: args.index("--")] if "--" in args else args
+        if (
+            config in {GENERIC_REMOTE_CONFIG, OPENAI_REMOTE_CONFIG}
+            and env.get("RUNNER_OS") == "Windows"
+            and args[command_idx]
+            in {"build", "test", "run", "coverage", "cquery", "aquery", "info"}
+            and option_contains_value(prefix, "--platforms", "//:windows_x86_64_msvc")
+        ):
+            remote_args.extend(local_windows_msvc_cc_args(prefix))
 
         # Insert immediately after the Bazel command. This keeps wrapper-added
         # options out of positional payloads and lets later CI configs override
