@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_distributional_v2.restore_artifacts",
+    "--worker-plan",
+    "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/reproduction_receipts/final_catalog001/PLAN.json",
+    "--plan-sha256",
+    "7db4b99d5b49d2f19663b10d5a2ccaecbffd95044269c37b783936f7366a33ae"
+  ],
+  "complete_child_cpu_seconds": 0.075749,
+  "exit_code": 0,
+  "peak_rss_kib_linux": 34820,
+  "scope": "wait4 covers the complete worker including interpreter/imports/payload verification/restore/serialization/exit",
+  "wall_seconds": 0.07624253800167935
+}

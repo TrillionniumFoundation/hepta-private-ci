@@ -1,0 +1,29 @@
+{
+  "child_peak_rss_kib_linux": 225156,
+  "child_system_cpu_seconds": 0.20646599999999998,
+  "child_user_cpu_seconds": 2.774167,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_distributional_v2.task_value_run",
+    "--output",
+    "experiments/hcsn_distributional_v2/results/task_value002",
+    "--raw-root",
+    "/workspace/scratch/58af017d4789/raw_data",
+    "--worker",
+    "recovery",
+    "--kind",
+    "active"
+  ],
+  "complete_child_cpu_seconds": 2.9806329999999996,
+  "exit_code": 0,
+  "log_sha256": "d4208b47332174db5756227633c9fced820cf9f35c0ae2502cdbd0f17718bb05",
+  "measurement": "Linux wait4; imports and waited native descendants included",
+  "thread_counts": {
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "wall_seconds": 3.339282593000007
+}

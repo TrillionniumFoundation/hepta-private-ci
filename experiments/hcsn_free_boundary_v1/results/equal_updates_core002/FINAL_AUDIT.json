@@ -1,0 +1,102 @@
+{
+  "analysis_dependency_hash_scope": "Captured at final audit, not a new pretraining registration; registered training/protocol hashes are unchanged.",
+  "analysis_dependency_sha256_post_audit": {
+    "analysis.py": "ed50b8d88e797038b4102283b2e6c7c4e6c12add80889de75af278f7318d63ff",
+    "analysis_report.py": "6e46cb5dcfe760c05a35c83ab7bccd8a12373bb9421d849363aefb25f7ff5d68",
+    "analysis_secondary.py": "a74038ecbe6bb4753129eeee8c005be6a4257c2b56305e76ca54b0a48951238f",
+    "equal_updates_core002.py": "d78fb409d07c0cef5c72469a492f34af9a0d76577841e2d5823e661cd71a6c57",
+    "equal_updates_core002_analysis.py": "c1ea6191864476f1a7237e14272e8803d8445b8bdfea6ca3e74fdd9984166668",
+    "equal_updates_core002_analysis_tests.py": "7807261fe767eab24971de6571e615c0cea653bf9884b5bc362af659c4facb1e"
+  },
+  "artifact_sha256": {
+    "ANALYSIS.json": "ff64f7fad2936953f333ffda6918ecb7da13c78aa8e989cb9b78e4457ffe3d29",
+    "ANALYSIS_EXECUTION.json": "1b0118c39c1d41db7161847d1ac972c5365769e08f672251b7fdd9bf96ad0d20",
+    "COMPLETE.json": "439adce216ae6ce0041ecb93ff5217b50c1c289c68c69034c0c2e8f6b6111afe",
+    "REFERENCE_PREFIX_AUDIT.json": "99024569247741ffaccbc0bbd4bd117f50d818fddc6cf02cd88fe05e7b22e219",
+    "REGISTRATION.json": "33c3bcafd03eadd5412eae6a8f90e28a9875532a0c72338a00f248d2d6a9e487",
+    "REPORT.md": "1fa6d745a2ee46f50a6b25143e88f1358ec748a2b5ce1f05d82f518086ae6c1c",
+    "analysis001/INDEX.json": "68d1efdcdab55334d5a4695f3f3693f7d911cfe896a60af213c983f936ff8b66",
+    "analysis001/equal_updates_core002_analysis.py": "33df5f8420a1ac0f1c67a6b536633984714b99e896904bf225eb918091f4ff04",
+    "analysis002/ANALYSIS.json": "d0b4e3272292cebac62a2dab69a6d735ff95b5ed8500daf8055fb0820b48699b",
+    "analysis002/COMPUTE.csv": "ad4c1ca7e0387e1787478c4bb6fbaddb96f695b2ea0276d38026a8b818d9abd3",
+    "analysis002/EXECUTION.json": "0ba985dde853ffefa41628597210bd0552a67cef216dc417c125c9df60c5cdb1",
+    "analysis002/PREFLIGHT.json": "e0fa107b6698f230c7eb99361d6070e70fc5fd79e13f6a04ff636f2519ef155a",
+    "analysis002/REPORT.md": "fd17b3fa9e91a1a8b8277c0d9d58ab252a2d3597c2e74d6f6cabd03e3cf19f53",
+    "analysis002/TABLE.csv": "302f793450b390ff1a766de61c64fb308c721fc13f536154fec550b36394e253"
+  },
+  "audits": {
+    "baseline_prefix_logs_reread_live": 252,
+    "candidate_directories_with_verified_retention_anomaly": 17,
+    "existing_original128_exact_replays": 11,
+    "fresh_initials_byte_identical": 36,
+    "new_candidate_full128_prefixes_verified": 36,
+    "reused_baseline_candidate_full128_prefixes_verified": 252,
+    "verified_extra_intermediate_numeric_files": 33
+  },
+  "authoritative_quality_analysis": "analysis002/ANALYSIS.json",
+  "authoritative_quality_report": "analysis002/REPORT.md",
+  "complete_task_three_seed_eight_model_panels": 6,
+  "current_analysis_source_sha256": "c1ea6191864476f1a7237e14272e8803d8445b8bdfea6ca3e74fdd9984166668",
+  "factual_clarifications": {
+    "irregular_ood": {
+      "interpretation": "joint length and time-interval shift; existing report heading omitted the length component, no metric change",
+      "ood_sequence_length": 64,
+      "time_interval_distribution_scale": 3,
+      "train_sequence_length": 32
+    },
+    "storage": {
+      "baseline_logs_reread_live": 252,
+      "conditional_jobs_files_deleted": 0,
+      "observed_f_bfree_approx_gb": [
+        1.3,
+        1.6
+      ],
+      "observed_io_failures": 0,
+      "original_study001_log_or_npz_files_deleted": 0,
+      "prefix_audit_purpose": "preventive preservation; original logs remained available",
+      "reported_f_bavail_bytes": 0
+    }
+  },
+  "final_addendum_sha256": {
+    "FINAL_AUDIT.md": "4a58658d106a1127ca8170cedadadaa6fbd8c2d05b7dfa3f3727979254a7f727",
+    "README.md": "30092a7fe5e7880079b521821c3daced70886ba94f4b0ab410224da69c20c99e"
+  },
+  "first_analysis_source_sha256": "33df5f8420a1ac0f1c67a6b536633984714b99e896904bf225eb918091f4ff04",
+  "first_audit_unchanged": true,
+  "formal_execution_costs": {
+    "extra_retained_intermediate_bytes": 1579368,
+    "extra_retained_intermediate_files": 33,
+    "first_audit_complete_cpu_seconds": 2.210424,
+    "initial_audit_storage_rejections": 14,
+    "nested_training_update_cpu_seconds": 691.7196720829999,
+    "new_training_aggregate_rusage_children_cpu_seconds": 809.2695199999999,
+    "new_training_coordinator_self_cpu_seconds": 0.103280725,
+    "new_training_wall_seconds": 270.9102544310008,
+    "new_training_workers_complete_cpu_seconds": 809.269501,
+    "reused_reference_new_inference_cpu_seconds": 0,
+    "reused_reference_new_training_cpu_seconds": 0,
+    "scope": "Measured formal worker/coordinator and two complete audit processes; does not claim to meter every interactive read, preflight import, or report-authoring command",
+    "second_audit_complete_cpu_seconds": 2.4801889999999998,
+    "sum_disjoint_measured_scopes_cpu_seconds": 814.063394725,
+    "worker_failures": 0,
+    "worker_retries": 0
+  },
+  "interpretation": "Post-primary descriptive fixed-update diagnostic on already-observed test data. Terminal128-only selection differs from original primary CPU-gate-eligible checkpoint selection, so the contrast cannot isolate optimizer-update count alone; no new significance/acceptance or equal-compute claim.",
+  "new_candidates": 36,
+  "new_total_optimizer_updates": 4608,
+  "original_secondary_stays": {
+    "added_training": 0,
+    "evaluated": 202,
+    "incomplete": 42
+  },
+  "registered_protocol_sha256": "373132facf5b491c271ef8da115855cfa0e636542aa5d6118ba87be6f69cb62a",
+  "registered_runner_sha256": "d78fb409d07c0cef5c72469a492f34af9a0d76577841e2d5823e661cd71a6c57",
+  "retention_handling": "Only declared-pruned extras with matching SHA and no terminal128 eligibility are classified as storage anomalies; missing, unknown, mismatched, initial/prefix/replay/selection/gradient/prediction failures remain fatal. Extra files retained, cause unknown. No retraining or selected-checkpoint mutation.",
+  "reused_baseline_searches": 126,
+  "schema": "hcsn-equal-updates-core002-final-audit.v1",
+  "status": "complete_with_disclosed_retention_anomaly",
+  "trainability_candidates_passed": 36,
+  "trainability_groups_per_candidate": 5,
+  "training_searches_completed": 18,
+  "updates_each_candidate": 128
+}

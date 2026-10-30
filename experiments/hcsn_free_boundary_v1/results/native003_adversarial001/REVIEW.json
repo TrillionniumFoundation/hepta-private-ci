@@ -1,0 +1,21 @@
+{
+  "actual_new_fixed1_steps": 128,
+  "audit_script_sha256": "1267b9791850a4299ae65a411fc2145f8b0209ce907a3b51eb7633904dbf8463",
+  "checks_performed": 431,
+  "classification": "posthoc adversarial audit; does not replace registered native003 results",
+  "failed_checks": [],
+  "fixed1_equivalent_prediction_cases": 384,
+  "main_summary_unchanged_sha256": "d77d73c891b4a5d0ab1b35008bee61a3d919693dee360bbb0618068f56c918ed",
+  "method": "Read-only VAL selection reproduction; new fixed1 execution receipt inspection; pairwise comparison with main STOP1 predictions; main/source/selection hash locks; complete wait4 CPU arithmetic. No model inference or fitting.",
+  "scenario_rows_checked": 36,
+  "schema": "native003-posthoc-readonly-receipt-audit.v1",
+  "status": "passed",
+  "summary_sha256": "6f2e2d42ce79e7ee8fe828ccb53a86290c6340bc51af25dca32909eea36c85b1",
+  "validation_selected_prefixes": {
+    "0.005": 32,
+    "0.02": 1,
+    "0.05": 1
+  },
+  "value_minus_ordinary_macro_utility": -0.04562500000000003,
+  "value_strict_wins_over_ordinary_scenarios": 0
+}

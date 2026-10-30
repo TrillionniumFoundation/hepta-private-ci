@@ -1,0 +1,47 @@
+{
+  "schema": "hcsn-delivery-post-cutoff.v1",
+  "ledger": "results/campaign_costs001/LEDGER.json",
+  "ledger_sha256": "a52cb1d9075caa98f5540ce97041c4daded0f37b10139631ffe0e2c2360f4c4f",
+  "ledger_observed_cpu_lower_bound_seconds": 30939.006142960003,
+  "post_cutoff_disjoint_scopes": [
+    {
+      "path": "results/campaign_costs001_execution/EXECUTION.json",
+      "sha256": "18cec2d1e8131d4ba6d1fbc26fbbb67115b3766486a186cfae5695bd1c9e7abb",
+      "scope": "final ledger generation",
+      "returncode": 0,
+      "complete_child_cpu_seconds": 0.24583499999999997,
+      "supervisor_self_cpu_seconds": 0.035024305,
+      "cpu_seconds": 0.28085930499999995
+    },
+    {
+      "path": "results/final_report001_execution/EXECUTION.json",
+      "sha256": "e8f87a40fef4a670add42d430a008f815059a07926268b7d9dce6b409cd49738",
+      "scope": "first report assembly, undefined 0/0 relative improvement",
+      "returncode": 1,
+      "complete_child_cpu_seconds": 0.13829,
+      "supervisor_self_cpu_seconds": 0.035152322,
+      "cpu_seconds": 0.17344232199999998
+    },
+    {
+      "path": "results/final_report002_execution/EXECUTION.json",
+      "sha256": "9bd82c72373dba47747f9caa356347faba94443c94487bb4595cffd4646f4cf8",
+      "scope": "successful report assembly",
+      "returncode": 0,
+      "complete_child_cpu_seconds": 0.09233,
+      "supervisor_self_cpu_seconds": 0.053594911,
+      "cpu_seconds": 0.145924911
+    }
+  ],
+  "additional_measured_cpu_seconds": 0.6002265379999999,
+  "not_retroactively_added_to_frozen_ledger": true,
+  "unmeasured_editing_network_publication_and_process_tail_costs": null,
+  "report_assembly_repair": {
+    "original_source_sha256": "b16cbb5a127efd0093f151b6dde8b5b0af5354ac0a48db52d14b40481b7ad3ab",
+    "original_source_commit": "4e22064d0341a96792ad18e95d23951db3232956",
+    "source_path": "final_report.py",
+    "successful_source_sha256": "04777ec4ea6cfff4f2d49951ae3f04aebb077581f385df10fbdcfbf149a1de48",
+    "reason": "no_upward_noise has initial 0 -> 0 and a null relative improvement; selecting a largest defined relative improvement must exclude undefined ratios without changing the original case",
+    "original_evidence_changed": false,
+    "training_inference_selection_or_statistical_thresholds_changed": false
+  }
+}

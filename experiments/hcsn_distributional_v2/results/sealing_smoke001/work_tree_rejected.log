@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/sealing_smoke001/fixture/experiments/hcsn_distributional_v2/seal_bundle.py", line 169, in <module>
+    run(args.name, includes)
+  File "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/sealing_smoke001/fixture/experiments/hcsn_distributional_v2/seal_bundle.py", line 66, in run
+    raise ValueError('An include contains archives or an internal staging work tree')
+ValueError: An include contains archives or an internal staging work tree

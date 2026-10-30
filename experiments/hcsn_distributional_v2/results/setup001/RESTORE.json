@@ -1,0 +1,93 @@
+{
+  "schema": "hcsn-v2-prior-restoration.v1",
+  "base_commit": "caa94dc53f8b8b721ee00076ce060d44a98d7a4f",
+  "records": [
+    {
+      "name": "original_data",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/archive.py",
+        "restore",
+        "--manifest",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/artifacts/original_data.json",
+        "--destination",
+        "/workspace/scratch/58af017d4789/raw_data"
+      ],
+      "manifest_sha256": "5d27742563e7fbf44f49642e21231b24416770489c3f22bbd30a8111ed64e3b0",
+      "exit_code": 0,
+      "child_cpu_seconds": 0.48128899999999997,
+      "wall_seconds": 0.48283513600017613,
+      "maxrss_kib": 26036
+    },
+    {
+      "name": "auxiliary_evidence",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/archive.py",
+        "restore",
+        "--manifest",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/artifacts/auxiliary_evidence.json",
+        "--destination",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1"
+      ],
+      "manifest_sha256": "d84c5eff167f64a412c4f5c77a10bac393b14c3c8c2f52b37c09c89dfce41193",
+      "exit_code": 0,
+      "child_cpu_seconds": 4.091035,
+      "wall_seconds": 4.124544697000147,
+      "maxrss_kib": 51752
+    },
+    {
+      "name": "study001_evidence",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/archive.py",
+        "restore",
+        "--manifest",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.json",
+        "--destination",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1"
+      ],
+      "manifest_sha256": "7ec65c21984c53cc755821d4f44ab8240a41bc17b7d1fffaf3d45bc677b107f7",
+      "exit_code": 0,
+      "child_cpu_seconds": 7.510866,
+      "wall_seconds": 7.51887216099999,
+      "maxrss_kib": 35956
+    },
+    {
+      "name": "conditional001_evidence",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/archive.py",
+        "restore",
+        "--manifest",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/artifacts/conditional001_evidence.json",
+        "--destination",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1"
+      ],
+      "manifest_sha256": "81e8d9a5f2e4e8ecc6a9bda1d9a83311041839b0e15aefc0c7092928e46511ac",
+      "exit_code": 0,
+      "child_cpu_seconds": 0.415431,
+      "wall_seconds": 0.4169880220001687,
+      "maxrss_kib": 27356
+    },
+    {
+      "name": "equal_updates_core002_evidence",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/archive.py",
+        "restore",
+        "--manifest",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/artifacts/equal_updates_core002_evidence.json",
+        "--destination",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/results/equal_updates_core002"
+      ],
+      "manifest_sha256": "771914ebfaecadf609f8abec33c1680bcb149e4172195bb75cf69cdaa0a3fa15",
+      "exit_code": 0,
+      "child_cpu_seconds": 0.34623,
+      "wall_seconds": 0.3469920219999949,
+      "maxrss_kib": 25048
+    }
+  ],
+  "coordinator_cpu_through_cutoff": 0.008033250000000002,
+  "wall_through_cutoff": 12.891837295999949
+}

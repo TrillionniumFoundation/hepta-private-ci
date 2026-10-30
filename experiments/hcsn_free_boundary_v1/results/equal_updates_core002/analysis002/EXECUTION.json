@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_free_boundary_v1.equal_updates_core002_analysis",
+    "--analysis-output",
+    "experiments/hcsn_free_boundary_v1/results/equal_updates_core002/analysis002"
+  ],
+  "returncode": 0,
+  "child_cpu_seconds": 2.4801889999999998,
+  "child_user_cpu_seconds": 2.255769,
+  "child_system_cpu_seconds": 0.22441999999999998,
+  "wall_seconds": 2.480800992998411,
+  "whole_child_peak_rss_kib_linux": 93456,
+  "scope": "Complete second fixed-update diagnostic audit/report worker, including imports, hash/prefix/gradient/metric checks and writes; zero new training or inference",
+  "source_sha256": {
+    "equal_updates_core002_analysis.py": "c1ea6191864476f1a7237e14272e8803d8445b8bdfea6ca3e74fdd9984166668",
+    "equal_updates_core002_analysis_tests.py": "7807261fe767eab24971de6571e615c0cea653bf9884b5bc362af659c4facb1e"
+  },
+  "process_log_sha256": "e0d679ec97c916c617d19029d663c7f98d944c3f5b908c637747744a1f5c55fc"
+}

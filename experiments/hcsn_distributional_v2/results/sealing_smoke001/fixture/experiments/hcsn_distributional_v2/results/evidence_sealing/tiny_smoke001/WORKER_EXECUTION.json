@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_distributional_v2.evidence_bundle",
+    "--name",
+    "tiny_smoke001",
+    "--include",
+    "payload/weights.bin",
+    "--include",
+    "payload/nested/updates.jsonl",
+    "--include",
+    "results/evidence_sealing/tiny_smoke001/SELECTION.json"
+  ],
+  "complete_archive_child_cpu_seconds": 0.11043499999999999,
+  "log_sha256": "ad5320fd946d223e25e02c49db3a1261ddc7c3cb4cf7c5241fc9c860bdfadbfc",
+  "measurement": "Complete Linux wait4 child including imports, packing, restore verification and exit",
+  "peak_rss_kib_linux": 29184,
+  "returncode": 0
+}

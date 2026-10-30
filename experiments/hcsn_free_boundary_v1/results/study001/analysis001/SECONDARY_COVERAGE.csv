@@ -1,0 +1,59 @@
+task,model,expected,available,missing,missing_seeds
+selective_copy,free_dual,8,1,7,"[9101, 9102, 9103, 9104, 9105, 9106, 9107]"
+mqar,free_dual,3,0,3,"[9101, 9102, 9103]"
+irregular,free_dual,3,1,2,"[9101, 9102]"
+mnist,free_dual,3,0,3,"[9101, 9102, 9103]"
+fsdd,free_dual,3,1,2,"[9101, 9102]"
+multimodal_select,free_dual,8,0,8,"[9101, 9102, 9103, 9104, 9105, 9106, 9107, 9108]"
+selective_copy,legacy_hcsn,3,3,0,[]
+mqar,legacy_hcsn,3,3,0,[]
+irregular,legacy_hcsn,3,3,0,[]
+mnist,legacy_hcsn,3,3,0,[]
+fsdd,legacy_hcsn,3,3,0,[]
+multimodal_select,legacy_hcsn,3,3,0,[]
+selective_copy,two_gates,8,8,0,[]
+mqar,two_gates,3,3,0,[]
+irregular,two_gates,3,3,0,[]
+mnist,two_gates,3,3,0,[]
+fsdd,two_gates,3,3,0,[]
+multimodal_select,two_gates,8,8,0,[]
+selective_copy,continuous_rnn,3,3,0,[]
+mqar,continuous_rnn,3,3,0,[]
+irregular,continuous_rnn,3,3,0,[]
+mnist,continuous_rnn,3,3,0,[]
+fsdd,continuous_rnn,3,3,0,[]
+multimodal_select,continuous_rnn,3,3,0,[]
+selective_copy,cfc,3,3,0,[]
+mqar,cfc,3,3,0,[]
+irregular,cfc,3,3,0,[]
+mnist,cfc,3,3,0,[]
+fsdd,cfc,3,3,0,[]
+multimodal_select,cfc,3,3,0,[]
+selective_copy,mamba1,3,3,0,[]
+mqar,mamba1,3,3,0,[]
+irregular,mamba1,3,3,0,[]
+mnist,mamba1,3,3,0,[]
+fsdd,mamba1,3,3,0,[]
+multimodal_select,mamba1,3,3,0,[]
+selective_copy,transformer,3,3,0,[]
+mqar,transformer,3,3,0,[]
+irregular,transformer,3,3,0,[]
+mnist,transformer,3,3,0,[]
+fsdd,transformer,3,3,0,[]
+multimodal_select,transformer,3,3,0,[]
+selective_copy,lif_snn,3,3,0,[]
+mqar,lif_snn,3,3,0,[]
+irregular,lif_snn,3,3,0,[]
+mnist,lif_snn,3,3,0,[]
+fsdd,lif_snn,3,3,0,[]
+multimodal_select,lif_snn,3,3,0,[]
+selective_copy,fixed_dual,8,8,0,[]
+multimodal_select,fixed_dual,8,7,1,[9108]
+selective_copy,direct_dual,8,8,0,[]
+multimodal_select,direct_dual,8,7,1,[9107]
+selective_copy,free_margin,8,8,0,[]
+multimodal_select,free_margin,8,8,0,[]
+selective_copy,free_continuation,8,2,6,"[9102, 9103, 9105, 9106, 9107, 9108]"
+multimodal_select,free_continuation,8,5,3,"[9105, 9106, 9107]"
+selective_copy,free_ordinary,8,6,2,"[9105, 9106]"
+multimodal_select,free_ordinary,8,4,4,"[9102, 9103, 9104, 9108]"

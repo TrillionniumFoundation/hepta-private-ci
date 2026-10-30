@@ -1,0 +1,249 @@
+{
+  "baseline_cost_bound": "Second allocation charges every new campaign CPU second to value-head research and gives the ordinary reference free new setup, retaining its historical backbone and measured runtime. This is an intentionally favorable cost lower bound for the ordinary alternative, not its observed setup cost.",
+  "coordinator_imports_and_self_cpu_seconds": 2.707681000000008,
+  "evaluation_unassigned_shared_cpu_seconds": 3.5739578919999913,
+  "fit_unassigned_shared_cpu_seconds": 3.8838362780000004,
+  "historical_backbone_search_cpu_seconds": 46.474767,
+  "measured_complete_campaign_cpu_seconds": 97.56292400000001,
+  "measured_disjoint_phase_cpu_seconds_nested": 94.855243,
+  "method_allocation": "Shared measured data, exact-oracle verification, imports, heldout-cache verification and complete recovery fixture costs charged to each alternative once; method-specific traces/solver/teacher/candidate search charged only where used. Native actual runtime charged per future stream. Schedule excludes train-trace/teacher/head fitting.",
+  "native_runtime_cpu_per_stream": {
+    "bellman_value_head": 0.29089323925000005,
+    "ordinary_action_head": 0.26543369402083344,
+    "tabular_bellman": 0.18893962708333345,
+    "validation_risk": 0.20236063647916672,
+    "validation_schedule": 0.23583529670833334
+  },
+  "no_energy_or_dollar_price_measurement": true,
+  "ordinary_reference_selected_on_validation": "validation_schedule",
+  "preserved_prior_attempt_cpu_seconds": 5.395364,
+  "recovery_limit": "Complete verification fixture (reference/suspend/resume) is charged, not claimed as an isolated production restart latency.",
+  "recovery_verification_complete_cpu_seconds": 14.157759,
+  "scenario_one_time_setup_by_family": {
+    "bellman_value_head": 90.44773920899999,
+    "ordinary_action_head": 89.76639837399999,
+    "tabular_bellman": 87.418699199,
+    "validation_risk": 87.51567312,
+    "validation_schedule": 85.455869093
+  },
+  "scenarios": [
+    {
+      "allocation": "measured_method_components",
+      "difference": -0.060416666666666785,
+      "future_stream_lifetime": 1000,
+      "ordinary_net_utility": 0.5755,
+      "utility_units_per_cpu_second": 0.0,
+      "value_higher": false,
+      "value_net_utility": 0.5150833333333332
+    },
+    {
+      "allocation": "measured_method_components",
+      "difference": -0.06042267164793258,
+      "future_stream_lifetime": 1000,
+      "ordinary_net_utility": 0.5754678708834199,
+      "utility_units_per_cpu_second": 0.0001,
+      "value_higher": false,
+      "value_net_utility": 0.5150451992354873
+    },
+    {
+      "allocation": "measured_method_components",
+      "difference": -0.0604767164793244,
+      "future_stream_lifetime": 1000,
+      "ordinary_net_utility": 0.5751787088341986,
+      "utility_units_per_cpu_second": 0.001,
+      "value_higher": false,
+      "value_net_utility": 0.5147019923548742
+    },
+    {
+      "allocation": "measured_method_components",
+      "difference": -0.061017164793243484,
+      "future_stream_lifetime": 1000,
+      "ordinary_net_utility": 0.5722870883419867,
+      "utility_units_per_cpu_second": 0.01,
+      "value_higher": false,
+      "value_net_utility": 0.5112699235487432
+    },
+    {
+      "allocation": "measured_method_components",
+      "difference": -0.060416666666666785,
+      "future_stream_lifetime": 10000,
+      "ordinary_net_utility": 0.5755,
+      "utility_units_per_cpu_second": 0.0,
+      "value_higher": false,
+      "value_net_utility": 0.5150833333333332
+    },
+    {
+      "allocation": "measured_method_components",
+      "difference": -0.06042222237962214,
+      "future_stream_lifetime": 10000,
+      "ordinary_net_utility": 0.5754755619116383,
+      "utility_units_per_cpu_second": 0.0001,
+      "value_higher": false,
+      "value_net_utility": 0.5150533395320162
+    },
+    {
+      "allocation": "measured_method_components",
+      "difference": -0.06047222379621997,
+      "future_stream_lifetime": 10000,
+      "ordinary_net_utility": 0.5752556191163823,
+      "utility_units_per_cpu_second": 0.001,
+      "value_higher": false,
+      "value_net_utility": 0.5147833953201624
+    },
+    {
+      "allocation": "measured_method_components",
+      "difference": -0.060972237962199416,
+      "future_stream_lifetime": 10000,
+      "ordinary_net_utility": 0.5730561911638237,
+      "utility_units_per_cpu_second": 0.01,
+      "value_higher": false,
+      "value_net_utility": 0.5120839532016243
+    },
+    {
+      "allocation": "measured_method_components",
+      "difference": -0.060416666666666785,
+      "future_stream_lifetime": 100000,
+      "ordinary_net_utility": 0.5755,
+      "utility_units_per_cpu_second": 0.0,
+      "value_higher": false,
+      "value_net_utility": 0.5150833333333332
+    },
+    {
+      "allocation": "measured_method_components",
+      "difference": -0.06042217745279099,
+      "future_stream_lifetime": 100000,
+      "ordinary_net_utility": 0.57547633101446,
+      "utility_units_per_cpu_second": 0.0001,
+      "value_higher": false,
+      "value_net_utility": 0.5150541535616691
+    },
+    {
+      "allocation": "measured_method_components",
+      "difference": -0.06047177452790964,
+      "future_stream_lifetime": 100000,
+      "ordinary_net_utility": 0.5752633101446007,
+      "utility_units_per_cpu_second": 0.001,
+      "value_higher": false,
+      "value_net_utility": 0.5147915356166911
+    },
+    {
+      "allocation": "measured_method_components",
+      "difference": -0.0609677452790951,
+      "future_stream_lifetime": 100000,
+      "ordinary_net_utility": 0.5731331014460074,
+      "utility_units_per_cpu_second": 0.01,
+      "value_higher": false,
+      "value_net_utility": 0.5121653561669123
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": -0.060416666666666785,
+      "future_stream_lifetime": 1000,
+      "ordinary_net_utility": 0.5755,
+      "utility_units_per_cpu_second": 0.0,
+      "value_higher": false,
+      "value_net_utility": 0.5150833333333332
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": -0.06043246828972093,
+      "future_stream_lifetime": 1000,
+      "ordinary_net_utility": 0.5754717689936292,
+      "utility_units_per_cpu_second": 0.0001,
+      "value_higher": false,
+      "value_net_utility": 0.5150393007039082
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": -0.060574682897208354,
+      "future_stream_lifetime": 1000,
+      "ordinary_net_utility": 0.5752176899362916,
+      "utility_units_per_cpu_second": 0.001,
+      "value_higher": false,
+      "value_net_utility": 0.5146430070390833
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": -0.06199682897208347,
+      "future_stream_lifetime": 1000,
+      "ordinary_net_utility": 0.5726768993629167,
+      "utility_units_per_cpu_second": 0.01,
+      "value_higher": false,
+      "value_net_utility": 0.5106800703908332
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": -0.060416666666666785,
+      "future_stream_lifetime": 10000,
+      "ordinary_net_utility": 0.5755,
+      "utility_units_per_cpu_second": 0.0,
+      "value_higher": false,
+      "value_net_utility": 0.5150833333333332
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": -0.060423202043800917,
+      "future_stream_lifetime": 10000,
+      "ordinary_net_utility": 0.5754759517226592,
+      "utility_units_per_cpu_second": 0.0001,
+      "value_higher": false,
+      "value_net_utility": 0.5150527496788583
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": -0.06048202043800843,
+      "future_stream_lifetime": 10000,
+      "ordinary_net_utility": 0.5752595172265916,
+      "utility_units_per_cpu_second": 0.001,
+      "value_higher": false,
+      "value_net_utility": 0.5147774967885832
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": -0.06107020438008348,
+      "future_stream_lifetime": 10000,
+      "ordinary_net_utility": 0.5730951722659167,
+      "utility_units_per_cpu_second": 0.01,
+      "value_higher": false,
+      "value_net_utility": 0.5120249678858332
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": -0.060416666666666785,
+      "future_stream_lifetime": 100000,
+      "ordinary_net_utility": 0.5755,
+      "utility_units_per_cpu_second": 0.0,
+      "value_higher": false,
+      "value_net_utility": 0.5150833333333332
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": -0.06042227541920897,
+      "future_stream_lifetime": 100000,
+      "ordinary_net_utility": 0.5754763699955622,
+      "utility_units_per_cpu_second": 0.0001,
+      "value_higher": false,
+      "value_net_utility": 0.5150540945763532
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": -0.06047275419208842,
+      "future_stream_lifetime": 100000,
+      "ordinary_net_utility": 0.5752636999556217,
+      "utility_units_per_cpu_second": 0.001,
+      "value_higher": false,
+      "value_net_utility": 0.5147909457635332
+    },
+    {
+      "allocation": "all_new_campaign_vs_free_ordinary_setup_bound",
+      "difference": -0.06097754192088345,
+      "future_stream_lifetime": 100000,
+      "ordinary_net_utility": 0.5731369995562167,
+      "utility_units_per_cpu_second": 0.01,
+      "value_higher": false,
+      "value_net_utility": 0.5121594576353332
+    }
+  ],
+  "scope": "All measured phase processes are disjoint. Runtime/model/native details are nested. Setup allocations describe alternative future deployments, not additive totals.",
+  "total_new_campaign_and_prior_attempt_cpu_seconds": 102.95828800000001
+}

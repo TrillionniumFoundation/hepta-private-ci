@@ -1,0 +1,66 @@
+{
+  "accounting": "Distinct engineering runs only. These do not overlap content001/content002 main study or math/runtime/task-value studies. Per-step costs nested in preflight reports are not added again.",
+  "complete_process_cpu_seconds": 79.349581,
+  "complete_processes": [
+    {
+      "cpu_seconds": 10.318546000000001,
+      "path": "content_preflight002_EXECUTION.json",
+      "returncode": 0,
+      "sha256": "7d51d0ecb1db07437eabf4b80a8ffa70a9681b2ce87f1a5e7265537fe807168f"
+    },
+    {
+      "cpu_seconds": 4.478607,
+      "path": "content_tests002_EXECUTION.json",
+      "returncode": 0,
+      "sha256": "9b1f99fb7ef497d8843178985a859f2f1a2bcf4f11b51fb02905386d6afeb262"
+    },
+    {
+      "cpu_seconds": 4.530425,
+      "path": "content_tests003_EXECUTION.json",
+      "returncode": 0,
+      "sha256": "d59eb99afb4d1000c34202628589b24813d8ee6a8de3d8c02424b1899c5e4505"
+    },
+    {
+      "cpu_seconds": 5.385713,
+      "path": "content_tests004_EXECUTION.json",
+      "returncode": 0,
+      "sha256": "981e9588f6a2ef07510d2219a6af7be90ec5afaf0724a60ed7ee0859847a4c52"
+    },
+    {
+      "cpu_seconds": 54.63629,
+      "path": "content_domain_preflight003_EXECUTION.json",
+      "returncode": 0,
+      "sha256": "2c15788988259f96f69b6cbfb93ac96ccf6f43c082436da76ebd71d37a2f0b6b"
+    }
+  ],
+  "coverage": "Not a complete bill for all exploratory commands, source editing or registration imports; never label this research-wide total. The first preflight and memory/operator probes lack complete child wait4 measurements.",
+  "partial_measured_cpu_seconds": 22.43795015,
+  "partial_measurements": [
+    {
+      "cpu_seconds": 5.821801653,
+      "path": "content_preflight001.json",
+      "scope": "reported process-body timer; process launch/import not covered",
+      "sha256": "4c5e2203f6f091e3dc4539b83fe4f26f589ad4504dc8489bd6c475413fd8898e"
+    },
+    {
+      "cpu_seconds": 5.684260408,
+      "path": "content_memory_probe001.json",
+      "scope": "reported process-body timer; process launch/import not covered",
+      "sha256": "73ce0c7104dfa74f8c1fe5022853cfc1b0004d066f0863af222d288ace5e59d4"
+    },
+    {
+      "cpu_seconds": 8.049329773,
+      "path": "content_memory_probe002.json",
+      "scope": "reported process-body timer; process launch/import not covered",
+      "sha256": "283b788d6a91115ebf94b71b31eb7b5002c0a8f983361ab9cf3a72fb59b56976"
+    },
+    {
+      "cpu_seconds": 2.882558316,
+      "path": "content_operator_probe001.json",
+      "scope": "six complete training steps; setup/import/other process work not covered",
+      "sha256": "a1e82a94d05a723821448d9a96920defda24938628ab6e472828f24964b001cc"
+    }
+  ],
+  "recorded_engineering_cpu_lower_bound_seconds": 101.78753115,
+  "schema": "hcsn-content-engineering-cost-evidence.v2"
+}

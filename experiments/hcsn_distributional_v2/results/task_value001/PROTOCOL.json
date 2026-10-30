@@ -1,0 +1,100 @@
+{
+  "base_commit": "caa94dc53f8b8b721ee00076ce060d44a98d7a4f",
+  "baselines": [
+    "tabular_bellman",
+    "validation_schedule",
+    "validation_risk"
+  ],
+  "batch_size": 128,
+  "bootstrap_seed": 73015,
+  "budget": "Equal updates/search opportunities for the2 learned heads; not equalCPU. Record full measured costs.",
+  "cache_native_parity": "Audit and retain any mismatches; never combine cache scores with actual native costs as if they were one execution",
+  "checkpoints": [
+    64,
+    128,
+    256
+  ],
+  "clock": "READ consumes 1 model-clock tick; quiet ticks are simulated task time, not wall-clock sleep; actual CPU billed separately",
+  "cost": {
+    "fixed_backbone": "Charge historical complete search cost46.474767CPU under alternative deployment scenarios; no new backbone training",
+    "lifetimes_streams": [
+      1000,
+      10000,
+      100000
+    ],
+    "measure": "wait4 complete childCPU including waited native descendants; nested details not added again",
+    "scope": "Measured research costs and assumption-based amortization reported separately; no energy claim",
+    "utility_per_cpu_second": [
+      0.0,
+      0.0001,
+      0.001,
+      0.01
+    ]
+  },
+  "counterfactual": "All128 shuffled new streams; full-prefix cache computation fully charged; logical paid reads do not imply compute savings",
+  "data": {
+    "fresh_test": "reproduce old 640 test prefixes, then source episodes 640:1024; 384 new images",
+    "future_task_independence": "Approximate independent restart assumption; deterministic permutation without replacement, no hidden future-label input",
+    "new_test_streams": 128,
+    "old_validation_reused": true,
+    "prior_exclusions": "all original train/val/test source IDs and all native003 128 source IDs",
+    "test_queue_permutation_seed": 73013,
+    "train": "all original 1024 TRAIN images",
+    "validation": "all original 256 VAL images; 85 shuffled three-image streams, last unused image disclosed",
+    "validation_queue_permutation_seed": 73012
+  },
+  "deadline_ticks": 48,
+  "discount_per_tick": 1.0,
+  "failure_policy": "Keep failed processes/logs; source changes afterregistration require a new study identity; no fresh-test-driven selection changes",
+  "fire_and_reset": "FIRE terminates the current native owner and iterator; if >2 ticks remain and queue nonempty, consume 2 quiet ticks and reset neural state for the next image",
+  "first_read": "Mandatory only when starting a task; fitted fresh value must be positive for all registered prices and available deadlines",
+  "head_architecture": "Identical Linear(5,8),tanh,Linear(8,2); all66 parameters active in both score differences",
+  "head_inputs": [
+    "prefix/32",
+    "confidence_bin/3",
+    "remaining_ticks/48",
+    "remaining_tasks/3",
+    "price/.02"
+  ],
+  "head_intervention": "Value target/objective vs ordinary action distillation; not a pure architecture/channel-count comparison",
+  "head_seed": 34001,
+  "interpretation": "Task-layer owner value contract, not a theorem that each neural pressure boundary optimizes classification or a claim that frozenv1 execution demonstrates v2 content superiority",
+  "learning_rates": [
+    0.003,
+    0.01
+  ],
+  "maximum_reads_per_task": 32,
+  "native_invariants": "Original fixed binary, width5/topk1/20percent limit, DENY_ALL. KEEP iff Q24(tanh(score))>0; forced STOP at local maximum or global deadline.",
+  "native_streams": 16,
+  "native_subset": "First16 of the registered new queue permutation, all3 prices and all5 policies; actual step/owner/STOP/RESET, no extra postSTOP observations",
+  "observation_model": {
+    "confidence_bins": 4,
+    "confidence_quantum": 0.0001,
+    "exact_belief_process": false,
+    "quantile_fit": "TRAIN only, separately for each observed prefix",
+    "transition_reward_fit": "TRAIN-only empirical transitions/correctness, shrinkage pseudocount5"
+  },
+  "optimizer": "Adam, default betas, clip norm2",
+  "ordinary_loss": "Cross entropy of two ordinary logits against teacher Q24(tanh(C-G))>0 READ action; ties FIRE",
+  "pairing": "Same initialization, complete minibatch sequence, input bank, candidate and checkpoint counts",
+  "prices": [
+    0.001,
+    0.005,
+    0.02
+  ],
+  "primary_ordinary_reference": "VAL macro-best among ordinary_action_head, validation_schedule, validation_risk; locked before new test",
+  "queue_tasks": 3,
+  "recovery": "A declared fixed8 engineering fixture on firstnewstream: active state after1read and mid-refractory after1quiettick; suspend and resume in different Python processes, compare full semantic trajectory to uninterrupted fixture",
+  "refractory_ticks": 2,
+  "reward": "Actual correctness at each FIRE minus price times every actual READ; later tasks score separately",
+  "risk_candidates": "confidence_bin threshold0/1/2/3/4, each fixed or deadline-balanced; select perprice on VAL",
+  "schedule_candidates": "prefix1/2/4/8/16/32, each fixed or deadline-balanced; select perprice on VAL",
+  "schema": "hcsn-v2-regenerative-task-protocol.v1",
+  "selection": "Maximum actual VAL stream reward, macro average across prices; ties earlier checkpoint then smaller LR",
+  "statistics": "Descriptive stream-level paired means and1999-resample nominal bootstrap intervals; macro over3 prices before resampling; no new significance/superiority gate",
+  "status_at_registration": "no new task head training or fresh-cohort inference",
+  "study_id": "task_value001",
+  "teacher": "Finite Bellman table fitted from actual TRAIN prefix correctness/next-confidence distribution and actual public read cost; includes future tasks after reset",
+  "updates": 256,
+  "value_loss": "MSE(predicted [G,C],teacher [G,C]) +25*MSE(predicted C-G,teacher C-G)"
+}

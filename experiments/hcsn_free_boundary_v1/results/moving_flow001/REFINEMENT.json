@@ -1,0 +1,316 @@
+{
+  "case": {
+    "initial": 0.2,
+    "name": "negative_drift_then_shrink",
+    "reset": -0.25,
+    "segments": [
+      {
+        "boundary": 1.0,
+        "duration": 0.9,
+        "mu": -0.4,
+        "sigma": 0.75
+      },
+      {
+        "boundary": 0.35,
+        "duration": 0.9,
+        "mu": 0.45,
+        "sigma": 0.65
+      },
+      {
+        "boundary": 0.85,
+        "duration": 0.6,
+        "mu": -0.15,
+        "sigma": 0.6
+      }
+    ],
+    "tau": 0.45
+  },
+  "comparisons": {
+    "events": {
+      "1024_inside_original_pointwise_95_ci": true,
+      "1024_signed_offset_above_original_upper_ci": -0.003220485045276056,
+      "absolute_error_vs_same_mc_mean": {
+        "1024": 0.0029561273054226067,
+        "256": 0.006748501614526448,
+        "512": 0.004240197897080411
+      },
+      "estimates": {
+        "1024": 0.7579561273054226,
+        "256": 0.7617485016145265,
+        "512": 0.7592401978970804
+      },
+      "increment_256_to_512": -0.0025083037174460365,
+      "increment_512_to_1024": -0.0012840705916578043,
+      "increment_ratio": 0.5119278748927779,
+      "signed_error_vs_same_mc_mean": {
+        "1024": 0.0029561273054226067,
+        "256": 0.006748501614526448,
+        "512": 0.004240197897080411
+      },
+      "unchanged_mc": {
+        "mean": 0.755,
+        "pointwise_normal_95_ci": [
+          0.7488233876493013,
+          0.7611766123506987
+        ],
+        "standard_error": 0.003151332831989087
+      }
+    },
+    "mean": {
+      "1024_inside_original_pointwise_95_ci": true,
+      "1024_signed_offset_above_original_upper_ci": -0.0072980955429117755,
+      "absolute_error_vs_same_mc_mean": {
+        "1024": 0.0019944493497238147,
+        "256": 0.005888562827897181,
+        "512": 0.0032894653665055396
+      },
+      "estimates": {
+        "1024": -0.5009325726237248,
+        "256": -0.5048266861018982,
+        "512": -0.5022275886405065
+      },
+      "increment_256_to_512": 0.0025990974613916418,
+      "increment_512_to_1024": 0.0012950160167817248,
+      "increment_ratio": 0.4982560431144167,
+      "signed_error_vs_same_mc_mean": {
+        "1024": -0.0019944493497238147,
+        "256": -0.005888562827897181,
+        "512": -0.0032894653665055396
+      },
+      "unchanged_mc": {
+        "mean": -0.498938123274001,
+        "pointwise_normal_95_ci": [
+          -0.504241769467189,
+          -0.49363447708081304
+        ],
+        "standard_error": 0.0027059419352999845
+      }
+    },
+    "reward": {
+      "1024_inside_original_pointwise_95_ci": true,
+      "1024_signed_offset_above_original_upper_ci": -3.152810739179279e-05,
+      "absolute_error_vs_same_mc_mean": {
+        "1024": 0.0019177745438827554,
+        "256": 0.0034606560826008215,
+        "512": 0.00242774402105711
+      },
+      "estimates": {
+        "1024": 0.0865041463398777,
+        "256": 0.08804702787859577,
+        "512": 0.08701411581705205
+      },
+      "increment_256_to_512": -0.0010329120615437115,
+      "increment_512_to_1024": -0.0005099694771743546,
+      "increment_ratio": 0.49372012987455405,
+      "signed_error_vs_same_mc_mean": {
+        "1024": 0.0019177745438827554,
+        "256": 0.0034606560826008215,
+        "512": 0.00242774402105711
+      },
+      "unchanged_mc": {
+        "mean": 0.08458637179599494,
+        "pointwise_normal_95_ci": [
+          0.0826370691447204,
+          0.08653567444726949
+        ],
+        "standard_error": 0.0009945421690176278
+      }
+    },
+    "variance": {
+      "1024_inside_original_pointwise_95_ci": true,
+      "1024_signed_offset_above_original_upper_ci": -0.006146470667384107,
+      "absolute_error_vs_same_mc_mean": {
+        "1024": 0.00033857002959958304,
+        "256": 0.003915248981894437,
+        "512": 0.001051432964633725
+      },
+      "estimates": {
+        "1024": 0.36576019570939455,
+        "256": 0.3700140147208886,
+        "512": 0.36715019870362786
+      },
+      "increment_256_to_512": -0.002863816017260712,
+      "increment_512_to_1024": -0.001390002994233308,
+      "increment_ratio": 0.4853674209011755,
+      "signed_error_vs_same_mc_mean": {
+        "1024": -0.00033857002959958304,
+        "256": 0.003915248981894437,
+        "512": 0.001051432964633725
+      },
+      "unchanged_mc": {
+        "mean": 0.36609876573899414,
+        "pointwise_normal_95_ci": [
+          0.3602908651012096,
+          0.37190666637677866
+        ],
+        "standard_error": 0.0029632146111145427
+      }
+    }
+  },
+  "created_utc": "2026-10-29T13:35:33.814933+00:00",
+  "findings": {
+    "all_four_1024_metrics_inside_unchanged_original_mc_pointwise_95_ci": true,
+    "grid_2048_run": false,
+    "increment_ratio_range_across_four_metrics": [
+      0.4853674209011755,
+      0.5119278748927779
+    ],
+    "interpretation": "The reward discrepancy continues to decrease with spatial refinement. The 512-to-1024 correction is 0.494 times the 256-to-512 correction, consistent with the observed first-order spatial trend. At 1024 the reward is inside the same original Monte Carlo interval, only 3.15e-5 below its upper endpoint; this is modest evidence of numerical convergence, not proof of exact continuum agreement or a bound.",
+    "reward_increment_halving_ratio": 0.49372012987455405,
+    "stopping_reason": "Targeted 1024 refinement resolves the original interval-exceedance check and shows continued spatial convergence; no further expansion was needed."
+  },
+  "finite_final": {
+    "events": 0.7579561273054226,
+    "lower_cell_mass": 2.88642845221424e-08,
+    "mass": 0.9999999999790921,
+    "mean": -0.5009325726237248,
+    "minimum_probability": 2.8532949311750227e-08,
+    "refractory_mass": 0.020958574650614525,
+    "refractory_remaining": 0.005185929817071146,
+    "reward": 0.0865041463398777,
+    "second_moment": 0.6166936380248179,
+    "variance": 0.36576019570939455
+  },
+  "grid": {
+    "cells": 1024,
+    "lower": -5,
+    "refractory_stages": 16
+  },
+  "interpretation": "Successive-grid differences are empirical convergence diagnostics, not a certified continuum error bound. The same original pointwise Monte Carlo intervals are retained.",
+  "main_outcomes_read": false,
+  "measurement": {
+    "cpu_seconds": 4.767552597,
+    "includes": "Generator construction, three-segment propagation, remapping and moments; excludes imports",
+    "interop_threads": 1,
+    "intraop_threads": 1,
+    "peak_rss_kib_linux_after": 446688,
+    "peak_rss_kib_linux_before": 230940,
+    "torch": "2.8.0+cpu",
+    "wall_seconds": 5.971180743996229
+  },
+  "monte_carlo_reused": {
+    "new_paths_generated": 0,
+    "new_seed_selected": false,
+    "refractory_stages": 16,
+    "samples": 50000,
+    "seed": 603002
+  },
+  "original_results_modified": false,
+  "original_results_sha256_after": "805dc3b007374f84cb464ec006b96c53b7e2847c039145d0b98225c01010940d",
+  "original_results_sha256_before": "805dc3b007374f84cb464ec006b96c53b7e2847c039145d0b98225c01010940d",
+  "records": [
+    {
+      "after_jump": {
+        "events": 0.0,
+        "lower_cell_mass": 0.0,
+        "mass": 1.0,
+        "mean": 0.2,
+        "minimum_probability": 0.0,
+        "refractory_mass": 0.0,
+        "refractory_remaining": 0.0,
+        "reward": 0.0,
+        "second_moment": 0.040003967285156254,
+        "variance": 3.967285156246392e-06
+      },
+      "after_segment": {
+        "events": 0.13839323223750555,
+        "lower_cell_mass": 6.95587129534297e-13,
+        "mass": 0.9999999999707666,
+        "mean": -0.31500072348112834,
+        "minimum_probability": 6.914076603171543e-13,
+        "refractory_mass": 0.07759573802802912,
+        "refractory_remaining": 0.01729991248656569,
+        "reward": 0.08303593934250335,
+        "second_moment": 0.42101232943674766,
+        "variance": 0.32178687364311337
+      },
+      "jump": {
+        "immediate_events": 0.0,
+        "immediate_reward": 0.0,
+        "projection_mean_error": 0.0,
+        "projection_mean_error_bound": 0.0
+      }
+    },
+    {
+      "after_jump": {
+        "events": 0.25863670784681614,
+        "lower_cell_mass": 6.202318571681237e-13,
+        "mass": 0.9999999999707665,
+        "mean": -0.41243670537542193,
+        "minimum_probability": 6.166925915346746e-13,
+        "refractory_mass": 0.19783921363733975,
+        "refractory_remaining": 0.07140947651075547,
+        "reward": 0.10231279364817188,
+        "second_moment": 0.38806324946021137,
+        "variance": 0.21795921351927877
+      },
+      "after_segment": {
+        "events": 0.7396414799761503,
+        "lower_cell_mass": 7.214905501826687e-10,
+        "mass": 0.999999999977236,
+        "mean": -0.3998297812708285,
+        "minimum_probability": 7.214905501826687e-10,
+        "refractory_mass": 0.23058077907269192,
+        "refractory_remaining": 0.05723214712844718,
+        "reward": 0.07826255504170515,
+        "second_moment": 0.3584861787262591,
+        "variance": 0.19862232473518052
+      },
+      "jump": {
+        "immediate_events": 0.12024347560931062,
+        "immediate_reward": 0.019276854305668528,
+        "projection_mean_error": -8.684425731320111e-07,
+        "projection_mean_error_bound": 0.002095488382267497
+      }
+    },
+    {
+      "after_jump": {
+        "events": 0.7396414799761503,
+        "lower_cell_mass": 7.897083061703996e-10,
+        "mass": 0.999999999977236,
+        "mean": -0.3998298062949549,
+        "minimum_probability": 0.0,
+        "refractory_mass": 0.23058077907269192,
+        "refractory_remaining": 0.05723214712844718,
+        "reward": 0.07826255504170515,
+        "second_moment": 0.3584903823305716,
+        "variance": 0.19862650832871045
+      },
+      "after_segment": {
+        "events": 0.7579561273054226,
+        "lower_cell_mass": 2.88642845221424e-08,
+        "mass": 0.9999999999790921,
+        "mean": -0.5009325726237248,
+        "minimum_probability": 2.8532949311750227e-08,
+        "refractory_mass": 0.020958574650614525,
+        "refractory_remaining": 0.005185929817071146,
+        "reward": 0.0865041463398777,
+        "second_moment": 0.6166936380248179,
+        "variance": 0.36576019570939455
+      },
+      "jump": {
+        "immediate_events": 0.0,
+        "immediate_reward": 0.0,
+        "projection_mean_error": -2.502412638216711e-08,
+        "projection_mean_error_bound": 0.002197803926900187
+      }
+    }
+  ],
+  "schema": "hcsn-moving-flow-targeted-refinement.v1",
+  "scope": "Only scenario B spatial refinement to 1024 cells; original MC and all other parameters unchanged",
+  "source_sha256_after": {
+    "closure_audit.py": "199d78f7e099eac32af184118d310e87368d97c03c9edef721ece86454fa8178",
+    "distributional_flow.py": "f63f0ba94e6ce0aa348e33557b20d64261308d10bf832d1f7324aceec79965a3",
+    "model.py": "c86535bf5b37589503aada3b1d979d80b75e54eb19e6be4f3b93482066147625",
+    "moving_flow.py": "698a7e621f89fcde4aee6f485575470ec04e2d11fe1021b2c5ce4e92e720a05c",
+    "moving_flow_tests.py": "ae59cf2fcc2c9a7aff648373254af54b38a5fed2ee88d8add085d8bcf7cd9d68"
+  },
+  "source_sha256_before": {
+    "closure_audit.py": "199d78f7e099eac32af184118d310e87368d97c03c9edef721ece86454fa8178",
+    "distributional_flow.py": "f63f0ba94e6ce0aa348e33557b20d64261308d10bf832d1f7324aceec79965a3",
+    "model.py": "c86535bf5b37589503aada3b1d979d80b75e54eb19e6be4f3b93482066147625",
+    "moving_flow.py": "698a7e621f89fcde4aee6f485575470ec04e2d11fe1021b2c5ce4e92e720a05c",
+    "moving_flow_tests.py": "ae59cf2fcc2c9a7aff648373254af54b38a5fed2ee88d8add085d8bcf7cd9d68"
+  },
+  "sources_modified": false
+}

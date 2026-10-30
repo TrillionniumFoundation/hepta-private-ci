@@ -1,0 +1,16 @@
+{
+  "schema": "hcsn-equal-updates-core002-preflight.v1",
+  "tests_run": 3,
+  "passed": true,
+  "failures": 0,
+  "errors": 0,
+  "scope": "synthetic data only, target3 updates for helper integration; no new registered real-data training or inference",
+  "cpu_seconds": 1.087944104,
+  "source_sha256": {
+    "equal_updates_core002.py": "d78fb409d07c0cef5c72469a492f34af9a0d76577841e2d5823e661cd71a6c57",
+    "equal_updates_core002_tests.py": "0834f79c57b8074f897b2e8d2aa3f7cdc2db7e4c49048fbdb9fbbdc14b5950c5",
+    "training.py": "1aab526dec037ba19a5b55fc532027d2a688212f4595ed21d5d86f35ebcbe653",
+    "model.py": "c86535bf5b37589503aada3b1d979d80b75e54eb19e6be4f3b93482066147625"
+  },
+  "test_output": "test_bad_initialization_fails_before_holdout_and_is_preserved (experiments.hcsn_free_boundary_v1.equal_updates_core002_tests.ExactUpdateTests.test_bad_initialization_fails_before_holdout_and_is_preserved) ... ok\ntest_cpu_gate_best_is_ignored_and_only_own_intermediate_numeric_pruned (experiments.hcsn_free_boundary_v1.equal_updates_core002_tests.ExactUpdateTests.test_cpu_gate_best_is_ignored_and_only_own_intermediate_numeric_pruned) ... ok\ntest_fresh_restart_exact_prefix_checkpoint_and_selection_lock (experiments.hcsn_free_boundary_v1.equal_updates_core002_tests.ExactUpdateTests.test_fresh_restart_exact_prefix_checkpoint_and_selection_lock) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 1.309s\n\nOK\n"
+}

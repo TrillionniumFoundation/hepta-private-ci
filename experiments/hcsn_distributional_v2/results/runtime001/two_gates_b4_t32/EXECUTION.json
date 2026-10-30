@@ -1,0 +1,22 @@
+{
+  "child_cpu_seconds": 3.946105,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_distributional_v2.runtime_eval",
+    "bench",
+    "--output",
+    "experiments/hcsn_distributional_v2/results/runtime001/two_gates_b4_t32",
+    "--model",
+    "two_gates",
+    "--batch",
+    "4",
+    "--length",
+    "32",
+    "--registration",
+    "experiments/hcsn_distributional_v2/results/runtime001/REGISTRATION.json"
+  ],
+  "exit_code": 0,
+  "maxrss_kib": 267820,
+  "wall_seconds": 9.170869675999711
+}

@@ -1,0 +1,158 @@
+{
+  "additional_measured_windows": [
+    {
+      "cpu_seconds": 0.0026781719999999995,
+      "field": "/outer_supervisor_self_window_cpu_seconds",
+      "measurement_kind": "partial_process_body_timer",
+      "receipt": "experiments/hcsn_distributional_v2/results/lif_supplement001/SCHEDULER_EXECUTION.json",
+      "receipt_sha256": "efda6065633bd5d796af694780d9561fac330baa990fa253d26179e21c860519",
+      "scope": "Independent outer supervisor self CPU measured over its recorded window; not whole-process CPU, not part of the scheduler child tree; counted only through the separately declared extra-cost scope",
+      "scope_id": "lif_scheduler_supervisor_window"
+    }
+  ],
+  "analysis": {
+    "path": "experiments/hcsn_distributional_v2/results/lif_analysis001/ANALYSIS.json",
+    "sha256": "757a13820a15517c65b5c157f26715cb1a7cd30d35ebc10a10201f9d7c3f582f"
+  },
+  "bindings_sha256": "8a9439a14251ac50035283bab8397959b84e31ab18f41d8097c363338348c2a7",
+  "containment": "Three disjoint core scopes: complete scheduler tree, complete analyzer child, final analysis-watcher self CPU through receipt. Worker/candidate/training/body clocks remain nested and are not added.",
+  "main_admission": {
+    "basis": "independent_post_hoc_producer_exact_integrity_audit",
+    "derived_source": {
+      "path": "experiments/hcsn_distributional_v2/content_supplemental_analysis.py",
+      "sha256": "2f4dd656fcd868a891ee78808f7974e45a990a713020a1aaef2b89e74d771413"
+    },
+    "interpretation": "Original strict CE gate remains failed (175/1). The independent supplement completes all 176 integrity audits under an explicitly registered producer-exact CE check; this is not a retroactive strict pass or a scientific superiority result.",
+    "original_strict": {
+      "execution_path": "experiments/hcsn_distributional_v2/results/content_analysis002/EXECUTION.json",
+      "execution_sha256": "888306666e60ee51c40aa7af02e8c2f46bd4aaf4ff88a2601fd1dd5d51b37218",
+      "expected": 176,
+      "gate_passed": false,
+      "invalid": 1,
+      "path": "experiments/hcsn_distributional_v2/results/content_analysis002/ANALYSIS.json",
+      "sha256": "654f1f3b235bd066e8ee64f2f20e18dc16eb7f83ecbef31379a066d94433da76",
+      "valid": 175
+    },
+    "schema": "hcsn-main-analysis-admission.v1",
+    "scientific_comparisons_preserved": true,
+    "supplemental": {
+      "expected": 176,
+      "invalid": 0,
+      "path": "experiments/hcsn_distributional_v2/results/content_analysis_supplement001/ANALYSIS.json",
+      "post_hoc": true,
+      "protocol_path": "experiments/hcsn_distributional_v2/CONTENT_SUPPLEMENT001_PROTOCOL.json",
+      "protocol_sha256": "5e431b9165efc855d7b45cad5185cc7d093c900a533c2aa37e2c81eec231a6c2",
+      "sha256": "6e7aa0c66627663ea84e962f502a7a73dcb46b0c0569e71feb932e51b27ecffd",
+      "statistical_gates_changed": false,
+      "valid": 176
+    }
+  },
+  "main_admission_proofs": {
+    "main_strict_analysis": {
+      "path": "results/content_analysis002/ANALYSIS.json",
+      "sha256": "654f1f3b235bd066e8ee64f2f20e18dc16eb7f83ecbef31379a066d94433da76"
+    },
+    "main_strict_analysis_execution": {
+      "path": "results/content_analysis002/EXECUTION.json",
+      "sha256": "888306666e60ee51c40aa7af02e8c2f46bd4aaf4ff88a2601fd1dd5d51b37218"
+    },
+    "main_supplement_analysis": {
+      "path": "results/content_analysis_supplement001/ANALYSIS.json",
+      "sha256": "6e7aa0c66627663ea84e962f502a7a73dcb46b0c0569e71feb932e51b27ecffd"
+    },
+    "main_supplement_execution": {
+      "path": "results/content_analysis_supplement001_execution/EXECUTION.json",
+      "sha256": "d7507b04aa6393298a56429d6332b2b17b1bb693e804967e1f14e6214dca64d1"
+    },
+    "main_supplement_execution_log": {
+      "path": "results/content_analysis_supplement001_execution/process.log",
+      "sha256": "ca32141becc72308dbe3a305ab873d8c084a2679b478179650c5775d1fb13da9"
+    },
+    "main_supplement_execution_request": {
+      "path": "results/content_analysis_supplement001_execution/REQUEST.json",
+      "sha256": "efaa093a750e0efc6a2599dce8081f769dc1d6dce0a2235532a4294096cc70e0"
+    },
+    "main_supplement_protocol": {
+      "path": "CONTENT_SUPPLEMENT001_PROTOCOL.json",
+      "sha256": "5e431b9165efc855d7b45cad5185cc7d093c900a533c2aa37e2c81eec231a6c2"
+    },
+    "main_supplement_registered_ast_evidence": {
+      "path": "results/content_supplement001/AST_COMPARISON.json",
+      "sha256": "a007b03824139e989e4bc6efa43b3b732019d584062b75c593a2c949eb597415"
+    },
+    "main_supplement_registered_derivation_diff": {
+      "path": "results/content_supplement001/DERIVATION.diff",
+      "sha256": "4e24e3067125999079c14a8ec60c00617bd7cfcadc66ac8e18afc42583df4408"
+    },
+    "main_supplement_registered_diagnostic": {
+      "path": "results/content_ce_diagnostic002/RESULT.json",
+      "sha256": "9a7e1e1ed6dd9bf959fa65a652f932175fb264afe012c7937f971a093423a0a9"
+    },
+    "main_supplement_registered_preparer_source": {
+      "path": "results/content_supplement001/PREPARE.py",
+      "sha256": "ad70b29dadf6943bfc2978a9fcfb05d81c76bc8a4fbb51b2c363dbba68451956"
+    },
+    "main_supplement_registered_producer_checks": {
+      "path": "results/content_supplement001/PRODUCER_CHECKS.json",
+      "sha256": "df2490c066639397106013c4556304290473c7c3def2033a43e6771268d41285"
+    },
+    "main_supplement_registration_ast_comparison_json": {
+      "path": "results/content_supplement001/AST_COMPARISON.json",
+      "sha256": "a007b03824139e989e4bc6efa43b3b732019d584062b75c593a2c949eb597415"
+    },
+    "main_supplement_registration_derivation_diff": {
+      "path": "results/content_supplement001/DERIVATION.diff",
+      "sha256": "4e24e3067125999079c14a8ec60c00617bd7cfcadc66ac8e18afc42583df4408"
+    },
+    "main_supplement_registration_producer_checks_json": {
+      "path": "results/content_supplement001/PRODUCER_CHECKS.json",
+      "sha256": "df2490c066639397106013c4556304290473c7c3def2033a43e6771268d41285"
+    },
+    "main_supplement_registration_registration_json": {
+      "path": "results/content_supplement001/REGISTRATION.json",
+      "sha256": "82158d1f4aa4f3b87ab877865cc12dcb315ad5c8f1744c187d55f571f0a30427"
+    }
+  },
+  "protocol_sha256": "68a55b63c7c91d413c507766463cf07cf8b0163ddf092fdeaf810bbded7278cc",
+  "schema": "hcsn-lif-cost-receipts.v1",
+  "scopes": [
+    {
+      "cpu_seconds": 2266.716221,
+      "field": "/complete_child_cpu_seconds",
+      "measurement_kind": "complete_process_tree_wait4",
+      "receipt": "experiments/hcsn_distributional_v2/results/lif_supplement001/SCHEDULER_EXECUTION.json",
+      "receipt_sha256": "efda6065633bd5d796af694780d9561fac330baa990fa253d26179e21c860519",
+      "scope": "Complete Linux waited LIF scheduler tree, including all 18 waited search workers; worker, candidate and training clocks are nested.",
+      "scope_id": "lif_scheduler",
+      "success_field": "/exit_code",
+      "success_value": 0
+    },
+    {
+      "cpu_seconds": 9.848573,
+      "field": "/complete_child_cpu_seconds",
+      "measurement_kind": "complete_process_tree_wait4",
+      "receipt": "experiments/hcsn_distributional_v2/results/lif_supplement001/ANALYSIS_OUTER_EXECUTION.json",
+      "receipt_sha256": "2ac81012279188b0fa16bc83b404271d87991b915a887431472b9cabbab75619",
+      "scope": "Complete isolated LIF analyzer child measured by its outer wait4 receipt; analyzer body/self clocks are nested and parent content training is reused without an additional charge.",
+      "scope_id": "lif_analysis",
+      "success_field": "/exit_code",
+      "success_value": 0
+    },
+    {
+      "cpu_seconds": 0.7266347989999999,
+      "field": "/watcher_self_cpu_seconds",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "receipt": "experiments/hcsn_distributional_v2/results/lif_supplement001/ANALYSIS_OUTER_EXECUTION.json",
+      "receipt_sha256": "2ac81012279188b0fa16bc83b404271d87991b915a887431472b9cabbab75619",
+      "scope": "One final cumulative watcher process-self CPU through its receipt, excluding the analyzer child; earlier heartbeat snapshots are not additive. Verify this exact field and terminal status in the original final file.",
+      "scope_id": "lif_analysis_watcher",
+      "success_field": "/status",
+      "success_value": "completed"
+    }
+  ],
+  "source_sha256": {
+    "archive_closure.py": "a73cdcadf0164a83c1355cce17bec9e38e0991e9155b9a4c52c243cb8e4d0209",
+    "lif_cost_receipts.py": "1522af122bfc48ade0947ad200dd5e9e8ba9bf0ed0da2157cba01afd94767cb2"
+  },
+  "status": "completed"
+}
