@@ -1,0 +1,27 @@
+{
+  "confirmation_freeze_sha256": "5b679b7074497957dba0bc51b95b39f1d62fd36326456b49879257b9c5de7d77",
+  "status": "not_executed_development_failed",
+  "no_confirmation_data_constructed": true,
+  "children": [],
+  "preparation_attempts": [],
+  "observed_development_runs": 47,
+  "development_gate": {
+    "passed": false,
+    "checks": {
+      "matrix_complete": true,
+      "memory128_every_seed": true,
+      "retrieval128_every_seed": true,
+      "memory512_delta": true,
+      "retrieval512_delta": false,
+      "all_numerical": true
+    },
+    "mean512_deltas": {
+      "memory": 0.25716145833333337,
+      "retrieval": -0.01953125
+    },
+    "next_action": "Separate frozen confirmation only if passed; no backbone authorization",
+    "financial_shape_superiority_established": false,
+    "confirmation_data_constructed": false
+  },
+  "development_result_sha256": "9425e32b1a69b789440fcc36d4f298cd2e2d586d113cf08dec391a4e3e0891ee"
+}
