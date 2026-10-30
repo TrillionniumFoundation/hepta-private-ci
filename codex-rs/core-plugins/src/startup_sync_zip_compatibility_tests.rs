@@ -19,12 +19,12 @@ const BZIP2_ZIPBALL: &[u8] = &[
 fn bzip2_zipball_extracts_independent_archive() {
     let destination = tempdir().unwrap();
     let mut archive = zip::ZipArchive::new(std::io::Cursor::new(BZIP2_ZIPBALL)).unwrap();
-    assert_eq!(
+    std::assert_eq!(
         archive.by_index(0).unwrap().compression(),
         zip::CompressionMethod::Bzip2
     );
     extract_zipball_to_dir(BZIP2_ZIPBALL, destination.path()).unwrap();
-    assert_eq!(
+    std::assert_eq!(
         std::fs::read(destination.path().join("plugin.txt")).unwrap(),
         b"Independent bzip2 plugin archive\n"
     );
@@ -40,5 +40,5 @@ fn zipball_special_mode_bits_never_reach_filesystem() {
         .unwrap()
         .permissions()
         .mode();
-    assert_eq!(mode & 0o7777, 0o755);
+    std::assert_eq!(mode & 0o7777, 0o755);
 }
