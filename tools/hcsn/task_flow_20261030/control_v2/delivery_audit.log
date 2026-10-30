@@ -1,0 +1,37 @@
+{
+  "passed": true,
+  "files": 3560,
+  "traces": 800,
+  "counts": {
+    "SKIP": 2758,
+    "READ": 1424,
+    "FIRE": 1214,
+    "STOP": 56
+  },
+  "diagnostic_summaries": [
+    {
+      "family": "full_value",
+      "mean_accumulated_model_regret": 0.4030478330747696,
+      "mean_initial_decision_model_regret": 0.07118934557196177,
+      "per_decision_model_regret": 0.0639758465198047
+    },
+    {
+      "family": "ordinary_boundary",
+      "mean_accumulated_model_regret": 0.5826477194794655,
+      "mean_initial_decision_model_regret": 0.07818146670186618,
+      "per_decision_model_regret": 0.08154621686206653
+    },
+    {
+      "family": "first_event_value",
+      "mean_accumulated_model_regret": 0.5355547584214446,
+      "mean_initial_decision_model_regret": 0.07296811192426035,
+      "per_decision_model_regret": 0.07806920676697443
+    },
+    {
+      "family": "model_dp",
+      "mean_accumulated_model_regret": 0.0,
+      "mean_initial_decision_model_regret": 0.0,
+      "per_decision_model_regret": 0.0
+    }
+  ]
+}
