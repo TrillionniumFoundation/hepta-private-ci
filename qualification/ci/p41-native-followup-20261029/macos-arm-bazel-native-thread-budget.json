@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.p41-native-followup.macos-arm-bazel-host-budget.v1",
+  "observed_at_utc": "2026-10-30T01:16:16Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 4184,
+  "parent_source_sha": "f27062acd3814eb140c72fb303787dd09dff2e6a",
+  "failed_run_id": 40979942686,
+  "failed_job_id": 123817643778,
+  "failed_job_name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+  "source_observation": {
+    "exit_code": 33,
+    "fatal": "bazel ran out of memory and crashed",
+    "exception": "java.lang.OutOfMemoryError: unable to create native thread: possibly out of memory or process/resource limits reached",
+    "native_stack_site": "com.google.devtools.build.lib.sandbox.AsynchronousTreeDeleter.deleteTree",
+    "last_approx_progress": "66/237 Bazel tests; 3651/3693 actions; analysis still expanding",
+    "console_test_failure_claimed": false,
+    "root_cause": "UNCONFIRMED_HOST_THREAD_OR_MEMORY_EXHAUSTION"
+  },
+  "change": {
+    "path": ".github/workflows/bazel.yml",
+    "matrix_target": "aarch64-apple-darwin",
+    "bazel_test_args_added": [
+      "--jobs=24",
+      "--local_test_jobs=2"
+    ],
+    "test_targets_changed": false,
+    "test_tag_filters_changed": false,
+    "test_timeout_changed": false,
+    "required_gate_changed": false,
+    "security_assertions_changed": false,
+    "test_env_changed": false,
+    "reason": "Bound on locally submitted test processes and Bazel execution scheduling to reduce Mac host thread pressure while retaining the complete original Bazel test graph."
+  },
+  "validation": {
+    "static_exact_anchor_verified": true,
+    "native_macos_arm_owning_reexecution": "NOT_YET_OBSERVED",
+    "source_success_claimed": false,
+    "requires": "Actual exact-head macos-15 aarch64 Bazel test terminal success, original failures addressed independently; all other required gates must still pass."
+  },
+  "production_activated": false,
+  "authority": "DENY_ALL",
+  "mode": "SHADOW_ONLY",
+  "decision": "HOLD_NO_GO"
+}
