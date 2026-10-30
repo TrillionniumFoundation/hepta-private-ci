@@ -1,0 +1,969 @@
+{
+  "passed": true,
+  "independent_numpy_replays": [
+    {
+      "task": "memory",
+      "seed": 11,
+      "variant": "sigmoid_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 3.006099739792656e-10,
+          "brier": 1.3633154141793266e-13,
+          "ece": 3.005363735653077e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 1.876186349293249e-09,
+          "brier": 2.1549716729769765e-15,
+          "ece": 1.8755759167987662e-09
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 11,
+      "variant": "c1_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 1.5835201383485042e-07,
+          "brier": 9.885023240230328e-08,
+          "ece": 1.2136225635561715e-07
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 3.9389345474205584e-07,
+          "brier": 1.5138519326995947e-09,
+          "ece": 5.785012469061712e-10
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 11,
+      "variant": "c1_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 1.456551093387444e-10,
+          "brier": 1.383933703040049e-13,
+          "ece": 1.456281761846867e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 3.841993717525888e-10,
+          "brier": 1.6873582575399528e-13,
+          "ece": 3.8452019346379984e-10
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 11,
+      "variant": "memory_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 2.5281879073579816e-07,
+          "brier": 2.1968942748307185e-07,
+          "ece": 1.1135411526891348e-08
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 2.793785967014628e-07,
+          "brier": 3.3996239157119135e-09,
+          "ece": 9.464169448136772e-10
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 11,
+      "variant": "memory_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 7.9811782535558e-11,
+          "brier": 1.501712790234488e-13,
+          "ece": 7.97863997092918e-11
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 6.765565876629132e-10,
+          "brier": 2.9416612899785947e-12,
+          "ece": 6.758459347722123e-10
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 11,
+      "variant": "full_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 7.862534215363759e-08,
+          "brier": 5.405783044809542e-08,
+          "ece": 5.692108429045106e-08
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 3.347346853033173e-07,
+          "brier": 2.315375668970887e-09,
+          "ece": 6.181954947948043e-10
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 11,
+      "variant": "full_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 2.3104827854550022e-10,
+          "brier": 5.145899172724328e-13,
+          "ece": 2.3087509681829488e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 1.655040350259521e-08,
+          "brier": 4.8773212825074555e-11,
+          "ece": 1.653626535702557e-08
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 11,
+      "variant": "sigmoid_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 1.9315647395434787e-07,
+          "brier": 1.4387024142858973e-07,
+          "ece": 1.3710383950371607e-07
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 6.14723312253318e-07,
+          "brier": 3.1600257965891387e-09,
+          "ece": 1.0833649533026346e-09
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 29,
+      "variant": "c1_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 3.4570451579521433e-10,
+          "brier": 2.5383976960457544e-14,
+          "ece": 3.4572722462655747e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 1.0292290045384699e-07,
+          "brier": 1.0318706434145487e-09,
+          "ece": 1.02611132257735e-07
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 29,
+      "variant": "memory_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 1.5064039967684073e-10,
+          "brier": 2.584275169402788e-13,
+          "ece": 1.5054824054061555e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 3.0010395783014454e-09,
+          "brier": 1.02501484188465e-10,
+          "ece": 2.9651153754528536e-09
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 29,
+      "variant": "memory_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 1.4656744784860565e-11,
+          "brier": 6.9629462658770216e-12,
+          "ece": 1.219868650537137e-11
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 2.019342308645644e-07,
+          "brier": 1.8641733405956422e-08,
+          "ece": 1.948155311515265e-07
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 29,
+      "variant": "full_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 3.5192757865884494e-10,
+          "brier": 9.239731278434208e-13,
+          "ece": 3.516016366944541e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 8.249199691390263e-09,
+          "brier": 7.378173895412551e-10,
+          "ece": 7.988024686156336e-09
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 29,
+      "variant": "full_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 7.189075216205987e-10,
+          "brier": 1.9525563355677673e-12,
+          "ece": 7.182802130856203e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 5.498469797656988e-08,
+          "brier": 1.3555332685857326e-09,
+          "ece": 5.4617538380874464e-08
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 29,
+      "variant": "sigmoid_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 5.289058794882492e-10,
+          "brier": 1.415781182221421e-12,
+          "ece": 5.284078730127817e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 5.462044504189745e-09,
+          "brier": 2.373439581806677e-10,
+          "ece": 5.375047407163436e-09
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 29,
+      "variant": "sigmoid_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 7.73005298226187e-10,
+          "brier": 8.945083401665765e-13,
+          "ece": 7.727478656960329e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 1.5996207013125284e-07,
+          "brier": 2.4649812714388017e-09,
+          "ece": 1.5925435414843037e-07
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 29,
+      "variant": "c1_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 2.1451049150942453e-10,
+          "brier": 5.839293195483486e-13,
+          "ece": 2.1431256769233187e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 7.0397812267086746e-09,
+          "brier": 7.385712345528428e-10,
+          "ece": 6.793333451327044e-09
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 47,
+      "variant": "memory_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 4.543767706923288e-10,
+          "brier": 3.195691311176997e-13,
+          "ece": 4.5426684636140635e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 6.55790265021404e-08,
+          "brier": 3.4189407071661353e-10,
+          "ece": 6.548930320260382e-08
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 47,
+      "variant": "full_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 3.6279560302124314e-11,
+          "brier": 2.9464519061520885e-14,
+          "ece": 3.626865474615215e-11
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 3.1959743879150793e-10,
+          "brier": 3.342983938511867e-12,
+          "ece": 3.184605912309735e-10
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 47,
+      "variant": "full_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 1.9729772915248744e-10,
+          "brier": 2.5927052113413815e-13,
+          "ece": 1.9726453803770028e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 1.0293362556132446e-06,
+          "brier": 2.187630081921816e-07,
+          "ece": 9.69733432998332e-07
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 47,
+      "variant": "sigmoid_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 3.621249600096327e-11,
+          "brier": 5.109658994601599e-14,
+          "ece": 3.619349264738503e-11
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 1.0935417159470273e-09,
+          "brier": 1.1397318437533408e-11,
+          "ece": 1.089528578468446e-09
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 47,
+      "variant": "sigmoid_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 9.467139919228096e-10,
+          "brier": 2.8918144061960898e-12,
+          "ece": 9.457949978752822e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 6.555765321610008e-07,
+          "brier": 1.4954220591370006e-07,
+          "ece": 6.143088230325944e-07
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 47,
+      "variant": "c1_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 3.33449012759196e-11,
+          "brier": 3.2215953071806414e-14,
+          "ece": 3.3333114046740775e-11
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 1.3192522421712205e-10,
+          "brier": 1.1870527228953183e-12,
+          "ece": 1.3154388689429197e-10
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 47,
+      "variant": "c1_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 1.3803080416933261e-09,
+          "brier": 4.350965872202759e-12,
+          "ece": 1.3789778208206371e-09
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 3.0810624451205193e-06,
+          "brier": 1.0983486313769636e-06,
+          "ece": 2.7698338448817195e-06
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "memory",
+      "seed": 47,
+      "variant": "memory_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 1.6878380572522833e-10,
+          "brier": 1.7945623395582468e-13,
+          "ece": 1.687189277177481e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 1.4357412064791575e-09,
+          "brier": 3.4217696486319154e-11,
+          "ece": 1.4234691203540706e-09
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 11,
+      "variant": "sigmoid_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 1.2558940224588477e-09,
+          "brier": 8.2409950140827e-13,
+          "ece": 1.2555123607427277e-09
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 2.6266534614571846e-06,
+          "brier": 1.9347445033013333e-06,
+          "ece": 6.831117131123055e-07
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 11,
+      "variant": "c1_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 1.3513450237284674e-09,
+          "brier": 1.4546883385097974e-11,
+          "ece": 1.3457646108605559e-09
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 1.661170684341684e-08,
+          "brier": 4.234093620852919e-09,
+          "ece": 1.500862729930663e-08
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 11,
+      "variant": "c1_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 5.967723884503506e-10,
+          "brier": 2.212402434308993e-11,
+          "ece": 5.909783773461186e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 4.074877747062278e-06,
+          "brier": 3.272778057214487e-06,
+          "ece": 1.929489964573594e-07
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 11,
+      "variant": "memory_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 2.360137135205831e-09,
+          "brier": 6.1660331178502e-11,
+          "ece": 2.339846316701255e-09
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 3.468115666871441e-08,
+          "brier": 1.1773527684028062e-08,
+          "ece": 2.9743558768724476e-08
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 11,
+      "variant": "memory_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 5.615190716914964e-10,
+          "brier": 1.7536199074002687e-11,
+          "ece": 5.553824067305868e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 2.084545142055916e-06,
+          "brier": 1.565483104079557e-06,
+          "ece": 2.7525833405650513e-07
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 11,
+      "variant": "full_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 2.1380877207599625e-09,
+          "brier": 4.247415925714309e-11,
+          "ece": 2.124542097803328e-09
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 3.2057202073443314e-08,
+          "brier": 8.73947698237787e-09,
+          "ece": 2.8454529302224252e-08
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 11,
+      "variant": "full_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 2.0167290593585407e-09,
+          "brier": 4.5901054761908326e-11,
+          "ece": 2.002223942199066e-09
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 7.773898478280472e-07,
+          "brier": 6.833629433988797e-07,
+          "ece": 2.3166791021586586e-06
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 11,
+      "variant": "sigmoid_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 1.6323904354978436e-09,
+          "brier": 3.313969701752178e-11,
+          "ece": 1.6220165210967252e-09
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 2.410545187070401e-08,
+          "brier": 6.295687004706507e-09,
+          "ece": 2.1472071135009152e-08
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 29,
+      "variant": "c1_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 1.092109954553555e-09,
+          "brier": 5.414577773739848e-11,
+          "ece": 1.0767888802831749e-09
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 8.486566126231221e-07,
+          "brier": 4.063615766207451e-07,
+          "ece": 6.114361245437849e-07
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 29,
+      "variant": "memory_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 1.217503052368396e-09,
+          "brier": 3.1058825501165295e-11,
+          "ece": 1.207988598039833e-09
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 8.919726665612693e-09,
+          "brier": 7.607880610216444e-10,
+          "ece": 8.153769631702446e-09
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 29,
+      "variant": "memory_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 5.220970672936351e-10,
+          "brier": 1.7952065007136833e-11,
+          "ece": 5.17033416080892e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 7.077783534259474e-08,
+          "brier": 8.232048448464369e-08,
+          "ece": 6.845342088168671e-07
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 29,
+      "variant": "full_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 7.637559716611175e-10,
+          "brier": 7.319759610650736e-12,
+          "ece": 7.614326946736583e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 1.0523244088622707e-08,
+          "brier": 1.8429297359012775e-09,
+          "ece": 9.893634470709012e-09
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 29,
+      "variant": "full_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 2.6649647180861102e-09,
+          "brier": 7.497034740108982e-11,
+          "ece": 2.643677277092138e-09
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 8.151777398657245e-07,
+          "brier": 5.921804150481325e-07,
+          "ece": 3.551342375451849e-07
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 29,
+      "variant": "sigmoid_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 4.1343627653345205e-10,
+          "brier": 4.035460195037565e-12,
+          "ece": 4.121293306624807e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 2.146282328946425e-09,
+          "brier": 9.56531051414522e-10,
+          "ece": 2.458515099834635e-09
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 29,
+      "variant": "sigmoid_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 1.3256322938231396e-09,
+          "brier": 3.0451543991269155e-11,
+          "ece": 1.3172112289794313e-09
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 3.7323049681403653e-07,
+          "brier": 3.590668316462431e-07,
+          "ece": 3.977569887209098e-07
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 29,
+      "variant": "c1_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 5.247635707049392e-10,
+          "brier": 5.635075932486572e-12,
+          "ece": 5.229991995037153e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 1.0219607639305739e-08,
+          "brier": 1.1557365975703449e-09,
+          "ece": 9.798083254464185e-09
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 47,
+      "variant": "memory_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 1.0308326948114954e-09,
+          "brier": 1.4524777923910522e-11,
+          "ece": 1.025907359064604e-09
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 5.142681537111116e-07,
+          "brier": 2.8811777667055866e-07,
+          "ece": 4.03945878000439e-07
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 47,
+      "variant": "full_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 1.2966168030752179e-09,
+          "brier": 1.7337778422958552e-11,
+          "ece": 1.2910461588688804e-09
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 1.7351124384501482e-08,
+          "brier": 5.216771958860278e-09,
+          "ece": 1.2740082100393124e-08
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 47,
+      "variant": "full_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 3.1819397193055127e-10,
+          "brier": 4.517417324001634e-12,
+          "ece": 3.1664237898354486e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 1.4248504911704152e-07,
+          "brier": 6.072486817012245e-08,
+          "ece": 1.2019212896480225e-07
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 47,
+      "variant": "sigmoid_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 8.834775194407896e-10,
+          "brier": 7.292225654429493e-12,
+          "ece": 8.807725659920607e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 1.562259077658723e-08,
+          "brier": 4.182260024410134e-09,
+          "ece": 1.208461714030662e-08
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 47,
+      "variant": "sigmoid_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 8.919421776686087e-10,
+          "brier": 2.8354392023092828e-11,
+          "ece": 8.847973465009318e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 1.9638411439745762e-07,
+          "brier": 8.757891573020135e-08,
+          "ece": 1.664922620776832e-07
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 47,
+      "variant": "c1_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 9.788910623927116e-10,
+          "brier": 6.854790623604711e-12,
+          "ece": 9.763045927257963e-10
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 1.4740882334218774e-08,
+          "brier": 4.903663419764115e-09,
+          "ece": 1.2930781626008248e-08
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 47,
+      "variant": "c1_mass",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 8.059115115706394e-11,
+          "brier": 9.01920371544694e-12,
+          "ece": 8.295963915827542e-11
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 3.2342709899157995e-08,
+          "brier": 5.453672781603747e-09,
+          "ece": 3.800902013961771e-08
+        }
+      },
+      "passed": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 47,
+      "variant": "memory_fixed",
+      "errors": {
+        "diagnostic128": {
+          "accuracy": 0.0,
+          "loss": 1.074259632638519e-09,
+          "brier": 1.65424963122576e-11,
+          "ece": 1.0692214891250273e-09
+        },
+        "diagnostic512": {
+          "accuracy": 0.0,
+          "loss": 1.1512358143173085e-08,
+          "brier": 1.5099612506522253e-09,
+          "ece": 1.094580406868495e-08
+        }
+      },
+      "passed": true
+    }
+  ],
+  "dynamic_initial_parameters_identical": true,
+  "development_results_sha256": "9425e32b1a69b789440fcc36d4f298cd2e2d586d113cf08dec391a4e3e0891ee",
+  "retrained": false,
+  "source": "bf6f4585523f292eb41dd9bcd03dbedcf866ed2d65d5c3ebadeb3521489b42e2"
+}

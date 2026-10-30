@@ -1,0 +1,3018 @@
+{
+  "metadata": {
+    "dataset": "cifar10",
+    "features_sha256": "4aa81cf9f6c2dfe451f2f02fda0c389f2f155c5321606e0661db930de292f2d8",
+    "source_sha256": {
+      "next/encoder/run_baselines.py": "0f045b1a53d97813467aa23596638dd7c3d0ebc12b958913c61d8eb7828b4edb",
+      "benchmarks/v2_models.py": "4ca4309b9d52a911485490a0667f089a193f5aa4600ae724f596b71e07823a53",
+      "benchmarks/models.py": "212d0ed0c06bb9168c91363529fa30c25fa3668b1927ddc53483af8884ad5b88",
+      "next/common.py": "27a6b807db7a2a0d0ad3f49dbc34b1d2850dcf8bdab00cedb928a153489ac565"
+    },
+    "protocol_sha256": "396100b01c00e90b4e60b4ac6c08171fc4575839cf6afaec6fc9be0f02094eb9",
+    "steps": 300,
+    "batch_size": 32,
+    "learning_rate": 0.003,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "parameter_target": 6000,
+    "classes": 10,
+    "shape_per_example": [
+      17,
+      64
+    ],
+    "shared_encoder_frozen": true,
+    "shared_projection_frozen": true,
+    "corrupted_input": "Raw-input corruption before the encoder; global feature recomputed",
+    "encoder_preparation_seconds": 48.985689144999924,
+    "projection_seconds": 2.1403609839981073,
+    "encoder_preparation_examples": 4500,
+    "environment": {
+      "jax": "0.4.38",
+      "numpy": "2.3.5",
+      "devices": [
+        "TFRT_CPU_0"
+      ]
+    },
+    "limitations": [
+      "Small fixed-budget unimodal experiments, not a full multimodal backbone",
+      "One fixed shared holdout; seed SD does not capture all dataset uncertainty",
+      "Shared CPU timing; not equal FLOPs, isolated hardware, or energy measurements"
+    ]
+  },
+  "runs": [
+    {
+      "kind": "hcsn",
+      "architecture_version": 2,
+      "seed": 0,
+      "width": 25,
+      "parameter_count": 6010,
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.4413480758666992,
+          "validation": {
+            "loss": 1.4077469057858027,
+            "accuracy": 0.652,
+            "brier": 0.6165644676417681,
+            "ece": 0.33234450155112144
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.9512732625007629,
+          "validation": {
+            "loss": 0.8893981204230483,
+            "accuracy": 0.742,
+            "brier": 0.40246370105650464,
+            "ece": 0.16786791570673493
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.6543539762496948,
+          "validation": {
+            "loss": 0.7562264806999504,
+            "accuracy": 0.738,
+            "brier": 0.353212287645549,
+            "ece": 0.06797196379863316
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.5594419240951538,
+          "validation": {
+            "loss": 0.7042182062514863,
+            "accuracy": 0.756,
+            "brier": 0.333461860849898,
+            "ece": 0.023422578924031646
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.37154489755630493,
+          "validation": {
+            "loss": 0.6879409424927228,
+            "accuracy": 0.786,
+            "brier": 0.31993161905000356,
+            "ece": 0.034805544405016126
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.2133864015340805,
+          "validation": {
+            "loss": 0.6859817557992202,
+            "accuracy": 0.766,
+            "brier": 0.3227775716896923,
+            "ece": 0.043062114326392904
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 300,
+        "steps": 300,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 9600,
+        "compilation_seconds": 0.9875838560001284,
+        "optimizer_execution_seconds": 0.5443825080074021,
+        "optimizer_update_median_ms": 1.6971344994090032,
+        "optimizer_update_p95_ms": 2.0835671481108875,
+        "validation_seconds": 0.3340673179991427,
+        "host_batch_seconds": 0.10322586897746078,
+        "total_train_call_seconds": 2.0381674879972707,
+        "first_three_optimizer_update_seconds": [
+          0.02974526300022262,
+          0.0027573709994612727,
+          0.0015570450013910886
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 2.9451870918273926,
+        "mean_unclipped_gradient_norm": 1.430007249911626,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.3295153924529011,
+          "accuracy": 0.9025,
+          "brier": 0.15367139947948033,
+          "ece": 0.07079531919712297
+        },
+        "validation": {
+          "loss": 0.6859817557992202,
+          "accuracy": 0.766,
+          "brier": 0.3227775716896923,
+          "ece": 0.043062114326392904
+        },
+        "test": {
+          "loss": 0.767491400622622,
+          "accuracy": 0.752,
+          "brier": 0.35432339035620736,
+          "ece": 0.045982090062415354
+        },
+        "corrupted_test": {
+          "loss": 1.9256688567311349,
+          "accuracy": 0.413,
+          "brier": 0.7814190067055123,
+          "ece": 0.19556318188806607
+        }
+      },
+      "checkpoint_file": "checkpoints/cifar10/hcsn_seed0.npz",
+      "checkpoint_sha256": "aff24108d2f1198680175cde8a7271e846071504ee1842b5bedd11be90438383",
+      "logits_latency_batch1": {
+        "batch_size": 1,
+        "median_ms": 0.08618799802206922,
+        "p95_ms": 0.15515419981966247,
+        "p99_ms": 0.26800521151017137,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      },
+      "logits_latency_batch32": {
+        "batch_size": 32,
+        "median_ms": 0.390164999771514,
+        "p95_ms": 0.4731618493678979,
+        "p99_ms": 0.49958280065766303,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      }
+    },
+    {
+      "kind": "hcsn",
+      "architecture_version": 2,
+      "seed": 1,
+      "width": 25,
+      "parameter_count": 6010,
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.2752928733825684,
+          "validation": {
+            "loss": 1.3482452548136712,
+            "accuracy": 0.67,
+            "brier": 0.5972005336356981,
+            "ece": 0.3311863275541916
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.7645567655563354,
+          "validation": {
+            "loss": 0.8770331406898698,
+            "accuracy": 0.75,
+            "brier": 0.40439882020594575,
+            "ece": 0.19280996522433563
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.6655331254005432,
+          "validation": {
+            "loss": 0.7397682817221661,
+            "accuracy": 0.752,
+            "brier": 0.35249611274001613,
+            "ece": 0.0809423180163447
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.6044018268585205,
+          "validation": {
+            "loss": 0.6792401035021021,
+            "accuracy": 0.76,
+            "brier": 0.32827142724255637,
+            "ece": 0.04197061324688335
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.3424971103668213,
+          "validation": {
+            "loss": 0.6500241114687755,
+            "accuracy": 0.75,
+            "brier": 0.32153978072430334,
+            "ece": 0.03098813534810466
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.25939086079597473,
+          "validation": {
+            "loss": 0.6605700667040539,
+            "accuracy": 0.752,
+            "brier": 0.3222773974014835,
+            "ece": 0.03890671478797591
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 250,
+        "steps": 300,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 9600,
+        "compilation_seconds": 0.9924773320017266,
+        "optimizer_execution_seconds": 0.571651964008197,
+        "optimizer_update_median_ms": 1.8233464979857672,
+        "optimizer_update_p95_ms": 2.5852460974419955,
+        "validation_seconds": 0.04102470500220079,
+        "host_batch_seconds": 0.12154954397192341,
+        "total_train_call_seconds": 1.7490127740020398,
+        "first_three_optimizer_update_seconds": [
+          0.003385243999218801,
+          0.001495493997936137,
+          0.001986534000025131
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 3.3959271907806396,
+        "mean_unclipped_gradient_norm": 1.3478785727421443,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.3677288773634001,
+          "accuracy": 0.8955,
+          "brier": 0.16941993321465498,
+          "ece": 0.09323439811009018
+        },
+        "validation": {
+          "loss": 0.6500241114687755,
+          "accuracy": 0.75,
+          "brier": 0.32153978072430334,
+          "ece": 0.03098813534810466
+        },
+        "test": {
+          "loss": 0.7081105676149757,
+          "accuracy": 0.767,
+          "brier": 0.33123983352399616,
+          "ece": 0.029232294049776588
+        },
+        "corrupted_test": {
+          "loss": 1.6539656229703386,
+          "accuracy": 0.444,
+          "brier": 0.7332489730329647,
+          "ece": 0.15869491396515206
+        }
+      },
+      "checkpoint_file": "checkpoints/cifar10/hcsn_seed1.npz",
+      "checkpoint_sha256": "a07aa4df2974b54950b8ddf5f4aa6bdaeca7a5f3c407f60f48f54de830b4762f",
+      "logits_latency_batch1": {
+        "batch_size": 1,
+        "median_ms": 0.0775459993747063,
+        "p95_ms": 0.1354521502435091,
+        "p99_ms": 0.17764719883416533,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      },
+      "logits_latency_batch32": {
+        "batch_size": 32,
+        "median_ms": 0.3583979996619746,
+        "p95_ms": 0.4698138520325301,
+        "p99_ms": 0.5078167805186239,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      }
+    },
+    {
+      "kind": "hcsn",
+      "architecture_version": 2,
+      "seed": 2,
+      "width": 25,
+      "parameter_count": 6010,
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.2849136590957642,
+          "validation": {
+            "loss": 1.3409542831845505,
+            "accuracy": 0.642,
+            "brier": 0.5841640434582648,
+            "ece": 0.287279620412523
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.6161076426506042,
+          "validation": {
+            "loss": 0.8317107242954827,
+            "accuracy": 0.738,
+            "brier": 0.38260979610687335,
+            "ece": 0.13755612964365485
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.694273054599762,
+          "validation": {
+            "loss": 0.7065506350510521,
+            "accuracy": 0.758,
+            "brier": 0.3428461703383947,
+            "ece": 0.06481544847466632
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.43973585963249207,
+          "validation": {
+            "loss": 0.6520513459927735,
+            "accuracy": 0.768,
+            "brier": 0.31966044125003606,
+            "ece": 0.046267605169016554
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.24715982377529144,
+          "validation": {
+            "loss": 0.624114260460282,
+            "accuracy": 0.776,
+            "brier": 0.3112094123209571,
+            "ece": 0.03312361650146631
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.19681620597839355,
+          "validation": {
+            "loss": 0.6511429526468325,
+            "accuracy": 0.768,
+            "brier": 0.31695858316865105,
+            "ece": 0.03251618773493122
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 250,
+        "steps": 300,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 9600,
+        "compilation_seconds": 1.098956846002693,
+        "optimizer_execution_seconds": 0.5697091360234481,
+        "optimizer_update_median_ms": 1.9035659988730913,
+        "optimizer_update_p95_ms": 2.273478400275053,
+        "validation_seconds": 0.04095188299470465,
+        "host_batch_seconds": 0.11812520203966415,
+        "total_train_call_seconds": 1.8490200630003528,
+        "first_three_optimizer_update_seconds": [
+          0.004269288998330012,
+          0.002731081000092672,
+          0.002103017999615986
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 5.265911102294922,
+        "mean_unclipped_gradient_norm": 1.4291654135783514,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.3647999197472552,
+          "accuracy": 0.892,
+          "brier": 0.17066717620183064,
+          "ece": 0.0811348043428299
+        },
+        "validation": {
+          "loss": 0.624114260460282,
+          "accuracy": 0.776,
+          "brier": 0.3112094123209571,
+          "ece": 0.03312361650146631
+        },
+        "test": {
+          "loss": 0.6951760364552748,
+          "accuracy": 0.773,
+          "brier": 0.3236103526461318,
+          "ece": 0.04012584589797145
+        },
+        "corrupted_test": {
+          "loss": 1.811144745501556,
+          "accuracy": 0.432,
+          "brier": 0.7640164017583656,
+          "ece": 0.1796016514849291
+        }
+      },
+      "checkpoint_file": "checkpoints/cifar10/hcsn_seed2.npz",
+      "checkpoint_sha256": "cecc383e166093ef172889f8e4b8b98c553b8f3310f0fca1e2194bafef98265c",
+      "logits_latency_batch1": {
+        "batch_size": 1,
+        "median_ms": 0.08906250150175765,
+        "p95_ms": 0.14846664980723281,
+        "p99_ms": 0.2098696328539516,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      },
+      "logits_latency_batch32": {
+        "batch_size": 32,
+        "median_ms": 0.4026935002912069,
+        "p95_ms": 0.5396470000050613,
+        "p99_ms": 0.5858435494155855,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      }
+    },
+    {
+      "kind": "hcsn",
+      "architecture_version": 2,
+      "seed": 3,
+      "width": 25,
+      "parameter_count": 6010,
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.3434730768203735,
+          "validation": {
+            "loss": 1.3895707810850095,
+            "accuracy": 0.656,
+            "brier": 0.612045111376992,
+            "ece": 0.3216861731949319
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.7996841073036194,
+          "validation": {
+            "loss": 0.9036322973087071,
+            "accuracy": 0.74,
+            "brier": 0.41402511838766737,
+            "ece": 0.15123200225724695
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.5813521146774292,
+          "validation": {
+            "loss": 0.8056722764845454,
+            "accuracy": 0.742,
+            "brier": 0.37376561453108026,
+            "ece": 0.0598180544519856
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.45543158054351807,
+          "validation": {
+            "loss": 0.7228331554663877,
+            "accuracy": 0.76,
+            "brier": 0.3370588881858643,
+            "ece": 0.0407383864112479
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.26737135648727417,
+          "validation": {
+            "loss": 0.6983832947193829,
+            "accuracy": 0.776,
+            "brier": 0.32719697236132245,
+            "ece": 0.04141907231290966
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.522434413433075,
+          "validation": {
+            "loss": 0.7138759889320255,
+            "accuracy": 0.77,
+            "brier": 0.3253287188996768,
+            "ece": 0.04032561252722892
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 250,
+        "steps": 300,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 9600,
+        "compilation_seconds": 1.0026767019990075,
+        "optimizer_execution_seconds": 0.6015620330035745,
+        "optimizer_update_median_ms": 1.8806459993356839,
+        "optimizer_update_p95_ms": 2.729750947764842,
+        "validation_seconds": 0.043501018997631036,
+        "host_batch_seconds": 0.1217827809487062,
+        "total_train_call_seconds": 1.7937332290021004,
+        "first_three_optimizer_update_seconds": [
+          0.003777795998757938,
+          0.00224726099986583,
+          0.00210683199838968
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 4.040088653564453,
+        "mean_unclipped_gradient_norm": 1.4072492345174155,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.3927015819095562,
+          "accuracy": 0.8905,
+          "brier": 0.18206453793606275,
+          "ece": 0.08245019981734039
+        },
+        "validation": {
+          "loss": 0.6983832947193829,
+          "accuracy": 0.776,
+          "brier": 0.32719697236132245,
+          "ece": 0.04141907231290966
+        },
+        "test": {
+          "loss": 0.7322367079396674,
+          "accuracy": 0.765,
+          "brier": 0.3337768139447626,
+          "ece": 0.030395147403478272
+        },
+        "corrupted_test": {
+          "loss": 1.9043858713022284,
+          "accuracy": 0.41,
+          "brier": 0.7847424654995424,
+          "ece": 0.20583499209128572
+        }
+      },
+      "checkpoint_file": "checkpoints/cifar10/hcsn_seed3.npz",
+      "checkpoint_sha256": "f9990bf15c39f1f2bd5328ac724efbe0b89c75e505bde44c4a6c67d18a7a4290",
+      "logits_latency_batch1": {
+        "batch_size": 1,
+        "median_ms": 0.07582299986097496,
+        "p95_ms": 0.12747370219585713,
+        "p99_ms": 0.1960236298691596,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      },
+      "logits_latency_batch32": {
+        "batch_size": 32,
+        "median_ms": 0.4846029987675138,
+        "p95_ms": 0.6785351484722922,
+        "p99_ms": 0.7177798308111959,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      }
+    },
+    {
+      "kind": "hcsn",
+      "architecture_version": 2,
+      "seed": 4,
+      "width": 25,
+      "parameter_count": 6010,
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.322243094444275,
+          "validation": {
+            "loss": 1.3712649847601908,
+            "accuracy": 0.654,
+            "brier": 0.5982859960985042,
+            "ece": 0.2927570597723027
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.715723991394043,
+          "validation": {
+            "loss": 0.8897494598165029,
+            "accuracy": 0.726,
+            "brier": 0.41136852100615756,
+            "ece": 0.13873095494376206
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.5411206483840942,
+          "validation": {
+            "loss": 0.7370349260824784,
+            "accuracy": 0.764,
+            "brier": 0.3487592612568509,
+            "ece": 0.081010751861137
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.44839534163475037,
+          "validation": {
+            "loss": 0.6888149476249172,
+            "accuracy": 0.764,
+            "brier": 0.33003245118349206,
+            "ece": 0.03465060477867176
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.49864909052848816,
+          "validation": {
+            "loss": 0.6495667317184237,
+            "accuracy": 0.772,
+            "brier": 0.31719933890113106,
+            "ece": 0.01987093810723564
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.25301238894462585,
+          "validation": {
+            "loss": 0.6505255129499699,
+            "accuracy": 0.79,
+            "brier": 0.30752061070183423,
+            "ece": 0.037249794918997874
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 250,
+        "steps": 300,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 9600,
+        "compilation_seconds": 1.1001181370011182,
+        "optimizer_execution_seconds": 0.5935797009915404,
+        "optimizer_update_median_ms": 1.8898624985013157,
+        "optimizer_update_p95_ms": 2.729262748471229,
+        "validation_seconds": 0.03987564899944118,
+        "host_batch_seconds": 0.12058752097073011,
+        "total_train_call_seconds": 1.876387918000546,
+        "first_three_optimizer_update_seconds": [
+          0.0029751630027021747,
+          0.0017667969987087417,
+          0.002157578001060756
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 2.6350927352905273,
+        "mean_unclipped_gradient_norm": 1.3390564771493276,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.37983336390324385,
+          "accuracy": 0.8935,
+          "brier": 0.17546163978150528,
+          "ece": 0.0842395167928716
+        },
+        "validation": {
+          "loss": 0.6495667317184237,
+          "accuracy": 0.772,
+          "brier": 0.31719933890113106,
+          "ece": 0.01987093810723564
+        },
+        "test": {
+          "loss": 0.7245053089535193,
+          "accuracy": 0.748,
+          "brier": 0.33813071375384685,
+          "ece": 0.035737505970414994
+        },
+        "corrupted_test": {
+          "loss": 1.7970957697011527,
+          "accuracy": 0.419,
+          "brier": 0.7694158280187788,
+          "ece": 0.18216672200787956
+        }
+      },
+      "checkpoint_file": "checkpoints/cifar10/hcsn_seed4.npz",
+      "checkpoint_sha256": "6ce4a51674ba5a7c1f07e4433c82ba7f9e09efffe29a76d3070078a73b1cd6f4",
+      "logits_latency_batch1": {
+        "batch_size": 1,
+        "median_ms": 0.08379499922739342,
+        "p95_ms": 0.1468508000471047,
+        "p99_ms": 0.17339023921522304,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      },
+      "logits_latency_batch32": {
+        "batch_size": 32,
+        "median_ms": 0.4074160005984595,
+        "p95_ms": 0.6085239992899004,
+        "p99_ms": 0.7486038499700952,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      }
+    },
+    {
+      "kind": "sigmoid",
+      "architecture_version": 2,
+      "seed": 0,
+      "width": 25,
+      "parameter_count": 6010,
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.4228852987289429,
+          "validation": {
+            "loss": 1.3909628031616383,
+            "accuracy": 0.652,
+            "brier": 0.6094606059836029,
+            "ece": 0.32520139655293057
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.979184627532959,
+          "validation": {
+            "loss": 0.8909172518725107,
+            "accuracy": 0.738,
+            "brier": 0.4030084122880331,
+            "ece": 0.15912693460475566
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.7098174095153809,
+          "validation": {
+            "loss": 0.7531629449676537,
+            "accuracy": 0.756,
+            "brier": 0.3513155086888099,
+            "ece": 0.0723226368566341
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.5286999940872192,
+          "validation": {
+            "loss": 0.7024284995847656,
+            "accuracy": 0.778,
+            "brier": 0.33249523329006647,
+            "ece": 0.04037710849917827
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.3393915593624115,
+          "validation": {
+            "loss": 0.7084895776218134,
+            "accuracy": 0.764,
+            "brier": 0.3250390595779667,
+            "ece": 0.04012414933776672
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.23754209280014038,
+          "validation": {
+            "loss": 0.6986523567025192,
+            "accuracy": 0.772,
+            "brier": 0.3274355573100245,
+            "ece": 0.04675344523486285
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 300,
+        "steps": 300,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 9600,
+        "compilation_seconds": 1.113964052998199,
+        "optimizer_execution_seconds": 0.5441698379981972,
+        "optimizer_update_median_ms": 1.71959650106146,
+        "optimizer_update_p95_ms": 2.507765599148116,
+        "validation_seconds": 0.35011639799995464,
+        "host_batch_seconds": 0.10821327299709083,
+        "total_train_call_seconds": 2.136407010999392,
+        "first_three_optimizer_update_seconds": [
+          0.00404613499995321,
+          0.00310796000121627,
+          0.0027243500007898547
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 3.288882255554199,
+        "mean_unclipped_gradient_norm": 1.5454817724227905,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.33152132693367414,
+          "accuracy": 0.9045,
+          "brier": 0.15085364189677442,
+          "ece": 0.07322993309436826
+        },
+        "validation": {
+          "loss": 0.6986523567025192,
+          "accuracy": 0.772,
+          "brier": 0.3274355573100245,
+          "ece": 0.04675344523486285
+        },
+        "test": {
+          "loss": 0.776857182692449,
+          "accuracy": 0.758,
+          "brier": 0.3548870913625389,
+          "ece": 0.042246238144260304
+        },
+        "corrupted_test": {
+          "loss": 1.8435196955395061,
+          "accuracy": 0.427,
+          "brier": 0.7628011968558434,
+          "ece": 0.1742854348172563
+        }
+      },
+      "checkpoint_file": "checkpoints/cifar10/sigmoid_seed0.npz",
+      "checkpoint_sha256": "fe4b1c0be7f1d32764ab43b3e292500e8c918f7e1929d7a51b92e3db0a6b525d",
+      "logits_latency_batch1": {
+        "batch_size": 1,
+        "median_ms": 0.08937300117395353,
+        "p95_ms": 0.12372479795885735,
+        "p99_ms": 0.1469492695105145,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      },
+      "logits_latency_batch32": {
+        "batch_size": 32,
+        "median_ms": 0.5189215007703751,
+        "p95_ms": 0.624496602176805,
+        "p99_ms": 0.7116065503214485,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      }
+    },
+    {
+      "kind": "sigmoid",
+      "architecture_version": 2,
+      "seed": 1,
+      "width": 25,
+      "parameter_count": 6010,
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.252525806427002,
+          "validation": {
+            "loss": 1.330269329012247,
+            "accuracy": 0.684,
+            "brier": 0.5889800726728026,
+            "ece": 0.3370356681458573
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.7723715305328369,
+          "validation": {
+            "loss": 0.8612224291896753,
+            "accuracy": 0.744,
+            "brier": 0.39618463740374305,
+            "ece": 0.19723713880127644
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.6552383899688721,
+          "validation": {
+            "loss": 0.7358645300009119,
+            "accuracy": 0.756,
+            "brier": 0.34733138893644994,
+            "ece": 0.07942138760254301
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.6185111999511719,
+          "validation": {
+            "loss": 0.6780105901022453,
+            "accuracy": 0.772,
+            "brier": 0.32624839556466223,
+            "ece": 0.04157173535619647
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.39240801334381104,
+          "validation": {
+            "loss": 0.6380586116560355,
+            "accuracy": 0.752,
+            "brier": 0.3144873514286194,
+            "ece": 0.04410643057128136
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.3251991271972656,
+          "validation": {
+            "loss": 0.645865596896757,
+            "accuracy": 0.77,
+            "brier": 0.31545591869712897,
+            "ece": 0.02570159952128511
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 250,
+        "steps": 300,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 9600,
+        "compilation_seconds": 0.8566991129991948,
+        "optimizer_execution_seconds": 0.5853972039840301,
+        "optimizer_update_median_ms": 1.9491300008667167,
+        "optimizer_update_p95_ms": 2.501657548600633,
+        "validation_seconds": 0.055938350000360515,
+        "host_batch_seconds": 0.11578637997445185,
+        "total_train_call_seconds": 1.6350674919995072,
+        "first_three_optimizer_update_seconds": [
+          0.0029108579983585514,
+          0.0021227069992164616,
+          0.0032852440017450135
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 4.4636335372924805,
+        "mean_unclipped_gradient_norm": 1.4473948431015016,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.36987014170959603,
+          "accuracy": 0.8985,
+          "brier": 0.16980506338224433,
+          "ece": 0.09670068030783188
+        },
+        "validation": {
+          "loss": 0.6380586116560355,
+          "accuracy": 0.752,
+          "brier": 0.3144873514286194,
+          "ece": 0.04410643057128136
+        },
+        "test": {
+          "loss": 0.6949627918221537,
+          "accuracy": 0.774,
+          "brier": 0.3221982841903643,
+          "ece": 0.03415339907977593
+        },
+        "corrupted_test": {
+          "loss": 1.7263246718202268,
+          "accuracy": 0.417,
+          "brier": 0.7557353097776609,
+          "ece": 0.18243263587410055
+        }
+      },
+      "checkpoint_file": "checkpoints/cifar10/sigmoid_seed1.npz",
+      "checkpoint_sha256": "830a8b2efbf7136db4caa7e64ee1b4314cef5d1e6477a7a7f294782c3af97572",
+      "logits_latency_batch1": {
+        "batch_size": 1,
+        "median_ms": 0.0971884983300697,
+        "p95_ms": 0.7814906502971986,
+        "p99_ms": 4.92740890953427,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      },
+      "logits_latency_batch32": {
+        "batch_size": 32,
+        "median_ms": 0.6455919992731651,
+        "p95_ms": 0.8441177984423119,
+        "p99_ms": 6.215451929056131,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      }
+    },
+    {
+      "kind": "sigmoid",
+      "architecture_version": 2,
+      "seed": 2,
+      "width": 25,
+      "parameter_count": 6010,
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.26715087890625,
+          "validation": {
+            "loss": 1.3234850149706316,
+            "accuracy": 0.658,
+            "brier": 0.5764811334476276,
+            "ece": 0.295788519380525
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.6062052845954895,
+          "validation": {
+            "loss": 0.8438006760715805,
+            "accuracy": 0.73,
+            "brier": 0.38578041694277637,
+            "ece": 0.13032371820012068
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.633006751537323,
+          "validation": {
+            "loss": 0.7084274050521137,
+            "accuracy": 0.756,
+            "brier": 0.3410116507840373,
+            "ece": 0.06306589640471272
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.44373124837875366,
+          "validation": {
+            "loss": 0.6628000103343111,
+            "accuracy": 0.766,
+            "brier": 0.32702720133440355,
+            "ece": 0.03518478000546407
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.30544281005859375,
+          "validation": {
+            "loss": 0.6191769686325966,
+            "accuracy": 0.77,
+            "brier": 0.3090111135300689,
+            "ece": 0.03147317563064036
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.19997122883796692,
+          "validation": {
+            "loss": 0.6598097063192221,
+            "accuracy": 0.762,
+            "brier": 0.3252350026925383,
+            "ece": 0.0507353104017224
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 250,
+        "steps": 300,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 9600,
+        "compilation_seconds": 1.0326221869981964,
+        "optimizer_execution_seconds": 0.6040157259849366,
+        "optimizer_update_median_ms": 1.9618869973783148,
+        "optimizer_update_p95_ms": 2.8360535481624543,
+        "validation_seconds": 0.0661888859976898,
+        "host_batch_seconds": 0.12241807298050844,
+        "total_train_call_seconds": 1.8563909279982909,
+        "first_three_optimizer_update_seconds": [
+          0.003924755001207814,
+          0.0024179829997592606,
+          0.002146449998690514
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 4.39588737487793,
+        "mean_unclipped_gradient_norm": 1.5833378769954045,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.36237496382335527,
+          "accuracy": 0.8895,
+          "brier": 0.17013606726641695,
+          "ece": 0.0839667133655643
+        },
+        "validation": {
+          "loss": 0.6191769686325966,
+          "accuracy": 0.77,
+          "brier": 0.3090111135300689,
+          "ece": 0.03147317563064036
+        },
+        "test": {
+          "loss": 0.6897795930221332,
+          "accuracy": 0.773,
+          "brier": 0.3204795915771654,
+          "ece": 0.017833861659482874
+        },
+        "corrupted_test": {
+          "loss": 1.785388892080691,
+          "accuracy": 0.421,
+          "brier": 0.7521080281013601,
+          "ece": 0.17826173312422422
+        }
+      },
+      "checkpoint_file": "checkpoints/cifar10/sigmoid_seed2.npz",
+      "checkpoint_sha256": "f5d2a0f45ae2465f3e0157542d1ce3ed708f48dc29f6dad0708bda9cac66789a",
+      "logits_latency_batch1": {
+        "batch_size": 1,
+        "median_ms": 0.06220700015546754,
+        "p95_ms": 0.12674010031332728,
+        "p99_ms": 0.163501109855133,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      },
+      "logits_latency_batch32": {
+        "batch_size": 32,
+        "median_ms": 0.597360000028857,
+        "p95_ms": 0.8234143500885693,
+        "p99_ms": 1.1696222707905677,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      }
+    },
+    {
+      "kind": "sigmoid",
+      "architecture_version": 2,
+      "seed": 3,
+      "width": 25,
+      "parameter_count": 6010,
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.3316612243652344,
+          "validation": {
+            "loss": 1.3755001878596418,
+            "accuracy": 0.658,
+            "brier": 0.6061774985201789,
+            "ece": 0.31741605704771514
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.8078751564025879,
+          "validation": {
+            "loss": 0.9154882282581666,
+            "accuracy": 0.732,
+            "brier": 0.4202017306523946,
+            "ece": 0.14561966371299087
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.5472317337989807,
+          "validation": {
+            "loss": 0.7969529202742572,
+            "accuracy": 0.742,
+            "brier": 0.3709608313109094,
+            "ece": 0.0680826638904891
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.39935067296028137,
+          "validation": {
+            "loss": 0.6972373027405249,
+            "accuracy": 0.772,
+            "brier": 0.3326645558588101,
+            "ece": 0.03236918176341025
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.32495081424713135,
+          "validation": {
+            "loss": 0.6799295974228581,
+            "accuracy": 0.76,
+            "brier": 0.325569341384895,
+            "ece": 0.044666456780875226
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.5528242588043213,
+          "validation": {
+            "loss": 0.6856676743133151,
+            "accuracy": 0.784,
+            "brier": 0.3131413375262507,
+            "ece": 0.028737356394129245
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 250,
+        "steps": 300,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 9600,
+        "compilation_seconds": 0.9808046299986017,
+        "optimizer_execution_seconds": 0.5906383140172693,
+        "optimizer_update_median_ms": 1.8210534981335513,
+        "optimizer_update_p95_ms": 2.7686639492458207,
+        "validation_seconds": 0.06202150699755293,
+        "host_batch_seconds": 0.12299621496276814,
+        "total_train_call_seconds": 1.7816421889983758,
+        "first_three_optimizer_update_seconds": [
+          0.0032483329996466637,
+          0.0020360470007290132,
+          0.0018662949987628963
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 10.23741626739502,
+        "mean_unclipped_gradient_norm": 1.5924124521017076,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.40717710617975306,
+          "accuracy": 0.8805,
+          "brier": 0.18907422137761914,
+          "ece": 0.07863859951708568
+        },
+        "validation": {
+          "loss": 0.6799295974228581,
+          "accuracy": 0.76,
+          "brier": 0.325569341384895,
+          "ece": 0.044666456780875226
+        },
+        "test": {
+          "loss": 0.7402411646931228,
+          "accuracy": 0.773,
+          "brier": 0.3364788197602545,
+          "ece": 0.017454080751231924
+        },
+        "corrupted_test": {
+          "loss": 1.8212221033493734,
+          "accuracy": 0.417,
+          "brier": 0.7826155667580915,
+          "ece": 0.20382962639582017
+        }
+      },
+      "checkpoint_file": "checkpoints/cifar10/sigmoid_seed3.npz",
+      "checkpoint_sha256": "7c1a1eaef42f0da6d62559e6722e7e3a0da87a05e493227a9e69893e279107a9",
+      "logits_latency_batch1": {
+        "batch_size": 1,
+        "median_ms": 0.09164100083580706,
+        "p95_ms": 0.18956654876092213,
+        "p99_ms": 0.900695671443825,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      },
+      "logits_latency_batch32": {
+        "batch_size": 32,
+        "median_ms": 0.6481604978034738,
+        "p95_ms": 0.8581499001593329,
+        "p99_ms": 1.0018540680175643,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      }
+    },
+    {
+      "kind": "sigmoid",
+      "architecture_version": 2,
+      "seed": 4,
+      "width": 25,
+      "parameter_count": 6010,
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.295220136642456,
+          "validation": {
+            "loss": 1.3522063958633141,
+            "accuracy": 0.658,
+            "brier": 0.5904304248358617,
+            "ece": 0.2866329976683526
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.7292786240577698,
+          "validation": {
+            "loss": 0.8931067679468013,
+            "accuracy": 0.72,
+            "brier": 0.41278282836194824,
+            "ece": 0.12900257672590068
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.5859628915786743,
+          "validation": {
+            "loss": 0.7391644180315895,
+            "accuracy": 0.754,
+            "brier": 0.34964191739673856,
+            "ece": 0.07811734115348112
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.4475019574165344,
+          "validation": {
+            "loss": 0.6916449502051275,
+            "accuracy": 0.766,
+            "brier": 0.32610161352393074,
+            "ece": 0.029495729343403457
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.5535917282104492,
+          "validation": {
+            "loss": 0.6409102279072717,
+            "accuracy": 0.784,
+            "brier": 0.3114870706588753,
+            "ece": 0.03686286112864021
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.2781069874763489,
+          "validation": {
+            "loss": 0.6613566129498795,
+            "accuracy": 0.782,
+            "brier": 0.3208675612856614,
+            "ece": 0.03695629555210086
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 250,
+        "steps": 300,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 9600,
+        "compilation_seconds": 1.1822531320030976,
+        "optimizer_execution_seconds": 0.8970125319974613,
+        "optimizer_update_median_ms": 1.9949180004914524,
+        "optimizer_update_p95_ms": 7.712242502748272,
+        "validation_seconds": 0.08377663599458174,
+        "host_batch_seconds": 0.17283602401221287,
+        "total_train_call_seconds": 2.363697286000388,
+        "first_three_optimizer_update_seconds": [
+          0.002966766001918586,
+          0.0016728789996705018,
+          0.0024034559974097647
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 9.085453987121582,
+        "mean_unclipped_gradient_norm": 1.501946451862653,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.38045240513284057,
+          "accuracy": 0.8905,
+          "brier": 0.17457273760662487,
+          "ece": 0.08088732324120324
+        },
+        "validation": {
+          "loss": 0.6409102279072717,
+          "accuracy": 0.784,
+          "brier": 0.3114870706588753,
+          "ece": 0.03686286112864021
+        },
+        "test": {
+          "loss": 0.7449627962045506,
+          "accuracy": 0.754,
+          "brier": 0.3435702518451408,
+          "ece": 0.03118689148755556
+        },
+        "corrupted_test": {
+          "loss": 1.7978306598148448,
+          "accuracy": 0.428,
+          "brier": 0.7613087892892947,
+          "ece": 0.16234155286325092
+        }
+      },
+      "checkpoint_file": "checkpoints/cifar10/sigmoid_seed4.npz",
+      "checkpoint_sha256": "96db161378c0d28c618e250ab93771f5d47896b8b67dcad7227dd05b9c81e4bc",
+      "logits_latency_batch1": {
+        "batch_size": 1,
+        "median_ms": 0.07584250124637038,
+        "p95_ms": 0.24975825053843426,
+        "p99_ms": 0.41916448120900857,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      },
+      "logits_latency_batch32": {
+        "batch_size": 32,
+        "median_ms": 0.6799335005780449,
+        "p95_ms": 0.9112758492847206,
+        "p99_ms": 1.276271710776199,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      }
+    },
+    {
+      "kind": "gru",
+      "architecture_version": 1,
+      "seed": 0,
+      "width": 22,
+      "parameter_count": 6038,
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.511924386024475,
+          "validation": {
+            "loss": 1.5935132496198041,
+            "accuracy": 0.534,
+            "brier": 0.6984068747919161,
+            "ece": 0.24543054048215385
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 1.1579293012619019,
+          "validation": {
+            "loss": 1.0387119992044642,
+            "accuracy": 0.702,
+            "brier": 0.4806807696086491,
+            "ece": 0.22987602984655203
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.9387029409408569,
+          "validation": {
+            "loss": 0.7896533985190434,
+            "accuracy": 0.748,
+            "brier": 0.3705642786714379,
+            "ece": 0.13675202212383133
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.6376953721046448,
+          "validation": {
+            "loss": 0.6703905165625663,
+            "accuracy": 0.786,
+            "brier": 0.31729393688373986,
+            "ece": 0.09996920305209966
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.33763107657432556,
+          "validation": {
+            "loss": 0.6547012722157179,
+            "accuracy": 0.774,
+            "brier": 0.31223631907283994,
+            "ece": 0.05774143105383012
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.3180301785469055,
+          "validation": {
+            "loss": 0.6141259769652964,
+            "accuracy": 0.796,
+            "brier": 0.2905220696218354,
+            "ece": 0.04458457922485801
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 300,
+        "steps": 300,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 9600,
+        "compilation_seconds": 0.346301814999606,
+        "optimizer_execution_seconds": 0.27479490495170467,
+        "optimizer_update_median_ms": 0.831900499179028,
+        "optimizer_update_p95_ms": 1.2331209005424173,
+        "validation_seconds": 0.1698178300030122,
+        "host_batch_seconds": 0.09784280302483239,
+        "total_train_call_seconds": 0.9602092069981154,
+        "first_three_optimizer_update_seconds": [
+          0.0015984550009306986,
+          0.0009184430018649437,
+          0.0009158789980574511
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 1.7676870822906494,
+        "mean_unclipped_gradient_norm": 0.8920807214577993,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.3941948239484906,
+          "accuracy": 0.8885,
+          "brier": 0.18186240835496062,
+          "ece": 0.09497267158235505
+        },
+        "validation": {
+          "loss": 0.6141259769652964,
+          "accuracy": 0.796,
+          "brier": 0.2905220696218354,
+          "ece": 0.04458457922485801
+        },
+        "test": {
+          "loss": 0.6923994276822477,
+          "accuracy": 0.77,
+          "brier": 0.32663304370337437,
+          "ece": 0.024156954557264507
+        },
+        "corrupted_test": {
+          "loss": 1.7847575793395032,
+          "accuracy": 0.429,
+          "brier": 0.7532713374070421,
+          "ece": 0.18371400508851013
+        }
+      },
+      "checkpoint_file": "checkpoints/cifar10/gru_seed0.npz",
+      "checkpoint_sha256": "01534b7386fb5697e5a9aa69e199018a75c9c55141ca6d59b51692acf7863a60",
+      "logits_latency_batch1": {
+        "batch_size": 1,
+        "median_ms": 0.04591299875755794,
+        "p95_ms": 0.08353134890057842,
+        "p99_ms": 0.12167867196694707,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      },
+      "logits_latency_batch32": {
+        "batch_size": 32,
+        "median_ms": 0.3326249989186181,
+        "p95_ms": 0.3773717007788946,
+        "p99_ms": 0.3983593097655102,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      }
+    },
+    {
+      "kind": "gru",
+      "architecture_version": 1,
+      "seed": 1,
+      "width": 22,
+      "parameter_count": 6038,
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.5194110870361328,
+          "validation": {
+            "loss": 1.5708083746943302,
+            "accuracy": 0.512,
+            "brier": 0.6906294632946204,
+            "ece": 0.22349358299546657
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.9230031371116638,
+          "validation": {
+            "loss": 1.0213978356222586,
+            "accuracy": 0.696,
+            "brier": 0.4762938874086932,
+            "ece": 0.20310578292665518
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.6116044521331787,
+          "validation": {
+            "loss": 0.7980069769937882,
+            "accuracy": 0.748,
+            "brier": 0.37861652021431824,
+            "ece": 0.125175341818867
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.7259958982467651,
+          "validation": {
+            "loss": 0.693083444761412,
+            "accuracy": 0.78,
+            "brier": 0.3241170622734135,
+            "ece": 0.09472453165191912
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.6017240285873413,
+          "validation": {
+            "loss": 0.6533283551735876,
+            "accuracy": 0.786,
+            "brier": 0.3077204954080258,
+            "ece": 0.04952881110955585
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.4369279742240906,
+          "validation": {
+            "loss": 0.6447699644663837,
+            "accuracy": 0.788,
+            "brier": 0.3029506027347409,
+            "ece": 0.039442555192397505
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 300,
+        "steps": 300,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 9600,
+        "compilation_seconds": 0.30029666799964616,
+        "optimizer_execution_seconds": 0.31270122300702496,
+        "optimizer_update_median_ms": 1.0528755010454915,
+        "optimizer_update_p95_ms": 1.3046793019384495,
+        "validation_seconds": 0.0484260089979216,
+        "host_batch_seconds": 0.11080930699245073,
+        "total_train_call_seconds": 0.7884967960017093,
+        "first_three_optimizer_update_seconds": [
+          0.0014303370007837657,
+          0.001058829999237787,
+          0.0008497010021528695
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 4.079576015472412,
+        "mean_unclipped_gradient_norm": 0.9559452150265376,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.41536227508257956,
+          "accuracy": 0.884,
+          "brier": 0.19286014636936905,
+          "ece": 0.09694180654815075
+        },
+        "validation": {
+          "loss": 0.6447699644663837,
+          "accuracy": 0.788,
+          "brier": 0.3029506027347409,
+          "ece": 0.039442555192397505
+        },
+        "test": {
+          "loss": 0.7055533263788063,
+          "accuracy": 0.771,
+          "brier": 0.3249564534928512,
+          "ece": 0.031814875257041686
+        },
+        "corrupted_test": {
+          "loss": 1.7469076275085071,
+          "accuracy": 0.427,
+          "brier": 0.7671162145979652,
+          "ece": 0.2107846600170643
+        }
+      },
+      "checkpoint_file": "checkpoints/cifar10/gru_seed1.npz",
+      "checkpoint_sha256": "6860c38458ffe3186118fce8eb66e5e91cc448e0748f61467e32add6daa7deea",
+      "logits_latency_batch1": {
+        "batch_size": 1,
+        "median_ms": 0.03849199856631458,
+        "p95_ms": 0.055709749176457976,
+        "p99_ms": 0.07480036067136095,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      },
+      "logits_latency_batch32": {
+        "batch_size": 32,
+        "median_ms": 0.3305514983367175,
+        "p95_ms": 0.5546238497117881,
+        "p99_ms": 0.6786730807289132,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      }
+    },
+    {
+      "kind": "gru",
+      "architecture_version": 1,
+      "seed": 2,
+      "width": 22,
+      "parameter_count": 6038,
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.5029845237731934,
+          "validation": {
+            "loss": 1.5450657658544047,
+            "accuracy": 0.586,
+            "brier": 0.6810358225798586,
+            "ece": 0.3023245294211962
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.9054659008979797,
+          "validation": {
+            "loss": 0.9936348346606952,
+            "accuracy": 0.712,
+            "brier": 0.4609469786488373,
+            "ece": 0.2100380565418174
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.7650494575500488,
+          "validation": {
+            "loss": 0.7569434912814913,
+            "accuracy": 0.776,
+            "brier": 0.3570539442756203,
+            "ece": 0.15050081104198457
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.5695228576660156,
+          "validation": {
+            "loss": 0.6622321186520559,
+            "accuracy": 0.78,
+            "brier": 0.316958983451348,
+            "ece": 0.08153823760729556
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.4478539824485779,
+          "validation": {
+            "loss": 0.6413911598936561,
+            "accuracy": 0.788,
+            "brier": 0.31167664735163214,
+            "ece": 0.04752343300938966
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.19186192750930786,
+          "validation": {
+            "loss": 0.6371145243484723,
+            "accuracy": 0.78,
+            "brier": 0.3132716219545247,
+            "ece": 0.03960840884234276
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 300,
+        "steps": 300,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 9600,
+        "compilation_seconds": 0.34066508400064777,
+        "optimizer_execution_seconds": 0.2557134839989885,
+        "optimizer_update_median_ms": 0.7864335002523148,
+        "optimizer_update_p95_ms": 1.1193510481462,
+        "validation_seconds": 0.04075669400845072,
+        "host_batch_seconds": 0.10535852801331202,
+        "total_train_call_seconds": 0.7577023430021654,
+        "first_three_optimizer_update_seconds": [
+          0.001785501000995282,
+          0.0009448030032217503,
+          0.0008183960017049685
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 1.7443252801895142,
+        "mean_unclipped_gradient_norm": 0.8959064695239067,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.38292519362653793,
+          "accuracy": 0.8865,
+          "brier": 0.1799756958578743,
+          "ece": 0.08703209577027729
+        },
+        "validation": {
+          "loss": 0.6371145243484723,
+          "accuracy": 0.78,
+          "brier": 0.3132716219545247,
+          "ece": 0.03960840884234276
+        },
+        "test": {
+          "loss": 0.7196763765605144,
+          "accuracy": 0.767,
+          "brier": 0.3336656983312395,
+          "ece": 0.013355578312670802
+        },
+        "corrupted_test": {
+          "loss": 1.7384759714138855,
+          "accuracy": 0.461,
+          "brier": 0.7365403245068627,
+          "ece": 0.17000863426248305
+        }
+      },
+      "checkpoint_file": "checkpoints/cifar10/gru_seed2.npz",
+      "checkpoint_sha256": "98980074b8b470371e9a8a9a757d36e7408d5996b74845c8e9c7ed4a0dd3b17a",
+      "logits_latency_batch1": {
+        "batch_size": 1,
+        "median_ms": 0.03543800085026305,
+        "p95_ms": 0.05754180001531494,
+        "p99_ms": 0.14585129112674589,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      },
+      "logits_latency_batch32": {
+        "batch_size": 32,
+        "median_ms": 0.3541959995345678,
+        "p95_ms": 0.47864584867056686,
+        "p99_ms": 3.12152917882485,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      }
+    },
+    {
+      "kind": "gru",
+      "architecture_version": 1,
+      "seed": 3,
+      "width": 22,
+      "parameter_count": 6038,
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.6464996337890625,
+          "validation": {
+            "loss": 1.6000326510897183,
+            "accuracy": 0.558,
+            "brier": 0.6947124105359792,
+            "ece": 0.2910445796557791
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 1.051788091659546,
+          "validation": {
+            "loss": 1.0265743138715275,
+            "accuracy": 0.69,
+            "brier": 0.47145382106184475,
+            "ece": 0.20703605703705716
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.5966609716415405,
+          "validation": {
+            "loss": 0.7686775572053943,
+            "accuracy": 0.774,
+            "brier": 0.36322824702740353,
+            "ece": 0.14751938508065163
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.5228882431983948,
+          "validation": {
+            "loss": 0.6771703450928787,
+            "accuracy": 0.78,
+            "brier": 0.3214528049985797,
+            "ece": 0.06478904790198163
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.4224587678909302,
+          "validation": {
+            "loss": 0.6199536065402348,
+            "accuracy": 0.804,
+            "brier": 0.2937469855536876,
+            "ece": 0.05319894905105224
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.49623847007751465,
+          "validation": {
+            "loss": 0.5855824593005581,
+            "accuracy": 0.806,
+            "brier": 0.2818349182938886,
+            "ece": 0.028683518160353652
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 300,
+        "steps": 300,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 9600,
+        "compilation_seconds": 0.35150045699992916,
+        "optimizer_execution_seconds": 0.2946730890107574,
+        "optimizer_update_median_ms": 0.9703885007183999,
+        "optimizer_update_p95_ms": 1.250393497684854,
+        "validation_seconds": 0.048309815992979566,
+        "host_batch_seconds": 0.10842633895663312,
+        "total_train_call_seconds": 0.8195208100005402,
+        "first_three_optimizer_update_seconds": [
+          0.0017716809998091776,
+          0.0010075959980895277,
+          0.0011067330015066545
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 2.55655574798584,
+        "mean_unclipped_gradient_norm": 0.8886351584394773,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.3837134061865901,
+          "accuracy": 0.8825,
+          "brier": 0.17764934875557947,
+          "ece": 0.07324135273921001
+        },
+        "validation": {
+          "loss": 0.5855824593005581,
+          "accuracy": 0.806,
+          "brier": 0.2818349182938886,
+          "ece": 0.028683518160353652
+        },
+        "test": {
+          "loss": 0.7061224315744767,
+          "accuracy": 0.763,
+          "brier": 0.33665685298395215,
+          "ece": 0.023782155332512808
+        },
+        "corrupted_test": {
+          "loss": 1.826859305949367,
+          "accuracy": 0.445,
+          "brier": 0.7834297892193285,
+          "ece": 0.217358733925952
+        }
+      },
+      "checkpoint_file": "checkpoints/cifar10/gru_seed3.npz",
+      "checkpoint_sha256": "c369160c811c102cc75574bfccae7fb1f6d88f703d3cdb57e0f50fe65bb960e1",
+      "logits_latency_batch1": {
+        "batch_size": 1,
+        "median_ms": 0.057575000028009526,
+        "p95_ms": 0.09548500092932953,
+        "p99_ms": 0.10052843903395114,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      },
+      "logits_latency_batch32": {
+        "batch_size": 32,
+        "median_ms": 0.4565880008158274,
+        "p95_ms": 0.5222878495260375,
+        "p99_ms": 0.5393500117133954,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      }
+    },
+    {
+      "kind": "gru",
+      "architecture_version": 1,
+      "seed": 4,
+      "width": 22,
+      "parameter_count": 6038,
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.5806140899658203,
+          "validation": {
+            "loss": 1.565099454102181,
+            "accuracy": 0.566,
+            "brier": 0.680030383860008,
+            "ece": 0.2676423878369223
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.9208440780639648,
+          "validation": {
+            "loss": 1.0290208918764967,
+            "accuracy": 0.712,
+            "brier": 0.4658870134259162,
+            "ece": 0.2130815487214434
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.7665720582008362,
+          "validation": {
+            "loss": 0.7595051733185221,
+            "accuracy": 0.782,
+            "brier": 0.3506566032921164,
+            "ece": 0.15733998249831319
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.5629205703735352,
+          "validation": {
+            "loss": 0.671211798516103,
+            "accuracy": 0.774,
+            "brier": 0.3106256017330372,
+            "ece": 0.07197626634796189
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.5195814371109009,
+          "validation": {
+            "loss": 0.6167216693137191,
+            "accuracy": 0.79,
+            "brier": 0.2947584360064818,
+            "ece": 0.041165549162738097
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.3152330219745636,
+          "validation": {
+            "loss": 0.5670490416708777,
+            "accuracy": 0.8,
+            "brier": 0.2737722573594938,
+            "ece": 0.03630357265905429
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 300,
+        "steps": 300,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 9600,
+        "compilation_seconds": 0.35069412799930433,
+        "optimizer_execution_seconds": 0.26144108705193503,
+        "optimizer_update_median_ms": 0.799122501121019,
+        "optimizer_update_p95_ms": 1.0979990984196777,
+        "validation_seconds": 0.04064904499682598,
+        "host_batch_seconds": 0.10395675799009041,
+        "total_train_call_seconds": 0.7722625550013618,
+        "first_three_optimizer_update_seconds": [
+          0.0014573849985026754,
+          0.0007751009979983792,
+          0.0007095840010151733
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 1.7112295627593994,
+        "mean_unclipped_gradient_norm": 0.8350792874892553,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.393112972914883,
+          "accuracy": 0.883,
+          "brier": 0.18407425766723207,
+          "ece": 0.08459717275430984
+        },
+        "validation": {
+          "loss": 0.5670490416708777,
+          "accuracy": 0.8,
+          "brier": 0.2737722573594938,
+          "ece": 0.03630357265905429
+        },
+        "test": {
+          "loss": 0.6508931559663325,
+          "accuracy": 0.785,
+          "brier": 0.3129323257291829,
+          "ece": 0.04209834452951052
+        },
+        "corrupted_test": {
+          "loss": 1.6601779494207303,
+          "accuracy": 0.456,
+          "brier": 0.7247287663161662,
+          "ece": 0.15843479663837798
+        }
+      },
+      "checkpoint_file": "checkpoints/cifar10/gru_seed4.npz",
+      "checkpoint_sha256": "621c97a2fe276e2bdcfb8cbfbd2391b073a969c55449e6109111b5d7816c9988",
+      "logits_latency_batch1": {
+        "batch_size": 1,
+        "median_ms": 0.041351500840391964,
+        "p95_ms": 0.10389360068074883,
+        "p99_ms": 0.1435171129924128,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      },
+      "logits_latency_batch32": {
+        "batch_size": 32,
+        "median_ms": 0.32511800054635387,
+        "p95_ms": 0.47488180025538884,
+        "p99_ms": 0.5749731409014202,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      }
+    },
+    {
+      "kind": "transformer",
+      "architecture_version": 1,
+      "seed": 0,
+      "width": 23,
+      "parameter_count": 6151,
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 0.8610430359840393,
+          "validation": {
+            "loss": 1.0328944910150628,
+            "accuracy": 0.648,
+            "brier": 0.4802196482365557,
+            "ece": 0.11005445797977155
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.8816468715667725,
+          "validation": {
+            "loss": 0.709360666444759,
+            "accuracy": 0.75,
+            "brier": 0.34633392049502987,
+            "ece": 0.047339642335379066
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.6957259774208069,
+          "validation": {
+            "loss": 0.6194366522598244,
+            "accuracy": 0.766,
+            "brier": 0.3213619103687323,
+            "ece": 0.039249482393815864
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.6101714968681335,
+          "validation": {
+            "loss": 0.6179559601105986,
+            "accuracy": 0.782,
+            "brier": 0.30483845723599007,
+            "ece": 0.041915149368297176
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.2328857034444809,
+          "validation": {
+            "loss": 0.6258186034477566,
+            "accuracy": 0.78,
+            "brier": 0.3079257869212178,
+            "ece": 0.0571330621247148
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.3166026771068573,
+          "validation": {
+            "loss": 0.5902232578756418,
+            "accuracy": 0.81,
+            "brier": 0.280522740589528,
+            "ece": 0.05496107586668528
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 300,
+        "steps": 300,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 9600,
+        "compilation_seconds": 0.7094944290001877,
+        "optimizer_execution_seconds": 0.4822304079934838,
+        "optimizer_update_median_ms": 1.5422759988723556,
+        "optimizer_update_p95_ms": 2.15196519948222,
+        "validation_seconds": 0.3424739239962946,
+        "host_batch_seconds": 0.11716072298804647,
+        "total_train_call_seconds": 1.7611684119983693,
+        "first_three_optimizer_update_seconds": [
+          0.002824734001478646,
+          0.0018216749995190185,
+          0.0017763729993021116
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 3.9493460655212402,
+        "mean_unclipped_gradient_norm": 2.1603625228007632,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.35136694078305525,
+          "accuracy": 0.8885,
+          "brier": 0.16596118671591129,
+          "ece": 0.01909652813414178
+        },
+        "validation": {
+          "loss": 0.5902232578756418,
+          "accuracy": 0.81,
+          "brier": 0.280522740589528,
+          "ece": 0.05496107586668528
+        },
+        "test": {
+          "loss": 0.7208422915685306,
+          "accuracy": 0.791,
+          "brier": 0.3166296009877233,
+          "ece": 0.06043326417848624
+        },
+        "corrupted_test": {
+          "loss": 2.3003758496986566,
+          "accuracy": 0.431,
+          "brier": 0.8283658640602284,
+          "ece": 0.28746921265946757
+        }
+      },
+      "checkpoint_file": "checkpoints/cifar10/transformer_seed0.npz",
+      "checkpoint_sha256": "911c4631d22a571645a26c86f2a855ece01043df1c4907e68fe0b7d3ed62b017",
+      "logits_latency_batch1": {
+        "batch_size": 1,
+        "median_ms": 0.04309399992052931,
+        "p95_ms": 0.05772705044364557,
+        "p99_ms": 0.07880659144575473,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      },
+      "logits_latency_batch32": {
+        "batch_size": 32,
+        "median_ms": 0.3479515016806545,
+        "p95_ms": 0.42861995243583795,
+        "p99_ms": 0.5459552982210878,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      }
+    },
+    {
+      "kind": "transformer",
+      "architecture_version": 1,
+      "seed": 1,
+      "width": 23,
+      "parameter_count": 6151,
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.1674461364746094,
+          "validation": {
+            "loss": 1.0716519490988408,
+            "accuracy": 0.638,
+            "brier": 0.48878872736164497,
+            "ece": 0.0763404528372634
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.784977912902832,
+          "validation": {
+            "loss": 0.7066706066831964,
+            "accuracy": 0.754,
+            "brier": 0.3417203267808984,
+            "ece": 0.038037392204190806
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.37950611114501953,
+          "validation": {
+            "loss": 0.6465248044055893,
+            "accuracy": 0.784,
+            "brier": 0.3224112704245716,
+            "ece": 0.03996516698720604
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.6555352807044983,
+          "validation": {
+            "loss": 0.6294471462787373,
+            "accuracy": 0.788,
+            "brier": 0.3097593309480197,
+            "ece": 0.05542800388138165
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.44836610555648804,
+          "validation": {
+            "loss": 0.5841589598237791,
+            "accuracy": 0.798,
+            "brier": 0.28552457613367677,
+            "ece": 0.06661530589329595
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.46667784452438354,
+          "validation": {
+            "loss": 0.6153289006171299,
+            "accuracy": 0.778,
+            "brier": 0.3006552280388826,
+            "ece": 0.0888711614743637
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 250,
+        "steps": 300,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 9600,
+        "compilation_seconds": 0.5566990990009799,
+        "optimizer_execution_seconds": 0.5242407170262595,
+        "optimizer_update_median_ms": 1.5337820004788227,
+        "optimizer_update_p95_ms": 2.2057053982280195,
+        "validation_seconds": 0.05010895500163315,
+        "host_batch_seconds": 0.13098699304828187,
+        "total_train_call_seconds": 1.2857165230016108,
+        "first_three_optimizer_update_seconds": [
+          0.0029219820025900844,
+          0.0015824139991309494,
+          0.0017047870023816358
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 3.6322133541107178,
+        "mean_unclipped_gradient_norm": 2.1607010654608407,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.37672163674034764,
+          "accuracy": 0.8765,
+          "brier": 0.18442161061834472,
+          "ece": 0.018848804191654064
+        },
+        "validation": {
+          "loss": 0.5841589598237791,
+          "accuracy": 0.798,
+          "brier": 0.28552457613367677,
+          "ece": 0.06661530589329595
+        },
+        "test": {
+          "loss": 0.7370969999890353,
+          "accuracy": 0.766,
+          "brier": 0.33836085167553015,
+          "ece": 0.06709226148123645
+        },
+        "corrupted_test": {
+          "loss": 1.9939727888309262,
+          "accuracy": 0.43,
+          "brier": 0.7980011081600232,
+          "ece": 0.24837169357664243
+        }
+      },
+      "checkpoint_file": "checkpoints/cifar10/transformer_seed1.npz",
+      "checkpoint_sha256": "17e5e4559c60e0e75c62ba4b73796dbf34b462118fce90dd13c102f91542c4d2",
+      "logits_latency_batch1": {
+        "batch_size": 1,
+        "median_ms": 0.04283900125301443,
+        "p95_ms": 0.09079179872060189,
+        "p99_ms": 0.154137980825908,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      },
+      "logits_latency_batch32": {
+        "batch_size": 32,
+        "median_ms": 0.35564850077207666,
+        "p95_ms": 0.4441831009899033,
+        "p99_ms": 0.4834614375431556,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      }
+    },
+    {
+      "kind": "transformer",
+      "architecture_version": 1,
+      "seed": 2,
+      "width": 23,
+      "parameter_count": 6151,
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 0.9552197456359863,
+          "validation": {
+            "loss": 0.9967375534707862,
+            "accuracy": 0.676,
+            "brier": 0.4616718833445168,
+            "ece": 0.09711863155936393
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.5727736949920654,
+          "validation": {
+            "loss": 0.7238628105822522,
+            "accuracy": 0.746,
+            "brier": 0.35397220091975784,
+            "ece": 0.030364491314722686
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.45600375533103943,
+          "validation": {
+            "loss": 0.6805740086324004,
+            "accuracy": 0.76,
+            "brier": 0.33604355777965406,
+            "ece": 0.0547516973331686
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.5983239412307739,
+          "validation": {
+            "loss": 0.6040992110406641,
+            "accuracy": 0.806,
+            "brier": 0.2916058232522849,
+            "ece": 0.06099705765815853
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.19196178019046783,
+          "validation": {
+            "loss": 0.6134211940975886,
+            "accuracy": 0.81,
+            "brier": 0.28988472547343813,
+            "ece": 0.044834594295116444
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.08371999114751816,
+          "validation": {
+            "loss": 0.6543956165949043,
+            "accuracy": 0.798,
+            "brier": 0.29547717319765976,
+            "ece": 0.059211327770840524
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 200,
+        "steps": 300,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 9600,
+        "compilation_seconds": 0.5086209660003078,
+        "optimizer_execution_seconds": 0.4241694929987716,
+        "optimizer_update_median_ms": 1.384900997436489,
+        "optimizer_update_p95_ms": 1.640710798164946,
+        "validation_seconds": 0.04218190100073116,
+        "host_batch_seconds": 0.1017750299834006,
+        "total_train_call_seconds": 1.0963895700006105,
+        "first_three_optimizer_update_seconds": [
+          0.0026260269987687934,
+          0.0015679930002079345,
+          0.0013462739989336114
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 3.8468029499053955,
+        "mean_unclipped_gradient_norm": 2.1391682108243306,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.4325297566004221,
+          "accuracy": 0.8545,
+          "brier": 0.2166223681014279,
+          "ece": 0.020624447543948404
+        },
+        "validation": {
+          "loss": 0.6040992110406641,
+          "accuracy": 0.806,
+          "brier": 0.2916058232522849,
+          "ece": 0.06099705765815853
+        },
+        "test": {
+          "loss": 0.7211422548166186,
+          "accuracy": 0.763,
+          "brier": 0.335975201117163,
+          "ece": 0.06973996005920477
+        },
+        "corrupted_test": {
+          "loss": 2.3390721632502345,
+          "accuracy": 0.359,
+          "brier": 0.8986930138764878,
+          "ece": 0.31617497583433996
+        }
+      },
+      "checkpoint_file": "checkpoints/cifar10/transformer_seed2.npz",
+      "checkpoint_sha256": "9745ab97321bc9b1a1955c92e9629ca506ff9e6e9bc91409525b7faf545aebe5",
+      "logits_latency_batch1": {
+        "batch_size": 1,
+        "median_ms": 0.049788999604061246,
+        "p95_ms": 0.06830514885223236,
+        "p99_ms": 0.0861999084736453,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      },
+      "logits_latency_batch32": {
+        "batch_size": 32,
+        "median_ms": 0.46560699956899043,
+        "p95_ms": 0.5905064002945436,
+        "p99_ms": 0.6099415196877089,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      }
+    },
+    {
+      "kind": "transformer",
+      "architecture_version": 1,
+      "seed": 3,
+      "width": 23,
+      "parameter_count": 6151,
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 0.8536869287490845,
+          "validation": {
+            "loss": 1.0225558200056037,
+            "accuracy": 0.662,
+            "brier": 0.4633349228421428,
+            "ece": 0.05680739115477078
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.9499626159667969,
+          "validation": {
+            "loss": 0.7248451208110106,
+            "accuracy": 0.77,
+            "brier": 0.3502821773504787,
+            "ece": 0.042600679096776325
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.39393162727355957,
+          "validation": {
+            "loss": 0.7064487433812072,
+            "accuracy": 0.768,
+            "brier": 0.33313329613745435,
+            "ece": 0.05671452771895783
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.4078385829925537,
+          "validation": {
+            "loss": 0.6238067602889189,
+            "accuracy": 0.788,
+            "brier": 0.30204861009763695,
+            "ece": 0.046459818849865206
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.35763779282569885,
+          "validation": {
+            "loss": 0.5884549092036953,
+            "accuracy": 0.816,
+            "brier": 0.28031316736155326,
+            "ece": 0.044239348760360286
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.6220479011535645,
+          "validation": {
+            "loss": 0.602894324107288,
+            "accuracy": 0.798,
+            "brier": 0.2911040021409857,
+            "ece": 0.06465866911318206
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 250,
+        "steps": 300,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 9600,
+        "compilation_seconds": 0.5521319200015569,
+        "optimizer_execution_seconds": 0.46790527703342377,
+        "optimizer_update_median_ms": 1.4351250010804506,
+        "optimizer_update_p95_ms": 2.0674923503975156,
+        "validation_seconds": 0.04212668800391839,
+        "host_batch_seconds": 0.11343951598610147,
+        "total_train_call_seconds": 1.1968759510018572,
+        "first_three_optimizer_update_seconds": [
+          0.0026920150012301747,
+          0.0018654450032045133,
+          0.0012522430006356444
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 3.434638261795044,
+        "mean_unclipped_gradient_norm": 2.1067241736253104,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.4006060485250016,
+          "accuracy": 0.866,
+          "brier": 0.19555589962529252,
+          "ece": 0.018200378807198412
+        },
+        "validation": {
+          "loss": 0.5884549092036953,
+          "accuracy": 0.816,
+          "brier": 0.28031316736155326,
+          "ece": 0.044239348760360286
+        },
+        "test": {
+          "loss": 0.6683846773578557,
+          "accuracy": 0.791,
+          "brier": 0.30284621221119035,
+          "ece": 0.06196061663298807
+        },
+        "corrupted_test": {
+          "loss": 1.9867791257033125,
+          "accuracy": 0.452,
+          "brier": 0.7831896849606379,
+          "ece": 0.2539861611043376
+        }
+      },
+      "checkpoint_file": "checkpoints/cifar10/transformer_seed3.npz",
+      "checkpoint_sha256": "9c3df172582dff0a206a807a217591502d612ce04ae42d3056423e3723a67484",
+      "logits_latency_batch1": {
+        "batch_size": 1,
+        "median_ms": 0.04347499998402782,
+        "p95_ms": 0.06286665084189735,
+        "p99_ms": 0.0912521510326769,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      },
+      "logits_latency_batch32": {
+        "batch_size": 32,
+        "median_ms": 0.3781630002777092,
+        "p95_ms": 0.4995853012587758,
+        "p99_ms": 0.9823300200514484,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      }
+    },
+    {
+      "kind": "transformer",
+      "architecture_version": 1,
+      "seed": 4,
+      "width": 23,
+      "parameter_count": 6151,
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.1163495779037476,
+          "validation": {
+            "loss": 0.9085027102539537,
+            "accuracy": 0.684,
+            "brier": 0.42804364293748015,
+            "ece": 0.0931948876417436
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.31453049182891846,
+          "validation": {
+            "loss": 0.6464064097161037,
+            "accuracy": 0.776,
+            "brier": 0.31215059480013935,
+            "ece": 0.04364873097612803
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.5783623456954956,
+          "validation": {
+            "loss": 0.5748986240798596,
+            "accuracy": 0.79,
+            "brier": 0.28751762422050675,
+            "ece": 0.04330779579648828
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.3584670424461365,
+          "validation": {
+            "loss": 0.5305343743469418,
+            "accuracy": 0.81,
+            "brier": 0.26850590772055355,
+            "ece": 0.035359230746174156
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.4320170283317566,
+          "validation": {
+            "loss": 0.545948339932942,
+            "accuracy": 0.812,
+            "brier": 0.27097523754222336,
+            "ece": 0.04894814566652296
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.3568788170814514,
+          "validation": {
+            "loss": 0.5705430521404857,
+            "accuracy": 0.82,
+            "brier": 0.26991716996976184,
+            "ece": 0.05949571444277707
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 200,
+        "steps": 300,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 9600,
+        "compilation_seconds": 0.5696123439993244,
+        "optimizer_execution_seconds": 0.42523557102686027,
+        "optimizer_update_median_ms": 1.3894125004298985,
+        "optimizer_update_p95_ms": 1.6643376480715237,
+        "validation_seconds": 0.045122185998479836,
+        "host_batch_seconds": 0.09563510101725115,
+        "total_train_call_seconds": 1.155643827001768,
+        "first_three_optimizer_update_seconds": [
+          0.0022308900006464683,
+          0.0012926529998367187,
+          0.0012326139985816553
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 3.628335952758789,
+        "mean_unclipped_gradient_norm": 2.082814454038938,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.4141142827586602,
+          "accuracy": 0.8615,
+          "brier": 0.20570015646934814,
+          "ece": 0.015883948359871326
+        },
+        "validation": {
+          "loss": 0.5305343743469418,
+          "accuracy": 0.81,
+          "brier": 0.26850590772055355,
+          "ece": 0.035359230746174156
+        },
+        "test": {
+          "loss": 0.7006803533019527,
+          "accuracy": 0.773,
+          "brier": 0.331145803136698,
+          "ece": 0.06253283132926883
+        },
+        "corrupted_test": {
+          "loss": 2.1771268708007954,
+          "accuracy": 0.411,
+          "brier": 0.8462611666271264,
+          "ece": 0.28515694491455357
+        }
+      },
+      "checkpoint_file": "checkpoints/cifar10/transformer_seed4.npz",
+      "checkpoint_sha256": "0b3d0d8c9817a5496ce763979c7760b10114c5c3a5741ee98d289466061aa3ac",
+      "logits_latency_batch1": {
+        "batch_size": 1,
+        "median_ms": 0.05558749944611918,
+        "p95_ms": 0.09143379793385974,
+        "p99_ms": 0.11273963093117342,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      },
+      "logits_latency_batch32": {
+        "batch_size": 32,
+        "median_ms": 0.4586924987961538,
+        "p95_ms": 0.5166256474694819,
+        "p99_ms": 0.5347759883443359,
+        "includes_encoder": false,
+        "includes_metrics": false,
+        "includes_compilation": false,
+        "scope": "Pure logits, shared CPU, fixed batch and sequence shape"
+      }
+    }
+  ],
+  "complete": true,
+  "linear_reference": {
+    "kind": "global_mean_logistic_reference",
+    "C": 1.0,
+    "parameter_count": 650,
+    "fit_seconds": 0.018593329998111585,
+    "train": {
+      "loss": 0.30126536518319075,
+      "accuracy": 0.9005,
+      "brier": 0.15232218307535242,
+      "ece": 0.04737870596698655
+    },
+    "validation": {
+      "loss": 0.4985641391751426,
+      "accuracy": 0.832,
+      "brier": 0.2435899215213277,
+      "ece": 0.042614458745971896
+    },
+    "test": {
+      "loss": 0.5920301933366059,
+      "accuracy": 0.813,
+      "brier": 0.27783329322278727,
+      "ece": 0.04125667307160691
+    },
+    "corrupted_test": {
+      "loss": 1.9109859724185234,
+      "accuracy": 0.407,
+      "brier": 0.7849980947591371,
+      "ece": 0.22341003080329674
+    },
+    "checkpoint_file": "checkpoints/cifar10/linear_reference.npz",
+    "checkpoint_sha256": "2d9fa8381f73cc67a75b76a0e318643a3fe2ce2cfca2a68723f4d64a789c13ec"
+  },
+  "summary": {
+    "hcsn": {
+      "test": {
+        "mean": 0.7610000000000001,
+        "sd": 0.010559356040971447
+      },
+      "corrupted_test": {
+        "mean": 0.4236,
+        "sd": 0.014188023118109173
+      },
+      "mean_compilation_seconds": 1.0363625746009348,
+      "mean_optimizer_execution_seconds": 0.5761770684068324
+    },
+    "sigmoid": {
+      "test": {
+        "mean": 0.7664000000000001,
+        "sd": 0.009607288899580367
+      },
+      "corrupted_test": {
+        "mean": 0.422,
+        "sd": 0.005291502622129186
+      },
+      "mean_compilation_seconds": 1.0332686229994579,
+      "mean_optimizer_execution_seconds": 0.6442467227963788
+    },
+    "gru": {
+      "test": {
+        "mean": 0.7712,
+        "sd": 0.008318653737234175
+      },
+      "corrupted_test": {
+        "mean": 0.4436,
+        "sd": 0.01538830724933709
+      },
+      "mean_compilation_seconds": 0.33789163039982667,
+      "mean_optimizer_execution_seconds": 0.27986475760408214
+    },
+    "transformer": {
+      "test": {
+        "mean": 0.7767999999999999,
+        "sd": 0.013461054936371083
+      },
+      "corrupted_test": {
+        "mean": 0.41659999999999997,
+        "sd": 0.03531713465161069
+      },
+      "mean_compilation_seconds": 0.5793117516004713,
+      "mean_optimizer_execution_seconds": 0.4647562932157598
+    }
+  },
+  "paired_hcsn_minus_sigmoid": {
+    "test": {
+      "deltas": [
+        -0.006000000000000005,
+        -0.007000000000000006,
+        0.0,
+        -0.008000000000000007,
+        -0.006000000000000005
+      ],
+      "mean": -0.005400000000000005,
+      "sd": 0.0031304951684997086
+    },
+    "corrupted_test": {
+      "deltas": [
+        -0.014000000000000012,
+        0.027000000000000024,
+        0.01100000000000001,
+        -0.007000000000000006,
+        -0.009000000000000008
+      ],
+      "mean": 0.0016000000000000014,
+      "sd": 0.01705285899783378
+    }
+  },
+  "elapsed_head_experiment_seconds": 36.25194113700127,
+  "features_sha256_after": "4aa81cf9f6c2dfe451f2f02fda0c389f2f155c5321606e0661db930de292f2d8"
+}

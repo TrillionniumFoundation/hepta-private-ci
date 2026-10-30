@@ -1,0 +1,998 @@
+{
+  "schema": "hcsn.memory.mechanism.diagnostic.v1",
+  "exploratory": true,
+  "old_tests_already_exposed": true,
+  "retrained": false,
+  "new_acceptance_claim": false,
+  "explanation": "G=r*S,H=r*T. Fixed normalized ridge implies unnormalized lambda/r. Mass-scaled ridge removes this normalization effect only; conditioning and interference remain.",
+  "orthogonal_counterexample": [
+    {
+      "orthogonal_distractors": 0,
+      "fixed": {
+        "read": 0.9803921568627451,
+        "condition": 51.0
+      },
+      "mass": {
+        "read": 0.9900990099009901,
+        "condition": 101.0
+      }
+    },
+    {
+      "orthogonal_distractors": 31,
+      "fixed": {
+        "read": 0.7518796992481203,
+        "condition": 23.55639097744361
+      },
+      "mass": {
+        "read": 0.9900990099009902,
+        "condition": 30.702970297029704
+      }
+    },
+    {
+      "orthogonal_distractors": 127,
+      "fixed": {
+        "read": 0.43668122270742354,
+        "condition": 56.021834061135365
+      },
+      "mass": {
+        "read": 0.9900990099009901,
+        "condition": 125.75247524752476
+      }
+    },
+    {
+      "orthogonal_distractors": 511,
+      "fixed": {
+        "read": 0.1631321370309951,
+        "condition": 84.1973898858075
+      },
+      "mass": {
+        "read": 0.9900990099009902,
+        "condition": 505.950495049505
+      }
+    },
+    {
+      "orthogonal_distractors": 4095,
+      "fixed": {
+        "read": 0.02382654276864427,
+        "condition": 98.54586609482963
+      },
+      "mass": {
+        "read": 0.99009900990099,
+        "condition": 4054.4653465346532
+      }
+    }
+  ],
+  "checkpoint_write_diagnostics": [
+    {
+      "kind": "full_hx",
+      "seed": 0,
+      "checkpoint_sha256": "c2eb180654b8461b642fc83f430cdef6eacc8e09a6c74160157615001084407c",
+      "filler_write": [
+        0.003910128492861986,
+        0.009652175009250641,
+        2.507092631276464e-07,
+        0.006040652748197317
+      ],
+      "marked_write": [
+        0.15843096375465393,
+        0.18090370297431946,
+        0.12140826135873795,
+        0.16789473593235016
+      ],
+      "all_four_filler_writes_zero": false,
+      "expected_effective_ridge128": 0.01774660497903824,
+      "expected_effective_ridge512": 0.03656568005681038
+    },
+    {
+      "kind": "full_hx",
+      "seed": 1,
+      "checkpoint_sha256": "9c1698a678362f5ab89819febea88fccc4e728aec20c47f45ef09dda21e90e1c",
+      "filler_write": [
+        7.206669124570908e-06,
+        0.01571814715862274,
+        0.022735603153705597,
+        2.6220826839562505e-05
+      ],
+      "marked_write": [
+        0.16632764041423798,
+        0.24545486271381378,
+        0.2624414563179016,
+        0.1678415685892105
+      ],
+      "all_four_filler_writes_zero": false,
+      "expected_effective_ridge128": 0.024228624999523163,
+      "expected_effective_ridge512": 0.06117631122469902
+    },
+    {
+      "kind": "full_hx",
+      "seed": 2,
+      "checkpoint_sha256": "efb6908738201aa79b52f436e4bfe78b7c413e04eeafc465691a814021b284ec",
+      "filler_write": [
+        0.0005323515506461263,
+        0.03301649168133736,
+        0.04660088196396828,
+        0.0
+      ],
+      "marked_write": [
+        0.200299471616745,
+        0.3048161268234253,
+        0.3278965353965759,
+        0.12860436737537384
+      ],
+      "all_four_filler_writes_zero": false,
+      "expected_effective_ridge128": 0.03765120357275009,
+      "expected_effective_ridge512": 0.11459493637084961
+    },
+    {
+      "kind": "full_hx",
+      "seed": 3,
+      "checkpoint_sha256": "ff0d5235a112c74e354c41af2ed176852136fc40192224d42c658ca22a8ff8fd",
+      "filler_write": [
+        0.021719617769122124,
+        0.0011124404845759273,
+        0.02265923097729683,
+        0.00774057861417532
+      ],
+      "marked_write": [
+        0.19830889999866486,
+        0.12718194723129272,
+        0.20039574801921844,
+        0.1601482778787613
+      ],
+      "all_four_filler_writes_zero": false,
+      "expected_effective_ridge128": 0.028483126312494278,
+      "expected_effective_ridge512": 0.0795857161283493
+    },
+    {
+      "kind": "full_hx",
+      "seed": 4,
+      "checkpoint_sha256": "74239dcbe533945ab04ed898cc04652e9592daf05ad2fecd001740e50fd1ca6f",
+      "filler_write": [
+        0.0,
+        0.029576340690255165,
+        0.07138051092624664,
+        0.03631258010864258
+      ],
+      "marked_write": [
+        0.11111248284578323,
+        0.22516867518424988,
+        0.2917042374610901,
+        0.23783324658870697
+      ],
+      "all_four_filler_writes_zero": false,
+      "expected_effective_ridge128": 0.0554044172167778,
+      "expected_effective_ridge512": 0.18718309700489044
+    },
+    {
+      "kind": "hcsn",
+      "seed": 0,
+      "checkpoint_sha256": "befe7d67359f92301530c954bbd760d01f26161738456fd02a82f6e12eea06df",
+      "filler_write": [
+        0.003854252863675356,
+        0.009380625560879707,
+        3.6828461702498316e-07,
+        0.005835171788930893
+      ],
+      "marked_write": [
+        0.15760105848312378,
+        0.17944669723510742,
+        0.12095291167497635,
+        0.16649919748306274
+      ],
+      "all_four_filler_writes_zero": false,
+      "expected_effective_ridge128": 0.017568429931998253,
+      "expected_effective_ridge512": 0.03587603196501732
+    },
+    {
+      "kind": "hcsn",
+      "seed": 1,
+      "checkpoint_sha256": "28443c1c1e8ea31e35579f1d14a5bf5653008dfdab56dd453fbf2ecfe62e3750",
+      "filler_write": [
+        8.10933761385968e-06,
+        0.016599856317043304,
+        0.021685125306248665,
+        2.4985321942949668e-05
+      ],
+      "marked_write": [
+        0.1653279960155487,
+        0.2466108500957489,
+        0.25892341136932373,
+        0.16666288673877716
+      ],
+      "all_four_filler_writes_zero": false,
+      "expected_effective_ridge128": 0.024164006114006042,
+      "expected_effective_ridge512": 0.06094936281442642
+    },
+    {
+      "kind": "hcsn",
+      "seed": 2,
+      "checkpoint_sha256": "ea0924c70cb491e0aea68e6b63d911207f9cd7e4e3c2907ac4add483f1bf2d47",
+      "filler_write": [
+        0.00046609839773736894,
+        0.03296685218811035,
+        0.045910172164440155,
+        0.0
+      ],
+      "marked_write": [
+        0.19924254715442657,
+        0.30461713671684265,
+        0.32670265436172485,
+        0.12842348217964172
+      ],
+      "all_four_filler_writes_zero": false,
+      "expected_effective_ridge128": 0.03739054501056671,
+      "expected_effective_ridge512": 0.11355993896722794
+    },
+    {
+      "kind": "hcsn",
+      "seed": 3,
+      "checkpoint_sha256": "78899ff01e75cdd659c9604abd7c59966d3a91a323f313f24ca227a1eeb329ed",
+      "filler_write": [
+        0.02215142734348774,
+        0.0011132067302241921,
+        0.02269180305302143,
+        0.00786128081381321
+      ],
+      "marked_write": [
+        0.1988886445760727,
+        0.1268395632505417,
+        0.20008301734924316,
+        0.16020429134368896
+      ],
+      "all_four_filler_writes_zero": false,
+      "expected_effective_ridge128": 0.028667619451880455,
+      "expected_effective_ridge512": 0.08033262938261032
+    },
+    {
+      "kind": "hcsn",
+      "seed": 4,
+      "checkpoint_sha256": "15840745f609b19d52a306df66cfe1676bf5aab4eaea74934fa220c9aaaeafda",
+      "filler_write": [
+        0.0,
+        0.028714574873447418,
+        0.07012937217950821,
+        0.035037148743867874
+      ],
+      "marked_write": [
+        0.11528023332357407,
+        0.22290167212486267,
+        0.2894556522369385,
+        0.2349584400653839
+      ],
+      "all_four_filler_writes_zero": false,
+      "expected_effective_ridge128": 0.0543290376663208,
+      "expected_effective_ridge512": 0.18285487592220306
+    },
+    {
+      "kind": "sigmoid",
+      "seed": 0,
+      "checkpoint_sha256": "d3e1fd8f7273223bbbe5e94c332e70708a272d857d4725185bb4595fd439ae98",
+      "filler_write": [
+        0.003912307322025299,
+        0.009646279737353325,
+        1.3158186540351835e-08,
+        0.006083961576223373
+      ],
+      "marked_write": [
+        0.15863443911075592,
+        0.18108223378658295,
+        0.1213667094707489,
+        0.1682644486427307
+      ],
+      "all_four_filler_writes_zero": false,
+      "expected_effective_ridge128": 0.017760775983333588,
+      "expected_effective_ridge512": 0.03661763668060303
+    },
+    {
+      "kind": "sigmoid",
+      "seed": 1,
+      "checkpoint_sha256": "8ab46a1c87b08d6c48c73a0d70262394628db81642457029eede93a12bd7b95b",
+      "filler_write": [
+        6.907895567564992e-06,
+        0.015729665756225586,
+        0.022852208465337753,
+        2.6332954803365283e-05
+      ],
+      "marked_write": [
+        0.1666579246520996,
+        0.2458672970533371,
+        0.2630825340747833,
+        0.16821424663066864
+      ],
+      "all_four_filler_writes_zero": false,
+      "expected_effective_ridge128": 0.02427331916987896,
+      "expected_effective_ridge512": 0.061343830078840256
+    },
+    {
+      "kind": "sigmoid",
+      "seed": 2,
+      "checkpoint_sha256": "42d2c8be6993c37db341c6aa641b1238f4bd913e8c87d6ba72ae28dd19a662a0",
+      "filler_write": [
+        0.0005053954664617777,
+        0.032576240599155426,
+        0.046465255320072174,
+        0.0
+      ],
+      "marked_write": [
+        0.19961896538734436,
+        0.3036963939666748,
+        0.3273860812187195,
+        0.1281929761171341
+      ],
+      "all_four_filler_writes_zero": false,
+      "expected_effective_ridge128": 0.0374545082449913,
+      "expected_effective_ridge512": 0.11381951719522476
+    },
+    {
+      "kind": "sigmoid",
+      "seed": 3,
+      "checkpoint_sha256": "75fcddf33d18ac7941d3e4fc31bb95ebf44e4192d3824d27537fec012b0d60b6",
+      "filler_write": [
+        0.02163100615143776,
+        0.0011111745843663812,
+        0.02269493043422699,
+        0.007682061288505793
+      ],
+      "marked_write": [
+        0.19826900959014893,
+        0.12731550633907318,
+        0.2006334513425827,
+        0.1600937694311142
+      ],
+      "all_four_filler_writes_zero": false,
+      "expected_effective_ridge128": 0.0284483190625906,
+      "expected_effective_ridge512": 0.07944272458553314
+    },
+    {
+      "kind": "sigmoid",
+      "seed": 4,
+      "checkpoint_sha256": "3153956815da7b90d44b2a3abdb51ea2dbdf52881ad8e1ee00cfb09ef35418ac",
+      "filler_write": [
+        0.0,
+        0.029563868418335915,
+        0.07164867967367172,
+        0.036575742065906525
+      ],
+      "marked_write": [
+        0.11064271628856659,
+        0.22529441118240356,
+        0.2922145426273346,
+        0.23845691978931427
+      ],
+      "all_four_filler_writes_zero": false,
+      "expected_effective_ridge128": 0.05556982755661011,
+      "expected_effective_ridge512": 0.1878466010093689
+    },
+    {
+      "kind": "ridge_memory_only",
+      "seed": 0,
+      "checkpoint_sha256": "09bd77b40d101cf3f828fd552f3f280e3e9e42719984c4d28d1541b72cc46a73",
+      "filler_write": [
+        0.031467255204916,
+        0.01839490979909897,
+        0.0,
+        0.007937369868159294
+      ],
+      "marked_write": [
+        0.23024821281433105,
+        0.20228168368339539,
+        0.09366583079099655,
+        0.17221501469612122
+      ],
+      "all_four_filler_writes_zero": false,
+      "expected_effective_ridge128": 0.02995287999510765,
+      "expected_effective_ridge512": 0.08544042706489563
+    },
+    {
+      "kind": "ridge_memory_only",
+      "seed": 1,
+      "checkpoint_sha256": "fceb2890ca32beb63fa26502172fb2b7eca288feb4dde3b220bf18f860dd2dc4",
+      "filler_write": [
+        8.991643881017808e-06,
+        0.09274698793888092,
+        0.021666541695594788,
+        0.037067968398332596
+      ],
+      "marked_write": [
+        0.12756133079528809,
+        0.3282979726791382,
+        0.21813319623470306,
+        0.2488500475883484
+      ],
+      "all_four_filler_writes_zero": false,
+      "expected_effective_ridge128": 0.060026612132787704,
+      "expected_effective_ridge512": 0.20545749366283417
+    },
+    {
+      "kind": "ridge_memory_only",
+      "seed": 2,
+      "checkpoint_sha256": "13e4db2203c0571b6ab7f70176a64e17f380d9f256b87b7f77e03d20a355b60a",
+      "filler_write": [
+        0.0013868266250938177,
+        0.049924496561288834,
+        3.115415165666491e-05,
+        0.0013814945705235004
+      ],
+      "marked_write": [
+        0.17951756715774536,
+        0.3032495975494385,
+        0.15977546572685242,
+        0.17947237193584442
+      ],
+      "all_four_filler_writes_zero": false,
+      "expected_effective_ridge128": 0.028663089498877525,
+      "expected_effective_ridge512": 0.07927809655666351
+    },
+    {
+      "kind": "ridge_memory_only",
+      "seed": 3,
+      "checkpoint_sha256": "009a0ac8034e2e37c48adc3de26ec2a57336708612d1091706e1101fc4914dd3",
+      "filler_write": [
+        0.010232827626168728,
+        0.0021240387577563524,
+        0.013476074673235416,
+        0.010049578733742237
+      ],
+      "marked_write": [
+        0.15129368007183075,
+        0.11851340532302856,
+        0.16060073673725128,
+        0.15073199570178986
+      ],
+      "all_four_filler_writes_zero": false,
+      "expected_effective_ridge128": 0.02275584079325199,
+      "expected_effective_ridge512": 0.057203058153390884
+    },
+    {
+      "kind": "ridge_memory_only",
+      "seed": 4,
+      "checkpoint_sha256": "c8151cb3a62c0920b5817cc6345f366c14f8633535fc6a586ee27a4c35356689",
+      "filler_write": [
+        0.0,
+        0.06077964976429939,
+        0.04865618422627449,
+        0.0709294006228447
+      ],
+      "marked_write": [
+        0.04983583465218544,
+        0.2640845775604248,
+        0.24575018882751465,
+        0.27828654646873474
+      ],
+      "all_four_filler_writes_zero": false,
+      "expected_effective_ridge128": 0.06890993565320969,
+      "expected_effective_ridge512": 0.2420605570077896
+    }
+  ],
+  "old_checkpoint_counterfactuals": [
+    {
+      "kind": "full_hx",
+      "seed": 0,
+      "length": 128,
+      "examples": 1024,
+      "data_sha256": "aa11a3ef662a4c94a6c9b91861f63ec6b738636972f4f03a976e6cfd0684f1c5",
+      "checkpoint_sha256": "c2eb180654b8461b642fc83f430cdef6eacc8e09a6c74160157615001084407c",
+      "original_recorded_accuracy": 1.0,
+      "original_accuracy_reproduced": true,
+      "modes": {
+        "fixed": {
+          "maximum_condition": 5.6405267319830905,
+          "maximum_relative_residual": 8.208329660419622e-08,
+          "maximum_read": 0.8371201157569885,
+          "maximum_write_mass": 0.8908730745315552,
+          "accuracy": 1.0
+        },
+        "mass": {
+          "maximum_condition": 9.743939696095389,
+          "maximum_relative_residual": 8.732993705962144e-08,
+          "maximum_read": 0.9284949898719788,
+          "maximum_write_mass": 0.8908730745315552,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "kind": "full_hx",
+      "seed": 0,
+      "length": 512,
+      "examples": 256,
+      "data_sha256": "d89a4515ed4e1975525c69a56f46200e0f8f14506827fc28d1610354430fb0f5",
+      "checkpoint_sha256": "c2eb180654b8461b642fc83f430cdef6eacc8e09a6c74160157615001084407c",
+      "original_recorded_accuracy": 1.0,
+      "original_accuracy_reproduced": true,
+      "modes": {
+        "fixed": {
+          "maximum_condition": 7.644030716338881,
+          "maximum_relative_residual": 8.214665569994395e-08,
+          "maximum_read": 0.7968105673789978,
+          "maximum_write_mass": 2.871082067489624,
+          "accuracy": 1.0
+        },
+        "mass": {
+          "maximum_condition": 26.61782656731171,
+          "maximum_relative_residual": 1.0382866832969739e-07,
+          "maximum_read": 0.9783694744110107,
+          "maximum_write_mass": 2.871082067489624,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "kind": "full_hx",
+      "seed": 1,
+      "length": 128,
+      "examples": 1024,
+      "data_sha256": "0bf2f184c75c8fce993e386b00526e8fcf6ed95c3f64322f7361ebd5018e76f9",
+      "checkpoint_sha256": "9c1698a678362f5ab89819febea88fccc4e728aec20c47f45ef09dda21e90e1c",
+      "original_recorded_accuracy": 1.0,
+      "original_accuracy_reproduced": true,
+      "modes": {
+        "fixed": {
+          "maximum_condition": 2.601050246621236,
+          "maximum_relative_residual": 8.704414966587137e-08,
+          "maximum_read": 0.9341471791267395,
+          "maximum_write_mass": 1.8107123374938965,
+          "accuracy": 1.0
+        },
+        "mass": {
+          "maximum_condition": 5.23635331991301,
+          "maximum_relative_residual": 8.410178509166144e-08,
+          "maximum_read": 1.8267626762390137,
+          "maximum_write_mass": 1.8107123374938965,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "kind": "full_hx",
+      "seed": 1,
+      "length": 512,
+      "examples": 256,
+      "data_sha256": "688be6655e593e413b64f1cf3449a5430b9b5945d6f0738bfc1457884cf6ec9e",
+      "checkpoint_sha256": "9c1698a678362f5ab89819febea88fccc4e728aec20c47f45ef09dda21e90e1c",
+      "original_recorded_accuracy": 1.0,
+      "original_accuracy_reproduced": true,
+      "modes": {
+        "fixed": {
+          "maximum_condition": 3.0487280448048804,
+          "maximum_relative_residual": 7.903538801201648e-08,
+          "maximum_read": 0.5314812660217285,
+          "maximum_write_mass": 5.7135186195373535,
+          "accuracy": 1.0
+        },
+        "mass": {
+          "maximum_condition": 14.54186630083754,
+          "maximum_relative_residual": 7.68428733977089e-08,
+          "maximum_read": 2.1229970455169678,
+          "maximum_write_mass": 5.7135186195373535,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "kind": "full_hx",
+      "seed": 2,
+      "length": 128,
+      "examples": 1024,
+      "data_sha256": "35bc3effa122ea2dd6791807380d31b3d745cfcdbfc7b57aaf9795f3087412d6",
+      "checkpoint_sha256": "efb6908738201aa79b52f436e4bfe78b7c413e04eeafc465691a814021b284ec",
+      "original_recorded_accuracy": 0.9384765625,
+      "original_accuracy_reproduced": true,
+      "modes": {
+        "fixed": {
+          "maximum_condition": 3.30715719434239,
+          "maximum_relative_residual": 6.408674835256534e-08,
+          "maximum_read": 1.0884222984313965,
+          "maximum_write_mass": 3.529907703399658,
+          "accuracy": 0.9384765625
+        },
+        "mass": {
+          "maximum_condition": 10.329298459162105,
+          "maximum_relative_residual": 6.38736707969656e-08,
+          "maximum_read": 1.959280252456665,
+          "maximum_write_mass": 3.529907703399658,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "kind": "full_hx",
+      "seed": 2,
+      "length": 512,
+      "examples": 256,
+      "data_sha256": "50d04952c26bcabbbe35fca69394d9035dee6bc6ff97db67451634a6f432fed2",
+      "checkpoint_sha256": "efb6908738201aa79b52f436e4bfe78b7c413e04eeafc465691a814021b284ec",
+      "original_recorded_accuracy": 0.23828125,
+      "original_accuracy_reproduced": true,
+      "modes": {
+        "fixed": {
+          "maximum_condition": 3.3934310290565106,
+          "maximum_relative_residual": 5.970386496301217e-08,
+          "maximum_read": 0.8282478451728821,
+          "maximum_write_mass": 11.760042190551758,
+          "accuracy": 0.23828125
+        },
+        "mass": {
+          "maximum_condition": 29.44764327952454,
+          "maximum_relative_residual": 5.924899681986062e-08,
+          "maximum_read": 1.8019158840179443,
+          "maximum_write_mass": 11.760042190551758,
+          "accuracy": 0.91015625
+        }
+      }
+    },
+    {
+      "kind": "full_hx",
+      "seed": 3,
+      "length": 128,
+      "examples": 1024,
+      "data_sha256": "e86b71ceba3e5c170f1cc0b49b81f0fcba4da315c4532b50a671ac1b3d22a60a",
+      "checkpoint_sha256": "ff0d5235a112c74e354c41af2ed176852136fc40192224d42c658ca22a8ff8fd",
+      "original_recorded_accuracy": 1.0,
+      "original_accuracy_reproduced": true,
+      "modes": {
+        "fixed": {
+          "maximum_condition": 7.000426775343853,
+          "maximum_relative_residual": 1.1493423102137967e-07,
+          "maximum_read": 0.7436349391937256,
+          "maximum_write_mass": 2.1612157821655273,
+          "accuracy": 1.0
+        },
+        "mass": {
+          "maximum_condition": 19.601057545006274,
+          "maximum_relative_residual": 1.5416543419632944e-07,
+          "maximum_read": 0.9134910106658936,
+          "maximum_write_mass": 2.1612157821655273,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "kind": "full_hx",
+      "seed": 3,
+      "length": 512,
+      "examples": 256,
+      "data_sha256": "fb129ca6ce695f4d7b1328d2ac4538226974a1199c12e718f4d055287498507e",
+      "checkpoint_sha256": "ff0d5235a112c74e354c41af2ed176852136fc40192224d42c658ca22a8ff8fd",
+      "original_recorded_accuracy": 0.6796875,
+      "original_accuracy_reproduced": true,
+      "modes": {
+        "fixed": {
+          "maximum_condition": 8.113594211713435,
+          "maximum_relative_residual": 9.730516836725656e-08,
+          "maximum_read": 0.7050940990447998,
+          "maximum_write_mass": 7.422370910644531,
+          "accuracy": 0.6796875
+        },
+        "mass": {
+          "maximum_condition": 60.8759951782648,
+          "maximum_relative_residual": 2.1840689612417918e-07,
+          "maximum_read": 0.9614108800888062,
+          "maximum_write_mass": 7.422370910644531,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "kind": "full_hx",
+      "seed": 4,
+      "length": 128,
+      "examples": 1024,
+      "data_sha256": "b11ce64f650f5a9be21f4e95ea54584054941f734ca2fa399516ea4bec00c180",
+      "checkpoint_sha256": "74239dcbe533945ab04ed898cc04652e9592daf05ad2fecd001740e50fd1ca6f",
+      "original_recorded_accuracy": 1.0,
+      "original_accuracy_reproduced": true,
+      "modes": {
+        "fixed": {
+          "maximum_condition": 6.897509053870355,
+          "maximum_relative_residual": 9.064626027566192e-08,
+          "maximum_read": 0.7842979431152344,
+          "maximum_write_mass": 5.454068183898926,
+          "accuracy": 1.0
+        },
+        "mass": {
+          "maximum_condition": 38.620911184093906,
+          "maximum_relative_residual": 9.810392498366127e-08,
+          "maximum_read": 1.4343899488449097,
+          "maximum_write_mass": 5.454068183898926,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "kind": "full_hx",
+      "seed": 4,
+      "length": 512,
+      "examples": 256,
+      "data_sha256": "d683e4282852e2f514e6821899247b5f96e19141aad4453c0641b72ca2f71047",
+      "checkpoint_sha256": "74239dcbe533945ab04ed898cc04652e9592daf05ad2fecd001740e50fd1ca6f",
+      "original_recorded_accuracy": 0.25,
+      "original_accuracy_reproduced": true,
+      "modes": {
+        "fixed": {
+          "maximum_condition": 7.2385898235129895,
+          "maximum_relative_residual": 8.226025016710992e-08,
+          "maximum_read": 0.7120052576065063,
+          "maximum_write_mass": 19.170547485351562,
+          "accuracy": 0.25
+        },
+        "mass": {
+          "maximum_condition": 125.70844315140738,
+          "maximum_relative_residual": 1.0793526428187761e-07,
+          "maximum_read": 1.4750525951385498,
+          "maximum_write_mass": 19.170547485351562,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "kind": "sigmoid",
+      "seed": 0,
+      "length": 128,
+      "examples": 1024,
+      "data_sha256": "aa11a3ef662a4c94a6c9b91861f63ec6b738636972f4f03a976e6cfd0684f1c5",
+      "checkpoint_sha256": "d3e1fd8f7273223bbbe5e94c332e70708a272d857d4725185bb4595fd439ae98",
+      "original_recorded_accuracy": 1.0,
+      "original_accuracy_reproduced": true,
+      "modes": {
+        "fixed": {
+          "maximum_condition": 5.644000881641429,
+          "maximum_relative_residual": 8.16773919609659e-08,
+          "maximum_read": 0.836208701133728,
+          "maximum_write_mass": 0.8925573825836182,
+          "accuracy": 1.0
+        },
+        "mass": {
+          "maximum_condition": 9.754997480181178,
+          "maximum_relative_residual": 8.543958074369584e-08,
+          "maximum_read": 0.9276309609413147,
+          "maximum_write_mass": 0.8925573825836182,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "kind": "sigmoid",
+      "seed": 0,
+      "length": 512,
+      "examples": 256,
+      "data_sha256": "d89a4515ed4e1975525c69a56f46200e0f8f14506827fc28d1610354430fb0f5",
+      "checkpoint_sha256": "d3e1fd8f7273223bbbe5e94c332e70708a272d857d4725185bb4595fd439ae98",
+      "original_recorded_accuracy": 1.0,
+      "original_accuracy_reproduced": true,
+      "modes": {
+        "fixed": {
+          "maximum_condition": 7.64329635106692,
+          "maximum_relative_residual": 7.988042227680126e-08,
+          "maximum_read": 0.7956817150115967,
+          "maximum_write_mass": 2.876204252243042,
+          "accuracy": 1.0
+        },
+        "mass": {
+          "maximum_condition": 26.65822917543353,
+          "maximum_relative_residual": 1.0541864980950777e-07,
+          "maximum_read": 0.9773187637329102,
+          "maximum_write_mass": 2.876204252243042,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "kind": "sigmoid",
+      "seed": 1,
+      "length": 128,
+      "examples": 1024,
+      "data_sha256": "0bf2f184c75c8fce993e386b00526e8fcf6ed95c3f64322f7361ebd5018e76f9",
+      "checkpoint_sha256": "8ab46a1c87b08d6c48c73a0d70262394628db81642457029eede93a12bd7b95b",
+      "original_recorded_accuracy": 1.0,
+      "original_accuracy_reproduced": true,
+      "modes": {
+        "fixed": {
+          "maximum_condition": 2.602701662293182,
+          "maximum_relative_residual": 8.63595275291118e-08,
+          "maximum_read": 0.9351912140846252,
+          "maximum_write_mass": 1.8168599605560303,
+          "accuracy": 1.0
+        },
+        "mass": {
+          "maximum_condition": 5.250574114018131,
+          "maximum_relative_residual": 8.500995818394586e-08,
+          "maximum_read": 1.8294141292572021,
+          "maximum_write_mass": 1.8168599605560303,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "kind": "sigmoid",
+      "seed": 1,
+      "length": 512,
+      "examples": 256,
+      "data_sha256": "688be6655e593e413b64f1cf3449a5430b9b5945d6f0738bfc1457884cf6ec9e",
+      "checkpoint_sha256": "8ab46a1c87b08d6c48c73a0d70262394628db81642457029eede93a12bd7b95b",
+      "original_recorded_accuracy": 1.0,
+      "original_accuracy_reproduced": true,
+      "modes": {
+        "fixed": {
+          "maximum_condition": 3.0501327103903764,
+          "maximum_relative_residual": 8.006723106745994e-08,
+          "maximum_read": 0.5300862193107605,
+          "maximum_write_mass": 5.732611656188965,
+          "accuracy": 1.0
+        },
+        "mass": {
+          "maximum_condition": 14.585739352116237,
+          "maximum_relative_residual": 7.599398088586895e-08,
+          "maximum_read": 2.1268599033355713,
+          "maximum_write_mass": 5.732611656188965,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "kind": "sigmoid",
+      "seed": 2,
+      "length": 128,
+      "examples": 1024,
+      "data_sha256": "35bc3effa122ea2dd6791807380d31b3d745cfcdbfc7b57aaf9795f3087412d6",
+      "checkpoint_sha256": "42d2c8be6993c37db341c6aa641b1238f4bd913e8c87d6ba72ae28dd19a662a0",
+      "original_recorded_accuracy": 0.9287109375,
+      "original_accuracy_reproduced": true,
+      "modes": {
+        "fixed": {
+          "maximum_condition": 3.2850150237354496,
+          "maximum_relative_residual": 6.545480601971576e-08,
+          "maximum_read": 1.0907983779907227,
+          "maximum_write_mass": 3.5072340965270996,
+          "accuracy": 0.9287109375
+        },
+        "mass": {
+          "maximum_condition": 10.19978412747075,
+          "maximum_relative_residual": 6.260417961811982e-08,
+          "maximum_read": 1.9602962732315063,
+          "maximum_write_mass": 3.5072340965270996,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "kind": "sigmoid",
+      "seed": 2,
+      "length": 512,
+      "examples": 256,
+      "data_sha256": "50d04952c26bcabbbe35fca69394d9035dee6bc6ff97db67451634a6f432fed2",
+      "checkpoint_sha256": "42d2c8be6993c37db341c6aa641b1238f4bd913e8c87d6ba72ae28dd19a662a0",
+      "original_recorded_accuracy": 0.23828125,
+      "original_accuracy_reproduced": true,
+      "modes": {
+        "fixed": {
+          "maximum_condition": 3.368434392597925,
+          "maximum_relative_residual": 6.107707406499685e-08,
+          "maximum_read": 0.8324077129364014,
+          "maximum_write_mass": 11.676322937011719,
+          "accuracy": 0.23828125
+        },
+        "mass": {
+          "maximum_condition": 28.96429098297672,
+          "maximum_relative_residual": 5.955377346822388e-08,
+          "maximum_read": 1.8124831914901733,
+          "maximum_write_mass": 11.676322937011719,
+          "accuracy": 0.93359375
+        }
+      }
+    },
+    {
+      "kind": "sigmoid",
+      "seed": 3,
+      "length": 128,
+      "examples": 1024,
+      "data_sha256": "e86b71ceba3e5c170f1cc0b49b81f0fcba4da315c4532b50a671ac1b3d22a60a",
+      "checkpoint_sha256": "75fcddf33d18ac7941d3e4fc31bb95ebf44e4192d3824d27537fec012b0d60b6",
+      "original_recorded_accuracy": 1.0,
+      "original_accuracy_reproduced": true,
+      "modes": {
+        "fixed": {
+          "maximum_condition": 7.004598139203384,
+          "maximum_relative_residual": 1.1175234249094501e-07,
+          "maximum_read": 0.745033323764801,
+          "maximum_write_mass": 2.15745210647583,
+          "accuracy": 1.0
+        },
+        "mass": {
+          "maximum_condition": 19.598391272195155,
+          "maximum_relative_residual": 1.5441148093486845e-07,
+          "maximum_read": 0.9144449234008789,
+          "maximum_write_mass": 2.15745210647583,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "kind": "sigmoid",
+      "seed": 3,
+      "length": 512,
+      "examples": 256,
+      "data_sha256": "fb129ca6ce695f4d7b1328d2ac4538226974a1199c12e718f4d055287498507e",
+      "checkpoint_sha256": "75fcddf33d18ac7941d3e4fc31bb95ebf44e4192d3824d27537fec012b0d60b6",
+      "original_recorded_accuracy": 0.68359375,
+      "original_accuracy_reproduced": true,
+      "modes": {
+        "fixed": {
+          "maximum_condition": 8.119359623373601,
+          "maximum_relative_residual": 9.836084302605741e-08,
+          "maximum_read": 0.706188440322876,
+          "maximum_write_mass": 7.40712833404541,
+          "accuracy": 0.68359375
+        },
+        "mass": {
+          "maximum_condition": 60.83059802414042,
+          "maximum_relative_residual": 2.1772390823571186e-07,
+          "maximum_read": 0.9620735049247742,
+          "maximum_write_mass": 7.40712833404541,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "kind": "sigmoid",
+      "seed": 4,
+      "length": 128,
+      "examples": 1024,
+      "data_sha256": "b11ce64f650f5a9be21f4e95ea54584054941f734ca2fa399516ea4bec00c180",
+      "checkpoint_sha256": "3153956815da7b90d44b2a3abdb51ea2dbdf52881ad8e1ee00cfb09ef35418ac",
+      "original_recorded_accuracy": 1.0,
+      "original_accuracy_reproduced": true,
+      "modes": {
+        "fixed": {
+          "maximum_condition": 6.909784426078622,
+          "maximum_relative_residual": 8.629629633105651e-08,
+          "maximum_read": 0.7855539917945862,
+          "maximum_write_mass": 5.474412441253662,
+          "accuracy": 1.0
+        },
+        "mass": {
+          "maximum_condition": 38.8171071064879,
+          "maximum_relative_residual": 9.975469339451593e-08,
+          "maximum_read": 1.4372923374176025,
+          "maximum_write_mass": 5.474412441253662,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "kind": "sigmoid",
+      "seed": 4,
+      "length": 512,
+      "examples": 256,
+      "data_sha256": "d683e4282852e2f514e6821899247b5f96e19141aad4453c0641b72ca2f71047",
+      "checkpoint_sha256": "3153956815da7b90d44b2a3abdb51ea2dbdf52881ad8e1ee00cfb09ef35418ac",
+      "original_recorded_accuracy": 0.25,
+      "original_accuracy_reproduced": true,
+      "modes": {
+        "fixed": {
+          "maximum_condition": 7.250574038112367,
+          "maximum_relative_residual": 8.183342714573882e-08,
+          "maximum_read": 0.7141249179840088,
+          "maximum_write_mass": 19.24171257019043,
+          "accuracy": 0.25
+        },
+        "mass": {
+          "maximum_condition": 126.38936346469737,
+          "maximum_relative_residual": 1.093971917498493e-07,
+          "maximum_read": 1.4698913097381592,
+          "maximum_write_mass": 19.24171257019043,
+          "accuracy": 1.0
+        }
+      }
+    }
+  ],
+  "all_old_accuracies_reproduced": true,
+  "elapsed_seconds": 24.578183281999372,
+  "source_sha256": {
+    "third/memory/diagnose.py": "c2fa7069708bf85ea8eee0bec6b021cd669341864efb97ee60f8f76f9becd640",
+    "third/memory/reference.py": "eb9ae19aa3fb6c17d4a69e585f1b7789ae6c95b5f84283db498094cf3db6b47e",
+    "benchmarks/data.py": "7f086e58eb04429de723fb0383b8731cc1fc50eff643fd5e78993cf32fd0f63d",
+    "next/ridge/results.json": "41068832208cdcaa1ac8e1eae9d145a1dd0884fb70c5296d9095aeee8208a2a1",
+    "next/ridge/challenge_results.json": "bebc4f31dc8fad6a5d54a5bf59b4c5717fa6929ed37bf0193759ba86210b0f34"
+  }
+}

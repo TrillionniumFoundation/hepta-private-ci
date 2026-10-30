@@ -1,0 +1,1397 @@
+{
+  "scope": "Shared CPU wall costs, batch1, all raw encoding and analytical lookup included; not energy or equal-quality cost frontier",
+  "datasets": {
+    "ag_news": {
+      "reconstruction_max_error": 4.291534423828125e-06,
+      "fixed_input_count": 12,
+      "timings": [
+        {
+          "kind": "same_call_sigmoid",
+          "regime": "dynamic_head",
+          "seed": 11,
+          "samples": [
+            {
+              "total_ms": 61.9111839987454,
+              "raw_encoder_ms": 60.98965500132181,
+              "projection_transfer_head_ms": 0.921528997423593
+            },
+            {
+              "total_ms": 21.505725002498366,
+              "raw_encoder_ms": 20.71809500193922,
+              "projection_transfer_head_ms": 0.7876300005591474
+            },
+            {
+              "total_ms": 19.40586499404162,
+              "raw_encoder_ms": 18.580528994789347,
+              "projection_transfer_head_ms": 0.8253359992522746
+            },
+            {
+              "total_ms": 19.401078003284056,
+              "raw_encoder_ms": 18.604894998134114,
+              "projection_transfer_head_ms": 0.7961830051499419
+            },
+            {
+              "total_ms": 19.417473005887587,
+              "raw_encoder_ms": 18.600139002955984,
+              "projection_transfer_head_ms": 0.8173340029316023
+            },
+            {
+              "total_ms": 19.49347600020701,
+              "raw_encoder_ms": 18.65319699572865,
+              "projection_transfer_head_ms": 0.8402790044783615
+            },
+            {
+              "total_ms": 19.06821399461478,
+              "raw_encoder_ms": 18.189367998274975,
+              "projection_transfer_head_ms": 0.8788459963398054
+            },
+            {
+              "total_ms": 18.768137000733986,
+              "raw_encoder_ms": 18.063850999169517,
+              "projection_transfer_head_ms": 0.7042860015644692
+            },
+            {
+              "total_ms": 18.2436479954049,
+              "raw_encoder_ms": 17.55474499805132,
+              "projection_transfer_head_ms": 0.6889029973535798
+            },
+            {
+              "total_ms": 19.536821004294325,
+              "raw_encoder_ms": 18.903650001448113,
+              "projection_transfer_head_ms": 0.6331710028462112
+            },
+            {
+              "total_ms": 18.766916000458878,
+              "raw_encoder_ms": 17.974367998249363,
+              "projection_transfer_head_ms": 0.7925480022095144
+            },
+            {
+              "total_ms": 20.66074900358217,
+              "raw_encoder_ms": 19.971485002315603,
+              "projection_transfer_head_ms": 0.6892640012665652
+            }
+          ],
+          "median_total_ms": 19.411668999964604,
+          "p95_total_ms": 39.6881815508095
+        },
+        {
+          "kind": "ordinary_c1",
+          "regime": "dynamic_head",
+          "seed": 11,
+          "samples": [
+            {
+              "total_ms": 20.088289005798288,
+              "raw_encoder_ms": 19.34718800475821,
+              "projection_transfer_head_ms": 0.7411010010400787
+            },
+            {
+              "total_ms": 17.625259002670646,
+              "raw_encoder_ms": 16.9312380021438,
+              "projection_transfer_head_ms": 0.6940210005268455
+            },
+            {
+              "total_ms": 17.752097999618854,
+              "raw_encoder_ms": 16.717721002351027,
+              "projection_transfer_head_ms": 1.0343769972678274
+            },
+            {
+              "total_ms": 17.90627700393088,
+              "raw_encoder_ms": 17.201931004819926,
+              "projection_transfer_head_ms": 0.7043459991109557
+            },
+            {
+              "total_ms": 18.142127002647612,
+              "raw_encoder_ms": 17.269611002120655,
+              "projection_transfer_head_ms": 0.8725160005269572
+            },
+            {
+              "total_ms": 18.639226000232156,
+              "raw_encoder_ms": 17.93425899813883,
+              "projection_transfer_head_ms": 0.7049670020933263
+            },
+            {
+              "total_ms": 18.063099996652454,
+              "raw_encoder_ms": 17.373033995681908,
+              "projection_transfer_head_ms": 0.6900660009705462
+            },
+            {
+              "total_ms": 17.93171499593882,
+              "raw_encoder_ms": 17.22321200213628,
+              "projection_transfer_head_ms": 0.70850299380254
+            },
+            {
+              "total_ms": 17.96905999799492,
+              "raw_encoder_ms": 17.32975100458134,
+              "projection_transfer_head_ms": 0.6393089934135787
+            },
+            {
+              "total_ms": 17.388968997693155,
+              "raw_encoder_ms": 16.768396002589725,
+              "projection_transfer_head_ms": 0.62057299510343
+            },
+            {
+              "total_ms": 18.054777996439952,
+              "raw_encoder_ms": 17.42667399958009,
+              "projection_transfer_head_ms": 0.6281039968598634
+            },
+            {
+              "total_ms": 17.654982999374624,
+              "raw_encoder_ms": 17.022944004565943,
+              "projection_transfer_head_ms": 0.6320389948086813
+            }
+          ],
+          "median_total_ms": 17.95038749696687,
+          "p95_total_ms": 19.291304352736915
+        },
+        {
+          "kind": "gru",
+          "regime": "dynamic_head",
+          "seed": 11,
+          "samples": [
+            {
+              "total_ms": 18.373500999587122,
+              "raw_encoder_ms": 17.73607400537003,
+              "projection_transfer_head_ms": 0.637426994217094
+            },
+            {
+              "total_ms": 18.197810000856407,
+              "raw_encoder_ms": 17.484390002209693,
+              "projection_transfer_head_ms": 0.7134199986467138
+            },
+            {
+              "total_ms": 18.212482005765196,
+              "raw_encoder_ms": 17.642535000049975,
+              "projection_transfer_head_ms": 0.5699470057152212
+            },
+            {
+              "total_ms": 17.338663994451053,
+              "raw_encoder_ms": 16.843217999849003,
+              "projection_transfer_head_ms": 0.49544599460205063
+            },
+            {
+              "total_ms": 18.357938999542966,
+              "raw_encoder_ms": 17.734613000357058,
+              "projection_transfer_head_ms": 0.6233259991859086
+            },
+            {
+              "total_ms": 17.256751001696102,
+              "raw_encoder_ms": 16.677530999004375,
+              "projection_transfer_head_ms": 0.5792200026917271
+            },
+            {
+              "total_ms": 17.766468998161145,
+              "raw_encoder_ms": 17.105005994380917,
+              "projection_transfer_head_ms": 0.6614630037802272
+            },
+            {
+              "total_ms": 18.0076469987398,
+              "raw_encoder_ms": 17.446523997932673,
+              "projection_transfer_head_ms": 0.5611230008071288
+            },
+            {
+              "total_ms": 17.731888001435436,
+              "raw_encoder_ms": 17.11447100387886,
+              "projection_transfer_head_ms": 0.6174169975565746
+            },
+            {
+              "total_ms": 17.75012500002049,
+              "raw_encoder_ms": 17.167910002171993,
+              "projection_transfer_head_ms": 0.5822149978484958
+            },
+            {
+              "total_ms": 18.017771995801013,
+              "raw_encoder_ms": 17.39318399631884,
+              "projection_transfer_head_ms": 0.6245879994821735
+            },
+            {
+              "total_ms": 17.854719997558277,
+              "raw_encoder_ms": 17.30002600379521,
+              "projection_transfer_head_ms": 0.5546939937630668
+            }
+          ],
+          "median_total_ms": 17.93118349814904,
+          "p95_total_ms": 18.364941899562837
+        },
+        {
+          "kind": "transformer",
+          "regime": "dynamic_head",
+          "seed": 11,
+          "samples": [
+            {
+              "total_ms": 18.74832800240256,
+              "raw_encoder_ms": 17.84951199806528,
+              "projection_transfer_head_ms": 0.8988160043372773
+            },
+            {
+              "total_ms": 17.557359002239536,
+              "raw_encoder_ms": 16.868345002876595,
+              "projection_transfer_head_ms": 0.6890139993629418
+            },
+            {
+              "total_ms": 17.76897300442215,
+              "raw_encoder_ms": 17.008082002575975,
+              "projection_transfer_head_ms": 0.7608910018461756
+            },
+            {
+              "total_ms": 17.58977599820355,
+              "raw_encoder_ms": 16.884026998013724,
+              "projection_transfer_head_ms": 0.7057490001898259
+            },
+            {
+              "total_ms": 17.722484000842087,
+              "raw_encoder_ms": 17.138846997113433,
+              "projection_transfer_head_ms": 0.5836370037286542
+            },
+            {
+              "total_ms": 18.86061499681091,
+              "raw_encoder_ms": 18.274944995937403,
+              "projection_transfer_head_ms": 0.5856700008735061
+            },
+            {
+              "total_ms": 17.943621998711023,
+              "raw_encoder_ms": 17.28676600032486,
+              "projection_transfer_head_ms": 0.6568559983861633
+            },
+            {
+              "total_ms": 17.61335199989844,
+              "raw_encoder_ms": 16.92148399888538,
+              "projection_transfer_head_ms": 0.6918680010130629
+            },
+            {
+              "total_ms": 18.229146000521723,
+              "raw_encoder_ms": 17.345282998576295,
+              "projection_transfer_head_ms": 0.8838630019454286
+            },
+            {
+              "total_ms": 18.299051000212785,
+              "raw_encoder_ms": 17.400245000317227,
+              "projection_transfer_head_ms": 0.8988059998955578
+            },
+            {
+              "total_ms": 19.026102003408596,
+              "raw_encoder_ms": 17.923113002325408,
+              "projection_transfer_head_ms": 1.1029890010831878
+            },
+            {
+              "total_ms": 19.300868996651843,
+              "raw_encoder_ms": 18.41030499781482,
+              "projection_transfer_head_ms": 0.890563998837024
+            }
+          ],
+          "median_total_ms": 18.086383999616373,
+          "p95_total_ms": 19.149747150368057
+        },
+        {
+          "kind": "full_hx",
+          "regime": "dynamic_head",
+          "seed": 11,
+          "samples": [
+            {
+              "total_ms": 20.382846996653825,
+              "raw_encoder_ms": 19.354508993274067,
+              "projection_transfer_head_ms": 1.0283380033797584
+            },
+            {
+              "total_ms": 18.746034998912364,
+              "raw_encoder_ms": 18.00185899628559,
+              "projection_transfer_head_ms": 0.744176002626773
+            },
+            {
+              "total_ms": 20.095100000617094,
+              "raw_encoder_ms": 19.130615997710265,
+              "projection_transfer_head_ms": 0.9644840029068291
+            },
+            {
+              "total_ms": 18.886413003201596,
+              "raw_encoder_ms": 18.2027070040931,
+              "projection_transfer_head_ms": 0.683705999108497
+            },
+            {
+              "total_ms": 18.591474996355828,
+              "raw_encoder_ms": 17.566641996381804,
+              "projection_transfer_head_ms": 1.0248329999740236
+            },
+            {
+              "total_ms": 18.551806999312248,
+              "raw_encoder_ms": 17.676144998404197,
+              "projection_transfer_head_ms": 0.8756620009080507
+            },
+            {
+              "total_ms": 19.488598001771607,
+              "raw_encoder_ms": 18.782509003358427,
+              "projection_transfer_head_ms": 0.7060889984131791
+            },
+            {
+              "total_ms": 19.69180000014603,
+              "raw_encoder_ms": 18.753735996142495,
+              "projection_transfer_head_ms": 0.938064004003536
+            },
+            {
+              "total_ms": 18.655910993402358,
+              "raw_encoder_ms": 18.019985996943433,
+              "projection_transfer_head_ms": 0.6359249964589253
+            },
+            {
+              "total_ms": 17.819077002059203,
+              "raw_encoder_ms": 17.18061899737222,
+              "projection_transfer_head_ms": 0.6384580046869814
+            },
+            {
+              "total_ms": 18.273552996106446,
+              "raw_encoder_ms": 17.646881002292503,
+              "projection_transfer_head_ms": 0.6266719938139431
+            },
+            {
+              "total_ms": 18.68417299556313,
+              "raw_encoder_ms": 18.04636499582557,
+              "projection_transfer_head_ms": 0.6378079997375607
+            }
+          ],
+          "median_total_ms": 18.715103997237748,
+          "p95_total_ms": 20.224586148833623
+        },
+        {
+          "kind": "same_call_sigmoid",
+          "regime": "linear_plus_dynamic",
+          "seed": 11,
+          "samples": [
+            {
+              "total_ms": 19.668193999677896,
+              "raw_encoder_ms": 18.711563003307674,
+              "projection_transfer_head_ms": 0.9566309963702224
+            },
+            {
+              "total_ms": 18.87479599827202,
+              "raw_encoder_ms": 18.0274369995459,
+              "projection_transfer_head_ms": 0.8473589987261221
+            },
+            {
+              "total_ms": 19.03207099530846,
+              "raw_encoder_ms": 18.20032499381341,
+              "projection_transfer_head_ms": 0.8317460014950484
+            },
+            {
+              "total_ms": 19.17882799898507,
+              "raw_encoder_ms": 18.327402998693287,
+              "projection_transfer_head_ms": 0.8514250002917834
+            },
+            {
+              "total_ms": 19.48173799610231,
+              "raw_encoder_ms": 18.67002200015122,
+              "projection_transfer_head_ms": 0.81171599595109
+            },
+            {
+              "total_ms": 19.423099998675752,
+              "raw_encoder_ms": 18.47029499913333,
+              "projection_transfer_head_ms": 0.9528049995424226
+            },
+            {
+              "total_ms": 19.224376002966892,
+              "raw_encoder_ms": 18.347894001635723,
+              "projection_transfer_head_ms": 0.8764820013311692
+            },
+            {
+              "total_ms": 18.962445996294264,
+              "raw_encoder_ms": 18.22453999920981,
+              "projection_transfer_head_ms": 0.7379059970844537
+            },
+            {
+              "total_ms": 18.87478600110626,
+              "raw_encoder_ms": 18.13257300091209,
+              "projection_transfer_head_ms": 0.7422130001941696
+            },
+            {
+              "total_ms": 17.586572001164313,
+              "raw_encoder_ms": 16.829086001962423,
+              "projection_transfer_head_ms": 0.7574859992018901
+            },
+            {
+              "total_ms": 17.554294994624797,
+              "raw_encoder_ms": 16.87636699352879,
+              "projection_transfer_head_ms": 0.6779280010960065
+            },
+            {
+              "total_ms": 17.671108005743008,
+              "raw_encoder_ms": 16.933901999436785,
+              "projection_transfer_head_ms": 0.7372060063062236
+            }
+          ],
+          "median_total_ms": 18.99725849580136,
+          "p95_total_ms": 19.565643197711324
+        },
+        {
+          "kind": "ordinary_c1",
+          "regime": "linear_plus_dynamic",
+          "seed": 11,
+          "samples": [
+            {
+              "total_ms": 19.613263000792358,
+              "raw_encoder_ms": 18.729269999312237,
+              "projection_transfer_head_ms": 0.8839930014801212
+            },
+            {
+              "total_ms": 19.605181005317718,
+              "raw_encoder_ms": 18.725695001194254,
+              "projection_transfer_head_ms": 0.8794860041234642
+            },
+            {
+              "total_ms": 20.357599001727067,
+              "raw_encoder_ms": 19.56540199898882,
+              "projection_transfer_head_ms": 0.7921970027382486
+            },
+            {
+              "total_ms": 19.567145005567,
+              "raw_encoder_ms": 18.76321000600001,
+              "projection_transfer_head_ms": 0.8039349995669909
+            },
+            {
+              "total_ms": 19.565952999982983,
+              "raw_encoder_ms": 18.754947996058036,
+              "projection_transfer_head_ms": 0.8110050039249472
+            },
+            {
+              "total_ms": 18.813454997143708,
+              "raw_encoder_ms": 18.02209900051821,
+              "projection_transfer_head_ms": 0.7913559966254979
+            },
+            {
+              "total_ms": 19.586132999393158,
+              "raw_encoder_ms": 18.748989998130128,
+              "projection_transfer_head_ms": 0.8371430012630299
+            },
+            {
+              "total_ms": 19.72162399761146,
+              "raw_encoder_ms": 18.837079995137174,
+              "projection_transfer_head_ms": 0.8845440024742857
+            },
+            {
+              "total_ms": 19.645710999611765,
+              "raw_encoder_ms": 18.814886003383435,
+              "projection_transfer_head_ms": 0.8308249962283298
+            },
+            {
+              "total_ms": 19.701344004715793,
+              "raw_encoder_ms": 18.89351400313899,
+              "projection_transfer_head_ms": 0.8078300015768036
+            },
+            {
+              "total_ms": 18.07196300069336,
+              "raw_encoder_ms": 17.236922001757193,
+              "projection_transfer_head_ms": 0.8350409989361651
+            },
+            {
+              "total_ms": 18.65029300097376,
+              "raw_encoder_ms": 17.78049000131432,
+              "projection_transfer_head_ms": 0.8698029996594414
+            }
+          ],
+          "median_total_ms": 19.595657002355438,
+          "p95_total_ms": 20.007812749463483
+        },
+        {
+          "kind": "gru",
+          "regime": "linear_plus_dynamic",
+          "seed": 11,
+          "samples": [
+            {
+              "total_ms": 20.932853993144818,
+              "raw_encoder_ms": 20.331560997874476,
+              "projection_transfer_head_ms": 0.6012929952703416
+            },
+            {
+              "total_ms": 20.267396001145244,
+              "raw_encoder_ms": 19.562629000574816,
+              "projection_transfer_head_ms": 0.7047670005704276
+            },
+            {
+              "total_ms": 19.8664799972903,
+              "raw_encoder_ms": 19.129494998196606,
+              "projection_transfer_head_ms": 0.7369849990936927
+            },
+            {
+              "total_ms": 20.130701996095013,
+              "raw_encoder_ms": 19.485322998662014,
+              "projection_transfer_head_ms": 0.6453789974329993
+            },
+            {
+              "total_ms": 21.405806997790933,
+              "raw_encoder_ms": 20.716662998893298,
+              "projection_transfer_head_ms": 0.6891439988976344
+            },
+            {
+              "total_ms": 23.061167004925665,
+              "raw_encoder_ms": 22.01405099913245,
+              "projection_transfer_head_ms": 1.0471160057932138
+            },
+            {
+              "total_ms": 21.41984800255159,
+              "raw_encoder_ms": 20.82616600091569,
+              "projection_transfer_head_ms": 0.5936820016358979
+            },
+            {
+              "total_ms": 20.95466600439977,
+              "raw_encoder_ms": 20.210881004459225,
+              "projection_transfer_head_ms": 0.7437849999405444
+            },
+            {
+              "total_ms": 20.067217999894638,
+              "raw_encoder_ms": 19.277024002803955,
+              "projection_transfer_head_ms": 0.7901939970906824
+            },
+            {
+              "total_ms": 20.59370000642957,
+              "raw_encoder_ms": 19.643158004328143,
+              "projection_transfer_head_ms": 0.9505420021014288
+            },
+            {
+              "total_ms": 22.01343899650965,
+              "raw_encoder_ms": 21.222613999270834,
+              "projection_transfer_head_ms": 0.7908249972388148
+            },
+            {
+              "total_ms": 19.34656700177584,
+              "raw_encoder_ms": 18.721959000686184,
+              "projection_transfer_head_ms": 0.6246080010896549
+            }
+          ],
+          "median_total_ms": 20.763276999787195,
+          "p95_total_ms": 22.484916600296856
+        },
+        {
+          "kind": "transformer",
+          "regime": "linear_plus_dynamic",
+          "seed": 11,
+          "samples": [
+            {
+              "total_ms": 18.979681997734588,
+              "raw_encoder_ms": 18.217618999187835,
+              "projection_transfer_head_ms": 0.7620629985467531
+            },
+            {
+              "total_ms": 17.881129002489615,
+              "raw_encoder_ms": 17.130022999481298,
+              "projection_transfer_head_ms": 0.7511060030083172
+            },
+            {
+              "total_ms": 17.500715002825018,
+              "raw_encoder_ms": 16.729488997953013,
+              "projection_transfer_head_ms": 0.7712260048720054
+            },
+            {
+              "total_ms": 18.020776005869266,
+              "raw_encoder_ms": 17.230082004971337,
+              "projection_transfer_head_ms": 0.7906940008979291
+            },
+            {
+              "total_ms": 18.06116700026905,
+              "raw_encoder_ms": 17.38407099765027,
+              "projection_transfer_head_ms": 0.6770960026187822
+            },
+            {
+              "total_ms": 18.995765996805858,
+              "raw_encoder_ms": 18.221534999611322,
+              "projection_transfer_head_ms": 0.774230997194536
+            },
+            {
+              "total_ms": 20.711184995889198,
+              "raw_encoder_ms": 20.06330199947115,
+              "projection_transfer_head_ms": 0.6478829964180477
+            },
+            {
+              "total_ms": 18.12130699545378,
+              "raw_encoder_ms": 17.45163199666422,
+              "projection_transfer_head_ms": 0.66967499878956
+            },
+            {
+              "total_ms": 18.841887002054136,
+              "raw_encoder_ms": 18.15333400008967,
+              "projection_transfer_head_ms": 0.6885530019644648
+            },
+            {
+              "total_ms": 18.996045997482724,
+              "raw_encoder_ms": 18.345979995501693,
+              "projection_transfer_head_ms": 0.6500660019810311
+            },
+            {
+              "total_ms": 17.925804997503292,
+              "raw_encoder_ms": 17.251913996005896,
+              "projection_transfer_head_ms": 0.6738910014973953
+            },
+            {
+              "total_ms": 18.706285998632666,
+              "raw_encoder_ms": 17.996791000769008,
+              "projection_transfer_head_ms": 0.7094949978636578
+            }
+          ],
+          "median_total_ms": 18.413796497043222,
+          "p95_total_ms": 19.767858546765638
+        },
+        {
+          "kind": "full_hx",
+          "regime": "linear_plus_dynamic",
+          "seed": 11,
+          "samples": [
+            {
+              "total_ms": 21.97312099451665,
+              "raw_encoder_ms": 21.14725399587769,
+              "projection_transfer_head_ms": 0.8258669986389577
+            },
+            {
+              "total_ms": 21.76161600073101,
+              "raw_encoder_ms": 20.45875499607064,
+              "projection_transfer_head_ms": 1.3028610046603717
+            },
+            {
+              "total_ms": 22.964427997067105,
+              "raw_encoder_ms": 22.07941300002858,
+              "projection_transfer_head_ms": 0.8850149970385246
+            },
+            {
+              "total_ms": 19.79256000049645,
+              "raw_encoder_ms": 18.963547998282593,
+              "projection_transfer_head_ms": 0.8290120022138581
+            },
+            {
+              "total_ms": 19.85538299777545,
+              "raw_encoder_ms": 19.03474400023697,
+              "projection_transfer_head_ms": 0.8206389975384809
+            },
+            {
+              "total_ms": 18.940132998977788,
+              "raw_encoder_ms": 17.996459995629266,
+              "projection_transfer_head_ms": 0.9436730033485219
+            },
+            {
+              "total_ms": 20.662471994000953,
+              "raw_encoder_ms": 17.752597996150143,
+              "projection_transfer_head_ms": 2.9098739978508092
+            },
+            {
+              "total_ms": 19.230014004278928,
+              "raw_encoder_ms": 18.463475003954954,
+              "projection_transfer_head_ms": 0.7665390003239736
+            },
+            {
+              "total_ms": 19.417001996771432,
+              "raw_encoder_ms": 18.703451998590026,
+              "projection_transfer_head_ms": 0.7135499981814064
+            },
+            {
+              "total_ms": 18.89445500273723,
+              "raw_encoder_ms": 18.13654900615802,
+              "projection_transfer_head_ms": 0.7579059965792112
+            },
+            {
+              "total_ms": 18.88775500265183,
+              "raw_encoder_ms": 18.211831004009582,
+              "projection_transfer_head_ms": 0.6759239986422472
+            },
+            {
+              "total_ms": 19.560860004276037,
+              "raw_encoder_ms": 18.608260004839394,
+              "projection_transfer_head_ms": 0.952599999436643
+            }
+          ],
+          "median_total_ms": 19.676710002386244,
+          "p95_total_ms": 22.419209145664354
+        }
+      ]
+    },
+    "cifar10": {
+      "reconstruction_max_error": 2.86102294921875e-06,
+      "fixed_input_count": 12,
+      "timings": [
+        {
+          "kind": "same_call_sigmoid",
+          "regime": "dynamic_head",
+          "seed": 11,
+          "samples": [
+            {
+              "total_ms": 11.625445004028734,
+              "raw_encoder_ms": 10.837544003152288,
+              "projection_transfer_head_ms": 0.7879010008764453
+            },
+            {
+              "total_ms": 12.284985001315363,
+              "raw_encoder_ms": 11.187995005457196,
+              "projection_transfer_head_ms": 1.0969899958581664
+            },
+            {
+              "total_ms": 11.86560200585518,
+              "raw_encoder_ms": 11.004612002579961,
+              "projection_transfer_head_ms": 0.8609900032752194
+            },
+            {
+              "total_ms": 11.800004001997877,
+              "raw_encoder_ms": 10.983100000885315,
+              "projection_transfer_head_ms": 0.8169040011125617
+            },
+            {
+              "total_ms": 10.916691993770655,
+              "raw_encoder_ms": 10.175259994866792,
+              "projection_transfer_head_ms": 0.7414319989038631
+            },
+            {
+              "total_ms": 12.58725399384275,
+              "raw_encoder_ms": 11.699303999193944,
+              "projection_transfer_head_ms": 0.8879499946488068
+            },
+            {
+              "total_ms": 11.703921998559963,
+              "raw_encoder_ms": 10.728342000220437,
+              "projection_transfer_head_ms": 0.9755799983395264
+            },
+            {
+              "total_ms": 12.207258994749282,
+              "raw_encoder_ms": 11.257297999691218,
+              "projection_transfer_head_ms": 0.9499609950580634
+            },
+            {
+              "total_ms": 12.182373000541702,
+              "raw_encoder_ms": 11.293641997326631,
+              "projection_transfer_head_ms": 0.8887310032150708
+            },
+            {
+              "total_ms": 11.545465000381228,
+              "raw_encoder_ms": 10.627500996633898,
+              "projection_transfer_head_ms": 0.9179640037473291
+            },
+            {
+              "total_ms": 12.014002000796609,
+              "raw_encoder_ms": 11.222445995372254,
+              "projection_transfer_head_ms": 0.7915560054243542
+            },
+            {
+              "total_ms": 12.14480699854903,
+              "raw_encoder_ms": 11.401511997974012,
+              "projection_transfer_head_ms": 0.7432950005750172
+            }
+          ],
+          "median_total_ms": 11.939802003325894,
+          "p95_total_ms": 12.421006047952687
+        },
+        {
+          "kind": "ordinary_c1",
+          "regime": "dynamic_head",
+          "seed": 11,
+          "samples": [
+            {
+              "total_ms": 11.41353899583919,
+              "raw_encoder_ms": 10.504838995984755,
+              "projection_transfer_head_ms": 0.9086999998544343
+            },
+            {
+              "total_ms": 12.008464000246022,
+              "raw_encoder_ms": 11.132301995530725,
+              "projection_transfer_head_ms": 0.8761620047152974
+            },
+            {
+              "total_ms": 11.281724000582471,
+              "raw_encoder_ms": 10.446972999488935,
+              "projection_transfer_head_ms": 0.8347510010935366
+            },
+            {
+              "total_ms": 12.069444004737306,
+              "raw_encoder_ms": 11.238099003094248,
+              "projection_transfer_head_ms": 0.8313450016430579
+            },
+            {
+              "total_ms": 12.458992998290341,
+              "raw_encoder_ms": 11.34827300120378,
+              "projection_transfer_head_ms": 1.1107199970865622
+            },
+            {
+              "total_ms": 14.396833001228515,
+              "raw_encoder_ms": 13.492679005139507,
+              "projection_transfer_head_ms": 0.9041539960890077
+            },
+            {
+              "total_ms": 13.51493199763354,
+              "raw_encoder_ms": 10.669884002709296,
+              "projection_transfer_head_ms": 2.8450479949242435
+            },
+            {
+              "total_ms": 12.540724004793447,
+              "raw_encoder_ms": 11.474669998278841,
+              "projection_transfer_head_ms": 1.0660540065146051
+            },
+            {
+              "total_ms": 12.02960500086192,
+              "raw_encoder_ms": 11.011852999217808,
+              "projection_transfer_head_ms": 1.0177520016441122
+            },
+            {
+              "total_ms": 10.525869998673443,
+              "raw_encoder_ms": 9.78139400103828,
+              "projection_transfer_head_ms": 0.7444759976351634
+            },
+            {
+              "total_ms": 10.557256995525677,
+              "raw_encoder_ms": 9.839220998401288,
+              "projection_transfer_head_ms": 0.7180359971243888
+            },
+            {
+              "total_ms": 10.364810994360596,
+              "raw_encoder_ms": 9.672582993516698,
+              "projection_transfer_head_ms": 0.6922280008438975
+            }
+          ],
+          "median_total_ms": 12.019034500553971,
+          "p95_total_ms": 13.911787449251278
+        },
+        {
+          "kind": "gru",
+          "regime": "dynamic_head",
+          "seed": 11,
+          "samples": [
+            {
+              "total_ms": 12.823826000385452,
+              "raw_encoder_ms": 12.110756004403811,
+              "projection_transfer_head_ms": 0.7130699959816411
+            },
+            {
+              "total_ms": 15.062521000800189,
+              "raw_encoder_ms": 14.16459699976258,
+              "projection_transfer_head_ms": 0.8979240010376088
+            },
+            {
+              "total_ms": 11.649199994280934,
+              "raw_encoder_ms": 10.893456994381268,
+              "projection_transfer_head_ms": 0.7557429998996668
+            },
+            {
+              "total_ms": 11.834406002890319,
+              "raw_encoder_ms": 11.093264001829084,
+              "projection_transfer_head_ms": 0.7411420010612346
+            },
+            {
+              "total_ms": 15.087177998793777,
+              "raw_encoder_ms": 13.970560001325794,
+              "projection_transfer_head_ms": 1.1166179974679835
+            },
+            {
+              "total_ms": 12.118978003854863,
+              "raw_encoder_ms": 11.35931900353171,
+              "projection_transfer_head_ms": 0.759659000323154
+            },
+            {
+              "total_ms": 11.020336001820397,
+              "raw_encoder_ms": 10.29819300310919,
+              "projection_transfer_head_ms": 0.722142998711206
+            },
+            {
+              "total_ms": 10.477969000930898,
+              "raw_encoder_ms": 9.756788000231609,
+              "projection_transfer_head_ms": 0.7211810006992891
+            },
+            {
+              "total_ms": 10.724706000473816,
+              "raw_encoder_ms": 10.013029001129325,
+              "projection_transfer_head_ms": 0.7116769993444905
+            },
+            {
+              "total_ms": 11.677180998958647,
+              "raw_encoder_ms": 10.641392000252381,
+              "projection_transfer_head_ms": 1.0357889987062663
+            },
+            {
+              "total_ms": 12.9613099998096,
+              "raw_encoder_ms": 10.836883004230913,
+              "projection_transfer_head_ms": 2.1244269955786876
+            },
+            {
+              "total_ms": 10.95510899904184,
+              "raw_encoder_ms": 10.181999998167157,
+              "projection_transfer_head_ms": 0.7731090008746833
+            }
+          ],
+          "median_total_ms": 11.755793500924483,
+          "p95_total_ms": 15.073616649897303
+        },
+        {
+          "kind": "transformer",
+          "regime": "dynamic_head",
+          "seed": 11,
+          "samples": [
+            {
+              "total_ms": 13.996447996760253,
+              "raw_encoder_ms": 12.96970199473435,
+              "projection_transfer_head_ms": 1.0267460020259023
+            },
+            {
+              "total_ms": 13.200184002926107,
+              "raw_encoder_ms": 11.639194999588653,
+              "projection_transfer_head_ms": 1.560989003337454
+            },
+            {
+              "total_ms": 12.01198899798328,
+              "raw_encoder_ms": 10.845415003132075,
+              "projection_transfer_head_ms": 1.1665739948512055
+            },
+            {
+              "total_ms": 12.379795000015292,
+              "raw_encoder_ms": 11.423974996432662,
+              "projection_transfer_head_ms": 0.9558200035826303
+            },
+            {
+              "total_ms": 13.173614999686833,
+              "raw_encoder_ms": 12.32038700254634,
+              "projection_transfer_head_ms": 0.8532279971404932
+            },
+            {
+              "total_ms": 12.35294600337511,
+              "raw_encoder_ms": 11.511105003592093,
+              "projection_transfer_head_ms": 0.8418409997830167
+            },
+            {
+              "total_ms": 12.539183000626508,
+              "raw_encoder_ms": 11.789138006861322,
+              "projection_transfer_head_ms": 0.7500449937651865
+            },
+            {
+              "total_ms": 15.848881004785653,
+              "raw_encoder_ms": 14.352717000292614,
+              "projection_transfer_head_ms": 1.496164004493039
+            },
+            {
+              "total_ms": 14.531091997923795,
+              "raw_encoder_ms": 13.61894699948607,
+              "projection_transfer_head_ms": 0.912144998437725
+            },
+            {
+              "total_ms": 13.345851002668496,
+              "raw_encoder_ms": 11.453359002189245,
+              "projection_transfer_head_ms": 1.8924920004792511
+            },
+            {
+              "total_ms": 11.190558005182538,
+              "raw_encoder_ms": 10.242089003440924,
+              "projection_transfer_head_ms": 0.9484690017416142
+            },
+            {
+              "total_ms": 13.524125999538228,
+              "raw_encoder_ms": 12.582166003994644,
+              "projection_transfer_head_ms": 0.9419599955435842
+            }
+          ],
+          "median_total_ms": 13.18689950130647,
+          "p95_total_ms": 15.124097051011631
+        },
+        {
+          "kind": "full_hx",
+          "regime": "dynamic_head",
+          "seed": 11,
+          "samples": [
+            {
+              "total_ms": 13.926063998951577,
+              "raw_encoder_ms": 12.744617997668684,
+              "projection_transfer_head_ms": 1.1814460012828931
+            },
+            {
+              "total_ms": 13.430776001769118,
+              "raw_encoder_ms": 12.138726000557654,
+              "projection_transfer_head_ms": 1.2920500012114644
+            },
+            {
+              "total_ms": 12.92580599692883,
+              "raw_encoder_ms": 12.006609998934437,
+              "projection_transfer_head_ms": 0.9191959979943931
+            },
+            {
+              "total_ms": 14.28225199924782,
+              "raw_encoder_ms": 13.372861001698766,
+              "projection_transfer_head_ms": 0.9093909975490533
+            },
+            {
+              "total_ms": 12.664447996939998,
+              "raw_encoder_ms": 11.8211649969453,
+              "projection_transfer_head_ms": 0.8432829999946989
+            },
+            {
+              "total_ms": 13.929919005022384,
+              "raw_encoder_ms": 13.082690005830955,
+              "projection_transfer_head_ms": 0.8472289991914295
+            },
+            {
+              "total_ms": 14.00250699953176,
+              "raw_encoder_ms": 12.966027003130876,
+              "projection_transfer_head_ms": 1.0364799964008853
+            },
+            {
+              "total_ms": 12.315801002841908,
+              "raw_encoder_ms": 11.555240998859517,
+              "projection_transfer_head_ms": 0.7605600039823912
+            },
+            {
+              "total_ms": 12.315250001847744,
+              "raw_encoder_ms": 11.617322998063173,
+              "projection_transfer_head_ms": 0.6979270037845708
+            },
+            {
+              "total_ms": 12.63727800687775,
+              "raw_encoder_ms": 11.872722003317904,
+              "projection_transfer_head_ms": 0.7645560035598464
+            },
+            {
+              "total_ms": 12.973817996680737,
+              "raw_encoder_ms": 12.253036999027245,
+              "projection_transfer_head_ms": 0.7207809976534918
+            },
+            {
+              "total_ms": 12.667572998907417,
+              "raw_encoder_ms": 11.725332995411009,
+              "projection_transfer_head_ms": 0.9422400034964085
+            }
+          ],
+          "median_total_ms": 12.949811996804783,
+          "p95_total_ms": 14.128392249403987
+        },
+        {
+          "kind": "same_call_sigmoid",
+          "regime": "linear_plus_dynamic",
+          "seed": 11,
+          "samples": [
+            {
+              "total_ms": 11.410600003728177,
+              "raw_encoder_ms": 10.52077799977269,
+              "projection_transfer_head_ms": 0.8898220039554872
+            },
+            {
+              "total_ms": 10.965923996991478,
+              "raw_encoder_ms": 10.09866599633824,
+              "projection_transfer_head_ms": 0.8672580006532371
+            },
+            {
+              "total_ms": 10.86366300296504,
+              "raw_encoder_ms": 10.072226999909617,
+              "projection_transfer_head_ms": 0.7914360030554235
+            },
+            {
+              "total_ms": 11.880382997333072,
+              "raw_encoder_ms": 10.923310997895896,
+              "projection_transfer_head_ms": 0.9570719994371757
+            },
+            {
+              "total_ms": 11.450865997176152,
+              "raw_encoder_ms": 10.394535995146725,
+              "projection_transfer_head_ms": 1.0563300020294264
+            },
+            {
+              "total_ms": 11.136187000374775,
+              "raw_encoder_ms": 10.211283006356098,
+              "projection_transfer_head_ms": 0.9249039940186776
+            },
+            {
+              "total_ms": 11.119002003397327,
+              "raw_encoder_ms": 10.305914001946803,
+              "projection_transfer_head_ms": 0.8130880014505237
+            },
+            {
+              "total_ms": 11.859692000143696,
+              "raw_encoder_ms": 10.982868996507023,
+              "projection_transfer_head_ms": 0.8768230036366731
+            },
+            {
+              "total_ms": 11.02038499811897,
+              "raw_encoder_ms": 10.16993100347463,
+              "projection_transfer_head_ms": 0.8504539946443401
+            },
+            {
+              "total_ms": 11.027485998056363,
+              "raw_encoder_ms": 10.150542999326717,
+              "projection_transfer_head_ms": 0.8769429987296462
+            },
+            {
+              "total_ms": 11.30395699874498,
+              "raw_encoder_ms": 10.3062839989434,
+              "projection_transfer_head_ms": 0.9976729998015799
+            },
+            {
+              "total_ms": 10.84898100089049,
+              "raw_encoder_ms": 9.969934995751828,
+              "projection_transfer_head_ms": 0.8790460051386617
+            }
+          ],
+          "median_total_ms": 11.127594501886051,
+          "p95_total_ms": 11.869002948878915
+        },
+        {
+          "kind": "ordinary_c1",
+          "regime": "linear_plus_dynamic",
+          "seed": 11,
+          "samples": [
+            {
+              "total_ms": 13.689090999832842,
+              "raw_encoder_ms": 12.69468399550533,
+              "projection_transfer_head_ms": 0.9944070043275133
+            },
+            {
+              "total_ms": 11.96889499988174,
+              "raw_encoder_ms": 11.048756998206954,
+              "projection_transfer_head_ms": 0.9201380016747862
+            },
+            {
+              "total_ms": 11.794536003435496,
+              "raw_encoder_ms": 10.668522001651581,
+              "projection_transfer_head_ms": 1.1260140017839149
+            },
+            {
+              "total_ms": 13.66659800260095,
+              "raw_encoder_ms": 12.788102001650259,
+              "projection_transfer_head_ms": 0.8784960009506904
+            },
+            {
+              "total_ms": 13.703882003028411,
+              "raw_encoder_ms": 12.63444300275296,
+              "projection_transfer_head_ms": 1.0694390002754517
+            },
+            {
+              "total_ms": 13.684874997125007,
+              "raw_encoder_ms": 12.819399002182763,
+              "projection_transfer_head_ms": 0.8654759949422441
+            },
+            {
+              "total_ms": 10.52990600146586,
+              "raw_encoder_ms": 9.679132002929691,
+              "projection_transfer_head_ms": 0.8507739985361695
+            },
+            {
+              "total_ms": 11.406719997467007,
+              "raw_encoder_ms": 10.644597001373768,
+              "projection_transfer_head_ms": 0.7621229960932396
+            },
+            {
+              "total_ms": 11.224508998566307,
+              "raw_encoder_ms": 10.540502997173462,
+              "projection_transfer_head_ms": 0.6840060013928451
+            },
+            {
+              "total_ms": 11.929094995139167,
+              "raw_encoder_ms": 10.971682997478638,
+              "projection_transfer_head_ms": 0.9574119976605289
+            },
+            {
+              "total_ms": 10.936311002296861,
+              "raw_encoder_ms": 10.075071004393976,
+              "projection_transfer_head_ms": 0.8612399979028851
+            },
+            {
+              "total_ms": 12.243393000971992,
+              "raw_encoder_ms": 11.309294997772668,
+              "projection_transfer_head_ms": 0.934098003199324
+            }
+          ],
+          "median_total_ms": 11.948994997510454,
+          "p95_total_ms": 13.695746951270849
+        },
+        {
+          "kind": "gru",
+          "regime": "linear_plus_dynamic",
+          "seed": 11,
+          "samples": [
+            {
+              "total_ms": 11.86650800082134,
+              "raw_encoder_ms": 11.062233003030997,
+              "projection_transfer_head_ms": 0.8042749977903441
+            },
+            {
+              "total_ms": 11.148835998028517,
+              "raw_encoder_ms": 10.314716993889306,
+              "projection_transfer_head_ms": 0.834119004139211
+            },
+            {
+              "total_ms": 11.293121002381667,
+              "raw_encoder_ms": 10.610386001644656,
+              "projection_transfer_head_ms": 0.6827350007370114
+            },
+            {
+              "total_ms": 10.904943999776151,
+              "raw_encoder_ms": 10.253275999275502,
+              "projection_transfer_head_ms": 0.6516680005006492
+            },
+            {
+              "total_ms": 11.169657002028544,
+              "raw_encoder_ms": 10.48467900545802,
+              "projection_transfer_head_ms": 0.6849779965705238
+            },
+            {
+              "total_ms": 12.643688001844566,
+              "raw_encoder_ms": 11.923868005396798,
+              "projection_transfer_head_ms": 0.7198199964477681
+            },
+            {
+              "total_ms": 10.918414001935162,
+              "raw_encoder_ms": 10.194798996963073,
+              "projection_transfer_head_ms": 0.7236150049720891
+            },
+            {
+              "total_ms": 11.78717499715276,
+              "raw_encoder_ms": 10.769281994726043,
+              "projection_transfer_head_ms": 1.0178930024267174
+            },
+            {
+              "total_ms": 12.712609997834079,
+              "raw_encoder_ms": 12.003276002360508,
+              "projection_transfer_head_ms": 0.7093339954735711
+            },
+            {
+              "total_ms": 11.90748299995903,
+              "raw_encoder_ms": 11.087915998359676,
+              "projection_transfer_head_ms": 0.8195670015993528
+            },
+            {
+              "total_ms": 11.706985002092551,
+              "raw_encoder_ms": 10.977922000165563,
+              "projection_transfer_head_ms": 0.7290630019269884
+            },
+            {
+              "total_ms": 11.101336000137962,
+              "raw_encoder_ms": 10.40858600026695,
+              "projection_transfer_head_ms": 0.6927499998710118
+            }
+          ],
+          "median_total_ms": 11.50005300223711,
+          "p95_total_ms": 12.674702900039847
+        },
+        {
+          "kind": "transformer",
+          "regime": "linear_plus_dynamic",
+          "seed": 11,
+          "samples": [
+            {
+              "total_ms": 11.03799099655589,
+              "raw_encoder_ms": 10.27178300137166,
+              "projection_transfer_head_ms": 0.7662079951842315
+            },
+            {
+              "total_ms": 11.071781002101488,
+              "raw_encoder_ms": 10.22747700335458,
+              "projection_transfer_head_ms": 0.8443039987469092
+            },
+            {
+              "total_ms": 10.895900006289594,
+              "raw_encoder_ms": 10.132776005775668,
+              "projection_transfer_head_ms": 0.7631240005139261
+            },
+            {
+              "total_ms": 10.687560999940615,
+              "raw_encoder_ms": 9.841273000347428,
+              "projection_transfer_head_ms": 0.8462879995931871
+            },
+            {
+              "total_ms": 11.059142001613509,
+              "raw_encoder_ms": 10.030033001385164,
+              "projection_transfer_head_ms": 1.0291090002283454
+            },
+            {
+              "total_ms": 11.56812899716897,
+              "raw_encoder_ms": 10.643374997016508,
+              "projection_transfer_head_ms": 0.9247540001524612
+            },
+            {
+              "total_ms": 10.812838001584169,
+              "raw_encoder_ms": 9.998367000662256,
+              "projection_transfer_head_ms": 0.8144710009219125
+            },
+            {
+              "total_ms": 11.38775200524833,
+              "raw_encoder_ms": 10.513603003346361,
+              "projection_transfer_head_ms": 0.8741490019019693
+            },
+            {
+              "total_ms": 10.865205003938172,
+              "raw_encoder_ms": 10.039667999080848,
+              "projection_transfer_head_ms": 0.8255370048573241
+            },
+            {
+              "total_ms": 11.133022999274544,
+              "raw_encoder_ms": 10.29383599961875,
+              "projection_transfer_head_ms": 0.8391869996557944
+            },
+            {
+              "total_ms": 10.82784900063416,
+              "raw_encoder_ms": 9.943525001290254,
+              "projection_transfer_head_ms": 0.8843239993439056
+            },
+            {
+              "total_ms": 14.307970996014774,
+              "raw_encoder_ms": 13.348804997804109,
+              "projection_transfer_head_ms": 0.9591659982106648
+            }
+          ],
+          "median_total_ms": 11.0485664990847,
+          "p95_total_ms": 12.80105789664958
+        },
+        {
+          "kind": "full_hx",
+          "regime": "linear_plus_dynamic",
+          "seed": 11,
+          "samples": [
+            {
+              "total_ms": 11.188014002982527,
+              "raw_encoder_ms": 10.306845004379284,
+              "projection_transfer_head_ms": 0.8811689986032434
+            },
+            {
+              "total_ms": 10.721590995672159,
+              "raw_encoder_ms": 9.943855002347846,
+              "projection_transfer_head_ms": 0.7777359933243133
+            },
+            {
+              "total_ms": 10.669333998521324,
+              "raw_encoder_ms": 9.861042999546044,
+              "projection_transfer_head_ms": 0.8082909989752807
+            },
+            {
+              "total_ms": 10.69802699930733,
+              "raw_encoder_ms": 9.865590000117663,
+              "projection_transfer_head_ms": 0.8324369991896674
+            },
+            {
+              "total_ms": 10.959365004964639,
+              "raw_encoder_ms": 10.121570005139802,
+              "projection_transfer_head_ms": 0.8377949998248369
+            },
+            {
+              "total_ms": 11.385999001504388,
+              "raw_encoder_ms": 10.557968002103735,
+              "projection_transfer_head_ms": 0.828030999400653
+            },
+            {
+              "total_ms": 10.996379998687189,
+              "raw_encoder_ms": 10.225174002698623,
+              "projection_transfer_head_ms": 0.7712059959885664
+            },
+            {
+              "total_ms": 10.94092799758073,
+              "raw_encoder_ms": 10.045117000117898,
+              "projection_transfer_head_ms": 0.8958109974628314
+            },
+            {
+              "total_ms": 13.609617999463808,
+              "raw_encoder_ms": 12.539151997771114,
+              "projection_transfer_head_ms": 1.0704660016926937
+            },
+            {
+              "total_ms": 12.637196996365674,
+              "raw_encoder_ms": 11.564282998733688,
+              "projection_transfer_head_ms": 1.0729139976319857
+            },
+            {
+              "total_ms": 13.694508998014499,
+              "raw_encoder_ms": 12.692841002717614,
+              "projection_transfer_head_ms": 1.0016679952968843
+            },
+            {
+              "total_ms": 12.170795002020895,
+              "raw_encoder_ms": 11.348923995683435,
+              "projection_transfer_head_ms": 0.8218710063374601
+            }
+          ],
+          "median_total_ms": 11.092197000834858,
+          "p95_total_ms": 13.647818948811619
+        }
+      ]
+    }
+  }
+}

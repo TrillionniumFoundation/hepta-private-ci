@@ -1,0 +1,55 @@
+{
+  "schema": "hcsn.memory.mechanism.development.v1",
+  "status": "Frozen before new development data construction or training",
+  "hypothesis": "Scaling normalized-statistic ridge by inverse write mass removes pure normalization dilution, while potentially increasing conditioning costs; this need not benefit classification or financial gates specifically.",
+  "variants": ["full_fixed", "full_mass", "sigmoid_fixed", "sigmoid_mass", "c1_fixed", "c1_mass", "memory_fixed", "memory_mass"],
+  "tasks": ["memory", "retrieval"],
+  "seeds": [11, 29, 47],
+  "data_seed_base": 3900000,
+  "initialization_seed_base": 43000,
+  "optimizer_seed_base": 44000,
+  "training_lengths": [8, 16, 32],
+  "training_examples_per_length": 2048,
+  "validation_examples": 512,
+  "diagnostic_examples": 512,
+  "training_updates": 600,
+  "batch_size": 32,
+  "learning_rate": 0.003,
+  "parameter_target": 6200,
+  "ridge": 0.01,
+  "checkpoint_selection": "Lowest length32 development validation cross entropy, every50 updates; no diagnostic-length model selection",
+  "gate_definitions": {
+    "full": "Original next/full_kernel compiled FullHX risk and Call; finance parameters fixed",
+    "sigmoid": "sigmoid(2z) risk, retaining exactly the same compiled FullHX Call; this differs deliberately from the old v4 sigmoid control",
+    "c1": "q=.5+.5*z*abs(z)/(1+z*z), a=relu(-z)^2/(1+relu(-z)^2); stable extreme branches, no financial table",
+    "memory": "No fast/slow dynamics; original learned generic key/value/write projections",
+    "fixed": "Read with symmetrized G+.01I",
+    "mass": "Read with symmetrized G+.01*r*I; no numerical ridge floor or detached mass gradient"
+  },
+  "comparison": "Identical initial parameters and widths across all three dynamic families and ridge modes; pure-memory width chosen to match parameter target. Persistent state and FLOPs reported, not matched.",
+  "development_gate": {
+    "numerical_validation_required": true,
+    "full_mass_every_seed_memory128_min": 0.95,
+    "full_mass_every_seed_retrieval128_min": 0.90,
+    "full_mass_minus_full_fixed_mean_memory512_min": 0.02,
+    "full_mass_minus_full_fixed_mean_retrieval512_min": -0.01,
+    "maximum_solve_relative_residual": 0.00005,
+    "meaning": "Candidate-mechanism screen only. Passing authorizes a separate frozen confirmation protocol; it does not establish financial-gate superiority or authorize backbone pretraining."
+  },
+  "numerical_standards": {
+    "float64_directional_error": 0.00002,
+    "float32_directional_error": 0.005,
+    "float64_difference_steps": [0.0001, 0.00003],
+    "float32_difference_steps": [0.003, 0.001],
+    "condition_roundoff_fraction": 0.001,
+    "numpy_jax_logit_error": 0.00005
+  },
+  "freshness": "New development RNG bases and initialization seeds; input fingerprints and exact development-evaluation overlap against all old v3/v4 train/evaluation inputs at matching lengths checked before training. No new confirmation set is constructed.",
+  "limits": [
+    "Old-checkpoint counterfactuals are exploratory and never count as new confirmation success",
+    "Condition<=101 applies only to fixed mode; mass mode has bound1+sum(w)/.01 in exact arithmetic",
+    "Single final-query solve is sequence-to-one, not token-by-token language decoding",
+    "No extra HPO, failed-seed replacement, or threshold changes after development outcomes",
+    "Synthetic tasks do not establish multimodal or large-backbone advantages"
+  ]
+}

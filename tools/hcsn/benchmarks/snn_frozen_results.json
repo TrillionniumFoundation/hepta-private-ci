@@ -1,0 +1,763 @@
+{
+  "metadata": {
+    "protocol": {
+      "status": "Frozen before first SNN training run; one architecture and one hyperparameter setting",
+      "scope": "Post-declared conventional SNN reference on already examined v1 synthetic and frozen SST holdouts; exploratory comparison",
+      "architecture": "Single-layer recurrent leaky integrate-and-fire, spike-only low-pass readout, linear classifier",
+      "threshold": 1.0,
+      "forward_spike": "1[membrane_before_reset >= 1], exactly binary",
+      "backward_surrogate": "1 / (1 + 5 * abs(membrane_before_reset - 1))^2",
+      "reset": "Soft subtractive reset by one threshold; reset spike is stop_gradient; no refractory period",
+      "integration": "Exponential leak per supplied dt with frozen current; at most one spike per supplied time bin",
+      "tau_membrane_range": [
+        2.0,
+        20.0
+      ],
+      "tau_membrane_initial": 4.0,
+      "tau_readout_range": [
+        4.0,
+        64.0
+      ],
+      "tau_readout_initial": 16.0,
+      "bias_initial": 1.25,
+      "bias_trainable": true,
+      "recurrent_initial_gain": 0.1,
+      "input_encoding": "Same real-valued current input plus log1p(dt); no input/membrane bypass to output",
+      "state_scalars": "3 * width: membrane, prior spike, filtered spike",
+      "synthetic_parameter_target": 6200,
+      "frozen_parameter_target": 6000,
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "synthetic_initial_seed": "1000 + seed, as v1",
+      "frozen_initial_seed": "seed, as frozen v1/v2 heads",
+      "minibatch_seed": "50000 + seed, as paired references",
+      "updates": 300,
+      "batch_size": 32,
+      "learning_rate": 0.003,
+      "optimizer": "Adam; global gradient clip norm 1",
+      "selection": "Minimum validation cross entropy at updates 50,100,150,200,250,300",
+      "synthetic_data": "Exactly original v1 dataset_suite(task,seed), verified by recorded per-split fingerprints",
+      "synthetic_tasks": [
+        "memory",
+        "retrieval",
+        "irregular"
+      ],
+      "frozen_features_sha256": "970c2c56442dc7deaa0e1db98f78b12ab0254a5fae2d45923852055252286a8a",
+      "frozen_corruption": "Gaussian sigma 0.15 plus 20% local feature-block dropout, full-sentence global feature always retained; not raw missing input",
+      "no_test_tuning": true,
+      "claim_limit": "Dense CPU simulation; no neuromorphic, energy, SOTA, LLM or multimodal superiority inference",
+      "method_reference": "https://arxiv.org/abs/1901.09948"
+    },
+    "source_sha256": {
+      "snn_models.py": "34d08455bba4cf57b6aa19ec981fdef98a8ac63a647a262b80130b00688cc1c4",
+      "run_snn_reference.py": "382ff5e4531a7a1224f776186c6ab846fcc7225509ef2d1d6bd21b223092c2fa",
+      "validate_snn.py": "6d7c54fd748491ce2a357146a44a242068c2d0fa0c102402962a5fcb9a0f0e4c",
+      "snn_protocol.json": "de62bcbc31da6910ab61c78a07bd453fcd9cb3145c4926ce70ef3db2ca3e6573",
+      "data.py": "7f086e58eb04429de723fb0383b8731cc1fc50eff643fd5e78993cf32fd0f63d",
+      "train.py": "eac86da2d322e4089e8bd2e865baeda4e7e759222646d5bea729e6b48e71b546",
+      "models.py": "212d0ed0c06bb9168c91363529fa30c25fa3668b1927ddc53483af8884ad5b88"
+    },
+    "python": "3.12.14",
+    "jax": "0.4.38",
+    "numpy": "2.3.5",
+    "cpu_affinity": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "devices": [
+      "TFRT_CPU_0"
+    ],
+    "gradient_validation": {
+      "passed": true,
+      "jax": "0.4.38",
+      "dtype": "float32",
+      "parameter_count": 6260,
+      "width": 68,
+      "persistent_state_scalars": 204,
+      "tested_threshold_offsets": [
+        -2.0,
+        -9.999999974752427e-07,
+        0.0,
+        9.999999974752427e-07,
+        2.0
+      ],
+      "hard_forward": [
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "backward": [
+        0.00826446246355772,
+        0.9999899864196777,
+        1.0,
+        0.9999899864196777,
+        0.00826446246355772
+      ],
+      "declared_surrogate": [
+        0.00826446246355772,
+        0.9999899864196777,
+        1.0,
+        0.9999899864196777,
+        0.00826446246355772
+      ],
+      "parameter_gradient_norms": {
+        "bias": 0.23212267458438873,
+        "inp": 0.16339221596717834,
+        "out": 0.8920583128929138,
+        "out_bias": 0.8489401936531067,
+        "recurrent": 0.27446115016937256,
+        "tau_membrane": 0.05548472702503204,
+        "tau_readout": 0.021043438464403152
+      },
+      "spike_values": [
+        0.0,
+        1.0
+      ],
+      "spike_fraction": 0.12890625,
+      "every_initial_parameter_strong_float32": true,
+      "interpretation": "Backward matches the declared surrogate; it is not the true derivative of hard forward, so finite-difference equality is not claimed"
+    },
+    "comparison_status": "Additional post-declared baseline on already examined holdouts; exploratory, not a new independent confirmation",
+    "timing_caveat": "All timing fields are diagnostic; cache and shared CPU effects prevent speed/energy conclusions; old warm_training_seconds may include secondary JIT compilation",
+    "scope": "Dense CPU reference simulation of hard-spiking neurons; no energy or neuromorphic hardware measurement",
+    "feature_sha256": "970c2c56442dc7deaa0e1db98f78b12ab0254a5fae2d45923852055252286a8a",
+    "shared_encoder_frozen": true,
+    "shared_training_only_pca": true,
+    "perturbation": "Local feature-block dropout and noise, full-sentence global feature preserved; does not test raw missing inputs"
+  },
+  "runs": [
+    {
+      "task": "frozen_text",
+      "kind": "snn_lif",
+      "seed": 0,
+      "initial_seed": 0,
+      "width": 50,
+      "parameter_count": 6002,
+      "persistent_state_scalars": 150,
+      "data_sha256": {
+        "train": "e16fa1a5b6abf20d118ed6e43b0ff4779916981fc366d5e1868ef988ce1bdd36",
+        "validation": "3661451dcbacc50939481ffef35238283a58cf856671c49862d747c203f6f211",
+        "test": "32a5048a667709c697e7ef5ac00a9706a32c8cb5574991668a5b2821e9180dba",
+        "corrupted_test": "b0aee7c9e70f6925da7e6d254c0a74f7fe106acd39ffa0e35e5b92166d2ea718"
+      },
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 0.5225139856338501,
+          "validation": {
+            "loss": 0.5406592488288879,
+            "accuracy": 0.7825,
+            "brier": 0.35541590690612795
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.3829786777496338,
+          "validation": {
+            "loss": 0.4843562054634094,
+            "accuracy": 0.775,
+            "brier": 0.3200129044055939
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.4805208444595337,
+          "validation": {
+            "loss": 0.47051997423172,
+            "accuracy": 0.7925,
+            "brier": 0.30639003455638886
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.44446730613708496,
+          "validation": {
+            "loss": 0.480297394990921,
+            "accuracy": 0.79,
+            "brier": 0.31346497654914857
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.32114970684051514,
+          "validation": {
+            "loss": 0.46723477959632875,
+            "accuracy": 0.7825,
+            "brier": 0.3086241328716278
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.2720591723918915,
+          "validation": {
+            "loss": 0.4459178400039673,
+            "accuracy": 0.8,
+            "brier": 0.2890237033367157
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 300,
+        "first_update_seconds": 0.53401805500107,
+        "warm_training_seconds": 0.3038051549665397,
+        "max_unclipped_gradient_norm": 0.4846809208393097,
+        "mean_unclipped_gradient_norm": 0.23810953507820765,
+        "steps": 300,
+        "batch_size": 32,
+        "train_examples_seen": 9600,
+        "learning_rate": 0.003,
+        "train_call_wall_seconds_including_validation_jit": 1.5488410590005515,
+        "train_call_process_cpu_seconds_including_validation_jit": 2.2813507230000027,
+        "interpretation": "Diagnostic only, shared CPU and cache-order effects; no speed or energy inference. Legacy warm_training_seconds excludes only update 1 and is not asserted pure warm."
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.3720112371444702,
+          "accuracy": 0.846875,
+          "brier": 0.22905406653881072
+        },
+        "validation": {
+          "loss": 0.4459178400039673,
+          "accuracy": 0.8,
+          "brier": 0.2890237033367157
+        },
+        "test": {
+          "loss": 0.5220664691925049,
+          "accuracy": 0.755,
+          "brier": 0.34709309101104735
+        },
+        "corrupted_test": {
+          "loss": 0.5360954451560974,
+          "accuracy": 0.75125,
+          "brier": 0.3584584653377533
+        }
+      },
+      "spike_diagnostics": {
+        "examples": 128,
+        "binary_forward_verified": true,
+        "active_fraction": 0.2446874976158142,
+        "mean_spikes_per_example": 159.046875,
+        "tau_membrane_mean": 3.845500946044922,
+        "tau_readout_mean": 15.721713066101074
+      },
+      "checkpoint_file": "snn_reference_checkpoints/frozen_text_seed0.npz",
+      "checkpoint_sha256": "96eca4664a29ee985604b9bb56d0c79a478628aa648407867d90c23221c5803a",
+      "process_peak_rss_kib": 486184
+    },
+    {
+      "task": "frozen_text",
+      "kind": "snn_lif",
+      "seed": 1,
+      "initial_seed": 1,
+      "width": 50,
+      "parameter_count": 6002,
+      "persistent_state_scalars": 150,
+      "data_sha256": {
+        "train": "e16fa1a5b6abf20d118ed6e43b0ff4779916981fc366d5e1868ef988ce1bdd36",
+        "validation": "3661451dcbacc50939481ffef35238283a58cf856671c49862d747c203f6f211",
+        "test": "32a5048a667709c697e7ef5ac00a9706a32c8cb5574991668a5b2821e9180dba",
+        "corrupted_test": "b0aee7c9e70f6925da7e6d254c0a74f7fe106acd39ffa0e35e5b92166d2ea718"
+      },
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 0.5268938541412354,
+          "validation": {
+            "loss": 0.5466995096206665,
+            "accuracy": 0.7725,
+            "brier": 0.36052861213684084
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.3471471965312958,
+          "validation": {
+            "loss": 0.462788405418396,
+            "accuracy": 0.7925,
+            "brier": 0.30133885502815244
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.4723265469074249,
+          "validation": {
+            "loss": 0.4630938792228699,
+            "accuracy": 0.79,
+            "brier": 0.30497881531715393
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.35482311248779297,
+          "validation": {
+            "loss": 0.4561294388771057,
+            "accuracy": 0.785,
+            "brier": 0.30106634974479674
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.4136546850204468,
+          "validation": {
+            "loss": 0.4556589663028717,
+            "accuracy": 0.8,
+            "brier": 0.2946629452705383
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.3487127721309662,
+          "validation": {
+            "loss": 0.4613425016403198,
+            "accuracy": 0.7975,
+            "brier": 0.30048061728477476
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 250,
+        "first_update_seconds": 0.0008879900015017483,
+        "warm_training_seconds": 0.35587156502515427,
+        "max_unclipped_gradient_norm": 0.4707285463809967,
+        "mean_unclipped_gradient_norm": 0.23161993578076362,
+        "steps": 300,
+        "batch_size": 32,
+        "train_examples_seen": 9600,
+        "learning_rate": 0.003,
+        "train_call_wall_seconds_including_validation_jit": 0.5434203189979598,
+        "train_call_process_cpu_seconds_including_validation_jit": 0.5442834239999996,
+        "interpretation": "Diagnostic only, shared CPU and cache-order effects; no speed or energy inference. Legacy warm_training_seconds excludes only update 1 and is not asserted pure warm."
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.39462607622146606,
+          "accuracy": 0.828125,
+          "brier": 0.2480699324607849
+        },
+        "validation": {
+          "loss": 0.4556589663028717,
+          "accuracy": 0.8,
+          "brier": 0.2946629452705383
+        },
+        "test": {
+          "loss": 0.5272938799858093,
+          "accuracy": 0.7625,
+          "brier": 0.34762331008911135
+        },
+        "corrupted_test": {
+          "loss": 0.5389018130302429,
+          "accuracy": 0.755,
+          "brier": 0.3587001979351044
+        }
+      },
+      "spike_diagnostics": {
+        "examples": 128,
+        "binary_forward_verified": true,
+        "active_fraction": 0.24742788076400757,
+        "mean_spikes_per_example": 160.828125,
+        "tau_membrane_mean": 3.8585498332977295,
+        "tau_readout_mean": 15.563953399658203
+      },
+      "checkpoint_file": "snn_reference_checkpoints/frozen_text_seed1.npz",
+      "checkpoint_sha256": "aa2ec3a3ef456dc3c97834d850834c005a9025780f50fbbb5a64c6c1fd6a7df5",
+      "process_peak_rss_kib": 491688
+    },
+    {
+      "task": "frozen_text",
+      "kind": "snn_lif",
+      "seed": 2,
+      "initial_seed": 2,
+      "width": 50,
+      "parameter_count": 6002,
+      "persistent_state_scalars": 150,
+      "data_sha256": {
+        "train": "e16fa1a5b6abf20d118ed6e43b0ff4779916981fc366d5e1868ef988ce1bdd36",
+        "validation": "3661451dcbacc50939481ffef35238283a58cf856671c49862d747c203f6f211",
+        "test": "32a5048a667709c697e7ef5ac00a9706a32c8cb5574991668a5b2821e9180dba",
+        "corrupted_test": "b0aee7c9e70f6925da7e6d254c0a74f7fe106acd39ffa0e35e5b92166d2ea718"
+      },
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 0.5535043478012085,
+          "validation": {
+            "loss": 0.5619643807411194,
+            "accuracy": 0.77,
+            "brier": 0.3741854131221771
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.5450088381767273,
+          "validation": {
+            "loss": 0.47435874462127686,
+            "accuracy": 0.765,
+            "brier": 0.3136834681034088
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.28570449352264404,
+          "validation": {
+            "loss": 0.48287769079208376,
+            "accuracy": 0.785,
+            "brier": 0.31362695813179015
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.3107728958129883,
+          "validation": {
+            "loss": 0.46716757893562316,
+            "accuracy": 0.7775,
+            "brier": 0.3066865801811218
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.4333169460296631,
+          "validation": {
+            "loss": 0.4613352632522583,
+            "accuracy": 0.7775,
+            "brier": 0.3045134830474854
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.525000274181366,
+          "validation": {
+            "loss": 0.45360814571380614,
+            "accuracy": 0.7925,
+            "brier": 0.29455732941627505
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 300,
+        "first_update_seconds": 0.0014312870007415768,
+        "warm_training_seconds": 0.25691248298971914,
+        "max_unclipped_gradient_norm": 0.5838953852653503,
+        "mean_unclipped_gradient_norm": 0.2259937807917595,
+        "steps": 300,
+        "batch_size": 32,
+        "train_examples_seen": 9600,
+        "learning_rate": 0.003,
+        "train_call_wall_seconds_including_validation_jit": 0.41338983199966606,
+        "train_call_process_cpu_seconds_including_validation_jit": 0.4486776230000018,
+        "interpretation": "Diagnostic only, shared CPU and cache-order effects; no speed or energy inference. Legacy warm_training_seconds excludes only update 1 and is not asserted pure warm."
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.36922734618186953,
+          "accuracy": 0.844375,
+          "brier": 0.22816406667232514
+        },
+        "validation": {
+          "loss": 0.45360814571380614,
+          "accuracy": 0.7925,
+          "brier": 0.29455732941627505
+        },
+        "test": {
+          "loss": 0.5102191495895386,
+          "accuracy": 0.76375,
+          "brier": 0.3362051200866699
+        },
+        "corrupted_test": {
+          "loss": 0.5211133098602295,
+          "accuracy": 0.76,
+          "brier": 0.3439171040058136
+        }
+      },
+      "spike_diagnostics": {
+        "examples": 128,
+        "binary_forward_verified": true,
+        "active_fraction": 0.26800480484962463,
+        "mean_spikes_per_example": 174.203125,
+        "tau_membrane_mean": 3.849994421005249,
+        "tau_readout_mean": 15.725643157958984
+      },
+      "checkpoint_file": "snn_reference_checkpoints/frozen_text_seed2.npz",
+      "checkpoint_sha256": "9a4b7ce026cf2b1ceb12b229131fed42831d11c5382ba2d95b24e8691928a02b",
+      "process_peak_rss_kib": 495528
+    },
+    {
+      "task": "frozen_text",
+      "kind": "snn_lif",
+      "seed": 3,
+      "initial_seed": 3,
+      "width": 50,
+      "parameter_count": 6002,
+      "persistent_state_scalars": 150,
+      "data_sha256": {
+        "train": "e16fa1a5b6abf20d118ed6e43b0ff4779916981fc366d5e1868ef988ce1bdd36",
+        "validation": "3661451dcbacc50939481ffef35238283a58cf856671c49862d747c203f6f211",
+        "test": "32a5048a667709c697e7ef5ac00a9706a32c8cb5574991668a5b2821e9180dba",
+        "corrupted_test": "b0aee7c9e70f6925da7e6d254c0a74f7fe106acd39ffa0e35e5b92166d2ea718"
+      },
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 0.5324833989143372,
+          "validation": {
+            "loss": 0.571189923286438,
+            "accuracy": 0.745,
+            "brier": 0.3834808683395386
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.47837913036346436,
+          "validation": {
+            "loss": 0.4781154441833496,
+            "accuracy": 0.78,
+            "brier": 0.3143002307415009
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.4294559359550476,
+          "validation": {
+            "loss": 0.4770146059989929,
+            "accuracy": 0.7925,
+            "brier": 0.31102652311325074
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.46106481552124023,
+          "validation": {
+            "loss": 0.4872848892211914,
+            "accuracy": 0.7775,
+            "brier": 0.3219292390346527
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.33828410506248474,
+          "validation": {
+            "loss": 0.45670710563659667,
+            "accuracy": 0.795,
+            "brier": 0.2985851263999939
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.3016325533390045,
+          "validation": {
+            "loss": 0.4563102447986603,
+            "accuracy": 0.7975,
+            "brier": 0.29411370277404786
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 300,
+        "first_update_seconds": 0.0012857219990110025,
+        "warm_training_seconds": 0.2973295019874058,
+        "max_unclipped_gradient_norm": 0.5226858854293823,
+        "mean_unclipped_gradient_norm": 0.23567156019310156,
+        "steps": 300,
+        "batch_size": 32,
+        "train_examples_seen": 9600,
+        "learning_rate": 0.003,
+        "train_call_wall_seconds_including_validation_jit": 0.4685506310015626,
+        "train_call_process_cpu_seconds_including_validation_jit": 0.5121911359999984,
+        "interpretation": "Diagnostic only, shared CPU and cache-order effects; no speed or energy inference. Legacy warm_training_seconds excludes only update 1 and is not asserted pure warm."
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.4015902733802795,
+          "accuracy": 0.825625,
+          "brier": 0.25261343955993654
+        },
+        "validation": {
+          "loss": 0.4563102447986603,
+          "accuracy": 0.7975,
+          "brier": 0.29411370277404786
+        },
+        "test": {
+          "loss": 0.5098229598999023,
+          "accuracy": 0.7675,
+          "brier": 0.33503150939941406
+        },
+        "corrupted_test": {
+          "loss": 0.5185314297676087,
+          "accuracy": 0.7625,
+          "brier": 0.3428285551071167
+        }
+      },
+      "spike_diagnostics": {
+        "examples": 128,
+        "binary_forward_verified": true,
+        "active_fraction": 0.22759614884853363,
+        "mean_spikes_per_example": 147.9375,
+        "tau_membrane_mean": 3.867418050765991,
+        "tau_readout_mean": 15.807406425476074
+      },
+      "checkpoint_file": "snn_reference_checkpoints/frozen_text_seed3.npz",
+      "checkpoint_sha256": "bae5be341f3d366abcbd99af0cb130caaad378aca7812bc2ed8caea7253d1212",
+      "process_peak_rss_kib": 497832
+    },
+    {
+      "task": "frozen_text",
+      "kind": "snn_lif",
+      "seed": 4,
+      "initial_seed": 4,
+      "width": 50,
+      "parameter_count": 6002,
+      "persistent_state_scalars": 150,
+      "data_sha256": {
+        "train": "e16fa1a5b6abf20d118ed6e43b0ff4779916981fc366d5e1868ef988ce1bdd36",
+        "validation": "3661451dcbacc50939481ffef35238283a58cf856671c49862d747c203f6f211",
+        "test": "32a5048a667709c697e7ef5ac00a9706a32c8cb5574991668a5b2821e9180dba",
+        "corrupted_test": "b0aee7c9e70f6925da7e6d254c0a74f7fe106acd39ffa0e35e5b92166d2ea718"
+      },
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 0.5884841084480286,
+          "validation": {
+            "loss": 0.5939671993255615,
+            "accuracy": 0.7725,
+            "brier": 0.4032436144351959
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 0.5784306526184082,
+          "validation": {
+            "loss": 0.4783275413513184,
+            "accuracy": 0.775,
+            "brier": 0.3140157639980316
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 0.5561002492904663,
+          "validation": {
+            "loss": 0.45597431182861325,
+            "accuracy": 0.795,
+            "brier": 0.2953078281879425
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.2257012277841568,
+          "validation": {
+            "loss": 0.4765666198730469,
+            "accuracy": 0.7875,
+            "brier": 0.3136201751232147
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.4414490759372711,
+          "validation": {
+            "loss": 0.4697705578804016,
+            "accuracy": 0.785,
+            "brier": 0.30546815156936646
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.3849031925201416,
+          "validation": {
+            "loss": 0.4695286345481873,
+            "accuracy": 0.81,
+            "brier": 0.30324517130851747
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 150,
+        "first_update_seconds": 0.0027087560010841116,
+        "warm_training_seconds": 0.33205944904329954,
+        "max_unclipped_gradient_norm": 0.5821537971496582,
+        "mean_unclipped_gradient_norm": 0.22659986903270085,
+        "steps": 300,
+        "batch_size": 32,
+        "train_examples_seen": 9600,
+        "learning_rate": 0.003,
+        "train_call_wall_seconds_including_validation_jit": 0.5530260590021499,
+        "train_call_process_cpu_seconds_including_validation_jit": 0.6056806400000028,
+        "interpretation": "Diagnostic only, shared CPU and cache-order effects; no speed or energy inference. Legacy warm_training_seconds excludes only update 1 and is not asserted pure warm."
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.4105220639705658,
+          "accuracy": 0.8225,
+          "brier": 0.2583178246021271
+        },
+        "validation": {
+          "loss": 0.45597431182861325,
+          "accuracy": 0.795,
+          "brier": 0.2953078281879425
+        },
+        "test": {
+          "loss": 0.5179682970046997,
+          "accuracy": 0.76125,
+          "brier": 0.3445321607589722
+        },
+        "corrupted_test": {
+          "loss": 0.5272290730476379,
+          "accuracy": 0.75875,
+          "brier": 0.3520127534866333
+        }
+      },
+      "spike_diagnostics": {
+        "examples": 128,
+        "binary_forward_verified": true,
+        "active_fraction": 0.24128605425357819,
+        "mean_spikes_per_example": 156.8359375,
+        "tau_membrane_mean": 3.8713858127593994,
+        "tau_readout_mean": 15.574904441833496
+      },
+      "checkpoint_file": "snn_reference_checkpoints/frozen_text_seed4.npz",
+      "checkpoint_sha256": "6821f0ea12cc932019c86f0474c46c75020e34de99224e781b71de6c40c80c1d",
+      "process_peak_rss_kib": 500264
+    }
+  ],
+  "complete": true,
+  "summary": {
+    "frozen_text": {
+      "parameter_count": 6002,
+      "persistent_state_scalars": 150,
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "train": {
+        "mean_accuracy": 0.8335000000000001,
+        "sample_sd": 0.011281206717368491
+      },
+      "validation": {
+        "mean_accuracy": 0.7969999999999999,
+        "sample_sd": 0.003259601202601344
+      },
+      "test": {
+        "mean_accuracy": 0.762,
+        "sample_sd": 0.004558645632202607
+      },
+      "corrupted_test": {
+        "mean_accuracy": 0.7575000000000001,
+        "sample_sd": 0.004419417382415922
+      },
+      "mean_train_call_wall_seconds_including_validation_jit": 0.7054455800003779,
+      "mean_train_call_process_cpu_seconds_including_validation_jit": 0.878436709200001
+    }
+  },
+  "elapsed_seconds": 5.251242129001184,
+  "feature_sha_after_training": "970c2c56442dc7deaa0e1db98f78b12ab0254a5fae2d45923852055252286a8a"
+}

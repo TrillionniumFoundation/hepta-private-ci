@@ -1,0 +1,371 @@
+{
+  "schema": "hepta.hcsn.encoder.feature_parts.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "chunk_bytes": 786432,
+  "scope": "Appended exact-cache delivery only; no new experiment or changed sample selection",
+  "contains": "Audited frozen encoder features, labels and training-only PCA parameters; no raw input examples or encoder weights",
+  "source_audit_sha256": "d8b44a7e5bcf0632d544a9d8b5bd71d65d1a188b2e897a8813da4b98c717cf30",
+  "source_freeze_sha256": "050d05e69471f4580561b8ceee8a46df128c28c33eee5176bf728a5b664b078f",
+  "datasets": [
+    {
+      "dataset": "ag_news",
+      "filename": "ag_news_features.npz",
+      "size_bytes": 14363266,
+      "sha256": "f6a4a1a2ff584c4fec7e10da6a8668f22531bac872c0c8aa9cd1b69b57246899",
+      "parts": [
+        {
+          "index": 0,
+          "name": "ag_news_features.npz.part0000",
+          "repository_path": "tools/hcsn/third/encoder/features/ag_news_features.npz.part0000",
+          "size_bytes": 786432,
+          "sha256": "421bb08688cd1e189885df89ac6632464a2b5a227a604bb2e157949b353c6197",
+          "git_blob_sha": "58700b4b4261841781dcadf12de73c515a993bf4"
+        },
+        {
+          "index": 1,
+          "name": "ag_news_features.npz.part0001",
+          "repository_path": "tools/hcsn/third/encoder/features/ag_news_features.npz.part0001",
+          "size_bytes": 786432,
+          "sha256": "abd7fc0df5a06deb0c690a570ccdd52de584e68e9c7ca5d1a6581f84e1585209",
+          "git_blob_sha": "d305032b1df9b56b628c6aa4e1f82b4099d0c7a8"
+        },
+        {
+          "index": 2,
+          "name": "ag_news_features.npz.part0002",
+          "repository_path": "tools/hcsn/third/encoder/features/ag_news_features.npz.part0002",
+          "size_bytes": 786432,
+          "sha256": "7d07fc2a6caa92cfef3b2ffec69ac90330aaea44eeaba5028096b7be98c10502",
+          "git_blob_sha": "a365f38173a5af73f135070a15f8bbf62669f771"
+        },
+        {
+          "index": 3,
+          "name": "ag_news_features.npz.part0003",
+          "repository_path": "tools/hcsn/third/encoder/features/ag_news_features.npz.part0003",
+          "size_bytes": 786432,
+          "sha256": "8a7754d8f791bef2870929624d17d3c97417ee26333041c504c7da6832dc540a",
+          "git_blob_sha": "4551bb3a59e2150640748f8c8b2122c1dce13ca3"
+        },
+        {
+          "index": 4,
+          "name": "ag_news_features.npz.part0004",
+          "repository_path": "tools/hcsn/third/encoder/features/ag_news_features.npz.part0004",
+          "size_bytes": 786432,
+          "sha256": "2f47b0d4a875adf1734109ff6ed2f122e436f8016d8f8eb2e6745915ee67156b",
+          "git_blob_sha": "b673103ebb8ec1e4122289bdb823ce99c91fbcda"
+        },
+        {
+          "index": 5,
+          "name": "ag_news_features.npz.part0005",
+          "repository_path": "tools/hcsn/third/encoder/features/ag_news_features.npz.part0005",
+          "size_bytes": 786432,
+          "sha256": "54c664c7843b6063419c9c2d3aff9f716102375c6b8a2dee3e432e686ed5d5c9",
+          "git_blob_sha": "bc1275fc7e535e0894c88f87a186a2dca59b75c4"
+        },
+        {
+          "index": 6,
+          "name": "ag_news_features.npz.part0006",
+          "repository_path": "tools/hcsn/third/encoder/features/ag_news_features.npz.part0006",
+          "size_bytes": 786432,
+          "sha256": "01d5b0b7c54e3da4f654fe9156ad4fa35a191b57628adecea8aa296ef5f4d333",
+          "git_blob_sha": "d06ad0c420a0f163ee4a3a4590a923e21eae82bc"
+        },
+        {
+          "index": 7,
+          "name": "ag_news_features.npz.part0007",
+          "repository_path": "tools/hcsn/third/encoder/features/ag_news_features.npz.part0007",
+          "size_bytes": 786432,
+          "sha256": "13d62a12835fee8bea0f1af6af30e2136f1a0f18e427313b4154dd1bdfba45f9",
+          "git_blob_sha": "86a26357eb724a1469054eb4eaa843a0160ddba1"
+        },
+        {
+          "index": 8,
+          "name": "ag_news_features.npz.part0008",
+          "repository_path": "tools/hcsn/third/encoder/features/ag_news_features.npz.part0008",
+          "size_bytes": 786432,
+          "sha256": "339586d29a0088c9d6bba78bef038c45bbe9aedc3118a5d796b222d00528f713",
+          "git_blob_sha": "22fa9d7d0c1279d28af5e35fd1409e083b395f9c"
+        },
+        {
+          "index": 9,
+          "name": "ag_news_features.npz.part0009",
+          "repository_path": "tools/hcsn/third/encoder/features/ag_news_features.npz.part0009",
+          "size_bytes": 786432,
+          "sha256": "54adcaf450183fba0c4b2d08f82d41ba4efd09faca41f0cf25bdfcf05b95b93c",
+          "git_blob_sha": "4df38074c1188289ce19a2710b5d3862ddc60ba2"
+        },
+        {
+          "index": 10,
+          "name": "ag_news_features.npz.part0010",
+          "repository_path": "tools/hcsn/third/encoder/features/ag_news_features.npz.part0010",
+          "size_bytes": 786432,
+          "sha256": "ac187d9f74600e43776660327bcc0f61cc907e37ef14317ddfef4d3f55f6851a",
+          "git_blob_sha": "4ff931d1e9c0df787fd2f9d3450ad7958724b777"
+        },
+        {
+          "index": 11,
+          "name": "ag_news_features.npz.part0011",
+          "repository_path": "tools/hcsn/third/encoder/features/ag_news_features.npz.part0011",
+          "size_bytes": 786432,
+          "sha256": "89ab5ea47cfc775a7c9198fba494f98b17baad9707b7b2d2f70f6413af63bcbb",
+          "git_blob_sha": "51e5aaff9f5f9ec3d19373b5c424b68397910b58"
+        },
+        {
+          "index": 12,
+          "name": "ag_news_features.npz.part0012",
+          "repository_path": "tools/hcsn/third/encoder/features/ag_news_features.npz.part0012",
+          "size_bytes": 786432,
+          "sha256": "230194599d8aa99ffec6fdb829b0cf0bff2b0927872f4aec0bcdd45f898825d6",
+          "git_blob_sha": "d2f56399ac7385ab46e3fc3bd3876e9be3b88d45"
+        },
+        {
+          "index": 13,
+          "name": "ag_news_features.npz.part0013",
+          "repository_path": "tools/hcsn/third/encoder/features/ag_news_features.npz.part0013",
+          "size_bytes": 786432,
+          "sha256": "43ef428ce88fd27143f4b0645f68eac013df16ca3e5771f88dabe6b64a97af60",
+          "git_blob_sha": "c4ca69c66c34731f23bcc8a591ebda1a5ccd4046"
+        },
+        {
+          "index": 14,
+          "name": "ag_news_features.npz.part0014",
+          "repository_path": "tools/hcsn/third/encoder/features/ag_news_features.npz.part0014",
+          "size_bytes": 786432,
+          "sha256": "226c77f7fab292904846d39d1a19aeac124fc6ca1557c7fa5987e29cbc7c700b",
+          "git_blob_sha": "a586aad0d88118d115a9eaac3c57b8ecb52090be"
+        },
+        {
+          "index": 15,
+          "name": "ag_news_features.npz.part0015",
+          "repository_path": "tools/hcsn/third/encoder/features/ag_news_features.npz.part0015",
+          "size_bytes": 786432,
+          "sha256": "b0424e6ba680caad356af9d348c2b11f69d43aaf7f5b0e2ce30e3502c9aaff5e",
+          "git_blob_sha": "b79a139ee62f6287e132516c5d1488c3cf5b52e9"
+        },
+        {
+          "index": 16,
+          "name": "ag_news_features.npz.part0016",
+          "repository_path": "tools/hcsn/third/encoder/features/ag_news_features.npz.part0016",
+          "size_bytes": 786432,
+          "sha256": "c1497840664e5fb07332a5c47557699d15aae73fc455c750d305b1ca5f5f2dc3",
+          "git_blob_sha": "57e1cbdc9f4e6d8917359887accaac25cf9619ab"
+        },
+        {
+          "index": 17,
+          "name": "ag_news_features.npz.part0017",
+          "repository_path": "tools/hcsn/third/encoder/features/ag_news_features.npz.part0017",
+          "size_bytes": 786432,
+          "sha256": "8618700eb2070f13d6bfc18f924d6ebe407f22ca218446c562d1fe170b1e5223",
+          "git_blob_sha": "3c51331a7ed71587ef55162ec215510bbbca55a6"
+        },
+        {
+          "index": 18,
+          "name": "ag_news_features.npz.part0018",
+          "repository_path": "tools/hcsn/third/encoder/features/ag_news_features.npz.part0018",
+          "size_bytes": 207490,
+          "sha256": "bd07ef522bede71afd80cfcc046a1b858b46bb882e9a1fb6bd848852d5806917",
+          "git_blob_sha": "108ff42bf6e51e7ab7284d713bc52810e3c77ac5"
+        }
+      ]
+    },
+    {
+      "dataset": "cifar10",
+      "filename": "cifar10_features.npz",
+      "size_bytes": 18574634,
+      "sha256": "96feacafd26c8e82971b94729be1fd7bc91de4d71ad7d1863503251a91d1733d",
+      "parts": [
+        {
+          "index": 0,
+          "name": "cifar10_features.npz.part0000",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0000",
+          "size_bytes": 786432,
+          "sha256": "c1923ce6c118d955820c0799270129b4148432938527deae93ad7a2eff30e98a",
+          "git_blob_sha": "bcea5441d2f280397b6aef64f8cea25757e21502"
+        },
+        {
+          "index": 1,
+          "name": "cifar10_features.npz.part0001",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0001",
+          "size_bytes": 786432,
+          "sha256": "dc41f2819776dea930402ef4af85239e6b2f10f87703a62b730886b6cfd5df1e",
+          "git_blob_sha": "b1a473ad954bb0deebc86131037fafe62418ff74"
+        },
+        {
+          "index": 2,
+          "name": "cifar10_features.npz.part0002",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0002",
+          "size_bytes": 786432,
+          "sha256": "d810140c90c904861826735d0817b536cb151154172159fe220df8d018204fc8",
+          "git_blob_sha": "da6a935297d6dbfe0a021b64c1d35ff4c1adba06"
+        },
+        {
+          "index": 3,
+          "name": "cifar10_features.npz.part0003",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0003",
+          "size_bytes": 786432,
+          "sha256": "aef11dc695ce3d8b125ddf5ccc6f9f67dcaae33d0d11fa7d2a493860851d89c7",
+          "git_blob_sha": "ddd4ed928ad31c44040189f450e3243028875484"
+        },
+        {
+          "index": 4,
+          "name": "cifar10_features.npz.part0004",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0004",
+          "size_bytes": 786432,
+          "sha256": "7172331f3d1621917e9d3637a3e87095ac80bcac337808445acb01d34aeb186d",
+          "git_blob_sha": "80adfa1783b2e9e025349c2365c4ea4b6d9b48cc"
+        },
+        {
+          "index": 5,
+          "name": "cifar10_features.npz.part0005",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0005",
+          "size_bytes": 786432,
+          "sha256": "93a03688b64e1825ea013565b9d105ed39783865c60d30203ceac63d48ac65d4",
+          "git_blob_sha": "6c570d6eedbff4795dfb59195b6e7619b315eb80"
+        },
+        {
+          "index": 6,
+          "name": "cifar10_features.npz.part0006",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0006",
+          "size_bytes": 786432,
+          "sha256": "42347f40fcab34fe71120095c30d669e07b85f3b7b54d479284bd073d606c6bc",
+          "git_blob_sha": "7b8d46c73cf6fc223536bdcad0f78897a8601102"
+        },
+        {
+          "index": 7,
+          "name": "cifar10_features.npz.part0007",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0007",
+          "size_bytes": 786432,
+          "sha256": "311aa5d944c828ee8fff3146c5811acfe5a549cfbe09e12401b7f1ba5a1fd119",
+          "git_blob_sha": "0de4c910f8308807f4f9880507c3d431cd72c08f"
+        },
+        {
+          "index": 8,
+          "name": "cifar10_features.npz.part0008",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0008",
+          "size_bytes": 786432,
+          "sha256": "5166731650baf13885f2ea71bebea4bbfd7df6cac0904237ab5aa608514ffaab",
+          "git_blob_sha": "4645f11f33bf83da9b984f17cfc681996e547e90"
+        },
+        {
+          "index": 9,
+          "name": "cifar10_features.npz.part0009",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0009",
+          "size_bytes": 786432,
+          "sha256": "e733859fd9a76d25ca3227c10b1b84a6215a47cc264ae2d552db45ac9f88fda7",
+          "git_blob_sha": "85a323b4fc5543c8676ffe427d4acdabbf8add3d"
+        },
+        {
+          "index": 10,
+          "name": "cifar10_features.npz.part0010",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0010",
+          "size_bytes": 786432,
+          "sha256": "68629d44d18aa8483531aaca9730c931f0bd21e60e5131ef5239b40689adc793",
+          "git_blob_sha": "b9e2173ebc468f58bbbaf1faa543cac067770003"
+        },
+        {
+          "index": 11,
+          "name": "cifar10_features.npz.part0011",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0011",
+          "size_bytes": 786432,
+          "sha256": "da7556c5b539efc5a3f299500bd2291c1f7ac98f5c2d794e78a60840aa3735c3",
+          "git_blob_sha": "385030514a07243fc64b51ae24b7a67b35cf2d2e"
+        },
+        {
+          "index": 12,
+          "name": "cifar10_features.npz.part0012",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0012",
+          "size_bytes": 786432,
+          "sha256": "b9b8f158eca36f673c4d5ef0ba1e7c78822f347ff1455e9e97736cf56c8a5913",
+          "git_blob_sha": "65c496634b8e9c4a0386fd7a8cb3212df31d517f"
+        },
+        {
+          "index": 13,
+          "name": "cifar10_features.npz.part0013",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0013",
+          "size_bytes": 786432,
+          "sha256": "4381e9a4c1dbf109ef57633542e14b7a179d9b15c6c80970db170877e59ea21b",
+          "git_blob_sha": "05830c5ff0c4018c26b9d8df321c65382c39a459"
+        },
+        {
+          "index": 14,
+          "name": "cifar10_features.npz.part0014",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0014",
+          "size_bytes": 786432,
+          "sha256": "ab89ade4427f3e719de350aceb3ae542c98d9be5780d27643f344b01af11e778",
+          "git_blob_sha": "ae33ad8deaf0a06f0dd7a83c8cfc6b6eec89d806"
+        },
+        {
+          "index": 15,
+          "name": "cifar10_features.npz.part0015",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0015",
+          "size_bytes": 786432,
+          "sha256": "986983a9b4e0a74de941ab9ddb16b626dab6311b938a89d2aa364f70b5be9e69",
+          "git_blob_sha": "8cac7f25c0f698980ab359e93704cacd6731d8c4"
+        },
+        {
+          "index": 16,
+          "name": "cifar10_features.npz.part0016",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0016",
+          "size_bytes": 786432,
+          "sha256": "1a0ddc273a36261d8483d59b3f97927d57057e28fe974c5d434b18433ec60887",
+          "git_blob_sha": "854c4983372e29a900c6866648935bc8ae304b6c"
+        },
+        {
+          "index": 17,
+          "name": "cifar10_features.npz.part0017",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0017",
+          "size_bytes": 786432,
+          "sha256": "3ed51972f0df23111ec4d8282847378507310fe54c8e2fb593df9b092db7721d",
+          "git_blob_sha": "b04deedf409d75be127f6fe0aa729c0364be2a4c"
+        },
+        {
+          "index": 18,
+          "name": "cifar10_features.npz.part0018",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0018",
+          "size_bytes": 786432,
+          "sha256": "95023b846d43c8a74ceacd1fb0850fb39f49baaf89ce8521785b0fb24ce147a2",
+          "git_blob_sha": "feba679b2f32630da784243d19af7754f61f3d10"
+        },
+        {
+          "index": 19,
+          "name": "cifar10_features.npz.part0019",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0019",
+          "size_bytes": 786432,
+          "sha256": "970bb8cefff8820e7675faedb28356abc2bf31fcd6112ff981d5d0e2abef2ea3",
+          "git_blob_sha": "14a226be3368413c9d7f0c102d4dfdc52dced499"
+        },
+        {
+          "index": 20,
+          "name": "cifar10_features.npz.part0020",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0020",
+          "size_bytes": 786432,
+          "sha256": "54d6d026fc5b72b9898a33f0440e74e380adae9a60728a2f7fae6dd88f34c80b",
+          "git_blob_sha": "e154eecc21ff3e57963e58d00db17c36367c8a58"
+        },
+        {
+          "index": 21,
+          "name": "cifar10_features.npz.part0021",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0021",
+          "size_bytes": 786432,
+          "sha256": "09130edf99f8aaacac3ea004eabc654e6be059d52b51601345acb6ef08dd0585",
+          "git_blob_sha": "5cea8956c621fba45612f5f11b00972b15eee063"
+        },
+        {
+          "index": 22,
+          "name": "cifar10_features.npz.part0022",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0022",
+          "size_bytes": 786432,
+          "sha256": "962d41450b21ada639a191e5c82f1c31cb0a4c1b4c63ad67392d174f2ffefc90",
+          "git_blob_sha": "7f7cd7f17dd28456820586b5711abe9cc055ed53"
+        },
+        {
+          "index": 23,
+          "name": "cifar10_features.npz.part0023",
+          "repository_path": "tools/hcsn/third/encoder/features/cifar10_features.npz.part0023",
+          "size_bytes": 486698,
+          "sha256": "0d9fb3836f12402a02a0726db2f4ecb71810e5b42f5e5588305a6bff938f2178",
+          "git_blob_sha": "c6ba71b62277456343973573d4605d9f3a0e874a"
+        }
+      ]
+    }
+  ]
+}

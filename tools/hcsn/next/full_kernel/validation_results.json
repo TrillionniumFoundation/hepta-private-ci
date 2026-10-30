@@ -1,0 +1,3304 @@
+{
+  "schema": "hepta.hcsn.compiled_full_kernel.v1",
+  "scope": "Fixed financial parameter templates",
+  "protocol": {
+    "scope": "Full He-Xiong equity and explicitly smoothed first-hit risk compiled for float32 neural-state training",
+    "financial_parameters": "Fixed per compiled template; NOT trainable through the lookup table",
+    "coordinate": "z=log(Vb/V)/(sigma*sqrt(maturity)); financial continuation distance x=-sigma*sqrt(maturity)*z",
+    "call": "a(z)=E(-sigma*sqrt(maturity)*z)/(E(-sigma*sqrt(maturity)*z)+Vb) for z<0; zero otherwise",
+    "risk": "C1 cubic Hermite patch of original F in 0<x<0.02*sigma*sqrt(maturity), with F(0)=1 and Fprime(0)=0; original F outside the boundary layer",
+    "danger_extension": "With s=sigma*sqrt(maturity), q(z)=0.5*Fpatched(s*abs(z)) for z<0, 1-0.5*Fpatched(s*abs(z)) for z>=0; this is a new neural design, not the original financial put",
+    "table": "Float64 original financial formulas -> monotone C1 cubic interpolation -> float32 coefficients",
+    "initial_nodes": 4097,
+    "call_distance_limit": 8.0,
+    "risk_scaled_distance_limit": "max(16, 2*abs(a*s)+12)",
+    "tails": "Explicit bounded exponential extensions matching value and first derivative; approximation error checked separately",
+    "float32_normalized_value_abs_tolerance": 5e-06,
+    "float32_state_gradient_scaled_tolerance": 0.0005,
+    "gradient_scale": "max(1,abs(reference derivative))",
+    "bounds_tolerance": 1e-06,
+    "boundary_layer_bias": "Reported separately from numerical error; smoothing changes the original F inside the layer",
+    "precision_interpretation": "New normalized-neural-kernel tolerances, not a revision or pass of the prior raw financial float32 test",
+    "validation_plan": [
+      "Original supported parameter cases",
+      "Dense continuation and danger states",
+      "All piecewise joins including boundary and tails",
+      "Reference numerical state gradients",
+      "FP32 and FP64 interpolation",
+      "Large-state finite bounded outputs",
+      "Short recurrent BPTT and finite differences"
+    ]
+  },
+  "cases": [
+    {
+      "name": "baseline",
+      "parameters": {
+        "r": 0.08,
+        "delta": 0.02,
+        "sigma": 0.23,
+        "alpha": 0.6,
+        "tax": 0.27,
+        "liquidity": 0.01,
+        "maturity": 1.0,
+        "coupon": 6.39,
+        "principal": 61.68
+      },
+      "boundary": 67.44151539060373,
+      "state_count": 18006,
+      "gradient_state_count": 2803,
+      "patch": {
+        "epsilon": 0.0046,
+        "epsilon_scaled": 0.02,
+        "value": 0.9810119465327823,
+        "derivative": -4.115350644637681,
+        "A": 0.03803354743631964,
+        "B": -0.019045493969101983,
+        "monotonicity_ratio": 0.9969749136222155
+      },
+      "financial_parameters_trainable": false,
+      "table_nodes": 4097,
+      "table_numeric_bytes_float32": 131128,
+      "precision": {
+        "float64": {
+          "value_abs_error_q_a": [
+            6.09350903069128e-10,
+            2.0568717307833726e-08
+          ],
+          "gradient_scaled_error_q_a": [
+            1.0189340364785693e-06,
+            0.00013502386508167205
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 1.7768648233329465e-08,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              5.457908433181902e-21
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -3.049152278261448e-101
+            ],
+            [
+              9.508386823369608e-09,
+              -1.091581665758842e-10
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              9.508386823369608e-09,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        },
+        "float32": {
+          "value_abs_error_q_a": [
+            8.543343599232145e-08,
+            1.4391355940279738e-07
+          ],
+          "gradient_scaled_error_q_a": [
+            8.862154096844765e-06,
+            0.00013502383159786952
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 8.47354531288147e-05,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              5.457907722170719e-21
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              9.508401177527048e-09,
+              -1.0915815473744317e-10
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              9.508401177527048e-09,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        }
+      },
+      "intentional_risk_probability_patch_max_bias": 0.002821415750582923
+    },
+    {
+      "name": "liquidity_0.1",
+      "parameters": {
+        "r": 0.08,
+        "delta": 0.02,
+        "sigma": 0.23,
+        "alpha": 0.6,
+        "tax": 0.27,
+        "liquidity": 0.1,
+        "maturity": 1.0,
+        "coupon": 6.39,
+        "principal": 61.68
+      },
+      "boundary": 88.24615079685395,
+      "state_count": 18006,
+      "gradient_state_count": 2803,
+      "patch": {
+        "epsilon": 0.0046,
+        "epsilon_scaled": 0.02,
+        "value": 0.9810119465327823,
+        "derivative": -4.115350644637681,
+        "A": 0.03803354743631964,
+        "B": -0.019045493969101983,
+        "monotonicity_ratio": 0.9969749136222155
+      },
+      "financial_parameters_trainable": false,
+      "table_nodes": 4097,
+      "table_numeric_bytes_float32": 131128,
+      "precision": {
+        "float64": {
+          "value_abs_error_q_a": [
+            6.09350903069128e-10,
+            7.457202474324365e-09
+          ],
+          "gradient_scaled_error_q_a": [
+            1.0189340364785693e-06,
+            4.895298624279758e-05
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 1.7768648233329465e-08,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              1.9781788316224336e-21
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -2.9266383452008265e-101
+            ],
+            [
+              9.508386823369608e-09,
+              -3.956357587587032e-11
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              9.508386823369608e-09,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        },
+        "float32": {
+          "value_abs_error_q_a": [
+            8.543343599232145e-08,
+            1.4717329821500869e-07
+          ],
+          "gradient_scaled_error_q_a": [
+            8.862154096844765e-06,
+            4.895298793862574e-05
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 8.47354531288147e-05,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              1.978179210855516e-21
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              9.508401177527048e-09,
+              -3.956358504697555e-11
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              9.508401177527048e-09,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        }
+      },
+      "intentional_risk_probability_patch_max_bias": 0.002821415750582923
+    },
+    {
+      "name": "maturity_0.01",
+      "parameters": {
+        "r": 0.08,
+        "delta": 0.02,
+        "sigma": 0.23,
+        "alpha": 0.6,
+        "tax": 0.27,
+        "liquidity": 0.01,
+        "maturity": 0.01,
+        "coupon": 6.39,
+        "principal": 61.68
+      },
+      "boundary": 97.36897340307344,
+      "state_count": 18006,
+      "gradient_state_count": 2803,
+      "patch": {
+        "epsilon": 0.00046000000000000007,
+        "epsilon_scaled": 0.02,
+        "value": 0.9837546754772355,
+        "derivative": -35.30099781909526,
+        "A": 0.03249751457150969,
+        "B": -0.016252190048745188,
+        "monotonicity_ratio": 0.9995773844978557
+      },
+      "financial_parameters_trainable": false,
+      "table_nodes": 4097,
+      "table_numeric_bytes_float32": 131128,
+      "precision": {
+        "float64": {
+          "value_abs_error_q_a": [
+            5.829192128992133e-10,
+            5.11481477199405e-09
+          ],
+          "gradient_scaled_error_q_a": [
+            9.496378900464286e-07,
+            2.211777995570208e-05
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 1.4505269610443072e-08,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.9999999998970922
+            ],
+            [
+              0.5,
+              5.065359471051697e-22
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -2.3664087494089507e-12
+            ],
+            [
+              8.124378612404568e-09,
+              -1.0130718823549345e-11
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              8.124378612404568e-09,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        },
+        "float32": {
+          "value_abs_error_q_a": [
+            7.57830939113191e-08,
+            1.7145373654159357e-07
+          ],
+          "gradient_scaled_error_q_a": [
+            8.46618425109913e-06,
+            2.2117775492399658e-05
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 6.917119026184082e-05,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              5.065360943184136e-22
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -2.366338245143873e-12
+            ],
+            [
+              8.124365180606219e-09,
+              -1.0130719180212466e-11
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              8.124365180606219e-09,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        }
+      },
+      "intentional_risk_probability_patch_max_bias": 0.002407574530466139
+    },
+    {
+      "name": "maturity_0.1",
+      "parameters": {
+        "r": 0.08,
+        "delta": 0.02,
+        "sigma": 0.23,
+        "alpha": 0.6,
+        "tax": 0.27,
+        "liquidity": 0.01,
+        "maturity": 0.1,
+        "coupon": 6.39,
+        "principal": 61.68
+      },
+      "boundary": 87.50774435439956,
+      "state_count": 18006,
+      "gradient_state_count": 2803,
+      "patch": {
+        "epsilon": 0.0014546477236774547,
+        "epsilon_scaled": 0.02,
+        "value": 0.9831194151217815,
+        "derivative": -11.59242394108704,
+        "A": 0.033778861536849294,
+        "B": -0.016898276658630768,
+        "monotonicity_ratio": 0.9989519450575989
+      },
+      "financial_parameters_trainable": false,
+      "table_nodes": 4097,
+      "table_numeric_bytes_float32": 131128,
+      "precision": {
+        "float64": {
+          "value_abs_error_q_a": [
+            5.855581575175961e-10,
+            1.0604174855431493e-08
+          ],
+          "gradient_scaled_error_q_a": [
+            9.628746170942115e-07,
+            5.577188614234554e-05
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 1.543140706883328e-08,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              1.6235945889369352e-21
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -1.9015419995467656e-33
+            ],
+            [
+              8.444715352528057e-09,
+              -3.247189130666227e-11
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              8.444715352528057e-09,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        },
+        "float32": {
+          "value_abs_error_q_a": [
+            9.454200067260388e-08,
+            1.579550665820051e-07
+          ],
+          "gradient_scaled_error_q_a": [
+            8.431702410438557e-06,
+            5.5771899746203844e-05
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 7.359683513641357e-05,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              1.6235938827540082e-21
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -1.9014355808519764e-33
+            ],
+            [
+              8.444704491239463e-09,
+              -3.247187935206952e-11
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              8.444704491239463e-09,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        }
+      },
+      "intentional_risk_probability_patch_max_bias": 0.0025032927289897478
+    },
+    {
+      "name": "maturity_5",
+      "parameters": {
+        "r": 0.08,
+        "delta": 0.02,
+        "sigma": 0.23,
+        "alpha": 0.6,
+        "tax": 0.27,
+        "liquidity": 0.01,
+        "maturity": 5.0,
+        "coupon": 6.39,
+        "principal": 61.68
+      },
+      "boundary": 51.67407338423814,
+      "state_count": 18006,
+      "gradient_state_count": 2803,
+      "patch": {
+        "epsilon": 0.010285912696499033,
+        "epsilon_scaled": 0.02,
+        "value": 0.9768298906970663,
+        "derivative": -2.237748334603819,
+        "A": 0.046493043902330194,
+        "B": -0.023322934599396467,
+        "monotonicity_ratio": 0.9934042047681066
+      },
+      "financial_parameters_trainable": false,
+      "table_nodes": 4097,
+      "table_numeric_bytes_float32": 131128,
+      "precision": {
+        "float64": {
+          "value_abs_error_q_a": [
+            7.386382616658693e-10,
+            3.287351498867053e-08
+          ],
+          "gradient_scaled_error_q_a": [
+            1.2362259832476852e-06,
+            0.0002900613021061813
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 2.204749244283377e-08,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              1.4177511119785083e-20
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -2.289175009456331e-224
+            ],
+            [
+              1.1623260931852043e-08,
+              -2.835502154860756e-10
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              1.1623260931852043e-08,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        },
+        "float32": {
+          "value_abs_error_q_a": [
+            7.052722250655563e-08,
+            1.33569999172245e-07
+          ],
+          "gradient_scaled_error_q_a": [
+            8.816303205705367e-06,
+            0.0002900612726896713
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 0.00010512024164199829,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              1.417751219205377e-20
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              1.162326324077867e-08,
+              -2.835502665998746e-10
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              1.162326324077867e-08,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        }
+      },
+      "intentional_risk_probability_patch_max_bias": 0.0034551996805051166
+    },
+    {
+      "name": "maturity_20",
+      "parameters": {
+        "r": 0.08,
+        "delta": 0.02,
+        "sigma": 0.23,
+        "alpha": 0.6,
+        "tax": 0.27,
+        "liquidity": 0.01,
+        "maturity": 20.0,
+        "coupon": 6.39,
+        "principal": 61.68
+      },
+      "boundary": 44.107877595815,
+      "state_count": 18006,
+      "gradient_state_count": 2803,
+      "patch": {
+        "epsilon": 0.020571825392998067,
+        "epsilon_scaled": 0.02,
+        "value": 0.9681337758054722,
+        "derivative": -1.5288180139727174,
+        "A": 0.06414809534246652,
+        "B": -0.03228187114793874,
+        "monotonicity_ratio": 0.9869565044520606
+      },
+      "financial_parameters_trainable": false,
+      "table_nodes": 4097,
+      "table_numeric_bytes_float32": 131128,
+      "precision": {
+        "float64": {
+          "value_abs_error_q_a": [
+            1.4572370532484058e-09,
+            5.1995949968452855e-08
+          ],
+          "gradient_scaled_error_q_a": [
+            2.1730172342637744e-06,
+            0.0004900883610971071
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 3.0789718857837656e-08,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              3.77049580478748e-20
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              1.6037023775088123e-08,
+              -7.540991372217636e-10
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              1.6037023775088123e-08,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        },
+        "float32": {
+          "value_abs_error_q_a": [
+            8.175223420447963e-08,
+            1.3249417796235008e-07
+          ],
+          "gradient_scaled_error_q_a": [
+            7.884107154021436e-06,
+            0.000490088109155989
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 0.00014681369066238403,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              3.770495057817558e-20
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              1.603704546937479e-08,
+              -7.540990054621943e-10
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              1.603704546937479e-08,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        }
+      },
+      "intentional_risk_probability_patch_max_bias": 0.004782910439757204
+    },
+    {
+      "name": "sigma_0.08",
+      "parameters": {
+        "r": 0.08,
+        "delta": 0.02,
+        "sigma": 0.08,
+        "alpha": 0.6,
+        "tax": 0.27,
+        "liquidity": 0.01,
+        "maturity": 1.0,
+        "coupon": 6.39,
+        "principal": 61.68
+      },
+      "boundary": 61.058298775258486,
+      "state_count": 18006,
+      "gradient_state_count": 2803,
+      "patch": {
+        "epsilon": 0.0016,
+        "epsilon_scaled": 0.02,
+        "value": 0.9664603316716553,
+        "derivative": -20.665018249586197,
+        "A": 0.06755497578569604,
+        "B": -0.03401530745735139,
+        "monotonicity_ratio": 0.9858186096430546
+      },
+      "financial_parameters_trainable": false,
+      "table_nodes": 4097,
+      "table_numeric_bytes_float32": 131128,
+      "precision": {
+        "float64": {
+          "value_abs_error_q_a": [
+            1.6779361233787426e-09,
+            4.387070801912988e-08
+          ],
+          "gradient_scaled_error_q_a": [
+            2.4334409861603845e-06,
+            0.0002557217278260338
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 3.0901391417925694e-08,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              6.998613829661774e-21
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -1.4528330041450206e-36
+            ],
+            [
+              1.688874388264531e-08,
+              -1.3997227451574493e-10
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              1.688874388264531e-08,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        },
+        "float32": {
+          "value_abs_error_q_a": [
+            7.295624937508904e-08,
+            1.484302531995496e-07
+          ],
+          "gradient_scaled_error_q_a": [
+            8.85435316122507e-06,
+            0.0002557216599523586
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 0.00014737248420715332,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              6.998614411891345e-21
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -1.4529031972498777e-36
+            ],
+            [
+              1.6888730414166275e-08,
+              -1.3997226988582412e-10
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              1.6888730414166275e-08,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        }
+      },
+      "intentional_risk_probability_patch_max_bias": 0.0050398526822543754
+    },
+    {
+      "name": "sigma_0.8",
+      "parameters": {
+        "r": 0.08,
+        "delta": 0.02,
+        "sigma": 0.8,
+        "alpha": 0.6,
+        "tax": 0.27,
+        "liquidity": 0.01,
+        "maturity": 1.0,
+        "coupon": 6.39,
+        "principal": 61.68
+      },
+      "boundary": 48.02294574794188,
+      "state_count": 18006,
+      "gradient_state_count": 2803,
+      "patch": {
+        "epsilon": 0.016,
+        "epsilon_scaled": 0.02,
+        "value": 0.9896407032065498,
+        "derivative": -0.6515466852945482,
+        "A": 0.020653143415637697,
+        "B": -0.010293846622187542,
+        "monotonicity_ratio": 1.0063180129469789
+      },
+      "financial_parameters_trainable": false,
+      "table_nodes": 4097,
+      "table_numeric_bytes_float32": 131128,
+      "precision": {
+        "float64": {
+          "value_abs_error_q_a": [
+            6.247253825364396e-10,
+            1.9298782201130696e-08
+          ],
+          "gradient_scaled_error_q_a": [
+            9.450679516742611e-07,
+            0.00018534146856017113
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 9.874469793919038e-09,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              1.1427383047514978e-20
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              5.163285834608462e-09,
+              -2.2854765443485392e-10
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              5.163285834608462e-09,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        },
+        "float32": {
+          "value_abs_error_q_a": [
+            7.936283463738647e-08,
+            1.8084124064898788e-07
+          ],
+          "gradient_scaled_error_q_a": [
+            1.0113011065959743e-05,
+            0.00018534158826738565
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 4.708580672740936e-05,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              1.1427382224559303e-20
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              5.163278249398218e-09,
+              -2.285476252694707e-10
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              5.163278249398218e-09,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        }
+      },
+      "intentional_risk_probability_patch_max_bias": 0.0015249058360250478
+    },
+    {
+      "name": "delta_0.2",
+      "parameters": {
+        "r": 0.08,
+        "delta": 0.2,
+        "sigma": 0.23,
+        "alpha": 0.6,
+        "tax": 0.27,
+        "liquidity": 0.01,
+        "maturity": 1.0,
+        "coupon": 6.39,
+        "principal": 61.68
+      },
+      "boundary": 71.53288372751604,
+      "state_count": 18006,
+      "gradient_state_count": 2803,
+      "patch": {
+        "epsilon": 0.0046,
+        "epsilon_scaled": 0.02,
+        "value": 0.9935664816907175,
+        "derivative": -1.4160948334775851,
+        "A": 0.012786518693850654,
+        "B": -0.00635300038456814,
+        "monotonicity_ratio": 1.0125153797414708
+      },
+      "financial_parameters_trainable": false,
+      "table_nodes": 4097,
+      "table_numeric_bytes_float32": 131128,
+      "precision": {
+        "float64": {
+          "value_abs_error_q_a": [
+            6.551222897499542e-10,
+            7.2136386585219976e-09
+          ],
+          "gradient_scaled_error_q_a": [
+            9.79218597318976e-07,
+            4.73541647927249e-05
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 5.9769224639016905e-09,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              1.913193934451964e-21
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -3.0547317253937345e-101
+            ],
+            [
+              3.1966296615507884e-09,
+              -3.826387795738712e-11
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              3.1966296615507884e-09,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        },
+        "float32": {
+          "value_abs_error_q_a": [
+            7.802363111153454e-08,
+            1.5763603944396465e-07
+          ],
+          "gradient_scaled_error_q_a": [
+            7.99768011683355e-06,
+            4.735416213019628e-05
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 2.8504058718681335e-05,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              1.9131940359302105e-21
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              3.196650943948498e-09,
+              -3.8263881646516396e-11
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              3.196650943948498e-09,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        }
+      },
+      "intentional_risk_probability_patch_max_bias": 0.0009411559888375942
+    },
+    {
+      "name": "recovery_0",
+      "parameters": {
+        "r": 0.08,
+        "delta": 0.02,
+        "sigma": 0.23,
+        "alpha": 0.0,
+        "tax": 0.27,
+        "liquidity": 0.01,
+        "maturity": 1.0,
+        "coupon": 6.39,
+        "principal": 61.68
+      },
+      "boundary": 128.73759369067312,
+      "state_count": 18006,
+      "gradient_state_count": 2803,
+      "patch": {
+        "epsilon": 0.0046,
+        "epsilon_scaled": 0.02,
+        "value": 0.9810119465327823,
+        "derivative": -4.115350644637681,
+        "A": 0.03803354743631964,
+        "B": -0.019045493969101983,
+        "monotonicity_ratio": 0.9969749136222155
+      },
+      "financial_parameters_trainable": false,
+      "table_nodes": 4097,
+      "table_numeric_bytes_float32": 131128,
+      "precision": {
+        "float64": {
+          "value_abs_error_q_a": [
+            6.09350903069128e-10,
+            2.801005552340025e-08
+          ],
+          "gradient_scaled_error_q_a": [
+            1.0189340364785693e-06,
+            0.0001838727039152481
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 1.7768648233329465e-08,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              7.432658031413955e-21
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -3.1267989071502916e-101
+            ],
+            [
+              9.508386823369608e-09,
+              -1.4865315778510915e-10
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              9.508386823369608e-09,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        },
+        "float32": {
+          "value_abs_error_q_a": [
+            8.543343599232145e-08,
+            1.4111029666974417e-07
+          ],
+          "gradient_scaled_error_q_a": [
+            8.862154096844765e-06,
+            0.0001838727270291298
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 8.47354531288147e-05,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              7.432658859076506e-21
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              9.508401177527048e-09,
+              -1.4865317310430726e-10
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              9.508401177527048e-09,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        }
+      },
+      "intentional_risk_probability_patch_max_bias": 0.002821415750582923
+    },
+    {
+      "name": "recovery_1",
+      "parameters": {
+        "r": 0.08,
+        "delta": 0.02,
+        "sigma": 0.23,
+        "alpha": 1.0,
+        "tax": 0.27,
+        "liquidity": 0.01,
+        "maturity": 1.0,
+        "coupon": 6.39,
+        "principal": 61.68
+      },
+      "boundary": 51.19206456188003,
+      "state_count": 18006,
+      "gradient_state_count": 2803,
+      "patch": {
+        "epsilon": 0.0046,
+        "epsilon_scaled": 0.02,
+        "value": 0.9810119465327823,
+        "derivative": -4.115350644637681,
+        "A": 0.03803354743631964,
+        "B": -0.019045493969101983,
+        "monotonicity_ratio": 0.9969749136222155
+      },
+      "financial_parameters_trainable": false,
+      "table_nodes": 4097,
+      "table_numeric_bytes_float32": 131128,
+      "precision": {
+        "float64": {
+          "value_abs_error_q_a": [
+            6.09350903069128e-10,
+            1.5607823522903094e-08
+          ],
+          "gradient_scaled_error_q_a": [
+            1.0189340364785693e-06,
+            0.00010245796217986982
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 1.7768648233329465e-08,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              4.141408710119277e-21
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -2.998452400891684e-101
+            ],
+            [
+              9.508386823369608e-09,
+              -8.282817261824226e-11
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              9.508386823369608e-09,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        },
+        "float32": {
+          "value_abs_error_q_a": [
+            8.543343599232145e-08,
+            1.4242598056490863e-07
+          ],
+          "gradient_scaled_error_q_a": [
+            8.862154096844765e-06,
+            0.00010245792363804254
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 8.47354531288147e-05,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              4.1414081759238775e-21
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              9.508401177527048e-09,
+              -8.282816793547809e-11
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              9.508401177527048e-09,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        }
+      },
+      "intentional_risk_probability_patch_max_bias": 0.002821415750582923
+    },
+    {
+      "name": "tax_0",
+      "parameters": {
+        "r": 0.08,
+        "delta": 0.02,
+        "sigma": 0.23,
+        "alpha": 0.6,
+        "tax": 0.0,
+        "liquidity": 0.01,
+        "maturity": 1.0,
+        "coupon": 6.39,
+        "principal": 61.68
+      },
+      "boundary": 75.49788070635663,
+      "state_count": 18006,
+      "gradient_state_count": 2803,
+      "patch": {
+        "epsilon": 0.0046,
+        "epsilon_scaled": 0.02,
+        "value": 0.9810119465327823,
+        "derivative": -4.115350644637681,
+        "A": 0.03803354743631964,
+        "B": -0.019045493969101983,
+        "monotonicity_ratio": 0.9969749136222155
+      },
+      "financial_parameters_trainable": false,
+      "table_nodes": 4097,
+      "table_numeric_bytes_float32": 131128,
+      "precision": {
+        "float64": {
+          "value_abs_error_q_a": [
+            6.09350903069128e-10,
+            1.592562796175762e-08
+          ],
+          "gradient_scaled_error_q_a": [
+            1.0189340364785693e-06,
+            0.0001045441942357098
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 1.7768648233329465e-08,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              4.225726920412859e-21
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -3.002434152925292e-101
+            ],
+            [
+              9.508386823369608e-09,
+              -8.451453679186272e-11
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              9.508386823369608e-09,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        },
+        "float32": {
+          "value_abs_error_q_a": [
+            8.543343599232145e-08,
+            1.4557712701979142e-07
+          ],
+          "gradient_scaled_error_q_a": [
+            8.862154096844765e-06,
+            0.00010454421459721221
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 8.47354531288147e-05,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              4.225727284028868e-21
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              9.508401177527048e-09,
+              -8.451454119873247e-11
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              9.508401177527048e-09,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        }
+      },
+      "intentional_risk_probability_patch_max_bias": 0.002821415750582923
+    },
+    {
+      "name": "tax_0.6",
+      "parameters": {
+        "r": 0.08,
+        "delta": 0.02,
+        "sigma": 0.23,
+        "alpha": 0.6,
+        "tax": 0.6,
+        "liquidity": 0.01,
+        "maturity": 1.0,
+        "coupon": 6.39,
+        "principal": 61.68
+      },
+      "boundary": 57.5948466713502,
+      "state_count": 18006,
+      "gradient_state_count": 2803,
+      "patch": {
+        "epsilon": 0.0046,
+        "epsilon_scaled": 0.02,
+        "value": 0.9810119465327823,
+        "derivative": -4.115350644637681,
+        "A": 0.03803354743631964,
+        "B": -0.019045493969101983,
+        "monotonicity_ratio": 0.9969749136222155
+      },
+      "financial_parameters_trainable": false,
+      "table_nodes": 4097,
+      "table_numeric_bytes_float32": 131128,
+      "precision": {
+        "float64": {
+          "value_abs_error_q_a": [
+            6.09350903069128e-10,
+            2.800760823101572e-08
+          ],
+          "gradient_scaled_error_q_a": [
+            1.0189340364785693e-06,
+            0.0001838566447956143
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 1.7768648233329465e-08,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              7.432039589983448e-21
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -3.125507215966924e-101
+            ],
+            [
+              9.508386823369608e-09,
+              -1.4864078895672961e-10
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              9.508386823369608e-09,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        },
+        "float32": {
+          "value_abs_error_q_a": [
+            8.543343599232145e-08,
+            1.2340853983161537e-07
+          ],
+          "gradient_scaled_error_q_a": [
+            8.862154096844765e-06,
+            0.00018385658348649494
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 8.47354531288147e-05,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              7.432040089204225e-21
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              9.508401177527048e-09,
+              -1.4864079411758269e-10
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              9.508401177527048e-09,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        }
+      },
+      "intentional_risk_probability_patch_max_bias": 0.002821415750582923
+    },
+    {
+      "name": "lower_liquidity_limit",
+      "parameters": {
+        "r": 0.08,
+        "delta": 0.02,
+        "sigma": 0.23,
+        "alpha": 0.6,
+        "tax": 0.27,
+        "liquidity": 0.0001,
+        "maturity": 1.0,
+        "coupon": 6.39,
+        "principal": 61.68
+      },
+      "boundary": 65.07241643960145,
+      "state_count": 18006,
+      "gradient_state_count": 2803,
+      "patch": {
+        "epsilon": 0.0046,
+        "epsilon_scaled": 0.02,
+        "value": 0.9810119465327823,
+        "derivative": -4.115350644637681,
+        "A": 0.03803354743631964,
+        "B": -0.019045493969101983,
+        "monotonicity_ratio": 0.9969749136222155
+      },
+      "financial_parameters_trainable": false,
+      "table_nodes": 4097,
+      "table_numeric_bytes_float32": 131128,
+      "precision": {
+        "float64": {
+          "value_abs_error_q_a": [
+            6.09350903069128e-10,
+            2.2593354513228707e-08
+          ],
+          "gradient_scaled_error_q_a": [
+            1.0189340364785693e-06,
+            0.0001483179813009999
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 1.7768648233329465e-08,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              5.99522908534939e-21
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -3.068880327642719e-101
+            ],
+            [
+              9.508386823369608e-09,
+              -1.1990457941369206e-10
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              9.508386823369608e-09,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        },
+        "float32": {
+          "value_abs_error_q_a": [
+            8.543343599232145e-08,
+            1.4863930486441745e-07
+          ],
+          "gradient_scaled_error_q_a": [
+            8.862154096844765e-06,
+            0.0001483179611984982
+          ],
+          "min": 0.0,
+          "max": 1.0,
+          "near_knot_gradient_variation": 8.47354531288147e-05,
+          "boundary_value": [
+            0.5,
+            0.0
+          ],
+          "boundary_derivative": [
+            -0.0,
+            0.0
+          ],
+          "stress_values": [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.5,
+              5.995230192477101e-21
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "stress_derivatives": [
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              0.0,
+              -0.0
+            ],
+            [
+              9.508401177527048e-09,
+              -1.199046140154536e-10
+            ],
+            [
+              -0.0,
+              0.0
+            ],
+            [
+              9.508401177527048e-09,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "passed": true
+        }
+      },
+      "intentional_risk_probability_patch_max_bias": 0.002821415750582923
+    }
+  ],
+  "jax": "0.4.38",
+  "original_raw_financial_float32_failure_preserved": true,
+  "implementation_fixes": [
+    "Replaced clip/min at selected exact joins: their half-derivative convention incorrectly halved a C1 composite slope. Explicit identity branches preserve the true selected derivative.",
+    "Runtime uses shared node values and slopes in an incremental Hermite basis, preserving the endpoint construction after coefficient casting.",
+    "Incremental Hermite basis avoids cancellation between O(1) basis derivatives for adjacent risk values near one."
+  ],
+  "baseline_table": {
+    "financial_parameters": {
+      "r": 0.08,
+      "delta": 0.02,
+      "sigma": 0.23,
+      "alpha": 0.6,
+      "tax": 0.27,
+      "liquidity": 0.01,
+      "maturity": 1.0,
+      "coupon": 6.39,
+      "principal": 61.68
+    },
+    "fixed_parameters": true,
+    "file": "baseline_table.npz",
+    "sha256": "c77e407162061c06a9a34c5822b8751ebb2a71b1a5ff2a584c60e6b6ec63e764",
+    "numeric_bytes": 262256
+  },
+  "bptt": [
+    {
+      "dtype": "float64",
+      "loss": 0.05804945708062188,
+      "gradient": [
+        -0.056135003951963025,
+        0.03819913337422291,
+        -0.0958157249409727,
+        0.06726344228460539,
+        -0.17033989275635855
+      ],
+      "finite_difference": [
+        -0.056135003742921456,
+        0.03819913334014713,
+        -0.09581572495698241,
+        0.06726344229587844,
+        -0.17033989275667957
+      ],
+      "max_abs_error": 2.0904156877721292e-10,
+      "passed": true
+    },
+    {
+      "dtype": "float32",
+      "loss": 0.058049459010362625,
+      "gradient": [
+        -0.05613522231578827,
+        0.03819911554455757,
+        -0.09581565856933594,
+        0.06726333498954773,
+        -0.1703399121761322
+      ],
+      "finite_difference": [
+        -0.05620718002319336,
+        0.0382130965590477,
+        -0.09580608457326889,
+        0.06725452840328217,
+        -0.17033983021974564
+      ],
+      "max_abs_error": 7.195770740509033e-05,
+      "passed": true
+    }
+  ],
+  "all_declared_checks_passed": true,
+  "source_sha256": {
+    "validate_kernel.py": "8b315db1a051ec9015826b28a2c68f8bee37bd2064e6d0ba8410e14594be56de",
+    "kernel.py": "8b3142a4122c75b871f8969fd43a956780392b162ac99f4ac0d8a5a81bc50110",
+    "__init__.py": "ebb6e03110e823bf4366537c150e3a67d1adcbd79bb8bd98b0b98473ad85c0e8",
+    "tables.py": "09f537dae9c93566ad744b4097ab0405b7a95044e4b906360a5ab2e3bed1ff71",
+    "check_joins.py": "85f273963b801e7e11519750f130f1a17c75366d26e03f3a9368dc3ec542cd5a"
+  },
+  "elapsed_seconds": 9.236034071000176,
+  "metadata_corrections": [
+    "The danger-extension prose now explicitly includes s=sigma*sqrt(maturity). The executable normalized coordinate was already implemented this way in every reported run; no values or scores were changed."
+  ]
+}

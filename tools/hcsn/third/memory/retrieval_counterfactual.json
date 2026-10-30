@@ -1,0 +1,461 @@
+{
+  "originals_reproduced": true,
+  "rows": [
+    {
+      "seed": 11,
+      "trained_variant": "full_fixed",
+      "split": "diagnostic128",
+      "checkpoint_sha256": "66ccb91139e247e6136ad86ed97feec2331ca8a8451ee172ed251b77be1103d7",
+      "metrics_by_read": {
+        "fixed": {
+          "accuracy": 1.0,
+          "loss": 0.003372054922259277,
+          "brier": 2.9795426335185144e-05,
+          "ece": 0.003362434839100148
+        },
+        "mass": {
+          "accuracy": 1.0,
+          "loss": 5.208688014815146e-05,
+          "brier": 8.26904088497074e-09,
+          "ece": 5.20842423509249e-05
+        }
+      },
+      "diagnostics_by_read": {
+        "fixed": {
+          "maximum_condition": 4.805758071672157,
+          "maximum_relative_residual": 2.147386845543839e-16,
+          "maximum_read": 0.6947072148323059,
+          "maximum_write_mass": 5.623117509081404
+        },
+        "mass": {
+          "maximum_condition": 24.329882771597084,
+          "maximum_relative_residual": 2.1758166656353676e-16,
+          "maximum_read": 1.329138159751892,
+          "maximum_write_mass": 5.623117509081404
+        }
+      },
+      "original_metric_maximum_error": 2.1380877207599625e-09,
+      "original_reproduced": true
+    },
+    {
+      "seed": 11,
+      "trained_variant": "full_fixed",
+      "split": "diagnostic512",
+      "checkpoint_sha256": "66ccb91139e247e6136ad86ed97feec2331ca8a8451ee172ed251b77be1103d7",
+      "metrics_by_read": {
+        "fixed": {
+          "accuracy": 1.0,
+          "loss": 0.07849684779900241,
+          "brier": 0.012326952744452072,
+          "ece": 0.07378774261892353
+        },
+        "mass": {
+          "accuracy": 1.0,
+          "loss": 0.00012881323697971735,
+          "brier": 8.453588412954634e-08,
+          "ece": 0.00012878787036707529
+        }
+      },
+      "diagnostics_by_read": {
+        "fixed": {
+          "maximum_condition": 3.641808557316663,
+          "maximum_relative_residual": 2.0983422729785718e-16,
+          "maximum_read": 0.5783113837242126,
+          "maximum_write_mass": 17.449129122309955
+        },
+        "mass": {
+          "maximum_condition": 47.67728055472531,
+          "maximum_relative_residual": 2.257540086895023e-16,
+          "maximum_read": 1.364200234413147,
+          "maximum_write_mass": 17.449129122309955
+        }
+      },
+      "original_metric_maximum_error": 3.2057202073443314e-08,
+      "original_reproduced": true
+    },
+    {
+      "seed": 11,
+      "trained_variant": "full_mass",
+      "split": "diagnostic128",
+      "checkpoint_sha256": "0a0b712656a07ff43300551d3dbe8ad3b064b55d0bde43102080cd2091fa969d",
+      "metrics_by_read": {
+        "fixed": {
+          "accuracy": 0.6640625,
+          "loss": 0.7596425115995592,
+          "brier": 0.4310122170301375,
+          "ece": 0.06245469031592053
+        },
+        "mass": {
+          "accuracy": 1.0,
+          "loss": 0.0012052700690236419,
+          "brier": 6.444368450970778e-06,
+          "ece": 0.0012032988774051123
+        }
+      },
+      "diagnostics_by_read": {
+        "fixed": {
+          "maximum_condition": 5.085177584092677,
+          "maximum_relative_residual": 1.7622602023221502e-16,
+          "maximum_read": 0.5630093812942505,
+          "maximum_write_mass": 46.201542604315875
+        },
+        "mass": {
+          "maximum_condition": 191.50948083464817,
+          "maximum_relative_residual": 2.5452943577645367e-16,
+          "maximum_read": 1.5934194326400757,
+          "maximum_write_mass": 46.201542604315875
+        }
+      },
+      "original_metric_maximum_error": 2.0167290593585407e-09,
+      "original_reproduced": true
+    },
+    {
+      "seed": 11,
+      "trained_variant": "full_mass",
+      "split": "diagnostic512",
+      "checkpoint_sha256": "0a0b712656a07ff43300551d3dbe8ad3b064b55d0bde43102080cd2091fa969d",
+      "metrics_by_read": {
+        "fixed": {
+          "accuracy": 0.271484375,
+          "loss": 1.628299198743534,
+          "brier": 0.8965525008187867,
+          "ece": 0.37401543226491674
+        },
+        "mass": {
+          "accuracy": 0.943359375,
+          "loss": 0.15137941673625754,
+          "brier": 0.0856598974241749,
+          "ece": 0.0315291517342736
+        }
+      },
+      "diagnostics_by_read": {
+        "fixed": {
+          "maximum_condition": 4.837092248009484,
+          "maximum_relative_residual": 1.7087262204408112e-16,
+          "maximum_read": 0.51016765832901,
+          "maximum_write_mass": 182.294622636815
+        },
+        "mass": {
+          "maximum_condition": 701.9303225892463,
+          "maximum_relative_residual": 2.6692753308459896e-16,
+          "maximum_read": 1.3529423475265503,
+          "maximum_write_mass": 182.294622636815
+        }
+      },
+      "original_metric_maximum_error": 2.3166791021586586e-06,
+      "original_reproduced": true
+    },
+    {
+      "seed": 29,
+      "trained_variant": "full_fixed",
+      "split": "diagnostic128",
+      "checkpoint_sha256": "8d6aaea42ece748bb443e21ec843f535f5f5f59185adf9dc809aa8a6ad7a5d2e",
+      "metrics_by_read": {
+        "fixed": {
+          "accuracy": 1.0,
+          "loss": 0.0019141834681443582,
+          "brier": 9.56833977608191e-06,
+          "ece": 0.0019111788780075134
+        },
+        "mass": {
+          "accuracy": 1.0,
+          "loss": 8.90559312661586e-05,
+          "brier": 1.8506178916992837e-08,
+          "ece": 8.904972644019349e-05
+        }
+      },
+      "diagnostics_by_read": {
+        "fixed": {
+          "maximum_condition": 6.7481859103239605,
+          "maximum_relative_residual": 2.129755835025207e-16,
+          "maximum_read": 0.8419421911239624,
+          "maximum_write_mass": 4.147754326073836
+        },
+        "mass": {
+          "maximum_condition": 27.936559392070098,
+          "maximum_relative_residual": 2.0977747513864897e-16,
+          "maximum_read": 1.1135761737823486,
+          "maximum_write_mass": 4.147754326073836
+        }
+      },
+      "original_metric_maximum_error": 7.637559716611175e-10,
+      "original_reproduced": true
+    },
+    {
+      "seed": 29,
+      "trained_variant": "full_fixed",
+      "split": "diagnostic512",
+      "checkpoint_sha256": "8d6aaea42ece748bb443e21ec843f535f5f5f59185adf9dc809aa8a6ad7a5d2e",
+      "metrics_by_read": {
+        "fixed": {
+          "accuracy": 1.0,
+          "loss": 0.030309803901438236,
+          "brier": 0.002307375064296521,
+          "ece": 0.029533113728204833
+        },
+        "mass": {
+          "accuracy": 1.0,
+          "loss": 0.00017109787147542296,
+          "brier": 1.201667027479547e-07,
+          "ece": 0.00017106154771395765
+        }
+      },
+      "diagnostics_by_read": {
+        "fixed": {
+          "maximum_condition": 3.9297470370207948,
+          "maximum_relative_residual": 2.2460337932110436e-16,
+          "maximum_read": 0.6644764542579651,
+          "maximum_write_mass": 11.42224884456877
+        },
+        "mass": {
+          "maximum_condition": 35.76118914201122,
+          "maximum_relative_residual": 2.4321439978465346e-16,
+          "maximum_read": 1.0258272886276245,
+          "maximum_write_mass": 11.42224884456877
+        }
+      },
+      "original_metric_maximum_error": 1.0523244088622707e-08,
+      "original_reproduced": true
+    },
+    {
+      "seed": 29,
+      "trained_variant": "full_mass",
+      "split": "diagnostic128",
+      "checkpoint_sha256": "3927276ecae8097b91073ac2f03e868c78dfbf21fa0ddb952207635260ee5bac",
+      "metrics_by_read": {
+        "fixed": {
+          "accuracy": 0.876953125,
+          "loss": 0.5522479470030786,
+          "brier": 0.2687304359161916,
+          "ece": 0.24101265410954226
+        },
+        "mass": {
+          "accuracy": 1.0,
+          "loss": 0.0013237203205078295,
+          "brier": 5.49978710323201e-06,
+          "ece": 0.001322018187416396
+        }
+      },
+      "diagnostics_by_read": {
+        "fixed": {
+          "maximum_condition": 4.299659845027556,
+          "maximum_relative_residual": 2.066060965509242e-16,
+          "maximum_read": 0.7388485670089722,
+          "maximum_write_mass": 46.7576409916372
+        },
+        "mass": {
+          "maximum_condition": 157.722710945064,
+          "maximum_relative_residual": 3.615089258794819e-16,
+          "maximum_read": 1.6206985712051392,
+          "maximum_write_mass": 46.7576409916372
+        }
+      },
+      "original_metric_maximum_error": 2.6649647180861102e-09,
+      "original_reproduced": true
+    },
+    {
+      "seed": 29,
+      "trained_variant": "full_mass",
+      "split": "diagnostic512",
+      "checkpoint_sha256": "3927276ecae8097b91073ac2f03e868c78dfbf21fa0ddb952207635260ee5bac",
+      "metrics_by_read": {
+        "fixed": {
+          "accuracy": 0.51171875,
+          "loss": 1.2080551931664698,
+          "brier": 0.6342963950509777,
+          "ece": 0.1113253942823612
+        },
+        "mass": {
+          "accuracy": 0.98828125,
+          "loss": 0.06886672376247446,
+          "brier": 0.025368739617227555,
+          "ece": 0.04432317233318521
+        }
+      },
+      "diagnostics_by_read": {
+        "fixed": {
+          "maximum_condition": 3.946429563365622,
+          "maximum_relative_residual": 2.1459766557858708e-16,
+          "maximum_read": 0.6634508967399597,
+          "maximum_write_mass": 184.21798688638043
+        },
+        "mass": {
+          "maximum_condition": 543.1475925095168,
+          "maximum_relative_residual": 3.095782815302859e-16,
+          "maximum_read": 1.5028630495071411,
+          "maximum_write_mass": 184.21798688638043
+        }
+      },
+      "original_metric_maximum_error": 8.151777398657245e-07,
+      "original_reproduced": true
+    },
+    {
+      "seed": 47,
+      "trained_variant": "full_fixed",
+      "split": "diagnostic128",
+      "checkpoint_sha256": "de78798b3aee2879b44814eaf13441ed0720ba3d94af2c5965bd142e7378e83c",
+      "metrics_by_read": {
+        "fixed": {
+          "accuracy": 1.0,
+          "loss": 0.002532495437368745,
+          "brier": 1.9187590649256248e-05,
+          "ece": 0.0025264469927617217
+        },
+        "mass": {
+          "accuracy": 1.0,
+          "loss": 3.5581484985398714e-05,
+          "brier": 2.8583706884525592e-09,
+          "ece": 3.5580514294419885e-05
+        }
+      },
+      "diagnostics_by_read": {
+        "fixed": {
+          "maximum_condition": 6.641340146056635,
+          "maximum_relative_residual": 2.248251910595341e-16,
+          "maximum_read": 0.8553004860877991,
+          "maximum_write_mass": 4.816275724737037
+        },
+        "mass": {
+          "maximum_condition": 30.525162764194995,
+          "maximum_relative_residual": 2.47899312232091e-16,
+          "maximum_read": 1.118837833404541,
+          "maximum_write_mass": 4.816275724737037
+        }
+      },
+      "original_metric_maximum_error": 1.2966168030752179e-09,
+      "original_reproduced": true
+    },
+    {
+      "seed": 47,
+      "trained_variant": "full_fixed",
+      "split": "diagnostic512",
+      "checkpoint_sha256": "de78798b3aee2879b44814eaf13441ed0720ba3d94af2c5965bd142e7378e83c",
+      "metrics_by_read": {
+        "fixed": {
+          "accuracy": 0.990234375,
+          "loss": 0.10377713851997879,
+          "brier": 0.03427350790119443,
+          "ece": 0.07945226909411719
+        },
+        "mass": {
+          "accuracy": 1.0,
+          "loss": 6.357908860401282e-05,
+          "brier": 1.308110707547156e-08,
+          "ece": 6.357500236031655e-05
+        }
+      },
+      "diagnostics_by_read": {
+        "fixed": {
+          "maximum_condition": 4.17787622888996,
+          "maximum_relative_residual": 2.1030728529793472e-16,
+          "maximum_read": 0.7478032112121582,
+          "maximum_write_mass": 13.977997192945024
+        },
+        "mass": {
+          "maximum_condition": 45.39974817525639,
+          "maximum_relative_residual": 2.714780749795966e-16,
+          "maximum_read": 1.1109704971313477,
+          "maximum_write_mass": 13.977997192945024
+        }
+      },
+      "original_metric_maximum_error": 1.7351124384501482e-08,
+      "original_reproduced": true
+    },
+    {
+      "seed": 47,
+      "trained_variant": "full_mass",
+      "split": "diagnostic128",
+      "checkpoint_sha256": "72e253e75c7c0ff0d126aee07a59ea7fc1aa424980274bd26fa47b24424af578",
+      "metrics_by_read": {
+        "fixed": {
+          "accuracy": 0.5078125,
+          "loss": 1.731868321454842,
+          "brier": 0.701823113637532,
+          "ece": 0.20131408787305818
+        },
+        "mass": {
+          "accuracy": 1.0,
+          "loss": 0.0007941007384697105,
+          "brier": 2.60698560151332e-06,
+          "ece": 0.0007933212020707625
+        }
+      },
+      "diagnostics_by_read": {
+        "fixed": {
+          "maximum_condition": 3.516649152893698,
+          "maximum_relative_residual": 1.9495671487751516e-16,
+          "maximum_read": 0.8604280352592468,
+          "maximum_write_mass": 48.34429487373325
+        },
+        "mass": {
+          "maximum_condition": 124.7172978585779,
+          "maximum_relative_residual": 1.9609060976235527e-16,
+          "maximum_read": 1.6876517534255981,
+          "maximum_write_mass": 48.34429487373325
+        }
+      },
+      "original_metric_maximum_error": 3.1819397193055127e-10,
+      "original_reproduced": true
+    },
+    {
+      "seed": 47,
+      "trained_variant": "full_mass",
+      "split": "diagnostic512",
+      "checkpoint_sha256": "72e253e75c7c0ff0d126aee07a59ea7fc1aa424980274bd26fa47b24424af578",
+      "metrics_by_read": {
+        "fixed": {
+          "accuracy": 0.25390625,
+          "loss": 2.8942999090973482,
+          "brier": 1.0604179984943363,
+          "ece": 0.4872574515780184
+        },
+        "mass": {
+          "accuracy": 1.0,
+          "loss": 0.017550586492737143,
+          "brier": 0.0017003404605192983,
+          "ece": 0.01701148573845311
+        }
+      },
+      "diagnostics_by_read": {
+        "fixed": {
+          "maximum_condition": 3.2224841995032554,
+          "maximum_relative_residual": 1.9638343090264585e-16,
+          "maximum_read": 0.7854008674621582,
+          "maximum_write_mass": 190.53186775629433
+        },
+        "mass": {
+          "maximum_condition": 425.313311262199,
+          "maximum_relative_residual": 2.2410323864157875e-16,
+          "maximum_read": 1.5299357175827026,
+          "maximum_write_mass": 190.53186775629433
+        }
+      },
+      "original_metric_maximum_error": 1.4248504911704152e-07,
+      "original_reproduced": true
+    }
+  ],
+  "original_development_gate_unchanged": {
+    "passed": false,
+    "checks": {
+      "matrix_complete": true,
+      "memory128_every_seed": true,
+      "retrieval128_every_seed": true,
+      "memory512_delta": true,
+      "retrieval512_delta": false,
+      "all_numerical": true
+    },
+    "mean512_deltas": {
+      "memory": 0.25716145833333337,
+      "retrieval": -0.01953125
+    },
+    "next_action": "Separate frozen confirmation only if passed; no backbone authorization",
+    "financial_shape_superiority_established": false,
+    "confirmation_data_constructed": false
+  },
+  "development_results_sha256": "9425e32b1a69b789440fcc36d4f298cd2e2d586d113cf08dec391a4e3e0891ee",
+  "source_sha256": "90e3c21337d3fec3e14a2455d087b6c803b9fbe105a63194140f0ea8ce0fe8ef",
+  "exploratory_plan_sha256": "6c52e592812cbe8c79914a3831fce2debb44f953c2a42ef393b22844946af13d",
+  "retrained": false,
+  "new_confirmation_data_constructed": false,
+  "scope": "Exploratory failure diagnosis on already exposed development samples. Each checkpoint keeps identical states/keys/writes/weights and changes only final ridge convention. No gate or model selection changes."
+}

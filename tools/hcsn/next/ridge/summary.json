@@ -1,0 +1,158 @@
+{
+  "primary_every_seed_length_targets_passed": false,
+  "complete_runs": 105,
+  "challenge_runs": 140,
+  "validation_passed": true,
+  "solve_stress_passed": false,
+  "audit_passed": true,
+  "independent_static_passed": true,
+  "independent_long_and_challenge_replay_passed": true,
+  "paired_differences_l128": [
+    {
+      "task": "memory",
+      "control": "hcsn",
+      "mean": -0.006640625,
+      "ci95": [
+        -0.025077955775390626,
+        0.011796705775390624
+      ],
+      "paired_values": [
+        0.0,
+        0.0,
+        -0.033203125,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "task": "memory",
+      "control": "sigmoid",
+      "mean": 0.001953125,
+      "ci95": [
+        -0.003469619345703125,
+        0.007375869345703125
+      ],
+      "paired_values": [
+        0.0,
+        0.0,
+        0.009765625,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "task": "memory",
+      "control": "ridge_memory_only",
+      "mean": 0.215234375,
+      "ci95": [
+        -0.2158589644181134,
+        0.6463277144181134
+      ],
+      "paired_values": [
+        0.0,
+        0.3916015625,
+        -0.0615234375,
+        0.0,
+        0.74609375
+      ]
+    },
+    {
+      "task": "retrieval",
+      "control": "hcsn",
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "paired_values": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "task": "retrieval",
+      "control": "sigmoid",
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "paired_values": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "task": "retrieval",
+      "control": "ridge_memory_only",
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "paired_values": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "task": "irregular",
+      "control": "hcsn",
+      "mean": 0.0060546875,
+      "ci95": [
+        -0.0013409497683001892,
+        0.01345032476830019
+      ],
+      "paired_values": [
+        -0.0029296875,
+        0.0107421875,
+        0.0087890625,
+        0.0029296875,
+        0.0107421875
+      ]
+    },
+    {
+      "task": "irregular",
+      "control": "sigmoid",
+      "mean": 0.00859375,
+      "ci95": [
+        0.00021916448012681243,
+        0.016968335519873187
+      ],
+      "paired_values": [
+        0.013671875,
+        0.013671875,
+        0.0126953125,
+        0.00390625,
+        -0.0009765625
+      ]
+    },
+    {
+      "task": "irregular",
+      "control": "ridge_memory_only",
+      "mean": 0.360546875,
+      "ci95": [
+        0.34021339136540596,
+        0.380880358634594
+      ],
+      "paired_values": [
+        0.361328125,
+        0.38671875,
+        0.341796875,
+        0.35546875,
+        0.357421875
+      ]
+    }
+  ],
+  "scientific_operator_advantage_established": false,
+  "full_backbone_readiness_established": false
+}

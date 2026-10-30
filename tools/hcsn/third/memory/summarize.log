@@ -1,0 +1,47 @@
+{
+  "evidence_audit_passed": true,
+  "development_gate_passed": false,
+  "development_gate_checks": {
+    "matrix_complete": true,
+    "memory128_every_seed": true,
+    "memory512_delta": true,
+    "retrieval128_every_seed": true,
+    "retrieval512_delta": false,
+    "all_numerical": true
+  },
+  "costs": {
+    "total_train_call_seconds": 900.1009154970161,
+    "compilation_seconds": 584.4954644299723,
+    "optimizer_execution_seconds": 196.55922348476452,
+    "validation_seconds": 93.23570984504477,
+    "host_batch_seconds": 17.686122031438572,
+    "completed_training_runs": 48,
+    "optimizer_updates": 28800,
+    "numerical_validation_attempts_are_training_runs": false,
+    "recorded_runner_elapsed_seconds": 1579.4643203729938,
+    "original_post_first_run_pause_seconds": 406.95966124534607,
+    "final_pre_run_pause_seconds": 203.5439794063568,
+    "interrun_process_restarts": 2,
+    "peak_process_rss_bytes": 741552128,
+    "maximum_unclipped_training_gradient_norm": 3.146801710128784,
+    "maximum_observed_cgroup_raw_bytes": 8574771200,
+    "cgroup_oom_counter_changes": {
+      "low": 0,
+      "high": 0,
+      "max": 25738,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0
+    },
+    "cgroup_counter_scope": "Since operational amendment after the first completed run; historical counters are not attributed to this experiment.",
+    "timing_scope": "Shared CPU with recorded inter-run restarts; no speed claim across cache/admission changes. Diagnostics and independent replay cost are not optimizer execution."
+  },
+  "maxima": {
+    "maximum_condition": 1530.520337224447,
+    "maximum_relative_residual": 7.012997613811542e-16,
+    "maximum_condition_times_solver_epsilon": 3.3984378360872804e-13,
+    "maximum_condition_times_state_epsilon": 0.00018245224204354847,
+    "maximum_read": 1.8979151248931885,
+    "maximum_write_mass": 190.54737854003906
+  }
+}

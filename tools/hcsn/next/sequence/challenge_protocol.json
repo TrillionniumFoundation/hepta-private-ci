@@ -1,0 +1,14 @@
+{
+  "status": "Declared while the fixed v3 run is in progress, before any retrieval v3 result; no model changes or checkpoint reselection",
+  "purpose": "Distinguish duration extrapolation from associative-memory capacity and distractor shift",
+  "data_seed_base": 2600000,
+  "training_seeds": [0, 1, 2, 3, 4],
+  "tasks": [
+    {"name": "memory_512", "trained_task": "memory", "length": 512, "examples": 256},
+    {"name": "retrieval_8_items_128", "trained_task": "retrieval", "length": 128, "examples": 512, "associations": 8, "filler_noise": 0.05},
+    {"name": "retrieval_noisy_filler_128", "trained_task": "retrieval", "length": 128, "examples": 512, "associations": 4, "filler_noise": 0.3}
+  ],
+  "selection": "Use the checkpoint already selected by v3 validation loss; do not tune or reselect using these results",
+  "additional_controls": "Unchanged v2 and full-HX fixed-table variants were added before any challenge evaluation, with their already selected checkpoints",
+  "interpretation": "A fixed eight-slot model does not provide unbounded content memory; challenge accuracy is measured, not presumed"
+}

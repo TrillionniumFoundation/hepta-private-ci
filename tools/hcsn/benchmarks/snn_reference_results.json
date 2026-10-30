@@ -1,0 +1,2045 @@
+{
+  "metadata": {
+    "protocol": {
+      "status": "Frozen before first SNN training run; one architecture and one hyperparameter setting",
+      "scope": "Post-declared conventional SNN reference on already examined v1 synthetic and frozen SST holdouts; exploratory comparison",
+      "architecture": "Single-layer recurrent leaky integrate-and-fire, spike-only low-pass readout, linear classifier",
+      "threshold": 1.0,
+      "forward_spike": "1[membrane_before_reset >= 1], exactly binary",
+      "backward_surrogate": "1 / (1 + 5 * abs(membrane_before_reset - 1))^2",
+      "reset": "Soft subtractive reset by one threshold; reset spike is stop_gradient; no refractory period",
+      "integration": "Exponential leak per supplied dt with frozen current; at most one spike per supplied time bin",
+      "tau_membrane_range": [
+        2.0,
+        20.0
+      ],
+      "tau_membrane_initial": 4.0,
+      "tau_readout_range": [
+        4.0,
+        64.0
+      ],
+      "tau_readout_initial": 16.0,
+      "bias_initial": 1.25,
+      "bias_trainable": true,
+      "recurrent_initial_gain": 0.1,
+      "input_encoding": "Same real-valued current input plus log1p(dt); no input/membrane bypass to output",
+      "state_scalars": "3 * width: membrane, prior spike, filtered spike",
+      "synthetic_parameter_target": 6200,
+      "frozen_parameter_target": 6000,
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "synthetic_initial_seed": "1000 + seed, as v1",
+      "frozen_initial_seed": "seed, as frozen v1/v2 heads",
+      "minibatch_seed": "50000 + seed, as paired references",
+      "updates": 300,
+      "batch_size": 32,
+      "learning_rate": 0.003,
+      "optimizer": "Adam; global gradient clip norm 1",
+      "selection": "Minimum validation cross entropy at updates 50,100,150,200,250,300",
+      "synthetic_data": "Exactly original v1 dataset_suite(task,seed), verified by recorded per-split fingerprints",
+      "synthetic_tasks": [
+        "memory",
+        "retrieval",
+        "irregular"
+      ],
+      "frozen_features_sha256": "970c2c56442dc7deaa0e1db98f78b12ab0254a5fae2d45923852055252286a8a",
+      "frozen_corruption": "Gaussian sigma 0.15 plus 20% local feature-block dropout, full-sentence global feature always retained; not raw missing input",
+      "no_test_tuning": true,
+      "claim_limit": "Dense CPU simulation; no neuromorphic, energy, SOTA, LLM or multimodal superiority inference",
+      "method_reference": "https://arxiv.org/abs/1901.09948"
+    },
+    "source_sha256": {
+      "snn_models.py": "34d08455bba4cf57b6aa19ec981fdef98a8ac63a647a262b80130b00688cc1c4",
+      "run_snn_reference.py": "382ff5e4531a7a1224f776186c6ab846fcc7225509ef2d1d6bd21b223092c2fa",
+      "validate_snn.py": "6d7c54fd748491ce2a357146a44a242068c2d0fa0c102402962a5fcb9a0f0e4c",
+      "snn_protocol.json": "de62bcbc31da6910ab61c78a07bd453fcd9cb3145c4926ce70ef3db2ca3e6573",
+      "data.py": "7f086e58eb04429de723fb0383b8731cc1fc50eff643fd5e78993cf32fd0f63d",
+      "train.py": "eac86da2d322e4089e8bd2e865baeda4e7e759222646d5bea729e6b48e71b546",
+      "models.py": "212d0ed0c06bb9168c91363529fa30c25fa3668b1927ddc53483af8884ad5b88"
+    },
+    "python": "3.12.14",
+    "jax": "0.4.38",
+    "numpy": "2.3.5",
+    "cpu_affinity": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "devices": [
+      "TFRT_CPU_0"
+    ],
+    "gradient_validation": {
+      "passed": true,
+      "jax": "0.4.38",
+      "dtype": "float32",
+      "parameter_count": 6260,
+      "width": 68,
+      "persistent_state_scalars": 204,
+      "tested_threshold_offsets": [
+        -2.0,
+        -9.999999974752427e-07,
+        0.0,
+        9.999999974752427e-07,
+        2.0
+      ],
+      "hard_forward": [
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "backward": [
+        0.00826446246355772,
+        0.9999899864196777,
+        1.0,
+        0.9999899864196777,
+        0.00826446246355772
+      ],
+      "declared_surrogate": [
+        0.00826446246355772,
+        0.9999899864196777,
+        1.0,
+        0.9999899864196777,
+        0.00826446246355772
+      ],
+      "parameter_gradient_norms": {
+        "bias": 0.23212267458438873,
+        "inp": 0.16339221596717834,
+        "out": 0.8920583128929138,
+        "out_bias": 0.8489401936531067,
+        "recurrent": 0.27446115016937256,
+        "tau_membrane": 0.05548472702503204,
+        "tau_readout": 0.021043438464403152
+      },
+      "spike_values": [
+        0.0,
+        1.0
+      ],
+      "spike_fraction": 0.12890625,
+      "every_initial_parameter_strong_float32": true,
+      "interpretation": "Backward matches the declared surrogate; it is not the true derivative of hard forward, so finite-difference equality is not claimed"
+    },
+    "comparison_status": "Additional post-declared baseline on already examined holdouts; exploratory, not a new independent confirmation",
+    "timing_caveat": "All timing fields are diagnostic; cache and shared CPU effects prevent speed/energy conclusions; old warm_training_seconds may include secondary JIT compilation",
+    "scope": "Dense CPU reference simulation of hard-spiking neurons; no energy or neuromorphic hardware measurement"
+  },
+  "runs": [
+    {
+      "task": "memory",
+      "kind": "snn_lif",
+      "seed": 0,
+      "initial_seed": 1000,
+      "width": 68,
+      "parameter_count": 6260,
+      "persistent_state_scalars": 204,
+      "data_sha256": {
+        "train": "46720496ac2fcc0e201497351147953cffb3d7ef94372b2c7dc141955871d6c2",
+        "validation": "8dfdbbf18ccbb9f489aa2b52c577860804163f6d87cfea8816de01128b6eae0f",
+        "test": "47e9e295380f6e88a840599bc7bede560d6d3f77a0bba2d25bd2f71506918785",
+        "long": "d3020aea72533128d9593f42a4df636092f0543177068b1dcf2e7ea38d313a18"
+      },
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.3950140476226807,
+          "validation": {
+            "loss": 1.3854156732559204,
+            "accuracy": 0.279296875,
+            "brier": 0.7494063377380371
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 1.3736469745635986,
+          "validation": {
+            "loss": 1.3930718302726746,
+            "accuracy": 0.2109375,
+            "brier": 0.7534386515617371
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 1.409462571144104,
+          "validation": {
+            "loss": 1.3927813172340393,
+            "accuracy": 0.236328125,
+            "brier": 0.7529624849557877
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 1.3918912410736084,
+          "validation": {
+            "loss": 1.3840463757514954,
+            "accuracy": 0.24609375,
+            "brier": 0.7488905042409897
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 1.371877908706665,
+          "validation": {
+            "loss": 1.3865943849086761,
+            "accuracy": 0.263671875,
+            "brier": 0.7501405626535416
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 1.3757673501968384,
+          "validation": {
+            "loss": 1.3964233100414276,
+            "accuracy": 0.216796875,
+            "brier": 0.7549911439418793
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 200,
+        "first_update_seconds": 0.5971913790017425,
+        "warm_training_seconds": 0.8016918019966397,
+        "max_unclipped_gradient_norm": 0.46967366337776184,
+        "mean_unclipped_gradient_norm": 0.19329486603538196,
+        "steps": 300,
+        "batch_size": 32,
+        "train_examples_seen": 9600,
+        "learning_rate": 0.003,
+        "train_call_wall_seconds_including_validation_jit": 1.9316205249997438,
+        "train_call_process_cpu_seconds_including_validation_jit": 2.6007219799999994,
+        "interpretation": "Diagnostic only, shared CPU and cache-order effects; no speed or energy inference. Legacy warm_training_seconds excludes only update 1 and is not asserted pure warm."
+      },
+      "metrics": {
+        "train": {
+          "loss": 1.388092078268528,
+          "accuracy": 0.2412109375,
+          "brier": 0.750909686088562
+        },
+        "validation": {
+          "loss": 1.3840463757514954,
+          "accuracy": 0.24609375,
+          "brier": 0.7488905042409897
+        },
+        "test": {
+          "loss": 1.3844064474105835,
+          "accuracy": 0.24609375,
+          "brier": 0.7490916103124619
+        },
+        "long": {
+          "loss": 1.3870681822299957,
+          "accuracy": 0.232421875,
+          "brier": 0.7504240125417709
+        }
+      },
+      "spike_diagnostics": {
+        "examples": 128,
+        "binary_forward_verified": true,
+        "active_fraction": 0.06885842978954315,
+        "mean_spikes_per_example": 149.8359375,
+        "tau_membrane_mean": 4.074662685394287,
+        "tau_readout_mean": 16.30299949645996
+      },
+      "checkpoint_file": "snn_reference_checkpoints/memory_seed0.npz",
+      "checkpoint_sha256": "24e5110c886370146e7dbb13da8184fa9dc2071c3e38142b303ea5b4f6ec2f00",
+      "process_peak_rss_kib": 379364,
+      "data_exactly_matches_v1": true
+    },
+    {
+      "task": "memory",
+      "kind": "snn_lif",
+      "seed": 1,
+      "initial_seed": 1001,
+      "width": 68,
+      "parameter_count": 6260,
+      "persistent_state_scalars": 204,
+      "data_sha256": {
+        "train": "f0531725388f806cbca95026de1b337c7a83a7e6822c76cee1a8eb36d5de5141",
+        "validation": "4876c460fc78562d0f1b6695142d19da2f703e842cb619c5705f0232c123508a",
+        "test": "23841d9482621b623bb1e7dd67907302ee2c428d18b7f794add724ef5b37bfa8",
+        "long": "22ce765dd7d7c48d168801946f5213ad0ffa67b8290b0f936a90e1e48d2c8b40"
+      },
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.3729575872421265,
+          "validation": {
+            "loss": 1.390766829252243,
+            "accuracy": 0.255859375,
+            "brier": 0.7520681321620941
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 1.388847827911377,
+          "validation": {
+            "loss": 1.3863515853881836,
+            "accuracy": 0.244140625,
+            "brier": 0.7500316798686981
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 1.3516302108764648,
+          "validation": {
+            "loss": 1.3922293186187744,
+            "accuracy": 0.255859375,
+            "brier": 0.7530712932348251
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 1.3952932357788086,
+          "validation": {
+            "loss": 1.3870964646339417,
+            "accuracy": 0.25390625,
+            "brier": 0.7504291832447052
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 1.4100854396820068,
+          "validation": {
+            "loss": 1.3933363258838654,
+            "accuracy": 0.255859375,
+            "brier": 0.7533394992351532
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 1.3913142681121826,
+          "validation": {
+            "loss": 1.387227088212967,
+            "accuracy": 0.2578125,
+            "brier": 0.7504612952470779
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 100,
+        "first_update_seconds": 0.00311414799944032,
+        "warm_training_seconds": 0.7340056039865885,
+        "max_unclipped_gradient_norm": 0.5380836725234985,
+        "mean_unclipped_gradient_norm": 0.20801361342271169,
+        "steps": 300,
+        "batch_size": 32,
+        "train_examples_seen": 9600,
+        "learning_rate": 0.003,
+        "train_call_wall_seconds_including_validation_jit": 1.0259119290021772,
+        "train_call_process_cpu_seconds_including_validation_jit": 1.217547786999999,
+        "interpretation": "Diagnostic only, shared CPU and cache-order effects; no speed or energy inference. Legacy warm_training_seconds excludes only update 1 and is not asserted pure warm."
+      },
+      "metrics": {
+        "train": {
+          "loss": 1.3840366825461388,
+          "accuracy": 0.26513671875,
+          "brier": 0.7488660253584385
+        },
+        "validation": {
+          "loss": 1.3863515853881836,
+          "accuracy": 0.244140625,
+          "brier": 0.7500316798686981
+        },
+        "test": {
+          "loss": 1.3881467878818512,
+          "accuracy": 0.232421875,
+          "brier": 0.7509463727474213
+        },
+        "long": {
+          "loss": 1.3861508965492249,
+          "accuracy": 0.2734375,
+          "brier": 0.7499213218688965
+        }
+      },
+      "spike_diagnostics": {
+        "examples": 128,
+        "binary_forward_verified": true,
+        "active_fraction": 0.08208510279655457,
+        "mean_spikes_per_example": 178.6171875,
+        "tau_membrane_mean": 4.046379089355469,
+        "tau_readout_mean": 16.175418853759766
+      },
+      "checkpoint_file": "snn_reference_checkpoints/memory_seed1.npz",
+      "checkpoint_sha256": "1df7d86e7b71b698a4c9d8ed42fc07dc09bcfdfdb4c4611c0f47ecfbf8ef8d78",
+      "process_peak_rss_kib": 387624,
+      "data_exactly_matches_v1": true
+    },
+    {
+      "task": "memory",
+      "kind": "snn_lif",
+      "seed": 2,
+      "initial_seed": 1002,
+      "width": 68,
+      "parameter_count": 6260,
+      "persistent_state_scalars": 204,
+      "data_sha256": {
+        "train": "28a2682c73551caca95b11187db63db7b4a09dad99290aff6112f084adb871b1",
+        "validation": "6617c39b8e8708e72d538daae031ef052488a9d2915c0d7313e96c4810082186",
+        "test": "68f8f94919de47d2a742087881ed688824ebe7cdfde2112a0309cf359f2c8cd1",
+        "long": "c49bb000dd0b04ab972ecd4a7c815819d592096b1ee6a00a60a7d16ce94a4a9f"
+      },
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.371856451034546,
+          "validation": {
+            "loss": 1.3927624821662903,
+            "accuracy": 0.255859375,
+            "brier": 0.7529738396406174
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 1.3782784938812256,
+          "validation": {
+            "loss": 1.3845197260379791,
+            "accuracy": 0.267578125,
+            "brier": 0.7491747140884399
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 1.3922752141952515,
+          "validation": {
+            "loss": 1.384100615978241,
+            "accuracy": 0.267578125,
+            "brier": 0.7490490674972534
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 1.373425006866455,
+          "validation": {
+            "loss": 1.3879191875457764,
+            "accuracy": 0.263671875,
+            "brier": 0.7507927864789963
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 1.4010028839111328,
+          "validation": {
+            "loss": 1.3903059661388397,
+            "accuracy": 0.265625,
+            "brier": 0.7519626766443253
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 1.3849570751190186,
+          "validation": {
+            "loss": 1.3821620643138885,
+            "accuracy": 0.259765625,
+            "brier": 0.7480007857084274
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 300,
+        "first_update_seconds": 0.0026868929999182,
+        "warm_training_seconds": 1.0391340970199963,
+        "max_unclipped_gradient_norm": 0.5081236362457275,
+        "mean_unclipped_gradient_norm": 0.19563313769797483,
+        "steps": 300,
+        "batch_size": 32,
+        "train_examples_seen": 9600,
+        "learning_rate": 0.003,
+        "train_call_wall_seconds_including_validation_jit": 1.487559624001733,
+        "train_call_process_cpu_seconds_including_validation_jit": 1.644354074999999,
+        "interpretation": "Diagnostic only, shared CPU and cache-order effects; no speed or energy inference. Legacy warm_training_seconds excludes only update 1 and is not asserted pure warm."
+      },
+      "metrics": {
+        "train": {
+          "loss": 1.3855808302760124,
+          "accuracy": 0.25146484375,
+          "brier": 0.7496577836573124
+        },
+        "validation": {
+          "loss": 1.3821620643138885,
+          "accuracy": 0.259765625,
+          "brier": 0.7480007857084274
+        },
+        "test": {
+          "loss": 1.3874725997447968,
+          "accuracy": 0.267578125,
+          "brier": 0.7504988461732864
+        },
+        "long": {
+          "loss": 1.3867880403995514,
+          "accuracy": 0.255859375,
+          "brier": 0.750283807516098
+        }
+      },
+      "spike_diagnostics": {
+        "examples": 128,
+        "binary_forward_verified": true,
+        "active_fraction": 0.06433823704719543,
+        "mean_spikes_per_example": 140.0,
+        "tau_membrane_mean": 4.07084321975708,
+        "tau_readout_mean": 16.415283203125
+      },
+      "checkpoint_file": "snn_reference_checkpoints/memory_seed2.npz",
+      "checkpoint_sha256": "b4348c7ffb9e3ffdc30a4c4e188345be20aa65f9596b353e6e29661590e4424d",
+      "process_peak_rss_kib": 394024,
+      "data_exactly_matches_v1": true
+    },
+    {
+      "task": "memory",
+      "kind": "snn_lif",
+      "seed": 3,
+      "initial_seed": 1003,
+      "width": 68,
+      "parameter_count": 6260,
+      "persistent_state_scalars": 204,
+      "data_sha256": {
+        "train": "ca04740b998dae9ee7b475d837723a00f5c1f841c70400cd4fa211aa71220ef9",
+        "validation": "391f45f88bb03c5178cccc85915c42ffe493d0ed264d1d06e6eb2471a7097458",
+        "test": "1c78b48fe968e1641e5a4d293b86e1d979ccefc0e90e15cf8eff41ac176bd159",
+        "long": "d336c98dd3b8f1972cee9a5a3dc343c2f87658d49b16640442c35c17d1b67c34"
+      },
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.3904294967651367,
+          "validation": {
+            "loss": 1.3873505592346191,
+            "accuracy": 0.220703125,
+            "brier": 0.7505295425653458
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 1.3680009841918945,
+          "validation": {
+            "loss": 1.3895405530929565,
+            "accuracy": 0.236328125,
+            "brier": 0.7516116350889206
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 1.3872570991516113,
+          "validation": {
+            "loss": 1.3878546059131622,
+            "accuracy": 0.234375,
+            "brier": 0.750822052359581
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 1.3924760818481445,
+          "validation": {
+            "loss": 1.394826054573059,
+            "accuracy": 0.220703125,
+            "brier": 0.7544971406459808
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 1.4006588459014893,
+          "validation": {
+            "loss": 1.3837808966636658,
+            "accuracy": 0.279296875,
+            "brier": 0.7487378716468811
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 1.3661231994628906,
+          "validation": {
+            "loss": 1.391847848892212,
+            "accuracy": 0.259765625,
+            "brier": 0.7527512609958649
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 250,
+        "first_update_seconds": 0.0035254190006526187,
+        "warm_training_seconds": 0.870599468027649,
+        "max_unclipped_gradient_norm": 0.42968183755874634,
+        "mean_unclipped_gradient_norm": 0.19495013405879338,
+        "steps": 300,
+        "batch_size": 32,
+        "train_examples_seen": 9600,
+        "learning_rate": 0.003,
+        "train_call_wall_seconds_including_validation_jit": 1.239284775001579,
+        "train_call_process_cpu_seconds_including_validation_jit": 1.5101209999999998,
+        "interpretation": "Diagnostic only, shared CPU and cache-order effects; no speed or energy inference. Legacy warm_training_seconds excludes only update 1 and is not asserted pure warm."
+      },
+      "metrics": {
+        "train": {
+          "loss": 1.3862475976347923,
+          "accuracy": 0.271484375,
+          "brier": 0.7499181888997555
+        },
+        "validation": {
+          "loss": 1.3837808966636658,
+          "accuracy": 0.279296875,
+          "brier": 0.7487378716468811
+        },
+        "test": {
+          "loss": 1.389196127653122,
+          "accuracy": 0.25,
+          "brier": 0.7514418363571167
+        },
+        "long": {
+          "loss": 1.3834734559059143,
+          "accuracy": 0.298828125,
+          "brier": 0.748556911945343
+        }
+      },
+      "spike_diagnostics": {
+        "examples": 128,
+        "binary_forward_verified": true,
+        "active_fraction": 0.07257798314094543,
+        "mean_spikes_per_example": 157.9296875,
+        "tau_membrane_mean": 4.060831069946289,
+        "tau_readout_mean": 16.177812576293945
+      },
+      "checkpoint_file": "snn_reference_checkpoints/memory_seed3.npz",
+      "checkpoint_sha256": "bce5fbf249d053a358a5a1de8a8ad182a2eea1a202b3c7b55a9601cd3f69d2ff",
+      "process_peak_rss_kib": 397224,
+      "data_exactly_matches_v1": true
+    },
+    {
+      "task": "memory",
+      "kind": "snn_lif",
+      "seed": 4,
+      "initial_seed": 1004,
+      "width": 68,
+      "parameter_count": 6260,
+      "persistent_state_scalars": 204,
+      "data_sha256": {
+        "train": "2e9d6291976eed3af5bec84b620afa9043892d20cb698fe3161b6d614820bece",
+        "validation": "fc6d2922403dd90b645b9808a4ae5e0cca2377046c7fefdd9e5d02b4faf57814",
+        "test": "97a70fb3be0bd5a84d15676c737356a4c841e58066f4da86db5a1ddafbdee1ab",
+        "long": "38418805819d5575440a6e0009aab9910717bc7b1a219106fb08233a9046fe87"
+      },
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.3964908123016357,
+          "validation": {
+            "loss": 1.3874703347682953,
+            "accuracy": 0.263671875,
+            "brier": 0.7505419999361038
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 1.3862550258636475,
+          "validation": {
+            "loss": 1.393151879310608,
+            "accuracy": 0.24609375,
+            "brier": 0.7534005045890808
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 1.3865149021148682,
+          "validation": {
+            "loss": 1.3891206681728363,
+            "accuracy": 0.251953125,
+            "brier": 0.7514274418354034
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 1.369138240814209,
+          "validation": {
+            "loss": 1.3878426849842072,
+            "accuracy": 0.23046875,
+            "brier": 0.7507819533348083
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 1.397043228149414,
+          "validation": {
+            "loss": 1.3886518478393555,
+            "accuracy": 0.2421875,
+            "brier": 0.7512033134698868
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 1.400646448135376,
+          "validation": {
+            "loss": 1.3893185257911682,
+            "accuracy": 0.25,
+            "brier": 0.7515925616025925
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 50,
+        "first_update_seconds": 0.0027683699991030153,
+        "warm_training_seconds": 1.0371966919774422,
+        "max_unclipped_gradient_norm": 0.46690645813941956,
+        "mean_unclipped_gradient_norm": 0.2031458877772093,
+        "steps": 300,
+        "batch_size": 32,
+        "train_examples_seen": 9600,
+        "learning_rate": 0.003,
+        "train_call_wall_seconds_including_validation_jit": 1.526389675000246,
+        "train_call_process_cpu_seconds_including_validation_jit": 1.7905031089999994,
+        "interpretation": "Diagnostic only, shared CPU and cache-order effects; no speed or energy inference. Legacy warm_training_seconds excludes only update 1 and is not asserted pure warm."
+      },
+      "metrics": {
+        "train": {
+          "loss": 1.387841947376728,
+          "accuracy": 0.25927734375,
+          "brier": 0.75072106346488
+        },
+        "validation": {
+          "loss": 1.3874703347682953,
+          "accuracy": 0.263671875,
+          "brier": 0.7505419999361038
+        },
+        "test": {
+          "loss": 1.3900271654129028,
+          "accuracy": 0.232421875,
+          "brier": 0.7518702149391174
+        },
+        "long": {
+          "loss": 1.387367457151413,
+          "accuracy": 0.26171875,
+          "brier": 0.7504671216011047
+        }
+      },
+      "spike_diagnostics": {
+        "examples": 128,
+        "binary_forward_verified": true,
+        "active_fraction": 0.10189998894929886,
+        "mean_spikes_per_example": 221.734375,
+        "tau_membrane_mean": 4.022978782653809,
+        "tau_readout_mean": 16.081708908081055
+      },
+      "checkpoint_file": "snn_reference_checkpoints/memory_seed4.npz",
+      "checkpoint_sha256": "1cd220d78457b8e0ee93fd7d1e37dceaf895c8e72b22f011d3cd7fc54bf78425",
+      "process_peak_rss_kib": 399528,
+      "data_exactly_matches_v1": true
+    },
+    {
+      "task": "retrieval",
+      "kind": "snn_lif",
+      "seed": 0,
+      "initial_seed": 1000,
+      "width": 68,
+      "parameter_count": 6260,
+      "persistent_state_scalars": 204,
+      "data_sha256": {
+        "train": "53f74ffa89b94ee66b0935e615dcf4d7749184933ee6d7befe7f34a3cb8d2bcb",
+        "validation": "c9637e5d13ced0e69a343b6146c094a5e03359d54eb82f0286054a256fcd98ff",
+        "test": "0665f8c09fd9bc222e3013f7496961e30f9b9b4b5b4b15e7fc7332fd8f920872",
+        "long": "ec1b791ce4d3d351a071bf3c06a35fc68abda3f62bd18175d928c5caf6c84882"
+      },
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.3918383121490479,
+          "validation": {
+            "loss": 1.3907378911972046,
+            "accuracy": 0.28515625,
+            "brier": 0.7520545572042465
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 1.3610106706619263,
+          "validation": {
+            "loss": 1.3728964924812317,
+            "accuracy": 0.369140625,
+            "brier": 0.743297815322876
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 1.3615984916687012,
+          "validation": {
+            "loss": 1.367465078830719,
+            "accuracy": 0.259765625,
+            "brier": 0.7408939599990845
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 1.3969085216522217,
+          "validation": {
+            "loss": 1.3183592855930328,
+            "accuracy": 0.365234375,
+            "brier": 0.7143189013004303
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 1.2200498580932617,
+          "validation": {
+            "loss": 1.2215933203697205,
+            "accuracy": 0.439453125,
+            "brier": 0.667373389005661
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 1.018097162246704,
+          "validation": {
+            "loss": 1.212870568037033,
+            "accuracy": 0.431640625,
+            "brier": 0.6645613312721252
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 300,
+        "first_update_seconds": 0.008483847999741556,
+        "warm_training_seconds": 1.1404679150182346,
+        "max_unclipped_gradient_norm": 1.4471065998077393,
+        "mean_unclipped_gradient_norm": 0.3747924108803272,
+        "steps": 300,
+        "batch_size": 32,
+        "train_examples_seen": 9600,
+        "learning_rate": 0.003,
+        "train_call_wall_seconds_including_validation_jit": 1.645456528000068,
+        "train_call_process_cpu_seconds_including_validation_jit": 1.8300221290000014,
+        "interpretation": "Diagnostic only, shared CPU and cache-order effects; no speed or energy inference. Legacy warm_training_seconds excludes only update 1 and is not asserted pure warm."
+      },
+      "metrics": {
+        "train": {
+          "loss": 1.1851698607206345,
+          "accuracy": 0.48095703125,
+          "brier": 0.6452938355505466
+        },
+        "validation": {
+          "loss": 1.212870568037033,
+          "accuracy": 0.431640625,
+          "brier": 0.6645613312721252
+        },
+        "test": {
+          "loss": 1.2345232665538788,
+          "accuracy": 0.4453125,
+          "brier": 0.6727603673934937
+        },
+        "long": {
+          "loss": 1.367908000946045,
+          "accuracy": 0.34765625,
+          "brier": 0.7437390387058258
+        }
+      },
+      "spike_diagnostics": {
+        "examples": 128,
+        "binary_forward_verified": true,
+        "active_fraction": 0.12518310546875,
+        "mean_spikes_per_example": 272.3984375,
+        "tau_membrane_mean": 3.8022897243499756,
+        "tau_readout_mean": 15.712316513061523
+      },
+      "checkpoint_file": "snn_reference_checkpoints/retrieval_seed0.npz",
+      "checkpoint_sha256": "246bff6a79c7488726eae06c1a1f98341414cffecc395f5032b1d82f9d213fbf",
+      "process_peak_rss_kib": 412000,
+      "data_exactly_matches_v1": true
+    },
+    {
+      "task": "retrieval",
+      "kind": "snn_lif",
+      "seed": 1,
+      "initial_seed": 1001,
+      "width": 68,
+      "parameter_count": 6260,
+      "persistent_state_scalars": 204,
+      "data_sha256": {
+        "train": "18bc153ab57f793a2426c5345ab6d9c846dc49202aeddab06fe437453d109efd",
+        "validation": "e082a42b94d86368c66bc02f26ed0ab7bd6c6241864f8796de1718cf1f800b03",
+        "test": "67e9ec72de971313136637c69ea109dde93d4927d5a9aa414043f68f038e9c4b",
+        "long": "38d0c3b8d2f1034a10b859ca7e0c6d20ab5657790b97aa05c0f0915807384267"
+      },
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.4084656238555908,
+          "validation": {
+            "loss": 1.3878467082977295,
+            "accuracy": 0.2421875,
+            "brier": 0.7508690506219864
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 1.371025562286377,
+          "validation": {
+            "loss": 1.3727686703205109,
+            "accuracy": 0.392578125,
+            "brier": 0.7432065457105637
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 1.3386486768722534,
+          "validation": {
+            "loss": 1.323242723941803,
+            "accuracy": 0.388671875,
+            "brier": 0.7189007848501205
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 1.4599575996398926,
+          "validation": {
+            "loss": 1.3096745610237122,
+            "accuracy": 0.44921875,
+            "brier": 0.7086811661720276
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 1.2204787731170654,
+          "validation": {
+            "loss": 1.2050860822200775,
+            "accuracy": 0.484375,
+            "brier": 0.6578816175460815
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 1.2543599605560303,
+          "validation": {
+            "loss": 1.181211531162262,
+            "accuracy": 0.45703125,
+            "brier": 0.6522161811590195
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 300,
+        "first_update_seconds": 0.0030043019978620578,
+        "warm_training_seconds": 0.8710870269896986,
+        "max_unclipped_gradient_norm": 1.2708913087844849,
+        "mean_unclipped_gradient_norm": 0.34613888401538134,
+        "steps": 300,
+        "batch_size": 32,
+        "train_examples_seen": 9600,
+        "learning_rate": 0.003,
+        "train_call_wall_seconds_including_validation_jit": 1.2488781840002048,
+        "train_call_process_cpu_seconds_including_validation_jit": 1.4863784110000005,
+        "interpretation": "Diagnostic only, shared CPU and cache-order effects; no speed or energy inference. Legacy warm_training_seconds excludes only update 1 and is not asserted pure warm."
+      },
+      "metrics": {
+        "train": {
+          "loss": 1.1851365193724632,
+          "accuracy": 0.4677734375,
+          "brier": 0.6521732248365879
+        },
+        "validation": {
+          "loss": 1.181211531162262,
+          "accuracy": 0.45703125,
+          "brier": 0.6522161811590195
+        },
+        "test": {
+          "loss": 1.2185759842395782,
+          "accuracy": 0.458984375,
+          "brier": 0.6759202480316162
+        },
+        "long": {
+          "loss": 1.2933999001979828,
+          "accuracy": 0.4140625,
+          "brier": 0.7129597365856171
+        }
+      },
+      "spike_diagnostics": {
+        "examples": 128,
+        "binary_forward_verified": true,
+        "active_fraction": 0.1288882941007614,
+        "mean_spikes_per_example": 280.4609375,
+        "tau_membrane_mean": 3.7984583377838135,
+        "tau_readout_mean": 15.79766845703125
+      },
+      "checkpoint_file": "snn_reference_checkpoints/retrieval_seed1.npz",
+      "checkpoint_sha256": "5af6a046c1f2010870403c2340b4f424130b4b60e16c3d7018685afac55edfe2",
+      "process_peak_rss_kib": 417376,
+      "data_exactly_matches_v1": true
+    },
+    {
+      "task": "retrieval",
+      "kind": "snn_lif",
+      "seed": 2,
+      "initial_seed": 1002,
+      "width": 68,
+      "parameter_count": 6260,
+      "persistent_state_scalars": 204,
+      "data_sha256": {
+        "train": "73699c809e8ae42b19d27c482b0a2d9a6439cfdbabba00bdfb858063e7bf5522",
+        "validation": "0f2e8f77fa8172af158abd253b69d5f2ba3230e193371fd57c978076c61f1210",
+        "test": "a8b12af5e77082ae22232a39ad2c78affaa46e75449284236a0da766bb870b0a",
+        "long": "16a926c9a74fc05cbc2dbe5de718800f061d70bb5ce140100138bedeec8e0089"
+      },
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.3847694396972656,
+          "validation": {
+            "loss": 1.3814878165721893,
+            "accuracy": 0.26953125,
+            "brier": 0.7476595789194107
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 1.3644647598266602,
+          "validation": {
+            "loss": 1.3712935745716095,
+            "accuracy": 0.3984375,
+            "brier": 0.7424587309360504
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 1.3474806547164917,
+          "validation": {
+            "loss": 1.3532720804214478,
+            "accuracy": 0.376953125,
+            "brier": 0.733160063624382
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 1.3787932395935059,
+          "validation": {
+            "loss": 1.2819612920284271,
+            "accuracy": 0.380859375,
+            "brier": 0.700177013874054
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 1.3271405696868896,
+          "validation": {
+            "loss": 1.2401231527328491,
+            "accuracy": 0.421875,
+            "brier": 0.6812061071395874
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 1.270361304283142,
+          "validation": {
+            "loss": 1.2113959789276123,
+            "accuracy": 0.443359375,
+            "brier": 0.6701259911060333
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 300,
+        "first_update_seconds": 0.002839376000338234,
+        "warm_training_seconds": 0.9239910610012885,
+        "max_unclipped_gradient_norm": 1.1562955379486084,
+        "mean_unclipped_gradient_norm": 0.36693527867396675,
+        "steps": 300,
+        "batch_size": 32,
+        "train_examples_seen": 9600,
+        "learning_rate": 0.003,
+        "train_call_wall_seconds_including_validation_jit": 1.3383472969981085,
+        "train_call_process_cpu_seconds_including_validation_jit": 1.5975566410000006,
+        "interpretation": "Diagnostic only, shared CPU and cache-order effects; no speed or energy inference. Legacy warm_training_seconds excludes only update 1 and is not asserted pure warm."
+      },
+      "metrics": {
+        "train": {
+          "loss": 1.1869137659668922,
+          "accuracy": 0.4560546875,
+          "brier": 0.6531389653682709
+        },
+        "validation": {
+          "loss": 1.2113959789276123,
+          "accuracy": 0.443359375,
+          "brier": 0.6701259911060333
+        },
+        "test": {
+          "loss": 1.2120606303215027,
+          "accuracy": 0.451171875,
+          "brier": 0.6666370779275894
+        },
+        "long": {
+          "loss": 1.273289680480957,
+          "accuracy": 0.4296875,
+          "brier": 0.6890916228294373
+        }
+      },
+      "spike_diagnostics": {
+        "examples": 128,
+        "binary_forward_verified": true,
+        "active_fraction": 0.13108915090560913,
+        "mean_spikes_per_example": 285.25,
+        "tau_membrane_mean": 3.8184194564819336,
+        "tau_readout_mean": 15.901151657104492
+      },
+      "checkpoint_file": "snn_reference_checkpoints/retrieval_seed2.npz",
+      "checkpoint_sha256": "46d83ee1a7345276b5080e72f7a8c598cbb11bacdb8b9e60e3f6f92bf45b529a",
+      "process_peak_rss_kib": 422392,
+      "data_exactly_matches_v1": true
+    },
+    {
+      "task": "retrieval",
+      "kind": "snn_lif",
+      "seed": 3,
+      "initial_seed": 1003,
+      "width": 68,
+      "parameter_count": 6260,
+      "persistent_state_scalars": 204,
+      "data_sha256": {
+        "train": "9dfb52b4877e770a2890d2178227cf248345c1f9307240ff0e9f797f93b48605",
+        "validation": "742e60dcb58cc8b65a958c40269f1e7a96dfdad10bad74ecb801088bde16ecff",
+        "test": "ae12e10c25b7bea877c51c9706e6fcff8a17890eace15e2ee00c31a6b5b63b73",
+        "long": "a46146263f5ba610eca17f2e6bec1f91b30d96a1bcbc530454f3fe5fd77d09fa"
+      },
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.358588695526123,
+          "validation": {
+            "loss": 1.3832063972949982,
+            "accuracy": 0.25390625,
+            "brier": 0.7484487146139145
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 1.3701406717300415,
+          "validation": {
+            "loss": 1.3729472160339355,
+            "accuracy": 0.38671875,
+            "brier": 0.7432612925767899
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 1.3787298202514648,
+          "validation": {
+            "loss": 1.3526030778884888,
+            "accuracy": 0.345703125,
+            "brier": 0.7331857085227966
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 1.270195484161377,
+          "validation": {
+            "loss": 1.2934429943561554,
+            "accuracy": 0.439453125,
+            "brier": 0.7050282955169678
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 1.259549617767334,
+          "validation": {
+            "loss": 1.2626031935214996,
+            "accuracy": 0.439453125,
+            "brier": 0.6882871240377426
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 1.1657493114471436,
+          "validation": {
+            "loss": 1.2417357861995697,
+            "accuracy": 0.4296875,
+            "brier": 0.6791421473026276
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 300,
+        "first_update_seconds": 0.0034360850004304666,
+        "warm_training_seconds": 1.04134727798737,
+        "max_unclipped_gradient_norm": 2.1012492179870605,
+        "mean_unclipped_gradient_norm": 0.3779136014729738,
+        "steps": 300,
+        "batch_size": 32,
+        "train_examples_seen": 9600,
+        "learning_rate": 0.003,
+        "train_call_wall_seconds_including_validation_jit": 1.442782066998916,
+        "train_call_process_cpu_seconds_including_validation_jit": 1.6159746939999984,
+        "interpretation": "Diagnostic only, shared CPU and cache-order effects; no speed or energy inference. Legacy warm_training_seconds excludes only update 1 and is not asserted pure warm."
+      },
+      "metrics": {
+        "train": {
+          "loss": 1.1739618629217148,
+          "accuracy": 0.48388671875,
+          "brier": 0.6400100216269493
+        },
+        "validation": {
+          "loss": 1.2417357861995697,
+          "accuracy": 0.4296875,
+          "brier": 0.6791421473026276
+        },
+        "test": {
+          "loss": 1.1666210293769836,
+          "accuracy": 0.498046875,
+          "brier": 0.6324188560247421
+        },
+        "long": {
+          "loss": 1.2836359441280365,
+          "accuracy": 0.416015625,
+          "brier": 0.6967083960771561
+        }
+      },
+      "spike_diagnostics": {
+        "examples": 128,
+        "binary_forward_verified": true,
+        "active_fraction": 0.1214204654097557,
+        "mean_spikes_per_example": 264.2109375,
+        "tau_membrane_mean": 3.8097004890441895,
+        "tau_readout_mean": 15.888876914978027
+      },
+      "checkpoint_file": "snn_reference_checkpoints/retrieval_seed3.npz",
+      "checkpoint_sha256": "220678ea551ad8ed4ace4c3b13ec388278592612ee6d27bff21fc5806c81d11e",
+      "process_peak_rss_kib": 424584,
+      "data_exactly_matches_v1": true
+    },
+    {
+      "task": "retrieval",
+      "kind": "snn_lif",
+      "seed": 4,
+      "initial_seed": 1004,
+      "width": 68,
+      "parameter_count": 6260,
+      "persistent_state_scalars": 204,
+      "data_sha256": {
+        "train": "8fd792e9ec51ed026216b58afe55546be6373ce2e513e08d0edc1c9eb9d4ba96",
+        "validation": "ed310615446c5e0e9204bd4dab62b9529c4530761f044d2f4da7fee56d5835d9",
+        "test": "5a740534d11d2df310bacdffca738a165b633a5ee6f36c69d80389c4e32abce9",
+        "long": "075d4dd39d603ca37cdef35477ae298dbc6558b96299ae00d5c0bf5ca0b82c29"
+      },
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.3577306270599365,
+          "validation": {
+            "loss": 1.3791390657424927,
+            "accuracy": 0.267578125,
+            "brier": 0.7464085966348648
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 1.3742655515670776,
+          "validation": {
+            "loss": 1.3719462156295776,
+            "accuracy": 0.291015625,
+            "brier": 0.7427486777305603
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 1.3426432609558105,
+          "validation": {
+            "loss": 1.3487359881401062,
+            "accuracy": 0.404296875,
+            "brier": 0.730958491563797
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 1.2298976182937622,
+          "validation": {
+            "loss": 1.2894081473350525,
+            "accuracy": 0.357421875,
+            "brier": 0.7024988681077957
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 1.1995975971221924,
+          "validation": {
+            "loss": 1.2506931722164154,
+            "accuracy": 0.4140625,
+            "brier": 0.6829937100410461
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 1.2200510501861572,
+          "validation": {
+            "loss": 1.2478255331516266,
+            "accuracy": 0.419921875,
+            "brier": 0.6792731285095215
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 300,
+        "first_update_seconds": 0.003392599999642698,
+        "warm_training_seconds": 1.0044249659840716,
+        "max_unclipped_gradient_norm": 1.4681899547576904,
+        "mean_unclipped_gradient_norm": 0.37321488417685034,
+        "steps": 300,
+        "batch_size": 32,
+        "train_examples_seen": 9600,
+        "learning_rate": 0.003,
+        "train_call_wall_seconds_including_validation_jit": 1.4433425949973753,
+        "train_call_process_cpu_seconds_including_validation_jit": 1.649193511,
+        "interpretation": "Diagnostic only, shared CPU and cache-order effects; no speed or energy inference. Legacy warm_training_seconds excludes only update 1 and is not asserted pure warm."
+      },
+      "metrics": {
+        "train": {
+          "loss": 1.2350451052188873,
+          "accuracy": 0.43603515625,
+          "brier": 0.6726786717772484
+        },
+        "validation": {
+          "loss": 1.2478255331516266,
+          "accuracy": 0.419921875,
+          "brier": 0.6792731285095215
+        },
+        "test": {
+          "loss": 1.291157454252243,
+          "accuracy": 0.43359375,
+          "brier": 0.6974951177835464
+        },
+        "long": {
+          "loss": 1.4307359457015991,
+          "accuracy": 0.35546875,
+          "brier": 0.7577564418315887
+        }
+      },
+      "spike_diagnostics": {
+        "examples": 128,
+        "binary_forward_verified": true,
+        "active_fraction": 0.13601505756378174,
+        "mean_spikes_per_example": 295.96875,
+        "tau_membrane_mean": 3.80928635597229,
+        "tau_readout_mean": 15.792885780334473
+      },
+      "checkpoint_file": "snn_reference_checkpoints/retrieval_seed4.npz",
+      "checkpoint_sha256": "e28f6cc48900529f10c44e2a8ac39c15174d64403a1bab6e98266d7e900c67da",
+      "process_peak_rss_kib": 426916,
+      "data_exactly_matches_v1": true
+    },
+    {
+      "task": "irregular",
+      "kind": "snn_lif",
+      "seed": 0,
+      "initial_seed": 1000,
+      "width": 68,
+      "parameter_count": 6260,
+      "persistent_state_scalars": 204,
+      "data_sha256": {
+        "train": "a060022b96cd121e3d0f9d776e5bf77376b19e573f33db169f1d65ebad9c28dd",
+        "validation": "927994ec2d6c39723095aaf75371a00224ee2f6475c5e71a3924dbbd02c51c5d",
+        "test": "bd00f17fa750757cb2bf70031253def979843951b2161f2591f5867a47ee5b1d",
+        "long": "de2327b6bb2b764bbaab8a901b1494a983e1b4913d2a82b0f317ef1735db087f",
+        "corrupt": "ff016b79e5daf1ed8d10909280d5cae96b9d5c2e00c70e891426210d4d152a60"
+      },
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.2302381992340088,
+          "validation": {
+            "loss": 1.2638221085071564,
+            "accuracy": 0.498046875,
+            "brier": 0.6871216148138046
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 1.1208391189575195,
+          "validation": {
+            "loss": 1.1569126546382904,
+            "accuracy": 0.556640625,
+            "brier": 0.631164476275444
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 1.1229512691497803,
+          "validation": {
+            "loss": 1.0678021013736725,
+            "accuracy": 0.609375,
+            "brier": 0.5820390582084656
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 1.1510863304138184,
+          "validation": {
+            "loss": 0.9907363504171371,
+            "accuracy": 0.62890625,
+            "brier": 0.5386686325073242
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.97996985912323,
+          "validation": {
+            "loss": 0.9354573637247086,
+            "accuracy": 0.634765625,
+            "brier": 0.5119288489222527
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.7932087182998657,
+          "validation": {
+            "loss": 0.8581195026636124,
+            "accuracy": 0.68359375,
+            "brier": 0.4674031063914299
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 300,
+        "first_update_seconds": 0.0029575539992947597,
+        "warm_training_seconds": 1.0060565589592443,
+        "max_unclipped_gradient_norm": 1.0220361948013306,
+        "mean_unclipped_gradient_norm": 0.4244436598320802,
+        "steps": 300,
+        "batch_size": 32,
+        "train_examples_seen": 9600,
+        "learning_rate": 0.003,
+        "train_call_wall_seconds_including_validation_jit": 1.6232436329992197,
+        "train_call_process_cpu_seconds_including_validation_jit": 1.7772408669999997,
+        "interpretation": "Diagnostic only, shared CPU and cache-order effects; no speed or energy inference. Legacy warm_training_seconds excludes only update 1 and is not asserted pure warm."
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.8734435364603996,
+          "accuracy": 0.65771484375,
+          "brier": 0.4807883482426405
+        },
+        "validation": {
+          "loss": 0.8581195026636124,
+          "accuracy": 0.68359375,
+          "brier": 0.4674031063914299
+        },
+        "test": {
+          "loss": 0.8559221923351288,
+          "accuracy": 0.6953125,
+          "brier": 0.46669379621744156
+        },
+        "long": {
+          "loss": 0.9338731169700623,
+          "accuracy": 0.626953125,
+          "brier": 0.515828862786293
+        },
+        "corrupt": {
+          "loss": 0.989213228225708,
+          "accuracy": 0.591796875,
+          "brier": 0.540991522371769
+        }
+      },
+      "spike_diagnostics": {
+        "examples": 128,
+        "binary_forward_verified": true,
+        "active_fraction": 0.2286197394132614,
+        "mean_spikes_per_example": 497.4765625,
+        "tau_membrane_mean": 3.7676620483398438,
+        "tau_readout_mean": 10.648565292358398
+      },
+      "checkpoint_file": "snn_reference_checkpoints/irregular_seed0.npz",
+      "checkpoint_sha256": "50c1b346e0b164897f3afd8e4205ae9fd2d7af04e6524b6111e21ad786c1c6b0",
+      "process_peak_rss_kib": 426916,
+      "data_exactly_matches_v1": true
+    },
+    {
+      "task": "irregular",
+      "kind": "snn_lif",
+      "seed": 1,
+      "initial_seed": 1001,
+      "width": 68,
+      "parameter_count": 6260,
+      "persistent_state_scalars": 204,
+      "data_sha256": {
+        "train": "c8b686bc1a0ab4cd2eb8c173a4b4a90c25aa0a52630e19f1a5a3ccaa7327f35a",
+        "validation": "db3afba59dfba9bf46b59a9a375f7a0a0890222adec7a125920d19fde79fde54",
+        "test": "4737cd7469ece498ecfabefb774b04f318e0cd90087c1be113135865717e46de",
+        "long": "59f72c079ef0f7726e45ed9716c8d1b062bb06be6dd1e68801b66525c36b7fac",
+        "corrupt": "6084130b566c931a0ff23eec8a60744924f8360043d890506dce501df34bc3c6"
+      },
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.2840956449508667,
+          "validation": {
+            "loss": 1.3041674196720123,
+            "accuracy": 0.451171875,
+            "brier": 0.7077693492174149
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 1.1923117637634277,
+          "validation": {
+            "loss": 1.1850807070732117,
+            "accuracy": 0.515625,
+            "brier": 0.6465003490447998
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 1.0791887044906616,
+          "validation": {
+            "loss": 1.0899591445922852,
+            "accuracy": 0.568359375,
+            "brier": 0.5960822999477386
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.9449878931045532,
+          "validation": {
+            "loss": 0.9961580038070679,
+            "accuracy": 0.599609375,
+            "brier": 0.5457497388124466
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.8327478766441345,
+          "validation": {
+            "loss": 0.9208245575428009,
+            "accuracy": 0.6171875,
+            "brier": 0.5058044046163559
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.7975056171417236,
+          "validation": {
+            "loss": 0.8667639940977097,
+            "accuracy": 0.6484375,
+            "brier": 0.4765825495123863
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 300,
+        "first_update_seconds": 0.004450702999747591,
+        "warm_training_seconds": 0.8887712530522549,
+        "max_unclipped_gradient_norm": 1.2282003164291382,
+        "mean_unclipped_gradient_norm": 0.3902506069342295,
+        "steps": 300,
+        "batch_size": 32,
+        "train_examples_seen": 9600,
+        "learning_rate": 0.003,
+        "train_call_wall_seconds_including_validation_jit": 1.2837874879987794,
+        "train_call_process_cpu_seconds_including_validation_jit": 1.482150334,
+        "interpretation": "Diagnostic only, shared CPU and cache-order effects; no speed or energy inference. Legacy warm_training_seconds excludes only update 1 and is not asserted pure warm."
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.8777202889323235,
+          "accuracy": 0.66943359375,
+          "brier": 0.47986445762217045
+        },
+        "validation": {
+          "loss": 0.8667639940977097,
+          "accuracy": 0.6484375,
+          "brier": 0.4765825495123863
+        },
+        "test": {
+          "loss": 0.9064749032258987,
+          "accuracy": 0.607421875,
+          "brier": 0.5019977167248726
+        },
+        "long": {
+          "loss": 0.8770197927951813,
+          "accuracy": 0.66015625,
+          "brier": 0.48225656151771545
+        },
+        "corrupt": {
+          "loss": 1.018223136663437,
+          "accuracy": 0.58203125,
+          "brier": 0.5574949830770493
+        }
+      },
+      "spike_diagnostics": {
+        "examples": 128,
+        "binary_forward_verified": true,
+        "active_fraction": 0.21173454821109772,
+        "mean_spikes_per_example": 460.734375,
+        "tau_membrane_mean": 3.784964084625244,
+        "tau_readout_mean": 11.091790199279785
+      },
+      "checkpoint_file": "snn_reference_checkpoints/irregular_seed1.npz",
+      "checkpoint_sha256": "17e53cf1f52db92f1678823b7bd1e151bffa35bf94a0f0a75b7827b952ed598b",
+      "process_peak_rss_kib": 426916,
+      "data_exactly_matches_v1": true
+    },
+    {
+      "task": "irregular",
+      "kind": "snn_lif",
+      "seed": 2,
+      "initial_seed": 1002,
+      "width": 68,
+      "parameter_count": 6260,
+      "persistent_state_scalars": 204,
+      "data_sha256": {
+        "train": "18b4ed258b6365f4376303bc181ba6156a39bc56c9082fa5c7c4a25f73cd789f",
+        "validation": "5bb802db342443ff6335fe43ce558bd51283f438e47a668b8469f24d8edecdc0",
+        "test": "b0ae6cfe17897cb8acf87af8c4665a66864362a304cbda38d7b87d21e7c66195",
+        "long": "f59d14d466413ea3550cf8b5b21f428cf5259277848e248cbd2c1386a0d7e28e",
+        "corrupt": "4f39aa5c7de568804a5daa5f16449d3763389e735ff6410272150048fb289c0d"
+      },
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.265762209892273,
+          "validation": {
+            "loss": 1.2655735313892365,
+            "accuracy": 0.486328125,
+            "brier": 0.6879383772611618
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 1.1804883480072021,
+          "validation": {
+            "loss": 1.1571859419345856,
+            "accuracy": 0.521484375,
+            "brier": 0.6325194537639618
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 1.0119725465774536,
+          "validation": {
+            "loss": 1.0729880034923553,
+            "accuracy": 0.556640625,
+            "brier": 0.5891237109899521
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.9960058927536011,
+          "validation": {
+            "loss": 1.001581996679306,
+            "accuracy": 0.599609375,
+            "brier": 0.5510549694299698
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.9473332166671753,
+          "validation": {
+            "loss": 0.9518373161554337,
+            "accuracy": 0.611328125,
+            "brier": 0.5288420915603638
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.6906052231788635,
+          "validation": {
+            "loss": 0.8918714821338654,
+            "accuracy": 0.63671875,
+            "brier": 0.4929591417312622
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 300,
+        "first_update_seconds": 0.0032221469991782214,
+        "warm_training_seconds": 0.8234340749804687,
+        "max_unclipped_gradient_norm": 0.9342764019966125,
+        "mean_unclipped_gradient_norm": 0.404937432607015,
+        "steps": 300,
+        "batch_size": 32,
+        "train_examples_seen": 9600,
+        "learning_rate": 0.003,
+        "train_call_wall_seconds_including_validation_jit": 1.1545190930009994,
+        "train_call_process_cpu_seconds_including_validation_jit": 1.2970479590000004,
+        "interpretation": "Diagnostic only, shared CPU and cache-order effects; no speed or energy inference. Legacy warm_training_seconds excludes only update 1 and is not asserted pure warm."
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.8566949814558029,
+          "accuracy": 0.67578125,
+          "brier": 0.46767107397317886
+        },
+        "validation": {
+          "loss": 0.8918714821338654,
+          "accuracy": 0.63671875,
+          "brier": 0.4929591417312622
+        },
+        "test": {
+          "loss": 0.8510059267282486,
+          "accuracy": 0.67578125,
+          "brier": 0.4647468701004982
+        },
+        "long": {
+          "loss": 0.8957739621400833,
+          "accuracy": 0.65234375,
+          "brier": 0.49181391298770905
+        },
+        "corrupt": {
+          "loss": 0.9900430291891098,
+          "accuracy": 0.5859375,
+          "brier": 0.5415174663066864
+        }
+      },
+      "spike_diagnostics": {
+        "examples": 128,
+        "binary_forward_verified": true,
+        "active_fraction": 0.22537769377231598,
+        "mean_spikes_per_example": 490.421875,
+        "tau_membrane_mean": 3.7517004013061523,
+        "tau_readout_mean": 10.86607551574707
+      },
+      "checkpoint_file": "snn_reference_checkpoints/irregular_seed2.npz",
+      "checkpoint_sha256": "6980bb77e4fb93e3e64acaf17ea0c030a5af28157a856c45215b258094ea7ee9",
+      "process_peak_rss_kib": 427136,
+      "data_exactly_matches_v1": true
+    },
+    {
+      "task": "irregular",
+      "kind": "snn_lif",
+      "seed": 3,
+      "initial_seed": 1003,
+      "width": 68,
+      "parameter_count": 6260,
+      "persistent_state_scalars": 204,
+      "data_sha256": {
+        "train": "8bb1c04f51c693c5f1aa1d864d07a69758a710372c29162378e5bd08868d7a6d",
+        "validation": "702c42ecb9cebdb433b726ab8469f1e32238575fe256d0e705a0f9d9d7ca96a2",
+        "test": "598885b3eea062caa1d59a86e746be9f02ece7c2ed3ca3a60447fc9b23f7f247",
+        "long": "7f73479ac6659acc489e28c4254f43cf01dc5a5126cf5910aaaaa4a650ba7335",
+        "corrupt": "e27eececb19b63fa05e966774aac005b91ded51fcbf9306f9dc6297ca41e9afe"
+      },
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.3059823513031006,
+          "validation": {
+            "loss": 1.275622397661209,
+            "accuracy": 0.509765625,
+            "brier": 0.6924691498279572
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 1.1665648221969604,
+          "validation": {
+            "loss": 1.1414114236831665,
+            "accuracy": 0.578125,
+            "brier": 0.6224102973937988
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 1.0649361610412598,
+          "validation": {
+            "loss": 1.0745213031768799,
+            "accuracy": 0.5546875,
+            "brier": 0.5871876180171967
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.8796207308769226,
+          "validation": {
+            "loss": 0.9903971701860428,
+            "accuracy": 0.607421875,
+            "brier": 0.5448162108659744
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.9479113817214966,
+          "validation": {
+            "loss": 0.9085170924663544,
+            "accuracy": 0.658203125,
+            "brier": 0.4983009994029999
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.9062236547470093,
+          "validation": {
+            "loss": 0.866970032453537,
+            "accuracy": 0.666015625,
+            "brier": 0.47508157789707184
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 300,
+        "first_update_seconds": 0.0021188930004427675,
+        "warm_training_seconds": 0.5832311630292679,
+        "max_unclipped_gradient_norm": 1.0190248489379883,
+        "mean_unclipped_gradient_norm": 0.4084595721463362,
+        "steps": 300,
+        "batch_size": 32,
+        "train_examples_seen": 9600,
+        "learning_rate": 0.003,
+        "train_call_wall_seconds_including_validation_jit": 0.8180155299996841,
+        "train_call_process_cpu_seconds_including_validation_jit": 1.0525089890000032,
+        "interpretation": "Diagnostic only, shared CPU and cache-order effects; no speed or energy inference. Legacy warm_training_seconds excludes only update 1 and is not asserted pure warm."
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.872531846165657,
+          "accuracy": 0.6611328125,
+          "brier": 0.47748393565416336
+        },
+        "validation": {
+          "loss": 0.866970032453537,
+          "accuracy": 0.666015625,
+          "brier": 0.47508157789707184
+        },
+        "test": {
+          "loss": 0.8678579479455948,
+          "accuracy": 0.66015625,
+          "brier": 0.47750387340784073
+        },
+        "long": {
+          "loss": 0.8659804910421371,
+          "accuracy": 0.6640625,
+          "brier": 0.47240477055311203
+        },
+        "corrupt": {
+          "loss": 0.9944035857915878,
+          "accuracy": 0.59375,
+          "brier": 0.5462621450424194
+        }
+      },
+      "spike_diagnostics": {
+        "examples": 128,
+        "binary_forward_verified": true,
+        "active_fraction": 0.1979800909757614,
+        "mean_spikes_per_example": 430.8046875,
+        "tau_membrane_mean": 3.7805984020233154,
+        "tau_readout_mean": 10.89208984375
+      },
+      "checkpoint_file": "snn_reference_checkpoints/irregular_seed3.npz",
+      "checkpoint_sha256": "a49aa9d251f4d383e5d994fd89145bccc17021b7f8320818cc399b6c1d47a4b3",
+      "process_peak_rss_kib": 429568,
+      "data_exactly_matches_v1": true
+    },
+    {
+      "task": "irregular",
+      "kind": "snn_lif",
+      "seed": 4,
+      "initial_seed": 1004,
+      "width": 68,
+      "parameter_count": 6260,
+      "persistent_state_scalars": 204,
+      "data_sha256": {
+        "train": "a10c026a7506403a1a9acb41fe9ddd5d963c240ebbe62ea36f329023113db04f",
+        "validation": "bdf906f1a9359d4161d6a05b7e147dac68ce989ec5bfb65435d02216633c29f5",
+        "test": "fc2af33bd43c915dab4785fa3701675450ca06e382a36f43773ffe7b2057a17a",
+        "long": "ff43e46bef4789674fc8ab1b52f906e52f9b99a62c24f24f80a207cbb31cc201",
+        "corrupt": "0e5f574bfdede696d6fd234820375dc2574b09151e6fd48e706dbd0707cbdea8"
+      },
+      "history": [
+        {
+          "step": 50,
+          "train_minibatch_loss": 1.2725744247436523,
+          "validation": {
+            "loss": 1.2942369282245636,
+            "accuracy": 0.396484375,
+            "brier": 0.7035716474056244
+          }
+        },
+        {
+          "step": 100,
+          "train_minibatch_loss": 1.1225682497024536,
+          "validation": {
+            "loss": 1.1675053238868713,
+            "accuracy": 0.537109375,
+            "brier": 0.6349946707487106
+          }
+        },
+        {
+          "step": 150,
+          "train_minibatch_loss": 1.1264852285385132,
+          "validation": {
+            "loss": 1.1035203337669373,
+            "accuracy": 0.541015625,
+            "brier": 0.603236198425293
+          }
+        },
+        {
+          "step": 200,
+          "train_minibatch_loss": 0.9824085235595703,
+          "validation": {
+            "loss": 0.9981992542743683,
+            "accuracy": 0.60546875,
+            "brier": 0.5471879690885544
+          }
+        },
+        {
+          "step": 250,
+          "train_minibatch_loss": 0.9167652130126953,
+          "validation": {
+            "loss": 0.9547493010759354,
+            "accuracy": 0.625,
+            "brier": 0.5201330631971359
+          }
+        },
+        {
+          "step": 300,
+          "train_minibatch_loss": 0.7847883701324463,
+          "validation": {
+            "loss": 0.8883458226919174,
+            "accuracy": 0.642578125,
+            "brier": 0.48794712126255035
+          }
+        }
+      ],
+      "timing": {
+        "best_step": 300,
+        "first_update_seconds": 0.002952668997750152,
+        "warm_training_seconds": 0.7304860310032382,
+        "max_unclipped_gradient_norm": 0.8646482825279236,
+        "mean_unclipped_gradient_norm": 0.4084409896035989,
+        "steps": 300,
+        "batch_size": 32,
+        "train_examples_seen": 9600,
+        "learning_rate": 0.003,
+        "train_call_wall_seconds_including_validation_jit": 1.0223645160003798,
+        "train_call_process_cpu_seconds_including_validation_jit": 1.2218751310000044,
+        "interpretation": "Diagnostic only, shared CPU and cache-order effects; no speed or energy inference. Legacy warm_training_seconds excludes only update 1 and is not asserted pure warm."
+      },
+      "metrics": {
+        "train": {
+          "loss": 0.8731697723269463,
+          "accuracy": 0.65478515625,
+          "brier": 0.48171581886708736
+        },
+        "validation": {
+          "loss": 0.8883458226919174,
+          "accuracy": 0.642578125,
+          "brier": 0.48794712126255035
+        },
+        "test": {
+          "loss": 0.8851820081472397,
+          "accuracy": 0.666015625,
+          "brier": 0.48473653197288513
+        },
+        "long": {
+          "loss": 0.9018030315637589,
+          "accuracy": 0.609375,
+          "brier": 0.4978484511375427
+        },
+        "corrupt": {
+          "loss": 1.0108767598867416,
+          "accuracy": 0.58203125,
+          "brier": 0.5551752597093582
+        }
+      },
+      "spike_diagnostics": {
+        "examples": 128,
+        "binary_forward_verified": true,
+        "active_fraction": 0.2166927605867386,
+        "mean_spikes_per_example": 471.5234375,
+        "tau_membrane_mean": 3.7828705310821533,
+        "tau_readout_mean": 10.82603931427002
+      },
+      "checkpoint_file": "snn_reference_checkpoints/irregular_seed4.npz",
+      "checkpoint_sha256": "bb3edc1c22a63dbb1299a9a6d07fb9db90e03c1fdafbd39773c7575cfe776c0b",
+      "process_peak_rss_kib": 432256,
+      "data_exactly_matches_v1": true
+    }
+  ],
+  "complete": true,
+  "summary": {
+    "irregular": {
+      "parameter_count": 6260,
+      "persistent_state_scalars": 204,
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "train": {
+        "mean_accuracy": 0.66376953125,
+        "sample_sd": 0.008670258242447146
+      },
+      "validation": {
+        "mean_accuracy": 0.65546875,
+        "sample_sd": 0.019166516289604835
+      },
+      "test": {
+        "mean_accuracy": 0.6609375,
+        "sample_sd": 0.0327578134316122
+      },
+      "long": {
+        "mean_accuracy": 0.642578125,
+        "sample_sd": 0.023518739411703703
+      },
+      "corrupt": {
+        "mean_accuracy": 0.587109375,
+        "sample_sd": 0.005454781267097243
+      },
+      "mean_train_call_wall_seconds_including_validation_jit": 1.1803860519998124,
+      "mean_train_call_process_cpu_seconds_including_validation_jit": 1.3661646560000016
+    },
+    "memory": {
+      "parameter_count": 6260,
+      "persistent_state_scalars": 204,
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "train": {
+        "mean_accuracy": 0.25771484375,
+        "sample_sd": 0.011817011541831764
+      },
+      "validation": {
+        "mean_accuracy": 0.25859375,
+        "sample_sd": 0.01432587564132207
+      },
+      "test": {
+        "mean_accuracy": 0.245703125,
+        "sample_sd": 0.014576646997691633
+      },
+      "long": {
+        "mean_accuracy": 0.264453125,
+        "sample_sd": 0.02433973059324122
+      },
+      "mean_train_call_wall_seconds_including_validation_jit": 1.4421533056010958,
+      "mean_train_call_process_cpu_seconds_including_validation_jit": 1.7526495901999994
+    },
+    "retrieval": {
+      "parameter_count": 6260,
+      "persistent_state_scalars": 204,
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "train": {
+        "mean_accuracy": 0.46494140625,
+        "sample_sd": 0.019608611437760957
+      },
+      "validation": {
+        "mean_accuracy": 0.436328125,
+        "sample_sd": 0.014259150194096858
+      },
+      "test": {
+        "mean_accuracy": 0.457421875,
+        "sample_sd": 0.024527082149922816
+      },
+      "long": {
+        "mean_accuracy": 0.392578125,
+        "sample_sd": 0.03802328580846052
+      },
+      "mean_train_call_wall_seconds_including_validation_jit": 1.4237613341989346,
+      "mean_train_call_process_cpu_seconds_including_validation_jit": 1.6358250772000003
+    }
+  },
+  "elapsed_seconds": 25.51256117599769
+}

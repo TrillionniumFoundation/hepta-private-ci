@@ -1,0 +1,23 @@
+{
+  "schema": "hcsn.memory.exploratory.failure.diagnostic.v1",
+  "planned_at_utc": "2026-10-30T06:32:30.123928+00:00",
+  "development_runs_already_exposed": 32,
+  "reason": "Partial development retrieval results showed long-sequence mass degradation in nonfinancial controls. This is exploratory failure diagnosis, not a new confirmation test.",
+  "execute_only_if": "Complete matrix and independent replay passed; retrieval128 or retrieval512 declared quality gate failed",
+  "checkpoints": "All six FullHX fixed/mass checkpoints from the three declared development seeds",
+  "splits": [
+    "diagnostic128",
+    "diagnostic512"
+  ],
+  "read_modes": [
+    "fixed",
+    "mass"
+  ],
+  "held_identical": "Parameters, all recurrent/statistic states, keys, values, queries and write gates within each checkpoint",
+  "no_training": true,
+  "no_hyperparameter_selection": true,
+  "no_new_confirmation_inputs": true,
+  "no_gate_changes": true,
+  "source_sha256": "90e3c21337d3fec3e14a2455d087b6c803b9fbe105a63194140f0ea8ce0fe8ef",
+  "scientific_freeze_sha256": "be352590d34de0eaf127b4566a89bb80e8a295799aebfa72febaee295f5db432"
+}

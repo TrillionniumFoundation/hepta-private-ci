@@ -1,0 +1,200 @@
+{
+  "gates": {
+    "dynamic_head": false,
+    "linear_plus_dynamic": false
+  },
+  "primary_contrasts": [
+    {
+      "dataset": "ag_news",
+      "regime": "dynamic_head",
+      "split": "test",
+      "lhs": "full_hx",
+      "control": "ordinary_c1",
+      "differences": [
+        0.010000000000000009,
+        -0.010000000000000009,
+        -0.010000000000000009,
+        -0.0030000000000000027,
+        -0.015000000000000013
+      ],
+      "mean": -0.005600000000000005,
+      "conditional_seed_ci95": [
+        -0.017657573984108686,
+        0.006457573984108675
+      ],
+      "primary_family": true,
+      "bonferroni_family95": [
+        -0.028447774237370417,
+        0.01724777423737041
+      ]
+    },
+    {
+      "dataset": "ag_news",
+      "regime": "dynamic_head",
+      "split": "corrupted_test",
+      "lhs": "full_hx",
+      "control": "ordinary_c1",
+      "differences": [
+        0.0040000000000000036,
+        -0.018000000000000016,
+        -0.0040000000000000036,
+        0.007000000000000006,
+        -0.0020000000000000018
+      ],
+      "mean": -0.0026000000000000025,
+      "conditional_seed_ci95": [
+        -0.014625565501881266,
+        0.009425565501881263
+      ],
+      "primary_family": true,
+      "bonferroni_family95": [
+        -0.02538712169013523,
+        0.020187121690135226
+      ]
+    },
+    {
+      "dataset": "ag_news",
+      "regime": "linear_plus_dynamic",
+      "split": "test",
+      "lhs": "full_hx",
+      "control": "ordinary_c1",
+      "differences": [
+        -0.0050000000000000044,
+        0.0030000000000000027,
+        -0.0030000000000000027,
+        -0.0020000000000000018,
+        -0.0050000000000000044
+      ],
+      "mean": -0.002400000000000002,
+      "conditional_seed_ci95": [
+        -0.006480524283949539,
+        0.001680524283949535
+      ],
+      "primary_family": true,
+      "bonferroni_family95": [
+        -0.010132143939789263,
+        0.005332143939789259
+      ]
+    },
+    {
+      "dataset": "ag_news",
+      "regime": "linear_plus_dynamic",
+      "split": "corrupted_test",
+      "lhs": "full_hx",
+      "control": "ordinary_c1",
+      "differences": [
+        -0.0040000000000000036,
+        0.008000000000000007,
+        -0.0010000000000000009,
+        0.0,
+        0.0
+      ],
+      "mean": 0.0006000000000000005,
+      "conditional_seed_ci95": [
+        -0.004925055998975948,
+        0.00612505599897595
+      ],
+      "primary_family": true,
+      "bonferroni_family95": [
+        -0.009869372386170193,
+        0.011069372386170192
+      ]
+    },
+    {
+      "dataset": "cifar10",
+      "regime": "dynamic_head",
+      "split": "test",
+      "lhs": "full_hx",
+      "control": "ordinary_c1",
+      "differences": [
+        0.017000000000000015,
+        0.020000000000000018,
+        -0.0030000000000000027,
+        0.0030000000000000027,
+        0.008000000000000007
+      ],
+      "mean": 0.009000000000000008,
+      "conditional_seed_ci95": [
+        -0.0028772154912603664,
+        0.020877215491260384
+      ],
+      "primary_family": true,
+      "bonferroni_family95": [
+        -0.013506014764708533,
+        0.031506014764708545
+      ]
+    },
+    {
+      "dataset": "cifar10",
+      "regime": "dynamic_head",
+      "split": "corrupted_test",
+      "lhs": "full_hx",
+      "control": "ordinary_c1",
+      "differences": [
+        0.0030000000000000027,
+        -0.01100000000000001,
+        -0.02699999999999997,
+        0.033999999999999975,
+        0.017000000000000015
+      ],
+      "mean": 0.0032000000000000028,
+      "conditional_seed_ci95": [
+        -0.026266965327871684,
+        0.03266696532787169
+      ],
+      "primary_family": true,
+      "bonferroni_family95": [
+        -0.05263665272624095,
+        0.05903665272624095
+      ]
+    },
+    {
+      "dataset": "cifar10",
+      "regime": "linear_plus_dynamic",
+      "split": "test",
+      "lhs": "full_hx",
+      "control": "ordinary_c1",
+      "differences": [
+        0.0,
+        0.006000000000000005,
+        -0.0040000000000000036,
+        -0.0010000000000000009,
+        -0.0040000000000000036
+      ],
+      "mean": -0.0006000000000000005,
+      "conditional_seed_ci95": [
+        -0.005689307942983411,
+        0.00448930794298341
+      ],
+      "primary_family": true,
+      "bonferroni_family95": [
+        -0.01024367782930395,
+        0.00904367782930395
+      ]
+    },
+    {
+      "dataset": "cifar10",
+      "regime": "linear_plus_dynamic",
+      "split": "corrupted_test",
+      "lhs": "full_hx",
+      "control": "ordinary_c1",
+      "differences": [
+        -0.0050000000000000044,
+        0.0040000000000000036,
+        0.0010000000000000009,
+        -0.0030000000000000027,
+        -0.0020000000000000018
+      ],
+      "mean": -0.0010000000000000009,
+      "conditional_seed_ci95": [
+        -0.005389945165425419,
+        0.0033899451654254174
+      ],
+      "primary_family": true,
+      "bonferroni_family95": [
+        -0.009318462419245117,
+        0.007318462419245116
+      ]
+    }
+  ]
+}

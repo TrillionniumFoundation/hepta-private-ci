@@ -1,0 +1,1446 @@
+{
+  "summary": {
+    "ag_news": {
+      "groups": [
+        {
+          "regime": "dynamic_head",
+          "kind": "full_hx",
+          "metrics": {
+            "test": {
+              "mean": 0.8686,
+              "seed_sd": 0.010334408546211059,
+              "values": [
+                0.884,
+                0.865,
+                0.856,
+                0.872,
+                0.866
+              ]
+            },
+            "corrupted_test": {
+              "mean": 0.861,
+              "seed_sd": 0.004183300132670382,
+              "values": [
+                0.865,
+                0.857,
+                0.856,
+                0.863,
+                0.864
+              ]
+            }
+          },
+          "trainable_parameters": 6114,
+          "fixed_operator_bytes": 262256,
+          "mean_total_cpu_seconds": 9.501799267799997,
+          "mean_optimizer_wall_seconds": 1.0912511102171265,
+          "mean_batch1_latency_ms": 0.12443890154827386
+        },
+        {
+          "regime": "dynamic_head",
+          "kind": "same_call_sigmoid",
+          "metrics": {
+            "test": {
+              "mean": 0.875,
+              "seed_sd": 0.0036742346141747707,
+              "values": [
+                0.879,
+                0.873,
+                0.87,
+                0.875,
+                0.878
+              ]
+            },
+            "corrupted_test": {
+              "mean": 0.8639999999999999,
+              "seed_sd": 0.007842193570679067,
+              "values": [
+                0.868,
+                0.871,
+                0.856,
+                0.855,
+                0.87
+              ]
+            }
+          },
+          "trainable_parameters": 6114,
+          "fixed_operator_bytes": 262256,
+          "mean_total_cpu_seconds": 5.8579374144,
+          "mean_optimizer_wall_seconds": 0.6884519183862722,
+          "mean_batch1_latency_ms": 0.1031854008033406
+        },
+        {
+          "regime": "dynamic_head",
+          "kind": "ordinary_c1",
+          "metrics": {
+            "test": {
+              "mean": 0.8742000000000001,
+              "seed_sd": 0.005357238094391554,
+              "values": [
+                0.874,
+                0.875,
+                0.866,
+                0.875,
+                0.881
+              ]
+            },
+            "corrupted_test": {
+              "mean": 0.8635999999999999,
+              "seed_sd": 0.007300684899377598,
+              "values": [
+                0.861,
+                0.875,
+                0.86,
+                0.856,
+                0.866
+              ]
+            }
+          },
+          "trainable_parameters": 6114,
+          "fixed_operator_bytes": 0,
+          "mean_total_cpu_seconds": 5.760632840399997,
+          "mean_optimizer_wall_seconds": 0.7296398786245846,
+          "mean_batch1_latency_ms": 0.11016620046575554
+        },
+        {
+          "regime": "dynamic_head",
+          "kind": "gru",
+          "metrics": {
+            "test": {
+              "mean": 0.8767999999999999,
+              "seed_sd": 0.003701351104664353,
+              "values": [
+                0.874,
+                0.881,
+                0.879,
+                0.872,
+                0.878
+              ]
+            },
+            "corrupted_test": {
+              "mean": 0.8720000000000001,
+              "seed_sd": 0.005147815070493504,
+              "values": [
+                0.877,
+                0.876,
+                0.874,
+                0.866,
+                0.867
+              ]
+            }
+          },
+          "trainable_parameters": 5900,
+          "fixed_operator_bytes": 0,
+          "mean_total_cpu_seconds": 2.3872677527999997,
+          "mean_optimizer_wall_seconds": 0.23912496979755815,
+          "mean_batch1_latency_ms": 0.052652500016847625
+        },
+        {
+          "regime": "dynamic_head",
+          "kind": "transformer",
+          "metrics": {
+            "test": {
+              "mean": 0.8664,
+              "seed_sd": 0.00873498712076899,
+              "values": [
+                0.874,
+                0.857,
+                0.857,
+                0.87,
+                0.874
+              ]
+            },
+            "corrupted_test": {
+              "mean": 0.8555999999999999,
+              "seed_sd": 0.008619744775803987,
+              "values": [
+                0.864,
+                0.843,
+                0.851,
+                0.858,
+                0.862
+              ]
+            }
+          },
+          "trainable_parameters": 6007,
+          "fixed_operator_bytes": 0,
+          "mean_total_cpu_seconds": 4.088306505199999,
+          "mean_optimizer_wall_seconds": 0.4257425543939462,
+          "mean_batch1_latency_ms": 0.05218250007601455
+        },
+        {
+          "regime": "linear_plus_dynamic",
+          "kind": "full_hx",
+          "metrics": {
+            "test": {
+              "mean": 0.8802,
+              "seed_sd": 0.003898717737923589,
+              "values": [
+                0.882,
+                0.876,
+                0.883,
+                0.884,
+                0.876
+              ]
+            },
+            "corrupted_test": {
+              "mean": 0.8716000000000002,
+              "seed_sd": 0.004449719092257402,
+              "values": [
+                0.866,
+                0.875,
+                0.869,
+                0.877,
+                0.871
+              ]
+            }
+          },
+          "trainable_parameters": 6114,
+          "fixed_operator_bytes": 262256,
+          "mean_total_cpu_seconds": 9.3973056116,
+          "mean_optimizer_wall_seconds": 1.1994836565310834,
+          "mean_batch1_latency_ms": 0.12956359933014028
+        },
+        {
+          "regime": "linear_plus_dynamic",
+          "kind": "same_call_sigmoid",
+          "metrics": {
+            "test": {
+              "mean": 0.8785999999999999,
+              "seed_sd": 0.0026076809620810618,
+              "values": [
+                0.879,
+                0.875,
+                0.881,
+                0.881,
+                0.877
+              ]
+            },
+            "corrupted_test": {
+              "mean": 0.8712,
+              "seed_sd": 0.005310367218940706,
+              "values": [
+                0.865,
+                0.871,
+                0.877,
+                0.876,
+                0.867
+              ]
+            }
+          },
+          "trainable_parameters": 6114,
+          "fixed_operator_bytes": 262256,
+          "mean_total_cpu_seconds": 5.574337977400006,
+          "mean_optimizer_wall_seconds": 0.5981376173833268,
+          "mean_batch1_latency_ms": 0.10822180047398433
+        },
+        {
+          "regime": "linear_plus_dynamic",
+          "kind": "ordinary_c1",
+          "metrics": {
+            "test": {
+              "mean": 0.8826,
+              "seed_sd": 0.005856620185738534,
+              "values": [
+                0.887,
+                0.873,
+                0.886,
+                0.886,
+                0.881
+              ]
+            },
+            "corrupted_test": {
+              "mean": 0.8710000000000001,
+              "seed_sd": 0.0036742346141747707,
+              "values": [
+                0.87,
+                0.867,
+                0.87,
+                0.877,
+                0.871
+              ]
+            }
+          },
+          "trainable_parameters": 6114,
+          "fixed_operator_bytes": 0,
+          "mean_total_cpu_seconds": 5.927777226799998,
+          "mean_optimizer_wall_seconds": 0.7549502749898238,
+          "mean_batch1_latency_ms": 0.10749349967227317
+        },
+        {
+          "regime": "linear_plus_dynamic",
+          "kind": "gru",
+          "metrics": {
+            "test": {
+              "mean": 0.8808,
+              "seed_sd": 0.004147288270665548,
+              "values": [
+                0.881,
+                0.879,
+                0.875,
+                0.886,
+                0.883
+              ]
+            },
+            "corrupted_test": {
+              "mean": 0.8695999999999999,
+              "seed_sd": 0.0047749345545253325,
+              "values": [
+                0.866,
+                0.869,
+                0.871,
+                0.865,
+                0.877
+              ]
+            }
+          },
+          "trainable_parameters": 5900,
+          "fixed_operator_bytes": 0,
+          "mean_total_cpu_seconds": 2.5199813764000054,
+          "mean_optimizer_wall_seconds": 0.26399141718866304,
+          "mean_batch1_latency_ms": 0.044735400297213346
+        },
+        {
+          "regime": "linear_plus_dynamic",
+          "kind": "transformer",
+          "metrics": {
+            "test": {
+              "mean": 0.8674,
+              "seed_sd": 0.00782943165242536,
+              "values": [
+                0.859,
+                0.863,
+                0.864,
+                0.873,
+                0.878
+              ]
+            },
+            "corrupted_test": {
+              "mean": 0.8634000000000001,
+              "seed_sd": 0.006877499545619765,
+              "values": [
+                0.86,
+                0.862,
+                0.857,
+                0.875,
+                0.863
+              ]
+            }
+          },
+          "trainable_parameters": 6007,
+          "fixed_operator_bytes": 0,
+          "mean_total_cpu_seconds": 4.243001708600002,
+          "mean_optimizer_wall_seconds": 0.4283509766028146,
+          "mean_batch1_latency_ms": 0.0511028993059881
+        }
+      ],
+      "linear_reference": {
+        "metrics": {
+          "train": {
+            "loss": 0.31678579716735283,
+            "accuracy": 0.893,
+            "brier": 0.16745259676367083,
+            "ece": 0.022770165032736715
+          },
+          "validation": {
+            "loss": 0.3392722984382752,
+            "accuracy": 0.9,
+            "brier": 0.16819794501637392,
+            "ece": 0.04589030985439321
+          },
+          "test": {
+            "loss": 0.3894321435579658,
+            "accuracy": 0.882,
+            "brier": 0.19026587414551455,
+            "ece": 0.031287325741719954
+          },
+          "corrupted_test": {
+            "loss": 0.4109942376524203,
+            "accuracy": 0.87,
+            "brier": 0.19369869444610469,
+            "ece": 0.034600228232020476
+          }
+        },
+        "fit_and_evaluation_wall_seconds": 0.026280337006028276,
+        "fit_and_evaluation_cpu_seconds": 0.026281646999999797,
+        "parameter_count": 260,
+        "checkpoint_sha256": "4c66c750cdc36ceca22008d960aed3f1d6321550cbdccc618b778083a9c9207d"
+      },
+      "total_head_cpu_seconds": 276.291738407,
+      "total_head_wall_seconds": 230.80471727803524
+    },
+    "cifar10": {
+      "groups": [
+        {
+          "regime": "dynamic_head",
+          "kind": "full_hx",
+          "metrics": {
+            "test": {
+              "mean": 0.7822,
+              "seed_sd": 0.003768288736283358,
+              "values": [
+                0.782,
+                0.783,
+                0.776,
+                0.784,
+                0.786
+              ]
+            },
+            "corrupted_test": {
+              "mean": 0.4064,
+              "seed_sd": 0.03266190441477656,
+              "values": [
+                0.353,
+                0.409,
+                0.406,
+                0.425,
+                0.439
+              ]
+            }
+          },
+          "trainable_parameters": 6010,
+          "fixed_operator_bytes": 262256,
+          "mean_total_cpu_seconds": 9.243474655200009,
+          "mean_optimizer_wall_seconds": 0.960988648586499,
+          "mean_batch1_latency_ms": 0.11917530064238235
+        },
+        {
+          "regime": "dynamic_head",
+          "kind": "same_call_sigmoid",
+          "metrics": {
+            "test": {
+              "mean": 0.7762,
+              "seed_sd": 0.008012490249604058,
+              "values": [
+                0.766,
+                0.773,
+                0.776,
+                0.778,
+                0.788
+              ]
+            },
+            "corrupted_test": {
+              "mean": 0.4034,
+              "seed_sd": 0.028271894170713078,
+              "values": [
+                0.355,
+                0.429,
+                0.408,
+                0.41,
+                0.415
+              ]
+            }
+          },
+          "trainable_parameters": 6010,
+          "fixed_operator_bytes": 262256,
+          "mean_total_cpu_seconds": 5.808454285400001,
+          "mean_optimizer_wall_seconds": 0.6161205157943186,
+          "mean_batch1_latency_ms": 0.10050240089185536
+        },
+        {
+          "regime": "dynamic_head",
+          "kind": "ordinary_c1",
+          "metrics": {
+            "test": {
+              "mean": 0.7732,
+              "seed_sd": 0.008497058314499208,
+              "values": [
+                0.765,
+                0.763,
+                0.779,
+                0.781,
+                0.778
+              ]
+            },
+            "corrupted_test": {
+              "mean": 0.4032,
+              "seed_sd": 0.03355145302367694,
+              "values": [
+                0.35,
+                0.42,
+                0.433,
+                0.391,
+                0.422
+              ]
+            }
+          },
+          "trainable_parameters": 6010,
+          "fixed_operator_bytes": 0,
+          "mean_total_cpu_seconds": 5.8753507207999975,
+          "mean_optimizer_wall_seconds": 0.7058899072144413,
+          "mean_batch1_latency_ms": 0.0917334014957305
+        },
+        {
+          "regime": "dynamic_head",
+          "kind": "gru",
+          "metrics": {
+            "test": {
+              "mean": 0.7798,
+              "seed_sd": 0.011278297743897357,
+              "values": [
+                0.79,
+                0.788,
+                0.764,
+                0.772,
+                0.785
+              ]
+            },
+            "corrupted_test": {
+              "mean": 0.4074,
+              "seed_sd": 0.03917014168981267,
+              "values": [
+                0.364,
+                0.467,
+                0.401,
+                0.42,
+                0.385
+              ]
+            }
+          },
+          "trainable_parameters": 6038,
+          "fixed_operator_bytes": 0,
+          "mean_total_cpu_seconds": 2.6042415910000045,
+          "mean_optimizer_wall_seconds": 0.2821422557943151,
+          "mean_batch1_latency_ms": 0.04319240033510141
+        },
+        {
+          "regime": "dynamic_head",
+          "kind": "transformer",
+          "metrics": {
+            "test": {
+              "mean": 0.7774000000000001,
+              "seed_sd": 0.012798437404620937,
+              "values": [
+                0.764,
+                0.766,
+                0.791,
+                0.776,
+                0.79
+              ]
+            },
+            "corrupted_test": {
+              "mean": 0.36719999999999997,
+              "seed_sd": 0.029115288080319594,
+              "values": [
+                0.319,
+                0.361,
+                0.388,
+                0.388,
+                0.38
+              ]
+            }
+          },
+          "trainable_parameters": 6151,
+          "fixed_operator_bytes": 0,
+          "mean_total_cpu_seconds": 4.329395345399985,
+          "mean_optimizer_wall_seconds": 0.4746553534612758,
+          "mean_batch1_latency_ms": 0.05743129804614
+        },
+        {
+          "regime": "linear_plus_dynamic",
+          "kind": "full_hx",
+          "metrics": {
+            "test": {
+              "mean": 0.8012,
+              "seed_sd": 0.0035637059362410954,
+              "values": [
+                0.8,
+                0.802,
+                0.799,
+                0.798,
+                0.807
+              ]
+            },
+            "corrupted_test": {
+              "mean": 0.388,
+              "seed_sd": 0.011768602295939831,
+              "values": [
+                0.368,
+                0.397,
+                0.391,
+                0.388,
+                0.396
+              ]
+            }
+          },
+          "trainable_parameters": 6010,
+          "fixed_operator_bytes": 262256,
+          "mean_total_cpu_seconds": 9.882874347800009,
+          "mean_optimizer_wall_seconds": 1.1404391749892966,
+          "mean_batch1_latency_ms": 0.12857389956479892
+        },
+        {
+          "regime": "linear_plus_dynamic",
+          "kind": "same_call_sigmoid",
+          "metrics": {
+            "test": {
+              "mean": 0.8028000000000001,
+              "seed_sd": 0.004024922359499625,
+              "values": [
+                0.799,
+                0.802,
+                0.799,
+                0.807,
+                0.807
+              ]
+            },
+            "corrupted_test": {
+              "mean": 0.3888,
+              "seed_sd": 0.010986355173577824,
+              "values": [
+                0.37,
+                0.397,
+                0.389,
+                0.392,
+                0.396
+              ]
+            }
+          },
+          "trainable_parameters": 6010,
+          "fixed_operator_bytes": 262256,
+          "mean_total_cpu_seconds": 6.06901641579999,
+          "mean_optimizer_wall_seconds": 0.6501952365899342,
+          "mean_batch1_latency_ms": 0.10560150039964356
+        },
+        {
+          "regime": "linear_plus_dynamic",
+          "kind": "ordinary_c1",
+          "metrics": {
+            "test": {
+              "mean": 0.8018000000000001,
+              "seed_sd": 0.005718391382198325,
+              "values": [
+                0.8,
+                0.796,
+                0.803,
+                0.799,
+                0.811
+              ]
+            },
+            "corrupted_test": {
+              "mean": 0.38900000000000007,
+              "seed_sd": 0.00946044396421226,
+              "values": [
+                0.373,
+                0.393,
+                0.39,
+                0.391,
+                0.398
+              ]
+            }
+          },
+          "trainable_parameters": 6010,
+          "fixed_operator_bytes": 0,
+          "mean_total_cpu_seconds": 6.165452362800022,
+          "mean_optimizer_wall_seconds": 0.7993319063913077,
+          "mean_batch1_latency_ms": 0.10269980048178695
+        },
+        {
+          "regime": "linear_plus_dynamic",
+          "kind": "gru",
+          "metrics": {
+            "test": {
+              "mean": 0.8024000000000001,
+              "seed_sd": 0.004037325847637273,
+              "values": [
+                0.801,
+                0.802,
+                0.798,
+                0.802,
+                0.809
+              ]
+            },
+            "corrupted_test": {
+              "mean": 0.38859999999999995,
+              "seed_sd": 0.008294576541331096,
+              "values": [
+                0.378,
+                0.392,
+                0.384,
+                0.4,
+                0.389
+              ]
+            }
+          },
+          "trainable_parameters": 6038,
+          "fixed_operator_bytes": 0,
+          "mean_total_cpu_seconds": 2.650169129400001,
+          "mean_optimizer_wall_seconds": 0.27192513175396016,
+          "mean_batch1_latency_ms": 0.04857769963564351
+        },
+        {
+          "regime": "linear_plus_dynamic",
+          "kind": "transformer",
+          "metrics": {
+            "test": {
+              "mean": 0.7964,
+              "seed_sd": 0.0066181568431097244,
+              "values": [
+                0.803,
+                0.802,
+                0.797,
+                0.793,
+                0.787
+              ]
+            },
+            "corrupted_test": {
+              "mean": 0.37779999999999997,
+              "seed_sd": 0.012194260945215182,
+              "values": [
+                0.36,
+                0.393,
+                0.377,
+                0.384,
+                0.375
+              ]
+            }
+          },
+          "trainable_parameters": 6151,
+          "fixed_operator_bytes": 0,
+          "mean_total_cpu_seconds": 4.407966009799987,
+          "mean_optimizer_wall_seconds": 0.4502736047725193,
+          "mean_batch1_latency_ms": 0.05312819921527989
+        }
+      ],
+      "linear_reference": {
+        "metrics": {
+          "train": {
+            "loss": 0.30347070601929055,
+            "accuracy": 0.901,
+            "brier": 0.1537603353660674,
+            "ece": 0.047576171464708605
+          },
+          "validation": {
+            "loss": 0.5237651513204078,
+            "accuracy": 0.844,
+            "brier": 0.24578105963904212,
+            "ece": 0.03571106511416333
+          },
+          "test": {
+            "loss": 0.561745680020664,
+            "accuracy": 0.8,
+            "brier": 0.27847434443345603,
+            "ece": 0.051111844631651006
+          },
+          "corrupted_test": {
+            "loss": 2.3168011687491745,
+            "accuracy": 0.386,
+            "brier": 0.8658092945031779,
+            "ece": 0.28388490511087583
+          }
+        },
+        "fit_and_evaluation_wall_seconds": 0.04701479100185679,
+        "fit_and_evaluation_cpu_seconds": 0.04700170899997147,
+        "parameter_count": 650,
+        "checkpoint_sha256": "1b414d87ef01de09edb3293a8284658d4645037d34ef75f1fd2b9780df2f13a9"
+      },
+      "total_head_cpu_seconds": 285.181974317,
+      "total_head_wall_seconds": 239.26364507797553
+    }
+  },
+  "contrasts": [
+    {
+      "dataset": "ag_news",
+      "regime": "dynamic_head",
+      "split": "test",
+      "lhs": "full_hx",
+      "control": "ordinary_c1",
+      "differences": [
+        0.010000000000000009,
+        -0.010000000000000009,
+        -0.010000000000000009,
+        -0.0030000000000000027,
+        -0.015000000000000013
+      ],
+      "mean": -0.005600000000000005,
+      "conditional_seed_ci95": [
+        -0.017657573984108686,
+        0.006457573984108675
+      ],
+      "primary_family": true,
+      "bonferroni_family95": [
+        -0.028447774237370417,
+        0.01724777423737041
+      ]
+    },
+    {
+      "dataset": "ag_news",
+      "regime": "dynamic_head",
+      "split": "test",
+      "lhs": "full_hx",
+      "control": "same_call_sigmoid",
+      "differences": [
+        0.0050000000000000044,
+        -0.008000000000000007,
+        -0.014000000000000012,
+        -0.0030000000000000027,
+        -0.01200000000000001
+      ],
+      "mean": -0.0064000000000000055,
+      "conditional_seed_ci95": [
+        -0.015880655512282977,
+        0.003080655512282965
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "ag_news",
+      "regime": "dynamic_head",
+      "split": "test",
+      "lhs": "full_hx",
+      "control": "gru",
+      "differences": [
+        0.010000000000000009,
+        -0.016000000000000014,
+        -0.02300000000000002,
+        0.0,
+        -0.01200000000000001
+      ],
+      "mean": -0.008200000000000008,
+      "conditional_seed_ci95": [
+        -0.02454097753208799,
+        0.008140977532087977
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "ag_news",
+      "regime": "dynamic_head",
+      "split": "test",
+      "lhs": "full_hx",
+      "control": "transformer",
+      "differences": [
+        0.010000000000000009,
+        0.008000000000000007,
+        -0.0010000000000000009,
+        0.0020000000000000018,
+        -0.008000000000000007
+      ],
+      "mean": 0.002200000000000002,
+      "conditional_seed_ci95": [
+        -0.006770968681671213,
+        0.011170968681671218
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "ag_news",
+      "regime": "dynamic_head",
+      "split": "corrupted_test",
+      "lhs": "full_hx",
+      "control": "ordinary_c1",
+      "differences": [
+        0.0040000000000000036,
+        -0.018000000000000016,
+        -0.0040000000000000036,
+        0.007000000000000006,
+        -0.0020000000000000018
+      ],
+      "mean": -0.0026000000000000025,
+      "conditional_seed_ci95": [
+        -0.014625565501881266,
+        0.009425565501881263
+      ],
+      "primary_family": true,
+      "bonferroni_family95": [
+        -0.02538712169013523,
+        0.020187121690135226
+      ]
+    },
+    {
+      "dataset": "ag_news",
+      "regime": "dynamic_head",
+      "split": "corrupted_test",
+      "lhs": "full_hx",
+      "control": "same_call_sigmoid",
+      "differences": [
+        -0.0030000000000000027,
+        -0.014000000000000012,
+        0.0,
+        0.008000000000000007,
+        -0.006000000000000005
+      ],
+      "mean": -0.0030000000000000027,
+      "conditional_seed_ci95": [
+        -0.013010615190301665,
+        0.007010615190301659
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "ag_news",
+      "regime": "dynamic_head",
+      "split": "corrupted_test",
+      "lhs": "full_hx",
+      "control": "gru",
+      "differences": [
+        -0.01200000000000001,
+        -0.019000000000000017,
+        -0.018000000000000016,
+        -0.0030000000000000027,
+        -0.0030000000000000027
+      ],
+      "mean": -0.01100000000000001,
+      "conditional_seed_ci95": [
+        -0.020657879363935927,
+        -0.0013421206360640908
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "ag_news",
+      "regime": "dynamic_head",
+      "split": "corrupted_test",
+      "lhs": "full_hx",
+      "control": "transformer",
+      "differences": [
+        0.0010000000000000009,
+        0.014000000000000012,
+        0.0050000000000000044,
+        0.0050000000000000044,
+        0.0020000000000000018
+      ],
+      "mean": 0.005400000000000005,
+      "conditional_seed_ci95": [
+        -0.0009676907463106186,
+        0.011767690746310629
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "ag_news",
+      "regime": "linear_plus_dynamic",
+      "split": "test",
+      "lhs": "full_hx",
+      "control": "ordinary_c1",
+      "differences": [
+        -0.0050000000000000044,
+        0.0030000000000000027,
+        -0.0030000000000000027,
+        -0.0020000000000000018,
+        -0.0050000000000000044
+      ],
+      "mean": -0.002400000000000002,
+      "conditional_seed_ci95": [
+        -0.006480524283949539,
+        0.001680524283949535
+      ],
+      "primary_family": true,
+      "bonferroni_family95": [
+        -0.010132143939789263,
+        0.005332143939789259
+      ]
+    },
+    {
+      "dataset": "ag_news",
+      "regime": "linear_plus_dynamic",
+      "split": "test",
+      "lhs": "full_hx",
+      "control": "same_call_sigmoid",
+      "differences": [
+        0.0030000000000000027,
+        0.0010000000000000009,
+        0.0020000000000000018,
+        0.0030000000000000027,
+        -0.0010000000000000009
+      ],
+      "mean": 0.0016000000000000014,
+      "conditional_seed_ci95": [
+        -0.0004777012673671361,
+        0.003677701267367139
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "ag_news",
+      "regime": "linear_plus_dynamic",
+      "split": "test",
+      "lhs": "full_hx",
+      "control": "gru",
+      "differences": [
+        0.0010000000000000009,
+        -0.0030000000000000027,
+        0.008000000000000007,
+        -0.0020000000000000018,
+        -0.007000000000000006
+      ],
+      "mean": -0.0006000000000000005,
+      "conditional_seed_ci95": [
+        -0.007546663433823951,
+        0.00634666343382395
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "ag_news",
+      "regime": "linear_plus_dynamic",
+      "split": "test",
+      "lhs": "full_hx",
+      "control": "transformer",
+      "differences": [
+        0.02300000000000002,
+        0.013000000000000012,
+        0.019000000000000017,
+        0.01100000000000001,
+        -0.0020000000000000018
+      ],
+      "mean": 0.012800000000000011,
+      "conditional_seed_ci95": [
+        0.0009422713397335431,
+        0.024657728660266477
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "ag_news",
+      "regime": "linear_plus_dynamic",
+      "split": "corrupted_test",
+      "lhs": "full_hx",
+      "control": "ordinary_c1",
+      "differences": [
+        -0.0040000000000000036,
+        0.008000000000000007,
+        -0.0010000000000000009,
+        0.0,
+        0.0
+      ],
+      "mean": 0.0006000000000000005,
+      "conditional_seed_ci95": [
+        -0.004925055998975948,
+        0.00612505599897595
+      ],
+      "primary_family": true,
+      "bonferroni_family95": [
+        -0.009869372386170193,
+        0.011069372386170192
+      ]
+    },
+    {
+      "dataset": "ag_news",
+      "regime": "linear_plus_dynamic",
+      "split": "corrupted_test",
+      "lhs": "full_hx",
+      "control": "same_call_sigmoid",
+      "differences": [
+        0.0010000000000000009,
+        0.0040000000000000036,
+        -0.008000000000000007,
+        0.0010000000000000009,
+        0.0040000000000000036
+      ],
+      "mean": 0.00040000000000000034,
+      "conditional_seed_ci95": [
+        -0.0057207864259243065,
+        0.006520786425924307
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "ag_news",
+      "regime": "linear_plus_dynamic",
+      "split": "corrupted_test",
+      "lhs": "full_hx",
+      "control": "gru",
+      "differences": [
+        0.0,
+        0.006000000000000005,
+        -0.0020000000000000018,
+        0.01200000000000001,
+        -0.006000000000000005
+      ],
+      "mean": 0.0020000000000000018,
+      "conditional_seed_ci95": [
+        -0.006779890330850833,
+        0.010779890330850837
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "ag_news",
+      "regime": "linear_plus_dynamic",
+      "split": "corrupted_test",
+      "lhs": "full_hx",
+      "control": "transformer",
+      "differences": [
+        0.006000000000000005,
+        0.013000000000000012,
+        0.01200000000000001,
+        0.0020000000000000018,
+        0.008000000000000007
+      ],
+      "mean": 0.008200000000000008,
+      "conditional_seed_ci95": [
+        0.002619414404778457,
+        0.013780585595221558
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "cifar10",
+      "regime": "dynamic_head",
+      "split": "test",
+      "lhs": "full_hx",
+      "control": "ordinary_c1",
+      "differences": [
+        0.017000000000000015,
+        0.020000000000000018,
+        -0.0030000000000000027,
+        0.0030000000000000027,
+        0.008000000000000007
+      ],
+      "mean": 0.009000000000000008,
+      "conditional_seed_ci95": [
+        -0.0028772154912603664,
+        0.020877215491260384
+      ],
+      "primary_family": true,
+      "bonferroni_family95": [
+        -0.013506014764708533,
+        0.031506014764708545
+      ]
+    },
+    {
+      "dataset": "cifar10",
+      "regime": "dynamic_head",
+      "split": "test",
+      "lhs": "full_hx",
+      "control": "same_call_sigmoid",
+      "differences": [
+        0.016000000000000014,
+        0.010000000000000009,
+        0.0,
+        0.006000000000000005,
+        -0.0020000000000000018
+      ],
+      "mean": 0.006000000000000005,
+      "conditional_seed_ci95": [
+        -0.0031243296827498154,
+        0.015124329682749826
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "cifar10",
+      "regime": "dynamic_head",
+      "split": "test",
+      "lhs": "full_hx",
+      "control": "gru",
+      "differences": [
+        -0.008000000000000007,
+        -0.0050000000000000044,
+        0.01200000000000001,
+        0.01200000000000001,
+        0.0010000000000000009
+      ],
+      "mean": 0.002400000000000002,
+      "conditional_seed_ci95": [
+        -0.009201421636644658,
+        0.014001421636644664
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "cifar10",
+      "regime": "dynamic_head",
+      "split": "test",
+      "lhs": "full_hx",
+      "control": "transformer",
+      "differences": [
+        0.018000000000000016,
+        0.017000000000000015,
+        -0.015000000000000013,
+        0.008000000000000007,
+        -0.0040000000000000036
+      ],
+      "mean": 0.004800000000000004,
+      "conditional_seed_ci95": [
+        -0.01279048343639755,
+        0.02239048343639756
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "cifar10",
+      "regime": "dynamic_head",
+      "split": "corrupted_test",
+      "lhs": "full_hx",
+      "control": "ordinary_c1",
+      "differences": [
+        0.0030000000000000027,
+        -0.01100000000000001,
+        -0.02699999999999997,
+        0.033999999999999975,
+        0.017000000000000015
+      ],
+      "mean": 0.0032000000000000028,
+      "conditional_seed_ci95": [
+        -0.026266965327871684,
+        0.03266696532787169
+      ],
+      "primary_family": true,
+      "bonferroni_family95": [
+        -0.05263665272624095,
+        0.05903665272624095
+      ]
+    },
+    {
+      "dataset": "cifar10",
+      "regime": "dynamic_head",
+      "split": "corrupted_test",
+      "lhs": "full_hx",
+      "control": "same_call_sigmoid",
+      "differences": [
+        -0.0020000000000000018,
+        -0.020000000000000018,
+        -0.0019999999999999463,
+        0.015000000000000013,
+        0.02400000000000002
+      ],
+      "mean": 0.003000000000000014,
+      "conditional_seed_ci95": [
+        -0.01818120109839593,
+        0.024181201098395957
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "cifar10",
+      "regime": "dynamic_head",
+      "split": "corrupted_test",
+      "lhs": "full_hx",
+      "control": "gru",
+      "differences": [
+        -0.01100000000000001,
+        -0.05800000000000005,
+        0.0050000000000000044,
+        0.0050000000000000044,
+        0.05399999999999999
+      ],
+      "mean": -0.001000000000000012,
+      "conditional_seed_ci95": [
+        -0.05084472955255732,
+        0.04884472955255729
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "cifar10",
+      "regime": "dynamic_head",
+      "split": "corrupted_test",
+      "lhs": "full_hx",
+      "control": "transformer",
+      "differences": [
+        0.033999999999999975,
+        0.04799999999999999,
+        0.018000000000000016,
+        0.03699999999999998,
+        0.059
+      ],
+      "mean": 0.03919999999999999,
+      "conditional_seed_ci95": [
+        0.02005661737178394,
+        0.05834338262821605
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "cifar10",
+      "regime": "linear_plus_dynamic",
+      "split": "test",
+      "lhs": "full_hx",
+      "control": "ordinary_c1",
+      "differences": [
+        0.0,
+        0.006000000000000005,
+        -0.0040000000000000036,
+        -0.0010000000000000009,
+        -0.0040000000000000036
+      ],
+      "mean": -0.0006000000000000005,
+      "conditional_seed_ci95": [
+        -0.005689307942983411,
+        0.00448930794298341
+      ],
+      "primary_family": true,
+      "bonferroni_family95": [
+        -0.01024367782930395,
+        0.00904367782930395
+      ]
+    },
+    {
+      "dataset": "cifar10",
+      "regime": "linear_plus_dynamic",
+      "split": "test",
+      "lhs": "full_hx",
+      "control": "same_call_sigmoid",
+      "differences": [
+        0.0010000000000000009,
+        0.0,
+        0.0,
+        -0.009000000000000008,
+        0.0
+      ],
+      "mean": -0.0016000000000000014,
+      "conditional_seed_ci95": [
+        -0.006764486429523437,
+        0.0035644864295234337
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "cifar10",
+      "regime": "linear_plus_dynamic",
+      "split": "test",
+      "lhs": "full_hx",
+      "control": "gru",
+      "differences": [
+        -0.0010000000000000009,
+        0.0,
+        0.0010000000000000009,
+        -0.0040000000000000036,
+        -0.0020000000000000018
+      ],
+      "mean": -0.001200000000000001,
+      "conditional_seed_ci95": [
+        -0.0035883883880999832,
+        0.0011883883880999813
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "cifar10",
+      "regime": "linear_plus_dynamic",
+      "split": "test",
+      "lhs": "full_hx",
+      "control": "transformer",
+      "differences": [
+        -0.0030000000000000027,
+        0.0,
+        0.0020000000000000018,
+        0.0050000000000000044,
+        0.020000000000000018
+      ],
+      "mean": 0.004800000000000004,
+      "conditional_seed_ci95": [
+        -0.006354262386815789,
+        0.0159542623868158
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "cifar10",
+      "regime": "linear_plus_dynamic",
+      "split": "corrupted_test",
+      "lhs": "full_hx",
+      "control": "ordinary_c1",
+      "differences": [
+        -0.0050000000000000044,
+        0.0040000000000000036,
+        0.0010000000000000009,
+        -0.0030000000000000027,
+        -0.0020000000000000018
+      ],
+      "mean": -0.0010000000000000009,
+      "conditional_seed_ci95": [
+        -0.005389945165425419,
+        0.0033899451654254174
+      ],
+      "primary_family": true,
+      "bonferroni_family95": [
+        -0.009318462419245117,
+        0.007318462419245116
+      ]
+    },
+    {
+      "dataset": "cifar10",
+      "regime": "linear_plus_dynamic",
+      "split": "corrupted_test",
+      "lhs": "full_hx",
+      "control": "same_call_sigmoid",
+      "differences": [
+        -0.0020000000000000018,
+        0.0,
+        0.0020000000000000018,
+        -0.0040000000000000036,
+        0.0
+      ],
+      "mean": -0.0008000000000000007,
+      "conditional_seed_ci95": [
+        -0.0036314295539645472,
+        0.0020314295539645456
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "cifar10",
+      "regime": "linear_plus_dynamic",
+      "split": "corrupted_test",
+      "lhs": "full_hx",
+      "control": "gru",
+      "differences": [
+        -0.010000000000000009,
+        0.0050000000000000044,
+        0.007000000000000006,
+        -0.01200000000000001,
+        0.007000000000000006
+      ],
+      "mean": -0.0006000000000000005,
+      "conditional_seed_ci95": [
+        -0.012464227826915175,
+        0.011264227826915175
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    },
+    {
+      "dataset": "cifar10",
+      "regime": "linear_plus_dynamic",
+      "split": "corrupted_test",
+      "lhs": "full_hx",
+      "control": "transformer",
+      "differences": [
+        0.008000000000000007,
+        0.0040000000000000036,
+        0.014000000000000012,
+        0.0040000000000000036,
+        0.02100000000000002
+      ],
+      "mean": 0.01020000000000001,
+      "conditional_seed_ci95": [
+        0.0011435101406802768,
+        0.019256489859319742
+      ],
+      "primary_family": false,
+      "bonferroni_family95": null
+    }
+  ],
+  "regime_financial_specific_gate": {
+    "dynamic_head": false,
+    "linear_plus_dynamic": false
+  },
+  "financial_specific_gate_passed": false,
+  "equal_quality_cost_gate_established": false,
+  "full_backbone_scale_gate_established": false,
+  "scope": "Five paired training seeds, one new fixed data sample per modality; intervals conditional on samples and budget"
+}

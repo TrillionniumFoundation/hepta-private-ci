@@ -1,0 +1,69 @@
+{
+  "schema": "hepta.hcsn.followup.integrity.v1",
+  "integrity_passed": true,
+  "meaning": "Integrity and recorded software validation, not scientific acceptance",
+  "historical_files_unchanged": 123,
+  "python_modules": 48,
+  "largest_python_module_lines": 319,
+  "json_files_inspected": 46,
+  "source_path_digest_pairs_verified": 44,
+  "unique_checkpoint_path_digest_pairs_verified": 337,
+  "completed_training_matrices": [
+    {
+      "file": "sequence/results.json",
+      "runs": 90,
+      "updates": 600
+    },
+    {
+      "file": "sequence/v2_reference_results.json",
+      "runs": 15,
+      "updates": 600
+    },
+    {
+      "file": "sequence/full_results.json",
+      "runs": 15,
+      "updates": 600
+    },
+    {
+      "file": "encoder/ag_news_baseline_results.json",
+      "runs": 20,
+      "updates": 300
+    },
+    {
+      "file": "encoder/cifar10_baseline_results.json",
+      "runs": 20,
+      "updates": 300
+    },
+    {
+      "file": "ablation/ag_news_results.json",
+      "runs": 35,
+      "updates": 300
+    },
+    {
+      "file": "ablation/cifar10_results.json",
+      "runs": 35,
+      "updates": 300
+    },
+    {
+      "file": "ridge/results.json",
+      "runs": 105,
+      "updates": 600
+    }
+  ],
+  "confirmatory_or_fixed_protocol_neural_runs": 335,
+  "excluded_from_that_run_count": "Four development trainings, two linear fits, numerical fixtures, prediction replay, timing probes",
+  "followup_manifest_files_verified": 449,
+  "research_acceptance_all_passed": false,
+  "failed_evidence_preserved": [
+    "Original raw financial float32 tests",
+    "v3 retrieval and longer memory/capacity challenges",
+    "v4 per-seed memory extrapolation target",
+    "v4 small-step float32 finite-difference stress checks",
+    "No established financial-operator-specific quality benefit"
+  ],
+  "limitations": [
+    "No GPU or equal-quality scale/energy benchmark",
+    "No paired multimodal or full-backbone training",
+    "Rust workspace formatting/tests not run; no Rust files changed"
+  ]
+}

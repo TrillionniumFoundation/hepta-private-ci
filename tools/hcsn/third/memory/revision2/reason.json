@@ -1,0 +1,6 @@
+{
+  "reason": "All sixteen real-graph checks printed pass, but final JSON serialization failed on a numpy.bool_ in a solve-stress row; no completed numerical receipt was saved.",
+  "new_development_data_seen": false,
+  "new_development_training_started": false,
+  "next_revision": "Convert pass flag to Python bool only, retain all numerical and quality thresholds, rerun validation."
+}

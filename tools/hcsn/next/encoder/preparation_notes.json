@@ -1,0 +1,5 @@
+{
+  "text_initial_assertion_failure": "The first feature preparation incorrectly required every 25-percent Bernoulli word-deletion draw to change the global feature. Some random draws leave all words untouched; truncation can also discard affected words.",
+  "repair": "Removed the incorrect universal-change assertion; preserve identical selection and corruption RNG. Record actual changed-feature fraction and unchanged raw inputs. No head training or test model score had occurred.",
+  "data_download": "Official CIFAR binary host too slow; fixed uoft-cs/cifar10 Parquet mirror checked separately."
+}

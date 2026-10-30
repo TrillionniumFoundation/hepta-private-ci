@@ -1,0 +1,15 @@
+full_fixed True True
+full_mass True True
+sigmoid_fixed True True
+sigmoid_mass True True
+c1_fixed True True
+c1_mass True True
+memory_fixed True True
+memory_mass True True
+NUMERICAL_VALIDATION False
+Traceback (most recent call last):
+  File "/workspace/scratch/3a11e0d2ca13/hcsn_execution/repo/tools/hcsn/third/memory/validate.py", line 103, in <module>
+    main()
+  File "/workspace/scratch/3a11e0d2ca13/hcsn_execution/repo/tools/hcsn/third/memory/validate.py", line 99, in main
+    raise RuntimeError("Numerical validation failed; development training remains closed")
+RuntimeError: Numerical validation failed; development training remains closed

@@ -1,0 +1,331 @@
+{
+  "passed": true,
+  "checkpoints_replayed": 20,
+  "source_sha_verified": true,
+  "all_accuracy_reproduced_exactly": true,
+  "max_loss_error": 0.0,
+  "max_brier_error": 0.0,
+  "all_checks": [
+    {
+      "task": "memory",
+      "seed": 0,
+      "reproduced_test": {
+        "loss": 1.3844064474105835,
+        "accuracy": 0.24609375,
+        "brier": 0.7490916103124619
+      },
+      "absolute_errors": {
+        "accuracy": 0.0,
+        "loss": 0.0,
+        "brier": 0.0
+      },
+      "checkpoint_sha_verified": true,
+      "data_sha_verified": true
+    },
+    {
+      "task": "memory",
+      "seed": 1,
+      "reproduced_test": {
+        "loss": 1.3881467878818512,
+        "accuracy": 0.232421875,
+        "brier": 0.7509463727474213
+      },
+      "absolute_errors": {
+        "accuracy": 0.0,
+        "loss": 0.0,
+        "brier": 0.0
+      },
+      "checkpoint_sha_verified": true,
+      "data_sha_verified": true
+    },
+    {
+      "task": "memory",
+      "seed": 2,
+      "reproduced_test": {
+        "loss": 1.3874725997447968,
+        "accuracy": 0.267578125,
+        "brier": 0.7504988461732864
+      },
+      "absolute_errors": {
+        "accuracy": 0.0,
+        "loss": 0.0,
+        "brier": 0.0
+      },
+      "checkpoint_sha_verified": true,
+      "data_sha_verified": true
+    },
+    {
+      "task": "memory",
+      "seed": 3,
+      "reproduced_test": {
+        "loss": 1.389196127653122,
+        "accuracy": 0.25,
+        "brier": 0.7514418363571167
+      },
+      "absolute_errors": {
+        "accuracy": 0.0,
+        "loss": 0.0,
+        "brier": 0.0
+      },
+      "checkpoint_sha_verified": true,
+      "data_sha_verified": true
+    },
+    {
+      "task": "memory",
+      "seed": 4,
+      "reproduced_test": {
+        "loss": 1.3900271654129028,
+        "accuracy": 0.232421875,
+        "brier": 0.7518702149391174
+      },
+      "absolute_errors": {
+        "accuracy": 0.0,
+        "loss": 0.0,
+        "brier": 0.0
+      },
+      "checkpoint_sha_verified": true,
+      "data_sha_verified": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 0,
+      "reproduced_test": {
+        "loss": 1.2345232665538788,
+        "accuracy": 0.4453125,
+        "brier": 0.6727603673934937
+      },
+      "absolute_errors": {
+        "accuracy": 0.0,
+        "loss": 0.0,
+        "brier": 0.0
+      },
+      "checkpoint_sha_verified": true,
+      "data_sha_verified": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 1,
+      "reproduced_test": {
+        "loss": 1.2185759842395782,
+        "accuracy": 0.458984375,
+        "brier": 0.6759202480316162
+      },
+      "absolute_errors": {
+        "accuracy": 0.0,
+        "loss": 0.0,
+        "brier": 0.0
+      },
+      "checkpoint_sha_verified": true,
+      "data_sha_verified": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 2,
+      "reproduced_test": {
+        "loss": 1.2120606303215027,
+        "accuracy": 0.451171875,
+        "brier": 0.6666370779275894
+      },
+      "absolute_errors": {
+        "accuracy": 0.0,
+        "loss": 0.0,
+        "brier": 0.0
+      },
+      "checkpoint_sha_verified": true,
+      "data_sha_verified": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 3,
+      "reproduced_test": {
+        "loss": 1.1666210293769836,
+        "accuracy": 0.498046875,
+        "brier": 0.6324188560247421
+      },
+      "absolute_errors": {
+        "accuracy": 0.0,
+        "loss": 0.0,
+        "brier": 0.0
+      },
+      "checkpoint_sha_verified": true,
+      "data_sha_verified": true
+    },
+    {
+      "task": "retrieval",
+      "seed": 4,
+      "reproduced_test": {
+        "loss": 1.291157454252243,
+        "accuracy": 0.43359375,
+        "brier": 0.6974951177835464
+      },
+      "absolute_errors": {
+        "accuracy": 0.0,
+        "loss": 0.0,
+        "brier": 0.0
+      },
+      "checkpoint_sha_verified": true,
+      "data_sha_verified": true
+    },
+    {
+      "task": "irregular",
+      "seed": 0,
+      "reproduced_test": {
+        "loss": 0.8559221923351288,
+        "accuracy": 0.6953125,
+        "brier": 0.46669379621744156
+      },
+      "absolute_errors": {
+        "accuracy": 0.0,
+        "loss": 0.0,
+        "brier": 0.0
+      },
+      "checkpoint_sha_verified": true,
+      "data_sha_verified": true
+    },
+    {
+      "task": "irregular",
+      "seed": 1,
+      "reproduced_test": {
+        "loss": 0.9064749032258987,
+        "accuracy": 0.607421875,
+        "brier": 0.5019977167248726
+      },
+      "absolute_errors": {
+        "accuracy": 0.0,
+        "loss": 0.0,
+        "brier": 0.0
+      },
+      "checkpoint_sha_verified": true,
+      "data_sha_verified": true
+    },
+    {
+      "task": "irregular",
+      "seed": 2,
+      "reproduced_test": {
+        "loss": 0.8510059267282486,
+        "accuracy": 0.67578125,
+        "brier": 0.4647468701004982
+      },
+      "absolute_errors": {
+        "accuracy": 0.0,
+        "loss": 0.0,
+        "brier": 0.0
+      },
+      "checkpoint_sha_verified": true,
+      "data_sha_verified": true
+    },
+    {
+      "task": "irregular",
+      "seed": 3,
+      "reproduced_test": {
+        "loss": 0.8678579479455948,
+        "accuracy": 0.66015625,
+        "brier": 0.47750387340784073
+      },
+      "absolute_errors": {
+        "accuracy": 0.0,
+        "loss": 0.0,
+        "brier": 0.0
+      },
+      "checkpoint_sha_verified": true,
+      "data_sha_verified": true
+    },
+    {
+      "task": "irregular",
+      "seed": 4,
+      "reproduced_test": {
+        "loss": 0.8851820081472397,
+        "accuracy": 0.666015625,
+        "brier": 0.48473653197288513
+      },
+      "absolute_errors": {
+        "accuracy": 0.0,
+        "loss": 0.0,
+        "brier": 0.0
+      },
+      "checkpoint_sha_verified": true,
+      "data_sha_verified": true
+    },
+    {
+      "task": "frozen_text",
+      "seed": 0,
+      "reproduced_test": {
+        "loss": 0.5220664691925049,
+        "accuracy": 0.755,
+        "brier": 0.34709309101104735
+      },
+      "absolute_errors": {
+        "accuracy": 0.0,
+        "loss": 0.0,
+        "brier": 0.0
+      },
+      "checkpoint_sha_verified": true,
+      "data_sha_verified": true
+    },
+    {
+      "task": "frozen_text",
+      "seed": 1,
+      "reproduced_test": {
+        "loss": 0.5272938799858093,
+        "accuracy": 0.7625,
+        "brier": 0.34762331008911135
+      },
+      "absolute_errors": {
+        "accuracy": 0.0,
+        "loss": 0.0,
+        "brier": 0.0
+      },
+      "checkpoint_sha_verified": true,
+      "data_sha_verified": true
+    },
+    {
+      "task": "frozen_text",
+      "seed": 2,
+      "reproduced_test": {
+        "loss": 0.5102191495895386,
+        "accuracy": 0.76375,
+        "brier": 0.3362051200866699
+      },
+      "absolute_errors": {
+        "accuracy": 0.0,
+        "loss": 0.0,
+        "brier": 0.0
+      },
+      "checkpoint_sha_verified": true,
+      "data_sha_verified": true
+    },
+    {
+      "task": "frozen_text",
+      "seed": 3,
+      "reproduced_test": {
+        "loss": 0.5098229598999023,
+        "accuracy": 0.7675,
+        "brier": 0.33503150939941406
+      },
+      "absolute_errors": {
+        "accuracy": 0.0,
+        "loss": 0.0,
+        "brier": 0.0
+      },
+      "checkpoint_sha_verified": true,
+      "data_sha_verified": true
+    },
+    {
+      "task": "frozen_text",
+      "seed": 4,
+      "reproduced_test": {
+        "loss": 0.5179682970046997,
+        "accuracy": 0.76125,
+        "brier": 0.3445321607589722
+      },
+      "absolute_errors": {
+        "accuracy": 0.0,
+        "loss": 0.0,
+        "brier": 0.0
+      },
+      "checkpoint_sha_verified": true,
+      "data_sha_verified": true
+    }
+  ],
+  "limitation": "Replay validates saved implementation/results, not new data or independent architecture superiority"
+}

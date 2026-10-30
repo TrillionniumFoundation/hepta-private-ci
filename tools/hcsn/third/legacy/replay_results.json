@@ -1,0 +1,136 @@
+{
+  "passed": true,
+  "baseline_commit": "1dd990bedee8a525093c1dd4008b2f00c2c5ff1c",
+  "baseline_files_verified": 575,
+  "first_release_integrity": {
+    "all_delivery_checks_passed": true,
+    "training_run_counts": {
+      "benchmarks/sequence_results.json": 60,
+      "benchmarks/sequence_v2_results.json": 40,
+      "benchmarks/v2_reference_results.json": 10,
+      "encoder/head_results.json": 20,
+      "benchmarks/frozen_v2_results.json": 10,
+      "benchmarks/snn_reference_results.json": 15,
+      "benchmarks/snn_frozen_results.json": 5
+    },
+    "total_neural_training_runs": 160,
+    "independent_linear_fits_in_main_comparison": 1,
+    "total_optimizer_updates": 48000,
+    "checkpoint_hashes_verified": 50,
+    "historical_source_hash_pairs_verified": 57,
+    "python_files_syntax_checked": [
+      "plot_summary.py",
+      "verify_evidence.py",
+      "reference_toy.py",
+      "analytic/hx_validation_extras.py",
+      "analytic/hx_model.py",
+      "analytic/hx_reference.py",
+      "analytic/__init__.py",
+      "analytic/jax_hx.py",
+      "analytic/run_validation.py",
+      "analytic/hx_precision.py",
+      "analytic/validate_jax.py",
+      "benchmarks/snn_models.py",
+      "benchmarks/train.py",
+      "benchmarks/run_snn_reference.py",
+      "benchmarks/run_v2_reference.py",
+      "benchmarks/run_v2.py",
+      "benchmarks/validate_snn.py",
+      "benchmarks/run_frozen_v2.py",
+      "benchmarks/__init__.py",
+      "benchmarks/validate_models.py",
+      "benchmarks/v2_models.py",
+      "benchmarks/validate_v2.py",
+      "benchmarks/run_benchmarks.py",
+      "benchmarks/audit_snn.py",
+      "benchmarks/data.py",
+      "benchmarks/models.py",
+      "encoder/prepare_features.py",
+      "encoder/audit_heads.py",
+      "encoder/run_heads.py",
+      "dynamics/run_validation.py",
+      "dynamics/gradient_check.py",
+      "dynamics/model.py",
+      "dynamics/write_report.py"
+    ],
+    "paired_synthetic_data_hashes_match": true,
+    "frozen_feature_hash_consistent": "970c2c56442dc7deaa0e1db98f78b12ab0254a5fae2d45923852055252286a8a",
+    "scope": "Artifact consistency, not a new claim of scientific advantage",
+    "known_limitations": [
+      "float32 complete financial-kernel tolerance failed",
+      "Legacy warm training timings may include a second compilation",
+      "Full neural training used simplified C1 operators, not the new complete financial JAX kernel"
+    ]
+  },
+  "followup_integrity": {
+    "schema": "hepta.hcsn.followup.integrity.v1",
+    "integrity_passed": true,
+    "meaning": "Integrity and recorded software validation, not scientific acceptance",
+    "historical_files_unchanged": 123,
+    "python_modules": 48,
+    "largest_python_module_lines": 319,
+    "json_files_inspected": 46,
+    "source_path_digest_pairs_verified": 44,
+    "unique_checkpoint_path_digest_pairs_verified": 337,
+    "completed_training_matrices": [
+      {
+        "file": "sequence/results.json",
+        "runs": 90,
+        "updates": 600
+      },
+      {
+        "file": "sequence/v2_reference_results.json",
+        "runs": 15,
+        "updates": 600
+      },
+      {
+        "file": "sequence/full_results.json",
+        "runs": 15,
+        "updates": 600
+      },
+      {
+        "file": "encoder/ag_news_baseline_results.json",
+        "runs": 20,
+        "updates": 300
+      },
+      {
+        "file": "encoder/cifar10_baseline_results.json",
+        "runs": 20,
+        "updates": 300
+      },
+      {
+        "file": "ablation/ag_news_results.json",
+        "runs": 35,
+        "updates": 300
+      },
+      {
+        "file": "ablation/cifar10_results.json",
+        "runs": 35,
+        "updates": 300
+      },
+      {
+        "file": "ridge/results.json",
+        "runs": 105,
+        "updates": 600
+      }
+    ],
+    "confirmatory_or_fixed_protocol_neural_runs": 335,
+    "excluded_from_that_run_count": "Four development trainings, two linear fits, numerical fixtures, prediction replay, timing probes",
+    "followup_manifest_files_verified": 449,
+    "research_acceptance_all_passed": false,
+    "failed_evidence_preserved": [
+      "Original raw financial float32 tests",
+      "v3 retrieval and longer memory/capacity challenges",
+      "v4 per-seed memory extrapolation target",
+      "v4 small-step float32 finite-difference stress checks",
+      "No established financial-operator-specific quality benefit"
+    ],
+    "limitations": [
+      "No GPU or equal-quality scale/energy benchmark",
+      "No paired multimodal or full-backbone training",
+      "Rust workspace formatting/tests not run; no Rust files changed"
+    ]
+  },
+  "scope": "Historical artifact/source integrity only; no new training, no reinterpretation of failed scientific gates",
+  "current_sources_modified": false
+}

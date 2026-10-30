@@ -1,0 +1,212 @@
+{
+  "passed": true,
+  "scope": "Software regression fixtures, not new task accuracy trials",
+  "rows": [
+    {
+      "kind": "hcsn",
+      "max_parameter_abs_difference": 0.0,
+      "strong_conversion_value_preserving": true,
+      "original_weak_leaf_count": 5,
+      "new_weak_leaf_count": 0,
+      "old_timing": {
+        "best_step": 4,
+        "first_update_seconds": 0.8365451809986553,
+        "warm_training_seconds": 0.6972496439957467,
+        "max_unclipped_gradient_norm": 1.8849313259124756,
+        "mean_unclipped_gradient_norm": 1.6511637568473816,
+        "steps": 4,
+        "batch_size": 32,
+        "train_examples_seen": 128,
+        "learning_rate": 0.003
+      },
+      "new_timing": {
+        "best_step": 4,
+        "steps": 4,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 128,
+        "compilation_seconds": 0.7647689929981425,
+        "optimizer_execution_seconds": 0.006203907003509812,
+        "optimizer_update_median_ms": 1.5125770005397499,
+        "optimizer_update_p95_ms": 2.3404871011734936,
+        "validation_seconds": 0.13622643999769934,
+        "host_batch_seconds": 0.0017970349981624167,
+        "total_train_call_seconds": 0.9141047010016337,
+        "first_three_optimizer_update_seconds": [
+          0.0020229219990142155,
+          0.0010022320020652842,
+          0.0007822250008757692
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 1.8849313259124756,
+        "mean_unclipped_gradient_norm": 1.6511637568473816,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      }
+    },
+    {
+      "kind": "sigmoid",
+      "max_parameter_abs_difference": 0.0,
+      "strong_conversion_value_preserving": true,
+      "original_weak_leaf_count": 5,
+      "new_weak_leaf_count": 0,
+      "old_timing": {
+        "best_step": 4,
+        "first_update_seconds": 0.8763645500002895,
+        "warm_training_seconds": 0.7807186599966371,
+        "max_unclipped_gradient_norm": 2.0357937812805176,
+        "mean_unclipped_gradient_norm": 1.7814472019672394,
+        "steps": 4,
+        "batch_size": 32,
+        "train_examples_seen": 128,
+        "learning_rate": 0.003
+      },
+      "new_timing": {
+        "best_step": 4,
+        "steps": 4,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 128,
+        "compilation_seconds": 0.7562473359976138,
+        "optimizer_execution_seconds": 0.004974364001100184,
+        "optimizer_update_median_ms": 1.0774964994197944,
+        "optimizer_update_p95_ms": 2.1397023007011735,
+        "validation_seconds": 0.14411378699878696,
+        "host_batch_seconds": 0.0019981489967904054,
+        "total_train_call_seconds": 0.9131719719989633,
+        "first_three_optimizer_update_seconds": [
+          0.002272728001116775,
+          0.0007691030004934873,
+          0.0013858899983461015
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 2.0357937812805176,
+        "mean_unclipped_gradient_norm": 1.7814472019672394,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      }
+    },
+    {
+      "kind": "gru",
+      "max_parameter_abs_difference": 0.0,
+      "strong_conversion_value_preserving": true,
+      "original_weak_leaf_count": 0,
+      "new_weak_leaf_count": 0,
+      "old_timing": {
+        "best_step": 4,
+        "first_update_seconds": 0.4210723819996929,
+        "warm_training_seconds": 0.001207917001011083,
+        "max_unclipped_gradient_norm": 0.43783602118492126,
+        "mean_unclipped_gradient_norm": 0.3470749035477638,
+        "steps": 4,
+        "batch_size": 32,
+        "train_examples_seen": 128,
+        "learning_rate": 0.003
+      },
+      "new_timing": {
+        "best_step": 4,
+        "steps": 4,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 128,
+        "compilation_seconds": 0.2930515820007713,
+        "optimizer_execution_seconds": 0.002214503998402506,
+        "optimizer_update_median_ms": 0.43363499935367145,
+        "optimizer_update_p95_ms": 0.8501622512994799,
+        "validation_seconds": 0.05190073400081019,
+        "host_batch_seconds": 0.0011434100015321746,
+        "total_train_call_seconds": 0.3505196280020755,
+        "first_three_optimizer_update_seconds": [
+          0.0009231440017174464,
+          0.00042408999797771685,
+          0.00043659899893100373
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 0.43783602118492126,
+        "mean_unclipped_gradient_norm": 0.3470749035477638,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      }
+    },
+    {
+      "kind": "transformer",
+      "max_parameter_abs_difference": 0.0,
+      "strong_conversion_value_preserving": true,
+      "original_weak_leaf_count": 0,
+      "new_weak_leaf_count": 0,
+      "old_timing": {
+        "best_step": 4,
+        "first_update_seconds": 0.6061679199992795,
+        "warm_training_seconds": 0.0015351039983215742,
+        "max_unclipped_gradient_norm": 1.2663991451263428,
+        "mean_unclipped_gradient_norm": 1.0330954790115356,
+        "steps": 4,
+        "batch_size": 32,
+        "train_examples_seen": 128,
+        "learning_rate": 0.003
+      },
+      "new_timing": {
+        "best_step": 4,
+        "steps": 4,
+        "batch_size": 32,
+        "learning_rate": 0.003,
+        "train_examples_seen": 128,
+        "compilation_seconds": 0.7256307960014965,
+        "optimizer_execution_seconds": 0.005029621002904605,
+        "optimizer_update_median_ms": 1.0394460005045403,
+        "optimizer_update_p95_ms": 2.122652901925903,
+        "validation_seconds": 0.12218057200152543,
+        "host_batch_seconds": 0.0018429420051688794,
+        "total_train_call_seconds": 0.8593432599991502,
+        "first_three_optimizer_update_seconds": [
+          0.002310587002284592,
+          0.0010576929998933338,
+          0.0010211990011157468
+        ],
+        "compiled_training_shapes": 1,
+        "strong_initial_parameters": true,
+        "optimizer_signature_stable": true,
+        "warmup_optimizer_updates": 0,
+        "max_unclipped_gradient_norm": 1.2663991451263428,
+        "mean_unclipped_gradient_norm": 1.0330954790115356,
+        "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+      }
+    }
+  ],
+  "multiple_shapes": {
+    "best_step": 4,
+    "steps": 4,
+    "batch_size": 32,
+    "learning_rate": 0.003,
+    "train_examples_seen": 128,
+    "compilation_seconds": 1.4228318599998602,
+    "optimizer_execution_seconds": 0.004142461999435909,
+    "optimizer_update_median_ms": 1.0115799996128771,
+    "optimizer_update_p95_ms": 1.5760991509523592,
+    "validation_seconds": 0.12491917000079411,
+    "host_batch_seconds": 0.0012759470009768847,
+    "total_train_call_seconds": 1.557457148002868,
+    "first_three_optimizer_update_seconds": [
+      0.0016012720006983727,
+      0.0014334530023916159,
+      0.0005180299995117821
+    ],
+    "compiled_training_shapes": 2,
+    "strong_initial_parameters": true,
+    "optimizer_signature_stable": true,
+    "warmup_optimizer_updates": 0,
+    "max_unclipped_gradient_norm": 1.8849313259124756,
+    "mean_unclipped_gradient_norm": 1.44924296438694,
+    "caveat": "AOT optimizer timing on shared CPU; no hardware, energy or end-to-end superiority claim"
+  },
+  "source_sha256": {
+    "validate_training.py": "34dcd816465f9f034485efd0adcfc7160bd876d53ddbef1426a7a11b685aa674",
+    "common.py": "27a6b807db7a2a0d0ad3f49dbc34b1d2850dcf8bdab00cedb928a153489ac565"
+  }
+}

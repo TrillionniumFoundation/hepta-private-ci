@@ -1,0 +1,147 @@
+{
+  "status": "Accounting erratum only; frozen runner and raw results retained",
+  "raw_field": "fixed_operator_bytes",
+  "raw_field_actual_meaning": "Sum of original float64 NPZ array bytes; it was mislabeled as runtime operator bytes in frozen runner",
+  "source_array_bytes": 262256,
+  "runtime_fp32_array_bytes": 131128,
+  "npz_file_bytes": 253216,
+  "table_sha256": "c77e407162061c06a9a34c5822b8751ebb2a71b1a5ff2a584c60e6b6ec63e764",
+  "runtime_cast_evidence": "models.py loads as_jax_table(..., jnp.float32) before tracing; all table leaves cast to float32",
+  "rows": [
+    {
+      "name": "call_coeff",
+      "source_dtype": "float64",
+      "source_shape": [
+        4,
+        4096
+      ],
+      "source_array_bytes": 131072,
+      "runtime_dtype": "float32",
+      "runtime_array_bytes": 65536
+    },
+    {
+      "name": "call_step",
+      "source_dtype": "float64",
+      "source_shape": [],
+      "source_array_bytes": 8,
+      "runtime_dtype": "float32",
+      "runtime_array_bytes": 4
+    },
+    {
+      "name": "call_limit",
+      "source_dtype": "float64",
+      "source_shape": [],
+      "source_array_bytes": 8,
+      "runtime_dtype": "float32",
+      "runtime_array_bytes": 4
+    },
+    {
+      "name": "call_distance_limit",
+      "source_dtype": "float64",
+      "source_shape": [],
+      "source_array_bytes": 8,
+      "runtime_dtype": "float32",
+      "runtime_array_bytes": 4
+    },
+    {
+      "name": "call_end",
+      "source_dtype": "float64",
+      "source_shape": [],
+      "source_array_bytes": 8,
+      "runtime_dtype": "float32",
+      "runtime_array_bytes": 4
+    },
+    {
+      "name": "call_tail_rate",
+      "source_dtype": "float64",
+      "source_shape": [],
+      "source_array_bytes": 8,
+      "runtime_dtype": "float32",
+      "runtime_array_bytes": 4
+    },
+    {
+      "name": "risk_coeff",
+      "source_dtype": "float64",
+      "source_shape": [
+        4,
+        4096
+      ],
+      "source_array_bytes": 131072,
+      "runtime_dtype": "float32",
+      "runtime_array_bytes": 65536
+    },
+    {
+      "name": "risk_step",
+      "source_dtype": "float64",
+      "source_shape": [],
+      "source_array_bytes": 8,
+      "runtime_dtype": "float32",
+      "runtime_array_bytes": 4
+    },
+    {
+      "name": "risk_limit",
+      "source_dtype": "float64",
+      "source_shape": [],
+      "source_array_bytes": 8,
+      "runtime_dtype": "float32",
+      "runtime_array_bytes": 4
+    },
+    {
+      "name": "risk_end",
+      "source_dtype": "float64",
+      "source_shape": [],
+      "source_array_bytes": 8,
+      "runtime_dtype": "float32",
+      "runtime_array_bytes": 4
+    },
+    {
+      "name": "risk_tail_rate",
+      "source_dtype": "float64",
+      "source_shape": [],
+      "source_array_bytes": 8,
+      "runtime_dtype": "float32",
+      "runtime_array_bytes": 4
+    },
+    {
+      "name": "diffusion_scale",
+      "source_dtype": "float64",
+      "source_shape": [],
+      "source_array_bytes": 8,
+      "runtime_dtype": "float32",
+      "runtime_array_bytes": 4
+    },
+    {
+      "name": "epsilon_scaled",
+      "source_dtype": "float64",
+      "source_shape": [],
+      "source_array_bytes": 8,
+      "runtime_dtype": "float32",
+      "runtime_array_bytes": 4
+    },
+    {
+      "name": "patch_A",
+      "source_dtype": "float64",
+      "source_shape": [],
+      "source_array_bytes": 8,
+      "runtime_dtype": "float32",
+      "runtime_array_bytes": 4
+    },
+    {
+      "name": "patch_B",
+      "source_dtype": "float64",
+      "source_shape": [],
+      "source_array_bytes": 8,
+      "runtime_dtype": "float32",
+      "runtime_array_bytes": 4
+    },
+    {
+      "name": "boundary",
+      "source_dtype": "float64",
+      "source_shape": [],
+      "source_array_bytes": 8,
+      "runtime_dtype": "float32",
+      "runtime_array_bytes": 4
+    }
+  ],
+  "affected": "Resource reporting only; no model, training, checkpoint selection, data or accuracy changes"
+}

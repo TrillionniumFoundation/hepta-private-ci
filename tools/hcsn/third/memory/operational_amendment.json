@@ -1,0 +1,62 @@
+{
+  "schema": "hcsn.memory.operational.amendment.v1",
+  "frozen_at_utc": "2026-10-30T06:17:59.383340+00:00",
+  "authority": "Parent explicitly authorized cache-aware resource scheduling without changing scientific protocol. Amendment is after first completed run and before second.",
+  "applies_after_completed_runs": 1,
+  "preserved_result_file": "before_operational_amendment/development_results.json",
+  "driver_sha256": "f3b2bcf1047a8a59c652930b2cc0da5b74a6a36fe2646c7368e37b48dfe9cfa5",
+  "scientific_freeze_sha256": "be352590d34de0eaf127b4566a89bb80e8a295799aebfa72febaee295f5db432",
+  "numeric_receipt_sha256": "265fb2dfdf97d1383bc4fc66e506d81e43debd0863c85b4e4bec13631c63c1a2",
+  "handoff_receipt_sha256": "a11b0a5c5daa037831aebb10c83389a525264ed78bdc0c9e478b3ffca8b6ce60",
+  "original_rule": "Admit if cgroup memory.current <= 7500000000 bytes",
+  "new_rule": "working_set=current-max(0,inactive_file-file_dirty-file_writeback); admit if memory.max-working_set >= 1500000000 bytes",
+  "permitted_callbacks": [
+    "capacity admission wait",
+    "atomic evidence writer adding provenance/resources"
+  ],
+  "unchanged": [
+    "scientific source hashes",
+    "parameters",
+    "initialization",
+    "datasets",
+    "training updates",
+    "optimizer",
+    "metrics",
+    "model selection",
+    "precision",
+    "development thresholds",
+    "48-run matrix",
+    "CPU affinity2,3"
+  ],
+  "first_run_preserved": true,
+  "first_run_repeated": false,
+  "numeric_revalidation_required": false,
+  "initial_resources": {
+    "raw_current_bytes": 7765659648,
+    "cgroup_limit_bytes": 8589934592,
+    "clean_inactive_estimate_bytes": 2291306496,
+    "conservative_working_set_bytes": 5474353152,
+    "estimated_headroom_bytes": 3115581440,
+    "components": {
+      "anon": 203259904,
+      "file": 6992281600,
+      "shmem": 2164154368,
+      "inactive_file": 2292518912,
+      "active_file": 2535608320,
+      "file_dirty": 1212416,
+      "file_writeback": 0,
+      "slab_reclaimable": 519519312,
+      "slab_unreclaimable": 43976416
+    },
+    "oom_events": {
+      "low": 0,
+      "high": 0,
+      "max": 2575483,
+      "oom": 94,
+      "oom_kill": 2,
+      "oom_group_kill": 0
+    },
+    "utc": "2026-10-30T06:17:59.383719+00:00"
+  },
+  "limitation": "The shared cgroup contains other work and reclaimable file cache. This is a conservative scheduling heuristic, not an OOM guarantee. No speed comparison across amendment boundary is valid."
+}

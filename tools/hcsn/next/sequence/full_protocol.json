@@ -1,0 +1,16 @@
+{
+  "status": "Declared before full-HX sequence training; existing v3 architecture and training budget are retained",
+  "variant": "Full-HX normalized equity and explicitly C1-risk table replace only the legacy q/a evaluation in the v3 dynamic cell",
+  "table": "next/full_kernel/baseline_table.npz",
+  "table_sha256": "c77e407162061c06a9a34c5822b8751ebb2a71b1a5ff2a584c60e6b6ec63e764",
+  "financial_parameters": "Fixed calibrated template; neural boundary offsets, weights and time constants train, but the nine financial parameters do not",
+  "operator_coordinate": "z = log(Vb/V)/(sigma*sqrt(m)); the learned dynamic-cell score is interpreted as z",
+  "data": "Exactly the v3 curriculum, validation and heldout datasets",
+  "seeds": [0, 1, 2, 3, 4],
+  "tasks": ["memory", "retrieval", "irregular"],
+  "updates": 600,
+  "batch_size": 32,
+  "learning_rate": 0.003,
+  "checkpoint_selection": "Minimum validation cross entropy every 50 updates",
+  "claim_limit": "A finite C1 numerical approximation based on complete financial values and a newly designed risk channel; neither an exact nonlinear ODE flow nor nine-parameter financial learning"
+}

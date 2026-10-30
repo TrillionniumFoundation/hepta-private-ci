@@ -1,0 +1,51 @@
+{
+  "status": "Frozen before feature generation or head test evaluation",
+  "data_seed": 2026102907,
+  "heads": [
+    "hcsn_v2",
+    "sigmoid_v2",
+    "gru",
+    "transformer",
+    "mean_linear_reference"
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "steps": 300,
+  "batch_size": 32,
+  "learning_rate": 0.003,
+  "parameter_target": 6000,
+  "checkpoint_selection": "lowest validation cross entropy at 50-update intervals",
+  "datasets": {
+    "ag_news": {
+      "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+      "train": 2000,
+      "validation": 500,
+      "test": 1000,
+      "classes": 4,
+      "encoder": "sentence-transformers/all-MiniLM-L6-v2",
+      "encoder_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+      "raw_corruption": "Delete 25 percent of whitespace words by fixed RNG before tokenization, re-encode complete remaining input; do not retain clean global feature",
+      "max_tokens": 64
+    },
+    "cifar10": {
+      "train": 2000,
+      "validation": 500,
+      "test": 1000,
+      "classes": 10,
+      "encoder": "onnxmodelzoo/mobilenetv2-12",
+      "encoder_revision": "23a2a25eaaa6fcd61865414c8a1acf13dda66b7a",
+      "raw_corruption": "Replace central 16 by 16 pixels of original 32 by 32 RGB image with value128 before resizing and re-encoding; no clean feature retained",
+      "resize": 224
+    }
+  },
+  "split_policy": "Keep official held-out test; derive validation from disjoint original train; stratified samples and normalized-content exact deduplication",
+  "features": "16 pooled local tokens plus global mean; 64-dimensional training-only PCA with variance normalization",
+  "scope": "Separate real text and image encoders; not paired multimodal training or a full backbone",
+  "pretraining_overlap": "Not audited; new holdout claim applies to these head experiments",
+  "source_freeze": "Code and downloaded hashes retained with actual results"
+}

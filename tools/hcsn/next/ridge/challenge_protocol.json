@@ -1,0 +1,13 @@
+{
+  "status": "Declared before v4 confirmation data construction",
+  "training_seeds": [0, 1, 2, 3, 4],
+  "data_seed_base": 2800000,
+  "selection": "Reuse the same validation-selected confirmation checkpoints; no retraining or reselection",
+  "tasks": [
+    {"name": "memory_512", "trained_task": "memory", "examples": 256, "length": 512},
+    {"name": "retrieval_8_items_128", "trained_task": "retrieval", "examples": 512, "length": 128, "associations": 8, "filler_noise": 0.05},
+    {"name": "retrieval_noisy_128", "trained_task": "retrieval", "examples": 512, "length": 128, "associations": 4, "filler_noise": 0.3},
+    {"name": "retrieval_8_items_512", "trained_task": "retrieval", "examples": 256, "length": 512, "associations": 8, "filler_noise": 0.05}
+  ],
+  "targets": "Diagnostic extrapolation and capacity tests only; no guaranteed accuracy or post hoc pass threshold"
+}

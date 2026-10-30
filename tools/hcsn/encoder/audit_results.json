@@ -1,0 +1,181 @@
+{
+  "original_results_sha256": "fa2149775c20551e7e97a69db1ed0cf638bbf1e77e02d2ff821ffc721664e025",
+  "original_run_heads_source_sha256": "adeb28cd68ea3650a8d69598c4bdccaa54135d824f9205f2965c1fde5a29534e",
+  "current_run_heads_source_sha256": "80eed40c611474f0205607c04102871109f236e550895fd6866fafac05804dfb",
+  "feature_sha256": "970c2c56442dc7deaa0e1db98f78b12ab0254a5fae2d45923852055252286a8a",
+  "training_repeated": false,
+  "purpose": "Correct metadata and metric bin partitions; replay saved predictions only",
+  "checks": [
+    {
+      "kind": "hcsn",
+      "seed": 0,
+      "checkpoint_hash_matches": true,
+      "test_accuracy_reproduced": 0.74,
+      "original_ece": 0.08017480000853539,
+      "corrected_ece": 0.08017480000853539
+    },
+    {
+      "kind": "hcsn",
+      "seed": 1,
+      "checkpoint_hash_matches": true,
+      "test_accuracy_reproduced": 0.75875,
+      "original_ece": 0.05955235779285431,
+      "corrected_ece": 0.05955235779285431
+    },
+    {
+      "kind": "hcsn",
+      "seed": 2,
+      "checkpoint_hash_matches": true,
+      "test_accuracy_reproduced": 0.75,
+      "original_ece": 0.08847903482615946,
+      "corrected_ece": 0.08847900621592997
+    },
+    {
+      "kind": "hcsn",
+      "seed": 3,
+      "checkpoint_hash_matches": true,
+      "test_accuracy_reproduced": 0.73125,
+      "original_ece": 0.027314157113432873,
+      "corrected_ece": 0.027314157113432873
+    },
+    {
+      "kind": "hcsn",
+      "seed": 4,
+      "checkpoint_hash_matches": true,
+      "test_accuracy_reproduced": 0.755,
+      "original_ece": 0.052087881341576575,
+      "corrected_ece": 0.052087881341576575
+    },
+    {
+      "kind": "sigmoid",
+      "seed": 0,
+      "checkpoint_hash_matches": true,
+      "test_accuracy_reproduced": 0.74125,
+      "original_ece": 0.08760395392775534,
+      "corrected_ece": 0.08760395392775534
+    },
+    {
+      "kind": "sigmoid",
+      "seed": 1,
+      "checkpoint_hash_matches": true,
+      "test_accuracy_reproduced": 0.75875,
+      "original_ece": 0.0665808279812336,
+      "corrected_ece": 0.0665808279812336
+    },
+    {
+      "kind": "sigmoid",
+      "seed": 2,
+      "checkpoint_hash_matches": true,
+      "test_accuracy_reproduced": 0.73375,
+      "original_ece": 0.05634539388120173,
+      "corrected_ece": 0.05634539388120173
+    },
+    {
+      "kind": "sigmoid",
+      "seed": 3,
+      "checkpoint_hash_matches": true,
+      "test_accuracy_reproduced": 0.71875,
+      "original_ece": 0.022861323207616798,
+      "corrected_ece": 0.022861323207616798
+    },
+    {
+      "kind": "sigmoid",
+      "seed": 4,
+      "checkpoint_hash_matches": true,
+      "test_accuracy_reproduced": 0.75875,
+      "original_ece": 0.04399959020316603,
+      "corrected_ece": 0.04399959020316603
+    },
+    {
+      "kind": "gru",
+      "seed": 0,
+      "checkpoint_hash_matches": true,
+      "test_accuracy_reproduced": 0.7575,
+      "original_ece": 0.07101931393146511,
+      "corrected_ece": 0.07101931393146511
+    },
+    {
+      "kind": "gru",
+      "seed": 1,
+      "checkpoint_hash_matches": true,
+      "test_accuracy_reproduced": 0.73,
+      "original_ece": 0.03950198754668238,
+      "corrected_ece": 0.03950198754668238
+    },
+    {
+      "kind": "gru",
+      "seed": 2,
+      "checkpoint_hash_matches": true,
+      "test_accuracy_reproduced": 0.7475,
+      "original_ece": 0.08295396983623503,
+      "corrected_ece": 0.08295396983623503
+    },
+    {
+      "kind": "gru",
+      "seed": 3,
+      "checkpoint_hash_matches": true,
+      "test_accuracy_reproduced": 0.7575,
+      "original_ece": 0.0445769353210926,
+      "corrected_ece": 0.0445769353210926
+    },
+    {
+      "kind": "gru",
+      "seed": 4,
+      "checkpoint_hash_matches": true,
+      "test_accuracy_reproduced": 0.76625,
+      "original_ece": 0.05788670070469376,
+      "corrected_ece": 0.05788670070469376
+    },
+    {
+      "kind": "transformer",
+      "seed": 0,
+      "checkpoint_hash_matches": true,
+      "test_accuracy_reproduced": 0.76,
+      "original_ece": 0.0452991655468941,
+      "corrected_ece": 0.0452991655468941
+    },
+    {
+      "kind": "transformer",
+      "seed": 1,
+      "checkpoint_hash_matches": true,
+      "test_accuracy_reproduced": 0.72625,
+      "original_ece": 0.08649066887795924,
+      "corrected_ece": 0.08649067811667917
+    },
+    {
+      "kind": "transformer",
+      "seed": 2,
+      "checkpoint_hash_matches": true,
+      "test_accuracy_reproduced": 0.7475,
+      "original_ece": 0.05718002378940583,
+      "corrected_ece": 0.05717998802661896
+    },
+    {
+      "kind": "transformer",
+      "seed": 3,
+      "checkpoint_hash_matches": true,
+      "test_accuracy_reproduced": 0.7425,
+      "original_ece": 0.06749061867594719,
+      "corrected_ece": 0.06749061673879622
+    },
+    {
+      "kind": "transformer",
+      "seed": 4,
+      "checkpoint_hash_matches": true,
+      "test_accuracy_reproduced": 0.75,
+      "original_ece": 0.0705697985738516,
+      "corrected_ece": 0.0705697985738516
+    }
+  ],
+  "selected_split_exact_text_overlap": {
+    "train_dev": 0,
+    "train_test": 0,
+    "dev_test": 0
+  },
+  "linear_actual_parameters": 65,
+  "max_ece_absolute_change": 3.576278687078549e-08,
+  "timing_finding": "The first update can turn weakly typed parameters into strong float32 values, causing a second JIT compilation. warm_training_seconds excludes only step zero and is not pure warm training time. Historical timing values are retained and must not support speed/efficiency conclusions.",
+  "corruption_finding": "Only local feature blocks are dropped after the complete truncated sentence has been encoded. The global mean remains; Gaussian noise also affects that retained global feature. This is not raw-input missingness.",
+  "all_checks_passed": true,
+  "corrected_results_sha256": "04922c85f66cc49e29c6b3825517ab941c54815232002464c57060c8fc459539"
+}
