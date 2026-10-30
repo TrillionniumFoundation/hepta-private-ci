@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.joint-observer-development.v2",
+  "study_id": "joint-hepta-observer-development-20261030-v2",
+  "parent_commit": "00b85f9646aa39f86592c20f14f01397b55ff759",
+  "task": "Unchanged 63-action / 17-sound top1 labels on physically written and reopened two-second Perception Test clips",
+  "observer_training_sources": 128,
+  "generator_mechanism_sources": 8,
+  "source_folds": 5,
+  "source_selection": "First 128 original observer_train sources ordered by SHA256(hepta-joint-natural-observer-20261029:source_id); first 64 must equal the archived v1 source order",
+  "fold_assignment": "Registered rank modulo five; all events from a source remain together",
+  "retained_events": "Original retained events, at most eight per original source; no class or difficulty filtering",
+  "candidates": {
+    "action": [
+      {"name": "s3d-ridge100", "feature": "action_s3d", "ridge": 100.0},
+      {"name": "tsm-ridge1", "feature": "action_tsm", "ridge": 1.0},
+      {"name": "tsm-ridge10", "feature": "action_tsm", "ridge": 10.0},
+      {"name": "tsm-ridge100", "feature": "action_tsm", "ridge": 100.0}
+    ],
+    "sound": [
+      {"name": "pann-ridge100", "feature": "sound_pann", "ridge": 100.0},
+      {"name": "temporal-pann-ridge1", "feature": "sound_temporal", "ridge": 1.0},
+      {"name": "temporal-pann-ridge10", "feature": "sound_temporal", "ridge": 10.0},
+      {"name": "temporal-pann-ridge100", "feature": "sound_temporal", "ridge": 100.0}
+    ]
+  },
+  "selection": "Maximum source-uniform OOF accuracy, first registered candidate wins ties, then refit on all 128 training sources. Selection and OOF reporting share development data and cannot establish independent confirmation.",
+  "normalization": "Source-uniform training-fold mean/std; floor 0.01; clamp [-8,8]; validation labels and features never fit normalization or regression",
+  "objective": "Source-uniform weighted ridge one-hot regression with unpenalized intercept and all original ontology classes",
+  "action_features": "Pinned S3D pooled 1424 baseline; pinned TSM Something-Something V2 pooled 2222 candidate; eight fixed odd-index frames from the actual sixteen-frame target",
+  "sound_features": "Pinned PANN MobileNetV2 baseline 1551. Candidate concatenates baseline with three chronological equal-index partitions of the same final convolution time axis, each pooled as max+mean through frozen fc1 and AudioSet head. No annotation timing, source id or label is supplied to feature extraction.",
+  "adequacy": {"action_accuracy": 0.6, "sound_accuracy": 0.6, "strictly_above_training_majority": true},
+  "fresh_media_access": false,
+  "old_development_or_calibration_access": false,
+  "generated_output_reliability_established": false,
+  "source_independence": "Original video ids; participant independence remains unknown",
+  "budget": {"cpu_seconds": 5400, "wall_seconds": 7200, "torch_threads": 4, "maximum_source_bytes": 12000000, "maximum_events_per_source": 8},
+  "sources": {
+    "tsm": "https://github.com/mit-han-lab/temporal-shift-module",
+    "pann": "https://github.com/qiuqiangkong/audioset_tagging_cnn",
+    "tsm_paper": "https://openaccess.thecvf.com/content_ICCV_2019/papers/Lin_TSM_Temporal_Shift_Module_for_Efficient_Video_Understanding_ICCV_2019_paper.pdf"
+  },
+  "interpretation": "A registered development revision after the failed v1 pilot, not a replacement or successful semantic qualification. Higher source count and feature changes are separately visible through same-cohort controls; no claims about independent participant or generated-output accuracy. The 64 fresh calibration sources stay unread even if this development gate passes."
+}
