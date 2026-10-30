@@ -108,8 +108,14 @@ async fn pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_an
     let mut classic: serde_json::Value =
         serde_json::from_slice(&std::fs::read(&fixture.trust_file).unwrap()).unwrap();
     classic["schema_version"] = serde_json::json!(1);
-    classic["public_key_hex"] = serde_json::json!(SigningKey::from_bytes(&[17; 32])
-        .verifying_key().as_bytes().iter().map(|byte| format!("{byte:02x}")).collect::<String>());
+    classic["public_key_hex"] = serde_json::json!(
+        SigningKey::from_bytes(&[17; 32])
+            .verifying_key()
+            .as_bytes()
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>()
+    );
     std::fs::write(&fixture.trust_file, serde_json::to_vec(&classic).unwrap()).unwrap();
     assert!(
         TextIngress::open(
