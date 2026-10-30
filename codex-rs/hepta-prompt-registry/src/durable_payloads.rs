@@ -11,6 +11,7 @@ use std::io::Read;
 use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
+use std::path::Path;
 
 use serde::Deserialize;
 use serde::Serialize;
@@ -76,6 +77,7 @@ impl PayloadState {
 
     pub fn hydrate(
         directory: &File,
+        directory_path: &Path,
         mut stored: StoredV3,
     ) -> Result<(Self, StoredV2), DurableRegistryError> {
         if stored.schema != 3
@@ -103,7 +105,7 @@ impl PayloadState {
                 .ok_or(DurableRegistryError::Corrupt)?;
             references.insert(reference.realization_id.clone(), reference);
         }
-        let mut file = open_private(directory, FILE_NAME, Access::Read)?;
+        let mut file = open_private(directory, directory_path, FILE_NAME, Access::Read)?;
         require_header(&mut file)?;
         if file.metadata().map_err(map_precommit_io)?.len() < committed_end {
             return Err(DurableRegistryError::Corrupt);
@@ -135,8 +137,12 @@ impl PayloadState {
     /// Only called after full V2 semantic/configuration validation succeeded.
     /// The selected manifest already proves the prefix; shortening that prefix
     /// is never recovery. No committed record or revoked payload is collected.
-    pub fn discard_unselected_tail(&self, directory: &File) -> Result<(), DurableRegistryError> {
-        let file = open_private(directory, FILE_NAME, Access::Create)?;
+    pub fn discard_unselected_tail(
+        &self,
+        directory: &File,
+        directory_path: &Path,
+    ) -> Result<(), DurableRegistryError> {
+        let file = open_private(directory, directory_path, FILE_NAME, Access::Create)?;
         let length = file.metadata().map_err(map_precommit_io)?.len();
         if length < self.committed_end {
             return Err(DurableRegistryError::Corrupt);
@@ -199,16 +205,17 @@ impl PayloadState {
         successor: &Self,
         registry: &PromptRegistry,
         directory: &File,
+        directory_path: &Path,
     ) -> Result<(), DurableRegistryError> {
         if self.initialized && successor.committed_end == self.committed_end {
-            let mut file = open_private(directory, FILE_NAME, Access::Read)?;
+            let mut file = open_private(directory, directory_path, FILE_NAME, Access::Read)?;
             require_header(&mut file)?;
             if file.metadata().map_err(map_precommit_io)?.len() < self.committed_end {
                 return Err(DurableRegistryError::Corrupt);
             }
             return Ok(());
         }
-        let mut file = open_private(directory, FILE_NAME, Access::Create)?;
+        let mut file = open_private(directory, directory_path, FILE_NAME, Access::Create)?;
         if self.initialized {
             require_header(&mut file)?;
             if file.metadata().map_err(map_precommit_io)?.len() < self.committed_end {

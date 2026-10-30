@@ -933,6 +933,20 @@ fn clear_g5_close_on_exec(fd: &std::os::fd::OwnedFd) -> Result<(), AcceptanceErr
     Ok(())
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 #[path = "g5_trust_tests.rs"]
 mod tests;
+
+#[cfg(all(test, windows))]
+#[test]
+fn windows_g5_signature_verification_is_explicitly_unsupported() {
+    let error = verify_sshsig_bytes(
+        b"challenge",
+        b"signature",
+        b"test-only allowed signers",
+        "operator@example",
+        SSHSIG_NAMESPACE,
+    )
+    .expect_err("Windows G5 verification must fail closed");
+    assert!(error.to_string().contains("requires Unix"));
+}

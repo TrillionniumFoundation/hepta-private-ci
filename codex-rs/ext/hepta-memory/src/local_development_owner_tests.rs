@@ -225,11 +225,13 @@ async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
         .expect("store");
     let current_fence = CompactFence::new(7, 8, 1, "e21-owner-fence").expect("fence");
     let checkpoint = checkpoint(current_fence.clone());
+    // A one-second wall-clock lease may expire during Windows SQLite setup;
+    // retain a real expiry boundary with enough time for an initial writer.
     let expires_at = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .expect("clock")
         .as_secs()
-        + 1;
+        + 5;
     let lease = match store
         .acquire_local_lease_bound(
             "lease:e21-owner",
@@ -269,7 +271,7 @@ async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
         Err(HeptaLocalDevelopmentLifecycleOwnerError::StoreBindingMismatch)
     ));
 
-    for _ in 0..120 {
+    for _ in 0..240 {
         if SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .expect("clock")

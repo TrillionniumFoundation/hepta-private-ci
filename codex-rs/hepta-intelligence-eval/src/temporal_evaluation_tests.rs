@@ -245,6 +245,16 @@ fn observed_outcomes_must_follow_the_held_out_decision() {
 }
 
 #[test]
+fn coincident_outcomes_do_not_count_as_a_future_window() {
+    let mut fixture = fixture();
+    fixture.rows[0].outcome_observed_at = fixture.targets[0].decision_at;
+    assert_eq!(
+        run(&fixture),
+        Err(TemporalEvaluationError::OutcomeBeforeDecision)
+    );
+}
+
+#[test]
 fn dependent_principals_cannot_be_split_between_clusters() {
     let mut fixture = fixture();
     fixture.targets[1].principal_lineage = fixture.targets[0].principal_lineage.clone();

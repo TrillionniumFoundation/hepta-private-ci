@@ -106,6 +106,22 @@ fn witness_path(path: &std::path::Path) -> std::path::PathBuf {
     path.with_extension("witness")
 }
 
+// Preserve real directory handles on Windows: File::open(dir) without
+// FILE_FLAG_BACKUP_SEMANTICS is rejected, and the durable writer syncs them.
+fn open_fixture_directory(path: &std::path::Path) -> std::fs::File {
+    let mut options = OpenOptions::new();
+    options.read(true);
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt;
+        const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
+        options.write(true).custom_flags(FILE_FLAG_BACKUP_SEMANTICS);
+    }
+    options
+        .open(path)
+        .unwrap_or_else(|error| panic!("open fixture directory: {error}"))
+}
+
 fn ledger_at(path: &std::path::Path, fixture: &Fixture) -> LedgerWriter {
     let file = OpenOptions::new()
         .create_new(true)
@@ -126,8 +142,8 @@ fn ledger_at(path: &std::path::Path, fixture: &Fixture) -> LedgerWriter {
         .open(witness_path(path))
         .unwrap();
     let witness = LedgerWitnessStore::create(witness, digest("host-authorized-ledger")).unwrap();
-    let ledger_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
-    let witness_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
+    let ledger_directory = open_fixture_directory(path.parent().unwrap());
+    let witness_directory = open_fixture_directory(path.parent().unwrap());
     LedgerWriter::from_durable(
         ledger,
         witness,
@@ -189,8 +205,8 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
         .open(witness_path(&path))
         .unwrap();
     let witness = LedgerWitnessStore::recover(witness, digest("host-authorized-ledger")).unwrap();
-    let ledger_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
-    let witness_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
+    let ledger_directory = open_fixture_directory(path.parent().unwrap());
+    let witness_directory = open_fixture_directory(path.parent().unwrap());
     let mut reopened = LedgerWriter::from_durable(
         reopened_ledger,
         witness,

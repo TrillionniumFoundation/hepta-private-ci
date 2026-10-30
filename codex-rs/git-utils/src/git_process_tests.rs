@@ -39,12 +39,19 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     let mut command = {
         let mut command = Command::new("powershell.exe");
         let child_command = "Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready; while (-not (Test-Path $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived; Start-Sleep -Seconds 60";
+        // Start-Process flattens ArgumentList: -Command followed by a raw script
+        // loses quoting across the parent/child PowerShell boundary. Encode the
+        // exact child script as UTF-16LE Base64 so its environment references
+        // are evaluated by the child, not expanded in the wrapper.
+        let launcher = format!(
+            "$encoded = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes('{child_command}')); $child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-EncodedCommand', $encoded) -PassThru -NoNewWindow;"
+        );
         let wrapper_command = match wrapper_lifetime {
             GitWrapperLifetime::WaitForChild => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); Wait-Process -Id $child.Id"
+                "{launcher} [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); Wait-Process -Id $child.Id"
             ),
             GitWrapperLifetime::ExitBeforeTimeout => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
+                "{launcher} [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
             ),
         };
         command
