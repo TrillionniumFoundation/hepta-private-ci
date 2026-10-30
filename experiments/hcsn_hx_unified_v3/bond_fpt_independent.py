@@ -51,7 +51,12 @@ def integrate_passage(x: float, *, drift: float, sigma: float,
     if not math.isfinite(sigma_sq) or sigma_sq == 0:
         raise ArithmeticError('First-passage squared volatility unresolved in f64')
     a = drift*x/sigma_sq
-    if not math.isfinite(a):
+    # With nonzero drift and positive x, the exact transformed drift is
+    # nonzero. Product-first underflow or division underflow must not
+    # silently replace it by zero in the large-u kernel. Legitimate zero
+    # drift remains allowed. This conservative refusal does not certify
+    # nonzero subnormal intermediates or all other rounding errors.
+    if not math.isfinite(a) or (drift != 0 and a == 0):
         raise ArithmeticError('First-passage transformed drift unresolved in f64')
     # Split the near-boundary layer at u=O(x/sigma). Integrating all the
     # way from u0 to infinity in one adaptive call can silently miss this
