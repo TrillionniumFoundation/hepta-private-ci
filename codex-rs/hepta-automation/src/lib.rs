@@ -15,7 +15,9 @@ mod effect_executor;
 mod authorized_effect;
 mod automation_taskflow;
 mod dispatch_recovery;
+mod effect_dispatch_identity;
 mod effect_dispatch_ledger;
+mod effect_dispatch_provider_receipt;
 mod lifecycle;
 mod model;
 mod neural_circuit;
@@ -152,4 +154,4 @@ pub use taskflow_step::TaskFlowStepState;
 pub use timer_lifecycle::TimerDrainStatus;
 pub use timer_lifecycle::TimerPhase;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 20;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 21;

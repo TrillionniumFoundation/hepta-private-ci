@@ -1,0 +1,197 @@
+{
+  "schema": "provider-effect-local-source-pair-audit-v1",
+  "authority": "audit_attachment_only",
+  "component_source_base": "6850ae0ca6191b0afa436b00403c059d58ca2893",
+  "component_files": [
+    {
+      "path": ".github/workflows/hepta-pon-native-pair.yml",
+      "mode": "100644",
+      "bytes": 58646,
+      "sha256": "96d494dbe2e84084c1df1cd8135207db037b550978f6fe36673df1179bbef294",
+      "blob": "ec4bc6e91f8ad04fc8f30f27a72b0994295b4fac"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "mode": "100644",
+      "bytes": 99108,
+      "sha256": "e9769bd34aeef17fcaf924a2ab0554f4d67d13a7c1ea67628460f8330030467a",
+      "blob": "2dc6b1479a4a314bb01544dc20d003da7136686e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_identity_tests.rs",
+      "mode": "100644",
+      "bytes": 11406,
+      "sha256": "7fa94248ec66684e76eb3ea19351544da0cadd8606c384b2aa3d4ad9cd5d820b",
+      "blob": "7b23b15f98707add9e284563986337da3f293a9f"
+    },
+    {
+      "path": "codex-rs/hepta-automation/PROVIDER_EFFECT_SAFETY.md",
+      "mode": "100644",
+      "bytes": 4599,
+      "sha256": "ed8d8824423b6594bfcb2a09d66329927d3f4269362a5ec819676d2b56cbc016",
+      "blob": "63409f0c31a9130c4afd2b033955f8c3f0bc599d"
+    },
+    {
+      "path": "codex-rs/hepta-automation/migrations/0021_effect_provider_receipts.sql",
+      "mode": "100644",
+      "bytes": 2301,
+      "sha256": "d6d946c84e58e08d8c1a556f9dc469fc850845db1a867308c457d39765231eca",
+      "blob": "86b0c1e5060398bedb5d309a6de63acd43eca4df"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "mode": "100644",
+      "bytes": 69910,
+      "sha256": "d2e0b0398b107f349be85fd0c5c44213dd309a1000771451e6ed5ad41f8fde2c",
+      "blob": "a9a18e8ec5340579529cf94cbc50551c8f50cd60"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_dispatch_identity.rs",
+      "mode": "100644",
+      "bytes": 5992,
+      "sha256": "e51e015f2e44c25b41c7234633266bbdbc42c02023961c559f7e2d17c11f104f",
+      "blob": "fea15da3468e92dca0981ae458d543e8bcc27aa4"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+      "mode": "100644",
+      "bytes": 39636,
+      "sha256": "4151f35e7603bc60eaf956dfd19e0e830f41282ccff7515e15c2dc2f3b0e0cf2",
+      "blob": "db400d1f81e8e6b0731e4cd511f399b1c0e52c6b"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_dispatch_provider_receipt.rs",
+      "mode": "100644",
+      "bytes": 15339,
+      "sha256": "40ed083c50e72357b721287f3cabbdcf12b25c7012e6347a68ceb1500593b33e",
+      "blob": "fa51ea6709954db4c0d967b109b012d0210c31c7"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/lib.rs",
+      "mode": "100644",
+      "bytes": 7114,
+      "sha256": "c5183d22895a3004ff9fc82251ce3669cb64ee4c9dced4f7ca8cc4de3dd95a19",
+      "blob": "2c69a4cab023ad2a74ae6335f687d0e2894257d7"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/store.rs",
+      "mode": "100644",
+      "bytes": 56797,
+      "sha256": "cec9747b03e834b380dae2204376a4fa8527b893cf3d014e141430b1d06d15b6",
+      "blob": "27a14fb9704018dadcf6328ad6754003bfc9174b"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/taskflow.rs",
+      "mode": "100644",
+      "bytes": 95649,
+      "sha256": "908e4dbba2f6487600a74ec6809d71182220d042f8d582aa33614fd0cd91df01",
+      "blob": "bc7fb696c99c0a404e0784845242e092f19d2c9d"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
+      "mode": "100644",
+      "bytes": 61870,
+      "sha256": "5878a48df7ab64c0b582fd207abbf0707bff87d90d63b91aab95f1853e8eb2e6",
+      "blob": "78b05ad82128201b430a93b129622c9d8cb5eb9f"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
+      "mode": "100644",
+      "bytes": 43919,
+      "sha256": "2ab6aa3eae649871cb8de75aa799d6ebd2fe2880895a35ee8a01c99b5a2544f1",
+      "blob": "c9155a1b577ccbabe5c3ef638469cd402c3dd5b8"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/automation.rs",
+      "mode": "100644",
+      "bytes": 55565,
+      "sha256": "5be606ffa69119ba14acbd01bdba3ec91bed69d1adfc4218e0646d33bee22cd4",
+      "blob": "d92eab60aba09b62999b19de2583097bb984de32"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/support/authorized_dispatch_barrier_tests.rs",
+      "mode": "100644",
+      "bytes": 15945,
+      "sha256": "827825c45c6623003d871c299781422dea0cdfbcd97764943fa9a94fc0412f70",
+      "blob": "88c31401507c070b39d1d7dd1030e3b9352379f9"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/support/authorized_provider_identity_tests.rs",
+      "mode": "100644",
+      "bytes": 10600,
+      "sha256": "32e684507276124094f1e021d10d9b98f8e14049929a248f14c989e7c6e977af",
+      "blob": "e8224d95098acc4491d4ba79b55913b1fa0d56f0"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/support/authorized_provider_late_ack_tests.rs",
+      "mode": "100644",
+      "bytes": 18239,
+      "sha256": "0fbb09b9ee6db354a07ad7b677e5b200b8b0c13f419496da8942e0e5fd4e9135",
+      "blob": "57be41505893a7bb46fbc6567b33b0de3182a8b7"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/support/authorized_provider_legacy_tests.rs",
+      "mode": "100644",
+      "bytes": 12437,
+      "sha256": "f544c61ebe269a1cd4431302e3654679a6658422db1b056406e27212737a2475",
+      "blob": "4ea53e30ad5e8b0f4713aa4dd0ba014f2bfbee2e"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/support/authorized_provider_receipt_tests.rs",
+      "mode": "100644",
+      "bytes": 14797,
+      "sha256": "1d71f87e19f0438fdb19d0af91e8b6f2b543aa20a30dcde5a816d0e023150228",
+      "blob": "00c8d1c9f84dd99d99c6bfd56c302bd3a39a7f31"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/support/authorized_provider_reopen_tests.rs",
+      "mode": "100644",
+      "bytes": 16168,
+      "sha256": "33d01108c79152bc30dd4fd4ddcf89a3859c27195459f812fd4293f6feb7dadf",
+      "blob": "acce48b7f9a1ad5205e2f90a7ea16aa768b2086c"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/provider_effect.rs",
+      "mode": "100644",
+      "bytes": 114699,
+      "sha256": "d1257b2b23605d1dc76695b084d8298bd57c3356af5233cbeefb658fda357cfc",
+      "blob": "d0fcf886de8320e13cf7455dd413503172cec0fc"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/provider_effect_taskflow_key_v2.rs",
+      "mode": "100644",
+      "bytes": 1672,
+      "sha256": "7ccafcc0b456f0be9e2acba463d1802d056da249ae3ba70c3f2f9d59bbde3ae3",
+      "blob": "51daa45effd383bcfa78aeee82677d11c69f930b"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/provider_effect_taskflow_key_v2_tests.rs",
+      "mode": "100644",
+      "bytes": 4179,
+      "sha256": "8dfdff28e5730598a83930e85d3b95f6bf675da58f731b187022d8bc0e11af84",
+      "blob": "a560f0bae8df5713d6a6d0f7d4182685580b8356"
+    }
+  ],
+  "configured_chain_pair": {
+    "source": "24b265834daea34947adbb5903d887e3f6043838",
+    "base": "1d11f875493f8125e36b9adceacb342df108e5e5",
+    "merge": "db139b5ef964509318de12974ed0d0cea7b02737",
+    "ordered_merge_parents": [
+      "1d11f875493f8125e36b9adceacb342df108e5e5",
+      "24b265834daea34947adbb5903d887e3f6043838"
+    ],
+    "canonical_merge_tree": "7327a5888428121157c9eb86a5d4d5c53a8d274c",
+    "source_tree": "7327a5888428121157c9eb86a5d4d5c53a8d274c",
+    "verified": true
+  },
+  "hosted_execution_of_configured_pair": "not_yet_observed_at_packaging",
+  "local_execution_scope": "Real local component tests with per-execution base and changed-file hashes. Pair-workflow pins changed after the HTTP tests; no cross-repository execution is inferred.",
+  "local_archive": {
+    "path": "local-executions.tar.gz",
+    "bytes": 111037,
+    "sha256": "2d484c4ec8501d8a0dcce303c47b4ccd10f4d445cfa065d80db01b21832616f6"
+  },
+  "local_execution_count": 39,
+  "native_http_binary_record": "agentd-http-native-binary.json",
+  "qualification": "OPEN / NO_GO"
+}

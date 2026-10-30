@@ -37,9 +37,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: ${{ github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && '540d72356a921da31dde1113537382e5c0f0c4fd' || '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' }}
-      CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && (matrix.lane == 'source-head' && '540d72356a921da31dde1113537382e5c0f0c4fd' || 'cff37ba978684ad1750d66b120ec2913d7c13f8f') || (matrix.lane == 'source-head' && '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' || 'f52fadb096d98589a5ac6c573659764815cae04d') }}
+      CHAIN_SOURCE_SHA: ${{ github.head_ref == 'fix/hepta-provider-operation-binding-20261030' && '24b265834daea34947adbb5903d887e3f6043838' || github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && '540d72356a921da31dde1113537382e5c0f0c4fd' || '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' }}
+      CHAIN_BASE_SHA: ${{ github.head_ref == 'fix/hepta-provider-operation-binding-20261030' && '1d11f875493f8125e36b9adceacb342df108e5e5' || '9fedf7ecbbe07177069c030592b4e03dcffebb81' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ github.head_ref == 'fix/hepta-provider-operation-binding-20261030' && (matrix.lane == 'source-head' && '24b265834daea34947adbb5903d887e3f6043838' || 'db139b5ef964509318de12974ed0d0cea7b02737') || github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && (matrix.lane == 'source-head' && '540d72356a921da31dde1113537382e5c0f0c4fd' || 'cff37ba978684ad1750d66b120ec2913d7c13f8f') || (matrix.lane == 'source-head' && '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' || 'f52fadb096d98589a5ac6c573659764815cae04d') }}
       TRNM_FROM_ZERO_HOST_OWNER: ${{ github.run_id }}.${{ github.run_attempt }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -191,9 +191,10 @@ jobs:
       - name: Require complete native SQL reuse and conditional query-bound controls
         env:
           TRNM_RETAINED_DELTA_COST_PATH: ${{ runner.temp }}/pon-pair/chain-retained-delta-cost.jsonl
+          CHAIN_NATIVE_SQL_MINIMUM: ${{ github.head_ref == 'fix/hepta-provider-operation-binding-20261030' && '74' || '37' }}
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-native-sql.json" --minimum-tests 37 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_authenticated:: -- --include-ignored --show-output --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-native-sql.json" --minimum-tests "$CHAIN_NATIVE_SQL_MINIMUM" -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_authenticated:: -- --include-ignored --show-output --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-query-bound.json" --minimum-tests 14 -- python3 ../chain/formal/pon-nakamoto-v1/test_work_query_bound.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-cache-receipt.json" --minimum-tests 34 -- python3 -m unittest discover -s ../chain/scripts/ci -p test_read_native_cache_observation.py -v
       - name: Require every cached-owner integrity and cold-reopen selector
@@ -344,6 +345,32 @@ jobs:
           CARGO_NET_OFFLINE: "true"
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/fleet-complete.json" --minimum-tests 49 -- just test --locked -p codex-hepta-fleet --no-capture
+      - name: Require provider operation identity and evidence recovery controls
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/provider-effects-complete.json" --minimum-tests 74 -- just test --locked -p codex-hepta-contracts -p codex-hepta-evidence -E 'test(provider_effect)' --no-capture
+      - name: Require complete TaskFlow effect owner and recovery controls
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/automation-complete.json" --minimum-tests 128 -- just test --locked -p codex-hepta-automation --no-capture
+      - name: Require each original-owner late acknowledgement control
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          set -euo pipefail
+          for selector in taskflow_provider_receipt_late_dispatch_completion_after_lookup_is_retained taskflow_provider_receipt_late_dispatch_cannot_replace_or_reject_accepted_operation taskflow_provider_receipt_late_dispatch_preserves_original_unknown_and_cancellation taskflow_provider_receipt_late_dispatch_reopen_requires_binding_from_same_attempt; do
+            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- just test --locked -p codex-hepta-automation --test authorized_effect -E "test($selector)" --no-capture
+          done
+      - name: Require each real HTTP provider receipt and durable owner control
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          set -euo pipefail
+          for selector in host_dispatches_exact_wire_payload_once host_provider_receipt_survives_unknown_and_rejects_operation_substitution host_provider_identity_legacy_http_queries_original_occurrence_and_retains_terminal_fact host_provider_identity_terminal_execute_uses_store_owner_not_shared_subject; do
+            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E "test($selector)" --no-capture
+          done
       - name: Compile complete Agentd and run subprocess and observation regressions
         env:
           CARGO_NET_OFFLINE: "true"

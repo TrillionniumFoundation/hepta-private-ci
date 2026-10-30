@@ -18,6 +18,9 @@ use crate::RequestBindingId;
 use crate::Sha256Digest;
 use crate::stable_id::parse_prefixed_sha256_id;
 
+#[path = "provider_effect_taskflow_key_v2.rs"]
+mod taskflow_key_v2;
+
 pub const PROVIDER_EFFECT_SCHEMA_VERSION: u32 = 1;
 
 /// A pending intent that predates the coordinator call has no local witness

@@ -6,14 +6,54 @@
 //! fact. Keeping both immutable lets recovery repair the TaskFlow step without
 //! ever inferring terminality from process-local control flow.
 
+use std::collections::BTreeSet;
+
+use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::ProviderEffectAck;
+use codex_hepta_contracts::ProviderEffectAckSource;
+use codex_hepta_contracts::ProviderEffectAckStatus;
 use codex_hepta_contracts::ProviderEffectKey;
 use codex_hepta_contracts::Sha256Digest;
+use sqlx::QueryBuilder;
 use sqlx::Row;
+use sqlx::Sqlite;
+use sqlx::SqliteConnection;
 
 use crate::AutomationStore;
 use crate::TaskFlowError;
+use crate::TaskFlowFence;
+use crate::effect_dispatch_identity::validate_effect_dispatch_history;
+use crate::effect_dispatch_identity::validate_effect_dispatch_identity_tx;
+use crate::effect_dispatch_provider_receipt::ProviderReceiptV1;
+use crate::effect_dispatch_provider_receipt::bind_provider_receipt;
+use crate::effect_dispatch_provider_receipt::validate_provider_projection;
+use crate::taskflow::load_taskflow_run_tx;
 
 const MAX_EFFECT_DISPATCH_WIRE_BYTES: usize = 64 * 1024;
+
+pub(crate) const EFFECT_DISPATCH_SELECT: &str =
+    "SELECT a.*,
+            COALESCE(r.observation, o.observation) AS observation,
+            COALESCE(r.evidence_digest, o.evidence_digest) AS evidence_digest,
+            COALESCE(r.observed_at_ms, o.observed_at_ms) AS observed_at_ms,
+            CASE WHEN r.run_id IS NOT NULL THEN CAST(substr(CAST(r.provider_receipt_json AS BLOB),1,1025) AS TEXT)
+                 ELSE CAST(substr(CAST(o.provider_receipt_json AS BLOB),1,1025) AS TEXT) END AS provider_receipt_json,
+            CAST(substr(CAST(o.provider_receipt_json AS BLOB),1,1025) AS TEXT) AS initial_provider_receipt_json,
+            o.evidence_digest AS initial_evidence_digest, o.observation AS initial_observation,
+            CAST(substr(CAST(r.provider_receipt_json AS BLOB),1,1025) AS TEXT) AS reconciled_provider_receipt_json,
+            r.evidence_digest AS reconciled_evidence_digest, r.observation AS reconciled_observation,
+            CAST(substr(CAST(b.receipt_json AS BLOB),1,1025) AS TEXT) AS binding_receipt_json,
+            b.receipt_digest AS binding_receipt_digest, b.attempt AS binding_attempt
+     FROM taskflow_effect_dispatch_attempts a
+     LEFT JOIN taskflow_effect_dispatch_observations o
+       ON o.owner_agent_id=a.owner_agent_id AND o.run_id=a.run_id
+      AND o.step_id=a.step_id AND o.attempt=a.attempt
+     LEFT JOIN taskflow_effect_dispatch_reconciliations r
+       ON r.owner_agent_id=a.owner_agent_id AND r.run_id=a.run_id
+      AND r.step_id=a.step_id AND r.attempt=a.attempt
+     LEFT JOIN taskflow_effect_provider_bindings b
+       ON b.owner_agent_id=a.owner_agent_id AND b.run_id=a.run_id AND b.step_id=a.step_id
+      AND b.attempt <= a.attempt";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) enum EffectDispatchObservationKind {
@@ -55,6 +95,7 @@ pub(crate) struct EffectDispatchObservation {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct EffectDispatchAttempt {
+    pub(crate) owner_agent_id: AgentId,
     pub(crate) run_id: String,
     pub(crate) step_id: String,
     pub(crate) attempt: u32,
@@ -74,6 +115,8 @@ pub(crate) struct EffectDispatchAttempt {
     pub(crate) record_command_id: String,
     pub(crate) started_at_ms: u64,
     pub(crate) observation: Option<EffectDispatchObservation>,
+    pub(crate) provider_binding: Option<ProviderReceiptV1>,
+    pub(crate) provider_binding_attempt: Option<u32>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -89,6 +132,7 @@ impl AutomationStore {
         run_id: &str,
         step_id: &str,
         attempt: u32,
+        fence: &TaskFlowFence,
         intent_digest: &Sha256Digest,
         payload_digest: &Sha256Digest,
         provider_effect_key: &ProviderEffectKey,
@@ -110,7 +154,118 @@ impl AutomationStore {
                 "effect dispatch recovery material".to_string(),
             ));
         }
-        let inserted = sqlx::query(
+        let owner = self.taskflow_owner_agent_id().as_str();
+        let mut transaction = self
+            .taskflow_pool()
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+        if let Some(existing) =
+            read_effect_attempt(&mut transaction, owner, run_id, step_id, attempt).await?
+        {
+            if existing.intent_digest != *intent_digest
+                || existing.payload_digest != *payload_digest
+                || existing.provider_effect_key.as_ref() != Some(provider_effect_key)
+                || existing.wire_payload.as_deref() != Some(wire_payload)
+                || existing.binding_digest != *binding_digest
+                || existing.destination_id != destination_id
+                || existing.record_command_id != record_command_id
+            {
+                return Err(TaskFlowError::Conflict(
+                    "effect dispatch attempt is bound to different bytes".to_string(),
+                ));
+            }
+            transaction
+                .commit()
+                .await
+                .map_err(|_| TaskFlowError::Unavailable)?;
+            return Ok(EffectDispatchStart::Existing(existing));
+        }
+        // Historical step reads permit reconciliation after lease expiry or
+        // cancellation. Only the original run owner's current live lease can
+        // authorize insertion of a new physical dispatch barrier.
+        let run = load_taskflow_run_tx(&mut transaction, self.taskflow_owner_agent_id(), run_id)
+            .await?
+            .ok_or_else(|| TaskFlowError::Conflict("effect TaskFlow run is missing".to_string()))?;
+        // A fresh attempt cannot bypass uncertainty by using another attempt
+        // number. Serialize this check with insertion and decode so concurrent
+        // preclaimed attempts cannot both cross the provider boundary, and a
+        // failed decode cannot leave a committed invalid barrier.
+        let blocked: bool = sqlx::query_scalar(
+            "SELECT EXISTS (
+                SELECT 1 FROM taskflow_effect_dispatch_attempts a
+                LEFT JOIN taskflow_effect_dispatch_observations o
+                  ON o.owner_agent_id=a.owner_agent_id AND o.run_id=a.run_id
+                 AND o.step_id=a.step_id AND o.attempt=a.attempt
+                LEFT JOIN taskflow_effect_dispatch_reconciliations r
+                  ON r.owner_agent_id=a.owner_agent_id AND r.run_id=a.run_id
+                 AND r.step_id=a.step_id AND r.attempt=a.attempt
+                WHERE a.owner_agent_id=? AND a.run_id=? AND a.step_id=?
+                  AND (a.attempt >= ?
+                       OR COALESCE(r.observation, o.observation, 'unobserved') != 'proven_absent')
+             )",
+        )
+        .bind(owner)
+        .bind(run_id)
+        .bind(step_id)
+        .bind(i64::from(attempt))
+        .fetch_one(&mut *transaction)
+        .await
+        .map_err(|_| TaskFlowError::Unavailable)?;
+        if blocked {
+            return Err(TaskFlowError::Conflict(
+                "a new effect attempt requires proved absence of every prior attempt".to_string(),
+            ));
+        }
+        let mut prior_query = QueryBuilder::<Sqlite>::new(EFFECT_DISPATCH_SELECT);
+        prior_query
+            .push(" WHERE a.owner_agent_id=")
+            .push_bind(owner)
+            .push(" AND a.run_id=")
+            .push_bind(run_id)
+            .push(" AND a.step_id=")
+            .push_bind(step_id)
+            .push(" ORDER BY a.attempt DESC LIMIT 1");
+        let previous = prior_query
+            .build()
+            .fetch_optional(&mut *transaction)
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?
+            .map(effect_attempt_from_row)
+            .transpose()?;
+        if let Some(previous) = &previous {
+            validate_effect_dispatch_identity_tx(
+                &mut transaction,
+                previous,
+                provider_effect_key,
+                payload_digest,
+                wire_payload,
+                destination_id,
+            )
+            .await?;
+        }
+        let previous_absence = previous
+            .as_ref()
+            .map(|previous| {
+                let observation = previous.observation.as_ref().ok_or_else(|| {
+                    TaskFlowError::Corrupt("prior effect absence is missing".to_string())
+                })?;
+                Ok::<_, TaskFlowError>((previous.attempt, &observation.evidence_digest))
+            })
+            .transpose()?;
+        self.validate_effect_dispatch_step_tx(
+            &mut transaction,
+            &run,
+            step_id,
+            attempt,
+            fence,
+            intent_digest,
+            payload_digest,
+            previous_absence,
+            started_at_ms,
+        )
+        .await?;
+        sqlx::query(
             "INSERT INTO taskflow_effect_dispatch_attempts (
                 owner_agent_id, run_id, step_id, attempt, intent_digest,
                 payload_digest, provider_effect_key, wire_payload, binding_digest,
@@ -118,7 +273,7 @@ impl AutomationStore {
                 record_command_id, started_at_ms
              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         )
-        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(owner)
         .bind(run_id)
         .bind(step_id)
         .bind(i64::from(attempt))
@@ -133,46 +288,27 @@ impl AutomationStore {
         .bind(grant_nonce_digest.as_str())
         .bind(record_command_id)
         .bind(to_i64(started_at_ms)?)
-        .execute(self.taskflow_pool())
-        .await;
-
-        match inserted {
-            Ok(_) => {
-                let attempt = self
-                    .effect_dispatch_attempt(run_id, step_id, attempt)
-                    .await?
-                    .ok_or_else(|| {
-                        TaskFlowError::Corrupt(
-                            "effect dispatch attempt vanished after insert".to_string(),
-                        )
-                    })?;
-                Ok(EffectDispatchStart::Inserted(attempt))
+        .execute(&mut *transaction)
+        .await
+        .map_err(|error| {
+            if is_constraint(&error) {
+                TaskFlowError::Conflict(
+                    "effect dispatch identity conflicts with durable evidence".to_string(),
+                )
+            } else {
+                TaskFlowError::Unavailable
             }
-            Err(error) if is_constraint(&error) => {
-                let existing = self
-                    .effect_dispatch_attempt(run_id, step_id, attempt)
-                    .await?
-                    .ok_or_else(|| {
-                        TaskFlowError::Conflict(
-                            "effect dispatch identity conflicts with durable evidence".to_string(),
-                        )
-                    })?;
-                if existing.intent_digest != *intent_digest
-                    || existing.payload_digest != *payload_digest
-                    || existing.provider_effect_key.as_ref() != Some(provider_effect_key)
-                    || existing.wire_payload.as_deref() != Some(wire_payload)
-                    || existing.binding_digest != *binding_digest
-                    || existing.destination_id != destination_id
-                    || existing.record_command_id != record_command_id
-                {
-                    return Err(TaskFlowError::Conflict(
-                        "effect dispatch attempt is bound to different bytes".to_string(),
-                    ));
-                }
-                Ok(EffectDispatchStart::Existing(existing))
-            }
-            Err(_) => Err(TaskFlowError::Unavailable),
-        }
+        })?;
+        let inserted = read_effect_attempt(&mut transaction, owner, run_id, step_id, attempt)
+            .await?
+            .ok_or_else(|| {
+                TaskFlowError::Corrupt("effect dispatch attempt vanished after insert".to_string())
+            })?;
+        transaction
+            .commit()
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+        Ok(EffectDispatchStart::Inserted(inserted))
     }
 
     pub(crate) async fn effect_dispatch_attempt(
@@ -181,33 +317,24 @@ impl AutomationStore {
         step_id: &str,
         attempt: u32,
     ) -> Result<Option<EffectDispatchAttempt>, TaskFlowError> {
-        let row = sqlx::query(
-            "SELECT a.*,
-                    COALESCE(r.observation, o.observation) AS observation,
-                    COALESCE(r.evidence_digest, o.evidence_digest) AS evidence_digest,
-                    COALESCE(r.observed_at_ms, o.observed_at_ms) AS observed_at_ms
-             FROM taskflow_effect_dispatch_attempts a
-             LEFT JOIN taskflow_effect_dispatch_observations o
-               ON o.owner_agent_id = a.owner_agent_id
-              AND o.run_id = a.run_id
-              AND o.step_id = a.step_id
-              AND o.attempt = a.attempt
-             LEFT JOIN taskflow_effect_dispatch_reconciliations r
-               ON r.owner_agent_id = a.owner_agent_id
-              AND r.run_id = a.run_id
-              AND r.step_id = a.step_id
-              AND r.attempt = a.attempt
-             WHERE a.owner_agent_id = ? AND a.run_id = ? AND a.step_id = ?
-               AND a.attempt = ?",
+        let mut transaction = self
+            .taskflow_pool()
+            .begin()
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+        let result = read_effect_attempt(
+            &mut transaction,
+            self.taskflow_owner_agent_id().as_str(),
+            run_id,
+            step_id,
+            attempt,
         )
-        .bind(self.taskflow_owner_agent_id().as_str())
-        .bind(run_id)
-        .bind(step_id)
-        .bind(i64::from(attempt))
-        .fetch_optional(self.taskflow_pool())
-        .await
-        .map_err(|_| TaskFlowError::Unavailable)?;
-        row.map(effect_attempt_from_row).transpose()
+        .await?;
+        transaction
+            .rollback()
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+        Ok(result)
     }
 
     pub(crate) async fn pending_effect_dispatch_attempts(
@@ -219,39 +346,49 @@ impl AutomationStore {
                 "effect recovery scan limit".to_string(),
             ));
         }
-        let rows = sqlx::query(
-            "SELECT a.*,
-                    COALESCE(r.observation, o.observation) AS observation,
-                    COALESCE(r.evidence_digest, o.evidence_digest) AS evidence_digest,
-                    COALESCE(r.observed_at_ms, o.observed_at_ms) AS observed_at_ms
-             FROM taskflow_effect_dispatch_attempts a
-             LEFT JOIN taskflow_effect_dispatch_observations o
-               ON o.owner_agent_id = a.owner_agent_id
-              AND o.run_id = a.run_id
-              AND o.step_id = a.step_id
-              AND o.attempt = a.attempt
-             LEFT JOIN taskflow_effect_dispatch_reconciliations r
-               ON r.owner_agent_id = a.owner_agent_id
-              AND r.run_id = a.run_id
-              AND r.step_id = a.step_id
-              AND r.attempt = a.attempt
-             WHERE a.owner_agent_id = ?
+        let mut query = QueryBuilder::<Sqlite>::new(EFFECT_DISPATCH_SELECT);
+        query
+            .push(" WHERE a.owner_agent_id = ")
+            .push_bind(self.taskflow_owner_agent_id().as_str())
+            .push(
+                "
                AND r.run_id IS NULL
                AND (o.run_id IS NULL OR o.observation = 'indeterminate')
-             ORDER BY a.started_at_ms, a.run_id, a.step_id, a.attempt
-             LIMIT ?",
-        )
-        .bind(self.taskflow_owner_agent_id().as_str())
-        .bind(
-            i64::try_from(limit)
-                .map_err(|_| TaskFlowError::Invalid("effect recovery scan limit".to_string()))?,
-        )
-        .fetch_all(self.taskflow_pool())
-        .await
-        .map_err(|_| TaskFlowError::Unavailable)?;
-        rows.into_iter().map(effect_attempt_from_row).collect()
+             ORDER BY a.started_at_ms, a.run_id, a.step_id, a.attempt LIMIT ",
+            )
+            .push_bind(
+                i64::try_from(limit).map_err(|_| {
+                    TaskFlowError::Invalid("effect recovery scan limit".to_string())
+                })?,
+            );
+        let mut transaction = self
+            .taskflow_pool()
+            .begin()
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+        let rows = query
+            .build()
+            .fetch_all(&mut *transaction)
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+        let attempts = rows
+            .into_iter()
+            .map(effect_attempt_from_row)
+            .collect::<Result<Vec<_>, _>>()?;
+        let mut checked = BTreeSet::new();
+        for attempt in &attempts {
+            if checked.insert((&attempt.run_id, &attempt.step_id)) {
+                validate_effect_dispatch_history(&mut transaction, attempt).await?;
+            }
+        }
+        transaction
+            .rollback()
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+        Ok(attempts)
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub(crate) async fn record_effect_dispatch_observation(
         &self,
         run_id: &str,
@@ -260,17 +397,49 @@ impl AutomationStore {
         kind: EffectDispatchObservationKind,
         evidence_digest: &Sha256Digest,
         observed_at_ms: u64,
+        provider_ack: Option<(&ProviderEffectAck, ProviderEffectAckSource)>,
     ) -> Result<EffectDispatchAttempt, TaskFlowError> {
-        let current = self
-            .effect_dispatch_attempt(run_id, step_id, attempt)
+        let owner = self.taskflow_owner_agent_id().as_str();
+        let mut transaction = self
+            .taskflow_pool()
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+        let current = read_effect_attempt(&mut transaction, owner, run_id, step_id, attempt)
             .await?
             .ok_or_else(|| {
                 TaskFlowError::Conflict("effect dispatch attempt is missing".to_string())
             })?;
-
-        if let Some(observation) = &current.observation {
-            if observation.kind == kind && observation.evidence_digest == *evidence_digest {
-                return Ok(current);
+        let provider_json = bind_provider_receipt(
+            &mut transaction,
+            owner,
+            &current,
+            (kind, evidence_digest, observed_at_ms),
+            provider_ack,
+        )
+        .await?;
+        let statement = if let Some(observation) = &current.observation {
+            let exact = observation.kind == kind && observation.evidence_digest == *evidence_digest;
+            let accepted_lookup = observation.kind == EffectDispatchObservationKind::Indeterminate
+                && kind == EffectDispatchObservationKind::Indeterminate
+                && provider_ack.is_some_and(|(ack, source)| {
+                    ack.status == ProviderEffectAckStatus::Accepted
+                        && source == ProviderEffectAckSource::StatusLookup
+                });
+            if exact || accepted_lookup {
+                // Persist the first observed provider identity even when the
+                // TaskFlow projection remains the original Unknown fact.
+                let refreshed =
+                    read_effect_attempt(&mut transaction, owner, run_id, step_id, attempt)
+                        .await?
+                        .ok_or_else(|| {
+                            TaskFlowError::Corrupt("effect attempt vanished".to_string())
+                        })?;
+                transaction
+                    .commit()
+                    .await
+                    .map_err(|_| TaskFlowError::Unavailable)?;
+                return Ok(refreshed);
             }
             if observation.kind != EffectDispatchObservationKind::Indeterminate
                 || kind == EffectDispatchObservationKind::Indeterminate
@@ -280,95 +449,69 @@ impl AutomationStore {
                         .to_string(),
                 ));
             }
-
-            let inserted = sqlx::query(
-                "INSERT INTO taskflow_effect_dispatch_reconciliations (
-                    owner_agent_id, run_id, step_id, attempt, observation,
-                    evidence_digest, observed_at_ms
-                 ) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            )
-            .bind(self.taskflow_owner_agent_id().as_str())
+            "INSERT INTO taskflow_effect_dispatch_reconciliations
+             (owner_agent_id, run_id, step_id, attempt, observation,
+              evidence_digest, observed_at_ms, provider_receipt_json)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+        } else {
+            "INSERT INTO taskflow_effect_dispatch_observations
+             (owner_agent_id, run_id, step_id, attempt, observation,
+              evidence_digest, observed_at_ms, provider_receipt_json)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+        };
+        sqlx::query(statement)
+            .bind(owner)
             .bind(run_id)
             .bind(step_id)
             .bind(i64::from(attempt))
             .bind(kind.as_str())
             .bind(evidence_digest.as_str())
             .bind(to_i64(observed_at_ms)?)
-            .execute(self.taskflow_pool())
-            .await;
-
-            let refreshed = self
-                .effect_dispatch_attempt(run_id, step_id, attempt)
-                .await?
-                .ok_or_else(|| {
-                    TaskFlowError::Corrupt(
-                        "effect dispatch attempt vanished during reconciliation".to_string(),
-                    )
-                })?;
-            return match inserted {
-                Ok(_) => Ok(refreshed),
-                Err(error) if is_constraint(&error) => {
-                    let Some(observation) = &refreshed.observation else {
-                        return Err(TaskFlowError::Conflict(
-                            "effect reconciliation conflicts with durable evidence".to_string(),
-                        ));
-                    };
-                    if observation.kind != kind || observation.evidence_digest != *evidence_digest {
-                        return Err(TaskFlowError::Conflict(
-                            "effect reconciliation is already bound to different bytes".to_string(),
-                        ));
-                    }
-                    Ok(refreshed)
-                }
-                Err(_) => Err(TaskFlowError::Unavailable),
-            };
-        }
-
-        let inserted = sqlx::query(
-            "INSERT INTO taskflow_effect_dispatch_observations (
-                owner_agent_id, run_id, step_id, attempt, observation,
-                evidence_digest, observed_at_ms
-             ) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        )
-        .bind(self.taskflow_owner_agent_id().as_str())
-        .bind(run_id)
-        .bind(step_id)
-        .bind(i64::from(attempt))
-        .bind(kind.as_str())
-        .bind(evidence_digest.as_str())
-        .bind(to_i64(observed_at_ms)?)
-        .execute(self.taskflow_pool())
-        .await;
-
-        let refreshed = self
-            .effect_dispatch_attempt(run_id, step_id, attempt)
+            .bind(provider_json)
+            .execute(&mut *transaction)
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+        let refreshed = read_effect_attempt(&mut transaction, owner, run_id, step_id, attempt)
             .await?
-            .ok_or_else(|| {
-                TaskFlowError::Corrupt(
-                    "effect dispatch attempt vanished after observation".to_string(),
-                )
-            })?;
-        match inserted {
-            Ok(_) => Ok(refreshed),
-            Err(error) if is_constraint(&error) => {
-                let Some(observation) = &refreshed.observation else {
-                    return Err(TaskFlowError::Conflict(
-                        "effect observation conflicts with durable evidence".to_string(),
-                    ));
-                };
-                if observation.kind != kind || observation.evidence_digest != *evidence_digest {
-                    return Err(TaskFlowError::Conflict(
-                        "effect observation is already bound to different bytes".to_string(),
-                    ));
-                }
-                Ok(refreshed)
-            }
-            Err(_) => Err(TaskFlowError::Unavailable),
-        }
+            .ok_or_else(|| TaskFlowError::Corrupt("effect attempt vanished".to_string()))?;
+        transaction
+            .commit()
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+        Ok(refreshed)
     }
 }
 
-fn effect_attempt_from_row(
+async fn read_effect_attempt(
+    connection: &mut SqliteConnection,
+    owner: &str,
+    run_id: &str,
+    step_id: &str,
+    attempt: u32,
+) -> Result<Option<EffectDispatchAttempt>, TaskFlowError> {
+    let mut query = QueryBuilder::<Sqlite>::new(EFFECT_DISPATCH_SELECT);
+    query
+        .push(" WHERE a.owner_agent_id=")
+        .push_bind(owner)
+        .push(" AND a.run_id=")
+        .push_bind(run_id)
+        .push(" AND a.step_id=")
+        .push_bind(step_id)
+        .push(" AND a.attempt=")
+        .push_bind(i64::from(attempt));
+    let row = query
+        .build()
+        .fetch_optional(&mut *connection)
+        .await
+        .map_err(|_| TaskFlowError::Unavailable)?;
+    let attempt = row.map(effect_attempt_from_row).transpose()?;
+    if let Some(attempt) = attempt.as_ref() {
+        validate_effect_dispatch_history(connection, attempt).await?;
+    }
+    Ok(attempt)
+}
+
+pub(crate) fn effect_attempt_from_row(
     row: sqlx::sqlite::SqliteRow,
 ) -> Result<EffectDispatchAttempt, TaskFlowError> {
     let provider_effect_key: Option<String> = row
@@ -426,7 +569,12 @@ fn effect_attempt_from_row(
             ));
         }
     };
-    Ok(EffectDispatchAttempt {
+    let mut attempt = EffectDispatchAttempt {
+        owner_agent_id: AgentId::parse(
+            row.try_get::<String, _>("owner_agent_id")
+                .map_err(|_| TaskFlowError::Corrupt("effect owner column".to_string()))?,
+        )
+        .map_err(|_| TaskFlowError::Corrupt("effect owner identity".to_string()))?,
         run_id: row
             .try_get("run_id")
             .map_err(|_| TaskFlowError::Corrupt("effect run id".to_string()))?,
@@ -474,7 +622,18 @@ fn effect_attempt_from_row(
                 .map_err(|_| TaskFlowError::Corrupt("effect start timestamp".to_string()))?,
         )?,
         observation,
-    })
+        provider_binding: None,
+        provider_binding_attempt: row
+            .try_get::<Option<i64>, _>("binding_attempt")
+            .map_err(|_| TaskFlowError::Corrupt("provider binding attempt column".to_string()))?
+            .map(|value| {
+                u32::try_from(value)
+                    .map_err(|_| TaskFlowError::Corrupt("provider binding attempt".to_string()))
+            })
+            .transpose()?,
+    };
+    attempt.provider_binding = validate_provider_projection(&row, &attempt)?;
+    Ok(attempt)
 }
 
 fn to_u64(value: i64) -> Result<u64, TaskFlowError> {
@@ -574,16 +733,30 @@ mod tests {
             )
             .await
             .expect("create run");
-        store
+        let claimed = store
             .claim_taskflow_run("effect-run", &fence, 20, 10_000)
             .await
             .expect("claim run");
+        store
+            .apply_taskflow_command(
+                &crate::TaskFlowCommand::new(
+                    "effect-run",
+                    "effect-start",
+                    fence.clone(),
+                    claimed.revision,
+                    crate::TaskFlowTransition::Start,
+                    21,
+                )
+                .expect("start command"),
+            )
+            .await
+            .expect("start run");
         (temp, layout, store, fence)
     }
 
     #[tokio::test]
     async fn indeterminate_provider_evidence_reconciles_after_reopen_without_redispatch() {
-        let (_temp, layout, store, _fence) = prepared_store().await;
+        let (_temp, layout, store, fence) = prepared_store().await;
         let intent = Sha256Digest::for_bytes(b"effect-intent");
         let wire_payload = b"effect-payload";
         let payload = Sha256Digest::for_bytes(wire_payload);
@@ -592,11 +765,38 @@ mod tests {
                 .expect("provider effect key");
         let binding = Sha256Digest::for_bytes(b"effect-binding");
         let nonce = Sha256Digest::for_bytes(b"effect-nonce");
+        store
+            .prepare_taskflow_step(
+                "effect-run",
+                "work",
+                1,
+                &fence,
+                &intent,
+                &payload,
+                "prepare-effect",
+                22,
+            )
+            .await
+            .expect("prepare effect step");
+        store
+            .claim_taskflow_step(
+                "effect-run",
+                "work",
+                1,
+                &fence,
+                &intent,
+                &payload,
+                "claim-effect",
+                23,
+            )
+            .await
+            .expect("claim effect step");
         let started = store
             .begin_effect_dispatch_attempt(
                 "effect-run",
                 "work",
                 1,
+                &fence,
                 &intent,
                 &payload,
                 &provider_effect_key,
@@ -607,7 +807,7 @@ mod tests {
                 "grant-1",
                 &nonce,
                 "record-effect",
-                21,
+                24,
             )
             .await
             .expect("begin attempt");
@@ -621,7 +821,8 @@ mod tests {
                 1,
                 EffectDispatchObservationKind::Indeterminate,
                 &unknown,
-                22,
+                25,
+                /*provider_ack*/ None,
             )
             .await
             .expect("record indeterminate");
@@ -664,6 +865,7 @@ mod tests {
                 EffectDispatchObservationKind::Succeeded,
                 &terminal,
                 30,
+                /*provider_ack*/ None,
             )
             .await
             .expect("terminal reconciliation");
@@ -694,6 +896,7 @@ mod tests {
                 EffectDispatchObservationKind::Succeeded,
                 &terminal,
                 31,
+                /*provider_ack*/ None,
             )
             .await
             .expect("terminal replay");
@@ -707,10 +910,116 @@ mod tests {
                     EffectDispatchObservationKind::Failed,
                     &Sha256Digest::for_bytes(b"different-terminal"),
                     32,
+                    /*provider_ack*/ None,
                 )
                 .await,
             Err(TaskFlowError::Conflict(_))
         ));
         reopened.close().await;
+    }
+
+    #[tokio::test]
+    async fn effect_dispatch_barrier_absence_cut_requires_settlement_and_new_fence() {
+        let (_temp, layout, store, fence) = prepared_store().await;
+        let intent = Sha256Digest::for_bytes(b"effect-intent");
+        let wire = b"effect-payload";
+        let payload = Sha256Digest::for_bytes(wire);
+        let key =
+            ProviderEffectKey::for_operation("provider:test", "effect-run", "work").expect("key");
+        let binding = Sha256Digest::for_bytes(b"effect-binding");
+        let nonce = Sha256Digest::for_bytes(b"effect-nonce");
+        for attempt in [1, 2] {
+            store
+                .prepare_taskflow_step(
+                    "effect-run",
+                    "work",
+                    attempt,
+                    &fence,
+                    &intent,
+                    &payload,
+                    &format!("prepare-{attempt}"),
+                    22,
+                )
+                .await
+                .expect("prepare both attempts");
+            store
+                .claim_taskflow_step(
+                    "effect-run",
+                    "work",
+                    attempt,
+                    &fence,
+                    &intent,
+                    &payload,
+                    &format!("claim-{attempt}"),
+                    23,
+                )
+                .await
+                .expect("preclaim both attempts");
+        }
+        store
+            .begin_effect_dispatch_attempt(
+                "effect-run",
+                "work",
+                1,
+                &fence,
+                &intent,
+                &payload,
+                &key,
+                wire,
+                &binding,
+                "provider:test",
+                7,
+                "grant-1",
+                &nonce,
+                "record-first",
+                24,
+            )
+            .await
+            .expect("original dispatch barrier");
+        store
+            .record_effect_dispatch_observation(
+                "effect-run",
+                "work",
+                1,
+                EffectDispatchObservationKind::ProvenAbsent,
+                &Sha256Digest::for_bytes(b"actual-before-contact-proof"),
+                25,
+                /*provider_ack*/ None,
+            )
+            .await
+            .expect("actual owner commits absence before projection settlement");
+        assert!(
+            store
+                .begin_effect_dispatch_attempt(
+                    "effect-run",
+                    "work",
+                    2,
+                    &fence,
+                    &intent,
+                    &payload,
+                    &key,
+                    wire,
+                    &binding,
+                    "provider:test",
+                    7,
+                    "grant-2",
+                    &Sha256Digest::for_bytes(b"effect-nonce-2"),
+                    "record-second",
+                    26,
+                )
+                .await
+                .is_err()
+        );
+        assert_eq!(
+            store
+                .effect_dispatch_attempt("effect-run", "work", 2)
+                .await
+                .expect("no partial second barrier"),
+            None
+        );
+        store.close().await;
+        AutomationStore::open(&layout)
+            .await
+            .expect("absence cut remains recoverable");
     }
 }
