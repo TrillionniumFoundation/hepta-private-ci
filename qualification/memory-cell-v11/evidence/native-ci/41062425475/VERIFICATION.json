@@ -1,0 +1,122 @@
+{
+  "schema": "hepta.memory.v11.native-ci-independent-verification.v1",
+  "conclusion": "passed",
+  "source_commit": "1bc02cb33a380cf53bb58333b2ee8b3d1a70f175",
+  "source_tree": "73de4b2ac95f7be92261dd7df07b8e70ddb5ddb3",
+  "run_id": 41062425475,
+  "job_id": 124085223772,
+  "artifact_id": 12981851880,
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41062425475",
+  "artifact_zip_sha256": "059eb9563458675dabddbcb0e3c12ec198bf5d2acf06836511afd544d570a585",
+  "artifact_zip_bytes": 454165,
+  "source_inventory_sha256": "135ebab68797bc86870ce1390ec0fa32097c6fe2caf08d2d57c65786fed09720",
+  "full_source_inventory_equals_local_exact_commit": true,
+  "native_build_input_entries": 8080,
+  "native_build_inputs_entries_sha256": "a20f51039d9608605e19196be33730217c317e38251c468817e923b4783f7d2d",
+  "executed_cases": 517,
+  "passed_cases": 517,
+  "failed_cases": [],
+  "nextest_reported_skipped_cases": 24,
+  "junit_skipped_cases": 0,
+  "skip_count_interpretation": "The JUnit contains the 517 executed cases. Nextest separately reports 24 skipped cases; they are not counted as passes.",
+  "v11_cases": [
+    {
+      "name": "memory_serving_plan_v11::tests::memory_v11_candidate_binds_the_complete_owner_partition_and_acquisition_cut",
+      "time_seconds": 0.154,
+      "passed": true
+    },
+    {
+      "name": "memory_serving_plan_v11::tests::memory_v11_plan_rejects_duplicate_and_ambiguous_ownership",
+      "time_seconds": 0.464,
+      "passed": true
+    },
+    {
+      "name": "memory_serving_plan_v11::tests::memory_v11_query_fences_reject_source_and_selected_version_races",
+      "time_seconds": 0.837,
+      "passed": true
+    },
+    {
+      "name": "memory_serving_plan_v11::tests::memory_v11_independent_cells_reuse_weights_with_fresh_queries_and_replace_one_version",
+      "time_seconds": 1.412,
+      "passed": true
+    },
+    {
+      "name": "memory_serving_plan_v11::tests::memory_v11_return_fence_rechecks_timed_dependencies_outside_query_support",
+      "time_seconds": 0.534,
+      "passed": true
+    },
+    {
+      "name": "memory_serving_plan_v11::tests::memory_v11_recovery_requires_live_signed_selection_and_withdrawal_frontier",
+      "time_seconds": 1.314,
+      "passed": true
+    },
+    {
+      "name": "memory_training_projection_v11::tests::memory_v11_new_effective_version_and_tombstone_cannot_hide_behind_old_source_ids",
+      "time_seconds": 0.131,
+      "passed": true
+    },
+    {
+      "name": "memory_training_projection_v11::tests::memory_v11_owner_projection_is_local_complete_and_recoverable",
+      "time_seconds": 0.276,
+      "passed": true
+    }
+  ],
+  "real_app_server_context_regression_passed": true,
+  "same_source_app_server": {
+    "path": "/home/runner/.cache/codex-ci/cargo-target/debug/codex-app-server",
+    "sha256": "6cbef25bf4dfa66573643cc97d0b435d8f76d2173a6907e6faf7cf9ce15d47c5",
+    "bytes": 444006728,
+    "source_commit": "1bc02cb33a380cf53bb58333b2ee8b3d1a70f175"
+  },
+  "command_order": [
+    "rustc-version",
+    "cargo-version",
+    "nextest-version",
+    "just-version",
+    "same-source-app-server",
+    "scoped-native-tests",
+    "final-scoped-fix",
+    "final-format"
+  ],
+  "command_exit_codes_all_zero": true,
+  "after_tests_after_fix_after_fmt_and_final_tree_unchanged": true,
+  "all_status_and_diff_files_empty": true,
+  "tests_executed_after_fix_or_format": false,
+  "cache_restore_hit": false,
+  "cache_save_succeeded": true,
+  "cache_not_substituted_for_validation": true,
+  "validation_wall_seconds": 772.191658061,
+  "test_process_wall_seconds": 223.57249896200005,
+  "local_failed_and_interrupted_attempts_retained": true,
+  "scope_limits": [
+    "Scoped codex-hepta-memory and codex-hepta-agentd library regression tests, not the whole workspace suite.",
+    "V11 lifecycle fixtures use analytic parameters; they establish ownership/lifecycle behavior, not trained prediction quality.",
+    "Shared V3 withdrawal frontier invalidates old admissions for every notified owner; unaffected parameters require fresh admission/install and a rebuilt plan.",
+    "This record applies to the exact source commit. Later publication heads require separate native/build input equality verification."
+  ],
+  "production_activation_allowed": false,
+  "trained_quality_claimed": false,
+  "evidence_files_sha256": {
+    "artifact/after_fix.patch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifact/after_fix.status.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifact/after_format.patch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifact/after_format.status.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifact/after_tests.patch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifact/after_tests.status.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifact/cargo-version.log": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5",
+    "artifact/final-format.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifact/final-scoped-fix.log": "a8793b7c411ac8577eef71c8efe221bcefcb83e77dce6e45d958ab6d04abea63",
+    "artifact/final.patch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifact/final.status.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifact/initial.patch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifact/initial.status.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifact/just-version.log": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87",
+    "artifact/native-junit.xml": "edd52a3a92adc3d3f3601e80551950841324ec4e2d7e313e2427d6547c4df7a7",
+    "artifact/nextest-version.log": "87195837e3b766934f3022b0ff917e4b7b50904a16f79838efa8af309a3e7ea4",
+    "artifact/receipt.json": "5a561d067a71e69673efb7e6cd6861891e39a39c8449d3e6468228907f3c42e5",
+    "artifact/rustc-version.log": "fe0e1b313beb7c714ae6338c5797b7a31f392b7bfead264a4c927f4a2b8ea2e0",
+    "artifact/same-source-app-server.log": "af9daaa5fdee99885a691e72fe8e34eb8dd68c9a01ad17ee8267c6b9e864e918",
+    "artifact/scoped-native-tests.log": "d2146cea8646f06f73555a3c088c87ae5001a3b83354a89bfcecdacad35ba2e4",
+    "artifact/source-tree.txt": "135ebab68797bc86870ce1390ec0fa32097c6fe2caf08d2d57c65786fed09720"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "archive": {
+    "bytes": 349728,
+    "compression": "xz",
+    "metadata_mode": "lexical order; uid=gid=mtime=0; modes=0644/0755",
+    "name": "v11-native-attempts-early.tar.xz",
+    "sha256": "4452c7f5c305fbd761d4f0c77cb2becd95dee60834665f51ec4dfe9407a139f8"
+  },
+  "chunk_bytes": 131072,
+  "external_assets": "No external pretrained assets are fetched or followed; only declared archive members are packaged.",
+  "includes_all_declared_archive_members": true,
+  "inventory": {
+    "bytes": 6272,
+    "path": "INVENTORY.json",
+    "sha256": "9f39542d392acf8723bbb5988868220b774b357309a2164c8c3618a7fbc42d16"
+  },
+  "parts": [
+    {
+      "binary_bytes": 131072,
+      "binary_sha256": "7c2ab1785ff43fcbc6d505139421aca5c9685b7e819f9dfe007a0b49f622f8fd",
+      "path": "part-00000.b64",
+      "text_bytes": 174765,
+      "text_sha256": "72235c6fd614b0f4863bb63cf064edff2591630a8bb7d36949e8d851949fead7"
+    },
+    {
+      "binary_bytes": 131072,
+      "binary_sha256": "edc21d0499de883353c6b77b5a6c4fbcb715410f5b4fec0b579ba2dec165f76b",
+      "path": "part-00001.b64",
+      "text_bytes": 174765,
+      "text_sha256": "12917c97ca6e3ce576bb7be2f90fb222e33bfac6ba8ee1a7fe2ce78cfe2689af"
+    },
+    {
+      "binary_bytes": 87584,
+      "binary_sha256": "060e1d3c7e9c7d32e04bff25219e1dc1d913372ef2e898208289f9004ca69887",
+      "path": "part-00002.b64",
+      "text_bytes": 116781,
+      "text_sha256": "af3ca84b0a44a16b56f1cc53b731c01490ec0de36239a91c6a2b11a19325b47d"
+    }
+  ],
+  "schema": "hepta.evidence.text-archive.v1",
+  "source_manifests": [],
+  "tool_sha256": {
+    "pack.py": "e7ea888ab292fd60cb3b1e34c55e3216fe37350ce7a83ca48c5ba96d7528934e",
+    "restore.py": "fa7e0e3287b8bc540a069dc743f06ea4fe61f42962ca2a8d243c77f6f0a099ef"
+  }
+}
