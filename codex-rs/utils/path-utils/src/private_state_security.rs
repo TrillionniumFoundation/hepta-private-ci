@@ -20,6 +20,11 @@ use windows_sys::Win32::Security::Authorization::GetSecurityInfo;
 use windows_sys::Win32::Security::Authorization::SDDL_REVISION_1;
 use windows_sys::Win32::Security::Authorization::SE_FILE_OBJECT;
 use windows_sys::Win32::Security::DACL_SECURITY_INFORMATION;
+use windows_sys::Win32::Security::GROUP_SECURITY_INFORMATION;
+use windows_sys::Win32::Security::INHERITED_ACE;
+use windows_sys::Win32::Security::OBJECT_INHERIT_ACE;
+use windows_sys::Win32::Security::CONTAINER_INHERIT_ACE;
+use windows_sys::Win32::Security::GetLengthSid;
 use windows_sys::Win32::Security::EqualSid;
 use windows_sys::Win32::Security::GetAce;
 use windows_sys::Win32::Security::GetSecurityDescriptorControl;
@@ -47,6 +52,22 @@ impl Drop for LocalAllocation {
     }
 }
 
+#[derive(Clone, Copy)]
+pub(super) enum Policy {
+    PrivateState,
+    SqliteDirectory,
+    SqliteFile,
+}
+
+/// Authorization-relevant descriptor data; auditing SACLs are not requested.
+#[derive(Debug, Eq, PartialEq)]
+pub(super) struct SecuritySnapshot {
+    owner: Vec<u8>,
+    group: Vec<u8>,
+    control: u16,
+    dacl: Vec<u8>,
+}
+
 pub(super) struct OwnerSecurity {
     token_user: Vec<usize>,
     descriptor: LocalAllocation,
@@ -54,6 +75,14 @@ pub(super) struct OwnerSecurity {
 
 impl OwnerSecurity {
     pub(super) fn current() -> io::Result<Self> {
+        Self::with_inheritance("")
+    }
+
+    pub(super) fn sqlite_directory() -> io::Result<Self> {
+        Self::with_inheritance("OICI")
+    }
+
+    fn with_inheritance(flags: &str) -> io::Result<Self> {
         let mut raw_token = 0;
         // SAFETY: The current-process pseudo handle is valid and output is writable.
         if unsafe { OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &mut raw_token) } == 0 {
@@ -112,7 +141,7 @@ impl OwnerSecurity {
         let sid_text = String::from_utf16(unsafe { std::slice::from_raw_parts(text, count) })
             .map_err(|_| unsafe_owner())?;
         drop(text_owner);
-        let descriptor_text: Vec<u16> = format!("O:{sid_text}D:P(A;;FA;;;{sid_text})")
+        let descriptor_text: Vec<u16> = format!("O:{sid_text}D:P(A;{flags};FA;;;{sid_text})")
             .encode_utf16()
             .chain(std::iter::once(0))
             .collect();
@@ -140,7 +169,16 @@ impl OwnerSecurity {
     }
 
     pub(super) fn validate(&self, file: &File) -> io::Result<()> {
+        self.snapshot(file, Policy::PrivateState).map(drop)
+    }
+
+    pub(super) fn snapshot(
+        &self,
+        file: &File,
+        policy: Policy,
+    ) -> io::Result<SecuritySnapshot> {
         let mut owner: PSID = ptr::null_mut();
+        let mut group: PSID = ptr::null_mut();
         let mut acl: *mut ACL = ptr::null_mut();
         let mut descriptor = ptr::null_mut();
         // SAFETY: The file is live and all output pointers remain writable.
@@ -148,9 +186,9 @@ impl OwnerSecurity {
             GetSecurityInfo(
                 file.as_raw_handle() as HANDLE,
                 SE_FILE_OBJECT,
-                OWNER_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION,
+                OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION,
                 &mut owner,
-                ptr::null_mut(),
+                &mut group,
                 &mut acl,
                 ptr::null_mut(),
                 &mut descriptor,
@@ -171,7 +209,6 @@ impl OwnerSecurity {
                 && !acl.is_null()
                 && IsValidAcl(acl) != 0
                 && GetSecurityDescriptorControl(descriptor, &mut control, &mut revision) != 0
-                && control & SE_DACL_PROTECTED != 0
                 && (*acl).AceCount == 1
         };
         if !valid {
@@ -191,16 +228,28 @@ impl OwnerSecurity {
         // its length proves that the remaining ACCESS_ALLOWED_ACE fields fit.
         let header = unsafe { (*ace).Header };
         let sid_offset = offset_of!(ACCESS_ALLOWED_ACE, SidStart);
+        let protected = control & SE_DACL_PROTECTED != 0;
+        let permitted_flags = match policy {
+            Policy::PrivateState => protected && header.AceFlags == 0,
+            Policy::SqliteDirectory => {
+                protected
+                    && u32::from(header.AceFlags) == (OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE)
+            }
+            Policy::SqliteFile => {
+                (protected && header.AceFlags == 0)
+                    || (!protected && u32::from(header.AceFlags) == INHERITED_ACE)
+            }
+        };
         if header.AceType != ACCESS_ALLOWED_ACE_TYPE
-            || header.AceFlags != 0
+            || !permitted_flags
             || usize::from(header.AceSize) < sid_offset + 8
         {
             return Err(unsafe_owner());
         }
         // SAFETY: The ACE length checked above contains the SID's fixed header.
         let sid = unsafe { ace.cast::<u8>().add(sid_offset) };
-        let sid_bytes = 8 + 4 * usize::from(unsafe { *sid.add(1) });
-        if sid_bytes > usize::from(header.AceSize) - sid_offset {
+        let sid_length = 8 + 4 * usize::from(unsafe { *sid.add(1) });
+        if sid_length > usize::from(header.AceSize) - sid_offset {
             return Err(unsafe_owner());
         }
         // SAFETY: The full SID is bounded by the validated ACE, and both SIDs
@@ -210,9 +259,31 @@ impl OwnerSecurity {
                 && EqualSid(sid.cast(), expected) != 0
                 && (*ace).Mask == FILE_ALL_ACCESS
         };
+        if !valid {
+            return Err(unsafe_owner());
+        }
+        let snapshot = SecuritySnapshot {
+            owner: sid_bytes(owner)?,
+            group: sid_bytes(group)?,
+            control,
+            // SAFETY: IsValidAcl validated the size, and the allocation remains
+            // owned through this copy. Preserve every ACL byte, not just its ACE.
+            dacl: unsafe {
+                std::slice::from_raw_parts(acl.cast::<u8>(), usize::from((*acl).AclSize))
+            }.to_vec(),
+        };
         drop(descriptor_owner);
-        if valid { Ok(()) } else { Err(unsafe_owner()) }
+        Ok(snapshot)
     }
+}
+
+fn sid_bytes(sid: PSID) -> io::Result<Vec<u8>> {
+    // SAFETY: GetSecurityInfo returned the SID inside its live descriptor.
+    if sid.is_null() || unsafe { IsValidSid(sid) } == 0 {
+        return Err(unsafe_owner());
+    }
+    // SAFETY: The validated SID contains the length reported by GetLengthSid.
+    Ok(unsafe { std::slice::from_raw_parts(sid.cast::<u8>(), GetLengthSid(sid) as usize) }.to_vec())
 }
 
 fn unsafe_owner() -> io::Error {

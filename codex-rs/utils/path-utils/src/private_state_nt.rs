@@ -26,6 +26,7 @@ use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
+use windows_sys::Win32::Storage::FileSystem::FILE_TRAVERSE;
 use windows_sys::Win32::Storage::FileSystem::GetFileInformationByHandle;
 use windows_sys::Win32::System::IO::IO_STATUS_BLOCK;
 use windows_sys::Win32::System::IO::IO_STATUS_BLOCK_0;
@@ -33,6 +34,7 @@ use windows_sys::Win32::System::Kernel::OBJ_CASE_INSENSITIVE;
 use windows_sys::Win32::System::Kernel::OBJ_DONT_REPARSE;
 
 const FILE_OPEN: u32 = 1;
+const FILE_CREATE: u32 = 2;
 const FILE_OPEN_IF: u32 = 3;
 const FILE_DIRECTORY_FILE: u32 = 1;
 const FILE_NON_DIRECTORY_FILE: u32 = 0x40;
@@ -49,8 +51,11 @@ pub(super) enum EntryKind {
 #[derive(Clone, Copy)]
 pub(super) enum Access {
     Read,
+    /// Existing, read-only source; regular files deny sharing for writes/deletes.
+    RetainRead,
     WriteExisting,
     Create,
+    CreateNew,
 }
 
 #[repr(C)]
@@ -85,6 +90,13 @@ unsafe extern "system" {
         create_options: u32,
         ea_buffer: *const c_void,
         ea_length: u32,
+    ) -> NTSTATUS;
+    fn NtQueryVolumeInformationFile(
+        file_handle: HANDLE,
+        io_status_block: *mut IO_STATUS_BLOCK,
+        information: *mut c_void,
+        length: u32,
+        information_class: u32,
     ) -> NTSTATUS;
     fn NtSetInformationFile(
         file_handle: HANDLE,
@@ -125,13 +137,22 @@ pub(super) fn open(
         ),
     };
     let (desired_access, disposition) = match access {
-        Access::Read => (FILE_GENERIC_READ, FILE_OPEN),
+        Access::Read | Access::RetainRead => (FILE_GENERIC_READ, FILE_OPEN),
         Access::WriteExisting => (FILE_ALL_ACCESS, FILE_OPEN),
         Access::Create => (FILE_ALL_ACCESS, FILE_OPEN_IF),
+        Access::CreateNew => (FILE_ALL_ACCESS, FILE_CREATE),
+    };
+    let sharing = if matches!((kind, access), (EntryKind::File, Access::RetainRead)) {
+        FILE_SHARE_READ
+    } else {
+        sharing
     };
     // Root handles prevent renaming the directory without requesting DELETE
     // themselves, so another owner can open it and observe the file-lock fence.
     let desired_access = match kind {
+        EntryKind::Directory if matches!(access, Access::RetainRead) => {
+            (desired_access | FILE_TRAVERSE) & !DELETE
+        }
         EntryKind::Directory => desired_access & !DELETE,
         EntryKind::File => desired_access,
     };
@@ -166,6 +187,41 @@ pub(super) fn open(
     Ok(File::from(unsafe {
         OwnedHandle::from_raw_handle(handle as *mut c_void)
     }))
+}
+
+/// Reject remote/mapped devices for the SQLite retained-source capability.
+pub(super) fn require_local_disk(file: &File) -> io::Result<()> {
+    // FILE_FS_DEVICE_INFORMATION / FileFsDeviceInformation from the Windows NT ABI.
+    #[repr(C)]
+    struct DeviceInformation { device_type: u32, characteristics: u32 }
+    const FILE_FS_DEVICE_INFORMATION: u32 = 4;
+    const FILE_DEVICE_DISK: u32 = 7;
+    const FILE_REMOTE_DEVICE: u32 = 0x10;
+    let mut information = DeviceInformation { device_type: 0, characteristics: 0 };
+    let mut status_block = IO_STATUS_BLOCK {
+        Anonymous: IO_STATUS_BLOCK_0 { Status: 0 },
+        Information: 0,
+    };
+    // SAFETY: The live synchronous handle and the exact information-class
+    // buffer remain valid through the call. No filesystem state is modified.
+    let status = unsafe {
+        NtQueryVolumeInformationFile(
+            file.as_raw_handle() as HANDLE,
+            &mut status_block,
+            (&raw mut information).cast(),
+            size_of::<DeviceInformation>() as u32,
+            FILE_FS_DEVICE_INFORMATION,
+        )
+    };
+    status_result(status)?;
+    if status != 0
+        || status_block.Information != size_of::<DeviceInformation>()
+        || information.device_type != FILE_DEVICE_DISK
+        || information.characteristics & FILE_REMOTE_DEVICE != 0
+    {
+        return Err(io::Error::new(io::ErrorKind::Unsupported, "SQLite retention requires a local disk filesystem"));
+    }
+    Ok(())
 }
 
 pub(super) fn validate_kind(file: &File, kind: EntryKind) -> io::Result<()> {

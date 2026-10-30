@@ -19,6 +19,9 @@ mod nt;
 #[path = "private_state_security.rs"]
 mod security;
 
+#[path = "sqlite_private_windows.rs"]
+pub mod sqlite;
+
 use security::OwnerSecurity;
 
 /// Access requested for one validated regular state file.
