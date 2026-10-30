@@ -352,7 +352,11 @@ fn read_tracked_artifacts() -> Result<BTreeMap<String, Vec<u8>>> {
     let manifest = codex_utils_cargo_bin::find_resource!(format!(
         "fixtures/robrix-control-v2/{MANIFEST_FILE}"
     ))?;
-    read_artifacts(manifest.parent().context("fixture manifest has no parent")?)
+    read_artifacts(
+        manifest
+            .parent()
+            .context("fixture manifest has no parent")?,
+    )
 }
 
 fn read_artifacts(root: &std::path::Path) -> Result<BTreeMap<String, Vec<u8>>> {

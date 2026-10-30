@@ -5,7 +5,9 @@ import tomllib
 import unittest
 
 
-SPEC = importlib.util.spec_from_file_location("vendor_runner", Path(__file__).with_name("run_hepta_vendor_compatibility.py"))
+SPEC = importlib.util.spec_from_file_location(
+    "vendor_runner", Path(__file__).with_name("run_hepta_vendor_compatibility.py")
+)
 RUNNER = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(RUNNER)
 
@@ -30,12 +32,16 @@ class VendorRunnerIntegrity(unittest.TestCase):
     def test_junit_requires_exact_names_and_no_skips_or_failures(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "junit.xml"
-            path.write_text('<testsuites><testsuite><testcase name="exact"/></testsuite></testsuites>')
+            path.write_text(
+                '<testsuites><testsuite><testcase name="exact"/></testsuite></testsuites>'
+            )
             self.assertEqual(RUNNER.validate_junit(path, ["exact"])["passed"], 1)
             with self.assertRaises(ValueError):
                 RUNNER.validate_junit(path, ["different"])
             for failure in ["skipped", "failure", "error"]:
-                path.write_text(f'<testsuite><testcase name="exact"><{failure}/></testcase></testsuite>')
+                path.write_text(
+                    f'<testsuite><testcase name="exact"><{failure}/></testcase></testsuite>'
+                )
                 with self.assertRaises(ValueError):
                     RUNNER.validate_junit(path, ["exact"])
 
@@ -47,18 +53,31 @@ class VendorRunnerIntegrity(unittest.TestCase):
             for name, vendor in RUNNER.VENDORS.items():
                 source = repo / "codex-rs/third_party" / vendor
                 source.mkdir(parents=True)
-                (source / "Cargo.toml").write_text(f'[package]\nname = "{name}"\nversion = "0.0.1"\n')
-                (source / "HEPTA_SOURCE.json").write_text('{}\n')
-                (source / "lib.rs").write_text(f'// {name} source\n')
-            (repo / "codex-rs/Cargo.lock").write_text('# seed lock\n')
+                (source / "Cargo.toml").write_text(
+                    f'[package]\nname = "{name}"\nversion = "0.0.1"\n'
+                )
+                (source / "HEPTA_SOURCE.json").write_text("{}\n")
+                (source / "lib.rs").write_text(f"// {name} source\n")
+            (repo / "codex-rs/Cargo.lock").write_text("# seed lock\n")
             records = RUNNER.prepare_workspace(repo, work, output)
             manifest = tomllib.loads((work / "Cargo.toml").read_text())
             self.assertEqual(set(records), set(RUNNER.VENDORS))
             for name, patch in manifest["patch"]["crates-io"].items():
                 copied = work / patch["path"]
-                self.assertEqual(tomllib.loads((copied / "Cargo.toml").read_text())["package"]["name"], name)
-                self.assertEqual(records[name]["source_manifest_sha256"], records[name]["copied_manifest_sha256"])
-            self.assertEqual((work / "Cargo.lock").read_bytes(), (repo / "codex-rs/Cargo.lock").read_bytes())
+                self.assertEqual(
+                    tomllib.loads((copied / "Cargo.toml").read_text())["package"][
+                        "name"
+                    ],
+                    name,
+                )
+                self.assertEqual(
+                    records[name]["source_manifest_sha256"],
+                    records[name]["copied_manifest_sha256"],
+                )
+            self.assertEqual(
+                (work / "Cargo.lock").read_bytes(),
+                (repo / "codex-rs/Cargo.lock").read_bytes(),
+            )
             with self.assertRaises(ValueError):
                 RUNNER.prepare_workspace(repo, work, output)
 

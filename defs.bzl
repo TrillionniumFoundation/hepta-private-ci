@@ -530,6 +530,7 @@ def codex_rust_crate(
         test_file_stem = test.removeprefix("tests/").removesuffix(".rs")
         test_crate_name = test_file_stem.replace("-", "_")
         replacements = integration_test_dependency_replacements.get(test_file_stem, {})
+
         # Relative labels are relative to the macro caller, not this .bzl file.
         normalized_replacements = {
             Label(original if original.startswith("//") or original.startswith("@") else "//" + native.package_name() + ":" + original.removeprefix(":")): replacement

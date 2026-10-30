@@ -61,9 +61,8 @@ enum CompatibilityValue {
 
 #[test]
 fn tagged_values_and_quoted_scalars_round_trip() -> Result<(), Box<dyn std::error::Error>> {
-    let values: Vec<CompatibilityValue> = serde_yaml::from_str(
-        "- !Text 'true'\n- !Text '0012'\n- !Coordinates {x: -2, y: 9}\n",
-    )?;
+    let values: Vec<CompatibilityValue> =
+        serde_yaml::from_str("- !Text 'true'\n- !Text '0012'\n- !Coordinates {x: -2, y: 9}\n")?;
     assert_eq!(
         values,
         vec![
@@ -73,6 +72,9 @@ fn tagged_values_and_quoted_scalars_round_trip() -> Result<(), Box<dyn std::erro
         ]
     );
     let serialized = serde_yaml::to_string(&values)?;
-    assert_eq!(serde_yaml::from_str::<Vec<CompatibilityValue>>(&serialized)?, values);
+    assert_eq!(
+        serde_yaml::from_str::<Vec<CompatibilityValue>>(&serialized)?,
+        values
+    );
     Ok(())
 }

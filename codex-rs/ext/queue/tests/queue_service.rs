@@ -72,10 +72,10 @@ use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 use tokio::sync::oneshot;
 
-#[path = "suite/queue_idle_continuation.rs"]
-mod queue_idle_continuation;
 #[path = "suite/queue_hook_rejection_tests.rs"]
 mod queue_hook_rejection_tests;
+#[path = "suite/queue_idle_continuation.rs"]
+mod queue_idle_continuation;
 
 const TINY_PNG_BYTES: &[u8] = &[
     137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 1, 0, 0, 0, 1, 8, 6, 0,

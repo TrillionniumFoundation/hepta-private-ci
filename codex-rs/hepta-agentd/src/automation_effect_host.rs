@@ -714,22 +714,34 @@ mod tests {
     impl Fixture {
         async fn new() -> Self {
             let temp = tempfile::tempdir().unwrap_or_else(|error| panic!("temp root: {error:?}"));
-            let root = temp.path().canonicalize().unwrap_or_else(|error| panic!("canonical temp root: {error:?}"));
+            let root = temp
+                .path()
+                .canonicalize()
+                .unwrap_or_else(|error| panic!("canonical temp root: {error:?}"));
             let fleet_path = root.join("fleet");
-            let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).unwrap_or_else(|error| panic!("fleet root: {error:?}"));
-            let registry = FleetRegistry::initialize(fleet_root.clone()).unwrap_or_else(|error| panic!("fleet registry: {error:?}"));
+            let fleet_root = HeptaFleetRoot::parse(fleet_path.clone())
+                .unwrap_or_else(|error| panic!("fleet root: {error:?}"));
+            let registry = FleetRegistry::initialize(fleet_root.clone())
+                .unwrap_or_else(|error| panic!("fleet registry: {error:?}"));
             let workspace = root.join("workspace");
             fs::create_dir(&workspace).unwrap_or_else(|error| panic!("workspace: {error:?}"));
-            let workspace = workspace.canonicalize().unwrap_or_else(|error| panic!("canonical workspace: {error:?}"));
-            let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID).unwrap_or_else(|error| panic!("agent id: {error:?}"));
+            let workspace = workspace
+                .canonicalize()
+                .unwrap_or_else(|error| panic!("canonical workspace: {error:?}"));
+            let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)
+                .unwrap_or_else(|error| panic!("agent id: {error:?}"));
             let resources = ResourceBudget::local_default();
             let manifest = AgentManifest::new(
                 agent_id.clone(),
-                WorkspaceBinding::new(workspace.clone(), &fleet_root).unwrap_or_else(|error| panic!("workspace binding: {error:?}")),
+                WorkspaceBinding::new(workspace.clone(), &fleet_root)
+                    .unwrap_or_else(|error| panic!("workspace binding: {error:?}")),
                 resources.clone(),
             )
             .unwrap_or_else(|error| panic!("manifest: {error:?}"));
-            let layout = registry.register(manifest).unwrap_or_else(|error| panic!("register agent: {error:?}")).layout;
+            let layout = registry
+                .register(manifest)
+                .unwrap_or_else(|error| panic!("register agent: {error:?}"))
+                .layout;
             let identity = AgentdIdentity {
                 agent_id: agent_id.clone(),
                 layout: layout.clone(),
@@ -841,7 +853,9 @@ mod tests {
             )
             .await
             .unwrap_or_else(|error| panic!("start run: {error:?}"));
-        let digest = intent.digest().unwrap_or_else(|error| panic!("intent digest: {error:?}"));
+        let digest = intent
+            .digest()
+            .unwrap_or_else(|error| panic!("intent digest: {error:?}"));
         fixture
             .store
             .prepare_taskflow_step(
@@ -878,7 +892,9 @@ mod tests {
         now_ms: u64,
         signing_key: &SigningKey,
     ) -> SignedFinalUseGrant {
-        let binding = intent.final_use_binding().unwrap_or_else(|error| panic!("final-use binding: {error:?}"));
+        let binding = intent
+            .final_use_binding()
+            .unwrap_or_else(|error| panic!("final-use binding: {error:?}"));
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "automation-security-owner".to_string(),
@@ -890,14 +906,19 @@ mod tests {
             expires_at_unix_ms: now_ms + 30_000,
         };
         let signature = signing_key
-            .sign(&grant.signing_bytes().unwrap_or_else(|error| panic!("signing bytes: {error:?}")))
+            .sign(
+                &grant
+                    .signing_bytes()
+                    .unwrap_or_else(|error| panic!("signing bytes: {error:?}")),
+            )
             .to_bytes()
             .to_vec();
         SignedFinalUseGrant { grant, signature }
     }
 
     fn digest_bytes_for_test(digest: &Sha256Digest) -> [u8; 32] {
-        decode_hex_array::<32>(digest.as_str(), "digest").unwrap_or_else(|error| panic!("digest bytes: {error:?}"))
+        decode_hex_array::<32>(digest.as_str(), "digest")
+            .unwrap_or_else(|error| panic!("digest bytes: {error:?}"))
     }
 
     fn hex(bytes: &[u8]) -> String {

@@ -994,7 +994,10 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     .execute(&mut *legacy)
     .await
     .expect("seed historical task");
-    legacy.commit().await.expect("publish complete historical seed");
+    legacy
+        .commit()
+        .await
+        .expect("publish complete historical seed");
     let legacy_versions: Vec<i64> =
         sqlx::query_scalar("SELECT version FROM _sqlx_migrations ORDER BY version")
             .fetch_all(&pool)

@@ -253,9 +253,7 @@ def bazel_args_with_remote_config(
             env.get("RUNNER_OS") == "Windows"
             and args[command_idx] in CONFIGURED_COMMANDS
             and not uses_remote_execution(prefix)
-            and option_contains_value(
-                prefix, "--platforms", "//:windows_x86_64_msvc"
-            )
+            and option_contains_value(prefix, "--platforms", "//:windows_x86_64_msvc")
         ):
             # Authentication selects cache access, not the native target ABI.
             # Keep the bounded compiler default before explicit caller options.

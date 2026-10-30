@@ -1116,7 +1116,7 @@ impl Session {
             .receiver
             .acquire()
             .await
-            .map_err(|_| crate::error::CodexErr::InternalAgentDied)?;
+            .map_err(|_| CodexErr::InternalAgentDied)?;
         let event = io.next_event().await?;
         let completion = self.take_terminal_event_completion(&event);
         Ok((event, completion))

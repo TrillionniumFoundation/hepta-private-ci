@@ -1,6 +1,6 @@
-use sqlx::migrate::Migrate;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
+use sqlx::migrate::Migrate;
 
 use super::*;
 

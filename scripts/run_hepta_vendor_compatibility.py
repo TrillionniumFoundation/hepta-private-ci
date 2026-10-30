@@ -67,11 +67,13 @@ def inventory(directory):
         if path.is_symlink():
             raise ValueError(f"unexpected symlink in vendor source: {path}")
         if path.is_file():
-            result.append({
-                "path": path.relative_to(directory).as_posix(),
-                "bytes": path.stat().st_size,
-                "sha256": digest(path),
-            })
+            result.append(
+                {
+                    "path": path.relative_to(directory).as_posix(),
+                    "bytes": path.stat().st_size,
+                    "sha256": digest(path),
+                }
+            )
     return result
 
 
@@ -86,17 +88,25 @@ def workspace_manifest():
     members = [f"vendors/{VENDORS[name]}" for name in TESTS]
     excluded = [f"vendors/{VENDORS[name]}" for name in VENDORS if name not in TESTS]
     lines = [
-        "[workspace]", 'resolver = "2"',
-        f"members = {json.dumps(members)}", f"exclude = {json.dumps(excluded)}",
-        "", "[patch.crates-io]",
+        "[workspace]",
+        'resolver = "2"',
+        f"members = {json.dumps(members)}",
+        f"exclude = {json.dumps(excluded)}",
+        "",
+        "[patch.crates-io]",
     ]
-    lines.extend(f'{name} = {{ path = "vendors/{directory}" }}' for name, directory in VENDORS.items())
+    lines.extend(
+        f'{name} = {{ path = "vendors/{directory}" }}'
+        for name, directory in VENDORS.items()
+    )
     return "\n".join(lines) + "\n"
 
 
 def prepare_workspace(repo, work, output):
     if work.exists() and any(work.iterdir()):
-        raise ValueError("work directory must be new or empty; use a new path for a new attempt")
+        raise ValueError(
+            "work directory must be new or empty; use a new path for a new attempt"
+        )
     work.mkdir(parents=True, exist_ok=True)
     records = {}
     for name, directory in VENDORS.items():
@@ -111,7 +121,8 @@ def prepare_workspace(repo, work, output):
         if manifest["package"]["name"] != name:
             raise ValueError(f"unexpected normalized package identity: {directory}")
         records[name] = {
-            "directory": directory, "files": len(rows),
+            "directory": directory,
+            "files": len(rows),
             "source_inventory": f"{directory}.source.json",
             "source_manifest_sha256": digest(source / "Cargo.toml"),
             "copied_manifest_sha256": digest(copied / "Cargo.toml"),
@@ -123,9 +134,9 @@ def prepare_workspace(repo, work, output):
     config = work / ".config/nextest.toml"
     config.parent.mkdir()
     config.write_text(
-        '[profile.default]\nretries = 0\n'
+        "[profile.default]\nretries = 0\n"
         'slow-timeout = { period = "60s", terminate-after = 3 }\n'
-        '[profile.local]\nretries = 0\n'
+        "[profile.local]\nretries = 0\n"
         '[profile.local.junit]\npath = "junit.xml"\n'
     )
     shutil.copy2(config, output / "nextest.toml")
@@ -137,8 +148,14 @@ def validate_junit(path, expected):
     cases = list(tree.iter("testcase"))
     observed = [case.get("name", "") for case in cases]
     if sorted(observed) != sorted(expected):
-        raise ValueError(f"JUnit test identities differ: expected {expected}, observed {observed}")
-    bad = [case.get("name") for case in cases if any(case.find(tag) is not None for tag in ("skipped", "error", "failure"))]
+        raise ValueError(
+            f"JUnit test identities differ: expected {expected}, observed {observed}"
+        )
+    bad = [
+        case.get("name")
+        for case in cases
+        if any(case.find(tag) is not None for tag in ("skipped", "error", "failure"))
+    ]
     if bad:
         raise ValueError(f"focused tests failed or skipped: {bad}")
     return {"tests": len(cases), "passed": len(cases), "skipped": 0, "names": observed}
@@ -148,15 +165,21 @@ def run_logged(command, label, cwd, output, env):
     log = output / f"{label}.log"
     started = time.monotonic()
     with log.open("wb") as stream:
-        process = subprocess.run(command, cwd=cwd, env=env, stdout=stream, stderr=subprocess.STDOUT)
+        process = subprocess.run(
+            command, cwd=cwd, env=env, stdout=stream, stderr=subprocess.STDOUT
+        )
     data = log.read_bytes()
     compressed = output / f"{label}.log.gz"
     compressed.write_bytes(gzip.compress(data, mtime=0))
     log.unlink()
     result = {
-        "command": command, "cwd": str(cwd), "exit_code": process.returncode,
-        "seconds": time.monotonic() - started, "log": compressed.name,
-        "log_uncompressed_bytes": len(data), "log_uncompressed_sha256": hashlib.sha256(data).hexdigest(),
+        "command": command,
+        "cwd": str(cwd),
+        "exit_code": process.returncode,
+        "seconds": time.monotonic() - started,
+        "log": compressed.name,
+        "log_uncompressed_bytes": len(data),
+        "log_uncompressed_sha256": hashlib.sha256(data).hexdigest(),
         "log_gzip_sha256": digest(compressed),
     }
     write_json(output / f"{label}.json", result)
@@ -166,7 +189,9 @@ def run_logged(command, label, cwd, output, env):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--repo", type=Path, default=Path(__file__).resolve().parents[1])
+    parser.add_argument(
+        "--repo", type=Path, default=Path(__file__).resolve().parents[1]
+    )
     parser.add_argument("--work", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--prepare-only", action="store_true")
@@ -176,8 +201,12 @@ def main():
         raise ValueError("output must be separate from the disposable build workspace")
     output.mkdir(parents=True, exist_ok=True)
     receipt = {
-        "schema": "hepta.vendor-compatibility.v2", "repo": str(repo), "work": str(work),
-        "status": "preparing", "expected_tests": TESTS, "feature_arguments": FEATURE_ARGS,
+        "schema": "hepta.vendor-compatibility.v2",
+        "repo": str(repo),
+        "work": str(work),
+        "status": "preparing",
+        "expected_tests": TESTS,
+        "feature_arguments": FEATURE_ARGS,
         "root_lock_before_sha256": digest(repo / "codex-rs/Cargo.lock"),
         "entrypoint_sha256": digest(repo / "justfile"),
         "nextest_wrapper_sha256": digest(repo / "scripts/run-nextest.py"),
@@ -193,17 +222,51 @@ def main():
             receipt["status"] = "prepared_only; no tests executed"
             return 0
         env = os.environ.copy()
-        env.update(CARGO_TARGET_DIR=str(work / "target"), CARGO_PROFILE_DEV_DEBUG="0", CARGO_PROFILE_TEST_DEBUG="0", CARGO_INCREMENTAL="0")
+        env.update(
+            CARGO_TARGET_DIR=str(work / "target"),
+            CARGO_PROFILE_DEV_DEBUG="0",
+            CARGO_PROFILE_TEST_DEBUG="0",
+            CARGO_INCREMENTAL="0",
+        )
         env.setdefault("CARGO_BUILD_JOBS", "2")
-        lock = run_logged(["cargo", "update", "--workspace", "--manifest-path", str(work / "Cargo.toml")], "resolve", work, output, env)
+        lock = run_logged(
+            [
+                "cargo",
+                "update",
+                "--workspace",
+                "--manifest-path",
+                str(work / "Cargo.toml"),
+            ],
+            "resolve",
+            work,
+            output,
+            env,
+        )
         receipt["commands"].append(lock)
         if lock["exit_code"]:
-            raise RuntimeError("independent dependency resolution failed; see resolve.log.gz")
-        (output / "isolated.Cargo.lock.gz").write_bytes(gzip.compress((work / "Cargo.lock").read_bytes(), mtime=0))
+            raise RuntimeError(
+                "independent dependency resolution failed; see resolve.log.gz"
+            )
+        (output / "isolated.Cargo.lock.gz").write_bytes(
+            gzip.compress((work / "Cargo.lock").read_bytes(), mtime=0)
+        )
         receipt["isolated_lock_sha256"] = digest(work / "Cargo.lock")
-        metadata_command = ["cargo", "metadata", "--no-deps", "--format-version=1", "--locked", "--manifest-path", str(work / "Cargo.toml")]
-        with (output / "metadata.json").open("wb") as stdout, (output / "metadata.stderr.log").open("wb") as stderr:
-            metadata = subprocess.run(metadata_command, cwd=work, env=env, stdout=stdout, stderr=stderr)
+        metadata_command = [
+            "cargo",
+            "metadata",
+            "--no-deps",
+            "--format-version=1",
+            "--locked",
+            "--manifest-path",
+            str(work / "Cargo.toml"),
+        ]
+        with (
+            (output / "metadata.json").open("wb") as stdout,
+            (output / "metadata.stderr.log").open("wb") as stderr,
+        ):
+            metadata = subprocess.run(
+                metadata_command, cwd=work, env=env, stdout=stdout, stderr=stderr
+            )
         if metadata.returncode:
             raise RuntimeError("independent metadata failed")
         failures = []
@@ -212,7 +275,21 @@ def main():
             junit = work / "target/nextest/local/junit.xml"
             junit.unlink(missing_ok=True)
             expression = " | ".join(f"test(={test})" for test in expected)
-            command = ["just", "--justfile", str(repo / "justfile"), "test", "--manifest-path", str(work / "Cargo.toml"), "-p", name, "--lib", "--locked", *FEATURE_ARGS[name], "-E", expression]
+            command = [
+                "just",
+                "--justfile",
+                str(repo / "justfile"),
+                "test",
+                "--manifest-path",
+                str(work / "Cargo.toml"),
+                "-p",
+                name,
+                "--lib",
+                "--locked",
+                *FEATURE_ARGS[name],
+                "-E",
+                expression,
+            ]
             result = run_logged(command, name, repo, output, env)
             receipt["commands"].append(result)
             if result["exit_code"]:
@@ -225,12 +302,16 @@ def main():
                 failures.append(f"{name}: {error}")
             write_json(receipt_path, receipt)
         for name, directory in VENDORS.items():
-            verify_identity(repo / "codex-rs/third_party" / directory, work / "vendors" / directory)
+            verify_identity(
+                repo / "codex-rs/third_party" / directory, work / "vendors" / directory
+            )
         if digest(work / "Cargo.lock") != receipt["isolated_lock_sha256"]:
             failures.append("isolated lock changed during locked tests")
         receipt.update(passed=passed, failures=failures)
         if failures or passed != 6:
-            raise RuntimeError("six exact focused tests did not all pass; see individual receipts")
+            raise RuntimeError(
+                "six exact focused tests did not all pass; see individual receipts"
+            )
         receipt["status"] = "passed: six focused tests, zero skipped"
         return 0
     except Exception as error:

@@ -25,7 +25,9 @@ impl IdleQueueState {
             .observations
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner);
-        observations.wakes.retain(|_, wake| wake.strong_count() != 0);
+        observations
+            .wakes
+            .retain(|_, wake| wake.strong_count() != 0);
         if let Some(wake) = observations.wakes.get(&thread_id).and_then(Weak::upgrade) {
             return wake;
         }

@@ -3494,14 +3494,18 @@ mod final_use_dispatch_tests {
     use tempfile::TempDir;
 
     fn agent() -> AgentId {
-        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cff").unwrap_or_else(|error| panic!("agent: {error:?}"))
+        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cff")
+            .unwrap_or_else(|error| panic!("agent: {error:?}"))
     }
 
     async fn store(temp: &TempDir) -> CognitiveStore {
         let root = temp.path().join("fleet-final-use");
         std::fs::create_dir_all(&root).unwrap_or_else(|error| panic!("fleet root: {error:?}"));
-        let fleet = HeptaFleetRoot::parse(root.canonicalize().unwrap_or_else(|error| panic!("canonical root: {error:?}")))
-            .unwrap_or_else(|error| panic!("fleet root: {error:?}"));
+        let fleet = HeptaFleetRoot::parse(
+            root.canonicalize()
+                .unwrap_or_else(|error| panic!("canonical root: {error:?}")),
+        )
+        .unwrap_or_else(|error| panic!("fleet root: {error:?}"));
         CognitiveStore::open(&fleet.layout().agent(&agent()))
             .await
             .unwrap_or_else(|error| panic!("store: {error:?}"))
@@ -3570,7 +3574,8 @@ mod final_use_dispatch_tests {
             StableId::new(destination).unwrap_or_else(|error| panic!("destination: {error:?}")),
             Digest32::of_bytes(payload.as_bytes()),
             Digest32::of_bytes(b"scope:production-test"),
-            codex_hepta_types::Generation::new(1).unwrap_or_else(|error| panic!("policy generation: {error:?}")),
+            codex_hepta_types::Generation::new(1)
+                .unwrap_or_else(|error| panic!("policy generation: {error:?}")),
             None,
         )
         .unwrap_or_else(|error| panic!("operation intent: {error:?}"))
@@ -3620,7 +3625,11 @@ mod final_use_dispatch_tests {
             expires_at_unix_ms: now_ms + 30_000,
         };
         let signature = issuer
-            .sign(&grant.signing_bytes().unwrap_or_else(|error| panic!("signing bytes: {error:?}")))
+            .sign(
+                &grant
+                    .signing_bytes()
+                    .unwrap_or_else(|error| panic!("signing bytes: {error:?}")),
+            )
             .to_bytes()
             .to_vec();
         SignedFinalUseGrant { grant, signature }

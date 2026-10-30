@@ -51,7 +51,9 @@ async fn queued_messages_continue_after_each_completion_owner_retires() -> anyho
         .collect::<Vec<_>>();
     assert_eq!(
         prompts,
-        (0..6).map(|index| format!("queued {index}")).collect::<Vec<_>>()
+        (0..6)
+            .map(|index| format!("queued {index}"))
+            .collect::<Vec<_>>()
     );
     assert!(queue.list(thread_id).await?.is_empty());
     Ok(())

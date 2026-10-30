@@ -264,13 +264,20 @@ async fn close_drains_sqlite_but_keeps_live_clone_fence_until_drop() {
     let (store, _, _) = seeded(&temp, &owner).await;
     let anchor = store.recovery_anchor().await.expect("current witness");
     let recovery_layout = codex_hepta_paths::HeptaFleetRoot::parse(
-        temp.path().join("fleet").canonicalize().expect("canonical fleet"),
+        temp.path()
+            .join("fleet")
+            .canonicalize()
+            .expect("canonical fleet"),
     )
     .expect("fleet identity")
     .layout()
     .agent(&owner);
     let surviving = store.clone();
-    let connection = store.pool.acquire().await.expect("active SQLite connection");
+    let connection = store
+        .pool
+        .acquire()
+        .await
+        .expect("active SQLite connection");
     {
         let close = store.close();
         tokio::pin!(close);
@@ -309,7 +316,10 @@ async fn close_drains_sqlite_but_keeps_live_clone_fence_until_drop() {
     {
         let recovered = recovery.expect("drained store with no live owner handle can recover");
         assert_eq!(
-            recovered.recovery_anchor().await.expect("recovered witness"),
+            recovered
+                .recovery_anchor()
+                .await
+                .expect("recovered witness"),
             anchor
         );
         recovered.close().await;

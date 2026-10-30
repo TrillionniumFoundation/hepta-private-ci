@@ -10,7 +10,10 @@ use std::collections::HashMap;
 #[test]
 fn persistent_builder_retains_existing_secret_service_credential() -> keyring::Result<()> {
     let builder = default_credential_builder();
-    assert!(matches!(builder.persistence(), CredentialPersistence::UntilDelete));
+    assert!(matches!(
+        builder.persistence(),
+        CredentialPersistence::UntilDelete
+    ));
     // keyring 3.6.3's persistent builder constructs SsCredential. Keep this
     // observed behavior instead of introducing a new kernel-cache side effect.
     let credential = builder.build(/*target*/ None, "hepta-compat-服务", "account")?;

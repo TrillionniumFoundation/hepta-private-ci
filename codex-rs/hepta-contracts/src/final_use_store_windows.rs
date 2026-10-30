@@ -27,10 +27,7 @@ pub(super) fn open_private(
     directory.open_file(name, access).map_err(map_io)
 }
 
-pub(super) fn entry_exists(
-    directory: &StateDirectory,
-    name: &str,
-) -> Result<bool, FinalUseError> {
+pub(super) fn entry_exists(directory: &StateDirectory, name: &str) -> Result<bool, FinalUseError> {
     directory.entry_exists(name).map_err(map_io)
 }
 

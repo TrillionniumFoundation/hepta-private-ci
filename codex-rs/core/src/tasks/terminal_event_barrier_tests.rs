@@ -346,10 +346,7 @@ async fn cancelled_terminal_receiver_releases_single_consumer_permit() {
     let io = crate::session::SessionIo {
         tx_sub,
         rx_event: events,
-        agent_status: tokio::sync::watch::channel(
-            crate::agent::AgentStatus::PendingInit,
-        )
-        .1,
+        agent_status: tokio::sync::watch::channel(crate::agent::AgentStatus::PendingInit).1,
         session_loop_termination: crate::session::completed_session_loop_termination(),
     };
     let mut cancelled = Box::pin(session.receive_event_with_completion(&io));

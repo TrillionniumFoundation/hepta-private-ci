@@ -60,10 +60,11 @@ fn verifies_alias_only_after_primary_failure() -> anyhow::Result<()> {
 
 #[test]
 fn reports_failure_when_only_posix_runtimes_exist() {
-    let error = find_native_python_with_probe(|_| {
-        Ok("cpython\nmsys\nposix\n/usr/bin/python3\n".to_owned())
-    })
-    .expect_err("a POSIX interpreter does not exercise Native ReadConsoleW");
+    let error =
+        find_native_python_with_probe(
+            |_| Ok("cpython\nmsys\nposix\n/usr/bin/python3\n".to_owned()),
+        )
+        .expect_err("a POSIX interpreter does not exercise Native ReadConsoleW");
     let message = error.to_string();
     assert!(message.contains("python.exe:"));
     assert!(message.contains("python3.exe:"));

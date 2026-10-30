@@ -151,6 +151,39 @@ jobs:
         with:
           tool: nextest@0.9.103
 
+      - name: Resolve verified V8 archive and bindings
+        if: matrix.lane == 'windows-private-state' || matrix.lane == 'security-consumers' || matrix.lane == 'idle-consumers'
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: |
+          python scripts/hepta_ci_v8.py
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          allowed = {"RUSTY_V8_ARCHIVE", "RUSTY_V8_SRC_BINDING_PATH"}
+          paths = {}
+          for line in Path(os.environ["GITHUB_ENV"]).read_text(encoding="utf-8").splitlines():
+              name, separator, value = line.partition("=")
+              if separator and name in allowed:
+                  paths[name] = value
+          if set(paths) != allowed:
+              raise SystemExit("verified V8 archive and binding must be supplied together")
+          artifacts = {
+              name: {"filename": Path(value).name,
+                     "bytes": Path(value).stat().st_size,
+                     "sha256": hashlib.sha256(Path(value).read_bytes()).hexdigest()}
+              for name, value in paths.items()
+          }
+          output = Path(os.environ["RUNNER_TEMP"]) / "hepta-operator-diagnostics"
+          (output / "v8-artifact-provenance.json").write_text(
+              json.dumps(artifacts, indent=2) + "\n", encoding="utf-8"
+          )
+          PY
+
       - name: Run canonical diagnostic commands
         run: |
           python - <<'PY'
@@ -182,10 +215,12 @@ jobs:
               "windows-private-state": [
                   ["just", "test", "-p", "codex-utils-path",
                    "-p", "codex-hepta-prompt-registry", "-p", "codex-hepta-contracts", "--lib", "--locked"],
-                  ["just", "test", "-p", "codex-utils-pty", "-p", "codex-v8-poc",
-                   "--lib", "--features", "codex-v8-poc/sandbox", "--locked"],
+                  ["just", "test", "-p", "codex-utils-pty", "--lib", "--locked"],
                   ["just", "test", "-p", "codex-hepta-intelligence", "-p", "codex-hepta-prompt-optimizer",
-                   "-p", "codex-hepta-operator-acceptance", "--lib", "--locked"],
+                   "-p", "codex-hepta-operator-acceptance", "-p", "codex-hepta-shadow-qualification",
+                   "--lib", "--locked"],
+                  ["just", "test", "-p", "codex-v8-poc", "--lib",
+                   "--features", "sandbox", "--locked"],
               ],
               "vendor-compatibility": [
                   [sys.executable, "scripts/run_hepta_vendor_compatibility.py", "--repo", str(Path.cwd()),
@@ -253,7 +288,6 @@ jobs:
               )
               if code != 0:
                   result = code if code > 0 else 1
-                  break
           raise SystemExit(result)
           PY
 

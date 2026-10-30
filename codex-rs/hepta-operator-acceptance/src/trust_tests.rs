@@ -64,7 +64,8 @@ fn sshsig_verifies_only_exact_namespace_against_pinned_policy() {
 fn sshsig_verification_reports_typed_unsupported_without_accepting_a_signature() {
     let fixture = TrustFixture::new();
     let anchor = fixture.load_anchor();
-    let envelope = b"-----BEGIN SSH SIGNATURE-----\nunverified-test-packet\n-----END SSH SIGNATURE-----\n";
+    let envelope =
+        b"-----BEGIN SSH SIGNATURE-----\nunverified-test-packet\n-----END SSH SIGNATURE-----\n";
     match anchor.verify_bytes(b"statement", envelope) {
         Err(crate::AcceptanceError::Io(error)) => {
             assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);

@@ -14,12 +14,12 @@ _UNIT_TEST_DEPENDENCIES = {
 codex_rust_crate(
     name = "hepta-agentd",
     crate_name = "codex_hepta_agentd",
-    integration_test_timeout = "long",
     integration_test_dependency_replacements = {
         "plasticity_process_e2e": _UNIT_TEST_DEPENDENCIES | {
             "//codex-rs/hepta-agentd": ":hepta-agentd-test-lib",
         },
     },
+    integration_test_timeout = "long",
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
 )
 

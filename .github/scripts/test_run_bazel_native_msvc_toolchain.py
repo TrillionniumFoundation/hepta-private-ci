@@ -6,7 +6,9 @@ import run_bazel_with_buildbuddy
 
 
 class NativeWindowsMsvcToolchainTest(unittest.TestCase):
-    def test_keyed_native_msvc_uses_matching_cc_and_preserves_remote_cache(self) -> None:
+    def test_keyed_native_msvc_uses_matching_cc_and_preserves_remote_cache(
+        self,
+    ) -> None:
         args = run_bazel_with_buildbuddy.bazel_args_with_remote_config(
             [
                 "--output_user_root=C:/bazel-cache",

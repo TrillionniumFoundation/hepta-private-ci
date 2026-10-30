@@ -1093,12 +1093,11 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
     }
     // Bind the full applied identities, not a hand-maintained version count.
     // A partially applied or modified migration must still fail this oracle.
-    let applied: Vec<(i64, Vec<u8>, bool)> = sqlx::query_as(
-        "SELECT version, checksum, success FROM _sqlx_migrations ORDER BY version",
-    )
-    .fetch_all(&migrated.pool)
-    .await
-    .expect("migration ledger identities");
+    let applied: Vec<(i64, Vec<u8>, bool)> =
+        sqlx::query_as("SELECT version, checksum, success FROM _sqlx_migrations ORDER BY version")
+            .fetch_all(&migrated.pool)
+            .await
+            .expect("migration ledger identities");
     let expected: Vec<_> = sqlx::migrate!("./migrations")
         .iter()
         .map(|migration| (migration.version, migration.checksum.to_vec(), true))

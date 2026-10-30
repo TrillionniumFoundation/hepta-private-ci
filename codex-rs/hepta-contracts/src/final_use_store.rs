@@ -28,7 +28,15 @@ type StateDirectory = File;
 #[path = "final_use_store_windows.rs"]
 mod windows;
 #[cfg(windows)]
-use windows::{entry_exists, open_private, prepare_directory, replace_claims, replace_state};
+use windows::entry_exists;
+#[cfg(windows)]
+use windows::open_private;
+#[cfg(windows)]
+use windows::prepare_directory;
+#[cfg(windows)]
+use windows::replace_claims;
+#[cfg(windows)]
+use windows::replace_state;
 
 const STATE_SCHEMA_V1: u32 = 1;
 const STATE_SCHEMA_V2: u32 = 2;

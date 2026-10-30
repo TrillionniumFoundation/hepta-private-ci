@@ -344,9 +344,12 @@ async fn conpty_delivers_input_to_foreground_children() -> anyhow::Result<()> {
         writer
             .send(format!("{}\n", shell.child_command).into_bytes())
             .await?;
-        let ready_output = wait_for_output_contains(&mut output_rx, READY_MARKER, /*timeout_ms*/ 10_000)
-            .await
-            .map_err(|err| anyhow::anyhow!("{} child did not become ready: {err}", shell.name))?;
+        let ready_output =
+            wait_for_output_contains(&mut output_rx, READY_MARKER, /*timeout_ms*/ 10_000)
+                .await
+                .map_err(|err| {
+                    anyhow::anyhow!("{} child did not become ready: {err}", shell.name)
+                })?;
 
         writer
             .send(format!("{expected}X\u{8}\n").into_bytes())
