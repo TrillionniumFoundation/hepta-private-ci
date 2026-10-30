@@ -1,0 +1,61 @@
+{
+  "scope": "Rebuilt native MSVC compiler selection after executor reset",
+  "base_commit": "c71bdb0583d3265b931b31579d6bf3a9b85691d3",
+  "source_sha256": {
+    ".github/scripts/run_bazel_with_buildbuddy.py": "3fae46e4c12dae20ebdc09e6e6471bdcbb3c13577ab379313953ba67aca8641d",
+    ".github/scripts/test_run_bazel_native_msvc_toolchain.py": "77a2709f89dfe716f8e80c884cb1046e8adaa7f39f79a62f6452dd9b6a75d116"
+  },
+  "checks": {
+    "before": {
+      "exit_code": 1,
+      "test_count": 5,
+      "tail": [
+        "    self.assertIn(\"--extra_toolchains=//:local_windows_msvc_cc_toolchain\", args)",
+        "AssertionError: '--extra_toolchains=//:local_windows_msvc_cc_toolchain' not found in ['--output_user_root=C:/bazel-cache', 'test', '--config=buildbuddy-generic', '--remote_header=x-buildbuddy-api-key=test-only-token', '--config=ci-windows', '--host_platform=//:local_windows_msvc', '--platforms=//:windows_x86_64_msvc', '--', '//fake:target']",
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 5 tests in 0.001s",
+        "",
+        "FAILED (failures=1, errors=1)"
+      ],
+      "log_sha256": "24a282a841b274de94bcfc2c0ad017b6f8943226e1a4a0c7f789c284911ad1b5",
+      "source_sha256": {
+        ".github/scripts/run_bazel_with_buildbuddy.py": "b58755a05dfec69e129262ee3c8608a25898ad2805a6fac4a6d7a31087dfe2fc",
+        ".github/scripts/test_run_bazel_native_msvc_toolchain.py": "77a2709f89dfe716f8e80c884cb1046e8adaa7f39f79a62f6452dd9b6a75d116"
+      }
+    },
+    "after": {
+      "exit_code": 0,
+      "test_count": 46,
+      "tail": [
+        "test_upstream_push_selects_openai_rbe_before_target_separator (test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_upstream_push_selects_openai_rbe_before_target_separator) ... ok",
+        "test_windows_cross_ci_configuration_follows_remote_configuration (test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_windows_cross_ci_configuration_follows_remote_configuration) ... ok",
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 46 tests in 1.275s",
+        "",
+        "OK"
+      ],
+      "log_sha256": "470bdbe11282c943ad8408d789a66ce08328e31ef5e8142fbd809d0a9cca4eb6",
+      "skipped_tests": 0,
+      "skip_evidence": "unittest terminal status is OK with no skipped summary; full 46 test lines retained"
+    }
+  },
+  "new_validation": true,
+  "windows_native_link_executed": false,
+  "commands": {
+    "before": "python3 -m unittest discover -s .github/scripts -p 'test_run_bazel_native_msvc_toolchain.py' -v",
+    "after": "python3 -m unittest discover -s .github/scripts -p 'test_run_bazel*.py' -v"
+  },
+  "old_pre_reset_test_results_reused": false,
+  "logs": {
+    "before": {
+      "path": "before.log",
+      "sha256": "24a282a841b274de94bcfc2c0ad017b6f8943226e1a4a0c7f789c284911ad1b5"
+    },
+    "after": {
+      "path": "after.log",
+      "sha256": "470bdbe11282c943ad8408d789a66ce08328e31ef5e8142fbd809d0a9cca4eb6"
+    }
+  }
+}
