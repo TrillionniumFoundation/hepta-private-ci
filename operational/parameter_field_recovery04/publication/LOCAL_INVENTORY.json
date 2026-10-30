@@ -1,0 +1,705 @@
+{
+  "base": "e38a2311c0fd3eecc7f95be00c29be970a3b7a34",
+  "base_tree": "2ce7fea61a636ff27520617569368ecac86803d3",
+  "branch": "research/parameter-field-fullstudy-recovery-20261030",
+  "commits": [
+    {
+      "files": [
+        {
+          "bytes": 2549,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/README_cwd.md",
+          "sha": "a84d8eb5b34bf41ed5a2c563e29f084532547dbd",
+          "sha256": "bacd6e25d9959dbe92eafaac9f32ff54cb448ad75d6c5851f2ed18eeeb29b4a2",
+          "type": "blob"
+        },
+        {
+          "bytes": 10663,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/cwd_runner.py",
+          "sha": "198b0ae22ce4ae5961f5cd2aa58e6cc5560cffd9",
+          "sha256": "c4eca6972780bb1f6d9a3ef31e28c41aadcd06959fca502e3bbb4d9e23599a5b",
+          "type": "blob"
+        },
+        {
+          "bytes": 1425,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/evidence/EPISODE02_COST_FACTS.json",
+          "sha": "8f6b3fdcf0751528aee0f2ecb3c8b06e10335d19",
+          "sha256": "b62350c7d56ab998746479bb5810ba204eff4431ef4a456635b46780e90d99f8",
+          "type": "blob"
+        },
+        {
+          "bytes": 1295,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/evidence/EPISODE03_COST_FACTS.json",
+          "sha": "439acecf6cbd1db43f3a5364f4263562124d9643",
+          "sha256": "eac8096b6dc7d82ef52a8ddb091ea4a4d465b50c83a406fd50bf720bb3b7c9a7",
+          "type": "blob"
+        },
+        {
+          "bytes": 2883,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/evidence/EXECUTION03_CONTINUITY_OBSERVATION.json",
+          "sha": "9a4ae580763a550be5849c27ab9a3f08225fdc0b",
+          "sha256": "be48accdfa5ddaba1fa27b5ded3bd703c6cb775062cd3f1d9090162da1ff4b2d",
+          "type": "blob"
+        },
+        {
+          "bytes": 2739,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/restore_assets.py",
+          "sha": "2538e45748e47b8b7e32e067f52bc62e8252e36c",
+          "sha256": "bd6173188f310ab215267cdf0bba694007d1701d8414ec3ec0efee0a9f61753e",
+          "type": "blob"
+        },
+        {
+          "bytes": 4981,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/test_cwd_runner.py",
+          "sha": "ab37c98732ed90bce354e53edfe9f314a1f56b3a",
+          "sha256": "eddb7acf92808f1bfdd4a96a2b4ec5d6adb770dbd13ab95d197814cd301a83bb",
+          "type": "blob"
+        }
+      ],
+      "local_commit": "2f53372e2005766590cbbf7d52e51401593eaf63",
+      "local_parent": "e38a2311c0fd3eecc7f95be00c29be970a3b7a34",
+      "message": "Recover exact study assets and isolate verified worker working directories",
+      "tree": "f2c882db36c62feefe477dddb733dd4fd624481b"
+    },
+    {
+      "files": [
+        {
+          "bytes": 22202,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/historical_costs.py",
+          "sha": "d9bfb0efd1d2f3a9e44494f6ccb92adaab6a90f7",
+          "sha256": "e8ec187543e5d249142a706699156fa97db767d6f1193ec9be466359a59ad440",
+          "type": "blob"
+        },
+        {
+          "bytes": 20178,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/registration.py",
+          "sha": "4a73e61500825e9a635aac40050152bea5c83195",
+          "sha256": "19e3eedaacc7795a2b45ea8165f2aa5e8180e0d12f4fc925075384861ab32979",
+          "type": "blob"
+        }
+      ],
+      "local_commit": "2f4f76c583b6b778a86f6d1e22b37ff108140ee6",
+      "local_parent": "2f53372e2005766590cbbf7d52e51401593eaf63",
+      "message": "Preserve frozen registration semantics and explicit historical cost evidence",
+      "tree": "61a7233ce10f53463dae4b91aa49016ef379593f"
+    },
+    {
+      "files": [
+        {
+          "bytes": 11104,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/README_registration.md",
+          "sha": "5340018bd2e35207c1e43ae23653d38d9e117d68",
+          "sha256": "b9c9008f0f47f9bb27046322019928257622672908a234b2973bd5e96f538b23",
+          "type": "blob"
+        },
+        {
+          "bytes": 13856,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/synthetic_test_registration.py",
+          "sha": "840a9f581b47b1ecba9e82eeff5657fbad574b8c",
+          "sha256": "92257cdd3ff1f13c65804face8c84e8bbfa8d3c32731de6a37a25eaa1a0d734a",
+          "type": "blob"
+        }
+      ],
+      "local_commit": "209d311e6b37e0370c331bf4acf3a353828498a8",
+      "local_parent": "2f4f76c583b6b778a86f6d1e22b37ff108140ee6",
+      "message": "Document and verify canonical queue and historical cost adapters",
+      "tree": "9723e7b1aa22b3e1009148d080cccffa0236de24"
+    },
+    {
+      "files": [
+        {
+          "bytes": 45470,
+          "mode": "100644",
+          "path": "supplements/parameter_field_fullstudy_20261030/postseal_supplement.py",
+          "sha": "da25ecba9d01ffd30da7de819604d6b1790234a3",
+          "sha256": "1b705285b99fc7185c20155fa85f3a5d370b473196eaf59c8ae1d6bb2941a633",
+          "type": "blob"
+        }
+      ],
+      "local_commit": "9e380ce2be9950d171cfcb15dde7e842d937406f",
+      "local_parent": "209d311e6b37e0370c331bf4acf3a353828498a8",
+      "message": "Add preregistered postseal successor and decision diagnostics",
+      "tree": "f284ffd75a2e29640a533b8cce00ad348a7d5cd2"
+    },
+    {
+      "files": [
+        {
+          "bytes": 1498,
+          "mode": "100644",
+          "path": "supplements/parameter_field_fullstudy_20261030/PREPARATION.json",
+          "sha": "ae2c9367c426e2d421bd272b35936b0f0008ce1f",
+          "sha256": "7be4f1923105c53e4b02f010e04b32bcc8684e6169de8b4b570a8a4611ff7332",
+          "type": "blob"
+        },
+        {
+          "bytes": 9337,
+          "mode": "100644",
+          "path": "supplements/parameter_field_fullstudy_20261030/PRE_ENDPOINT_PLAN.json",
+          "sha": "5fd337cd35259fcf614c4b393a5106c70b31435f",
+          "sha256": "cfd35051e481c5c1d070fec88f933e191b6368655325857079e3505fd195f8b1",
+          "type": "blob"
+        },
+        {
+          "bytes": 9849,
+          "mode": "100644",
+          "path": "supplements/parameter_field_fullstudy_20261030/README.md",
+          "sha": "f24f4132a1a4356929b5689386f41b468c689007",
+          "sha256": "5f0e044c2df81ac5a5b6aa1b65722f1da15e37dfe62f10b6b7936fe92d2a9cf3",
+          "type": "blob"
+        },
+        {
+          "bytes": 14012,
+          "mode": "100644",
+          "path": "supplements/parameter_field_fullstudy_20261030/test_semantics.py",
+          "sha": "1f39bf5c7c0888deffb0c345888d00fc6b9bcfaf",
+          "sha256": "267745e30f874740c8c739ea7b761ba3de580e75c4c20aee956a6fd8d25d0956",
+          "type": "blob"
+        }
+      ],
+      "local_commit": "2369ceae0fb163c44a4f7e4fe2d95d9066fa490a",
+      "local_parent": "9e380ce2be9950d171cfcb15dde7e842d937406f",
+      "message": "Register fixed supplement scope and synthetic gate checks",
+      "tree": "2a79e48790f1fceaf212d011506e0efd0124e5f9"
+    },
+    {
+      "files": [
+        {
+          "bytes": 2898,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/README_initialization.md",
+          "sha": "023176f4f3d55f1d6bd8ace7aac67083bc3e7a99",
+          "sha256": "b63000acf75827ea5aa817d5dd5726e02ac98e860fc9e49bf916765e6ccb52ed",
+          "type": "blob"
+        },
+        {
+          "bytes": 4439,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/import_probe.py",
+          "sha": "149f6f73c719ad3d7cedf64f8550cc996c1e5234",
+          "sha256": "0145f1838c1b479c20636e33b5bd79a27fd94524608949f1af1f632f5022c736",
+          "type": "blob"
+        },
+        {
+          "bytes": 17564,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/initialize.py",
+          "sha": "b35916d33947e93b93795450be07221fc2a3e0fb",
+          "sha256": "3fa5766eba4b4f79143fc4fe409a79b408e48cd1a9ca8c74dbea72c4bfac1512",
+          "type": "blob"
+        }
+      ],
+      "local_commit": "951c4adf442a9689c08c3c32623e6c0a2540a043",
+      "local_parent": "2369ceae0fb163c44a4f7e4fe2d95d9066fa490a",
+      "message": "Create committed two-step execution registration and real import closure probe",
+      "tree": "3a2028eddcb01f27e45352a756bf2fd9b4cbb855"
+    },
+    {
+      "files": [
+        {
+          "bytes": 41463,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/supervisor.py",
+          "sha": "bc3cf5c84871fedf96c0cf57168ab51c36a2340d",
+          "sha256": "cc1526c88184e26ce9eb363f053e2e2babce924020d80589b0891f4385307682",
+          "type": "blob"
+        }
+      ],
+      "local_commit": "31afddd7351771e8fc0e07677f516ccc6c2ce6b3",
+      "local_parent": "951c4adf442a9689c08c3c32623e6c0a2540a043",
+      "message": "Require durable stage acknowledgements before scientific queue advances",
+      "tree": "bd903cb7ea978cf8f2d8ed38fa352a16a89d61ab"
+    },
+    {
+      "files": [
+        {
+          "bytes": 14865,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/durable_archive.py",
+          "sha": "a2287025f506e9d0f620209c5bcbe2e4f4225026",
+          "sha256": "dfeee33870f3ca429284542cb8ca9ff8c9471a8fc8ff0339c3de251cabf260da",
+          "type": "blob"
+        },
+        {
+          "bytes": 6051,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/wait4_launcher.py",
+          "sha": "76bb6172ef104d5ea91a1f6ad923694b8bc3015e",
+          "sha256": "ccada17007abf8ce2d7d39d8a2c9102d7848971baf818a357e4c58643c287b20",
+          "type": "blob"
+        }
+      ],
+      "local_commit": "781208c80ad6d301ed52b254c3c9154626fdf3a1",
+      "local_parent": "31afddd7351771e8fc0e07677f516ccc6c2ce6b3",
+      "message": "Stream and verify complete stage archives with measured owned processes",
+      "tree": "94fd02acc2518e443de9cb964b71d7c6b8b2aa8b"
+    },
+    {
+      "files": [
+        {
+          "bytes": 15944,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/README_supervisor.md",
+          "sha": "526c547c02d894f73f54a57036394116d7c13c7c",
+          "sha256": "0743a75ba4b01271bbee8c45d023818088d1cb9b2ef2f60193c21d1d21deb154",
+          "type": "blob"
+        },
+        {
+          "bytes": 1098,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/evidence/WORKSPACE_CLEANUP_20261030.json",
+          "sha": "62b439cfa60451eb7a77dc109c095d76ca49ee1a",
+          "sha256": "00ff28dac33d221dbf349043c7351e34e69d0732590a8cee1ee7f1fba1b9458a",
+          "type": "blob"
+        },
+        {
+          "bytes": 8815,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/test_supervisor_semantics.py",
+          "sha": "98a1b72cb9765d5efada31be06d53c9d05df5d4b",
+          "sha256": "db598f4195d8e4df8b99e800dabe060adfe3e06dcbd91ac6d4d3c59ebe4f440a",
+          "type": "blob"
+        }
+      ],
+      "local_commit": "9374b1dcbf839e75e454147f6d370fb635448509",
+      "local_parent": "781208c80ad6d301ed52b254c3c9154626fdf3a1",
+      "message": "Document durable protocol and preserve actual workspace cleanup evidence",
+      "tree": "c06746f9fd6df9234f9efb51cd85f75630d83f6b"
+    },
+    {
+      "files": [
+        {
+          "bytes": 4382,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/external_step.py",
+          "sha": "2181388afbd606b3a7c80e74acbdfee84ecea081",
+          "sha256": "fb238cd0f28e331a2e9d4ada5950f436a2d31e579fa9fbd8c36cce70404c2b21",
+          "type": "blob"
+        }
+      ],
+      "local_commit": "37b8158fc333f1eac49b7936c8d291546d99e5be",
+      "local_parent": "9374b1dcbf839e75e454147f6d370fb635448509",
+      "message": "Measure external helper costs with owned-process cleanup and unchanged stdin",
+      "tree": "ae6625ed8b3c5c9cb395eab3562e0487795fbab0"
+    },
+    {
+      "files": [
+        {
+          "bytes": 16497,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/registrations/OPS_EXECUTION04_DURABLE.json",
+          "sha": "84cd47e56da2de11555fed03fcfffc9660cf71c6",
+          "sha256": "30a8e41c8fa8692cfb6a79f1dfcf3a10c5f2cda1c7cdd4259e874d156c22ca7e",
+          "type": "blob"
+        }
+      ],
+      "local_commit": "bf59ac45860884d770dfd437d8a447068c5ef9a9",
+      "local_parent": "37b8158fc333f1eac49b7936c8d291546d99e5be",
+      "message": "Register exact-design durable execution episode before new science",
+      "tree": "29fe750d50237ae3acd424271212b87313a759b2"
+    },
+    {
+      "files": [
+        {
+          "bytes": 21478,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/records/preexecution/A_SOURCE_FREEZE.json",
+          "sha": "bd8855aba6258f2300f9fcdd0e6fc80deb5bb0b7",
+          "sha256": "6cad1806689a4f5b6e7527139a5755b54cef16e921a093bb714cfc9c3bdec182",
+          "type": "blob"
+        },
+        {
+          "bytes": 20576,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/records/preexecution/CWD_POLICY.json",
+          "sha": "7ea23875a6b4263ee6ee256290ddb8b1870a1cc5",
+          "sha256": "1df758dfe17a32255bd0e43ccf689be80d34b570c93e39dfb637d7709545de8f",
+          "type": "blob"
+        },
+        {
+          "bytes": 21478,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/records/preexecution/C_SOURCE_FREEZE.json",
+          "sha": "3a6ad6e46bbc000faab207232ab929850477c869",
+          "sha256": "cbfa47cae2941e0750c90ea191f5bd76a044ca20ad2f4f3a0b1e5b9c6bc99277",
+          "type": "blob"
+        },
+        {
+          "bytes": 546,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/records/preexecution/INITIALIZATION.json",
+          "sha": "2afd2177043a2e7d3874a2b2d8226408f5383b5c",
+          "sha256": "902f982eff1de4a57fa9e1503c19821ddc4623778b931e6730729c879e676da0",
+          "type": "blob"
+        },
+        {
+          "bytes": 21000,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/records/preexecution/OPS_CORE_SOURCE_FREEZE.json",
+          "sha": "4cf8b2e9d2f3ee792b5239fdaf28c029a9a888be",
+          "sha256": "b7921e6395b7ccab31ea281e96205f874c4c222153793c40f76482166eb1c9c6",
+          "type": "blob"
+        },
+        {
+          "bytes": 21510,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/records/preexecution/OPS_ENVELOPE_SOURCE_FREEZE.json",
+          "sha": "77c42b2e9cd40ef0b280afa3154cd03cbd4b4278",
+          "sha256": "4c8da8392d3dd3e35ade2de843bcadc105b9e94e4ae4018b07f021cd56477691",
+          "type": "blob"
+        },
+        {
+          "bytes": 5259,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/records/preexecution/PIPELINE_CONFIG.json",
+          "sha": "7f65c6e43f66101c0c996e805e5280afe0d2ef45",
+          "sha256": "c1a541cd8fca9e43c710cfd5ccf1cb76793a28712d66eed65a238f158de0e57e",
+          "type": "blob"
+        },
+        {
+          "bytes": 16734,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/records/preexecution/PREEXECUTION_STATE.json",
+          "sha": "e3917ea35a7270436ff9d9da2c32c680b16c6814",
+          "sha256": "31700b79fe3c4f2dc9d50b76321ce0cffe1a77a70dd5e252a0bfc6719c06d836",
+          "type": "blob"
+        },
+        {
+          "bytes": 4994,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/records/preexecution/QUEUE_INITIAL.json",
+          "sha": "e111daedbedd1c371b059472a8c6a8bb9e117ed2",
+          "sha256": "703497d3289e103a6f16eeb9d7c90f831106c79051bf3233b5e919a204fb855a",
+          "type": "blob"
+        },
+        {
+          "bytes": 5735,
+          "mode": "100644",
+          "path": "operational/parameter_field_recovery04/records/preexecution/REGISTRATION_CONFIG.json",
+          "sha": "52ea3824a426b8c591ed0948cb95834d0bbd3bfe",
+          "sha256": "d8d0c11239f30a375265200ad3949dcb8248eb6243e262a59d2363677649a6dd",
+          "type": "blob"
+        }
+      ],
+      "local_commit": "e4822698613829fb1f2829ebe3e70fc5b75eb18c",
+      "local_parent": "bf59ac45860884d770dfd437d8a447068c5ef9a9",
+      "message": "Publish actual pre-execution freezes and original-validator receipts",
+      "tree": "a969b9bdcf82a0acdcab1bc4ab007fea67ea8efd"
+    }
+  ],
+  "file_count": 37,
+  "files": [
+    {
+      "bytes": 2549,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/README_cwd.md",
+      "sha": "a84d8eb5b34bf41ed5a2c563e29f084532547dbd",
+      "sha256": "bacd6e25d9959dbe92eafaac9f32ff54cb448ad75d6c5851f2ed18eeeb29b4a2",
+      "type": "blob"
+    },
+    {
+      "bytes": 10663,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/cwd_runner.py",
+      "sha": "198b0ae22ce4ae5961f5cd2aa58e6cc5560cffd9",
+      "sha256": "c4eca6972780bb1f6d9a3ef31e28c41aadcd06959fca502e3bbb4d9e23599a5b",
+      "type": "blob"
+    },
+    {
+      "bytes": 1425,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/evidence/EPISODE02_COST_FACTS.json",
+      "sha": "8f6b3fdcf0751528aee0f2ecb3c8b06e10335d19",
+      "sha256": "b62350c7d56ab998746479bb5810ba204eff4431ef4a456635b46780e90d99f8",
+      "type": "blob"
+    },
+    {
+      "bytes": 1295,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/evidence/EPISODE03_COST_FACTS.json",
+      "sha": "439acecf6cbd1db43f3a5364f4263562124d9643",
+      "sha256": "eac8096b6dc7d82ef52a8ddb091ea4a4d465b50c83a406fd50bf720bb3b7c9a7",
+      "type": "blob"
+    },
+    {
+      "bytes": 2883,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/evidence/EXECUTION03_CONTINUITY_OBSERVATION.json",
+      "sha": "9a4ae580763a550be5849c27ab9a3f08225fdc0b",
+      "sha256": "be48accdfa5ddaba1fa27b5ded3bd703c6cb775062cd3f1d9090162da1ff4b2d",
+      "type": "blob"
+    },
+    {
+      "bytes": 2739,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/restore_assets.py",
+      "sha": "2538e45748e47b8b7e32e067f52bc62e8252e36c",
+      "sha256": "bd6173188f310ab215267cdf0bba694007d1701d8414ec3ec0efee0a9f61753e",
+      "type": "blob"
+    },
+    {
+      "bytes": 4981,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/test_cwd_runner.py",
+      "sha": "ab37c98732ed90bce354e53edfe9f314a1f56b3a",
+      "sha256": "eddb7acf92808f1bfdd4a96a2b4ec5d6adb770dbd13ab95d197814cd301a83bb",
+      "type": "blob"
+    },
+    {
+      "bytes": 22202,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/historical_costs.py",
+      "sha": "d9bfb0efd1d2f3a9e44494f6ccb92adaab6a90f7",
+      "sha256": "e8ec187543e5d249142a706699156fa97db767d6f1193ec9be466359a59ad440",
+      "type": "blob"
+    },
+    {
+      "bytes": 20178,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/registration.py",
+      "sha": "4a73e61500825e9a635aac40050152bea5c83195",
+      "sha256": "19e3eedaacc7795a2b45ea8165f2aa5e8180e0d12f4fc925075384861ab32979",
+      "type": "blob"
+    },
+    {
+      "bytes": 11104,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/README_registration.md",
+      "sha": "5340018bd2e35207c1e43ae23653d38d9e117d68",
+      "sha256": "b9c9008f0f47f9bb27046322019928257622672908a234b2973bd5e96f538b23",
+      "type": "blob"
+    },
+    {
+      "bytes": 13856,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/synthetic_test_registration.py",
+      "sha": "840a9f581b47b1ecba9e82eeff5657fbad574b8c",
+      "sha256": "92257cdd3ff1f13c65804face8c84e8bbfa8d3c32731de6a37a25eaa1a0d734a",
+      "type": "blob"
+    },
+    {
+      "bytes": 45470,
+      "mode": "100644",
+      "path": "supplements/parameter_field_fullstudy_20261030/postseal_supplement.py",
+      "sha": "da25ecba9d01ffd30da7de819604d6b1790234a3",
+      "sha256": "1b705285b99fc7185c20155fa85f3a5d370b473196eaf59c8ae1d6bb2941a633",
+      "type": "blob"
+    },
+    {
+      "bytes": 1498,
+      "mode": "100644",
+      "path": "supplements/parameter_field_fullstudy_20261030/PREPARATION.json",
+      "sha": "ae2c9367c426e2d421bd272b35936b0f0008ce1f",
+      "sha256": "7be4f1923105c53e4b02f010e04b32bcc8684e6169de8b4b570a8a4611ff7332",
+      "type": "blob"
+    },
+    {
+      "bytes": 9337,
+      "mode": "100644",
+      "path": "supplements/parameter_field_fullstudy_20261030/PRE_ENDPOINT_PLAN.json",
+      "sha": "5fd337cd35259fcf614c4b393a5106c70b31435f",
+      "sha256": "cfd35051e481c5c1d070fec88f933e191b6368655325857079e3505fd195f8b1",
+      "type": "blob"
+    },
+    {
+      "bytes": 9849,
+      "mode": "100644",
+      "path": "supplements/parameter_field_fullstudy_20261030/README.md",
+      "sha": "f24f4132a1a4356929b5689386f41b468c689007",
+      "sha256": "5f0e044c2df81ac5a5b6aa1b65722f1da15e37dfe62f10b6b7936fe92d2a9cf3",
+      "type": "blob"
+    },
+    {
+      "bytes": 14012,
+      "mode": "100644",
+      "path": "supplements/parameter_field_fullstudy_20261030/test_semantics.py",
+      "sha": "1f39bf5c7c0888deffb0c345888d00fc6b9bcfaf",
+      "sha256": "267745e30f874740c8c739ea7b761ba3de580e75c4c20aee956a6fd8d25d0956",
+      "type": "blob"
+    },
+    {
+      "bytes": 2898,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/README_initialization.md",
+      "sha": "023176f4f3d55f1d6bd8ace7aac67083bc3e7a99",
+      "sha256": "b63000acf75827ea5aa817d5dd5726e02ac98e860fc9e49bf916765e6ccb52ed",
+      "type": "blob"
+    },
+    {
+      "bytes": 4439,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/import_probe.py",
+      "sha": "149f6f73c719ad3d7cedf64f8550cc996c1e5234",
+      "sha256": "0145f1838c1b479c20636e33b5bd79a27fd94524608949f1af1f632f5022c736",
+      "type": "blob"
+    },
+    {
+      "bytes": 17564,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/initialize.py",
+      "sha": "b35916d33947e93b93795450be07221fc2a3e0fb",
+      "sha256": "3fa5766eba4b4f79143fc4fe409a79b408e48cd1a9ca8c74dbea72c4bfac1512",
+      "type": "blob"
+    },
+    {
+      "bytes": 41463,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/supervisor.py",
+      "sha": "bc3cf5c84871fedf96c0cf57168ab51c36a2340d",
+      "sha256": "cc1526c88184e26ce9eb363f053e2e2babce924020d80589b0891f4385307682",
+      "type": "blob"
+    },
+    {
+      "bytes": 14865,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/durable_archive.py",
+      "sha": "a2287025f506e9d0f620209c5bcbe2e4f4225026",
+      "sha256": "dfeee33870f3ca429284542cb8ca9ff8c9471a8fc8ff0339c3de251cabf260da",
+      "type": "blob"
+    },
+    {
+      "bytes": 6051,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/wait4_launcher.py",
+      "sha": "76bb6172ef104d5ea91a1f6ad923694b8bc3015e",
+      "sha256": "ccada17007abf8ce2d7d39d8a2c9102d7848971baf818a357e4c58643c287b20",
+      "type": "blob"
+    },
+    {
+      "bytes": 15944,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/README_supervisor.md",
+      "sha": "526c547c02d894f73f54a57036394116d7c13c7c",
+      "sha256": "0743a75ba4b01271bbee8c45d023818088d1cb9b2ef2f60193c21d1d21deb154",
+      "type": "blob"
+    },
+    {
+      "bytes": 1098,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/evidence/WORKSPACE_CLEANUP_20261030.json",
+      "sha": "62b439cfa60451eb7a77dc109c095d76ca49ee1a",
+      "sha256": "00ff28dac33d221dbf349043c7351e34e69d0732590a8cee1ee7f1fba1b9458a",
+      "type": "blob"
+    },
+    {
+      "bytes": 8815,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/test_supervisor_semantics.py",
+      "sha": "98a1b72cb9765d5efada31be06d53c9d05df5d4b",
+      "sha256": "db598f4195d8e4df8b99e800dabe060adfe3e06dcbd91ac6d4d3c59ebe4f440a",
+      "type": "blob"
+    },
+    {
+      "bytes": 4382,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/external_step.py",
+      "sha": "2181388afbd606b3a7c80e74acbdfee84ecea081",
+      "sha256": "fb238cd0f28e331a2e9d4ada5950f436a2d31e579fa9fbd8c36cce70404c2b21",
+      "type": "blob"
+    },
+    {
+      "bytes": 16497,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/registrations/OPS_EXECUTION04_DURABLE.json",
+      "sha": "84cd47e56da2de11555fed03fcfffc9660cf71c6",
+      "sha256": "30a8e41c8fa8692cfb6a79f1dfcf3a10c5f2cda1c7cdd4259e874d156c22ca7e",
+      "type": "blob"
+    },
+    {
+      "bytes": 21478,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/records/preexecution/A_SOURCE_FREEZE.json",
+      "sha": "bd8855aba6258f2300f9fcdd0e6fc80deb5bb0b7",
+      "sha256": "6cad1806689a4f5b6e7527139a5755b54cef16e921a093bb714cfc9c3bdec182",
+      "type": "blob"
+    },
+    {
+      "bytes": 20576,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/records/preexecution/CWD_POLICY.json",
+      "sha": "7ea23875a6b4263ee6ee256290ddb8b1870a1cc5",
+      "sha256": "1df758dfe17a32255bd0e43ccf689be80d34b570c93e39dfb637d7709545de8f",
+      "type": "blob"
+    },
+    {
+      "bytes": 21478,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/records/preexecution/C_SOURCE_FREEZE.json",
+      "sha": "3a6ad6e46bbc000faab207232ab929850477c869",
+      "sha256": "cbfa47cae2941e0750c90ea191f5bd76a044ca20ad2f4f3a0b1e5b9c6bc99277",
+      "type": "blob"
+    },
+    {
+      "bytes": 546,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/records/preexecution/INITIALIZATION.json",
+      "sha": "2afd2177043a2e7d3874a2b2d8226408f5383b5c",
+      "sha256": "902f982eff1de4a57fa9e1503c19821ddc4623778b931e6730729c879e676da0",
+      "type": "blob"
+    },
+    {
+      "bytes": 21000,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/records/preexecution/OPS_CORE_SOURCE_FREEZE.json",
+      "sha": "4cf8b2e9d2f3ee792b5239fdaf28c029a9a888be",
+      "sha256": "b7921e6395b7ccab31ea281e96205f874c4c222153793c40f76482166eb1c9c6",
+      "type": "blob"
+    },
+    {
+      "bytes": 21510,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/records/preexecution/OPS_ENVELOPE_SOURCE_FREEZE.json",
+      "sha": "77c42b2e9cd40ef0b280afa3154cd03cbd4b4278",
+      "sha256": "4c8da8392d3dd3e35ade2de843bcadc105b9e94e4ae4018b07f021cd56477691",
+      "type": "blob"
+    },
+    {
+      "bytes": 5259,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/records/preexecution/PIPELINE_CONFIG.json",
+      "sha": "7f65c6e43f66101c0c996e805e5280afe0d2ef45",
+      "sha256": "c1a541cd8fca9e43c710cfd5ccf1cb76793a28712d66eed65a238f158de0e57e",
+      "type": "blob"
+    },
+    {
+      "bytes": 16734,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/records/preexecution/PREEXECUTION_STATE.json",
+      "sha": "e3917ea35a7270436ff9d9da2c32c680b16c6814",
+      "sha256": "31700b79fe3c4f2dc9d50b76321ce0cffe1a77a70dd5e252a0bfc6719c06d836",
+      "type": "blob"
+    },
+    {
+      "bytes": 4994,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/records/preexecution/QUEUE_INITIAL.json",
+      "sha": "e111daedbedd1c371b059472a8c6a8bb9e117ed2",
+      "sha256": "703497d3289e103a6f16eeb9d7c90f831106c79051bf3233b5e919a204fb855a",
+      "type": "blob"
+    },
+    {
+      "bytes": 5735,
+      "mode": "100644",
+      "path": "operational/parameter_field_recovery04/records/preexecution/REGISTRATION_CONFIG.json",
+      "sha": "52ea3824a426b8c591ed0948cb95834d0bbd3bfe",
+      "sha256": "d8d0c11239f30a375265200ad3949dcb8248eb6243e262a59d2363677649a6dd",
+      "type": "blob"
+    }
+  ],
+  "local_head": "e4822698613829fb1f2829ebe3e70fc5b75eb18c",
+  "models_assets_raw_or_private_paper_content_included": false,
+  "only_additions_to_registered_recovery_and_supplement_directories": true,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hepta.execution04.publication-local-inventory.1",
+  "signed_transfer_urls_found": false,
+  "total_file_bytes": 447367
+}

@@ -1,0 +1,116 @@
+{
+  "schema": "hepta.execution04.publication-identity-map.1",
+  "template_status": "FILLED_FOR_PUBLICATION",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "research/parameter-field-fullstudy-recovery-20261030",
+  "publication_method": "Mechanical snapshot of the exact C3 tree, followed by additive publication metadata and an unchanged original Git history bundle.",
+  "snapshot": {
+    "remote_commit": "cbfbab1c831e9e9e4c33e0eed7091ffcb71c6208",
+    "tree": "a969b9bdcf82a0acdcab1bc4ab007fea67ea8efd",
+    "parent": "e38a2311c0fd3eecc7f95be00c29be970a3b7a34",
+    "remote_commit_is_original_C1_C2_C3": false
+  },
+  "original_git_identities": {
+    "C1": {
+      "commit": "37b8158fc333f1eac49b7936c8d291546d99e5be",
+      "tree": "ae6625ed8b3c5c9cb395eab3562e0487795fbab0",
+      "parents": [
+        "9374b1dcbf839e75e454147f6d370fb635448509"
+      ]
+    },
+    "C2": {
+      "commit": "bf59ac45860884d770dfd437d8a447068c5ef9a9",
+      "tree": "29fe750d50237ae3acd424271212b87313a759b2",
+      "parents": [
+        "37b8158fc333f1eac49b7936c8d291546d99e5be"
+      ]
+    },
+    "C3": {
+      "commit": "e4822698613829fb1f2829ebe3e70fc5b75eb18c",
+      "tree": "a969b9bdcf82a0acdcab1bc4ab007fea67ea8efd",
+      "parents": [
+        "bf59ac45860884d770dfd437d8a447068c5ef9a9"
+      ]
+    }
+  },
+  "original_identity_access": "Restore actual original Git objects from the published binary bundle after obtaining its exact public base prerequisite. These original commit IDs are not asserted to be native GitHub branch-history commits.",
+  "original_commit_count_after_base": 12,
+  "base_prerequisite": {
+    "commit": "e38a2311c0fd3eecc7f95be00c29be970a3b7a34",
+    "tree": "2ce7fea61a636ff27520617569368ecac86803d3",
+    "repository_url": "https://github.com/TrillionniumFoundation/hepta-private-ci.git"
+  },
+  "bundle": {
+    "path": "operational/parameter_field_recovery04/publication/LOCAL_EXECUTION04_HISTORY.bundle",
+    "bytes": 131578,
+    "sha256": "96e136232f68b5eba1ec4122ecfb1aee9d263b7fd892091f19d373f37727931e"
+  },
+  "bundle_raw_object_count": 90,
+  "thin_pack_note": "The bundle contains 90 new objects. Git repaired the imported thin pack by appending one already fetched base tree, yielding 91 imported pack objects. That old tree was not extra data inside the original bundle.",
+  "original_study_subtree": {
+    "path": "experiments/parameter_field_fullstudy_20261029",
+    "file_count": 97,
+    "bytes": 1308415,
+    "unchanged_between_base_and_original_C3": true
+  },
+  "recovered_freeze_union": {
+    "file_count": 98,
+    "all_current_file_sha256_match_original_requirements": true,
+    "note": "This overlapping dependency union is not added to the study subtree count."
+  },
+  "frozen_closure": {
+    "registered_original_commit": "bf59ac45860884d770dfd437d8a447068c5ef9a9",
+    "file_count": 132,
+    "bytes": 3231404,
+    "all_independently_restored_from_C2_and_sha256_verified": true,
+    "A_SOURCE_FREEZE_sha256": "6cad1806689a4f5b6e7527139a5755b54cef16e921a093bb714cfc9c3bdec182"
+  },
+  "publication_source_files": {
+    "count": 37,
+    "bytes": 447367,
+    "changes_against_base": "additions only",
+    "inventory": {
+      "path": "operational/parameter_field_recovery04/publication/LOCAL_INVENTORY.json",
+      "bytes": 28281,
+      "sha256": "3da1d1b726bb65db7c14f1ae691fb482f79ab909a6453302278601aca937bdd4"
+    }
+  },
+  "independent_bundle_verification": {
+    "status": "PASS",
+    "completed_at_utc": "2026-10-30T01:49:44.279872+00:00",
+    "fresh_bare_repository": true,
+    "original_object_store_or_alternates_used": false,
+    "exact_public_base_fetched": true,
+    "verified_original_commits": 12,
+    "verified_added_files": 37,
+    "verified_frozen_source_files": 132,
+    "science_source_execution_performed": false,
+    "model_or_raw_values_read": false,
+    "receipts": [
+      {
+        "path": "operational/parameter_field_recovery04/publication/bundle_verification/VALIDATION.json",
+        "bytes": 94408,
+        "sha256": "2929d4ce707fceb3f5f86a97fa8527a5d1f829397b4a4a24dbc3e2aeb50906e2"
+      },
+      {
+        "path": "operational/parameter_field_recovery04/publication/bundle_verification/RECEIPT.json",
+        "bytes": 883,
+        "sha256": "29a8f8fcccad88f851779bca3b9f329447d08a1cedef7305179886c7c471898b"
+      },
+      {
+        "path": "operational/parameter_field_recovery04/publication/bundle_verification/COMMANDS.log",
+        "bytes": 106075,
+        "sha256": "93e98923229d2c913e753e0a890754e87b71395dc55756a4591e0d8f278ff4ed"
+      }
+    ]
+  },
+  "mechanical_change_guidance": {
+    "source_commit": "e38a2311c0fd3eecc7f95be00c29be970a3b7a34",
+    "source_path": "AGENTS.md",
+    "source_sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+    "section": "Change size guidance (800 lines)",
+    "application": "This publication copies already frozen and verified bytes. It is a mechanical mirror under the stated exception, while the original twelve reviewable commits remain preserved in the binary Git bundle. No code, numerical rule, endpoint or source freeze is altered by the publication method."
+  },
+  "scope": "Source identity and recovery evidence only. No claim that any execution04 scientific job, endpoint evaluation, aggregate analysis or finalizer has completed.",
+  "publication_receipt_policy": "After filling the actual snapshot remote commit, publish this manifest with additive metadata. Record the actual final publication commit/ref and fetched-byte verification in an external execution receipt; do not invent an unknown self commit SHA inside this file."
+}

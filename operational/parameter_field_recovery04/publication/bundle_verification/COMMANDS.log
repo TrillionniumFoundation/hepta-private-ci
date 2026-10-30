@@ -1,0 +1,1592 @@
+
+2026-10-30T01:46:23.994096+00:00 $ git init --bare /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git
+stdout:
+Initialized empty Git repository in /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git/
+stderr:
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: is subject to change. To configure the initial branch name to use in all
+hint: of your new repositories, which will suppress this warning, call:
+hint:
+hint: 	git config --global init.defaultBranch <name>
+hint:
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint:
+hint: 	git branch -m <name>
+hint:
+hint: Disable this message with "git config set advice.defaultBranchName false"
+returncode=0
+
+2026-10-30T01:46:24.003025+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci.git
+stdout:
+stderr:
+returncode=0
+
+2026-10-30T01:46:24.012482+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git bundle list-heads /workspace/scratch/178ced6a501f/fullstudy_git/operational/parameter_field_recovery04/publication/LOCAL_EXECUTION04_HISTORY.bundle
+stdout:
+e4822698613829fb1f2829ebe3e70fc5b75eb18c refs/heads/research/parameter-field-fullstudy-recovery-20261030
+stderr:
+returncode=0
+
+2026-10-30T01:46:24.022258+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git bundle verify /workspace/scratch/178ced6a501f/fullstudy_git/operational/parameter_field_recovery04/publication/LOCAL_EXECUTION04_HISTORY.bundle
+stdout:
+stderr:
+error: Repository lacks these prerequisite commits:
+error: e38a2311c0fd3eecc7f95be00c29be970a3b7a34 
+returncode=1
+
+2026-10-30T01:46:28.233077+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git fetch --depth=1 --filter=blob:none origin e38a2311c0fd3eecc7f95be00c29be970a3b7a34
+stdout:
+stderr:
+fatal: unable to access 'https://github.com/TrillionniumFoundation/hepta-private-ci.git/': Failed to connect to browser-proxy port 8889 after 14 ms: Couldn't connect to server
+returncode=128
+
+2026-10-30T01:46:39.029610+00:00 [host normal network] $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git fetch --depth=1 --filter=blob:none origin e38a2311c0fd3eecc7f95be00c29be970a3b7a34
+stdout:
+stderr:
+From https://github.com/TrillionniumFoundation/hepta-private-ci
+ * branch            e38a2311c0fd3eecc7f95be00c29be970a3b7a34 -> FETCH_HEAD
+returncode=0
+
+2026-10-30T01:48:02.211448+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git remote get-url origin
+stdout:
+https://github.com/TrillionniumFoundation/hepta-private-ci.git
+stderr:
+returncode=0
+
+2026-10-30T01:48:02.224294+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git rev-parse FETCH_HEAD
+stdout:
+e38a2311c0fd3eecc7f95be00c29be970a3b7a34
+stderr:
+returncode=0
+
+2026-10-30T01:48:02.258134+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git rev-parse --is-bare-repository
+stdout:
+true
+stderr:
+returncode=0
+
+2026-10-30T01:48:02.266918+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git update-ref refs/heads/verified-public-base e38a2311c0fd3eecc7f95be00c29be970a3b7a34
+stdout:
+stderr:
+returncode=0
+
+2026-10-30T01:48:02.271690+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit e38a2311c0fd3eecc7f95be00c29be970a3b7a34
+stdout_bytes=552 stdout_sha256=bab303873bc943cb57c6f63ecdf9a4c4f1b77975dde072b0e05963954ba60f3d
+stderr:
+returncode=0
+
+2026-10-30T01:48:02.275917+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git bundle verify /workspace/scratch/178ced6a501f/fullstudy_git/operational/parameter_field_recovery04/publication/LOCAL_EXECUTION04_HISTORY.bundle
+stdout:
+The bundle contains this ref:
+e4822698613829fb1f2829ebe3e70fc5b75eb18c refs/heads/research/parameter-field-fullstudy-recovery-20261030
+The bundle requires this ref:
+e38a2311c0fd3eecc7f95be00c29be970a3b7a34 
+The bundle uses this hash algorithm: sha1
+stderr:
+/workspace/scratch/178ced6a501f/fullstudy_git/operational/parameter_field_recovery04/publication/LOCAL_EXECUTION04_HISTORY.bundle is okay
+returncode=0
+
+2026-10-30T01:48:02.318046+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git bundle unbundle /workspace/scratch/178ced6a501f/fullstudy_git/operational/parameter_field_recovery04/publication/LOCAL_EXECUTION04_HISTORY.bundle
+stdout:
+e4822698613829fb1f2829ebe3e70fc5b75eb18c refs/heads/research/parameter-field-fullstudy-recovery-20261030
+stderr:
+returncode=0
+
+2026-10-30T01:48:02.365206+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git verify-pack -v /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git/objects/pack/pack-247d1c9187f80aa85fa3ece13bc81afe732fb136.idx
+stdout:
+e4822698613829fb1f2829ebe3e70fc5b75eb18c commit 265 191 12
+bf59ac45860884d770dfd437d8a447068c5ef9a9 commit 263 185 203
+37b8158fc333f1eac49b7936c8d291546d99e5be commit 273 193 388
+9374b1dcbf839e75e454147f6d370fb635448509 commit 269 190 581
+781208c80ad6d301ed52b254c3c9154626fdf3a1 commit 268 190 771
+31afddd7351771e8fc0e07677f516ccc6c2ce6b3 commit 268 191 961
+951c4adf442a9689c08c3c32623e6c0a2540a043 commit 275 188 1152
+2369ceae0fb163c44a4f7e4fe2d95d9066fa490a commit 254 180 1340
+9e380ce2be9950d171cfcb15dde7e842d937406f commit 258 180 1520
+209d311e6b37e0370c331bf4acf3a353828498a8 commit 261 180 1700
+2f4f76c583b6b778a86f6d1e22b37ff108140ee6 commit 273 191 1880
+2f53372e2005766590cbbf7d52e51401593eaf63 commit 271 189 2071
+a969b9bdcf82a0acdcab1bc4ab007fea67ea8efd tree   88 119 2260 1 2ce7fea61a636ff27520617569368ecac86803d3
+f312751989ac653ec3234acb0349fc47ac2e093c tree   53 63 2379
+75d841a44862a010ec47c3fef16de8ea22c1bd02 tree   896 698 2442
+a84d8eb5b34bf41ed5a2c563e29f084532547dbd blob   2549 1249 3140
+023176f4f3d55f1d6bd8ace7aac67083bc3e7a99 blob   2898 1418 4389
+5340018bd2e35207c1e43ae23653d38d9e117d68 blob   11104 4573 5807
+526c547c02d894f73f54a57036394116d7c13c7c blob   15944 6374 10380
+198b0ae22ce4ae5961f5cd2aa58e6cc5560cffd9 blob   10663 3629 16754
+a2287025f506e9d0f620209c5bcbe2e4f4225026 blob   14865 4620 20383
+c146632347bbfa7e273bb9af5997156ca06946f7 tree   232 195 25003
+8f6b3fdcf0751528aee0f2ecb3c8b06e10335d19 blob   1425 762 25198
+439acecf6cbd1db43f3a5364f4263562124d9643 blob   1295 786 25960
+9a4ae580763a550be5849c27ab9a3f08225fdc0b blob   2883 1384 26746
+62b439cfa60451eb7a77dc109c095d76ca49ee1a blob   1098 639 28130
+2181388afbd606b3a7c80e74acbdfee84ecea081 blob   4382 1801 28769
+d9bfb0efd1d2f3a9e44494f6ccb92adaab6a90f7 blob   22202 6284 30570
+149f6f73c719ad3d7cedf64f8550cc996c1e5234 blob   4439 1779 36854
+b35916d33947e93b93795450be07221fc2a3e0fb blob   17564 5818 38633
+8b8fdba7e45337452280f30ca4d3f44e4f170a06 tree   39 48 44451
+11308e7de0554744374cf4ef8f28894672e77752 tree   497 372 44499
+77c42b2e9cd40ef0b280afa3154cd03cbd4b4278 blob   21510 7582 44871
+bd8855aba6258f2300f9fcdd0e6fc80deb5bb0b7 blob   197 202 52453 1 77c42b2e9cd40ef0b280afa3154cd03cbd4b4278
+7ea23875a6b4263ee6ee256290ddb8b1870a1cc5 blob   20576 7121 52655
+3a6ad6e46bbc000faab207232ab929850477c869 blob   96 108 59776 2 bd8855aba6258f2300f9fcdd0e6fc80deb5bb0b7
+2afd2177043a2e7d3874a2b2d8226408f5383b5c blob   546 374 59884
+4cf8b2e9d2f3ee792b5239fdaf28c029a9a888be blob   47 60 60258 2 bd8855aba6258f2300f9fcdd0e6fc80deb5bb0b7
+e3917ea35a7270436ff9d9da2c32c680b16c6814 blob   16734 3432 60318
+7f65c6e43f66101c0c996e805e5280afe0d2ef45 blob   2160 1260 63750 1 e3917ea35a7270436ff9d9da2c32c680b16c6814
+e111daedbedd1c371b059472a8c6a8bb9e117ed2 blob   4994 776 65010
+52ea3824a426b8c591ed0948cb95834d0bbd3bfe blob   5735 1761 65786
+4a73e61500825e9a635aac40050152bea5c83195 blob   20178 5880 67547
+6b7f17586dd6ce2bfd14e0f1e2d699ab929c5d50 tree   56 67 73427
+84cd47e56da2de11555fed03fcfffc9660cf71c6 blob   16497 6355 73494
+2538e45748e47b8b7e32e067f52bc62e8252e36c blob   2739 1177 79849
+bc3cf5c84871fedf96c0cf57168ab51c36a2340d blob   41463 11094 81026
+840a9f581b47b1ecba9e82eeff5657fbad574b8c blob   13856 4096 92120
+ab37c98732ed90bce354e53edfe9f314a1f56b3a blob   4981 1618 96216
+98a1b72cb9765d5efada31be06d53c9d05df5d4b blob   8815 2806 97834
+76bb6172ef104d5ea91a1f6ad923694b8bc3015e blob   6051 2264 100640
+cd4bdabaa6cb66c791520edf3191ab01884a8d6d tree   61 70 102904
+266321d7090e98bdd1875058070664da98dcdc19 tree   226 212 102974
+ae2c9367c426e2d421bd272b35936b0f0008ce1f blob   1498 787 103186
+5fd337cd35259fcf614c4b393a5106c70b31435f blob   9337 3785 103973
+f24f4132a1a4356929b5689386f41b468c689007 blob   9849 4257 107758
+da25ecba9d01ffd30da7de819604d6b1790234a3 blob   45470 13369 112015
+1f39bf5c7c0888deffb0c345888d00fc6b9bcfaf blob   14012 4436 125384
+29fe750d50237ae3acd424271212b87313a759b2 tree   33 49 129820 2 a969b9bdcf82a0acdcab1bc4ab007fea67ea8efd
+ce57db938f136c74928f7db526ca890cb2e352c9 tree   53 62 129869
+10cf1e6b403e86497f1c6532a8e8cd8b1c58d7e8 tree   12 24 129931 1 75d841a44862a010ec47c3fef16de8ea22c1bd02
+ae6625ed8b3c5c9cb395eab3562e0487795fbab0 tree   33 47 129955 2 a969b9bdcf82a0acdcab1bc4ab007fea67ea8efd
+7dd81c8ce9f1fe01291a664ed29422ed71a8898d tree   53 62 130002
+2c514c23a6d72553e9a7035de0116416c0d9cb67 tree   16 29 130064 1 75d841a44862a010ec47c3fef16de8ea22c1bd02
+c06746f9fd6df9234f9efb51cd85f75630d83f6b tree   33 49 130093 2 a969b9bdcf82a0acdcab1bc4ab007fea67ea8efd
+0e0a12d3f4c1159df72a84f2996735128ecf3bf3 tree   53 62 130142
+66c26db2c0153bc7bc34a1854825bb23ec1d48d1 tree   20 33 130204 1 75d841a44862a010ec47c3fef16de8ea22c1bd02
+94fd02acc2518e443de9cb964b71d7c6b8b2aa8b tree   33 47 130237 2 a969b9bdcf82a0acdcab1bc4ab007fea67ea8efd
+61e3349eede287abe5e98007652e8a3252f04a1a tree   53 62 130284
+6239194f79d2b05929a89c118a2c6fe1d2347c86 tree   46 62 130346 1 75d841a44862a010ec47c3fef16de8ea22c1bd02
+115c9639631292583986210ed78a4290ecbdf637 tree   6 18 130408 1 c146632347bbfa7e273bb9af5997156ca06946f7
+bd903cb7ea978cf8f2d8ed38fa352a16a89d61ab tree   33 47 130426 2 a969b9bdcf82a0acdcab1bc4ab007fea67ea8efd
+823eba07863cd4bcf055d3b21e397ea0d92b0d35 tree   53 62 130473
+217b9ece699358a4e06f98796b68e9686ced1d12 tree   10 21 130535 2 6239194f79d2b05929a89c118a2c6fe1d2347c86
+3a2028eddcb01f27e45352a756bf2fd9b4cbb855 tree   33 49 130556 2 a969b9bdcf82a0acdcab1bc4ab007fea67ea8efd
+4a1aae50b16d8ae5fcc434ad2ed24192d45abf29 tree   53 62 130605
+415758eb3e1550ca9494761348133b45bdb5a665 tree   14 26 130667 2 6239194f79d2b05929a89c118a2c6fe1d2347c86
+2a79e48790f1fceaf212d011506e0efd0124e5f9 tree   33 49 130693 2 a969b9bdcf82a0acdcab1bc4ab007fea67ea8efd
+1e15ba43cee5621ebab3b083cf90be442cd5f58a tree   53 62 130742
+d07e7e5174868493ba7aaad2c496443d26f658cb tree   20 33 130804 2 6239194f79d2b05929a89c118a2c6fe1d2347c86
+f284ffd75a2e29640a533b8cce00ad348a7d5cd2 tree   32 45 130837 3 2a79e48790f1fceaf212d011506e0efd0124e5f9
+f966cd55a356ecc77cfe3cfb95804aaf16450d56 tree   61 70 130882
+6a43371408214bcb6ad23e642502754d5ee4ac9f tree   50 61 130952
+9723e7b1aa22b3e1009148d080cccffa0236de24 tree   11 22 131013 3 2a79e48790f1fceaf212d011506e0efd0124e5f9
+61a7233ce10f53463dae4b91aa49016ef379593f tree   37 52 131035 3 2a79e48790f1fceaf212d011506e0efd0124e5f9
+abb58139a151d55a4bb89694605a49dcbb88a430 tree   53 63 131087
+7edbd466fe93614e3dc8c5ed9e4bdbfbdbe3971c tree   20 33 131150 2 6239194f79d2b05929a89c118a2c6fe1d2347c86
+f2c882db36c62feefe477dddb733dd4fd624481b tree   37 52 131183 3 2a79e48790f1fceaf212d011506e0efd0124e5f9
+a94079e448d2ca10d195243dd1c2b167951089b7 tree   53 62 131235
+0cba98141b0257749a42148a884796fbbbccd90c tree   9 20 131297 3 7edbd466fe93614e3dc8c5ed9e4bdbfbdbe3971c
+2ce7fea61a636ff27520617569368ecac86803d3 tree   2050 1659 131317
+non delta: 65 objects
+chain length = 1: 8 objects
+chain length = 2: 13 objects
+chain length = 3: 5 objects
+/workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git/objects/pack/pack-247d1c9187f80aa85fa3ece13bc81afe732fb136.pack: ok
+stderr:
+returncode=0
+
+2026-10-30T01:48:02.371720+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git update-ref refs/heads/verified-bundle-head e4822698613829fb1f2829ebe3e70fc5b75eb18c
+stdout:
+stderr:
+returncode=0
+
+2026-10-30T01:48:02.378999+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git rev-list --reverse e4822698613829fb1f2829ebe3e70fc5b75eb18c '^e38a2311c0fd3eecc7f95be00c29be970a3b7a34'
+stdout:
+2f53372e2005766590cbbf7d52e51401593eaf63
+2f4f76c583b6b778a86f6d1e22b37ff108140ee6
+209d311e6b37e0370c331bf4acf3a353828498a8
+9e380ce2be9950d171cfcb15dde7e842d937406f
+2369ceae0fb163c44a4f7e4fe2d95d9066fa490a
+951c4adf442a9689c08c3c32623e6c0a2540a043
+31afddd7351771e8fc0e07677f516ccc6c2ce6b3
+781208c80ad6d301ed52b254c3c9154626fdf3a1
+9374b1dcbf839e75e454147f6d370fb635448509
+37b8158fc333f1eac49b7936c8d291546d99e5be
+bf59ac45860884d770dfd437d8a447068c5ef9a9
+e4822698613829fb1f2829ebe3e70fc5b75eb18c
+stderr:
+returncode=0
+
+2026-10-30T01:48:02.383722+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit 2f53372e2005766590cbbf7d52e51401593eaf63
+stdout_bytes=271 stdout_sha256=8c6b476e05db6ad653c65ea3326e322298422ccb446e21f8285203d686c61027
+stderr:
+returncode=0
+
+2026-10-30T01:48:02.391837+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit 2f4f76c583b6b778a86f6d1e22b37ff108140ee6
+stdout_bytes=273 stdout_sha256=7c32bea74d4f56eb4c7eddc6d04aa3784e21812963862e17e98748b81e5c5b70
+stderr:
+returncode=0
+
+2026-10-30T01:48:02.398597+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit 209d311e6b37e0370c331bf4acf3a353828498a8
+stdout_bytes=261 stdout_sha256=e97978172679bdff1586d3dc3647a6a51e304fc7af47308c9e76864659d76442
+stderr:
+returncode=0
+
+2026-10-30T01:48:02.409066+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit 9e380ce2be9950d171cfcb15dde7e842d937406f
+stdout_bytes=258 stdout_sha256=8ea5b25d5b39da4120e7d5d3058334a5c615e39a53253f9acde6fae1ab690014
+stderr:
+returncode=0
+
+2026-10-30T01:48:02.416836+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit 2369ceae0fb163c44a4f7e4fe2d95d9066fa490a
+stdout_bytes=254 stdout_sha256=4282d854761b3a0ac32ab234c48addf2869e5a3f1504c176e44e33d1f6f0d9e3
+stderr:
+returncode=0
+
+2026-10-30T01:48:02.423391+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit 951c4adf442a9689c08c3c32623e6c0a2540a043
+stdout_bytes=275 stdout_sha256=9fb4352574d4e4729a3de2442dd7f6c8c685263f46abcbb34522ebaebda236f0
+stderr:
+returncode=0
+
+2026-10-30T01:48:02.427921+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit 31afddd7351771e8fc0e07677f516ccc6c2ce6b3
+stdout_bytes=268 stdout_sha256=d1c97fc1fa98d02f3a12417275b39a6a86305fc51f37d5835c7cf23791afe7b9
+stderr:
+returncode=0
+
+2026-10-30T01:48:02.446358+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit 781208c80ad6d301ed52b254c3c9154626fdf3a1
+stdout_bytes=268 stdout_sha256=246a55db7c57885d6e60d6ce10cd397f8629ec1275cd0c15403bbbcbe3d340d9
+stderr:
+returncode=0
+
+2026-10-30T01:48:02.451866+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit 9374b1dcbf839e75e454147f6d370fb635448509
+stdout_bytes=269 stdout_sha256=4df9b9e3d66f699a3e3ff42b62d49ce326175548707153179b718660eea7d965
+stderr:
+returncode=0
+
+2026-10-30T01:48:02.465311+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit 37b8158fc333f1eac49b7936c8d291546d99e5be
+stdout_bytes=273 stdout_sha256=1900117de8abc8e6a15f4dc5ace85172bfd4c210f26c47b8a852218c89c87d73
+stderr:
+returncode=0
+
+2026-10-30T01:48:02.472713+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit bf59ac45860884d770dfd437d8a447068c5ef9a9
+stdout_bytes=263 stdout_sha256=8692d7305375096704018ee33feb6eb7255dc377907b58029dea2e559e000880
+stderr:
+returncode=0
+
+2026-10-30T01:48:02.482890+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit e4822698613829fb1f2829ebe3e70fc5b75eb18c
+stdout_bytes=265 stdout_sha256=002755303a645de609f37e13f7affd10eab4c15b5e9f1f3942ab7fb7f1d41dad
+stderr:
+returncode=0
+
+2026-10-30T01:48:02.549571+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git rev-list --objects --no-object-names e4822698613829fb1f2829ebe3e70fc5b75eb18c '^e38a2311c0fd3eecc7f95be00c29be970a3b7a34'
+stdout:
+e4822698613829fb1f2829ebe3e70fc5b75eb18c
+bf59ac45860884d770dfd437d8a447068c5ef9a9
+37b8158fc333f1eac49b7936c8d291546d99e5be
+9374b1dcbf839e75e454147f6d370fb635448509
+781208c80ad6d301ed52b254c3c9154626fdf3a1
+31afddd7351771e8fc0e07677f516ccc6c2ce6b3
+951c4adf442a9689c08c3c32623e6c0a2540a043
+2369ceae0fb163c44a4f7e4fe2d95d9066fa490a
+9e380ce2be9950d171cfcb15dde7e842d937406f
+209d311e6b37e0370c331bf4acf3a353828498a8
+2f4f76c583b6b778a86f6d1e22b37ff108140ee6
+2f53372e2005766590cbbf7d52e51401593eaf63
+a969b9bdcf82a0acdcab1bc4ab007fea67ea8efd
+f312751989ac653ec3234acb0349fc47ac2e093c
+75d841a44862a010ec47c3fef16de8ea22c1bd02
+a84d8eb5b34bf41ed5a2c563e29f084532547dbd
+023176f4f3d55f1d6bd8ace7aac67083bc3e7a99
+5340018bd2e35207c1e43ae23653d38d9e117d68
+526c547c02d894f73f54a57036394116d7c13c7c
+198b0ae22ce4ae5961f5cd2aa58e6cc5560cffd9
+a2287025f506e9d0f620209c5bcbe2e4f4225026
+c146632347bbfa7e273bb9af5997156ca06946f7
+8f6b3fdcf0751528aee0f2ecb3c8b06e10335d19
+439acecf6cbd1db43f3a5364f4263562124d9643
+9a4ae580763a550be5849c27ab9a3f08225fdc0b
+62b439cfa60451eb7a77dc109c095d76ca49ee1a
+2181388afbd606b3a7c80e74acbdfee84ecea081
+d9bfb0efd1d2f3a9e44494f6ccb92adaab6a90f7
+149f6f73c719ad3d7cedf64f8550cc996c1e5234
+b35916d33947e93b93795450be07221fc2a3e0fb
+8b8fdba7e45337452280f30ca4d3f44e4f170a06
+11308e7de0554744374cf4ef8f28894672e77752
+bd8855aba6258f2300f9fcdd0e6fc80deb5bb0b7
+7ea23875a6b4263ee6ee256290ddb8b1870a1cc5
+3a6ad6e46bbc000faab207232ab929850477c869
+2afd2177043a2e7d3874a2b2d8226408f5383b5c
+4cf8b2e9d2f3ee792b5239fdaf28c029a9a888be
+77c42b2e9cd40ef0b280afa3154cd03cbd4b4278
+7f65c6e43f66101c0c996e805e5280afe0d2ef45
+e3917ea35a7270436ff9d9da2c32c680b16c6814
+e111daedbedd1c371b059472a8c6a8bb9e117ed2
+52ea3824a426b8c591ed0948cb95834d0bbd3bfe
+4a73e61500825e9a635aac40050152bea5c83195
+6b7f17586dd6ce2bfd14e0f1e2d699ab929c5d50
+84cd47e56da2de11555fed03fcfffc9660cf71c6
+2538e45748e47b8b7e32e067f52bc62e8252e36c
+bc3cf5c84871fedf96c0cf57168ab51c36a2340d
+840a9f581b47b1ecba9e82eeff5657fbad574b8c
+ab37c98732ed90bce354e53edfe9f314a1f56b3a
+98a1b72cb9765d5efada31be06d53c9d05df5d4b
+76bb6172ef104d5ea91a1f6ad923694b8bc3015e
+cd4bdabaa6cb66c791520edf3191ab01884a8d6d
+266321d7090e98bdd1875058070664da98dcdc19
+ae2c9367c426e2d421bd272b35936b0f0008ce1f
+5fd337cd35259fcf614c4b393a5106c70b31435f
+f24f4132a1a4356929b5689386f41b468c689007
+da25ecba9d01ffd30da7de819604d6b1790234a3
+1f39bf5c7c0888deffb0c345888d00fc6b9bcfaf
+29fe750d50237ae3acd424271212b87313a759b2
+ce57db938f136c74928f7db526ca890cb2e352c9
+10cf1e6b403e86497f1c6532a8e8cd8b1c58d7e8
+ae6625ed8b3c5c9cb395eab3562e0487795fbab0
+7dd81c8ce9f1fe01291a664ed29422ed71a8898d
+2c514c23a6d72553e9a7035de0116416c0d9cb67
+c06746f9fd6df9234f9efb51cd85f75630d83f6b
+0e0a12d3f4c1159df72a84f2996735128ecf3bf3
+66c26db2c0153bc7bc34a1854825bb23ec1d48d1
+94fd02acc2518e443de9cb964b71d7c6b8b2aa8b
+61e3349eede287abe5e98007652e8a3252f04a1a
+6239194f79d2b05929a89c118a2c6fe1d2347c86
+115c9639631292583986210ed78a4290ecbdf637
+bd903cb7ea978cf8f2d8ed38fa352a16a89d61ab
+823eba07863cd4bcf055d3b21e397ea0d92b0d35
+217b9ece699358a4e06f98796b68e9686ced1d12
+3a2028eddcb01f27e45352a756bf2fd9b4cbb855
+4a1aae50b16d8ae5fcc434ad2ed24192d45abf29
+415758eb3e1550ca9494761348133b45bdb5a665
+2a79e48790f1fceaf212d011506e0efd0124e5f9
+1e15ba43cee5621ebab3b083cf90be442cd5f58a
+d07e7e5174868493ba7aaad2c496443d26f658cb
+f284ffd75a2e29640a533b8cce00ad348a7d5cd2
+f966cd55a356ecc77cfe3cfb95804aaf16450d56
+6a43371408214bcb6ad23e642502754d5ee4ac9f
+9723e7b1aa22b3e1009148d080cccffa0236de24
+61a7233ce10f53463dae4b91aa49016ef379593f
+abb58139a151d55a4bb89694605a49dcbb88a430
+7edbd466fe93614e3dc8c5ed9e4bdbfbdbe3971c
+f2c882db36c62feefe477dddb733dd4fd624481b
+a94079e448d2ca10d195243dd1c2b167951089b7
+0cba98141b0257749a42148a884796fbbbccd90c
+stderr:
+returncode=0
+
+2026-10-30T01:48:58.775286+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git remote get-url origin
+stdout:
+https://github.com/TrillionniumFoundation/hepta-private-ci.git
+stderr:
+returncode=0
+
+2026-10-30T01:48:58.783675+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git rev-parse FETCH_HEAD
+stdout:
+e38a2311c0fd3eecc7f95be00c29be970a3b7a34
+stderr:
+returncode=0
+
+2026-10-30T01:48:58.794079+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git rev-parse --is-bare-repository
+stdout:
+true
+stderr:
+returncode=0
+
+2026-10-30T01:48:58.799868+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git update-ref refs/heads/verified-public-base e38a2311c0fd3eecc7f95be00c29be970a3b7a34
+stdout:
+stderr:
+returncode=0
+
+2026-10-30T01:48:58.807556+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit e38a2311c0fd3eecc7f95be00c29be970a3b7a34
+stdout_bytes=552 stdout_sha256=bab303873bc943cb57c6f63ecdf9a4c4f1b77975dde072b0e05963954ba60f3d
+stderr:
+returncode=0
+
+2026-10-30T01:48:58.813751+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git bundle verify /workspace/scratch/178ced6a501f/fullstudy_git/operational/parameter_field_recovery04/publication/LOCAL_EXECUTION04_HISTORY.bundle
+stdout:
+The bundle contains this ref:
+e4822698613829fb1f2829ebe3e70fc5b75eb18c refs/heads/research/parameter-field-fullstudy-recovery-20261030
+The bundle requires this ref:
+e38a2311c0fd3eecc7f95be00c29be970a3b7a34 
+The bundle uses this hash algorithm: sha1
+stderr:
+/workspace/scratch/178ced6a501f/fullstudy_git/operational/parameter_field_recovery04/publication/LOCAL_EXECUTION04_HISTORY.bundle is okay
+returncode=0
+
+2026-10-30T01:48:58.859526+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git bundle unbundle /workspace/scratch/178ced6a501f/fullstudy_git/operational/parameter_field_recovery04/publication/LOCAL_EXECUTION04_HISTORY.bundle
+stdout:
+e4822698613829fb1f2829ebe3e70fc5b75eb18c refs/heads/research/parameter-field-fullstudy-recovery-20261030
+stderr:
+returncode=0
+
+2026-10-30T01:48:58.894529+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git verify-pack -v /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git/objects/pack/pack-247d1c9187f80aa85fa3ece13bc81afe732fb136.idx
+stdout:
+e4822698613829fb1f2829ebe3e70fc5b75eb18c commit 265 191 12
+bf59ac45860884d770dfd437d8a447068c5ef9a9 commit 263 185 203
+37b8158fc333f1eac49b7936c8d291546d99e5be commit 273 193 388
+9374b1dcbf839e75e454147f6d370fb635448509 commit 269 190 581
+781208c80ad6d301ed52b254c3c9154626fdf3a1 commit 268 190 771
+31afddd7351771e8fc0e07677f516ccc6c2ce6b3 commit 268 191 961
+951c4adf442a9689c08c3c32623e6c0a2540a043 commit 275 188 1152
+2369ceae0fb163c44a4f7e4fe2d95d9066fa490a commit 254 180 1340
+9e380ce2be9950d171cfcb15dde7e842d937406f commit 258 180 1520
+209d311e6b37e0370c331bf4acf3a353828498a8 commit 261 180 1700
+2f4f76c583b6b778a86f6d1e22b37ff108140ee6 commit 273 191 1880
+2f53372e2005766590cbbf7d52e51401593eaf63 commit 271 189 2071
+a969b9bdcf82a0acdcab1bc4ab007fea67ea8efd tree   88 119 2260 1 2ce7fea61a636ff27520617569368ecac86803d3
+f312751989ac653ec3234acb0349fc47ac2e093c tree   53 63 2379
+75d841a44862a010ec47c3fef16de8ea22c1bd02 tree   896 698 2442
+a84d8eb5b34bf41ed5a2c563e29f084532547dbd blob   2549 1249 3140
+023176f4f3d55f1d6bd8ace7aac67083bc3e7a99 blob   2898 1418 4389
+5340018bd2e35207c1e43ae23653d38d9e117d68 blob   11104 4573 5807
+526c547c02d894f73f54a57036394116d7c13c7c blob   15944 6374 10380
+198b0ae22ce4ae5961f5cd2aa58e6cc5560cffd9 blob   10663 3629 16754
+a2287025f506e9d0f620209c5bcbe2e4f4225026 blob   14865 4620 20383
+c146632347bbfa7e273bb9af5997156ca06946f7 tree   232 195 25003
+8f6b3fdcf0751528aee0f2ecb3c8b06e10335d19 blob   1425 762 25198
+439acecf6cbd1db43f3a5364f4263562124d9643 blob   1295 786 25960
+9a4ae580763a550be5849c27ab9a3f08225fdc0b blob   2883 1384 26746
+62b439cfa60451eb7a77dc109c095d76ca49ee1a blob   1098 639 28130
+2181388afbd606b3a7c80e74acbdfee84ecea081 blob   4382 1801 28769
+d9bfb0efd1d2f3a9e44494f6ccb92adaab6a90f7 blob   22202 6284 30570
+149f6f73c719ad3d7cedf64f8550cc996c1e5234 blob   4439 1779 36854
+b35916d33947e93b93795450be07221fc2a3e0fb blob   17564 5818 38633
+8b8fdba7e45337452280f30ca4d3f44e4f170a06 tree   39 48 44451
+11308e7de0554744374cf4ef8f28894672e77752 tree   497 372 44499
+77c42b2e9cd40ef0b280afa3154cd03cbd4b4278 blob   21510 7582 44871
+bd8855aba6258f2300f9fcdd0e6fc80deb5bb0b7 blob   197 202 52453 1 77c42b2e9cd40ef0b280afa3154cd03cbd4b4278
+7ea23875a6b4263ee6ee256290ddb8b1870a1cc5 blob   20576 7121 52655
+3a6ad6e46bbc000faab207232ab929850477c869 blob   96 108 59776 2 bd8855aba6258f2300f9fcdd0e6fc80deb5bb0b7
+2afd2177043a2e7d3874a2b2d8226408f5383b5c blob   546 374 59884
+4cf8b2e9d2f3ee792b5239fdaf28c029a9a888be blob   47 60 60258 2 bd8855aba6258f2300f9fcdd0e6fc80deb5bb0b7
+e3917ea35a7270436ff9d9da2c32c680b16c6814 blob   16734 3432 60318
+7f65c6e43f66101c0c996e805e5280afe0d2ef45 blob   2160 1260 63750 1 e3917ea35a7270436ff9d9da2c32c680b16c6814
+e111daedbedd1c371b059472a8c6a8bb9e117ed2 blob   4994 776 65010
+52ea3824a426b8c591ed0948cb95834d0bbd3bfe blob   5735 1761 65786
+4a73e61500825e9a635aac40050152bea5c83195 blob   20178 5880 67547
+6b7f17586dd6ce2bfd14e0f1e2d699ab929c5d50 tree   56 67 73427
+84cd47e56da2de11555fed03fcfffc9660cf71c6 blob   16497 6355 73494
+2538e45748e47b8b7e32e067f52bc62e8252e36c blob   2739 1177 79849
+bc3cf5c84871fedf96c0cf57168ab51c36a2340d blob   41463 11094 81026
+840a9f581b47b1ecba9e82eeff5657fbad574b8c blob   13856 4096 92120
+ab37c98732ed90bce354e53edfe9f314a1f56b3a blob   4981 1618 96216
+98a1b72cb9765d5efada31be06d53c9d05df5d4b blob   8815 2806 97834
+76bb6172ef104d5ea91a1f6ad923694b8bc3015e blob   6051 2264 100640
+cd4bdabaa6cb66c791520edf3191ab01884a8d6d tree   61 70 102904
+266321d7090e98bdd1875058070664da98dcdc19 tree   226 212 102974
+ae2c9367c426e2d421bd272b35936b0f0008ce1f blob   1498 787 103186
+5fd337cd35259fcf614c4b393a5106c70b31435f blob   9337 3785 103973
+f24f4132a1a4356929b5689386f41b468c689007 blob   9849 4257 107758
+da25ecba9d01ffd30da7de819604d6b1790234a3 blob   45470 13369 112015
+1f39bf5c7c0888deffb0c345888d00fc6b9bcfaf blob   14012 4436 125384
+29fe750d50237ae3acd424271212b87313a759b2 tree   33 49 129820 2 a969b9bdcf82a0acdcab1bc4ab007fea67ea8efd
+ce57db938f136c74928f7db526ca890cb2e352c9 tree   53 62 129869
+10cf1e6b403e86497f1c6532a8e8cd8b1c58d7e8 tree   12 24 129931 1 75d841a44862a010ec47c3fef16de8ea22c1bd02
+ae6625ed8b3c5c9cb395eab3562e0487795fbab0 tree   33 47 129955 2 a969b9bdcf82a0acdcab1bc4ab007fea67ea8efd
+7dd81c8ce9f1fe01291a664ed29422ed71a8898d tree   53 62 130002
+2c514c23a6d72553e9a7035de0116416c0d9cb67 tree   16 29 130064 1 75d841a44862a010ec47c3fef16de8ea22c1bd02
+c06746f9fd6df9234f9efb51cd85f75630d83f6b tree   33 49 130093 2 a969b9bdcf82a0acdcab1bc4ab007fea67ea8efd
+0e0a12d3f4c1159df72a84f2996735128ecf3bf3 tree   53 62 130142
+66c26db2c0153bc7bc34a1854825bb23ec1d48d1 tree   20 33 130204 1 75d841a44862a010ec47c3fef16de8ea22c1bd02
+94fd02acc2518e443de9cb964b71d7c6b8b2aa8b tree   33 47 130237 2 a969b9bdcf82a0acdcab1bc4ab007fea67ea8efd
+61e3349eede287abe5e98007652e8a3252f04a1a tree   53 62 130284
+6239194f79d2b05929a89c118a2c6fe1d2347c86 tree   46 62 130346 1 75d841a44862a010ec47c3fef16de8ea22c1bd02
+115c9639631292583986210ed78a4290ecbdf637 tree   6 18 130408 1 c146632347bbfa7e273bb9af5997156ca06946f7
+bd903cb7ea978cf8f2d8ed38fa352a16a89d61ab tree   33 47 130426 2 a969b9bdcf82a0acdcab1bc4ab007fea67ea8efd
+823eba07863cd4bcf055d3b21e397ea0d92b0d35 tree   53 62 130473
+217b9ece699358a4e06f98796b68e9686ced1d12 tree   10 21 130535 2 6239194f79d2b05929a89c118a2c6fe1d2347c86
+3a2028eddcb01f27e45352a756bf2fd9b4cbb855 tree   33 49 130556 2 a969b9bdcf82a0acdcab1bc4ab007fea67ea8efd
+4a1aae50b16d8ae5fcc434ad2ed24192d45abf29 tree   53 62 130605
+415758eb3e1550ca9494761348133b45bdb5a665 tree   14 26 130667 2 6239194f79d2b05929a89c118a2c6fe1d2347c86
+2a79e48790f1fceaf212d011506e0efd0124e5f9 tree   33 49 130693 2 a969b9bdcf82a0acdcab1bc4ab007fea67ea8efd
+1e15ba43cee5621ebab3b083cf90be442cd5f58a tree   53 62 130742
+d07e7e5174868493ba7aaad2c496443d26f658cb tree   20 33 130804 2 6239194f79d2b05929a89c118a2c6fe1d2347c86
+f284ffd75a2e29640a533b8cce00ad348a7d5cd2 tree   32 45 130837 3 2a79e48790f1fceaf212d011506e0efd0124e5f9
+f966cd55a356ecc77cfe3cfb95804aaf16450d56 tree   61 70 130882
+6a43371408214bcb6ad23e642502754d5ee4ac9f tree   50 61 130952
+9723e7b1aa22b3e1009148d080cccffa0236de24 tree   11 22 131013 3 2a79e48790f1fceaf212d011506e0efd0124e5f9
+61a7233ce10f53463dae4b91aa49016ef379593f tree   37 52 131035 3 2a79e48790f1fceaf212d011506e0efd0124e5f9
+abb58139a151d55a4bb89694605a49dcbb88a430 tree   53 63 131087
+7edbd466fe93614e3dc8c5ed9e4bdbfbdbe3971c tree   20 33 131150 2 6239194f79d2b05929a89c118a2c6fe1d2347c86
+f2c882db36c62feefe477dddb733dd4fd624481b tree   37 52 131183 3 2a79e48790f1fceaf212d011506e0efd0124e5f9
+a94079e448d2ca10d195243dd1c2b167951089b7 tree   53 62 131235
+0cba98141b0257749a42148a884796fbbbccd90c tree   9 20 131297 3 7edbd466fe93614e3dc8c5ed9e4bdbfbdbe3971c
+2ce7fea61a636ff27520617569368ecac86803d3 tree   2050 1659 131317
+non delta: 65 objects
+chain length = 1: 8 objects
+chain length = 2: 13 objects
+chain length = 3: 5 objects
+/workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git/objects/pack/pack-247d1c9187f80aa85fa3ece13bc81afe732fb136.pack: ok
+stderr:
+returncode=0
+
+2026-10-30T01:48:58.900328+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git update-ref refs/heads/verified-bundle-head e4822698613829fb1f2829ebe3e70fc5b75eb18c
+stdout:
+stderr:
+returncode=0
+
+2026-10-30T01:48:58.904336+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git rev-list --reverse e4822698613829fb1f2829ebe3e70fc5b75eb18c '^e38a2311c0fd3eecc7f95be00c29be970a3b7a34'
+stdout:
+2f53372e2005766590cbbf7d52e51401593eaf63
+2f4f76c583b6b778a86f6d1e22b37ff108140ee6
+209d311e6b37e0370c331bf4acf3a353828498a8
+9e380ce2be9950d171cfcb15dde7e842d937406f
+2369ceae0fb163c44a4f7e4fe2d95d9066fa490a
+951c4adf442a9689c08c3c32623e6c0a2540a043
+31afddd7351771e8fc0e07677f516ccc6c2ce6b3
+781208c80ad6d301ed52b254c3c9154626fdf3a1
+9374b1dcbf839e75e454147f6d370fb635448509
+37b8158fc333f1eac49b7936c8d291546d99e5be
+bf59ac45860884d770dfd437d8a447068c5ef9a9
+e4822698613829fb1f2829ebe3e70fc5b75eb18c
+stderr:
+returncode=0
+
+2026-10-30T01:48:58.907950+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit 2f53372e2005766590cbbf7d52e51401593eaf63
+stdout_bytes=271 stdout_sha256=8c6b476e05db6ad653c65ea3326e322298422ccb446e21f8285203d686c61027
+stderr:
+returncode=0
+
+2026-10-30T01:48:58.913668+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit 2f4f76c583b6b778a86f6d1e22b37ff108140ee6
+stdout_bytes=273 stdout_sha256=7c32bea74d4f56eb4c7eddc6d04aa3784e21812963862e17e98748b81e5c5b70
+stderr:
+returncode=0
+
+2026-10-30T01:48:58.919832+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit 209d311e6b37e0370c331bf4acf3a353828498a8
+stdout_bytes=261 stdout_sha256=e97978172679bdff1586d3dc3647a6a51e304fc7af47308c9e76864659d76442
+stderr:
+returncode=0
+
+2026-10-30T01:48:58.923910+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit 9e380ce2be9950d171cfcb15dde7e842d937406f
+stdout_bytes=258 stdout_sha256=8ea5b25d5b39da4120e7d5d3058334a5c615e39a53253f9acde6fae1ab690014
+stderr:
+returncode=0
+
+2026-10-30T01:48:58.927724+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit 2369ceae0fb163c44a4f7e4fe2d95d9066fa490a
+stdout_bytes=254 stdout_sha256=4282d854761b3a0ac32ab234c48addf2869e5a3f1504c176e44e33d1f6f0d9e3
+stderr:
+returncode=0
+
+2026-10-30T01:48:58.946604+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit 951c4adf442a9689c08c3c32623e6c0a2540a043
+stdout_bytes=275 stdout_sha256=9fb4352574d4e4729a3de2442dd7f6c8c685263f46abcbb34522ebaebda236f0
+stderr:
+returncode=0
+
+2026-10-30T01:48:58.952285+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit 31afddd7351771e8fc0e07677f516ccc6c2ce6b3
+stdout_bytes=268 stdout_sha256=d1c97fc1fa98d02f3a12417275b39a6a86305fc51f37d5835c7cf23791afe7b9
+stderr:
+returncode=0
+
+2026-10-30T01:48:58.957753+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit 781208c80ad6d301ed52b254c3c9154626fdf3a1
+stdout_bytes=268 stdout_sha256=246a55db7c57885d6e60d6ce10cd397f8629ec1275cd0c15403bbbcbe3d340d9
+stderr:
+returncode=0
+
+2026-10-30T01:48:58.963631+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit 9374b1dcbf839e75e454147f6d370fb635448509
+stdout_bytes=269 stdout_sha256=4df9b9e3d66f699a3e3ff42b62d49ce326175548707153179b718660eea7d965
+stderr:
+returncode=0
+
+2026-10-30T01:48:58.967746+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit 37b8158fc333f1eac49b7936c8d291546d99e5be
+stdout_bytes=273 stdout_sha256=1900117de8abc8e6a15f4dc5ace85172bfd4c210f26c47b8a852218c89c87d73
+stderr:
+returncode=0
+
+2026-10-30T01:48:58.975808+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit bf59ac45860884d770dfd437d8a447068c5ef9a9
+stdout_bytes=263 stdout_sha256=8692d7305375096704018ee33feb6eb7255dc377907b58029dea2e559e000880
+stderr:
+returncode=0
+
+2026-10-30T01:48:58.979602+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git cat-file commit e4822698613829fb1f2829ebe3e70fc5b75eb18c
+stdout_bytes=265 stdout_sha256=002755303a645de609f37e13f7affd10eab4c15b5e9f1f3942ab7fb7f1d41dad
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.000087+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git rev-list --objects --no-object-names e4822698613829fb1f2829ebe3e70fc5b75eb18c '^e38a2311c0fd3eecc7f95be00c29be970a3b7a34'
+stdout:
+e4822698613829fb1f2829ebe3e70fc5b75eb18c
+bf59ac45860884d770dfd437d8a447068c5ef9a9
+37b8158fc333f1eac49b7936c8d291546d99e5be
+9374b1dcbf839e75e454147f6d370fb635448509
+781208c80ad6d301ed52b254c3c9154626fdf3a1
+31afddd7351771e8fc0e07677f516ccc6c2ce6b3
+951c4adf442a9689c08c3c32623e6c0a2540a043
+2369ceae0fb163c44a4f7e4fe2d95d9066fa490a
+9e380ce2be9950d171cfcb15dde7e842d937406f
+209d311e6b37e0370c331bf4acf3a353828498a8
+2f4f76c583b6b778a86f6d1e22b37ff108140ee6
+2f53372e2005766590cbbf7d52e51401593eaf63
+a969b9bdcf82a0acdcab1bc4ab007fea67ea8efd
+f312751989ac653ec3234acb0349fc47ac2e093c
+75d841a44862a010ec47c3fef16de8ea22c1bd02
+a84d8eb5b34bf41ed5a2c563e29f084532547dbd
+023176f4f3d55f1d6bd8ace7aac67083bc3e7a99
+5340018bd2e35207c1e43ae23653d38d9e117d68
+526c547c02d894f73f54a57036394116d7c13c7c
+198b0ae22ce4ae5961f5cd2aa58e6cc5560cffd9
+a2287025f506e9d0f620209c5bcbe2e4f4225026
+c146632347bbfa7e273bb9af5997156ca06946f7
+8f6b3fdcf0751528aee0f2ecb3c8b06e10335d19
+439acecf6cbd1db43f3a5364f4263562124d9643
+9a4ae580763a550be5849c27ab9a3f08225fdc0b
+62b439cfa60451eb7a77dc109c095d76ca49ee1a
+2181388afbd606b3a7c80e74acbdfee84ecea081
+d9bfb0efd1d2f3a9e44494f6ccb92adaab6a90f7
+149f6f73c719ad3d7cedf64f8550cc996c1e5234
+b35916d33947e93b93795450be07221fc2a3e0fb
+8b8fdba7e45337452280f30ca4d3f44e4f170a06
+11308e7de0554744374cf4ef8f28894672e77752
+bd8855aba6258f2300f9fcdd0e6fc80deb5bb0b7
+7ea23875a6b4263ee6ee256290ddb8b1870a1cc5
+3a6ad6e46bbc000faab207232ab929850477c869
+2afd2177043a2e7d3874a2b2d8226408f5383b5c
+4cf8b2e9d2f3ee792b5239fdaf28c029a9a888be
+77c42b2e9cd40ef0b280afa3154cd03cbd4b4278
+7f65c6e43f66101c0c996e805e5280afe0d2ef45
+e3917ea35a7270436ff9d9da2c32c680b16c6814
+e111daedbedd1c371b059472a8c6a8bb9e117ed2
+52ea3824a426b8c591ed0948cb95834d0bbd3bfe
+4a73e61500825e9a635aac40050152bea5c83195
+6b7f17586dd6ce2bfd14e0f1e2d699ab929c5d50
+84cd47e56da2de11555fed03fcfffc9660cf71c6
+2538e45748e47b8b7e32e067f52bc62e8252e36c
+bc3cf5c84871fedf96c0cf57168ab51c36a2340d
+840a9f581b47b1ecba9e82eeff5657fbad574b8c
+ab37c98732ed90bce354e53edfe9f314a1f56b3a
+98a1b72cb9765d5efada31be06d53c9d05df5d4b
+76bb6172ef104d5ea91a1f6ad923694b8bc3015e
+cd4bdabaa6cb66c791520edf3191ab01884a8d6d
+266321d7090e98bdd1875058070664da98dcdc19
+ae2c9367c426e2d421bd272b35936b0f0008ce1f
+5fd337cd35259fcf614c4b393a5106c70b31435f
+f24f4132a1a4356929b5689386f41b468c689007
+da25ecba9d01ffd30da7de819604d6b1790234a3
+1f39bf5c7c0888deffb0c345888d00fc6b9bcfaf
+29fe750d50237ae3acd424271212b87313a759b2
+ce57db938f136c74928f7db526ca890cb2e352c9
+10cf1e6b403e86497f1c6532a8e8cd8b1c58d7e8
+ae6625ed8b3c5c9cb395eab3562e0487795fbab0
+7dd81c8ce9f1fe01291a664ed29422ed71a8898d
+2c514c23a6d72553e9a7035de0116416c0d9cb67
+c06746f9fd6df9234f9efb51cd85f75630d83f6b
+0e0a12d3f4c1159df72a84f2996735128ecf3bf3
+66c26db2c0153bc7bc34a1854825bb23ec1d48d1
+94fd02acc2518e443de9cb964b71d7c6b8b2aa8b
+61e3349eede287abe5e98007652e8a3252f04a1a
+6239194f79d2b05929a89c118a2c6fe1d2347c86
+115c9639631292583986210ed78a4290ecbdf637
+bd903cb7ea978cf8f2d8ed38fa352a16a89d61ab
+823eba07863cd4bcf055d3b21e397ea0d92b0d35
+217b9ece699358a4e06f98796b68e9686ced1d12
+3a2028eddcb01f27e45352a756bf2fd9b4cbb855
+4a1aae50b16d8ae5fcc434ad2ed24192d45abf29
+415758eb3e1550ca9494761348133b45bdb5a665
+2a79e48790f1fceaf212d011506e0efd0124e5f9
+1e15ba43cee5621ebab3b083cf90be442cd5f58a
+d07e7e5174868493ba7aaad2c496443d26f658cb
+f284ffd75a2e29640a533b8cce00ad348a7d5cd2
+f966cd55a356ecc77cfe3cfb95804aaf16450d56
+6a43371408214bcb6ad23e642502754d5ee4ac9f
+9723e7b1aa22b3e1009148d080cccffa0236de24
+61a7233ce10f53463dae4b91aa49016ef379593f
+abb58139a151d55a4bb89694605a49dcbb88a430
+7edbd466fe93614e3dc8c5ed9e4bdbfbdbe3971c
+f2c882db36c62feefe477dddb733dd4fd624481b
+a94079e448d2ca10d195243dd1c2b167951089b7
+0cba98141b0257749a42148a884796fbbbccd90c
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.004244+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git diff-tree --no-commit-id --name-status -r e38a2311c0fd3eecc7f95be00c29be970a3b7a34 e4822698613829fb1f2829ebe3e70fc5b75eb18c
+stdout:
+A	operational/parameter_field_recovery04/README_cwd.md
+A	operational/parameter_field_recovery04/README_initialization.md
+A	operational/parameter_field_recovery04/README_registration.md
+A	operational/parameter_field_recovery04/README_supervisor.md
+A	operational/parameter_field_recovery04/cwd_runner.py
+A	operational/parameter_field_recovery04/durable_archive.py
+A	operational/parameter_field_recovery04/evidence/EPISODE02_COST_FACTS.json
+A	operational/parameter_field_recovery04/evidence/EPISODE03_COST_FACTS.json
+A	operational/parameter_field_recovery04/evidence/EXECUTION03_CONTINUITY_OBSERVATION.json
+A	operational/parameter_field_recovery04/evidence/WORKSPACE_CLEANUP_20261030.json
+A	operational/parameter_field_recovery04/external_step.py
+A	operational/parameter_field_recovery04/historical_costs.py
+A	operational/parameter_field_recovery04/import_probe.py
+A	operational/parameter_field_recovery04/initialize.py
+A	operational/parameter_field_recovery04/records/preexecution/A_SOURCE_FREEZE.json
+A	operational/parameter_field_recovery04/records/preexecution/CWD_POLICY.json
+A	operational/parameter_field_recovery04/records/preexecution/C_SOURCE_FREEZE.json
+A	operational/parameter_field_recovery04/records/preexecution/INITIALIZATION.json
+A	operational/parameter_field_recovery04/records/preexecution/OPS_CORE_SOURCE_FREEZE.json
+A	operational/parameter_field_recovery04/records/preexecution/OPS_ENVELOPE_SOURCE_FREEZE.json
+A	operational/parameter_field_recovery04/records/preexecution/PIPELINE_CONFIG.json
+A	operational/parameter_field_recovery04/records/preexecution/PREEXECUTION_STATE.json
+A	operational/parameter_field_recovery04/records/preexecution/QUEUE_INITIAL.json
+A	operational/parameter_field_recovery04/records/preexecution/REGISTRATION_CONFIG.json
+A	operational/parameter_field_recovery04/registration.py
+A	operational/parameter_field_recovery04/registrations/OPS_EXECUTION04_DURABLE.json
+A	operational/parameter_field_recovery04/restore_assets.py
+A	operational/parameter_field_recovery04/supervisor.py
+A	operational/parameter_field_recovery04/synthetic_test_registration.py
+A	operational/parameter_field_recovery04/test_cwd_runner.py
+A	operational/parameter_field_recovery04/test_supervisor_semantics.py
+A	operational/parameter_field_recovery04/wait4_launcher.py
+A	supplements/parameter_field_fullstudy_20261030/PREPARATION.json
+A	supplements/parameter_field_fullstudy_20261030/PRE_ENDPOINT_PLAN.json
+A	supplements/parameter_field_fullstudy_20261030/README.md
+A	supplements/parameter_field_fullstudy_20261030/postseal_supplement.py
+A	supplements/parameter_field_fullstudy_20261030/test_semantics.py
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.047365+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git ls-tree -rz e4822698613829fb1f2829ebe3e70fc5b75eb18c
+stdout_bytes=1284865 stdout_sha256=5e7b8d417dfb90f589cf7f00b4addf74a35ef54d485dae6bea446c6ab872f963
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.077642+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/README_cwd.md
+stdout_bytes=2549 stdout_sha256=bacd6e25d9959dbe92eafaac9f32ff54cb448ad75d6c5851f2ed18eeeb29b4a2
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.085630+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/cwd_runner.py
+stdout_bytes=10663 stdout_sha256=c4eca6972780bb1f6d9a3ef31e28c41aadcd06959fca502e3bbb4d9e23599a5b
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.091811+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/evidence/EPISODE02_COST_FACTS.json
+stdout_bytes=1425 stdout_sha256=b62350c7d56ab998746479bb5810ba204eff4431ef4a456635b46780e90d99f8
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.095829+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/evidence/EPISODE03_COST_FACTS.json
+stdout_bytes=1295 stdout_sha256=eac8096b6dc7d82ef52a8ddb091ea4a4d465b50c83a406fd50bf720bb3b7c9a7
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.106501+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/evidence/EXECUTION03_CONTINUITY_OBSERVATION.json
+stdout_bytes=2883 stdout_sha256=be48accdfa5ddaba1fa27b5ded3bd703c6cb775062cd3f1d9090162da1ff4b2d
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.111963+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/restore_assets.py
+stdout_bytes=2739 stdout_sha256=bd6173188f310ab215267cdf0bba694007d1701d8414ec3ec0efee0a9f61753e
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.118696+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/test_cwd_runner.py
+stdout_bytes=4981 stdout_sha256=eddb7acf92808f1bfdd4a96a2b4ec5d6adb770dbd13ab95d197814cd301a83bb
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.125661+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/historical_costs.py
+stdout_bytes=22202 stdout_sha256=e8ec187543e5d249142a706699156fa97db767d6f1193ec9be466359a59ad440
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.146562+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/registration.py
+stdout_bytes=20178 stdout_sha256=19e3eedaacc7795a2b45ea8165f2aa5e8180e0d12f4fc925075384861ab32979
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.149872+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/README_registration.md
+stdout_bytes=11104 stdout_sha256=b9c9008f0f47f9bb27046322019928257622672908a234b2973bd5e96f538b23
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.156019+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/synthetic_test_registration.py
+stdout_bytes=13856 stdout_sha256=92257cdd3ff1f13c65804face8c84e8bbfa8d3c32731de6a37a25eaa1a0d734a
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.160187+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:supplements/parameter_field_fullstudy_20261030/postseal_supplement.py
+stdout_bytes=45470 stdout_sha256=1b705285b99fc7185c20155fa85f3a5d370b473196eaf59c8ae1d6bb2941a633
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.164264+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:supplements/parameter_field_fullstudy_20261030/PREPARATION.json
+stdout_bytes=1498 stdout_sha256=7be4f1923105c53e4b02f010e04b32bcc8684e6169de8b4b570a8a4611ff7332
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.169655+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:supplements/parameter_field_fullstudy_20261030/PRE_ENDPOINT_PLAN.json
+stdout_bytes=9337 stdout_sha256=cfd35051e481c5c1d070fec88f933e191b6368655325857079e3505fd195f8b1
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.175671+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:supplements/parameter_field_fullstudy_20261030/README.md
+stdout_bytes=9849 stdout_sha256=5f0e044c2df81ac5a5b6aa1b65722f1da15e37dfe62f10b6b7936fe92d2a9cf3
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.180267+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:supplements/parameter_field_fullstudy_20261030/test_semantics.py
+stdout_bytes=14012 stdout_sha256=267745e30f874740c8c739ea7b761ba3de580e75c4c20aee956a6fd8d25d0956
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.183561+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/README_initialization.md
+stdout_bytes=2898 stdout_sha256=b63000acf75827ea5aa817d5dd5726e02ac98e860fc9e49bf916765e6ccb52ed
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.188251+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/import_probe.py
+stdout_bytes=4439 stdout_sha256=0145f1838c1b479c20636e33b5bd79a27fd94524608949f1af1f632f5022c736
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.196241+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/initialize.py
+stdout_bytes=17564 stdout_sha256=3fa5766eba4b4f79143fc4fe409a79b408e48cd1a9ca8c74dbea72c4bfac1512
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.201647+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/supervisor.py
+stdout_bytes=41463 stdout_sha256=cc1526c88184e26ce9eb363f053e2e2babce924020d80589b0891f4385307682
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.207985+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/durable_archive.py
+stdout_bytes=14865 stdout_sha256=dfeee33870f3ca429284542cb8ca9ff8c9471a8fc8ff0339c3de251cabf260da
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.211701+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/wait4_launcher.py
+stdout_bytes=6051 stdout_sha256=ccada17007abf8ce2d7d39d8a2c9102d7848971baf818a357e4c58643c287b20
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.215968+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/README_supervisor.md
+stdout_bytes=15944 stdout_sha256=0743a75ba4b01271bbee8c45d023818088d1cb9b2ef2f60193c21d1d21deb154
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.219204+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/evidence/WORKSPACE_CLEANUP_20261030.json
+stdout_bytes=1098 stdout_sha256=00ff28dac33d221dbf349043c7351e34e69d0732590a8cee1ee7f1fba1b9458a
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.224046+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/test_supervisor_semantics.py
+stdout_bytes=8815 stdout_sha256=db598f4195d8e4df8b99e800dabe060adfe3e06dcbd91ac6d4d3c59ebe4f440a
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.229610+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/external_step.py
+stdout_bytes=4382 stdout_sha256=fb238cd0f28e331a2e9d4ada5950f436a2d31e579fa9fbd8c36cce70404c2b21
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.247214+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/registrations/OPS_EXECUTION04_DURABLE.json
+stdout_bytes=16497 stdout_sha256=30a8e41c8fa8692cfb6a79f1dfcf3a10c5f2cda1c7cdd4259e874d156c22ca7e
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.252016+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/records/preexecution/A_SOURCE_FREEZE.json
+stdout_bytes=21478 stdout_sha256=6cad1806689a4f5b6e7527139a5755b54cef16e921a093bb714cfc9c3bdec182
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.255804+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/records/preexecution/CWD_POLICY.json
+stdout_bytes=20576 stdout_sha256=1df758dfe17a32255bd0e43ccf689be80d34b570c93e39dfb637d7709545de8f
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.259808+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/records/preexecution/C_SOURCE_FREEZE.json
+stdout_bytes=21478 stdout_sha256=cbfa47cae2941e0750c90ea191f5bd76a044ca20ad2f4f3a0b1e5b9c6bc99277
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.264478+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/records/preexecution/INITIALIZATION.json
+stdout_bytes=546 stdout_sha256=902f982eff1de4a57fa9e1503c19821ddc4623778b931e6730729c879e676da0
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.269557+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/records/preexecution/OPS_CORE_SOURCE_FREEZE.json
+stdout_bytes=21000 stdout_sha256=b7921e6395b7ccab31ea281e96205f874c4c222153793c40f76482166eb1c9c6
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.275755+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/records/preexecution/OPS_ENVELOPE_SOURCE_FREEZE.json
+stdout_bytes=21510 stdout_sha256=4c8da8392d3dd3e35ade2de843bcadc105b9e94e4ae4018b07f021cd56477691
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.279959+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/records/preexecution/PIPELINE_CONFIG.json
+stdout_bytes=5259 stdout_sha256=c1a541cd8fca9e43c710cfd5ccf1cb76793a28712d66eed65a238f158de0e57e
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.284344+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/records/preexecution/PREEXECUTION_STATE.json
+stdout_bytes=16734 stdout_sha256=31700b79fe3c4f2dc9d50b76321ce0cffe1a77a70dd5e252a0bfc6719c06d836
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.290374+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/records/preexecution/QUEUE_INITIAL.json
+stdout_bytes=4994 stdout_sha256=703497d3289e103a6f16eeb9d7c90f831106c79051bf3233b5e919a204fb855a
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.296024+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show e4822698613829fb1f2829ebe3e70fc5b75eb18c:operational/parameter_field_recovery04/records/preexecution/REGISTRATION_CONFIG.json
+stdout_bytes=5735 stdout_sha256=d8d0c11239f30a375265200ad3949dcb8248eb6243e262a59d2363677649a6dd
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.324590+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git ls-tree -rz bf59ac45860884d770dfd437d8a447068c5ef9a9
+stdout_bytes=1283508 stdout_sha256=6dfe6559cc428afe9e03d087ade786e4270bc10a59cb410c466477a307ed0898
+stderr:
+returncode=0
+
+2026-10-30T01:48:59.893427+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/continuous_spiking_network/cell.py
+stdout_bytes=7589 stdout_sha256=486b9f86ad7cdbae2f3e8a151cb500a219b87cd67a438e9a4e10c038a43ac311
+stderr:
+returncode=0
+
+2026-10-30T01:49:00.406165+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/continuous_spiking_network/kernels.py
+stdout_bytes=4000 stdout_sha256=188334725b39b7e3bfdf5b17dd04cef2d3383ab6eb02c17eedad912dea21ae30
+stderr:
+returncode=0
+
+2026-10-30T01:49:00.797597+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_20261027/__init__.py
+stdout_bytes=80 stdout_sha256=bd7dd4dfde2e00c99b998bfd6a1cd822820fbd970fe5bd4d2245a8661aa9053b
+stderr:
+returncode=0
+
+2026-10-30T01:49:01.209952+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_20261027/adaptation.py
+stdout_bytes=13972 stdout_sha256=95c2acfe820febb905c11b5057f7817af4d244db1e52adab7744d2c1d931b2d8
+stderr:
+returncode=0
+
+2026-10-30T01:49:01.576354+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_20261027/adapters.py
+stdout_bytes=4335 stdout_sha256=2818464ba927b8e0ed5c92315a5bf26832672391c1fbbba709d6ed72cdc76b7b
+stderr:
+returncode=0
+
+2026-10-30T01:49:02.022047+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_20261027/protocol.py
+stdout_bytes=6275 stdout_sha256=36e131e2f4c6dd4221631813dfe360d185cf532218597218e2791700e8e93911
+stderr:
+returncode=0
+
+2026-10-30T01:49:02.368379+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_20261027/task.py
+stdout_bytes=17742 stdout_sha256=4999eb8220847239db194c8a87bc5353802abc74e685eb9079f872ea8ef7d953
+stderr:
+returncode=0
+
+2026-10-30T01:49:02.767362+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v3_20261027/PROTOCOL.json
+stdout_bytes=12633 stdout_sha256=a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7
+stderr:
+returncode=0
+
+2026-10-30T01:49:03.146217+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v3_20261027/SOURCE_ALLOCATION.json
+stdout_bytes=8713 stdout_sha256=068381327c437aa2edfc4c3db204bf836aa87e0d681bd15a4dbde7a119810f48
+stderr:
+returncode=0
+
+2026-10-30T01:49:04.159503+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v3_20261027/SOURCE_IDENTITIES.json.gz
+stdout_bytes=1185009 stdout_sha256=8ceec51e530a52b601dfd5ba84fe73da49ae3ed8a37beea06ea5bb78c033fe29
+stderr:
+returncode=0
+
+2026-10-30T01:49:04.588264+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v3_20261027/__init__.py
+stdout_bytes=76 stdout_sha256=476928d856b1abac9c21b0f5b491fcfa024e0a352d1e7e16bd947eb7568ae232
+stderr:
+returncode=0
+
+2026-10-30T01:49:05.023371+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v3_20261027/assets.py
+stdout_bytes=3106 stdout_sha256=ee8851e2b7f18200a58ee2ffe4e555d242886732a50bb6e169f49a46dc0b8e21
+stderr:
+returncode=0
+
+2026-10-30T01:49:05.518303+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/ARCHIVE_RUNTIME_ENVIRONMENT.json
+stdout_bytes=1444 stdout_sha256=9f033bc6d08c3edb97fb39ef68f88a2ff1a5bafe8bdf46a3931fb56f7efa6fd4
+stderr:
+returncode=0
+
+2026-10-30T01:49:05.869576+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v3_20261027/feedback_bank.py
+stdout_bytes=7267 stdout_sha256=775d1cb3cc1734b3fa9d10d3dd5bf40572c81d97b83d78f406dd50a1c809b309
+stderr:
+returncode=0
+
+2026-10-30T01:49:06.217988+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v3_20261027/feedback_media.py
+stdout_bytes=6054 stdout_sha256=03974950aee527913df0dbf80fdd1c0b2e7e7ede70df15f32feb2257dcf7d7d3
+stderr:
+returncode=0
+
+2026-10-30T01:49:06.597225+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v3_20261027/feedback_rollout.py
+stdout_bytes=11945 stdout_sha256=cbaaf8c821fc70bafada6fec3b530a22f592cf17915808c32a9e5ab9ee001807
+stderr:
+returncode=0
+
+2026-10-30T01:49:06.930381+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v3_20261027/feedback_task.py
+stdout_bytes=10634 stdout_sha256=3596bdd3386717fea8c46d5c7a4cf5dc6e088a4ef573a0e1c2bee900056a3f8d
+stderr:
+returncode=0
+
+2026-10-30T01:49:07.246478+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v3_20261027/learning.py
+stdout_bytes=15506 stdout_sha256=97c3baabe208fd8d5e8ac9beb5ae4a244b3c8d6aac565e727fd64eed8c1371b7
+stderr:
+returncode=0
+
+2026-10-30T01:49:07.571122+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v3_20261027/native_stream.py
+stdout_bytes=12254 stdout_sha256=81d4355a7482642317a1a45f26140ff5c7a8c47748b857f9cce300251d7171bf
+stderr:
+returncode=0
+
+2026-10-30T01:49:07.953045+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v3_20261027/runtime_controller.py
+stdout_bytes=22474 stdout_sha256=ff38cd6ac178fa6550c4df03788401471e013895abbfd2417876c4f4fd193f5e
+stderr:
+returncode=0
+
+2026-10-30T01:49:08.353533+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v3_20261027/runtime_run.py
+stdout_bytes=13002 stdout_sha256=33ccf5648d7905b1f2d2ac014fde81dbd458d8fb9a6fdaf94dd0374003170d29
+stderr:
+returncode=0
+
+2026-10-30T01:49:08.702141+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v3_20261027/source_roles.py
+stdout_bytes=10974 stdout_sha256=0bf34863b1c6f43423484d115acb590bc6ea515c12c30a105e6e45c41f9a97cb
+stderr:
+returncode=0
+
+2026-10-30T01:49:09.058168+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_bank.py
+stdout_bytes=13431 stdout_sha256=9e6bb320ccaf087120a5cded8e2110478b87a4073febbb8bb999f2853073d7f1
+stderr:
+returncode=0
+
+2026-10-30T01:49:09.381625+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_common.py
+stdout_bytes=6073 stdout_sha256=e686e59dd34a0d8f2a31b192c1f47c59fd86cbc22fe42d60d821c4474db56591
+stderr:
+returncode=0
+
+2026-10-30T01:49:09.758382+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_features.py
+stdout_bytes=9527 stdout_sha256=8e3dfee7a0a77e74c16b459f8e15a0cad1cfa999a4187e975178bb2d2f0cd2a9
+stderr:
+returncode=0
+
+2026-10-30T01:49:10.093407+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_policy.py
+stdout_bytes=9016 stdout_sha256=824095a842ec6d4ab11ea560a5e763ce3d6cc524a92d4801b547d0f67b2451e4
+stderr:
+returncode=0
+
+2026-10-30T01:49:10.414795+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_run.py
+stdout_bytes=8853 stdout_sha256=a44e2069b2333bf5ac0e082c12f75360e96847b1d2b58bf311fc8dacc3c2c18d
+stderr:
+returncode=0
+
+2026-10-30T01:49:10.750891+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_stages.py
+stdout_bytes=10583 stdout_sha256=ed3fcc45531fe2fdb7ea6033ee7067a8e5221e52a69ec3abf1a23e1f65d2f2ef
+stderr:
+returncode=0
+
+2026-10-30T01:49:11.557598+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/source_role_audit.py
+stdout_bytes=14543 stdout_sha256=6d326be3f376f421b04541f34e33bf7274f4dee91e675b2b1b0ab658bcae5e34
+stderr:
+returncode=0
+
+2026-10-30T01:49:11.890656+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v4_20261027/PROTOCOL.json
+stdout_bytes=15605 stdout_sha256=561c8110c51fe5705f3966cc806221927497897f9498745466ec4966ea2f2797
+stderr:
+returncode=0
+
+2026-10-30T01:49:12.210109+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v4_20261027/SOURCE_ALLOCATION.json
+stdout_bytes=4677 stdout_sha256=0b5cc7213f7c635195b85c580cb92a72b08d9d200b9c3211dfef89a2887b79fb
+stderr:
+returncode=0
+
+2026-10-30T01:49:12.650130+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v4_20261027/SOURCE_IDENTITIES.json.gz
+stdout_bytes=269403 stdout_sha256=4dc43625c90a7d2b8ff5c93f6ef4c4e4f9b688dd37d5f15c41aae84c3e3ca88f
+stderr:
+returncode=0
+
+2026-10-30T01:49:12.980805+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v4_20261027/__init__.py
+stdout_bytes=82 stdout_sha256=3057b67b8920ebcb6324ae9811a9f1d79f0fb4e47c69331dd755af5dbe82f2f8
+stderr:
+returncode=0
+
+2026-10-30T01:49:13.281530+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v4_20261027/qualification_analysis.py
+stdout_bytes=23015 stdout_sha256=af3dee4c0b2870810d0fe2fee937499319ff93f8aa0e0ebabcf8d3c900d79998
+stderr:
+returncode=0
+
+2026-10-30T01:49:13.599775+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v4_20261027/source_roles.py
+stdout_bytes=12633 stdout_sha256=e0ea926f257bd1ec81970b8b401357b9450f0e5b8994bfe56310f682fd18cc59
+stderr:
+returncode=0
+
+2026-10-30T01:49:13.909907+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v4_20261027/training_qualification.py
+stdout_bytes=29162 stdout_sha256=1442e2811292ad2c5a90912bb667e1fb3a515bd38b79b246c72b3056b8f53fa2
+stderr:
+returncode=0
+
+2026-10-30T01:49:14.261574+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v4_20261027/training_run.py
+stdout_bytes=12700 stdout_sha256=bf1be7887c7b3384356bfd398cc0c0d346eda09247394c93bfb8755043d8e0f1
+stderr:
+returncode=0
+
+2026-10-30T01:49:14.598559+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/training_panel_origin.py
+stdout_bytes=2082 stdout_sha256=70ea67fa66ae24c36920749a61e9da646990da7c5c8fb40803392d79d164ff98
+stderr:
+returncode=0
+
+2026-10-30T01:49:14.970092+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v5_20261027/PROTOCOL.json
+stdout_bytes=3970 stdout_sha256=0cd30fe8ea8bb872f118ea88f7ed7b3c237e26a4074524ec64aaa10787425fb1
+stderr:
+returncode=0
+
+2026-10-30T01:49:15.430372+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v5_20261027/__init__.py
+stdout_bytes=77 stdout_sha256=c1c2fd4d0d1159279e9f9f205f00b44ac90f1b00fb800b54b4ed582bec34085a
+stderr:
+returncode=0
+
+2026-10-30T01:49:15.782633+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v5_20261027/calibration.py
+stdout_bytes=12809 stdout_sha256=873c4d3eb8dcc33bae085b74e18ad97cc23ec912765ab8bd42083e1ccbb5913e
+stderr:
+returncode=0
+
+2026-10-30T01:49:16.058842+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v5_20261027/records.py
+stdout_bytes=2254 stdout_sha256=5ddbee95298156c6162f223a0d703d784622246a1867cf37e48aa42ff4c63e98
+stderr:
+returncode=0
+
+2026-10-30T01:49:16.369054+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v5_20261027/transactions.py
+stdout_bytes=4641 stdout_sha256=6546016cc42cb21eb3679ec11dea562e9816da427a3332ce9ab5067f3afe96e3
+stderr:
+returncode=0
+
+2026-10-30T01:49:16.671044+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v6_gru_adapter_preparation_20261028/adapter.py
+stdout_bytes=6325 stdout_sha256=ffdc3aef38040531e8f4933f05be7e672e83d6a8e753d493217f65a281276919
+stderr:
+returncode=0
+
+2026-10-30T01:49:16.981498+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v6_gru_adapter_preparation_20261028/contract.py
+stdout_bytes=11849 stdout_sha256=ca7b33dca165aa22b953bb1528fefb80f8d8c4f26079c1cecba0ffd61e176827
+stderr:
+returncode=0
+
+2026-10-30T01:49:17.289550+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v6_gru_adapter_preparation_20261028/equivalence.py
+stdout_bytes=3260 stdout_sha256=3952ae7f4347bb44694f0d779221de725b43a449629ae163e2eb72ec2e518d89
+stderr:
+returncode=0
+
+2026-10-30T01:49:17.606265+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/BUDGET_PLAN.json
+stdout_bytes=1449 stdout_sha256=02055543f2b9f6f17a7f657568b00060e078589c4a1dfe43e6b06cabd791948c
+stderr:
+returncode=0
+
+2026-10-30T01:49:17.921537+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/SOURCE_REFERENCES.json
+stdout_bytes=2434 stdout_sha256=c5669659c48a1734c633dcee625b4e931464b176f023a6ac72676b169e968dda
+stderr:
+returncode=0
+
+2026-10-30T01:49:18.297460+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/branch_state.py
+stdout_bytes=12779 stdout_sha256=332080139de3a15a74d6ee5fad907fef661a1866551a0e23689884587d73cf82
+stderr:
+returncode=0
+
+2026-10-30T01:49:18.694249+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/budget.py
+stdout_bytes=7369 stdout_sha256=ea325da155d015e974ea65eddc9db60b0a6befc25835c481810d6e3235825c0b
+stderr:
+returncode=0
+
+2026-10-30T01:49:19.082321+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/codec.py
+stdout_bytes=6335 stdout_sha256=75b2be74e5a9bf7ff474e74f5e25f3f6dc3758c09d07ff78a1417537ddc772fb
+stderr:
+returncode=0
+
+2026-10-30T01:49:19.409303+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/adapter.py
+stdout_bytes=22211 stdout_sha256=59b32cbd4ac52dee2e3b0dec7f1c0b197d2c84dbd6fdf404156ad788d3d38e21
+stderr:
+returncode=0
+
+2026-10-30T01:49:19.721944+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/v6/conditioned.py
+stdout_bytes=6426 stdout_sha256=ccb5f9a78e58d6f1d1511a95f50de3602e1f39e7254fce5566e97a994d5b4cba
+stderr:
+returncode=0
+
+2026-10-30T01:49:20.017613+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/v6/data.py
+stdout_bytes=11933 stdout_sha256=de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29
+stderr:
+returncode=0
+
+2026-10-30T01:49:20.378914+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/v6/neural.py
+stdout_bytes=19994 stdout_sha256=6447edf81da45695ab87a033c544ff7c554a15431e614474be7ad3b7c329e742
+stderr:
+returncode=0
+
+2026-10-30T01:49:20.701524+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/v6/observer.py
+stdout_bytes=7652 stdout_sha256=5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e
+stderr:
+returncode=0
+
+2026-10-30T01:49:21.102767+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/multimodal_output_portfolio/v6/plan_training.py
+stdout_bytes=18967 stdout_sha256=b43ff714960139d4b58d02dec86b69d27ac51d5abfd75509936ee2c5c355997b
+stderr:
+returncode=0
+
+2026-10-30T01:49:21.425090+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/OPS_ATTEMPT02.json
+stdout_bytes=13868 stdout_sha256=583b3f8c7866b2d2a289e32cc9162472fd23ddc0b7897d0066863fd427173dd3
+stderr:
+returncode=0
+
+2026-10-30T01:49:21.754708+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/OPS_ATTEMPT02_DISK.json
+stdout_bytes=15269 stdout_sha256=d0572d7c26f7d15f9a78f3a8d6e6b72f70ae709e075c89a04f4599d90146d372
+stderr:
+returncode=0
+
+2026-10-30T01:49:22.080224+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/PROTOCOL.json
+stdout_bytes=37799 stdout_sha256=2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55
+stderr:
+returncode=0
+
+2026-10-30T01:49:22.428542+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/analysis.py
+stdout_bytes=16693 stdout_sha256=46ace84fa720026daa2f0b9de95b8c446f4e87ae6f1873ba43e9bceaca3f73e2
+stderr:
+returncode=0
+
+2026-10-30T01:49:22.765720+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/analysis_launch_v2.py
+stdout_bytes=17115 stdout_sha256=708003e123a97dbf17f8ba1fd2f7086ec70fc52f2f6a1dc41bf88c6882d4fdbb
+stderr:
+returncode=0
+
+2026-10-30T01:49:23.098255+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/architecture.py
+stdout_bytes=11371 stdout_sha256=bb561a118257b50b4588a804dba6a8c93e886f68c9982aaee5db6d2c18318f8f
+stderr:
+returncode=0
+
+2026-10-30T01:49:23.469581+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/architecture_bank.py
+stdout_bytes=9084 stdout_sha256=379160d95ded58ccfb198711c6d17187552b598414389e4c5c6062afa24980a3
+stderr:
+returncode=0
+
+2026-10-30T01:49:23.793606+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/architecture_endpoints.py
+stdout_bytes=22271 stdout_sha256=dfa06efceb582f82732f296f6cc51d36efdb4b1ac7666b5b0846a671a856f0c5
+stderr:
+returncode=0
+
+2026-10-30T01:49:24.117229+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/architecture_features.py
+stdout_bytes=6174 stdout_sha256=064023ea5c6ba01e309c2fda333b2865fae6ce97e2075601800c33246d0afc09
+stderr:
+returncode=0
+
+2026-10-30T01:49:24.493576+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/architecture_kernel.py
+stdout_bytes=13777 stdout_sha256=4ff6a03e6316e0b4767a0b9799b9685ededacdeecab39f35a3cd3b9be7b6d967
+stderr:
+returncode=0
+
+2026-10-30T01:49:24.854200+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/architecture_run.py
+stdout_bytes=14668 stdout_sha256=eabf22053ab92bd6babcd8d9e053ab9dd555d537cc4479c912336b85d8e6851d
+stderr:
+returncode=0
+
+2026-10-30T01:49:25.197571+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/architecture_run_v2.py
+stdout_bytes=6554 stdout_sha256=40caef710376bd0aab092f60945c026d5612319679c6e8be8510eea0a41d0751
+stderr:
+returncode=0
+
+2026-10-30T01:49:25.601594+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/architecture_state.py
+stdout_bytes=4878 stdout_sha256=d321d60d9657442237895b807d7b7db98a42938f733d583502687bb8d60e439b
+stderr:
+returncode=0
+
+2026-10-30T01:49:26.053531+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/architecture_store.py
+stdout_bytes=3792 stdout_sha256=5189e313dcdf4c747de0a95f0d4f5dd6c524384a8e83154e186c4c9718ee4cb6
+stderr:
+returncode=0
+
+2026-10-30T01:49:26.461418+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/architecture_training.py
+stdout_bytes=5407 stdout_sha256=7d3ce0de2df126fa67d811fed709f407e54407cd3a3b20a985abe2f082e327c3
+stderr:
+returncode=0
+
+2026-10-30T01:49:26.809223+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/bank.py
+stdout_bytes=8098 stdout_sha256=710a9a069f2d8bdbb208e16db62bc55fb1a07cbd3f9686546b46056673402653
+stderr:
+returncode=0
+
+2026-10-30T01:49:27.205777+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/branching.py
+stdout_bytes=12971 stdout_sha256=3825744797572e8a28aedec57fb0e6ed924586ea4b3c0f49accb0bf7bfbeee79
+stderr:
+returncode=0
+
+2026-10-30T01:49:27.597518+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/controller_envelope_v2.py
+stdout_bytes=18888 stdout_sha256=3bbc1e320bf9ab49d718ba8e876e4db8e04ab7d971d101e92fed2cdba1d53a43
+stderr:
+returncode=0
+
+2026-10-30T01:49:27.978699+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/endpoint_v2.py
+stdout_bytes=24853 stdout_sha256=0780cf261944dbdb6a47597c1294f4f9c9f761e3131d4a76e51b634cf7f15da2
+stderr:
+returncode=0
+
+2026-10-30T01:49:28.354687+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/endpoints.py
+stdout_bytes=21412 stdout_sha256=817ad730439ada07f1072ca88e032c6f63cf8b971286b6d8430d2fbae3b1c0fc
+stderr:
+returncode=0
+
+2026-10-30T01:49:28.725417+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/finalize_v2.py
+stdout_bytes=15490 stdout_sha256=6fbf4a7a994120b6c0ae577a10d9ba992ad483d253ff0afb9aea42af8bb705ac
+stderr:
+returncode=0
+
+2026-10-30T01:49:29.102725+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/heads.py
+stdout_bytes=5571 stdout_sha256=19254959a30e3719024841dc91376d1ecdfa018c30427b962a265e3b3d4647f7
+stderr:
+returncode=0
+
+2026-10-30T01:49:29.497935+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/launch.py
+stdout_bytes=10610 stdout_sha256=019b405c9fa9517da0ea1dfd860d5bb582974b0d56eaac1a8a7744971d9afee6
+stderr:
+returncode=0
+
+2026-10-30T01:49:29.890063+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/launch_v2.py
+stdout_bytes=21330 stdout_sha256=7423f368c7ec8fd39a666c575f91e36f69da78bd1ec6cdc39f3afbe8224332e3
+stderr:
+returncode=0
+
+2026-10-30T01:49:30.304497+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/preflight.py
+stdout_bytes=4759 stdout_sha256=944cb9fd142a2d3de3ecaf39eedf4863f3a8234c6dfb173b2a1fa582fdca8e07
+stderr:
+returncode=0
+
+2026-10-30T01:49:30.725701+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/register_followups_v2.py
+stdout_bytes=27198 stdout_sha256=915e7a012b321add3db081367796c0d8eb22555a5bd429da8ebc8c99828b9112
+stderr:
+returncode=0
+
+2026-10-30T01:49:31.081515+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/register_summary_v2.py
+stdout_bytes=25312 stdout_sha256=b20351ee0a242bf25352d67a912af3a3dcb6d7503c8e38f9973a437bb3d20184
+stderr:
+returncode=0
+
+2026-10-30T01:49:31.421871+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/registrations/A_SOURCE_FREEZE.json
+stdout_bytes=10486 stdout_sha256=2a5219147d38ebb6514059bd69e2d3489bf7d69d213cd01343455f63a08a53d2
+stderr:
+returncode=0
+
+2026-10-30T01:49:31.821705+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/registrations/C_SOURCE_FREEZE.json
+stdout_bytes=13473 stdout_sha256=5f427c8a8cebe8c96a2a0d81318e22d286dc0aaa8b3dbf4d5844df2177949c6d
+stderr:
+returncode=0
+
+2026-10-30T01:49:32.217627+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/replay_terminals.py
+stdout_bytes=19842 stdout_sha256=ac7981bf5ff0045c920bc9614edac1c81b34b05c7f74e8a6a40cea20e576012b
+stderr:
+returncode=0
+
+2026-10-30T01:49:32.610500+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/report_results.py
+stdout_bytes=28615 stdout_sha256=ccfe0f9fa555906f9cda0834424a5396c7146f523a47a4cd8696134d007e614f
+stderr:
+returncode=0
+
+2026-10-30T01:49:33.053564+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/resource_io_v2.py
+stdout_bytes=6783 stdout_sha256=25322e8356bb48de1299338768ec0341f8c4fb89028af7c9fdcdd7a22b2b0931
+stderr:
+returncode=0
+
+2026-10-30T01:49:33.413681+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/resource_v2.py
+stdout_bytes=13484 stdout_sha256=079b326b6d42cb9dccac2cbe8e872cb30e221169f6e0f650469e2a53774624bf
+stderr:
+returncode=0
+
+2026-10-30T01:49:33.784025+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/run.py
+stdout_bytes=9283 stdout_sha256=46f437e8756c83ae1abfedb7b36544f71a86093098363a8730b18357bf36c1c3
+stderr:
+returncode=0
+
+2026-10-30T01:49:34.201807+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/run_v2.py
+stdout_bytes=12641 stdout_sha256=291218547484a01ac0213c06f1b6bbd16104955348b818014a66f4d3a0ce3561
+stderr:
+returncode=0
+
+2026-10-30T01:49:34.617598+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/source_allocation/SOURCE_ALLOCATION.json
+stdout_bytes=3325 stdout_sha256=8a1e9af02f12a42d9eb0d312d91e8036169d2a8b2daa020255a724588b1e2b48
+stderr:
+returncode=0
+
+2026-10-30T01:49:35.045901+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/source_allocation/SOURCE_IDENTITIES.json.gz
+stdout_bytes=278118 stdout_sha256=8108104ecf91b9a2d8c528b5c49be98cd8fb82797a7f03305604889d96f376be
+stderr:
+returncode=0
+
+2026-10-30T01:49:35.593947+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/sources.py
+stdout_bytes=14848 stdout_sha256=afb066010f6265e83f1e309c3b78088c8ebe2d964b4715ea25e30061787e68c0
+stderr:
+returncode=0
+
+2026-10-30T01:49:35.989074+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/test_analysis.py
+stdout_bytes=6975 stdout_sha256=9c9d9afef6fceca35f3606d16fb4f4cc748e52172960d4a9f87da90d4b004c98
+stderr:
+returncode=0
+
+2026-10-30T01:49:36.485571+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/test_analysis_launch_v2.py
+stdout_bytes=12734 stdout_sha256=be1c2dbabd460e51bf87cc0ec1deb5df3e4c36aca1b0471dae30fe19943f7665
+stderr:
+returncode=0
+
+2026-10-30T01:49:36.874272+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/test_architecture.py
+stdout_bytes=5517 stdout_sha256=9c827edbedd2d4479b95ec689206b393fb4d18f2bdd969fbe7f4dba9a913620c
+stderr:
+returncode=0
+
+2026-10-30T01:49:37.256298+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/test_architecture_endpoints.py
+stdout_bytes=9864 stdout_sha256=a10c41955a0a2edd9c3d353a68f3aea87cbc6aa6f807be67cbdec35c94b2a675
+stderr:
+returncode=0
+
+2026-10-30T01:49:37.709667+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/test_architecture_kernel.py
+stdout_bytes=8963 stdout_sha256=160504fc4b733e6c070159335a3759ac27fa7e1501f8261c242dc95cd37ac176
+stderr:
+returncode=0
+
+2026-10-30T01:49:38.126144+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/test_architecture_run_v2.py
+stdout_bytes=1789 stdout_sha256=95956a5036f14acaf448bf72fe99f85f981692eec7d7be90eaaf77b8c8520c0d
+stderr:
+returncode=0
+
+2026-10-30T01:49:38.482033+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/test_branching.py
+stdout_bytes=10369 stdout_sha256=46a96022052d0609df26f6e4cdec178d8657f7f146a818f92c1109358660eded
+stderr:
+returncode=0
+
+2026-10-30T01:49:38.826786+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/test_controller_envelope_v2.py
+stdout_bytes=15510 stdout_sha256=1b1174c848d007c277315bb946b860551d7254bcdf506f6ae1968d372cd3e3fd
+stderr:
+returncode=0
+
+2026-10-30T01:49:39.189646+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/test_endpoint_v2.py
+stdout_bytes=6305 stdout_sha256=dfe4a4e2cb94c5b896413fb82975b7fb21bfbf09e131ff4a2ee5c6c2718dfcfb
+stderr:
+returncode=0
+
+2026-10-30T01:49:39.510371+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/test_endpoints.py
+stdout_bytes=11387 stdout_sha256=4ad82af081ede55f1a35a2fde6ec4f0fbf2cd227d5552e9bdc167c75c114e58a
+stderr:
+returncode=0
+
+2026-10-30T01:49:39.826519+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/test_finalize_v2.py
+stdout_bytes=8793 stdout_sha256=0fbc754450a3a4f785c520abe09995da9196d4768e0574ac753e5aa02abb15cd
+stderr:
+returncode=0
+
+2026-10-30T01:49:40.202475+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/test_heads.py
+stdout_bytes=6669 stdout_sha256=fef3d660bc07449a4504542e63ed91fc2cd37c65c68d766881de1905c06a1fd0
+stderr:
+returncode=0
+
+2026-10-30T01:49:40.646912+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/test_launch_v2_review.py
+stdout_bytes=6812 stdout_sha256=a84e97a78738b1109838e97d0a4105ac5065e6b23d9157e9970348e5337d8b91
+stderr:
+returncode=0
+
+2026-10-30T01:49:41.017975+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/test_register_followups_v2.py
+stdout_bytes=20193 stdout_sha256=d879843fdcf1fcfef3135303c7f77462e50f36c3494bce4867e2184cc011c110
+stderr:
+returncode=0
+
+2026-10-30T01:49:41.405668+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/test_register_summary_v2.py
+stdout_bytes=23124 stdout_sha256=56c7a6d087f7eef451954e4a2e13b61e6ae518a64cd9580b8651619978683738
+stderr:
+returncode=0
+
+2026-10-30T01:49:41.753945+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/test_replay_terminals.py
+stdout_bytes=8114 stdout_sha256=e9e60de7e2ddd7d2088264fc4386c8a251b01286d0dcaa526284cb25ca988d68
+stderr:
+returncode=0
+
+2026-10-30T01:49:42.098788+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/test_report_results.py
+stdout_bytes=4609 stdout_sha256=a4c3fb793a49258c412a7517df61fa5bf937807e3cbe9db470068796096626e2
+stderr:
+returncode=0
+
+2026-10-30T01:49:42.429186+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/test_resource_v2.py
+stdout_bytes=6855 stdout_sha256=8231eae721293705acb631f4ef4905d71ccebd1cdda36a95791ae2a99171e62f
+stderr:
+returncode=0
+
+2026-10-30T01:49:42.823248+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/test_run_v2.py
+stdout_bytes=4590 stdout_sha256=384f32ca8fcc9105c13e555e076f2a3e89b98eeca4c2e2c01b7f9f870c385a0e
+stderr:
+returncode=0
+
+2026-10-30T01:49:43.249103+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/test_sources.py
+stdout_bytes=7429 stdout_sha256=3629a8862d2bc102335d40e4be8aa8b7d6322a7f6efc1ad98e57c78341466049
+stderr:
+returncode=0
+
+2026-10-30T01:49:43.681682+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/test_witness.py
+stdout_bytes=5657 stdout_sha256=1ef237805ef2345b44d950560c3f94bec2a6d58539209540d85908ceed0e463d
+stderr:
+returncode=0
+
+2026-10-30T01:49:44.057801+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:experiments/parameter_field_fullstudy_20261029/witness.py
+stdout_bytes=22153 stdout_sha256=7f81ff7660e3bb4a99e9b7b4addf2705b2f55bffd3e80c6d47ef5737278f7f08
+stderr:
+returncode=0
+
+2026-10-30T01:49:44.067757+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:operational/parameter_field_recovery04/cwd_runner.py
+stdout_bytes=10663 stdout_sha256=c4eca6972780bb1f6d9a3ef31e28c41aadcd06959fca502e3bbb4d9e23599a5b
+stderr:
+returncode=0
+
+2026-10-30T01:49:44.082281+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:operational/parameter_field_recovery04/durable_archive.py
+stdout_bytes=14865 stdout_sha256=dfeee33870f3ca429284542cb8ca9ff8c9471a8fc8ff0339c3de251cabf260da
+stderr:
+returncode=0
+
+2026-10-30T01:49:44.095079+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:operational/parameter_field_recovery04/external_step.py
+stdout_bytes=4382 stdout_sha256=fb238cd0f28e331a2e9d4ada5950f436a2d31e579fa9fbd8c36cce70404c2b21
+stderr:
+returncode=0
+
+2026-10-30T01:49:44.107718+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:operational/parameter_field_recovery04/historical_costs.py
+stdout_bytes=22202 stdout_sha256=e8ec187543e5d249142a706699156fa97db767d6f1193ec9be466359a59ad440
+stderr:
+returncode=0
+
+2026-10-30T01:49:44.121984+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:operational/parameter_field_recovery04/import_probe.py
+stdout_bytes=4439 stdout_sha256=0145f1838c1b479c20636e33b5bd79a27fd94524608949f1af1f632f5022c736
+stderr:
+returncode=0
+
+2026-10-30T01:49:44.146090+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:operational/parameter_field_recovery04/initialize.py
+stdout_bytes=17564 stdout_sha256=3fa5766eba4b4f79143fc4fe409a79b408e48cd1a9ca8c74dbea72c4bfac1512
+stderr:
+returncode=0
+
+2026-10-30T01:49:44.161701+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:operational/parameter_field_recovery04/registration.py
+stdout_bytes=20178 stdout_sha256=19e3eedaacc7795a2b45ea8165f2aa5e8180e0d12f4fc925075384861ab32979
+stderr:
+returncode=0
+
+2026-10-30T01:49:44.169583+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:operational/parameter_field_recovery04/restore_assets.py
+stdout_bytes=2739 stdout_sha256=bd6173188f310ab215267cdf0bba694007d1701d8414ec3ec0efee0a9f61753e
+stderr:
+returncode=0
+
+2026-10-30T01:49:44.184703+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:operational/parameter_field_recovery04/supervisor.py
+stdout_bytes=41463 stdout_sha256=cc1526c88184e26ce9eb363f053e2e2babce924020d80589b0891f4385307682
+stderr:
+returncode=0
+
+2026-10-30T01:49:44.195099+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:operational/parameter_field_recovery04/synthetic_test_registration.py
+stdout_bytes=13856 stdout_sha256=92257cdd3ff1f13c65804face8c84e8bbfa8d3c32731de6a37a25eaa1a0d734a
+stderr:
+returncode=0
+
+2026-10-30T01:49:44.208164+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:operational/parameter_field_recovery04/test_cwd_runner.py
+stdout_bytes=4981 stdout_sha256=eddb7acf92808f1bfdd4a96a2b4ec5d6adb770dbd13ab95d197814cd301a83bb
+stderr:
+returncode=0
+
+2026-10-30T01:49:44.218827+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:operational/parameter_field_recovery04/test_supervisor_semantics.py
+stdout_bytes=8815 stdout_sha256=db598f4195d8e4df8b99e800dabe060adfe3e06dcbd91ac6d4d3c59ebe4f440a
+stderr:
+returncode=0
+
+2026-10-30T01:49:44.232338+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:operational/parameter_field_recovery04/wait4_launcher.py
+stdout_bytes=6051 stdout_sha256=ccada17007abf8ce2d7d39d8a2c9102d7848971baf818a357e4c58643c287b20
+stderr:
+returncode=0
+
+2026-10-30T01:49:44.260309+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:supplements/parameter_field_fullstudy_20261030/postseal_supplement.py
+stdout_bytes=45470 stdout_sha256=1b705285b99fc7185c20155fa85f3a5d370b473196eaf59c8ae1d6bb2941a633
+stderr:
+returncode=0
+
+2026-10-30T01:49:44.274197+00:00 $ git -C /workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/restored.git show bf59ac45860884d770dfd437d8a447068c5ef9a9:supplements/parameter_field_fullstudy_20261030/test_semantics.py
+stdout_bytes=14012 stdout_sha256=267745e30f874740c8c739ea7b761ba3de580e75c4c20aee956a6fd8d25d0956
+stderr:
+returncode=0
