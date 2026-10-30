@@ -32,15 +32,18 @@ fn digest(value: &str) -> Digest32 {
 pub(crate) fn admitted_registry(
     root: &std::path::Path,
     payload: &[u8],
-) -> (
-    DurablePromptRegistry,
-    PromptModelTupleV2,
-    FinalUseAuthority,
-    SigningKey,
-    u64,
-) {
-    let mut registry =
-        DurablePromptRegistry::open_state_dir(root, 64).expect("open durable registry");
+) -> Result<
+    (
+        DurablePromptRegistry,
+        PromptModelTupleV2,
+        FinalUseAuthority,
+        SigningKey,
+        u64,
+    ),
+    String,
+> {
+    let mut registry = DurablePromptRegistry::open_state_dir(root, 64)
+        .map_err(|error| format!("open durable registry: {error:?}"))?;
     let factor = PromptFactor {
         factor_id: id("factor:verify"),
         proposer_id: id("proposer:1"),
@@ -54,12 +57,12 @@ pub(crate) fn admitted_registry(
     };
     registry
         .register_factor(factor.clone())
-        .expect("register factor");
+        .map_err(|error| format!("register factor: {error:?}"))?;
 
     let signing_key = SigningKey::from_bytes(&[23; 32]);
     let authority_root = root
         .parent()
-        .expect("registry root parent")
+        .ok_or_else(|| "registry root parent".to_owned())?
         .join("prompt-admission-authority");
     let authority = FinalUseAuthority::open_state_dir(
         &authority_root,
@@ -71,15 +74,15 @@ pub(crate) fn admitted_registry(
             revoked_grant_ids: BTreeSet::new(),
         },
     )
-    .expect("final-use authority");
+    .map_err(|error| format!("final-use authority: {error:?}"))?;
     let reviewer = id("reviewer:1");
     let scope = digest("scope:prompt");
     let evidence = digest("evidence:prompt");
     let binding = final_use_admission_binding(&factor, &reviewer, scope, evidence)
-        .expect("final-use admission binding");
+        .map_err(|error| format!("final-use admission binding: {error:?}"))?;
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .expect("clock")
+        .map_err(|error| format!("clock: {error:?}"))?
         .as_millis() as u64;
     let grant = FinalUseGrant {
         schema_version: 1,
@@ -93,20 +96,24 @@ pub(crate) fn admitted_registry(
     };
     let signed = SignedFinalUseGrant {
         signature: signing_key
-            .sign(&grant.signing_bytes().expect("signing bytes"))
+            .sign(
+                &grant
+                    .signing_bytes()
+                    .map_err(|error| format!("signing bytes: {error:?}"))?,
+            )
             .to_bytes()
             .to_vec(),
         grant,
     };
     registry
         .admit_factor_final_use(&authority, &signed, &factor.factor_id, scope, evidence)
-        .expect("admit factor through final-use authority");
+        .map_err(|error| format!("admit factor through final-use authority: {error:?}"))?;
     let admitted_factor = registry
         .registry()
-        .expect("registry remains readable after admission")
+        .map_err(|error| format!("registry remains readable after admission: {error:?}"))?
         .factor(&factor.factor_id)
         .cloned()
-        .expect("admitted factor remains present");
+        .ok_or_else(|| "admitted factor remains present".to_owned())?;
 
     let tuple = PromptModelTupleV2 {
         model_id: id("model:hepta-test"),
@@ -143,7 +150,7 @@ pub(crate) fn admitted_registry(
         &realization,
         None,
     )
-    .expect("realization authority binding");
+    .map_err(|error| format!("realization authority binding: {error:?}"))?;
     let realization_grant = FinalUseGrant {
         schema_version: 1,
         signer_id: "review-authority:prompt".to_owned(),
@@ -159,7 +166,7 @@ pub(crate) fn admitted_registry(
             .sign(
                 &realization_grant
                     .signing_bytes()
-                    .expect("realization signing bytes"),
+                    .map_err(|error| format!("realization signing bytes: {error:?}"))?,
             )
             .to_bytes()
             .to_vec(),
@@ -175,8 +182,10 @@ pub(crate) fn admitted_registry(
             payload.to_vec(),
             None,
         )
-        .expect("register actual payload through final-use authority");
-    (registry, tuple, authority, signing_key, now)
+        .map_err(|error| {
+            format!("register actual payload through final-use authority: {error:?}")
+        })?;
+    Ok((registry, tuple, authority, signing_key, now))
 }
 
 pub(crate) struct CanonicalSelection {
@@ -188,9 +197,11 @@ pub(crate) fn canonical_selection(
     registry: &DurablePromptRegistry,
     tuple: &PromptModelTupleV2,
     now: u64,
-) -> CanonicalSelection {
+) -> Result<CanonicalSelection, String> {
     let candidates = enumerate_factors_v1(
-        registry.registry().expect("registry"),
+        registry
+            .registry()
+            .map_err(|error| format!("registry: {error:?}"))?,
         PromptEnumerationRequestV1 {
             set_id: id("set:canonical"),
             objective_digest: digest("objective"),
@@ -203,7 +214,7 @@ pub(crate) fn canonical_selection(
             selection_grammar_digest: digest("grammar"),
         },
     )
-    .expect("enumerate current registry");
+    .map_err(|error| format!("enumerate current registry: {error:?}"))?;
     let portfolio = SelectedPromptPortfolioV1 {
         receipt: PromptPortfolioReceiptV1 {
             portfolio_id: id("portfolio:1"),
@@ -236,19 +247,20 @@ pub(crate) fn canonical_selection(
         wait_value_q32: FixedQ32::ZERO,
         policy_digest: digest("exercise-policy"),
     };
-    CanonicalSelection {
+    Ok(CanonicalSelection {
         portfolio,
         exercise_request,
-    }
+    })
 }
 
 #[test]
-fn exercised_registry_payload_is_the_exact_context_attachment_input() {
-    let temporary = tempfile::tempdir().expect("tempdir");
+fn exercised_registry_payload_is_the_exact_context_attachment_input() -> Result<(), String> {
+    let temporary = tempfile::tempdir().map_err(|error| format!("tempdir: {error:?}"))?;
     let root = temporary.path().join("prompt-registry");
     let payload = b"Inspect evidence before mutation.";
-    let (registry, tuple, _authority, _signing_key, _grant_now) = admitted_registry(&root, payload);
-    let selected = canonical_selection(&registry, &tuple, 100);
+    let (registry, tuple, _authority, _signing_key, _grant_now) =
+        admitted_registry(&root, payload)?;
+    let selected = canonical_selection(&registry, &tuple, 100)?;
 
     let output = compile_prompt_registry_v2(
         &registry,
@@ -274,7 +286,7 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
             truncation_policy_digest: digest("truncation"),
         },
     )
-    .expect("compile exercised prompt registry context");
+    .map_err(|error| format!("compile exercised prompt registry context: {error:?}"))?;
 
     assert_eq!(
         output.compiled.receipt().selected_item_ids(),
@@ -289,11 +301,13 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
     assert_eq!(
         output.exercise_receipt_digest,
         exercise_v1(
-            registry.registry().expect("registry"),
+            registry
+                .registry()
+                .map_err(|error| format!("registry: {error:?}"))?,
             &selected.portfolio,
             selected.exercise_request.clone()
         )
-        .expect("exercise")
+        .map_err(|error| format!("exercise: {error:?}"))?
         .receipt_digest
     );
     assert_eq!(
@@ -317,45 +331,48 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
 
     let factor_v1 = registry
         .registry()
-        .expect("registry")
+        .map_err(|error| format!("registry: {error:?}"))?
         .factor_protocol_v1(&id("factor:verify"))
-        .expect("factor projection")
-        .expect("factor exists");
+        .map_err(|error| format!("factor projection: {error:?}"))?
+        .ok_or_else(|| "factor exists".to_owned())?;
     assert_eq!(
         factor_v1.semantic_purpose,
         "inspect evidence before mutation"
     );
     let realization_v1 = registry
         .registry()
-        .expect("registry")
+        .map_err(|error| format!("registry: {error:?}"))?
         .realization_protocol_v1(&id("realization:verify"))
-        .expect("realization projection")
-        .expect("realization exists");
+        .map_err(|error| format!("realization projection: {error:?}"))?
+        .ok_or_else(|| "realization exists".to_owned())?;
     assert_eq!(realization_v1.model_id, tuple.model_id);
     assert_eq!(realization_v1.model_version, tuple.model_version);
-    output.validate().expect("compiled delivery validates");
+    output
+        .validate()
+        .map_err(|error| format!("compiled delivery validates: {error:?}"))?;
+    Ok(())
 }
 
 #[test]
-fn revocation_after_exercise_prevents_delivery_of_the_selected_realization() {
-    let temporary = tempfile::tempdir().expect("tempdir");
+fn revocation_after_exercise_prevents_delivery_of_the_selected_realization() -> Result<(), String> {
+    let temporary = tempfile::tempdir().map_err(|error| format!("tempdir: {error:?}"))?;
     let root = temporary.path().join("prompt-registry-revocation");
     let (mut registry, tuple, authority, signing_key, grant_now) =
-        admitted_registry(&root, b"Bound instruction");
-    let selected = canonical_selection(&registry, &tuple, 100);
+        admitted_registry(&root, b"Bound instruction")?;
+    let selected = canonical_selection(&registry, &tuple, 100)?;
 
     let factor = registry
         .registry()
-        .expect("registry")
+        .map_err(|error| format!("registry: {error:?}"))?
         .factor(&id("factor:verify"))
         .cloned()
-        .expect("admitted factor");
+        .ok_or_else(|| "admitted factor".to_owned())?;
     let actor = id("revoker:test");
     let revoke_scope = digest("scope:revoke:test");
     let reason = digest("reason:revoke");
     let cutoff = grant_now + 5_000;
     let revoke_binding = final_use_revoke_binding(&factor, &actor, revoke_scope, reason, cutoff)
-        .expect("revoke binding");
+        .map_err(|error| format!("revoke binding: {error:?}"))?;
     let revoke_grant = FinalUseGrant {
         schema_version: 1,
         signer_id: "review-authority:prompt".to_owned(),
@@ -368,7 +385,11 @@ fn revocation_after_exercise_prevents_delivery_of_the_selected_realization() {
     };
     let revoke_signed = SignedFinalUseGrant {
         signature: signing_key
-            .sign(&revoke_grant.signing_bytes().expect("revoke signing bytes"))
+            .sign(
+                &revoke_grant
+                    .signing_bytes()
+                    .map_err(|error| format!("revoke signing bytes: {error:?}"))?,
+            )
             .to_bytes()
             .to_vec(),
         grant: revoke_grant,
@@ -383,9 +404,9 @@ fn revocation_after_exercise_prevents_delivery_of_the_selected_realization() {
             reason,
             cutoff,
         )
-        .expect("final-use revocation");
+        .map_err(|error| format!("final-use revocation: {error:?}"))?;
 
-    let error = compile_prompt_registry_v2(
+    let Err(error) = compile_prompt_registry_v2(
         &registry,
         &selected.portfolio,
         &selected.exercise_request,
@@ -408,23 +429,25 @@ fn revocation_after_exercise_prevents_delivery_of_the_selected_realization() {
             token_budget: 128,
             truncation_policy_digest: digest("truncation"),
         },
-    )
-    .expect_err("stale exercised selection must not deliver");
+    ) else {
+        return Err("stale exercised selection must not deliver".to_owned());
+    };
     assert!(matches!(
         error,
         PromptRegistryCompilationErrorV2::Pipeline(_)
     ));
+    Ok(())
 }
 
 #[test]
-fn compiler_rejects_registry_and_context_model_drift() {
-    let temporary = tempfile::tempdir().expect("tempdir");
+fn compiler_rejects_registry_and_context_model_drift() -> Result<(), String> {
+    let temporary = tempfile::tempdir().map_err(|error| format!("tempdir: {error:?}"))?;
     let root = temporary.path().join("prompt-registry-model-drift");
     let (registry, tuple, _authority, _signing_key, _grant_now) =
-        admitted_registry(&root, b"Bound instruction");
-    let selected = canonical_selection(&registry, &tuple, 100);
+        admitted_registry(&root, b"Bound instruction")?;
+    let selected = canonical_selection(&registry, &tuple, 100)?;
 
-    let error = compile_prompt_registry_v2(
+    let Err(error) = compile_prompt_registry_v2(
         &registry,
         &selected.portfolio,
         &selected.exercise_request,
@@ -447,12 +470,14 @@ fn compiler_rejects_registry_and_context_model_drift() {
             token_budget: 128,
             truncation_policy_digest: digest("truncation"),
         },
-    )
-    .expect_err("model drift must fail");
+    ) else {
+        return Err("model drift must fail".to_owned());
+    };
     assert!(matches!(
         error,
         PromptRegistryCompilationErrorV2::Pipeline(_)
     ));
+    Ok(())
 }
 
 pub(crate) fn revoke_registry(
@@ -460,19 +485,19 @@ pub(crate) fn revoke_registry(
     authority: &FinalUseAuthority,
     signing_key: &SigningKey,
     grant_now: u64,
-) {
+) -> Result<(), String> {
     let factor = registry
         .registry()
-        .expect("registry")
+        .map_err(|error| format!("registry: {error:?}"))?
         .factor(&id("factor:verify"))
         .cloned()
-        .expect("admitted factor");
+        .ok_or_else(|| "admitted factor".to_owned())?;
     let actor = id("revoker:test");
     let revoke_scope = digest("scope:revoke:test");
     let reason = digest("reason:revoke");
     let cutoff = grant_now + 5_000;
     let revoke_binding = final_use_revoke_binding(&factor, &actor, revoke_scope, reason, cutoff)
-        .expect("revoke binding");
+        .map_err(|error| format!("revoke binding: {error:?}"))?;
     let revoke_grant = FinalUseGrant {
         schema_version: 1,
         signer_id: "review-authority:prompt".to_owned(),
@@ -485,7 +510,11 @@ pub(crate) fn revoke_registry(
     };
     let revoke_signed = SignedFinalUseGrant {
         signature: signing_key
-            .sign(&revoke_grant.signing_bytes().expect("revoke signing bytes"))
+            .sign(
+                &revoke_grant
+                    .signing_bytes()
+                    .map_err(|error| format!("revoke signing bytes: {error:?}"))?,
+            )
             .to_bytes()
             .to_vec(),
         grant: revoke_grant,
@@ -500,5 +529,6 @@ pub(crate) fn revoke_registry(
             reason,
             cutoff,
         )
-        .expect("final-use revocation");
+        .map_err(|error| format!("final-use revocation: {error:?}"))?;
+    Ok(())
 }

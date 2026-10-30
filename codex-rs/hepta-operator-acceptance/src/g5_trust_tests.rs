@@ -27,9 +27,11 @@ use crate::durable::write_private_new;
 use crate::test_support::private_tempdir;
 use crate::trust::SSHSIG_NAMESPACE;
 
+type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
+
 #[test]
-fn fresh_head_scoped_challenge_reaches_ready_without_authority() {
-    let fixture = TrustFixture::new(false);
+fn fresh_head_scoped_challenge_reaches_ready_without_authority() -> TestResult {
+    let fixture = TrustFixture::new(/*revoked*/ false)?;
     let challenge_path = fixture.root.join("g5-challenge.json");
     let prepared = prepare_g5_challenge(G5PrepareRequest {
         challenge_path: &challenge_path,
@@ -38,12 +40,10 @@ fn fresh_head_scoped_challenge_reaches_ready_without_authority() {
         lifetime_seconds: 120,
         now_unix_seconds: 1_000,
         trust: fixture.inputs(),
-    })
-    .expect("prepare fresh G5 challenge");
+    })?;
     assert_eq!(prepared.challenge_sha256.len(), 64);
-    let challenge_bytes = std::fs::read(&challenge_path).expect("read challenge");
-    let challenge: super::G5Challenge =
-        serde_json::from_slice(&challenge_bytes).expect("decode challenge");
+    let challenge_bytes = std::fs::read(&challenge_path)?;
+    let challenge: super::G5Challenge = serde_json::from_slice(&challenge_bytes)?;
     assert_eq!(challenge.authority, G5AuthorityBoundary::all_false());
 
     let assessment_path = fixture.root.join("g5-assessment.json");
@@ -55,11 +55,10 @@ fn fresh_head_scoped_challenge_reaches_ready_without_authority() {
         now_unix_seconds: 1_001,
         signature: G5SignatureInput::Absent,
         trust: fixture.inputs(),
-    })
-    .expect("assess unsigned challenge");
+    })?;
     assert_eq!(assessed.status, "READY_FOR_CHALLENGE");
     assert!(!assessed.signature_verified);
-    let (receipt, _) = read_assessment(&assessment_path);
+    let (receipt, _) = read_assessment(&assessment_path)?;
     assert_eq!(receipt.schema, G5_ASSESSMENT_SCHEMA);
     assert_eq!(
         receipt.authority,
@@ -79,11 +78,12 @@ fn fresh_head_scoped_challenge_reaches_ready_without_authority() {
             .iter()
             .any(|blocker| blocker.contains("independent signer"))
     );
+    Ok(())
 }
 
 #[test]
-fn exact_head_and_predecessor_binding_is_required() {
-    let fixture = TrustFixture::new(false);
+fn exact_head_and_predecessor_binding_is_required() -> TestResult {
+    let fixture = TrustFixture::new(/*revoked*/ false)?;
     let challenge_path = fixture.root.join("g5-challenge.json");
     prepare_g5_challenge(G5PrepareRequest {
         challenge_path: &challenge_path,
@@ -92,8 +92,7 @@ fn exact_head_and_predecessor_binding_is_required() {
         lifetime_seconds: 120,
         now_unix_seconds: 1_000,
         trust: fixture.inputs(),
-    })
-    .expect("prepare challenge");
+    })?;
 
     let mut wrong = candidate();
     wrong.parent_head = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".to_string();
@@ -109,11 +108,12 @@ fn exact_head_and_predecessor_binding_is_required() {
         })
         .is_err()
     );
+    Ok(())
 }
 
 #[test]
-fn expiry_is_half_open_and_never_creates_acceptance() {
-    let fixture = TrustFixture::new(false);
+fn expiry_is_half_open_and_never_creates_acceptance() -> TestResult {
+    let fixture = TrustFixture::new(/*revoked*/ false)?;
     let challenge_path = fixture.root.join("g5-challenge.json");
     let prepared = prepare_g5_challenge(G5PrepareRequest {
         challenge_path: &challenge_path,
@@ -122,8 +122,7 @@ fn expiry_is_half_open_and_never_creates_acceptance() {
         lifetime_seconds: 2,
         now_unix_seconds: 1_000,
         trust: fixture.inputs(),
-    })
-    .expect("prepare challenge");
+    })?;
     let assessed = assess_g5_challenge(G5AssessRequest {
         assessment_path: None,
         challenge_path: &challenge_path,
@@ -132,15 +131,15 @@ fn expiry_is_half_open_and_never_creates_acceptance() {
         now_unix_seconds: prepared.expires_at_unix_seconds,
         signature: G5SignatureInput::Absent,
         trust: fixture.inputs(),
-    })
-    .expect("expired challenge assessment");
+    })?;
     assert_eq!(assessed.status, "EXPIRED");
     assert!(!assessed.signature_verified);
+    Ok(())
 }
 
 #[test]
-fn independently_signed_challenge_is_verified_but_not_accepted() {
-    let fixture = TrustFixture::new(false);
+fn independently_signed_challenge_is_verified_but_not_accepted() -> TestResult {
+    let fixture = TrustFixture::new(/*revoked*/ false)?;
     let challenge_path = fixture.root.join("g5-challenge.json");
     prepare_g5_challenge(G5PrepareRequest {
         challenge_path: &challenge_path,
@@ -149,9 +148,8 @@ fn independently_signed_challenge_is_verified_but_not_accepted() {
         lifetime_seconds: 120,
         now_unix_seconds: 1_000,
         trust: fixture.inputs(),
-    })
-    .expect("prepare challenge");
-    let signature_path = fixture.sign(&challenge_path);
+    })?;
+    let signature_path = fixture.sign(&challenge_path)?;
     let assessed = assess_g5_challenge(G5AssessRequest {
         assessment_path: None,
         challenge_path: &challenge_path,
@@ -160,15 +158,15 @@ fn independently_signed_challenge_is_verified_but_not_accepted() {
         now_unix_seconds: 1_001,
         signature: G5SignatureInput::Detached(&signature_path),
         trust: fixture.inputs(),
-    })
-    .expect("verify independent signature");
+    })?;
     assert_eq!(assessed.status, "SIGNATURE_VERIFIED_NO_AUTHORITY");
     assert!(assessed.signature_verified);
+    Ok(())
 }
 
 #[test]
-fn revocation_is_external_and_fail_closed_before_challenge_issuance() {
-    let fixture = TrustFixture::new(true);
+fn revocation_is_external_and_fail_closed_before_challenge_issuance() -> TestResult {
+    let fixture = TrustFixture::new(/*revoked*/ true)?;
     let challenge_path = fixture.root.join("g5-challenge.json");
     let error = prepare_g5_challenge(G5PrepareRequest {
         challenge_path: &challenge_path,
@@ -178,14 +176,16 @@ fn revocation_is_external_and_fail_closed_before_challenge_issuance() {
         now_unix_seconds: 1_000,
         trust: fixture.inputs(),
     })
-    .expect_err("revoked signer must not receive a challenge");
+    .err()
+    .ok_or("revoked signer must not receive a challenge")?;
     assert!(error.to_string().contains("revoked"));
     assert!(!challenge_path.exists());
+    Ok(())
 }
 
 #[test]
-fn revocation_digest_change_invalidates_existing_challenge() {
-    let mut fixture = TrustFixture::new(false);
+fn revocation_digest_change_invalidates_existing_challenge() -> TestResult {
+    let mut fixture = TrustFixture::new(/*revoked*/ false)?;
     let challenge_path = fixture.root.join("g5-challenge.json");
     prepare_g5_challenge(G5PrepareRequest {
         challenge_path: &challenge_path,
@@ -194,11 +194,10 @@ fn revocation_digest_change_invalidates_existing_challenge() {
         lifetime_seconds: 120,
         now_unix_seconds: 1_000,
         trust: fixture.inputs(),
-    })
-    .expect("prepare challenge");
+    })?;
 
     fixture.revocation.revoked_nonces = vec!["f".repeat(64)];
-    fixture.rewrite_policy_and_revocation();
+    fixture.rewrite_policy_and_revocation()?;
     assert!(
         assess_g5_challenge(G5AssessRequest {
             assessment_path: None,
@@ -211,22 +210,23 @@ fn revocation_digest_change_invalidates_existing_challenge() {
         })
         .is_err()
     );
+    Ok(())
 }
 
 #[test]
-fn policy_and_revocation_files_must_be_canonical() {
-    let mut fixture = TrustFixture::new(false);
-    let policy_bytes = std::fs::read(&fixture.policy).expect("read policy");
-    std::fs::remove_file(&fixture.policy).expect("remove policy");
+fn policy_and_revocation_files_must_be_canonical() -> TestResult {
+    let mut fixture = TrustFixture::new(/*revoked*/ false)?;
+    let policy_bytes = std::fs::read(&fixture.policy)?;
+    std::fs::remove_file(&fixture.policy)?;
     write_private_new(
         &fixture.policy,
         br#"{"trust_root_id":"root","trust_root_revision":1,"schema":"hepta_g5_operator_trust_policy_v1","schema_version":1,"trust_policy_scope":"g5_head_scoped_ed25519_external_policy_with_explicit_revocation_v1","principal":"operator@example","key_fingerprint":"SHA256:bad","allowed_signers_sha256":"bad","maximum_lifetime_seconds":120,"revocation_owner":"security@example","revocation_revision":1,"revocation_sha256":"bad"}"#,
-    )
-    .expect("write malformed policy");
+    )?;
     assert!(fixture.try_inputs().is_err());
-    std::fs::remove_file(&fixture.policy).expect("remove malformed policy");
-    write_private_new(&fixture.policy, &policy_bytes).expect("restore policy");
-    fixture.rewrite_policy_and_revocation();
+    std::fs::remove_file(&fixture.policy)?;
+    write_private_new(&fixture.policy, &policy_bytes)?;
+    fixture.rewrite_policy_and_revocation()?;
+    Ok(())
 }
 
 fn candidate() -> G5HeadBinding {
@@ -247,10 +247,10 @@ fn evidence() -> G5EvidenceBinding {
     }
 }
 
-fn read_assessment(path: &Path) -> (G5Assessment, Vec<u8>) {
-    let bytes = std::fs::read(path).expect("read assessment");
-    let value = serde_json::from_slice(&bytes).expect("decode assessment");
-    (value, bytes)
+fn read_assessment(path: &Path) -> TestResult<(G5Assessment, Vec<u8>)> {
+    let bytes = std::fs::read(path)?;
+    let value = serde_json::from_slice(&bytes)?;
+    Ok((value, bytes))
 }
 
 struct TrustFixture {
@@ -266,35 +266,32 @@ struct TrustFixture {
 }
 
 impl TrustFixture {
-    fn new(revoked: bool) -> Self {
+    fn new(revoked: bool) -> TestResult<Self> {
         let temporary = private_tempdir("G5 trust fixture");
-        let root = temporary.path().canonicalize().expect("canonical root");
+        let root = temporary.path().canonicalize()?;
         let key = root.join("operator-key");
         let status = Command::new("/usr/bin/ssh-keygen")
             .args(["-q", "-t", "ed25519", "-N", "", "-f"])
             .arg(&key)
-            .status()
-            .expect("start test key generation");
+            .status()?;
         assert!(status.success());
-        let public = std::fs::read_to_string(key.with_extension("pub")).expect("public key");
+        let public = std::fs::read_to_string(key.with_extension("pub"))?;
         let fields = public.split_ascii_whitespace().collect::<Vec<_>>();
         assert_eq!(fields.first().copied(), Some("ssh-ed25519"));
         let allowed_signers = root.join("allowed_signers");
         write_private_new(
             &allowed_signers,
             format!("operator@example {} {}\n", fields[0], fields[1]).as_bytes(),
-        )
-        .expect("write allowed signers");
+        )?;
         let fingerprint_output = Command::new("/usr/bin/ssh-keygen")
             .args(["-E", "sha256", "-lf"])
             .arg(key.with_extension("pub"))
-            .output()
-            .expect("compute fingerprint");
+            .output()?;
         assert!(fingerprint_output.status.success());
         let fingerprint = String::from_utf8_lossy(&fingerprint_output.stdout)
             .split_ascii_whitespace()
             .nth(1)
-            .expect("fingerprint field")
+            .ok_or("fingerprint field")?
             .to_string();
         let revocation = G5RevocationState {
             effective_at_unix_seconds: 1,
@@ -312,14 +309,14 @@ impl TrustFixture {
             trust_root_revision: 1,
         };
         let revocation_path = root.join("revocations.json");
-        write_private_new(&revocation_path, &canonical_json(&revocation).unwrap()).unwrap();
+        write_private_new(&revocation_path, &canonical_json(&revocation)?)?;
         let policy_value = G5TrustPolicy {
-            allowed_signers_sha256: sha256(&std::fs::read(&allowed_signers).unwrap()),
+            allowed_signers_sha256: sha256(&std::fs::read(&allowed_signers)?),
             key_fingerprint: fingerprint,
             maximum_lifetime_seconds: 900,
             principal: "operator@example".to_string(),
             revocation_owner: "security@example".to_string(),
-            revocation_sha256: sha256(&std::fs::read(&revocation_path).unwrap()),
+            revocation_sha256: sha256(&std::fs::read(&revocation_path)?),
             revocation_revision: 1,
             schema: G5_TRUST_POLICY_SCHEMA.to_string(),
             schema_version: 1,
@@ -328,9 +325,9 @@ impl TrustFixture {
             trust_root_revision: 1,
         };
         let policy = root.join("trust-policy.json");
-        write_private_new(&policy, &canonical_json(&policy_value).unwrap()).unwrap();
-        let policy_sha256 = sha256(&std::fs::read(&policy).unwrap());
-        Self {
+        write_private_new(&policy, &canonical_json(&policy_value)?)?;
+        let policy_sha256 = sha256(&std::fs::read(&policy)?);
+        Ok(Self {
             _temporary: temporary,
             allowed_signers,
             key,
@@ -340,7 +337,7 @@ impl TrustFixture {
             revocation_path,
             root,
             policy_value,
-        }
+        })
     }
 
     fn inputs(&self) -> G5TrustInputs<'_> {
@@ -357,37 +354,37 @@ impl TrustFixture {
         Ok(())
     }
 
-    fn rewrite_policy_and_revocation(&mut self) {
-        let revocation_bytes = canonical_json(&self.revocation).expect("canonical revocation");
-        std::fs::remove_file(&self.revocation_path).expect("replace revocation");
-        write_private_new(&self.revocation_path, &revocation_bytes).expect("write revocation");
+    fn rewrite_policy_and_revocation(&mut self) -> Result<(), crate::AcceptanceError> {
+        let revocation_bytes = canonical_json(&self.revocation)?;
+        std::fs::remove_file(&self.revocation_path)?;
+        write_private_new(&self.revocation_path, &revocation_bytes)?;
         self.policy_value.revocation_sha256 = sha256(&revocation_bytes);
-        let policy_bytes = canonical_json(&self.policy_value).expect("canonical policy");
-        std::fs::remove_file(&self.policy).expect("replace policy");
-        write_private_new(&self.policy, &policy_bytes).expect("write policy");
+        let policy_bytes = canonical_json(&self.policy_value)?;
+        std::fs::remove_file(&self.policy)?;
+        write_private_new(&self.policy, &policy_bytes)?;
         self.policy_sha256 = sha256(&policy_bytes);
+        Ok(())
     }
 
-    fn sign(&self, challenge: &Path) -> PathBuf {
+    fn sign(&self, challenge: &Path) -> std::io::Result<PathBuf> {
         let status = Command::new("/usr/bin/ssh-keygen")
             .args(["-Y", "sign", "-f"])
             .arg(&self.key)
             .args(["-n", SSHSIG_NAMESPACE])
             .arg(challenge)
-            .status()
-            .expect("start SSHSIG signer");
+            .status()?;
         assert!(status.success());
         let signature = PathBuf::from(format!("{}.sig", challenge.display()));
-        set_private_permissions(&signature);
-        signature
+        set_private_permissions(&signature)?;
+        Ok(signature)
     }
 }
 
-fn set_private_permissions(path: &Path) {
+fn set_private_permissions(path: &Path) -> std::io::Result<()> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
-        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))
-            .expect("private signature permissions");
+        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
     }
+    Ok(())
 }

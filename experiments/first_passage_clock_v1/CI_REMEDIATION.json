@@ -1,0 +1,57 @@
+{
+  "schema": "fpt-research-ci-remediation-v1",
+  "pr": 4378,
+  "initial_research_head": "97fe2540dda08f6af0d0bcfc6f497a7ac4ca6cfb",
+  "initial_blocking_run": 41079898424,
+  "observed_failures": [
+    {
+      "job": 124146677180,
+      "platform": "macos-15 / aarch64-apple-darwin",
+      "gate": "Bazel release build",
+      "exit_code": 33,
+      "diagnostic": "java.lang.OutOfMemoryError: unable to create native thread",
+      "transport": "buildbuddy-generic-rbe",
+      "progress_before_failure": "15011 / 18048 actions; 800 actions, 13 running",
+      "correction": "ci-macos jobs=32 and loading_phase_threads=8, preserving all targets and assertion modes",
+      "scope": "Reduce coordinator concurrency pressure; successful completion still requires actual CI verification."
+    },
+    {
+      "job": 124146677222,
+      "platform": "Ubuntu / x86_64-unknown-linux-gnu",
+      "gate": "Bazel Clippy",
+      "exit_code": 1,
+      "diagnostic": "clippy::expect_used and clippy::unwrap_used in inherited operator trust and prompt delivery test fixtures",
+      "correction": "Explicit Result propagation and required Err checks; original assertions and strict lint levels retained"
+    },
+    {
+      "job": 124146677135,
+      "platform": "macos-15 / aarch64-apple-darwin",
+      "gate": "Bazel Clippy",
+      "exit_code": 1,
+      "diagnostic": "Same inherited test-fixture lint violations as the Ubuntu job"
+    }
+  ],
+  "local_validation": {
+    "buildbuddy_wrapper_tests": {"passed": 16},
+    "wrapper_order_and_target_transport": "Verified RBE defaults precede ci-macos and target/assertion arguments remain intact",
+    "operator_acceptance": {
+      "strict_clippy": "PASS",
+      "isolated_just_test": {"passed": 24, "skipped": 0},
+      "changed_tests_retained": 11,
+      "original_assertions_retained": 34,
+      "qualification": "Real repository source with an isolated offline manifest; cached serde_json 1.0.151 differs from repository lock 1.0.154, so actual Bazel CI remains necessary"
+    },
+    "intelligence": {
+      "changed_tests_retained": 7,
+      "original_assertions_retained": 30,
+      "original_matches_retained": 2,
+      "rustfmt_parse": "PASS",
+      "local_just_test": "Workspace loading blocked by missing aws-auth manifest in sparse checkout; compilation and tests were not run locally"
+    },
+    "just_fmt": "PASS",
+    "diff_check": "PASS"
+  },
+  "preserved": ["scientific freeze and trained bundle", "confirmation and OOD results", "native owner source identity", "strict Clippy policy", "complete Bazel targets", "release debug-assertions gate"],
+  "bazel_reference": "https://bazel.build/versions/9.0.0/reference/command-line-reference",
+  "final_ci_authority": "GitHub check runs for the PR's current source head; this record does not relabel the initial failures as passing"
+}
