@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.first-passage.runtime-recovery-review.v1",
+  "base_commit": "9b71cf4e65194593d5e0fb2a507026d21527a740",
+  "scope": "Repair concrete repository failures around the frozen study. This record does not establish successful execution on a new pull-request head.",
+  "workspace_recovery": {
+    "published_evidence": "Previously committed evidence and scientific data remain unchanged.",
+    "unpublished_evidence": "The transient workspace reset removed earlier local files. Reconstructed source is identified separately from byte-identical restoration; lost local logs are not recreated or counted as fresh results.",
+    "fresh_validation": "The retained raw logs in this package were produced after restoration. Environment failures remain visible alongside subsequent successful runs."
+  },
+  "repairs": [
+    {
+      "owner": "Pinned research materializer",
+      "problem": "The historical just entry point needs scripts/just-shell.py as well as scripts/run-nextest.py.",
+      "change": "Materialize both support scripts from the same pinned historical commit and reject an incomplete source set before writing output.",
+      "invariant": "The 64 frozen owner files and their source identity are unchanged."
+    },
+    {
+      "owner": "Locked holdout CAS store",
+      "problem": "A duplicated or inherited descriptor can retain the advisory lock after the owning store is dropped.",
+      "change": "Explicitly unlock in Drop before the file closes. A regression keeps a duplicate descriptor alive, verifies exclusion while the owner exists, and then reacquires the same anchored journal after owner drop.",
+      "invariant": "CAS, anchor, rollback, fence and durability checks are unchanged. Destructor errors cannot be returned; closing the owned file remains the fallback."
+    },
+    {
+      "owner": "Cognitive memory recovery",
+      "problem": "Dropping a pool handle alone does not wait for all SQLite workers to close before descriptor-bound recovery.",
+      "change": "Expose close().await on the owner. Recovery fixtures close the shared pool while the store guard remains held, drop the store, and then recover.",
+      "invariant": "All clones share the pool. Callers must release every store handle before reopening; closing can wait for an outstanding borrowed connection."
+    },
+    {
+      "owner": "Migration and lease fixtures",
+      "problem": "Historical downgrade fixtures omitted current schema objects, and the seeded lease could expire while its own evidence was still being prepared.",
+      "change": "Account for memory migration 15 and automation migrations 17/18. Give the seeded lease a 10-second preparation budget and wait until one second beyond its actual expiry before recovery.",
+      "invariant": "Real migrations, immutable evidence, wall-clock expiry checks and original outcome assertions remain active. Extreme load or wall-clock changes can still affect the lease fixture."
+    },
+    {
+      "owner": "Exec resume fixtures",
+      "problem": "The production delete_thread API permanently seals queue admission and therefore cannot model a missing recoverable index row.",
+      "change": "Use the configured SQLite owner to delete exactly the intended threads row with a parameterized query, assert one affected row, and close the auxiliary pool.",
+      "invariant": "Production deletion and permanent queue sealing remain unchanged. SQLx is added only as a test dependency."
+    },
+    {
+      "owner": "Fleet release publication on Darwin",
+      "problem": "The old order removed directory write permission before rename. XNU requires write authority on the directory being renamed even when its parent is unchanged.",
+      "change": "Create private staging with mode 0700, retain file and directory synchronization, rename while writable, seal the final root as 0555, synchronize it and its parent, then return the validated release.",
+      "invariant": "Readers reject a writable final root. The added interruption regression proves that complete bytes in an unsealed catalog entry cannot gain an agent allowance. Existing fsync errors are propagated.",
+      "failure_boundary": "After successful rename, error cleanup addresses this installation's final root; before rename it addresses only its staging path. A crash before sealing can leave an unusable entry requiring repair. No general concurrent no-clobber theorem is claimed.",
+      "primary_source": "https://github.com/apple-oss-distributions/xnu/blob/f6217f891ac0bb64f3d375211650a4c1ff8ca1ea/bsd/vfs/vfs_subr.c",
+      "source_function": "vn_authorize_renamex_with_paths",
+      "native_acceptance": "A Linux regression and source review do not substitute for native macOS CI."
+    }
+  ],
+  "dependencies": {
+    "Cargo.lock_sha256": "d76c461efa4ed6c2ad930ed56e37b7790ef6c02046280c83fa2357346c93ed38",
+    "changes": "Only two workspace test dependency edges: exec to SQLx and supervisor to cargo-bin. Registry versions and checksums are unchanged.",
+    "MODULE.bazel.lock_sha256": "36e52d219967278c1c1d29bf760a41a4c0af5a01dd7f91a5410c89ae552c1e94",
+    "verification": "The native-owner evidence records a successful canonical update and strict lock check. The two workspace edges do not change external extension facts, so the Bazel lock remains byte-identical."
+  },
+  "independent_review": "../runtime-math-20261030/RUNTIME_OWNER_REVIEW.json",
+  "scientific_boundary": {
+    "freeze_commit": "99f4d90ce4bb773240840f10cf65e28c72a4092e",
+    "owner_source_commit": "71b4305c6619ed9faff98062f0ff7f932f4abfd0",
+    "confirmation_reopened": false,
+    "production_activation": false,
+    "selected_models_or_seeds_changed": false,
+    "unfavorable_results": "The meta-gradient result remains below the exact-gradient baseline; the threshold cross-stratum gate fails; the resource-feedback fixture loses task utility. No energy advantage is established."
+  }
+}

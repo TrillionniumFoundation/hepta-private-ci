@@ -1,0 +1,151 @@
+diff --git a/codex-rs/sandboxing/src/seatbelt_tests.rs b/codex-rs/sandboxing/src/seatbelt_tests.rs
+index f5db9e2..1d599dd 100644
+--- a/codex-rs/sandboxing/src/seatbelt_tests.rs
++++ b/codex-rs/sandboxing/src/seatbelt_tests.rs
+@@ -75,6 +75,40 @@ fn seatbelt_policy_arg(args: &[String]) -> &str {
+         .expect("seatbelt args should include policy text")
+ }
+ 
++fn seatbelt_writable_parameter_paths(args: &[String]) -> Vec<String> {
++    let policy = seatbelt_policy_arg(args);
++    let mut names = std::collections::BTreeSet::new();
++    let mut parameters = args
++        .iter()
++        .filter(|arg| arg.starts_with("-DWRITABLE_ROOT_"))
++        .map(|arg| {
++            let (name, path) = arg
++                .strip_prefix("-D")
++                .expect("writable parameter prefix")
++                .split_once('=')
++                .expect("writable parameter value");
++            assert!(names.insert(name), "duplicate writable parameter {name}");
++            let name = if let Some((root, _)) = name.split_once("_EXCLUDED_") {
++                // Exclusion numbers only bind parameters within the policy.
++                // Preserve every path and verify both deny predicates before
++                // comparing their order-independent assignment to a root.
++                for matcher in ["literal", "subpath"] {
++                    assert!(
++                        policy.contains(&format!("(require-not ({matcher} (param \"{name}\")))")),
++                        "missing {matcher} exclusion for {name}: {policy}"
++                    );
++                }
++                format!("{root}_EXCLUDED")
++            } else {
++                name.to_string()
++            };
++            format!("-D{name}={path}")
++        })
++        .collect::<Vec<_>>();
++    parameters.sort();
++    parameters
++}
++
+ #[cfg(unix)]
+ fn restricted_write_policy(paths: &[&Path]) -> FileSystemSandboxPolicy {
+     let mut entries = vec![FileSystemSandboxEntry::new(
+@@ -1551,7 +1585,7 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
+         "expected empty root metadata protection regex requirements in policy:\n{policy_text}",
+     );
+ 
+-    let expected_definitions = [
++    let mut expected_definitions = [
+         format!(
+             "-DWRITABLE_ROOT_0={}",
+             cwd.canonicalize()
+@@ -1559,21 +1593,21 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
+                 .to_string_lossy()
+         ),
+         format!(
+-            "-DWRITABLE_ROOT_0_EXCLUDED_0={}",
++            "-DWRITABLE_ROOT_0_EXCLUDED={}",
+             cwd.canonicalize()
+                 .expect("canonicalize cwd")
+                 .join(".git")
+                 .display()
+         ),
+         format!(
+-            "-DWRITABLE_ROOT_0_EXCLUDED_1={}",
++            "-DWRITABLE_ROOT_0_EXCLUDED={}",
+             cwd.canonicalize()
+                 .expect("canonicalize cwd")
+                 .join(".agents")
+                 .display()
+         ),
+         format!(
+-            "-DWRITABLE_ROOT_0_EXCLUDED_2={}",
++            "-DWRITABLE_ROOT_0_EXCLUDED={}",
+             cwd.canonicalize()
+                 .expect("canonicalize cwd")
+                 .join(".codex")
+@@ -1584,11 +1618,11 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
+             vulnerable_root_canonical.to_string_lossy()
+         ),
+         format!(
+-            "-DWRITABLE_ROOT_1_EXCLUDED_0={}",
++            "-DWRITABLE_ROOT_1_EXCLUDED={}",
+             dot_git_canonical.to_string_lossy()
+         ),
+         format!(
+-            "-DWRITABLE_ROOT_1_EXCLUDED_1={}",
++            "-DWRITABLE_ROOT_1_EXCLUDED={}",
+             dot_codex_canonical.to_string_lossy()
+         ),
+         format!(
+@@ -1596,11 +1630,8 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
+             empty_root_canonical.to_string_lossy()
+         ),
+     ];
+-    let writable_definitions: Vec<String> = args
+-        .iter()
+-        .filter(|arg| arg.starts_with("-DWRITABLE_ROOT_"))
+-        .cloned()
+-        .collect();
++    expected_definitions.sort();
++    let writable_definitions = seatbelt_writable_parameter_paths(&args);
+     assert_eq!(
+         writable_definitions, expected_definitions,
+         "unexpected writable-root parameter definitions in {args:#?}"
+@@ -2495,29 +2526,20 @@ fn create_seatbelt_args_for_cwd_as_git_repo() {
+         args.contains(&expected_root),
+         "missing {expected_root}: {args:#?}"
+     );
+-    let expected_dot_git = format!(
+-        "-DWRITABLE_ROOT_0_EXCLUDED_0={}",
+-        dot_git_canonical.to_string_lossy()
+-    );
+-    assert!(
+-        args.contains(&expected_dot_git),
+-        "missing {expected_dot_git}: {args:#?}"
+-    );
+-    let expected_dot_codex = format!(
+-        "-DWRITABLE_ROOT_0_EXCLUDED_2={}",
+-        dot_codex_canonical.to_string_lossy()
+-    );
+-    assert!(
+-        args.contains(&expected_dot_codex),
+-        "missing {expected_dot_codex}: {args:#?}"
+-    );
+-    let expected_dot_agents = format!(
+-        "-DWRITABLE_ROOT_0_EXCLUDED_1={}",
+-        dot_agents_canonical.to_string_lossy()
+-    );
+-    assert!(
+-        args.contains(&expected_dot_agents),
+-        "missing {expected_dot_agents}: {args:#?}"
++    let mut expected_metadata = [
++        &dot_git_canonical,
++        &dot_codex_canonical,
++        &dot_agents_canonical,
++    ]
++    .map(|path| format!("-DWRITABLE_ROOT_0_EXCLUDED={}", path.display()));
++    expected_metadata.sort();
++    let actual_metadata = seatbelt_writable_parameter_paths(&args)
++        .into_iter()
++        .filter(|arg| arg.starts_with("-DWRITABLE_ROOT_0_EXCLUDED="))
++        .collect::<Vec<_>>();
++    assert_eq!(
++        actual_metadata, expected_metadata,
++        "unexpected cwd metadata exclusions in {args:#?}"
+     );
+     let expected_slash_tmp = format!("-DWRITABLE_ROOT_1={}", slash_tmp.to_string_lossy());
+     assert!(

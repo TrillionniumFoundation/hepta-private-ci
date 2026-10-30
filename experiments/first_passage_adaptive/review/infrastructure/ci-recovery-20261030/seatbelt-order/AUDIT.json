@@ -1,0 +1,49 @@
+{
+  "schema": "hepta_ci_seatbelt_exclusion_order_audit_v1",
+  "base_head": "9b71cf4e65194593d5e0fb2a507026d21527a740",
+  "original_failure": {
+    "job_id": 123485500602,
+    "log_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40883692430/job/123485500602",
+    "raw_gzip_sha256": "efd7d9d4df212cffe8cb28ff4b44bf855eaed3780285aad184686f49b4542275",
+    "status": "original macOS ARM native failure; not rerun locally"
+  },
+  "source": {
+    "path": "codex-rs/sandboxing/src/seatbelt_tests.rs",
+    "before_sha256": "e2c0cd651f5289a9c5df37e37c76153bd2396835403e89bcc7be6c71542ec6ea",
+    "after_sha256": "5143be839e5246fb0454d5bbe4b9118f26d0a7b294649fab590137b555faa42a"
+  },
+  "production_files": {
+    "codex-rs/sandboxing/src/seatbelt.rs": {
+      "unchanged_from_base": true,
+      "sha256": "7e8f7c00d1ad9e714b683928e3b753c3e01b57e22c489a2a730ec7282c5b4802"
+    },
+    "codex-rs/protocol/src/permissions.rs": {
+      "unchanged_from_base": true,
+      "sha256": "3ad7c54a19a3bddd72e9e8d8d0641835674ac2b596001ee0d7ce32293863fe06"
+    }
+  },
+  "reason": "Opaque exclusion parameter numbers depend on existing metadata versus explicit non-write paths. All exclusions are conjoined literal and subpath predicates; assignment order is not permission precedence. Preserve every root/path occurrence and validate parameter binding, while comparing complete path multisets.",
+  "validation_scope": "Python projection of original CI arguments plus source review. Rustfmt parser/format command exit 0 with stable imports_granularity warning. No Rust compilation and no local native macOS Seatbelt execution. New-head macOS CI remains required.",
+  "checks": [
+    {
+      "case": "create_seatbelt_args_for_cwd_as_git_repo",
+      "full_original_argument_projection_valid": true,
+      "writable_parameter_count": 9,
+      "duplicate_name_rejected": true,
+      "missing_literal_deny_rejected": true,
+      "missing_subpath_deny_rejected": true,
+      "missing_protected_path_changes_expected_multiset": true,
+      "argument_order_permutation_preserves_projection": true
+    },
+    {
+      "case": "create_seatbelt_args_with_read_only_git_and_codex_subpaths",
+      "full_original_argument_projection_valid": true,
+      "writable_parameter_count": 8,
+      "duplicate_name_rejected": true,
+      "missing_literal_deny_rejected": true,
+      "missing_subpath_deny_rejected": true,
+      "missing_protected_path_changes_expected_multiset": true,
+      "argument_order_permutation_preserves_projection": true
+    }
+  ]
+}
