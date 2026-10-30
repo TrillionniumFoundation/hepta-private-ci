@@ -801,16 +801,20 @@ pub(crate) async fn verify_provider_effect_rows(pool: &SqlitePool) -> Result<(),
                     "provider effect ACK and uncertainty share an ambiguous timestamp".to_string(),
                 ));
             }
+            // Later uncertainty must not retroactively invalidate the initial
+            // dispatch ACK. Only the prefix preceding this ACK is relevant.
+            let uncertainty_before = uncertainty_rows
+                .iter()
+                .filter(|uncertainty_row| {
+                    uncertainty_row.get::<i64, _>("recorded_at_ms") < ack.recorded_at_ms
+                })
+                .count();
             let boundary_dispatch_ack = previous_ack.is_none()
                 && ack.source == ProviderEffectAckSource::DispatchResponse
-                && uncertainty_rows.len() == 1
+                && uncertainty_before == 1
                 && uncertainty_rows[0].get::<String, _>("reason_code")
-                    == PROVIDER_EFFECT_DISPATCH_BOUNDARY_PENDING_REASON
-                && uncertainty_rows[0].get::<i64, _>("recorded_at_ms") < ack.recorded_at_ms;
-            let uncertainty_before = uncertainty_rows.iter().any(|uncertainty_row| {
-                uncertainty_row.get::<i64, _>("recorded_at_ms") < ack.recorded_at_ms
-            });
-            if uncertainty_before
+                    == PROVIDER_EFFECT_DISPATCH_BOUNDARY_PENDING_REASON;
+            if uncertainty_before != 0
                 && ack.source != ProviderEffectAckSource::StatusLookup
                 && !boundary_dispatch_ack
             {
@@ -840,13 +844,10 @@ pub(crate) async fn verify_provider_effect_rows(pool: &SqlitePool) -> Result<(),
                 );
                 let operation_rebound = previous.ack.provider_operation_id_sha256
                     != ack.ack.provider_operation_id_sha256;
-                let legal = if uncertainty_between {
-                    // An uncertainty can justify rebinding the provider
-                    // operation id, but never permits Accepted -> Rejected.
-                    ack.source == ProviderEffectAckSource::StatusLookup && legal_status_transition
-                } else {
-                    legal_status_transition && !operation_rebound
-                };
+                let legal = legal_status_transition
+                    && !operation_rebound
+                    && (!uncertainty_between
+                        || ack.source == ProviderEffectAckSource::StatusLookup);
                 if !legal {
                     return Err(EvidenceError::Corrupt(
                         "provider effect ACK transition is not monotonic".to_string(),
@@ -1225,6 +1226,11 @@ async fn validate_ack_transition_in_transaction(
     let Some(previous) = previous else {
         return Ok(());
     };
+    if previous.ack.provider_operation_id_sha256 != next.provider_operation_id_sha256 {
+        return Err(EvidenceError::IdempotencyConflict {
+            record_id: next.key.as_str().to_string(),
+        });
+    }
     if uncertainties
         .iter()
         .any(|uncertainty| uncertainty.recorded_at_ms > previous.recorded_at_ms)
@@ -1234,9 +1240,8 @@ async fn validate_ack_transition_in_transaction(
                 record_id: next.key.as_str().to_string(),
             });
         }
-        // An uncertainty marker permits a later status lookup to bind the
-        // provider's authoritative operation id, but it must not weaken the
-        // local monotonic state machine.  Once an operation was accepted,
+        // Uncertainty requires a status lookup for the original operation ID;
+        // it never releases that binding. Once an operation was accepted,
         // only another Accepted observation or a Completed receipt can close
         // it.  Accepted -> Rejected remains fail-closed because the earlier
         // admission leaves open the possibility that the provider applied the
@@ -1254,11 +1259,6 @@ async fn validate_ack_transition_in_transaction(
         if source == ProviderEffectAckSource::StatusLookup && legal_after_uncertainty {
             return Ok(());
         }
-        return Err(EvidenceError::IdempotencyConflict {
-            record_id: next.key.as_str().to_string(),
-        });
-    }
-    if previous.ack.provider_operation_id_sha256 != next.provider_operation_id_sha256 {
         return Err(EvidenceError::IdempotencyConflict {
             record_id: next.key.as_str().to_string(),
         });

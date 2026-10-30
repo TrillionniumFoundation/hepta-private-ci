@@ -726,8 +726,8 @@ fn validate_journal_contents(
             let source = sources[index];
             // An uncertainty marker is stored out-of-band from the ACK
             // sequence.  Treat a status-sourced ACK as following that marker
-            // so the accepted -> completed operation-id rebinding used by
-            // reconciliation remains valid during replay validation.
+            // so replay enforces the same status-only recovery boundary.
+            // Uncertainty never releases an already observed operation ID.
             if uncertainty_present && source == ProviderEffectAckSource::StatusLookup {
                 quarantined_before = true;
             }
@@ -1130,12 +1130,13 @@ fn validate_ack_transition(
     let Some(previous) = observations.last() else {
         return Ok(());
     };
-    if previous.state().is_terminal() {
+    if previous.state().is_terminal()
+        || previous.provider_operation_id_sha256 != next.provider_operation_id_sha256
+    {
         return Err(ProviderEffectBindingError::AckConflict);
     }
-    // A status lookup after an explicit unknown observation is allowed to
-    // bind the provider's authoritative operation identity.  It does not,
-    // however, relax the state machine: an already accepted operation may
+    // A status lookup after an explicit unknown observation must preserve
+    // the provider operation identity already observed. An accepted operation may
     // only remain accepted or advance to completed.  In particular,
     // accepted -> rejected must stay fail-closed because the earlier
     // admission proves that the provider may already have applied it.
@@ -1148,9 +1149,6 @@ fn validate_ack_transition(
             | (ProviderEffectAckStatus::Accepted, ProviderEffectAckStatus::Completed) => Ok(()),
             _ => Err(ProviderEffectBindingError::AckConflict),
         };
-    }
-    if previous.provider_operation_id_sha256 != next.provider_operation_id_sha256 {
-        return Err(ProviderEffectBindingError::AckConflict);
     }
     match (previous.status, next.status) {
         (ProviderEffectAckStatus::Accepted, ProviderEffectAckStatus::Completed) => Ok(()),
@@ -1602,6 +1600,10 @@ fn digest_parts<'a>(parts: impl IntoIterator<Item = &'a str>) -> String {
 }
 
 #[cfg(test)]
+#[path = "provider_effect_operation_binding_tests.rs"]
+mod operation_binding_tests;
+
+#[cfg(test)]
 mod tests {
     use super::*;
     use crate::PROVIDER_EVIDENCE_SCHEMA_VERSION;
@@ -1918,7 +1920,7 @@ mod tests {
         let completed = ProviderEffectAck::new(
             key.clone(),
             intent.payload_sha256.clone(),
-            Sha256Digest::for_bytes(b"operation-2"),
+            Sha256Digest::for_bytes(b"operation-1"),
             ProviderEffectAckStatus::Completed,
         );
         let mut journal = ProviderEffectJournal::default();
@@ -1946,7 +1948,7 @@ mod tests {
     }
 
     #[test]
-    fn journal_status_acceptance_can_close_prior_quarantine() {
+    fn journal_status_acceptance_cannot_replace_the_original_operation() {
         let intent = intent(b"status-accepted-after-unknown");
         let key = intent.key.clone();
         let accepted_before_unknown = ProviderEffectAck::new(
@@ -1971,9 +1973,12 @@ mod tests {
             .expect("quarantine");
         assert_eq!(
             journal.record_status_observation(accepted_after_unknown),
-            Ok(ProviderEffectAppendDisposition::Inserted)
+            Err(ProviderEffectBindingError::AckConflict)
         );
-        assert_eq!(journal.state(&key), Some(ProviderEffectState::Accepted));
+        assert_eq!(
+            journal.state(&key),
+            Some(ProviderEffectState::Indeterminate)
+        );
         assert!(journal.validate().is_ok());
     }
 
