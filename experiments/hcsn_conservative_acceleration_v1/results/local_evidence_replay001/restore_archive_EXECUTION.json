@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+    "-m",
+    "experiments.hcsn_free_boundary_v1.archive",
+    "restore",
+    "--manifest",
+    "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/artifacts/hosted002/hosted_attempt.json",
+    "--destination",
+    "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/results"
+  ],
+  "complete_child_cpu_seconds": 1.6224109999999998,
+  "cwd": "/workspace/scratch/af4384a0a49b/hepta-hcsn",
+  "ended_utc": "2026-10-30T13:29:13.800593+00:00",
+  "exit_code": 0,
+  "log": "experiments/hcsn_conservative_acceleration_v1/results/local_evidence_replay001/restore_archive.log",
+  "name": "restore_archive",
+  "peak_rss_bytes": 31318016,
+  "process_created": true,
+  "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+  "started_utc": "2026-10-30T13:29:12.103260+00:00",
+  "system_cpu_seconds": 0.36724399999999996,
+  "user_cpu_seconds": 1.255167,
+  "wall_seconds": 1.6973476840030344
+}

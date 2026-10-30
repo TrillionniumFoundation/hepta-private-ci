@@ -1,5 +1,28 @@
 # Conservative acceleration of the HCSN distributional model
 
+## Completed hosted study (2026-10-30)
+
+All 70 registered jobs completed and passed the frozen integrity analysis.
+Six primary fixed-update pairs retained their loss/parameter trajectories and
+selected accuracies while delivering a 1.9875x geometric-mean training CPU
+speedup and a 1.7430x whole-worker speedup. These compare two implementations
+of the same finite HCSN. The external quality-conditioned comparisons passed
+0/18 gates; the study does not establish superiority over Transformer, ordinary
+gates, general SNNs, or multimodal foundation models.
+
+Read the [complete Chinese report](FINAL_REPORT_ZH.md),
+[reproduction guide](REPRODUCE.md), and
+[independent statistical review](reports/HOSTED_COMPARISON_AUDIT.md).
+The immutable original result is in evidence commit
+`a0de582931981b3742433475ecf5565409854a5c`, executed from seal
+`78b98ed8dd66294a3de6abce2fa0bbbd2c24f8d5`.
+The [archive](artifacts/hosted002/hosted_attempt.json) preserves all 1,289 raw
+members. All parts and members were restored and checked; a frozen-analyzer
+replay reproduces every scientific field, differing only in the analyzer's own
+CPU/wall timing. Prior failures and negative mechanism findings remain retained.
+
+## Purpose
+
 This continuation addresses a measured computational bottleneck in the existing
 HCSN content model. It preserves the registered finite probability/event
 operator while changing its evaluation order and explicitly enabling the

@@ -1,0 +1,29 @@
+{
+  "schema": "hcsn-hosted-actions-final-receipt.v1",
+  "execution_seal": "78b98ed8dd66294a3de6abce2fa0bbbd2c24f8d5",
+  "evidence_commit": "a0de582931981b3742433475ecf5565409854a5c",
+  "run_id": 41059620366,
+  "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41059620366",
+  "jobs": [
+    {
+      "id": 124075796883,
+      "name": "comparison",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-30T13:00:07Z",
+      "completed_at": "2026-10-30T13:14:12Z",
+      "wall_seconds": 845
+    },
+    {
+      "id": 124082254922,
+      "name": "publish",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-30T13:14:15Z",
+      "completed_at": "2026-10-30T13:14:28Z",
+      "wall_seconds": 13
+    }
+  ],
+  "cpu_accounting": "GitHub job timestamps are wall time only. Job CPU, installation CPU and publisher CPU were not separately instrumented and remain unknown. Nested measured stages are reported in the original runner receipts.",
+  "archive_preservation": "The Actions artifact expires after one day. Its content has already been permanently committed as 145 verified bounded tar.xz parts plus manifests; do not rely on the temporary Actions artifact link."
+}

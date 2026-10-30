@@ -1,0 +1,237 @@
+{
+  "total_count": 2,
+  "jobs": [
+    {
+      "id": 124075796883,
+      "run_id": 41059620366,
+      "workflow_name": "HCSN conservative hosted comparison",
+      "head_branch": "research/hcsn-conservative-acceleration-20261030",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41059620366",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTrgxoM8AAAAc435pkw",
+      "head_sha": "78b98ed8dd66294a3de6abce2fa0bbbd2c24f8d5",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/124075796883",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41059620366/job/124075796883",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-30T13:00:04Z",
+      "started_at": "2026-10-30T13:00:07Z",
+      "completed_at": "2026-10-30T13:14:12Z",
+      "name": "comparison",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-30T13:00:08Z",
+          "completed_at": "2026-10-30T13:00:08Z"
+        },
+        {
+          "name": "Initialize containers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-30T13:00:09Z",
+          "completed_at": "2026-10-30T13:00:24Z"
+        },
+        {
+          "name": "Check out the exact execution source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-30T13:00:24Z",
+          "completed_at": "2026-10-30T13:00:26Z"
+        },
+        {
+          "name": "Materialize only the pinned source and bounded data objects",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-30T13:00:26Z",
+          "completed_at": "2026-10-30T13:00:27Z"
+        },
+        {
+          "name": "Check the pinned interpreter and actual cgroup namespace",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-30T13:00:27Z",
+          "completed_at": "2026-10-30T13:00:28Z"
+        },
+        {
+          "name": "Install pinned CPU numerical dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-30T13:00:28Z",
+          "completed_at": "2026-10-30T13:00:56Z"
+        },
+        {
+          "name": "Restore data, verify math, and register the full rerun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-30T13:00:56Z",
+          "completed_at": "2026-10-30T13:01:16Z"
+        },
+        {
+          "name": "Preserve registration before formal training",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-30T13:01:16Z",
+          "completed_at": "2026-10-30T13:01:17Z"
+        },
+        {
+          "name": "Run all 70 registered jobs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-30T13:01:17Z",
+          "completed_at": "2026-10-30T13:13:17Z"
+        },
+        {
+          "name": "Independently analyze and bind the trained native execution",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-30T13:13:17Z",
+          "completed_at": "2026-10-30T13:13:33Z"
+        },
+        {
+          "name": "Package all original evidence including failures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-30T13:13:33Z",
+          "completed_at": "2026-10-30T13:14:06Z"
+        },
+        {
+          "name": "Preserve complete bounded evidence for publication",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-30T13:14:06Z",
+          "completed_at": "2026-10-30T13:14:08Z"
+        },
+        {
+          "name": "Require complete audited execution",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-30T13:14:08Z",
+          "completed_at": "2026-10-30T13:14:08Z"
+        },
+        {
+          "name": "Post Check out the exact execution source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-10-30T13:14:08Z",
+          "completed_at": "2026-10-30T13:14:09Z"
+        },
+        {
+          "name": "Stop containers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 26,
+          "started_at": "2026-10-30T13:14:09Z",
+          "completed_at": "2026-10-30T13:14:11Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 27,
+          "started_at": "2026-10-30T13:14:11Z",
+          "completed_at": "2026-10-30T13:14:11Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/124075796883",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000291547,
+      "runner_name": "GitHub Actions 1000291547",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 124082254922,
+      "run_id": 41059620366,
+      "workflow_name": "HCSN conservative hosted comparison",
+      "head_branch": "research/hcsn-conservative-acceleration-20261030",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41059620366",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTrgxoM8AAAAc4-D0Sg",
+      "head_sha": "78b98ed8dd66294a3de6abce2fa0bbbd2c24f8d5",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/124082254922",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41059620366/job/124082254922",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-30T13:14:12Z",
+      "started_at": "2026-10-30T13:14:15Z",
+      "completed_at": "2026-10-30T13:14:28Z",
+      "name": "publish",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-30T13:14:16Z",
+          "completed_at": "2026-10-30T13:14:16Z"
+        },
+        {
+          "name": "Check out the sealed branch for evidence publication",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-30T13:14:16Z",
+          "completed_at": "2026-10-30T13:14:18Z"
+        },
+        {
+          "name": "Obtain this run's exact evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-30T13:14:18Z",
+          "completed_at": "2026-10-30T13:14:19Z"
+        },
+        {
+          "name": "Verify all bytes and publish with a branch-head check",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-30T13:14:19Z",
+          "completed_at": "2026-10-30T13:14:27Z"
+        },
+        {
+          "name": "Post Check out the sealed branch for evidence publication",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-30T13:14:27Z",
+          "completed_at": "2026-10-30T13:14:27Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-30T13:14:27Z",
+          "completed_at": "2026-10-30T13:14:27Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/124082254922",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000291667,
+      "runner_name": "GitHub Actions 1000291667",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}
