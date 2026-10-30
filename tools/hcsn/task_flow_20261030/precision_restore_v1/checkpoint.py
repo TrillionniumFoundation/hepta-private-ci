@@ -153,10 +153,11 @@ def load_checked(path, *, expected_precision, max_bytes=MAX_UNCOMPRESSED_BYTES):
 def save_v2(path, params, state, *, precision):
     """Write a new, checksummed snapshot; refuse replacement of existing files."""
     dtype = _expected(precision)
-    arrays = {**{f"params__{k}": np.asarray(v) for k, v in params.items()},
-              **{f"state__{k}": np.asarray(v) for k, v in state.items()}}
-    _validate_arrays({k: arrays[f"params__{k}"] for k in PARAMETERS},
-                     {k: arrays[f"state__{k}"] for k in STATES}, dtype)
+    normalized_params = {k: np.asarray(v) for k, v in params.items()}
+    normalized_state = {k: np.asarray(v) for k, v in state.items()}
+    _validate_arrays(normalized_params, normalized_state, dtype)
+    arrays = {**{f"params__{k}": v for k, v in normalized_params.items()},
+              **{f"state__{k}": v for k, v in normalized_state.items()}}
     arrays["schema"] = np.asarray(SCHEMA_V2)
     arrays["precision"] = np.asarray(precision)
     arrays["payload_sha256"] = np.asarray(_digest({k: v for k, v in arrays.items()
