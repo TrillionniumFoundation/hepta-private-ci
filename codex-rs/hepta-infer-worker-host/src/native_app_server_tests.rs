@@ -430,8 +430,6 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone() -> Result<()> {
     use std::sync::Arc;
-    use std::time::SystemTime;
-    use std::time::UNIX_EPOCH;
 
     use codex_hepta_agentd::test_support::CognitiveTestHost;
     use codex_hepta_infer_core::durable_control::DurableInferenceControl;
@@ -458,8 +456,10 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     ]);
     let response_mock = responses::mount_sse_once(&server, response).await;
 
-    let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
-    let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
+    // Hold an owned, short private root until the real socket owner shuts down.
+    // Darwin's default TMPDIR plus the fleet suffix exceeds SUN_LEN.
+    let directory = tempfile::Builder::new().prefix("hcw-").tempdir_in("/tmp")?;
+    let root = directory.path().canonicalize()?.join("host");
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
     // The existing core_test_support ctor installs the real arg0 helper modes
     // on this executable, matching App Server's in-process test fixture.
@@ -494,7 +494,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         timeout: Duration::from_secs(20),
     })?
     .with_turn_start_authorizer(Arc::new(authorizer));
-    let journal = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}.journal"));
+    let journal = directory.path().join("control.journal");
     let mut durable = DurableInferenceControl::open(&journal, 8)?;
 
     let accepted = driver

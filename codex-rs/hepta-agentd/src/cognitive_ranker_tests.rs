@@ -420,6 +420,13 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
     use codex_hepta_paths::HeptaFleetRoot;
     use tokio_util::sync::CancellationToken;
 
+    // A private short fixture avoids Darwin's long TMPDIR exhausting SUN_LEN.
+    #[cfg(unix)]
+    let directory = tempfile::Builder::new()
+        .prefix("har-")
+        .tempdir_in("/tmp")
+        .unwrap();
+    #[cfg(not(unix))]
     let directory = tempfile::tempdir().unwrap();
     let root = directory.path().canonicalize().unwrap();
     let fleet_path = root.join("fleet");

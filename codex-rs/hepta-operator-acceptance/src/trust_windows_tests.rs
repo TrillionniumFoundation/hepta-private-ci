@@ -21,7 +21,9 @@ use crate::test_support::write_fixture_file;
 #[test]
 fn sshsig_entrypoints_fail_closed_without_unix_inherited_descriptors() {
     let fixture = TrustFixture::new();
-    let anchor = fixture.load_anchor();
+    let anchor = fixture
+        .try_load_anchor()
+        .expect("load pinned fixture trust");
     for (name, statement, packet) in [
         ("valid", STATEMENT.as_bytes(), VALID_SIGNATURE),
         (
@@ -96,7 +98,10 @@ fn trust_policy_pins_store_principal_fingerprint_and_allowed_signers() {
     ] {
         let mut fixture = TrustFixture::new();
         mutate(&mut fixture.policy_value);
-        fixture.persist_changed_policy();
+        let bytes = canonical_json(&fixture.policy_value).expect("canonical changed policy");
+        std::fs::remove_file(&fixture.policy).expect("replace policy");
+        write_fixture_file(&fixture.policy, &bytes).expect("changed policy fixture");
+        fixture.policy_sha256 = sha256(&bytes);
         assert!(fixture.try_load_anchor().is_err());
         fixture.assert_no_authority();
     }
@@ -165,10 +170,6 @@ impl TrustFixture {
         }
     }
 
-    fn load_anchor(&self) -> TrustAnchor {
-        self.try_load_anchor().expect("load pinned fixture trust")
-    }
-
     fn try_load_anchor(&self) -> Result<TrustAnchor, crate::AcceptanceError> {
         TrustAnchor::load(TrustInputs {
             acceptance_store_root: &self.root,
@@ -176,13 +177,6 @@ impl TrustFixture {
             externally_pinned_trust_policy_sha256: &self.policy_sha256,
             trust_policy_path: &self.policy,
         })
-    }
-
-    fn persist_changed_policy(&mut self) {
-        let bytes = canonical_json(&self.policy_value).expect("canonical changed policy");
-        std::fs::remove_file(&self.policy).expect("replace policy");
-        write_fixture_file(&self.policy, &bytes).expect("changed policy fixture");
-        self.policy_sha256 = sha256(&bytes);
     }
 
     fn snapshot(&self) -> BTreeMap<PathBuf, Vec<u8>> {

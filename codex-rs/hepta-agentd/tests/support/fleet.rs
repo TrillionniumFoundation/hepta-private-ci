@@ -51,7 +51,9 @@ pub(crate) struct FleetHarness {
 
 impl FleetHarness {
     pub(crate) fn new() -> Result<Self> {
-        let temp = tempfile::tempdir()?;
+        // Darwin's private TMPDIR can exhaust SUN_LEN before the compact
+        // production control-socket suffix. Keep this owned fixture short.
+        let temp = tempfile::Builder::new().prefix("haf-").tempdir_in("/tmp")?;
         let root = temp.path().canonicalize()?;
         let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
         let registry = FleetRegistry::initialize(fleet_root.clone())?;
