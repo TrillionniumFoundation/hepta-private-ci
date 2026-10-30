@@ -13,10 +13,15 @@ _UNIT_TEST_DEPENDENCIES = {
 
 codex_rust_crate(
     name = "hepta-agentd",
+    # Match the named Agentd product profile selected by Cargo's default feature.
+    crate_features = ["production-cognitive-write"],
     crate_name = "codex_hepta_agentd",
+    integration_test_crate_features = {
+        "cognitive_product_e2e": ["production-cognitive-write"],
+    },
     integration_test_timeout = "long",
-    # This fixture seeds a qualification ledger; product targets retain the
-    # default closed write capability and the test gets one coherent crate graph.
+    # This fixture seeds a qualification learning ledger; product targets retain
+    # the closed legacy learning-ledger capability and one coherent crate graph.
     integration_tests_using_unit_test_library = ["plasticity_process_e2e"],
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
 )
@@ -28,7 +33,10 @@ rust_library(
     name = "hepta-agentd-cognitive-write-qualification-lib",
     testonly = True,
     srcs = glob(["src/**/*.rs"]),
-    crate_features = ["qualification-cognitive-write"],
+    crate_features = [
+        "production-cognitive-write",
+        "qualification-cognitive-write",
+    ],
     crate_name = "codex_hepta_agentd",
     crate_root = "src/lib.rs",
     edition = "2024",
@@ -39,7 +47,10 @@ rust_library(
 rust_test(
     name = "hepta-agentd-cognitive-write-qualification-test-bin",
     crate = ":hepta-agentd-cognitive-write-qualification-lib",
-    crate_features = ["qualification-cognitive-write"],
+    crate_features = [
+        "production-cognitive-write",
+        "qualification-cognitive-write",
+    ],
     rustc_flags = WINDOWS_RUSTC_LINK_FLAGS + [
         "--remap-path-prefix=../codex-rs=",
         "--remap-path-prefix=codex-rs=",
@@ -71,7 +82,10 @@ rust_binary(
     name = "hepta-agentd-cognitive-product-qualification-bin",
     testonly = True,
     srcs = glob(["src/**/*.rs"]),
-    crate_features = ["qualification-cognitive-write"],
+    crate_features = [
+        "production-cognitive-write",
+        "qualification-cognitive-write",
+    ],
     crate_name = "codex_hepta_agentd",
     crate_root = "src/main.rs",
     edition = "2024",
@@ -91,7 +105,10 @@ rust_binary(
 rust_test(
     name = "hepta-agentd-cognitive-product-qualification-test-bin",
     srcs = ["tests/cognitive_product_e2e.rs"] + glob(["tests/support/**/*.rs"]),
-    crate_features = ["qualification-cognitive-write"],
+    crate_features = [
+        "production-cognitive-write",
+        "qualification-cognitive-write",
+    ],
     crate_name = "cognitive_product_e2e",
     crate_root = "tests/cognitive_product_e2e.rs",
     data = glob(["tests/support/**"]),
@@ -117,6 +134,77 @@ workspace_root_test(
     },
     target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
     test_bin = ":hepta-agentd-cognitive-product-qualification-test-bin",
+    test_threads = 1,
+    visibility = ["//visibility:public"],
+    workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
+)
+
+# Explicitly exercise the no-default-features host without changing the product
+# binary's mutation profile. Missing critical storage must remain observable and
+# must not become healthy or admit a provider turn in this read-only composition.
+rust_library(
+    name = "hepta-agentd-cognitive-read-only-lib",
+    testonly = True,
+    srcs = glob(["src/**/*.rs"]),
+    crate_features = [],
+    crate_name = "codex_hepta_agentd",
+    crate_root = "src/lib.rs",
+    edition = "2024",
+    target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
+    visibility = ["//visibility:private"],
+    deps = all_crate_deps(),
+)
+
+rust_binary(
+    name = "hepta-agentd-cognitive-read-only-bin",
+    testonly = True,
+    srcs = glob(["src/**/*.rs"]),
+    crate_features = [],
+    crate_name = "codex_hepta_agentd",
+    crate_root = "src/main.rs",
+    edition = "2024",
+    rustc_env = {"CARGO_BIN_NAME": "codex-hepta-agentd"},
+    rustc_flags = WINDOWS_RUSTC_LINK_FLAGS + [
+        "--remap-path-prefix=../codex-rs=",
+        "--remap-path-prefix=codex-rs=",
+    ],
+    tags = ["manual"],
+    target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
+    visibility = ["//visibility:private"],
+    deps = [":hepta-agentd-cognitive-read-only-lib"] + all_crate_deps(),
+)
+
+rust_test(
+    name = "hepta-agentd-cognitive-read-only-test-bin",
+    testonly = True,
+    srcs = ["tests/cognitive_product_e2e.rs"] + glob(["tests/support/**/*.rs"]),
+    crate_features = [],
+    crate_name = "cognitive_product_e2e",
+    crate_root = "tests/cognitive_product_e2e.rs",
+    data = glob(["tests/support/**"]),
+    edition = "2024",
+    rustc_flags = WINDOWS_RUSTC_LINK_FLAGS + [
+        "--remap-path-prefix=../codex-rs=",
+        "--remap-path-prefix=codex-rs=",
+    ],
+    tags = ["manual"],
+    target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
+    visibility = ["//visibility:private"],
+    deps = [":hepta-agentd-cognitive-read-only-lib"] + all_crate_deps(
+        normal = True,
+        normal_dev = True,
+    ),
+)
+
+workspace_root_test(
+    name = "hepta-agentd-cognitive-read-only-test",
+    timeout = "long",
+    args = ["read_only_unavailable_cognitive_store_keeps_control_but_denies_admission"],
+    runfile_env = {
+        ":hepta-agentd-cognitive-read-only-bin": "CARGO_BIN_EXE_codex-hepta-agentd",
+    },
+    target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
+    test_bin = ":hepta-agentd-cognitive-read-only-test-bin",
     test_threads = 1,
     visibility = ["//visibility:public"],
     workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",

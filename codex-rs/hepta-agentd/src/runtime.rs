@@ -194,10 +194,9 @@ pub async fn run(
             .await?
         }
     };
-    // The writer-enabled qualification binary must never start in a
-    // degraded CognitiveRuntime state.  The default/production binary keeps
-    // the existing availability-tolerant behavior; only the explicit
-    // compile-time qualification profile takes this fail-closed startup gate.
+    // The named Agentd product requires the cognitive store at startup.
+    // A read-only build may expose diagnostic control while storage is unavailable,
+    // but the critical-store readiness gate still keeps admission closed.
     let cognitive_runtime = require_cognitive_runtime_for_profile(cognitive_runtime)?;
     if let Some(store) = cognitive_runtime.available_store() {
         state.attach_cognitive_store(Arc::clone(store))?;

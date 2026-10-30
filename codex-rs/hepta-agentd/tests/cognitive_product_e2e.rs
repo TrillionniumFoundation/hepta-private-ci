@@ -279,7 +279,7 @@ impl ProductClient {
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 #[cfg_attr(
     not(feature = "qualification-cognitive-write"),
-    ignore = "requires the explicit qualification-cognitive-write profile; local-development keeps remember/correct/forget disabled"
+    ignore = "requires the explicit qualification turn witness; default product mutations require external authority"
 )]
 async fn real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends() -> Result<()> {
     const ORIGINAL: &str = "Project Aurora deadline is Friday.";
@@ -950,7 +950,7 @@ async fn real_agentd_external_gpt53_spark_read_only_smoke() -> Result<()> {
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 #[cfg_attr(
     not(feature = "qualification-cognitive-write"),
-    ignore = "requires the explicit qualification-cognitive-write profile; default/local binary keeps cognitive writes disabled"
+    ignore = "requires the explicit qualification turn witness; default product mutations require external authority"
 )]
 async fn two_real_agentd_app_servers_never_cross_recall() -> Result<()> {
     const MEMORY_A: &str = "Agent Alpha project milestone is Tuesday.";
@@ -1354,74 +1354,105 @@ async fn five_running_agents_share_only_with_the_explicit_consumer() -> Result<(
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 #[cfg(not(feature = "production-cognitive-write"))]
-async fn unavailable_cognitive_store_keeps_read_tools_and_omits_write_tools() -> Result<()> {
-    const UNAVAILABLE_CALL: &str = "unavailable-recall";
-    const QUERY: &str = "unavailable runtime probe";
+async fn read_only_unavailable_cognitive_store_keeps_control_but_denies_admission() -> Result<()> {
+    use codex_hepta_agentd::AgentdPayload;
+    use codex_hepta_agentd::AgentdRequest;
+    use codex_hepta_agentd::AgentdResponse;
+    use tokio::io::AsyncBufReadExt;
+    use tokio::io::AsyncReadExt;
+    use tokio::io::AsyncWriteExt;
 
     let mut fleet = FleetHarness::new()?;
-    let agent = fleet.register(AGENT_A, "workspace-a")?;
+    let agent = fleet.register(AGENT_A, "workspace-a-read-only-unavailable")?;
     let model = responses::start_mock_server().await;
     MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
     let blocking_path = agent.layout.cognitive_root().join("cognitive_1.sqlite3");
     std::fs::create_dir(&blocking_path)?;
 
     fleet.start(&agent)?;
-    let (control, _) = fleet.wait_ready(&agent, 1).await?;
-    ensure!(control.health().await?.ready, "agentd did not stay ready");
-    let mut product = ProductClient::connect(&agent, &control).await?;
-    let thread = product.start_thread(&agent.workspace).await?;
-    let unavailable = responses::mount_sse_sequence(
-        &model,
-        vec![
-            tool_sse(
-                "unavailable-response",
-                UNAVAILABLE_CALL,
-                "recall",
-                json!({ "query": QUERY }),
-            ),
-            final_sse("unavailable-final"),
-        ],
-    )
-    .await;
-    product.run_turn(&thread, QUERY).await?;
-    assert_physical_request_count_stable(&unavailable, 2, "unavailable cognitive read").await?;
-    let requests = unavailable.requests();
-    assert_no_cognitive_reference(&requests[0])?;
-    for operation in ["remember", "correct", "forget"] {
+    let spawn_generation = 1;
+    let control = fleet.control_client(&agent, spawn_generation)?;
+    let deadline = Instant::now() + Duration::from_secs(20);
+    loop {
+        let report = fleet.supervisor.tick(Instant::now());
         ensure!(
-            requests[0]
-                .tool_by_name(COGNITIVE_NAMESPACE, operation)
-                .is_none(),
-            "unavailable runtime incorrectly advertised write tool {operation}"
+            report.faults.is_empty(),
+            "startup faults: {:?}",
+            report.faults
         );
-    }
-    for operation in ["recall", "explain"] {
+        if let Ok(health) = control.health().await {
+            ensure!(
+                !health.ready && !health.promotion_ready && !health.fenced,
+                "unavailable critical store changed the readiness contract: {health:?}"
+            );
+            ensure!(health.lifecycle == AgentLifecycle::Starting);
+            if control.lifecycle().await?.app_server_ready {
+                break;
+            }
+        }
         ensure!(
-            requests[0]
-                .tool_by_name(COGNITIVE_NAMESPACE, operation)
-                .is_some(),
-            "unavailable runtime incorrectly removed read tool {operation}"
+            Instant::now() < deadline,
+            "read-only control did not become observable"
         );
+        tokio::time::sleep(Duration::from_millis(25)).await;
     }
-    assert_no_cognitive_reference(&requests[1])?;
-    let output = unavailable
-        .function_call_output_text(UNAVAILABLE_CALL)
-        .context("unavailable tool output did not reach the model")?;
-    let typed: Value = serde_json::from_str(&output)?;
-    ensure!(typed["error"]["code"] == "hepta_cognitive_unavailable");
-    ensure!(
-        typed["error"]["message"]
-            .as_str()
-            .is_some_and(|message| message.contains("storage_unavailable")),
-        "typed error omitted the sanitized stable reason"
-    );
-    ensure!(
-        !output.contains(blocking_path.to_string_lossy().as_ref())
-            && !output.to_ascii_lowercase().contains("sqlite"),
-        "typed unavailable error leaked storage details"
-    );
 
-    product.shutdown().await?;
+    // Read the same bounded wire protocol as the supervisor. An available App Server
+    // transport cannot substitute for a missing critical durable store.
+    let request_id = 7;
+    let request = AgentdRequest::readiness(request_id, spawn_generation);
+    let mut stream = tokio::net::UnixStream::connect(agent.layout.agentd_control_socket()).await?;
+    let mut frame = serde_json::to_vec(&request)?;
+    frame.push(b'\n');
+    stream.write_all(&frame).await?;
+    stream.shutdown().await?;
+    let response_limit = 4096;
+    let mut reader = tokio::io::BufReader::new(stream.take(response_limit));
+    let mut frame = Vec::new();
+    tokio::time::timeout(Duration::from_secs(2), reader.read_until(b'\n', &mut frame)).await??;
+    ensure!(
+        frame.ends_with(b"\n"),
+        "readiness response was incomplete or over limit"
+    );
+    let response: AgentdResponse = serde_json::from_slice(&frame)?;
+    ensure!(
+        response.schema_version == codex_hepta_agentd::AGENTD_CONTROL_SCHEMA_VERSION
+            && response.request_id == request_id
+            && response.agent_id == agent.agent_id
+            && response.spawn_generation == spawn_generation
+            && response.current_generation == spawn_generation,
+        "readiness response did not bind the starting generation"
+    );
+    let AgentdPayload::Readiness(readiness) = response.payload else {
+        bail!("read-only control returned the wrong readiness payload");
+    };
+    ensure!(
+        !readiness.critical_stores_ready
+            && !readiness.admission_open
+            && readiness.required_ports_ready,
+        "missing store must keep admission closed: {readiness:?}"
+    );
+    let rejected = control
+        .session_ingress()
+        .await
+        .expect_err("unready Agent must reject ingress");
+    ensure!(
+        rejected.to_string().contains("(not_ready)"),
+        "unexpected ingress error: {rejected}"
+    );
+    let snapshot = fleet
+        .supervisor
+        .snapshot(&agent.agent_id)
+        .context("Agent snapshot")?;
+    ensure!(snapshot.active && !snapshot.healthy);
+    ensure!(
+        model
+            .received_requests()
+            .await
+            .context("provider request log")?
+            .is_empty(),
+        "unready read-only Agent issued a provider request"
+    );
     Ok(())
 }
 

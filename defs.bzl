@@ -211,7 +211,8 @@ def codex_rust_crate(
         unit_test_timeout = None,
         extra_binaries = [],
         extra_binaries_non_windows = [],
-        run_tests_with_wine_exec = False):
+        run_tests_with_wine_exec = False,
+        integration_test_crate_features = {}):
     """Defines a Rust crate with library, binaries, and tests wired for Bazel + Cargo parity.
 
     The macro mirrors Cargo conventions: it builds a library when `src/` exists,
@@ -231,6 +232,8 @@ def codex_rust_crate(
         unit_test_dependency_replacements: Test-only workspace dependency variants.
             Replace the complete transitive closure when public types cross crates.
         unit_test_features: Additional features for the test-only library and harness.
+        integration_test_crate_features: Additional harness features keyed by integration test
+            file stem. This does not change the production library or dependency graph.
         crate_srcs: Optional explicit srcs; defaults to `src/**/*.rs`.
         crate_edition: Rust edition override, if not default.
             You probably don't want this, it's only here for a single caller.
@@ -526,10 +529,16 @@ def codex_rust_crate(
     if integration_test_timeout:
         integration_test_kwargs["timeout"] = integration_test_timeout
 
-    for test in native.glob(["tests/*.rs"], allow_empty = True):
+    integration_test_files = native.glob(["tests/*.rs"], allow_empty = True)
+    integration_test_stems = [test.removeprefix("tests/").removesuffix(".rs") for test in integration_test_files]
+    for test_stem in integration_test_crate_features:
+        if test_stem not in integration_test_stems:
+            fail("unknown integration test in integration_test_crate_features: " + test_stem)
+
+    for test in integration_test_files:
         test_file_stem = test.removeprefix("tests/").removesuffix(".rs")
         integration_deps = all_crate_deps(normal = True, normal_dev = True) + maybe_deps + deps_extra
-        integration_features = []
+        integration_features = integration_test_crate_features.get(test_file_stem, [])
         if test_file_stem in integration_tests_using_unit_test_library:
             if not lib_srcs:
                 fail("integration test dependency variants require a library: " + test)
@@ -537,7 +546,7 @@ def codex_rust_crate(
                 unit_test_library if dependency == name else dependency
                 for dependency in maybe_deps
             ] + deps_extra
-            integration_features = crate_features + unit_test_features
+            integration_features = crate_features + unit_test_features + integration_features
         test_crate_name = test_file_stem.replace("-", "_")
         test_name = name + "-" + test_file_stem.replace("/", "-")
         if not test_name.endswith("-test"):
