@@ -1,0 +1,1947 @@
+{
+  "audit": {
+    "actual_output_files_verified": 0,
+    "counts_by_phase": {},
+    "errors": [],
+    "failures": 0,
+    "fresh_media_opened_by_audit": false,
+    "integrity_passed": true,
+    "process_completed_successfully": true,
+    "profile_sha256_values": [],
+    "receipt_checks": {
+      "checkpoint_files_verified": 0,
+      "child_reaped": true,
+      "observer_checkpoints_verified": 2,
+      "process_exit_code": 0,
+      "process_receipt_present": true,
+      "process_timed_out": false,
+      "source_receipt_present": true
+    },
+    "schema": "hepta.joint-generation.compact-archive.v2.audit",
+    "scientific_qualification": false,
+    "scope": "Actual recorded chains and file identities; not semantic correctness or model efficacy",
+    "source_files_unchanged_during_archive": true,
+    "trajectory_chains_verified": 0,
+    "trajectory_files_found": 0
+  },
+  "input_bytes": 1244074187,
+  "input_files": 2978,
+  "input_manifest_sha256": "f814a59f58249901f90dfe74a4f29d816bb41053511058026884cd522e1d762d",
+  "media_and_pretrained_weights": "Omitted from compact archive; retained in original full artifact",
+  "original_bytes_rewritten": false,
+  "preserved_originals": [
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 1759,
+      "source_path": "PROCESS_RECEIPT.json",
+      "source_sha256": "bbc043168789342bdcaffa475d6a0ed3601a65055314d5bc2594023727ce69bf",
+      "stored_bytes": 952,
+      "stored_path": "original/PROCESS_RECEIPT.json.gz",
+      "stored_sha256": "6a77d6a19884a7aab5973f904cb5488c6f2989e81a67f8632b06e37a1e16ed25"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 44703,
+      "source_path": "SOURCE_RECEIPT.json",
+      "source_sha256": "652239ded87aaa6a8fad45251106313dec908a3ae1c1d6ccf0a0daea23952752",
+      "stored_bytes": 7370,
+      "stored_path": "original/SOURCE_RECEIPT.json.gz",
+      "stored_sha256": "b60c435e78bbe6d000897b2c038cb1e1d0db8ad0f1064ee32e86f7d70b43b3b9"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 236,
+      "source_path": "environment.txt",
+      "source_sha256": "5713b7188485bc7bf5a47ccb45160bf1e7befeefb873798b28e95893cedba2ac",
+      "stored_bytes": 190,
+      "stored_path": "original/environment.txt.gz",
+      "stored_sha256": "e13f5e4db3cbeee78c5500447f597c28dc564ab5639952f49e372b2939bfa78b"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 17690,
+      "source_path": "process.log",
+      "source_sha256": "ceb47b9fb25569c9fe9b9b5ca6ed752c4bea9b9e0181a8309f0fe3cf2f9dc86c",
+      "stored_bytes": 3617,
+      "stored_path": "original/process.log.gz",
+      "stored_sha256": "fe7b03347555239993a8c506ffc56178deb94ecf907edac41d23dbc278b35e24"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 675566,
+      "source_path": "run/ALLOCATION.json",
+      "source_sha256": "8542742a09a690d3ae2c655654a57b0342f20bcc0c2dbbeeccd3a86bb026cc0a",
+      "stored_bytes": 120451,
+      "stored_path": "original/run/ALLOCATION.json.gz",
+      "stored_sha256": "bb73caaa8ca4e40d68c2922b480bb73e0fcc5e7155b606923f53a6401738e7fe"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 1113626,
+      "source_path": "run/OBSERVER_V2_FREEZE.json",
+      "source_sha256": "27de1655789d1b39dc23eb10d962bcb9f8d520baa8e012ca9987131138a0130d",
+      "stored_bytes": 67584,
+      "stored_path": "original/run/OBSERVER_V2_FREEZE.json.gz",
+      "stored_sha256": "9eb557a30b3780ddd3c585bbc8b101776b0272519bd9d35cb8b4fc156b349ea6"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 3954,
+      "source_path": "run/PROTOCOL.json",
+      "source_sha256": "9605129c5e51e1658277d60eaaf42059f77a6b7949d73ef28f135294bf9c0095",
+      "stored_bytes": 1643,
+      "stored_path": "original/run/PROTOCOL.json.gz",
+      "stored_sha256": "98b2f136c9a237c6d091fea8f0b41765242e47eabddb8e86b6af2166c75839e0"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 3946,
+      "source_path": "run/RESULT.json",
+      "source_sha256": "ecfcbb793c12d712a423915a8a5b92a4b6aea85d7e7fccd89ee48186041ea2c7",
+      "stored_bytes": 1708,
+      "stored_path": "original/run/RESULT.json.gz",
+      "stored_sha256": "203dc8e0050c42b2f8f8ca028966114b6d725ce8667d27571f5fa406486b2582"
+    },
+    {
+      "encoding": "original_bytes",
+      "source_bytes": 794882,
+      "source_path": "run/action_observer.npz",
+      "source_sha256": "9596ed0f04fe59813b4c7a49f9e53b7afcaedb800bca242e8b9e50d31fecdfdd",
+      "stored_bytes": 794882,
+      "stored_path": "original/run/action_observer.npz",
+      "stored_sha256": "9596ed0f04fe59813b4c7a49f9e53b7afcaedb800bca242e8b9e50d31fecdfdd"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 8718,
+      "source_path": "run/actual/prepared/observer_train/video_10014/RECEIPT.json",
+      "source_sha256": "4fdb3e88d87abc37bf3d0aeb51cf8cc622034e9ec1453f9d99250b79f9eced10",
+      "stored_bytes": 2065,
+      "stored_path": "original/run/actual/prepared/observer_train/video_10014/RECEIPT.json.gz",
+      "stored_sha256": "7f0558aec9f4b02a9c03b17dc9d6ffe346dc3b83475641e2ae5e477cea45b1e1"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 7148,
+      "source_path": "run/actual/prepared/observer_train/video_10128/RECEIPT.json",
+      "source_sha256": "e4e22e60217d4084470fc98f7f9e017c51d458d78553b39c8d6ee608a82c59ab",
+      "stored_bytes": 1946,
+      "stored_path": "original/run/actual/prepared/observer_train/video_10128/RECEIPT.json.gz",
+      "stored_sha256": "8e4027f6566a218c29f7e0c50375d807509078bd87c2e717d1e498ece5fe7cd6"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11416,
+      "source_path": "run/actual/prepared/observer_train/video_10159/RECEIPT.json",
+      "source_sha256": "506a61c4d6c7d12a45a7aef4441ca8345fc26eac2ae005caaff229814238f0c5",
+      "stored_bytes": 2695,
+      "stored_path": "original/run/actual/prepared/observer_train/video_10159/RECEIPT.json.gz",
+      "stored_sha256": "b38a121f8f7e505eb2baaff9930317e9a2409c603876774c9647c6a7df5d00a1"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 7233,
+      "source_path": "run/actual/prepared/observer_train/video_10165/RECEIPT.json",
+      "source_sha256": "7d9d9b3a4ad9de47c14472c98bd09ea4958c86d153898caab572ad11aaab78fd",
+      "stored_bytes": 1810,
+      "stored_path": "original/run/actual/prepared/observer_train/video_10165/RECEIPT.json.gz",
+      "stored_sha256": "8c40246103706a285aea26ec86ea1c00407120b3a694a0a4cabf3ff666b6e573"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5939,
+      "source_path": "run/actual/prepared/observer_train/video_10288/RECEIPT.json",
+      "source_sha256": "0d1c0a16e12f9bb5631f0b8cf62924e13ca032939a4f0e4c07985bdb13ce6bfd",
+      "stored_bytes": 1707,
+      "stored_path": "original/run/actual/prepared/observer_train/video_10288/RECEIPT.json.gz",
+      "stored_sha256": "3bdefc8d5bb250a575218c92968b6c960cbadf89ecaf7c8696d44888bb51aeb3"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5923,
+      "source_path": "run/actual/prepared/observer_train/video_1050/RECEIPT.json",
+      "source_sha256": "8677d2202e5b2b4af115316b00026f629b9d63b14ba8a8de71364b9a269a1293",
+      "stored_bytes": 1713,
+      "stored_path": "original/run/actual/prepared/observer_train/video_1050/RECEIPT.json.gz",
+      "stored_sha256": "af1584a8032d5c99352247bf69b7c175f0cdb0ce5c7092ac4a872a57723ae8a2"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 7310,
+      "source_path": "run/actual/prepared/observer_train/video_10817/RECEIPT.json",
+      "source_sha256": "4a6079efb8f26633e4ad2cda10b65c2aa775cc1f65a5d714fbaa305c81637163",
+      "stored_bytes": 1912,
+      "stored_path": "original/run/actual/prepared/observer_train/video_10817/RECEIPT.json.gz",
+      "stored_sha256": "56a0b50f661de36cffe6ee0f2d90ef3336b5ff8b3cf5d7e47a95c5063696044e"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 7357,
+      "source_path": "run/actual/prepared/observer_train/video_10884/RECEIPT.json",
+      "source_sha256": "685ae6c15a82fc7980db4ec61114f86b0492f45f78e65516b70f4bf5f5b64f30",
+      "stored_bytes": 1814,
+      "stored_path": "original/run/actual/prepared/observer_train/video_10884/RECEIPT.json.gz",
+      "stored_sha256": "aaf39c04ddfa3a7c3e0350c7c6332c0b9b49f75147958d322f9b8032b1465ccb"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 4472,
+      "source_path": "run/actual/prepared/observer_train/video_1097/RECEIPT.json",
+      "source_sha256": "f319b7452bb7d16efce166f75e9c1b1b47566d10bd647a8cc8426e5b69c33fb6",
+      "stored_bytes": 1394,
+      "stored_path": "original/run/actual/prepared/observer_train/video_1097/RECEIPT.json.gz",
+      "stored_sha256": "cbe77963f96992e93ae2bb4356ed5067d6be94b057f82c35cef0d271f7805356"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5845,
+      "source_path": "run/actual/prepared/observer_train/video_11019/RECEIPT.json",
+      "source_sha256": "301cfa58a9c8ff02a0114f6d5cde46641ab0a5847714e13b884ec56622801946",
+      "stored_bytes": 1549,
+      "stored_path": "original/run/actual/prepared/observer_train/video_11019/RECEIPT.json.gz",
+      "stored_sha256": "2a01e18ef0f71d7021a0d8c5618a8ed2f8e8b2e136b93e56aecf3372966c4d59"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 7271,
+      "source_path": "run/actual/prepared/observer_train/video_11132/RECEIPT.json",
+      "source_sha256": "cdebd4ea242fae6171b1a0d1f1f22bb3357d6aa1a3c23139529924d8238f5d5b",
+      "stored_bytes": 2002,
+      "stored_path": "original/run/actual/prepared/observer_train/video_11132/RECEIPT.json.gz",
+      "stored_sha256": "709d85d37d5b99101454a11fecc9e957282e94e33563b976b0d11940c34e0db7"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 8610,
+      "source_path": "run/actual/prepared/observer_train/video_11210/RECEIPT.json",
+      "source_sha256": "a965805f2e4fbf5afb58e7bb80f4c2c34f95526cfa88947ecf8f797c13d62197",
+      "stored_bytes": 2122,
+      "stored_path": "original/run/actual/prepared/observer_train/video_11210/RECEIPT.json.gz",
+      "stored_sha256": "d48122840d81d2db75dd0934a3603bdcf0bae19a2a9bf3cd98241f18cca30191"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11528,
+      "source_path": "run/actual/prepared/observer_train/video_11261/RECEIPT.json",
+      "source_sha256": "ba66532e2a3cc2e0ce58ba088242e025da8eed3ef616a070fb93f8181807957b",
+      "stored_bytes": 2534,
+      "stored_path": "original/run/actual/prepared/observer_train/video_11261/RECEIPT.json.gz",
+      "stored_sha256": "5dd69734ee7d3f3b58db0011ab4df208b8073594b8776179d68389ae622fdde0"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 4465,
+      "source_path": "run/actual/prepared/observer_train/video_11362/RECEIPT.json",
+      "source_sha256": "b16be39fd1e0ecb4cea45b8ca341ace124b19a0195789777a958e96eaf491f35",
+      "stored_bytes": 1420,
+      "stored_path": "original/run/actual/prepared/observer_train/video_11362/RECEIPT.json.gz",
+      "stored_sha256": "43336669887d168eb49d74859c179958d7a4092393c6ead9232bb65581646b2c"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11362,
+      "source_path": "run/actual/prepared/observer_train/video_11388/RECEIPT.json",
+      "source_sha256": "b402fed2d27dfa9b69a165df1873da37ba3501ba6c27789082e92393662ebcd3",
+      "stored_bytes": 2755,
+      "stored_path": "original/run/actual/prepared/observer_train/video_11388/RECEIPT.json.gz",
+      "stored_sha256": "0ab88adea11b22e05876e0d7224adacbe597368b3a63d1c5ece1514fded5c656"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 4501,
+      "source_path": "run/actual/prepared/observer_train/video_11421/RECEIPT.json",
+      "source_sha256": "81dce1c659abd2a0a29d2ddf37424a8f8c3fef3a6346ee6a96a3d59184f09893",
+      "stored_bytes": 1364,
+      "stored_path": "original/run/actual/prepared/observer_train/video_11421/RECEIPT.json.gz",
+      "stored_sha256": "6ab12071c55cc3bfeac2043255726fffcae312e18d35e8bfe90ea423edc623a8"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11353,
+      "source_path": "run/actual/prepared/observer_train/video_11534/RECEIPT.json",
+      "source_sha256": "4ffe2e827b251c858d918ea60450f0b2e54684e426ddaa44ecbc6d9febfc0652",
+      "stored_bytes": 2496,
+      "stored_path": "original/run/actual/prepared/observer_train/video_11534/RECEIPT.json.gz",
+      "stored_sha256": "8aec1677d605e7de2ed83879c859bccc53516c273da565a585c22d24c2a0d4a5"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5852,
+      "source_path": "run/actual/prepared/observer_train/video_11567/RECEIPT.json",
+      "source_sha256": "4949aaec4958c7aa7cc58c7d98b1575b92255993c08629415470abd7417718f7",
+      "stored_bytes": 1707,
+      "stored_path": "original/run/actual/prepared/observer_train/video_11567/RECEIPT.json.gz",
+      "stored_sha256": "ba97e943bf5d51393df152e9f92b79b52f12dc50a78fa253421824edc982b431"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 1758,
+      "source_path": "run/actual/prepared/observer_train/video_1179/RECEIPT.json",
+      "source_sha256": "664f37a192ee60564a084065944450361630f749effd598dd3ec9511505ebdbb",
+      "stored_bytes": 799,
+      "stored_path": "original/run/actual/prepared/observer_train/video_1179/RECEIPT.json.gz",
+      "stored_sha256": "8a7c2aa01667975a73f1cbca96605198f8e488ab7beb754c8f7bde8dd0fc798f"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5897,
+      "source_path": "run/actual/prepared/observer_train/video_119/RECEIPT.json",
+      "source_sha256": "11a5e9824ca84da2bf3b4a5df0ed69e98da77c2ae21601e46a9b4bcca66c8217",
+      "stored_bytes": 1723,
+      "stored_path": "original/run/actual/prepared/observer_train/video_119/RECEIPT.json.gz",
+      "stored_sha256": "194b5b738dc164f213ef24a96e9c01c902ba976bb526be4ae4066e66a9e5aa09"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 1814,
+      "source_path": "run/actual/prepared/observer_train/video_1204/RECEIPT.json",
+      "source_sha256": "5a04d31d01d1914c4a6babb7464d06231a5adae954116837c0fabb278e014836",
+      "stored_bytes": 819,
+      "stored_path": "original/run/actual/prepared/observer_train/video_1204/RECEIPT.json.gz",
+      "stored_sha256": "d2901c29c26eba0d922cd13c939c5c8bcd961bad85eee1a728233681393801bc"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5869,
+      "source_path": "run/actual/prepared/observer_train/video_1205/RECEIPT.json",
+      "source_sha256": "663614efbb3dea25725126d91e92ad0cda2efcb8d4fad465a1f4a11299cdae15",
+      "stored_bytes": 1747,
+      "stored_path": "original/run/actual/prepared/observer_train/video_1205/RECEIPT.json.gz",
+      "stored_sha256": "0282b6250420af2469d03b3ec043e7f5a49188470869eb481e67a0fa61d5e62b"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5958,
+      "source_path": "run/actual/prepared/observer_train/video_1262/RECEIPT.json",
+      "source_sha256": "3ce97b2bb111ae5ed46bf766f1d8c2323e68cbecd1fbaeb512ba396638b8f400",
+      "stored_bytes": 1696,
+      "stored_path": "original/run/actual/prepared/observer_train/video_1262/RECEIPT.json.gz",
+      "stored_sha256": "216a5b660fc1b468fffd1a0056ca5b42583cb5e20f008758da5bbc31297d7274"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5882,
+      "source_path": "run/actual/prepared/observer_train/video_1343/RECEIPT.json",
+      "source_sha256": "eebb4ad3b9c4a161ae84f65c6dba0195fad6fe8353465769419828f9e16b9ac7",
+      "stored_bytes": 1690,
+      "stored_path": "original/run/actual/prepared/observer_train/video_1343/RECEIPT.json.gz",
+      "stored_sha256": "3fdd616b5e7708da59211d1e7a4e4d6a33bf8b405e7d0dd988aa67a078fe18da"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5943,
+      "source_path": "run/actual/prepared/observer_train/video_1523/RECEIPT.json",
+      "source_sha256": "089f80145b44af0bfa9a1d1459c4865ab337f95423bb5a71600a0cd0b2b75f8b",
+      "stored_bytes": 1646,
+      "stored_path": "original/run/actual/prepared/observer_train/video_1523/RECEIPT.json.gz",
+      "stored_sha256": "64148e986b31c834bab6be8d3c6e8172f8adbe9675db8653297c76c63bfc4d65"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 4397,
+      "source_path": "run/actual/prepared/observer_train/video_1611/RECEIPT.json",
+      "source_sha256": "56a9643e5d433793284a6a294383ca4eb6b85887e44503ae7b3f975bba1833b9",
+      "stored_bytes": 1427,
+      "stored_path": "original/run/actual/prepared/observer_train/video_1611/RECEIPT.json.gz",
+      "stored_sha256": "25c7ac7b9e10d46c4ac61912a449cafbff0bf97964b5d163f3c28e26ae41babc"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11367,
+      "source_path": "run/actual/prepared/observer_train/video_1627/RECEIPT.json",
+      "source_sha256": "9827948622a6ddf8b9d98312c09ba33a5cbb8da1185620555c741d283f62639c",
+      "stored_bytes": 2813,
+      "stored_path": "original/run/actual/prepared/observer_train/video_1627/RECEIPT.json.gz",
+      "stored_sha256": "025b208438c1013ea32849cf15ce954e95a8770973ca9c16158bf04fd75f9313"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11390,
+      "source_path": "run/actual/prepared/observer_train/video_1787/RECEIPT.json",
+      "source_sha256": "76facdc7e1fafee019c888fe8dca948fbbda3c9568cf311f5fb62ab32d9e9bd4",
+      "stored_bytes": 2679,
+      "stored_path": "original/run/actual/prepared/observer_train/video_1787/RECEIPT.json.gz",
+      "stored_sha256": "1bccfa47c51432034216bea3b7c263488ce2c943ad2adbb981cbe33effa0b00c"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 3169,
+      "source_path": "run/actual/prepared/observer_train/video_1995/RECEIPT.json",
+      "source_sha256": "0998f2e42bba0c0ee12d8ca421dcc37858fd9912fab6e5b4fb17471837f38eab",
+      "stored_bytes": 1076,
+      "stored_path": "original/run/actual/prepared/observer_train/video_1995/RECEIPT.json.gz",
+      "stored_sha256": "70c43cbea43f72ae86200f18c9dbedfb839869655b13ad079d102fbba426c0b3"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5937,
+      "source_path": "run/actual/prepared/observer_train/video_2072/RECEIPT.json",
+      "source_sha256": "f343ec1075e1b41329931360e0202e4c1a4690cca9d7cd25a02a4380a22bb481",
+      "stored_bytes": 1682,
+      "stored_path": "original/run/actual/prepared/observer_train/video_2072/RECEIPT.json.gz",
+      "stored_sha256": "e0ca2ac12a67a91bff62d51a846dc4c50194d6957a614c34b4ebeedf8b72dd25"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11343,
+      "source_path": "run/actual/prepared/observer_train/video_2093/RECEIPT.json",
+      "source_sha256": "85a768930fac893d2ca93b0469ff6960c5d2838bcd9e634ef7d76e2f95415459",
+      "stored_bytes": 2768,
+      "stored_path": "original/run/actual/prepared/observer_train/video_2093/RECEIPT.json.gz",
+      "stored_sha256": "179b00df2d3b90c3e43e4ad276328efd18a357b97c63cabe3e9628015ac3aeea"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 7326,
+      "source_path": "run/actual/prepared/observer_train/video_2183/RECEIPT.json",
+      "source_sha256": "bfd171ce77023f7a54a72e0438e8ce197f6dbeba594fcf36eff69a7cdb4f45ad",
+      "stored_bytes": 2067,
+      "stored_path": "original/run/actual/prepared/observer_train/video_2183/RECEIPT.json.gz",
+      "stored_sha256": "13c38fb8e5de96dc6de1119badcceeb7e3e050e6c4e405d38d467a35f9a72990"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 7227,
+      "source_path": "run/actual/prepared/observer_train/video_2215/RECEIPT.json",
+      "source_sha256": "3480a52f73b4eda9e56346363ceaa4b64c30df24bd94aedc7bf9e130de46ba62",
+      "stored_bytes": 1870,
+      "stored_path": "original/run/actual/prepared/observer_train/video_2215/RECEIPT.json.gz",
+      "stored_sha256": "0f8ef3e5e861121a6d009c587d3c4d3de662c20ca5a8aebee449a19d92ec397b"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5911,
+      "source_path": "run/actual/prepared/observer_train/video_2255/RECEIPT.json",
+      "source_sha256": "f4e950cda9220b8b7e9cc4de6d0c099c421ae593e7cbeab4da21279c6fb6e603",
+      "stored_bytes": 1733,
+      "stored_path": "original/run/actual/prepared/observer_train/video_2255/RECEIPT.json.gz",
+      "stored_sha256": "9aa1d3d57fe53d78a30f250b4ed6b03e9fa4c718d1ca54862b4734d2dcc4c677"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11322,
+      "source_path": "run/actual/prepared/observer_train/video_2270/RECEIPT.json",
+      "source_sha256": "58e7281c513ee91af9618df4c5b0956f3d845c9c617096cd8eadd562190bbfea",
+      "stored_bytes": 2828,
+      "stored_path": "original/run/actual/prepared/observer_train/video_2270/RECEIPT.json.gz",
+      "stored_sha256": "ac52401f5644a9e2d74d37570b05f55167347c9be66d894f7caef802d08cc730"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11342,
+      "source_path": "run/actual/prepared/observer_train/video_2325/RECEIPT.json",
+      "source_sha256": "a99423dd37fe21e0fb9e5d585f310cd48dbea8114c621b34e64ed77c4fb16975",
+      "stored_bytes": 2784,
+      "stored_path": "original/run/actual/prepared/observer_train/video_2325/RECEIPT.json.gz",
+      "stored_sha256": "bd91b0ca1770b6394d4b378401e9b8435e2a8c9f13c24b1bbe07d36d3cd28296"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 3160,
+      "source_path": "run/actual/prepared/observer_train/video_2356/RECEIPT.json",
+      "source_sha256": "7db5357f7819f729094ca242a9d10a0c07aff8563d52d7c78054e26f91ce98a8",
+      "stored_bytes": 1147,
+      "stored_path": "original/run/actual/prepared/observer_train/video_2356/RECEIPT.json.gz",
+      "stored_sha256": "e9bf546092c2b019891500e83f2f50f84569c6199442c0c2ede20331b720fa38"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11281,
+      "source_path": "run/actual/prepared/observer_train/video_2362/RECEIPT.json",
+      "source_sha256": "04a8759b9b621a16d6c64d1276b7e6aa23f16ae0e63fc19dfc28714e45b5e0fd",
+      "stored_bytes": 2596,
+      "stored_path": "original/run/actual/prepared/observer_train/video_2362/RECEIPT.json.gz",
+      "stored_sha256": "f2b2df70191a9e66554765daf9adcd9be11064f224a754f849097f29261e3eb2"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 10001,
+      "source_path": "run/actual/prepared/observer_train/video_2372/RECEIPT.json",
+      "source_sha256": "3a892504d4d47efd9b769b9d014dbd08fe32d8d75640126823a965f1e392f4e0",
+      "stored_bytes": 2468,
+      "stored_path": "original/run/actual/prepared/observer_train/video_2372/RECEIPT.json.gz",
+      "stored_sha256": "992e85cd259cce369d77007e9ef6b5e0f0ab4b3de0686ce7c4134d6755817637"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 8630,
+      "source_path": "run/actual/prepared/observer_train/video_2425/RECEIPT.json",
+      "source_sha256": "29e4b238b3d2fb226f9449dfe5fdd935c00ba1f5355cd8e3cf7b6d0ec9af2dfb",
+      "stored_bytes": 2210,
+      "stored_path": "original/run/actual/prepared/observer_train/video_2425/RECEIPT.json.gz",
+      "stored_sha256": "ca68887c90ec2a884edd0c81a2be001be818a21f03442a45e46e8f0c94b4470a"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 3171,
+      "source_path": "run/actual/prepared/observer_train/video_2439/RECEIPT.json",
+      "source_sha256": "0d156294fccbd741a545f412f5633c9cf0bc6960870ecfbbfe9d5e410c6004d2",
+      "stored_bytes": 1116,
+      "stored_path": "original/run/actual/prepared/observer_train/video_2439/RECEIPT.json.gz",
+      "stored_sha256": "4836848513080ce8fd1db278238a55c9eb382a995121fe59a972f0587cbf68e8"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 9989,
+      "source_path": "run/actual/prepared/observer_train/video_2448/RECEIPT.json",
+      "source_sha256": "bc3e3043d8725d4b86208800eb07e205237e62ef150d321a3a4c6addccc9fd45",
+      "stored_bytes": 2495,
+      "stored_path": "original/run/actual/prepared/observer_train/video_2448/RECEIPT.json.gz",
+      "stored_sha256": "a38a870ff94fd9d4197aa2697882bd447d4a63a95647f27782550573d200057f"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 9850,
+      "source_path": "run/actual/prepared/observer_train/video_2514/RECEIPT.json",
+      "source_sha256": "24201ff99023e617c0fc23ffe550b0c03922d9a0272df8d480794f8bd3007636",
+      "stored_bytes": 2369,
+      "stored_path": "original/run/actual/prepared/observer_train/video_2514/RECEIPT.json.gz",
+      "stored_sha256": "6ceca61f603e678166707b3937e8b96052bf1cf51f086f8473dbe996d564847a"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 8568,
+      "source_path": "run/actual/prepared/observer_train/video_2679/RECEIPT.json",
+      "source_sha256": "19633c77eae76b7c38fdeb942a45c7dd470e4f56c854da704a80a09184dd7d31",
+      "stored_bytes": 2142,
+      "stored_path": "original/run/actual/prepared/observer_train/video_2679/RECEIPT.json.gz",
+      "stored_sha256": "4306b86cdf443ee09f2f6182be781cfea956aded92b9f5b1c1243511f78d8135"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11436,
+      "source_path": "run/actual/prepared/observer_train/video_2800/RECEIPT.json",
+      "source_sha256": "d4adf190ef15ff71e59dbb6f49187b0e1bd6875a55bc97f52691dd1ac2641116",
+      "stored_bytes": 2693,
+      "stored_path": "original/run/actual/prepared/observer_train/video_2800/RECEIPT.json.gz",
+      "stored_sha256": "2e8e4bb8b2c7c0f2476ade13fcfc27fb18f465327dc849aec312e25d641e6e9b"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5972,
+      "source_path": "run/actual/prepared/observer_train/video_2874/RECEIPT.json",
+      "source_sha256": "c621f9751bccc2cec5dc01d17f4bb46efea75198fced4374eec23571d8544fb3",
+      "stored_bytes": 1564,
+      "stored_path": "original/run/actual/prepared/observer_train/video_2874/RECEIPT.json.gz",
+      "stored_sha256": "d856fc7f116d092c2250ec9d35c9f05cf43a0e3455982bdc1461076605fa5f4e"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11353,
+      "source_path": "run/actual/prepared/observer_train/video_2901/RECEIPT.json",
+      "source_sha256": "5a91a35c3ca5e6c4292bf4ae911ff29a8484f1e2fa801aad5930f86335ab06d7",
+      "stored_bytes": 2518,
+      "stored_path": "original/run/actual/prepared/observer_train/video_2901/RECEIPT.json.gz",
+      "stored_sha256": "3733375a6d982ab812f1d03e35dfc11e7828460476d4d6aa9ed0049aac572f86"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 3133,
+      "source_path": "run/actual/prepared/observer_train/video_2902/RECEIPT.json",
+      "source_sha256": "c0d51d9f947775e25c7d22d35585f259506977abbaaef4e78ecd1f2bd7fcc305",
+      "stored_bytes": 1044,
+      "stored_path": "original/run/actual/prepared/observer_train/video_2902/RECEIPT.json.gz",
+      "stored_sha256": "e7057bb45516cf413140a0b054c9f35617d393792f07e0efa034c9412ec26893"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 7209,
+      "source_path": "run/actual/prepared/observer_train/video_3186/RECEIPT.json",
+      "source_sha256": "2edb5c3286ea0e2260cffedbe94c471b2a54aaf687ec68eb1bd544a59f288fd3",
+      "stored_bytes": 1823,
+      "stored_path": "original/run/actual/prepared/observer_train/video_3186/RECEIPT.json.gz",
+      "stored_sha256": "507b6f7204d3dedb192bac62e75c2ae0047c058cdb4ed56204dfecc575107f23"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11288,
+      "source_path": "run/actual/prepared/observer_train/video_324/RECEIPT.json",
+      "source_sha256": "76df5aa42c33cacee271da0042fb46b9528d68415a72ef1b468ec5c21b423512",
+      "stored_bytes": 2718,
+      "stored_path": "original/run/actual/prepared/observer_train/video_324/RECEIPT.json.gz",
+      "stored_sha256": "81bd2d6f954699bacdd6620422b09784f8628a91958e3a3031cadc4f7ee75478"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 4534,
+      "source_path": "run/actual/prepared/observer_train/video_3327/RECEIPT.json",
+      "source_sha256": "89a044522cf94a542410beeb71d7aca857e5fbfd6ecab86c3f2ec83cda122bde",
+      "stored_bytes": 1421,
+      "stored_path": "original/run/actual/prepared/observer_train/video_3327/RECEIPT.json.gz",
+      "stored_sha256": "961dc0d15fd759880552c35bb9d8947ab5685b94efeaaf6ad11cb744b8bb76b9"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11348,
+      "source_path": "run/actual/prepared/observer_train/video_3467/RECEIPT.json",
+      "source_sha256": "39cd67e8943b2b7c8f0aa573c0101337e8473153298c9e8cb8bfc6e816a48e48",
+      "stored_bytes": 2573,
+      "stored_path": "original/run/actual/prepared/observer_train/video_3467/RECEIPT.json.gz",
+      "stored_sha256": "aeddc1f11e8db402a641e5af49bf454779e701ad1b4c4490f6d71a780cb3bd50"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11325,
+      "source_path": "run/actual/prepared/observer_train/video_3498/RECEIPT.json",
+      "source_sha256": "f5343b9ac76f2184f94c3e40d9e552883b43f35ee7a17ade97fc3b8dc3ae7c78",
+      "stored_bytes": 2782,
+      "stored_path": "original/run/actual/prepared/observer_train/video_3498/RECEIPT.json.gz",
+      "stored_sha256": "ddf53d9910bb971366d5850afa9ca8a85b1f2d876756529f5dcf2cd45d483236"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11217,
+      "source_path": "run/actual/prepared/observer_train/video_3563/RECEIPT.json",
+      "source_sha256": "509cb25cfd253e23cef209ef14459ab5038b1dd7b1151f12fcbac36e50dfc718",
+      "stored_bytes": 2817,
+      "stored_path": "original/run/actual/prepared/observer_train/video_3563/RECEIPT.json.gz",
+      "stored_sha256": "96e73d5288d36501bf1aca691b5ac44398cf060a4160ea42b6f735e192392167"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 3136,
+      "source_path": "run/actual/prepared/observer_train/video_3570/RECEIPT.json",
+      "source_sha256": "597951aac17de26f71f65ab2df20e2f783a2aeb91e9e7b882a67e1117e61d4e0",
+      "stored_bytes": 1059,
+      "stored_path": "original/run/actual/prepared/observer_train/video_3570/RECEIPT.json.gz",
+      "stored_sha256": "51e624a04270e533bff86392fde4f2d96d850dbee951189421ee76f9a6c54083"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 3138,
+      "source_path": "run/actual/prepared/observer_train/video_3690/RECEIPT.json",
+      "source_sha256": "6e2aa6e588cb3acf31995692680411b56a16a65cf1a4356b4133a9889765395b",
+      "stored_bytes": 1046,
+      "stored_path": "original/run/actual/prepared/observer_train/video_3690/RECEIPT.json.gz",
+      "stored_sha256": "ee6f7c32fb88a7eeadfece388dc3bb91bf789efac51a0d3786b16db37ac7e54c"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5933,
+      "source_path": "run/actual/prepared/observer_train/video_3773/RECEIPT.json",
+      "source_sha256": "a824be80d7fbbcb555321f313a8190948263d08b5bfda0530c5baa4b61a489c8",
+      "stored_bytes": 1750,
+      "stored_path": "original/run/actual/prepared/observer_train/video_3773/RECEIPT.json.gz",
+      "stored_sha256": "c3ec1a96d96a959df62b2ee7d9d25aa84a9346acdef3726a84fadfdb910db7f6"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11447,
+      "source_path": "run/actual/prepared/observer_train/video_3776/RECEIPT.json",
+      "source_sha256": "b3ffa0ad2a7ba13be64317bdc67dd54f69303a0be3966e29eb1b73bfeef2cdf1",
+      "stored_bytes": 2649,
+      "stored_path": "original/run/actual/prepared/observer_train/video_3776/RECEIPT.json.gz",
+      "stored_sha256": "af36dc0fff3cadc090063d932919a42f6b03ba9585bdf3381b7b0dd1dbfa4e76"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5808,
+      "source_path": "run/actual/prepared/observer_train/video_3893/RECEIPT.json",
+      "source_sha256": "a844a59178ce1f532a85036e189a55539c05c07e3a17b9ca03c3abc0826fcf79",
+      "stored_bytes": 1717,
+      "stored_path": "original/run/actual/prepared/observer_train/video_3893/RECEIPT.json.gz",
+      "stored_sha256": "783ebcb252d1bdb47f4355d8609e0ef3740933ab7e2a6360ffb5c8903f0a8208"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11287,
+      "source_path": "run/actual/prepared/observer_train/video_3919/RECEIPT.json",
+      "source_sha256": "ea617ab503be71f358cd875db3817cedff0cb6d8ba56e3582b27a53b6f09f961",
+      "stored_bytes": 2609,
+      "stored_path": "original/run/actual/prepared/observer_train/video_3919/RECEIPT.json.gz",
+      "stored_sha256": "b071e24efd182bb1c36c0a076ea565b2c14688d95339b52fcb751ae712a6df9d"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5864,
+      "source_path": "run/actual/prepared/observer_train/video_3958/RECEIPT.json",
+      "source_sha256": "e6d10557a6df0c34cc8e7d3ba9b3202e66129d48d83cf1d60185104e8f436887",
+      "stored_bytes": 1644,
+      "stored_path": "original/run/actual/prepared/observer_train/video_3958/RECEIPT.json.gz",
+      "stored_sha256": "38301ad7ea751cc9df72a0d41289a4dfb05e04393f70cc20c8efb00e04696548"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 8726,
+      "source_path": "run/actual/prepared/observer_train/video_411/RECEIPT.json",
+      "source_sha256": "9003f87ce6dbcbba2e7710bec93013f933620de7aade4f03d772ae11ad1f599a",
+      "stored_bytes": 2154,
+      "stored_path": "original/run/actual/prepared/observer_train/video_411/RECEIPT.json.gz",
+      "stored_sha256": "e8fecf991571372b77c8fa336acedabaa9d102aba4eef00cf527a70300bc25b8"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 8673,
+      "source_path": "run/actual/prepared/observer_train/video_4285/RECEIPT.json",
+      "source_sha256": "347bdb49bb8e16f036cf5f73216709299eda6dfa5ffcaa9fd12b2a7ce898f645",
+      "stored_bytes": 2071,
+      "stored_path": "original/run/actual/prepared/observer_train/video_4285/RECEIPT.json.gz",
+      "stored_sha256": "1a876318188652eadd3a9b30ead938e2de833cfe98d28590c848cabf44c5d736"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 9994,
+      "source_path": "run/actual/prepared/observer_train/video_4397/RECEIPT.json",
+      "source_sha256": "57d184894af1051507d259c6634fd321d46415881a0ea98a81acab1af0216c5f",
+      "stored_bytes": 2611,
+      "stored_path": "original/run/actual/prepared/observer_train/video_4397/RECEIPT.json.gz",
+      "stored_sha256": "5d70a7e05b4d7b49d66ff74ae682a360c0c1cabd6d452bb0366e532666e5c38d"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 8608,
+      "source_path": "run/actual/prepared/observer_train/video_4419/RECEIPT.json",
+      "source_sha256": "7aa497fbedb16fb5417a034a5b27fd9e1b50d723b0336cd420d7d7a339fa6cfd",
+      "stored_bytes": 2245,
+      "stored_path": "original/run/actual/prepared/observer_train/video_4419/RECEIPT.json.gz",
+      "stored_sha256": "d9913f7ee78e82c3998263fddd655a65e90ba372e626bc3a47462e7cdd20d3c1"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 9996,
+      "source_path": "run/actual/prepared/observer_train/video_4602/RECEIPT.json",
+      "source_sha256": "58891bab59908b75c67c8aa91a00bf6acaf9c828e18106b9a01012ec63ef9efa",
+      "stored_bytes": 2584,
+      "stored_path": "original/run/actual/prepared/observer_train/video_4602/RECEIPT.json.gz",
+      "stored_sha256": "153c865869924d32bcdec8b48b21ab312cc7fea2e13ba1239f9c7a2d72c83cf1"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5847,
+      "source_path": "run/actual/prepared/observer_train/video_4629/RECEIPT.json",
+      "source_sha256": "3dde8916a0e9993f8dcb917dcb1ea5d05d36e4cbbc212de18b7a9ad561e94fbc",
+      "stored_bytes": 1551,
+      "stored_path": "original/run/actual/prepared/observer_train/video_4629/RECEIPT.json.gz",
+      "stored_sha256": "d2fbd04d66cee59f519c88cf5d2211b2f0b23dd73ab1cabc413442a7cf23a289"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 8663,
+      "source_path": "run/actual/prepared/observer_train/video_4770/RECEIPT.json",
+      "source_sha256": "b69e314506776d7244b663b15e9812531ebfff812b6d5db2490dfa1c38a1f601",
+      "stored_bytes": 2092,
+      "stored_path": "original/run/actual/prepared/observer_train/video_4770/RECEIPT.json.gz",
+      "stored_sha256": "10c29772867b553241a279df6fe999f48b71bcc4bcc1b4bf147b6c0cb72b584d"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 7171,
+      "source_path": "run/actual/prepared/observer_train/video_4873/RECEIPT.json",
+      "source_sha256": "32884de35598bd883f74caa8e3427f1daf57fd60c5f4e223702bea56fa41ef0b",
+      "stored_bytes": 1761,
+      "stored_path": "original/run/actual/prepared/observer_train/video_4873/RECEIPT.json.gz",
+      "stored_sha256": "d2d0e7066239310fe1ca52c22961b059ecad485b666eb056710917d3f76fa117"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11322,
+      "source_path": "run/actual/prepared/observer_train/video_4987/RECEIPT.json",
+      "source_sha256": "92a21071576c8d3e486431ac83b6c698519e9c95024b1f39e4e53628537d215c",
+      "stored_bytes": 2867,
+      "stored_path": "original/run/actual/prepared/observer_train/video_4987/RECEIPT.json.gz",
+      "stored_sha256": "9c29748c293511708594222f216cd43b5cc39fbe3dafce020e12eb5bfa8fa568"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 4507,
+      "source_path": "run/actual/prepared/observer_train/video_5040/RECEIPT.json",
+      "source_sha256": "2e31e2092cb582c3515a93b40afa92e6a328932890ce7ed278a9f2e56550de81",
+      "stored_bytes": 1408,
+      "stored_path": "original/run/actual/prepared/observer_train/video_5040/RECEIPT.json.gz",
+      "stored_sha256": "d50775226d2c0df6136f8a6095d1203b78341dbaba7eb367a0aa1e7473d62df2"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5864,
+      "source_path": "run/actual/prepared/observer_train/video_5081/RECEIPT.json",
+      "source_sha256": "bf9e9e3f80e257a3c5c8a3b35cb9385f9c548e8f561d22ab816d2d54181809e8",
+      "stored_bytes": 1751,
+      "stored_path": "original/run/actual/prepared/observer_train/video_5081/RECEIPT.json.gz",
+      "stored_sha256": "2d15addee529508c806348516b3eb66c047ba8af8989cdeb1afced974e09fbcd"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 4494,
+      "source_path": "run/actual/prepared/observer_train/video_5112/RECEIPT.json",
+      "source_sha256": "53a358ba0662a65723da4d985252b35a88a1440524d127bebe8511352b42c7de",
+      "stored_bytes": 1327,
+      "stored_path": "original/run/actual/prepared/observer_train/video_5112/RECEIPT.json.gz",
+      "stored_sha256": "2d6cd8e41d8ac99c8e327ece6dd273fb24a1dacaa85b084d670276adbebe4048"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 3143,
+      "source_path": "run/actual/prepared/observer_train/video_5116/RECEIPT.json",
+      "source_sha256": "654adc08713d2bfedea8c638255ae10aab85e8e06fdb97164f2a6740c56c8d31",
+      "stored_bytes": 1064,
+      "stored_path": "original/run/actual/prepared/observer_train/video_5116/RECEIPT.json.gz",
+      "stored_sha256": "74a38bd07d71c9e05e364a799af3d7ba2f5d94fbebfcb4908f3be3ee8721df2b"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11348,
+      "source_path": "run/actual/prepared/observer_train/video_5126/RECEIPT.json",
+      "source_sha256": "fd849a54411a97b54339091f4efbd690c948c03096c9b70856652acdc46e27c3",
+      "stored_bytes": 2601,
+      "stored_path": "original/run/actual/prepared/observer_train/video_5126/RECEIPT.json.gz",
+      "stored_sha256": "e7453eb8917a57ea2c62bbcfd60f88f4734185c149b16c35916eab4e9a3a5579"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 3112,
+      "source_path": "run/actual/prepared/observer_train/video_5127/RECEIPT.json",
+      "source_sha256": "fdcdec6461ac9aca1020194f7a46caf08947e185ac378598090ebce8e00c289c",
+      "stored_bytes": 1104,
+      "stored_path": "original/run/actual/prepared/observer_train/video_5127/RECEIPT.json.gz",
+      "stored_sha256": "33ef0cfcc4660198c2c69484509b43b11430a12fe3737045f01ac12026733885"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 8544,
+      "source_path": "run/actual/prepared/observer_train/video_5259/RECEIPT.json",
+      "source_sha256": "70be76b48263665f469ea624fbf1cec07ec56f863c95803ded7648e491f17ef7",
+      "stored_bytes": 1985,
+      "stored_path": "original/run/actual/prepared/observer_train/video_5259/RECEIPT.json.gz",
+      "stored_sha256": "ffe5dc09c0ce9da755c429fc0bc6da4eb49376d3d9ef8611fccc4404a62fa4bd"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 1787,
+      "source_path": "run/actual/prepared/observer_train/video_5335/RECEIPT.json",
+      "source_sha256": "a39150fbea9ad64cbc390de258552c7fffba2173d0c71f70bcf526e86e8abd3f",
+      "stored_bytes": 816,
+      "stored_path": "original/run/actual/prepared/observer_train/video_5335/RECEIPT.json.gz",
+      "stored_sha256": "90c51ac1537106bef8eecd1135cbafb7b307975968b4f80fa668f1332fd43edb"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 1795,
+      "source_path": "run/actual/prepared/observer_train/video_5379/RECEIPT.json",
+      "source_sha256": "857f839040b3a9692edb0429259160b0dcf91f7bb31cbee4b3c3eab6d7af95ee",
+      "stored_bytes": 807,
+      "stored_path": "original/run/actual/prepared/observer_train/video_5379/RECEIPT.json.gz",
+      "stored_sha256": "09bd44bb9666857993f1f89722f3eba1c00b4e1ba6d6248a4925c162c33b62b9"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 1784,
+      "source_path": "run/actual/prepared/observer_train/video_5388/RECEIPT.json",
+      "source_sha256": "f4700ab230f0e2d6b4518fd042be9944965d6113e69d1ff0ee357bf7b33c6519",
+      "stored_bytes": 805,
+      "stored_path": "original/run/actual/prepared/observer_train/video_5388/RECEIPT.json.gz",
+      "stored_sha256": "f51051fdb63145e9d4cbbd730946c03d9f766612dcbcaef64b0b32b5404aa35d"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 1783,
+      "source_path": "run/actual/prepared/observer_train/video_5397/RECEIPT.json",
+      "source_sha256": "85f3abb2ebc56471987e47ab1436913e3b636ddccb6467e44ee61444ecfe972d",
+      "stored_bytes": 808,
+      "stored_path": "original/run/actual/prepared/observer_train/video_5397/RECEIPT.json.gz",
+      "stored_sha256": "ad7804b001a4c8adfb697f5995441b7691396c0f8c8b374a9167d0a6e556e2d6"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 7328,
+      "source_path": "run/actual/prepared/observer_train/video_5677/RECEIPT.json",
+      "source_sha256": "8295eb6f89e02fa338f905cd7ff5129c1d35dc26a26ff4567c58678a1ff74332",
+      "stored_bytes": 2041,
+      "stored_path": "original/run/actual/prepared/observer_train/video_5677/RECEIPT.json.gz",
+      "stored_sha256": "c51dd7988682e9456182bf5248a3684313dd3178f4a2634ce000e603b5a5c44c"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11387,
+      "source_path": "run/actual/prepared/observer_train/video_5689/RECEIPT.json",
+      "source_sha256": "20577e26b5ad3b52327ff101c18e9099327214341f2c8f7584ce3137b066ee75",
+      "stored_bytes": 2901,
+      "stored_path": "original/run/actual/prepared/observer_train/video_5689/RECEIPT.json.gz",
+      "stored_sha256": "bcf6f8bf7f5dfa8543a54d30c3982cd37c0ef15feb48474ab16b90fb520a95c2"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5900,
+      "source_path": "run/actual/prepared/observer_train/video_5780/RECEIPT.json",
+      "source_sha256": "b4e8be7dcbab105eec371015e76094796d63657c68a8583513f6e4598fc1fd01",
+      "stored_bytes": 1677,
+      "stored_path": "original/run/actual/prepared/observer_train/video_5780/RECEIPT.json.gz",
+      "stored_sha256": "b73497dc8ffcdb74e93a3d2152994836861b049cfcd7d9fa7d2018c12a0589d9"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 3132,
+      "source_path": "run/actual/prepared/observer_train/video_6092/RECEIPT.json",
+      "source_sha256": "c000898935a319e26f53d1b6b8881e8eabe9edabbbfe75dfc4034a9683434613",
+      "stored_bytes": 1062,
+      "stored_path": "original/run/actual/prepared/observer_train/video_6092/RECEIPT.json.gz",
+      "stored_sha256": "561ded4cad50b39812c8cf4f9576438e1373226d7464efd9d26bbb127dc4067d"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 7184,
+      "source_path": "run/actual/prepared/observer_train/video_6101/RECEIPT.json",
+      "source_sha256": "a512295e6fda1e9ec9d1f36ee2f4474bb42a46370425e5dbd2d21a3f671f1c01",
+      "stored_bytes": 1873,
+      "stored_path": "original/run/actual/prepared/observer_train/video_6101/RECEIPT.json.gz",
+      "stored_sha256": "3be51de9ed9cc44429d7da272a7a1c1554240a8bb8dca061c4fed8fc6fee1421"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11437,
+      "source_path": "run/actual/prepared/observer_train/video_6169/RECEIPT.json",
+      "source_sha256": "45bf78930fbbb7fb00649b967c2bb8d9875a4e2a3967fba099d0c7d8091dc570",
+      "stored_bytes": 2858,
+      "stored_path": "original/run/actual/prepared/observer_train/video_6169/RECEIPT.json.gz",
+      "stored_sha256": "79ca3aa616a6c4ad6312f5884b3abec13cdbbda4281bad970caf1a488d246e9b"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 8675,
+      "source_path": "run/actual/prepared/observer_train/video_6190/RECEIPT.json",
+      "source_sha256": "cf18eaf4a8a8a54064232740acb15965cb5256c5d24701dcd09e57c7a8935421",
+      "stored_bytes": 2142,
+      "stored_path": "original/run/actual/prepared/observer_train/video_6190/RECEIPT.json.gz",
+      "stored_sha256": "ce596cb5ff3b6ac373f725082ba0d908b8ec569f1c83fecd8fd60deea01aea86"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11317,
+      "source_path": "run/actual/prepared/observer_train/video_6300/RECEIPT.json",
+      "source_sha256": "aa980ce118e206771d959f714eb060658407430c6532dd6e61a8295e51dca86c",
+      "stored_bytes": 2742,
+      "stored_path": "original/run/actual/prepared/observer_train/video_6300/RECEIPT.json.gz",
+      "stored_sha256": "747ea87f1261398077df1918e2c144102313814b6f6edd6d5dae9dfd3e818589"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 4545,
+      "source_path": "run/actual/prepared/observer_train/video_6515/RECEIPT.json",
+      "source_sha256": "13ba8e25272955e2e935089149d19aa79b9164c736bfcbab8cb0c1f7a2d37311",
+      "stored_bytes": 1313,
+      "stored_path": "original/run/actual/prepared/observer_train/video_6515/RECEIPT.json.gz",
+      "stored_sha256": "dbbbca6ec43bb0dd3a5d06e8f03dd3d0b29b7875c85ce3246123111061403f8b"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5934,
+      "source_path": "run/actual/prepared/observer_train/video_6526/RECEIPT.json",
+      "source_sha256": "4623e294b237b25a918184f050c565bf44f383b4089f8c3174ae2e8db3ca661c",
+      "stored_bytes": 1729,
+      "stored_path": "original/run/actual/prepared/observer_train/video_6526/RECEIPT.json.gz",
+      "stored_sha256": "c7f49ed156f7f833c8dc6e563f4265db8d2d1ac88310101ef87ee5674ad0a4e0"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 7216,
+      "source_path": "run/actual/prepared/observer_train/video_6543/RECEIPT.json",
+      "source_sha256": "829c3802ea0134a75c9392547bfe380329037c2ed07ba50adc3ab59851e50fec",
+      "stored_bytes": 1912,
+      "stored_path": "original/run/actual/prepared/observer_train/video_6543/RECEIPT.json.gz",
+      "stored_sha256": "3edc928b5300cad85e811377adeb45f820147e6e8d3e3b3cad778f1aeb11969c"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11387,
+      "source_path": "run/actual/prepared/observer_train/video_6562/RECEIPT.json",
+      "source_sha256": "77814be1f62ad0da2297484aedcb52090ffbcfa4e68d1465f9fc606892668fae",
+      "stored_bytes": 2633,
+      "stored_path": "original/run/actual/prepared/observer_train/video_6562/RECEIPT.json.gz",
+      "stored_sha256": "39730ee976027a3b04f7c2c97e85cc3ff9e30e9cbe7352cedf8d221f3d1e70d1"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 8567,
+      "source_path": "run/actual/prepared/observer_train/video_6583/RECEIPT.json",
+      "source_sha256": "6572e238ff453f316d42d541b17d2714411915af14c730ce778e869d85d20a2a",
+      "stored_bytes": 2168,
+      "stored_path": "original/run/actual/prepared/observer_train/video_6583/RECEIPT.json.gz",
+      "stored_sha256": "33ef1e30d0a4bafc2863850ee60150cad86397177db8bffba834e8fdc0a66d64"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5830,
+      "source_path": "run/actual/prepared/observer_train/video_6807/RECEIPT.json",
+      "source_sha256": "cce5ecce85f41d602f0cc6f188b60a89bcf1709c784f46067a40a41cac3dceaa",
+      "stored_bytes": 1634,
+      "stored_path": "original/run/actual/prepared/observer_train/video_6807/RECEIPT.json.gz",
+      "stored_sha256": "e37c17f64d377418bbb69b4a144f976b86a6fcf7ecce9119f7caa50f41c95efb"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 7204,
+      "source_path": "run/actual/prepared/observer_train/video_6861/RECEIPT.json",
+      "source_sha256": "e6829e584b5b0259294654ef1917646f077557fe9670201869928b8d7c3e206c",
+      "stored_bytes": 1837,
+      "stored_path": "original/run/actual/prepared/observer_train/video_6861/RECEIPT.json.gz",
+      "stored_sha256": "01cce5166ce25f12a10aac2b90b42f080d150354ab3a31babee3592828dd5e3d"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5926,
+      "source_path": "run/actual/prepared/observer_train/video_6893/RECEIPT.json",
+      "source_sha256": "28353c065e2b2221a02c57ad7cc889e424e0df9223ac3588390ad9f39f2fcaac",
+      "stored_bytes": 1644,
+      "stored_path": "original/run/actual/prepared/observer_train/video_6893/RECEIPT.json.gz",
+      "stored_sha256": "1427592f26f1f0c5f50658b998db94965c2bddee5fdcac936ac71e83b7566529"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11359,
+      "source_path": "run/actual/prepared/observer_train/video_6908/RECEIPT.json",
+      "source_sha256": "b4523f3ce3cd8fe38372f9f935bc24bfbaad607578f19ca4a14fb58e5cb68cad",
+      "stored_bytes": 2817,
+      "stored_path": "original/run/actual/prepared/observer_train/video_6908/RECEIPT.json.gz",
+      "stored_sha256": "4884fe96fc924dc96555d8c1d3891a6ee635392ea114d9981cd534ee94e83a3f"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 3103,
+      "source_path": "run/actual/prepared/observer_train/video_7253/RECEIPT.json",
+      "source_sha256": "7c346dab1e646f27402b556b519908cbf77f9099b6abdaef601806989c947521",
+      "stored_bytes": 1059,
+      "stored_path": "original/run/actual/prepared/observer_train/video_7253/RECEIPT.json.gz",
+      "stored_sha256": "c8cbe459e1ff3252d31d73f041d4553ed3b8ccf80d277e4ed107da5d4b9a04fc"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 1794,
+      "source_path": "run/actual/prepared/observer_train/video_7373/RECEIPT.json",
+      "source_sha256": "bd81587014d91f9987aa37b66763551b7d09a051c481f2800c073583de271f7f",
+      "stored_bytes": 815,
+      "stored_path": "original/run/actual/prepared/observer_train/video_7373/RECEIPT.json.gz",
+      "stored_sha256": "d4929cdc9e29f4193802dd5f68a710c22173c35dfc87e41f8c6f0f1685f01d48"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 7057,
+      "source_path": "run/actual/prepared/observer_train/video_7402/RECEIPT.json",
+      "source_sha256": "efcf7f4aac597ee7d9dda8de4b7dff3a3edbbcc12f248c776557bfe4a47a1084",
+      "stored_bytes": 1916,
+      "stored_path": "original/run/actual/prepared/observer_train/video_7402/RECEIPT.json.gz",
+      "stored_sha256": "0a929ca562060d4669869bf8c141e7c0246ddbc25775470c1990d43f69a185e6"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5924,
+      "source_path": "run/actual/prepared/observer_train/video_7408/RECEIPT.json",
+      "source_sha256": "0a3204b1c20b7f33b9d55fd0ff47090664fc6b1408a8bfbd90264f989863ab31",
+      "stored_bytes": 1580,
+      "stored_path": "original/run/actual/prepared/observer_train/video_7408/RECEIPT.json.gz",
+      "stored_sha256": "8a97684110aa00879a20b6582b75d58d68b4319b7b79578ab40d2a9507625e4c"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 1790,
+      "source_path": "run/actual/prepared/observer_train/video_7447/RECEIPT.json",
+      "source_sha256": "1838af0f5fc77a8595e3a909a70a026314bbb3eed9ed5099582145ca113740eb",
+      "stored_bytes": 812,
+      "stored_path": "original/run/actual/prepared/observer_train/video_7447/RECEIPT.json.gz",
+      "stored_sha256": "8f279a009552b683033b58da410562227fd496da4ff05bb22fa662dfb4881949"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 7189,
+      "source_path": "run/actual/prepared/observer_train/video_75/RECEIPT.json",
+      "source_sha256": "0ce132bb326db795c6b885b73c6544737a2cf817d358356f6f93ae0efe6064bf",
+      "stored_bytes": 1924,
+      "stored_path": "original/run/actual/prepared/observer_train/video_75/RECEIPT.json.gz",
+      "stored_sha256": "4c28eccff68b43035665b3ba1bb40c8a7f1d43a70788fc9ead39e610f21c32d1"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5930,
+      "source_path": "run/actual/prepared/observer_train/video_7527/RECEIPT.json",
+      "source_sha256": "ddfb39de4df4d9661f0a2dea6996cf28d856d9f9b9ce739fee39a0c11c77cdf3",
+      "stored_bytes": 1713,
+      "stored_path": "original/run/actual/prepared/observer_train/video_7527/RECEIPT.json.gz",
+      "stored_sha256": "c04d0b195d516afd9ac56a16856b517d48f606b5fe3815203b63bd3001599869"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 3137,
+      "source_path": "run/actual/prepared/observer_train/video_7536/RECEIPT.json",
+      "source_sha256": "44752e12a26020a5188f5ac9062024c308da1cddbdd434d3f1c0d3f1a3eb7b63",
+      "stored_bytes": 1138,
+      "stored_path": "original/run/actual/prepared/observer_train/video_7536/RECEIPT.json.gz",
+      "stored_sha256": "827e6ce013f5953f68a1bc55051e434633828c32fc7fa093b49e394969bf1ab6"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 1780,
+      "source_path": "run/actual/prepared/observer_train/video_77/RECEIPT.json",
+      "source_sha256": "00ea7490d0fbca4b1787747f18e2e37d4b505cff66ee345ef40d8d299ffc5268",
+      "stored_bytes": 806,
+      "stored_path": "original/run/actual/prepared/observer_train/video_77/RECEIPT.json.gz",
+      "stored_sha256": "7bd143e215be4e1a2fa19d740329cd86026bc92c34b9c2934adbc8a4e8aab601"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 7297,
+      "source_path": "run/actual/prepared/observer_train/video_7709/RECEIPT.json",
+      "source_sha256": "b7561b47a1b44a515f5ac265daf924886f7de41e88fcb61586dc8149dbf75bd2",
+      "stored_bytes": 1931,
+      "stored_path": "original/run/actual/prepared/observer_train/video_7709/RECEIPT.json.gz",
+      "stored_sha256": "61758cace16a5ea1fc151be179ea015ebc23d9c4d7bdb9adc9ece8a3f9d1d256"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11299,
+      "source_path": "run/actual/prepared/observer_train/video_7746/RECEIPT.json",
+      "source_sha256": "dc25dfa7452e7bb1a419daa339a940f8b3d4c1a0026d5e1d816549625f769ca7",
+      "stored_bytes": 2731,
+      "stored_path": "original/run/actual/prepared/observer_train/video_7746/RECEIPT.json.gz",
+      "stored_sha256": "1c28a97d2c859d018742710bb8d60ca848bffbf7cfc38211f1aeb9b7ab47115e"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5791,
+      "source_path": "run/actual/prepared/observer_train/video_7918/RECEIPT.json",
+      "source_sha256": "511d2e8396e8260d53cd2d410aca381017c6c89b756de895a4e70345e9fc4a7f",
+      "stored_bytes": 1704,
+      "stored_path": "original/run/actual/prepared/observer_train/video_7918/RECEIPT.json.gz",
+      "stored_sha256": "924dddc86c8258c458e2fc6fb9ecdece27e51b4c80944084bf2076b2c991da7f"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11354,
+      "source_path": "run/actual/prepared/observer_train/video_7985/RECEIPT.json",
+      "source_sha256": "34e3f4863a3a1611fe7de3094c2360b8cfb8133711536eb734f446087647a791",
+      "stored_bytes": 2558,
+      "stored_path": "original/run/actual/prepared/observer_train/video_7985/RECEIPT.json.gz",
+      "stored_sha256": "c51d0f2b59898d3b1b7bafa8fcaf3a429912e9d38c847cfb4fadbfc66472eedf"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 8609,
+      "source_path": "run/actual/prepared/observer_train/video_8130/RECEIPT.json",
+      "source_sha256": "e78dd1e0848caa1589c9dd2291b7bd942758ecd9c96da64aa0aeda69f8d7838e",
+      "stored_bytes": 2284,
+      "stored_path": "original/run/actual/prepared/observer_train/video_8130/RECEIPT.json.gz",
+      "stored_sha256": "32febab5aff063baf7e3230a5b71e7a23877206528637f7feccd80a8b18a16e5"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11364,
+      "source_path": "run/actual/prepared/observer_train/video_8145/RECEIPT.json",
+      "source_sha256": "405899bd8cd7eba104fe9f4638bd6dc4ca545d2e3b7afd792b6169b7def3b022",
+      "stored_bytes": 2792,
+      "stored_path": "original/run/actual/prepared/observer_train/video_8145/RECEIPT.json.gz",
+      "stored_sha256": "dcf4d998f5c2471c8ddcd83982858d60b238aa6a7ee2d1502bb897efb1997cd6"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 3176,
+      "source_path": "run/actual/prepared/observer_train/video_8295/RECEIPT.json",
+      "source_sha256": "39aba93da514291639c9b8673ce261be533fd3dd86a9c5fa20d14997f7fb8694",
+      "stored_bytes": 1050,
+      "stored_path": "original/run/actual/prepared/observer_train/video_8295/RECEIPT.json.gz",
+      "stored_sha256": "51be3203e1638a069de839c124d88eaa1ad92a348c28505c670ea75448611a76"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 8603,
+      "source_path": "run/actual/prepared/observer_train/video_8416/RECEIPT.json",
+      "source_sha256": "19a1c6eb9c70ec871d60617ff10d2c29ae4e01a85d023ab53de38b4cc75bbcc3",
+      "stored_bytes": 2138,
+      "stored_path": "original/run/actual/prepared/observer_train/video_8416/RECEIPT.json.gz",
+      "stored_sha256": "07504005f1852c9e218f3e4204b8355d543367ee03a6b071010bd3d9b3be4fe9"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11300,
+      "source_path": "run/actual/prepared/observer_train/video_8442/RECEIPT.json",
+      "source_sha256": "0cb07f00744eaf433f530c61d25dbb6e180c41348ea540ee953c2968eaedf072",
+      "stored_bytes": 2863,
+      "stored_path": "original/run/actual/prepared/observer_train/video_8442/RECEIPT.json.gz",
+      "stored_sha256": "794c2a37a0c84f89be0c599d0da67f4441f2a48dec089e97a9f0c29f02f65e8d"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11443,
+      "source_path": "run/actual/prepared/observer_train/video_8520/RECEIPT.json",
+      "source_sha256": "d1cdca28b7f9b0323a52d4082a8d328d60e154b4c990659a4af003a6b3d711f4",
+      "stored_bytes": 2850,
+      "stored_path": "original/run/actual/prepared/observer_train/video_8520/RECEIPT.json.gz",
+      "stored_sha256": "e12e4771e499770e686edb2c2c3614f90c7e5033096a2bf0f2b1e937be7307f1"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 8592,
+      "source_path": "run/actual/prepared/observer_train/video_8778/RECEIPT.json",
+      "source_sha256": "f50908818a332f22cbc1417f7c8726513fae57ef28db1930e18e45d61b5672d3",
+      "stored_bytes": 2122,
+      "stored_path": "original/run/actual/prepared/observer_train/video_8778/RECEIPT.json.gz",
+      "stored_sha256": "ef4a65d77892f12f709bad24f6408e936da8a74aa1a071b6cd57e37aed2a864d"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 8559,
+      "source_path": "run/actual/prepared/observer_train/video_8850/RECEIPT.json",
+      "source_sha256": "17bbc9c9660bfd7e88a66672a1f28d77835d10a6611578d16e18f91132ef515e",
+      "stored_bytes": 1969,
+      "stored_path": "original/run/actual/prepared/observer_train/video_8850/RECEIPT.json.gz",
+      "stored_sha256": "11f09ca9036c02e821dce44d12ef7775f011f40e92eafde2d53eccf98105e9ac"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 4519,
+      "source_path": "run/actual/prepared/observer_train/video_8894/RECEIPT.json",
+      "source_sha256": "6b49df5a9150a5c1cf42a86992b0f950c7414dbdf53cbc3dac3d85d36d1f1cca",
+      "stored_bytes": 1300,
+      "stored_path": "original/run/actual/prepared/observer_train/video_8894/RECEIPT.json.gz",
+      "stored_sha256": "d1003a52444bd0d04c81c4ea30633c7688f9786048cb387a5d9f0aaed94d87cf"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 4494,
+      "source_path": "run/actual/prepared/observer_train/video_9193/RECEIPT.json",
+      "source_sha256": "ba93ae3dedb1719f7c2d1294e85ae49563d279b35c4a63ab6fcf11b746cc7b91",
+      "stored_bytes": 1391,
+      "stored_path": "original/run/actual/prepared/observer_train/video_9193/RECEIPT.json.gz",
+      "stored_sha256": "7626ca4ce13e34cd1cbefe5272d9fd9d352d237892a19b18cb19519244249318"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 8633,
+      "source_path": "run/actual/prepared/observer_train/video_9364/RECEIPT.json",
+      "source_sha256": "f541bb78d94ead1cd6b95f12ef42f3a0d6630fb41484d8bbf94382e48b75db88",
+      "stored_bytes": 2205,
+      "stored_path": "original/run/actual/prepared/observer_train/video_9364/RECEIPT.json.gz",
+      "stored_sha256": "f5041219d4ac6fd6d1ddb5f503ae8d21f044d7b7e926e3d6076d330507a80690"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 4558,
+      "source_path": "run/actual/prepared/observer_train/video_9417/RECEIPT.json",
+      "source_sha256": "0df2814fde25d90f6c2e434581c4b9d69be0abf248fcf50dc1dfd18b3bdb8ce1",
+      "stored_bytes": 1328,
+      "stored_path": "original/run/actual/prepared/observer_train/video_9417/RECEIPT.json.gz",
+      "stored_sha256": "7ca15a4ee99568096f02aa2c787879bcbe3fb3fee8eac5e4b9f4440aafafa781"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 8656,
+      "source_path": "run/actual/prepared/observer_train/video_9540/RECEIPT.json",
+      "source_sha256": "0f4f3302c3395b2fd4ebff5ff1d7b4831a6b41e6cb275878eaa00fa2e75753ef",
+      "stored_bytes": 2328,
+      "stored_path": "original/run/actual/prepared/observer_train/video_9540/RECEIPT.json.gz",
+      "stored_sha256": "90c16b9fec477fb7637f0ca1ae0c94d2a8bdee79b90ec04336823baef07075c2"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 8634,
+      "source_path": "run/actual/prepared/observer_train/video_9622/RECEIPT.json",
+      "source_sha256": "1b36be591d3c2adff2020a0c4e816941708568dcfdc8f6147a27e951f2793aff",
+      "stored_bytes": 2107,
+      "stored_path": "original/run/actual/prepared/observer_train/video_9622/RECEIPT.json.gz",
+      "stored_sha256": "e4b6ef45a5f9e6db4407d387e7f1bee8135e739f5a83e696339a2970f38301c3"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 11444,
+      "source_path": "run/actual/prepared/observer_train/video_9919/RECEIPT.json",
+      "source_sha256": "d4ed06d0eb6b1c72e552c975e758a88ec648025045ceafa86972a09fe8af8382",
+      "stored_bytes": 2797,
+      "stored_path": "original/run/actual/prepared/observer_train/video_9919/RECEIPT.json.gz",
+      "stored_sha256": "bb7c01d4b77180527943d60ed80a191955363c9e622ec635c9891bf8602ac1dc"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 4490,
+      "source_path": "run/actual/prepared/observer_train/video_9937/RECEIPT.json",
+      "source_sha256": "e5197283a55b0f00c5ce5ef3a3852b4e598c2fe46ec878154d8fde7e66ce84f7",
+      "stored_bytes": 1308,
+      "stored_path": "original/run/actual/prepared/observer_train/video_9937/RECEIPT.json.gz",
+      "stored_sha256": "cde0440d56f71582dbc88037af5086770b616855c4bf35a44e01b28ee2a49955"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 4532,
+      "source_path": "run/actual/prepared/observer_train/video_9975/RECEIPT.json",
+      "source_sha256": "b09e2a5fba34ef27e036e4f53500344ed37ef43764b68f3c9c427111ff215442",
+      "stored_bytes": 1385,
+      "stored_path": "original/run/actual/prepared/observer_train/video_9975/RECEIPT.json.gz",
+      "stored_sha256": "66eaffc970f641e5a37e96a7567c246729c7c9af3ae0d9279452abdb7018c4a9"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 4000,
+      "source_path": "run/seed/prepared/observer_train/video_1685/RECEIPT.json",
+      "source_sha256": "8ff9a29ebeaf9141d66167e4b1624286b94052b8d5ad31e920228ee64583f5ca",
+      "stored_bytes": 1454,
+      "stored_path": "original/run/seed/prepared/observer_train/video_1685/RECEIPT.json.gz",
+      "stored_sha256": "cf63e241f3f1a4093543283f17e43c9b9ca2e3e7b4d19dabb7e7294fa217a710"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5837,
+      "source_path": "run/seed/prepared/observer_train/video_3212/RECEIPT.json",
+      "source_sha256": "9409b3e85b2639a868302b1e1af559b77debfdcf9586f7ea469329e136cd331d",
+      "stored_bytes": 1701,
+      "stored_path": "original/run/seed/prepared/observer_train/video_3212/RECEIPT.json.gz",
+      "stored_sha256": "de3b64845d8872266c6904a596436c01b0a3a4012c66d1fdf6624f3aa5b4dbf1"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 4864,
+      "source_path": "run/seed/prepared/observer_train/video_3466/RECEIPT.json",
+      "source_sha256": "ef3f02610b5ac52ad8f323b9f5dbb3a55c9af2bfc9c1d69870682dcea66c0a0b",
+      "stored_bytes": 1541,
+      "stored_path": "original/run/seed/prepared/observer_train/video_3466/RECEIPT.json.gz",
+      "stored_sha256": "a9c3c5de84e0793993b5e326b9dc4112db235dffe70dbfe917bd2b2808559e72"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 9478,
+      "source_path": "run/seed/prepared/observer_train/video_4523/RECEIPT.json",
+      "source_sha256": "11903f27aaf54c55692301c436cec9458a6a6674ce6a75bfe4dc3a6b9cee5a63",
+      "stored_bytes": 2104,
+      "stored_path": "original/run/seed/prepared/observer_train/video_4523/RECEIPT.json.gz",
+      "stored_sha256": "3454622532e6ad38069ee03cdd42fdb4e96f26d807832d672a589915010782e4"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5806,
+      "source_path": "run/seed/prepared/observer_train/video_6067/RECEIPT.json",
+      "source_sha256": "e8db3cfd0a1cac0d06e7f512b6b621b8d2a6535866a65707f5bc71e1033969a9",
+      "stored_bytes": 1674,
+      "stored_path": "original/run/seed/prepared/observer_train/video_6067/RECEIPT.json.gz",
+      "stored_sha256": "e4b83eccabd74e14118a551b71c5a597e54e72b4454cc33ff8843f4891d19bc0"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 9516,
+      "source_path": "run/seed/prepared/observer_train/video_6277/RECEIPT.json",
+      "source_sha256": "5a58a8d2f8a00a6e5de33c1b4c25837fe92aadc4be5ff6ef77486456dc93cf69",
+      "stored_bytes": 2108,
+      "stored_path": "original/run/seed/prepared/observer_train/video_6277/RECEIPT.json.gz",
+      "stored_sha256": "c528f6e4df03ea4f233fb4c4ea9f7b630ab32290aded4dcbb8a802cf038e7735"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 8693,
+      "source_path": "run/seed/prepared/observer_train/video_7513/RECEIPT.json",
+      "source_sha256": "b0ba823af848c64c379d2a1dd4f3584d39b299be4b257c5228e90d51298a7e1b",
+      "stored_bytes": 1986,
+      "stored_path": "original/run/seed/prepared/observer_train/video_7513/RECEIPT.json.gz",
+      "stored_sha256": "74f735effd4ea93255401ef1a42ba29b15d8fd0e3b8b088dd4f991e664d84a1f"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 6917,
+      "source_path": "run/seed/prepared/observer_train/video_8274/RECEIPT.json",
+      "source_sha256": "6b7ff1b0cfaa6b7e3d9f4ae2033c74a857fc9b5f895ddc656f93f8d7ce0ff8ce",
+      "stored_bytes": 1694,
+      "stored_path": "original/run/seed/prepared/observer_train/video_8274/RECEIPT.json.gz",
+      "stored_sha256": "4d3c94c89ace5c5bf3f1f385c638bc27c5d2ec6492f5f3a1a74bddb735136af4"
+    },
+    {
+      "encoding": "original_bytes",
+      "source_bytes": 130685,
+      "source_path": "run/sound_observer.npz",
+      "source_sha256": "6d4d426401e94121caa4860f0246b35418ce8dd4088fd222e0ae418e2cc257af",
+      "stored_bytes": 130685,
+      "stored_path": "original/run/sound_observer.npz",
+      "stored_sha256": "6d4d426401e94121caa4860f0246b35418ce8dd4088fd222e0ae418e2cc257af"
+    }
+  ],
+  "schema": "hepta.joint-generation.compact-archive.v2",
+  "stored_files": {
+    "AUDIT.json": {
+      "bytes": 816,
+      "sha256": "4e929dd27b364e627ce698d6123a449cf7530da29e346034cc1d19dcc397d0d5"
+    },
+    "INPUT_MANIFEST.json.gz": {
+      "bytes": 125528,
+      "sha256": "f814a59f58249901f90dfe74a4f29d816bb41053511058026884cd522e1d762d"
+    },
+    "TRAJECTORY_AUDIT.json.gz": {
+      "bytes": 23,
+      "sha256": "2ca4529576310b626c1bd48352d283b521d029d54f195d8416536872d826e4c6"
+    },
+    "original/PROCESS_RECEIPT.json.gz": {
+      "bytes": 952,
+      "sha256": "6a77d6a19884a7aab5973f904cb5488c6f2989e81a67f8632b06e37a1e16ed25"
+    },
+    "original/SOURCE_RECEIPT.json.gz": {
+      "bytes": 7370,
+      "sha256": "b60c435e78bbe6d000897b2c038cb1e1d0db8ad0f1064ee32e86f7d70b43b3b9"
+    },
+    "original/environment.txt.gz": {
+      "bytes": 190,
+      "sha256": "e13f5e4db3cbeee78c5500447f597c28dc564ab5639952f49e372b2939bfa78b"
+    },
+    "original/process.log.gz": {
+      "bytes": 3617,
+      "sha256": "fe7b03347555239993a8c506ffc56178deb94ecf907edac41d23dbc278b35e24"
+    },
+    "original/run/ALLOCATION.json.gz": {
+      "bytes": 120451,
+      "sha256": "bb73caaa8ca4e40d68c2922b480bb73e0fcc5e7155b606923f53a6401738e7fe"
+    },
+    "original/run/OBSERVER_V2_FREEZE.json.gz": {
+      "bytes": 67584,
+      "sha256": "9eb557a30b3780ddd3c585bbc8b101776b0272519bd9d35cb8b4fc156b349ea6"
+    },
+    "original/run/PROTOCOL.json.gz": {
+      "bytes": 1643,
+      "sha256": "98b2f136c9a237c6d091fea8f0b41765242e47eabddb8e86b6af2166c75839e0"
+    },
+    "original/run/RESULT.json.gz": {
+      "bytes": 1708,
+      "sha256": "203dc8e0050c42b2f8f8ca028966114b6d725ce8667d27571f5fa406486b2582"
+    },
+    "original/run/action_observer.npz": {
+      "bytes": 794882,
+      "sha256": "9596ed0f04fe59813b4c7a49f9e53b7afcaedb800bca242e8b9e50d31fecdfdd"
+    },
+    "original/run/actual/prepared/observer_train/video_10014/RECEIPT.json.gz": {
+      "bytes": 2065,
+      "sha256": "7f0558aec9f4b02a9c03b17dc9d6ffe346dc3b83475641e2ae5e477cea45b1e1"
+    },
+    "original/run/actual/prepared/observer_train/video_10128/RECEIPT.json.gz": {
+      "bytes": 1946,
+      "sha256": "8e4027f6566a218c29f7e0c50375d807509078bd87c2e717d1e498ece5fe7cd6"
+    },
+    "original/run/actual/prepared/observer_train/video_10159/RECEIPT.json.gz": {
+      "bytes": 2695,
+      "sha256": "b38a121f8f7e505eb2baaff9930317e9a2409c603876774c9647c6a7df5d00a1"
+    },
+    "original/run/actual/prepared/observer_train/video_10165/RECEIPT.json.gz": {
+      "bytes": 1810,
+      "sha256": "8c40246103706a285aea26ec86ea1c00407120b3a694a0a4cabf3ff666b6e573"
+    },
+    "original/run/actual/prepared/observer_train/video_10288/RECEIPT.json.gz": {
+      "bytes": 1707,
+      "sha256": "3bdefc8d5bb250a575218c92968b6c960cbadf89ecaf7c8696d44888bb51aeb3"
+    },
+    "original/run/actual/prepared/observer_train/video_1050/RECEIPT.json.gz": {
+      "bytes": 1713,
+      "sha256": "af1584a8032d5c99352247bf69b7c175f0cdb0ce5c7092ac4a872a57723ae8a2"
+    },
+    "original/run/actual/prepared/observer_train/video_10817/RECEIPT.json.gz": {
+      "bytes": 1912,
+      "sha256": "56a0b50f661de36cffe6ee0f2d90ef3336b5ff8b3cf5d7e47a95c5063696044e"
+    },
+    "original/run/actual/prepared/observer_train/video_10884/RECEIPT.json.gz": {
+      "bytes": 1814,
+      "sha256": "aaf39c04ddfa3a7c3e0350c7c6332c0b9b49f75147958d322f9b8032b1465ccb"
+    },
+    "original/run/actual/prepared/observer_train/video_1097/RECEIPT.json.gz": {
+      "bytes": 1394,
+      "sha256": "cbe77963f96992e93ae2bb4356ed5067d6be94b057f82c35cef0d271f7805356"
+    },
+    "original/run/actual/prepared/observer_train/video_11019/RECEIPT.json.gz": {
+      "bytes": 1549,
+      "sha256": "2a01e18ef0f71d7021a0d8c5618a8ed2f8e8b2e136b93e56aecf3372966c4d59"
+    },
+    "original/run/actual/prepared/observer_train/video_11132/RECEIPT.json.gz": {
+      "bytes": 2002,
+      "sha256": "709d85d37d5b99101454a11fecc9e957282e94e33563b976b0d11940c34e0db7"
+    },
+    "original/run/actual/prepared/observer_train/video_11210/RECEIPT.json.gz": {
+      "bytes": 2122,
+      "sha256": "d48122840d81d2db75dd0934a3603bdcf0bae19a2a9bf3cd98241f18cca30191"
+    },
+    "original/run/actual/prepared/observer_train/video_11261/RECEIPT.json.gz": {
+      "bytes": 2534,
+      "sha256": "5dd69734ee7d3f3b58db0011ab4df208b8073594b8776179d68389ae622fdde0"
+    },
+    "original/run/actual/prepared/observer_train/video_11362/RECEIPT.json.gz": {
+      "bytes": 1420,
+      "sha256": "43336669887d168eb49d74859c179958d7a4092393c6ead9232bb65581646b2c"
+    },
+    "original/run/actual/prepared/observer_train/video_11388/RECEIPT.json.gz": {
+      "bytes": 2755,
+      "sha256": "0ab88adea11b22e05876e0d7224adacbe597368b3a63d1c5ece1514fded5c656"
+    },
+    "original/run/actual/prepared/observer_train/video_11421/RECEIPT.json.gz": {
+      "bytes": 1364,
+      "sha256": "6ab12071c55cc3bfeac2043255726fffcae312e18d35e8bfe90ea423edc623a8"
+    },
+    "original/run/actual/prepared/observer_train/video_11534/RECEIPT.json.gz": {
+      "bytes": 2496,
+      "sha256": "8aec1677d605e7de2ed83879c859bccc53516c273da565a585c22d24c2a0d4a5"
+    },
+    "original/run/actual/prepared/observer_train/video_11567/RECEIPT.json.gz": {
+      "bytes": 1707,
+      "sha256": "ba97e943bf5d51393df152e9f92b79b52f12dc50a78fa253421824edc982b431"
+    },
+    "original/run/actual/prepared/observer_train/video_1179/RECEIPT.json.gz": {
+      "bytes": 799,
+      "sha256": "8a7c2aa01667975a73f1cbca96605198f8e488ab7beb754c8f7bde8dd0fc798f"
+    },
+    "original/run/actual/prepared/observer_train/video_119/RECEIPT.json.gz": {
+      "bytes": 1723,
+      "sha256": "194b5b738dc164f213ef24a96e9c01c902ba976bb526be4ae4066e66a9e5aa09"
+    },
+    "original/run/actual/prepared/observer_train/video_1204/RECEIPT.json.gz": {
+      "bytes": 819,
+      "sha256": "d2901c29c26eba0d922cd13c939c5c8bcd961bad85eee1a728233681393801bc"
+    },
+    "original/run/actual/prepared/observer_train/video_1205/RECEIPT.json.gz": {
+      "bytes": 1747,
+      "sha256": "0282b6250420af2469d03b3ec043e7f5a49188470869eb481e67a0fa61d5e62b"
+    },
+    "original/run/actual/prepared/observer_train/video_1262/RECEIPT.json.gz": {
+      "bytes": 1696,
+      "sha256": "216a5b660fc1b468fffd1a0056ca5b42583cb5e20f008758da5bbc31297d7274"
+    },
+    "original/run/actual/prepared/observer_train/video_1343/RECEIPT.json.gz": {
+      "bytes": 1690,
+      "sha256": "3fdd616b5e7708da59211d1e7a4e4d6a33bf8b405e7d0dd988aa67a078fe18da"
+    },
+    "original/run/actual/prepared/observer_train/video_1523/RECEIPT.json.gz": {
+      "bytes": 1646,
+      "sha256": "64148e986b31c834bab6be8d3c6e8172f8adbe9675db8653297c76c63bfc4d65"
+    },
+    "original/run/actual/prepared/observer_train/video_1611/RECEIPT.json.gz": {
+      "bytes": 1427,
+      "sha256": "25c7ac7b9e10d46c4ac61912a449cafbff0bf97964b5d163f3c28e26ae41babc"
+    },
+    "original/run/actual/prepared/observer_train/video_1627/RECEIPT.json.gz": {
+      "bytes": 2813,
+      "sha256": "025b208438c1013ea32849cf15ce954e95a8770973ca9c16158bf04fd75f9313"
+    },
+    "original/run/actual/prepared/observer_train/video_1787/RECEIPT.json.gz": {
+      "bytes": 2679,
+      "sha256": "1bccfa47c51432034216bea3b7c263488ce2c943ad2adbb981cbe33effa0b00c"
+    },
+    "original/run/actual/prepared/observer_train/video_1995/RECEIPT.json.gz": {
+      "bytes": 1076,
+      "sha256": "70c43cbea43f72ae86200f18c9dbedfb839869655b13ad079d102fbba426c0b3"
+    },
+    "original/run/actual/prepared/observer_train/video_2072/RECEIPT.json.gz": {
+      "bytes": 1682,
+      "sha256": "e0ca2ac12a67a91bff62d51a846dc4c50194d6957a614c34b4ebeedf8b72dd25"
+    },
+    "original/run/actual/prepared/observer_train/video_2093/RECEIPT.json.gz": {
+      "bytes": 2768,
+      "sha256": "179b00df2d3b90c3e43e4ad276328efd18a357b97c63cabe3e9628015ac3aeea"
+    },
+    "original/run/actual/prepared/observer_train/video_2183/RECEIPT.json.gz": {
+      "bytes": 2067,
+      "sha256": "13c38fb8e5de96dc6de1119badcceeb7e3e050e6c4e405d38d467a35f9a72990"
+    },
+    "original/run/actual/prepared/observer_train/video_2215/RECEIPT.json.gz": {
+      "bytes": 1870,
+      "sha256": "0f8ef3e5e861121a6d009c587d3c4d3de662c20ca5a8aebee449a19d92ec397b"
+    },
+    "original/run/actual/prepared/observer_train/video_2255/RECEIPT.json.gz": {
+      "bytes": 1733,
+      "sha256": "9aa1d3d57fe53d78a30f250b4ed6b03e9fa4c718d1ca54862b4734d2dcc4c677"
+    },
+    "original/run/actual/prepared/observer_train/video_2270/RECEIPT.json.gz": {
+      "bytes": 2828,
+      "sha256": "ac52401f5644a9e2d74d37570b05f55167347c9be66d894f7caef802d08cc730"
+    },
+    "original/run/actual/prepared/observer_train/video_2325/RECEIPT.json.gz": {
+      "bytes": 2784,
+      "sha256": "bd91b0ca1770b6394d4b378401e9b8435e2a8c9f13c24b1bbe07d36d3cd28296"
+    },
+    "original/run/actual/prepared/observer_train/video_2356/RECEIPT.json.gz": {
+      "bytes": 1147,
+      "sha256": "e9bf546092c2b019891500e83f2f50f84569c6199442c0c2ede20331b720fa38"
+    },
+    "original/run/actual/prepared/observer_train/video_2362/RECEIPT.json.gz": {
+      "bytes": 2596,
+      "sha256": "f2b2df70191a9e66554765daf9adcd9be11064f224a754f849097f29261e3eb2"
+    },
+    "original/run/actual/prepared/observer_train/video_2372/RECEIPT.json.gz": {
+      "bytes": 2468,
+      "sha256": "992e85cd259cce369d77007e9ef6b5e0f0ab4b3de0686ce7c4134d6755817637"
+    },
+    "original/run/actual/prepared/observer_train/video_2425/RECEIPT.json.gz": {
+      "bytes": 2210,
+      "sha256": "ca68887c90ec2a884edd0c81a2be001be818a21f03442a45e46e8f0c94b4470a"
+    },
+    "original/run/actual/prepared/observer_train/video_2439/RECEIPT.json.gz": {
+      "bytes": 1116,
+      "sha256": "4836848513080ce8fd1db278238a55c9eb382a995121fe59a972f0587cbf68e8"
+    },
+    "original/run/actual/prepared/observer_train/video_2448/RECEIPT.json.gz": {
+      "bytes": 2495,
+      "sha256": "a38a870ff94fd9d4197aa2697882bd447d4a63a95647f27782550573d200057f"
+    },
+    "original/run/actual/prepared/observer_train/video_2514/RECEIPT.json.gz": {
+      "bytes": 2369,
+      "sha256": "6ceca61f603e678166707b3937e8b96052bf1cf51f086f8473dbe996d564847a"
+    },
+    "original/run/actual/prepared/observer_train/video_2679/RECEIPT.json.gz": {
+      "bytes": 2142,
+      "sha256": "4306b86cdf443ee09f2f6182be781cfea956aded92b9f5b1c1243511f78d8135"
+    },
+    "original/run/actual/prepared/observer_train/video_2800/RECEIPT.json.gz": {
+      "bytes": 2693,
+      "sha256": "2e8e4bb8b2c7c0f2476ade13fcfc27fb18f465327dc849aec312e25d641e6e9b"
+    },
+    "original/run/actual/prepared/observer_train/video_2874/RECEIPT.json.gz": {
+      "bytes": 1564,
+      "sha256": "d856fc7f116d092c2250ec9d35c9f05cf43a0e3455982bdc1461076605fa5f4e"
+    },
+    "original/run/actual/prepared/observer_train/video_2901/RECEIPT.json.gz": {
+      "bytes": 2518,
+      "sha256": "3733375a6d982ab812f1d03e35dfc11e7828460476d4d6aa9ed0049aac572f86"
+    },
+    "original/run/actual/prepared/observer_train/video_2902/RECEIPT.json.gz": {
+      "bytes": 1044,
+      "sha256": "e7057bb45516cf413140a0b054c9f35617d393792f07e0efa034c9412ec26893"
+    },
+    "original/run/actual/prepared/observer_train/video_3186/RECEIPT.json.gz": {
+      "bytes": 1823,
+      "sha256": "507b6f7204d3dedb192bac62e75c2ae0047c058cdb4ed56204dfecc575107f23"
+    },
+    "original/run/actual/prepared/observer_train/video_324/RECEIPT.json.gz": {
+      "bytes": 2718,
+      "sha256": "81bd2d6f954699bacdd6620422b09784f8628a91958e3a3031cadc4f7ee75478"
+    },
+    "original/run/actual/prepared/observer_train/video_3327/RECEIPT.json.gz": {
+      "bytes": 1421,
+      "sha256": "961dc0d15fd759880552c35bb9d8947ab5685b94efeaaf6ad11cb744b8bb76b9"
+    },
+    "original/run/actual/prepared/observer_train/video_3467/RECEIPT.json.gz": {
+      "bytes": 2573,
+      "sha256": "aeddc1f11e8db402a641e5af49bf454779e701ad1b4c4490f6d71a780cb3bd50"
+    },
+    "original/run/actual/prepared/observer_train/video_3498/RECEIPT.json.gz": {
+      "bytes": 2782,
+      "sha256": "ddf53d9910bb971366d5850afa9ca8a85b1f2d876756529f5dcf2cd45d483236"
+    },
+    "original/run/actual/prepared/observer_train/video_3563/RECEIPT.json.gz": {
+      "bytes": 2817,
+      "sha256": "96e73d5288d36501bf1aca691b5ac44398cf060a4160ea42b6f735e192392167"
+    },
+    "original/run/actual/prepared/observer_train/video_3570/RECEIPT.json.gz": {
+      "bytes": 1059,
+      "sha256": "51e624a04270e533bff86392fde4f2d96d850dbee951189421ee76f9a6c54083"
+    },
+    "original/run/actual/prepared/observer_train/video_3690/RECEIPT.json.gz": {
+      "bytes": 1046,
+      "sha256": "ee6f7c32fb88a7eeadfece388dc3bb91bf789efac51a0d3786b16db37ac7e54c"
+    },
+    "original/run/actual/prepared/observer_train/video_3773/RECEIPT.json.gz": {
+      "bytes": 1750,
+      "sha256": "c3ec1a96d96a959df62b2ee7d9d25aa84a9346acdef3726a84fadfdb910db7f6"
+    },
+    "original/run/actual/prepared/observer_train/video_3776/RECEIPT.json.gz": {
+      "bytes": 2649,
+      "sha256": "af36dc0fff3cadc090063d932919a42f6b03ba9585bdf3381b7b0dd1dbfa4e76"
+    },
+    "original/run/actual/prepared/observer_train/video_3893/RECEIPT.json.gz": {
+      "bytes": 1717,
+      "sha256": "783ebcb252d1bdb47f4355d8609e0ef3740933ab7e2a6360ffb5c8903f0a8208"
+    },
+    "original/run/actual/prepared/observer_train/video_3919/RECEIPT.json.gz": {
+      "bytes": 2609,
+      "sha256": "b071e24efd182bb1c36c0a076ea565b2c14688d95339b52fcb751ae712a6df9d"
+    },
+    "original/run/actual/prepared/observer_train/video_3958/RECEIPT.json.gz": {
+      "bytes": 1644,
+      "sha256": "38301ad7ea751cc9df72a0d41289a4dfb05e04393f70cc20c8efb00e04696548"
+    },
+    "original/run/actual/prepared/observer_train/video_411/RECEIPT.json.gz": {
+      "bytes": 2154,
+      "sha256": "e8fecf991571372b77c8fa336acedabaa9d102aba4eef00cf527a70300bc25b8"
+    },
+    "original/run/actual/prepared/observer_train/video_4285/RECEIPT.json.gz": {
+      "bytes": 2071,
+      "sha256": "1a876318188652eadd3a9b30ead938e2de833cfe98d28590c848cabf44c5d736"
+    },
+    "original/run/actual/prepared/observer_train/video_4397/RECEIPT.json.gz": {
+      "bytes": 2611,
+      "sha256": "5d70a7e05b4d7b49d66ff74ae682a360c0c1cabd6d452bb0366e532666e5c38d"
+    },
+    "original/run/actual/prepared/observer_train/video_4419/RECEIPT.json.gz": {
+      "bytes": 2245,
+      "sha256": "d9913f7ee78e82c3998263fddd655a65e90ba372e626bc3a47462e7cdd20d3c1"
+    },
+    "original/run/actual/prepared/observer_train/video_4602/RECEIPT.json.gz": {
+      "bytes": 2584,
+      "sha256": "153c865869924d32bcdec8b48b21ab312cc7fea2e13ba1239f9c7a2d72c83cf1"
+    },
+    "original/run/actual/prepared/observer_train/video_4629/RECEIPT.json.gz": {
+      "bytes": 1551,
+      "sha256": "d2fbd04d66cee59f519c88cf5d2211b2f0b23dd73ab1cabc413442a7cf23a289"
+    },
+    "original/run/actual/prepared/observer_train/video_4770/RECEIPT.json.gz": {
+      "bytes": 2092,
+      "sha256": "10c29772867b553241a279df6fe999f48b71bcc4bcc1b4bf147b6c0cb72b584d"
+    },
+    "original/run/actual/prepared/observer_train/video_4873/RECEIPT.json.gz": {
+      "bytes": 1761,
+      "sha256": "d2d0e7066239310fe1ca52c22961b059ecad485b666eb056710917d3f76fa117"
+    },
+    "original/run/actual/prepared/observer_train/video_4987/RECEIPT.json.gz": {
+      "bytes": 2867,
+      "sha256": "9c29748c293511708594222f216cd43b5cc39fbe3dafce020e12eb5bfa8fa568"
+    },
+    "original/run/actual/prepared/observer_train/video_5040/RECEIPT.json.gz": {
+      "bytes": 1408,
+      "sha256": "d50775226d2c0df6136f8a6095d1203b78341dbaba7eb367a0aa1e7473d62df2"
+    },
+    "original/run/actual/prepared/observer_train/video_5081/RECEIPT.json.gz": {
+      "bytes": 1751,
+      "sha256": "2d15addee529508c806348516b3eb66c047ba8af8989cdeb1afced974e09fbcd"
+    },
+    "original/run/actual/prepared/observer_train/video_5112/RECEIPT.json.gz": {
+      "bytes": 1327,
+      "sha256": "2d6cd8e41d8ac99c8e327ece6dd273fb24a1dacaa85b084d670276adbebe4048"
+    },
+    "original/run/actual/prepared/observer_train/video_5116/RECEIPT.json.gz": {
+      "bytes": 1064,
+      "sha256": "74a38bd07d71c9e05e364a799af3d7ba2f5d94fbebfcb4908f3be3ee8721df2b"
+    },
+    "original/run/actual/prepared/observer_train/video_5126/RECEIPT.json.gz": {
+      "bytes": 2601,
+      "sha256": "e7453eb8917a57ea2c62bbcfd60f88f4734185c149b16c35916eab4e9a3a5579"
+    },
+    "original/run/actual/prepared/observer_train/video_5127/RECEIPT.json.gz": {
+      "bytes": 1104,
+      "sha256": "33ef0cfcc4660198c2c69484509b43b11430a12fe3737045f01ac12026733885"
+    },
+    "original/run/actual/prepared/observer_train/video_5259/RECEIPT.json.gz": {
+      "bytes": 1985,
+      "sha256": "ffe5dc09c0ce9da755c429fc0bc6da4eb49376d3d9ef8611fccc4404a62fa4bd"
+    },
+    "original/run/actual/prepared/observer_train/video_5335/RECEIPT.json.gz": {
+      "bytes": 816,
+      "sha256": "90c51ac1537106bef8eecd1135cbafb7b307975968b4f80fa668f1332fd43edb"
+    },
+    "original/run/actual/prepared/observer_train/video_5379/RECEIPT.json.gz": {
+      "bytes": 807,
+      "sha256": "09bd44bb9666857993f1f89722f3eba1c00b4e1ba6d6248a4925c162c33b62b9"
+    },
+    "original/run/actual/prepared/observer_train/video_5388/RECEIPT.json.gz": {
+      "bytes": 805,
+      "sha256": "f51051fdb63145e9d4cbbd730946c03d9f766612dcbcaef64b0b32b5404aa35d"
+    },
+    "original/run/actual/prepared/observer_train/video_5397/RECEIPT.json.gz": {
+      "bytes": 808,
+      "sha256": "ad7804b001a4c8adfb697f5995441b7691396c0f8c8b374a9167d0a6e556e2d6"
+    },
+    "original/run/actual/prepared/observer_train/video_5677/RECEIPT.json.gz": {
+      "bytes": 2041,
+      "sha256": "c51dd7988682e9456182bf5248a3684313dd3178f4a2634ce000e603b5a5c44c"
+    },
+    "original/run/actual/prepared/observer_train/video_5689/RECEIPT.json.gz": {
+      "bytes": 2901,
+      "sha256": "bcf6f8bf7f5dfa8543a54d30c3982cd37c0ef15feb48474ab16b90fb520a95c2"
+    },
+    "original/run/actual/prepared/observer_train/video_5780/RECEIPT.json.gz": {
+      "bytes": 1677,
+      "sha256": "b73497dc8ffcdb74e93a3d2152994836861b049cfcd7d9fa7d2018c12a0589d9"
+    },
+    "original/run/actual/prepared/observer_train/video_6092/RECEIPT.json.gz": {
+      "bytes": 1062,
+      "sha256": "561ded4cad50b39812c8cf4f9576438e1373226d7464efd9d26bbb127dc4067d"
+    },
+    "original/run/actual/prepared/observer_train/video_6101/RECEIPT.json.gz": {
+      "bytes": 1873,
+      "sha256": "3be51de9ed9cc44429d7da272a7a1c1554240a8bb8dca061c4fed8fc6fee1421"
+    },
+    "original/run/actual/prepared/observer_train/video_6169/RECEIPT.json.gz": {
+      "bytes": 2858,
+      "sha256": "79ca3aa616a6c4ad6312f5884b3abec13cdbbda4281bad970caf1a488d246e9b"
+    },
+    "original/run/actual/prepared/observer_train/video_6190/RECEIPT.json.gz": {
+      "bytes": 2142,
+      "sha256": "ce596cb5ff3b6ac373f725082ba0d908b8ec569f1c83fecd8fd60deea01aea86"
+    },
+    "original/run/actual/prepared/observer_train/video_6300/RECEIPT.json.gz": {
+      "bytes": 2742,
+      "sha256": "747ea87f1261398077df1918e2c144102313814b6f6edd6d5dae9dfd3e818589"
+    },
+    "original/run/actual/prepared/observer_train/video_6515/RECEIPT.json.gz": {
+      "bytes": 1313,
+      "sha256": "dbbbca6ec43bb0dd3a5d06e8f03dd3d0b29b7875c85ce3246123111061403f8b"
+    },
+    "original/run/actual/prepared/observer_train/video_6526/RECEIPT.json.gz": {
+      "bytes": 1729,
+      "sha256": "c7f49ed156f7f833c8dc6e563f4265db8d2d1ac88310101ef87ee5674ad0a4e0"
+    },
+    "original/run/actual/prepared/observer_train/video_6543/RECEIPT.json.gz": {
+      "bytes": 1912,
+      "sha256": "3edc928b5300cad85e811377adeb45f820147e6e8d3e3b3cad778f1aeb11969c"
+    },
+    "original/run/actual/prepared/observer_train/video_6562/RECEIPT.json.gz": {
+      "bytes": 2633,
+      "sha256": "39730ee976027a3b04f7c2c97e85cc3ff9e30e9cbe7352cedf8d221f3d1e70d1"
+    },
+    "original/run/actual/prepared/observer_train/video_6583/RECEIPT.json.gz": {
+      "bytes": 2168,
+      "sha256": "33ef1e30d0a4bafc2863850ee60150cad86397177db8bffba834e8fdc0a66d64"
+    },
+    "original/run/actual/prepared/observer_train/video_6807/RECEIPT.json.gz": {
+      "bytes": 1634,
+      "sha256": "e37c17f64d377418bbb69b4a144f976b86a6fcf7ecce9119f7caa50f41c95efb"
+    },
+    "original/run/actual/prepared/observer_train/video_6861/RECEIPT.json.gz": {
+      "bytes": 1837,
+      "sha256": "01cce5166ce25f12a10aac2b90b42f080d150354ab3a31babee3592828dd5e3d"
+    },
+    "original/run/actual/prepared/observer_train/video_6893/RECEIPT.json.gz": {
+      "bytes": 1644,
+      "sha256": "1427592f26f1f0c5f50658b998db94965c2bddee5fdcac936ac71e83b7566529"
+    },
+    "original/run/actual/prepared/observer_train/video_6908/RECEIPT.json.gz": {
+      "bytes": 2817,
+      "sha256": "4884fe96fc924dc96555d8c1d3891a6ee635392ea114d9981cd534ee94e83a3f"
+    },
+    "original/run/actual/prepared/observer_train/video_7253/RECEIPT.json.gz": {
+      "bytes": 1059,
+      "sha256": "c8cbe459e1ff3252d31d73f041d4553ed3b8ccf80d277e4ed107da5d4b9a04fc"
+    },
+    "original/run/actual/prepared/observer_train/video_7373/RECEIPT.json.gz": {
+      "bytes": 815,
+      "sha256": "d4929cdc9e29f4193802dd5f68a710c22173c35dfc87e41f8c6f0f1685f01d48"
+    },
+    "original/run/actual/prepared/observer_train/video_7402/RECEIPT.json.gz": {
+      "bytes": 1916,
+      "sha256": "0a929ca562060d4669869bf8c141e7c0246ddbc25775470c1990d43f69a185e6"
+    },
+    "original/run/actual/prepared/observer_train/video_7408/RECEIPT.json.gz": {
+      "bytes": 1580,
+      "sha256": "8a97684110aa00879a20b6582b75d58d68b4319b7b79578ab40d2a9507625e4c"
+    },
+    "original/run/actual/prepared/observer_train/video_7447/RECEIPT.json.gz": {
+      "bytes": 812,
+      "sha256": "8f279a009552b683033b58da410562227fd496da4ff05bb22fa662dfb4881949"
+    },
+    "original/run/actual/prepared/observer_train/video_75/RECEIPT.json.gz": {
+      "bytes": 1924,
+      "sha256": "4c28eccff68b43035665b3ba1bb40c8a7f1d43a70788fc9ead39e610f21c32d1"
+    },
+    "original/run/actual/prepared/observer_train/video_7527/RECEIPT.json.gz": {
+      "bytes": 1713,
+      "sha256": "c04d0b195d516afd9ac56a16856b517d48f606b5fe3815203b63bd3001599869"
+    },
+    "original/run/actual/prepared/observer_train/video_7536/RECEIPT.json.gz": {
+      "bytes": 1138,
+      "sha256": "827e6ce013f5953f68a1bc55051e434633828c32fc7fa093b49e394969bf1ab6"
+    },
+    "original/run/actual/prepared/observer_train/video_77/RECEIPT.json.gz": {
+      "bytes": 806,
+      "sha256": "7bd143e215be4e1a2fa19d740329cd86026bc92c34b9c2934adbc8a4e8aab601"
+    },
+    "original/run/actual/prepared/observer_train/video_7709/RECEIPT.json.gz": {
+      "bytes": 1931,
+      "sha256": "61758cace16a5ea1fc151be179ea015ebc23d9c4d7bdb9adc9ece8a3f9d1d256"
+    },
+    "original/run/actual/prepared/observer_train/video_7746/RECEIPT.json.gz": {
+      "bytes": 2731,
+      "sha256": "1c28a97d2c859d018742710bb8d60ca848bffbf7cfc38211f1aeb9b7ab47115e"
+    },
+    "original/run/actual/prepared/observer_train/video_7918/RECEIPT.json.gz": {
+      "bytes": 1704,
+      "sha256": "924dddc86c8258c458e2fc6fb9ecdece27e51b4c80944084bf2076b2c991da7f"
+    },
+    "original/run/actual/prepared/observer_train/video_7985/RECEIPT.json.gz": {
+      "bytes": 2558,
+      "sha256": "c51d0f2b59898d3b1b7bafa8fcaf3a429912e9d38c847cfb4fadbfc66472eedf"
+    },
+    "original/run/actual/prepared/observer_train/video_8130/RECEIPT.json.gz": {
+      "bytes": 2284,
+      "sha256": "32febab5aff063baf7e3230a5b71e7a23877206528637f7feccd80a8b18a16e5"
+    },
+    "original/run/actual/prepared/observer_train/video_8145/RECEIPT.json.gz": {
+      "bytes": 2792,
+      "sha256": "dcf4d998f5c2471c8ddcd83982858d60b238aa6a7ee2d1502bb897efb1997cd6"
+    },
+    "original/run/actual/prepared/observer_train/video_8295/RECEIPT.json.gz": {
+      "bytes": 1050,
+      "sha256": "51be3203e1638a069de839c124d88eaa1ad92a348c28505c670ea75448611a76"
+    },
+    "original/run/actual/prepared/observer_train/video_8416/RECEIPT.json.gz": {
+      "bytes": 2138,
+      "sha256": "07504005f1852c9e218f3e4204b8355d543367ee03a6b071010bd3d9b3be4fe9"
+    },
+    "original/run/actual/prepared/observer_train/video_8442/RECEIPT.json.gz": {
+      "bytes": 2863,
+      "sha256": "794c2a37a0c84f89be0c599d0da67f4441f2a48dec089e97a9f0c29f02f65e8d"
+    },
+    "original/run/actual/prepared/observer_train/video_8520/RECEIPT.json.gz": {
+      "bytes": 2850,
+      "sha256": "e12e4771e499770e686edb2c2c3614f90c7e5033096a2bf0f2b1e937be7307f1"
+    },
+    "original/run/actual/prepared/observer_train/video_8778/RECEIPT.json.gz": {
+      "bytes": 2122,
+      "sha256": "ef4a65d77892f12f709bad24f6408e936da8a74aa1a071b6cd57e37aed2a864d"
+    },
+    "original/run/actual/prepared/observer_train/video_8850/RECEIPT.json.gz": {
+      "bytes": 1969,
+      "sha256": "11f09ca9036c02e821dce44d12ef7775f011f40e92eafde2d53eccf98105e9ac"
+    },
+    "original/run/actual/prepared/observer_train/video_8894/RECEIPT.json.gz": {
+      "bytes": 1300,
+      "sha256": "d1003a52444bd0d04c81c4ea30633c7688f9786048cb387a5d9f0aaed94d87cf"
+    },
+    "original/run/actual/prepared/observer_train/video_9193/RECEIPT.json.gz": {
+      "bytes": 1391,
+      "sha256": "7626ca4ce13e34cd1cbefe5272d9fd9d352d237892a19b18cb19519244249318"
+    },
+    "original/run/actual/prepared/observer_train/video_9364/RECEIPT.json.gz": {
+      "bytes": 2205,
+      "sha256": "f5041219d4ac6fd6d1ddb5f503ae8d21f044d7b7e926e3d6076d330507a80690"
+    },
+    "original/run/actual/prepared/observer_train/video_9417/RECEIPT.json.gz": {
+      "bytes": 1328,
+      "sha256": "7ca15a4ee99568096f02aa2c787879bcbe3fb3fee8eac5e4b9f4440aafafa781"
+    },
+    "original/run/actual/prepared/observer_train/video_9540/RECEIPT.json.gz": {
+      "bytes": 2328,
+      "sha256": "90c16b9fec477fb7637f0ca1ae0c94d2a8bdee79b90ec04336823baef07075c2"
+    },
+    "original/run/actual/prepared/observer_train/video_9622/RECEIPT.json.gz": {
+      "bytes": 2107,
+      "sha256": "e4b6ef45a5f9e6db4407d387e7f1bee8135e739f5a83e696339a2970f38301c3"
+    },
+    "original/run/actual/prepared/observer_train/video_9919/RECEIPT.json.gz": {
+      "bytes": 2797,
+      "sha256": "bb7c01d4b77180527943d60ed80a191955363c9e622ec635c9891bf8602ac1dc"
+    },
+    "original/run/actual/prepared/observer_train/video_9937/RECEIPT.json.gz": {
+      "bytes": 1308,
+      "sha256": "cde0440d56f71582dbc88037af5086770b616855c4bf35a44e01b28ee2a49955"
+    },
+    "original/run/actual/prepared/observer_train/video_9975/RECEIPT.json.gz": {
+      "bytes": 1385,
+      "sha256": "66eaffc970f641e5a37e96a7567c246729c7c9af3ae0d9279452abdb7018c4a9"
+    },
+    "original/run/seed/prepared/observer_train/video_1685/RECEIPT.json.gz": {
+      "bytes": 1454,
+      "sha256": "cf63e241f3f1a4093543283f17e43c9b9ca2e3e7b4d19dabb7e7294fa217a710"
+    },
+    "original/run/seed/prepared/observer_train/video_3212/RECEIPT.json.gz": {
+      "bytes": 1701,
+      "sha256": "de3b64845d8872266c6904a596436c01b0a3a4012c66d1fdf6624f3aa5b4dbf1"
+    },
+    "original/run/seed/prepared/observer_train/video_3466/RECEIPT.json.gz": {
+      "bytes": 1541,
+      "sha256": "a9c3c5de84e0793993b5e326b9dc4112db235dffe70dbfe917bd2b2808559e72"
+    },
+    "original/run/seed/prepared/observer_train/video_4523/RECEIPT.json.gz": {
+      "bytes": 2104,
+      "sha256": "3454622532e6ad38069ee03cdd42fdb4e96f26d807832d672a589915010782e4"
+    },
+    "original/run/seed/prepared/observer_train/video_6067/RECEIPT.json.gz": {
+      "bytes": 1674,
+      "sha256": "e4b83eccabd74e14118a551b71c5a597e54e72b4454cc33ff8843f4891d19bc0"
+    },
+    "original/run/seed/prepared/observer_train/video_6277/RECEIPT.json.gz": {
+      "bytes": 2108,
+      "sha256": "c528f6e4df03ea4f233fb4c4ea9f7b630ab32290aded4dcbb8a802cf038e7735"
+    },
+    "original/run/seed/prepared/observer_train/video_7513/RECEIPT.json.gz": {
+      "bytes": 1986,
+      "sha256": "74f735effd4ea93255401ef1a42ba29b15d8fd0e3b8b088dd4f991e664d84a1f"
+    },
+    "original/run/seed/prepared/observer_train/video_8274/RECEIPT.json.gz": {
+      "bytes": 1694,
+      "sha256": "4d3c94c89ace5c5bf3f1f385c638bc27c5d2ec6492f5f3a1a74bddb735136af4"
+    },
+    "original/run/sound_observer.npz": {
+      "bytes": 130685,
+      "sha256": "6d4d426401e94121caa4860f0246b35418ce8dd4088fd222e0ae418e2cc257af"
+    }
+  }
+}
