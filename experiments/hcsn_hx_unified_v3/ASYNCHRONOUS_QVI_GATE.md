@@ -1,22 +1,22 @@
 # P0: asynchronous two-cell regenerative QVI — bounded research evidence
 
-**DRAFT / DENY_ALL / NOT PRODUCTION.** This is an additive continuation of #4388 at exact head \`8af5999908e239f02ac17e2c7d7cb711051e50e5\`. No changes to upstream He–Xiong finance kernels, original scalar stopping, prior two-cell solver, previously frozen experiments, Rust authority, training, release or deployment.
+**DRAFT / DENY_ALL / NOT PRODUCTION.** This is an additive continuation of #4388 at exact head `8af5999908e239f02ac17e2c7d7cb711051e50e5`. No changes to upstream He–Xiong finance kernels, original scalar stopping, prior two-cell solver, previously frozen experiments, Rust authority, training, release or deployment.
 
 ## Precise alternative mathematical model
 
-#4388's two-cell QVI freezes **both** neurons for a **deterministic** refractory duration after any firing. This research alternative instead uses **independent exponential** per-neuron refractory times, with mean \`Stop.refractory\` and hazard \`lambda_i = 1 / Stop.refractory\`. This reinterprets the original parameter: the two models are **not equivalent** and no deterministic-delay error bound is claimed.
+#4388's two-cell QVI freezes **both** neurons for a **deterministic** refractory duration after any firing. This research alternative instead uses **independent exponential** per-neuron refractory times, with mean `Stop.refractory` and hazard `lambda_i = 1 / Stop.refractory`. This reinterprets the original parameter: the two models are **not equivalent** and no deterministic-delay error bound is claimed.
 
-Each axis has finite active grid coordinates plus one refractory sentinel. A fired neuron receives \`x_i - cost_i\` immediately and moves to its sentinel while the other neuron continues to evolve. During refractory, only the fired neuron's coordinate is frozen at its reset. The other coordinate continues its reflected blocked-outward-jump finite CTMC, can fire, and can undergo its own independent refractory recovery. Upon recovery, a reset coordinate is convex-interpolated between adjacent active grid positions. When a cell is refractory it cannot fire. The full finite-state space has \`(n1+1)(n2+1)\` states.
+Each axis has finite active grid coordinates plus one refractory sentinel. A fired neuron receives `x_i - cost_i` immediately and moves to its sentinel while the other neuron continues to evolve. During refractory, only the fired neuron's coordinate is frozen at its reset. The other coordinate continues its reflected blocked-outward-jump finite CTMC, can fire, and can undergo its own independent refractory recovery. Upon recovery, a reset coordinate is convex-interpolated between adjacent active grid positions. When a cell is refractory it cannot fire. The full finite-state space has `(n1+1)(n2+1)` states.
 
 The **stationary discrete QVI** is
 
-\`\`\`text
+```text
 max{ (Q-rho*I)V,
      x1-cost1 + V(refractory1, j) - V(i,j) [FIRE1 eligible],
      x2-cost2 + V(i, refractory2) - V(i,j) [FIRE2 eligible] } = 0.
-\`\`\`
+```
 
-Immediate firing has no spurious \`exp(-rho*tau)\` factor because the transition consumes no time. At most two firings can occur without a WAIT, since firing strictly increases the number of refractory cells. All returns to active status require stochastic positive-time recovery under positive discount. Finite positive generator rates and recoveries make the finite-state policies proper in exact arithmetic. A numerical guard rejects cases where floating-point summation erases the discount from a WAIT row.
+Immediate firing has no spurious `exp(-rho*tau)` factor because the transition consumes no time. At most two firings can occur without a WAIT, since firing strictly increases the number of refractory cells. All returns to active status require stochastic positive-time recovery under positive discount. Finite positive generator rates and recoveries make the finite-state policies proper in exact arithmetic. A numerical guard rejects cases where floating-point summation erases the discount from a WAIT row.
 
 This is not the original HX corporate credit fixed point and not a true continuum SDE, deterministic refractory implementation, or a training-ready neural layer.
 
@@ -24,10 +24,10 @@ This is not the original HX corporate credit fixed point and not a true continuu
 
 Environment: Python 3.13.5, NumPy 2.3.5, SciPy 1.17.0; CPU only.
 
-\`\`\`sh
+```sh
 python -m unittest -v experiments.hcsn_hx_unified_v3.test_asynchronous_qvi
 python -m unittest -v experiments.hcsn_hx_unified_v3.test_coupled_qvi experiments.hcsn_hx_unified_v3.test_asynchronous_qvi
-\`\`\`
+```
 
 **24/24 combined upstream+new tests passed** against byte-exact #4388 source; 12 new methods. This is a bounded local result; it is not a full-repository CI or a product gate.
 
