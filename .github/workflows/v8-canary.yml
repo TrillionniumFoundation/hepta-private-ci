@@ -74,7 +74,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build:
-    timeout-minutes: 30
+    timeout-minutes: 90
     name: Build ${{ matrix.variant }} ${{ matrix.target }}
     needs: metadata
     # Metadata always runs; only relevant changes pay for the large matrix.
@@ -289,6 +289,9 @@ jobs:
 
       - name: Smoke test staged artifact with Cargo
         env:
+          # codex-rs/rust-toolchain.toml selects 1.91.0; match the pinned Cargo
+          # 1.95.0 binary to avoid mixed-rustc build-script artifacts (E0514).
+          RUSTUP_TOOLCHAIN: "1.95.0"
           SANDBOX: ${{ matrix.sandbox }}
           TARGET: ${{ matrix.target }}
         shell: bash
@@ -336,7 +339,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build-windows-source:
-    timeout-minutes: 30
+    timeout-minutes: 180
     name: Build ptrcomp-sandbox ${{ matrix.target }} from source
     needs: metadata
     if: ${{ needs.metadata.outputs.windows_source_required == 'true' }}
