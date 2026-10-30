@@ -1,0 +1,57 @@
+{
+  "argv": [
+    "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+    "-B",
+    "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_nonzero_supervisor_has_actual_wait4_without_primary_claim/tiny_supervisor.py",
+    "--config",
+    "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_nonzero_supervisor_has_actual_wait4_without_primary_claim/CONFIG.json",
+    "--expected-config-sha256",
+    "b812d38caed3fa334bf09a59146d8a39d4c53d53cf9957119198225e3e75c773",
+    "--execute"
+  ],
+  "child_identity": {
+    "parent_pid": 398216,
+    "pgid": 398225,
+    "pid": 398225,
+    "sid": 398225,
+    "start_ticks": 2270324
+  },
+  "config": {
+    "bytes": 1316,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_nonzero_supervisor_has_actual_wait4_without_primary_claim/CONFIG.json",
+    "sha256": "b812d38caed3fa334bf09a59146d8a39d4c53d53cf9957119198225e3e75c773"
+  },
+  "detached_start": {
+    "bytes": 1748,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_nonzero_supervisor_has_actual_wait4_without_primary_claim/detached/READY.json",
+    "sha256": "370217312db89751fe1b2cdad28a367b7653003571cb1bd2f114d5b7ba5546d7"
+  },
+  "do_not_add_nested_science_driver_archive_or_supervisor_ledgers": true,
+  "execution_episode": "execution06_detached_20261030",
+  "exit_code": 7,
+  "imported_A17_historical_scientific_cpu_not_added": true,
+  "launcher_cpu_seconds_separate": 0.006985153,
+  "measurement_scope": "Full supervisor entry-to-exit and descendants it waited for; excludes external root upload/readback and historical A17 execution.",
+  "measuring_parent_identity": {
+    "parent_pid": 1,
+    "pgid": 398215,
+    "pid": 398216,
+    "sid": 398215,
+    "start_ticks": 2270314
+  },
+  "owned_supervisor_closure": {
+    "bytes": 3850,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_nonzero_supervisor_has_actual_wait4_without_primary_claim/ops/wait4_launcher/owned_supervisor/CLOSURE.json",
+    "sha256": "0bf1968563a9ec5b41e980ed1835b8b009b64506b22b830c7fd39fa4efb78dda"
+  },
+  "peak_rss_bytes": 11665408,
+  "pending_root_durable_closure": true,
+  "schema": "hepta.fullstudy.execution06-outer-wait4.1",
+  "system_cpu_seconds": 0.007206,
+  "total_cpu_seconds_inclusive": 0.056374999999999995,
+  "unwaited_orphan_costs_unknown_if_failure": true,
+  "user_cpu_seconds": 0.049169,
+  "wait_status": 1792,
+  "waited_pid": 398225,
+  "wall_seconds": 0.12028927699793712
+}

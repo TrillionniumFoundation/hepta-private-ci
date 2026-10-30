@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+    "-B",
+    "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/case/tiny_supervisor.py",
+    "--config",
+    "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/case/CONFIG.json",
+    "--expected-config-sha256",
+    "1b46c2eafba08d1a740615a1909ca1512d94b02301bf93489403a14fa4fa9995",
+    "--execute"
+  ],
+  "child_identity": {
+    "parent_pid": 398758,
+    "pgid": 398759,
+    "pid": 398759,
+    "sid": 398759,
+    "start_ticks": 2275962
+  },
+  "config": {
+    "bytes": 1112,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/case/CONFIG.json",
+    "sha256": "1b46c2eafba08d1a740615a1909ca1512d94b02301bf93489403a14fa4fa9995"
+  },
+  "detached_start": {
+    "bytes": 1545,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/case/detached/READY.json",
+    "sha256": "249f1ddbed55bbac0f01f9176a5f8c9ed7a7bb58190d54115ac7f26dea4f3e18"
+  },
+  "parent_identity": {
+    "parent_pid": 1,
+    "pgid": 398757,
+    "pid": 398758,
+    "sid": 398757,
+    "start_ticks": 2275952
+  },
+  "started_unix": 1793369668.1383553
+}

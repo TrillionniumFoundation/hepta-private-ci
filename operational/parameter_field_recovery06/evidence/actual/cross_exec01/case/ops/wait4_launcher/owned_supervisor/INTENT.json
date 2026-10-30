@@ -1,0 +1,26 @@
+{
+  "binding": {
+    "execution_episode": "execution06_detached_20261030",
+    "pipeline_config": {
+      "bytes": 1112,
+      "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/case/CONFIG.json",
+      "sha256": "1b46c2eafba08d1a740615a1909ca1512d94b02301bf93489403a14fa4fa9995"
+    },
+    "scientific_scope": "Supervisor plus its waited descendants, excluding historical imported A17 execution."
+  },
+  "controller_identity": {
+    "parent_pid": 1,
+    "pgid": 398757,
+    "pid": 398758,
+    "sid": 398757,
+    "start_ticks": 2275952
+  },
+  "cost_scope": "Direct children attributed inside an inclusive outer controller wait4; do not add twice.",
+  "global_subprocess_patched": false,
+  "kill_wait_seconds": 5.0,
+  "process_groups_changed": false,
+  "reconstruction": "CONTEXT_RECONSTRUCTION",
+  "schema": "hepta.execution06.owned-children.intent.1",
+  "started_unix": 1793369668.1339417,
+  "term_grace_seconds": 15.0
+}

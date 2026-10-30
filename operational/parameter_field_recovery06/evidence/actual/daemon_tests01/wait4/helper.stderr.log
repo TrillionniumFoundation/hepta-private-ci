@@ -1,0 +1,26 @@
+test_acceptance_write_failure_never_starts_target_and_is_not_retryable (operational.parameter_field_recovery06.test_daemon_bootstrap.DetachedBootstrapTests.test_acceptance_write_failure_never_starts_target_and_is_not_retryable) ... ok
+test_caller_returns_and_inherited_pipes_close_before_measured_child_finishes (operational.parameter_field_recovery06.test_daemon_bootstrap.DetachedBootstrapTests.test_caller_returns_and_inherited_pipes_close_before_measured_child_finishes) ... ok
+test_direct_foreground_production_launcher_refuses_before_config_or_spawn (operational.parameter_field_recovery06.test_daemon_bootstrap.DetachedBootstrapTests.test_direct_foreground_production_launcher_refuses_before_config_or_spawn) ... ok
+test_existing_attempt_cannot_launch_second_target (operational.parameter_field_recovery06.test_daemon_bootstrap.DetachedBootstrapTests.test_existing_attempt_cannot_launch_second_target) ... ok
+test_nonzero_supervisor_has_actual_wait4_without_primary_claim (operational.parameter_field_recovery06.test_daemon_bootstrap.DetachedBootstrapTests.test_nonzero_supervisor_has_actual_wait4_without_primary_claim) ... ok
+test_originating_session_leader_exit_does_not_change_measuring_parent (operational.parameter_field_recovery06.test_daemon_bootstrap.DetachedBootstrapTests.test_originating_session_leader_exit_does_not_change_measuring_parent) ... ERROR
+test_ready_write_failure_preserves_startup_failure_without_target (operational.parameter_field_recovery06.test_daemon_bootstrap.DetachedBootstrapTests.test_ready_write_failure_preserves_startup_failure_without_target) ... ok
+
+======================================================================
+ERROR: test_originating_session_leader_exit_does_not_change_measuring_parent (operational.parameter_field_recovery06.test_daemon_bootstrap.DetachedBootstrapTests.test_originating_session_leader_exit_does_not_change_measuring_parent)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/test_daemon_bootstrap.py", line 147, in test_originating_session_leader_exit_does_not_change_measuring_parent
+    self.assertEqual(caller.wait(timeout=3), -signal.SIGHUP)
+                     ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 1264, in wait
+    return self._wait(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 2045, in _wait
+    raise TimeoutExpired(self.args, timeout)
+subprocess.TimeoutExpired: Command '['/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python', '-B', '/workspace/scratch/178ced6a501f/execution06_recovery_20261030/daemon_tests01/cases/test_originating_session_leader_exit_does_not_change_measuring_parent/tiny_bootstrap_driver.py', '--stay']' timed out after 3 seconds
+
+----------------------------------------------------------------------
+Ran 7 tests in 5.103s
+
+FAILED (errors=1)

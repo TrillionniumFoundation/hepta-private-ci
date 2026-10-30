@@ -1,0 +1,38 @@
+{
+  "binding": {
+    "daemon_bootstrap": {
+      "bytes": 14457,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/daemon_bootstrap.py",
+      "sha256": "8caa56a4af9e8c66a8cb5ce6f26469779dca6174ce0e234a5e9ea5626a1234a3"
+    },
+    "execution_episode": "execution06_detached_20261030",
+    "pipeline_config": {
+      "bytes": 1112,
+      "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/case/CONFIG.json",
+      "sha256": "1b46c2eafba08d1a740615a1909ca1512d94b02301bf93489403a14fa4fa9995"
+    },
+    "wait4_launcher": {
+      "bytes": 10156,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/wait4_launcher.py",
+      "sha256": "2ed6930e78aa9ba3328fc9525e0bb995b8bbbb6cd2b5bc6fa586b4e3fb2476dd"
+    }
+  },
+  "final_supervisor_wait4_must_be_verified_separately": true,
+  "measuring_parent_identity": {
+    "parent_pid": 1,
+    "pgid": 398757,
+    "pid": 398758,
+    "sid": 398757,
+    "start_ticks": 2275952
+  },
+  "own_cpu_seconds_until_receipt": 0.339587811,
+  "ready": {
+    "bytes": 1545,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/case/detached/READY.json",
+    "sha256": "249f1ddbed55bbac0f01f9176a5f8c9ed7a7bb58190d54115ac7f26dea4f3e18"
+  },
+  "schema": "hepta.execution06.detached-parent-returned.1",
+  "target_exit_code": 0,
+  "this_is_not_the_daemons_own_kernel_wait4": true,
+  "wall_seconds_until_receipt": 46.92574725499799
+}

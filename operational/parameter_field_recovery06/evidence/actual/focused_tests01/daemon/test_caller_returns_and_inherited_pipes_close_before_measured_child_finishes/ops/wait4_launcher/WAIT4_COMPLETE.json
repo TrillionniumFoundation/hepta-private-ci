@@ -1,0 +1,62 @@
+{
+  "argv": [
+    "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+    "-B",
+    "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_caller_returns_and_inherited_pipes_close_before_measured_child_finishes/tiny_supervisor.py",
+    "--config",
+    "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_caller_returns_and_inherited_pipes_close_before_measured_child_finishes/CONFIG.json",
+    "--expected-config-sha256",
+    "c4dd22dc7fc6a5c58f8f264638ca94695bb2bb304615b2804c9c932f1e890899",
+    "--execute"
+  ],
+  "child_identity": {
+    "parent_pid": 398196,
+    "pgid": 398197,
+    "pid": 398197,
+    "sid": 398197,
+    "start_ticks": 2270253
+  },
+  "config": {
+    "bytes": 1358,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_caller_returns_and_inherited_pipes_close_before_measured_child_finishes/CONFIG.json",
+    "sha256": "c4dd22dc7fc6a5c58f8f264638ca94695bb2bb304615b2804c9c932f1e890899"
+  },
+  "detached_start": {
+    "bytes": 1790,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_caller_returns_and_inherited_pipes_close_before_measured_child_finishes/detached/READY.json",
+    "sha256": "60cf2791caea2bbd53114e9574918d599fe49dacc899531b10eb2fe637215497"
+  },
+  "do_not_add_nested_science_driver_archive_or_supervisor_ledgers": true,
+  "execution_episode": "execution06_detached_20261030",
+  "exit_code": 0,
+  "imported_A17_historical_scientific_cpu_not_added": true,
+  "launcher_cpu_seconds_separate": 0.005206079,
+  "measurement_scope": "Full supervisor entry-to-exit and descendants it waited for; excludes external root upload/readback and historical A17 execution.",
+  "measuring_parent_identity": {
+    "parent_pid": 1,
+    "pgid": 398195,
+    "pid": 398196,
+    "sid": 398195,
+    "start_ticks": 2270245
+  },
+  "owned_supervisor_closure": {
+    "bytes": 3905,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_caller_returns_and_inherited_pipes_close_before_measured_child_finishes/ops/wait4_launcher/owned_supervisor/CLOSURE.json",
+    "sha256": "4bebab4a913af6479aa4862a5b1f20d1a765e427a758c8f4640f39de4a3b1fca"
+  },
+  "peak_rss_bytes": 11665408,
+  "pending_root_durable_closure": true,
+  "primary_complete": {
+    "bytes": 101,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_caller_returns_and_inherited_pipes_close_before_measured_child_finishes/ops/COMPLETE.json",
+    "sha256": "29daabb44705132900bd02a305f0c7e26743fb2310202c1fb8df179b8e42af2c"
+  },
+  "schema": "hepta.fullstudy.execution06-outer-wait4.1",
+  "system_cpu_seconds": 0.0075439999999999995,
+  "total_cpu_seconds_inclusive": 0.044183,
+  "unwaited_orphan_costs_unknown_if_failure": false,
+  "user_cpu_seconds": 0.036639,
+  "wait_status": 0,
+  "waited_pid": 398197,
+  "wall_seconds": 0.11852548299793852
+}

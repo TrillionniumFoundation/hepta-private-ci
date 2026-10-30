@@ -1,0 +1,244 @@
+{
+  "at_utc": "2026-10-30T14:18:36.251206+00:00",
+  "atomic_handshake_corrected_before_production": "Exclusive temporary file + full fsync + no-replace link + directory fsync; no reader-visible partial JSON, no overwrite, pending evidence preserved on failure.",
+  "cross_exec_actual_bootstrap_wait4": {
+    "bytes": 1753,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/bootstrap_wait4/WAIT4.json",
+    "sha256": "26b70040468391ce5720d0ef8d54fcf69b04dc66bed258aa128e63d735bf60e9"
+  },
+  "cross_exec_actual_observation_wait4": {
+    "bytes": 1748,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/observation_wait4/WAIT4.json",
+    "sha256": "0125561c78e3c197b16d0b9347582ffd0d7c73601532060a278ec0291fd28a9e"
+  },
+  "cross_exec_after_originating_task_returned": {
+    "bytes": 1102,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/AFTER_ORIGINATING_EXEC_RETURNED.json",
+    "sha256": "3e8e407eaec1fb500965e6913d727bae525f3c94698fba37ef811dc3ce642434"
+  },
+  "cross_exec_closed": {
+    "bytes": 1572,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/CROSS_EXEC_CLOSED.json",
+    "sha256": "e5e636cf564bab31f1208f3f0697ef0cff40031639468860646373fe03aa99ea"
+  },
+  "cwd_policy_structure_schema": "hepta.fullstudy.cwd-policy.5",
+  "cwd_source_closure_additions": [
+    "wait4_launcher.py",
+    "daemon_bootstrap.py"
+  ],
+  "detached_tiny_target_actual_wait4": [
+    {
+      "actual_exit_code": 0,
+      "actual_target_cpu_seconds": 0.044183,
+      "descriptor": {
+        "bytes": 3013,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_caller_returns_and_inherited_pipes_close_before_measured_child_finishes/ops/wait4_launcher/WAIT4_COMPLETE.json",
+        "sha256": "b041247236c90472ab3265e5e666c4bd11b87cfd2c3b0e14f854b6cb7188da0b"
+      },
+      "measuring_parent_identity": {
+        "parent_pid": 1,
+        "pgid": 398195,
+        "pid": 398196,
+        "sid": 398195,
+        "start_ticks": 2270245
+      }
+    },
+    {
+      "actual_exit_code": 0,
+      "actual_target_cpu_seconds": 0.059833,
+      "descriptor": {
+        "bytes": 2849,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_existing_attempt_cannot_launch_second_target/ops/wait4_launcher/WAIT4_COMPLETE.json",
+        "sha256": "434753ee0ec8b0318dcf5508902d0c147935b0b410826d5b9716d4e9ccf30e8e"
+      },
+      "measuring_parent_identity": {
+        "parent_pid": 1,
+        "pgid": 398200,
+        "pid": 398201,
+        "sid": 398200,
+        "start_ticks": 2270278
+      }
+    },
+    {
+      "actual_exit_code": 7,
+      "actual_target_cpu_seconds": 0.056374999999999995,
+      "descriptor": {
+        "bytes": 2621,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_nonzero_supervisor_has_actual_wait4_without_primary_claim/ops/wait4_launcher/WAIT4_COMPLETE.json",
+        "sha256": "155e24163e3188b2ca181e1d2d684abdc98c18aca4abcfe8c4b8060d22916b4b"
+      },
+      "measuring_parent_identity": {
+        "parent_pid": 1,
+        "pgid": 398215,
+        "pid": 398216,
+        "sid": 398215,
+        "start_ticks": 2270314
+      }
+    },
+    {
+      "actual_exit_code": 0,
+      "actual_target_cpu_seconds": 0.048097,
+      "descriptor": {
+        "bytes": 2981,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_originating_session_leader_exit_does_not_change_measuring_parent/ops/wait4_launcher/WAIT4_COMPLETE.json",
+        "sha256": "f69ea2e5911bc4c569dd38f658a3c3c5a2a04fc9d3e2ff618210b0f7b5b4872b"
+      },
+      "measuring_parent_identity": {
+        "parent_pid": 1,
+        "pgid": 398228,
+        "pid": 398229,
+        "sid": 398228,
+        "start_ticks": 2270342
+      }
+    }
+  ],
+  "direct_wait4_launcher_execute_forbidden": true,
+  "earlier_failed_run_preserved": {
+    "actual_exit_code": 1,
+    "failed_cases": 1,
+    "passed_cases": 6,
+    "reason": "Synthetic caller inherited SIGHUP ignored; fixed fixture explicitly restores SIGHUP default. No production launch occurred.",
+    "wait4": {
+      "bytes": 1717,
+      "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/daemon_tests01/wait4/WAIT4.json",
+      "sha256": "7fbaffe0202913abe711d0c2e96e5d7537c2746906f0cd024b061a16c81fad42"
+    }
+  },
+  "focused_run": {
+    "actual_exit_code": 0,
+    "cwd": 18,
+    "daemon": 9,
+    "launcher": 5,
+    "owned": 14,
+    "passed": 79,
+    "resource": 33,
+    "scope_excludes_intentionally_detached_descendants": true,
+    "stderr": {
+      "bytes": 17300,
+      "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/wait4/helper.stderr.log",
+      "sha256": "c2f12df6287e56c39fa5b3a4d0e1cb7434bf38d674481ccfda4564a5b9de44d6"
+    },
+    "stdout": {
+      "bytes": 0,
+      "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/wait4/helper.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "test_wrapper_cpu_seconds": 2.1127409999999998,
+    "test_wrapper_peak_rss_bytes": 23642112,
+    "test_wrapper_wall_seconds": 4.12628005499937,
+    "tests": 79,
+    "wait4": {
+      "bytes": 1729,
+      "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/wait4/WAIT4.json",
+      "sha256": "078c5ae50b50be2bb0fd2deff151f72533abbc0bf1e75525935517b0bd8d839e"
+    }
+  },
+  "git_commits_or_uploads_performed_by_this_agent": 0,
+  "limitations": [
+    "Actual tests establish normal host exec completion/caller SIGHUP isolation, not survival after entire container/cgroup destruction.",
+    "Bootstrap/bridge readiness never substitutes for actual final supervisor wait4.",
+    "Daemon own interval CPU is a separate bounded record, not fabricated own kernel wait4.",
+    "No missing historical execution05 outer wait4 was synthesized."
+  ],
+  "new_diagnostics_only": [
+    "Exact expected/observed supervisor identity in rejection.",
+    "Bounded original exception causes/contexts in wrapper terminal receipt."
+  ],
+  "old_execution05_source_or_evidence_modified": false,
+  "pipeline_additional_descriptor": "daemon_bootstrap",
+  "production_entrypoint": "daemon_bootstrap.py --config ACTUAL --expected-config-sha256 ACTUAL --execute",
+  "production_raw_or_ops_created": false,
+  "schema": "hepta.execution06.detached-launch-validation.1",
+  "scientific_workers_started": 0,
+  "source_files": {
+    "DETACHED_LAUNCH.md": {
+      "bytes": 5157,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/DETACHED_LAUNCH.md",
+      "sha256": "fd90f2cc95fbe2ee0537d425fe82187b44369a97ceef2d619e9b391a791cb453"
+    },
+    "ROOT_ACK_RUNBOOK.md": {
+      "bytes": 12636,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/ROOT_ACK_RUNBOOK.md",
+      "sha256": "385c7856566591ec225780fd193aec8c39219333a123cceddd1d83c805a3c323"
+    },
+    "cwd_runner.py": {
+      "bytes": 26650,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/cwd_runner.py",
+      "sha256": "95403029436c72dfb7a545de4794781947a45de62a9412a8be20ed1623f9f86b"
+    },
+    "daemon_bootstrap.py": {
+      "bytes": 14457,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/daemon_bootstrap.py",
+      "sha256": "8caa56a4af9e8c66a8cb5ce6f26469779dca6174ce0e234a5e9ea5626a1234a3"
+    },
+    "owned_children.py": {
+      "bytes": 19241,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/owned_children.py",
+      "sha256": "ad6f049d5d2beb2f999921bc796908c5b4b37b1c4a22094e4669d480cd3cca01"
+    },
+    "resource_backpressure.py": {
+      "bytes": 40624,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/resource_backpressure.py",
+      "sha256": "e36f43dd3a8044875d3f4cd2612347ff991ddd5393f75e5a1b1e2cc55e43dea6"
+    },
+    "test_cwd_runner.py": {
+      "bytes": 31263,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/test_cwd_runner.py",
+      "sha256": "cf7425376bf6333399aafabf59830ff95418f3e02fae2f1e44545971675e7baf"
+    },
+    "test_daemon_bootstrap.py": {
+      "bytes": 13001,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/test_daemon_bootstrap.py",
+      "sha256": "3239c211c958d4b832cfe0328a7535f06c513767f907f057d9fc200ebf7ebaef"
+    },
+    "test_owned_children.py": {
+      "bytes": 16189,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/test_owned_children.py",
+      "sha256": "fe5528c566988936df2b58c5d25c256a076746eaf2dec24b028a02d05cd439c6"
+    },
+    "test_resource_backpressure.py": {
+      "bytes": 34905,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/test_resource_backpressure.py",
+      "sha256": "95fbc6d100c7de5adc52fe3071497c9ba9c8524d1049e39abbe43382c11d3d9f"
+    },
+    "test_wait4_launcher.py": {
+      "bytes": 5687,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/test_wait4_launcher.py",
+      "sha256": "d0cd272675a5975dacd1260bb333f05f13c048573bb2058ab20a21222c78416b"
+    },
+    "wait4_launcher.py": {
+      "bytes": 10156,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/wait4_launcher.py",
+      "sha256": "2ed6930e78aa9ba3328fc9525e0bb995b8bbbb6cd2b5bc6fa586b4e3fb2476dd"
+    }
+  },
+  "tested_code_mtimes_precede_measured_test_start": true,
+  "unchanged_semantics": {
+    "owned_children.py": {
+      "equal_after_episode_namespace_substitution": true,
+      "new_source": {
+        "bytes": 19241,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/owned_children.py",
+        "sha256": "ad6f049d5d2beb2f999921bc796908c5b4b37b1c4a22094e4669d480cd3cca01"
+      },
+      "old_frozen_source": {
+        "bytes": 19241,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/owned_children.py",
+        "sha256": "c91f10d2a485814536ddfe0bd71a89994fb4eba324bb7ea0ff5f0e96b026bcf2"
+      }
+    },
+    "resource_backpressure.py": {
+      "equal_after_episode_namespace_substitution": true,
+      "new_source": {
+        "bytes": 40624,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/resource_backpressure.py",
+        "sha256": "e36f43dd3a8044875d3f4cd2612347ff991ddd5393f75e5a1b1e2cc55e43dea6"
+      },
+      "old_frozen_source": {
+        "bytes": 40624,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/resource_backpressure.py",
+        "sha256": "8c179f68253c4c6559b76b18ca1afd7109fa99a6e39fae4c150514fe97267bca"
+      }
+    }
+  }
+}

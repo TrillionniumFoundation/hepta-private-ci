@@ -1,0 +1,62 @@
+{
+  "argv": [
+    "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+    "-B",
+    "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/case/tiny_supervisor.py",
+    "--config",
+    "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/case/CONFIG.json",
+    "--expected-config-sha256",
+    "1b46c2eafba08d1a740615a1909ca1512d94b02301bf93489403a14fa4fa9995",
+    "--execute"
+  ],
+  "child_identity": {
+    "parent_pid": 398758,
+    "pgid": 398759,
+    "pid": 398759,
+    "sid": 398759,
+    "start_ticks": 2275962
+  },
+  "config": {
+    "bytes": 1112,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/case/CONFIG.json",
+    "sha256": "1b46c2eafba08d1a740615a1909ca1512d94b02301bf93489403a14fa4fa9995"
+  },
+  "detached_start": {
+    "bytes": 1545,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/case/detached/READY.json",
+    "sha256": "249f1ddbed55bbac0f01f9176a5f8c9ed7a7bb58190d54115ac7f26dea4f3e18"
+  },
+  "do_not_add_nested_science_driver_archive_or_supervisor_ledgers": true,
+  "execution_episode": "execution06_detached_20261030",
+  "exit_code": 0,
+  "imported_A17_historical_scientific_cpu_not_added": true,
+  "launcher_cpu_seconds_separate": 0.332072452,
+  "measurement_scope": "Full supervisor entry-to-exit and descendants it waited for; excludes external root upload/readback and historical A17 execution.",
+  "measuring_parent_identity": {
+    "parent_pid": 1,
+    "pgid": 398757,
+    "pid": 398758,
+    "sid": 398757,
+    "start_ticks": 2275952
+  },
+  "owned_supervisor_closure": {
+    "bytes": 3516,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/case/ops/wait4_launcher/owned_supervisor/CLOSURE.json",
+    "sha256": "b5c9042eb9e9e7b2aea1a98c81ced46f5705670e498146ba82e30c3f89aca6da"
+  },
+  "peak_rss_bytes": 11927552,
+  "pending_root_durable_closure": true,
+  "primary_complete": {
+    "bytes": 101,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/case/ops/COMPLETE.json",
+    "sha256": "29daabb44705132900bd02a305f0c7e26743fb2310202c1fb8df179b8e42af2c"
+  },
+  "schema": "hepta.fullstudy.execution06-outer-wait4.1",
+  "system_cpu_seconds": 0.142999,
+  "total_cpu_seconds_inclusive": 0.8114159999999999,
+  "unwaited_orphan_costs_unknown_if_failure": false,
+  "user_cpu_seconds": 0.6684169999999999,
+  "wait_status": 0,
+  "waited_pid": 398759,
+  "wall_seconds": 46.832580838003196
+}

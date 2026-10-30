@@ -1,0 +1,13 @@
+{
+  "driver": {
+    "bytes": 884,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/case/tiny_bootstrap_driver.py",
+    "sha256": "6e5e2231862abdb599b3f048b02cfc4f0fbf1865111a50a240a410a317105a36"
+  },
+  "phase1": "Original external_step measures bootstrap command until normal exit, then host exec task returns.",
+  "phase2": "A distinct host exec reads original READY and proves same measuring parent and tiny supervisor still live, then releases the tiny target.",
+  "phase3": "Verify actual original supervisor wait4 and detached identity, without attributing bridge wait4 as final target cost.",
+  "schema": "hepta.execution06.tiny-cross-exec-lifecycle-test.1",
+  "science_workers_started": 0,
+  "synthetic": true
+}

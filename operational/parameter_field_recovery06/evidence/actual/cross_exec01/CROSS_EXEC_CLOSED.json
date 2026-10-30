@@ -1,0 +1,38 @@
+{
+  "actual_daemon_returned": {
+    "bytes": 1538,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/case/detached/DAEMON_RETURNED.json",
+    "sha256": "fe479819497de07456fb44c172bf4bf6ba9263748312c92e9fc124aa8d86025e"
+  },
+  "actual_owned_closure": {
+    "bytes": 3516,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/case/ops/wait4_launcher/owned_supervisor/CLOSURE.json",
+    "sha256": "b5c9042eb9e9e7b2aea1a98c81ced46f5705670e498146ba82e30c3f89aca6da"
+  },
+  "actual_supervisor_wait4": {
+    "bytes": 2527,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/case/ops/wait4_launcher/WAIT4_COMPLETE.json",
+    "sha256": "c5e58bc5407809b458b23c456e4a2339022abb0179800557b72b71ad10e2529c"
+  },
+  "at_unix": 1793369714.9863086,
+  "bootstrap_wait4_is_not_target_wait4": true,
+  "daemon_own_kernel_wait4_not_claimed": true,
+  "observation": {
+    "bytes": 1102,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/AFTER_ORIGINATING_EXEC_RETURNED.json",
+    "sha256": "3e8e407eaec1fb500965e6913d727bae525f3c94698fba37ef811dc3ce642434"
+  },
+  "passed": true,
+  "real_supervisor_exit_code": 0,
+  "real_supervisor_wait4_cpu_seconds": 0.8114159999999999,
+  "same_measuring_parent_identity_preserved": {
+    "parent_pid": 1,
+    "pgid": 398757,
+    "pid": 398758,
+    "sid": 398757,
+    "start_ticks": 2275952
+  },
+  "schema": "hepta.execution06.tiny-cross-exec-closed.1",
+  "scientific_workers_started": 0,
+  "synthetic": true
+}

@@ -1,0 +1,62 @@
+{
+  "argv": [
+    "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+    "-B",
+    "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_existing_attempt_cannot_launch_second_target/tiny_supervisor.py",
+    "--config",
+    "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_existing_attempt_cannot_launch_second_target/CONFIG.json",
+    "--expected-config-sha256",
+    "4977be2ad72c7c3f8fb76f226812eff69727e76bee1e0476c3114e61d07aa6bd",
+    "--execute"
+  ],
+  "child_identity": {
+    "parent_pid": 398201,
+    "pgid": 398206,
+    "pid": 398206,
+    "sid": 398206,
+    "start_ticks": 2270287
+  },
+  "config": {
+    "bytes": 1277,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_existing_attempt_cannot_launch_second_target/CONFIG.json",
+    "sha256": "4977be2ad72c7c3f8fb76f226812eff69727e76bee1e0476c3114e61d07aa6bd"
+  },
+  "detached_start": {
+    "bytes": 1710,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_existing_attempt_cannot_launch_second_target/detached/READY.json",
+    "sha256": "5533fad9f8c464f39f1260b666120201eac1dd267a6d2b57432e10a80fc7a7c0"
+  },
+  "do_not_add_nested_science_driver_archive_or_supervisor_ledgers": true,
+  "execution_episode": "execution06_detached_20261030",
+  "exit_code": 0,
+  "imported_A17_historical_scientific_cpu_not_added": true,
+  "launcher_cpu_seconds_separate": 0.00608766,
+  "measurement_scope": "Full supervisor entry-to-exit and descendants it waited for; excludes external root upload/readback and historical A17 execution.",
+  "measuring_parent_identity": {
+    "parent_pid": 1,
+    "pgid": 398200,
+    "pid": 398201,
+    "sid": 398200,
+    "start_ticks": 2270278
+  },
+  "owned_supervisor_closure": {
+    "bytes": 3776,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_existing_attempt_cannot_launch_second_target/ops/wait4_launcher/owned_supervisor/CLOSURE.json",
+    "sha256": "4dca3b841a0dd797a2b899bb5abc5763f8075b37b5fded9f32dd53cce4df342b"
+  },
+  "peak_rss_bytes": 11665408,
+  "pending_root_durable_closure": true,
+  "primary_complete": {
+    "bytes": 101,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_existing_attempt_cannot_launch_second_target/ops/COMPLETE.json",
+    "sha256": "29daabb44705132900bd02a305f0c7e26743fb2310202c1fb8df179b8e42af2c"
+  },
+  "schema": "hepta.fullstudy.execution06-outer-wait4.1",
+  "system_cpu_seconds": 0.009413999999999999,
+  "total_cpu_seconds_inclusive": 0.059833,
+  "unwaited_orphan_costs_unknown_if_failure": false,
+  "user_cpu_seconds": 0.050419,
+  "wait_status": 0,
+  "waited_pid": 398206,
+  "wall_seconds": 0.16576002099827747
+}

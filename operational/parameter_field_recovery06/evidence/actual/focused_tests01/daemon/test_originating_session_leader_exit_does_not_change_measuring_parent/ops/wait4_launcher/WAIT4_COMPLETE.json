@@ -1,0 +1,62 @@
+{
+  "argv": [
+    "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+    "-B",
+    "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_originating_session_leader_exit_does_not_change_measuring_parent/tiny_supervisor.py",
+    "--config",
+    "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_originating_session_leader_exit_does_not_change_measuring_parent/CONFIG.json",
+    "--expected-config-sha256",
+    "7c3c8d036fac7342e73aab150a0116483b784a488683c7f88e6959cad27bd430",
+    "--execute"
+  ],
+  "child_identity": {
+    "parent_pid": 398229,
+    "pgid": 398231,
+    "pid": 398231,
+    "sid": 398231,
+    "start_ticks": 2270350
+  },
+  "config": {
+    "bytes": 1337,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_originating_session_leader_exit_does_not_change_measuring_parent/CONFIG.json",
+    "sha256": "7c3c8d036fac7342e73aab150a0116483b784a488683c7f88e6959cad27bd430"
+  },
+  "detached_start": {
+    "bytes": 1770,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_originating_session_leader_exit_does_not_change_measuring_parent/detached/READY.json",
+    "sha256": "e42bbfc8b74cdd209250b85fd124a912972b74175d73c5c8b147b90f85d27cbe"
+  },
+  "do_not_add_nested_science_driver_archive_or_supervisor_ledgers": true,
+  "execution_episode": "execution06_detached_20261030",
+  "exit_code": 0,
+  "imported_A17_historical_scientific_cpu_not_added": true,
+  "launcher_cpu_seconds_separate": 0.0058083219999999994,
+  "measurement_scope": "Full supervisor entry-to-exit and descendants it waited for; excludes external root upload/readback and historical A17 execution.",
+  "measuring_parent_identity": {
+    "parent_pid": 1,
+    "pgid": 398228,
+    "pid": 398229,
+    "sid": 398228,
+    "start_ticks": 2270342
+  },
+  "owned_supervisor_closure": {
+    "bytes": 3879,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_originating_session_leader_exit_does_not_change_measuring_parent/ops/wait4_launcher/owned_supervisor/CLOSURE.json",
+    "sha256": "0369c406512b3fbf31679831d00936aa267d9adcf127a585130a4d83979c4e63"
+  },
+  "peak_rss_bytes": 11665408,
+  "pending_root_durable_closure": true,
+  "primary_complete": {
+    "bytes": 101,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/daemon/test_originating_session_leader_exit_does_not_change_measuring_parent/ops/COMPLETE.json",
+    "sha256": "29daabb44705132900bd02a305f0c7e26743fb2310202c1fb8df179b8e42af2c"
+  },
+  "schema": "hepta.fullstudy.execution06-outer-wait4.1",
+  "system_cpu_seconds": 0.0070999999999999995,
+  "total_cpu_seconds_inclusive": 0.048097,
+  "unwaited_orphan_costs_unknown_if_failure": false,
+  "user_cpu_seconds": 0.040997,
+  "wait_status": 0,
+  "waited_pid": 398231,
+  "wall_seconds": 0.11358434300200315
+}

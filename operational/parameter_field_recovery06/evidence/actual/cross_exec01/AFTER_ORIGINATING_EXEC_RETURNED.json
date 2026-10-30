@@ -1,0 +1,32 @@
+{
+  "actual_prior_bootstrap_wait4": {
+    "bytes": 1753,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/bootstrap_wait4/WAIT4.json",
+    "sha256": "26b70040468391ce5720d0ef8d54fcf69b04dc66bed258aa128e63d735bf60e9"
+  },
+  "at_unix": 1793369714.9163504,
+  "daemon_stdio": {
+    "0": "/dev/null",
+    "1": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/case/detached/daemon.stdout.log",
+    "2": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/cross_exec01/case/detached/daemon.stderr.log"
+  },
+  "final_supervisor_wait4_existed_before_release": false,
+  "original_bootstrap_pid_absent": true,
+  "same_measuring_parent_still_live": {
+    "parent_pid": 1,
+    "pgid": 398757,
+    "pid": 398758,
+    "sid": 398757,
+    "start_ticks": 2275952
+  },
+  "same_tiny_supervisor_still_live": {
+    "parent_pid": 398758,
+    "pgid": 398759,
+    "pid": 398759,
+    "sid": 398759,
+    "start_ticks": 2275962
+  },
+  "schema": "hepta.execution06.tiny-cross-exec-observation.1",
+  "scientific_workers_started": 0,
+  "synthetic": true
+}

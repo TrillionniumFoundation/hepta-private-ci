@@ -1,0 +1,44 @@
+{
+  "at_utc": "2026-10-30T14:13:34.293039+00:00",
+  "child": {
+    "exit_code": 0,
+    "identity": {
+      "pid": 398186,
+      "process_group": 398186,
+      "session": 398186,
+      "start_ticks": "2270165",
+      "state": "R"
+    },
+    "peak_rss_bytes": 23642112,
+    "scope": "this child and descendants it waited for; includes nested phase/driver costs",
+    "system_cpu_seconds": 0.588144,
+    "total_cpu_seconds": 2.1127409999999998,
+    "unwaited_orphan_costs_unknown_if_failure": false,
+    "user_cpu_seconds": 1.524597,
+    "wait_status": 0,
+    "wall_seconds": 4.12628005499937
+  },
+  "command_success": true,
+  "complete": true,
+  "intent": {
+    "bytes": 737,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/wait4/INTENT.json",
+    "sha256": "f06ca99d5ca9d9ebd01e952715c0054cb579a103d4b39aca2e761cc9014085c8"
+  },
+  "measuring_parent_cpu_seconds": 0.007655598999999999,
+  "schema": "hepta.execution04.root-engineering-wait4.1",
+  "scope": "Local helper and waited descendants; excludes remote service compute and other root commands",
+  "service_outcome_requires_reading_actual_tool_result": true,
+  "stderr": {
+    "bytes": 17300,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/wait4/helper.stderr.log",
+    "sha256": "c2f12df6287e56c39fa5b3a4d0e1cb7434bf38d674481ccfda4564a5b9de44d6"
+  },
+  "stdout": {
+    "bytes": 0,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/focused_tests01/wait4/helper.stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "unknown_write_outcome_must_be_reconciled_before_retry": true,
+  "wall_seconds": 4.1317272529995535
+}
