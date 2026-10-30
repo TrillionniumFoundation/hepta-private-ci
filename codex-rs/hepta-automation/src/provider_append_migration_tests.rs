@@ -19,6 +19,9 @@ use pretty_assertions::assert_eq;
 use sqlx::Connection;
 use sqlx::Executor;
 
+#[path = "provider_append_schema_tests.rs"]
+mod schema_tests;
+
 enum LegacyReceipt {
     LostAcceptedV20,
     CompletedV20,

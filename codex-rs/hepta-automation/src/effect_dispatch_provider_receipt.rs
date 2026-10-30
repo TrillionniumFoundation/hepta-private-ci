@@ -340,6 +340,17 @@ pub(crate) async fn verify_provider_receipts(
             "TaskFlow provider operation bindings are immutable",
         ),
     ] {
+        let profile = sqlx::query_as::<_, (String, i64, Option<String>, i64, i64)>(
+            r#"SELECT type,"notnull",dflt_value,pk,hidden
+               FROM pragma_table_xinfo(?, 'main') WHERE name='append_profile_version'"#,
+        )
+        .bind(table)
+        .fetch_optional(&mut *transaction)
+        .await
+        .map_err(|_| TaskFlowError::Unavailable)?;
+        if profile != Some(("INTEGER".to_string(), 1, Some("0".to_string()), 0, 0)) {
+            return Err(corrupt());
+        }
         for action in ["UPDATE", "DELETE"] {
             let suffix = action.to_ascii_lowercase();
             let name = format!("{table}_no_{suffix}");
