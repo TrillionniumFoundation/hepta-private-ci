@@ -1,0 +1,49 @@
+{
+  "budget_pass": true,
+  "complete_child_cpu": 3.4927209999999995,
+  "complete_method_child_cpu": {
+    "11-isolated-additive": 0.4616282807499998,
+    "11-isolated-ndu": 0.4816063637499997,
+    "11-joint-additive": 0.40560067574999986,
+    "11-joint-ndu": 0.40527495475000025,
+    "23-isolated-additive": 0.46864897525000004,
+    "23-isolated-ndu": 0.4646584252499999,
+    "23-joint-additive": 0.4046435272500004,
+    "23-joint-ndu": 0.40065979724999967
+  },
+  "equal_cap_seconds_per_method": 60,
+  "historical_research_review_publication_cpu": "SEPARATE_UNKNOWN_NOT_ZERO",
+  "lock": "/workspace/shared/rgb-class-preservation-20261030/benchmark.lock",
+  "schema": "rgb-complete-child-cost-v1",
+  "science": {
+    "complete_wait4": true,
+    "cpu_seconds": 3.3246919999999998,
+    "exit_code": 0,
+    "maxrss_kib": 41124,
+    "pid": 8,
+    "wall_seconds": 3.3259194140000545
+  },
+  "scope": "NEW_SYNTHETIC_ONLY_NOT_ROUND04",
+  "standalone_conservative_method_cpu": {
+    "11-isolated-additive": 0.9292374439999994,
+    "11-isolated-ndu": 0.9492155269999993,
+    "11-joint-additive": 0.8732098389999995,
+    "11-joint-ndu": 0.8728841179999999,
+    "23-isolated-additive": 0.9453139609999995,
+    "23-isolated-ndu": 0.9413234109999994,
+    "23-joint-additive": 0.8813085129999999,
+    "23-joint-ndu": 0.8773247829999992
+  },
+  "standalone_cost_note": "Full own-seed base plus ALL shared preparation/test/import/report/tail charges per method; conservative attribution, not measured separate-process standalone latency. Campaign amortized allocation kept separately.",
+  "supervisor_cpu_observed_prefix": 0.0025254790000000006,
+  "supervisor_final_tail": "UNKNOWN_NOT_ZERO",
+  "tests": {
+    "complete_wait4": true,
+    "cpu_seconds": 0.16802899999999998,
+    "exit_code": 0,
+    "maxrss_kib": 29604,
+    "pid": 7,
+    "wall_seconds": 0.16863063300002068
+  },
+  "wall_observed_prefix": 3.4955137870001636
+}
