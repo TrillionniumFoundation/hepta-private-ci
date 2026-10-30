@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.operator-test-host-contract.v1",
+  "source_path": "codex-rs/hepta-operator-acceptance/BUILD.bazel",
+  "source_sha256": "4928542230742a33bfa7ea3ca4268e869c233ad67472374284a323bffb0c13a7",
+  "observed_failure": {
+    "run_id": 40838158978,
+    "job_id": 123328231746,
+    "cause": "The RBE executor lacks /usr/bin/ssh-keygen, which both the production Unix verifier and its independent signature fixtures require"
+  },
+  "change": "Set local=True only on hepta-operator-acceptance-tests; retain all cases, test assertions, production trusted binary path, target compilation, and missing-tool errors",
+  "official_bazel_reference": "https://bazel.build/versions/9.0.0/reference/be/common-definitions",
+  "validation_status": "Source change prepared; native Bazel CI execution still required",
+  "remaining_platform_scope": "Unix SSHSIG verification uses OpenSSH plus inherited descriptors; non-Unix verifier must return typed Unsupported and its policy/challenge tests still run",
+  "bazel_query": {
+    "command": [
+      "bazel",
+      "query",
+      "--lockfile_mode=error",
+      "--output=build",
+      "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 2.2289153209999313,
+    "source_lock_hashes_before": {
+      "codex-rs/Cargo.lock": "7cd3ac48f8a03093674bf8e54ffa8b86dcbeaac64d535b1d8c59b21e5dd327e3",
+      "MODULE.bazel.lock": "6cd33cd619de9103e3df32fd75eb55324482a2c8609620c6b3598f1cb6e99902"
+    },
+    "source_lock_hashes_after": {
+      "codex-rs/Cargo.lock": "7cd3ac48f8a03093674bf8e54ffa8b86dcbeaac64d535b1d8c59b21e5dd327e3",
+      "MODULE.bazel.lock": "6cd33cd619de9103e3df32fd75eb55324482a2c8609620c6b3598f1cb6e99902"
+    },
+    "local_true_observed": true,
+    "log_sha256": "8e0680f53f359995d1fd6914f86241680dbf5cf877304c6449be083e6c9863dc"
+  }
+}

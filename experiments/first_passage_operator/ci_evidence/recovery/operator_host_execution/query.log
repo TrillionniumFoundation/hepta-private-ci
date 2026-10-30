@@ -1,0 +1,24 @@
+INFO: Invocation ID: a075818c-68b2-46a6-8520-53b344270100
+WARNING: Repository '@@v8+' will be fetched again since the file '' has been modified externally. External modifications can lead to incorrect builds.
+WARNING: Repository '@@llvm++llvm_source+llvm-raw' will be fetched again since the file '' has been modified externally. External modifications can lead to incorrect builds.
+Loading: 0 packages loaded
+# /workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-operator-acceptance/BUILD.bazel:25:10
+rust_test(
+  name = "hepta-operator-acceptance-tests",
+  visibility = ["//codex-rs/hepta-operator-acceptance:__pkg__"],
+  generator_name = "hepta-operator-acceptance-tests",
+  generator_function = "rust_test",
+  generator_location = "codex-rs/hepta-operator-acceptance/BUILD.bazel:25:10",
+  local = True,
+  deps = ["@crates//:pretty_assertions", "@crates//:tempfile"],
+  proc_macro_deps = ["@crates//:pretty_assertions", "@crates//:tempfile"],
+  rustc_flags = select({"@platforms//os:windows": ["-Aunused-imports", "-Aunused-variables"], "//conditions:default": []}),
+  crate = "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-lib",
+)
+# Rule hepta-operator-acceptance-tests instantiated at (most recent call last):
+#   /workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/hepta-operator-acceptance/BUILD.bazel:25:10                                                in <toplevel>
+#   /workspace/scratch/8b9f3e9fd04d/task_tools/bazel-cache/e79eaa0a79e864246cbdcf48958830ba/external/rules_rs++rules_rust+rules_rust/rust/defs.bzl:132:1 in rust_test
+#   /workspace/scratch/8b9f3e9fd04d/task_tools/bazel-cache/e79eaa0a79e864246cbdcf48958830ba/external/rules_rs++rules_rust+rules_rust/rust/defs.bzl:96:13 in _wrapped
+# Rule rust_test defined at (most recent call last):
+#   /workspace/scratch/8b9f3e9fd04d/task_tools/bazel-cache/e79eaa0a79e864246cbdcf48958830ba/external/rules_rs++rules_rust+rules_rust/rust/private/rust.bzl:1571:17 in <toplevel>
+
