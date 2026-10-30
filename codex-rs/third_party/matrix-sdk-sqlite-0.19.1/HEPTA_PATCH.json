@@ -1,0 +1,29 @@
+{
+  "schema": "hepta.vendor-patch.v1",
+  "package": "matrix-sdk-sqlite",
+  "version": "0.19.1",
+  "upstream_archive_sha256": "8d4271e06d52a17bc6ec39b5a2985b65dcced737969fac3678967783656edb34",
+  "rationale": "Use rusqlite ^0.39.0 to share libsqlite3-sys ^0.37 with the root SQLx 0.9 graph. Retain limits/fallible_uint/cache and all upstream runtime Rust and SQL migration bytes. Root consumer compatibility tests are required.",
+  "modified_files": [
+    {
+      "path": "Cargo.toml",
+      "upstream_sha256": "d0714a65585690a924811221c55439663f7c16587e47b19d8c429e2af1143b30",
+      "patched_sha256": "21e25ca585ec01e11b39bfcdb7425d3103261fdda86aedef422078d2f8b02931",
+      "bytes": 5563
+    },
+    {
+      "path": "Cargo.toml.orig",
+      "upstream_sha256": "b3916f966a3974857b9be832e657a5a1be2e5a13c7e57726397c9b3cb5f1daa6",
+      "patched_sha256": "fb1cd1f71e091019090261245733871f29a7345d40f6bfddeea246e8cefec936",
+      "bytes": 2298
+    }
+  ],
+  "added_files": [],
+  "excluded_files": [
+    "Cargo.lock"
+  ],
+  "test_status": "pending fresh execution after reconstruction; old lost logs do not validate this source",
+  "source_api_references": [
+    "https://docs.rs/rusqlite/0.39.0/rusqlite/"
+  ]
+}
