@@ -1,0 +1,55 @@
+{
+  "schema": "hepta.p41-native-followup.openssh-exclusive-test-execution.v1",
+  "observed_date_utc": "2026-10-30",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 4184,
+  "branch": "audit/p41-4152-rollback-completed-turn-fence-20261028-v1",
+  "original_head_sha": "cba3b6e719a561274d50479729e38aea7b407d41",
+  "base_sha": "2f393197ec7e4e76f5405f66c3f6e478421a35f4",
+  "native_failure": {
+    "run_id": 41021552491,
+    "macos_arm_job_id": 123950244068,
+    "repo_check_job_id": 123950243627,
+    "macos_arm_exit": 126,
+    "exact_error": "process_wrapper: cannot execute binary file",
+    "observation": "no-remote propagated to the Rust compile spawn, which attempted Linux aarch64 process_wrapper on macOS ARM. BUILD tags ordering also failed buildifier.",
+    "linux_target_pass_jobs": [
+      123950244291,
+      123950244390
+    ],
+    "linux_target_scope": "operator test target passed inside otherwise failing Linux Bazel jobs"
+  },
+  "patch": {
+    "file": "codex-rs/hepta-operator-acceptance/BUILD.bazel",
+    "old_tag": "no-remote",
+    "new_tag": "exclusive",
+    "format": "tags moved before deps, consistent with existing formatted rust_test rules",
+    "intent": "Bazel exclusive scheduling keeps host-OpenSSH-dependent TestRunner on native runner while Rust compile spawn remains eligible for Linux RBE cross-toolchain",
+    "source_assertions_preserved": true,
+    "original_35_tests_retained": true,
+    "dependency_changes": 0,
+    "gate_changes": 0,
+    "production_permission_changes": 0
+  },
+  "actual_validation": "PENDING: new exact-head owning native tests and formatting",
+  "local_checks": [
+    "Exact prior file stanza matched before substitution",
+    "Source-level replacement leaves original 35 test bodies untouched"
+  ],
+  "unavailable": [
+    "Rust/Bazel/buildifier executables not available in this execution container",
+    "macOS and Windows owning native execution not observed after patch"
+  ],
+  "prior_scope": "P39 frozen paired source-image research loop remains CLOSED only for original declared task",
+  "still_open": [
+    "Current full required CI",
+    "Windows outside-root DELETE",
+    "AppServer plugin TTL",
+    "RustSec",
+    "authentic owner-backed full policy learning",
+    "target device p95/p99/energy"
+  ],
+  "authority": "DENY_ALL",
+  "mode": "SHADOW_ONLY",
+  "promotion": "HOLD_NO_GO"
+}
