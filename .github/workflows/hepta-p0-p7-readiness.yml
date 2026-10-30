@@ -1,0 +1,46 @@
+name: Hepta P0-P7 source-exact CI readiness (non-authorizing)
+on:
+  pull_request:
+    paths:
+      - 'qa/hepta-p0-p7-readiness/**'
+      - '.github/workflows/hepta-p0-p7-readiness.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+jobs:
+  source-exact-readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Test source-bound status logic (no model, no external effects)
+        run: |
+          python3 -m unittest discover -s qa/hepta-p0-p7-readiness -p 'test_*.py' -v
+          python3 -m compileall -q qa/hepta-p0-p7-readiness/audit.py qa/hepta-p0-p7-readiness/test_audit.py
+      - name: Read-only exact-SHA PR and native CI observation
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python3 qa/hepta-p0-p7-readiness/audit.py \
+            --plan qa/hepta-p0-p7-readiness/candidate_plan.json \
+            --output /tmp/hepta-p0-p7-ci-observation.json
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          r = json.loads(Path('/tmp/hepta-p0-p7-ci-observation.json').read_text())
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as f:
+              f.write(f"## HOLD_NO_GO: {r['ci_preflight_count']}/8 CI preflights ready\n\n")
+              for s in r['stages']:
+                  f.write(f"- {s['stage']}: {s['ci_preflight']} ({len(s['ci_blockers'])} CI blockers, "
+                          f"{len(s['scientific_and_authority_blockers'])} independent gates)\n")
+              f.write("\nNo production, scientific or model-promotion authorization.\n")
+          PY
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v4.6.2
+        if: always()
+        with:
+          name: hepta-p0-p7-ci-observation
+          path: /tmp/hepta-p0-p7-ci-observation.json
+          if-no-files-found: ignore
