@@ -361,6 +361,17 @@ jobs:
             target: aarch64-pc-windows-msvc
 
     steps:
+      # The Windows upstream source-build jobs checkout the entire evidence
+      # tree. Their first checkout must allow Git's long Windows paths before
+      # actions/checkout executes, matching the existing Bazel/repo-checks fix.
+      - name: Enable Git for Windows long evidence paths before source checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config --global core.longpaths true
+          printf 'GIT_CONFIG_COUNT=1\nGIT_CONFIG_KEY_0=core.longpaths\nGIT_CONFIG_VALUE_0=true\n' >> "$GITHUB_ENV"
+          test "$(GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.longpaths GIT_CONFIG_VALUE_0=true git config --get --bool core.longpaths)" = true
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
