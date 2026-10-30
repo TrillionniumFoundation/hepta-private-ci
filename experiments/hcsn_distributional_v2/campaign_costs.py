@@ -239,12 +239,12 @@ def fixed_scopes(ledger):
             "Fixture test supervisor's separate self CPU through receipt.", required=False)
 
 
-def verify_scheduler(ledger, directory, expected, field):
+def verify_scheduler(ledger, directory, expected, field, success_field="/returncode"):
     receipt = ledger.read(directory + "/SCHEDULER_EXECUTION.json")
     complete = ledger.read(directory + "/COMPLETE.json")
     if receipt is None or complete is None:
         return
-    if receipt["returncode"] != 0 or complete["status"] != "completed":
+    if pointer(receipt, success_field) != 0 or complete["status"] != "completed":
         raise ValueError("Required formal study did not complete: " + directory)
     records = complete["records"]
     if len(records) != expected or complete["completed"] != expected or complete["failures"] != 0:
@@ -266,6 +266,11 @@ def lif_receipts(ledger):
     if {row["scope_id"] for row in data["scopes"]} != expected or len(data["scopes"]) != len(expected):
         raise ValueError("LIF receipt map must contain exactly the three declared disjoint scopes")
     for row in data["scopes"]:
+        original = ledger.read(row["receipt"], row["receipt_sha256"])
+        if original is not None:
+            success = pointer(original, row["success_field"])
+            if success != row["success_value"] or type(success) is not type(row["success_value"]):
+                raise ValueError("LIF original receipt success field does not match its explicit declaration")
         binding = ledger.binding(row["receipt"], row["field"], row["receipt_sha256"])
         if binding is not None:
             equal(binding["cpu_seconds"], numeric(row["cpu_seconds"]), "LIF raw receipt mapping")
@@ -275,7 +280,9 @@ def lif_receipts(ledger):
         ledger.add(row["scope_id"], "lif", binding, expected_measurement, row["scope"],
             excludes=["Reused main-study 18 comparator workers", "Nested worker/body/heartbeat timings"])
         if row["scope_id"] == "lif_scheduler":
-            verify_scheduler(ledger, "results/lif_supplement001", 18, row["field"])
+            if row["success_field"] != "/exit_code" or row["success_value"] != 0:
+                raise ValueError("The original LIF scheduler uses /exit_code == 0")
+            verify_scheduler(ledger, "results/lif_supplement001", 18, row["field"], success_field=row["success_field"])
 
 
 def archive_receipts(ledger, completion_path):
@@ -405,6 +412,57 @@ def finish_future_scopes(ledger, archive_completion):
     verify_scheduler(ledger, "results/content002", 176, "/wait4_total_cpu_seconds")
     lif_receipts(ledger)
     archive_receipts(ledger, archive_completion)
+    scaling_receipts(ledger)
+
+
+def scaling_receipts(ledger):
+    if not (ledger.package / "SCALING001_PROTOCOL.json").exists():
+        return
+    protocol = ledger.read("SCALING001_PROTOCOL.json")
+    path = "results/scaling001/SUITE_EXECUTION.json"
+    ledger.single("scaling001_suite", "scaling", path, "/complete_child_cpu_seconds", WAIT4,
+        "Complete 30-case scaling coordinator/worker/report tree; all worker/body/warmup timers are nested.")
+    ledger.single("scaling001_supervisor", "scaling", path, "/supervisor_self_cpu_seconds_through_cutoff", SELF,
+        "Separate outer scaling supervisor self CPU through receipt.")
+    outer = ledger.read(path)
+    complete_path = "results/scaling001/COMPLETE.json"
+    complete = ledger.read(complete_path)
+    if outer is None or complete is None:
+        return
+    expected = {case["case_id"] for case in protocol["cases"]}
+    observed = {row["case_id"] for row in complete["records"]}
+    if (len(expected) != 30 or len(complete["records"]) != 30 or expected != observed or
+            complete["expected_cases"] != 30 or complete["completed_cases"] != 30 or
+            complete["status"] != "completed" or outer["returncode"] != 0 or
+            outer["protocol_sha256"] != sha(ledger.package / "SCALING001_PROTOCOL.json") or
+            complete["protocol_sha256"] != outer["protocol_sha256"] or
+            complete["source_files_sha256"] != protocol["source_files_sha256"] or
+            outer["source_files_sha256"] != protocol["source_files_sha256"] or
+            outer["complete_receipt_sha256"] != sha(ledger.resolve(complete_path))):
+        raise ValueError("Scaling complete receipt/source/protocol/30-case coverage mismatch")
+    nested, components = [], []
+    for row in complete["records"]:
+        raw = ledger.read(row["receipt_path"])
+        if raw is None:
+            continue
+        if raw != row:
+            raise ValueError("Scaling completion row differs from original case receipt")
+        nested.append(numeric(raw["complete_child_cpu_seconds"]))
+        binding = ledger.binding(row["receipt_path"], "/complete_child_cpu_seconds")
+        binding["measurement_kind"] = WAIT4
+        key = (binding["path"], binding["field"])
+        if key in ledger.reserved_fields:
+            raise ValueError("Nested scaling worker already charged elsewhere")
+        ledger.reserved_fields.add(key)
+        components.append(binding)
+    suite_row = next(row for row in ledger.rows if row["scope_id"] == "scaling001_suite")
+    suite_row["verified_nested_components"].extend(components)
+    if len(nested) == 30:
+        equal(math.fsum(nested), numeric(complete["complete_worker_cpu_seconds"]), "nested scaling workers")
+        if numeric(outer["complete_child_cpu_seconds"]) + 1e-6 < math.fsum(nested):
+            raise ValueError("Scaling outer CPU does not contain its complete workers")
+    ledger.excluded.append(dict(path=complete_path, nested_cpu_seconds=math.fsum(nested),
+        reason="30 independent worker receipts are reconciled but already contained in complete scaling suite wait4"))
 
 
 def report(ledger):

@@ -7,7 +7,7 @@ import tempfile
 import unittest
 
 from experiments.hcsn_distributional_v2.campaign_costs import (
-    Ledger, SELF, WAIT4, aggregate_receipts, archive_receipts, numeric,
+    Ledger, SELF, WAIT4, aggregate_receipts, archive_receipts, lif_receipts, numeric, scaling_receipts,
 )
 
 
@@ -116,6 +116,53 @@ class CostEvidenceTests(unittest.TestCase):
         archive_receipts(self.ledger, "artifacts/ARCHIVE_COMPLETION.json")
         self.assertEqual({r["scope_id"]: r["observed_cpu_seconds"] for r in self.ledger.rows},
                          {"archive_staged": 3., "archive_coordinator_staged": .5})
+
+    def test_lif_original_exit_code_and_success_pointer_are_explicit(self):
+        scheduler = "results/lif_supplement001/SCHEDULER_EXECUTION.json"
+        self.save(scheduler, dict(schema="hcsn-lif-scheduler-tree-execution.v1",
+                                 exit_code=0, complete_child_cpu_seconds=22.))
+        self.save("results/lif_supplement001/COMPLETE.json", dict(status="completed", completed=18, failures=0,
+            records=[dict(child_total_cpu_seconds=1.) for _ in range(18)], complete_child_cpu_seconds=18.))
+        self.save("analysis.json", dict(exit_code=0, child_cpu=2.5))
+        self.save("watcher.json", dict(status="completed", self_cpu=.25))
+        entries = [("lif_scheduler", scheduler, "/complete_child_cpu_seconds", 22., WAIT4, "/exit_code", 0),
+                   ("lif_analysis", "analysis.json", "/child_cpu", 2.5, WAIT4, "/exit_code", 0),
+                   ("lif_analysis_watcher", "watcher.json", "/self_cpu", .25, SELF, "/status", "completed")]
+        scopes = [dict(scope_id=name, receipt=path, receipt_sha256=hashlib.sha256((self.package / path).read_bytes()).hexdigest(),
+            field=field, cpu_seconds=amount, measurement_kind=kind, success_field=success_field,
+            success_value=success_value, scope="Explicit original LIF receipt fixture")
+            for name, path, field, amount, kind, success_field, success_value in entries]
+        self.save("results/lif_cost_receipts001/RECEIPTS.json", dict(schema="hcsn-lif-cost-receipts.v1", status="completed", scopes=scopes))
+        lif_receipts(self.ledger)
+        self.assertEqual({r["scope_id"]: r["observed_cpu_seconds"] for r in self.ledger.rows},
+                         {"lif_scheduler": 22., "lif_analysis": 2.5, "lif_analysis_watcher": .25})
+        self.save(scheduler, dict(schema="hcsn-lif-scheduler-tree-execution.v1", exit_code=1, complete_child_cpu_seconds=22.))
+        scopes[0]["receipt_sha256"] = hashlib.sha256((self.package / scheduler).read_bytes()).hexdigest()
+        self.save("results/lif_cost_receipts001/RECEIPTS.json", dict(schema="hcsn-lif-cost-receipts.v1", status="completed", scopes=scopes))
+        with self.assertRaisesRegex(ValueError, "success field"):
+            lif_receipts(Ledger(self.package))
+
+    def test_registered_scaling_charges_outer_and_supervisor_once(self):
+        protocol = self.save("SCALING001_PROTOCOL.json", dict(cases=[dict(case_id=f"case_{i}") for i in range(30)], source_files_sha256={}))
+        protocol_sha = hashlib.sha256(protocol.read_bytes()).hexdigest()
+        records = []
+        for i in range(30):
+            path = f"results/scaling001/cases/case_{i}/EXECUTION.json"
+            row = dict(case_id=f"case_{i}", complete_child_cpu_seconds=.1, receipt_path=path)
+            self.save(path, row)
+            records.append(row)
+        completion = self.save("results/scaling001/COMPLETE.json", dict(records=records, expected_cases=30,
+            completed_cases=30, status="completed", protocol_sha256=protocol_sha, source_files_sha256={}, complete_worker_cpu_seconds=3.))
+        self.save("results/scaling001/SUITE_EXECUTION.json", dict(returncode=0, complete_child_cpu_seconds=4.,
+            supervisor_self_cpu_seconds_through_cutoff=.2, protocol_sha256=protocol_sha, source_files_sha256={},
+            complete_receipt_sha256=hashlib.sha256(completion.read_bytes()).hexdigest()))
+        scaling_receipts(self.ledger)
+        self.assertEqual({r["scope_id"]: r["observed_cpu_seconds"] for r in self.ledger.rows},
+                         {"scaling001_suite": 4., "scaling001_supervisor": .2})
+        self.assertEqual(self.ledger.missing, [])
+        with self.assertRaisesRegex(ValueError, "reused"):
+            self.ledger.single("duplicate_worker", "scaling", "results/scaling001/cases/case_0/EXECUTION.json",
+                               "/complete_child_cpu_seconds", WAIT4, "Would repeat a nested worker")
 
 
 if __name__ == "__main__":

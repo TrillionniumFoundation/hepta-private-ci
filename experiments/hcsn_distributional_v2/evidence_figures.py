@@ -26,7 +26,7 @@ def save(figure, directory, name):
     plt.close(figure)
 
 
-def render(output, content=None):
+def render(output, content=None, scaling=None):
     package = Path(__file__).resolve().parent
     output = Path(output).resolve()
     output.mkdir(parents=True, exist_ok=False)
@@ -127,6 +127,60 @@ def render(output, content=None):
         figure.text(.02, .015, f"{data['valid']}/{data['expected']} integrity checks passed. Same training-CPU budget and ±3% backbone parameters; total worker costs differ.\nPreviously observed datasets; descriptive core panel. Small digit-based multimodal task, not a foundation-model evaluation.", fontsize=9)
         figure.tight_layout(rect=[0, .07, 1, 1])
         save(figure, output, "content_accuracy")
+
+    if scaling:
+        paths["scaling"] = Path(scaling).resolve()
+        paths["scaling_completion"] = paths["scaling"].with_name("COMPLETE.json")
+        data = read(paths["scaling"])
+        completion = read(paths["scaling_completion"])
+        rows = data["rows"]
+        if (len(rows) != 30 or completion["expected_cases"] != 30
+                or completion["completed_cases"] != 30
+                or completion["status"] != "completed"):
+            raise AssertionError("Scaling figure requires all 30 registered attempts, including failures")
+        models = ["distribution_free_dual", "two_gates", "transformer"]
+        model_labels = ["Free boundary + dual", "Ordinary two gates", "Transformer (SDPA)"]
+        model_colors = ["#bd4336", "#4e8b76", "#236ca3"]
+        lengths = [16, 32, 64, 128, 256, 512]
+        shapes = [(32, 1), (32, 2), (32, 4), (64, 1), (64, 2)]
+        by_case = {(row["model"], row["length"], row["width"], row["depth"]): row for row in rows}
+        if len(by_case) != 30:
+            raise AssertionError("Duplicate scaling cases")
+        figure, axes = plt.subplots(1, 2, figsize=(12.5, 4.8))
+        for index, (model, label, color) in enumerate(zip(models, model_labels, model_colors)):
+            measured = []
+            for length in lengths:
+                row = by_case[(model, length, 32, 1)]
+                measured.append(row["optimizer_cpu_median"] * 1000 if row["returncode"] == 0 else np.nan)
+            axes[0].plot(lengths, measured, marker="o", color=color, label=label, lw=2, ms=5)
+            heights = []
+            for width, depth in shapes:
+                row = by_case[(model, 64, width, depth)]
+                heights.append(row["optimizer_cpu_median"] * 1000 if row["returncode"] == 0 else np.nan)
+            positions = np.arange(len(shapes)) + (index - 1) * .25
+            axes[1].bar(positions, heights, width=.23, color=color, label=label, alpha=.9)
+        axes[0].set_xscale("log", base=2)
+        axes[0].set_xticks(lengths, [str(length) for length in lengths])
+        axes[0].set_xlabel("Sequence length T; width32, depth1")
+        axes[0].set_title("Longer sequences", loc="left", fontsize=12)
+        axes[1].set_xticks(range(len(shapes)), [f"W{width}\nD{depth}" for width, depth in shapes])
+        axes[1].set_xlabel("Registered model dimensions; T=64")
+        axes[1].set_title("Wider and deeper models", loc="left", fontsize=12)
+        for axis in axes:
+            axis.set_yscale("log")
+            axis.set_ylabel("CPU ms / complete Adam step (log scale)")
+            axis.grid(axis="y", alpha=.18)
+            axis.set_axisbelow(True)
+        axes[0].legend(frameon=False, fontsize=9, loc="upper left")
+        figure.suptitle("Registered CPU scaling: actual full-model updates, up to 105,492 parameters",
+                        x=.02, ha="left", fontsize=14, fontweight="bold")
+        failed = completion["failed_cases"]
+        figure.text(.02, -.015,
+            f"B=1, float32, one thread. Median of 3 measured steps after one warmup. All 30 cases attempted; {failed} failed (omitted, never imputed).\n"
+            "Includes finite checks of outputs, loss, gradients, updated parameters and Adam state. This is a separate timing contract from the B=4 plot.\n"
+            "Random-weight execution diagnostic on CPU; no content, GPU, energy or foundation-model scaling result.", fontsize=9)
+        figure.tight_layout(rect=[0, .095, 1, .91])
+        save(figure, output, "cpu_scaling")
     manifest = dict(schema="hcsn-evidence-figures.v1", input_sha256={key: sha(value) for key, value in paths.items()},
                     source_sha256=sha(__file__), whole_self_cpu_seconds_through_render=time.process_time(),
                     outputs={path.name: sha(path) for path in sorted(output.iterdir()) if path.is_file()},
@@ -139,5 +193,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--content", type=Path)
+    parser.add_argument("--scaling", type=Path)
     args = parser.parse_args()
-    render(args.output, args.content)
+    render(args.output, args.content, args.scaling)

@@ -13,8 +13,10 @@
 | 复现环境、恢复原始数据与权重、运行和分析实验 | [REPRODUCE.md](REPRODUCE.md) |
 | 查看主训练的冻结条件 | [CONTENT.md](CONTENT.md)、[CONTENT002_PROTOCOL.json](CONTENT002_PROTOCOL.json) |
 | 查看传统硬脉冲 LIF 的独立补充协议 | [LIF_SUPPLEMENT001_PROTOCOL.json](LIF_SUPPLEMENT001_PROTOCOL.json) |
+| 查看长度、宽度和深度的独立 CPU 扫描合同 | [SCALING.md](SCALING.md)、[SCALING001_PROTOCOL.json](SCALING001_PROTOCOL.json) |
 | 查看真实任务收益、未来任务、owner 动作及成本分配 | [TASK_VALUE.md](TASK_VALUE.md) |
 | 理解与金融模型、CfC、SNN、状态空间和注意力的关系 | [RELATED_WORK.md](RELATED_WORK.md) |
+| 查看证据闭合与成本包含关系 | [ARCHIVE_CLOSURE.md](ARCHIVE_CLOSURE.md)、[CAMPAIGN_COSTS.md](CAMPAIGN_COSTS.md) |
 
 最终主矩阵分析使用 `results/content_analysis002/`，LIF 补充分析使用 `results/lif_analysis001/`。只有完整执行收据和全部逐项完整性审计通过后，才可把这两处结果用于结论。运行中的 `PROGRESS.json` 只表示调度进度。
 
@@ -100,6 +102,8 @@ G_i^\pi=x_i-K+D\,J_r^\pi,
 ## 4. 数据、统计与规模限制
 
 选择性复制、MQAR 和不规则时间任务分别测试内容记忆与时序外推；合成 OOD 长度从 32 增到 64，不规则任务还将间隔分布乘三。真实任务使用 MNIST、FSDD，以及由真实图像和音频构造的模态选择任务。它们不能代替语义丰富的通用多模态预训练。
+
+每项任务的 TRAIN/VAL/TEST 分别为 1,024/256/512 个 episode；三个合成任务另有 512 个 OOD episode。复制和 MQAR 每个 episode 评分四个目标 token；不规则时间任务评分速率 0.2 的精确漏积分符号。图像任务的三个 split 分别使用 1,024/256/512 张不同原图。音频总计 600 条不同录音，按说话者拆为 300/100/200 条，抽样组成上述 episode；512 个音频测试 episode 不能称为 512 条独立录音。模态选择使用这些真实图像和录音，再由查询指定应回答哪一种模态的数字。原始身份及任务合同见 [v1 data manifests](../hcsn_free_boundary_v1/data/study001/)。
 
 核心仅三个训练种子，准确率、标准差和两百分点筛查是描述性结果。机制比较按八个种子配对，先在两个固定任务内平均，再进行已声明的符号翻转检验和四项 Holm 校正；不能把这两个任务当作随机任务总体。相同测试数据已在 v1 和部分 content001 被观察，因此本轮属于登记后的后续研究，不属于全新测试集的确认性证据。
 

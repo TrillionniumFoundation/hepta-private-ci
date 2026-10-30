@@ -8,6 +8,7 @@ import argparse
 from datetime import datetime, timezone
 import hashlib
 import json
+import math
 from pathlib import Path
 import statistics
 import time
@@ -21,7 +22,7 @@ MODEL_LABELS = {
     'distribution_conditional_dual': '分布＋学习条件边界＋双值',
     'distribution_free_ordinary': '分布＋自由边界＋普通特征',
     'active_mean_collapse_free_dual': '活动均值闭合＋自由边界＋双值',
-    'legacy_free': 'v1 均值模型',
+    'legacy_free': 'v1 均值机制（重训）',
     'two_gates': '普通双门控',
     'transformer': '小型 Transformer',
     'lif_snn': '传统 LIF SNN（补充）',
@@ -53,6 +54,8 @@ def table(headers, rows):
 
 
 def run(output, costs_path):
+    if not __debug__:
+        raise RuntimeError('Final reporting requires assertion-enabled Python; optimized mode is refused')
     paths = {
         'content': PACKAGE/'results/content_analysis002/ANALYSIS.json',
         'lif': PACKAGE/'results/lif_analysis001/ANALYSIS.json',
@@ -63,6 +66,10 @@ def run(output, costs_path):
         'kernel': PACKAGE/'results/kernel_validation003/RESULTS.json',
         'control': PACKAGE/'results/grid_control_validation001/RESULTS.json',
         'runtime': PACKAGE/'results/runtime_review001/SUMMARY.json',
+        'scaling': PACKAGE/'results/scaling001/SUMMARY.json',
+        'scaling_complete': PACKAGE/'results/scaling001/COMPLETE.json',
+        'scaling_protocol': PACKAGE/'SCALING001_PROTOCOL.json',
+        'scaling_execution': PACKAGE/'results/scaling001/SUITE_EXECUTION.json',
         'task': PACKAGE/'results/task_value002/EVALUATION_SUMMARY.json',
         'task_review': PACKAGE/'results/independent_execution_review001/SUMMARY.json',
         'native_v2': PACKAGE/'results/distributional_native001/COMPLETE.json',
@@ -74,6 +81,11 @@ def run(output, costs_path):
                          if path.is_relative_to(PACKAGE) else str(path), 'sha256': sha(path)}
                   for name, path in paths.items()}
     d = {name: read(path) for name, path in paths.items()}
+    cost_amount = d['costs'].get('observed_cpu_lower_bound_seconds')
+    if (d['costs'].get('schema') != 'hcsn-observed-campaign-costs.v1'
+            or type(cost_amount) not in (int, float)
+            or not math.isfinite(cost_amount) or cost_amount < 0):
+        raise ValueError('Expected a campaign cost ledger with a finite nonnegative observed CPU lower bound')
     c, lif, proto = d['content'], d['lif'], d['content_protocol']
     assert c['expected'] == c['valid'] == 176 and c['invalid'] == 0
     assert not c['common_initialization_mismatches']
@@ -90,6 +102,14 @@ def run(output, costs_path):
     assert d['kernel']['passed'] and d['control']['passed']
     assert d['runtime']['status'] == 'passed' and d['task_review']['status'] == 'passed'
     assert d['native_v2']['status'] == 'completed'
+    scale_complete = d['scaling_complete']
+    assert scale_complete['status']=='completed' and scale_complete['expected_cases']==scale_complete['completed_cases']==30
+    assert scale_complete['protocol_sha256']==sha(paths['scaling_protocol'])
+    assert scale_complete['summary_sha256']==sha(paths['scaling'])
+    assert d['scaling_execution']['returncode']==0
+    assert d['scaling_execution']['complete_receipt_sha256']==sha(paths['scaling_complete'])
+    assert {r['case_id'] for r in d['scaling']['rows']} == {r['case_id'] for r in d['scaling_protocol']['cases']}
+    assert len(d['scaling']['rows'])==30
     assert d['costs']['status'] == 'complete' and not d['costs']['missing_required_inputs']
     assert all(row['complete'] for row in c['mechanism'])
     assert all(row['complete'] for row in c['content_screens'])
@@ -97,7 +117,8 @@ def run(output, costs_path):
     output = Path(output).resolve()
     if not output.is_relative_to(PACKAGE):
         raise ValueError('Report destination must be a new v2 package directory')
-    output.mkdir(parents=True, exist_ok=False)
+    if output.exists():
+        raise FileExistsError('Use a new synthesis output directory')
 
     core = {(r['task'], r['model'], r['split']): r for r in c['core']}
     lt = {(r['task'], r['split']): r for r in lif['table']}
@@ -127,6 +148,9 @@ def run(output, costs_path):
                 mean, sd = row['mean'], row['sd']
             cells.append(f'{100*mean:.2f} ± {100*sd:.2f}')
         ood_rows.append([MODEL_LABELS[model]]+cells)
+    random_reference = {task: 1.0/proto['data'][task]['output_dim'] for task in TASKS}
+    id_rows.insert(0, ['均匀随机参考（理论）']+[f'{100*random_reference[t]:.2f}' for t in TASKS])
+    ood_rows.insert(0, ['均匀随机参考（理论）']+[f'{100*random_reference[t]:.2f}' for t in TASKS[:3]])
     mechanism_rows = [[MODEL_LABELS[r['comparison']], f"{100*r['mean']:+.3f}",
         f"[{100*r['interval'][0]:+.3f}, {100*r['interval'][1]:+.3f}]",
         f"{r['holm_p']:.6f}", '达到' if r['positive_gate'] else '未达到'] for r in c['mechanism']]
@@ -183,6 +207,22 @@ def run(output, costs_path):
     runtime_rows = [[MODEL_LABELS[r['model']], f"{1000*r['forward_cpu_median']:.3f}",
                     f"{1000*r['optimizer_cpu_median']:.3f}"] for r in runtime['cases'] if r['length']==128]
     ratios = {r['comparison']: r['free_dual_optimizer_ratio'] for r in runtime['runtime_ratios'] if r['length']==128}
+    scale = {(r['model'], r['length'], r['width'], r['depth']): r for r in d['scaling']['rows']}
+    scale_models = ('distribution_free_dual', 'two_gates', 'transformer')
+    def milliseconds(row):
+        return f"{1000*row['optimizer_cpu_median']:.3f}" if row['returncode']==0 else '失败，见原始收据'
+    scale_length_rows = []
+    for length in (16,32,64,128,256,512):
+        rows = [scale[(m,length,32,1)] for m in scale_models]
+        relative = [f"{rows[0]['optimizer_cpu_median']/r['optimizer_cpu_median']:.2f}"
+                    if rows[0]['returncode']==r['returncode']==0 else '不可计算' for r in rows[1:]]
+        scale_length_rows.append([length]+[milliseconds(r) for r in rows]+relative)
+    scale_dimension_rows = []
+    for width, depth in ((32,1),(32,2),(32,4),(64,1),(64,2)):
+        rows = [scale[(m,64,width,depth)] for m in scale_models]
+        count = rows[0]['actual_counts']['total'] if rows[0]['actual_counts'] else '未观测'
+        scale_dimension_rows.append([width,depth,count]+[milliseconds(r) for r in rows]+
+                                    [f"{rows[0]['worker_peak_rss_kib']/1024:.1f}"])
     task, review = d['task'], d['task_review']; prices = tuple(task['actual_native'])
     task_rows = []
     for name in ('bellman_value_head', 'ordinary_action_head', 'tabular_bellman', 'validation_schedule', 'validation_risk'):
@@ -224,6 +264,9 @@ def run(output, costs_path):
         'new_training_or_inference': False, 'new_statistical_tests_or_selection': False,
         'foundation_model_or_gpu_advantage_established': False,
         'native_v2_policy_mean_utility': v2_means,
+        'uniform_random_expected_accuracy': random_reference,
+        'scaling': {'attempted': 30, 'successful': scale_complete['successful_cases'],
+                    'failed': scale_complete['failed_cases'], 'all_cases_successful': scale_complete['all_cases_successful']},
     }
     blocks = [
         '# HCSN 全量验证：完整证据与六项验收',
@@ -239,7 +282,7 @@ def run(output, costs_path):
         f"有限控制在 6 组场景、4/6/8 格上独立枚举；在八格场景 `{largest_gain['case']}` 中，允许活动格点立即 FIRE，将起始价值从 {largest_gain['old_initial_value']:.9f} 提高到 {largest_gain['optimal_initial_value']:.9f}，相对提高 **{100*largest_gain['initial_relative_improvement']:.3f}%**。这说明连续理想模型的边界不自动成为有限网格最优策略，不能只检查价值方程就宣布整套最优。",
         '参考还核对受控生成器、初始即时发放、阶段强制续存、贴现奖励加末端值，以及两组各 20,000 条独立路径。梯度核对在固定插值片段、固定分段数或固定最优动作集内进行；不覆盖动作切换点的普通导数。完整结果见 [kernel_validation003](../kernel_validation003/REPORT.md) 与 [grid_control_validation001](../grid_control_validation001/REPORT.md)。',
         '## 3. 内容能力：完整主比较与 LIF 补充',
-        '以下为三个训练种子的准确率均值 ± 样本标准差，单位 %。各模型相同数据、前端/readout 初始化、训练 CPU 预算和选择机会；有效 backbone 参数差不超过 3%。不同吞吐产生不同更新次数。普通物理特征 arm 看到相同完整概率与七项物理系数，省去其没有使用的 J/G 求解；它是双值特征贡献的直接对照。',
+        '以下为三个训练种子的准确率均值 ± 样本标准差，单位 %。首行仅是均匀随机猜测的理论期望1/类别数，没有训练或新增检验。各模型相同数据、前端/readout 初始化、训练 CPU 预算和选择机会；有效 backbone 参数差不超过 3%。不同吞吐产生不同更新次数。普通物理特征 arm 看到相同完整概率与七项物理系数，省去其没有使用的 J/G 求解；它是双值特征贡献的直接对照。',
         table(['模型']+list(TASK_LABELS), id_rows),
         '### 时序与长度外推',
         '合成 OOD 将长度 32 增到 64；不规则时间任务另外将间隔分布乘三。真实图像、音频、模态选择任务没有另外的 OOD split。',
@@ -248,7 +291,7 @@ def run(output, costs_path):
         '差值为分布自由边界双值减对照，先在每个种子内平均两个固定任务。八种子的双侧符号翻转检验共用四项 Holm 校正；正面门同时要求均值至少 +1 pp、Holm p≤0.05、名义 95% t 区间下限大于零。符号翻转依赖相应对称/交换性假设，区间未作同时覆盖调整；固定两个任务不构成任务总体随机样本。',
         table(['对照', '差值 pp', '名义 95% 区间 pp', 'Holm p', '登记门'], mechanism_rows),
         '### 基线接近度与传统 SNN',
-        '两百分点筛查只描述当前核心三个种子是否接近测试均值最高的三个外部对照；这不是正式非劣效检验，且这个“最佳”由测试结果描述性选出。',
+        '两百分点筛查只描述当前核心三个种子是否接近测试均值最高的三个外部对照；这不是正式非劣效检验，且这个“最佳”由测试结果描述性选出。也要看上表绝对准确率：若某项对照本身接近随机水平，接近该对照不构成强内容能力证据。此解释不改变原登记筛查公式。',
         table(['任务', '核心外部对照最高均值', 'HCSN 减该对照 pp', '描述性筛查'], screen_rows),
         'LIF 为单独补充：硬 0/1 前向、fast-sigmoid 替代梯度、学习漏电和阈值、减法复位。替代梯度不是硬阈值的真实导数。补充沿用相同 CPU/选择协议，仅新增18次搜索，不修改原四项 Holm 家族。下表不新增 p 值或优势门。',
         table(['任务', 'HCSN 减 LIF 平均 pp', '配对差值 SD pp'], lif_rows),
@@ -260,7 +303,12 @@ def run(output, costs_path):
         table(['模型', '前向 CPU 毫秒', '完整 Adam 步 CPU 毫秒'], runtime_rows),
         f"该配置下分布双值完整 Adam 步为普通双门控的 **{ratios['two_gates']:.2f} 倍**、小型 Transformer 的 **{ratios['transformer']:.2f} 倍**。当前实现中数值求解、分布传播和反向的整模型代价很高，不能由取消硬 step 推导效率优势。内部期望事件流仍执行稠密计算；只有真正的 owner STOP 才停止之后的模型调用。",
         f"独立恢复使用成功训练的 MNIST checkpoint：B=2、256 token，第113步保存，在另一个 Python 进程恢复后143步。每步持续状态均为 **{recover['persistent_state_bytes_min']} 字节**；恢复后的 logits 和最终状态逐位一致。整序列与逐步流式前向最大差 {recover['full_vs_stream_max_absolute_logit_error']:.3e}，argmax 分歧 {recover['full_vs_stream_argmax_disagreements']}，最大概率质量误差 {recover['max_probability_mass_error']:.3e}。快照包含非零不应期质量。",
-        r'持续状态字节公式为 $4B\{1+D[W+C(S+R+1)]\}$；不包含权重、输出、BPTT 激活、准备的时变算子或对照 KV。该数值验证状态有界，不验证无限长召回，也不等于固定训练内存。详见 [runtime_review001](../runtime_review001/REPORT.md)。',
+        r'持续状态字节公式为 $4B\{1+D[W+C(S+R+1)]\}$。此处 $D$ 是层数，$S=8$ 是活动空间格数，$R=2$ 是 Erlang 阶段数，$C=8$ 是通道数，$W=32$ 是内容宽度；这里的 $D$ 不表示前述贴现因子。此式不包含权重、输出、BPTT 激活、准备的时变算子或对照 KV。该数值验证状态有界，不验证无限长召回，也不等于固定训练内存。详见 [runtime_review001](../runtime_review001/REPORT.md)。',
+        '### 序列长度、宽度和深度的独立 CPU 诊断',
+        f"另一个冻结的30配置诊断已全部尝试：**{scale_complete['successful_cases']}成功、{scale_complete['failed_cases']}失败**，失败不会被删掉。B=1，随机权重、共享随机输入前缀和随机标签；每点独立进程，一个warmup加三次计时。Adam步骤新增了明确的梯度、参数和优化器状态有限性检查，所以以下数值不与上面的旧B4测试无说明地拼成同一曲线。",
+        table(['T（W32/D1）','HCSN Adam 毫秒','双门控 Adam 毫秒','Transformer Adam 毫秒','HCSN/双门控','HCSN/Transformer'], scale_length_rows),
+        table(['W','D','HCSN 实际总参数','HCSN Adam 毫秒','双门控 Adam 毫秒','Transformer Adam 毫秒','HCSN 全进程峰值 MiB'], scale_dimension_rows),
+        '第二表固定T64。完整30点的前向/反向CPU和wall、各次原始计时、全部实际参数数及资源失败见 [scaling001](../scaling001/REPORT.md)。峰值RSS包含解释器、导入、构造、序列和反向，是全进程高水位，不能当作单独激活内存。本诊断测到的模型最大仅约10.5万参数；没有拟合渐近指数或外推未测GPU、模型规模、等质量吞吐或基础模型可行性。',
         '## 5. Hepta 任务执行：未来项、实际动作与净收益',
         '任务层价值定义 READ、FIRE、quiet、RESET 和后续任务。FIRE 对真实标签评分并停止当前 owner；两次 quiet tick 不执行模型，随后启动后续任务。旧 backbone 面板含128个三任务流的缓存反事实，以及其中前16个流的真实 native 执行。三种 READ 价格等权平均；两者分别报告，不能当作144个独立流。两个学习头同输入、同有效参数与同更新/选择机会，它们比较训练目标，不是重新比较物理双通道。',
         table(['策略', '缓存128流平均效用', 'native16流平均效用', 'native CPU 秒/流'], task_rows),
@@ -276,7 +324,7 @@ def run(output, costs_path):
         r'部署期 $N$ 流、CPU 每秒效用价格 $\alpha$ 下，$\Delta U_{net}=\Delta U_{task}-\alpha[\Delta C_{runtime}+\Delta C_{setup}/N]$。这是声明的效用情景，不是实测货币或能耗。',
         f"只要求CPU抵消的寿命约为 {expense['equal_cpu_lifetime_streams']:.2f} 流；它和质量效用盈亏平衡不是同一个数。独立敏感性分析包含短寿命：N=1、α=0.01时净差为 {next(r['net_difference'] for r in review['short_lifetime_sensitivity'] if r['lifetime_streams']==1 and r['utility_per_cpu_second']==.01):+.6f}，说明收益并非对所有部署条件都成立。完整原始收据见 [independent_execution_review001](../independent_execution_review001/REPORT.md)。",
         '## 6. 成本、失败记录和证据完整性',
-        f"统一成本账本在其明确截止点记录互不重叠的 CPU 下界 **{d['costs']['observed_cpu_lower_bound_seconds']:,.6f} 秒**（**{d['costs']['observed_cpu_lower_bound_seconds']/3600:.3f} CPU小时**）。输入门为 complete，意味着要求的活动/分析/封存收据齐全；不意味着未计量研发、下载、编辑和网络服务的费用为零。逐收据SHA、字段、嵌套排除与未知范围见 `{identities['costs']['path']}`。本报告自身生成费另留 EXECUTION.json，避免递归计费。",
+        f"统一成本账本在其明确截止点记录本轮 v2 活动互不重叠的 CPU 下界 **{d['costs']['observed_cpu_lower_bound_seconds']:,.6f} 秒**（**{d['costs']['observed_cpu_lower_bound_seconds']/3600:.3f} CPU小时**）。输入门为 complete，意味着要求的活动/分析/封存收据齐全；不意味着未计量研发、下载、编辑和网络服务的费用为零。历史 v1 研究费用保留在上游报告，复用其模型不在本轮冒充新训练再计一次。逐收据SHA、字段、嵌套排除与未知范围见 `{identities['costs']['path']}`。本报告自身生成费另留 EXECUTION.json，避免递归计费。",
         f"主内容完整 worker 为 {c['complete_child_cpu_seconds']:.6f} CPU秒，训练部分为 {c['training_cpu_seconds']:.6f}；两者嵌套。LIF新增 worker 为 {lif['extra_lif_search_worker_cpu_seconds']:.6f}，复用的18个分布搜索不再计费。旧content001完整调度树2227.408732秒及其16完成/4失败结果均保留，未复用到主比较。",
         '原始数据、每个候选、所有检查点、全更新日志、预测、native journal、恢复状态和源码身份均封存。完整成功run按完成记录分批保存，选择规则不看分数；主结论只读取完整冻结分析。恢复器拒绝不同内容覆盖。复现入口为 [REPRODUCE.md](../../REPRODUCE.md)。',
         '## 7. 对 encoder、传统 SNN 和 Transformer 的判断',
@@ -289,6 +337,7 @@ def run(output, costs_path):
         '- He, Z. & Xiong, W. (2012), [Rollover Risk and Credit Risk](https://www.princeton.edu/~wxiong/papers/rollover.pdf)：金融模型及其边界条件。\n- [Surrogate Gradient Learning in Spiking Neural Networks](https://arxiv.org/abs/1901.09948)：SNN硬脉冲与替代梯度背景。\n- [Zoology](https://arxiv.org/abs/2312.04927)：关联召回测量背景；本文的小任务结果只来自本仓库。\n- [Mamba](https://arxiv.org/abs/2312.00752)：选择性状态空间与硬件实现背景；本文不声称复现其论文大规模结果。',
     ]
     report = output/'REPORT.zh-CN.md'
+    output.mkdir(parents=True, exist_ok=False)
     with report.open('x') as handle:
         handle.write('\n\n'.join(blocks)+'\n')
     write(output/'SUMMARY.json', summary)

@@ -33,7 +33,7 @@ python -m experiments.hcsn_distributional_v2.campaign_costs \
 
 python -m experiments.hcsn_distributional_v2.campaign_costs \
   --archive-completion artifacts/ARCHIVE_COMPLETION.json \
-  --extra-scopes experiments/hcsn_distributional_v2/results/campaign_costs_extra_scopes004.json \
+  --extra-scopes experiments/hcsn_distributional_v2/results/campaign_costs_extra_scopes006.json \
   --output experiments/hcsn_distributional_v2/results/campaign_costs_NEW_FINAL
 ```
 
@@ -61,6 +61,7 @@ All paths below are relative to `experiments/hcsn_distributional_v2/`. A slash-p
 | Reproduction | `reproduction_receipts/list001/EXECUTION.json` contributes `/complete_worker_cpu_seconds` and `/coordinator_whole_self_cpu_seconds_through_cutoff`; `restore_smoke001/EXECUTION.json` contributes `/complete_child_cpu_seconds` and `/outer_parent_self_cpu_seconds_to_cutoff`. Nested helper receipts share one smoke interpreter and are not additive. |
 | Figures | Existing `results/figures001/MANIFEST.json#/whole_self_cpu_seconds_through_render`; later rendering/report invocations can enter through an explicit extra-scope manifest. |
 | Archive engineering | Existing `results/content_checkpoint_archives_tests001/EXECUTION.json` and `tests002/EXECUTION.json`: `/cpu_seconds_including_children` plus separate `/supervisor_self_cpu_seconds_through_receipt`. The failed first fixture is retained and charged. |
+| Registered scaling suite | When `SCALING001_PROTOCOL.json` exists, `results/scaling001/SUITE_EXECUTION.json` is required: `/complete_child_cpu_seconds` plus separate `/supervisor_self_cpu_seconds_through_cutoff`. `COMPLETE.json`, all30 original case receipts and the protocol/source binding are reconciled. Their worker totals are nested and cannot be added through extra scopes. The independent preparation costs are in extra006. |
 
 ### LIF original-field adapter
 
@@ -70,7 +71,7 @@ The LIF outer launchers were started before this ledger was written. Their futur
 - `lif_analysis`: complete independent analyzer `wait4`.
 - `lif_analysis_watcher`: the final watcher self-CPU cutoff, separate from its analyzer child.
 
-Each scope declares `receipt`, `receipt_sha256`, `field`, `cpu_seconds`, `measurement_kind`, and a plain-language `scope`. The first two measurement kinds are `complete_process_tree_wait4`; the third is `process_self_cpu_through_receipt`. The ledger rereads each **original** file, verifies its SHA and field, and checks the mapped amount. The map itself adds no CPU. The scheduler's original receipt path is `results/lif_supplement001/SCHEDULER_EXECUTION.json`; its 18-worker sum is checked using `COMPLETE.json` and remains nested.
+Each scope declares `receipt`, `receipt_sha256`, `field`, `cpu_seconds`, `measurement_kind`, `success_field`, `success_value`, and a plain-language `scope`. The first two measurement kinds are `complete_process_tree_wait4`; the third is `process_self_cpu_through_receipt`. The ledger rereads each **original** file, verifies its SHA and CPU field, checks the mapped amount, and verifies the exact original success field/value and its JSON type. The map itself adds no CPU. The scheduler's original receipt path is `results/lif_supplement001/SCHEDULER_EXECUTION.json`; its real success field is `/exit_code == 0`, while the main content scheduler uses `/returncode == 0`. Its18-worker sum is checked using `COMPLETE.json` and remains nested. The separately measured LIF outer-supervisor window `/outer_supervisor_self_window_cpu_seconds` is included through extra006 as a **partial self window**, not whole-process self CPU.
 
 ## Archive cost selection and final closure
 
@@ -90,16 +91,16 @@ Final receipt coverage requires `artifacts/ARCHIVE_COMPLETION.json` with `schema
 
 An extra-scope file uses schema `hcsn-explicit-extra-costs.v1` and a `scopes` array. Each entry requires `scope_id`, `group`, original `path`, `receipt_sha256`, `field`, `measurement_kind`, and `disjoint_scope_explanation`. It is an explicit reviewed addition, not a recursive CPU-field search. Reusing an already charged field or an aggregate's verified nested field is rejected.
 
-`results/campaign_costs_extra_scopes004.json` records this tool's three independent fixture-test and three preview invocations, including the failed preview001. Its 12 additive child/supervisor scopes total 0.829165328 CPU seconds. Future figure/report generation can be appended in a **new** manifest, retaining every original receipt and old manifest. Never modify a sealed earlier preview to include later costs.
+`results/campaign_costs_extra_scopes006.json` retains the earlier cost-audit test/preview invocations and adds the seal smoke, closure tests, actual scaling producer/consumer interface test, measured LIF supervisor window, scaling preparation and two targeted cost-accounting regressions. Its25 independent scopes total **12.898198371 CPU seconds observed lower bound**. The original extra004 remains preserved with its12 earlier scopes. Future figure/report generation can be appended in a **new** manifest, retaining every original receipt and old manifest. The formal scaling suite is already required by the fixed ledger when its protocol exists; do not append its cost again. Never modify a sealed earlier preview to include later costs.
 
 The emitted ledger's own `EXECUTION.json` lies after that ledger's accounting cutoff. It is deliberately outside its own sum. A later ledger can count the preceding generator's full outer `WRAPPER_EXECUTION.json` and supervisor self CPU once; the earlier generator's inner self timer is then nested. This avoids recursive self-charging. The same cutoff rule applies to a final report produced after the ledger it cites.
 
 ## Completed validation and incomplete preview
 
-Nine tiny-fixture tests cover raw SHA binding, nonnegative finite CPU values, rejected reuse of nested fields, numerical aggregate reconciliation, the mixed original content receipt field names, failed packing retention, seal/restore binding, per-bundle outer-over-inner replacement and the staged publisher's separate child/coordinator scopes. They run under `unittest` without loading experiment data:
+Eleven tiny-fixture tests cover raw SHA binding, nonnegative finite CPU values, rejected reuse of nested fields, numerical aggregate reconciliation, the mixed original content receipt field names, failed packing retention, seal/restore binding, per-bundle outer-over-inner replacement, the staged publisher's separate child/coordinator scopes, the original LIF `/exit_code` and success-pointer contract, and containment of the newly registered scaling suite. They run under `unittest` without loading experiment data:
 
 ```bash
 python -m unittest experiments.hcsn_distributional_v2.campaign_costs_tests -v
 ```
 
-`results/campaign_costs_tests001` preserves the initial seven tests. `tests002` preserves all eight after the content-field regression; `tests003` preserves all nine after the staged-publisher adapter. `campaign_costs_probe001` preserves the failed original-field lookup, source snapshot, log and complete outer cost receipt; it produced no ledger. `campaign_costs_probe002` is the earlier successful **incomplete** preview: 48 additive scopes, 61 SHA-bound input files, **2728.407221895 CPU seconds observed lower bound**. `campaign_costs_probe003` uses the final source and adds the completed first content checkpoint bundle via its outer receipt: **2800.711608450 CPU seconds observed lower bound**. Pending main scheduler/analysis, LIF final mapping, archive-watcher completion and archive closure remain explicitly absent. Neither preview is a final campaign accounting claim. Each probe's own execution lies after its accounting cutoff.
+`results/campaign_costs_tests001` preserves the initial seven tests. `tests002` preserves all eight after the content-field regression; `tests003` preserves all nine after the staged-publisher adapter. After LIF's actual scheduler receipt became available, `tests004` ran the new targeted exit-field/success-pointer regression successfully. `tests005` then passed the targeted30-receipt scaling containment regression, including rejection of a duplicate nested-worker charge. All prior source snapshots remain unchanged. `campaign_costs_probe001` preserves the failed original-field lookup, source snapshot, log and complete outer cost receipt; it produced no ledger. `campaign_costs_probe002` is the earlier successful **incomplete** preview: 48 additive scopes, 61 SHA-bound input files, **2728.407221895 CPU seconds observed lower bound**. `campaign_costs_probe003`, before the LIF exit-field/scaling additions, adds the completed first content checkpoint bundle via its outer receipt: **2800.711608450 CPU seconds observed lower bound**. Pending main scheduler/analysis, LIF final mapping, archive-watcher completion and archive closure remain explicitly absent from that historical preview. Neither preview is a final campaign accounting claim. Each probe's own execution lies after its accounting cutoff; the current source additionally requires the registered scaling suite's final receipts.
