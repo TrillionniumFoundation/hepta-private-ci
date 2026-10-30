@@ -1,0 +1,34 @@
+{
+  "architecture": "hcsn_v2_dynamic_boundary_residual_memory",
+  "design_count": 1,
+  "decision": "One targeted follow-up after observing v1 failures; no v2 test-guided redesign",
+  "changes": [
+    "Preserve bounded fast/slow Call/Put recurrence",
+    "Input-dependent boundary includes input projection and bounded diagonal memory feedback",
+    "C1 write gate q(s)*normalized_call(-s) is exactly zero when s<=0",
+    "Residual memory update is a convex interpolation of old memory and bounded candidate",
+    "Read old memory with q(s) before writing the current token"
+  ],
+  "tasks": ["memory", "retrieval"],
+  "models": ["hcsn", "sigmoid", "gru", "transformer"],
+  "training_seeds": [0, 1, 2, 3, 4],
+  "data_seed_base": 900000,
+  "train_examples": 2048,
+  "validation_examples": 512,
+  "test_examples": 512,
+  "training_length": 32,
+  "ood_length": 64,
+  "parameter_target": 6200,
+  "updates": 300,
+  "batch_size": 32,
+  "learning_rate": 0.003,
+  "optimizer": "Adam, global gradient norm clipping at 1",
+  "checkpoint_selection": "minimum validation loss every 50 updates",
+  "hyperparameter_search": false,
+  "budget_kind": "approximately matched parameters, exactly matched data and updates; not matched FLOPs",
+  "promotion_criteria": [
+    "Repair memory length extrapolation",
+    "Demonstrate adequate associative retrieval",
+    "Demonstrate incremental value over the identical sigmoid architecture"
+  ]
+}
