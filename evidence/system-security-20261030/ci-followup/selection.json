@@ -1,0 +1,209 @@
+{
+  "context": {
+    "chain_merge_configured_in_parent": "db139b5ef964509318de12974ed0d0cea7b02737",
+    "chain_observed_source": "24b265834daea34947adbb5903d887e3f6043838",
+    "followup_pair_configuration": {
+      "chain_merge": "52a3c9d614281897dd5a6adeb3576a8acfb1ee82",
+      "chain_source": "a38d770966c65ad34c9d5e55f3c2917c2e3bda0f",
+      "scope": "Configuration only; original executions retain their original source/merge IDs, and no successful execution of this new pair is inferred."
+    },
+    "hepta_parent": "f874d948a38c119e57b1368adab79437956acd78",
+    "identity_scope": "Retained observations and parent configuration only; no final-pair or later-HEAD qualification."
+  },
+  "groups": [
+    {
+      "files": [
+        "hepta-caller-proof-f874/base-drift-proof.json",
+        "hepta-caller-proof-f874/candidate-b4-final.json",
+        "hepta-caller-proof-f874/candidate-b4-final.log",
+        "hepta-caller-proof-f874/candidate-b4-first.json",
+        "hepta-caller-proof-f874/candidate-b4-first.log",
+        "hepta-caller-proof-f874/candidate-diff-check.json",
+        "hepta-caller-proof-f874/candidate-diff-check.log",
+        "hepta-caller-proof-f874/candidate-self-test.json",
+        "hepta-caller-proof-f874/candidate-self-test.log",
+        "hepta-caller-proof-f874/candidate-source-manifest.json",
+        "hepta-caller-proof-f874/candidate-typed-callers.json",
+        "hepta-caller-proof-f874/candidate-typed-callers.log",
+        "hepta-caller-proof-f874/candidate-v1-nested-decoy-red.json",
+        "hepta-caller-proof-f874/candidate-v1-nested-decoy-red.log",
+        "hepta-caller-proof-f874/candidate-v2-focused.json",
+        "hepta-caller-proof-f874/candidate-v2-focused.log",
+        "hepta-caller-proof-f874/candidate-v3-focused.json",
+        "hepta-caller-proof-f874/candidate-v3-focused.log",
+        "hepta-caller-proof-f874/candidate-v3-source-snapshot/CALLERS.toml",
+        "hepta-caller-proof-f874/candidate-v3-source-snapshot/manifest.json",
+        "hepta-caller-proof-f874/candidate-v3-source-snapshot/qa/b4-no-bypass/test_verify_hepta_callers.py",
+        "hepta-caller-proof-f874/candidate-v3-source-snapshot/scripts/verify_hepta_callers.py",
+        "hepta-caller-proof-f874/candidate-verify.json",
+        "hepta-caller-proof-f874/candidate-verify.log",
+        "hepta-caller-proof-f874/original-b4.json",
+        "hepta-caller-proof-f874/original-b4.log",
+        "hepta-caller-proof-f874/original-self-test.json",
+        "hepta-caller-proof-f874/original-self-test.log",
+        "hepta-caller-proof-f874/original-verifier-counterfactual.json",
+        "hepta-caller-proof-f874/original-verifier-counterfactual.log",
+        "hepta-caller-proof-f874/original-verify.json",
+        "hepta-caller-proof-f874/original-verify.log",
+        "hepta-caller-proof-f874/source-pin-b4.json",
+        "hepta-caller-proof-f874/source-pin-b4.log",
+        "hepta-caller-proof-f874/source-pin-diff-check.json",
+        "hepta-caller-proof-f874/source-pin-diff-check.log",
+        "hepta-caller-proof-f874/source-pin-final-manifest.json",
+        "hepta-caller-proof-f874/source-pin-original-verifier-counterfactual.json",
+        "hepta-caller-proof-f874/source-pin-original-verifier-counterfactual.log",
+        "hepta-caller-proof-f874/source-pin-self-test.json",
+        "hepta-caller-proof-f874/source-pin-self-test.log",
+        "hepta-caller-proof-f874/source-pin-typed-callers.json",
+        "hepta-caller-proof-f874/source-pin-typed-callers.log",
+        "hepta-caller-proof-f874/source-pin-verify.json",
+        "hepta-caller-proof-f874/source-pin-verify.log"
+      ],
+      "name": "caller-proof-local",
+      "scope": "Original Python caller-proof failures, superseded candidates, final exact-source controls, and source-binding counterfactuals; no Rust execution or qualification."
+    },
+    {
+      "files": [
+        "quantum-review-b23c/caller-proof-independent-red/conditional-context-result.json",
+        "quantum-review-b23c/caller-proof-independent-red/conditional_context.rs",
+        "quantum-review-b23c/caller-proof-independent-red/grant-message-result.json",
+        "quantum-review-b23c/caller-proof-independent-red/grant_binding_skip_serializing.rs",
+        "quantum-review-b23c/caller-proof-independent-red/macro_with_qualified_real_impl.rs",
+        "quantum-review-b23c/caller-proof-independent-red/nested_context_constant.rs",
+        "quantum-review-b23c/caller-proof-independent-red/nested_import_alias.rs",
+        "quantum-review-b23c/caller-proof-independent-red/nested_key_binding_function.rs",
+        "quantum-review-b23c/caller-proof-independent-red/nested_other_impl.rs",
+        "quantum-review-b23c/caller-proof-independent-red/reproduce.py",
+        "quantum-review-b23c/caller-proof-independent-red/result.json",
+        "quantum-review-b23c/caller-proof-independent-red/snapshot-hashes.json",
+        "quantum-review-b23c/caller-proof-independent-red/snapshot/CALLERS.toml",
+        "quantum-review-b23c/caller-proof-independent-red/snapshot/codex-rs/hepta-contracts/src/final_use.rs",
+        "quantum-review-b23c/caller-proof-independent-red/snapshot/codex-rs/hepta-contracts/src/final_use_ml_dsa65_v2.rs",
+        "quantum-review-b23c/caller-proof-independent-red/snapshot/qa/b4-no-bypass/test_verify_hepta_callers.py",
+        "quantum-review-b23c/caller-proof-independent-red/snapshot/scripts/hepta_typed_callers.py",
+        "quantum-review-b23c/caller-proof-independent-red/snapshot/scripts/verify_hepta_callers.py",
+        "quantum-review-b23c/caller-proof-independent-final-review.json"
+      ],
+      "name": "caller-proof-independent",
+      "scope": "Independent static review and seven exact retained source-drift counterexamples; no Rust build or runtime/PQ qualification."
+    },
+    {
+      "files": [
+        "bazel-tool-verification.json",
+        "hepta-bazel-deps-buildifier.json",
+        "hepta-bazel-deps-buildifier.log",
+        "hepta-bazel-deps-direct-query-system-trust.json",
+        "hepta-bazel-deps-direct-query-system-trust.log",
+        "hepta-bazel-deps-direct-query.json",
+        "hepta-bazel-deps-direct-query.log",
+        "hepta-bazel-other-direct-dependencies-query.json",
+        "hepta-bazel-other-direct-dependencies-query.log",
+        "hepta-bazel-production-explicit-no-qualification-query.json",
+        "hepta-bazel-production-explicit-no-qualification-query.log",
+        "hepta-bazel-production-no-qualification-query.json",
+        "hepta-bazel-production-no-qualification-query.log",
+        "hepta-bazel-query-cache-reclaim-final.json",
+        "hepta-bazel-query-cache-reclaim.json",
+        "hepta-caller-bazel-followup-docs.json",
+        "hepta-caller-bazel-followup-docs.log",
+        "hepta-caller-bazel-followup-format-check.json",
+        "hepta-caller-bazel-followup-format-check.log",
+        "hepta-caller-bazel-followup-format.json",
+        "hepta-caller-bazel-followup-format.log",
+        "hepta-caller-bazel-followup-source-verify.json",
+        "hepta-caller-bazel-followup-source-verify.log",
+        "hepta-followup-format-ast-equality.json"
+      ],
+      "name": "root-followup-checks",
+      "scope": "Original formatter/AST/static/docs/query observations. Both complete transitive Bazel path queries failed NoSpace; successful direct-label queries do not establish transitive non-reachability."
+    },
+    {
+      "files": [
+        "hosted-hepta-f874/original-job-log-digests.json",
+        "hosted-hepta-f874/privileged-closed-set-job.log",
+        "hosted-hepta-f874/read_compact_execution.py",
+        "hosted-hepta-f874/windows-shard2-execution-selected.json",
+        "hosted-hepta-f874/windows_shard2.job.log.gz"
+      ],
+      "name": "hosted-hepta-baseline",
+      "scope": "Original f874 hosted failures and read-only compact spawned-action decoding; no action replay or successful new hosted run."
+    },
+    {
+      "files": [
+        "hosted-24b/codeql-b23-to-24b-sarif-comparison.json",
+        "quantum-review-b23c/chain24b-actions-security-observation.json",
+        "quantum-review-b23c/chain24b-export-job-123918418063.log",
+        "quantum-review-b23c/chain24b-rust-job-123918417062.log",
+        "quantum-review-b23c/codeql-b23-production-triage-summary.md",
+        "quantum-review-b23c/codeql-b23-production-triage.json",
+        "quantum-review-b23c/codeql-result-review.json"
+      ],
+      "name": "chain-codeql-review",
+      "scope": "Full original 780-finding triage and explicit bidirectional result mapping; extraction coverage and official gate remain unqualified."
+    },
+    {
+      "files": [
+        "hosted-24b/codeql-24b-rust-sarif.zip",
+        "quantum-review-b23c/codeql-rust-metadata-b23c.zip",
+        "quantum-review-b23c/codeql-rust-sarif-b23c.zip"
+      ],
+      "name": "chain-sarif-originals",
+      "scope": "Immutable original b23 and 24b SARIF archive bytes plus original metadata; no new scan or waiver."
+    },
+    {
+      "files": [
+        "hosted-24b/artifact-metadata.json",
+        "hosted-24b/b23-fence-actual-depletion-comparison.json",
+        "hosted-24b/raw-history-24b-code-diagnosis-index.json",
+        "hosted-24b/raw-history-24b-compact-business-pressure-readback.json",
+        "hosted-24b/raw-history-24b-phase-cost-readback-summary.json"
+      ],
+      "name": "chain-raw-history",
+      "scope": "Read-only original 24b raw-History artifact/cost readbacks; original failed completion/pressure criteria remain failed, with source/run IDs and full ZIP references."
+    },
+    {
+      "files": [
+        "hosted-hepta-f874/native-msvc-keyed-wrapper-candidate1.patch",
+        "hosted-hepta-f874/native-msvc-wrapper-full-candidate1.log",
+        "hosted-hepta-f874/native-msvc-wrapper-red.log",
+        "hosted-hepta-f874/native-msvc-wrapper-review-red.log",
+        "hosted-hepta-f874/native-msvc-wrapper-validation-candidate1.json"
+      ],
+      "name": "windows-wrapper-history",
+      "scope": "Original 3-test RED, superseded 65-control Python candidate, and nine-test review RED with eight failing subcases; no native Windows execution."
+    },
+    {
+      "files": [
+        "hosted-hepta-f874/native-msvc-keyed-wrapper.patch",
+        "hosted-hepta-f874/native-msvc-wrapper-full.log",
+        "hosted-hepta-f874/native-msvc-wrapper-validation.json",
+        "quantum-review-b23c/native-msvc-wrapper-independent-review.json"
+      ],
+      "name": "windows-wrapper-final",
+      "scope": "Later 66-control Python wrapper run and independent 39-control static/Python review; no successful native Windows rebuild or hosted qualification inferred."
+    },
+    {
+      "files": [
+        "hepta-ci-followup-current-pair-source.json",
+        "hepta-ci-followup-final-format-ast-equality.json",
+        "hepta-ci-followup-final-format-check.json",
+        "hepta-ci-followup-final-format-check.log",
+        "hepta-ci-followup-final-format.json",
+        "hepta-ci-followup-final-format.log"
+      ],
+      "name": "final-source-observations",
+      "scope": "Original final formatter mutation, AST-only equivalence, stable format check and configured pair/canonical merge source receipt. No new tests, native execution or pair qualification."
+    },
+    {
+      "files": [
+        "quantum-review-b23c/hepta-f874-musl-scope-triage.json",
+        "quantum-review-b23c/hepta-f874-musl-job-123922567669.log",
+        "quantum-review-b23c/actions-refresh-20261030-0713.json",
+        "quantum-review-b23c/actions-refresh-20261030-0713.md",
+        "chain-a38-pq-readonly-review/review.json"
+      ],
+      "name": "latest-readonly-observations",
+      "scope": "Original f874 musl complete log and bounded failure triage; time-stamped Actions metadata; static compatibility review of separately published a38. No native rerun, retargeting of prior results, acceptance or activation."
+    }
+  ]
+}

@@ -166,7 +166,7 @@ id = "final_use_claim_raw"
 symbol = "FinalUseAuthority::claim"
 receiver_type = "FinalUseAuthority"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
-definition_markers = ["pub fn claim(", "verify_strict", "used_nonces"]
+definition_markers = ["pub fn claim(", "grant_signing_input", "candidate.key.verify(", "used_nonces"]
 product_callers = ["codex-rs/hepta-memory/src/production_writer.rs", "codex-rs/hepta-automation/src/authorized_effect.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-operations/src/durable_store.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
 caller_markers = ["authority", "binding"]
 
@@ -462,8 +462,17 @@ forbidden = ["impl Default for HttpProviderEffectAdapter"]
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/final_use.rs"
-required = ["pub fn open_state_dir(", "pub fn open_state_dir_with_trust(", "pub fn open_state_dir_with_issuer_keys(", "FinalUseIssuerTrustKey", "pub fn claim_final_use(", "pub fn deliver_final_use", "pub fn deliver_final_use_with_witness", "pub fn dispatch_final_use", "pub fn dispatch_final_use_with_witness", "pub fn claim(", "pub fn with_verified_use", "pub fn with_dispatch_boundary", "FinalUseFrontier", "VerifiedUseTokenWitnessV1", "verify_strict", "validate_live"]
+# Pin the reviewed owner/delegate bytes; this does not grant runtime authority
+# or establish cryptographic qualification. Source changes update these pins.
+source_sha256 = "123512d86e7713e7892a22a651b45f05a1eb18ba665d5133644a9b5dcc2a6063"
+required = ["pub fn open_state_dir(", "pub fn open_state_dir_with_trust(", "pub fn open_state_dir_with_issuer_keys(", "FinalUseIssuerTrustKey", "pub fn claim_final_use(", "pub fn deliver_final_use", "pub fn deliver_final_use_with_witness", "pub fn dispatch_final_use", "pub fn dispatch_final_use_with_witness", "pub fn claim(", "pub fn with_verified_use", "pub fn with_dispatch_boundary", "FinalUseFrontier", "VerifiedUseTokenWitnessV1", "grant_signing_input", "candidate.key.verify(", "validate_live"]
 forbidden = ["impl Default for FinalUseAuthority", "pub fn permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/final_use_ml_dsa65_v2.rs"
+source_sha256 = "796d9c15f04f37d0b820b4f2b847e38a8e4ce29b3a230b32cb61aa887e4d6066"
+required = ["pub(super) enum IssuerVerifier", "verify_strict", "MlDsaSignature::<MlDsa65>", "verify_with_context", "FINAL_USE_ML_DSA65_V2_CONTEXT"]
+forbidden = ["impl Default for IssuerVerifier", "pub fn permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/final_use_control.rs"

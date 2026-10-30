@@ -37,9 +37,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: ${{ github.head_ref == 'fix/hepta-provider-operation-binding-20261030' && '24b265834daea34947adbb5903d887e3f6043838' || github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && '540d72356a921da31dde1113537382e5c0f0c4fd' || '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' }}
+      CHAIN_SOURCE_SHA: ${{ github.head_ref == 'fix/hepta-provider-operation-binding-20261030' && 'a38d770966c65ad34c9d5e55f3c2917c2e3bda0f' || github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && '540d72356a921da31dde1113537382e5c0f0c4fd' || '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' }}
       CHAIN_BASE_SHA: ${{ github.head_ref == 'fix/hepta-provider-operation-binding-20261030' && '1d11f875493f8125e36b9adceacb342df108e5e5' || '9fedf7ecbbe07177069c030592b4e03dcffebb81' }}
-      HEPTA_PON_CHAIN_SOURCE: ${{ github.head_ref == 'fix/hepta-provider-operation-binding-20261030' && (matrix.lane == 'source-head' && '24b265834daea34947adbb5903d887e3f6043838' || 'db139b5ef964509318de12974ed0d0cea7b02737') || github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && (matrix.lane == 'source-head' && '540d72356a921da31dde1113537382e5c0f0c4fd' || 'cff37ba978684ad1750d66b120ec2913d7c13f8f') || (matrix.lane == 'source-head' && '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' || 'f52fadb096d98589a5ac6c573659764815cae04d') }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ github.head_ref == 'fix/hepta-provider-operation-binding-20261030' && (matrix.lane == 'source-head' && 'a38d770966c65ad34c9d5e55f3c2917c2e3bda0f' || '52a3c9d614281897dd5a6adeb3576a8acfb1ee82') || github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && (matrix.lane == 'source-head' && '540d72356a921da31dde1113537382e5c0f0c4fd' || 'cff37ba978684ad1750d66b120ec2913d7c13f8f') || (matrix.lane == 'source-head' && '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' || 'f52fadb096d98589a5ac6c573659764815cae04d') }}
       TRNM_FROM_ZERO_HOST_OWNER: ${{ github.run_id }}.${{ github.run_attempt }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683

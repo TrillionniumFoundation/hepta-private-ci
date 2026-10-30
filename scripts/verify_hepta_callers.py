@@ -23,6 +23,7 @@ Rows without either option retain the original exact-symbol behavior.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -570,7 +571,21 @@ def _verify_protected_files(root: Path, data: dict[str, Any]) -> list[str]:
         path = root / relative
         if not path.is_file():
             raise VerificationFailure(f"protected file is missing: {relative}")
-        text = path.read_text(encoding="utf-8")
+        raw = path.read_bytes()
+        if "source_sha256" in row:
+            expected = row["source_sha256"]
+            if (
+                not isinstance(expected, str)
+                or re.fullmatch(r"[0-9a-f]{64}", expected) is None
+            ):
+                raise VerificationFailure(
+                    f"{relative}: source_sha256 must be 64 lowercase hex characters"
+                )
+            if hashlib.sha256(raw).hexdigest() != expected:
+                raise VerificationFailure(
+                    f"{relative}: protected source SHA256 mismatch"
+                )
+        text = raw.decode("utf-8")
         for marker in _string_tuple(row, "required"):
             if marker not in text:
                 raise VerificationFailure(

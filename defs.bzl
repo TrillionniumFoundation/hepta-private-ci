@@ -198,6 +198,7 @@ def codex_rust_crate(
         deps_extra = [],
         integration_compile_data_extra = [],
         integration_test_args = [],
+        integration_test_dependency_replacements = {},
         unit_test_args = [],
         unit_test_runfile_env = {},
         unit_test_dependency_replacements = {},
@@ -248,6 +249,9 @@ def codex_rust_crate(
             Typically only needed when features add additional deps.
         integration_compile_data_extra: Extra compile_data for integration tests.
         integration_test_args: Optional args for integration test binaries.
+        integration_test_dependency_replacements: Test-only workspace dependency
+            variants keyed by the exact integration test file stem. These affect
+            only that test harness, never the product library or spawned binaries.
         unit_test_args: Optional args for the unit test binary.
         unit_test_runfile_env: Binary runfiles exported to the unit-test launcher.
         binary_test_target_compatible_with: Platform constraints for binary unit tests.
@@ -525,13 +529,22 @@ def codex_rust_crate(
     if integration_test_timeout:
         integration_test_kwargs["timeout"] = integration_test_timeout
 
-    for test in native.glob(["tests/*.rs"], allow_empty = True):
+    integration_tests = native.glob(["tests/*.rs"], allow_empty = True)
+    for test_file_stem in integration_test_dependency_replacements:
+        if "tests/" + test_file_stem + ".rs" not in integration_tests:
+            fail("Unknown integration test dependency replacement: " + test_file_stem)
+
+    for test in integration_tests:
         test_file_stem = test.removeprefix("tests/").removesuffix(".rs")
         test_crate_name = test_file_stem.replace("-", "_")
         test_name = name + "-" + test_file_stem.replace("/", "-")
         if not test_name.endswith("-test"):
             test_name += "-test"
         windows_cross_test_binary = test_name + "-windows-cross-bin"
+        integration_deps = rust_test_dependencies(
+            integration_test_dependency_replacements.get(test_file_stem, {}),
+            normal_dev = True,
+        ) + maybe_deps + deps_extra
 
         test_kwargs = {}
         test_kwargs.update(integration_test_kwargs)
@@ -575,7 +588,7 @@ def codex_rust_crate(
                 srcs = [test],
                 data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
                 compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
-                deps = all_crate_deps(normal = True, normal_dev = True) + maybe_deps + deps_extra,
+                deps = integration_deps,
                 # Bazel has emitted both `codex-rs/<crate>/...` and
                 # `../codex-rs/<crate>/...` paths for `file!()`. Strip either
                 # prefix so Insta records Cargo-like metadata such as `core/tests/...`.
@@ -615,7 +628,7 @@ def codex_rust_crate(
                 srcs = [test],
                 data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
                 compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
-                deps = all_crate_deps(normal = True, normal_dev = True) + maybe_deps + deps_extra,
+                deps = integration_deps,
                 # Bazel has emitted both `codex-rs/<crate>/...` and
                 # `../codex-rs/<crate>/...` paths for `file!()`. Strip either
                 # prefix so Insta records Cargo-like metadata such as `core/tests/...`.
@@ -690,7 +703,7 @@ def codex_rust_crate(
             srcs = [test],
             data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
             compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
-            deps = all_crate_deps(normal = True, normal_dev = True) + maybe_deps + deps_extra,
+            deps = integration_deps,
             rustc_flags = rustc_flags_extra + WINDOWS_RUSTC_LINK_FLAGS + [
                 "--remap-path-prefix=../codex-rs=",
                 "--remap-path-prefix=codex-rs=",
