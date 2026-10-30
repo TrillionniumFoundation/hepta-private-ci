@@ -4,6 +4,7 @@ The old implementation returned F=G=0 for a near-deterministic negative-drift
 hit when its distant peak was narrower than the floating-point u grid.  These
 cases must fail closed; rejection is not a certified probability evaluation.
 """
+import math
 import unittest
 
 from .bond_fpt_independent import integrate_passage, reflected_passage
@@ -34,6 +35,32 @@ class ExtremePeakGuardTests(unittest.TestCase):
                       discount=.1, horizon=1.)
         with self.assertRaisesRegex(ArithmeticError, 'squared volatility unresolved'):
             integrate_passage(**params)
+
+    def test_nonzero_drift_product_underflow_is_rejected(self):
+        # Exact powers: sigma**2=2**-1074 is nonzero, but drift*x
+        # rounds to zero. The exact dimensionless a is +/-0.25.
+        sigma=math.ldexp(1.,-537)
+        x=math.ldexp(1.,-539)
+        self.assertGreater(sigma*sigma,0.)
+        for sign in (-1.,1.):
+            drift=sign*sigma
+            with self.subTest(sign=sign):
+                self.assertEqual(drift*x,0.)
+                self.assertEqual((drift/sigma)*(x/sigma),sign*.25)
+                with self.assertRaisesRegex(ArithmeticError,
+                                            'transformed drift unresolved'):
+                    integrate_passage(x,drift=drift,sigma=sigma,
+                                      discount=.5,horizon=1.)
+
+    def test_exact_zero_drift_remains_allowed_at_same_scale(self):
+        # Same scale, but a=0 is now mathematically correct. Reference
+        # values follow the independent dimensionless x=.25,sigma=1
+        # normal-CDF formulas, not a previous quadrature execution.
+        result=integrate_passage(math.ldexp(1.,-539),drift=0.,
+                                sigma=math.ldexp(1.,-537),
+                                discount=.5,horizon=1.)
+        self.assertAlmostEqual(result.probability,.8025873486341526,delta=3e-12)
+        self.assertAlmostEqual(result.discounted,.7379602182304501,delta=3e-12)
 
     def test_ordinary_resolved_fpt_unchanged(self):
         params = dict(x=.16, drift=-.02, sigma=.25, discount=.08, horizon=2.)
