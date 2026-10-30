@@ -1,0 +1,132 @@
+{
+  "result": {
+    "literal_tests": {
+      "errors": 0,
+      "failures": 0,
+      "run": 11
+    },
+    "literal_toy_updates": "Included in tests and wholechild costs; not zero",
+    "measurements": {
+      "A_anchor_bothhead_FD_coordinates": 8,
+      "A_anchor_max_FD": 5.813182053782118e-11,
+      "model_A_anchor_FD_coordinates": 7,
+      "model_A_anchor_max_FD": 5.100408073319129e-11,
+      "model_FD_coordinates": 7,
+      "model_max_FD": 2.359050177425104e-10,
+      "virtual_logit_cotangent_FD_coordinates": 48,
+      "virtual_logit_cotangent_max_FD": 1.0952134338326758e-10
+    },
+    "model_restores": 0,
+    "objective_key": "b346a639e2f66913dc0484a5e0f661a5f11a7ac07e72fafde76612cf92de957e",
+    "objective_profile": {
+      "attributes": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          1
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          1
+        ],
+        [
+          1,
+          1,
+          0
+        ],
+        [
+          1,
+          1,
+          1
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          1
+        ],
+        [
+          2,
+          1,
+          0
+        ],
+        [
+          2,
+          1,
+          1
+        ]
+      ],
+      "gradient": "virtual factor-logit gradient; row sum tolerance1e-12; centered residual",
+      "mode": "canonical-factorized-source-v1",
+      "normalization_tolerance": 1e-12,
+      "positive_policy": true,
+      "prior": "source label factors, not observed decoder semantics",
+      "schema": "rgb-canonical-3x2x2-factorized-source-v1"
+    },
+    "scientific_dataset_rows": 0,
+    "scientific_models": 0,
+    "scientific_training_updates": 0,
+    "scope": "Canonical factorization qualification with hand-input toy model initialization/updates; no restored models/scientific training/datasets or renderer. Not a decoded semantic guarantee.",
+    "source_freeze_sha256": "574ed8e10ab738b5d0745906d32d1ee2993c0780abb4d867fd976d7b5dd3f65e",
+    "status": "COMPLETE_LITERAL_FACTORIZED_SOURCE",
+    "toy_model_counts": {
+      "toy_model_initializations": 10
+    }
+  },
+  "scientific_benefit": "NOT_EVALUATED",
+  "whole_waited_child": {
+    "automatic_retry": false,
+    "complete_wait": true,
+    "exit_code": 0,
+    "limits": {
+      "AS_bytes": 536870912,
+      "CPU_seconds": 5,
+      "affinity": [
+        0
+      ],
+      "file_bytes": 4194304,
+      "numerical_threads": 1,
+      "wall_seconds": 30
+    },
+    "max_rss_kib": 30452,
+    "new_synthetic_only_shared_lock": true,
+    "not_original_digit_lock": true,
+    "preparation_review_and_shared_upstream_costs": "OUTSIDE_CHILD_NOT_ZERO",
+    "raw_wait_status": 0,
+    "result_sha256": "f8ca2d498b520145cca7b5522771a1034312c995c6dfd5c478f1133af3a1fde7",
+    "source_freeze_sha256": "574ed8e10ab738b5d0745906d32d1ee2993c0780abb4d867fd976d7b5dd3f65e",
+    "status": "COMPLETE_LITERAL_FACTORIZED_SOURCE",
+    "supervisor_CPU_observed_prefix_seconds": 0.004360793000000002,
+    "supervisor_final_tail": "UNKNOWN_NOT_ZERO",
+    "system_CPU_seconds": 0.03986,
+    "timed_out": false,
+    "user_CPU_seconds": 0.218764,
+    "wall_seconds": 0.4543173919992114,
+    "whole_child_CPU_seconds": 0.25862399999999997
+  }
+}
