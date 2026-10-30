@@ -451,9 +451,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     // A canonical macOS per-user temp path can exceed SUN_LEN after fleet/run
     // and the agent socket name are appended. Keep this private test fixture
     // under the canonical short /tmp root; retain all production fences.
-    let short_fixture = tempfile::Builder::new()
-        .prefix("hcn-")
-        .tempdir_in("/tmp")?;
+    let short_fixture = tempfile::Builder::new().prefix("hcn-").tempdir_in("/tmp")?;
     let root = short_fixture.path().canonicalize()?;
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
     let host =
