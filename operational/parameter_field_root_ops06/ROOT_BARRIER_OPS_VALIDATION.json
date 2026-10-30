@@ -1,0 +1,228 @@
+{
+  "actual_child_result": {
+    "exit_code": 0,
+    "identity": {
+      "pid": 408086,
+      "process_group": 408086,
+      "session": 408086,
+      "start_ticks": "2451725",
+      "state": "R"
+    },
+    "peak_rss_bytes": 25952256,
+    "scope": "this child and descendants it waited for; includes nested phase/driver costs",
+    "system_cpu_seconds": 0.278976,
+    "total_cpu_seconds": 1.095447,
+    "unwaited_orphan_costs_unknown_if_failure": false,
+    "user_cpu_seconds": 0.816471,
+    "wait_status": 0,
+    "wall_seconds": 1.7091614210003172
+  },
+  "actual_focused_suite_wait4": {
+    "bytes": 1765,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops_tests01/measurement/WAIT4.json",
+    "sha256": "d573542080f2331e963c7fb6086c0ee43e65878226299016329641b570aec5ea"
+  },
+  "actual_frozen_dependencies": [
+    {
+      "bytes": 22847,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/archive_io.py",
+      "sha256": "84eb4813a0bf487c5a1edfe77185ae4863c7d6f3431898eac9bc91e7f1946449"
+    },
+    {
+      "bytes": 51460,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/supervisor.py",
+      "sha256": "9fe5a97112693d6eb2f718c50d09c3b53a85c4f949d1b571b0494b48902f547b"
+    },
+    {
+      "bytes": 4382,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery04/external_step.py",
+      "sha256": "fb238cd0f28e331a2e9d4ada5950f436a2d31e579fa9fbd8c36cce70404c2b21"
+    },
+    {
+      "bytes": 41463,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery04/supervisor.py",
+      "sha256": "cc1526c88184e26ce9eb363f053e2e2babce924020d80589b0891f4385307682"
+    },
+    {
+      "bytes": 14865,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery04/durable_archive.py",
+      "sha256": "dfeee33870f3ca429284542cb8ca9ff8c9471a8fc8ff0339c3de251cabf260da"
+    },
+    {
+      "bytes": 45069,
+      "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/helpers/library_download.py",
+      "sha256": "7a092c11922d14a5c61ce1a9beb7d1d3af89bd22b3eff4549abf79ac28878989"
+    },
+    {
+      "bytes": 16285,
+      "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/helpers/library_file_transfer.py",
+      "sha256": "d0385de4b634c4a6d4c26a83b40ee4ff33461e42473ce8c0387460be2465e314"
+    },
+    {
+      "bytes": 15837,
+      "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/helpers/library_hosted_apps.py",
+      "sha256": "7958642b88cde925aaca036989de1028c0864eb6d82a9cb175ebf9380cb9677b"
+    },
+    {
+      "bytes": 44876,
+      "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/helpers/library_upload.py",
+      "sha256": "5bc473dadefe1f68ee8797baaed19d6662642d0ea4bcba128fa12938faa0d767"
+    }
+  ],
+  "actual_inner_print_only_wait4": {
+    "bytes": 2027,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops_tests01/cases/test_real_external_step_print_process_yields_actual_wait4_plain_stdout/REAL_PRINT_ONLY_WAIT4/WAIT4.json",
+    "sha256": "1ec4a9a21525f6e5dcaf99d0fcceefcbc990bb71e2dfa4fed4e9aaf1e2fe148d"
+  },
+  "actual_library_calls_by_this_agent": 0,
+  "ast_parse_success": true,
+  "at_utc": "2026-10-30T14:47:21.002399+00:00",
+  "frozen_source_modifications_by_this_agent_for_this_task": 0,
+  "independent_static_review": {
+    "bytes": 2634,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/ROOT_BARRIER_STATIC_REVIEW.json",
+    "sha256": "c98239b496f0c6ab406da1cce821c60203592c86520c98a911765f72f582566e"
+  },
+  "limitations": [
+    "Remote service/helper results and ACKs in unit cases are explicitly marked synthetic fixtures, not actual remote evidence.",
+    "Frozen archive aggregate verifier is mocked only in marked candidate/publication fixtures; production CLI has no such bypass.",
+    "The sole actual inner helper process prints a path and performs no remote operation.",
+    "The focused suite actual wait4 includes the inner print-only test; never add nested cost twice.",
+    "This record does not assert production barrier completion or supervisor ACK acceptance."
+  ],
+  "metadata_hashes_recorded_after_test_run": true,
+  "production_phase_invocations_by_this_agent": 0,
+  "production_status_read_only_observation": {
+    "execution_episode": "execution06_detached_20261030",
+    "ops_exists": false,
+    "ops_path": "/workspace/scratch/178ced6a501f/fullstudy_execution06_ops",
+    "read_only": true
+  },
+  "runbook": {
+    "bytes": 9542,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/ROOT_BARRIER_OPS_RUNBOOK.md",
+    "sha256": "c1bf7056fae18542633540b2de322c49ba1549414d4a2b16d1b850a78af68722"
+  },
+  "schema": "hepta.execution06.root-barrier-external-glue-validation.1",
+  "scientific_execution_by_this_agent": 0,
+  "scope": [
+    "CLI orchestration and fixed dependency/source bindings.",
+    "One whole ordered upload, exact upload stdout, full materialization envelopes, original exact readback argv and plain output path.",
+    "Partial/unknown/nonzero/missing WAIT4/current-request/source/identity/deadline failure stops.",
+    "Separate reviewed-candidate-SHA explicit publication and no automatic supervisor-acceptance claim.",
+    "Read-only status with no production OPS creation."
+  ],
+  "script": {
+    "bytes": 38437,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops.py",
+    "sha256": "68150c451c9ab181d949a19f1b5cb106dfd23762701bf7a821309882b23dad83"
+  },
+  "source_binding_in_actual_test_fixtures": {
+    "all_match_current_glue_and_dependency_descriptors": true,
+    "matching_phase_intent_count": 18,
+    "records": [
+      {
+        "bytes": 3793,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops_tests01/cases/test_materialize_partial_result_is_rejected_without_transfer/synthetic_ops/root_archive_io/_engineering/01_A-17_upload_phase/INTENT.json",
+        "sha256": "a7fd6f032a3aac456c7663362bc7cd624d3be53ef743835174cbfc4759e04bfb"
+      },
+      {
+        "bytes": 3789,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops_tests01/cases/test_missing_wait4_is_unknown_and_stops_without_candidate/synthetic_ops/root_archive_io/_engineering/01_A-17_readback_phase/INTENT.json",
+        "sha256": "5d908f77b013f74047860fa4495bcccf2b225d799ca5626cbe8732e0d784b29d"
+      },
+      {
+        "bytes": 3787,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops_tests01/cases/test_missing_wait4_is_unknown_and_stops_without_candidate/synthetic_ops/root_archive_io/_engineering/01_A-17_upload_phase/INTENT.json",
+        "sha256": "a64a6e54afaed3dce0eeacf7423b393cef795733771c374a289d7ff88e67da97"
+      },
+      {
+        "bytes": 3777,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops_tests01/cases/test_modified_plan_argv_is_rejected_before_transfer/synthetic_ops/root_archive_io/_engineering/01_A-17_readback_phase/INTENT.json",
+        "sha256": "ba479130ebddc714847cb25c019a64d60295add0391c8f043219c5733bc5f6b3"
+      },
+      {
+        "bytes": 3775,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops_tests01/cases/test_modified_plan_argv_is_rejected_before_transfer/synthetic_ops/root_archive_io/_engineering/01_A-17_upload_phase/INTENT.json",
+        "sha256": "7bce24cc40929c305199d918e18fb1fa95e46d0c57e31c5fae52d8d0caa68a4b"
+      },
+      {
+        "bytes": 3803,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops_tests01/cases/test_nonzero_transfer_is_not_retried_and_cannot_create_candidate/synthetic_ops/root_archive_io/_engineering/01_A-17_readback_phase/INTENT.json",
+        "sha256": "dd78434d6e209d155b6f67abfc6f3e0db18a931599463cb4ffc72dbb24022aca"
+      },
+      {
+        "bytes": 3801,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops_tests01/cases/test_nonzero_transfer_is_not_retried_and_cannot_create_candidate/synthetic_ops/root_archive_io/_engineering/01_A-17_upload_phase/INTENT.json",
+        "sha256": "9bcc1e8105f89f33d0f2f5bf725ba4da13dcab72a0c5216ce205899aa17fed53"
+      },
+      {
+        "bytes": 3791,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops_tests01/cases/test_partial_upload_even_exit_zero_has_no_readback_or_retry/synthetic_ops/root_archive_io/_engineering/01_A-17_upload_phase/INTENT.json",
+        "sha256": "72f3c318e162e806b62ed1dcb9adf1b9c38bd6f06b8b6360c0e602aa25dd2aed"
+      },
+      {
+        "bytes": 3799,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops_tests01/cases/test_plain_stdout_wrong_path_is_rejected_without_next_transfer/synthetic_ops/root_archive_io/_engineering/01_A-17_readback_phase/INTENT.json",
+        "sha256": "9e4d3b25741f7338b420d9fe4068029cfe7c75fa35cc97c679d563d54150269a"
+      },
+      {
+        "bytes": 3797,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops_tests01/cases/test_plain_stdout_wrong_path_is_rejected_without_next_transfer/synthetic_ops/root_archive_io/_engineering/01_A-17_upload_phase/INTENT.json",
+        "sha256": "98dee2f40482af1c5679e174c12d157e99976ad803abb9f90f4064de10be2fdd"
+      },
+      {
+        "bytes": 3834,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops_tests01/cases/test_publish_requires_explicit_flag_and_reviewed_sha_and_never_claims_acceptance/synthetic_ops/root_archive_io/_engineering/01_A-17_publish_phase/INTENT.json",
+        "sha256": "d4140d01de5c30dc2500dcd82230322a55804c0eedd660a7949dda2606e4ccdd"
+      },
+      {
+        "bytes": 3835,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops_tests01/cases/test_publish_requires_explicit_flag_and_reviewed_sha_and_never_claims_acceptance/synthetic_ops/root_archive_io/_engineering/01_A-17_readback_phase/INTENT.json",
+        "sha256": "4835e0eb020f804a69f6453413642ce77c4427fa0046efa38ce62c533fa2bcb7"
+      },
+      {
+        "bytes": 3833,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops_tests01/cases/test_publish_requires_explicit_flag_and_reviewed_sha_and_never_claims_acceptance/synthetic_ops/root_archive_io/_engineering/01_A-17_upload_phase/INTENT.json",
+        "sha256": "a55bb3c75f3c5c9cc7fb3beefe9f363f600fe9d6d15df36a167880558076b784"
+      },
+      {
+        "bytes": 3823,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops_tests01/cases/test_readback_uses_each_exact_plan_argv_and_plain_text_then_candidate_only/synthetic_ops/root_archive_io/_engineering/01_A-17_readback_phase/INTENT.json",
+        "sha256": "4eeb6984ef1b0a9c9c2b814ba1b698e494167251d4028f16366af2b995c36fbc"
+      },
+      {
+        "bytes": 3821,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops_tests01/cases/test_readback_uses_each_exact_plan_argv_and_plain_text_then_candidate_only/synthetic_ops/root_archive_io/_engineering/01_A-17_upload_phase/INTENT.json",
+        "sha256": "9ed9162714cf1db8c83da40ec03214a819e32891d15e4d0fc7b2c497023c4cc0"
+      },
+      {
+        "bytes": 3799,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops_tests01/cases/test_upload_is_one_whole_ordered_call_and_requires_exact_stdout/synthetic_ops/root_archive_io/_engineering/01_A-17_upload_phase/INTENT.json",
+        "sha256": "1abc29ee0802033ad6a4f46c0c289d039f32c9a92f33f32a15dd8f346e757761"
+      },
+      {
+        "bytes": 3783,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops_tests01/cases/test_workspace_materialization_uses_exact_apply_xattrs/synthetic_ops/root_archive_io/_engineering/01_A-17_readback_phase/INTENT.json",
+        "sha256": "9d3428745ccd024f242ac5f496c5d9d8a8fc5c34f538e4a0bd12b0b2b30c1f88"
+      },
+      {
+        "bytes": 3781,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops_tests01/cases/test_workspace_materialization_uses_exact_apply_xattrs/synthetic_ops/root_archive_io/_engineering/01_A-17_upload_phase/INTENT.json",
+        "sha256": "78eacc66845a8ea6e967b2f07460280d7686b74984bbcb0f9f40de60ea6c28b6"
+      }
+    ]
+  },
+  "suite_stderr": {
+    "bytes": 3206,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops_tests01/measurement/helper.stderr.log",
+    "sha256": "c3623eb953ae7bc9a0dc3dcf48db5bf125476da26ac35ac4c0098bf538de23ec"
+  },
+  "test_source": {
+    "bytes": 24316,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/test_root_barrier_ops.py",
+    "sha256": "32287e88b4d4359b9290495a5c6b098a9bd8fc8e0f6feb03f104003b08cb6f19"
+  },
+  "tests_passed": 21,
+  "tests_run": 21
+}

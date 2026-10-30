@@ -1,0 +1,22 @@
+test_actual_child_fd_and_mmap_prevent_retirement (__main__.RetirementTests.test_actual_child_fd_and_mmap_prevent_retirement) ... ok
+test_atomic_evidence_is_exclusive_and_not_overwritten (__main__.RetirementTests.test_atomic_evidence_is_exclusive_and_not_overwritten) ... ok
+test_current_unaccepted_status_and_wrong_request_are_rejected_without_plan (__main__.RetirementTests.test_current_unaccepted_status_and_wrong_request_are_rejected_without_plan) ... ok
+test_existing_prepare_and_plan_sha_cannot_restart (__main__.RetirementTests.test_existing_prepare_and_plan_sha_cannot_restart) ... ok
+test_helper_intent_changed_after_ack_blocks_before_any_deletion (__main__.RetirementTests.test_helper_intent_changed_after_ack_blocks_before_any_deletion) ... ok
+test_known_user_and_unrelated_errors_never_enter_observation_wait (__main__.RetirementTests.test_known_user_and_unrelated_errors_never_enter_observation_wait) ... ok
+test_parent_deadline_oom_and_startup_change_fail_closed (__main__.RetirementTests.test_parent_deadline_oom_and_startup_change_fail_closed) ... ok
+test_partial_unlink_error_is_journaled_and_never_retried (__main__.RetirementTests.test_partial_unlink_error_is_journaled_and_never_retried) ... ok
+test_protected_metadata_mutation_blocks_before_delete (__main__.RetirementTests.test_protected_metadata_mutation_blocks_before_delete) ... ok
+test_read_only_unknown_coverage_can_settle_but_requires_original_full_pass (__main__.RetirementTests.test_read_only_unknown_coverage_can_settle_but_requires_original_full_pass) ... ok
+test_real_file_full_prepare_execute_and_no_second_unlink (__main__.RetirementTests.test_real_file_full_prepare_execute_and_no_second_unlink) ... ok
+test_source_or_duplicate_identity_change_blocks_all_unlinks (__main__.RetirementTests.test_source_or_duplicate_identity_change_blocks_all_unlinks) ... ok
+test_symlink_and_out_of_stage_targets_fail_closed (__main__.RetirementTests.test_symlink_and_out_of_stage_targets_fail_closed) ... ok
+test_unknown_coverage_has_ten_second_bound_and_preserves_health_failure (__main__.RetirementTests.test_unknown_coverage_has_ten_second_bound_and_preserves_health_failure) ... ok
+test_unlink_return_then_journal_failure_keeps_ambiguity_and_no_retry (__main__.RetirementTests.test_unlink_return_then_journal_failure_keeps_ambiguity_and_no_retry) ... ok
+test_verified_hash_last_payload_operation_is_real_advice (__main__.RetirementTests.test_verified_hash_last_payload_operation_is_real_advice) ... ok
+test_wrong_remote_version_and_hardlinks_are_rejected (__main__.RetirementTests.test_wrong_remote_version_and_hardlinks_are_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 2.718s
+
+OK

@@ -1,0 +1,208 @@
+{
+  "ack_or_remote_actions_here": 0,
+  "actual_config": {
+    "bytes": 8638,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_execution06_ops/registrations/initial/PIPELINE_CONFIG.json",
+    "sha256": "d16bac3194b36d286f180976ddbc7dff16e544763e195d408a135b30af4fb86e"
+  },
+  "actual_cwd_policy": {
+    "bytes": 25580,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_execution06_ops/registrations/initial/CWD_POLICY.json",
+    "sha256": "8372d19d086cfeba5d7710fb095aa45c907c498da0d730864ef069d2a0a4f297"
+  },
+  "actual_source_commit": "bc4e757f5c90f6365f383c1127be710d2ded874a",
+  "all_14_pinned_consumers_match": true,
+  "all_4_official_helpers_match": true,
+  "all_code_pins_present_exactly_in_cwd_policy": true,
+  "at_utc": "2026-10-30T15:35:51.046946+00:00",
+  "conclusion": "PASS_NO_IDENTIFIED_SCOPE_OR_FROZEN_INTERFACE_BLOCKER",
+  "findings": [
+    {
+      "area": "Accepted barrier and immutable owner",
+      "finding": "Fixed actual config SHA/commit/episode/roots, complete predecessor REQUEST/ACK/ACK_VERIFIED chain, exact root operational binding, original supervisor identity including parent, and STATUS advanced beyond selected barrier are mandatory. No ACK is created or replaced.",
+      "source_functions": [
+        "pipeline",
+        "Health",
+        "accepted"
+      ]
+    },
+    {
+      "area": "Deletion scope",
+      "finding": "Only ordered accepted part-NNNN.tar.gz readbacks in OPS/root_archive_io/<exact stage>/readback are candidates; matching originals remain in OPS/durable/<exact stage>. Exact plan SHA, fixed stage population, independent single-link regular inodes, symlink rejection and captured parent dirfd restrict every unlink.",
+      "source_functions": [
+        "row_scope",
+        "execute",
+        "unlink_once"
+      ]
+    },
+    {
+      "area": "Actual helper receipts",
+      "finding": "Matches frozen archive_io actual complete upload results, materialize ToolResponse, ordered transfer identity/version, helper argv/stdin/cwd, actual external_step successful WAIT4, exact stdout/stderr descriptors and returned output path. Unknown or partial outcomes stop. Helper names/hashes match current restored helpers.",
+      "source_functions": [
+        "helper_chain"
+      ]
+    },
+    {
+      "area": "Bytes and metadata preservation",
+      "finding": "Prepare re-enters unchanged original verify_ack against currently existing payloads, then source and duplicate full SHA/stat/xattrs are verified; execute rechecks all and protects small stage/root/helper evidence byte/stat population. Retained originals receive full SHA/xattr re-verification after retirement. RAW/CAS/scientific source and remote objects are outside mutation scope.",
+      "source_functions": [
+        "frozen_verify",
+        "verified_part",
+        "protected_files",
+        "check_preservation"
+      ]
+    },
+    {
+      "area": "Health and process use",
+      "finding": "Original absolute 12-hour window, initial OOM baseline, original supervisor parent/PID/start_ticks/group/session and immutable start policy are checked throughout. Full visible /proc FD/maps PASS is required. Only typed unknown coverage with zero target references can settle for <=10 seconds, every <=0.2 seconds with fsynced evidence and continuing health; known references/unrelated exceptions fail immediately. This is not mutation retry.",
+      "source_functions": [
+        "Health",
+        "no_open_references",
+        "settled_no_use",
+        "unlink_once"
+      ]
+    },
+    {
+      "area": "Durability and partial failure",
+      "finding": "Exclusive stage/execution paths and nonblocking flock reject repeats. Intent is fsynced before a single dirfd unlink; return, parent fsync and absence receive separate records. Any exception stops; missing final receipt or journal ambiguity explicitly requires reconciliation and cannot be treated as success or retried automatically.",
+      "source_functions": [
+        "Journal",
+        "stage_lock",
+        "unlink_once",
+        "fail_record",
+        "execute"
+      ]
+    },
+    {
+      "area": "Terminal owner compatibility",
+      "finding": "When actual primary and outer terminal receipts exist, the candidate extracts the exact frozen metadata-only detached_provenance function with all names it needs. Original wait4_launcher child_identity and START_POLICY supervisor_identity both use integer proc_identity. Departed supervisor liveness is replaced by exact matching successful primary/outer/detached ancestry, not by a synthetic exit.",
+      "source_functions": [
+        "load_terminal",
+        "Health"
+      ]
+    },
+    {
+      "area": "Future consumers",
+      "finding": "Frozen supervisor verifies each ACK once before recording ACK_VERIFIED; subsequent stages and final_closure retain previous metadata and coverage. Literal finalization operates on RAW/CAS. Postseal checks all 17 REQUEST/ACK/ACK_VERIFIED/manifest chains without reopening retired readback part payloads. Later manual original verify_ack would require real remote rematerialization to independent paths, which the plan/result explicitly state.",
+      "source_functions": [
+        "supervisor.durable",
+        "supervisor.finalize",
+        "postseal.prepare_pins.collect_primary"
+      ]
+    }
+  ],
+  "limitations": [
+    "Independent static/config/source review is not a production prepare, deletion result, or fresh remote-service authentication.",
+    "/proc is a complete observation snapshot, not a continuous kernel lease; final identity/xattr/dirfd checks narrow but cannot eliminate concurrent external filesystem mutation.",
+    "A failure after unlink but before a success journal can leave known_unlinks_returned shorter than actual removed paths; the fsynced last intent and fresh path/inode observation must be reconciled. No retry is authorized by this review.",
+    "COMPLETE appearing before outer/detached terminal receipts close causes a truthful temporary failure; root should start terminal retirement only after all actual terminal receipts exist.",
+    "All reads retain the physical reserve; >16 MiB metadata or unexpected concurrently changing small evidence fails closed instead of broadening the scope.",
+    "POSIX_FADV_DONTNEED is advisory; no memory or future capacity qualification is inferred."
+  ],
+  "official_helpers": [
+    {
+      "bytes": 45069,
+      "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/helpers/library_download.py",
+      "sha256": "7a092c11922d14a5c61ce1a9beb7d1d3af89bd22b3eff4549abf79ac28878989"
+    },
+    {
+      "bytes": 16285,
+      "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/helpers/library_file_transfer.py",
+      "sha256": "d0385de4b634c4a6d4c26a83b40ee4ff33461e42473ce8c0387460be2465e314"
+    },
+    {
+      "bytes": 15837,
+      "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/helpers/library_hosted_apps.py",
+      "sha256": "7958642b88cde925aaca036989de1028c0864eb6d82a9cb175ebf9380cb9677b"
+    },
+    {
+      "bytes": 44876,
+      "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/helpers/library_upload.py",
+      "sha256": "5bc473dadefe1f68ee8797baaed19d6662642d0ea4bcba128fa12938faa0d767"
+    }
+  ],
+  "pinned_consumers": [
+    {
+      "bytes": 51460,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/supervisor.py",
+      "sha256": "9fe5a97112693d6eb2f718c50d09c3b53a85c4f949d1b571b0494b48902f547b"
+    },
+    {
+      "bytes": 22847,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/archive_io.py",
+      "sha256": "84eb4813a0bf487c5a1edfe77185ae4863c7d6f3431898eac9bc91e7f1946449"
+    },
+    {
+      "bytes": 14865,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery04/durable_archive.py",
+      "sha256": "dfeee33870f3ca429284542cb8ca9ff8c9471a8fc8ff0339c3de251cabf260da"
+    },
+    {
+      "bytes": 24985,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/producer_adapter.py",
+      "sha256": "14ef2027993d39549099161833b91246a8c85469d4118274fed46b809463eed7"
+    },
+    {
+      "bytes": 23852,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/registration.py",
+      "sha256": "1e30fc9e0a234046346f4c46d01b217f009660dbd1b120da0d53f5298daa79ca"
+    },
+    {
+      "bytes": 19400,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/postseal/prepare_pins.py",
+      "sha256": "4b7c54ae135286e6b9d080dd30d148b303bd1daa5a0c0612fc2850354c4acd4d"
+    },
+    {
+      "bytes": 29479,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/postseal/review.py",
+      "sha256": "9682c1e07398a8ad0efb2babdc03fc61079ade33f76aa1fa77838d41fe167c5a"
+    },
+    {
+      "bytes": 2007,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/postseal/run_supplement.py",
+      "sha256": "0fc55b5e031c3cbeb1f796d3fd493f7f6689e747693c41fdf263675b0fba38a1"
+    },
+    {
+      "bytes": 15490,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/experiments/parameter_field_fullstudy_20261029/finalize_v2.py",
+      "sha256": "6fbf4a7a994120b6c0ae577a10d9ba992ad483d253ff0afb9aea42af8bb705ac"
+    },
+    {
+      "bytes": 45470,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/supplements/parameter_field_fullstudy_20261030/postseal_supplement.py",
+      "sha256": "1b705285b99fc7185c20155fa85f3a5d370b473196eaf59c8ae1d6bb2941a633"
+    },
+    {
+      "bytes": 26650,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/cwd_runner.py",
+      "sha256": "95403029436c72dfb7a545de4794781947a45de62a9412a8be20ed1623f9f86b"
+    },
+    {
+      "bytes": 14457,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/daemon_bootstrap.py",
+      "sha256": "8caa56a4af9e8c66a8cb5ce6f26469779dca6174ce0e234a5e9ea5626a1234a3"
+    },
+    {
+      "bytes": 10156,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/wait4_launcher.py",
+      "sha256": "2ed6930e78aa9ba3328fc9525e0bb995b8bbbb6cd2b5bc6fa586b4e3fb2476dd"
+    },
+    {
+      "bytes": 4382,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery04/external_step.py",
+      "sha256": "fb238cd0f28e331a2e9d4ada5950f436a2d31e579fa9fbd8c36cce70404c2b21"
+    }
+  ],
+  "production_delete_executed_here": false,
+  "production_prepare_executed_here": false,
+  "review_scope": "Read entire candidate script, compare frozen consumer/helper schemas and actual immutable configuration/source pins; no candidate import/execution and no scientific result decoding.",
+  "reviewed_script": {
+    "bytes": 55186,
+    "path": "/workspace/scratch/178ced6a501f/execution06_retirement_development/retire_accepted_readbacks06.py",
+    "sha256": "721bed06b6ded5146e057e10dbf230689f8ab411b8ead3e0aeee5852d12c8c4c"
+  },
+  "reviewer": "/root/stage_integrity_audit",
+  "schema": "hepta.execution06.accepted-readback-retirement-independent-static-review.1",
+  "scientific_processes_started_here": 0,
+  "tests_rerun_here": 0
+}

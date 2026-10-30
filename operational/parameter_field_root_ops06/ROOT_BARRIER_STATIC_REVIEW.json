@@ -1,0 +1,39 @@
+{
+  "at_utc": "2026-10-30T14:45:56.121430+00:00",
+  "blocking_interface_mismatches_found": [],
+  "checks": [
+    "Three explicit CLI phases upload/readback/publish; publish requires reviewed candidate SHA and separate --publish-ack.",
+    "Upload requires exact forthcoming stdout path, full ToolResponse folder identity, and entire ordered upload result success with actual version including zero.",
+    "No automatic retry: fresh phase directory, helper directory, saved full input, intent/attempt and failure records; unknown remote outcome requires root reconciliation.",
+    "Every helper uses original external_step with exact intent argv/cwd/stdin, successful actual WAIT4 exit and matching stdout/stderr descriptors.",
+    "Readback checks original prepared READBACK_PLAN per-item transfer descriptor/remote version/helper argv/entire external_step argv and then passes that exact argv.",
+    "ACK candidate-only phase stops before publication; explicit publish verifies exact copied ACK bytes and leaves actual ACK_VERIFIED acceptance to original supervisor.",
+    "START_POLICY exact supervisor identity plus /proc namespace and original 43200-second deadline checked between helpers.",
+    "Terminal supervisor or mismatched current request/stage/source pins rejects further work."
+  ],
+  "cross_checked_external_step": {
+    "bytes": 4382,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery04/external_step.py",
+    "sha256": "fb238cd0f28e331a2e9d4ada5950f436a2d31e579fa9fbd8c36cce70404c2b21"
+  },
+  "cross_checked_frozen_archive_io": {
+    "bytes": 22847,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/archive_io.py",
+    "sha256": "84eb4813a0bf487c5a1edfe77185ae4863c7d6f3431898eac9bc91e7f1946449"
+  },
+  "limitations": [
+    "Static review only; actual future tool response and running supervisor metadata still must pass runtime gates.",
+    "Only actual supervisor ACK_VERIFIED establishes acceptance.",
+    "No claim about remote work success from process exit alone."
+  ],
+  "production_helpers_executed_here": 0,
+  "reviewed_source": {
+    "bytes": 38437,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/root_barrier_ops.py",
+    "sha256": "68150c451c9ab181d949a19f1b5cb106dfd23762701bf7a821309882b23dad83"
+  },
+  "reviewer": "stage_integrity_audit",
+  "schema": "hepta.execution06.root-barrier-independent-static-review.1",
+  "scope": "Read-only source review, no production phase invoked, no remote operation, no ACK publication.",
+  "source_modified_here": false
+}
