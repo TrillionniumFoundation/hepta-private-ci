@@ -114,6 +114,8 @@ pub(crate) struct EffectDispatchAttempt {
     pub(crate) grant_nonce_digest: Sha256Digest,
     pub(crate) record_command_id: String,
     pub(crate) started_at_ms: u64,
+    /// Zero identifies a pre-v22 attempt; missing typed history stays unknown.
+    pub(crate) append_profile_version: u32,
     pub(crate) observation: Option<EffectDispatchObservation>,
     pub(crate) provider_binding: Option<ProviderReceiptV1>,
     pub(crate) provider_binding_attempt: Option<u32>,
@@ -270,8 +272,8 @@ impl AutomationStore {
                 owner_agent_id, run_id, step_id, attempt, intent_digest,
                 payload_digest, provider_effect_key, wire_payload, binding_digest,
                 destination_id, authority_epoch, grant_id, grant_nonce_digest,
-                record_command_id, started_at_ms
-             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                record_command_id, started_at_ms, append_profile_version
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)",
         )
         .bind(owner)
         .bind(run_id)
@@ -465,13 +467,13 @@ impl AutomationStore {
             }
             "INSERT INTO taskflow_effect_dispatch_reconciliations
              (owner_agent_id, run_id, step_id, attempt, observation,
-              evidence_digest, observed_at_ms, provider_receipt_json)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+              evidence_digest, observed_at_ms, provider_receipt_json, append_profile_version)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)"
         } else {
             "INSERT INTO taskflow_effect_dispatch_observations
              (owner_agent_id, run_id, step_id, attempt, observation,
-              evidence_digest, observed_at_ms, provider_receipt_json)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+              evidence_digest, observed_at_ms, provider_receipt_json, append_profile_version)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)"
         };
         sqlx::query(statement)
             .bind(owner)
@@ -635,6 +637,14 @@ pub(crate) fn effect_attempt_from_row(
             row.try_get("started_at_ms")
                 .map_err(|_| TaskFlowError::Corrupt("effect start timestamp".to_string()))?,
         )?,
+        append_profile_version: match row
+            .try_get::<i64, _>("append_profile_version")
+            .map_err(|_| TaskFlowError::Corrupt("effect append profile column".to_string()))?
+        {
+            0 => 0,
+            1 => 1,
+            _ => return Err(TaskFlowError::Corrupt("effect append profile".to_string())),
+        },
         observation,
         provider_binding: None,
         provider_binding_attempt: row

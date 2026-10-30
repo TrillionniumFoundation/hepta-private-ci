@@ -147,6 +147,18 @@ pub(crate) async fn bind_provider_receipt(
     ack: Option<(&ProviderEffectAck, ProviderEffectAckSource)>,
 ) -> Result<Option<String>, TaskFlowError> {
     let (kind, evidence_digest, observed_at_ms) = observation;
+    let unresolved = attempt
+        .observation
+        .as_ref()
+        .is_none_or(|observation| observation.kind == EffectDispatchObservationKind::Indeterminate);
+    if attempt.append_profile_version == 0
+        && attempt.provider_binding.is_none()
+        && (ack.is_some() || (unresolved && kind != EffectDispatchObservationKind::Indeterminate))
+    {
+        return Err(TaskFlowError::Conflict(
+            "legacy provider history has no original operation binding".to_string(),
+        ));
+    }
     let next = ack.map(|(ack, source)| ProviderReceiptV1 {
         schema_version: 1,
         source,
@@ -178,8 +190,8 @@ pub(crate) async fn bind_provider_receipt(
         sqlx::query(
             "INSERT INTO taskflow_effect_provider_bindings (
                 owner_agent_id, run_id, step_id, attempt,
-                receipt_json, receipt_digest, observed_at_ms
-             ) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                receipt_json, receipt_digest, observed_at_ms, append_profile_version
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, 1)",
         )
         .bind(owner)
         .bind(&attempt.run_id)
@@ -348,6 +360,29 @@ pub(crate) async fn verify_provider_receipts(
             {
                 return Err(corrupt());
             }
+        }
+    }
+    // Verify the exact published writer guards, including the closed legacy
+    // profile. Bazel already includes every migration as compile_data.
+    for definition in include_str!("../migrations/0022_effect_append_profile.sql")
+        .split("CREATE TRIGGER ")
+        .skip(1)
+    {
+        let (body, _) = definition.split_once("\nEND;").ok_or_else(corrupt)?;
+        let name = body.split_whitespace().next().ok_or_else(corrupt)?;
+        let expected = format!("CREATE TRIGGER {body}\nEND");
+        let actual: Option<String> =
+            sqlx::query_scalar("SELECT sql FROM sqlite_schema WHERE type='trigger' AND name=?")
+                .bind(name)
+                .fetch_optional(&mut *transaction)
+                .await
+                .map_err(|_| TaskFlowError::Unavailable)?;
+        if actual
+            .as_deref()
+            .map(|sql| sql.split_whitespace().collect::<String>())
+            != Some(expected.split_whitespace().collect::<String>())
+        {
+            return Err(corrupt());
         }
     }
     let mut cursor = (String::new(), String::new(), 0_i64);

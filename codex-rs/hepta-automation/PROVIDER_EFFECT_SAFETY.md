@@ -16,11 +16,15 @@ After contact, an acknowledgement is a fact about the existing attempt. A later 
 
 ## Receipts and uncertainty
 
-Migration `0021` adds versioned provider receipts to the original ledger and pins the first binding to its actual attempt. Receipt identity includes the stable key, payload digest, provider operation ID digest, state, and actual dispatch-response or status-lookup provenance. The first binding and each attempt's observation/reconciliation remain append-only.
+Migration `0021` adds versioned provider receipts to the original ledger and pins the first binding to its actual attempt. Receipt identity includes the stable key, payload digest, provider operation ID digest, state, and actual dispatch-response or status-lookup provenance. The first binding and each attempt's observation/reconciliation remain append-only. The current `ProviderEffectAck` has no provider signature. Its source and digest preserve the adapter observation; endpoint authentication remains the adapter's responsibility.
 
 An original `Indeterminate` observation stays in history. Recovery appends terminal reconciliation; consumers use `final_outcome` for the known result. A later unknown lookup cannot release a known operation ID. Ordinary 404 / `NotFound` is unresolved and cannot authorize replay. The original owner's explicit absence API remains separate and cannot turn a known accepted operation into absence.
 
 One narrow reverse-provenance continuation is permitted: physical dispatch is awaiting its response when a concurrent lookup first records `Accepted`. Its later `Completed` dispatch response may append a terminal fact only for that same bound attempt, key, payload, and provider operation while the effective observation is indeterminate. The receipt remains labelled `DispatchResponse`. A different operation, rejection after acceptance, a binding from another attempt, or replacement of an existing terminal result is rejected.
+
+Migration `0022` freezes an append profile on every existing ledger table. Pre-upgrade rows remain profile 0; current writers must explicitly append profile 1. SQLite rejects the old INSERT forms even on connections opened before migration. This is a writer compatibility gate, not authentication or additional execution authority.
+
+A pre-upgrade attempt without a complete typed binding remains recovery-only: later Accepted, Completed, opaque terminal evidence, or an absence claim cannot reconstruct a discarded original operation ID. Existing terminal history stays readable, and an existing full v21 binding may continue under its original operation. New Unknown → Accepted → Unknown → Completed recovery remains supported across restart. Old migration files and checksums are preserved.
 
 Receipts have a 1024-byte limit. Reads cap materialization at the rejection boundary, and startup scans bounded pages. Reopen checks immutable triggers, JSON/digest agreement, exact identity and attempt association, observation/reconciliation consistency, and whole-step identity continuity. Old migration checksums are unchanged.
 

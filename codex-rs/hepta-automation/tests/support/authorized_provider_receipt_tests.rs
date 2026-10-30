@@ -333,6 +333,19 @@ async fn taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurr
         .await
         .expect("pending");
     assert_eq!(pending[0].provider_ack, Some(accepted));
+    started.driver.adapter_mut().lookup_result = ProviderEffectLookup::Unknown;
+    assert!(matches!(
+        started.driver.lookup(&pending[0]).await,
+        AuthorizedProviderEffectLookup::Unresolved
+    ));
+    assert_eq!(
+        started
+            .store
+            .pending_authorized_taskflow_effects(8)
+            .await
+            .expect("retained Accepted after Unknown"),
+        pending
+    );
 
     let correct = AuthorizedEffectProviderReceipt::from_provider_ack(
         provider_ack(
