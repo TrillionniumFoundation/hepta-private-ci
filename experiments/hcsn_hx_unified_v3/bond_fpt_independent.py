@@ -196,6 +196,14 @@ def independent_bond(*, x: float, drift: float, sigma: float, discount: float,
                 fp.absolute_error_bound, math.ulp(fp.probability),
                 math.ulp(fp.discounted)):
             raise ArithmeticError('First-passage coupon duration unresolved in f64')
+        # The tiny-F carveout above can still amplify independent F/G
+        # roundoff by 1/q. For every tau <= horizon, the default-time
+        # coupon contribution obeys 0 <= F-G <= F*(1-exp(-q*h)).
+        # Check this *necessary physical envelope* before dividing by q.
+        # It is a refusal guard, not a certified numerical error bound.
+        if (default_duration_num < 0. or default_duration_num >
+                fp.probability*(-math.expm1(-discount_horizon))):
+            raise ArithmeticError('First-passage coupon domination unresolved in f64')
         survival_annuity=-math.expm1(-discount_horizon)/discount
         coupon_pv=coupon_per_bond*(
             survival*survival_annuity+default_duration_num/discount)
