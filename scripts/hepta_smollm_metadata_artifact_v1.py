@@ -29,6 +29,7 @@ ROOT_TEXT = {
     "final-source-diff.patch",
 }
 ROOT_JSON = {
+    "integrated-execution-source.json",
     "host.json",
     "model-target.json",
     "native-input.json",
@@ -39,6 +40,10 @@ ROOT_JSON = {
     "evidence-index.json",
 }
 COMMANDS = (
+    "execution-source-controls",
+    "execution-source-v2-controls",
+    "execution-source-v3-controls",
+    "execution-source-v4-controls",
     "required-cli-build",
     "scoped-rust",
     "ordinary-native",

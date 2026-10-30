@@ -36,10 +36,10 @@ jobs:
       TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
       HEPTA_CI_LANE: source-head
-      HEPTA_PAIRED_EXECUTION_PROFILE: hepta-integrated-chain-execution-v3
-      CHAIN_SHA: 89218d818a1766c5610b64f09d75fc3d2ff6007d
-      RESEARCH_CHAIN_SHA: 89218d818a1766c5610b64f09d75fc3d2ff6007d
-      OBSERVATION_CHAIN_SHA: 89218d818a1766c5610b64f09d75fc3d2ff6007d
+      HEPTA_PAIRED_EXECUTION_PROFILE: hepta-integrated-chain-execution-v4
+      CHAIN_SHA: c16507147b65285ea94dead22d3b93c5db7295af
+      RESEARCH_CHAIN_SHA: c16507147b65285ea94dead22d3b93c5db7295af
+      OBSERVATION_CHAIN_SHA: c16507147b65285ea94dead22d3b93c5db7295af
       CARGO_BUILD_JOBS: "2"
       CARGO_PROFILE_DEV_DEBUG: "0"
       CARGO_PROFILE_TEST_DEBUG: "0"
@@ -161,6 +161,7 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/execution-source-controls.json" --timeout-seconds 60 --minimum-tests 16 -- python3 scripts/test_hepta_smollm_execution_source_v1.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/execution-source-v2-controls.json" --timeout-seconds 60 --minimum-tests 7 -- python3 scripts/test_hepta_smollm_execution_source_v2.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/execution-source-v3-controls.json" --timeout-seconds 60 --minimum-tests 8 -- python3 scripts/test_hepta_smollm_execution_source_v3.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/execution-source-v4-controls.json" --timeout-seconds 60 --minimum-tests 9 -- python3 scripts/test_hepta_smollm_execution_source_v4.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/observation-boundary-controls.json" --timeout-seconds 60 --minimum-tests 8 -- python3 scripts/test_hepta_smollm_observed_execution_v1.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/observation-owner-controls.json" --timeout-seconds 60 --minimum-tests 8 -- python3 ../chain-observed/scripts/test_llm_runtime_observed_execution_v1.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/live-control-boundary-controls.json" --timeout-seconds 60 --minimum-tests 9 -- python3 scripts/test_hepta_smollm_live_control_v1.py -v
@@ -385,7 +386,7 @@ jobs:
         if: always()
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/metadata-export-controls.json" --timeout-seconds 60 --minimum-tests 14 -- python3 -B scripts/test_hepta_smollm_metadata_artifact_v1.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/metadata-export-controls.json" --timeout-seconds 60 --minimum-tests 15 -- python3 -B scripts/test_hepta_smollm_metadata_artifact_v1.py -v
       - name: Preserve actual outcome and any formatter patch
         if: always()
         env:

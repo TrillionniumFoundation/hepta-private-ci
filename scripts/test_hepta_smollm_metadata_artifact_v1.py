@@ -99,6 +99,44 @@ class MetadataArtifactTests(unittest.TestCase):
         self.assertFalse(result["checkpoint_payloads_exported"])
         self.assertFalse(result["independent_payload_replay_available"])
 
+    def test_exact_source_proof_and_all_closed_profile_controls_retain_original_bytes(
+        self,
+    ):
+        proof = {
+            "schema": "hepta-smollm-public-initial-execution-source-verified-v1",
+            "profile": "hepta-integrated-chain-execution-v4",
+            "chain_commit": "b" * 40,
+            "verified_source_files": 33,
+            "product_qualification": False,
+            "installation_authorized": False,
+        }
+        self.file("integrated-execution-source.json", json.dumps(proof).encode())
+        expected = {"integrated-execution-source.json", "evidence-index.json"}
+        for name in (
+            "execution-source-controls",
+            "execution-source-v2-controls",
+            "execution-source-v3-controls",
+            "execution-source-v4-controls",
+        ):
+            receipt = name + ".json"
+            log = receipt + "." + "a" * 32 + ".log"
+            self.file(receipt, b'{"status":"failed","observed_failed_tests":1}')
+            self.file(log, b"original source refusal\n")
+            expected.update((receipt, log))
+        self.file("execution-source-v99-controls.json", b'{"status":"passed"}')
+        self.file("execution-source-v4-controls/checkpoint.json", b'{"weights":[1]}')
+        self.index()
+        result = self.run_export()
+        self.assertEqual(set(result["files"]), expected)
+        self.assertEqual(result["omitted_file_count"], 2)
+        for relative in expected:
+            self.assertEqual(
+                (self.output / relative).read_bytes(),
+                (self.root / relative).read_bytes(),
+            )
+        self.assertFalse(result["product_qualification"])
+        self.assertFalse(result["independent_payload_replay_available"])
+
     def test_omitted_checkpoint_hash_does_not_require_payload_read_or_claim_retention(
         self,
     ):

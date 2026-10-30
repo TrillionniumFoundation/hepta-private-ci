@@ -107,9 +107,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: ${{ github.head_ref == 'fix/hepta-provider-operation-binding-20261030' && '89218d818a1766c5610b64f09d75fc3d2ff6007d' || github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && '540d72356a921da31dde1113537382e5c0f0c4fd' || '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' }}
+      CHAIN_SOURCE_SHA: ${{ github.head_ref == 'fix/hepta-provider-operation-binding-20261030' && 'c16507147b65285ea94dead22d3b93c5db7295af' || github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && '540d72356a921da31dde1113537382e5c0f0c4fd' || '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' }}
       CHAIN_BASE_SHA: ${{ github.head_ref == 'fix/hepta-provider-operation-binding-20261030' && '1d11f875493f8125e36b9adceacb342df108e5e5' || '9fedf7ecbbe07177069c030592b4e03dcffebb81' }}
-      HEPTA_PON_CHAIN_SOURCE: ${{ github.head_ref == 'fix/hepta-provider-operation-binding-20261030' && (matrix.lane == 'source-head' && '89218d818a1766c5610b64f09d75fc3d2ff6007d' || 'bfd6b6a6a8d3b32ca130d179f6e8d80655f1c83f') || github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && (matrix.lane == 'source-head' && '540d72356a921da31dde1113537382e5c0f0c4fd' || 'cff37ba978684ad1750d66b120ec2913d7c13f8f') || (matrix.lane == 'source-head' && '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' || 'f52fadb096d98589a5ac6c573659764815cae04d') }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ github.head_ref == 'fix/hepta-provider-operation-binding-20261030' && (matrix.lane == 'source-head' && 'c16507147b65285ea94dead22d3b93c5db7295af' || 'd1b8ae970bb5e014b6feaa49030823e1d8228c90') || github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && (matrix.lane == 'source-head' && '540d72356a921da31dde1113537382e5c0f0c4fd' || 'cff37ba978684ad1750d66b120ec2913d7c13f8f') || (matrix.lane == 'source-head' && '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' || 'f52fadb096d98589a5ac6c573659764815cae04d') }}
       TRNM_FROM_ZERO_HOST_OWNER: ${{ github.run_id }}.${{ github.run_attempt }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683

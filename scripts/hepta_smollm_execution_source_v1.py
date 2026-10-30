@@ -31,6 +31,10 @@ PROFILE_V3 = "hepta-integrated-chain-execution-v3"
 CHAIN_COMMIT_V3 = "89218d818a1766c5610b64f09d75fc3d2ff6007d"
 MANIFEST_NAME_V3 = "smollm2-public-initial-v2.execution-sources-v3.json"
 MANIFEST_SHA256_V3 = "9dcd7666bb6462712356ee73a5f17d5d3fdecfea44a3ff8dad01dca10a25dfa3"
+PROFILE_V4 = "hepta-integrated-chain-execution-v4"
+CHAIN_COMMIT_V4 = "c16507147b65285ea94dead22d3b93c5db7295af"
+MANIFEST_NAME_V4 = "smollm2-public-initial-v2.execution-sources-v4.json"
+MANIFEST_SHA256_V4 = "cc88782c649504cbab886ba5040f183e27fb87d278d682492d68253101bc8f31"
 HISTORICAL_PROFILE_SHA256 = (
     "695d12e8dce5c289a063effdbcc2289148b4708a4a6ead77199da734e0dba2c8"
 )
@@ -64,6 +68,8 @@ def selected_source(profile):
         return CHAIN_COMMIT_V2, MANIFEST_NAME_V2, MANIFEST_SHA256_V2
     if profile == PROFILE_V3:
         return CHAIN_COMMIT_V3, MANIFEST_NAME_V3, MANIFEST_SHA256_V3
+    if profile == PROFILE_V4:
+        return CHAIN_COMMIT_V4, MANIFEST_NAME_V4, MANIFEST_SHA256_V4
     raise ValueError("explicit closed execution-source profile required")
 
 
@@ -223,7 +229,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--chain", type=Path, required=True)
     parser.add_argument(
-        "--profile", choices=[PROFILE, PROFILE_V2, PROFILE_V3], required=True
+        "--profile",
+        choices=[PROFILE, PROFILE_V2, PROFILE_V3, PROFILE_V4],
+        required=True,
     )
     args = parser.parse_args()
     print(json.dumps(verify(args.chain, args.profile), sort_keys=True))
