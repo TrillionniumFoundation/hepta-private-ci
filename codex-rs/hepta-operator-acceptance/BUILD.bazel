@@ -1,4 +1,5 @@
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
+load("//:defs.bzl", "workspace_root_test")
 
 rust_library(
     name = "hepta-operator-acceptance-lib",
@@ -23,7 +24,7 @@ rust_library(
 )
 
 rust_test(
-    name = "hepta-operator-acceptance-tests",
+    name = "hepta-operator-acceptance-tests-bin",
     crate = ":hepta-operator-acceptance-lib",
     rustc_flags = select({
         "@platforms//os:windows": [
@@ -32,10 +33,19 @@ rust_test(
         ],
         "//conditions:default": [],
     }),
+    tags = ["manual"],
     deps = [
         "@crates//:pretty_assertions",
         "@crates//:tempfile",
     ],
+)
+
+workspace_root_test(
+    name = "hepta-operator-acceptance-tests",
+    chdir_workspace_root = False,
+    tags = ["no-remote"],
+    test_bin = ":hepta-operator-acceptance-tests-bin",
+    workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
 )
 
 rust_binary(

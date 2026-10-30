@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# macOS can expose the same private temporary directory through /var and
+# /private/var. Give children its physical path so strict root validation does
+# not reject an alias supplied by the test runner.
+test_tmp_root="${TMPDIR:-${TEST_TMPDIR:-}}"
+if [[ -z "${test_tmp_root}" ]]; then
+  echo "the test launcher requires TMPDIR or TEST_TMPDIR" >&2
+  exit 1
+fi
+TMPDIR="$(cd -- "${test_tmp_root}" && pwd -P)"
+export TMPDIR
+
 resolve_runfile() {
   local logical_path="$1"
   local workspace_logical_path="${logical_path}"

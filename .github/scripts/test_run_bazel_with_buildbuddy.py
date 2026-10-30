@@ -115,7 +115,7 @@ class RunBazelWithBuildBuddyTest(unittest.TestCase):
             )
 
     def test_windows_cross_ci_configuration_follows_remote_configuration(self) -> None:
-        env = {"BUILDBUDDY_API_KEY": "fork-token"}
+        env = {"BUILDBUDDY_API_KEY": "fork-token", "RUNNER_OS": "Windows"}
 
         self.assertEqual(
             run_bazel_with_buildbuddy.bazel_args_with_remote_config(

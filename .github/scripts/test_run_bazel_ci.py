@@ -204,6 +204,26 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             Path(pattern_file).exists(), "retired Bazel must release its target file"
         )
 
+    def test_keyed_cache_only_native_windows_keeps_msvc_c_archives(self) -> None:
+        self.env["BUILDBUDDY_API_KEY"] = "test-only-token"
+        result, calls = self.run_wrapper(
+            "--",
+            "build",
+            "--platforms=//:windows_x86_64_msvc",
+            "--",
+            "//fake:target",
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 1)
+        args = calls[0]
+        self.assertIn("--config=buildbuddy-generic", args)
+        self.assertIn("--platforms=//:windows_x86_64_msvc", args)
+        self.assertIn("--extra_toolchains=//:local_windows_msvc_cc_toolchain", args)
+        self.assertIn("--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0", args)
+        self.assertNotIn("--config=buildbuddy-generic-rbe", args)
+        self.assertNotIn("--platforms=//:windows_x86_64_gnullvm", args)
+        self.assertEqual(args[args.index("--") + 1 :], ["//fake:target"])
+
     def test_windows_target_files_preserve_test_and_coverage_failures(self) -> None:
         self.env["BAZEL_PROBE_FAIL"] = "1"
         physical = self.root / "physical-arguments.jsonl"

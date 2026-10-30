@@ -235,8 +235,13 @@ def bazel_args_with_remote_config(
         raise ValueError("expected a Bazel command")
 
     config = remote_config(args, env)
+    local_args = (
+        bazel_args_without_remote_execution(args, env)
+        if config is None or not uses_remote_execution(args)
+        else list(args)
+    )
     if config is None:
-        configured_args = bazel_args_without_remote_execution(args, env)
+        configured_args = local_args
     else:
         # `remote_config()` returns a configuration only when this key is present.
         api_key = env["BUILDBUDDY_API_KEY"]
@@ -249,9 +254,9 @@ def bazel_args_with_remote_config(
         # options out of positional payloads and lets later CI configs override
         # shared RBE defaults such as the Windows cross-compilation exec platforms.
         configured_args = [
-            *args[: command_idx + 1],
+            *local_args[: command_idx + 1],
             *remote_args,
-            *args[command_idx + 1 :],
+            *local_args[command_idx + 1 :],
         ]
 
     try:
