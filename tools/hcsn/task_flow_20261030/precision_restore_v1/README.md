@@ -37,3 +37,26 @@ The suite includes a separate Python process with JAX_ENABLE_X64=0 to prove
 fail-closed behavior at restore and integration against the real flow/api.py.
 It does not certify default FP32 kernel error, mixed-precision training,
 task utility, secure source custody, or foundation-model performance.
+
+## Executable cold-process continuation (versioned opt-in path)
+
+The original frozen flow/validate.py --recover uses api.load_checkpoint and
+keeps its historical evidence untouched. For new evidence use the versioned
+safe runner instead:
+
+    JAX_ENABLE_X64=1 python -m tools.hcsn.task_flow_20261030.precision_restore_v1.recover \
+      --checkpoint INPUT_V1_OR_V2.npz --destination NEW_V2.npz --precision float64
+
+The runner checks declared precision and all loaded arrays BEFORE advancing
+any flow state, then performs the original two-gap/two-observation suffix using
+the actual finite-flow model and writes a new V2 checkpoint. It does not
+overwrite existing artifacts. It rejects x64-disabled restores without
+creating an output file. The paired-process tests compare every parameter and
+state array bit-for-bit for both float32 and float64.
+
+Hosted source-head test: 21/21 passing on JAX 0.4.38 / NumPy 1.26.4 /
+Python 3.11: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41068335242
+
+This is exact cold-process continuation of the selected deterministic
+finite model, not proof of FP32 accuracy against independent SciPy, all
+physical input schedules, mixed-precision gradients, or production security.
