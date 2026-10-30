@@ -12,7 +12,13 @@ use sha2::Sha256;
 /// the canonical path or its exact URI rendering is accepted; arbitrary
 /// symlink, parent-component and relative aliases do not gain authority.
 pub(crate) fn canonical_workspace_path(path: &Path) -> Option<PathBuf> {
-    if !path.is_absolute() {
+    // Windows path equality can normalize a `child/..` spelling into an
+    // accepted URI path. Reject traversal lexically before canonicalization.
+    if !path.is_absolute()
+        || path
+            .components()
+            .any(|component| component.as_os_str() == std::ffi::OsStr::new(".."))
+    {
         return None;
     }
     let canonical = std::fs::canonicalize(path).ok()?;
