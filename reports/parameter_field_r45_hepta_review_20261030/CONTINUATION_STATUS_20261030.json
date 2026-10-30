@@ -1,0 +1,268 @@
+{
+  "all_blockers_closed": false,
+  "already_closed": [
+    {
+      "commit": "51749cfc93452ba7c235543c1529568a75368f2d",
+      "evidence": [
+        "E10"
+      ],
+      "item": "source_publication"
+    },
+    {
+      "commit": "522b344da7635711e7cee617243061db44e212d5",
+      "evidence": [
+        "E11"
+      ],
+      "item": "theory_comments_and_decision_matrix_publication",
+      "verified_bytes": 90840,
+      "verified_files": 6
+    },
+    {
+      "at_utc": "2026-10-30T02:17:18.526531+00:00",
+      "evidence": [
+        "E09"
+      ],
+      "item": "historical_real_import_closure",
+      "not_scientific_resource_qualification": true
+    },
+    {
+      "evidence": [
+        "E04"
+      ],
+      "item": "authorized_cleanup_operation_and_reappearance_reconciliation",
+      "persistent_reclamation_not_proven": true
+    },
+    {
+      "evidence": [
+        "E05",
+        "E06",
+        "E07"
+      ],
+      "item": "scoped_readonly_owned_cache_measurement"
+    },
+    {
+      "evidence": [
+        "E02",
+        "E03"
+      ],
+      "item": "measured_launcher_start",
+      "not_scientific_start": true
+    }
+  ],
+  "alternative_capacity": {
+    "alternative_controller_started": false,
+    "alternative_launch_stopped_by_original_launch_ownership": true,
+    "assessment_at_utc": "2026-10-30T03:48:20.545801+00:00",
+    "evidence": [
+      "E08"
+    ],
+    "existing_frozen_fullstudy_runner_interface_verified": false,
+    "historical_hosted_ci_success_is_not_fullstudy_qualification": true,
+    "status": "NO_READY_FROZEN_FULLSTUDY_RUNNER_VERIFIED"
+  },
+  "artifact_kind": "historical_execution_status_snapshot",
+  "as_of_display": "2026-10-30 00:24:34 EDT",
+  "as_of_utc": "2026-10-30T04:24:34.447574+00:00",
+  "capacity": {
+    "available_disk_bytes": 6346141696,
+    "consecutive_qualified_samples": 0,
+    "disk_single_sample_pass": true,
+    "effective_available_ram_bytes": 707678208,
+    "evidence": [
+      "E01",
+      "E12"
+    ],
+    "oom_process_attribution": "NOT_ESTABLISHED",
+    "ram_shortfall_bytes": 1171369984,
+    "ram_single_sample_pass": false,
+    "required_consecutive_samples": 3,
+    "resource_window_passed_as_of": false,
+    "sample_interval_seconds": 10,
+    "shared_oom_count": 4,
+    "shared_oom_kill_count": 4,
+    "unchanged_disk_threshold_bytes": 2415919104,
+    "unchanged_ram_threshold_bytes": 1879048192
+  },
+  "cleanup": {
+    "evidence": [
+      "E04"
+    ],
+    "host_recheck_files": 4758,
+    "host_recheck_logical_bytes": 103154374,
+    "host_recheck_seconds_after": 42.3812189500004,
+    "logical_bytes_unlinked": 103154374,
+    "persistent_reclamation_proven": false,
+    "reappearance_mechanism": "UNKNOWN",
+    "repeated_deletion_loop": false,
+    "unlinks_returned_successfully": 4758
+  },
+  "display_timezone": "America/New_York",
+  "evidence_descriptors": [
+    {
+      "bytes": 762,
+      "id": "E01",
+      "sha256": "37cde87abba588458715f3a0cabbb95137f18efc2b5bc715caa35ba2fbe46c70",
+      "workspace_relative_path": "publication_bridge_20261030/CONTINUATION_STATUS_PUBLICATION/SNAPSHOT.json"
+    },
+    {
+      "bytes": 989,
+      "id": "E02",
+      "sha256": "a05cc2e0fbf57534b23417d322899463b73e60229f7b87959d807e60856c368e",
+      "workspace_relative_path": "fullstudy_execution04_ops/wait4_launcher/START.json"
+    },
+    {
+      "bytes": 1147,
+      "id": "E03",
+      "sha256": "540e65a913b3356f0efea7c1f166b12163acdd86ac374f2edd71c5dda788542c",
+      "workspace_relative_path": "fullstudy_execution04_ops/detached_launcher/RELEASED.json"
+    },
+    {
+      "bytes": 4754,
+      "id": "E04",
+      "sha256": "add9f840199ce145ec9664221ae6a59b7ee9926039bfa963eb06bb396b88fd24",
+      "workspace_relative_path": "continuation_recovery_20261030/current_readiness_0253/capacity_reconcile/FINAL_RECONCILIATION.json"
+    },
+    {
+      "bytes": 11914,
+      "id": "E05",
+      "sha256": "5cdcba58648e80e1c787b784662d56383bed8458ed7a206569b619f8dabe1d7a",
+      "workspace_relative_path": "continuation_recovery_20261030/current_readiness_0253/file_cache_residency_20261030T040749/RESIDENCY.json"
+    },
+    {
+      "bytes": 4503,
+      "id": "E06",
+      "sha256": "e0e27962cf66570bce6de75602491620d241f00c9077fbfd73a52270b71e0d0c",
+      "workspace_relative_path": "continuation_recovery_20261030/current_readiness_0253/small_file_cache_residency_20261030T041129/RESIDENCY.json"
+    },
+    {
+      "bytes": 1705,
+      "id": "E07",
+      "sha256": "4b10507996e4a11b3a3f52d66b25b25a368d6eb09c6237262dc62fc0f474c690",
+      "workspace_relative_path": "continuation_recovery_20261030/current_readiness_0253/WORKSPACE_OWNED_CACHE_BOUND.json"
+    },
+    {
+      "bytes": 15436,
+      "id": "E08",
+      "sha256": "18e3187bd1d7695c30a3d18933f507830f25e858cdaf868e159311fe98671a69",
+      "workspace_relative_path": "continuation_recovery_20261030/current_readiness_0253/ALT_CAPACITY_ASSESSMENT.json"
+    },
+    {
+      "bytes": 2228,
+      "id": "E09",
+      "sha256": "477b5719c790c05b5162199e76c2de2c1711852226ae7fdb2a68b2a5df63b00d",
+      "workspace_relative_path": "fullstudy_execution04_ops/prelaunch/import_gate/IMPORT_CLOSURE.json"
+    },
+    {
+      "bytes": 1937,
+      "id": "E10",
+      "sha256": "5acf21093bf567a8c5dbddd0a48b0977ac8cf845dd6e6aff91b09700796bad57",
+      "workspace_relative_path": "fullstudy_execution04_ops/prelaunch/SOURCE_PUBLICATION_VERIFIED.json"
+    },
+    {
+      "bytes": 11123,
+      "id": "E11",
+      "sha256": "07f2c3295b39819dc1b42435081fe81e63d3531b9767dd23b9fe21f661610e56",
+      "workspace_relative_path": "publication_bridge_20261030/report_remote_readback_522b344da763/REMOTE_BYTES_VERIFIED.json"
+    },
+    {
+      "bytes": 5259,
+      "id": "E12",
+      "sha256": "c1a541cd8fca9e43c710cfd5ccf1cb76793a28712d66eed65a238f158de0e57e",
+      "workspace_relative_path": "fullstudy_execution04_ops/registrations/initial/PIPELINE_CONFIG.json"
+    }
+  ],
+  "execution": {
+    "actual_gradient_microsteps_in_this_episode": 0,
+    "children_observed": 0,
+    "completed_jobs": 0,
+    "evidence": [
+      "E01"
+    ],
+    "phase": "initial_capacity_admission",
+    "planned_gradient_microsteps": 343808,
+    "planned_is_not_actual": true,
+    "planned_primary_jobs": 14,
+    "required_stage_acks": 17,
+    "science_zero_basis": "initial_capacity_admission with no supervisor children and no completed jobs",
+    "scientific_work_started_in_this_episode": false,
+    "verified_stage_acks": 0
+  },
+  "execution_episode": "execution04_durable_20261030",
+  "five_priorities": [
+    {
+      "priority": 1,
+      "question": "合法候选是否产生不同 guard 后状态",
+      "required": "合法后继差、首次分歧、fallback、真实成本；完整 A inactive 谓词",
+      "status": "PENDING_SCIENTIFIC_EVIDENCE"
+    },
+    {
+      "priority": 2,
+      "question": "价值标签是否与 baseline、clock、guard、budget 对齐",
+      "required": "完整分支状态上的 advantage 与误差/可得增益比较",
+      "status": "PENDING_SCIENTIFIC_EVIDENCE"
+    },
+    {
+      "priority": 3,
+      "question": "field 遗漏何种决策信息",
+      "required": "同动作空间的 field/full-state/history 比较及动作排序 witness",
+      "status": "PENDING_SCIENTIFIC_EVIDENCE"
+    },
+    {
+      "priority": 4,
+      "question": "参数场控制是否有独立净收益",
+      "required": "ordinary/fixed_taper 对照、独立任务、retention、总成本",
+      "status": "PENDING_SCIENTIFIC_EVIDENCE"
+    },
+    {
+      "priority": 5,
+      "question": "Hepta 是否有额外适配性",
+      "required": "原 2×2 simple effects 与 interaction；再判断是否扩展 neuron 或 modality",
+      "status": "PENDING_SCIENTIFIC_EVIDENCE"
+    }
+  ],
+  "historical_extra_work_or_total_cpu_upper_bound_claimed_closed": false,
+  "launcher": {
+    "detached_release_at_utc": "2026-10-30T04:00:50.179354+00:00",
+    "evidence": [
+      "E02",
+      "E03"
+    ],
+    "started": true,
+    "supervisor_started_at_utc": "2026-10-30T04:00:50.249628+00:00"
+  },
+  "owned_file_cache": {
+    "cache_drop_or_fadvise_performed": false,
+    "evidence": [
+      "E05",
+      "E06",
+      "E07"
+    ],
+    "interpretation": "Covered task-owned file pages do not explain the observed RAM admission shortfall; no ownership attribution for global cache.",
+    "large_measurement_at_utc": "2026-10-30T04:09:01.735016+00:00",
+    "limitations": "Read-only mincore and inventory snapshots at different times; not atomic global memory measurement, guaranteed reclaimable bytes, or a future residency guarantee.",
+    "measured_file_count": 19051,
+    "measured_resident_page_bytes": 12288,
+    "nonempty_runtime_and_assets_logical_bytes_measured": 1446678132,
+    "remaining_workspace_file_page_upper_bound_at_inventory_bytes": 57715232,
+    "small_measurement_at_utc": "2026-10-30T04:11:33.010163+00:00"
+  },
+  "public_scope": "Operational summary and evidence identities only. Private snapshot contents, model/data/Paper TeX, service credentials and remote-storage object identities are not included.",
+  "public_source_links": {
+    "paper_commit": "https://github.com/TrillionniumFoundation/ICLR-2027/tree/f8df0a6075f58f3ab9431a889b773cdf8d6e771d/revision_2026-09-26-r45",
+    "review": "https://github.com/TrillionniumFoundation/hepta-private-ci/tree/522b344da7635711e7cee617243061db44e212d5/reports/parameter_field_r45_hepta_review_20261030",
+    "source_publication": "https://github.com/TrillionniumFoundation/hepta-private-ci/tree/51749cfc93452ba7c235543c1529568a75368f2d/operational/parameter_field_recovery04/publication"
+  },
+  "resource_block_is_scientific_negative_result": false,
+  "schema": "hepta.execution04.public-continuation-status.1",
+  "snapshot_read_at_utc": "2026-10-30T04:24:40.434060+00:00",
+  "status": "INITIAL_CAPACITY_ADMISSION_SCIENCE_NOT_STARTED_AS_OF",
+  "still_open": [
+    "current resource admission",
+    "14 original primary jobs",
+    "17 real stage archive upload/readback ACKs",
+    "26-seal analysis and 30-seal finalizer/literal restoration",
+    "registered postseal supplement and A global inactive predicate",
+    "final outer wait4 and terminal root closure",
+    "five scientific priorities"
+  ]
+}
