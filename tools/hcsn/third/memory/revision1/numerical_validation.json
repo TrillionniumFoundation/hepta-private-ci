@@ -1,0 +1,505 @@
+{
+  "passed": false,
+  "freeze_sha256": "70f8d7baf830de197342c46d6e4c1bab016defd94b82b48d759895018ddf69c5",
+  "source_sha256": {
+    "third/memory/data.py": "105de5ab92bb05df45c00229ed3504cdbe4ee6acf2283e98dbc874a5d3a5850a",
+    "third/memory/development.py": "8542ecdb42aecbce829956fcae7719f43ebbff073445787342b4eba66794ddd6",
+    "third/memory/diagnose.py": "c2fa7069708bf85ea8eee0bec6b021cd669341864efb97ee60f8f76f9becd640",
+    "third/memory/freeze.py": "f651923b9a889a2a8c5ccf59bcf54d58b46246520a9471c4f654fee66a977139",
+    "third/memory/models.py": "8efb11c6681609ac782f2e3255f540485eabdc3b960d535dace50e6316302bae",
+    "third/memory/reference.py": "14b861e0fd5a778a7a604c560ce5bb56a3eac0a81b7964d8d5c2da644f96e64f",
+    "third/memory/validate.py": "e8c59e0d24a0f08aebcfe8a9ad66a918a37aeca4e92d04602d53b146b58942a9",
+    "third/memory/protocol.json": "993067c81968614224746f91bcd7fc594d7406562df1e24a6041e9d478c2c447",
+    "next/ridge/models.py": "faced710339290ada09bea51630e921dc7edb21c53472e43425cef481dccaf82",
+    "next/common.py": "27a6b807db7a2a0d0ad3f49dbc34b1d2850dcf8bdab00cedb928a153489ac565",
+    "benchmarks/data.py": "7f086e58eb04429de723fb0383b8731cc1fc50eff643fd5e78993cf32fd0f63d",
+    "benchmarks/models.py": "212d0ed0c06bb9168c91363529fa30c25fa3668b1927ddc53483af8884ad5b88",
+    "next/full_kernel/kernel.py": "8b3142a4122c75b871f8969fd43a956780392b162ac99f4ac0d8a5a81bc50110",
+    "next/full_kernel/baseline_table.npz": "c77e407162061c06a9a34c5822b8751ebb2a71b1a5ff2a584c60e6b6ec63e764"
+  },
+  "graph_checks": [
+    {
+      "variant": "full_fixed",
+      "dtype": "float64",
+      "directional_errors": [
+        1.1449479697667186e-09,
+        1.0022810359444634e-10
+      ],
+      "numpy_jax_logit_error": 6.661338147750939e-16,
+      "solve": {
+        "maximum_condition": 10.804638168458954,
+        "maximum_relative_residual": 1.4963162382000789e-16,
+        "maximum_read": 0.6195089844436694,
+        "maximum_write_mass": 1.1566198420476987
+      },
+      "passed": true
+    },
+    {
+      "variant": "full_fixed",
+      "dtype": "float32",
+      "directional_errors": [
+        6.854534149169922e-06,
+        3.2901763916015625e-05
+      ],
+      "numpy_jax_logit_error": 1.1920928955078125e-07,
+      "solve": {
+        "maximum_condition": 10.804640954876726,
+        "maximum_relative_residual": 7.538303492538034e-08,
+        "maximum_read": 0.6195089221000671,
+        "maximum_write_mass": 1.1566200256347656
+      },
+      "passed": true
+    },
+    {
+      "variant": "full_mass",
+      "dtype": "float64",
+      "directional_errors": [
+        1.5258259308814637e-09,
+        1.406376751167393e-10
+      ],
+      "numpy_jax_logit_error": 1.1102230246251565e-15,
+      "solve": {
+        "maximum_condition": 21.405774271021237,
+        "maximum_relative_residual": 1.5167332218672845e-16,
+        "maximum_read": 0.8243344922153295,
+        "maximum_write_mass": 1.1566198420476987
+      },
+      "passed": true
+    },
+    {
+      "variant": "full_mass",
+      "dtype": "float32",
+      "directional_errors": [
+        7.927417755126953e-06,
+        0.00011129677295684814
+      ],
+      "numpy_jax_logit_error": 2.384185791015625e-07,
+      "solve": {
+        "maximum_condition": 21.405787065380938,
+        "maximum_relative_residual": 7.540669599848115e-08,
+        "maximum_read": 0.8243343830108643,
+        "maximum_write_mass": 1.1566200256347656
+      },
+      "passed": true
+    },
+    {
+      "variant": "sigmoid_fixed",
+      "dtype": "float64",
+      "directional_errors": [
+        5.113325457495321e-10,
+        6.909371685903665e-11
+      ],
+      "numpy_jax_logit_error": 2.220446049250313e-16,
+      "solve": {
+        "maximum_condition": 10.804638168458954,
+        "maximum_relative_residual": 1.5986002285372042e-16,
+        "maximum_read": 0.6187678509118959,
+        "maximum_write_mass": 1.1566198420476987
+      },
+      "passed": true
+    },
+    {
+      "variant": "sigmoid_fixed",
+      "dtype": "float32",
+      "directional_errors": [
+        2.7298927307128906e-05,
+        0.000330314040184021
+      ],
+      "numpy_jax_logit_error": 1.3663657227880321e-07,
+      "solve": {
+        "maximum_condition": 10.804640954876726,
+        "maximum_relative_residual": 7.210206121044394e-08,
+        "maximum_read": 0.6187678575515747,
+        "maximum_write_mass": 1.1566200256347656
+      },
+      "passed": true
+    },
+    {
+      "variant": "sigmoid_mass",
+      "dtype": "float64",
+      "directional_errors": [
+        1.4833173578310266e-10,
+        2.6577295919594235e-11
+      ],
+      "numpy_jax_logit_error": 4.440892098500626e-16,
+      "solve": {
+        "maximum_condition": 21.405774271021237,
+        "maximum_relative_residual": 1.788664348210881e-16,
+        "maximum_read": 0.8233241533695304,
+        "maximum_write_mass": 1.1566198420476987
+      },
+      "passed": true
+    },
+    {
+      "variant": "sigmoid_mass",
+      "dtype": "float32",
+      "directional_errors": [
+        2.0176172256469727e-05,
+        0.0002579689025878906
+      ],
+      "numpy_jax_logit_error": 3.5762786865234375e-07,
+      "solve": {
+        "maximum_condition": 21.405787065380938,
+        "maximum_relative_residual": 9.432026359945667e-08,
+        "maximum_read": 0.8233239650726318,
+        "maximum_write_mass": 1.1566200256347656
+      },
+      "passed": true
+    },
+    {
+      "variant": "c1_fixed",
+      "dtype": "float64",
+      "directional_errors": [
+        2.628104955881838e-10,
+        1.967165319527453e-11
+      ],
+      "numpy_jax_logit_error": 2.220446049250313e-16,
+      "solve": {
+        "maximum_condition": 10.804638168458954,
+        "maximum_relative_residual": 1.839498865553428e-16,
+        "maximum_read": 0.6237681209068058,
+        "maximum_write_mass": 1.1566198420476987
+      },
+      "passed": true
+    },
+    {
+      "variant": "c1_fixed",
+      "dtype": "float32",
+      "directional_errors": [
+        1.683831214904785e-05,
+        0.00020170211791992188
+      ],
+      "numpy_jax_logit_error": 2.384185791015625e-07,
+      "solve": {
+        "maximum_condition": 10.804640954876726,
+        "maximum_relative_residual": 6.890216042165775e-08,
+        "maximum_read": 0.6237680315971375,
+        "maximum_write_mass": 1.1566200256347656
+      },
+      "passed": true
+    },
+    {
+      "variant": "c1_mass",
+      "dtype": "float64",
+      "directional_errors": [
+        7.800386725431707e-10,
+        6.24645196678486e-11
+      ],
+      "numpy_jax_logit_error": 8.881784197001252e-16,
+      "solve": {
+        "maximum_condition": 21.405774271021237,
+        "maximum_relative_residual": 1.852565052659598e-16,
+        "maximum_read": 0.8310453591510298,
+        "maximum_write_mass": 1.1566198420476987
+      },
+      "passed": true
+    },
+    {
+      "variant": "c1_mass",
+      "dtype": "float32",
+      "directional_errors": [
+        2.4052336812019348e-05,
+        6.378814578056335e-05
+      ],
+      "numpy_jax_logit_error": 4.172325134277344e-07,
+      "solve": {
+        "maximum_condition": 21.405787065380938,
+        "maximum_relative_residual": 6.878217106986995e-08,
+        "maximum_read": 0.8310451507568359,
+        "maximum_write_mass": 1.1566200256347656
+      },
+      "passed": true
+    },
+    {
+      "variant": "memory_fixed",
+      "dtype": "float64",
+      "directional_errors": [
+        3.6259564795138033e-10,
+        2.5457920493909825e-11
+      ],
+      "numpy_jax_logit_error": 2.220446049250313e-16,
+      "solve": {
+        "maximum_condition": 10.804638168458954,
+        "maximum_relative_residual": 2.3398670260688023e-16,
+        "maximum_read": 0.6049184839210545,
+        "maximum_write_mass": 1.1566198420476987
+      },
+      "passed": true
+    },
+    {
+      "variant": "memory_fixed",
+      "dtype": "float32",
+      "directional_errors": [
+        5.199015140533447e-05,
+        1.2263655662536621e-05
+      ],
+      "numpy_jax_logit_error": 1.7881393432617188e-07,
+      "solve": {
+        "maximum_condition": 10.804640954876726,
+        "maximum_relative_residual": 8.203942059026303e-08,
+        "maximum_read": 0.6049184203147888,
+        "maximum_write_mass": 1.1566200256347656
+      },
+      "passed": true
+    },
+    {
+      "variant": "memory_mass",
+      "dtype": "float64",
+      "directional_errors": [
+        1.6473692965313091e-09,
+        1.3968642909034656e-10
+      ],
+      "numpy_jax_logit_error": 6.661338147750939e-16,
+      "solve": {
+        "maximum_condition": 21.405774271021237,
+        "maximum_relative_residual": 1.8084229672069284e-16,
+        "maximum_read": 0.8042039666672796,
+        "maximum_write_mass": 1.1566198420476987
+      },
+      "passed": true
+    },
+    {
+      "variant": "memory_mass",
+      "dtype": "float32",
+      "directional_errors": [
+        6.261467933654785e-05,
+        0.00010235607624053955
+      ],
+      "numpy_jax_logit_error": 1.7881393432617188e-07,
+      "solve": {
+        "maximum_condition": 21.405787065380938,
+        "maximum_relative_residual": 8.241156024269003e-08,
+        "maximum_read": 0.8042037487030029,
+        "maximum_write_mass": 1.1566200256347656
+      },
+      "passed": true
+    }
+  ],
+  "solve_checks": [
+    {
+      "dtype": "<class 'jax.numpy.float64'>",
+      "mode": "fixed",
+      "inverse_mass": 1.0,
+      "condition": 81.00000000000004,
+      "adjoint_errors": [
+        1.3322676295501878e-15,
+        3.0531133177191805e-15,
+        0.0
+      ],
+      "relative_residual": 1.0763130040724048e-16,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float64'>",
+      "mode": "mass",
+      "inverse_mass": 1.0,
+      "condition": 81.00000000000004,
+      "adjoint_errors": [
+        1.3322676295501878e-15,
+        3.0531133177191805e-15,
+        6.938893903907228e-18
+      ],
+      "relative_residual": 1.0763130040724048e-16,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float64'>",
+      "mode": "fixed",
+      "inverse_mass": 0.007751937984496124,
+      "condition": 81.00000000000004,
+      "adjoint_errors": [
+        1.3322676295501878e-15,
+        3.0531133177191805e-15,
+        0.0
+      ],
+      "relative_residual": 1.0763130040724048e-16,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float64'>",
+      "mode": "mass",
+      "inverse_mass": 0.007751937984496124,
+      "condition": 10321.000000002612,
+      "adjoint_errors": [
+        1.3222756223285614e-13,
+        2.9726221484338566e-13,
+        1.3877787807814457e-17
+      ],
+      "relative_residual": 1.259729087387478e-16,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float64'>",
+      "mode": "fixed",
+      "inverse_mass": 0.001949317738791423,
+      "condition": 81.00000000000004,
+      "adjoint_errors": [
+        1.3322676295501878e-15,
+        3.0531133177191805e-15,
+        0.0
+      ],
+      "relative_residual": 1.0763130040724048e-16,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float64'>",
+      "mode": "mass",
+      "inverse_mass": 0.001949317738791423,
+      "condition": 41041.00000006726,
+      "adjoint_errors": [
+        3.3678615452004124e-13,
+        7.488454301096681e-13,
+        1.3877787807814457e-17
+      ],
+      "relative_residual": 9.025616793991674e-17,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float64'>",
+      "mode": "fixed",
+      "inverse_mass": 0.000244081034903588,
+      "condition": 81.00000000000004,
+      "adjoint_errors": [
+        1.3322676295501878e-15,
+        3.0531133177191805e-15,
+        0.0
+      ],
+      "relative_residual": 1.0763130040724048e-16,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float64'>",
+      "mode": "mass",
+      "inverse_mass": 0.000244081034903588,
+      "condition": 327761.00000257976,
+      "adjoint_errors": [
+        2.6753876891660866e-12,
+        6.133371588390446e-12,
+        0.0
+      ],
+      "relative_residual": 2.1029050734147383e-16,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float32'>",
+      "mode": "fixed",
+      "inverse_mass": 1.0,
+      "condition": 81.00000119209291,
+      "adjoint_errors": [
+        1.226697643047503e-06,
+        2.235717019016814e-06,
+        0.0
+      ],
+      "relative_residual": 4.205477566188165e-08,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float32'>",
+      "mode": "mass",
+      "inverse_mass": 1.0,
+      "condition": 81.00000119209291,
+      "adjoint_errors": [
+        1.226697643047503e-06,
+        2.235717019016814e-06,
+        3.850972131458352e-09
+      ],
+      "relative_residual": 4.205477566188165e-08,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float32'>",
+      "mode": "fixed",
+      "inverse_mass": 0.007751937984496124,
+      "condition": 81.00000119209291,
+      "adjoint_errors": [
+        1.226697643047503e-06,
+        2.235717019016814e-06,
+        0.0
+      ],
+      "relative_residual": 4.205477566188165e-08,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float32'>",
+      "mode": "mass",
+      "inverse_mass": 0.007751937984496124,
+      "condition": 10321.000192226331,
+      "adjoint_errors": [
+        0.00010429824818278255,
+        0.00025427935430943904,
+        7.392266930528191e-09
+      ],
+      "relative_residual": 7.071690788507112e-08,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float32'>",
+      "mode": "fixed",
+      "inverse_mass": 0.001949317738791423,
+      "condition": 81.00000119209291,
+      "adjoint_errors": [
+        1.226697643047503e-06,
+        2.235717019016814e-06,
+        0.0
+      ],
+      "relative_residual": 4.205477566188165e-08,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float32'>",
+      "mode": "mass",
+      "inverse_mass": 0.001949317738791423,
+      "condition": 41041.000305810216,
+      "adjoint_errors": [
+        0.00043579355157083444,
+        0.000445498471573047,
+        9.870120283583805e-09
+      ],
+      "relative_residual": 1.3526235242977691e-08,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float32'>",
+      "mode": "fixed",
+      "inverse_mass": 0.000244081034903588,
+      "condition": 81.00000119209291,
+      "adjoint_errors": [
+        1.226697643047503e-06,
+        2.235717019016814e-06,
+        0.0
+      ],
+      "relative_residual": 4.205477566188165e-08,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float32'>",
+      "mode": "mass",
+      "inverse_mass": 0.000244081034903588,
+      "condition": 327761.00488299585,
+      "adjoint_errors": [
+        0.006300869511357221,
+        0.007966361951163958,
+        6.058997684549317e-07
+      ],
+      "relative_residual": 9.612196549824148e-08,
+      "finite": true,
+      "passed": false
+    }
+  ],
+  "scope": "Small real recurrent graphs and declared rank-one solve stress only; not a uniform long-time BPTT guarantee"
+}

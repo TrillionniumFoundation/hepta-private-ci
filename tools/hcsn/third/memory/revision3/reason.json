@@ -1,0 +1,5 @@
+{
+  "reason": "Final JSON serialization exposed a second NumPy scalar type (float32 condition-times-state-epsilon). All sixteen graph checks printed pass but no completed validation receipt exists.",
+  "development_training_started": false,
+  "next_revision": "Use explicit NumPy-scalar-to-native JSON conversion for all evidence writes; mathematical code and all tolerances unchanged."
+}
