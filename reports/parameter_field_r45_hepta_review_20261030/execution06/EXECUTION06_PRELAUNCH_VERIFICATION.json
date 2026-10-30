@@ -1,0 +1,152 @@
+{
+  "C1_publication": {
+    "bytes": 3592,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/C1_PUBLICATION_VERIFIED.json",
+    "sha256": "629ada50569d750cf087645f73710762280945c9303ed171d2bafb471fbce8a2"
+  },
+  "C2_publication": {
+    "bytes": 4092,
+    "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/C2_PUBLICATION_VERIFIED.json",
+    "sha256": "c5c2e0797866a43e9d268b55b59627122ed5387393b53ec8982ca182db735c4d"
+  },
+  "actual_import_probe": {
+    "bytes": 11406,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_execution06_ops/import_probe/IMPORT_CLOSURE.json",
+    "sha256": "64c8838ebbfc28ba506747b1337798e7d4734bcc459db475082c9d4c8714f440"
+  },
+  "actual_supervisor_three_sample_capacity_admission": "NOT_STARTED",
+  "at_utc": "2026-10-30T15:19:48.147115+00:00",
+  "capacity_work_may_be_in_progress": true,
+  "code_commit": "058cd3d22aecbf67f9c5054f2131eeb0ccd55793",
+  "completion_claim": false,
+  "disk_available_at_snapshot": 1550065664,
+  "history": {
+    "execution05_missing_outer_wait4_remains_unknown": true,
+    "failed_execution05_cost_facts": {
+      "bytes": 717,
+      "path": "/workspace/scratch/178ced6a501f/execution06_preregistration_inputs/EXECUTION05_COST_FACTS.json",
+      "sha256": "18e83746ee27172a4ffa5a3fc9fe7bd468ba9ea645eb6ce8402b85e48fd519da"
+    },
+    "failed_execution05_source_pins": {
+      "bytes": 3374,
+      "path": "/workspace/scratch/178ced6a501f/execution06_preregistration_inputs/FAILURE05_SOURCE_PINS.json",
+      "sha256": "83605f6963d34b3e66716acf23d863516c285fd68dac605c31bc02d12d338518"
+    }
+  },
+  "import_receipt": {
+    "bytes": 116925,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_execution06_durable_raw/imports/execution04/A-17/IMPORT_RECEIPT.json",
+    "sha256": "5215c9410345a1a5a3366cc33bcecc2e3bdd13947cbae8ee9cf9c2bbdc3ae074"
+  },
+  "initial_queue_jobs": 4,
+  "logical_jobs": 14,
+  "measurement_selection_scope": "Only the seven named metadata/initialization commands; excludes other recovery, cleanup, transfer and remote service costs. This is not a whole-project total.",
+  "measurements": [
+    {
+      "child_cpu_seconds": 1.966162,
+      "measuring_parent_cpu_seconds": 0.00473245600000001,
+      "step": "prepare_amendment01",
+      "wait4": {
+        "bytes": 1750,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/measurements/prepare_amendment01/WAIT4.json",
+        "sha256": "e60ce96ea7cc33bbe1eb214b520e448b58c4a16b167b1e236817e8b07b088116"
+      },
+      "wall_seconds": 2.1133935949983425
+    },
+    {
+      "child_cpu_seconds": 3.784376,
+      "measuring_parent_cpu_seconds": 0.006680409999999998,
+      "step": "initialize_build01",
+      "wait4": {
+        "bytes": 1747,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/measurements/initialize_build01/WAIT4.json",
+        "sha256": "3231dd40eeb78686b7a200d2544ed9af6a77bbedae418b13b8b9978ea8b924fd"
+      },
+      "wall_seconds": 4.016654367002047
+    },
+    {
+      "child_cpu_seconds": 3.608994,
+      "measuring_parent_cpu_seconds": 0.007479946000000001,
+      "step": "import_probe01",
+      "wait4": {
+        "bytes": 1750,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/measurements/import_probe01/WAIT4.json",
+        "sha256": "63da403155d0eee9296d6c5f71d12b227ed9329591b07d19b04b3a8181536c10"
+      },
+      "wall_seconds": 3.1213081120004063
+    },
+    {
+      "child_cpu_seconds": 0.22358699999999998,
+      "measuring_parent_cpu_seconds": 0.003077007999999999,
+      "step": "supervisor_prepare01",
+      "wait4": {
+        "bytes": 1766,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/measurements/supervisor_prepare01/WAIT4.json",
+        "sha256": "efa316705897dc54a3eeb0d90629aa82c61f5ac7a55b5ff5110ac3d65874ee9e"
+      },
+      "wall_seconds": 0.307243588998972
+    },
+    {
+      "child_cpu_seconds": 0.054841,
+      "measuring_parent_cpu_seconds": 0.003339637999999992,
+      "step": "launcher_prepare01",
+      "wait4": {
+        "bytes": 1751,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/measurements/launcher_prepare01/WAIT4.json",
+        "sha256": "67587ac1927840340bfe24a529a40ad185697a56b57feabff0edf7d4a4dd76af"
+      },
+      "wall_seconds": 0.10857221599871991
+    },
+    {
+      "child_cpu_seconds": 0.054776,
+      "measuring_parent_cpu_seconds": 0.002985561999999997,
+      "step": "daemon_prepare01",
+      "wait4": {
+        "bytes": 1758,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/measurements/daemon_prepare01/WAIT4.json",
+        "sha256": "4742f4fec676e87678f5aa14c1694cee6fd46e88fc8783cbc19baee727a75181"
+      },
+      "wall_seconds": 0.10817825300182449
+    },
+    {
+      "child_cpu_seconds": 0.09967999999999999,
+      "measuring_parent_cpu_seconds": 0.006164855999999996,
+      "step": "C2_publication_verification01",
+      "wait4": {
+        "bytes": 1795,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/measurements/C2_publication_verification01/WAIT4.json",
+        "sha256": "19c8680cbd4c0efe56cfcbe42f379eff8eb93ffba6ca6a47f5a686b97cb03498"
+      },
+      "wall_seconds": 0.11606069299887167
+    }
+  ],
+  "pipeline_config": {
+    "bytes": 8638,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_execution06_ops/registrations/initial/PIPELINE_CONFIG.json",
+    "sha256": "d16bac3194b36d286f180976ddbc7dff16e544763e195d408a135b30af4fb86e"
+  },
+  "positive_effect_claim": false,
+  "private_prelaunch_remote_checkpoint": "NOT_CLAIMED_BY_THIS_SNAPSHOT",
+  "raw_file_identities_unchanged": true,
+  "raw_identity_inventory_entries": 295,
+  "registration_commit": "bc4e757f5c90f6365f383c1127be710d2ded874a",
+  "required_analysis_seals": 26,
+  "required_durable_barriers": 17,
+  "required_final_seals": 30,
+  "runtime": {
+    "numpy": "2.3.5",
+    "pillow": "12.3.0",
+    "python": "3.12.14",
+    "torch": "2.8.0+cpu"
+  },
+  "schema": "hepta.execution06.actual-prelaunch-snapshot.1",
+  "science_counters": {
+    "checkpoints_decoded": 0,
+    "dataset_values_read": 0,
+    "model_instances_created": 0,
+    "scheduled_gradient_microsteps": 0,
+    "workers_started": 0
+  },
+  "source_files": 167,
+  "status": "REAL_IMPORT_AND_STATIC_LAUNCH_CHAIN_VERIFIED_SCIENCE_NOT_STARTED"
+}
