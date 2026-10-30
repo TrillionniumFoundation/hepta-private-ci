@@ -96,6 +96,166 @@ def merge_members(union, members, owners, bundle_name):
         owners.setdefault(path, []).append(bundle_name)
 
 
+def verify_main_admission(package):
+    """Bind the failed frozen audit and a separate complete supplemental audit.
+
+    This is an explicitly post-hoc engineering admission. The original strict
+    CE gate remains failed, and no training, selection or statistical gate is
+    altered by accepting the independent producer-exact integrity evidence.
+    """
+    package = Path(package).resolve()
+    root = package.parents[1]
+
+    def metadata(path):
+        return dict(path=str(path.relative_to(package)), sha256=file_hash(path))
+
+    parent_path = package / "CONTENT002_PROTOCOL.json"
+    parent = read_json(parent_path)
+    parent_sha = file_hash(parent_path)
+    jobs = {job_id(job): job for job in parent["jobs"]}
+    require(len(jobs) == len(parent["jobs"]) == 176, "Main admission requires the original 176 registered jobs")
+    strict_path = package / "results/content_analysis002/ANALYSIS.json"
+    strict_execution_path = package / "results/content_analysis002/EXECUTION.json"
+    strict = read_json(strict_path)
+    base_source = package / "content_analysis.py"
+    base_sha = file_hash(base_source)
+    require(strict["schema"] == "hcsn-distribution-content-analysis.v2"
+            and strict["protocol_sha256"] == parent_sha and strict["analyzer_sha256"] == base_sha
+            and (strict["expected"], strict["valid"], strict["invalid"]) == (176, 175, 1),
+            "Original strict audit must remain the unchanged 175 valid / 1 invalid evidence")
+    require(strict["common_initialization_mismatches"] == [], "Original strict audit has initialization mismatches")
+    strict_rows = {job_id(row["job"]): row for row in strict["audits"]}
+    require(len(strict_rows) == len(strict["audits"]) == 176 and set(strict_rows) == set(jobs),
+            "Original strict audit rows do not cover the registered jobs")
+    bad_id = "fsdd__transformer__9202"
+    for run_id, row in strict_rows.items():
+        require(row["job"] == jobs[run_id], "Original strict audit job coordinates changed")
+        if run_id == bad_id:
+            require(row["valid"] is False and row["error"] == "AssertionError: cross entropy summary",
+                    "The original frozen CE failure has been removed or changed")
+        else:
+            require(row["valid"] is True, "An additional original strict audit failure is not covered by this admission")
+    strict_execution = read_json(strict_execution_path)
+    require(type(strict_execution["returncode"]) is int and strict_execution["returncode"] == 0
+            and strict_execution["protocol_sha256"] == parent_sha
+            and strict_execution["analyzer_sha256"] == base_sha,
+            "Original strict analyzer outer receipt is unsuccessful or mismatched")
+
+    supplemental_path = package / "results/content_analysis_supplement001/ANALYSIS.json"
+    supplemental_protocol_path = package / "CONTENT_SUPPLEMENT001_PROTOCOL.json"
+    supplement = read_json(supplemental_path)
+    supplemental_protocol = read_json(supplemental_protocol_path)
+    supplemental_sha = file_hash(supplemental_protocol_path)
+    require(supplement["schema"] == "hcsn-distribution-content-supplemental-analysis.v1"
+            and supplement["protocol_sha256"] == parent_sha
+            and supplement["supplemental_protocol_sha256"] == supplemental_sha
+            and supplement["post_hoc"] is True and supplement["statistical_gates_changed"] is False
+            and supplement["base_analyzer_sha256"] == base_sha
+            and (supplement["expected"], supplement["valid"], supplement["invalid"]) == (176, 176, 0),
+            "Independent producer-exact supplement is not complete or misstates its post-hoc scope")
+    require(supplement["common_initialization_mismatches"] == [], "Supplement has initialization mismatches")
+    rows = {job_id(row["job"]): row for row in supplement["audits"]}
+    require(len(rows) == len(supplement["audits"]) == 176 and set(rows) == set(jobs)
+            and all(row["valid"] is True and row["job"] == jobs[run_id] for run_id, row in rows.items()),
+            "Supplement does not independently audit all 176 registered jobs")
+    expected_original = dict(path=str(strict_path.relative_to(root)), sha256=file_hash(strict_path),
+        execution_path=str(strict_execution_path.relative_to(root)), execution_sha256=file_hash(strict_execution_path),
+        expected=176, valid=175, invalid=1, gate_passed=False)
+    require(supplement["original_strict_audit"] == expected_original,
+            "Supplement does not bind the actual unchanged failed strict audit")
+    derived_path = package / "content_supplemental_analysis.py"
+    derived = dict(path=str(derived_path.relative_to(root)), sha256=file_hash(derived_path))
+    require(supplement["derived_source"] == derived, "Supplement derived analyzer source changed")
+    expected_sources = dict(parent["source_files_sha256"])
+    require(derived["path"] not in expected_sources, "Supplement cannot replace an original registered source")
+    expected_sources[derived["path"]] = derived["sha256"]
+    require(supplemental_protocol["schema"] == "hcsn-post-hoc-content-audit-protocol.v1"
+            and supplemental_protocol["study_id"] == "content_supplement001"
+            and supplemental_protocol["expected_runs"] == 176
+            and supplemental_protocol["post_hoc"] is True and supplemental_protocol["statistical_gates_changed"] is False
+            and supplemental_protocol["parent_protocol_sha256"] == parent_sha
+            and supplemental_protocol["base_analyzer_sha256"] == base_sha
+            and supplemental_protocol["derived_source"] == derived
+            and supplemental_protocol["original_strict_audit"] == expected_original
+            and supplemental_protocol["source_files_sha256"] == expected_sources,
+            "Supplement protocol changed the parent, failed audit binding, or registered source set")
+    evidence_paths = {}
+    for key in ("derivation_diff", "ast_evidence", "producer_checks", "diagnostic", "preparer_source"):
+        item = supplemental_protocol[key]
+        safe_relative(item["path"])
+        path = root / item["path"]
+        require(path.resolve().is_relative_to(package) and not path.is_symlink()
+                and file_hash(path) == item["sha256"], "Registered supplemental evidence changed: " + key)
+        evidence_paths[key] = path
+    ast_evidence = read_json(evidence_paths["ast_evidence"])
+    require(ast_evidence["schema"] == "hcsn-supplemental-audit-ast-evidence.v1"
+            and ast_evidence["base"] == dict(path=str(base_source.relative_to(root)), sha256=base_sha)
+            and ast_evidence["derived"] == derived
+            and all(ast_evidence[key] is True for key in ("audit_run_unchanged", "exact_sign_flip_unchanged",
+                "holm_unchanged", "entire_core_mechanism_screen_statement_block_unchanged")),
+            "Supplement did not retain the original full run audit and scientific computations")
+    producer_checks = read_json(evidence_paths["producer_checks"])
+    require(producer_checks["schema"] == "hcsn-exact-producer-contract-checks.v1"
+            and producer_checks["passed"] is True and producer_checks["source"] == derived,
+            "Exact-producer contract preflight failed or changed")
+    registration_path = package / "results/content_supplement001/REGISTRATION.json"
+    registration = read_json(registration_path)
+    require(registration["schema"] == "hcsn-post-hoc-content-audit-registration.v1"
+            and registration["status"] == "registered_not_run" and registration["post_hoc"] is True
+            and registration["original_strict_gate_passed"] is False
+            and registration["protocol"] == dict(path=str(supplemental_protocol_path.relative_to(root)), sha256=supplemental_sha)
+            and registration["derived_source"] == derived,
+            "Supplement registration is missing or bound to another analysis")
+    for relative, expected in expected_sources.items():
+        safe_relative(relative)
+        source = root / relative
+        require(source.resolve().is_relative_to(root) and not source.is_symlink() and file_hash(source) == expected,
+                "Supplement registered source changed: " + relative)
+    require(supplement["supplemental_gate_passed"] is True
+            and supplement["supplemental"] == dict(expected=176, valid=176, invalid=0, gate_passed=True),
+            "Independent supplemental gate did not pass")
+    reconciliation = supplement["scientific_comparison_reconciliation"]
+    required_reconciliation = ("all_four_mechanism_records_exactly_equal",
+        "previously_complete_core_records_exactly_equal", "previously_complete_content_screens_exactly_equal",
+        "only_previously_missing_fsdd_rows_filled", "all_prediction_summaries_producer_exact",
+        "original_strict_ce_failure_remains_explicit")
+    require(all(reconciliation[name] is True for name in required_reconciliation)
+            and reconciliation["training_selection_prediction_or_scientific_threshold_changes"] is False,
+            "Supplement changed existing scientific comparisons or obscured the strict failure")
+
+    execution_directory = package / "results/content_analysis_supplement001_execution"
+    execution_path = execution_directory / "EXECUTION.json"
+    execution = read_json(execution_path)
+    require(execution["schema"] == "hcsn-measured-support-execution.v1" and execution["status"] == "completed"
+            and type(execution["returncode"]) is int and execution["returncode"] == 0
+            and execution["request_sha256"] == file_hash(execution_directory / "REQUEST.json")
+            and execution["log_sha256"] == file_hash(execution_directory / "process.log")
+            and execution["source_sha256"] == file_hash(package / "measured_support.py"),
+            "Supplement outer process is incomplete or mismatched")
+    require(type(execution["complete_child_cpu_seconds"]) in (int, float)
+            and math.isfinite(execution["complete_child_cpu_seconds"]) and execution["complete_child_cpu_seconds"] >= 0,
+            "Supplement has no valid complete-process measurement")
+    proofs = dict(main_strict_analysis=metadata(strict_path), main_strict_analysis_execution=metadata(strict_execution_path),
+        main_supplement_protocol=metadata(supplemental_protocol_path), main_supplement_analysis=metadata(supplemental_path),
+        main_supplement_execution=metadata(execution_path),
+        main_supplement_execution_request=metadata(execution_directory / "REQUEST.json"),
+        main_supplement_execution_log=metadata(execution_directory / "process.log"))
+    for name in ("REGISTRATION.json", "DERIVATION.diff", "AST_COMPARISON.json", "PRODUCER_CHECKS.json"):
+        proofs["main_supplement_registration_" + name.replace(".", "_").lower()] = metadata(
+            package / "results/content_supplement001" / name)
+    for key, path in evidence_paths.items():
+        proofs["main_supplement_registered_" + key] = metadata(path)
+    record = dict(schema="hcsn-main-analysis-admission.v1", basis="independent_post_hoc_producer_exact_integrity_audit",
+        original_strict=expected_original,
+        supplemental=dict(path=str(supplemental_path.relative_to(root)), sha256=file_hash(supplemental_path),
+                          protocol_path=str(supplemental_protocol_path.relative_to(root)), protocol_sha256=supplemental_sha,
+                          expected=176, valid=176, invalid=0, post_hoc=True, statistical_gates_changed=False),
+        derived_source=derived,
+        scientific_comparisons_preserved=True,
+        interpretation="Original strict CE gate remains failed (175/1). The independent supplement completes all 176 integrity audits under an explicitly registered producer-exact CE check; this is not a retroactive strict pass or a scientific superiority result.")
+    return dict(record=record, proofs=proofs, protocol=supplemental_protocol)
+
+
 class ClosureAudit:
     def __init__(self, package=PACKAGE):
         self.package = Path(package).resolve()
@@ -188,15 +348,8 @@ class ClosureAudit:
                 and watcher["scheduler_receipt_sha256"] == file_hash(scheduler_path), "Watcher completion bindings differ")
         analysis_path = self.package / "results/content_analysis002/ANALYSIS.json"
         analysis = read_json(analysis_path)
-        require(analysis["schema"] == "hcsn-distribution-content-analysis.v2"
-                and analysis["protocol_sha256"] == main["protocol_sha"]
-                and analysis["expected"] == analysis["valid"] == 176 and analysis["invalid"] == 0,
-                "Main analysis is not 176 valid / 0 invalid")
-        require(analysis["analyzer_sha256"] == file_hash(self.package / "content_analysis.py"), "Main analyzer source mismatch")
-        require(analysis["common_initialization_mismatches"] == [], "Main analysis has cross-arm common-initialization mismatches")
-        audited = [job_id(row["job"]) for row in analysis["audits"]]
-        require(len(audited) == len(set(audited)) == 176 and set(audited) == set(main["jobs"])
-                and all(row["valid"] is True for row in analysis["audits"]), "Main audit rows differ from registered jobs")
+        admission = verify_main_admission(self.package)
+        self.main_analysis_admission = admission["record"]
         lif_analysis_path = self.package / "results/lif_analysis001/ANALYSIS.json"
         lif_analysis = read_json(lif_analysis_path)
         require(lif_analysis["schema"] == "hcsn-lif-supplement-analysis.v1" and lif_analysis["status"] == "passed"
@@ -237,12 +390,15 @@ class ClosureAudit:
                       lif_completion=self.metadata(lif["completion_path"]), main_scheduler=self.metadata(scheduler_path),
                       lif_scheduler=self.metadata(lif_scheduler_path), main_analysis_execution=self.metadata(main_analysis_receipt_path),
                       main_analysis_process_log=self.metadata(main_analysis_log))
+        proofs.update(admission["proofs"])
         normalized_path = self.package / "results/lif_cost_receipts001/RECEIPTS.json"
         normalized = read_json(normalized_path)
         require(normalized["schema"] == "hcsn-lif-cost-receipts.v1" and normalized["status"] == "completed",
                 "LIF cost normalization is not complete")
         require(normalized["source_sha256"] == {name: file_hash(self.package / name)
                 for name in ("lif_cost_receipts.py", "archive_closure.py")}, "LIF normalization source binding changed")
+        require(normalized["main_admission"] == admission["record"],
+                "LIF normalization does not bind the same original and supplemental main audits")
         scopes = {scope["scope_id"]: scope for scope in normalized["scopes"]}
         require(set(scopes) == {"lif_scheduler", "lif_analysis", "lif_analysis_watcher"}
                 and len(normalized["scopes"]) == 3, "LIF normalized core scopes differ from the exact three-scope contract")
@@ -324,10 +480,55 @@ class ClosureAudit:
         return receipt_path
 
     def audit_scaling(self):
-        protocol_path = self.package / "SCALING001_PROTOCOL.json"
+        old_protocol_path = self.package / "SCALING001_PROTOCOL.json"
+        old_protocol = read_json(old_protocol_path)
+        old_protocol_sha = file_hash(old_protocol_path)
+        protocol_path = self.package / "SCALING002_PROTOCOL.json"
         protocol = read_json(protocol_path)
         protocol_sha = file_hash(protocol_path)
-        study = self.package / "results/scaling001"
+        require(old_protocol["schema"] == "hcsn-v2-scaling-protocol.v1"
+                and old_protocol["study_id"] == "scaling001"
+                and protocol["schema"] == "hcsn-v2-scaling-protocol.v2" and protocol["study_id"] == "scaling002",
+                "Scaling admission must preserve the original identity and use a separate 002 protocol")
+        require(protocol["inherited_protocol"] == dict(path=str(old_protocol_path.relative_to(self.root)), sha256=old_protocol_sha)
+                and protocol["frozen_benchmark"] == dict(path=str((self.package / "scaling_eval.py").relative_to(self.root)),
+                    sha256=file_hash(self.package / "scaling_eval.py"), functions=["benchmark", "summary_report"], implementation_modified=False)
+                and protocol["timing_parameter_seed_or_repetition_change"] is False and protocol["new_preflight"] is False,
+                "Scaling002 changed the frozen benchmark or obscured its inherited identity")
+        for field in ("cases", "measurement", "randomness", "preflight", "expected_cases"):
+            require(protocol[field] == old_protocol[field], "Scaling002 changed the registered diagnostic design: " + field)
+        require(all(protocol["source_files_sha256"].get(path) == digest
+                    for path, digest in old_protocol["source_files_sha256"].items()),
+                "Scaling002 does not preserve every original registered source")
+        preflight_relative = old_protocol["preflight"]["path"]
+        safe_relative(preflight_relative)
+        preflight_directory = self.root / preflight_relative
+        require(preflight_directory.resolve().is_relative_to(self.package)
+                and file_hash(preflight_directory / "EXECUTION.json") == old_protocol["preflight"]["execution_sha256"]
+                and file_hash(preflight_directory / "RESULTS.json") == old_protocol["preflight"]["results_sha256"],
+                "Original scaling001 preflight evidence changed")
+        old_study = self.package / "results/scaling001"
+        blocked_path = old_study / "NOT_EXECUTED.json"
+        blocked = read_json(blocked_path)
+        require(blocked["schema"] == "hcsn-v2-scaling-not-executed.v1" and blocked["study_id"] == "scaling001"
+                and blocked["status"] == "not_executed" and blocked["protocol_sha256"] == old_protocol_sha
+                and blocked["benchmark_source_sha256"] == file_hash(self.package / "scaling_eval.py")
+                and type(blocked["started_workers"]) is int and blocked["started_workers"] == 0
+                and blocked["strict_gate_passed"] is False and blocked["successor_study"] == "scaling002",
+                "Scaling001 must retain its explicit unexecuted failed-strict-gate evidence")
+        strict_path = self.package / "results/content_analysis002/ANALYSIS.json"
+        require(blocked["original_analysis"] == dict(path=str(strict_path.relative_to(self.root)), sha256=file_hash(strict_path),
+                                                    expected=176, valid=175, invalid=1)
+                and protocol["original_not_executed"] == dict(path=str(blocked_path.relative_to(self.root)), sha256=file_hash(blocked_path)),
+                "Scaling001 block or successor protocol is bound to another strict analysis")
+        admission = getattr(self, "main_analysis_admission", None) or verify_main_admission(self.package)["record"]
+        declared_admission = protocol["admission_evidence"]
+        require(declared_admission["schema"] == "hcsn-scaling002-main-admission.v1"
+                and all(declared_admission[key] == admission[key] for key in ("original_strict", "supplemental", "derived_source")),
+                "Scaling002 admission differs from the completed original-plus-supplemental audit")
+        require(not (old_study / "COMPLETE.json").exists() and not (old_study / "SUITE_EXECUTION.json").exists()
+                and not (old_study / "cases").exists(), "Original blocked scaling001 acquired executed case evidence")
+        study = self.package / "results/scaling002"
         completion_path = study / "COMPLETE.json"
         completion = read_json(completion_path)
         source_map = protocol["source_files_sha256"]
@@ -353,7 +554,10 @@ class ClosureAudit:
                 "Scaling protocol differs from the registered 30-configuration diagnostic grid")
         require(completion["schema"] == "hcsn-v2-scaling-complete.v1" and completion["status"] == "completed"
                 and completion["expected_cases"] == completion["completed_cases"] == 30
-                and completion["protocol_sha256"] == protocol_sha and completion["source_files_sha256"] == source_map,
+                and completion["protocol_sha256"] == protocol_sha and completion["source_files_sha256"] == source_map
+                and completion["study_id"] == "scaling002" and completion["original_strict_gate_passed"] is False
+                and completion["admission_evidence"] == declared_admission
+                and completion["frozen_benchmark"] == protocol["frozen_benchmark"],
                 "Scaling suite has not attempted and recorded all 30 cases")
         rows = {}
         for row in completion["records"]:
@@ -397,9 +601,27 @@ class ClosureAudit:
                 and suite["complete_receipt_sha256"] == file_hash(completion_path), "Scaling complete outer receipt mismatch")
         require(math.isfinite(suite["complete_child_cpu_seconds"]) and suite["complete_child_cpu_seconds"] >= 0,
                 "Invalid scaling complete-process CPU")
+        authorization_path = study / "RUN_AUTHORIZATION.json"
+        authorization = read_json(authorization_path)
+        require(authorization["study_id"] == "scaling002" and authorization["protocol_sha256"] == protocol_sha
+                and authorization["source_files_sha256"] == source_map
+                and authorization["original_strict_gate_passed"] is False
+                and authorization["benchmark_implementation_modified"] is False
+                and authorization["admission"]["main_admission"] == declared_admission,
+                "Scaling002 run authorization differs from the explicit registered admission")
+        for key, relative in (("normalized_lif", "results/lif_cost_receipts001/RECEIPTS.json"),
+                              ("normalization_execution", "results/lif_cost_normalization001/EXECUTION.json")):
+            path = self.package / relative
+            require(authorization["admission"][key] == dict(path=str(path.relative_to(self.root)), sha256=file_hash(path)),
+                    "Scaling002 run did not bind final LIF normalization: " + key)
         proofs = dict(scaling_protocol=self.metadata(protocol_path), scaling_completion=self.metadata(completion_path),
-                      scaling_suite_execution=self.metadata(suite_path))
-        return dict(directory=study, cases=cases, rows=rows, successful=successful, failed=failed, proofs=proofs)
+                      scaling_suite_execution=self.metadata(suite_path), scaling_run_authorization=self.metadata(authorization_path),
+                      original_scaling_protocol=self.metadata(old_protocol_path),
+                      original_scaling_not_executed=self.metadata(blocked_path),
+                      original_scaling_preflight_execution=self.metadata(preflight_directory / "EXECUTION.json"),
+                      original_scaling_preflight_results=self.metadata(preflight_directory / "RESULTS.json"))
+        return dict(directory=study, old_directory=old_study, preflight_directory=preflight_directory,
+                    cases=cases, rows=rows, successful=successful, failed=failed, proofs=proofs)
 
     def audit_bundle(self, manifest_path):
         manifest = read_json(manifest_path)
@@ -521,18 +743,25 @@ class ClosureAudit:
         lif_coverage = self.audit_run_inventory(lif)
         scaling_case_dirs = {path.name for path in (scaling["directory"] / "cases").iterdir() if path.is_dir()}
         require(scaling_case_dirs == set(scaling["cases"]), "Scaling case directories differ from registered cases")
-        scaling_files = set()
-        for path in sorted(scaling["directory"].rglob("*")):
-            require(not path.is_symlink(), "Scaling evidence contains a symlink")
-            require("work" not in path.relative_to(scaling["directory"]).parts, "Scaling evidence contains an internal work tree")
-            if path.is_file():
-                self.covered_file(path)
-                scaling_files.add(self.relative(path))
-        require({path for path in self.union if path.startswith("results/scaling001/")} == scaling_files,
-                "Scaling whole-directory archive inventory differs")
+        scaling_inventories = {}
+        for directory in (scaling["directory"], scaling["old_directory"], scaling["preflight_directory"]):
+            files = set()
+            for path in sorted(directory.rglob("*")):
+                require(not path.is_symlink(), "Scaling evidence contains a symlink")
+                require("work" not in path.relative_to(directory).parts, "Scaling evidence contains an internal work tree")
+                if path.is_file():
+                    self.covered_file(path)
+                    files.add(self.relative(path))
+            prefix = self.relative(directory) + "/"
+            require({path for path in self.union if path.startswith(prefix)} == files,
+                    "Scaling whole-directory archive inventory differs: " + prefix)
+            scaling_inventories[self.relative(directory)] = len(files)
+        scaling_files = scaling_inventories[self.relative(scaling["directory"])]
         scaling_coverage = dict(expected=30, completed=len(scaling["rows"]), unique=len(scaling_case_dirs),
-            successful=scaling["successful"], failed=scaling["failed"], files=len(scaling_files),
-            case_ids=list(scaling["cases"]), interpretation="Complete attempted diagnostic grid; resource failures are preserved negative evidence, not successful measurements")
+            study="scaling002", successful=scaling["successful"], failed=scaling["failed"], files=scaling_files,
+            original_scaling001_status="not_executed", original_strict_gate_passed=False,
+            archived_study_inventories=scaling_inventories,
+            case_ids=list(scaling["cases"]), interpretation="Complete attempted scaling002 diagnostic grid under explicit supplemental admission; original scaling001 was not executed. Resource failures are preserved negative evidence, not successful measurements")
         required_metadata = [main["protocol_path"], lif["protocol_path"]]
         required_metadata += [self.local(record["path"]) for record in proofs.values()]
         for path in required_metadata:
@@ -547,6 +776,7 @@ class ClosureAudit:
             completed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
             bundles=bundles, required_bundle_names=sorted(REQUIRED_BUNDLES), proofs=proofs,
             main_run_coverage=main_coverage, lif_run_coverage=lif_coverage,
+            main_analysis_admission=self.main_analysis_admission,
             scaling_case_coverage=scaling_coverage,
             member_union=dict(unique_paths=len(self.union), bytes=sum(row["bytes"] for row in self.union.values()),
                               conflicting_paths=0, identical_repeated_paths=sum(len(names)>1 for names in self.owners.values())),

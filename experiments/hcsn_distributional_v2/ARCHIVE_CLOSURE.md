@@ -8,15 +8,26 @@ is immutable and is published with an exclusive atomic link.
 
 ## Completion order
 
-1. Finish and audit all 176 main searches and all 18 LIF pairs. Main analysis
-   must have 176 valid, zero invalid, and no common-initialization mismatches.
+1. Finish all 176 main searches and all 18 LIF pairs. Preserve the frozen main
+   strict audit exactly: **175 valid, one invalid**, with its original FSDD
+   Transformer cross-entropy-summary failure. Independently complete all 176
+   integrity audits under `CONTENT_SUPPLEMENT001_PROTOCOL.json`; the supplement
+   must be explicitly post hoc, have 176 valid and zero invalid, preserve the
+   statistical gates, and have no common-initialization mismatches. Both exact
+   identities and the failed original gate are recorded in the final closure;
+   a supplemental pass is never relabeled as a strict pass.
    The main and LIF schedulers and both analysis processes must have exited
    successfully. Wait for the existing LIF analysis watcher to finalize its
    own CPU record; an active heartbeat cannot be substituted.
 2. Create the explicit LIF cost bindings and run the adapter below. This is an
    on-demand adapter, not a second analysis watcher. Its completed receipt is
    also a gate for the registered scaling study.
-3. Complete all 30 registered CPU scaling attempts. The models are
+3. Preserve `SCALING001_PROTOCOL.json` and its preflight, and record that the
+   original scaling study was not executed because its strict-audit admission
+   failed. Complete all 30 separately registered `SCALING002_PROTOCOL.json`
+   CPU scaling attempts using the same cases, randomness, measurement rules,
+   preflight, and frozen benchmark code. Only the admission identity changes.
+   The models are
    `distribution_free_dual`, `two_gates`, and `transformer`. There are six
    lengths from 16 through 512 at width 32/depth 1, plus four width/depth cases
    at length 64, for each model. A recorded resource failure is valid negative
@@ -64,8 +75,10 @@ no missing complete outer measurement is invented.
 The member union may repeat identical bytes at an identical path. A size or
 hash conflict is rejected. All files in the 176 main run directories, all
 files in the 18 LIF run directories, and their corresponding process logs must
-be covered byte-for-byte. The full `results/scaling001/` tree must also be
+be covered byte-for-byte. The full `results/scaling002/` tree must also be
 covered, including all 30 case directories and all failed-case evidence.
+The unexecuted `results/scaling001/` tree and the original
+`results/scaling_preflight001/` tree remain required historical evidence.
 Internal `work/` trees are not traversed as campaign evidence.
 
 ## Required proof files in the archive union
@@ -74,14 +87,16 @@ These are exact paths relative to `experiments/hcsn_distributional_v2/`:
 
 | Group | Required paths |
 |---|---|
-| Canonical registrations | `CONTENT002_PROTOCOL.json`, `LIF_SUPPLEMENT001_PROTOCOL.json`, `SCALING001_PROTOCOL.json` |
+| Canonical registrations | `CONTENT002_PROTOCOL.json`, `CONTENT_SUPPLEMENT001_PROTOCOL.json`, `LIF_SUPPLEMENT001_PROTOCOL.json`, `SCALING001_PROTOCOL.json`, `SCALING002_PROTOCOL.json` |
 | Checkpoint closure | `results/content_checkpoint_archives/COMPLETE.json` |
 | Main completion | `results/content002/COMPLETE.json`, `results/content002/SCHEDULER_EXECUTION.json` |
 | Main analysis | `results/content_analysis002/ANALYSIS.json`, `results/content_analysis002/EXECUTION.json`, `results/content_analysis002.log` |
+| Supplemental analysis | `results/content_analysis_supplement001/ANALYSIS.json` and `results/content_analysis_supplement001_execution/{EXECUTION.json,REQUEST.json,process.log}` |
 | LIF completion | `results/lif_supplement001/COMPLETE.json`, `results/lif_supplement001/SCHEDULER_EXECUTION.json` |
 | LIF analysis | `results/lif_analysis001/ANALYSIS.json` |
 | LIF normalized costs | `results/lif_cost_receipts001/RECEIPTS.json` and each of its three original receipt paths |
-| Scaling | `results/scaling001/COMPLETE.json`, `results/scaling001/SUITE_EXECUTION.json`, and every other regular file in `results/scaling001/` |
+| Scaling002 | `results/scaling002/COMPLETE.json`, `results/scaling002/SUITE_EXECUTION.json`, and every other regular file in `results/scaling002/` |
+| Original scaling001 | `results/scaling001/NOT_EXECUTED.json`, the complete original study tree, and the complete `results/scaling_preflight001/` tree |
 
 For the three LIF original receipts, take the exact paths from
 `RECEIPTS.json.scopes[*].receipt`, stripping the repository prefix
@@ -111,7 +126,8 @@ integer zero. The template deliberately cannot pass while placeholders remain.
 PYTHONDONTWRITEBYTECODE=1 python -m experiments.hcsn_distributional_v2.lif_cost_receipts --bindings PATH_TO_COMPLETED_BINDINGS_JSON --output experiments/hcsn_distributional_v2/results/lif_cost_receipts001
 ```
 
-The adapter verifies the 18-pair analysis, original hashes, exact pointer
+The adapter verifies the 18-pair analysis, explicit original-plus-supplemental
+main admission, original hashes, exact pointer
 values and types, successful exit/status conditions, and the frozen protocol.
 It emits exactly three core scopes: complete LIF scheduler tree, complete
 analyzer child, and one final watcher-self measurement. The independent outer
@@ -124,6 +140,8 @@ Failed adapter attempts retain `FAILED_EXECUTION_<id>.json` and do not create
 Successful normalization is immutable. Keep both `lif_cost_receipts.py` and
 `archive_closure.py` unchanged after actual normalization, since the
 normalized record binds their source hashes.
+Its `main_admission` records the original failed strict audit and the separate
+complete producer-exact supplement, with their exact paths and hashes.
 
 The adapter has no background loop or children. Its own self-CPU through the
 final receipt is in `results/lif_cost_receipts001/EXECUTION.json`. Prefer an
@@ -145,3 +163,8 @@ initialization/exit/cost-pointer gates, rejects an active watcher, verifies a
 successful retry, and rejects both a forged CPU value and a boolean supplied
 as an integer exit status. These are synthetic contract tests, not model
 quality results. The real final closure is a separate later invocation.
+
+The pre-supplement consumers and documents are preserved byte-for-byte under
+`results/admission_consumer004/before/`. The later narrow admission validation
+tests the new original/supplement identities and scaling001/scaling002 handoff;
+it does not rerun mathematics, training, or the earlier bundle fixtures.

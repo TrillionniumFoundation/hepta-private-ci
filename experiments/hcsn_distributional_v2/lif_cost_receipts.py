@@ -16,7 +16,7 @@ import time
 import traceback
 import uuid
 
-from .archive_closure import file_hash, json_pointer, read_json, require, safe_relative, write_new
+from .archive_closure import file_hash, json_pointer, read_json, require, safe_relative, verify_main_admission, write_new
 
 
 PACKAGE = Path(__file__).resolve().parent
@@ -57,6 +57,7 @@ def normalize(bindings_path, output):
                 and analysis["protocol_sha256"] == protocol_sha
                 and analysis["parent_protocol_sha256"] == file_hash(PACKAGE / "CONTENT002_PROTOCOL.json"),
                 "LIF 18-pair analysis is not successful")
+        admission = verify_main_admission(PACKAGE)
         scopes = []
         for scope_id in CORE_SCOPES:
             binding = selected[scope_id]
@@ -95,6 +96,7 @@ def normalize(bindings_path, output):
             scope="Independent outer supervisor self CPU measured over its recorded window; not whole-process CPU, not part of the scheduler child tree; counted only through the separately declared extra-cost scope")
         result = dict(schema="hcsn-lif-cost-receipts.v1", status="completed", protocol_sha256=protocol_sha,
             source_sha256=sources, bindings_sha256=file_hash(bindings_path), scopes=scopes,
+            main_admission=admission["record"], main_admission_proofs=admission["proofs"],
             additional_measured_windows=[extra], analysis=dict(path=str(analysis_path.relative_to(ROOT)), sha256=file_hash(analysis_path)),
             containment="Three disjoint core scopes: complete scheduler tree, complete analyzer child, final analysis-watcher self CPU through receipt. Worker/candidate/training/body clocks remain nested and are not added.")
         for scope in scopes:
