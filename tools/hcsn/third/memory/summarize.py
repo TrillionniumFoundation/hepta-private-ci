@@ -94,6 +94,16 @@ def main():
     snapshots = [amendment["initial_resources"]]
     snapshots += [r["resource_pause"]["admission_snapshot"] for r in amended_rows]
     snapshots += [r["resources_after_run"] for r in amended_rows]
+    restart = read("final_run_handoff.json") if (HERE/"final_run_handoff.json").exists() else None
+    if restart:
+        saved = read(restart["saved_result_file"])
+        checks["all_pre_final_restart_runs_preserved"] = rows[:restart["completed_runs"]] == saved["runs"]
+        checks["final_restart_preserved_files_unchanged"] = all(
+            sha(HERE/"before_final_run_restart"/name) == digest for name,digest in restart["preserved_sha256"].items())
+        checks["final_restart_same_driver"] = restart["driver_sha256"] == amendment["driver_sha256"]
+    for name in ("before_final_run_restart/operational_resource_pause.json", "operational_resource_pause.json"):
+        if (HERE/name).exists():
+            snapshots.extend(read(name)["observations"])
     baseline = amendment["initial_resources"]["oom_events"]
     counters = {k: max(s["oom_events"][k] for s in snapshots)-baseline[k] for k in baseline}
     checks["admission_headroom_preserved"] = all(
@@ -105,12 +115,15 @@ def main():
         recorded_runner_elapsed_seconds=result["elapsed_seconds"],
         original_post_first_run_pause_seconds=datetime.fromisoformat(handoff["utc"]).timestamp() -
             handoff["active_attempt"]["started_epoch_seconds"]-handoff["active_attempt"]["elapsed_seconds"],
+        final_pre_run_pause_seconds=(datetime.fromisoformat(restart["utc"]).timestamp() -
+            restart["active_attempt"]["started_epoch_seconds"]-restart["active_attempt"]["elapsed_seconds"]) if restart else 0.,
+        interrun_process_restarts=1+int(restart is not None),
         peak_process_rss_bytes=max(r["process_peak_rss_bytes"] for r in rows),
         maximum_unclipped_training_gradient_norm=max(r["timing"]["max_unclipped_gradient_norm"] for r in rows),
         maximum_observed_cgroup_raw_bytes=max(s["raw_current_bytes"] for s in snapshots),
         cgroup_oom_counter_changes=counters,
         cgroup_counter_scope="Since operational amendment after the first completed run; historical counters are not attributed to this experiment.",
-        timing_scope="Shared CPU, one process restart between runs1and2; no speed claim across cache/admission changes. Diagnostics and independent replay cost are not optimizer execution.")
+        timing_scope="Shared CPU with recorded inter-run restarts; no speed claim across cache/admission changes. Diagnostics and independent replay cost are not optimizer execution.")
     report = dict(evidence_audit_passed=all(checks.values()), evidence_checks=checks,
         development_gate_passed=all(gate.values()), development_gate_checks=gate,
         groups=summaries, paired_mass_minus_fixed=paired, costs=costs,

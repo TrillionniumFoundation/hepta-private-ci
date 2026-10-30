@@ -1,0 +1,560 @@
+{
+  "passed": true,
+  "freeze_sha256": "be352590d34de0eaf127b4566a89bb80e8a295799aebfa72febaee295f5db432",
+  "source_sha256": {
+    "third/memory/audit_development.py": "bf6f4585523f292eb41dd9bcd03dbedcf866ed2d65d5c3ebadeb3521489b42e2",
+    "third/memory/data.py": "105de5ab92bb05df45c00229ed3504cdbe4ee6acf2283e98dbc874a5d3a5850a",
+    "third/memory/development.py": "79210d7cb9233d8d1dee056483243bb039f80d4d6e68c3cc71dd305c062ca071",
+    "third/memory/diagnose.py": "c2fa7069708bf85ea8eee0bec6b021cd669341864efb97ee60f8f76f9becd640",
+    "third/memory/execution.py": "114d35b7911b5d9497a96c00475de58b67a1451565cda29e1a254d1b6be61195",
+    "third/memory/freeze.py": "5dbe390b146f31607b38a3c7e8c7e4055fe88b80ac58c6221ff6cfb4fd24b567",
+    "third/memory/models.py": "e1cce0a5b815d081a321949077a7236b24bef6389ad46d5967e3153332183311",
+    "third/memory/reference.py": "eb9ae19aa3fb6c17d4a69e585f1b7789ae6c95b5f84283db498094cf3db6b47e",
+    "third/memory/validate.py": "475204153fcb0695dd54a84b610fd762ef4c0263b9f1be9800245ed428c00f82",
+    "third/memory/protocol.json": "71aa7d0c70e73d49b22cfbf1c4c181608989eec5ceed05303b25ef9cc276746a",
+    "next/ridge/models.py": "faced710339290ada09bea51630e921dc7edb21c53472e43425cef481dccaf82",
+    "next/common.py": "27a6b807db7a2a0d0ad3f49dbc34b1d2850dcf8bdab00cedb928a153489ac565",
+    "benchmarks/data.py": "7f086e58eb04429de723fb0383b8731cc1fc50eff643fd5e78993cf32fd0f63d",
+    "benchmarks/models.py": "212d0ed0c06bb9168c91363529fa30c25fa3668b1927ddc53483af8884ad5b88",
+    "benchmarks/snn_models.py": "34d08455bba4cf57b6aa19ec981fdef98a8ac63a647a262b80130b00688cc1c4",
+    "next/sequence/challenge.py": "f6ffee8342ce495a9cd07089633b96adcaba32680fbfb1d4a5a5c62e2e04c2e8",
+    "next/full_kernel/__init__.py": "ebb6e03110e823bf4366537c150e3a67d1adcbd79bb8bd98b0b98473ad85c0e8",
+    "next/full_kernel/kernel.py": "8b3142a4122c75b871f8969fd43a956780392b162ac99f4ac0d8a5a81bc50110",
+    "next/full_kernel/baseline_table.npz": "c77e407162061c06a9a34c5822b8751ebb2a71b1a5ff2a584c60e6b6ec63e764"
+  },
+  "graph_checks": [
+    {
+      "variant": "full_fixed",
+      "dtype": "float64",
+      "directional_errors": [
+        1.1449479697667186e-09,
+        1.0022810359444634e-10
+      ],
+      "numpy_jax_logit_error": 6.661338147750939e-16,
+      "solve": {
+        "maximum_condition": 10.804638168458954,
+        "maximum_relative_residual": 1.4963162382000789e-16,
+        "maximum_read": 0.6195089844436694,
+        "maximum_write_mass": 1.1566198420476987
+      },
+      "passed": true
+    },
+    {
+      "variant": "full_fixed",
+      "dtype": "float32",
+      "directional_errors": [
+        3.291666507720947e-05,
+        2.6673078536987305e-05
+      ],
+      "numpy_jax_logit_error": 1.7881393432617188e-07,
+      "solve": {
+        "maximum_condition": 10.804640135165373,
+        "maximum_relative_residual": 1.28330345408616e-16,
+        "maximum_read": 0.6195089221000671,
+        "maximum_write_mass": 1.1566199874206284
+      },
+      "passed": true
+    },
+    {
+      "variant": "full_mass",
+      "dtype": "float64",
+      "directional_errors": [
+        1.5258259308814637e-09,
+        1.406376751167393e-10
+      ],
+      "numpy_jax_logit_error": 1.1102230246251565e-15,
+      "solve": {
+        "maximum_condition": 21.405774271021237,
+        "maximum_relative_residual": 1.5167332218672845e-16,
+        "maximum_read": 0.8243344922153295,
+        "maximum_write_mass": 1.1566198420476987
+      },
+      "passed": true
+    },
+    {
+      "variant": "full_mass",
+      "dtype": "float32",
+      "directional_errors": [
+        3.212690353393555e-05,
+        0.00011160969734191895
+      ],
+      "numpy_jax_logit_error": 2.384185791015625e-07,
+      "solve": {
+        "maximum_condition": 21.405787250185092,
+        "maximum_relative_residual": 1.44985143852491e-16,
+        "maximum_read": 0.8243343830108643,
+        "maximum_write_mass": 1.1566199874206284
+      },
+      "passed": true
+    },
+    {
+      "variant": "sigmoid_fixed",
+      "dtype": "float64",
+      "directional_errors": [
+        5.113325457495321e-10,
+        6.909371685903665e-11
+      ],
+      "numpy_jax_logit_error": 2.220446049250313e-16,
+      "solve": {
+        "maximum_condition": 10.804638168458954,
+        "maximum_relative_residual": 1.5986002285372042e-16,
+        "maximum_read": 0.6187678509118959,
+        "maximum_write_mass": 1.1566198420476987
+      },
+      "passed": true
+    },
+    {
+      "variant": "sigmoid_fixed",
+      "dtype": "float32",
+      "directional_errors": [
+        2.7298927307128906e-05,
+        2.7313828468322754e-05
+      ],
+      "numpy_jax_logit_error": 2.384185791015625e-07,
+      "solve": {
+        "maximum_condition": 10.804640135165373,
+        "maximum_relative_residual": 1.1645618066720055e-16,
+        "maximum_read": 0.6187677383422852,
+        "maximum_write_mass": 1.1566199874206284
+      },
+      "passed": true
+    },
+    {
+      "variant": "sigmoid_mass",
+      "dtype": "float64",
+      "directional_errors": [
+        1.4833173578310266e-10,
+        2.6577295919594235e-11
+      ],
+      "numpy_jax_logit_error": 4.440892098500626e-16,
+      "solve": {
+        "maximum_condition": 21.405774271021237,
+        "maximum_relative_residual": 1.788664348210881e-16,
+        "maximum_read": 0.8233241533695304,
+        "maximum_write_mass": 1.1566198420476987
+      },
+      "passed": true
+    },
+    {
+      "variant": "sigmoid_mass",
+      "dtype": "float32",
+      "directional_errors": [
+        1.9535422325134277e-05,
+        7.912516593933105e-05
+      ],
+      "numpy_jax_logit_error": 4.172325134277344e-07,
+      "solve": {
+        "maximum_condition": 21.405787250185092,
+        "maximum_relative_residual": 1.5934520443484076e-16,
+        "maximum_read": 0.8233239650726318,
+        "maximum_write_mass": 1.1566199874206284
+      },
+      "passed": true
+    },
+    {
+      "variant": "c1_fixed",
+      "dtype": "float64",
+      "directional_errors": [
+        2.628104955881838e-10,
+        1.967165319527453e-11
+      ],
+      "numpy_jax_logit_error": 2.220446049250313e-16,
+      "solve": {
+        "maximum_condition": 10.804638168458954,
+        "maximum_relative_residual": 1.839498865553428e-16,
+        "maximum_read": 0.6237681209068058,
+        "maximum_write_mass": 1.1566198420476987
+      },
+      "passed": true
+    },
+    {
+      "variant": "c1_fixed",
+      "dtype": "float32",
+      "directional_errors": [
+        2.8908252716064453e-06,
+        0.00014197826385498047
+      ],
+      "numpy_jax_logit_error": 1.7881393432617188e-07,
+      "solve": {
+        "maximum_condition": 10.804640135165373,
+        "maximum_relative_residual": 1.7149936977112625e-16,
+        "maximum_read": 0.6237680315971375,
+        "maximum_write_mass": 1.1566199874206284
+      },
+      "passed": true
+    },
+    {
+      "variant": "c1_mass",
+      "dtype": "float64",
+      "directional_errors": [
+        7.800386725431707e-10,
+        6.24645196678486e-11
+      ],
+      "numpy_jax_logit_error": 8.881784197001252e-16,
+      "solve": {
+        "maximum_condition": 21.405774271021237,
+        "maximum_relative_residual": 1.852565052659598e-16,
+        "maximum_read": 0.8310453591510298,
+        "maximum_write_mass": 1.1566198420476987
+      },
+      "passed": true
+    },
+    {
+      "variant": "c1_mass",
+      "dtype": "float32",
+      "directional_errors": [
+        3.9637088775634766e-06,
+        6.35683536529541e-05
+      ],
+      "numpy_jax_logit_error": 2.384185791015625e-07,
+      "solve": {
+        "maximum_condition": 21.405787250185092,
+        "maximum_relative_residual": 1.516445278547512e-16,
+        "maximum_read": 0.8310452103614807,
+        "maximum_write_mass": 1.1566199874206284
+      },
+      "passed": true
+    },
+    {
+      "variant": "memory_fixed",
+      "dtype": "float64",
+      "directional_errors": [
+        3.6259564795138033e-10,
+        2.5457920493909825e-11
+      ],
+      "numpy_jax_logit_error": 2.220446049250313e-16,
+      "solve": {
+        "maximum_condition": 10.804638168458954,
+        "maximum_relative_residual": 2.3398670260688023e-16,
+        "maximum_read": 0.6049184839210545,
+        "maximum_write_mass": 1.1566198420476987
+      },
+      "passed": true
+    },
+    {
+      "variant": "memory_fixed",
+      "dtype": "float32",
+      "directional_errors": [
+        3.205239772796631e-05,
+        0.00013141334056854248
+      ],
+      "numpy_jax_logit_error": 1.7881393432617188e-07,
+      "solve": {
+        "maximum_condition": 10.804640135165373,
+        "maximum_relative_residual": 1.8737343097507214e-16,
+        "maximum_read": 0.604918360710144,
+        "maximum_write_mass": 1.1566199874206284
+      },
+      "passed": true
+    },
+    {
+      "variant": "memory_mass",
+      "dtype": "float64",
+      "directional_errors": [
+        1.6473692965313091e-09,
+        1.3968642909034656e-10
+      ],
+      "numpy_jax_logit_error": 6.661338147750939e-16,
+      "solve": {
+        "maximum_condition": 21.405774271021237,
+        "maximum_relative_residual": 1.8084229672069284e-16,
+        "maximum_read": 0.8042039666672796,
+        "maximum_write_mass": 1.1566198420476987
+      },
+      "passed": true
+    },
+    {
+      "variant": "memory_mass",
+      "dtype": "float32",
+      "directional_errors": [
+        4.2557716369628906e-05,
+        0.00013625621795654297
+      ],
+      "numpy_jax_logit_error": 3.5762786865234375e-07,
+      "solve": {
+        "maximum_condition": 21.405787250185092,
+        "maximum_relative_residual": 1.6103522032832822e-16,
+        "maximum_read": 0.8042038083076477,
+        "maximum_write_mass": 1.1566199874206284
+      },
+      "passed": true
+    }
+  ],
+  "solve_checks": [
+    {
+      "dtype": "<class 'jax.numpy.float64'>",
+      "mode": "fixed",
+      "inverse_mass": 1.0,
+      "condition": 81.00000000000004,
+      "adjoint_errors": [
+        1.3322676295501878e-15,
+        3.0531133177191805e-15,
+        0.0
+      ],
+      "matrix_dtype": "float64",
+      "condition_times_solver_epsilon": 1.7985612998927545e-14,
+      "condition_times_state_epsilon": 1.7985612998927545e-14,
+      "relative_residual": 1.0763130040724048e-16,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float64'>",
+      "mode": "mass",
+      "inverse_mass": 1.0,
+      "condition": 81.00000000000004,
+      "adjoint_errors": [
+        1.3322676295501878e-15,
+        3.0531133177191805e-15,
+        6.938893903907228e-18
+      ],
+      "matrix_dtype": "float64",
+      "condition_times_solver_epsilon": 1.7985612998927545e-14,
+      "condition_times_state_epsilon": 1.7985612998927545e-14,
+      "relative_residual": 1.0763130040724048e-16,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float64'>",
+      "mode": "fixed",
+      "inverse_mass": 0.007751937984496124,
+      "condition": 81.00000000000004,
+      "adjoint_errors": [
+        1.3322676295501878e-15,
+        3.0531133177191805e-15,
+        0.0
+      ],
+      "matrix_dtype": "float64",
+      "condition_times_solver_epsilon": 1.7985612998927545e-14,
+      "condition_times_state_epsilon": 1.7985612998927545e-14,
+      "relative_residual": 1.0763130040724048e-16,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float64'>",
+      "mode": "mass",
+      "inverse_mass": 0.007751937984496124,
+      "condition": 10321.000000002612,
+      "adjoint_errors": [
+        1.3222756223285614e-13,
+        2.9726221484338566e-13,
+        1.3877787807814457e-17
+      ],
+      "matrix_dtype": "float64",
+      "condition_times_solver_epsilon": 2.291722367431828e-12,
+      "condition_times_state_epsilon": 2.291722367431828e-12,
+      "relative_residual": 1.259729087387478e-16,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float64'>",
+      "mode": "fixed",
+      "inverse_mass": 0.001949317738791423,
+      "condition": 81.00000000000004,
+      "adjoint_errors": [
+        1.3322676295501878e-15,
+        3.0531133177191805e-15,
+        0.0
+      ],
+      "matrix_dtype": "float64",
+      "condition_times_solver_epsilon": 1.7985612998927545e-14,
+      "condition_times_state_epsilon": 1.7985612998927545e-14,
+      "relative_residual": 1.0763130040724048e-16,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float64'>",
+      "mode": "mass",
+      "inverse_mass": 0.001949317738791423,
+      "condition": 41041.00000006726,
+      "adjoint_errors": [
+        3.3678615452004124e-13,
+        7.488454301096681e-13,
+        1.3877787807814457e-17
+      ],
+      "matrix_dtype": "float64",
+      "condition_times_solver_epsilon": 9.112932630743144e-12,
+      "condition_times_state_epsilon": 9.112932630743144e-12,
+      "relative_residual": 9.025616793991674e-17,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float64'>",
+      "mode": "fixed",
+      "inverse_mass": 0.000244081034903588,
+      "condition": 81.00000000000004,
+      "adjoint_errors": [
+        1.3322676295501878e-15,
+        3.0531133177191805e-15,
+        0.0
+      ],
+      "matrix_dtype": "float64",
+      "condition_times_solver_epsilon": 1.7985612998927545e-14,
+      "condition_times_state_epsilon": 1.7985612998927545e-14,
+      "relative_residual": 1.0763130040724048e-16,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float64'>",
+      "mode": "mass",
+      "inverse_mass": 0.000244081034903588,
+      "condition": 327761.00000257976,
+      "adjoint_errors": [
+        2.6753876891660866e-12,
+        6.133371588390446e-12,
+        0.0
+      ],
+      "matrix_dtype": "float64",
+      "condition_times_solver_epsilon": 7.277756175540601e-11,
+      "condition_times_state_epsilon": 7.277756175540601e-11,
+      "relative_residual": 2.1029050734147383e-16,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float32'>",
+      "mode": "fixed",
+      "inverse_mass": 1.0,
+      "condition": 81.00000119209291,
+      "adjoint_errors": [
+        4.802425151995138e-09,
+        2.7844668515353277e-09,
+        0.0
+      ],
+      "matrix_dtype": "float64",
+      "condition_times_solver_epsilon": 1.7985613263625335e-14,
+      "condition_times_state_epsilon": 9.655952453613281e-06,
+      "relative_residual": 3.291405771891979e-16,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float32'>",
+      "mode": "mass",
+      "inverse_mass": 1.0,
+      "condition": 81.00000119209291,
+      "adjoint_errors": [
+        4.802425151995138e-09,
+        2.7844668515353277e-09,
+        1.256818329964382e-10
+      ],
+      "matrix_dtype": "float64",
+      "condition_times_solver_epsilon": 1.7985613263625335e-14,
+      "condition_times_state_epsilon": 9.655952453613281e-06,
+      "relative_residual": 3.291405771891979e-16,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float32'>",
+      "mode": "fixed",
+      "inverse_mass": 0.007751937984496124,
+      "condition": 81.00000119209291,
+      "adjoint_errors": [
+        4.802425151995138e-09,
+        2.7844668515353277e-09,
+        0.0
+      ],
+      "matrix_dtype": "float64",
+      "condition_times_solver_epsilon": 1.7985613263625335e-14,
+      "condition_times_state_epsilon": 9.655952453613281e-06,
+      "relative_residual": 3.291405771891979e-16,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float32'>",
+      "mode": "mass",
+      "inverse_mass": 0.007751937984496124,
+      "condition": 10321.000192226331,
+      "adjoint_errors": [
+        9.880317841659547e-09,
+        1.0128852312440983e-08,
+        5.83136663956374e-11
+      ],
+      "matrix_dtype": "float64",
+      "condition_times_solver_epsilon": 2.291722410114068e-12,
+      "condition_times_state_epsilon": 0.0012303590774536133,
+      "relative_residual": 9.314045909490729e-17,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float32'>",
+      "mode": "fixed",
+      "inverse_mass": 0.001949317738791423,
+      "condition": 81.00000119209291,
+      "adjoint_errors": [
+        4.802425151995138e-09,
+        2.7844668515353277e-09,
+        0.0
+      ],
+      "matrix_dtype": "float64",
+      "condition_times_solver_epsilon": 1.7985613263625335e-14,
+      "condition_times_state_epsilon": 9.655952453613281e-06,
+      "relative_residual": 3.291405771891979e-16,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float32'>",
+      "mode": "mass",
+      "inverse_mass": 0.001949317738791423,
+      "condition": 41041.000305810216,
+      "adjoint_errors": [
+        9.092846947611477e-09,
+        1.644593594640753e-08,
+        1.3057506118019369e-09
+      ],
+      "matrix_dtype": "float64",
+      "condition_times_solver_epsilon": 9.112932698631718e-12,
+      "condition_times_state_epsilon": 0.004892468452453613,
+      "relative_residual": 3.0925424043962106e-16,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float32'>",
+      "mode": "fixed",
+      "inverse_mass": 0.000244081034903588,
+      "condition": 81.00000119209291,
+      "adjoint_errors": [
+        4.802425151995138e-09,
+        2.7844668515353277e-09,
+        0.0
+      ],
+      "matrix_dtype": "float64",
+      "condition_times_solver_epsilon": 1.7985613263625335e-14,
+      "condition_times_state_epsilon": 9.655952453613281e-06,
+      "relative_residual": 3.291405771891979e-16,
+      "finite": true,
+      "passed": true
+    },
+    {
+      "dtype": "<class 'jax.numpy.float32'>",
+      "mode": "mass",
+      "inverse_mass": 0.000244081034903588,
+      "condition": 327761.00488299585,
+      "adjoint_errors": [
+        2.912938223964545e-09,
+        2.2369109953235267e-08,
+        2.402740104101575e-09
+      ],
+      "matrix_dtype": "float64",
+      "condition_times_solver_epsilon": 7.277756283907607e-11,
+      "condition_times_state_epsilon": 0.03907215595245361,
+      "relative_residual": 2.5215563857555267e-16,
+      "finite": true,
+      "passed": true
+    }
+  ],
+  "prior_failure_preserved": "revision1/numerical_validation.json",
+  "precision": "State/parameters at named dtype; matrix construction/solve float64, read cast to state dtype",
+  "scope": "Small real recurrent graphs and declared rank-one solve stress only; not a uniform long-time BPTT guarantee"
+}
