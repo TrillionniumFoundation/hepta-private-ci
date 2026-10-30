@@ -14,6 +14,12 @@ _UNIT_TEST_DEPENDENCIES = {
 codex_rust_crate(
     name = "hepta-agentd",
     crate_name = "codex_hepta_agentd",
+    # Feature-gated legacy ledger writes belong only to this existing E2E test.
+    integration_test_dependency_replacements = {
+        "hepta-agentd-plasticity_process_e2e-test": {
+            "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+        },
+    },
     integration_test_timeout = "long",
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
 )
