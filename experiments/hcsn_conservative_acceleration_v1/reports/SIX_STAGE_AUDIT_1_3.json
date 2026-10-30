@@ -1,0 +1,405 @@
+{
+  "schema": "hcsn-six-stage-independent-audit-1-3.v1",
+  "scope": [
+    1,
+    2,
+    3
+  ],
+  "published_parent_commit": "63fd568b177c0456ddd8b590e3ac77d35307c0c4",
+  "audited_current_package": "experiments/hcsn_conservative_acceleration_v1",
+  "audit_method": "Read-only mathematical/source review; original published content002 statistics and parameter-update fields were independently recomputed/checked. No frozen Python source was changed and the running 70-job matrix was not inspected.",
+  "summary_zh": "语义合同与标量再生控制模型成立，有限生成元传播和局部一阶梯度有独立核验；有限网格/任务最优性不成立为既有结论，已发表机制优势门仍未通过。当前加速实验只检验实现保真与计算成本。",
+  "status_summary": {
+    "stage1": "completed_with_explicit_modeling_approximations",
+    "stage2_scalar_regenerative_oracle": "passed_for_declared_stationary_scalar_problem",
+    "stage2_finite_policy_evaluation": "passed_for_declared_finite_generator",
+    "stage2_finite_grid_optimality": "not_certified_and_sampled_counterexamples_recorded",
+    "stage2_classification_or_owner_Bellman_optimality": "not_established",
+    "stage3_joint_first_order_training": "supported",
+    "stage3_positive_mechanism_advantage": "failed_published_acceptance_gates",
+    "gpu_accelerator_or_hardware_energy_evidence": "not_measured"
+  },
+  "stages": [
+    {
+      "stage": 1,
+      "title": "Typed event/value semantics and chronology",
+      "status": "completed_with_explicit_modeling_approximations",
+      "evidence": [
+        "E1",
+        "E3",
+        "E5",
+        "E9",
+        "E10"
+      ],
+      "completed": [
+        "C=E[N_s] is repeated expected firing count; P=Pr(N_s>=1) includes the declared complete initial state; F is a frozen first-passage CDF for a specified active start; f is its continuous density with atoms accounted separately; H_rho is discounted first-event mass; K is the immediate firing cost.",
+        "J^pi and G^pi are policy and immediate-intervention values with reset continuation. G is neither default probability nor a literal financial Put. Neither value channel has a mathematically fixed restoring/panic-force sign.",
+        "A boundary shrink emits covered active mass at time zero and rewards its original position. Existing refractory stages persist. All later reset cycles count; zero-phase self-reset events remain marked events.",
+        "The trained model retains eight active cells and two Erlang phase masses. Physical model time is 0.1 times input dt; it is distinct from hardware seconds and native-owner ticks."
+      ],
+      "independently_published_separation_example": {
+        "case": "repeated_event_window",
+        "dtype": "float64",
+        "first_event_probability": 0.964144481,
+        "expected_count": 4.8116507,
+        "evidence": "E9"
+      },
+      "limits": [
+        "These are continuous probability/expectation messages, not sampled binary biological spikes or neuromorphic event executions.",
+        "Finite lower reflection, coarse spatial cells, piecewise-uniform moving-boundary remaps and finite Erlang duration variance remain explicit modeling approximations.",
+        "P and F coincide only when the event, start, filtration, boundary jump and refractory conventions coincide. A terminal exceedance probability cannot replace a first-passage CDF.",
+        "Smooth pasting applies to the value problem; it does not make CDF atoms, reset knots or the complete hybrid network globally smooth.",
+        "The failed original v1 mean-state closure and failed raw 4096-step probability audit remain preserved; neither is retroactively reclassified by v2 or the stable profile."
+      ]
+    },
+    {
+      "stage": 2,
+      "title": "Regenerative Bellman/QVI, implicit boundary gradient, and finite-grid mismatch",
+      "status": "scalar_oracle_and_policy_evaluation_passed_with_optimality_limits",
+      "evidence": [
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E8",
+        "E10",
+        "E12"
+      ],
+      "scalar_contract": {
+        "domain": "sigma>0, rho>0, r<K, tau>=0; stationary arithmetic Brownian active state on the unbounded line; affine firing reward x-K; adapted nonaccumulating impulse controls",
+        "intervention": "M U(x)=x-K+exp(-rho*tau) U(r)",
+        "qvi": "max{L U-rho U, M U-U}=0",
+        "root": "kappa=(sqrt(mu^2+2*rho*sigma^2)-mu)/sigma^2; q=exp(-rho*tau-kappa*(b-r)); Psi(b)=kappa*(b-K)-1+q=0",
+        "boundary_conditions": "U(b)=M U(b), U_x(b-)=1; Psi_b=kappa*(1-q)>0",
+        "gradient": "db/dtheta=-Psi_theta/Psi_b, with the full chain rule for constrained and effective-delay parameterizations",
+        "validity": "The source verifies both global QVI inequalities and transversality for this scalar problem; value matching and smooth pasting alone would not establish optimality.",
+        "excluded": "Higher derivatives through the detached root, sigma=0 or rho=0 diffusion formulas, near-chattering uniform conditioning, moving/input-dependent policies and task-specific optimality are not certified."
+      },
+      "published_scalar_numerical_checks": {
+        "boundary_gradient_checks": 24,
+        "physical_parameters": 6,
+        "maximum_scaled_fd_error_approximately": 1.59e-9,
+        "independent_finest_QVI_value_error_approximately": 0.000443,
+        "independent_finest_QVI_boundary_error_approximately": 0.001341,
+        "evidence": "E4",
+        "scope": "Published source-bound results reviewed here; not rerun as new experiments."
+      },
+      "finite_model_contract": {
+        "delay": "For m Erlang stages, D=(nu/(nu+rho))^m with nu=m/tau. Equivalent tau_eff=m/rho*log(1+rho*tau/m) matches only the discount factor in the continuous boundary calculation.",
+        "active_first_hit": "(rho I-A) h=lambda_active; h_r=sum_i w_i(r) h_i, where A is the killed backward active generator.",
+        "regeneration": "J_i=h_i*(b-K)/(1-D*h_r); J_r=h_r*(b-K)/(1-D*h_r); J_phase,j=D_j*J_r.",
+        "intervention": "G_i=x_i-K+D*J_r on active cells; G_phase,j=J_phase,j during mandatory refractory continuation.",
+        "Bellman_scope": "With column probability generator Q, (rho I-Q^T)J=(b-K)*lambda. This is own-policy evaluation, not a maximized finite-state Bellman equation.",
+        "surrogate_boundary": "The Brownian/Erlang b is not the finite reflecting grid optimum; replacing J with an optimal grid value without changing the controlled event law/reward would be inconsistent."
+      },
+      "finite_grid_counterexamples": {
+        "declared_cases": 5,
+        "grid_sizes": [
+          8,
+          32,
+          128
+        ],
+        "labels_read": false,
+        "source_changed_during_original_audit": [],
+        "example_central_8_cells": {
+          "case": "central",
+          "cells": 8,
+          "analytic_boundary": 1.0603110959811977,
+          "analytic_policy_value": 0.113991122270362,
+          "best_sampled_boundary": 1.1516766124006903,
+          "best_sampled_value": 0.11549391702245584,
+          "sampled_improvement_lower_bound": 0.0015027947520938473,
+          "relative_sampled_improvement": 0.01318343676386962,
+          "max_active_obstacle_violation": 0.00009369206559334264
+        },
+        "largest_recorded_relative_improvement": 0.0460509910943962,
+        "interpretation": "A sampled feasible boundary has higher own-policy value, establishing a lower bound on suboptimality. The best sampled boundary is not certified globally optimal, and these returns are not classification or owner returns.",
+        "evidence": "E8"
+      },
+      "current_backend_acceptance": {
+        "source_identity": "All five source hashes recorded by validation001 were rechecked against the current restored bytes and match.",
+        "parameters_checked": [
+          "mu",
+          "sigma",
+          "boundary",
+          "reset",
+          "tau",
+          "duration",
+          "old_boundary",
+          "rho",
+          "cost"
+        ],
+        "maximum_dense_fd_scaled_gradient_error": 5.588974493003141e-10,
+        "maximum_original_autograd_scaled_error": 1.1819349021923596e-15,
+        "maximum_dense_transition_row_L1_float32": 0.0000015143305026645015,
+        "maximum_dense_transition_row_L1_float64": 2.749991206973945e-12,
+        "long_float32_observations": 4096,
+        "long_float32_final_state_L1_error": 3.1197138404201463e-7,
+        "long_float32_maximum_post_correction_mass_defect": 3.3527612686157227e-8,
+        "scope": "Selected cases support faithful finite-model polynomial evaluation and local first derivatives. They do not certify global floating-point/gradient bounds, spatial accuracy of arbitrary parameters, or a mechanism advantage.",
+        "evidence": "E2"
+      }
+    },
+    {
+      "stage": 3,
+      "title": "Joint training versus causal contribution and predictive advantage",
+      "status": "training_supported_positive_advantage_not_passed",
+      "evidence": [
+        "E4",
+        "E6",
+        "E7",
+        "E11",
+        "E13"
+      ],
+      "training_evidence": {
+        "v1_published_joint_training_runs": 108,
+        "v1_free_dual_runs_with_all_five_groups_changed": 28,
+        "v2_independent_recheck": {
+          "source_analysis_sha256": "654f1f3b235bd066e8ee64f2f20e18dc16eb7f83ecbef31379a066d94433da76",
+          "audited_distribution_runs": 112,
+          "audited_lr_candidates": 224,
+          "all_runs_valid": true,
+          "per_model_runs": {
+            "active_mean_collapse_free_dual": 28,
+            "distribution_conditional_dual": 28,
+            "distribution_free_dual": 28,
+            "distribution_free_ordinary": 28
+          },
+          "five_group_gradient_and_selected_change_violations": [],
+          "mechanism_statistics_independently_recomputed": [
+            {
+              "comparison": "distribution_conditional_dual",
+              "seed_pairs": 8,
+              "mean_percentage_points": 0.469970703125,
+              "nominal_95pct_interval_percentage_points": [
+                -1.939074803617272,
+                2.879016209867272
+              ],
+              "two_sided_exact_sign_flip_p": 0.640625,
+              "reported_holm_p": 1,
+              "positive_gate": false
+            },
+            {
+              "comparison": "distribution_free_ordinary",
+              "seed_pairs": 8,
+              "mean_percentage_points": 0.01220703125,
+              "nominal_95pct_interval_percentage_points": [
+                -2.4182912223652044,
+                2.4427052848652044
+              ],
+              "two_sided_exact_sign_flip_p": 1,
+              "reported_holm_p": 1,
+              "positive_gate": false
+            },
+            {
+              "comparison": "active_mean_collapse_free_dual",
+              "seed_pairs": 8,
+              "mean_percentage_points": 0.360107421875,
+              "nominal_95pct_interval_percentage_points": [
+                -2.5037260217338453,
+                3.2239408654838453
+              ],
+              "two_sided_exact_sign_flip_p": 0.7421875,
+              "reported_holm_p": 1,
+              "positive_gate": false
+            },
+            {
+              "comparison": "two_gates",
+              "seed_pairs": 8,
+              "mean_percentage_points": -48.3978271484375,
+              "nominal_95pct_interval_percentage_points": [
+                -51.039275643664574,
+                -45.756378653210426
+              ],
+              "two_sided_exact_sign_flip_p": 0.0078125,
+              "reported_holm_p": 0.03125,
+              "positive_gate": false
+            }
+          ],
+          "mechanism_statistics_match": true,
+          "formal_new_matrix_not_read": true
+        },
+        "propagation_path_test": "The frozen v2 model integration test detaches direct physical-parameter gate features and all analytic feature inputs; task CE gradients still reach the four physical groups through retained probability propagation. This demonstrates a local computational path, not a benefit in predictive quality.",
+        "limits": "Finite nonzero gradients and observed parameter updates establish trainability. They do not prove the implicit affine-reward boundary is task-optimal, that every parameter is necessary, or that training the full physical system improves quality."
+      },
+      "published_contribution_results": {
+        "v1_positive_gates_passed": 0,
+        "v1_positive_gates_total": 6,
+        "v2_positive_gates_passed": 0,
+        "v2_positive_gates_total": 4,
+        "v2_strict_integrity": {
+          "valid": 175,
+          "expected": 176,
+          "invalid_job": {
+            "task": "fsdd",
+            "model": "transformer",
+            "seed": 9202,
+            "error": "cross entropy summary"
+          },
+          "all_four_registered_mechanism_comparisons_complete": true
+        },
+        "v2_statistics": [
+          {
+            "comparison": "distribution_conditional_dual",
+            "seed_pairs": 8,
+            "mean_percentage_points": 0.469970703125,
+            "nominal_95pct_interval_percentage_points": [
+              -1.939074803617272,
+              2.879016209867272
+            ],
+            "two_sided_exact_sign_flip_p": 0.640625,
+            "reported_holm_p": 1,
+            "positive_gate": false
+          },
+          {
+            "comparison": "distribution_free_ordinary",
+            "seed_pairs": 8,
+            "mean_percentage_points": 0.01220703125,
+            "nominal_95pct_interval_percentage_points": [
+              -2.4182912223652044,
+              2.4427052848652044
+            ],
+            "two_sided_exact_sign_flip_p": 1,
+            "reported_holm_p": 1,
+            "positive_gate": false
+          },
+          {
+            "comparison": "active_mean_collapse_free_dual",
+            "seed_pairs": 8,
+            "mean_percentage_points": 0.360107421875,
+            "nominal_95pct_interval_percentage_points": [
+              -2.5037260217338453,
+              3.2239408654838453
+            ],
+            "two_sided_exact_sign_flip_p": 0.7421875,
+            "reported_holm_p": 1,
+            "positive_gate": false
+          },
+          {
+            "comparison": "two_gates",
+            "seed_pairs": 8,
+            "mean_percentage_points": -48.3978271484375,
+            "nominal_95pct_interval_percentage_points": [
+              -51.039275643664574,
+              -45.756378653210426
+            ],
+            "two_sided_exact_sign_flip_p": 0.0078125,
+            "reported_holm_p": 0.03125,
+            "positive_gate": false
+          }
+        ],
+        "interpretation": "The boundary, dual-value and active-distribution comparisons did not pass their positive advantage gates. This is not evidence of equivalence or of zero functional effect. The independent ordinary gated network had a significant negative free-model difference in the declared two-task, eight-seed comparison.",
+        "statistical_scope": "Each seed averages the same two fixed tasks; the exact sign-flip family contains four contrasts. Nominal t intervals are not simultaneous intervals, and these tasks are not a random population of all modalities.",
+        "heldout_scope": "These published datasets had already been observed in earlier studies; the result is not fresh-test confirmation."
+      },
+      "missing_or_separate_tests": [
+        "The reviewed model arm lists do not contain a complete freeze-one-physical-group factorial establishing which of jointly trained drift, discount/cost, reset and refractory pathways produces task benefit.",
+        "The v2 arm list is not a full margin -> J-only -> J+G -> explicit first-event-risk feature ladder. G must not be renamed a default-risk feature.",
+        "Fixed/direct/conditional thresholds, ordinary physical features, active-mean collapse and independent two_gates isolate different interventions and must not be pooled as the same ablation.",
+        "The new 70-job matrix contains hcsn_reference, hcsn_accelerated, two_gates, transformer and lif_snn; it does not introduce a new mechanism-ablation family."
+      ],
+      "current_experiment_interpretation": "The reference/accelerated pair shares generator, value equation, stable profile and learned parameter shapes. Any faithful speed improvement supports implementation efficiency only. Its result cannot retrospectively change the failed mechanism gates."
+    }
+  ],
+  "claim_boundaries": {
+    "new_formal_70_job_results": "running_at_audit_request; not inspected or used",
+    "new_benchmarks_or_training_run_by_this_audit": false,
+    "frozen_python_files_modified": false,
+    "mathematical_audit_is_architecture_superiority": false,
+    "task_optimal_stopping_claim": false,
+    "foundation_or_full_multimodal_training_claim": false,
+    "gpu_memory_accelerator_throughput_or_energy_claim": false,
+    "internal_event_counts_are_hardware_savings": false,
+    "stages_4_5_6": "Delegated to the source_model agent; combine its separate report with this one."
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "path": "experiments/hcsn_conservative_acceleration_v1/CONTRACT.md",
+      "sha256": "3ee468e4d986ab481f3fe187b5e24d82125c82300af904aa83a728bcb09d9b5b",
+      "kind": "current_local_contract"
+    },
+    {
+      "id": "E2",
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/validation001/RESULTS.json",
+      "sha256": "ae174e46a343e31ad294aecbd80a25ee7594694fb8531204ea6e3889b8def0da",
+      "kind": "current_source_bound_raw_numerical_evidence"
+    },
+    {
+      "id": "E3",
+      "path": "experiments/hcsn_free_boundary_v1/MATH.md",
+      "git_blob_sha": "98f078983076094e5031b6d64863d770b6767f2e",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_free_boundary_v1/MATH.md"
+    },
+    {
+      "id": "E4",
+      "path": "experiments/hcsn_free_boundary_v1/RESULTS.md",
+      "git_blob_sha": "2977279c1142563b46a8d13a5c8cce15d7263b32",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_free_boundary_v1/RESULTS.md"
+    },
+    {
+      "id": "E5",
+      "path": "experiments/hcsn_distributional_v2/MATH.md",
+      "git_blob_sha": "943e9b29cd716548cc7c73c50c30820fcce2bdc2",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_distributional_v2/MATH.md"
+    },
+    {
+      "id": "E6",
+      "path": "experiments/hcsn_distributional_v2/CONTENT.md",
+      "git_blob_sha": "1aed9ce9e7c4f2a7005da781031c0c50b10dd010",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_distributional_v2/CONTENT.md"
+    },
+    {
+      "id": "E7",
+      "path": "experiments/hcsn_distributional_v2/model_tests.py",
+      "git_blob_sha": "e9e8fe2d0c68e3229015288f3c662b5cdd0dc0fa",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_distributional_v2/model_tests.py"
+    },
+    {
+      "id": "E8",
+      "path": "experiments/hcsn_distributional_v2/results/policy_gap001/RESULTS.json",
+      "git_blob_sha": "64870829fc3431425894c1a09c0c4616265b093d",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_distributional_v2/results/policy_gap001/RESULTS.json"
+    },
+    {
+      "id": "E9",
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_risk_independent/REPORT.md",
+      "git_blob_sha": "88d46dbc507ce1d796b3e417eb573706e9e1359d",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_distributional_v2/results/sixstage_20261030_risk_independent/REPORT.md"
+    },
+    {
+      "id": "E10",
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_math/completion_export/COMPLETION_MAP.json",
+      "git_blob_sha": "e1b8da7a0fca5858cce803b9d44f88ecb58c932e",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_distributional_v2/results/sixstage_20261030_math/completion_export/COMPLETION_MAP.json"
+    },
+    {
+      "id": "E11",
+      "archive_manifest": "experiments/hcsn_sixstage_v1/artifacts/content002_analysis.json",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_sixstage_v1/artifacts/content002_analysis.json",
+      "members": [
+        {
+          "path": "REPORT.md",
+          "sha256": "795f8dc3a9fc99f58cb796387cc1bf1106c4bcff9404d8cb6def30c145a0a4de"
+        },
+        {
+          "path": "ANALYSIS.json",
+          "sha256": "654f1f3b235bd066e8ee64f2f20e18dc16eb7f83ecbef31379a066d94433da76"
+        }
+      ],
+      "verification": "Archive members restored and manifest-checked by source_model; both member bytes read and SHA256-checked independently here."
+    },
+    {
+      "id": "E12",
+      "path": "experiments/hcsn_distributional_v2/results/kernel_validation003/REPORT.md",
+      "git_blob_sha": "7add1626c94c79edba0c6988477a08b3621890be",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_distributional_v2/results/kernel_validation003/REPORT.md"
+    },
+    {
+      "id": "E13",
+      "path": "experiments/hcsn_conservative_acceleration_v1/PROTOCOL.json",
+      "sha256": "38dc6de2b9279b88be653275e1be30a972b9aa0899b6fbc12be5fad776f29114",
+      "kind": "registered_current_70_job_protocol"
+    }
+  ]
+}

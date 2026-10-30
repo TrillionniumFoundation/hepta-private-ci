@@ -1,0 +1,167 @@
+name: HCSN conservative hosted comparison
+
+on:
+  push:
+    branches:
+      - research/hcsn-conservative-acceleration-20261030
+    paths:
+      - .github/workflows/hcsn-conservative-hosted.yml
+      - experiments/hcsn_conservative_acceleration_v1/hosted/**
+      - experiments/hcsn_conservative_acceleration_v1/HOSTED_DESIGN.json
+      - experiments/hcsn_conservative_acceleration_v1/HOSTED_EXECUTION_PLAN.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcsn-conservative-hosted-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  OMP_NUM_THREADS: "1"
+  OPENBLAS_NUM_THREADS: "1"
+  MKL_NUM_THREADS: "1"
+  NUMEXPR_NUM_THREADS: "1"
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  comparison:
+    runs-on: ubuntu-24.04
+    container:
+      image: python:3.12.14@sha256:6dc02694c53fde08b0e39de9273a708d2f2a612f77dc173a64835c3f7a40ee35
+      options: --memory=8g --memory-swap=8g --cpus=2 --cgroupns=private
+    timeout-minutes: 60
+    outputs:
+      publication_ready: ${{ steps.package.outputs.ready }}
+    steps:
+      - name: Check out the exact execution source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /experiments/hcsn_conservative_acceleration_v1/
+            /experiments/hcsn_sixstage_v1/transport_indexes/initial_text_bounded.json
+            /.github/workflows/hcsn-conservative-hosted.yml
+      - name: Materialize only the pinned source and bounded data objects
+        run: |
+          python3 -m experiments.hcsn_conservative_acceleration_v1.hosted.restore_data --print-sparse-paths > "$RUNNER_TEMP/hcsn-sparse-paths.txt"
+          git sparse-checkout set --no-cone --stdin < "$RUNNER_TEMP/hcsn-sparse-paths.txt"
+      - name: Check the pinned interpreter and actual cgroup namespace
+        run: |
+          python - <<'PY'
+          import sys
+          from pathlib import Path
+          assert sys.version_info[:3] == (3, 12, 14), sys.version
+          assert Path('/.dockerenv').is_file()
+          for name in ('memory.max', 'memory.current', 'memory.events', 'memory.stat', 'cpu.max'):
+              assert (Path('/sys/fs/cgroup')/name).is_file(), name
+          assert int(Path('/sys/fs/cgroup/memory.max').read_text()) == 8*1024**3
+          quota, period = Path('/sys/fs/cgroup/cpu.max').read_text().split()
+          assert int(quota) == 2*int(period)
+          print('Pinned Python and bounded private cgroup namespace verified.')
+          PY
+      - name: Install pinned CPU numerical dependencies
+        run: |
+          python -m pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu torch==2.8.0
+          python -m pip install --no-cache-dir numpy==2.3.5 scipy==1.17.0
+      - name: Restore data, verify math, and register the full rerun
+        id: prepare
+        run: python -m experiments.hcsn_conservative_acceleration_v1.hosted.runner prepare
+      - name: Preserve registration before formal training
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: hcsn-hosted-registration-${{ github.run_id }}
+          retention-days: 1
+          if-no-files-found: error
+          path: |
+            experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json
+            experiments/hcsn_conservative_acceleration_v1/results/hosted_prepare001
+            experiments/hcsn_conservative_acceleration_v1/results/hosted_validation001
+            experiments/hcsn_conservative_acceleration_v1/results/hosted_preflight001
+            experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/REGISTRATION.json
+      - name: Run all 70 registered jobs
+        id: train
+        continue-on-error: true
+        run: python -m experiments.hcsn_conservative_acceleration_v1.hosted.runner train
+      - name: Independently analyze and bind the trained native execution
+        id: finalize
+        if: ${{ always() && steps.prepare.outcome == 'success' }}
+        continue-on-error: true
+        run: python -m experiments.hcsn_conservative_acceleration_v1.hosted.runner finalize
+      - name: Package all original evidence including failures
+        id: package
+        if: ${{ always() && steps.prepare.outcome != 'skipped' }}
+        run: |
+          python -m experiments.hcsn_conservative_acceleration_v1.hosted.package_evidence package --output "$RUNNER_TEMP/hcsn-publication"
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+      - name: Preserve complete bounded evidence for publication
+        if: ${{ always() && steps.package.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: hcsn-hosted-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/hcsn-publication
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 0
+      - name: Require complete audited execution
+        if: ${{ always() && steps.prepare.outcome == 'success' }}
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          base = Path('experiments/hcsn_conservative_acceleration_v1/results')
+          result = json.loads((base/'comparison002_hosted_analysis/ANALYSIS.json').read_text())
+          assert result['complete'] and result['valid_jobs'] == 70 and not result['errors'], result.get('errors')
+          assert '${{ steps.finalize.outcome }}' == 'success', 'Trained execution did not complete'
+          print('All 70 jobs audited; scientific speed/quality gates remain separate outcomes.')
+          PY
+
+  publish:
+    needs: comparison
+    if: ${{ always() && needs.comparison.outputs.publication_ready == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - name: Check out the sealed branch for evidence publication
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: research/hcsn-conservative-acceleration-20261030
+          fetch-depth: 1
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /experiments/hcsn_conservative_acceleration_v1/
+            /experiments/hcsn_free_boundary_v1/archive.py
+      - name: Obtain this run's exact evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: hcsn-hosted-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/hcsn-publication
+      - name: Verify all bytes and publish with a branch-head check
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python3 -m experiments.hcsn_conservative_acceleration_v1.hosted.package_evidence verify --output "$RUNNER_TEMP/hcsn-publication" --expected-seal "$GITHUB_SHA"
+          hcsn_branch='research/hcsn-conservative-acceleration-20261030'
+          hcsn_remote_head="$(git ls-remote --exit-code origin "refs/heads/$hcsn_branch" | cut -f1)"
+          test "$hcsn_remote_head" = "$GITHUB_SHA"
+          cp -a "$RUNNER_TEMP/hcsn-publication/experiments/hcsn_conservative_acceleration_v1/." experiments/hcsn_conservative_acceleration_v1/
+          git add -- experiments/hcsn_conservative_acceleration_v1/results experiments/hcsn_conservative_acceleration_v1/artifacts/hosted002
+          if test -f experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json; then
+            git add -- experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json
+          fi
+          git diff --cached --stat
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'research(hcsn): retain complete hosted attempt evidence and audit outcomes'
+          git push origin "HEAD:refs/heads/$hcsn_branch"

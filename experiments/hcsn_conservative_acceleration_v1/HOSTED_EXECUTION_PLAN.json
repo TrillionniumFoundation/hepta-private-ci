@@ -1,0 +1,239 @@
+{
+  "schema": "hcsn-hosted-execution-plan.v1",
+  "status": "planned_before_hosted_execution",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "required_runner": "ubuntu-24.04",
+  "original_seal_commit": "394eac0fc2e8220902534d5f97025ce760f0279b",
+  "original_protocol_sha256": "38dc6de2b9279b88be653275e1be30a972b9aa0899b6fbc12be5fad776f29114",
+  "original_protocol": {
+    "path": "experiments/hcsn_conservative_acceleration_v1/PROTOCOL.json",
+    "sha256": "38dc6de2b9279b88be653275e1be30a972b9aa0899b6fbc12be5fad776f29114"
+  },
+  "original_design": {
+    "path": "experiments/hcsn_conservative_acceleration_v1/results/comparison001/DESIGN.json",
+    "sha256": "8a0dc3f8a33f6c31091aa0c3908384d9dfa6fe1abd88ad853da646f9552b6b79"
+  },
+  "original_design_snapshot": {
+    "analysis": {
+      "cpu_primary": "Updates completed in the same30CPU-second budget and paired selected heldout CE/accuracy; show whole-worker costs, including all setup/validation/I/O.",
+      "engineering_speed_gate": "All six primary fixed-update pairs pass the registered trajectory tolerances, each training CPU speedup exceeds1, and their geometric mean is at least1.10.",
+      "fixed_primary": "Paired initial-state/minibatch equality, every training loss, final parameter tensors, training CPU and whole-worker CPU. Validation-selected quality is separately reported.",
+      "metric": "Compute CE once from saved float32 logits cast to float64 using stable log-sum-exp; independently recompute in analyzer with absolute tolerance1e-10. Do not relax any older sealed audit.",
+      "quality_conditioned_comparison": "An external-control timing comparison qualifies at a target only when both selected test accuracies reach that target and are within2percentage points for every one of the three paired seeds; otherwise mark unavailable.",
+      "quality_pair_tolerance": 0.02,
+      "quality_targets": [
+        0.5,
+        0.75,
+        0.9
+      ],
+      "statistics": "Primary task means and sample SD; paired differences with descriptive Student-t95% interval for3seeds. No confirmatory significance or equivalence claim. Single-seed supplementary panels are descriptive."
+    },
+    "data_design": {
+      "cremad": "Reuse all cached train480/validation120/test120 actor-disjoint clips; dt=1; fixed full-clip features; old heldout has already been observed in earlier studies. No download or new split claim.",
+      "development_seed": 2026103018,
+      "generator": "experiments.hcsn_free_boundary_v1.datasets.synthetic",
+      "length": 32,
+      "seed": 2026103017,
+      "sizes": {
+        "test": 256,
+        "train": 1024,
+        "val": 128
+      },
+      "split_randomness": "Original SeedSequence([seed, split_id, task_id]); each split is a separate NPZ and only requested split arrays are loaded."
+    },
+    "execution": {
+      "expected_jobs": 70,
+      "heartbeat_seconds": 30,
+      "memory_wait_limit_seconds": 120,
+      "nominal_cpu_family_training_seconds": 900,
+      "order_seed": 2026103019,
+      "shared_reserve_bytes": 1073741824,
+      "stop_policy": "Stop new dispatch on worker failure, STOP_REQUESTED, new cgroup OOM event or exceeded worker memory forecast; drain active jobs and preserve every receipt. No replacement seeds or retries.",
+      "threads_per_worker": 1,
+      "worker_memory_reservation_bytes": 2684354560,
+      "workers": 2
+    },
+    "fidelity": {
+      "preflight_atol": 5e-05,
+      "preflight_batch": 4,
+      "preflight_rtol": 0.0005,
+      "preflight_updates": 3,
+      "scope": "Finite tested float32 output/gradient/Adam trajectories, not bitwise equivalence or a theorem for every input. The independent kernel proof must also pass before registration.",
+      "trajectory_loss_atol": 0.0001,
+      "trajectory_loss_rtol": 0.0001,
+      "trajectory_parameter_atol": 0.0005,
+      "trajectory_parameter_rtol": 0.005
+    },
+    "interpretation": "Post-baseline engineering comparison. Fresh synthetic episodes and model seeds; existing CREMA-D actor split is a descriptive reevaluation. No task-optimal stopping, whole-SNN, foundation-model, GPU or energy claim.",
+    "models": [
+      "hcsn_reference",
+      "hcsn_accelerated",
+      "two_gates",
+      "transformer",
+      "lif_snn"
+    ],
+    "optimization": {
+      "av_batch_size": 16,
+      "av_loss": "Original fused CE +0.25(audio CE+video CE)+0.5 symmetric same-recording InfoNCE, temperature0.1; shared linear head and arithmetic late fusion unchanged.",
+      "av_temperature": 0.1,
+      "backbone_relative_parameter_tolerance": 0.03,
+      "batch_size": 32,
+      "clip_l2": 2,
+      "cpu_seconds": 30,
+      "cpu_validation_seconds": [
+        15,
+        30
+      ],
+      "depth": 1,
+      "fixed_training_cpu_cap_seconds": 240,
+      "fixed_updates": 32,
+      "fixed_validation_updates": [
+        16,
+        32
+      ],
+      "heldout": "Persist selection.json and selected checkpoint hash before opening the test split; evaluate only the selected checkpoint.",
+      "learning_rate": 0.003,
+      "matching": "Reuse v2 matched_configuration with effective parameter counts; no padding. Identical frontend/readout initialization across all models; entire HCSN reference/accelerated state_dict identical.",
+      "max_updates": 65536,
+      "minibatches": "Torch generator seed=model_seed+200003; synthetic sampling with replacement; CREMA-D shuffled passes without replacement, discarding an incomplete final batch.",
+      "model_profile": "Both HCSN backends use distribution_free_dual with profile=stable; only the numerical backend differs. Raw profiles are separate train-only mathematical diagnostics.",
+      "optimizer": "Adam with PyTorch defaults, no weight decay",
+      "selection": "Minimum float64 validation CE among exactly the registered two milestones; earlier update breaks ties. One common fixed LR, no per-model tuning or extra selection opportunities.",
+      "supplementary_updates": 16,
+      "supplementary_validation_updates": [
+        8,
+        16
+      ],
+      "synthetic_loss": "Masked supervised token cross entropy only; modeled activity/cost are diagnostics and do not enter this objective.",
+      "width": 32
+    },
+    "primary_seeds": [
+      98031,
+      98032,
+      98033
+    ],
+    "primary_tasks": [
+      "selective_copy",
+      "mqar"
+    ],
+    "schema": "hcsn-conservative-acceleration-protocol.v1",
+    "status": "draft_not_registered",
+    "supplementary_seed": 98041,
+    "supplementary_tasks": [
+      "irregular",
+      "cremad"
+    ],
+    "timing": {
+      "energy_measured": false,
+      "gpu_measured": false,
+      "inference_batch": 16,
+      "inference_scope": "Complete selected model from in-memory features, including boundary/value/density computation; no media decoding or accelerator transfer.",
+      "repetitions": 3,
+      "training_cpu_scope": "Minibatch sampling, forward/backward, finite/probability/gradient audit, clipping and optimizer. Complete final update and its overrun are charged; validation/checkpoint serialization outside this clock are included in whole-worker cost.",
+      "warmups": 1,
+      "whole_worker": "Isolated child wait4 user+system CPU and whole-process maximum RSS; failures and unselected validation checkpoints included."
+    }
+  },
+  "preserved_design_keys": [
+    "analysis",
+    "data_design",
+    "execution",
+    "fidelity",
+    "models",
+    "optimization",
+    "primary_seeds",
+    "primary_tasks",
+    "schema",
+    "supplementary_seed",
+    "supplementary_tasks",
+    "timing"
+  ],
+  "intended_design_differences": [
+    "interpretation",
+    "new output path",
+    "hosted_replication metadata"
+  ],
+  "design": {
+    "path": "experiments/hcsn_conservative_acceleration_v1/HOSTED_DESIGN.json",
+    "sha256": "3f1c7f7ccd720515867b0bae23b3c39e405d9809acff12d8bad151140e2c578d"
+  },
+  "protocol_path": "experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+  "output": "experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted",
+  "preflight": "experiments/hcsn_conservative_acceleration_v1/results/hosted_preflight001/PREFLIGHT.json",
+  "kernel_proof": "experiments/hcsn_conservative_acceleration_v1/results/hosted_validation001/RESULTS.json",
+  "prepare_output": "experiments/hcsn_conservative_acceleration_v1/results/hosted_prepare001",
+  "analysis_output": "experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted_analysis",
+  "finalize_output": "experiments/hcsn_conservative_acceleration_v1/results/hosted_finalize001",
+  "execution_binding_plan": {
+    "path": "experiments/hcsn_conservative_acceleration_v1/EXECUTION_BINDING_PLAN.json",
+    "sha256": "b473b281b50a96a604a3866643349bf8e0ebc1db1dcac755d15b0714fdf3eb8b"
+  },
+  "expected_jobs": 70,
+  "full_cohort_rerun": true,
+  "reuse_original_completed_rows": false,
+  "prior_cohort": {
+    "output": "experiments/hcsn_conservative_acceleration_v1/results/comparison001",
+    "terminal": "ABORTED",
+    "executed": 9,
+    "successful": 7,
+    "failed": 2,
+    "unstarted": 61,
+    "heldout_previously_evaluated": true,
+    "interpretation": "Engineering replication, not fresh-test confirmation",
+    "observed_failure_context": "The shared32GB overlay was observed100percent full. One log contains only the traceback heading; the other is empty. Do not infer an exact Python exception from these incomplete logs.",
+    "whole_child_cpu_seconds": 128.032042,
+    "coordinator_cpu_seconds": 1.5449291440000001,
+    "wall_seconds": 211.1586238,
+    "analysis": "experiments/hcsn_conservative_acceleration_v1/results/comparison001_analysis/ANALYSIS.json"
+  },
+  "runner_resources": {
+    "expected_ram_gb": 16,
+    "expected_ssd_gb": 14,
+    "gpu": false,
+    "max_workers": 2,
+    "threads_per_worker": 1,
+    "original_memory_guard_unchanged": true,
+    "measure_actual_resources_before_work": true,
+    "interpretation": "The standard public hosted VM is expected to provide16GB RAM and14GB available SSD. The job uses a digest-pinned private cgroup container limited to8GiB RAM and2CPU cores. The original two-worker, one-thread-per-worker, 2.5GiB reservation and1GiB safety guard are unchanged.",
+    "container_memory_limit_gib": 8,
+    "container_cpu_limit": 2
+  },
+  "execution_order": [
+    "Verify Git HEAD and published plan/design/binding/hosted code plus every frozen original source hash.",
+    "Restore byte-verified cached AV tensors; do not download raw media or inspect heldout arrays.",
+    "Run independent kernel/model tests and train-only preflight in isolated processes, charging their costs separately.",
+    "Register HOSTED_PROTOCOL with the frozen study.register implementation, preserving all70 original mathematical jobs and their random order.",
+    "Run all70 jobs through the frozen study.run implementation with its original per-worker budgets and guards.",
+    "Run the frozen analyzer; bind trained stream/native/native_causal only after a complete, valid70-job cohort and validation-only selected checkpoints.",
+    "Persist all raw output, including failures and incomplete receipts; never substitute comparison001 rows."
+  ],
+  "cost_accounting": "Report original aborted cohort, hosted prepare, hosted workers, coordinator, analysis, artifact transport and trained runtime separately. Nested training clocks must not be added to whole-worker wait4 costs. Unmeasured development cost stays null.",
+  "inherited_flag_override": "The frozen synthetic previously_observed_examples=false field is inherited original-design metadata. The present plan explicitly records that the repeated cohort is not fresh heldout confirmation.",
+  "forbidden_changes": [
+    "model or kernel code",
+    "loss",
+    "data/model/minibatch seeds",
+    "learning rate",
+    "fixed updates or training CPU budget",
+    "validation checkpoints or selection rule",
+    "quality/fidelity gates",
+    "parameter matching",
+    "two-worker ceiling or original memory guard"
+  ],
+  "execution_container": {
+    "image": "python:3.12.14@sha256:6dc02694c53fde08b0e39de9273a708d2f2a612f77dc173a64835c3f7a40ee35",
+    "platform": "linux/amd64",
+    "distribution": "Debian trixie inside the declared Ubuntu24.04 hosted VM",
+    "python_version": "3.12.14",
+    "options": "--memory=8g --memory-swap=8g --cpus=2 --cgroupns=private",
+    "memory_bytes": 8589934592,
+    "cpu_quota_cores": 2,
+    "swap_bytes": 0,
+    "private_cgroup_namespace": true,
+    "reason": "The frozen study reads memory.max/current/events/stat at /sys/fs/cgroup. Linux exposes these interfaces for non-root groups; a job container supplies a real private cgroup namespace instead of assuming the bare VM root has them. The guard and scientific source stay unchanged.",
+    "source": "https://github.com/docker-library/repo-info/blob/6f3a6a22ff9af6b10d9c3a8aeaaf1a2fb4c5873c/repos/python/remote/3.12.14.md",
+    "source_git_blob": "18c1e9ca8104ded321b963ff274fd2489cb4f11c",
+    "linux_amd64_image_id": "sha256:09fac22af2fd4a25594a5b259f918e1a2b77cb15b00b21db260487f1cfcf8503",
+    "compressed_transfer_bytes": 411054586
+  }
+}
