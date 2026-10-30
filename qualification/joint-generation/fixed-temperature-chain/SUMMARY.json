@@ -1,0 +1,150 @@
+{
+  "interpretation": "Payload-free fixed-temperature smooth-reference gradient qualification only; no science/benefit or globally valid numerical-domain claim.",
+  "qualification": {
+    "dataset_rows": 0,
+    "literal_tests": {
+      "errors": 0,
+      "failures": 0,
+      "run": 26
+    },
+    "measurements": {
+      "finite_difference_checks": 128,
+      "maximum_FD_error": 3.56667056999882e-11,
+      "maximum_actual_CDF_value_error": 2.0816681711721685e-16
+    },
+    "model_restores": 0,
+    "objective_key": "474c933bc1ea2a2e54c450ba223c036e0107859e062041c5d5f115b16698a15b",
+    "objective_profile": {
+      "mode": "fixed-temperature-support-coupling-smooth-v1",
+      "precision": {
+        "mantissa_bits": 63,
+        "maximum_exponent": 16384
+      },
+      "relative_balance": 1.4901161193847656e-08,
+      "residual_floor": 1.4210854715202004e-14,
+      "rho": [
+        0.0,
+        1.5
+      ],
+      "schema": "rgb-fixed-temperature-support-coupling-loss-v1",
+      "structural_support": "exact fixed destination image; zeros never filled",
+      "temperature": {
+        "profile": {
+          "base_profile": {
+            "profile": {
+              "coupling_profile": {
+                "profile": {
+                  "mode": "transport-then-maximal-semantic-coupling",
+                  "schema": "rgb-maximal-semantic-coupling-v1",
+                  "transport_profile": {
+                    "profile": {
+                      "base_profile": {
+                        "profile": {
+                          "image_semantics": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11
+                          ],
+                          "mode": "explicit-request-words",
+                          "model_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                          "schema": "rgb-decoded-command-support-v1",
+                          "text_semantics": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11
+                          ],
+                          "vocabulary": [
+                            "red",
+                            "green",
+                            "blue",
+                            "square",
+                            "cross",
+                            "left",
+                            "right"
+                          ]
+                        },
+                        "profile_key": "77cb341ee9e82edf72b106372ad29ef55f7bbc7a2418a6c69ddf7b85577b12bf"
+                      },
+                      "mode": "explicit-word-semantic-transport",
+                      "schema": "rgb-decoded-semantic-pushforward-v1"
+                    },
+                    "profile_key": "0dc0ef71624f1b81b4dd36165b5143bac15384aba13beee5b5a7b1606cb43c9f"
+                  }
+                },
+                "profile_key": "0834413d75b080b7aa41ffacd0495503edf3f49f51f8b0641b34cbaac1537ae8"
+              },
+              "mode": "coupled-simplex-longdouble-v1",
+              "precision": {
+                "mantissa_bits": 63,
+                "maximum_exponent": 16384
+              },
+              "schema": "rgb-coupled-simplex-longdouble-profile-v1"
+            },
+            "profile_key": "f5f93106f194333b0bb734c20aa561e7540210048cd7bc7023919e32461fd125"
+          },
+          "image_inverse_temperature": "0x1.0000000000000p+1",
+          "interval": [
+            0.125,
+            8.0
+          ],
+          "mode": "post-transport-positive-inverse-temperature-v1",
+          "schema": "rgb-post-transport-temperature-profile-v1",
+          "text_inverse_temperature": "0x1.0000000000000p-1"
+        },
+        "profile_key": "4d1240ae8377dc4460c626739ad960eebd6bed27ec6fc6ec7847ad7533195203"
+      }
+    },
+    "scope": "Literal fixed-tau smooth reference qualification only; not derivative through rounding or refittedtau; old/default law unchanged; no science or benefit claim.",
+    "source_freeze_sha256": "c6033a4c5db22bd2364d5b63c2deea37be95c95aacb102c3a359e4fd54b5289b",
+    "status": "COMPLETE_PAYLOAD_FREE_FIXED_TEMPERATURE_CHAIN",
+    "training_updates": 0
+  },
+  "wait4": {
+    "automatic_retry": false,
+    "complete_wait": true,
+    "exit_code": 0,
+    "limits": {
+      "AS_bytes": 536870912,
+      "CPU_seconds": 5,
+      "affinity": [
+        0
+      ],
+      "file_bytes": 4194304,
+      "numerical_threads": 1,
+      "wall_seconds": 30
+    },
+    "max_rss_kib": 34508,
+    "new_synthetic_only_shared_lock": true,
+    "not_original_digit_lock": true,
+    "preparation_review_and_shared_upstream_costs": "OUTSIDE_CHILD_NOT_ZERO",
+    "raw_wait_status": 0,
+    "result_sha256": "0cb9ade6d8af67353ea3b4d2e0e7eb9ea61c348a49d38a11068f9ba4f2a3d7b6",
+    "source_freeze_sha256": "c6033a4c5db22bd2364d5b63c2deea37be95c95aacb102c3a359e4fd54b5289b",
+    "status": "COMPLETE_PAYLOAD_FREE_FIXED_TEMPERATURE_CHAIN",
+    "supervisor_CPU_observed_prefix_seconds": 0.004532580999999997,
+    "supervisor_final_tail": "UNKNOWN_NOT_ZERO",
+    "system_CPU_seconds": 0.031006,
+    "timed_out": false,
+    "user_CPU_seconds": 0.97607,
+    "wall_seconds": 1.033102257999417,
+    "whole_child_CPU_seconds": 1.007076
+  }
+}
