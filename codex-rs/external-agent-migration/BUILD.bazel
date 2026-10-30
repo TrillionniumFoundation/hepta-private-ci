@@ -3,4 +3,6 @@ load("//:defs.bzl", "codex_rust_crate")
 codex_rust_crate(
     name = "external-agent-migration",
     crate_name = "codex_external_agent_migration",
+    # Cargo exposes serde_norway under serde_yaml; keep the Bazel extern alias.
+    use_cargo_renamed_deps = True,
 )
