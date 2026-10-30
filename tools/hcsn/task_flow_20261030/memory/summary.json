@@ -1,0 +1,575 @@
+{
+  "quality_gate": {
+    "passed": false,
+    "checks": {
+      "matrix_complete": true,
+      "numerical_and_replay": false,
+      "memory128_every_seed": true,
+      "retrieval128_every_seed": true,
+      "memory512_improvement": false,
+      "retrieval512_nonregression": false
+    }
+  },
+  "summaries": [
+    {
+      "task": "memory",
+      "split": "test128",
+      "variant": "full_delta",
+      "mean": 0.9928385416666666,
+      "sd": 0.012404009689620866,
+      "minimum": 0.978515625,
+      "seed_scores": [
+        1.0,
+        0.978515625,
+        1.0
+      ]
+    },
+    {
+      "task": "memory",
+      "split": "test128",
+      "variant": "sigmoid_delta",
+      "mean": 0.966796875,
+      "sd": 0.05750949947006038,
+      "minimum": 0.900390625,
+      "seed_scores": [
+        1.0,
+        0.900390625,
+        1.0
+      ]
+    },
+    {
+      "task": "memory",
+      "split": "test128",
+      "variant": "c1_delta",
+      "mean": 1.0,
+      "sd": 0.0,
+      "minimum": 1.0,
+      "seed_scores": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "task": "memory",
+      "split": "test128",
+      "variant": "full_fixed",
+      "mean": 1.0,
+      "sd": 0.0,
+      "minimum": 1.0,
+      "seed_scores": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "task": "memory",
+      "split": "test128",
+      "variant": "full_mass",
+      "mean": 1.0,
+      "sd": 0.0,
+      "minimum": 1.0,
+      "seed_scores": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "task": "memory",
+      "split": "test512",
+      "variant": "full_delta",
+      "mean": 0.4622395833333333,
+      "sd": 0.2446037274446522,
+      "minimum": 0.255859375,
+      "seed_scores": [
+        0.3984375,
+        0.255859375,
+        0.732421875
+      ]
+    },
+    {
+      "task": "memory",
+      "split": "test512",
+      "variant": "sigmoid_delta",
+      "mean": 0.4342447916666667,
+      "sd": 0.2608817461643701,
+      "minimum": 0.248046875,
+      "seed_scores": [
+        0.322265625,
+        0.248046875,
+        0.732421875
+      ]
+    },
+    {
+      "task": "memory",
+      "split": "test512",
+      "variant": "c1_delta",
+      "mean": 0.763671875,
+      "sd": 0.2216000855153053,
+      "minimum": 0.560546875,
+      "seed_scores": [
+        0.560546875,
+        1.0,
+        0.73046875
+      ]
+    },
+    {
+      "task": "memory",
+      "split": "test512",
+      "variant": "full_fixed",
+      "mean": 1.0,
+      "sd": 0.0,
+      "minimum": 1.0,
+      "seed_scores": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "task": "memory",
+      "split": "test512",
+      "variant": "full_mass",
+      "mean": 0.7526041666666666,
+      "sd": 0.42850215291417537,
+      "minimum": 0.2578125,
+      "seed_scores": [
+        1.0,
+        0.2578125,
+        1.0
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "test128",
+      "variant": "full_delta",
+      "mean": 1.0,
+      "sd": 0.0,
+      "minimum": 1.0,
+      "seed_scores": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "test128",
+      "variant": "sigmoid_delta",
+      "mean": 1.0,
+      "sd": 0.0,
+      "minimum": 1.0,
+      "seed_scores": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "test128",
+      "variant": "c1_delta",
+      "mean": 1.0,
+      "sd": 0.0,
+      "minimum": 1.0,
+      "seed_scores": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "test128",
+      "variant": "full_fixed",
+      "mean": 1.0,
+      "sd": 0.0,
+      "minimum": 1.0,
+      "seed_scores": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "test128",
+      "variant": "full_mass",
+      "mean": 1.0,
+      "sd": 0.0,
+      "minimum": 1.0,
+      "seed_scores": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "test512",
+      "variant": "full_delta",
+      "mean": 0.8776041666666666,
+      "sd": 0.10335581217089443,
+      "minimum": 0.767578125,
+      "seed_scores": [
+        0.767578125,
+        0.97265625,
+        0.892578125
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "test512",
+      "variant": "sigmoid_delta",
+      "mean": 0.8776041666666666,
+      "sd": 0.10529378813425538,
+      "minimum": 0.765625,
+      "seed_scores": [
+        0.765625,
+        0.974609375,
+        0.892578125
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "test512",
+      "variant": "c1_delta",
+      "mean": 0.8821614583333334,
+      "sd": 0.09727137700528973,
+      "minimum": 0.779296875,
+      "seed_scores": [
+        0.779296875,
+        0.97265625,
+        0.89453125
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "test512",
+      "variant": "full_fixed",
+      "mean": 0.9798177083333334,
+      "sd": 0.024106130965590646,
+      "minimum": 0.953125,
+      "seed_scores": [
+        0.986328125,
+        1.0,
+        0.953125
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "test512",
+      "variant": "full_mass",
+      "mean": 0.994140625,
+      "sd": 0.008513474499102879,
+      "minimum": 0.984375,
+      "seed_scores": [
+        0.984375,
+        0.998046875,
+        1.0
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "capacity8_512",
+      "variant": "full_delta",
+      "mean": 0.849609375,
+      "sd": 0.1083764406172272,
+      "minimum": 0.728515625,
+      "seed_scores": [
+        0.728515625,
+        0.9375,
+        0.8828125
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "capacity8_512",
+      "variant": "sigmoid_delta",
+      "mean": 0.8502604166666666,
+      "sd": 0.10868106688899501,
+      "minimum": 0.728515625,
+      "seed_scores": [
+        0.728515625,
+        0.9375,
+        0.884765625
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "capacity8_512",
+      "variant": "c1_delta",
+      "mean": 0.8509114583333334,
+      "sd": 0.10431101651943436,
+      "minimum": 0.734375,
+      "seed_scores": [
+        0.734375,
+        0.935546875,
+        0.8828125
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "capacity8_512",
+      "variant": "full_fixed",
+      "mean": 0.958984375,
+      "sd": 0.04667110603651766,
+      "minimum": 0.908203125,
+      "seed_scores": [
+        0.96875,
+        1.0,
+        0.908203125
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "capacity8_512",
+      "variant": "full_mass",
+      "mean": 0.9765625,
+      "sd": 0.03069576883887053,
+      "minimum": 0.94140625,
+      "seed_scores": [
+        0.94140625,
+        0.990234375,
+        0.998046875
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "overwrite128",
+      "variant": "full_delta",
+      "mean": 0.9212239583333334,
+      "sd": 0.13644410658582953,
+      "minimum": 0.763671875,
+      "seed_scores": [
+        1.0,
+        1.0,
+        0.763671875
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "overwrite128",
+      "variant": "sigmoid_delta",
+      "mean": 0.9212239583333334,
+      "sd": 0.13644410658582953,
+      "minimum": 0.763671875,
+      "seed_scores": [
+        1.0,
+        1.0,
+        0.763671875
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "overwrite128",
+      "variant": "c1_delta",
+      "mean": 0.9212239583333334,
+      "sd": 0.13644410658582953,
+      "minimum": 0.763671875,
+      "seed_scores": [
+        1.0,
+        1.0,
+        0.763671875
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "overwrite128",
+      "variant": "full_fixed",
+      "mean": 0.5201822916666666,
+      "sd": 0.014917238590351042,
+      "minimum": 0.50390625,
+      "seed_scores": [
+        0.5234375,
+        0.50390625,
+        0.533203125
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "overwrite128",
+      "variant": "full_mass",
+      "mean": 0.5026041666666666,
+      "sd": 0.001127637244510988,
+      "minimum": 0.501953125,
+      "seed_scores": [
+        0.501953125,
+        0.50390625,
+        0.501953125
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "interference128",
+      "variant": "full_delta",
+      "mean": 0.5651041666666666,
+      "sd": 0.09508997888992539,
+      "minimum": 0.458984375,
+      "seed_scores": [
+        0.458984375,
+        0.642578125,
+        0.59375
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "interference128",
+      "variant": "sigmoid_delta",
+      "mean": 0.56640625,
+      "sd": 0.09526365936138437,
+      "minimum": 0.458984375,
+      "seed_scores": [
+        0.458984375,
+        0.640625,
+        0.599609375
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "interference128",
+      "variant": "c1_delta",
+      "mean": 0.5696614583333334,
+      "sd": 0.09119929607632786,
+      "minimum": 0.466796875,
+      "seed_scores": [
+        0.466796875,
+        0.640625,
+        0.6015625
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "interference128",
+      "variant": "full_fixed",
+      "mean": 0.9986979166666666,
+      "sd": 0.002255274489021976,
+      "minimum": 0.99609375,
+      "seed_scores": [
+        1.0,
+        1.0,
+        0.99609375
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "interference128",
+      "variant": "full_mass",
+      "mean": 0.6822916666666666,
+      "sd": 0.04455237528886881,
+      "minimum": 0.630859375,
+      "seed_scores": [
+        0.630859375,
+        0.708984375,
+        0.70703125
+      ]
+    }
+  ],
+  "shape_contrasts": [
+    {
+      "task": "memory",
+      "split": "test128",
+      "control": "sigmoid_delta",
+      "mean_difference": 0.026041666666666668,
+      "bonferroni95_interval": [
+        -0.3018161604477019,
+        0.35389949378103525
+      ],
+      "passed": false
+    },
+    {
+      "task": "memory",
+      "split": "test128",
+      "control": "c1_delta",
+      "mean_difference": -0.007161458333333333,
+      "bonferroni95_interval": [
+        -0.09732236078978469,
+        0.08299944412311804
+      ],
+      "passed": false
+    },
+    {
+      "task": "memory",
+      "split": "test512",
+      "control": "sigmoid_delta",
+      "mean_difference": 0.027994791666666668,
+      "bonferroni95_interval": [
+        -0.27659995178253327,
+        0.33258953511586664
+      ],
+      "passed": false
+    },
+    {
+      "task": "memory",
+      "split": "test512",
+      "control": "c1_delta",
+      "mean_difference": -0.3014322916666667,
+      "bonferroni95_interval": [
+        -3.1512976754721413,
+        2.5484330921388083
+      ],
+      "passed": false
+    },
+    {
+      "task": "retrieval",
+      "split": "test128",
+      "control": "sigmoid_delta",
+      "mean_difference": 0.0,
+      "bonferroni95_interval": [
+        0.0,
+        0.0
+      ],
+      "passed": false
+    },
+    {
+      "task": "retrieval",
+      "split": "test128",
+      "control": "c1_delta",
+      "mean_difference": 0.0,
+      "bonferroni95_interval": [
+        0.0,
+        0.0
+      ],
+      "passed": false
+    },
+    {
+      "task": "retrieval",
+      "split": "test512",
+      "control": "sigmoid_delta",
+      "mean_difference": 0.0,
+      "bonferroni95_interval": [
+        -0.014196660355530487,
+        0.014196660355530487
+      ],
+      "passed": false
+    },
+    {
+      "task": "retrieval",
+      "split": "test512",
+      "control": "c1_delta",
+      "mean_difference": -0.004557291666666667,
+      "bonferroni95_interval": [
+        -0.05019316981372336,
+        0.041078586480390034
+      ],
+      "passed": false
+    }
+  ],
+  "positive_shape_gates": 0,
+  "costs": {
+    "complete_run_wall_seconds": 1205.1826660810111,
+    "complete_run_cpu_seconds": 1280.685340321,
+    "compilation_seconds": 529.6361509319959,
+    "optimizer_seconds": 186.51109480598643,
+    "validation_seconds": 68.8611342439981,
+    "candidates_saved": 360,
+    "peak_process_rss": 759721984,
+    "audit_cpu_seconds": 152.77051522600001,
+    "audit_wall_seconds": 153.04040867799995
+  },
+  "results_sha256": "cae161908c11fdbce7616aba87ecf31d1657ae326abad0e4c1412777d02183f3",
+  "audit_sha256": "d0420f878fa1a5655c124097fa4fc4b60597a527eba3ac3da8e94f7c92a259c1",
+  "interpretation": "Three paired seeds, fixed synthetic tasks; no population-level equivalence, GPU, energy or backbone claim"
+}
