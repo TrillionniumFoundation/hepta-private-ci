@@ -157,6 +157,7 @@ From the repository root:
 python -m unittest experiments.first_passage_clock_v1.kernel_tests experiments.first_passage_clock_v1.task_tests
 python -m experiments.first_passage_clock_v1.validation --output /tmp/fpt-numerical-reproduction.json
 python -m experiments.first_passage_clock_v1.identifiability
+python -m experiments.first_passage_clock_v1.verify_evidence
 python -m experiments.first_passage_clock_v1.report_results
 ```
 
