@@ -1589,6 +1589,9 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
         1,
         &[dot_git_canonical.clone(), dot_codex_canonical.clone()],
     );
+    // Per-root checks above account for all five exclusions. Reject extra
+    // definitions on the empty root or any unexpected root as well.
+    assert_total_root_exclusions(&args, /*expected*/ 5);
     let command_index = args
         .iter()
         .position(|arg| arg == "--")
@@ -2532,6 +2535,48 @@ fn assert_root_exclusions(args: &[String], root: usize, expected: &[PathBuf]) {
         actual_paths, expected_paths,
         "missing or unexpected protected metadata paths in {args:#?}"
     );
+}
+
+// Together with the per-root bijections, this prevents unchecked roots from
+// carrying extra exclusions without depending on discovery order.
+fn assert_total_root_exclusions(args: &[String], expected: usize) {
+    let actual = args
+        .iter()
+        .filter(|arg| arg.starts_with("-DWRITABLE_ROOT_") && arg.contains("_EXCLUDED_"))
+        .count();
+    assert_eq!(
+        actual, expected,
+        "unexpected global writable-root exclusion count in {args:#?}"
+    );
+}
+
+#[test]
+fn total_root_exclusions_rejects_empty_and_unknown_root_extras() {
+    let args = [
+        "-DWRITABLE_ROOT_0=/workspace",
+        "-DWRITABLE_ROOT_1=/other",
+        "-DWRITABLE_ROOT_2=/empty",
+        "-DWRITABLE_ROOT_1_EXCLUDED_1=/other/.codex",
+        "-DWRITABLE_ROOT_0_EXCLUDED_2=/workspace/.agents",
+        "-DWRITABLE_ROOT_0_EXCLUDED_0=/workspace/.git",
+        "-DWRITABLE_ROOT_1_EXCLUDED_0=/other/.git",
+        "-DWRITABLE_ROOT_0_EXCLUDED_1=/workspace/.codex",
+    ]
+    .map(str::to_string)
+    .to_vec();
+    assert_total_root_exclusions(&args, /*expected*/ 5);
+
+    for root in [2, 99] {
+        let mut unexpected = args.clone();
+        unexpected.push(format!("-DWRITABLE_ROOT_{root}_EXCLUDED_0=/extra"));
+        assert!(
+            std::panic::catch_unwind(|| {
+                assert_total_root_exclusions(&unexpected, /*expected*/ 5);
+            })
+            .is_err(),
+            "extra exclusions on root {root} must fail"
+        );
+    }
 }
 
 struct PopulatedTmp {
