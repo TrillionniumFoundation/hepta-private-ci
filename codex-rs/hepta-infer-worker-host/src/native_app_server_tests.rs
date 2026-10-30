@@ -221,9 +221,7 @@ fn terminal_summary_recovers_final_agent_text_without_delta_and_fences_conflicts
         }),
     )
     .unwrap();
-    assert!(
-        observe_for_test(&mut partial, summary("fresh context accepted".to_string())).unwrap()
-    );
+    assert!(observe_for_test(&mut partial, summary("fresh context accepted".to_string())).unwrap());
     assert_eq!(partial.output, "fresh context accepted");
 
     let mut conflict = output();
@@ -235,9 +233,7 @@ fn terminal_summary_recovers_final_agent_text_without_delta_and_fences_conflicts
     assert!(!conflict.terminal_observed);
 
     let mut oversized = output();
-    assert!(
-        observe_for_test(&mut oversized, summary("x".repeat(MAX_OUTPUT_BYTES + 1))).is_err()
-    );
+    assert!(observe_for_test(&mut oversized, summary("x".repeat(MAX_OUTPUT_BYTES + 1))).is_err());
     assert!(oversized.output.is_empty());
     assert!(!oversized.terminal_observed);
 }
