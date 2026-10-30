@@ -87,6 +87,205 @@ def _json(value):
 
 
 class KernelTests(unittest.TestCase):
+    def test_independent_chunks_dense_state_count_reward_and_limits(self):
+        grid=Grid(8,-2,2,fixed_rate=8.1,fixed_terms=21,max_duration=.36,
+                  per_token_chunks=True)
+        durations=torch.tensor([0.,.12,.36,.360001,.495755147934,.72,.720001,
+                                1.079999,3.2,7.31],dtype=torch.float64)
+        count=len(durations)
+        mu=torch.linspace(-.25,.5,count,dtype=torch.float64)
+        b=torch.linspace(.43,.8,count,dtype=torch.float64)
+        f=make_flow(mu,.6,b,-.1,.3,grid)
+        p=torch.tensor(np.random.default_rng(710121).dirichlet(np.ones(10),count),dtype=torch.float64)
+        out=propagate(p,f,durations)
+        prep=prepare_operator(mu,.6,b,-.1,.3,durations,grid,reward_intercept=-.4)
+        actual_reward=(p*prep['reward_vector']).sum(-1)
+        rows=[]
+        for i,duration in enumerate(durations):
+            params=(float(mu[i]),.6,float(b[i]),-.1,.3)
+            reference=independent_propagation(params,grid,p[i].numpy(),float(duration))
+            state_error=float(np.abs(out['probability'][i].numpy()-reference[:-2]).sum())
+            count_error=abs(float(out['events'][i])-reference[-2])
+            reward_error=abs(float(actual_reward[i])-reference[-1])
+            state_bound=float(out['probability_l1_error_bound'][i])
+            count_bound=float(out['event_error_bound'][i])
+            self.assertLessEqual(state_error,state_bound+2e-12)
+            self.assertLessEqual(count_error,count_bound+2e-12)
+            self.assertLessEqual(reward_error,abs(params[2]-.4)*count_bound+2e-12)
+            self.assertLessEqual(float(out['chunk_duration'][i]),.36)
+            rows.append(dict(duration=float(duration),chunks=int(out['chunks'][i]),
+                state_l1_error=state_error,event_error=count_error,reward_error=reward_error,
+                state_l1_bound=state_bound,event_bound=count_bound,
+                expected_events=float(out['events'][i])))
+        self.assertTrue(torch.equal(out['probability'][0],p[0]))
+        self.assertEqual(float(out['events'][0]),0.)
+        self.assertGreater(rows[-1]['expected_events'],2.)
+        self.assertLess(float((out['probability'].sum(-1)-1).abs().max()),2e-13)
+        self.assertGreaterEqual(float(out['probability'].min()),0.)
+        with self.assertRaises(ValueError):
+            propagate(p,f,grid.max_duration*(grid.max_independent_chunks+2))
+        with self.assertRaises(ValueError): propagate(p,f,float('inf'))
+        with self.assertRaises(ValueError): propagate(p,f,-.1)
+        with self.assertRaises(ValueError):
+            propagate(p,make_flow(mu,.9,.35,-.1,.3,grid),.1)
+        with self.assertRaises(ValueError): make_flow(.1,.5,.8,-.1,.3,Grid(per_token_chunks=True))
+        RECORDS['independent_chunks_dense']=dict(records=rows,
+            numerical_configuration=out['numerical_configuration'],terms=out['terms'],
+            fixed_rate=out['uniformization_rate'],scheduling_binary_rounds=out['scheduling_binary_rounds'],
+            resource_cap=grid.max_independent_chunks,resource_cap_and_invalid_inputs_rejected=True,
+            maximum_mass_error=float((out['probability'].sum(-1)-1).abs().max()))
+
+    def test_independent_chunks_boundary_remap_occurs_once(self):
+        grid=Grid(8,-2,2,fixed_rate=8.1,fixed_terms=21,max_duration=.36,
+                  per_token_chunks=True)
+        old_boundary=1.17
+        params=(.21,.57,.431,-.19,.47)
+        p=torch.tensor(np.random.default_rng(710123).dirichlet(np.ones(10)),dtype=torch.float64)
+        old_edges=np.linspace(-2,old_boundary,9)
+        new_edges=np.linspace(-2,params[2],9)
+        remapped=np.r_[np.zeros(8),p.numpy()[8:]]
+        immediate_count,immediate_reward=0.,0.
+        h=(old_boundary+2)/8
+        for i in range(8):
+            for j in range(8):
+                overlap=max(0.,min(old_edges[i+1],new_edges[j+1])-max(old_edges[i],new_edges[j]))
+                remapped[j]+=float(p[i])*overlap/h
+            left=max(old_edges[i],params[2]);right=old_edges[i+1]
+            if right>left:
+                mass=float(p[i])*(right-left)/h
+                immediate_count+=mass
+                immediate_reward+=mass*((left+right)/2-.4)
+                remapped[8]+=mass
+        rows=[]
+        for duration in (0.,.8,3.2):
+            out=step(p,old_boundary,*params,duration,grid,reward_intercept=-.4)
+            prep=prepare_operator(*params,duration,grid,old_boundary=old_boundary,reward_intercept=-.4)
+            ref=independent_propagation(params,grid,remapped,duration)
+            error=float(np.abs(out['probability'].numpy()-ref[:-2]).sum())
+            count_error=abs(float(out['events'])-ref[-2]-immediate_count)
+            reward_error=abs(float(out['reward'])-ref[-1]-immediate_reward)
+            self.assertLess(error,2e-10)
+            self.assertLess(count_error,2e-10)
+            self.assertLess(reward_error,2e-10)
+            self.assertLess(float((p@prep['transition']-out['probability']).abs().max()),2e-14)
+            self.assertLess(abs(float(p@prep['event_vector']-out['events'])),2e-14)
+            self.assertLess(abs(float(p@prep['reward_vector']-out['reward'])),2e-14)
+            self.assertAlmostEqual(float(out['immediate_events']),immediate_count,13)
+            rows.append(dict(duration=duration,chunks=int(out['solver']['chunks']),
+                state_l1_error=error,event_error=count_error,reward_error=reward_error,
+                total_events=float(out['events']),immediate_events=float(out['immediate_events'])))
+        RECORDS['independent_chunks_remap_once']=dict(records=rows,
+            independent_immediate_count=immediate_count,independent_immediate_reward=immediate_reward,
+            reference='Independent physical-overlap loops then one SciPy matrix exponential')
+
+    def test_independent_chunks_suffix_and_neighbor_noninterference(self):
+        records=[]
+        for dtype in (torch.float32,torch.float64):
+            B,T,C=3,7,4
+            rng=torch.Generator().manual_seed(710125)
+            mu=(-.2+.3*torch.rand(B,T,C,generator=rng,dtype=dtype)).requires_grad_()
+            boundary=(.8+.4*torch.rand(B,T,C,generator=rng,dtype=dtype)).requires_grad_()
+            dt=(.02+.08*torch.rand(B,T,1,generator=rng,dtype=dtype)).requires_grad_()
+            mu2,b2,dt2=mu.detach().clone(),boundary.detach().clone(),dt.detach().clone()
+            mu2[0,3:]=.5;b2[0,3:]=.35;dt2[0,3:]=3.2
+            mu2[1:]=-.3;b2[1:]=.45;dt2[1:]=7.31
+            grid=Grid(8,-2,2,fixed_rate=8.1,fixed_terms=21,max_duration=.36,
+                      per_token_chunks=True)
+            strict=Grid(8,-2,2,fixed_rate=8.1,fixed_terms=21,max_duration=.36)
+            def prepare(m,b,t,g):
+                old=torch.cat((b[:,:1],b[:,:-1]),1)
+                return prepare_operator(m,.6,b,-.2,1.2,t,g,old_boundary=old,
+                                        rho=.4,K=.3,reward_intercept=-.3)
+            first=prepare(mu,boundary,dt,grid)
+            changed=prepare(mu2,b2,dt2,grid)
+            old=prepare(mu,boundary,dt,strict)
+            fields=('transition','event_vector','reward_vector')
+            equality={key:bool(torch.equal(first[key][0,:3],changed[key][0,:3])) for key in fields}
+            equality.update({key:bool(torch.equal(first['values'][key][0,:3],changed['values'][key][0,:3]))
+                             for key in ('J','G')})
+            equality.update({key:bool(torch.equal(first['solver'][key][0,:3],changed['solver'][key][0,:3]))
+                             for key in ('chunks','chunk_duration','probability_l1_error_bound','event_error_bound')})
+            strict_equality={key:bool(torch.equal(first[key],old[key])) for key in fields}
+            self.assertTrue(all(equality.values()))
+            self.assertTrue(all(strict_equality.values()))
+            loss=first['transition'][0,:3].square().sum()+first['event_vector'][0,:3].sum()
+            gradients=torch.autograd.grad(loss,(mu,boundary,dt))
+            forbidden=max(max(float(g[0,3:].abs().max()),float(g[1:].abs().max())) for g in gradients)
+            self.assertEqual(forbidden,0.)
+            records.append(dict(dtype=str(dtype),shape=[B,T,C,10],exact_prefix_equality=equality,
+                exact_equality_to_previous_short_profile=strict_equality,
+                forbidden_derivative_max=forbidden,
+                original_scheduling_rounds=first['solver']['scheduling_binary_rounds'],
+                perturbed_scheduling_rounds=changed['solver']['scheduling_binary_rounds'],
+                perturbed_maximum_chunks=int(changed['solver']['chunks'].max())))
+        RECORDS['independent_chunks_noninterference']=records
+
+    def test_independent_chunks_composition_and_local_gradients(self):
+        grid=Grid(8,-2,2,fixed_rate=8.1,fixed_terms=21,max_duration=.36,
+                  per_token_chunks=True)
+        strict=Grid(8,-2,2,fixed_rate=8.1,fixed_terms=21,max_duration=.36)
+        values=(.237,.513,.8431,-.173,.417,.437,.413,1.137)
+        p=torch.tensor(np.random.default_rng(710127).dirichlet(np.ones(10)),dtype=torch.float64)
+        def objective(xs):
+            out=step(p,1.137,*xs[:5],xs[7],grid,reward_intercept=-xs[6])
+            v=finite_generator_values(out['flow'],out['probability'],xs[5],xs[6])
+            return (.3*out['mean']+.2*out['variance']+1.1*out['events']+.4*out['reward']
+                    +.15*v['J_total']+.07*v['G_total']),out
+        args=[torch.tensor(x,dtype=torch.float64,requires_grad=True) for x in values]
+        obj,out=objective(args)
+        gradients=torch.autograd.grad(obj,args)
+        rows=[]
+        for i,name in enumerate(('mu','sigma','boundary','reset','tau','rho','K','duration')):
+            plus,minus=list(values),list(values)
+            plus[i]+=1e-5;minus[i]-=1e-5
+            positive,pos_out=objective(plus);negative,neg_out=objective(minus)
+            fd=float((positive-negative)/2e-5)
+            gradient=float(gradients[i]);scaled=abs(fd-gradient)/max(1e-5,abs(fd))
+            self.assertLess(scaled,2e-6)
+            self.assertGreater(abs(gradient),1e-8)
+            self.assertEqual(int(pos_out['solver']['chunks']),int(neg_out['solver']['chunks']))
+            rows.append(dict(parameter=name,autograd=gradient,finite_difference=fd,scaled_error=scaled))
+        flow=make_flow(*values[:5],strict)
+        initial=step(p,1.137,*values[:5],0.,strict,reward_intercept=-values[6])
+        q=initial['probability'];e=initial['events'];r=initial['reward']
+        n=int(out['solver']['chunks'])
+        for _ in range(n):
+            one=propagate(q,flow,values[7]/n)
+            q=one['probability'];e=e+one['events'];r=r+(values[2]-values[6])*one['events']
+        equivalence=dict(probability_max=float((q-out['probability'].detach()).abs().max()),
+            events=abs(float(e-out['events'].detach())),reward=abs(float(r-out['reward'].detach())))
+        for error in equivalence.values():self.assertLess(error,2e-14)
+        # Time subdivision is a fixed-generator check, with no remapping or
+        # collapse inserted at artificial numerical subdivision boundaries.
+        first=propagate(initial['probability'],make_flow(*values[:5],grid),values[7]/2)
+        second=propagate(first['probability'],make_flow(*values[:5],grid),values[7]/2)
+        partition_error=float((second['probability']-out['probability'].detach()).abs().sum())
+        self.assertLess(partition_error,2e-10)
+        RECORDS['independent_chunks_gradients']=dict(records=rows,chunks=n,
+            repeated_strict_chunk_equivalence=equivalence,halves_state_l1_difference=partition_error,
+            scope='Local first derivatives with per-token integer chunk count fixed; no claim across count/interpolation knots')
+
+    def test_independent_chunks_float32_long_sequence(self):
+        grid=Grid(8,-2,2,fixed_rate=8.1,fixed_terms=21,max_duration=.36,
+                  per_token_chunks=True)
+        mu=torch.full((2,3),.3,dtype=torch.float32)
+        f=make_flow(mu,.5,1.,-.2,.4,grid)
+        p=initial_probability(f);old=f['boundary'];count=torch.zeros_like(mu)
+        maximum_mass_error=0.
+        for t in range(64):
+            boundary=.8+.13*math.sin(t*.37)
+            duration=(0.,.05,.36,.495755147934,1.2,3.2)[t%6]
+            out=step(p,old,mu,.5,boundary,-.2,.4,duration,grid)
+            p,old=out['probability'],out['boundary'];count=count+out['events']
+            maximum_mass_error=max(maximum_mass_error,float((p.sum(-1)-1).abs().max()))
+            self.assertGreaterEqual(float(p.min()),0.)
+        self.assertLess(maximum_mass_error,2e-5)
+        self.assertGreater(float(count.min()),10.)
+        RECORDS['independent_chunks_float32_long_sequence']=dict(steps=64,
+            maximum_mass_error=maximum_mass_error,minimum_probability=float(p.min()),
+            expected_events=float(count.mean()),duration_pattern=[0.,.05,.36,.495755147934,1.2,3.2],
+            numerical_configuration='fixed_rate_terms_independent_token_chunks')
+
     def test_fixed_neural_domain_certificate_and_dense_reference(self):
         h_min=(.35+2)/8
         rate_bound=3*(.6**2/2)/h_min**2+.5/h_min
@@ -522,6 +721,54 @@ def performance_probe():
         energy_measured=False)
 
 
+def independent_chunk_performance_probe():
+    B,T,C=8,16,4
+    grid=Grid(8,-2,2,validate=False,fixed_rate=8.1,fixed_terms=21,max_duration=.36,
+              per_token_chunks=True)
+    duration=torch.full((B,T,1),.07)
+    duration[:,3::7]=.495755147934
+    duration[:,7::11]=3.2
+    def workload(prepared):
+        mu=torch.linspace(-.2,.4,B*T*C).reshape(B,T,C).requires_grad_()
+        boundary=(1.+.2*torch.sin(torch.arange(B*T*C)*.031)).reshape(B,T,C).requires_grad_()
+        old=torch.cat((boundary[:,:1],boundary[:,:-1]),1)
+        p=initial_probability(make_flow(mu[:,0],.5,boundary[:,0],-.2,.4,grid))
+        total=p.new_zeros(B,C)
+        if prepared:
+            ops=prepare_operator(mu,.5,boundary,-.2,.4,duration,grid,old_boundary=old,
+                                 rho=.4,K=.4,reward_intercept=-.4)
+            for t in range(T):
+                total=total+(p*ops['event_vector'][:,t]).sum(-1)
+                p=torch.matmul(p.unsqueeze(-2),ops['transition'][:,t]).squeeze(-2)
+                total=total+.1*(p*ops['values']['J'][:,t]).sum(-1)
+        else:
+            for t in range(T):
+                out=step(p,old[:,t],mu[:,t],.5,boundary[:,t],-.2,.4,duration[:,t],grid,
+                         reward_intercept=-.4)
+                p=out['probability']
+                values=finite_generator_values(out['flow'],p,.4,.4)
+                total=total+out['events']+.1*values['J_total']
+        objective=p.square().sum()+total.sum()
+        objective.backward()
+        return float(objective.detach())
+    rows={}
+    for name,prepared in [('sequential_local_composite_operator',False),
+                          ('prepared_composite_operator',True)]:
+        workload(prepared)
+        times=[];objectives=[]
+        for _ in range(3):
+            start=time.process_time();objectives.append(workload(prepared));times.append(time.process_time()-start)
+        rows[name]=dict(cpu_seconds=times,median_cpu_seconds=float(np.median(times)),objectives=objectives)
+    RECORDS['independent_chunks_performance_probe']=dict(batch=B,steps=T,physical_channels=C,
+        cells=8,phases=2,dtype='float32',mode='forward+backward; no optimizer update',
+        duration_values=[.07,.495755147934,3.2],records=rows,
+        numerical_configuration=dict(fixed_rate=8.1,fixed_terms=21,max_chunk_duration=.36,
+                                     per_token_chunks=True),
+        median_ratio_sequential_over_prepared=rows['sequential_local_composite_operator']['median_cpu_seconds']/
+                                             rows['prepared_composite_operator']['median_cpu_seconds'],
+        energy_measured=False)
+
+
 def main(output):
     output=Path(output)
     output.mkdir(parents=True,exist_ok=False)
@@ -533,6 +780,7 @@ def main(output):
         try:
             supplemental_references()
             performance_probe()
+            independent_chunk_performance_probe()
         except Exception as error:
             import traceback
             supplemental_error=traceback.format_exc()

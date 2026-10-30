@@ -4,13 +4,16 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
+import subprocess
+import sys
 
 import numpy as np
 import torch
 
 from experiments.hcsn_free_boundary_v1 import training
 from .content_analysis import audit_predictions, exact_sign_flip, holm
-from .content_study import evaluate
+from .content_study import batch, evaluate, file_hash, write_json
 from .content_training import train_candidate
 
 
@@ -62,6 +65,31 @@ class StudyIntegrityTests(unittest.TestCase):
             self.assertTrue(all(r["max_abs"] > 0 for r in result["selected_parameter_changes"].values()))
             points = json.loads((Path(folder) / "candidate/checkpoints.json").read_bytes())
             self.assertEqual(result["checkpoints"], points)
+
+    def test_cooperative_stop_drains_real_child_and_preserves_wait4(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            output, protocol_path = root / "study", root / "protocol.json"
+            output.mkdir()
+            jobs = [dict(task="selective_copy", model="two_gates", seed=i) for i in range(3)]
+            protocol = dict(source_files_sha256={}, data={}, jobs=jobs, execution=dict(workers=1))
+            write_json(protocol_path, protocol)
+            write_json(output / "REGISTRATION.json", dict(protocol_sha256=file_hash(protocol_path)))
+            child = ("from pathlib import Path\n"
+                     f"Path({str(output / 'STOP_REQUESTED.json')!r}).write_text('{{\"reason\":\"test drain\"}}')\n"
+                     "print(sum(i*i for i in range(200000)))\n")
+            real_popen = subprocess.Popen
+            def launch(_, **kwargs):
+                return real_popen([sys.executable, "-c", child], **kwargs)
+            with patch("experiments.hcsn_distributional_v2.content_study.subprocess.Popen", side_effect=launch):
+                result = batch(protocol_path, output)
+            self.assertEqual(result["status"], "aborted")
+            self.assertEqual(result["completed"], 1)
+            self.assertEqual(result["unstarted"], jobs[1:])
+            self.assertEqual(result["records"][0]["returncode"], 0)
+            self.assertGreater(result["complete_child_cpu_seconds"], 0)
+            self.assertTrue((output / "ABORTED.json").is_file())
+            self.assertFalse((output / "COMPLETE.json").exists())
 
 
 if __name__ == "__main__":

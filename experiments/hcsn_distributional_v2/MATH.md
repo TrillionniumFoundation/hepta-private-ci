@@ -12,7 +12,10 @@ Source: `distribution_kernel.py`. Independent audit: `kernel_tests.py`. The
 development audit is retained at `results/kernel_development001/RESULTS.json`.
 The first source-bound audit and its exact source snapshot remain under
 `results/kernel_validation001/`; the final causal numerical configuration is
-bound by `results/kernel_validation002/RESULTS.json`.
+bound by `results/kernel_validation002/RESULTS.json`. That one-chunk source is
+preserved exactly in `results/kernel_validation002/source/`. Revision 003 extends
+the certified time domain with independent token chunks; it does not overwrite
+the source or costs of the stopped content001 attempt.
 
 ## 1. State and time contract
 
@@ -170,33 +173,84 @@ future-suffix or neighboring-example numerical dependence. This issue was found
 and corrected **before formal content training was registered**. The earlier
 source and successful scalar numerical audit are preserved rather than rewritten.
 
-The neural model uses `fixed_rate=8.1`, `fixed_terms=21`, `max_duration=.36`, and
-exactly one chunk. Its registered domain is n=8, L=-2, m=2, sigma in [.3,.6],
-mu in [-.3,.5], b>=.35, reset in [-.3,.1], tau in [.3,1.2] and physical dt<=.36.
-The smallest spatial width is (.35+2)/8=.29375. The gross active-rate upper bound
-is attained at the upper cell and obeys
+The neural model uses `fixed_rate=8.1`, `fixed_terms=21`,
+`max_duration=.36`, and `per_token_chunks=True`. Here `max_duration` is the
+maximum **chunk** duration, not a maximum observation duration. The registered
+physical coefficient domain is n=8, L=-2, m=2, sigma in [.3,.6], mu in [-.3,.5],
+b>=.35, reset in [-.3,.1], and tau in [.3,1.2]. The smallest spatial width is
+(.35+2)/8=.29375. The gross active-rate upper bound is attained at the upper
+cell and obeys
 
 \[
 q_{max}\le\frac{3(.6^2/2)}{.29375^2}+\frac{.5}{.29375}
 =7.960162969669533<8.1.
 \]
 
-The phase rate is at most 2/.3=6.6666667. The maximum Poisson mean is 8.1*.36=2.916.
-At K=21, the state L1 bound is at most about 1.854e-12 and the unit-jump count
-bound about 2.323e-11, both below the declared tolerance 1e-10. K=20 fails that
-joint certificate. The precise duration representation for the tensor dtype is
-used for the bound; ordinary floating-point roundoff is still excluded.
+The phase rate is at most 2/.3=6.6666667. The maximum chunk Poisson mean is
+8.1*.36=2.916. At K=21, the chunk state L1 bound is at most about 1.854e-12
+and the unit-jump count bound about 2.323e-11, both below the declared chunk
+tolerance 1e-10. K=20 fails that joint certificate. The represented duration
+limit for the tensor dtype is used in the certificate; floating-point roundoff
+is excluded. Out-of-domain gross rates or insufficient fixed terms raise an
+error, with no adaptive fallback.
 
-Rate, term count and chunk count never change in response to current batch or
-future suffix values in this neural configuration. Out-of-domain duration,
-gross rate, or insufficient fixed terms raise an error; there is no adaptive
-fallback. The bound itself uses the registered universal g_max<=1. Zero-time
-segments run the same fixed series and preserve the boundary-jump contract.
-The formal audit changes both future coefficients and neighboring examples,
-checks identical prefix operators in float32 and float64, and checks exactly
-zero derivatives of prefix outputs with respect to those forbidden inputs.
-This fixed numerical configuration does not remove the explicitly stated
-spatial/remapping approximation.
+For each token i independently, the algorithm chooses
+
+\[
+n_i=\max(1,\lceil dt_i/.36\rceil),\qquad q_i=dt_i/n_i,
+\]
+
+with a local additional increment if rounding makes represented q_i exceed the
+represented chunk limit. It evaluates one fixed-rate/fixed-order chunk operator
+T_i and event vector e_i for q_i, then composes n_i copies. For row probability,
+the composition law is
+
+\[
+(T_a,e_a)\circ(T_b,e_b)=(T_aT_b,e_a+T_ae_b).
+\]
+
+Repeated squaring and binary decomposition use O(log n_i) small matrix
+compositions. Each token has its own exponent and chunk duration. A batch-wide
+loop count only schedules the maximum necessary number of binary rounds;
+`where` preserves completed-token operators and powers exactly. A short token
+returns its original one-chunk operator without an identity multiplication.
+Changing a future suffix or another example can increase scheduled work but
+cannot change an unchanged token's arithmetic result. Returned chunk counts,
+chunk durations and error bounds are per token; `scheduling_binary_rounds` is
+explicitly a batch-wide diagnostic, not a physical output or model feature.
+
+For each token the state certificate is 2*n_i*bar_delta and the count certificate
+is n_i*B+n_i*(n_i-1)*bar_delta*z_max, where B is the one-chunk unit-jump count
+bound above. The whole observation is **not** claimed to retain the one-chunk
+1e-10 error for arbitrary n_i. For nine chunks, covering a physical interval
+up to 3.2, these bounds are approximately 1.669e-11 for state L1 and 4.037e-10
+for expected count. Reward has the corresponding absolute affine factor.
+These bounds exclude the stated spatial, input and floating-point errors.
+
+The explicit resource cap `max_independent_chunks=1048576` rejects a duration
+requiring more chunks instead of silently truncating it. This cap is fixed
+independently of dataset observations and requires at most 20 binary rounds.
+There is no selection of rate, terms or chunk count from batch or future maxima.
+The integer count is held fixed when differentiating q_i=dt_i/n_i; finite
+difference checks are local and do not claim differentiability across count
+boundaries. Zero-duration tokens preserve their probability and zero dynamic
+event count; boundary-jump remapping still occurs once at the observation.
+
+The prior `per_token_chunks=False` strict profile remains available for
+one-chunk independent reference checks and still rejects dt>.36. The adaptive
+reference also remains available, with its documented limited numerical
+noninterference. The 003 audit checks both floats, long neighboring/suffix
+intervals requiring different binary rounds, exact prefix operator invariance,
+zero forbidden-input gradients, old short-profile equality, independent dense
+state/count/reward references, repeated strict chunk equivalence, and local
+physical/duration gradients.
+
+The domain correction followed a stopped formal content001 attempt. Real-task
+source generates positive lognormal gaps normalized to sum to 32; a single raw
+gap can approach 32, so the physical time scale .1 permits an interval approaching
+3.2. The earlier single-interval .36 assumption was insufficient. No heldout
+maximum was used to choose the 003 algorithm. Source snapshots, failed jobs,
+completed jobs, and all incurred costs of the prior attempt remain separate.
 
 ## 4. Moving boundaries in physical coordinates
 
@@ -281,10 +335,11 @@ not the classification or owner task Bellman values.
 
 ## 6. Efficient prepared operators and the collapse control
 
-`step` applies physical remapping and sparse uniformization directly to the
-current probability. `prepare_operator` applies the same propagation to all
-basis rows and returns a small transition matrix plus event/reward/value
-vectors. It can batch independent local coefficients over [batch,time,channel].
+`step` applies physical remapping once, then propagates the current probability.
+For the adaptive and strict one-chunk profiles it uses sparse uniformization
+directly. For independent token chunks it applies a composed small transition
+operator. `prepare_operator` batches the same basis-row propagation and binary
+composition, returning transition matrices plus event/reward/value vectors. It can batch independent local coefficients over [batch,time,channel].
 The content recurrence then performs only p@transition and scalar projections.
 
 The neural preparation combines current/past-only coefficients with the fixed
@@ -319,9 +374,10 @@ at 128. Refinement was not monotone at its first step. Accurate propagation of
 the finite generator must not be confused with an accurate continuous Brownian
 approximation at every chosen resolution.
 
-The final performance probe uses the fixed 8.1/21/one-chunk neural configuration
-and compares forward+backward computation only, for an 8-batch,16-step,4-channel
-synthetic input and 8 cells/2 phases. It does not run an
+The performance probes retain the old fixed 8.1/21/one-chunk configuration and
+add the independent-chunk profile on mixed physical intervals .07, .495755147934
+and 3.2. Both compare forward+backward computation only, for an
+8-batch,16-step,4-channel synthetic input and 8 cells/2 phases. It does not run an
 optimizer update and is not a whole content-training benchmark. The final
 result records every repeat, both objectives, dtype, dimensions and measured
 CPU time. No GPU or energy result is claimed.

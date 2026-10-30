@@ -67,7 +67,8 @@ class DistributionalContentCell(nn.Module):
         self.width, self.arm, self.physical_channels = width, arm, physical_channels
         self.precompute = precompute
         self.grid = kernel.Grid(cells=8, lower=-2.0, refractory_stages=2,
-                                fixed_rate=8.1, fixed_terms=21, max_duration=0.36)
+                                fixed_rate=8.1, fixed_terms=21, max_duration=0.36,
+                                per_token_chunks=True, max_independent_chunks=1048576)
         self.norm = nn.LayerNorm(width)
         self.drift_input = nn.Linear(width, physical_channels, bias=False)
         self.mu_bias = nn.Parameter(torch.zeros(physical_channels))
@@ -242,7 +243,8 @@ class DistributionalClassifier(nn.Module):
                            grid_cells=8, refractory_stages=2, lower=-2.0,
                            precomputed_operators=True,
                            uniformization_rate=8.1, uniformization_terms=21,
-                           max_physical_duration=0.36)
+                           max_physical_substep=0.36, per_token_chunks=True,
+                           max_independent_chunks=1048576)
         with torch.random.fork_rng():
             torch.manual_seed(seed)
             self.frontend = nn.Sequential(nn.Linear(input_dim + 2, width),

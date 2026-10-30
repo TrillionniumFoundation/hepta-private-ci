@@ -95,16 +95,17 @@ def evaluate(model, split, batch_size=128, output_path=None):
                 max_expected_events_per_interval=maximum_events if distribution_audited else None)
 
 
-def register(protocol_path, output, cpu_seconds=60.0, mechanism_seeds=8, workers=6):
+def register(protocol_path, output, cpu_seconds=60.0, mechanism_seeds=8, workers=5):
     protocol_path, output = Path(protocol_path), Path(output)
     if protocol_path.exists() or output.exists():
         raise FileExistsError("Registration and output must be new")
-    if cpu_seconds <= 0 or not 3 <= mechanism_seeds <= 8:
-        raise ValueError("Positive CPU budget and 3..8 mechanism seeds required")
+    if cpu_seconds <= 0 or not 3 <= mechanism_seeds <= 8 or workers < 1:
+        raise ValueError("Positive CPU budget/workers and 3..8 mechanism seeds required")
     frozen = json.loads((ROOT / "experiments/hcsn_free_boundary_v1/FREEZE.json").read_bytes())
     source_files = dict(frozen["files"])
     for name in ("model.py", "model_tests.py", "distribution_kernel.py", "kernel_tests.py",
-                 "content_study.py", "content_training.py", "content_analysis.py", "content_tests.py"):
+                 "content_study.py", "content_training.py", "content_analysis.py", "content_tests.py",
+                 "content_domain_preflight.py"):
         path = PACKAGE / name
         source_files[str(path.relative_to(ROOT))] = file_hash(path)
     for relative, expected in source_files.items():
@@ -123,11 +124,30 @@ def register(protocol_path, output, cpu_seconds=60.0, mechanism_seeds=8, workers
     priority = dict(task="mnist", model="distribution_free_dual", seed=9201)
     jobs.remove(priority)
     jobs.insert(0, priority)
-    protocol = dict(schema="hcsn-distribution-content-study.v2", study_id="content001",
+    prior_path = PACKAGE / "results/content001/ABORTED.json"
+    prior = json.loads(prior_path.read_bytes())
+    if prior["status"] != "aborted-invalid-duration-domain":
+        raise RuntimeError("The superseded registration must retain its explicit abort receipt")
+    preflight_path = PACKAGE / "results/content_domain_preflight003.json"
+    preflight = json.loads(preflight_path.read_bytes())
+    if not preflight["passed"] or not preflight["train_only"]:
+        raise RuntimeError("All six training duration domains must pass before registration")
+    for name, expected in preflight["source_sha256"].items():
+        if file_hash(PACKAGE / name) != expected:
+            raise RuntimeError(f"Preflight source changed: {name}")
+    protocol = dict(schema="hcsn-distribution-content-study.v2", study_id="content002",
         parent_commit="caa94dc53f8b8b721ee00076ce060d44a98d7a4f",
         registered_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        status_at_registration="no_content001_training_started",
-        outcome_scope="new source and seeds; post-v1 diagnostic using previously observed task datasets",
+        status_at_registration="no_content002_training_started",
+        outcome_scope="corrected source; post-v1/content001 diagnostic using previously observed task datasets",
+        prior_aborted_study=dict(study_id="content001", receipt=str(prior_path.relative_to(ROOT)),
+            receipt_sha256=file_hash(prior_path), protocol_sha256=prior["protocol_sha256"],
+            started_searches=prior["started_and_reaped"], completed_searches=prior["completed_worker_searches"],
+            failed_searches=prior["failed_workers"], cost=prior["cost"],
+            heldout_outcomes_exist=True, reuse_weights_or_scores=False,
+            repair_basis="train dt and source generator contract only; token-local numerical subdivision",
+            changes="per-token duration subdivision and cooperative stop; no arms, seeds, budgets, LR or gates changed"),
+        domain_preflight=dict(path=str(preflight_path.relative_to(ROOT)), sha256=file_hash(preflight_path)),
         source_files_sha256=source_files, data=data, jobs=jobs,
         core=dict(tasks=list(TASKS), models=list(MODEL_NAMES), seeds=[9201, 9202, 9203]),
         mechanism=dict(tasks=list(MECHANISM_TASKS), models=list(MECHANISM_MODELS),
@@ -147,9 +167,12 @@ def register(protocol_path, output, cpu_seconds=60.0, mechanism_seeds=8, workers
             fixed128="saved if reached, ineligible for primary selection; no coverage-completion retraining"),
         physical_contract=dict(channels=8, cells=8, refractory_stages=2, lower=-2.0,
             time_scale=.1, state="full active-cell and refractory-phase masses",
-            numerical_profile=dict(fixed_rate=8.1, fixed_terms=21, max_physical_duration=.36,
-                fallback="none; reject out-of-domain rate/duration", parameter_domain="bounded transforms in model.py",
-                causality="fixed numerical choices independent of batch neighbors and future inputs"),
+            numerical_profile=dict(fixed_rate=8.1, fixed_terms=21, max_physical_substep=.36,
+                per_token_chunks=True, max_independent_chunks=1048576,
+                chunks="n=max(1,ceil(dt_phys/.36)); equal per-token substeps composed by binary powering; remap once",
+                fallback="none; reject invalid rates, nonfinite/negative duration or explicit resource cap",
+                parameter_domain="bounded transforms in model.py",
+                causality="subdivision depends only on that token duration; fixed rate/terms; completed tokens remain unchanged"),
             boundary="Brownian infinite-domain optimum with Erlang Laplace factor; not finite-grid or task optimum",
             conditional_boundary="K+.01+3.99*sigmoid(a+s*mu); gap initially.65, slope initially0; bounded to keep reset/initial inside grid-center range",
             values="finite-generator own-policy J/G; G equals forced continuation on refractory states",
@@ -170,6 +193,8 @@ def register(protocol_path, output, cpu_seconds=60.0, mechanism_seeds=8, workers
                   no_energy_measurement=True, failures="preserved and charged; affected comparison incomplete"),
         execution=dict(workers=workers, expected_searches=len(jobs), expected_lr_candidates=2*len(jobs),
                        nominal_training_cpu_seconds=2*len(jobs)*cpu_seconds,
+                       workers_basis="content001 observed peak961953792bytes exceeded900MB engineering gate; reduce6to5",
+                       stop_policy="first worker failure or STOP_REQUESTED.json halts new scheduling; all active children finish and wait4 costs are recorded",
                        priority_reason="unlock actual v2 owner integration; remaining job order fixed before outcomes"))
     protocol_path.parent.mkdir(parents=True, exist_ok=True)
     write_json(protocol_path, protocol)
@@ -234,8 +259,19 @@ def batch(protocol_path, output):
         environment[key] = "1"
     environment["PYTHONDONTWRITEBYTECODE"] = "1"
     pending, active, records = list(protocol["jobs"]), {}, []
+    stopped, unstarted = None, []
+    stop_path = output / "STOP_REQUESTED.json"
     while pending or active:
+        if stop_path.exists() and stopped is None:
+            stopped = dict(reason="operator_stop", request_sha256=file_hash(stop_path),
+                           request=json.loads(stop_path.read_bytes()))
+            unstarted, pending = pending, []
+            write_json(output / "DRAINING.json", dict(stop=stopped, unstarted=unstarted,
+                       active_jobs=[item["job"] for item in active.values()],
+                       protocol_sha256=registration["protocol_sha256"]))
         while pending and len(active) < protocol["execution"]["workers"]:
+            if stop_path.exists():
+                break
             job = pending.pop(0)
             identifier = f"{job['task']}__{job['model']}__{job['seed']}"
             destination, log_path = output / "runs" / identifier, output / "process_logs" / f"{identifier}.log"
@@ -265,6 +301,13 @@ def batch(protocol_path, output):
             write_json(item["output"] / "EXECUTION.json", receipt)
             records.append(receipt)
             finished.append(pid)
+            if code != 0 and stopped is None:
+                stopped = dict(reason="worker_failure", job=item["job"], returncode=code)
+                unstarted, pending = pending, []
+                write_json(output / "DRAINING.json", dict(stop=stopped, unstarted=unstarted,
+                           active_jobs=[other["job"] for other_pid, other in active.items()
+                                        if other_pid != pid],
+                           protocol_sha256=registration["protocol_sha256"]))
             print(json.dumps(dict(completed=len(records), expected=len(protocol["jobs"]),
                                   job=item["job"], returncode=code)), flush=True)
         for pid in finished:
@@ -277,25 +320,26 @@ def batch(protocol_path, output):
     verify(protocol_path)
     if file_hash(protocol_path) != registration["protocol_sha256"]:
         raise RuntimeError("Protocol changed during batch")
-    success = all(row["returncode"] == 0 for row in records)
-    final = dict(schema="hcsn-distribution-content-completion.v2", status="completed" if success else "incomplete",
+    success = stopped is None and all(row["returncode"] == 0 for row in records)
+    final = dict(schema="hcsn-distribution-content-completion.v2", status="completed" if success else "aborted",
         expected=len(protocol["jobs"]), completed=len(records), failures=sum(row["returncode"] != 0 for row in records),
+        stop=stopped, unstarted=unstarted,
         protocol_sha256=registration["protocol_sha256"], records=records,
         complete_child_cpu_seconds=sum(row["child_total_cpu_seconds"] for row in records),
         coordinator_cpu_seconds=time.process_time()-started_cpu, wall_seconds=time.perf_counter()-started_wall,
         completed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat())
-    write_json(output / "COMPLETE.json", final)
+    write_json(output / ("COMPLETE.json" if success else "ABORTED.json"), final)
     return final
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("register", "run", "worker"))
-    parser.add_argument("--protocol", type=Path, default=PACKAGE / "CONTENT_PROTOCOL.json")
+    parser.add_argument("--protocol", type=Path, default=PACKAGE / "CONTENT002_PROTOCOL.json")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--cpu-seconds", type=float, default=60)
     parser.add_argument("--mechanism-seeds", type=int, default=8)
-    parser.add_argument("--workers", type=int, default=6)
+    parser.add_argument("--workers", type=int, default=5)
     parser.add_argument("--task", choices=TASKS)
     parser.add_argument("--model", choices=MODEL_NAMES)
     parser.add_argument("--seed", type=int)
@@ -309,6 +353,8 @@ def main():
         result = batch(args.protocol, args.output)
         print(json.dumps({key: result[key] for key in ("status", "expected", "completed", "failures",
                                                      "complete_child_cpu_seconds", "wall_seconds")}))
+        if result["status"] != "completed":
+            raise SystemExit(1)
 
 
 if __name__ == "__main__":

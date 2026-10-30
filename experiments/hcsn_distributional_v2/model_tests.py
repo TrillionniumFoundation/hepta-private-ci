@@ -52,6 +52,7 @@ class ContentIntegrationTests(unittest.TestCase):
             second = copy.deepcopy(first)
             second.layers[0].precompute = False
             x, dt = torch.randn(2, 6, 5, dtype=torch.float64), torch.rand(2, 6, dtype=torch.float64)
+            dt[0, 2], dt[1, 4] = 4.95, 31.99
             a, aa = first(x, dt, return_sequence=True)
             b, ba = second(x, dt, return_sequence=True)
             torch.testing.assert_close(a, b, atol=2e-10, rtol=2e-9)
@@ -90,6 +91,7 @@ class ContentIntegrationTests(unittest.TestCase):
             torch.manual_seed(8)
             model = DistributionalClassifier(5, 3, width=10, seed=83).double()
             x, dt = torch.randn(2, 7, 5, dtype=torch.float64), torch.rand(2, 7, dtype=torch.float64)
+            dt[0, 2], dt[1, 4] = 4.95, 31.99
             batch, batch_aux = model(x, dt, return_sequence=True)
             state, outputs = None, []
             for index in range(x.shape[1]):
@@ -107,9 +109,9 @@ class ContentIntegrationTests(unittest.TestCase):
             x, dt = torch.randn(2, 7, 5, dtype=torch.float64), torch.rand(2, 7, dtype=torch.float64)
             altered_x, altered_dt = x.clone(), dt.clone()
             altered_x[0, 4:] = 9*torch.randn_like(altered_x[0, 4:])
-            altered_dt[0, 4:] = 3.5
+            altered_dt[0, 4:] = 31.99
             altered_x[1] = -15*torch.randn_like(altered_x[1])
-            altered_dt[1] = 3.2
+            altered_dt[1] = 7.5
             a, aa = model(x, dt, return_sequence=True)
             b, ba = model(altered_x, altered_dt, return_sequence=True)
             torch.testing.assert_close(a[0, :4], b[0, :4], rtol=0, atol=0)

@@ -12,7 +12,7 @@ Moving-boundary remapping acts even when dt is zero.  All values here are local
 fixed-policy values; task Bellman optimality is not implied.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import math
 
 import torch
@@ -31,6 +31,8 @@ class Grid:
     fixed_rate: float | None = None
     fixed_terms: int | None = None
     max_duration: float | None = None
+    per_token_chunks: bool = False
+    max_independent_chunks: int = 1048576
 
 
 def _broadcast(*values):
@@ -66,6 +68,11 @@ def make_flow(mu, sigma, boundary, reset, tau, grid=Grid()):
                 or grid.fixed_terms < 0 or grid.fixed_terms > grid.max_terms
                 or not math.isfinite(grid.max_duration) or grid.max_duration <= 0):
             raise ValueError("Fixed numerical configuration requires a positive rate/duration and integer terms")
+    if grid.per_token_chunks and grid.fixed_rate is None:
+        raise ValueError("Independent token chunks require a fixed numerical configuration")
+    if (not isinstance(grid.max_independent_chunks, int)
+            or not 1 <= grid.max_independent_chunks <= 2**30):
+        raise ValueError("Require an explicit independent-chunk resource cap in [1, 2**30]")
     spacing = (boundary - grid.lower) / n
     edges = grid.lower + spacing[..., None] * torch.arange(n+1, dtype=mu.dtype, device=mu.device)
     centers = (edges[..., :-1] + edges[..., 1:]) / 2
@@ -221,6 +228,11 @@ def propagate(probability, flow, dt):
         mass_tolerance = max(1e-12, 256*torch.finfo(probability.dtype).eps)
         if bool(((probability.sum(-1)-1).abs()>mass_tolerance).any()):
             raise ValueError("Unit-mass distributions required; bounds assume unit mass")
+    if flow['grid'].per_token_chunks:
+        operator = _independent_chunk_operator(flow, dt)
+        result = torch.matmul(probability.unsqueeze(-2), operator['transition']).squeeze(-2)
+        events = (probability*operator['event_vector']).sum(-1)
+        return dict(probability=result, events=events, **operator['solver'])
     max_rate = max(float(flow['active_out'].detach().max()), float(flow['phase_rate'].detach().max()))
     fixed = flow['grid'].fixed_rate is not None
     if fixed:
@@ -284,6 +296,73 @@ def propagate(probability, flow, dt):
                 event_error_bound=event_bound, roundoff_included=False,
                 uniformization_rate=rate, max_chunk_mean=mean,
                 numerical_configuration='fixed_neural_contract' if fixed else 'adaptive_scalar_reference')
+
+
+def _independent_chunk_operator(flow, dt):
+    """Compose independently certified token chunks by masked binary powers.
+
+    Every token chooses n=ceil(dt/chunk_limit) using only its own duration. Its
+    q=dt/n is differentiated with n held fixed. A batch-wide loop length only
+    schedules work: completed tokens keep their exact previous tensors. Physical
+    boundary remapping is deliberately absent here; it happens once outside.
+    """
+    grid = flow['grid']
+    dt = torch.as_tensor(dt, dtype=flow['mu'].dtype, device=flow['mu'].device)
+    shape = torch.broadcast_shapes(flow['mu'].shape, dt.shape)
+    dt = torch.broadcast_to(dt, shape)
+    limit = dt.new_tensor(grid.max_duration)
+    if not bool(torch.isfinite(dt).all()) or bool((dt < 0).any()):
+        raise ValueError("Independent chunks require finite nonnegative duration")
+    raw_chunks = torch.ceil(dt.detach()/limit).clamp_min(1)
+    if bool((raw_chunks > grid.max_independent_chunks).any()):
+        raise ValueError("Duration exceeds the declared independent-chunk resource cap")
+    chunks = raw_chunks.to(torch.int64)
+    chunk_dt = dt/chunks.to(dt.dtype)
+    # Guard the represented q, including a quotient rounded just above limit.
+    # This is a local integer decision, never a choice based on another token.
+    chunks = chunks+(chunk_dt.detach() > limit).to(torch.int64)
+    if bool((chunks > grid.max_independent_chunks).any()):
+        raise ValueError("Represented duration exceeds the independent-chunk resource cap")
+    chunk_dt = dt/chunks.to(dt.dtype)
+    size = grid.cells+grid.refractory_stages
+    strict = replace(grid, per_token_chunks=False)
+    parameters = [torch.broadcast_to(flow[k], shape)[..., None].expand(*shape, size)
+                  for k in ('mu', 'sigma', 'boundary', 'reset', 'tau')]
+    expanded = make_flow(*parameters, grid=strict)
+    basis = torch.eye(size, dtype=dt.dtype, device=dt.device).expand(*shape, size, size)
+    base = propagate(basis, expanded, chunk_dt[..., None])
+    transition, event_vector = base['probability'], base['events']
+    power_transition, power_events = transition, event_vector
+    remaining = chunks-1
+    rounds = 0
+    while bool((remaining > 0).any()):
+        use = (remaining % 2) == 1
+        accumulated_events = event_vector+torch.matmul(
+            transition, power_events[..., None]).squeeze(-1)
+        accumulated_transition = torch.matmul(transition, power_transition)
+        event_vector = torch.where(use[..., None], accumulated_events, event_vector)
+        transition = torch.where(use[..., None, None], accumulated_transition, transition)
+        remaining = remaining//2
+        live = remaining > 0
+        if bool(live.any()):
+            doubled_events = power_events+torch.matmul(
+                power_transition, power_events[..., None]).squeeze(-1)
+            doubled_transition = torch.matmul(power_transition, power_transition)
+            power_events = torch.where(live[..., None], doubled_events, power_events)
+            power_transition = torch.where(live[..., None, None], doubled_transition, power_transition)
+        rounds += 1
+    n = chunks.to(dt.dtype)
+    tail = base['probability_l1_error_bound']/2
+    count_bound = (n*base['event_error_bound']
+                   +n*(n-1)*tail*base['max_chunk_mean'])
+    solver = dict(chunks=chunks, chunk_duration=chunk_dt, terms=base['terms'],
+        probability_l1_error_bound=2*n*tail, event_error_bound=count_bound,
+        roundoff_included=False, uniformization_rate=base['uniformization_rate'],
+        max_chunk_mean=base['max_chunk_mean'],
+        numerical_configuration='fixed_rate_terms_independent_token_chunks',
+        scheduling_binary_rounds=rounds,
+        max_independent_chunks=grid.max_independent_chunks)
+    return dict(transition=transition, event_vector=event_vector, solver=solver)
 
 
 def moments(flow, probability):
@@ -408,14 +487,20 @@ def prepare_operator(mu, sigma, boundary, reset, tau, dt, grid=Grid(),
     """
     flow = make_flow(mu, sigma, boundary, reset, tau, grid)
     shape, size = flow['mu'].shape, grid.cells+grid.refractory_stages
-    expand = lambda x: x[..., None].expand(*shape, size)
-    expanded = make_flow(*(expand(flow[k]) for k in ('mu','sigma','boundary','reset','tau')), grid=grid)
-    basis = torch.eye(size, dtype=flow['mu'].dtype, device=flow['mu'].device)
-    basis = basis.expand(*shape, size, size)
     dt = torch.as_tensor(dt, dtype=flow['mu'].dtype, device=flow['mu'].device)
     dt = torch.broadcast_to(dt, shape)
-    propagated = propagate(basis, expanded, dt[..., None])
-    transition, event_vector = propagated['probability'], propagated['events']
+    if grid.per_token_chunks:
+        composite = _independent_chunk_operator(flow, dt)
+        transition, event_vector = composite['transition'], composite['event_vector']
+        solver = composite['solver']
+    else:
+        expand = lambda x: x[..., None].expand(*shape, size)
+        expanded = make_flow(*(expand(flow[k]) for k in ('mu','sigma','boundary','reset','tau')), grid=grid)
+        basis = torch.eye(size, dtype=flow['mu'].dtype, device=flow['mu'].device)
+        basis = basis.expand(*shape, size, size)
+        propagated = propagate(basis, expanded, dt[..., None])
+        transition, event_vector = propagated['probability'], propagated['events']
+        solver = {k:v for k,v in propagated.items() if k not in ('probability','events')}
     slope, intercept, b = _broadcast(reward_slope, reward_intercept, flow['boundary'])
     reward_vector = (slope*b+intercept)[..., None]*event_vector
     if old_boundary is not None:
@@ -426,7 +511,7 @@ def prepare_operator(mu, sigma, boundary, reset, tau, dt, grid=Grid(),
     values = policy_value_vectors(flow, rho, K) if rho is not None and K is not None else None
     return dict(flow=flow, transition=transition, event_vector=event_vector,
                 reward_vector=reward_vector, values=values,
-                solver={k:v for k,v in propagated.items() if k not in ('probability','events')})
+                solver=solver)
 
 
 def collapse_active_mean(flow, probability):

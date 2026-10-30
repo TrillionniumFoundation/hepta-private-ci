@@ -1,4 +1,4 @@
-"""Independent integrity checks and predeclared comparisons for content001."""
+"""Independent integrity checks and predeclared comparisons for content002."""
 
 import argparse
 import csv
@@ -221,6 +221,9 @@ def analyze(protocol_path, study, output):
     started = time.process_time()
     completion = read_json(study / "COMPLETE.json")
     assert completion["protocol_sha256"] == protocol["_sha256"], "completion protocol"
+    assert completion["status"] == "completed" and not completion.get("unstarted"), "completed full matrix"
+    prior = protocol["prior_aborted_study"]
+    assert file_hash(ROOT / prior["receipt"]) == prior["receipt_sha256"], "prior failed study retained"
     expected_jobs = {(j["task"], j["model"], j["seed"]) for j in protocol["jobs"]}
     completed_jobs = [(r["job"]["task"], r["job"]["model"], r["job"]["seed"])
                       for r in completion["records"]]
@@ -310,10 +313,12 @@ def analyze(protocol_path, study, output):
         passed_content_screens=sum(row["screen"] for row in screens),
         complete_child_cpu_seconds=completion["complete_child_cpu_seconds"],
         coordinator_cpu_seconds=completion["coordinator_cpu_seconds"],
+        prior_aborted_study_cost=prior["cost"],
+        both_study_worker_cpu_seconds=completion["complete_child_cpu_seconds"]+prior["cost"]["complete_worker_cpu_seconds"],
         training_cpu_seconds=sum(c["training_cpu_seconds"] for a in audits if a["valid"] for c in a["candidates"]),
         analysis_body_cpu_seconds=time.process_time()-started,
         inference_replay="first4test samples every selected checkpoint, max_abs tolerance5e-5",
-        statistical_scope="post-v1 source-registered study; same previously observed test datasets; three-seed core descriptive")
+        statistical_scope="post-v1/content001 source-registered study; same previously observed test datasets; three-seed core descriptive")
     write_json(output / "ANALYSIS.json", result)
     with (output / "CORE_TABLE.csv").open("w", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=("task", "model", "split", "complete", "mean", "sd"))
@@ -337,12 +342,13 @@ def analyze(protocol_path, study, output):
         else:
             lines.append(f"| {row['comparison']} | incomplete | | | False |")
     lines += ["", "## Scope and costs", "", f"Complete search worker CPU: **{result['complete_child_cpu_seconds']:.6f} s**. Coordinator self CPU: **{result['coordinator_cpu_seconds']:.6f} s**. Training CPU inside valid workers: **{result['training_cpu_seconds']:.6f} s**, a nested component, not an additional charge.", "",
+              f"The invalid-duration content001 registration remains sealed: {prior['started_searches']} searches started, {prior['completed_searches']} completed and {prior['failed_searches']} failed. Its complete worker cost was **{prior['cost']['complete_worker_cpu_seconds']:.6f} s**. Combined worker CPU across both studies is **{result['both_study_worker_cpu_seconds']:.6f} s**, before engineering, analysis or separate execution work. No content001 scores or weights enter these comparisons; its completed searches did expose heldout outcomes, and this rerun is not fresh-test confirmation.", "",
               "All seven models use the same frontend/readout initialization and actual paired minibatch sequence. Backbone counts differ by at most3%; conditional threshold adds16 active parameters. The ordinary physical-feature arm sees the complete probability and the same seven physical coefficients. The legacy comparator is the original mean-state mechanism with active projections and a re-matched internal width, retrained here.", "",
               "The ordinary-feature arm omits its unused J/G solve, so it is not charged for unnecessary value computation. Its active_center_variance feature is an active-mass-weighted conditional cell-center variance, excluding within-cell and refractory-position variance. The conditional threshold uses a bounded gap(.01,4) to preserve its grid's reset/initial-state validity; its two learned boundary coefficients are unchanged in number.", "",
               f"The {protocol['optimization']['training_cpu_seconds_per_lr']:g} training CPU second budget and common {protocol['optimization']['primary_cpu_checkpoints']} CPU checkpoints were fixed before this study's heldout evaluation, after train-only engineering probes. Both LR candidates finish before selection is locked; fixed128 snapshots add no primary selection opportunity. No failed search may disappear from comparisons.", "",
-              "The registered neural numerical profile uses fixed uniformization rate8.1, fixed21Poisson terms and one interval, with physical dt<=.36. It rejects out-of-domain requests and never chooses numerical effort from a future suffix or neighboring batch sample. Adaptive oracle profiles remain separate.", "",
+              "The registered neural numerical profile uses fixed uniformization rate8.1 and21Poisson terms per substep. Each token uses max(1,ceil(physical_dt/.36)) equal substeps with one boundary remapping; binary composition preserves all event/reward integrals and leaves completed neighboring tokens unchanged. The explicit resource cap is1048576substeps. Neither a future suffix nor a neighboring sample selects another token's numerical effort. This repairs content001's incorrect per-observation duration bound. Adaptive oracle profiles remain separate.", "",
               "The physical model retains eight spatial cells and two Erlang phases; it is not exact Brownian dynamics. The input-dependent analytic boundary uses the Brownian/Erlang optimum, while J/G evaluate its actual finite-generator policy. Neither value is a proved classification Bellman value. Active-mean collapse preserves every refractory phase and is not identical to the old v1 mean/cooldown implementation.", "",
-              "Synthetic OOD doubles length32→64; irregular OOD additionally multiplies the dt distribution by3. Real tasks have no OOD split. FSDD uses600speaker-disjoint recordings with repeated episodes and offline features; this is not a foundation-model or broad speech benchmark. Core statistics use three seeds and are descriptive. The two mechanism tasks are fixed, not a random task population. Same test datasets were already observed during v1; this is a registered post-baseline study, not fresh-test confirmation.", "",
+              "Synthetic OOD doubles length32→64; irregular OOD additionally multiplies the dt distribution by3. Real tasks have no OOD split. FSDD uses600speaker-disjoint recordings with repeated episodes and offline features; this is not a foundation-model or broad speech benchmark. Core statistics use three seeds and are descriptive. The two mechanism tasks are fixed, not a random task population. Same test datasets were already observed during v1 and partial content001; this is a registered post-baseline study, not fresh-test confirmation.", "",
               "ANALYSIS.json records all prediction-coordinate/label/CE checks, complete minibatch prefixes, source/selection identities, actual parameter updates, checkpoint inference replay and available OOD results. Missing/invalid evidence makes the affected contrast incomplete. Energy was not measured."]
     (output / "REPORT.md").write_text("\n".join(lines)+"\n")
     return result
@@ -350,7 +356,7 @@ def analyze(protocol_path, study, output):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--protocol", type=Path, default=PACKAGE / "CONTENT_PROTOCOL.json")
+    parser.add_argument("--protocol", type=Path, default=PACKAGE / "CONTENT002_PROTOCOL.json")
     parser.add_argument("--study", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
