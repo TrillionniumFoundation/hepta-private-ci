@@ -1,10 +1,13 @@
 use std::collections::HashMap;
 use std::collections::HashSet;
+use std::future::Future;
+use std::future::poll_fn;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex as StdMutex;
 use std::sync::Weak;
+use std::task::Poll;
 use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -1088,6 +1091,14 @@ impl QueuedItemService {
         };
 
         loop {
+            // Completion is only a wakeup. Recheck the current stop state, and
+            // leave final admission to Core even after the old owner finished.
+            if matches!(
+                thread.agent_status().await,
+                AgentStatus::Interrupted | AgentStatus::Shutdown | AgentStatus::NotFound
+            ) {
+                return Ok(());
+            }
             let Some(record) = self
                 .queue
                 .list_page(thread_id, /*offset*/ 0, /*limit*/ 1)
@@ -1347,9 +1358,31 @@ where
                 );
                 return;
             };
-            let _guard = self.dispatch_guard(thread_id).await;
-            if let Err(error) = self.dispatch_if_idle(thread_id).await {
-                tracing::warn!(%thread_id, %error, "failed to dispatch queued user input");
+            let Some(manager) = self.thread_manager.upgrade() else {
+                return;
+            };
+            let Ok(thread) = manager.get_thread(thread_id).await else {
+                return;
+            };
+            let mut completion = Box::pin(thread.current_turn_completion_barrier());
+            let service = self.clone();
+            let dispatch = async move {
+                let _guard = service.dispatch_guard(thread_id).await;
+                if let Err(error) = service.dispatch_if_idle(thread_id).await {
+                    tracing::warn!(%thread_id, %error, "failed to dispatch queued user input");
+                }
+            };
+            // A finish owner invokes this callback before releasing its fence.
+            // Poll once to preserve synchronous ready callbacks, but never wait
+            // for that owner from inside its own callback or under a queue lock.
+            match poll_fn(|context| Poll::Ready(completion.as_mut().poll(context))).await {
+                Poll::Ready(()) => dispatch.await,
+                Poll::Pending => {
+                    tokio::spawn(async move {
+                        completion.await;
+                        dispatch.await;
+                    });
+                }
             }
         })
     }

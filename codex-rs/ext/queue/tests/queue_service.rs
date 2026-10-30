@@ -38,6 +38,7 @@ use codex_protocol::models::ImageDetail;
 use codex_protocol::models::ResponseItem;
 use codex_protocol::protocol::Event;
 use codex_protocol::protocol::EventMsg;
+use codex_protocol::protocol::Op;
 use codex_protocol::protocol::ThreadHistoryMode;
 use codex_protocol::user_input::MAX_USER_INPUT_TEXT_CHARS;
 use codex_protocol::user_input::UserInput;
@@ -70,6 +71,7 @@ use core_test_support::wait_for_event_match;
 use core_test_support::wait_for_event_with_timeout;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
+use tokio::sync::Notify;
 use tokio::sync::oneshot;
 
 const TINY_PNG_BYTES: &[u8] = &[
@@ -138,6 +140,38 @@ fn registered_queue_extensions() -> (
     let mut extensions = ExtensionRegistryBuilder::new();
     extensions.thread_lifecycle_contributor(installed.clone());
     (installed, Arc::new(extensions.build()))
+}
+
+#[derive(Default)]
+struct FirstIdleGate {
+    used: AtomicBool,
+    entered: Notify,
+    release: Notify,
+}
+
+impl ThreadLifecycleContributor<codex_core::config::Config> for FirstIdleGate {
+    fn on_thread_idle<'a>(&'a self, input: ThreadIdleInput<'a>) -> ExtensionFuture<'a, ()> {
+        Box::pin(async move {
+            if input.cause == ThreadIdleCause::Completed && !self.used.swap(true, Ordering::SeqCst)
+            {
+                self.entered.notify_one();
+                self.release.notified().await;
+            }
+        })
+    }
+}
+
+fn gated_registered_queue_extensions() -> (
+    Arc<InstalledQueue>,
+    Arc<FirstIdleGate>,
+    Arc<ExtensionRegistry<codex_core::config::Config>>,
+) {
+    let installed = Arc::new(InstalledQueue::default());
+    let gate = Arc::new(FirstIdleGate::default());
+    let mut extensions = ExtensionRegistryBuilder::new();
+    extensions.thread_lifecycle_contributor(installed.clone());
+    extensions.thread_lifecycle_contributor(gate.clone());
+    (installed, gate, Arc::new(extensions.build()))
 }
 
 fn install_registered_queue(
@@ -2161,6 +2195,113 @@ async fn interrupted_turns_pause_queued_messages_but_failed_turns_drain_them() -
             .message_input_texts("user")
             .last()
             .map(String::as_str)
+    );
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn registered_queue_waits_for_terminalization_and_dispatches_once() -> anyhow::Result<()> {
+    let server = start_mock_server().await;
+    let responses = responses::mount_sse_sequence(
+        &server,
+        ["turn-a", "turn-b"]
+            .into_iter()
+            .map(responses::sse_completed)
+            .collect(),
+    )
+    .await;
+    let (installed, gate, extensions) = gated_registered_queue_extensions();
+    let test = test_codex()
+        .with_extensions(extensions)
+        .with_config(|config| config.include_environment_context = false)
+        .build_with_auto_env(&server)
+        .await?;
+    let thread_id = test.session_configured.thread_id;
+    let staging = QueuedItemService::new(
+        loaded_thread_queue(&test)?,
+        Weak::new(),
+        Arc::new(NoopExtensionEventSink),
+    );
+    let queued = staging.enqueue(thread_id, user_input("B")).await?;
+    let queue = install_registered_queue(&test, installed.as_ref())?;
+    test.submit_text_turn("A").await?;
+    tokio::time::timeout(Duration::from_secs(5), gate.entered.notified()).await?;
+
+    // The queue callback has returned, but the finish owner remains fenced by
+    // the next contributor. Neither an explicit start nor another wake may run B.
+    assert_eq!(responses.requests().len(), 1);
+    assert_eq!(queue.list(thread_id).await?, vec![queued.clone()]);
+    assert!(matches!(
+        queue
+            .start(test.codex.as_ref(), Some(queued.id.clone()), None)
+            .await?,
+        StartIfIdleSubmission::NotSubmitted {
+            reason: NotSubmittedReason::NotIdle
+        }
+    ));
+    tokio::time::timeout(Duration::from_secs(5), emit_idle(&queue, thread_id)).await?;
+    assert_eq!(responses.requests().len(), 1);
+    assert_eq!(queue.list(thread_id).await?, vec![queued]);
+
+    gate.release.notify_one();
+    tokio::time::timeout(Duration::from_secs(10), async {
+        wait_for_event_match(test.codex.as_ref(), |event| {
+            matches!(event, EventMsg::TurnComplete(_)).then_some(())
+        })
+        .await;
+        test.codex.current_turn_completion_barrier().await;
+    })
+    .await?;
+    let prompts = responses
+        .requests()
+        .into_iter()
+        .map(|request| {
+            request
+                .message_input_texts("user")
+                .pop()
+                .context("model request has no user input")
+        })
+        .collect::<anyhow::Result<Vec<_>>>()?;
+    assert_eq!(prompts, vec!["A", "B"]);
+    assert!(queue.list(thread_id).await?.is_empty());
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn deferred_queue_dispatch_does_not_bypass_shutdown() -> anyhow::Result<()> {
+    let server = start_mock_server().await;
+    let responses = responses::mount_sse_once(&server, responses::sse_completed("turn-a")).await;
+    let (installed, gate, extensions) = gated_registered_queue_extensions();
+    let test = test_codex()
+        .with_extensions(extensions)
+        .with_config(|config| config.include_environment_context = false)
+        .build_with_auto_env(&server)
+        .await?;
+    let thread_id = test.session_configured.thread_id;
+    let staging = QueuedItemService::new(
+        loaded_thread_queue(&test)?,
+        Weak::new(),
+        Arc::new(NoopExtensionEventSink),
+    );
+    let queued = staging.enqueue(thread_id, user_input("B")).await?;
+    let queue = install_registered_queue(&test, installed.as_ref())?;
+    test.submit_text_turn("A").await?;
+    tokio::time::timeout(Duration::from_secs(5), gate.entered.notified()).await?;
+    assert_eq!(responses.requests().len(), 1);
+
+    // Shutdown enters Core before the deferred wake is released. The wake must
+    // still traverse normal admission and cannot use completion as authority.
+    test.codex.submit(Op::Shutdown).await?;
+    gate.release.notify_one();
+    tokio::time::timeout(Duration::from_secs(10), test.codex.wait_until_terminated()).await?;
+    tokio::time::timeout(Duration::from_secs(5), emit_idle(&queue, thread_id)).await?;
+    assert_eq!(responses.requests().len(), 1);
+    assert_eq!(queue.list(thread_id).await?, vec![queued.clone()]);
+    assert!(
+        queue
+            .start(test.codex.as_ref(), Some(queued.id), None)
+            .await
+            .is_err()
     );
     Ok(())
 }
