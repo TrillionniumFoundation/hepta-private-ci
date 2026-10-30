@@ -448,7 +448,13 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let response_mock = responses::mount_sse_once(&server, response).await;
 
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
-    let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
+    // A canonical macOS per-user temp path can exceed SUN_LEN after fleet/run
+    // and the agent socket name are appended. Keep this private test fixture
+    // under the canonical short /tmp root; retain all production fences.
+    let short_fixture = tempfile::Builder::new()
+        .prefix("hcn-")
+        .tempdir_in("/tmp")?;
+    let root = short_fixture.path().canonicalize()?;
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
     let host =
         CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
