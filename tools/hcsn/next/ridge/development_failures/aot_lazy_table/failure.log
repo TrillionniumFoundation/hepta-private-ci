@@ -1,0 +1,24 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/1a8848124607/hcsn_research/next/ridge/develop.py", line 49, in <module>
+    if __name__=="__main__":main()
+                            ^^^^^^
+  File "/workspace/scratch/1a8848124607/hcsn_research/next/ridge/develop.py", line 32, in main
+    learned,history,timing=train_model(params,apply,training,validation,17137,
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/1a8848124607/hcsn_research/next/common.py", line 114, in train_model
+    state,loss,norm=compiled[key](jnp.asarray(index,dtype=jnp.int32),state,*batch)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hcsn-jax-20261029/jax/_src/stages.py", line 596, in __call__
+    return self._call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hcsn-jax-20261029/jax/_src/interpreters/pxla.py", line 3124, in aot_cache_miss
+    outs, out_flat, args_flat = stages.Compiled.call(params, *args, **kwargs)
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hcsn-jax-20261029/jax/_src/stages.py", line 565, in call
+    out_flat = params.executable.call(*args_flat)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hcsn-jax-20261029/jax/_src/interpreters/pxla.py", line 3096, in call
+    check_arg_avals_for_call(ref_avals, all_arg_avals, debug_info)
+  File "/tmp/hcsn-jax-20261029/jax/_src/interpreters/pxla.py", line 3159, in check_arg_avals_for_call
+    raise TypeError(
+TypeError: Computation compiled for 82 inputs but called with 67

@@ -1,0 +1,8 @@
+{
+  "phase": "development only",
+  "confirmation_test_constructed": false,
+  "error": "Computation compiled for 82 inputs but called with 67",
+  "diagnosis": "Lazy JAX table created inside scan trace escaped via global cache; table has 15 leaves",
+  "remedy": "Build fixed JAX table at module import before any tracing; no architecture or data change",
+  "failed_model_sha256": "8945af177ce47fd92bbaf33b835f57bf8f44823a33ee7431f294e180912318d3"
+}

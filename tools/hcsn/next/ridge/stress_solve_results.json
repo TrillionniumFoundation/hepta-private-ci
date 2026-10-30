@@ -1,0 +1,122 @@
+{
+  "passed": false,
+  "standards": {
+    "float32": {
+      "normalized_residual": 2e-05,
+      "gradient_normalized_error": 0.003
+    },
+    "float64": {
+      "normalized_residual": 2e-12,
+      "gradient_normalized_error": 2e-07
+    }
+  },
+  "runs": [
+    {
+      "dtype": "float32",
+      "scale": 0.0,
+      "minimum_eigenvalue": 0.009999999776482582,
+      "condition": 1.0,
+      "normalized_residual": 0.0,
+      "gradient_normalized_errors": [
+        0.0,
+        0.0
+      ],
+      "largest_gradient": 0.0,
+      "passed": true
+    },
+    {
+      "dtype": "float32",
+      "scale": 1e-08,
+      "minimum_eigenvalue": 0.010000000082805152,
+      "condition": 1.0000009999999855,
+      "normalized_residual": 3.106641353062679e-15,
+      "gradient_normalized_errors": [
+        1.9984014443252818e-15,
+        3.5779521567746997e-09
+      ],
+      "largest_gradient": 4.949987123836763e-05,
+      "passed": true
+    },
+    {
+      "dtype": "float32",
+      "scale": 0.5,
+      "minimum_eigenvalue": 0.009999997913837412,
+      "condition": 51.00001043081512,
+      "normalized_residual": 4.71216097253091e-08,
+      "gradient_normalized_errors": [
+        0.00036136090056970716,
+        0.00361025333404541
+      ],
+      "largest_gradient": 0.9515581727027893,
+      "passed": false
+    },
+    {
+      "dtype": "float32",
+      "scale": 0.999999,
+      "minimum_eigenvalue": 0.010000001639127717,
+      "condition": 100.99988228084601,
+      "normalized_residual": 3.359645717182502e-08,
+      "gradient_normalized_errors": [
+        0.004519195761531591,
+        0.002102881669998169
+      ],
+      "largest_gradient": 0.485248863697052,
+      "passed": false
+    },
+    {
+      "dtype": "float64",
+      "scale": 0.0,
+      "minimum_eigenvalue": 0.01,
+      "condition": 1.0,
+      "normalized_residual": 0.0,
+      "gradient_normalized_errors": [
+        0.0,
+        0.0
+      ],
+      "largest_gradient": 0.0,
+      "passed": true
+    },
+    {
+      "dtype": "float64",
+      "scale": 1e-08,
+      "minimum_eigenvalue": 0.009999999999999978,
+      "condition": 1.0000010000000015,
+      "normalized_residual": 8.171025789832207e-24,
+      "gradient_normalized_errors": [
+        1.07605067978007e-17,
+        7.860465750519907e-19
+      ],
+      "largest_gradient": 4.9499901000148515e-05,
+      "passed": true
+    },
+    {
+      "dtype": "float64",
+      "scale": 0.5,
+      "minimum_eigenvalue": 0.009999999999999957,
+      "condition": 51.00000000000022,
+      "normalized_residual": 2.0478555744737485e-16,
+      "gradient_normalized_errors": [
+        5.159358931425506e-11,
+        1.6269297020699014e-10
+      ],
+      "largest_gradient": 0.9515570934256092,
+      "passed": true
+    },
+    {
+      "dtype": "float64",
+      "scale": 0.999999,
+      "minimum_eigenvalue": 0.009999999999999827,
+      "condition": 100.9999000000018,
+      "normalized_residual": 1.6131558580315707e-16,
+      "gradient_normalized_errors": [
+        7.474287060498503e-11,
+        7.44899281146516e-10
+      ],
+      "largest_gradient": 0.4852470200945967,
+      "passed": true
+    }
+  ],
+  "model_sha256": "faced710339290ada09bea51630e921dc7edb21c53472e43425cef481dccaf82",
+  "diagnostic_sha256": "a8c20c813c837599eeec92c4623c0982882bcc4a9dce96bb2d8328eadd174aa3",
+  "scope": "No task data or training; reachable rank-one statistics approach the condition bound; gradient finite differences test the implemented read map"
+}

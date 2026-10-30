@@ -1,0 +1,51 @@
+{
+  "status": "Declared after four independent development runs and before any confirmation test construction",
+  "primary_model": "full_hx",
+  "models": ["full_hx", "hcsn", "sigmoid", "ridge_memory_only", "gru", "transformer", "snn"],
+  "tasks": ["memory", "retrieval", "irregular"],
+  "training_seeds": [0, 1, 2, 3, 4],
+  "data_seed_base": 2700000,
+  "initialization_seed_base": 3000,
+  "optimizer_seed_base": 17000,
+  "training_lengths": [8, 16, 32],
+  "training_examples_per_length": 2048,
+  "evaluation_examples": 1024,
+  "heldout_lengths": [32, 64, 128],
+  "updates": 600,
+  "batch_size": 32,
+  "learning_rate": 0.003,
+  "parameter_target": 6200,
+  "checkpoint_selection": "Lowest validation cross entropy, evaluated every 50 updates; no test selection",
+  "primary_acceptance": {
+    "memory": {"metric": "accuracy", "minimum_every_seed_and_heldout_length": 0.95},
+    "retrieval": {"metric": "accuracy", "minimum_every_seed_and_heldout_length": 0.90}
+  },
+  "secondary_evaluation": "All models and seed distributions, irregular/noisy/missing input, latency and state cost; no fabricated irregular target",
+  "architecture": {
+    "key_dimension": 16,
+    "key_query_projection": "Same trainable dense projection from all 16 input coordinates and log(1+dt), followed by tanh/sqrt(16)",
+    "value": "Learned dense projection of bounded hidden activation, optional fast state contribution, followed by tanh",
+    "write_gate": "C1 relu(score)^2/(1+relu(score)^2) with generic learned score over all inputs",
+    "inverse_mass_initial": 1,
+    "update": "r_next=r/(1+w*r), alpha=w*r_next, G_next=(1-alpha)G+alpha*k*k^T, H_next=(1-alpha)H+alpha*k*v^T",
+    "ridge": 0.01,
+    "ridge_policy": "Fixed normalized-statistic ridge for every dataset, length and seed; never scaled by inverse mass",
+    "read": "Last token queries prefix statistics through symmetrized G+ridge*I; query is not written",
+    "operator_limitations": "FullHX finance parameters and 128 KiB lookup table fixed; neuronal weights/boundary learnable; risk patch is a new C1 design, not a smooth-pasting financial put"
+  },
+  "development": {
+    "seed_base": 2690000,
+    "training_initialization_seed": 3137,
+    "models": ["full_hx", "ridge_memory_only"],
+    "tasks": ["memory", "retrieval"],
+    "all_validation_accuracies": 1.0,
+    "architecture_changes_after_scores": "None; initial AOT lazy-table bug fixed before any run completed"
+  },
+  "limits": [
+    "Data, optimizer steps and approximately trainable parameter count matched; persistent state size and operations not matched",
+    "Final-query-only solve is a sequence-to-one contract and does not establish efficient per-token language decoding",
+    "Normalized historical contributions can dilute as total write mass grows; fixed ridge trades retention for bounded conditioning",
+    "Synthetic task family and one small parameter budget do not support a full language or multimodal backbone claim",
+    "Bounded recurrent states and SPD matrices do not prove uniformly well-conditioned long-time BPTT"
+  ]
+}
