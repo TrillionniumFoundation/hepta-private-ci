@@ -1561,7 +1561,10 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
             "-DWRITABLE_ROOT_1={}",
             vulnerable_root_canonical.to_string_lossy()
         ),
-        format!("-DWRITABLE_ROOT_2={}", empty_root_canonical.to_string_lossy()),
+        format!(
+            "-DWRITABLE_ROOT_2={}",
+            empty_root_canonical.to_string_lossy()
+        ),
     ];
     let writable_definitions: Vec<String> = args
         .iter()
@@ -2502,7 +2505,10 @@ fn create_seatbelt_args_for_cwd_as_git_repo() {
 // missing, duplicated or extra exclusions are still rejected.
 fn assert_root_exclusions(args: &[String], root: usize, expected: &[PathBuf]) {
     let prefix = format!("-DWRITABLE_ROOT_{root}_EXCLUDED_");
-    let total = args.iter().filter(|arg| arg.starts_with(prefix.as_str())).count();
+    let total = args
+        .iter()
+        .filter(|arg| arg.starts_with(prefix.as_str()))
+        .count();
     assert_eq!(total, expected.len(), "wrong exclusion count in {args:#?}");
 
     let mut actual_paths = (0..expected.len())
