@@ -21,10 +21,6 @@ const AWS_SECRET_ACCESS_KEY: &str = "AWS_SECRET_ACCESS_KEY";
 const AWS_BEARER_TOKEN_BEDROCK: &str = "AWS_BEARER_TOKEN_BEDROCK";
 
 impl AccountRequestProcessor {
-    #[expect(
-        dead_code,
-        reason = "Bedrock account endpoints are not yet routed by the stable protocol"
-    )]
     pub(crate) async fn bedrock_discover(
         &self,
         _params: BedrockDiscoverParams,
@@ -69,10 +65,6 @@ impl AccountRequestProcessor {
         ))
     }
 
-    #[expect(
-        dead_code,
-        reason = "Bedrock account endpoints are not yet routed by the stable protocol"
-    )]
     pub(crate) async fn bedrock_setup(
         &self,
         params: BedrockSetupParams,

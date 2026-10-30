@@ -72,6 +72,11 @@ use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 use tokio::sync::oneshot;
 
+#[path = "suite/queue_idle_continuation.rs"]
+mod queue_idle_continuation;
+#[path = "suite/queue_hook_rejection_tests.rs"]
+mod queue_hook_rejection_tests;
+
 const TINY_PNG_BYTES: &[u8] = &[
     137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 1, 0, 0, 0, 1, 8, 6, 0,
     0, 0, 31, 21, 196, 137, 0, 0, 0, 11, 73, 68, 65, 84, 120, 156, 99, 96, 0, 2, 0, 0, 5, 0, 1,
@@ -2375,12 +2380,13 @@ async fn rejected_queue_messages_remain_durable_and_block_followups() -> anyhow:
 
     tokio::time::timeout(Duration::from_secs(10), async {
         test.submit_text_turn("A").await?;
-        for _ in 0..2 {
-            wait_for_event_match(test.codex.as_ref(), |event| {
-                matches!(event, EventMsg::TurnComplete(_)).then_some(())
-            })
-            .await;
-        }
+        // Exactly one rejected successor completes. Its idle callback must
+        // not generate another rejection of the unchanged durable head.
+        wait_for_event_match(test.codex.as_ref(), |event| {
+            matches!(event, EventMsg::TurnComplete(_)).then_some(())
+        })
+        .await;
+        test.codex.current_turn_completion_barrier().await;
         anyhow::Ok(())
     })
     .await??;
@@ -2398,9 +2404,7 @@ async fn rejected_queue_messages_remain_durable_and_block_followups() -> anyhow:
     assert_eq!(vec!["A"], prompts);
     let hook_log = std::fs::read_to_string(test.codex_home_path().join("queue_prompt_hook.log"))?;
     let hook_lines = hook_log.lines().collect::<Vec<_>>();
-    assert_eq!(Some(&"A"), hook_lines.first());
-    assert!(hook_lines[1..].iter().all(|line| *line == "blocked"));
-    assert!(hook_lines.len() >= 2);
+    assert_eq!(vec!["A", "blocked"], hook_lines);
     assert_eq!(vec![blocked, following], queue.list(thread_id).await?);
     assert_eq!(1, responses.requests().len());
     Ok(())

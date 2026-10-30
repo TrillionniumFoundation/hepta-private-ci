@@ -351,6 +351,17 @@ impl CognitiveStore {
         &self.owner_agent_id
     }
 
+    /// Drain and close the SQLite connections shared by this handle and its
+    /// clones, waiting for their close-time checkpoint work to finish.
+    ///
+    /// This does not release the owner fence: every surviving handle retains
+    /// its guard, including after the pool has closed. Drop all such handles
+    /// before requesting exclusive recovery; recovery still validates the
+    /// source identity, current-cut witness, and independent write authority.
+    pub async fn close(&self) {
+        self.pool.close().await;
+    }
+
     /// Returns whether two handles refer to the same Agent-local database and
     /// owner.  This is crate-private so composite local writers can reject a
     /// lease/executor assembled from different stores before opening a

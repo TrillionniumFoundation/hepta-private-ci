@@ -36,10 +36,13 @@ mod tests {
         INIT.call_once(|| {
             v8::V8::initialize_platform(v8::new_default_platform(0, false).make_shared());
             v8::V8::initialize();
+            // The first isolate initializes V8's process-wide backing-store pool.
+            // Complete that lazy initialization before parallel isolates can race it.
+            drop(v8::Isolate::new(Default::default()));
         });
     }
 
-    fn evaluate_expression(expression: &str) -> String {
+    pub(super) fn evaluate_expression(expression: &str) -> String {
         initialize_v8();
 
         let isolate = &mut v8::Isolate::new(Default::default());
@@ -90,3 +93,7 @@ mod tests {
         assert_eq!(dispatchable.method(), b"Runtime.evaluate");
     }
 }
+
+#[cfg(test)]
+#[path = "parallel_initialization_tests.rs"]
+mod parallel_initialization_tests;
