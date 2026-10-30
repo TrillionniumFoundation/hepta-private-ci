@@ -27,6 +27,10 @@ PROFILE_V2 = "hepta-integrated-chain-execution-v2"
 CHAIN_COMMIT_V2 = "540d72356a921da31dde1113537382e5c0f0c4fd"
 MANIFEST_NAME_V2 = "smollm2-public-initial-v2.execution-sources-v2.json"
 MANIFEST_SHA256_V2 = "7db8bb705a7bf17e08aba973a7a4d2f9c14693d4a6af782abdc7c254dc91699a"
+PROFILE_V3 = "hepta-integrated-chain-execution-v3"
+CHAIN_COMMIT_V3 = "89218d818a1766c5610b64f09d75fc3d2ff6007d"
+MANIFEST_NAME_V3 = "smollm2-public-initial-v2.execution-sources-v3.json"
+MANIFEST_SHA256_V3 = "9dcd7666bb6462712356ee73a5f17d5d3fdecfea44a3ff8dad01dca10a25dfa3"
 HISTORICAL_PROFILE_SHA256 = (
     "695d12e8dce5c289a063effdbcc2289148b4708a4a6ead77199da734e0dba2c8"
 )
@@ -53,11 +57,13 @@ def unique(pairs):
 
 
 def selected_source(profile):
-    """Select only the two reviewed identities; no caller may supply a commit."""
+    """Select only the reviewed identities; no caller may supply a commit."""
     if profile == PROFILE:
         return CHAIN_COMMIT, MANIFEST_NAME, MANIFEST_SHA256
     if profile == PROFILE_V2:
         return CHAIN_COMMIT_V2, MANIFEST_NAME_V2, MANIFEST_SHA256_V2
+    if profile == PROFILE_V3:
+        return CHAIN_COMMIT_V3, MANIFEST_NAME_V3, MANIFEST_SHA256_V3
     raise ValueError("explicit closed execution-source profile required")
 
 
@@ -216,7 +222,9 @@ def verify(chain, profile):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--chain", type=Path, required=True)
-    parser.add_argument("--profile", choices=[PROFILE, PROFILE_V2], required=True)
+    parser.add_argument(
+        "--profile", choices=[PROFILE, PROFILE_V2, PROFILE_V3], required=True
+    )
     args = parser.parse_args()
     print(json.dumps(verify(args.chain, args.profile), sort_keys=True))
 
