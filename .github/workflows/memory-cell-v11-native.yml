@@ -4,6 +4,43 @@ on:
   push:
     branches:
       - research/memory-cell-v11-20261030
+    # Research/evidence-only publication does not rerun this native suite.
+    # Carry results forward only after comparing all native/build inputs with
+    # the exact tested source commit recorded in the uploaded receipt.
+    paths:
+      - 'codex-rs/**'
+      - '.github/workflows/memory-cell-v11-native.yml'
+      - '.github/actions/setup-ci/**'
+      - 'scripts/**'
+      - 'tools/**'
+      - 'patches/**'
+      - 'third_party/**'
+      - 'bazel/**'
+      - '.cargo/**'
+      - 'justfile'
+      - 'AGENTS.md'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - 'rust-toolchain'
+      - 'rust-toolchain.toml'
+      - 'rustfmt.toml'
+      - '.rustfmt.toml'
+      - 'BUILD.bazel'
+      - 'MODULE.bazel'
+      - 'MODULE.bazel.lock'
+      - '*.bzl'
+      - '.bazel*'
+      - 'flake.nix'
+      - 'flake.lock'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.npmrc'
+      - '.prettier*'
+      - '.gitattributes'
+      - '.gitignore'
+      - 'CALLERS.toml'
+      - 'workspace_root_test_launcher.*.tpl'
 
 permissions:
   contents: read
@@ -21,7 +58,7 @@ jobs:
       CARGO_PROFILE_DEV_DEBUG: '0'
       CARGO_PROFILE_TEST_DEBUG: '0'
       CARGO_BUILD_JOBS: '2'
-      CARGO_TARGET_DIR: ${{ github.workspace }}/memory-v11-native-target
+      CARGO_TARGET_DIR: ${{ github.workspace }}/memory-v7-target
       HEPTA_MEMORY_V11_NATIVE_OUTPUT: /tmp/h11-native-${{ github.run_id }}-${{ github.run_attempt }}
       PYTHONDONTWRITEBYTECODE: '1'
       PYTHONUNBUFFERED: '1'
@@ -45,6 +82,21 @@ jobs:
         timeout-minutes: 5
         with:
           tool: cargo-nextest@0.9.131
+      - name: Restore scoped Rust dependencies and prior native build outputs
+        id: rust-cache
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        timeout-minutes: 10
+        continue-on-error: true
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ${{ env.CARGO_TARGET_DIR }}
+          key: memory-v11-native-rust-1.95-${{ hashFiles('codex-rs/Cargo.lock') }}-${{ github.sha }}
+          restore-keys: |
+            memory-v11-native-rust-1.95-${{ hashFiles('codex-rs/Cargo.lock') }}-
+            memory-v10-rust-1.95-verify-${{ hashFiles('codex-rs/Cargo.lock') }}-
+            memory-v10-rust-1.95-finalize-${{ hashFiles('codex-rs/Cargo.lock') }}-
       - name: Test exact sources, then final fix and format without further tests
         timeout-minutes: 205
         shell: bash
@@ -198,3 +250,14 @@ jobs:
           path: ${{ env.HEPTA_MEMORY_V11_NATIVE_OUTPUT }}/
           if-no-files-found: error
           retention-days: 30
+      - name: Save scoped build cache after immutable evidence upload
+        if: always() && steps.rust-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        timeout-minutes: 10
+        continue-on-error: true
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ${{ env.CARGO_TARGET_DIR }}
+          key: memory-v11-native-rust-1.95-${{ hashFiles('codex-rs/Cargo.lock') }}-${{ github.sha }}

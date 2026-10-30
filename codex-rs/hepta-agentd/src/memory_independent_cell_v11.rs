@@ -332,11 +332,14 @@ impl MemoryCellReleaseV11 {
         &self.cell_id
     }
     pub(crate) fn registry_binding(&self) -> Result<Digest32, String> {
+        let now =
+            crate::memory_cell_runtime::now_unix_seconds().map_err(|error| error.to_string())?;
+        let now = u64::try_from(now).map_err(|error| error.to_string())?;
         Ok(self
             .service
             .lock()
             .map_err(|_| "V11 artifact owner lock poisoned")?
-            .current_registry_view(crate::memory_cell_release::core::now()?)
+            .current_registry_view(now)
             .map_err(|error| error.to_string())?
             .receipt()
             .binding)
