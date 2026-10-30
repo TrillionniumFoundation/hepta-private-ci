@@ -5,6 +5,13 @@ Baseline: `hepta-private-ci` PR #4330 at
 the earlier analytic/JAX source manifests continue to describe that prior
 revision. The current revision is identified by `results.json/source_sha256`.
 
+An offline historical replay is provided by `python third/legacy/replay.py`
+from `tools/hcsn`. It reconstructs the 575-file baseline and the first-release
+manifest subset in separate temporary trees. The original checker predates
+`next/`, so it is run only against its own first-release subset. Both original
+integrity checks passed, covering the previous 495 neural trainings, without
+modifying current sources or the older evidence.
+
 Consequently, the legacy `verify_evidence.py` and `next/verify_delivery.py`
 cannot pass unchanged against this new working tree: they compare the modified
 analytic paths with historical digests and should report source drift. Replay

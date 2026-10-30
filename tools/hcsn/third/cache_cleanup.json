@@ -1,0 +1,20 @@
+{
+  "checked_at_utc": "2026-10-30T11:54:31.807187+00:00",
+  "reason": "Shared scratch filesystem exhausted while writing final manifest; remove only duplicate materialized feature caches whose exact contents remain in verified delivery parts.",
+  "disk_free_before": 0,
+  "removed": [
+    {
+      "path": "/tmp/hcsn-third-encoder-assets/ag_news_features.npz",
+      "bytes": 14363266,
+      "sha256": "f6a4a1a2ff584c4fec7e10da6a8668f22531bac872c0c8aa9cd1b69b57246899",
+      "recoverable_from": "third/encoder/restore_features.py and 43 delivered verified blocks"
+    },
+    {
+      "path": "/tmp/hcsn-third-encoder-assets/cifar10_features.npz",
+      "bytes": 18574634,
+      "sha256": "96feacafd26c8e82971b94729be1fd7bc91de4d71ad7d1863503251a91d1733d",
+      "recoverable_from": "third/encoder/restore_features.py and 43 delivered verified blocks"
+    }
+  ],
+  "disk_free_after": 0
+}
