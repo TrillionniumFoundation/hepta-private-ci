@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.vendor-patch.v1",
+  "package": "matrix-sdk",
+  "version": "0.19.1",
+  "upstream_archive_sha256": "2afc652a144822f6fbe24084e08bc59cb483fd0b504396d492131dec0749396e",
+  "rationale": "Replace unmaintained anymap2 with anymap3 ^1.1.0 + std. Native context map remains CloneAny + Send + Sync, wasm remains CloneAny. Root selects only e2e-encryption and sqlite.",
+  "modified_files": [
+    {
+      "path": "Cargo.toml",
+      "upstream_sha256": "a2e68b948c26633c9b22b6bcb5be1cecaedb50f6eb5359aaed54402697aa8e62",
+      "patched_sha256": "c5898fe086c2e408715036a0799a503afb9cc0b786c1efd2a60bfd58120a4151",
+      "bytes": 12654
+    },
+    {
+      "path": "Cargo.toml.orig",
+      "upstream_sha256": "3badb42576dc47ac68338aa2a98d99be62fd92ab649532755d091b6f69ba6692",
+      "patched_sha256": "fdc2db77c28a4d0bfddac91fceda730de602a939e093aa6abb079ab7ce02b8d0",
+      "bytes": 7539
+    },
+    {
+      "path": "src/event_handler/mod.rs",
+      "upstream_sha256": "0c29f6941bb97fc5cc115df745888b2e36022f78c346e01cb8c74b635d1835e4",
+      "patched_sha256": "1c89b6383aea7e4b9a880343c20dc0dc86c80e5cee606acac7c652c0e4b30dd1",
+      "bytes": 46999
+    }
+  ],
+  "added_files": [
+    {
+      "path": "src/event_handler/compatibility_tests.rs",
+      "sha256": "4ec93307433f42bbbc18472c5822292742e3e88c890eaf82736c7de232fafd00",
+      "bytes": 1052
+    }
+  ],
+  "excluded_files": [
+    "Cargo.lock"
+  ],
+  "test_status": "pending fresh execution after reconstruction; old lost logs do not validate this source",
+  "source_api_references": [
+    "https://docs.rs/p256/0.14.0/p256/",
+    "https://docs.rs/rand/0.10.0/rand/",
+    "https://docs.rs/anymap3/1.1.0/anymap3/"
+  ]
+}
