@@ -1,0 +1,9 @@
+{
+  "command": "just fix -p codex-hepta-operator-acceptance --locked",
+  "exit_code": 101,
+  "failure": "Cargo could not create its package .fingerprint directory because the filesystem was full (OS error 28).",
+  "phase": "After normal shared build-lock wait, before compiling or applying fixes.",
+  "source_auto_changes": [],
+  "log_sha256": "5ea4dda81bbab006c5e5492c3d4c34cbc80004372629dfd99902bfca8fc94b13",
+  "next_step": "Root will schedule the same scoped command after the current queue/schema/PTY owner work and safe cache reclamation. No reduced gate or unqualified success claim."
+}

@@ -1,0 +1,23 @@
+{
+  "baseline_head": "9b71cf4e65194593d5e0fb2a507026d21527a740",
+  "created_utc": "2026-10-30T12:15:11.270827+00:00",
+  "workspace_reset": "All uncommitted local files were lost. Sources were reconstructed; native Mac log was retrieved again with the exact previously recorded raw SHA-256. New signature fixtures and regression evidence are identified as fresh.",
+  "completed": {
+    "wrapper_child_regressions": "49 tests: 6 fail on unchanged baseline, all pass after reconstruction. Includes keyed/cache-only Windows MSVC, existing keyless/RBE branches, and 5 Unix temporary-root child tests.",
+    "bazel_metadata": "Canonical mod deps update and strict error both exit 0; Cargo.lock d76c461efa4ed6c2ad930ed56e37b7790ef6c02046280c83fa2357346c93ed38; MODULE.bazel.lock unchanged 36e52d219967278c1c1d29bf760a41a4c0af5a01dd7f91a5410c89ae552c1e94.",
+    "bazel_targets": "12 actual targets loaded; feature variants, readonly testonly library, supervisor runfiles/cargo-bin edge, operator TestRunner-only local tag verified. No graph compilation claim.",
+    "windows_operator_typecheck": "Real x86_64-pc-windows-msvc target cargo check --tests --locked exits 0 with official Rust1.96 target std; not Windows execution.",
+    "sshsig_fixtures": "Two public signatures produced and independently verified by actual OpenSSH; private key destroyed with temporary directory.",
+    "socket_geometry": "4 private temporary-root shapes actually bind on Linux, fit 67/72-byte Darwin spellings; product validation unchanged.",
+    "cache_cleanup": "Official Bazel clean --expunge removes only its reconstructible output/extraction state; downloaded archives retained."
+  },
+  "pending_at_this_snapshot": [
+    "Unix operator canonical rerun is queued behind the shared Cargo build lock and its live log is deliberately excluded.",
+    "Windows and macOS native execution, full modified-owner compilation and workspace CI remain required; no result is inferred from typechecking or metadata loading."
+  ],
+  "unmodified_scope": [
+    "No frozen scientific source, trained model, or confirmation dataset altered.",
+    "No unsupported production Windows SSHSIG or durability backend added.",
+    "No production socket bound, authority boundary, or required gate relaxed."
+  ]
+}

@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "archive": {
+    "format": "tar+gzip",
+    "bytes": 576300,
+    "sha256": "06c0ccaef4a471fa9741095623d8aa0543ca095f487156a658cd6fbf845f5101"
+  },
+  "piece_limit": 200000,
+  "pieces": [
+    {
+      "path": "raw.tar.gz.part000",
+      "bytes": 200000,
+      "sha256": "3726a0e49bc574454d1547589522fff8cd2eba1c9382ad33eeed75c1e926381f"
+    },
+    {
+      "path": "raw.tar.gz.part001",
+      "bytes": 200000,
+      "sha256": "ad4dcc0045ae1b56dac27d71f69ed54a811a87648e1276963b6d34801d17b33a"
+    },
+    {
+      "path": "raw.tar.gz.part002",
+      "bytes": 176300,
+      "sha256": "b9e7d41702d7a2a32c99b7de45fc87667d5da2d8e382f55df758bf987eb29adf"
+    }
+  ],
+  "files": [
+    {
+      "path": "BAZEL_CACHE_CLEANUP.json",
+      "bytes": 844,
+      "sha256": "2f44a6175b825b3a0673744cc5f0825421a4c1cd862b49b132ce443f931b980b"
+    },
+    {
+      "path": "BAZEL_FEATURE_QUERY.json",
+      "bytes": 35301,
+      "sha256": "8383021627b7e5d9ffa3cf7c9d08a5bf8615d01ef9c7ce5c7bb80f27b614473a"
+    },
+    {
+      "path": "BAZEL_INITIAL_INSTALL_FAILURE.json",
+      "bytes": 562,
+      "sha256": "3a0d50ad09ddd17bdb55e0dd5bba08068fd75fd203bfa7d6798f37f1ac565f1b"
+    },
+    {
+      "path": "BAZEL_QUERY_ASSERTIONS.json",
+      "bytes": 804,
+      "sha256": "8ae8d4cf0c45a675ef3c9188d5a311e44df03d13f62da73fc39279dd0607868e"
+    },
+    {
+      "path": "MAC_UDS_FAILURES.json",
+      "bytes": 23526,
+      "sha256": "9ff9c20699e66d7ec8669a0a7fc58e295415c6324576fb82c08b53df9d02f7a2"
+    },
+    {
+      "path": "OPERATOR_WINDOWS_TYPECHECK.json",
+      "bytes": 1904,
+      "sha256": "b8bc3900189b6182dc207f471428966d4a77c34f84d350b36aa832d8ab013312"
+    },
+    {
+      "path": "SHORT_SOCKET_FIXTURE.json",
+      "bytes": 1468,
+      "sha256": "41b9a9d34fc43df5491989b927b7ac8f76628d5bfe06f89f5935ce254e24006d"
+    },
+    {
+      "path": "TOOL_RESTORE.json",
+      "bytes": 427,
+      "sha256": "9ceccca7fe84bbacfb0244ec9619c666c24fe7c66bbe0f8998aad43d61f3459a"
+    },
+    {
+      "path": "WINDOWS_STD_INSTALL.json",
+      "bytes": 300,
+      "sha256": "1db05218a54ff10b2230e3cca17a4a43b9c9ffe459e6af0595d59f7da5376787"
+    },
+    {
+      "path": "WRAPPER_RECONSTRUCTION.json",
+      "bytes": 1502,
+      "sha256": "3db1ed720dd92c91af099339c83f06df51896cd2debcafb7b8cb19e8bdfbb95e"
+    },
+    {
+      "path": "bazel_error_reconstructed_v1.json",
+      "bytes": 1057,
+      "sha256": "2701c3394d6250712b77d9069b10e08d233174eea67bb5fdcb0e1992f3503be4"
+    },
+    {
+      "path": "bazel_error_reconstructed_v1.log",
+      "bytes": 551,
+      "sha256": "a19647d5b8c428838393ddd00ecdc0d54652633bcdc6b1e02ecbb3b2d40f7585"
+    },
+    {
+      "path": "bazel_expunge.log",
+      "bytes": 162,
+      "sha256": "81561461b0d8c2ec2457518f226afe3d6318378819b33fd2f733e923cc897164"
+    },
+    {
+      "path": "bazel_features.log",
+      "bytes": 85,
+      "sha256": "c5679f245ca5889eac6cc646ea0448d5367e2c8c2528077dbc995873582ae488"
+    },
+    {
+      "path": "bazel_features.xml",
+      "bytes": 216416,
+      "sha256": "9c30ca36125bcec764e5d1879969d59332d304ae279b8f6f02df90c8be0c6cc4"
+    },
+    {
+      "path": "bazel_update_reconstructed_v1.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "bazel_update_reconstructed_v2.json",
+      "bytes": 1043,
+      "sha256": "d49ffa6dfac7a182f6d502c55d59510e7ee990ebd1756f68df85ffb9056ef556"
+    },
+    {
+      "path": "bazel_update_reconstructed_v2.log",
+      "bytes": 2166,
+      "sha256": "7ccb4374618bc8adc4606063fdf8ef15ae96db695ad549feafdec20a1b3dc266"
+    },
+    {
+      "path": "ci_job_123485500602.log.gz",
+      "bytes": 549412,
+      "sha256": "efd7d9d4df212cffe8cb28ff4b44bf855eaed3780285aad184686f49b4542275"
+    },
+    {
+      "path": "dotslash_release.json",
+      "bytes": 37640,
+      "sha256": "80d4238f75283cbe74a50445871017ece8ccdd121689bd9317767788d69925e7"
+    },
+    {
+      "path": "operator_sshsig_fixture.json",
+      "bytes": 847,
+      "sha256": "9d946d99d57c4662b3e7237cbabaeec109c5b3fb5e77a3168daed51d95515240"
+    },
+    {
+      "path": "operator_windows_check.log",
+      "bytes": 1995,
+      "sha256": "d4d242db86f1e1bf65af413706bed9b9acfdc34c8f421600b4be1dd9c05aa2e2"
+    },
+    {
+      "path": "query_bazel_features.py",
+      "bytes": 3185,
+      "sha256": "96b3d11c586c2bfb09aeced3b80ea62629644357951c8feefbce4f2749be3d1c"
+    },
+    {
+      "path": "run_bazel_lock.py",
+      "bytes": 2230,
+      "sha256": "6a615f7f04b0f9ffbfd301650dbe83ba6cfc53b3423747d653060aa3948d7926"
+    },
+    {
+      "path": "wrappers_after.log",
+      "bytes": 148,
+      "sha256": "1a4246a61a39904537ba78d81f3a139b204f23a8024479de5b1f66c54bde1053"
+    },
+    {
+      "path": "wrappers_before.log",
+      "bytes": 5258,
+      "sha256": "dd505099aa023393047f52c78ff86289e941c30b673169ace3916fc524cac5a3"
+    }
+  ],
+  "summary_sha256": "bf74df61e5654771382bf48992d3693881762095f4968cc55af2fc3d462d8738",
+  "verification": "All pieces concatenated and decompressed; every archived file byte count and SHA-256 recomputed successfully."
+}

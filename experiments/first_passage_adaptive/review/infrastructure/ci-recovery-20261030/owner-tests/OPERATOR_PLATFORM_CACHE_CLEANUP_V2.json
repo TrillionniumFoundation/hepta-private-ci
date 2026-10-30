@@ -1,0 +1,8 @@
+{
+  "command": "PATH=<verified Rust1.96 prefix>:<task-tools>:$PATH CARGO_HOME=<shared cache> cargo clean --manifest-path bazel_lock_work/codex-rs/Cargo.toml --target-dir operator-platform-target --locked",
+  "exit_code": 0,
+  "before_bytes": 77614462,
+  "after_scope": "All compiled files in this inactive isolated Windows-check target removed; Cargo may leave empty metadata directories.",
+  "first_attempt": "The initial cleanup-only attempt failed before invoking rustc because its PATH omitted the verified Rust prefix. Both attempt logs retained.",
+  "scope": "No shared Cargo target, source, installed Rust target, registry source or evidence removed."
+}

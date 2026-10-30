@@ -1,0 +1,64 @@
+{
+  "base_commit": "9b71cf4e65194593d5e0fb2a507026d21527a740",
+  "correction": "The historical Bazel progress count 103 refers to actions, not 103 local tests. It supplies no local-test concurrency count.",
+  "date": "2026-10-30",
+  "fresh_validation": {
+    "bazel_feature_query": {
+      "exit_code": 0,
+      "path": "/workspace/scratch/65d421def718/ci_recovery_audit/BAZEL_FEATURE_QUERY.json",
+      "rules": 12,
+      "scope": "Unconfigured actual rule loading; neither complete graph compilation nor native process execution.",
+      "sha256": "8383021627b7e5d9ffa3cf7c9d08a5bf8615d01ef9c7ce5c7bb80f27b614473a"
+    },
+    "git_diff_check": 0,
+    "host_probe": {
+      "all_pass": true,
+      "cases": 5,
+      "result_path": "host_probe/RESULTS.json",
+      "scope": "Actual repository HostHarness imported into isolated small Rust probe; child resolver supplies controlled processes. Real Linux pipe/timeout/reap behavior, not full owner or native Mac.",
+      "sha256": "250bda5b96c73e204208624bd0204171774f65dc014496689ee9bfdd9af5ffd1"
+    },
+    "initial_matrix_environment_failure": {
+      "cause": "pkg-config was absent; root subsequently installed pkg-config and CMake.",
+      "exit_code": 101,
+      "log_sha256": "feb48468bd396e58c6c1dac63b83a75850684cb1b084b559858ff6a6d7805d82",
+      "resolution": "The subsequent unchanged-source cargo check completed successfully."
+    },
+    "matrix_check": {
+      "command": "cargo check -p codex-hepta-matrix-sdk --tests --locked --offline -j2",
+      "elapsed_reported": "5m05s including shared build-directory lock wait",
+      "exit_code": 0,
+      "log_sha256": "ee79b33179a6ac5c6a96629baf0e66158596671bad156931b5521a8490988160",
+      "source_sha256": "b02a254b5c4ae5c55606b436b395afb97d487381fea827b0359218bc244209e0"
+    },
+    "matrix_gap_fill_tests": {
+      "command": "just test -p codex-hepta-matrix-sdk --lib --locked --offline -E 'test(gap_fill)'",
+      "diagnostic": "ruma-events failed to build its archive: No space left on device; starlark LLVM output also failed with ENOSPC.",
+      "exit_code": 101,
+      "limitation": "No Matrix behavioral test pass is claimed. The earlier complete --tests cargo check passed.",
+      "log_sha256": "a74e50d6a5a310795264c5ff2536f21c74b64f81b3fd1789b1d162961917d825",
+      "status": "compilation_blocked_by_disk_exhaustion",
+      "tests_executed": 0
+    },
+    "rustfmt": "All modified Rust files parsed/formatted. Final canonical just fmt is owned by root."
+  },
+  "git_diff_check": {
+    "exit_code": 0,
+    "scope": "The 23 source files named in SOURCE_HASHES.json."
+  },
+  "historical_evidence_boundary": "Pre-reset raw local logs and functions.store contents are absent. Old pass reports are historical conversation records and are not presented as fresh validation of reconstructed files. CI originals may be fetched again independently.",
+  "raw_evidence_files": 17,
+  "raw_evidence_policy": "Only explicitly listed logs, review records, and probe source/fixtures are retained. No target directory, executable, cache, PID file, scientific retraining, or confirmation rerun is included.",
+  "schema": "hepta.runtime-reconstruction-review.v1",
+  "scope_limits": [
+    "Mac Intel code-mode host startup cause is not established. Added diagnostics keep the 10-second endpoint limit and successful stderr ownership, and do not constitute a product fix.",
+    "Windows V8 allocator race fix awaits exact-head native CI.",
+    "Product process tests await current-source CI. Actual Bazel target feature loading was verified by the native agent.",
+    "The HTTP, bounded-read and product fixture reconstructions require exact-head owner CI; no lost pre-reset local pass is represented as fresh.",
+    "The fleet publication review is a read-only source audit. Root owns its implementation and runtime validation.",
+    "The Bazel feature query loads actual rules but does not compile or execute the complete product graph.",
+    "The code-mode diagnostic probe uses real Linux child pipes and the unchanged repository HostHarness, with a controlled child resolver. It does not establish the Mac Intel startup cause."
+  ],
+  "source_files": 23,
+  "source_hashes_sha256": "e7e36b0b1d4a55d5026a087ba6ffa810c18ce954b3e3c782551a369f92b71a3e"
+}

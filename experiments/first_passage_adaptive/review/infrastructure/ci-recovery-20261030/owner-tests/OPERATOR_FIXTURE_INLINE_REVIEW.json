@@ -1,0 +1,7 @@
+{
+  "source": "codex-rs/hepta-operator-acceptance/src/trust_windows_tests.rs",
+  "typechecked_before_sha256": "43b2952cc089478f670f01c54ea63a4b3fec2f3f0160a978afedad2bd608b433",
+  "current_sha256": "72bc0c76f1aca9ed2fdf647a671f319dd8aaf38019576b1c6da361cae1805251",
+  "change": "Inline two single-use fixture helpers at their call sites as required by AGENTS.md; preserve the exact expressions, mutation order and assertions. No production or Unix code changed.",
+  "validation_scope": "Source-only final style review; the existing Windows MSVC typecheck snapshot is retained unmodified. Final native Windows CI remains required."
+}

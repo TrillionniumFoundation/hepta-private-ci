@@ -1,0 +1,7 @@
+cargo clippy --fix --tests --allow-dirty {args}
+    Blocking waiting for file lock on build directory
+error: failed to create directory `/workspace/scratch/65d421def718/security-target/debug/.fingerprint/codex-hepta-operator-acceptance-6d223f247e7d025d`
+
+Caused by:
+  No space left on device (os error 28)
+error: recipe `fix` failed on line 58 with exit code 101

@@ -1,0 +1,126 @@
+{
+  "archive": {
+    "bytes": 21584,
+    "format": "tar.gz",
+    "sha256": "22fa1eafd8eda203809bc444e9ccb27cbc5df8700fab68da6f25d9cd7319a046"
+  },
+  "excluded_paths": {},
+  "files": [
+    {
+      "bytes": 35301,
+      "path": "review/infrastructure/runtime-math-20261030/raw/BAZEL_FEATURE_QUERY.json",
+      "sha256": "8383021627b7e5d9ffa3cf7c9d08a5bf8615d01ef9c7ce5c7bb80f27b614473a"
+    },
+    {
+      "bytes": 2940,
+      "path": "review/infrastructure/runtime-math-20261030/raw/RELEASE_PUBLICATION_REVIEW.json",
+      "sha256": "c39438e67ea2e0859d4845f686a940e090ebdea0af9c8362f35422ee961234d5"
+    },
+    {
+      "bytes": 10336,
+      "path": "review/infrastructure/runtime-math-20261030/raw/RESTORATION_REVIEW.json",
+      "sha256": "99ab396629851eaa24d8010d6ec254f3a70901b4de1c3887ff1d0832603f436c"
+    },
+    {
+      "bytes": 3815,
+      "path": "review/infrastructure/runtime-math-20261030/raw/host_probe/Cargo.lock",
+      "sha256": "77f72db552a740b7803ff623d042885ef1819501f2b553ad7c956d69f6ed0565"
+    },
+    {
+      "bytes": 210,
+      "path": "review/infrastructure/runtime-math-20261030/raw/host_probe/Cargo.toml",
+      "sha256": "38c91803d9f9e8fa78a80435d6a7d2da57fe7c4bbf9158c9e310ec29b0a51d69"
+    },
+    {
+      "bytes": 2298,
+      "path": "review/infrastructure/runtime-math-20261030/raw/host_probe/RESULTS.json",
+      "sha256": "250bda5b96c73e204208624bd0204171774f65dc014496689ee9bfdd9af5ffd1"
+    },
+    {
+      "bytes": 652,
+      "path": "review/infrastructure/runtime-math-20261030/raw/host_probe/build.log",
+      "sha256": "8ae05216bb0ec4f9301462629343a797d102bf5c36a03a3fedc854465a251854"
+    },
+    {
+      "bytes": 293,
+      "path": "review/infrastructure/runtime-math-20261030/raw/host_probe/early_exit.py",
+      "sha256": "4a95c474e4425ab9be9b9dc5e9af9e71a6655f3419c7bbb28c54423f49d3bce7"
+    },
+    {
+      "bytes": 288,
+      "path": "review/infrastructure/runtime-math-20261030/raw/host_probe/oversized_endpoint.py",
+      "sha256": "ed7607167919f56a7bbc9158549b365913dab2467773175e71f7849473041e03"
+    },
+    {
+      "bytes": 3307,
+      "path": "review/infrastructure/runtime-math-20261030/raw/host_probe/probe.py",
+      "sha256": "bb4db9864279219e37b5a3a799dc5799dd8cb8db36c91327357c568a4ba6cfd2"
+    },
+    {
+      "bytes": 1096,
+      "path": "review/infrastructure/runtime-math-20261030/raw/host_probe/src/main.rs",
+      "sha256": "4f5e3716e379b896ff178c1b36a44e93e9095cb466a8cf7973cf61513a99d62d"
+    },
+    {
+      "bytes": 348,
+      "path": "review/infrastructure/runtime-math-20261030/raw/host_probe/stderr_full.py",
+      "sha256": "ca7ad855f4f9195e6782de0e192bb546a847261f57655bf7606941501d0bd23c"
+    },
+    {
+      "bytes": 317,
+      "path": "review/infrastructure/runtime-math-20261030/raw/host_probe/success.py",
+      "sha256": "86380dd84eb8d33546a525288246f765e52d7801843df427d9104d3aa524568e"
+    },
+    {
+      "bytes": 310,
+      "path": "review/infrastructure/runtime-math-20261030/raw/host_probe/timeout.py",
+      "sha256": "268202d6f5ff8babd7d9e2b0f609bf83209873c1859069b9661ffaf91b458caa"
+    },
+    {
+      "bytes": 14778,
+      "path": "review/infrastructure/runtime-math-20261030/raw/matrix-check-missing-pkg-config.log",
+      "sha256": "feb48468bd396e58c6c1dac63b83a75850684cb1b084b559858ff6a6d7805d82"
+    },
+    {
+      "bytes": 13980,
+      "path": "review/infrastructure/runtime-math-20261030/raw/matrix-check.log",
+      "sha256": "ee79b33179a6ac5c6a96629baf0e66158596671bad156931b5521a8490988160"
+    },
+    {
+      "bytes": 20723,
+      "path": "review/infrastructure/runtime-math-20261030/raw/matrix-gap-fill-tests.log",
+      "sha256": "a74e50d6a5a310795264c5ff2536f21c74b64f81b3fd1789b1d162961917d825"
+    }
+  ],
+  "name": "runtime-math-20261030",
+  "piece_limit": 250000,
+  "pieces": [
+    {
+      "bytes": 21584,
+      "path": "runtime-math-20261030.part000",
+      "sha256": "22fa1eafd8eda203809bc444e9ccb27cbc5df8700fab68da6f25d9cd7319a046"
+    }
+  ],
+  "restoration_root": "first_passage_adaptive package directory",
+  "schema": "hepta.first-passage.retained-evidence.v1",
+  "selected_paths": [
+    "review/infrastructure/runtime-math-20261030/raw/RESTORATION_REVIEW.json",
+    "review/infrastructure/runtime-math-20261030/raw/RELEASE_PUBLICATION_REVIEW.json",
+    "review/infrastructure/runtime-math-20261030/raw/matrix-check-missing-pkg-config.log",
+    "review/infrastructure/runtime-math-20261030/raw/matrix-check.log",
+    "review/infrastructure/runtime-math-20261030/raw/matrix-gap-fill-tests.log",
+    "review/infrastructure/runtime-math-20261030/raw/host_probe/Cargo.toml",
+    "review/infrastructure/runtime-math-20261030/raw/host_probe/Cargo.lock",
+    "review/infrastructure/runtime-math-20261030/raw/host_probe/src/main.rs",
+    "review/infrastructure/runtime-math-20261030/raw/host_probe/probe.py",
+    "review/infrastructure/runtime-math-20261030/raw/host_probe/RESULTS.json",
+    "review/infrastructure/runtime-math-20261030/raw/host_probe/build.log",
+    "review/infrastructure/runtime-math-20261030/raw/host_probe/success.py",
+    "review/infrastructure/runtime-math-20261030/raw/host_probe/early_exit.py",
+    "review/infrastructure/runtime-math-20261030/raw/host_probe/oversized_endpoint.py",
+    "review/infrastructure/runtime-math-20261030/raw/host_probe/timeout.py",
+    "review/infrastructure/runtime-math-20261030/raw/host_probe/stderr_full.py",
+    "review/infrastructure/runtime-math-20261030/raw/BAZEL_FEATURE_QUERY.json"
+  ],
+  "total_file_bytes": 110992
+}
