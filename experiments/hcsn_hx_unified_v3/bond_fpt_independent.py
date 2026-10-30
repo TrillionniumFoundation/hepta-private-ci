@@ -63,29 +63,37 @@ def integrate_passage(x: float, *, drift: float, sigma: float,
         if uc > u0:
             uend = uc/scale
             vlo=1/math.sqrt(horizon)
-            vcut=min(uend,max(vlo,8*(1+abs(drift)/sigma+math.sqrt(discount))))
-            f0,fe0=quad(lambda v: small(v,0.),vlo,vcut,
-                         epsabs=3e-13,epsrel=3e-12,limit=300)
-            g0,ge0=quad(lambda v: small(v,discount),vlo,vcut,
-                         epsabs=3e-13,epsrel=3e-12,limit=300)
-            if uend>vcut:
-                # For tiny log-distance, uend=uc/scale can be enormous.
-                # A single quad(vcut,uend) misses the low-v correction to
-                # the near-certain hit probability. Resolve all decades in
-                # finite geometric panels instead of treating it as flat.
-                start=vcut
-                panels=0
-                while start<uend:
-                    stop=min(uend,start*16)
-                    if stop<=start or panels>=512:
-                        raise ArithmeticError('Small-v quadrature panel limit')
-                    ff,eef=quad(lambda v: small(v,0.),start,stop,
-                                epsabs=3e-13,epsrel=3e-12,limit=300)
-                    gg,eeg=quad(lambda v: small(v,discount),start,stop,
-                                epsabs=3e-13,epsrel=3e-12,limit=300)
-                    f0+=ff;g0+=gg;fe0+=eef;ge0+=eeg
-                    start=stop
-                    panels+=1
+            # A single adaptive integral from vlo to vcut can miss a very
+            # thin low-v transition when the horizon is long. QUADPACK may
+            # then report a much smaller error than the actual discrepancy.
+            # Resolve the entire small-v region in finite geometric panels,
+            # including the first decades immediately above the horizon cut.
+            # Panels also cover the large-v correction originally isolated
+            # after vcut. This is a numerical diagnostic, not interval proof.
+            if not math.isfinite(uend) or uend <= vlo:
+                raise ArithmeticError('Small-v transformed interval unresolved')
+            fparts=[]
+            gparts=[]
+            ferr=[]
+            gerr=[]
+            start=vlo
+            panels=0
+            while start < uend:
+                stop=min(uend,start*16.)
+                if stop <= start or panels >= 512:
+                    raise ArithmeticError('Small-v quadrature panel limit')
+                ff,eef=quad(lambda v: small(v,0.),start,stop,
+                            epsabs=3e-13,epsrel=3e-12,limit=300)
+                gg,eeg=quad(lambda v: small(v,discount),start,stop,
+                            epsabs=3e-13,epsrel=3e-12,limit=300)
+                fparts.append(ff)
+                gparts.append(gg)
+                ferr.append(eef)
+                gerr.append(eeg)
+                start=stop
+                panels+=1
+            f0,g0=math.fsum(fparts),math.fsum(gparts)
+            fe0,ge0=math.fsum(ferr),math.fsum(gerr)
         else:
             f0=g0=fe0=ge0=0.
         # A single quad(uc, infinity) can miss a narrow peak far from uc.
