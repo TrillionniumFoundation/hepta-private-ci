@@ -287,5 +287,52 @@ class CallerProofTests(unittest.TestCase):
                     MODULE._verify_protected_files(root, data)
 
 
+    def test_real_final_use_retained_owner_delegate_noops_fail_source_pins(self) -> None:
+        paths = [
+            "codex-rs/hepta-contracts/src/final_use.rs",
+            "codex-rs/hepta-contracts/src/final_use_ml_dsa65_v2.rs",
+            "codex-rs/hepta-contracts/src/final_use_live_owner.rs",
+            "codex-rs/hepta-contracts/src/final_use_store.rs",
+            "codex-rs/utils/windows-private-state/src/private_owner_lock.rs",
+        ]
+        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        data = {
+            "protected_file": [
+                row for row in manifest["protected_file"] if row["path"] in paths
+            ]
+        }
+        originals = {path: (ROOT / path).read_bytes() for path in paths}
+        cases = [
+            (paths[2], "pub(super) fn ensure_live_state<'state>", "Ok(state)"),
+            (paths[3], "pub(super) fn revalidate_owner(", "Ok(())"),
+            (paths[4], "pub fn revalidate_shared(", "Ok(())"),
+        ]
+        for relative, marker, body in cases:
+            with self.subTest(delegate=relative), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                for path, raw in originals.items():
+                    target = root / path
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes(raw)
+                # Exercise the original validator on the actual reviewed sources
+                # before replacing one real delegate body with a permissive no-op.
+                MODULE._verify_protected_files(root, data)
+                source = originals[relative].decode("utf-8")
+                code = MODULE._strip_rust_non_code(source)
+                self.assertEqual(code.count(marker), 1)
+                start = code.index(marker)
+                brace = code.index("{", start)
+                end = MODULE._matching_delimiter(code, brace, "{", "}")
+                self.assertIsNotNone(end)
+                assert end is not None
+                changed = source[:brace] + "{ " + body + " }" + source[end + 1 :]
+                self.assertNotEqual(source, changed)
+                (root / relative).write_text(changed, encoding="utf-8")
+                with self.assertRaisesRegex(
+                    MODULE.VerificationFailure, "protected source SHA256 mismatch"
+                ):
+                    MODULE._verify_protected_files(root, data)
+
+
 if __name__ == "__main__":
     unittest.main()

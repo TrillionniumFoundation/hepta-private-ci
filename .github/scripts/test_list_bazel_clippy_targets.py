@@ -228,6 +228,7 @@ class ClippyTargetDiscoveryTests(unittest.TestCase):
                     ),
                 ),
                 patch.object(records.sys, "stdout", windows_stdout),
+                patch.object(records.sys, "argv", ["bazel_clippy_target_records.py"]),
             ):
                 records.main()
                 windows_stdout.flush()

@@ -31,6 +31,7 @@ jobs:
           python3 scripts/verify_hepta_callers.py self-test
           python3 scripts/verify_hepta_callers.py verify
           python3 -m unittest discover -s qa/b4-no-bypass -p 'test_*.py'
+          python3 scripts/test_hepta_typed_callers.py
           python3 -m unittest discover -s qa/fault-matrix -p 'test_*.py'
           python3 -m unittest discover -s qa/performance -p 'test_*.py'
           python3 -m unittest discover -s qa/vertical-slice -p 'test_*.py'
