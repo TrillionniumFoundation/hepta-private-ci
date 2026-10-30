@@ -57,7 +57,11 @@ def run(output, costs_path):
     if not __debug__:
         raise RuntimeError('Final reporting requires assertion-enabled Python; optimized mode is refused')
     paths = {
-        'content': PACKAGE/'results/content_analysis002/ANALYSIS.json',
+        'content': PACKAGE/'results/content_analysis_supplement001/ANALYSIS.json',
+        'strict_content': PACKAGE/'results/content_analysis002/ANALYSIS.json',
+        'content_supplement_protocol': PACKAGE/'CONTENT_SUPPLEMENT001_PROTOCOL.json',
+        'content_supplement_source': PACKAGE/'content_supplemental_analysis.py',
+        'ce_diagnostic': PACKAGE/'results/content_ce_diagnostic002/RESULT.json',
         'lif': PACKAGE/'results/lif_analysis001/ANALYSIS.json',
         'content_protocol': PACKAGE/'CONTENT002_PROTOCOL.json',
         'lif_protocol': PACKAGE/'LIF_SUPPLEMENT001_PROTOCOL.json',
@@ -66,10 +70,13 @@ def run(output, costs_path):
         'kernel': PACKAGE/'results/kernel_validation003/RESULTS.json',
         'control': PACKAGE/'results/grid_control_validation001/RESULTS.json',
         'runtime': PACKAGE/'results/runtime_review001/SUMMARY.json',
-        'scaling': PACKAGE/'results/scaling001/SUMMARY.json',
-        'scaling_complete': PACKAGE/'results/scaling001/COMPLETE.json',
-        'scaling_protocol': PACKAGE/'SCALING001_PROTOCOL.json',
-        'scaling_execution': PACKAGE/'results/scaling001/SUITE_EXECUTION.json',
+        'scaling': PACKAGE/'results/scaling002_summary_repair001/SUMMARY.json',
+        'scaling_complete': PACKAGE/'results/scaling002_summary_repair001/COMPLETE.json',
+        'scaling_protocol': PACKAGE/'SCALING002_PROTOCOL.json',
+        'scaling_execution': PACKAGE/'results/scaling002_summary_repair001_execution/EXECUTION.json',
+        'scaling_failed_execution': PACKAGE/'results/scaling002/SUITE_EXECUTION.json',
+        'blocked_scaling_protocol': PACKAGE/'SCALING001_PROTOCOL.json',
+        'blocked_scaling_receipt': PACKAGE/'results/scaling001/NOT_EXECUTED.json',
         'task': PACKAGE/'results/task_value002/EVALUATION_SUMMARY.json',
         'task_review': PACKAGE/'results/independent_execution_review001/SUMMARY.json',
         'native_v2': PACKAGE/'results/distributional_native001/COMPLETE.json',
@@ -80,17 +87,42 @@ def run(output, costs_path):
     identities = {name: {'path': str(path.relative_to(PACKAGE))
                          if path.is_relative_to(PACKAGE) else str(path), 'sha256': sha(path)}
                   for name, path in paths.items()}
-    d = {name: read(path) for name, path in paths.items()}
+    d = {name: read(path) for name, path in paths.items() if name != 'content_supplement_source'}
     cost_amount = d['costs'].get('observed_cpu_lower_bound_seconds')
     if (d['costs'].get('schema') != 'hcsn-observed-campaign-costs.v1'
             or type(cost_amount) not in (int, float)
             or not math.isfinite(cost_amount) or cost_amount < 0):
         raise ValueError('Expected a campaign cost ledger with a finite nonnegative observed CPU lower bound')
     c, lif, proto = d['content'], d['lif'], d['content_protocol']
+    strict = d['strict_content']
+    assert strict['expected'] == 176 and strict['valid'] == 175 and strict['invalid'] == 1
+    assert not strict['common_initialization_mismatches']
+    assert strict['protocol_sha256'] == sha(paths['content_protocol'])
+    assert strict['analyzer_sha256'] == proto['source_files_sha256']['experiments/hcsn_distributional_v2/content_analysis.py']
+    assert c['schema'] == 'hcsn-distribution-content-supplemental-analysis.v1'
+    assert c['post_hoc'] is True and c['statistical_gates_changed'] is False
+    assert c['supplemental_gate_passed'] is True
+    reconciliation = c['scientific_comparison_reconciliation']
+    assert all(reconciliation[name] is True for name in (
+        'all_four_mechanism_records_exactly_equal', 'previously_complete_core_records_exactly_equal',
+        'previously_complete_content_screens_exactly_equal', 'only_previously_missing_fsdd_rows_filled',
+        'all_prediction_summaries_producer_exact', 'original_strict_ce_failure_remains_explicit'))
+    assert reconciliation['training_selection_prediction_or_scientific_threshold_changes'] is False
+    assert c['supplemental_protocol_sha256'] == sha(paths['content_supplement_protocol'])
+    assert c['base_analyzer_sha256'] == strict['analyzer_sha256']
+    assert c['derived_source']['sha256'] == sha(paths['content_supplement_source'])
+    assert c['original_strict_audit']['sha256'] == sha(paths['strict_content'])
+    assert c['original_strict_audit']['valid'] == 175 and c['original_strict_audit']['invalid'] == 1
+    assert c['original_strict_audit']['gate_passed'] is False
+    assert c['mechanism'] == strict['mechanism']
+    diagnostic = d['ce_diagnostic']
+    assert diagnostic['status'] == 'reproduced' and all(value is True for value in diagnostic['checks'].values())
+    assert diagnostic['input_sha256']['frozen_analysis']['sha256'] == sha(paths['strict_content'])
+    assert diagnostic['input_sha256']['protocol']['sha256'] == sha(paths['content_protocol'])
+    ce = diagnostic['cross_entropy']
     assert c['expected'] == c['valid'] == 176 and c['invalid'] == 0
     assert not c['common_initialization_mismatches']
     assert c['protocol_sha256'] == sha(paths['content_protocol'])
-    assert c['analyzer_sha256'] == proto['source_files_sha256']['experiments/hcsn_distributional_v2/content_analysis.py']
     assert lif['status'] == 'passed' and lif['expected_pairs'] == lif['valid_pairs'] == 18
     assert lif['protocol_sha256'] == sha(paths['lif_protocol'])
     assert lif['parent_protocol_sha256'] == c['protocol_sha256']
@@ -105,9 +137,19 @@ def run(output, costs_path):
     scale_complete = d['scaling_complete']
     assert scale_complete['status']=='completed' and scale_complete['expected_cases']==scale_complete['completed_cases']==30
     assert scale_complete['protocol_sha256']==sha(paths['scaling_protocol'])
+    assert d['blocked_scaling_receipt']['status'] == 'not_executed'
+    assert d['blocked_scaling_receipt']['started_workers'] == 0
+    assert d['blocked_scaling_receipt']['strict_gate_passed'] is False
+    assert d['blocked_scaling_receipt']['protocol_sha256'] == sha(paths['blocked_scaling_protocol'])
+    assert d['blocked_scaling_receipt']['original_analysis']['sha256'] == sha(paths['strict_content'])
+    assert all(d['scaling_protocol'][name] == d['blocked_scaling_protocol'][name]
+               for name in ('cases', 'expected_cases', 'randomness', 'measurement', 'preflight'))
     assert scale_complete['summary_sha256']==sha(paths['scaling'])
     assert d['scaling_execution']['returncode']==0
-    assert d['scaling_execution']['complete_receipt_sha256']==sha(paths['scaling_complete'])
+    assert scale_complete['schema']=='hcsn-v2-scaling-summary-repair-complete.v1'
+    assert scale_complete['original_suite_failed'] is True
+    assert scale_complete['original_suite']['returncode'] == d['scaling_failed_execution']['returncode'] == 1
+    assert scale_complete['original_suite']['sha256'] == sha(paths['scaling_failed_execution'])
     assert {r['case_id'] for r in d['scaling']['rows']} == {r['case_id'] for r in d['scaling_protocol']['cases']}
     assert len(d['scaling']['rows'])==30
     assert d['costs']['status'] == 'complete' and not d['costs']['missing_required_inputs']
@@ -209,14 +251,23 @@ def run(output, costs_path):
     ratios = {r['comparison']: r['free_dual_optimizer_ratio'] for r in runtime['runtime_ratios'] if r['length']==128}
     scale = {(r['model'], r['length'], r['width'], r['depth']): r for r in d['scaling']['rows']}
     scale_models = ('distribution_free_dual', 'two_gates', 'transformer')
-    def milliseconds(row):
-        return f"{1000*row['optimizer_cpu_median']:.3f}" if row['returncode']==0 else '失败，见原始收据'
+    def milliseconds(row, clock='cpu'):
+        if row['returncode'] != 0:
+            return '失败，见原始收据'
+        value = row[f'optimizer_{clock}_median']
+        return f'{1000*value:.3f}' if value > 0 else 'CPU时钟未分辨正增量'
     scale_length_rows = []
+    scale_length_wall_rows = []
     for length in (16,32,64,128,256,512):
         rows = [scale[(m,length,32,1)] for m in scale_models]
         relative = [f"{rows[0]['optimizer_cpu_median']/r['optimizer_cpu_median']:.2f}"
-                    if rows[0]['returncode']==r['returncode']==0 else '不可计算' for r in rows[1:]]
+                    if rows[0]['returncode']==r['returncode']==0 and r['optimizer_cpu_median'] > 0
+                    and rows[0]['optimizer_cpu_median'] > 0 else '不可计算' for r in rows[1:]]
         scale_length_rows.append([length]+[milliseconds(r) for r in rows]+relative)
+        wall_relative = [f"{rows[0]['optimizer_wall_median']/r['optimizer_wall_median']:.2f}"
+                         if rows[0]['returncode']==r['returncode']==0 and r['optimizer_wall_median'] > 0
+                         else '不可计算' for r in rows[1:]]
+        scale_length_wall_rows.append([length]+[milliseconds(r, 'wall') for r in rows]+wall_relative)
     scale_dimension_rows = []
     for width, depth in ((32,1),(32,2),(32,4),(64,1),(64,2)):
         rows = [scale[(m,64,width,depth)] for m in scale_models]
@@ -248,7 +299,7 @@ def run(output, costs_path):
     verdicts = [
         ['1', '合同明确', '已完成', '金融价值、内部策略值、有限控制最优值、任务值分别定义；FIRE 含后续再生收益'],
         ['2', '低维 oracle', '在已声明问题内通过', '解析参考与有限模型独立核对；有限网格最优性单独评估'],
-        ['3', '联合训练', '实现与更新审计通过', '176 个搜索完整审计；五类参数有有效梯度和实际更新'],
+        ['3', '联合训练', '实现与更新证据成立', '原严格审计175/176；producer一致性补充176/176；主模型五类参数实际更新'],
         ['4', '隔离贡献并取得优势', f'{gates}/4 项登记优势门', '只能按具体对照和固定两任务范围解释'],
         ['5', '内容能力达到强基线', f'{screens}/6 项 ID 描述性筛查', '完整 ID/OOD 与 LIF 数据如下；不等同基础模型验收'],
         ['6', '实际执行与规模化净收益', '执行与恢复已验证；整体优势未确立', '当前 CPU 明显较慢；旧表格规划器的局部收益不能归给新架构'],
@@ -256,7 +307,10 @@ def run(output, costs_path):
     summary = {
         'schema': 'hcsn-complete-evidence-synthesis.v1', 'created_utc': datetime.now(timezone.utc).isoformat(),
         'source_sha256': sha(__file__), 'input_sha256': identities,
-        'integrity': {'content_valid': c['valid'], 'content_invalid': c['invalid'], 'lif_valid_pairs': lif['valid_pairs']},
+        'integrity': {'original_strict_content_valid': strict['valid'], 'original_strict_content_invalid': strict['invalid'],
+                      'original_strict_gate_passed': False, 'supplemental_content_valid': c['valid'],
+                      'supplemental_content_invalid': c['invalid'], 'supplement_is_post_hoc': True,
+                      'lif_valid_pairs': lif['valid_pairs']},
         'registered_mechanism_positive_gates': gates, 'descriptive_content_screens': screens,
         'acceptance': verdicts, 'free_dual_joint_learning': learning,
         'observed_cpu_lower_bound_seconds': d['costs']['observed_cpu_lower_bound_seconds'],
@@ -270,8 +324,11 @@ def run(output, costs_path):
     }
     blocks = [
         '# HCSN 全量验证：完整证据与六项验收',
-        f"主矩阵 **176/176** 搜索、**352** 个 LR 候选已完整审计；传统 LIF 补充 **18/18** 对、**36** 个新 LR 候选已完整审计。登记的机制优势门达到 **{gates}/4**，核心内容 ID 描述性筛查达到 **{screens}/6**。执行、恢复和低维数学可以分别成立；当前证据没有确立替代 Transformer 或训练全模态基础模型的整体优势。",
+        f"主矩阵 **176/176** 搜索、**352** 个 LR 候选全部完成。原冻结严格审计为 **175/176**；随后独立、后验登记的producer精确一致性补充审计为 **176/176**，没有改写原失败或训练结果。传统 LIF 补充 **18/18** 对、**36** 个新 LR 候选已完整审计。登记的机制优势门达到 **{gates}/4**，补全后的核心内容 ID 描述性筛查达到 **{screens}/6**。执行、恢复和低维数学可以分别成立；当前证据没有确立替代 Transformer 或训练全模态基础模型的整体优势。",
         table(['顺序', '工作', '本轮状态', '有效解释'], verdicts),
+        '### 原严格审计失败与后验补充的边界',
+        f"唯一原失败为 `fsdd__transformer__9202` 的交叉熵摘要核对。原producer采用FP32 PyTorch求和，每128个样本分批；原auditor用FP64重算并要求绝对差小于2e-6。原摘要及从保存logits重建的producer值均为{ce['stated']:.15f}；独立SciPy、PyTorch和math.fsum的FP64值约为{ce['scipy_fp64']:.15f}，差{ce['fp64_minus_stated']:.9e}，超出原门。重新加载原选中checkpoint对全部512个test样本按原批次重放，logits逐位相同，原FP32摘要精确一致。",
+        '原严格分析、源、协议、权重、预测与失败状态全部保留。补充分析另行登记新身份，对全部176个运行执行producer精确一致性及完整后续检查，同时记录FP64差异；它是后验工程审计，不是原门通过或新确认性研究。原已完整的四项机制比较逐项相同，原已完整的核心结果和筛查也必须相同；仅原不完整的FSDD外部对照项被补齐。原SCALING001因其准入门未通过而没有运行；SCALING002明确消费两份审计身份，沿用同一30配置、输入、预热、重复数和计时合同。',
         '## 1. 实现对象与可训练性',
         '本实现是受金融内生边界思想启发的再生控制研究模型。He–Xiong 原模型联合确定债务、股权与违约边界；债务不是直接命名的 Put，金融违约也没有自动神经再生。本项目另行定义压力过程、内部发放收益、复位与不应期。正式合同见 [CONTRACT.md](../../CONTRACT.md)，标量闭式与唯一边界验证见 [v1 MATH.md](../../../hcsn_free_boundary_v1/MATH.md)。',
         r'内部合法干预为 $G(x)=x-K+D J(r)$，未来项没有删去。连续参考值在边界满足价值匹配和一阶平滑粘贴；它是分段 $C^2$，并非所有实现分支的全局光滑函数。实际模型保留每个通道八格活动概率和两个 Erlang 阶段，层间仍有 32 维内容路径。概率是各通道边际分布，并非整个网络的联合随机分布。',
@@ -307,8 +364,10 @@ def run(output, costs_path):
         '### 序列长度、宽度和深度的独立 CPU 诊断',
         f"另一个冻结的30配置诊断已全部尝试：**{scale_complete['successful_cases']}成功、{scale_complete['failed_cases']}失败**，失败不会被删掉。B=1，随机权重、共享随机输入前缀和随机标签；每点独立进程，一个warmup加三次计时。Adam步骤新增了明确的梯度、参数和优化器状态有限性检查，所以以下数值不与上面的旧B4测试无说明地拼成同一曲线。",
         table(['T（W32/D1）','HCSN Adam 毫秒','双门控 Adam 毫秒','Transformer Adam 毫秒','HCSN/双门控','HCSN/Transformer'], scale_length_rows),
+        '上述为原始CPU时钟读数。11个前向中位数和1个Adam中位数未分辨出正CPU增量，不能解释为零成本；不以epsilon替换或计算无穷比值。原suite在对零分母计算比例时以exit1结束，30个实际worker均成功，其原始计时及失败收据保留；独立只读汇总修复另有身份和费用。以下同时报告原协议已记录的墙钟耗时，它包含调度等待，不能冒称纯CPU执行时间。',
+        table(['T（W32/D1）','HCSN Adam wall毫秒','双门控 Adam wall毫秒','Transformer Adam wall毫秒','wall比：HCSN/双门控','wall比：HCSN/Transformer'], scale_length_wall_rows),
         table(['W','D','HCSN 实际总参数','HCSN Adam 毫秒','双门控 Adam 毫秒','Transformer Adam 毫秒','HCSN 全进程峰值 MiB'], scale_dimension_rows),
-        '第二表固定T64。完整30点的前向/反向CPU和wall、各次原始计时、全部实际参数数及资源失败见 [scaling001](../scaling001/REPORT.md)。峰值RSS包含解释器、导入、构造、序列和反向，是全进程高水位，不能当作单独激活内存。本诊断测到的模型最大仅约10.5万参数；没有拟合渐近指数或外推未测GPU、模型规模、等质量吞吐或基础模型可行性。',
+        '最后一表固定T64。完整30点的前向/反向CPU和wall、各次原始计时、全部实际参数数及汇总修复说明见 [scaling002只读汇总](../scaling002_summary_repair001/REPORT.md)，原始worker与失败suite在 [scaling002](../scaling002/)。峰值RSS包含解释器、导入、构造、序列和反向，是全进程高水位，不能当作单独激活内存。本诊断测到的模型最大仅约10.5万参数；没有拟合渐近指数或外推未测GPU、模型规模、等质量吞吐或基础模型可行性。',
         '## 5. Hepta 任务执行：未来项、实际动作与净收益',
         '任务层价值定义 READ、FIRE、quiet、RESET 和后续任务。FIRE 对真实标签评分并停止当前 owner；两次 quiet tick 不执行模型，随后启动后续任务。旧 backbone 面板含128个三任务流的缓存反事实，以及其中前16个流的真实 native 执行。三种 READ 价格等权平均；两者分别报告，不能当作144个独立流。两个学习头同输入、同有效参数与同更新/选择机会，它们比较训练目标，不是重新比较物理双通道。',
         table(['策略', '缓存128流平均效用', 'native16流平均效用', 'native CPU 秒/流'], task_rows),
@@ -326,7 +385,7 @@ def run(output, costs_path):
         '## 6. 成本、失败记录和证据完整性',
         f"统一成本账本在其明确截止点记录本轮 v2 活动互不重叠的 CPU 下界 **{d['costs']['observed_cpu_lower_bound_seconds']:,.6f} 秒**（**{d['costs']['observed_cpu_lower_bound_seconds']/3600:.3f} CPU小时**）。输入门为 complete，意味着要求的活动/分析/封存收据齐全；不意味着未计量研发、下载、编辑和网络服务的费用为零。历史 v1 研究费用保留在上游报告，复用其模型不在本轮冒充新训练再计一次。逐收据SHA、字段、嵌套排除与未知范围见 `{identities['costs']['path']}`。本报告自身生成费另留 EXECUTION.json，避免递归计费。",
         f"主内容完整 worker 为 {c['complete_child_cpu_seconds']:.6f} CPU秒，训练部分为 {c['training_cpu_seconds']:.6f}；两者嵌套。LIF新增 worker 为 {lif['extra_lif_search_worker_cpu_seconds']:.6f}，复用的18个分布搜索不再计费。旧content001完整调度树2227.408732秒及其16完成/4失败结果均保留，未复用到主比较。",
-        '原始数据、每个候选、所有检查点、全更新日志、预测、native journal、恢复状态和源码身份均封存。完整成功run按完成记录分批保存，选择规则不看分数；主结论只读取完整冻结分析。恢复器拒绝不同内容覆盖。复现入口为 [REPRODUCE.md](../../REPRODUCE.md)。',
+        '原始数据、每个候选、所有检查点、全更新日志、预测、native journal、恢复状态和源码身份均封存。完整成功run按完成记录分批保存，选择规则不看分数；主结论同时保留原冻结严格分析及单独登记的事后补充分析。恢复器拒绝不同内容覆盖。复现入口为 [REPRODUCE.md](../../REPRODUCE.md)。',
         '## 7. 对 encoder、传统 SNN 和 Transformer 的判断',
         '本轮建立了一个可学习、可解释并可核对的再生状态单元。其可检验长处是持续状态有界、可处理不规则间隔、内部未来发放收益明确，并能为任务级停止控制提供连续信号。只有表格中达到的具体比较才算已有内容证据。边界和双值特征都是状态及系数的确定函数，不自动增加原始输入信息；价值必须体现为在预算内更好的表示或决策。',
         '传统 SNN 的硬事件前向与替代梯度、当前 HCSN 的概率流及局部梯度分别有其近似。取消0/1 step 没有取消所有不光滑点，也不自动保留事件芯片的稀疏计算收益。小型 Transformer 与双门控在本CPU实现上具有明确的运行成本优势；跨硬件和大模型结论尚无测量。',

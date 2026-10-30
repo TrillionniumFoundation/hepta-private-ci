@@ -129,6 +129,10 @@ python -m experiments.hcsn_distributional_v2.content_analysis \
 
 该命令分析已存在的研究，不重新训练或选择另一 checkpoint。应先有完整成功的 `COMPLETE.json` 与全部登记 jobs；缺失或失败的原始记录不能用重复训练覆盖，也不能用一个较小的完成子集冒充完整矩阵。
 
+这次原冻结分析的实际结果为 **175 valid / 1 invalid**。`fsdd__transformer__9202` 的 FP32 交叉熵与独立 FP64 交叉熵相差约 `2.16484e-6`，超过原先的 `2e-6` 绝对容差；原严格门仍为失败。独立检查确认原 checkpoint 重放 logits 逐位相同，原生产者 FP32 归约结果完全复现，标签和预测均未变。该诊断见 `results/content_ce_diagnostic002/RESULT.json`，首次失败的诊断收据也保留。
+
+事后另行登记的 [CONTENT_SUPPLEMENT001_PROTOCOL.json](CONTENT_SUPPLEMENT001_PROTOCOL.json) 和 [content_supplemental_analysis.py](content_supplemental_analysis.py) 只增加生产者精确复算的审计路径；完整结果位于 `results/content_analysis_supplement001/ANALYSIS.json`，为 **176 valid / 0 invalid**。它保留原失败身份，没有重训、换 checkpoint、改标签或放宽科学统计门。完整表格据此补齐原来缺失的一项 Transformer/FSDD 汇总；已完成的机制比较和内容记录完全一致。不能把补充结果改写成原预登记严格分析全部通过，也不能把已观察数据称为新的确认性测试。
+
 ## 5. 在新目录重新登记并训练
 
 下面是完整内容研究的**新执行**。既有 `content001` abort 收据和固定 `content_domain_preflight003.json` 是该版本注册器的历史依赖，需要从交付包恢复；前节新运行的 preflight 不用于覆盖这两个历史记录。
@@ -241,7 +245,15 @@ python -m experiments.hcsn_distributional_v2.lif_supplement_analysis \
 
 该冻结补充的 parent 固定为 `CONTENT002_PROTOCOL.json` 和 `results/content002`，复用其18个 free-dual search；CLI 没有更换 parent 的参数。上述新 LIF 运行也不会自动改成与第五节新训练的 free-dual 配对。补充的两学习率、15/30/60 CPU 选择门和单 worker 调度来自该固定 parent 合同，不改原176-job矩阵或原统计门。
 
-## 9. 本交付入口的实际验证范围
+## 9. 规模测量与独立汇总修复
+
+[SCALING001_PROTOCOL.json](SCALING001_PROTOCOL.json) 因原严格内容门未通过而没有启动正式 worker；`results/scaling001/NOT_EXECUTED.json` 保留这个状态。另行登记的 [SCALING002_PROTOCOL.json](SCALING002_PROTOCOL.json) 使用单独补充审计准入，并保持原来的30个配置、随机性和测量合同不变；具体入口见 [SCALING002.md](SCALING002.md)。
+
+SCALING002 的30个原始测量 worker 均成功结束。原汇总器随后因短操作的 CPU 时钟读数为零而除零退出；`results/scaling002/SUITE_EXECUTION.json` 仍保留 `returncode=1`。没有重跑计时，也没有给零读数加 epsilon。独立只读修复 [scaling_summary_repair.py](scaling_summary_repair.py) 逐项核对原始身份、计时和中位数，输出 `results/scaling002_summary_repair001/{SUMMARY.json,REPORT.md,COMPLETE.json}`；原始零 CPU 读数标为未分辨到正增量，分母为零的比率为 null，同时保留原有正值墙钟计时。完整范围见 [SCALING002_SUMMARY_REPAIR.md](SCALING002_SUMMARY_REPAIR.md)。
+
+最终结论同时引用原严格分析、事后补充分析、原失败汇总和独立修复；这些身份和费用都进入最终封存核验与成本账本。
+
+## 10. 本交付入口的实际验证范围
 
 [reproduction_receipts/list001](reproduction_receipts/list001) 保存了对当时已发布五个 v1、三个 v2 manifest 的实际目录列举。以后 bundle 数增多是自动发现的正常结果，不要求始终等于八。
 

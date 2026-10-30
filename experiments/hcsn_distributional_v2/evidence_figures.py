@@ -110,11 +110,19 @@ def render(output, content=None, scaling=None):
         data = read(paths["content"])
         if data["valid"] != data["expected"] or data["invalid"]:
             raise AssertionError("Do not render a complete-quality figure from an invalid matrix")
+        if (data.get("schema") != "hcsn-distribution-content-supplemental-analysis.v1"
+                or data.get("post_hoc") is not True
+                or data.get("statistical_gates_changed") is not False
+                or data.get("supplemental_gate_passed") is not True
+                or data["original_strict_audit"]["valid"] != 175
+                or data["original_strict_audit"]["invalid"] != 1
+                or data["original_strict_audit"]["gate_passed"] is not False):
+            raise AssertionError("Retain the original strict audit failure alongside the supplemental identity")
         tasks = ["selective_copy", "mqar", "irregular", "mnist", "fsdd", "multimodal_select"]
         task_labels = ["Selective copy", "MQAR", "Irregular time", "MNIST", "FSDD", "Modality selection"]
         matrix = np.array([[next(row["mean"] for row in data["core"] if row["task"] == task and row["model"] == name and row["split"] == "test")
                             for task in tasks] for name in names]) * 100
-        figure, axis = plt.subplots(figsize=(10.5, 5.3))
+        figure, axis = plt.subplots(figsize=(10.5, 5.6))
         im = axis.imshow(matrix, vmin=0, vmax=100, cmap="Blues", aspect="auto")
         for row in range(len(names)):
             for col in range(len(tasks)):
@@ -122,10 +130,10 @@ def render(output, content=None, scaling=None):
                           color="white" if matrix[row,col] > 58 else "#152c42", fontsize=11)
         axis.set_xticks(range(len(tasks)), task_labels)
         axis.set_yticks(range(len(names)), labels)
-        axis.set_title("Registered content002: mean ID accuracy across three seeds (%)", loc="left", pad=14)
+        axis.set_title("Content002: mean ID accuracy across three seeds (%)", loc="left", pad=14)
         figure.colorbar(im, ax=axis, fraction=.03, pad=.025, label="Accuracy (%)")
-        figure.text(.02, .015, f"{data['valid']}/{data['expected']} integrity checks passed. Same training-CPU budget and ±3% backbone parameters; total worker costs differ.\nPreviously observed datasets; descriptive core panel. Small digit-based multimodal task, not a foundation-model evaluation.", fontsize=9)
-        figure.tight_layout(rect=[0, .07, 1, 1])
+        figure.text(.02, .015, f"Original strict audit: 175/176. Post-hoc producer-exact audit: {data['valid']}/{data['expected']}; original failure and statistical gates retained.\nSame training-CPU budget and ±3% backbone parameters; total worker costs differ. Previously observed datasets; descriptive core panel.\nSmall digit-based multimodal task, not a foundation-model evaluation.", fontsize=9)
+        figure.tight_layout(rect=[0, .105, 1, 1])
         save(figure, output, "content_accuracy")
 
     if scaling:
@@ -146,17 +154,17 @@ def render(output, content=None, scaling=None):
         by_case = {(row["model"], row["length"], row["width"], row["depth"]): row for row in rows}
         if len(by_case) != 30:
             raise AssertionError("Duplicate scaling cases")
-        figure, axes = plt.subplots(1, 2, figsize=(12.5, 4.8))
+        figure, axes = plt.subplots(1, 2, figsize=(12.5, 5.2))
         for index, (model, label, color) in enumerate(zip(models, model_labels, model_colors)):
             measured = []
             for length in lengths:
                 row = by_case[(model, length, 32, 1)]
-                measured.append(row["optimizer_cpu_median"] * 1000 if row["returncode"] == 0 else np.nan)
+                measured.append(row["optimizer_wall_median"] * 1000 if row["returncode"] == 0 else np.nan)
             axes[0].plot(lengths, measured, marker="o", color=color, label=label, lw=2, ms=5)
             heights = []
             for width, depth in shapes:
                 row = by_case[(model, 64, width, depth)]
-                heights.append(row["optimizer_cpu_median"] * 1000 if row["returncode"] == 0 else np.nan)
+                heights.append(row["optimizer_wall_median"] * 1000 if row["returncode"] == 0 else np.nan)
             positions = np.arange(len(shapes)) + (index - 1) * .25
             axes[1].bar(positions, heights, width=.23, color=color, label=label, alpha=.9)
         axes[0].set_xscale("log", base=2)
@@ -168,18 +176,19 @@ def render(output, content=None, scaling=None):
         axes[1].set_title("Wider and deeper models", loc="left", fontsize=12)
         for axis in axes:
             axis.set_yscale("log")
-            axis.set_ylabel("CPU ms / complete Adam step (log scale)")
+            axis.set_ylabel("Wall ms / complete Adam step (log scale)")
             axis.grid(axis="y", alpha=.18)
             axis.set_axisbelow(True)
         axes[0].legend(frameon=False, fontsize=9, loc="upper left")
-        figure.suptitle("Registered CPU scaling: actual full-model updates, up to 105,492 parameters",
+        figure.suptitle("CPU execution scaling: complete updates, up to 105,492 parameters",
                         x=.02, ha="left", fontsize=14, fontweight="bold")
         failed = completion["failed_cases"]
         figure.text(.02, -.015,
             f"B=1, float32, one thread. Median of 3 measured steps after one warmup. All 30 cases attempted; {failed} failed (omitted, never imputed).\n"
-            "Includes finite checks of outputs, loss, gradients, updated parameters and Adam state. This is a separate timing contract from the B=4 plot.\n"
-            "Random-weight execution diagnostic on CPU; no content, GPU, energy or foundation-model scaling result.", fontsize=9)
-        figure.tight_layout(rect=[0, .095, 1, .91])
+            "Wall time includes scheduling waits. Short-operation CPU clocks include unresolved zero increments; raw CPU medians remain in the report.\n"
+            "SCALING002 keeps the original 30 cases/timing with explicit supplemental-audit admission. Original failed summarizer + read-only repair retained.\n"
+            "Finite checks are included. Separate timing contract from the B=4 plot; random weights, no content, GPU or energy conclusion.", fontsize=9)
+        figure.tight_layout(rect=[0, .135, 1, .91])
         save(figure, output, "cpu_scaling")
     manifest = dict(schema="hcsn-evidence-figures.v1", input_sha256={key: sha(value) for key, value in paths.items()},
                     source_sha256=sha(__file__), whole_self_cpu_seconds_through_render=time.process_time(),

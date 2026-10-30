@@ -4,6 +4,16 @@
 
 上游研究见 [hcsn_free_boundary_v1](../hcsn_free_boundary_v1/README.md)。本目录保留并修正第一版的均值闭合问题，没有重写第一版的协议、原始结果或失败记录。代码和证据随研究分支提交；生产 Rust 路径未作修改。
 
+## 本轮主要结果
+
+主矩阵176次搜索、352个LR候选均已完成；LIF补充为18次搜索、36个新候选。**四项登记机制优势门为0/4，补全后的六项ID描述性接近度筛查为0/6。** 在八种子、两个固定机制任务上，主模型相对普通双门控的准确率差为−48.398个百分点，名义95%区间[−51.039,−45.756]，Holm p=0.03125。边界、双值特征及保留活动分布的三个单独对照也均未显示登记优势。
+
+主模型在选择性复制、MQAR、MNIST、FSDD和真实模态选择的三个种子ID均值分别约为21.60%、19.89%、44.01%、11.33%和12.11%。不规则时间任务ID为92.19%，但所登记OOD为49.80%。这些结果不支持直接用当前单元替换内容骨干进行全模态基础模型训练；低维数学正确、参数实际更新和真实动作接通分别有证据，仍须与内容及成本优势区分。
+
+**原严格完整性审计仍为175/176。** 唯一失败是FSDD Transformer的FP32交叉熵摘要与FP64重算相差2.164839845e−6，超过原2e−6绝对门。完整512样本的选中checkpoint重放逐位一致，原FP32摘要可精确重现。随后另行登记的producer精确一致性补充对全部176运行执行完整审计并通过；原严格分析和失败没有改写。四项机制比较、原先完整的核心结果及筛查均逐项相同，只补齐FSDD外部对照缺项。此补充是后验工程核验，不是原门通过或新的确认性研究。
+
+完整六项验收、ID/OOD/LIF结果、实际执行、规模扫描和成本解释见 [最终报告](results/final_report001/REPORT.zh-CN.md)。原审计见 [content_analysis002](results/content_analysis002/REPORT.md)，补充身份见 [CONTENT_SUPPLEMENT001_PROTOCOL.json](CONTENT_SUPPLEMENT001_PROTOCOL.json) 与 [content_analysis_supplement001](results/content_analysis_supplement001/ANALYSIS.json)。
+
 ## 从哪里读起
 
 | 目的 | 入口 |
@@ -13,12 +23,12 @@
 | 复现环境、恢复原始数据与权重、运行和分析实验 | [REPRODUCE.md](REPRODUCE.md) |
 | 查看主训练的冻结条件 | [CONTENT.md](CONTENT.md)、[CONTENT002_PROTOCOL.json](CONTENT002_PROTOCOL.json) |
 | 查看传统硬脉冲 LIF 的独立补充协议 | [LIF_SUPPLEMENT001_PROTOCOL.json](LIF_SUPPLEMENT001_PROTOCOL.json) |
-| 查看长度、宽度和深度的独立 CPU 扫描合同 | [SCALING.md](SCALING.md)、[SCALING001_PROTOCOL.json](SCALING001_PROTOCOL.json) |
+| 查看长度、宽度和深度的独立 CPU 扫描合同 | 原 [SCALING.md](SCALING.md)；新准入 [SCALING002.md](SCALING002.md)、[SCALING002_PROTOCOL.json](SCALING002_PROTOCOL.json) |
 | 查看真实任务收益、未来任务、owner 动作及成本分配 | [TASK_VALUE.md](TASK_VALUE.md) |
 | 理解与金融模型、CfC、SNN、状态空间和注意力的关系 | [RELATED_WORK.md](RELATED_WORK.md) |
 | 查看证据闭合与成本包含关系 | [ARCHIVE_CLOSURE.md](ARCHIVE_CLOSURE.md)、[CAMPAIGN_COSTS.md](CAMPAIGN_COSTS.md) |
 
-最终主矩阵分析使用 `results/content_analysis002/`，LIF 补充分析使用 `results/lif_analysis001/`。只有完整执行收据和全部逐项完整性审计通过后，才可把这两处结果用于结论。运行中的 `PROGRESS.json` 只表示调度进度。
+原冻结主矩阵分析使用 `results/content_analysis002/`，producer一致性补充使用 `results/content_analysis_supplement001/`，LIF 补充分析使用 `results/lif_analysis001/`。三份身份分别保留；不能把补充的176/176改写成原严格门通过。`PROGRESS.json` 只表示调度进度，完整结论同时核对执行收据、原审计与补充审计。
 
 ## 1. 正式语义
 

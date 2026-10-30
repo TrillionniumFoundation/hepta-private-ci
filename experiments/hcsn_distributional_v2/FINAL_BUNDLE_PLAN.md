@@ -66,6 +66,12 @@ includes:
   preserved original preflight; the entire actual `results/scaling002/` suite,
   all 30 case receipts and raw outputs, source snapshots, registration, report,
   suite outer measurement, and scaling preflight evidence
+- The original SCALING002 suite exit-1 evidence and complete independent
+  `results/scaling002_summary_repair001/` plus its enclosing measurement.
+  All 30 original worker measurements remain unchanged; zero-denominator
+  summary ratios are explicit nulls. Readiness uses the separately derived
+  `archive_closure_final.py` consumer, while the actually normalized base
+  auditor and normalized LIF receipts remain unchanged.
 - `results/figures001/`, final `results/figures002/`, and independent
   `results/figures002_execution/`; final figure hashes and source identity must
   match their manifest before selection
@@ -94,7 +100,8 @@ value:
 - Files already present with the exact same path, size and SHA-256 in a
   successful formal bundle. A changed file at a covered path is an error.
 - Root canonical `README.md`, `final_report.py`, `campaign_costs.py`,
-  `CAMPAIGN_COSTS.md`, `archive_closure.py`, and `ARCHIVE_CLOSURE.md`. Root will
+  `CAMPAIGN_COSTS.md`, `archive_closure.py`, `ARCHIVE_CLOSURE.md`,
+  `archive_closure_final.py`, and `ARCHIVE_CLOSURE_FINAL.md`. Root will
   publish these directly in Git. Their already-created test/source snapshots
   remain eligible.
 - Actual final cost/report/closure output directories and their enclosing

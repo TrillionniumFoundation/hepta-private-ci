@@ -1,0 +1,697 @@
+{
+  "archive_consumer": {
+    "derived_source": {
+      "path": "archive_closure_final.py",
+      "sha256": "7f20d212c83a8d92d584c00cf9a69b76f5b1b5d9caa82d17be9d4a5c7c91ee0a"
+    },
+    "normalized_base_source": {
+      "path": "archive_closure.py",
+      "sha256": "a73cdcadf0164a83c1355cce17bec9e38e0991e9155b9a4c52c243cb8e4d0209"
+    },
+    "normalized_base_unchanged": true,
+    "scope": "Inherits original main/LIF/archive checks; adds explicit failed-suite plus independent-summary-repair scaling verification"
+  },
+  "bundles": [
+    {
+      "archive_sha256": "6a55646b3ba5ef8f1836ce2b2f2867b351c9f3af5314f78c5fc7d7e48a807939",
+      "compressed_bytes": 222204,
+      "manifest": "artifacts/content002_metadata.json",
+      "manifest_sha256": "f21c6b9c328b615fc4af32064a59ab498fd3311840f877fe2165ebc77ea4ce4b",
+      "members": 83,
+      "name": "content002_metadata",
+      "outer_receipt": "results/evidence_sealing/content002_metadata/EXECUTION.json",
+      "outer_receipt_sha256": "5f2dda5af1dbec35a8008ef181615237105c352dd9d38ad0a398c8ea5c3c8cd6",
+      "parts": 1,
+      "seal": "artifacts/content002_metadata_EXECUTION.json",
+      "seal_sha256": "7b3289ddde7bfc4ddad8f65eeecbf049c69c2cbf28d47b8c64995800e022b3a8"
+    },
+    {
+      "archive_sha256": "65b95408179cad5dd807623571ebe86a7313ff1714b7a4d56b4f41167bcafc0a",
+      "compressed_bytes": 29790280,
+      "manifest": "artifacts/content002_runs_000.json",
+      "manifest_sha256": "c3c61a0b95290e7c6d71971cb96c3a441ad5ec97c8ae7d712362575eba692f29",
+      "members": 749,
+      "name": "content002_runs_000",
+      "outer_receipt": "results/content_checkpoint_archives/receipts/content002_runs_000.json",
+      "outer_receipt_sha256": "c7c0a45fc025893428eee5f7c26b47b3e1e2eaafe771d0f2cf17377ca99856e6",
+      "parts": 19,
+      "seal": "artifacts/content002_runs_000_EXECUTION.json",
+      "seal_sha256": "a24c2b951be4bfb316d02867fc7411457e61a8d1baaa912822ae06830186b822"
+    },
+    {
+      "archive_sha256": "1a7808c1472a98ee76013607dcacef1c85543ede3e5cd60e966ddaaa22cc6ab2",
+      "compressed_bytes": 27135340,
+      "manifest": "artifacts/content002_runs_001.json",
+      "manifest_sha256": "751538dff2c2eb56119bc81e309061c89c5853926a7df6285e4a0edc3d6bb8cd",
+      "members": 736,
+      "name": "content002_runs_001",
+      "outer_receipt": "results/content_checkpoint_archives/receipts/content002_runs_001.json",
+      "outer_receipt_sha256": "4d7cddfc23254d07f0909e939b30e9e9c2517b9a2d88c4792777a904db229fed",
+      "parts": 18,
+      "seal": "artifacts/content002_runs_001_EXECUTION.json",
+      "seal_sha256": "e459ce343a16180455c7fabd411ade5a666f29b8d7200174d59b3651c1a3488c"
+    },
+    {
+      "archive_sha256": "e8282d4d7fffec6887a94457358c8fea6822ce021e8f9a625c9c50c26f4f5933",
+      "compressed_bytes": 26605836,
+      "manifest": "artifacts/content002_runs_002.json",
+      "manifest_sha256": "1d4f08cb1b5bd773fc5bde9b713752ec39d003576137310ec62369077f74da59",
+      "members": 742,
+      "name": "content002_runs_002",
+      "outer_receipt": "results/content_checkpoint_archives/receipts/content002_runs_002.json",
+      "outer_receipt_sha256": "7860240623a35cb1c90d81ad5ac11c249a9727cdac30c3da84201aaa631df207",
+      "parts": 17,
+      "seal": "artifacts/content002_runs_002_EXECUTION.json",
+      "seal_sha256": "ed73ddeae62678baaaba54bc6b0edba88a2cfe5c8e76c22fa2fbc68df3bb3a2c"
+    },
+    {
+      "archive_sha256": "a3a645d39084f0c680281a944cffde160f81073c43c01b14bbab74a2a24e142b",
+      "compressed_bytes": 29468924,
+      "manifest": "artifacts/content002_runs_003.json",
+      "manifest_sha256": "697a7a1e884a68e8b75706d3201d7fd11615ca047f2bb8c99a7c4be74a65503f",
+      "members": 751,
+      "name": "content002_runs_003",
+      "outer_receipt": "results/content_checkpoint_archives/receipts/content002_runs_003.json",
+      "outer_receipt_sha256": "a2de97cb25afe128c235df4f1e79503b2b10fea3d61ef1082af34a464f683b4b",
+      "parts": 19,
+      "seal": "artifacts/content002_runs_003_EXECUTION.json",
+      "seal_sha256": "5c95bfbc46db21d220e9a6e7d38643ea707d9b41c290ccb3254374dc6c62f073"
+    },
+    {
+      "archive_sha256": "2bea6ae5efdc0e41243cac4e92e38cac080ac5fae0f910b4aa390b1d988a6840",
+      "compressed_bytes": 28694972,
+      "manifest": "artifacts/content002_runs_004.json",
+      "manifest_sha256": "e3778d58a427ae4dcb97ab112dfee2ab6192cb91c0bd3fb893dc0933ef6ea321",
+      "members": 750,
+      "name": "content002_runs_004",
+      "outer_receipt": "results/content_checkpoint_archives/receipts/content002_runs_004.json",
+      "outer_receipt_sha256": "ea85bd59952aaf68cff5bef15cad81d16a94ece05b69e8158a7ecda5b6744338",
+      "parts": 19,
+      "seal": "artifacts/content002_runs_004_EXECUTION.json",
+      "seal_sha256": "1eb5a06ec893c108c5be2568f6d26e4ca4ebe09e9033f96a8afcae6cd1f02e1b"
+    },
+    {
+      "archive_sha256": "ab92d80faf3a1492be429bcfce7cdf5406a458634f5ac023183382f6081db136",
+      "compressed_bytes": 11126032,
+      "manifest": "artifacts/content002_runs_005.json",
+      "manifest_sha256": "2f90d89733ef84689f5f4fe9e5fffa62e3b07c5c0042286733191e629350db6d",
+      "members": 366,
+      "name": "content002_runs_005",
+      "outer_receipt": "results/content_checkpoint_archives/receipts/content002_runs_005.json",
+      "outer_receipt_sha256": "6bb710a55ce037386a9fcd571805c76368ea95b8b15a2a8490384e2802d9e7ab",
+      "parts": 8,
+      "seal": "artifacts/content002_runs_005_EXECUTION.json",
+      "seal_sha256": "6e1ec7048bcdc31d675de87e65ced09a5db9603cffcb5bc8274faed577e932da"
+    },
+    {
+      "archive_sha256": "8e121711ce80abe30eb5a804765483342cda9fddf07d10cb8066b26f6f78c3cb",
+      "compressed_bytes": 15871428,
+      "cost_scope": "Early bundle has only its seal process-self CPU through receipt; no invented complete outer measurement",
+      "manifest": "artifacts/content_aborted001.json",
+      "manifest_sha256": "612f14b5482e85ec3b39ddb870d770e00b32fb772105a2539b6f303f28d2c5dc",
+      "members": 427,
+      "name": "content_aborted001",
+      "parts": 11,
+      "seal": "artifacts/content_aborted001_EXECUTION.json",
+      "seal_sha256": "e0ce641a3fe754ffd2238020e8b0d73e04c2cf9496d5afdb13184c4cf375495d"
+    },
+    {
+      "archive_sha256": "76346cc2e8491b5d15faf510ce2ccaa5d5d3875e3d2b9e1bc03dfb2bdcc02430",
+      "compressed_bytes": 2277856,
+      "cost_scope": "Early bundle has only its seal process-self CPU through receipt; no invented complete outer measurement",
+      "manifest": "artifacts/execution_v2_001.json",
+      "manifest_sha256": "3e761d346e8b72c7b6c3b08bdea9c438ccdec7e7d82f2608c644a767ad8bb294",
+      "members": 424,
+      "name": "execution_v2_001",
+      "parts": 2,
+      "seal": "artifacts/execution_v2_001_EXECUTION.json",
+      "seal_sha256": "054d10cdcf1f78d15c072e8cb0b07bfb4924101d41b7b88197899b87756d48bd"
+    },
+    {
+      "archive_sha256": "45e20d0c76d113f17a12612a5379176c944780232e9c363338ce92a834f0e196",
+      "compressed_bytes": 35026072,
+      "manifest": "artifacts/lif_supplement001_evidence.json",
+      "manifest_sha256": "b6b2f50a9c786a78e3f577f5f21289c67cfa3fc8039d8d6cfdfd1e5c230e3f4f",
+      "members": 542,
+      "name": "lif_supplement001_evidence",
+      "outer_receipt": "results/evidence_sealing/lif_supplement001_evidence/EXECUTION.json",
+      "outer_receipt_sha256": "d2bb1d33306fbe2030d672abe79d13e6a7ca72c478db5e221a48fdb1cca5e712",
+      "parts": 23,
+      "seal": "artifacts/lif_supplement001_evidence_EXECUTION.json",
+      "seal_sha256": "18421730e200273c0dbd7e69f785acff8c80b5669130c98d6e0113f3c96ea94d"
+    },
+    {
+      "archive_sha256": "44132b319d676a4e4a213d5372d92205b61e93b83835c566df37074e7107743d",
+      "compressed_bytes": 7897644,
+      "cost_scope": "Early bundle has only its seal process-self CPU through receipt; no invented complete outer measurement",
+      "manifest": "artifacts/task_value_and_control002.json",
+      "manifest_sha256": "0a165a8a60dc47d6f20f8ffe067ffc12aaf21ac37cc797f8fcea49418f3a611b",
+      "members": 4930,
+      "name": "task_value_and_control002",
+      "parts": 6,
+      "seal": "artifacts/task_value_and_control002_EXECUTION.json",
+      "seal_sha256": "58e98a6ca9830a34b20680b84f1fda2fb9c2b0b5b84710d8cd684df2eda159ec"
+    },
+    {
+      "archive_sha256": "b26dda697c60036acf6924fe3a6770290522654556afefcc144634d55e3f8e3d",
+      "compressed_bytes": 4323088,
+      "manifest": "artifacts/v2_auxiliary_evidence.json",
+      "manifest_sha256": "2d71f57aa0c6f88326ee81de030cc5477bdc75b2f920cb1e26687f265519e4b7",
+      "members": 3479,
+      "name": "v2_auxiliary_evidence",
+      "outer_receipt": "results/evidence_sealing/v2_auxiliary_evidence/EXECUTION.json",
+      "outer_receipt_sha256": "53f2fd43677f1c4904177736b25050e852319b6878d5c107490398a2f0d98b90",
+      "parts": 3,
+      "seal": "artifacts/v2_auxiliary_evidence_EXECUTION.json",
+      "seal_sha256": "4a7cb1036ebf9f37698cefc4ae5b5fbf6ba3088155700949e25ba0f9c371fd2d"
+    }
+  ],
+  "completed_utc": "2026-10-30T06:00:59.639041+00:00",
+  "cost_scope": "This audit's separate execution receipt is not recursively included in these bundles or their archive costs",
+  "lif_run_coverage": {
+    "completed": 18,
+    "expected": 18,
+    "files": 423,
+    "logs": 18,
+    "run_ids": [
+      "fsdd__lif_snn__9203",
+      "mnist__lif_snn__9202",
+      "mqar__lif_snn__9202",
+      "mnist__lif_snn__9201",
+      "irregular__lif_snn__9202",
+      "irregular__lif_snn__9201",
+      "selective_copy__lif_snn__9202",
+      "mqar__lif_snn__9203",
+      "multimodal_select__lif_snn__9202",
+      "fsdd__lif_snn__9201",
+      "multimodal_select__lif_snn__9201",
+      "irregular__lif_snn__9203",
+      "selective_copy__lif_snn__9201",
+      "fsdd__lif_snn__9202",
+      "mnist__lif_snn__9203",
+      "selective_copy__lif_snn__9203",
+      "mqar__lif_snn__9201",
+      "multimodal_select__lif_snn__9203"
+    ],
+    "scope": "Every regular file in every completed run directory and its matching process log; no work-tree recursion",
+    "unique": 18
+  },
+  "limits": "This is evidence integrity and coverage, not a statistical superiority result; it does not re-run training or decompress payloads already bound by successful restore seals",
+  "main_analysis_admission": {
+    "basis": "independent_post_hoc_producer_exact_integrity_audit",
+    "derived_source": {
+      "path": "experiments/hcsn_distributional_v2/content_supplemental_analysis.py",
+      "sha256": "2f4dd656fcd868a891ee78808f7974e45a990a713020a1aaef2b89e74d771413"
+    },
+    "interpretation": "Original strict CE gate remains failed (175/1). The independent supplement completes all 176 integrity audits under an explicitly registered producer-exact CE check; this is not a retroactive strict pass or a scientific superiority result.",
+    "original_strict": {
+      "execution_path": "experiments/hcsn_distributional_v2/results/content_analysis002/EXECUTION.json",
+      "execution_sha256": "888306666e60ee51c40aa7af02e8c2f46bd4aaf4ff88a2601fd1dd5d51b37218",
+      "expected": 176,
+      "gate_passed": false,
+      "invalid": 1,
+      "path": "experiments/hcsn_distributional_v2/results/content_analysis002/ANALYSIS.json",
+      "sha256": "654f1f3b235bd066e8ee64f2f20e18dc16eb7f83ecbef31379a066d94433da76",
+      "valid": 175
+    },
+    "schema": "hcsn-main-analysis-admission.v1",
+    "scientific_comparisons_preserved": true,
+    "supplemental": {
+      "expected": 176,
+      "invalid": 0,
+      "path": "experiments/hcsn_distributional_v2/results/content_analysis_supplement001/ANALYSIS.json",
+      "post_hoc": true,
+      "protocol_path": "experiments/hcsn_distributional_v2/CONTENT_SUPPLEMENT001_PROTOCOL.json",
+      "protocol_sha256": "5e431b9165efc855d7b45cad5185cc7d093c900a533c2aa37e2c81eec231a6c2",
+      "sha256": "6e7aa0c66627663ea84e962f502a7a73dcb46b0c0569e71feb932e51b27ecffd",
+      "statistical_gates_changed": false,
+      "valid": 176
+    }
+  },
+  "main_run_coverage": {
+    "completed": 176,
+    "expected": 176,
+    "files": 3912,
+    "logs": 176,
+    "run_ids": [
+      "mnist__distribution_free_dual__9201",
+      "multimodal_select__legacy_free__9203",
+      "selective_copy__distribution_free_dual__9201",
+      "multimodal_select__distribution_free_dual__9207",
+      "fsdd__transformer__9202",
+      "multimodal_select__distribution_free_dual__9206",
+      "multimodal_select__active_mean_collapse_free_dual__9203",
+      "mnist__legacy_free__9202",
+      "irregular__distribution_free_dual__9202",
+      "irregular__two_gates__9203",
+      "mqar__distribution_free_ordinary__9201",
+      "mqar__distribution_free_ordinary__9203",
+      "irregular__transformer__9203",
+      "mqar__legacy_free__9203",
+      "selective_copy__distribution_conditional_dual__9201",
+      "selective_copy__distribution_free_dual__9208",
+      "mqar__two_gates__9203",
+      "selective_copy__two_gates__9208",
+      "irregular__distribution_free_ordinary__9202",
+      "selective_copy__two_gates__9203",
+      "multimodal_select__distribution_conditional_dual__9201",
+      "mqar__distribution_free_dual__9202",
+      "fsdd__two_gates__9203",
+      "multimodal_select__distribution_free_dual__9208",
+      "fsdd__distribution_free_ordinary__9201",
+      "multimodal_select__active_mean_collapse_free_dual__9207",
+      "selective_copy__distribution_free_ordinary__9203",
+      "fsdd__legacy_free__9203",
+      "mnist__transformer__9201",
+      "multimodal_select__distribution_free_ordinary__9203",
+      "selective_copy__two_gates__9205",
+      "multimodal_select__two_gates__9207",
+      "mnist__distribution_free_dual__9202",
+      "selective_copy__transformer__9203",
+      "fsdd__distribution_free_ordinary__9203",
+      "selective_copy__distribution_free_dual__9203",
+      "selective_copy__distribution_free_dual__9206",
+      "irregular__distribution_free_dual__9203",
+      "irregular__active_mean_collapse_free_dual__9202",
+      "selective_copy__distribution_free_ordinary__9202",
+      "multimodal_select__legacy_free__9202",
+      "multimodal_select__active_mean_collapse_free_dual__9204",
+      "irregular__two_gates__9201",
+      "mnist__distribution_free_dual__9203",
+      "multimodal_select__transformer__9202",
+      "selective_copy__two_gates__9201",
+      "selective_copy__two_gates__9206",
+      "multimodal_select__distribution_conditional_dual__9203",
+      "fsdd__active_mean_collapse_free_dual__9201",
+      "mnist__distribution_free_ordinary__9202",
+      "multimodal_select__distribution_free_ordinary__9208",
+      "selective_copy__distribution_conditional_dual__9204",
+      "mnist__active_mean_collapse_free_dual__9203",
+      "selective_copy__distribution_free_ordinary__9208",
+      "fsdd__transformer__9203",
+      "mnist__distribution_free_ordinary__9203",
+      "multimodal_select__transformer__9203",
+      "selective_copy__distribution_conditional_dual__9202",
+      "multimodal_select__distribution_conditional_dual__9206",
+      "multimodal_select__two_gates__9206",
+      "multimodal_select__active_mean_collapse_free_dual__9206",
+      "mqar__distribution_conditional_dual__9201",
+      "fsdd__active_mean_collapse_free_dual__9203",
+      "fsdd__distribution_free_dual__9201",
+      "selective_copy__two_gates__9202",
+      "multimodal_select__two_gates__9208",
+      "fsdd__distribution_conditional_dual__9201",
+      "multimodal_select__distribution_free_dual__9205",
+      "irregular__legacy_free__9201",
+      "selective_copy__distribution_conditional_dual__9206",
+      "multimodal_select__distribution_conditional_dual__9207",
+      "irregular__distribution_free_ordinary__9201",
+      "mnist__two_gates__9202",
+      "selective_copy__distribution_free_ordinary__9204",
+      "irregular__distribution_free_dual__9201",
+      "multimodal_select__active_mean_collapse_free_dual__9201",
+      "irregular__two_gates__9202",
+      "irregular__transformer__9201",
+      "multimodal_select__distribution_free_dual__9203",
+      "selective_copy__active_mean_collapse_free_dual__9207",
+      "selective_copy__active_mean_collapse_free_dual__9208",
+      "multimodal_select__distribution_free_ordinary__9201",
+      "mnist__two_gates__9203",
+      "selective_copy__two_gates__9207",
+      "selective_copy__distribution_conditional_dual__9207",
+      "irregular__distribution_conditional_dual__9201",
+      "selective_copy__distribution_free_dual__9207",
+      "selective_copy__distribution_conditional_dual__9203",
+      "mnist__distribution_conditional_dual__9203",
+      "fsdd__distribution_free_ordinary__9202",
+      "selective_copy__distribution_free_dual__9205",
+      "multimodal_select__distribution_conditional_dual__9202",
+      "mnist__distribution_conditional_dual__9201",
+      "mqar__active_mean_collapse_free_dual__9203",
+      "multimodal_select__two_gates__9202",
+      "fsdd__two_gates__9201",
+      "selective_copy__legacy_free__9201",
+      "mqar__transformer__9202",
+      "fsdd__legacy_free__9202",
+      "mqar__distribution_free_ordinary__9202",
+      "mqar__legacy_free__9202",
+      "mnist__two_gates__9201",
+      "irregular__legacy_free__9202",
+      "mqar__distribution_conditional_dual__9203",
+      "selective_copy__legacy_free__9202",
+      "mnist__transformer__9203",
+      "fsdd__distribution_conditional_dual__9202",
+      "selective_copy__two_gates__9204",
+      "selective_copy__distribution_free_ordinary__9205",
+      "multimodal_select__two_gates__9205",
+      "fsdd__active_mean_collapse_free_dual__9202",
+      "irregular__active_mean_collapse_free_dual__9203",
+      "selective_copy__active_mean_collapse_free_dual__9202",
+      "selective_copy__active_mean_collapse_free_dual__9203",
+      "mqar__active_mean_collapse_free_dual__9201",
+      "selective_copy__transformer__9202",
+      "multimodal_select__active_mean_collapse_free_dual__9202",
+      "multimodal_select__distribution_conditional_dual__9204",
+      "mnist__legacy_free__9201",
+      "multimodal_select__two_gates__9201",
+      "irregular__distribution_free_ordinary__9203",
+      "selective_copy__distribution_conditional_dual__9208",
+      "fsdd__transformer__9201",
+      "multimodal_select__active_mean_collapse_free_dual__9208",
+      "multimodal_select__distribution_free_ordinary__9207",
+      "selective_copy__active_mean_collapse_free_dual__9204",
+      "multimodal_select__distribution_free_ordinary__9204",
+      "mqar__distribution_conditional_dual__9202",
+      "multimodal_select__distribution_conditional_dual__9205",
+      "mqar__legacy_free__9201",
+      "irregular__active_mean_collapse_free_dual__9201",
+      "multimodal_select__two_gates__9203",
+      "multimodal_select__active_mean_collapse_free_dual__9205",
+      "irregular__distribution_conditional_dual__9202",
+      "selective_copy__transformer__9201",
+      "multimodal_select__legacy_free__9201",
+      "selective_copy__distribution_free_dual__9202",
+      "selective_copy__active_mean_collapse_free_dual__9205",
+      "mqar__transformer__9201",
+      "fsdd__legacy_free__9201",
+      "mnist__legacy_free__9203",
+      "irregular__transformer__9202",
+      "irregular__distribution_conditional_dual__9203",
+      "selective_copy__distribution_free_dual__9204",
+      "fsdd__two_gates__9202",
+      "multimodal_select__distribution_free_ordinary__9206",
+      "multimodal_select__transformer__9201",
+      "selective_copy__legacy_free__9203",
+      "mqar__distribution_free_dual__9203",
+      "mnist__transformer__9202",
+      "multimodal_select__distribution_free_dual__9202",
+      "selective_copy__distribution_free_ordinary__9206",
+      "multimodal_select__distribution_free_ordinary__9202",
+      "fsdd__distribution_conditional_dual__9203",
+      "multimodal_select__distribution_conditional_dual__9208",
+      "mnist__active_mean_collapse_free_dual__9201",
+      "selective_copy__distribution_free_ordinary__9201",
+      "mqar__distribution_free_dual__9201",
+      "mqar__transformer__9203",
+      "mqar__two_gates__9202",
+      "mqar__two_gates__9201",
+      "multimodal_select__two_gates__9204",
+      "mnist__active_mean_collapse_free_dual__9202",
+      "fsdd__distribution_free_dual__9203",
+      "mqar__active_mean_collapse_free_dual__9202",
+      "mnist__distribution_free_ordinary__9201",
+      "multimodal_select__distribution_free_ordinary__9205",
+      "mnist__distribution_conditional_dual__9202",
+      "multimodal_select__distribution_free_dual__9204",
+      "selective_copy__distribution_conditional_dual__9205",
+      "selective_copy__active_mean_collapse_free_dual__9201",
+      "multimodal_select__distribution_free_dual__9201",
+      "fsdd__distribution_free_dual__9202",
+      "selective_copy__active_mean_collapse_free_dual__9206",
+      "irregular__legacy_free__9203",
+      "selective_copy__distribution_free_ordinary__9207"
+    ],
+    "scope": "Every regular file in every completed run directory and its matching process log; no work-tree recursion",
+    "unique": 176
+  },
+  "member_union": {
+    "bytes": 599365493,
+    "conflicting_paths": 0,
+    "identical_repeated_paths": 0,
+    "unique_paths": 13979
+  },
+  "proofs": {
+    "checkpoint_watcher": {
+      "path": "results/content_checkpoint_archives/COMPLETE.json",
+      "sha256": "f76562205efa6ecc414b8e8db645b3c3c101f88640ee56477cb40dd319516da9"
+    },
+    "lif_analysis": {
+      "path": "results/lif_analysis001/ANALYSIS.json",
+      "sha256": "757a13820a15517c65b5c157f26715cb1a7cd30d35ebc10a10201f9d7c3f582f"
+    },
+    "lif_analysis_cost_original": {
+      "path": "results/lif_supplement001/ANALYSIS_OUTER_EXECUTION.json",
+      "sha256": "2ac81012279188b0fa16bc83b404271d87991b915a887431472b9cabbab75619"
+    },
+    "lif_analysis_watcher_cost_original": {
+      "path": "results/lif_supplement001/ANALYSIS_OUTER_EXECUTION.json",
+      "sha256": "2ac81012279188b0fa16bc83b404271d87991b915a887431472b9cabbab75619"
+    },
+    "lif_completion": {
+      "path": "results/lif_supplement001/COMPLETE.json",
+      "sha256": "bc91798b2a9b230d3747bba60e1526c5c870f652b9774140cc6ccd7c074c57d9"
+    },
+    "lif_normalized_cost_receipts": {
+      "path": "results/lif_cost_receipts001/RECEIPTS.json",
+      "sha256": "d10bcf9d0eb35c767cdb37063f712bd758a0dd1b34c1342e1f910301654cda00"
+    },
+    "lif_scheduler": {
+      "path": "results/lif_supplement001/SCHEDULER_EXECUTION.json",
+      "sha256": "efda6065633bd5d796af694780d9561fac330baa990fa253d26179e21c860519"
+    },
+    "lif_scheduler_cost_original": {
+      "path": "results/lif_supplement001/SCHEDULER_EXECUTION.json",
+      "sha256": "efda6065633bd5d796af694780d9561fac330baa990fa253d26179e21c860519"
+    },
+    "main_analysis": {
+      "path": "results/content_analysis002/ANALYSIS.json",
+      "sha256": "654f1f3b235bd066e8ee64f2f20e18dc16eb7f83ecbef31379a066d94433da76"
+    },
+    "main_analysis_execution": {
+      "path": "results/content_analysis002/EXECUTION.json",
+      "sha256": "888306666e60ee51c40aa7af02e8c2f46bd4aaf4ff88a2601fd1dd5d51b37218"
+    },
+    "main_analysis_process_log": {
+      "path": "results/content_analysis002.log",
+      "sha256": "09b78b28d09c0362f0f9201825fefb919155e655d5303768190e88efb49c342b"
+    },
+    "main_completion": {
+      "path": "results/content002/COMPLETE.json",
+      "sha256": "9153a92f04f8f7d255de52484bcab10c83c99c68cfcd6789216276fb82ed20c6"
+    },
+    "main_scheduler": {
+      "path": "results/content002/SCHEDULER_EXECUTION.json",
+      "sha256": "678b4a877fad5d20a841e382629ccc9d6e146198813a95e5d4fe800baebf86de"
+    },
+    "main_strict_analysis": {
+      "path": "results/content_analysis002/ANALYSIS.json",
+      "sha256": "654f1f3b235bd066e8ee64f2f20e18dc16eb7f83ecbef31379a066d94433da76"
+    },
+    "main_strict_analysis_execution": {
+      "path": "results/content_analysis002/EXECUTION.json",
+      "sha256": "888306666e60ee51c40aa7af02e8c2f46bd4aaf4ff88a2601fd1dd5d51b37218"
+    },
+    "main_supplement_analysis": {
+      "path": "results/content_analysis_supplement001/ANALYSIS.json",
+      "sha256": "6e7aa0c66627663ea84e962f502a7a73dcb46b0c0569e71feb932e51b27ecffd"
+    },
+    "main_supplement_execution": {
+      "path": "results/content_analysis_supplement001_execution/EXECUTION.json",
+      "sha256": "d7507b04aa6393298a56429d6332b2b17b1bb693e804967e1f14e6214dca64d1"
+    },
+    "main_supplement_execution_log": {
+      "path": "results/content_analysis_supplement001_execution/process.log",
+      "sha256": "ca32141becc72308dbe3a305ab873d8c084a2679b478179650c5775d1fb13da9"
+    },
+    "main_supplement_execution_request": {
+      "path": "results/content_analysis_supplement001_execution/REQUEST.json",
+      "sha256": "efaa093a750e0efc6a2599dce8081f769dc1d6dce0a2235532a4294096cc70e0"
+    },
+    "main_supplement_protocol": {
+      "path": "CONTENT_SUPPLEMENT001_PROTOCOL.json",
+      "sha256": "5e431b9165efc855d7b45cad5185cc7d093c900a533c2aa37e2c81eec231a6c2"
+    },
+    "main_supplement_registered_ast_evidence": {
+      "path": "results/content_supplement001/AST_COMPARISON.json",
+      "sha256": "a007b03824139e989e4bc6efa43b3b732019d584062b75c593a2c949eb597415"
+    },
+    "main_supplement_registered_derivation_diff": {
+      "path": "results/content_supplement001/DERIVATION.diff",
+      "sha256": "4e24e3067125999079c14a8ec60c00617bd7cfcadc66ac8e18afc42583df4408"
+    },
+    "main_supplement_registered_diagnostic": {
+      "path": "results/content_ce_diagnostic002/RESULT.json",
+      "sha256": "9a7e1e1ed6dd9bf959fa65a652f932175fb264afe012c7937f971a093423a0a9"
+    },
+    "main_supplement_registered_preparer_source": {
+      "path": "results/content_supplement001/PREPARE.py",
+      "sha256": "ad70b29dadf6943bfc2978a9fcfb05d81c76bc8a4fbb51b2c363dbba68451956"
+    },
+    "main_supplement_registered_producer_checks": {
+      "path": "results/content_supplement001/PRODUCER_CHECKS.json",
+      "sha256": "df2490c066639397106013c4556304290473c7c3def2033a43e6771268d41285"
+    },
+    "main_supplement_registration_ast_comparison_json": {
+      "path": "results/content_supplement001/AST_COMPARISON.json",
+      "sha256": "a007b03824139e989e4bc6efa43b3b732019d584062b75c593a2c949eb597415"
+    },
+    "main_supplement_registration_derivation_diff": {
+      "path": "results/content_supplement001/DERIVATION.diff",
+      "sha256": "4e24e3067125999079c14a8ec60c00617bd7cfcadc66ac8e18afc42583df4408"
+    },
+    "main_supplement_registration_producer_checks_json": {
+      "path": "results/content_supplement001/PRODUCER_CHECKS.json",
+      "sha256": "df2490c066639397106013c4556304290473c7c3def2033a43e6771268d41285"
+    },
+    "main_supplement_registration_registration_json": {
+      "path": "results/content_supplement001/REGISTRATION.json",
+      "sha256": "82158d1f4aa4f3b87ab877865cc12dcb315ad5c8f1744c187d55f571f0a30427"
+    },
+    "original_scaling_not_executed": {
+      "path": "results/scaling001/NOT_EXECUTED.json",
+      "sha256": "842eb51ba69d9f3619215d94fde27dfa729f9e009d845f5798e3e795b28dcd08"
+    },
+    "original_scaling_preflight_execution": {
+      "path": "results/scaling_preflight001/EXECUTION.json",
+      "sha256": "74e8426253fe4615679676cffcf5ca5f15eae7e65c5aa6a3b0a0ad119233d05f"
+    },
+    "original_scaling_preflight_results": {
+      "path": "results/scaling_preflight001/RESULTS.json",
+      "sha256": "cab0cba23b3290ed972d6e28425622ce6840e62af5182601540983f9fe33366d"
+    },
+    "original_scaling_protocol": {
+      "path": "SCALING001_PROTOCOL.json",
+      "sha256": "287c56ae904ec5c4cabe6e5ee309d6a22b8f4648e9b1890ed650af2b0fbc1fa3"
+    },
+    "scaling_completion": {
+      "path": "results/scaling002_summary_repair001/COMPLETE.json",
+      "sha256": "49bef4fbc4b9af92417dab708d197a3aa39be59693ab28753fcde812a36e5281"
+    },
+    "scaling_original_failed_suite_log": {
+      "path": "results/scaling002/process.log",
+      "sha256": "ab8b11b90e67f751e7c03376bb495b7bfd473ccc659fd8e2dee90ea9775a16ec"
+    },
+    "scaling_protocol": {
+      "path": "SCALING002_PROTOCOL.json",
+      "sha256": "b836b139d18d06a81628fc6c36865c232fac28518159b6b17fd995a8494ab8c0"
+    },
+    "scaling_run_authorization": {
+      "path": "results/scaling002/RUN_AUTHORIZATION.json",
+      "sha256": "a2eee0c665be0ff981dd2be91c5b975606b89ffe086354244b3aa23c6f648757"
+    },
+    "scaling_suite_execution": {
+      "path": "results/scaling002/SUITE_EXECUTION.json",
+      "sha256": "fa3731bffbc8ca577c3a2eef6e3d0e513a1c8a427afdd8813c91901a75860aec"
+    },
+    "scaling_summary_repair_body": {
+      "path": "results/scaling002_summary_repair001/EXECUTION.json",
+      "sha256": "1f2a5417397c072d23e896fc24257b38e356c13c03ec9b0e2b541f4a510d9c5d"
+    },
+    "scaling_summary_repair_inputs": {
+      "path": "results/scaling002_summary_repair001/INPUT_BINDINGS.json",
+      "sha256": "047fd350a86efd2bbabedd8ebf25ca444c79916a0e8097d0a9315de0b9bcc32e"
+    },
+    "scaling_summary_repair_outer": {
+      "path": "results/scaling002_summary_repair001_execution/EXECUTION.json",
+      "sha256": "a94aa21f1889f96ff5f2b74a6f85daf9a47d8f5e0c9e9e21b53705f6863bad9f"
+    },
+    "scaling_summary_repair_outer_log": {
+      "path": "results/scaling002_summary_repair001_execution/process.log",
+      "sha256": "d7cfe8e7d54051d11ca6337f0edca94174d806a67d17c505902044a03cc1f323"
+    },
+    "scaling_summary_repair_outer_request": {
+      "path": "results/scaling002_summary_repair001_execution/REQUEST.json",
+      "sha256": "c829808df6acc419b62e5eb8f736c4f9359dd91fe3eb382d594c8314e2306a63"
+    },
+    "scaling_summary_repair_report": {
+      "path": "results/scaling002_summary_repair001/REPORT.md",
+      "sha256": "897dd69790aadf3d3acd1d22d9f4c99639baccbf07a6a29f76d20b76cdb889ce"
+    },
+    "scaling_summary_repair_source": {
+      "path": "scaling_summary_repair.py",
+      "sha256": "605b46b3e45518589a9f4a07a8001747092aeb901ddc2102e623e8443b7ae7be"
+    },
+    "scaling_summary_repair_summary": {
+      "path": "results/scaling002_summary_repair001/SUMMARY.json",
+      "sha256": "668443779ddaaf03bf058c443d91da5c3180594ab107531b83f068852194cd19"
+    }
+  },
+  "required_bundle_names": [
+    "content002_metadata",
+    "content_aborted001",
+    "execution_v2_001",
+    "lif_supplement001_evidence",
+    "task_value_and_control002",
+    "v2_auxiliary_evidence"
+  ],
+  "scaling_case_coverage": {
+    "archived_study_inventories": {
+      "results/scaling001": 73,
+      "results/scaling002": 496,
+      "results/scaling_preflight001": 13
+    },
+    "case_ids": [
+      "distribution_free_dual_b1_t16_w32_d1",
+      "two_gates_b1_t16_w32_d1",
+      "transformer_b1_t16_w32_d1",
+      "distribution_free_dual_b1_t32_w32_d1",
+      "two_gates_b1_t32_w32_d1",
+      "transformer_b1_t32_w32_d1",
+      "distribution_free_dual_b1_t64_w32_d1",
+      "two_gates_b1_t64_w32_d1",
+      "transformer_b1_t64_w32_d1",
+      "distribution_free_dual_b1_t128_w32_d1",
+      "two_gates_b1_t128_w32_d1",
+      "transformer_b1_t128_w32_d1",
+      "distribution_free_dual_b1_t256_w32_d1",
+      "two_gates_b1_t256_w32_d1",
+      "transformer_b1_t256_w32_d1",
+      "distribution_free_dual_b1_t512_w32_d1",
+      "two_gates_b1_t512_w32_d1",
+      "transformer_b1_t512_w32_d1",
+      "distribution_free_dual_b1_t64_w32_d2",
+      "two_gates_b1_t64_w32_d2",
+      "transformer_b1_t64_w32_d2",
+      "distribution_free_dual_b1_t64_w32_d4",
+      "two_gates_b1_t64_w32_d4",
+      "transformer_b1_t64_w32_d4",
+      "distribution_free_dual_b1_t64_w64_d1",
+      "two_gates_b1_t64_w64_d1",
+      "transformer_b1_t64_w64_d1",
+      "distribution_free_dual_b1_t64_w64_d2",
+      "two_gates_b1_t64_w64_d2",
+      "transformer_b1_t64_w64_d2"
+    ],
+    "completed": 30,
+    "expected": 30,
+    "failed": 0,
+    "files": 496,
+    "independent_summary_repair": {
+      "path": "experiments/hcsn_distributional_v2/results/scaling002_summary_repair001_execution/EXECUTION.json",
+      "returncode": 0,
+      "sha256": "a94aa21f1889f96ff5f2b74a6f85daf9a47d8f5e0c9e9e21b53705f6863bad9f"
+    },
+    "interpretation": "All 30 original workers succeeded. Original scaling002 suite returned 1 during summary division by zero and remains failed; a separately measured read-only summary repair completed. Original zero timer values are preserved and corresponding ratios remain null.",
+    "new_timing_or_inference": false,
+    "original_case_timings_modified": false,
+    "original_scaling001_status": "not_executed",
+    "original_strict_gate_passed": false,
+    "original_suite": {
+      "path": "experiments/hcsn_distributional_v2/results/scaling002/SUITE_EXECUTION.json",
+      "returncode": 1,
+      "sha256": "fa3731bffbc8ca577c3a2eef6e3d0e513a1c8a427afdd8813c91901a75860aec"
+    },
+    "original_suite_succeeded": false,
+    "repair_evidence_inventories": {
+      "results/scaling002_summary_repair001": 6,
+      "results/scaling002_summary_repair001_execution": 4
+    },
+    "study": "scaling002",
+    "successful": 30,
+    "summary_repair_succeeded": true,
+    "undefined_ratio_count": 12,
+    "unique": 30,
+    "zero_timing_median_count": 12
+  },
+  "schema": "hcsn-v2-archive-closure.v1",
+  "source_sha256": {
+    "archive_closure.py": "a73cdcadf0164a83c1355cce17bec9e38e0991e9155b9a4c52c243cb8e4d0209",
+    "archive_closure_final.py": "7f20d212c83a8d92d584c00cf9a69b76f5b1b5d9caa82d17be9d4a5c7c91ee0a",
+    "content_checkpoint_archives.py": "1d68d5f7b3c2ba14632a886a1549c87668a4d76c5a4eda38be32f81ce1d909fc",
+    "evidence_bundle.py": "5cb943759e5ffdc91cd4bf2f98f813bfe89ceb90b37cd5799183bab12700a085",
+    "seal_bundle.py": "432ec83121406b9c0e1012d76cf85777c66335f9b5a45ad731fa46436953a8fa",
+    "v1/archive.py": "7aefcc785977bb391116750d04e9abd8bfa1db28381ee06227bac501c61eceab"
+  },
+  "status": "completed",
+  "verification": "All parts and combined compressed SHA-256, optional Git blob identities, successful restore seals, immutable source selections, outer receipts, conflict-free member union, registered source files and complete main/LIF file inventories"
+}

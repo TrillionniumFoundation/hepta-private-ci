@@ -15,12 +15,13 @@ import sys
 import time
 import traceback
 
-from .archive_closure import ClosureAudit, PACKAGE, file_hash, member_map, merge_members, read_json, require, write_new
+from .archive_closure import PACKAGE, file_hash, member_map, merge_members, read_json, require, write_new
+from .archive_closure_final import ClosureAudit
 
 
 NAMES = ("lif_supplement001_evidence", "content002_metadata", "v2_auxiliary_evidence")
 ROOT_DIRECT_GIT = {"README.md", "final_report.py", "campaign_costs.py", "CAMPAIGN_COSTS.md",
-                   "archive_closure.py", "ARCHIVE_CLOSURE.md"}
+                   "archive_closure.py", "ARCHIVE_CLOSURE.md", "archive_closure_final.py", "ARCHIVE_CLOSURE_FINAL.md"}
 LIF_ROOT = {"LIF_SUPPLEMENT001_PROTOCOL.json", "LIF_COST_BINDINGS_TEMPLATE.json", "lif_supplement.py",
             "lif_supplement_analysis.py", "lif_cost_receipts.py"}
 MAIN_ROOT = {"CONTENT002_PROTOCOL.json", "CONTENT.md", "model.py", "content_training.py", "content_study.py",

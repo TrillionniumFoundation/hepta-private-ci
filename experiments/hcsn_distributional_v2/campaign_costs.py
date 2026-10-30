@@ -56,6 +56,8 @@ class Ledger:
         self.root = self.package.parents[1]
         self.inputs, self.rows, self.missing, self.excluded = {}, [], [], []
         self.reserved_fields, self.scope_ids = set(), set()
+        self.main_admission = None
+        self.scaling_completion = None
 
     def resolve(self, value):
         path = Path(value)
@@ -195,6 +197,8 @@ SINGLES = [
     ("content002_scheduler", "content_main", "results/content002/SCHEDULER_EXECUTION.json", "/wait4_total_cpu_seconds", WAIT4, "Complete main scheduler tree including all 176 search workers; no worker CPU added again."),
     ("content002_analysis", "content_main", "results/content_analysis002/EXECUTION.json", "/complete_child_cpu_seconds", WAIT4, "Independent full main analyzer child, including integrity replays; body clocks are nested."),
     ("content002_analysis_watcher", "content_main", "results/content_analysis002/EXECUTION.json", "/watcher_self_cpu_seconds", SELF, "Analysis watcher's own CPU through receipt; sleeping wall time is not CPU."),
+    ("content_supplement_analysis", "content_supplemental_audit", "results/content_analysis_supplement001_execution/EXECUTION.json", "/complete_child_cpu_seconds", WAIT4, "Independent post-hoc producer-exact full 176-run integrity audit; original strict175/1 analysis remains separately charged and unchanged."),
+    ("content_supplement_supervisor", "content_supplemental_audit", "results/content_analysis_supplement001_execution/EXECUTION.json", "/supervisor_self_cpu_seconds_through_receipt", SELF, "Supplement audit's separate measured-support supervisor self CPU; audit body timer is nested in its child."),
     ("runtime_suite", "runtime", "results/runtime001/SUITE_EXECUTION.json", "/complete_child_cpu_seconds", WAIT4, "Outer runtime suite including all microbenchmark/recovery children and nested resume processes."),
     ("runtime_tests", "runtime", "results/runtime_tests001_EXECUTION.json", "/complete_child_cpu_seconds", WAIT4, "Independent runtime contract tests."),
     ("runtime_review", "runtime", "results/runtime_review001/EXECUTION.json", "/whole_analysis_self_cpu_seconds", SELF, "Read-only runtime review through receipt."),
@@ -411,35 +415,134 @@ def archive_receipts(ledger, completion_path):
 def finish_future_scopes(ledger, archive_completion):
     verify_scheduler(ledger, "results/content002", 176, "/wait4_total_cpu_seconds")
     lif_receipts(ledger)
+    main_integrity_admission(ledger)
     archive_receipts(ledger, archive_completion)
     scaling_receipts(ledger)
+
+
+def main_integrity_admission(ledger):
+    normalized = ledger.read("results/lif_cost_receipts001/RECEIPTS.json")
+    strict_path = "results/content_analysis002/ANALYSIS.json"
+    supplement_path = "results/content_analysis_supplement001/ANALYSIS.json"
+    strict = ledger.read(strict_path)
+    supplement = ledger.read(supplement_path)
+    protocol = ledger.read("CONTENT_SUPPLEMENT001_PROTOCOL.json")
+    if any(item is None for item in (normalized, strict, supplement, protocol)):
+        return
+    record = normalized["main_admission"]
+    if (record["schema"] != "hcsn-main-analysis-admission.v1" or
+            record["basis"] != "independent_post_hoc_producer_exact_integrity_audit" or
+            record["scientific_comparisons_preserved"] is not True or
+            strict["schema"] != "hcsn-distribution-content-analysis.v2" or
+            (strict["expected"], strict["valid"], strict["invalid"]) != (176, 175, 1) or
+            (supplement["expected"], supplement["valid"], supplement["invalid"]) != (176, 176, 0) or
+            supplement["schema"] != "hcsn-distribution-content-supplemental-analysis.v1" or
+            supplement["post_hoc"] is not True or supplement["statistical_gates_changed"] is not False or
+            supplement["supplemental_gate_passed"] is not True):
+        raise ValueError("Original strict failure and independent supplemental admission must stay distinct")
+    prior, added = record["original_strict"], record["supplemental"]
+    if (prior != supplement["original_strict_audit"] or prior != protocol["original_strict_audit"] or
+            prior["gate_passed"] is not False or (prior["expected"], prior["valid"], prior["invalid"]) != (176, 175, 1) or
+            (added["expected"], added["valid"], added["invalid"]) != (176, 176, 0) or
+            added["post_hoc"] is not True or added["statistical_gates_changed"] is not False or
+            ledger.resolve(prior["path"]) != ledger.resolve(strict_path) or
+            ledger.resolve(added["path"]) != ledger.resolve(supplement_path) or
+            ledger.resolve(added["protocol_path"]) != ledger.resolve("CONTENT_SUPPLEMENT001_PROTOCOL.json") or
+            added["protocol_sha256"] != supplement["supplemental_protocol_sha256"] or
+            record["derived_source"] != supplement["derived_source"] or record["derived_source"] != protocol["derived_source"]):
+        raise ValueError("Supplemental admission path/source/protocol binding differs")
+    ledger.read(prior["path"], prior["sha256"])
+    ledger.read(added["path"], added["sha256"])
+    ledger.read(added["protocol_path"], added["protocol_sha256"])
+    original_execution = ledger.read(prior["execution_path"], prior["execution_sha256"])
+    supplemental_execution = ledger.read("results/content_analysis_supplement001_execution/EXECUTION.json")
+    if any(item is None for item in (original_execution, supplemental_execution)):
+        return
+    if original_execution["returncode"] != 0 or supplemental_execution["returncode"] != 0:
+        raise ValueError("Original and supplementary analyzer processes must both complete")
+    reconciled = supplement["scientific_comparison_reconciliation"]
+    keys = ("all_four_mechanism_records_exactly_equal", "all_prediction_summaries_producer_exact",
+            "only_previously_missing_fsdd_rows_filled", "original_strict_ce_failure_remains_explicit",
+            "previously_complete_content_screens_exactly_equal", "previously_complete_core_records_exactly_equal")
+    if (not all(reconciled.get(key) is True for key in keys) or
+            reconciled["training_selection_prediction_or_scientific_threshold_changes"] is not False):
+        raise ValueError("Supplement changed scientific comparisons or thresholds")
+    source = ledger.resolve(record["derived_source"]["path"])
+    source_sha = sha(source)
+    if source_sha != record["derived_source"]["sha256"]:
+        raise ValueError("Supplement analyzer source changed")
+    key = str(source.relative_to(ledger.root))
+    ledger.inputs[key] = dict(path=key, sha256=source_sha, bytes=source.stat().st_size)
+    ledger.main_admission = record
 
 
 def scaling_receipts(ledger):
     if not (ledger.package / "SCALING001_PROTOCOL.json").exists():
         return
-    protocol = ledger.read("SCALING001_PROTOCOL.json")
-    path = "results/scaling001/SUITE_EXECUTION.json"
-    ledger.single("scaling001_suite", "scaling", path, "/complete_child_cpu_seconds", WAIT4,
-        "Complete 30-case scaling coordinator/worker/report tree; all worker/body/warmup timers are nested.")
-    ledger.single("scaling001_supervisor", "scaling", path, "/supervisor_self_cpu_seconds_through_cutoff", SELF,
+    original = ledger.read("SCALING001_PROTOCOL.json")
+    protocol = ledger.read("SCALING002_PROTOCOL.json")
+    marker_path = "results/scaling001/NOT_EXECUTED.json"
+    marker = ledger.read(marker_path)
+    if protocol is None or marker is None:
+        return
+    inherited = ("cases", "expected_cases", "measurement", "randomness", "preflight")
+    if (protocol["schema"] != "hcsn-v2-scaling-protocol.v2" or protocol["study_id"] != "scaling002" or
+            any(protocol[key] != original[key] for key in inherited) or
+            protocol["inherited_protocol"]["sha256"] != sha(ledger.package / "SCALING001_PROTOCOL.json") or
+            ledger.resolve(protocol["inherited_protocol"]["path"]) != ledger.resolve("SCALING001_PROTOCOL.json") or
+            ledger.resolve(protocol["original_not_executed"]["path"]) != ledger.resolve(marker_path) or
+            protocol["original_not_executed"]["sha256"] != sha(ledger.resolve(marker_path)) or
+            marker["status"] != "not_executed" or marker["started_workers"] != 0 or
+            marker["strict_gate_passed"] is not False or
+            marker["protocol_sha256"] != protocol["inherited_protocol"]["sha256"] or
+            any(protocol["source_files_sha256"].get(path) != value for path, value in original["source_files_sha256"].items()) or
+            protocol["frozen_benchmark"]["implementation_modified"] is not False):
+        raise ValueError("SCALING002 must inherit unchanged measurements and preserve unexecuted001")
+    if any((ledger.package / "results/scaling001" / leaf).exists()
+           for leaf in ("cases", "COMPLETE.json", "SUITE_EXECUTION.json", "RUN_AUTHORIZATION.json")):
+        raise ValueError("Original failed admission cannot have formal scaling001 workers")
+    path = "results/scaling002/SUITE_EXECUTION.json"
+    ledger.single("scaling002_suite", "scaling", path, "/complete_child_cpu_seconds", WAIT4,
+        "Complete original SCALING002 tree: all30 workers succeeded, then the summary divided by an observed zero CPU median and exited1. Worker/body/warmup clocks are nested; original failure remains charged.")
+    ledger.single("scaling002_supervisor", "scaling", path, "/supervisor_self_cpu_seconds_through_cutoff", SELF,
         "Separate outer scaling supervisor self CPU through receipt.")
     outer = ledger.read(path)
-    complete_path = "results/scaling001/COMPLETE.json"
+    repair_outer_path = "results/scaling002_summary_repair001_execution/EXECUTION.json"
+    ledger.single("scaling002_summary_repair", "scaling", repair_outer_path, "/complete_child_cpu_seconds", WAIT4,
+        "Independent read-only verification/aggregation of all30 original timings; no new benchmark, model operation, or changed raw value. Repair body clock is nested.")
+    ledger.single("scaling002_summary_repair_supervisor", "scaling", repair_outer_path, "/supervisor_self_cpu_seconds_through_receipt", SELF,
+        "Separate reconstruction supervisor self CPU through its receipt.")
+    repair_outer = ledger.read(repair_outer_path)
+    complete_path = "results/scaling002_summary_repair001/COMPLETE.json"
     complete = ledger.read(complete_path)
-    if outer is None or complete is None:
+    if outer is None or complete is None or repair_outer is None:
         return
     expected = {case["case_id"] for case in protocol["cases"]}
     observed = {row["case_id"] for row in complete["records"]}
     if (len(expected) != 30 or len(complete["records"]) != 30 or expected != observed or
             complete["expected_cases"] != 30 or complete["completed_cases"] != 30 or
-            complete["status"] != "completed" or outer["returncode"] != 0 or
-            outer["protocol_sha256"] != sha(ledger.package / "SCALING001_PROTOCOL.json") or
+            complete["status"] != "completed" or outer["returncode"] != 1 or
+            complete["schema"] != "hcsn-v2-scaling-summary-repair-complete.v1" or
+            complete["original_suite_failed"] is not True or complete["original_case_timings_modified"] is not False or
+            complete["new_timing_or_inference"] is not False or
+            repair_outer["returncode"] != 0 or repair_outer["status"] != "completed" or
+            complete["study_id"] != "scaling002" or complete["original_strict_gate_passed"] is not False or
+            outer["protocol_sha256"] != sha(ledger.package / "SCALING002_PROTOCOL.json") or
             complete["protocol_sha256"] != outer["protocol_sha256"] or
             complete["source_files_sha256"] != protocol["source_files_sha256"] or
             outer["source_files_sha256"] != protocol["source_files_sha256"] or
-            outer["complete_receipt_sha256"] != sha(ledger.resolve(complete_path))):
-        raise ValueError("Scaling complete receipt/source/protocol/30-case coverage mismatch")
+            outer["complete_receipt_sha256"] is not None or
+            complete["original_suite"] != dict(path=str(ledger.resolve(path).relative_to(ledger.root)),
+                sha256=sha(ledger.resolve(path)), returncode=1)):
+        raise ValueError("Scaling original failure/independent reconstruction/source/protocol/30-case coverage mismatch")
+    ledger.read("results/scaling002_summary_repair001/INPUT_BINDINGS.json", complete["input_bindings_sha256"])
+    ledger.read("results/scaling002_summary_repair001/SUMMARY.json", complete["summary_sha256"])
+    ledger.scaling_completion = dict(original_suite=complete["original_suite"], original_suite_failed=True,
+        independent_reconstruction=dict(path=str(ledger.resolve(complete_path).relative_to(ledger.root)),
+            sha256=sha(ledger.resolve(complete_path)), schema=complete["schema"]),
+        reconstruction_execution=dict(path=str(ledger.resolve(repair_outer_path).relative_to(ledger.root)),
+            sha256=sha(ledger.resolve(repair_outer_path)), returncode=0),
+        expected_cases=30, completed_cases=30, new_timing_or_inference=False)
     nested, components = [], []
     for row in complete["records"]:
         raw = ledger.read(row["receipt_path"])
@@ -455,7 +558,7 @@ def scaling_receipts(ledger):
             raise ValueError("Nested scaling worker already charged elsewhere")
         ledger.reserved_fields.add(key)
         components.append(binding)
-    suite_row = next(row for row in ledger.rows if row["scope_id"] == "scaling001_suite")
+    suite_row = next(row for row in ledger.rows if row["scope_id"] == "scaling002_suite")
     suite_row["verified_nested_components"].extend(components)
     if len(nested) == 30:
         equal(math.fsum(nested), numeric(complete["complete_worker_cpu_seconds"]), "nested scaling workers")
@@ -469,7 +572,8 @@ def report(ledger):
     lines = ["# Observed CPU lower bound", "", f"Receipt coverage status: **{ledger['status']}**.", "",
         f"Observed lower bound: **{ledger['observed_cpu_lower_bound_seconds']:.9f} CPU seconds**.", "",
         "This is a sum of the explicit disjoint scopes below. `complete` describes required receipt coverage only. Unmeasured development, downloads, source editing, process remainders and work after this cutoff remain unknown; they are not zero. Wall time, hypothetical deployment scenarios, historical v1 training and reused LIF comparator training are excluded.", "",
-        f"Cutoff: {ledger['coverage_cutoff_utc']}. No predictions, heldout scores, weights or policy choices were read by this audit.", "",
+        f"Cutoff: {ledger['coverage_cutoff_utc']}. This audit uses receipt and integrity-admission metadata, not prediction arrays, weights, quality-based policy selection, or new inference.", "",
+        "The original strict content audit remains175 valid/1 invalid. A separately registered post-hoc producer-exact audit has176 valid/0 invalid and retains all scientific comparisons. SCALING001 was not executed. All30 SCALING002 workers succeeded, but its original summary failed on a zero denominator; a separate read-only reconstruction preserves those timings and the failed suite. Both analysis processes, the failed suite and its reconstruction remain charged independently.", "",
         "## Additive groups", "", "| Group | Observed CPU lower bound (seconds) |", "| --- | ---: |"]
     lines += [f"| {key} | {value:.9f} |" for key, value in ledger["by_group"].items()]
     lines += ["", "## Explicit additive scopes", "", "| Scope | Measurement | Seconds | Receipt field |", "| --- | --- | ---: | --- |"]
@@ -527,9 +631,13 @@ def main():
         quantity_name="observed lower bound", observed_cpu_lower_bound_seconds=math.fsum(by_group.values()),
         unknown_additional_cpu_seconds=None, unknown_additional_cpu_scopes=UNKNOWN,
         required_receipt_coverage_is_not_complete_research_cost=True,
+        main_analysis_admission=ledger.main_admission,
+        scaling_completion=ledger.scaling_completion,
         by_group=by_group, scope_rows=ledger.rows, input_receipts=list(ledger.inputs.values()),
         missing_required_inputs=sorted(ledger.missing), excluded_nested_evidence=ledger.excluded,
-        source_sha256=sha(__file__), new_training_or_inference=False, heldout_predictions_or_scores_read=False)
+        source_sha256=sha(__file__), new_training_or_inference=False,
+        prediction_arrays_or_model_weights_loaded=False, quality_scores_used_for_accounting=False,
+        integrity_admission_metadata_read=True)
     for item in value["input_receipts"]:
         if sha(ledger.root / item["path"]) != item["sha256"]:
             raise ValueError("Input changed before ledger serialization: " + item["path"])
