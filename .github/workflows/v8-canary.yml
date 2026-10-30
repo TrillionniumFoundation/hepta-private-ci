@@ -194,6 +194,14 @@ jobs:
         with:
           toolchain: "1.95.0"
 
+      # Priming rust-src serially prevents Cargo smoke's parallel rustc shims
+      # from racing to download the same rustup component on first use.
+      - name: Preinstall Rust 1.95 source component for Cargo smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup component add rust-src --toolchain 1.95.0
+
       - name: Pin installed Cargo binary
         shell: bash
         run: |
