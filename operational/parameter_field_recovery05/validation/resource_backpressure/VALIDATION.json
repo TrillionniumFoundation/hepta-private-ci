@@ -1,0 +1,108 @@
+{
+  "capacity_profiles": "synthetic test-only finite cgroup profiles; no production admission success claimed",
+  "child_peak_rss_bytes": 22503424,
+  "child_pid": 8816,
+  "context_reconstructed": true,
+  "cwd": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git",
+  "entrypoint": "unittest.defaultTestLoader.loadTestsFromName(operational.parameter_field_recovery05.test_resource_backpressure)",
+  "exit_code": 0,
+  "filesystem_and_locks": "real low-memory files; actual independent-process flock writer locks",
+  "finished_utc": "2026-10-30T11:59:47.113856+00:00",
+  "fixture_source_pins_only": "current-tree pins used only as synthetic fixture data",
+  "frozen_scientific_git_diff_exit_code": 0,
+  "model_imports": false,
+  "oom_after": {
+    "oom": 0,
+    "oom_kill": 0
+  },
+  "oom_before": {
+    "oom": 0,
+    "oom_kill": 0
+  },
+  "owned_wait4_cpu_seconds": 0.34551,
+  "owned_wait4_system_cpu_seconds": 0.060848,
+  "owned_wait4_user_cpu_seconds": 0.28466199999999997,
+  "prior_receipts_or_hashes_reused": false,
+  "python_executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "receipt_parent_cpu_seconds": 0.002167899000000001,
+  "restored_public_base": "6b9353d8fd5ba2d05346afb0772dc49daa6038bd",
+  "schema": "hepta.execution05.resource-backpressure-validation.2",
+  "scientific_work_executed": false,
+  "source_bytes_unchanged_during_validation": true,
+  "source_files": {
+    "experiments/parameter_field_fullstudy_20261029/analysis_launch_v2.py": {
+      "bytes": 17115,
+      "sha256": "708003e123a97dbf17f8ba1fd2f7086ec70fc52f2f6a1dc41bf88c6882d4fdbb"
+    },
+    "experiments/parameter_field_fullstudy_20261029/architecture_run_v2.py": {
+      "bytes": 6554,
+      "sha256": "40caef710376bd0aab092f60945c026d5612319679c6e8be8510eea0a41d0751"
+    },
+    "experiments/parameter_field_fullstudy_20261029/architecture_store.py": {
+      "bytes": 3792,
+      "sha256": "5189e313dcdf4c747de0a95f0d4f5dd6c524384a8e83154e186c4c9718ee4cb6"
+    },
+    "experiments/parameter_field_fullstudy_20261029/controller_envelope_v2.py": {
+      "bytes": 18888,
+      "sha256": "3bbc1e320bf9ab49d718ba8e876e4db8e04ab7d971d101e92fed2cdba1d53a43"
+    },
+    "experiments/parameter_field_fullstudy_20261029/endpoint_v2.py": {
+      "bytes": 24853,
+      "sha256": "0780cf261944dbdb6a47597c1294f4f9c9f761e3131d4a76e51b634cf7f15da2"
+    },
+    "experiments/parameter_field_fullstudy_20261029/finalize_v2.py": {
+      "bytes": 15490,
+      "sha256": "6fbf4a7a994120b6c0ae577a10d9ba992ad483d253ff0afb9aea42af8bb705ac"
+    },
+    "experiments/parameter_field_fullstudy_20261029/launch_v2.py": {
+      "bytes": 21330,
+      "sha256": "7423f368c7ec8fd39a666c575f91e36f69da78bd1ec6cdc39f3afbe8224332e3"
+    },
+    "experiments/parameter_field_fullstudy_20261029/replay_terminals.py": {
+      "bytes": 19842,
+      "sha256": "ac7981bf5ff0045c920bc9614edac1c81b34b05c7f74e8a6a40cea20e576012b"
+    },
+    "experiments/parameter_field_fullstudy_20261029/resource_io_v2.py": {
+      "bytes": 6783,
+      "sha256": "25322e8356bb48de1299338768ec0341f8c4fb89028af7c9fdcdd7a22b2b0931"
+    },
+    "experiments/parameter_field_fullstudy_20261029/resource_v2.py": {
+      "bytes": 13484,
+      "sha256": "079b326b6d42cb9dccac2cbe8e872cb30e221169f6e0f650469e2a53774624bf"
+    },
+    "experiments/parameter_field_fullstudy_20261029/run_v2.py": {
+      "bytes": 12641,
+      "sha256": "291218547484a01ac0213c06f1b6bbd16104955348b818014a66f4d3a0ce3561"
+    },
+    "operational/parameter_field_recovery05/RESOURCE_BACKPRESSURE.md": {
+      "bytes": 11419,
+      "sha256": "e9ac5e8aff875146f180a7111896f6716e1919eca81929eb54e89dc1a00ff85a"
+    },
+    "operational/parameter_field_recovery05/resource_backpressure.py": {
+      "bytes": 40624,
+      "sha256": "8c179f68253c4c6559b76b18ca1afd7109fa99a6e39fae4c150514fe97267bca"
+    },
+    "operational/parameter_field_recovery05/test_resource_backpressure.py": {
+      "bytes": 34680,
+      "sha256": "02d05d9e421fc55643e0ec2139dde9394a500c147ec59bb4b974a04314ca9556"
+    }
+  },
+  "started_utc": "2026-10-30T11:59:46.545677+00:00",
+  "status": "PASS",
+  "tests": {
+    "errors": 0,
+    "failures": 0,
+    "numpy_imported": false,
+    "skipped": 0,
+    "successful": true,
+    "tests_run": 33,
+    "torch_imported": false
+  },
+  "transcript": {
+    "bytes": 7741,
+    "path": "operational/parameter_field_recovery05/validation/resource_backpressure/unittest_transcript.txt",
+    "sha256": "eaeecd62f4054eab30ec75ce89e1bbdcf359a0377f113ec6609c8e78ff86ae7d"
+  },
+  "wall_seconds": 0.5681862019991968
+}

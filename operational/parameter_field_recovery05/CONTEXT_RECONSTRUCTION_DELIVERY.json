@@ -1,0 +1,58 @@
+{
+  "cost_scope": "Two separate fresh test wait4 totals; each includes all its reaped test descendants. Never add inner cases again.",
+  "distinct_test_inclusive_cpu_seconds": 1.202931,
+  "fresh_tests_passed": 22,
+  "loop_audit": {
+    "bytes": 1251,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/evidence_controller_import/LOOP_STATIC_COMPARISON.json",
+    "sha256": "66601543812cce96b99f60ee325bc140351f75bcd308218ae488e59150e8a048"
+  },
+  "prior_test_receipts_reused": false,
+  "reconstruction": "CONTEXT_RECONSTRUCTION",
+  "schema": "hepta.execution05.context-reconstruction-delivery.1",
+  "scientific_tasks_executed": 0,
+  "sources": [
+    {
+      "bytes": 19241,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/owned_children.py",
+      "sha256": "c91f10d2a485814536ddfe0bd71a89994fb4eba324bb7ea0ff5f0e96b026bcf2"
+    },
+    {
+      "bytes": 16189,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/test_owned_children.py",
+      "sha256": "389b9995fd249c9d74779e243438f66aadff37270aff11e3f31687467e08affa"
+    },
+    {
+      "bytes": 24990,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/controller.py",
+      "sha256": "26347d490932f0c007dd78b5167438be8fda675b049a6838863204d8182a4b50"
+    },
+    {
+      "bytes": 18997,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/test_controller_import.py",
+      "sha256": "221832e85dfd263872ac3757fe4e99da9b6ed80f5a06b0607c095c1010d0727d"
+    },
+    {
+      "bytes": 5186,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/OWNED_CHILDREN.md",
+      "sha256": "9207a222ecd325f2ee2bfc3ecfec6c0fb52f81d6f2043ed15c0d015381c2e834"
+    },
+    {
+      "bytes": 5599,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/CONTROLLER_IMPORT.md",
+      "sha256": "76f4c4502ed3fc394b80906a9de4b5b844fc46f1c264e6a9df49cea52049a6c1"
+    }
+  ],
+  "test_receipts": [
+    {
+      "bytes": 1952,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/evidence_owned_children/reconstruction_tests_20261030T120254/WAIT4.json",
+      "sha256": "72ef732ef83d8fa49ff10898449d0391b5d21f8ef3cd3d4a98eeb92c834eb595"
+    },
+    {
+      "bytes": 2269,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/evidence_controller_import/reconstruction_tests_20261030T120311/WAIT4.json",
+      "sha256": "e4eec1f0bc3d10671a8ee4ecdafc182b9f5a7cb94fc7619ad8db5ecf11759151"
+    }
+  ]
+}

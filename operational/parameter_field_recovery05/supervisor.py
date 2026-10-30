@@ -391,9 +391,13 @@ class Supervisor:
                     and not (run / "FAILED.json").exists(), "Operational wrapper is not closed")
             if token in ("CONTROLLER", "ANALYSIS_PARENT"):
                 ownership = read(run / "owned_children/CLOSURE.json")
+                expected_children = 13 if token == "CONTROLLER" else 1
                 require(ownership.get("all_returned_direct_children_reaped") is True
-                        and ownership.get("accounting_complete_for_attempted_direct_workers") is True,
-                        "Owned worker accounting did not close")
+                        and ownership.get("accounting_complete_for_attempted_direct_workers") is True
+                        and ownership.get("attempt_count") == ownership.get("returned_children") == expected_children
+                        and len(ownership.get("children", [])) == expected_children
+                        and all(row.get("wait4", {}).get("exit_code") == 0 for row in ownership["children"]),
+                        "Owned worker accounting did not close with the exact new-worker population")
         for directory in (wrappers, OPS / "resource_backpressure"):
             require(directory.is_dir(), "Missing operational resource journal tree")
             for path in archive.regular_tree(directory):

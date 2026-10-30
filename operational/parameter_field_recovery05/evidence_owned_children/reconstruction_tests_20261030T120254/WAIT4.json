@@ -1,0 +1,45 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "operational.parameter_field_recovery05.test_owned_children",
+    "-v"
+  ],
+  "child_peak_rss_bytes": 20561920,
+  "cost_scope": "Outer test wait4 includes all reaped test children and drivers; do not add inner receipts again.",
+  "cwd": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git",
+  "exit_code": 0,
+  "inclusive_child_cpu_seconds": 0.465939,
+  "measuring_parent_cpu_seconds_until_receipt": 0.0011269999999999995,
+  "pid": 19845,
+  "prior_test_receipts_reused": false,
+  "reconstruction": "CONTEXT_RECONSTRUCTION",
+  "schema": "hepta.execution05.reconstructed-owned-tests.wait4.1",
+  "scientific_tasks_executed": false,
+  "sources": [
+    {
+      "bytes": 19241,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/owned_children.py",
+      "sha256": "c91f10d2a485814536ddfe0bd71a89994fb4eba324bb7ea0ff5f0e96b026bcf2"
+    },
+    {
+      "bytes": 16189,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/test_owned_children.py",
+      "sha256": "389b9995fd249c9d74779e243438f66aadff37270aff11e3f31687467e08affa"
+    }
+  ],
+  "stderr": {
+    "bytes": 2865,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/evidence_owned_children/reconstruction_tests_20261030T120254/stderr.log",
+    "sha256": "bf30214c0c80827fdc4bfb3053b38c3a26e37ed7c3b7fbcd76dd06312b2ac31d"
+  },
+  "stdout": {
+    "bytes": 0,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/evidence_owned_children/reconstruction_tests_20261030T120254/stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "wait_status": 0,
+  "wall_seconds": 0.6074931219991413
+}

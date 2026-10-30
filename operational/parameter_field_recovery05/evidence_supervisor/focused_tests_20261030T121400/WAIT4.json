@@ -1,0 +1,69 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "operational.parameter_field_recovery05.test_supervisor",
+    "operational.parameter_field_recovery05.test_wait4_launcher",
+    "-v"
+  ],
+  "child_peak_rss_bytes": 22614016,
+  "cost_scope": "Outer test wait4 includes all reaped tiny test children; never add inner case CPU again.",
+  "cwd": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git",
+  "exit_code": 0,
+  "expected_tests": 16,
+  "fixtures": "Synthetic imports and mocked scheduling; five actual tiny supervisor subprocesses.",
+  "inclusive_child_cpu_seconds": 0.405205,
+  "measuring_parent_cpu_seconds_until_receipt": 0.0003630000000000022,
+  "pid": 70133,
+  "prior_test_receipts_reused": false,
+  "reconstruction": "CONTEXT_RECONSTRUCTION",
+  "remote_actions_executed": false,
+  "schema": "hepta.execution05.supervisor-focused-tests.wait4.1",
+  "scientific_tasks_executed": false,
+  "sources": [
+    {
+      "bytes": 51312,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/supervisor.py",
+      "sha256": "e91ddc38e374f37c379618cbf89bb05a46e265a5e9865afbe3d47a585934661b"
+    },
+    {
+      "bytes": 8800,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/wait4_launcher.py",
+      "sha256": "7d3b8aff586a31c02de29199c09f9e1990f8fe71c7cd3bbb6dae01d202f702b3"
+    },
+    {
+      "bytes": 14337,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/test_supervisor.py",
+      "sha256": "584a27e6d722a5529fb60fb3fdfaf61eb6e02c85e0ee7baec4d4ed61d78aeb56"
+    },
+    {
+      "bytes": 5687,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/test_wait4_launcher.py",
+      "sha256": "d0cd272675a5975dacd1260bb333f05f13c048573bb2058ab20a21222c78416b"
+    },
+    {
+      "bytes": 19241,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/owned_children.py",
+      "sha256": "c91f10d2a485814536ddfe0bd71a89994fb4eba324bb7ea0ff5f0e96b026bcf2"
+    },
+    {
+      "bytes": 24990,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/controller.py",
+      "sha256": "26347d490932f0c007dd78b5167438be8fda675b049a6838863204d8182a4b50"
+    }
+  ],
+  "stderr": {
+    "bytes": 3382,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/evidence_supervisor/focused_tests_20261030T121400/stderr.log",
+    "sha256": "96d2465f6d1a9e749361b7e85897f7f7e31b950fe6bd5566c0d9f0cc6aa07f2c"
+  },
+  "stdout": {
+    "bytes": 0,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/evidence_supervisor/focused_tests_20261030T121400/stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "wait_status": 0,
+  "wall_seconds": 0.48729630100024224
+}

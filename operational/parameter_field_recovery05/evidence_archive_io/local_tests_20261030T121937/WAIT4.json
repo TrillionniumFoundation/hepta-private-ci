@@ -1,0 +1,52 @@
+{
+  "actual_ack_published": false,
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "operational.parameter_field_recovery05.test_archive_io",
+    "-v"
+  ],
+  "child_peak_rss_bytes": 20516864,
+  "cost_scope": "Only this test process and its waited descendants; no upload/readback work was executed.",
+  "cwd": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git",
+  "exit_code": 0,
+  "expected_tests": 8,
+  "fixtures": "Local synthetic request/status/response metadata only; all Library identities are explicitly synthetic.",
+  "inclusive_child_cpu_seconds": 0.221996,
+  "measuring_parent_cpu_seconds_until_receipt": 0.0015659999999999997,
+  "pid": 104121,
+  "remote_actions_executed": false,
+  "schema": "hepta.execution05.archive-io-local-tests.wait4.1",
+  "scientific_tasks_executed": false,
+  "sources": [
+    {
+      "bytes": 22851,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/archive_io.py",
+      "sha256": "27459ed53282fce7f6a381c11da49347bcfb2e8f94c10865808843d19255d09f"
+    },
+    {
+      "bytes": 8115,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/test_archive_io.py",
+      "sha256": "7484e8811a28bd7b4493b2fa6687ba54fb2d45da4c3e623b560234536db1cba6"
+    },
+    {
+      "bytes": 51312,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/supervisor.py",
+      "sha256": "e91ddc38e374f37c379618cbf89bb05a46e265a5e9865afbe3d47a585934661b"
+    }
+  ],
+  "stderr": {
+    "bytes": 1720,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/evidence_archive_io/local_tests_20261030T121937/stderr.log",
+    "sha256": "bea958947cea18ae5ffbe62dff16f63cb83f5157a7a71efd2d4dbe58830c6b7b"
+  },
+  "stdout": {
+    "bytes": 0,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/evidence_archive_io/local_tests_20261030T121937/stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "wait_status": 0,
+  "wall_seconds": 0.26768628700119734
+}

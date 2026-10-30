@@ -1,0 +1,51 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "operational.parameter_field_recovery05.test_controller_import",
+    "-v"
+  ],
+  "child_peak_rss_bytes": 21032960,
+  "cost_scope": "Outer test wait4 includes thirteen tiny substitute-module workers; do not add inner receipts again.",
+  "cwd": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git",
+  "exit_code": 0,
+  "expected_tiny_successor_children": 13,
+  "inclusive_child_cpu_seconds": 0.7369919999999999,
+  "measuring_parent_cpu_seconds_until_receipt": 0.00047699999999999826,
+  "pid": 21064,
+  "prior_test_receipts_reused": false,
+  "reconstruction": "CONTEXT_RECONSTRUCTION",
+  "schema": "hepta.execution05.reconstructed-controller-tests.wait4.1",
+  "scientific_tasks_executed": false,
+  "sources": [
+    {
+      "bytes": 24990,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/controller.py",
+      "sha256": "26347d490932f0c007dd78b5167438be8fda675b049a6838863204d8182a4b50"
+    },
+    {
+      "bytes": 18997,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/test_controller_import.py",
+      "sha256": "221832e85dfd263872ac3757fe4e99da9b6ed80f5a06b0607c095c1010d0727d"
+    },
+    {
+      "bytes": 19241,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/owned_children.py",
+      "sha256": "c91f10d2a485814536ddfe0bd71a89994fb4eba324bb7ea0ff5f0e96b026bcf2"
+    }
+  ],
+  "stderr": {
+    "bytes": 1752,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/evidence_controller_import/reconstruction_tests_20261030T120311/stderr.log",
+    "sha256": "77633f554ceea7a937bd8d5999a9bf9a088fd279ac419a09a8a6d9fd36cf7ff5"
+  },
+  "stdout": {
+    "bytes": 0,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/evidence_controller_import/reconstruction_tests_20261030T120311/stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "wait_status": 0,
+  "wall_seconds": 8.191467438999098
+}
