@@ -1,0 +1,52 @@
+{
+  "schema": "hepta.mac-fixture-recovery.v1",
+  "source_head": "738a00959b869a4cdd4730109b4ff60c9340f106",
+  "evidence_job": 124198476695,
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+      "reason": "HNMF fixture passes noncanonical /var fleet path to owner API; create then canonicalize only that fixture root."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
+      "reason": "Actual AgentdControlServer bind fails SUN_LEN with canonical but deep /private/var temp root; use short Unix /tmp TempDir then canonicalize. Non-Unix fixture behavior retained."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+      "reason": "External replay checkpoint parent in this fixture was aliased /var; canonicalize the existing owned TempDir before appending checkpoint filename."
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "reason": "Actual cognitive worker e2e bind fails SUN_LEN; short Unix TempDir survives for full host lifetime, owns host root and journal, is dropped after host. Test already cfg(unix). No timeout or final-use assertion changes."
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+      "reason": "Crash child received noncanonical fleet path and exited101 before intended abrupt73; parent passes canonical existing seeded fleet. Exit73, WAL presence and exact source-preservation assertions stay unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/robrix_control_projection.rs",
+      "reason": "Bazel trusted tracked resources are runfiles symlinks; canonicalize the manifest returned by find_resource before selecting its actual parent. read_artifacts still rejects nonfiles, compares complete exact set and bytes. Verified source directory contains exactly5 generated artifact files."
+    },
+    {
+      "path": "codex-rs/tui/src/lib.rs",
+      "reason": "Typed startup error binds canonical logs path; canonicalize only freshly created fixture sqlite_home before SqliteConfig construction. Keep full exact path and corruption-cause assertions."
+    }
+  ],
+  "source_diff": {
+    "insertions": 31,
+    "deletions": 8
+  },
+  "scope": "Test and test-fixture code only; no production path/ACL/owner checks, sandbox environment code, signatures, permissions or dependencies altered. No ignored tests, retry changes or timeout extensions.",
+  "local_validation": {
+    "just_fmt": 127,
+    "just_test_libraries": 127,
+    "just_test_robrix": 127,
+    "just_fix_scoped": 127,
+    "reason": "just executable absent; no compiler/native test claim"
+  },
+  "remaining": {
+    "native_validation": "pending on exact new-source native Cargo and Bazel lanes",
+    "holdout_busy": "738a Bazel intelligence-eval reports cached PASS, not fresh concurrent evidence. Historical Busy is not erased or declared resolved.",
+    "linux_pair_timeout": "Separate diagnostics package only; cause and product fix remain open."
+  }
+}

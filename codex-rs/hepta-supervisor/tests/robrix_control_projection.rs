@@ -350,7 +350,11 @@ fn writer_reproduces_the_tracked_artifact_set_byte_for_byte() -> Result<()> {
 
 fn read_tracked_artifacts() -> Result<BTreeMap<String, Vec<u8>>> {
     let relative_manifest = format!("fixtures/robrix-control-v2/{MANIFEST_FILE}");
-    let manifest = codex_utils_cargo_bin::find_resource!(relative_manifest)?;
+    // Bazel supplies these trusted tracked resources through runfiles symlinks.
+    // Resolve the manifest first; keep read_artifacts strict for the actual set.
+    let manifest = codex_utils_cargo_bin::find_resource!(relative_manifest)?
+        .canonicalize()
+        .context("resolve tracked projection manifest")?;
     read_artifacts(
         manifest
             .parent()
