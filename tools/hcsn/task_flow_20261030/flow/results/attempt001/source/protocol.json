@@ -1,0 +1,23 @@
+{
+  "protocol": "observation_gap_flow_v1",
+  "frozen_before_validation": true,
+  "baseline": "b1934022821f3fdafd509b43cf0c4d7d45852e6e",
+  "scope": "Finite reflecting active chain with absorbing marked exits, two Erlang refractory stages, and observation-only content writes. No claim of exact unbounded diffusion or task-optimal boundaries.",
+  "state": "Eight active probabilities, two phase probabilities, content, frozen gap coefficients, clocks, cumulative expected events and internal rewards",
+  "numerics": {"rate": 8.1, "terms": 21, "maximum_chunk_duration": 0.36, "maximum_squarings": 10, "maximum_duration": 368.64},
+  "physical_domain": {"mu": [-0.3, 0.5], "sigma": [0.3, 0.6], "boundary": [0.35, 1.5], "reset": [-0.3, 0.1], "refractory_mean": [0.3, 1.2]},
+  "audit_seed": 301030,
+  "acceptance": {
+    "dense_state_l1": 1e-9,
+    "dense_event_absolute": 1e-7,
+    "semigroup_full_state_absolute": 1e-8,
+    "mass_absolute": 1e-10,
+    "minimum_probability": -1e-12,
+    "gradient_scaled": 2e-6,
+    "fresh_process_recovery_absolute": 1e-12,
+    "observation_projection_gradient_norm_minimum": 1e-9
+  },
+  "required_checks": ["independent_dense_expm", "scipy_frechet_and_centered_difference", "initial_state_and_duration_gradients", "nonzero_content_projection_gradient", "gap_subdivision", "long_gap_repeated_events", "first_next_event_vs_count", "refractory_initial_distribution", "mass_conservation", "missing_vs_zero_observation", "zero_time_identity", "zero_time_boundary_crossing", "future_batch_noninterference", "fresh_process_checkpoint_recovery", "invalid_input_rejection"],
+  "execution": {"cpu_affinity": [0, 1], "blas_threads": 1, "jax_x64": true, "one_active_validation_process": true},
+  "evidence": "Each attempt uses a fresh numbered result directory and records source/protocol hashes, timing, checks, errors and environment; failed attempts remain."
+}

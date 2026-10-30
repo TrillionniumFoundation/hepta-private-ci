@@ -1,0 +1,430 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "dense_state_l1",
+      "value": 2.4153248845415476e-13,
+      "limit": 1e-09,
+      "sense": "maximum",
+      "passed": true
+    },
+    {
+      "name": "dense_event_absolute",
+      "value": 2.7542412794900883e-12,
+      "limit": 1e-07,
+      "sense": "maximum",
+      "passed": true
+    },
+    {
+      "name": "semigroup_complete_state",
+      "value": 3.2596148002994596e-13,
+      "limit": 1e-08,
+      "sense": "maximum",
+      "passed": true
+    },
+    {
+      "name": "zero_time_identity",
+      "value": 0.0,
+      "limit": 0.0,
+      "sense": "maximum",
+      "passed": true
+    },
+    {
+      "name": "no_observation_counter_unchanged",
+      "value": 0.0,
+      "limit": 0.0,
+      "sense": "maximum",
+      "passed": true
+    },
+    {
+      "name": "explicit_zero_changes_content",
+      "value": 0.0859848249350045,
+      "limit": 0.0001,
+      "sense": "minimum",
+      "passed": true
+    },
+    {
+      "name": "existing_refractory_phases",
+      "value": 6.106226635438361e-16,
+      "limit": 1e-09,
+      "sense": "maximum",
+      "passed": true
+    },
+    {
+      "name": "refractory_not_restarted",
+      "value": 1.0127593208508756e-12,
+      "limit": 1e-08,
+      "sense": "maximum",
+      "passed": true
+    },
+    {
+      "name": "longgap_expected_count_exceeds_one",
+      "value": 4.347194247493719,
+      "limit": 1.0001,
+      "sense": "minimum",
+      "passed": true
+    },
+    {
+      "name": "first_next_probability_in_unit_interval",
+      "value": 0.0,
+      "limit": 1e-10,
+      "sense": "maximum",
+      "passed": true
+    },
+    {
+      "name": "count_dominates_first_next_probability",
+      "value": 3.367368325254335,
+      "limit": 0.0,
+      "sense": "minimum",
+      "passed": true
+    },
+    {
+      "name": "first_next_independent_killed_reference",
+      "value": 2.842170943040401e-14,
+      "limit": 1e-09,
+      "sense": "maximum",
+      "passed": true
+    },
+    {
+      "name": "probability_mass",
+      "value": 2.4424906541753444e-14,
+      "limit": 1e-10,
+      "sense": "maximum",
+      "passed": true
+    },
+    {
+      "name": "minimum_probability",
+      "value": 0.03849170259220608,
+      "limit": -1e-12,
+      "sense": "minimum",
+      "passed": true
+    },
+    {
+      "name": "zero_time_boundary_event",
+      "value": 2.220446049250313e-16,
+      "limit": 1e-12,
+      "sense": "maximum",
+      "passed": true
+    },
+    {
+      "name": "zero_time_boundary_phase_inventory",
+      "value": 2.220446049250313e-16,
+      "limit": 1e-12,
+      "sense": "maximum",
+      "passed": true
+    },
+    {
+      "name": "zero_time_boundary_clock",
+      "value": 0.0,
+      "limit": 0.0,
+      "sense": "maximum",
+      "passed": true
+    },
+    {
+      "name": "long_neighbor_numerical_noninterference",
+      "value": 0.0,
+      "limit": 1e-12,
+      "sense": "maximum",
+      "passed": true
+    },
+    {
+      "name": "physical_gradient",
+      "value": 5.130287704285956e-11,
+      "limit": 2e-06,
+      "sense": "maximum",
+      "passed": true
+    },
+    {
+      "name": "probability_gradient",
+      "value": 1.0422246209258304e-14,
+      "limit": 2e-06,
+      "sense": "maximum",
+      "passed": true
+    },
+    {
+      "name": "duration_gradient",
+      "value": 9.946259697301203e-14,
+      "limit": 2e-06,
+      "sense": "maximum",
+      "passed": true
+    },
+    {
+      "name": "physical_centered_difference",
+      "value": 1.1237223379584174e-10,
+      "limit": 2e-06,
+      "sense": "maximum",
+      "passed": true
+    },
+    {
+      "name": "content_projection_gradient",
+      "value": 0.28904249753553435,
+      "limit": 1e-09,
+      "sense": "minimum",
+      "passed": true
+    },
+    {
+      "name": "recurrent_content_gradient",
+      "value": 0.16128185135957024,
+      "limit": 1e-09,
+      "sense": "minimum",
+      "passed": true
+    },
+    {
+      "name": "dynamics_projection_gradient",
+      "value": 0.007471024455389814,
+      "limit": 1e-09,
+      "sense": "minimum",
+      "passed": true
+    },
+    {
+      "name": "content_projection_centered_difference",
+      "value": 4.6974009071491874e-12,
+      "limit": 2e-06,
+      "sense": "maximum",
+      "passed": true
+    },
+    {
+      "name": "fresh_process_recovery",
+      "value": 0.0,
+      "limit": 1e-12,
+      "sense": "maximum",
+      "passed": true
+    },
+    {
+      "name": "invalid_inputs_rejected",
+      "value": 4.0,
+      "limit": 4,
+      "sense": "minimum",
+      "passed": true
+    }
+  ],
+  "dense_cases": [
+    {
+      "duration": 0.0,
+      "state_l1": 0.0,
+      "count_absolute": 0.0,
+      "certificate": {
+        "state_l1": 0.0,
+        "events_absolute": 0.0,
+        "chunks": 1
+      }
+    },
+    {
+      "duration": 0.03,
+      "state_l1": 1.7520707107365752e-16,
+      "count_absolute": 1.734723475976807e-18,
+      "certificate": {
+        "state_l1": 4.2922073094004833e-35,
+        "events_absolute": 4.775869975742849e-34,
+        "chunks": 1
+      }
+    },
+    {
+      "duration": 0.36,
+      "state_l1": 2.4153248845415476e-13,
+      "count_absolute": 4.0381586963178506e-13,
+      "certificate": {
+        "state_l1": 1.853803720898125e-12,
+        "events_absolute": 2.322926382252103e-11,
+        "chunks": 1
+      }
+    },
+    {
+      "duration": 1.17,
+      "state_l1": 7.945033519973776e-15,
+      "count_absolute": 2.6423307986078726e-14,
+      "certificate": {
+        "state_l1": 1.294266104130345e-13,
+        "events_absolute": 2.0444124299714427e-12,
+        "chunks": 4
+      }
+    },
+    {
+      "duration": 8.3,
+      "state_l1": 4.295175326518574e-15,
+      "count_absolute": 1.6209256159527285e-14,
+      "certificate": {
+        "state_l1": 9.498997520226074e-14,
+        "events_absolute": 4.242752311910633e-12,
+        "chunks": 32
+      }
+    },
+    {
+      "duration": 40.0,
+      "state_l1": 1.4738210651898953e-14,
+      "count_absolute": 2.7542412794900883e-12,
+      "certificate": {
+        "state_l1": 1.5211529086365316e-11,
+        "events_absolute": 2.6325350921366174e-09,
+        "chunks": 128
+      }
+    }
+  ],
+  "gradients": {
+    "physical": {
+      "autodiff": [
+        0.442392622536652,
+        0.11229091781906185,
+        -0.1045182580528785,
+        0.09372351182047196,
+        0.0719483147220506
+      ],
+      "independent": [
+        0.4423926225310012,
+        0.112290917804923,
+        -0.10451825810954346,
+        0.09372351181635008,
+        0.07194831472830525
+      ],
+      "scaled_error": 5.130287704285956e-11
+    },
+    "probability": {
+      "autodiff": [
+        -0.16644165523995383,
+        -0.09805603988334256,
+        0.006343432926809093,
+        0.1268353926926226,
+        0.2586968565967158,
+        0.406335220920839,
+        0.5674288843383566,
+        0.7020352822302592,
+        0.4128133389323543,
+        0.39257782000712543
+      ],
+      "independent": [
+        -0.16644165523994167,
+        -0.09805603988333139,
+        0.006343432926819282,
+        0.12683539269263205,
+        0.2586968565967244,
+        0.4063352209208456,
+        0.5674288843383601,
+        0.7020352822302609,
+        0.41281333893235883,
+        0.39257782000713226
+      ],
+      "scaled_error": 1.0422246209258304e-14
+    },
+    "duration": {
+      "autodiff": 0.031737608587862315,
+      "independent": 0.031737608587964934,
+      "scaled_error": 9.946259697301203e-14
+    }
+  },
+  "projection_gradient_norms": {
+    "bias": 0.4695843086337183,
+    "dynamics": 0.007471024455389814,
+    "gate_bias": 0.09848837635378743,
+    "gate_input": 0.13559450711736978,
+    "gate_physical": 0.03925399512511025,
+    "input": 0.28904249753553435,
+    "raw_cost": 0.000693622390743261,
+    "raw_decay": 0.00212773391205875,
+    "raw_physical": 0.012402802693457064,
+    "recurrent": 0.16128185135957024
+  },
+  "projection_objective": "content linear readout plus .03 internal reward; not a content benchmark",
+  "longgap": {
+    "next_event_probability": 0.9798259222393839,
+    "repeated_count": 4.347194247493719
+  },
+  "continuous_reference": {
+    "continuum": {
+      "expected_events": 0.5900966205854833,
+      "refractory_mass": 0.12527387969811765,
+      "active_mass": 0.8747261203018823,
+      "count_gradient": [
+        -1.7332785371227544,
+        1.222729937268912,
+        -0.8465776641834343,
+        -0.19194887465671065,
+        -0.06219147218313912
+      ],
+      "event_cdfs": [
+        0.5242576957396766,
+        0.06484905510448703,
+        0.0009881967392854822,
+        1.6726429658256595e-06,
+        3.5905699842776005e-10,
+        1.1308429860630822e-14,
+        5.881444890958393e-20,
+        5.537905044250029e-26,
+        1.0144400299863954e-32,
+        3.828075281380304e-40,
+        3.117064864709592e-48,
+        5.690095241402172e-57,
+        2.404303453164945e-66,
+        2.4162119342735645e-76,
+        5.911222236096953e-87,
+        3.5924426148885325e-98,
+        5.51891611515285e-110,
+        2.1755827760020499e-122,
+        2.2303141249840973e-135,
+        6.025284220717718e-149,
+        4.349032822303525e-163,
+        8.494970865622747e-178,
+        4.530298971927149e-193,
+        6.618458513170355e-209,
+        2.6480908767521345e-225,
+        2.902207307744016e-242,
+        8.752847950270208e-260,
+        7.348309634735132e-278,
+        1.749229829282629e-296,
+        1.206825013e-315
+      ],
+      "count_tail_bound": 2.7151490887036037e-35,
+      "quadrature_error_estimate": 2.4038322691371393e-13,
+      "terms": 30,
+      "scope": "Constant-coefficient half-line renewal; no moving boundary or learned policy"
+    },
+    "grids": [
+      {
+        "expected_events": 0.6141033377059365,
+        "active_mass": 0.8748319877277799,
+        "refractory_mass": 0.12516801227222069,
+        "mass_error": 6.661338147750939e-16,
+        "minimum_probability": 0.010396356507841284,
+        "wall_cell_mass": 0.010396356507841284,
+        "generator_mass_residual": 2.220446049250313e-16,
+        "cells": 8,
+        "upper_wall": 2.75,
+        "spacing": 0.34375,
+        "stages": 2,
+        "propagation": "scipy.sparse.linalg.expm_multiply"
+      },
+      {
+        "expected_events": 0.5967417667376569,
+        "active_mass": 0.8740449327248236,
+        "refractory_mass": 0.12595506727514544,
+        "mass_error": 3.097522238704187e-14,
+        "minimum_probability": 0.0005820862130754289,
+        "wall_cell_mass": 0.0005820862130754289,
+        "generator_mass_residual": 7.105427357601002e-15,
+        "cells": 64,
+        "upper_wall": 2.75,
+        "spacing": 0.04296875,
+        "stages": 2,
+        "propagation": "scipy.sparse.linalg.expm_multiply"
+      }
+    ],
+    "scope": "Spatial/reflection diagnostic, not an equality gate"
+  },
+  "execution": {
+    "wall_seconds": 12.83233770699917,
+    "process_cpu_seconds": 10.882442978999999,
+    "child_cpu_seconds": 3.3338279999999996,
+    "max_rss_kib": 485280,
+    "affinity": [
+      0,
+      1
+    ],
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "jax": "0.4.38",
+    "numpy": "2.3.5",
+    "blas_threads": {
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1"
+    }
+  }
+}
