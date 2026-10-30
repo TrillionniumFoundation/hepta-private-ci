@@ -1,32 +1,32 @@
 # P0 obstruction: local curvature rejection and a frozen-cashflow obstacle oracle
 
 **Research only — DENY_ALL.** Stacked on HCSN #4377 at inspected source
-\`166ee63c563d2df065c279ba312d0bcbc539cbce\`. The two new Python files
-\`obstacle.py\` and \`test_obstacle.py\` do not alter the existing financial
+`166ee63c563d2df065c279ba312d0bcbc539cbce`. The two new Python files
+`obstacle.py` and `test_obstacle.py` do not alter the existing financial
 closed forms, scalar stopping kernel, research reports, Rust/GPU runtime,
 Cell owner, production permissions, or training evidence.
 
 ## 1. Necessary mathematical rejection, not all-domain certification
 
-For an algebraic HX smooth-fit candidate with default asset boundary \`b\`,
-let \`x=log(V/b)\`. With financial continuation cashflow
+For an algebraic HX smooth-fit candidate with default asset boundary `b`,
+let `x=log(V/b)`. With financial continuation cashflow
 
     f(V;b)=payout*V-(1-tax_shield)*coupon
           +bond_value(V,maturity;b)-principal/maturity,
 
-the financial ODE and smooth fit at \`x=0\` give
+the financial ODE and smooth fit at `x=0` give
 
     E(0)=E_x(0)=0,
     E_xx(0+)=-2*f(b;b)/volatility**2.
 
-The finite-maturity bond recovers \`recovery*b/maturity\` at \`b\`, so
-\`f(b;b)\` is evaluable without subtracting neighboring equity values.
-If \`f(b;b)>0\` by a conservative floating-point sign tolerance, then
-the candidate has negative continuation equity immediately above \`b\`;
-it is **rejected**. If \`f(b;b)\` is close to zero, the sign is unresolved.
+The finite-maturity bond recovers `recovery*b/maturity` at `b`, so
+`f(b;b)` is evaluable without subtracting neighboring equity values.
+If `f(b;b)>0` by a conservative floating-point sign tolerance, then
+the candidate has negative continuation equity immediately above `b`;
+it is **rejected**. If `f(b;b)` is close to zero, the sign is unresolved.
 If it is negative, the local test passes, but **global admissibility
 remains unproven**. Finite sampled continuation-equity negatives independently
-cause a rejection. Every \`CandidateAudit.certified\` field is \`false\`.
+cause a rejection. Every `CandidateAudit.certified` field is `false`.
 
 This test is a necessary boundary inequality. It is *not* a proof that a
 globally admissible boundary exists anywhere in the full legal parameter
@@ -34,8 +34,8 @@ domain. There is no clamping of negative equity.
 
 ## 2. Independent finite stopping problem
 
-For numerical diagnosis only, fix the bond-pricing boundary \`b0\` *before*
-computing its cashflow \`f(V;b0)\`, including the extension below \`b0\`
+For numerical diagnosis only, fix the bond-pricing boundary `b0` *before*
+computing its cashflow `f(V;b0)`, including the extension below `b0`
 defined by the fixed recovery value. On a truncated log-asset interval,
 solve the **different, frozen-cashflow** obstacle problem
 
@@ -84,8 +84,8 @@ Selected *local diagnostic* values (not global proofs):
 
 | HX inputs | Algebraic b | Boundary cashflow | Gate |
 | --- | ---: | ---: | --- |
-| Default \`HX()\` | 64.6251766753 | -11.6736916972 | LOCAL_NECESSARY_ONLY |
-| \`sale_fraction=0.2\` | 101.3240286091 | +0.4369294410 | REJECT_NEGATIVE_CONTINUATION_EQUITY |
+| Default `HX()` | 64.6251766753 | -11.6736916972 | LOCAL_NECESSARY_ONLY |
+| `sale_fraction=0.2` | 101.3240286091 | +0.4369294410 | REJECT_NEGATIVE_CONTINUATION_EQUITY |
 
 At 1.01*b with sale_fraction=0.2, original A7 equity is
 about -0.0004892856; the 513-node frozen-price obstacle gives
