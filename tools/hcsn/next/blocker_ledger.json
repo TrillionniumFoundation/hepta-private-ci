@@ -1,0 +1,145 @@
+{
+  "schema": "hepta.hcsn.blockers.followup.v1",
+  "decision": "do_not_launch_full_backbone_pretraining",
+  "all_research_acceptance_criteria_met": false,
+  "meaning": "A resolved implementation item is not a passed superiority claim. Negative evidence and conditional scope remain explicit.",
+  "items": [
+    {
+      "id": "A1",
+      "criterion": "Reproduce original boundary and values against independent numerical solutions",
+      "status": "closed_in_prior_declared_domain",
+      "evidence": [
+        "../analytic/README.md",
+        "../RESULTS.md"
+      ],
+      "limit": "Prior evidence retained byte-for-byte; not a theorem for every financial parameter."
+    },
+    {
+      "id": "A2",
+      "criterion": "A C1 second neural risk channel compatible with the full equity template",
+      "status": "closed_with_explicit_model_extension",
+      "evidence": [
+        "full_kernel/README.md",
+        "full_kernel/join_results.json"
+      ],
+      "limit": "Original F is modified in a boundary layer and mirrored on the danger side. This is not an original smooth-pasting put."
+    },
+    {
+      "id": "A3",
+      "criterion": "Stable float32 full-formula-derived values and neural state gradients",
+      "status": "closed_for_fixed_financial_templates",
+      "evidence": [
+        "full_kernel/validation_results.json"
+      ],
+      "limit": "Fourteen cases; controlled Hermite approximation; nine financial parameters fixed. Original raw float32 failures retained."
+    },
+    {
+      "id": "A4",
+      "criterion": "Use complete-model operators in actual neural-network training",
+      "status": "closed",
+      "evidence": [
+        "sequence/full_results.json",
+        "ablation/ag_news_results.json",
+        "ablation/cifar10_results.json",
+        "ridge/results.json"
+      ],
+      "limit": "Neural weights/boundary learnable; finance parameters and table fixed."
+    },
+    {
+      "id": "D1",
+      "criterion": "Reproducible gradients, bounded state updates and reliable training timing",
+      "status": "closed_with_declared_scope",
+      "evidence": [
+        "training_validation.json",
+        "ablation/audit_results.json",
+        "ridge/validation.json",
+        "ridge/independent_audit.json"
+      ],
+      "limit": "No universal long-time BPTT bound or nonlinear ODE-flow claim. Original tiny-step float32 solve FD failures remain in stress_solve_results.json."
+    },
+    {
+      "id": "S1",
+      "criterion": "Complete-HX memory accuracy at least 95 percent for every seed and 32/64/128 length",
+      "status": "failed_predeclared_primary_target",
+      "evidence": [
+        "ridge/results.json",
+        "ridge/protocol.json"
+      ],
+      "observed": "FullHX seed2 length128 93.84765625 percent; mean98.76953125 percent cannot substitute for the per-seed threshold."
+    },
+    {
+      "id": "S2",
+      "criterion": "Four-item retrieval at least 90 percent for every seed and length",
+      "status": "closed_for_declared_four_item_task",
+      "evidence": [
+        "ridge/results.json",
+        "ridge/protocol.json"
+      ],
+      "observed": "FullHX, toy, sigmoid and ridge-memory-only all100 percent for5seeds at32/64/128. Attribution is to associative memory, not uniquely the financial operators."
+    },
+    {
+      "id": "S3",
+      "criterion": "Unrestricted duration, associative capacity and robustness",
+      "status": "not_established",
+      "evidence": [
+        "sequence/challenge_results.json",
+        "ridge/challenge_results.json"
+      ],
+      "limit": "V3 fails duration/capacity shifts. Separate v4 challenges do not establish arbitrary length or capacity."
+    },
+    {
+      "id": "E1",
+      "criterion": "New frozen-encoder tasks, ordinary gate ablations and true raw-input missingness",
+      "status": "closed_for_two_single_modalities",
+      "evidence": [
+        "encoder/README.md",
+        "ablation/README.md",
+        "encoder/baseline_audit.json",
+        "ablation/audit_results.json"
+      ],
+      "limit": "AG News and CIFAR10; not paired multimodal alignment, audio or real continuous-event inputs."
+    },
+    {
+      "id": "E2",
+      "criterion": "Stable quality gains attributable to financial operator shapes",
+      "status": "not_supported_by_current_evidence",
+      "evidence": [
+        "ablation/audit_results.json",
+        "encoder/ag_news_baseline_results.json",
+        "encoder/cifar10_baseline_results.json",
+        "ridge/results.json"
+      ],
+      "observed": "Complete HX versus same-graph sigmoid has small inconsistent mean differences; ordinary memory and linear controls remain competitive."
+    },
+    {
+      "id": "C1",
+      "criterion": "Measured full encoder-plus-head inference path and corrected cost accounting",
+      "status": "closed_as_measurement",
+      "evidence": [
+        "encoder/pipeline_latency_linear_corrected.json",
+        "ablation/pipeline_latency.json",
+        "ridge/resource_accounting.json"
+      ],
+      "limit": "Shared CPU block timing; not a statistically controlled equal-quality cost or energy comparison."
+    },
+    {
+      "id": "C2",
+      "criterion": "Equal-quality scale curves, GPU/energy and full-backbone pretraining",
+      "status": "not_executed_conditional_gate_not_met",
+      "evidence": [
+        "RESULTS.md",
+        "INTERPRETATION_REVIEW.md"
+      ],
+      "limit": "The user made expansion conditional on prior results. No established attributable quality benefit and a failed primary memory target."
+    },
+    {
+      "id": "M1",
+      "criterion": "Boundary-only multilayer communication, exact nonlinear continuous-time flow and spiking phase transitions",
+      "status": "not_established",
+      "evidence": [
+        "INTERPRETATION_REVIEW.md"
+      ],
+      "limit": "Current trainable graph uses input-dependent neural offsets plus fast/slow/memory readout and discrete event updates."
+    }
+  ]
+}
