@@ -68,6 +68,38 @@ class QuantizedBarrierTests(unittest.TestCase):
             count+=1
         self.assertEqual(count,80)
 
+    def test_near_barrier_fp32_cells_cover_high_precision_endpoint_fixtures(self):
+        # Frozen 120-dps mpmath references from the *exact binary64*
+        # fp32 rounding-cell endpoints, with log(asset/boundary) evaluated
+        # before converting to f64. The old log(asset)-log(boundary) lost
+        # 1e-15 in x and put a true endpoint outside the estimated bracket.
+        # Numerical agreement is evidence only, NOT a certified interval.
+        cases=(
+            # asset, boundary, drift, sigma, q, T,
+            # far F, near F, far G, near G
+            (2461.6043065865556,2461.601799999847,
+             .878797831826607,.01636151046030649,.0015892965090648003,
+             .6015898216497764,
+             .9928627249211992,.9941566116312371,
+             .9928627229622654,.9941566100263843),
+            (.00020627679851852393,.00020627619697328605,
+             .6659121606708411,.018016058057038903,.00015264391301638805,
+             7.486235697243127,
+             .9876300990973714,.9882020356281458,
+             .9876300984106261,.9882020349729629),
+        )
+        for asset,boundary,drift,sigma,q,horizon,far_f,near_f,far_g,near_g in cases:
+            with self.subTest(asset=asset,boundary=boundary):
+                order,bracket=guarded_fp32_passage(
+                    asset,boundary,drift=drift,sigma=sigma,
+                    discount=q,horizon=horizon)
+                self.assertEqual(order.status,'ABOVE')
+                self.assertIsNotNone(bracket)
+                self.assertLessEqual(bracket.lower_f,far_f)
+                self.assertGreaterEqual(bracket.upper_f,near_f)
+                self.assertLessEqual(bracket.lower_g,far_g)
+                self.assertGreaterEqual(bracket.upper_g,near_g)
+
     def test_seeded_1500_guard_decisions(self):
         # Bounded adversarial probe across fp32 exponent ranges. This does
         # not make the numerical brackets formally interval-certified.
