@@ -1,0 +1,102 @@
+{
+  "plan": {
+    "alpha": 0.05,
+    "amortization_episodes": 10000,
+    "arms": [
+      "hepta_teacher",
+      "hepta_student"
+    ],
+    "bootstrap_replicates": 4000,
+    "bootstrap_seed": 641729,
+    "comparisons": [
+      {
+        "id": "student_quality_noninferiority",
+        "left": "hepta_student",
+        "metric": "utility_ce",
+        "right": "hepta_teacher",
+        "threshold": -0.005
+      },
+      {
+        "id": "student_net_noninferiority",
+        "left": "hepta_student",
+        "metric": "net_ce",
+        "right": "hepta_teacher",
+        "threshold": -0.005
+      },
+      {
+        "id": "student_cost_saving",
+        "left": "hepta_student",
+        "metric": "cost_saving",
+        "right": "hepta_teacher",
+        "threshold": 0.0
+      }
+    ],
+    "cost_scope": "serving_including_audit_close",
+    "draws_per_source": 2,
+    "estimand": "mean_training_seed_effect_of_per_seed_population_CE",
+    "failure_utility": -1.0,
+    "gamma": 2.0,
+    "historical_namespaces": [
+      "controller-v2-development",
+      "controller-v2-distillation",
+      "controller-v2-train",
+      "development",
+      "test",
+      "train"
+    ],
+    "historical_training_seeds": [
+      17,
+      29,
+      43
+    ],
+    "require_each_seed_positive": true,
+    "schema": "hepta.joint-generation.research-gate.v2",
+    "seeds": [
+      17,
+      29
+    ],
+    "source_identity_law": "SHA256(joint-mechanism-v1:{namespace}:{source})",
+    "source_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "source_namespace": "controller-v2-development",
+    "stage": "development",
+    "widths": [
+      32,
+      64
+    ]
+  },
+  "plan_sha256": "d69b201890c11e0c44e3f7ab4ef345be86a1559ec3abacc7feda2258f110abdd",
+  "schema": "hepta.joint-generation.research-gate.v2.seal"
+}

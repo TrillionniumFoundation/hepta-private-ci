@@ -1,0 +1,115 @@
+{
+  "plan": {
+    "alpha": 0.05,
+    "amortization_episodes": 10000,
+    "arms": [
+      "ordinary_fixed_mean",
+      "ordinary_dynamic_mean",
+      "hepta_fixed_mean",
+      "hepta_dynamic_mean",
+      "hepta_dynamic_risk",
+      "hepta_dynamic_risk_actor_only",
+      "ordinary_dynamic_risk",
+      "hepta_fixed_risk"
+    ],
+    "bootstrap_replicates": 4000,
+    "bootstrap_seed": 641729,
+    "comparisons": [
+      {
+        "id": "risk",
+        "left": "hepta_dynamic_risk",
+        "metric": "net_ce",
+        "right": "hepta_dynamic_mean",
+        "threshold": 0.0
+      },
+      {
+        "id": "allocation",
+        "left": "hepta_dynamic_risk",
+        "metric": "net_ce",
+        "right": "hepta_fixed_risk",
+        "threshold": 0.0
+      },
+      {
+        "id": "operator",
+        "left": "hepta_dynamic_risk",
+        "metric": "net_ce",
+        "right": "ordinary_dynamic_risk",
+        "threshold": 0.0
+      },
+      {
+        "id": "joint_training",
+        "left": "hepta_dynamic_risk",
+        "metric": "net_ce",
+        "right": "hepta_dynamic_risk_actor_only",
+        "threshold": 0.0
+      }
+    ],
+    "cost_scope": "serving_including_audit_close",
+    "draws_per_source": 2,
+    "estimand": "mean_training_seed_effect_of_per_seed_population_CE",
+    "failure_utility": -1.0,
+    "gamma": 2.0,
+    "historical_namespaces": [
+      "controller-v2-development",
+      "controller-v2-distillation",
+      "controller-v2-train",
+      "development",
+      "test",
+      "train"
+    ],
+    "historical_training_seeds": [
+      17,
+      29,
+      43
+    ],
+    "require_each_seed_positive": true,
+    "schema": "hepta.joint-generation.research-gate.v2",
+    "seeds": [
+      17,
+      29
+    ],
+    "source_identity_law": "SHA256(joint-mechanism-v1:{namespace}:{source})",
+    "source_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "source_namespace": "controller-v2-development",
+    "stage": "development",
+    "widths": [
+      32,
+      64
+    ]
+  },
+  "plan_sha256": "622661ff7b8b2b38d866a96e25b42553d12479579309b6f5fec0e837f2c37653",
+  "schema": "hepta.joint-generation.research-gate.v2.seal"
+}
