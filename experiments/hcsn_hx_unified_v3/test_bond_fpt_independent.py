@@ -42,6 +42,23 @@ class IndependentPassageTests(unittest.TestCase):
             count+=1
         self.assertEqual(count,72)
 
+    def test_seeded_broad_parameter_stress_2000_cases(self):
+        # Deterministic adversarial CPU suite, not interval/full-domain proof.
+        import random
+        rng=random.Random(20261030)
+        maximum=0.
+        for _ in range(2000):
+            params=dict(x=10**rng.uniform(-10,1.6),
+                        sigma=10**rng.uniform(-2,.5),
+                        drift=rng.uniform(-1.,1.),
+                        discount=10**rng.uniform(-9,1.5),
+                        horizon=10**rng.uniform(-5,2.5))
+            a=integrate_passage(**params)
+            b=reflected_passage(**params)
+            maximum=max(maximum,abs(a.probability-b.probability),
+                        abs(a.discounted-b.discounted))
+        self.assertLess(maximum,5e-11)
+
     def test_hitting_probability_domains(self):
         for x in (.0001,.06,.2,1.,4.):
             for drift in (-.2,0.,.02,.2):
