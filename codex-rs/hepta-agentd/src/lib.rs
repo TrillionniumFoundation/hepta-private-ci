@@ -50,19 +50,6 @@ mod memory_cell_population_tests;
 mod memory_cell_prospective_tests;
 mod memory_cell_release;
 mod memory_cell_runtime;
-mod memory_inventory_bundle;
-mod memory_inventory_release;
-mod memory_inventory_runtime;
-#[cfg(test)]
-mod memory_inventory_release_test_support;
-#[cfg(test)]
-mod memory_inventory_withdrawal_test_support;
-#[cfg(test)]
-mod memory_inventory_test_support;
-#[cfg(test)]
-mod memory_inventory_control_tests;
-#[cfg(all(test, unix))]
-mod memory_inventory_actual_tests;
 #[cfg(test)]
 mod memory_cell_runtime_tests;
 #[cfg(test)]
@@ -74,6 +61,21 @@ mod memory_cell_training_test_support;
 mod memory_cell_training_tests;
 #[cfg(test)]
 mod memory_cell_v9_continual_tests;
+mod memory_independent_cell_v11;
+#[cfg(all(test, unix))]
+mod memory_inventory_actual_tests;
+mod memory_inventory_bundle;
+#[cfg(test)]
+mod memory_inventory_control_tests;
+mod memory_inventory_release;
+#[cfg(test)]
+mod memory_inventory_release_test_support;
+mod memory_inventory_runtime;
+#[cfg(test)]
+mod memory_inventory_test_support;
+#[cfg(test)]
+mod memory_inventory_withdrawal_test_support;
+mod memory_serving_plan_v11;
 mod neuron_runtime;
 mod objective_runtime;
 mod plasticity_anchor_journal;
@@ -160,11 +162,11 @@ pub use codex_hepta_agent_protocol::MAX_CONTROL_FRAME_BYTES;
 pub use codex_hepta_agent_protocol::MAX_EVENT_BATCH;
 pub use codex_hepta_agent_protocol::MAX_FEDERATION_CONTROL_LIST;
 pub use codex_hepta_agent_protocol::MemoryCellSnapshotPageV1;
-pub use codex_hepta_agent_protocol::MemoryInventorySnapshotPageV1;
 pub use codex_hepta_agent_protocol::MemoryFederationCapabilityId;
 pub use codex_hepta_agent_protocol::MemoryFederationCapabilitySnapshot;
 pub use codex_hepta_agent_protocol::MemoryFederationCapabilityState;
 pub use codex_hepta_agent_protocol::MemoryFederationScopeKind;
+pub use codex_hepta_agent_protocol::MemoryInventorySnapshotPageV1;
 pub use codex_hepta_agent_protocol::ObjectiveRunAdmission;
 pub use codex_hepta_agent_protocol::ObjectiveStartOutcome;
 pub use codex_hepta_agent_protocol::ReadinessSnapshot;
@@ -272,17 +274,23 @@ pub use memory_cell_release::stage_memory_structure_v9;
 pub use memory_cell_runtime::AgentdMemoryCellRuntimeV1;
 pub use memory_cell_runtime::MemoryCellAddressResolverV1;
 pub use memory_cell_runtime::MemoryCellResolvedAddressV1;
+pub use memory_cell_training::MemoryCellFitBudgetV1;
+pub use memory_cell_training::MemoryCellReplayParentV1;
+pub use memory_cell_training::MemoryCellTrainerConfigV1;
+pub use memory_cell_training::MemoryCellTrainingCandidateV1;
+pub use memory_cell_training::MemoryCellTrainingModeV1;
+pub use memory_independent_cell_v11::MemoryCellCandidateV11;
+pub use memory_independent_cell_v11::MemoryCellReleaseV11;
+pub use memory_independent_cell_v11::SelectedMemoryCellV11;
 pub use memory_inventory_bundle::LoadedMemoryInventoryBundleV1;
 pub use memory_inventory_bundle::MemoryInventoryBundleCandidateV1;
 pub use memory_inventory_release::MemoryInventoryReleaseHostV1;
 pub use memory_inventory_runtime::AgentdMemoryInventoryRuntimeV1;
 pub use memory_inventory_runtime::MemoryInventoryAddressResolverV1;
 pub use memory_inventory_runtime::MemoryInventoryResolvedAddressV1;
-pub use memory_cell_training::MemoryCellFitBudgetV1;
-pub use memory_cell_training::MemoryCellReplayParentV1;
-pub use memory_cell_training::MemoryCellTrainerConfigV1;
-pub use memory_cell_training::MemoryCellTrainingCandidateV1;
-pub use memory_cell_training::MemoryCellTrainingModeV1;
+pub use memory_serving_plan_v11::MemoryCellVersionV11;
+pub use memory_serving_plan_v11::MemoryPlanReadoutV11;
+pub use memory_serving_plan_v11::MemoryServingPlanV11;
 pub use neuron_runtime::AgentdNeuronOwner;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;
