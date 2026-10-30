@@ -120,10 +120,9 @@ fn preserves_overlong_descriptions_and_short_descriptions() {
 
 #[test]
 fn malformed_yaml_remains_a_typed_yaml_failure() {
-    let error = parse_skill_frontmatter_metadata("---\n[unterminated\n---\n", || {
-        "fallback".to_string()
-    })
-    .expect_err("malformed YAML must not be silently repaired into a valid skill");
+    let error =
+        parse_skill_frontmatter_metadata("---\n[unterminated\n---\n", || "fallback".to_string())
+            .expect_err("malformed YAML must not be silently repaired into a valid skill");
 
     assert!(matches!(error, super::SkillParseError::InvalidYaml(_)));
 }
