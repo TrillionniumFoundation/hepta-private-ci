@@ -19,7 +19,7 @@ import time
 
 
 PACKAGE = "experiments.multimodal_output_portfolio.joint_hepta_20261029"
-MODULES = ("controller_v2", "observer_v2")
+MODULES = ("controller_v2", "observer_v2", "diagnostics_v2.native_development")
 TARIFF = {"cpu_second": 0.02, "wall_second": 0.001}
 
 

@@ -1,0 +1,291 @@
+name: Joint Hepta v2 registered development
+
+on:
+  push:
+    branches: [research/joint-hepta-generation-20261029]
+    paths:
+      - experiments/multimodal_output_portfolio/joint_hepta_20261029/**
+      - .github/workflows/joint-hepta-v2.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: joint-hepta-v2-${{ github.sha }}
+  cancel-in-progress: false
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONNOUSERSITE: "1"
+  OMP_NUM_THREADS: "2"
+  MKL_NUM_THREADS: "2"
+  OPENBLAS_NUM_THREADS: "2"
+
+jobs:
+  source-and-runtime:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /experiments/multimodal_output_portfolio/joint_hepta_20261029/
+            /experiments/multimodal_output_portfolio/unified_20261028/
+            /experiments/multimodal_output_portfolio/closure_20261028/semantic_backbones.py
+            /experiments/multimodal_output_portfolio/closure_20261028/semantic_tsm.py
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - name: Install pinned numerical environment
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: --extra-index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu numpy==2.3.5 scipy==1.16.3 Pillow==12.3.0 pytest==8.4.2
+      - name: Verify previous contracts and new conditional gradients and stage gates
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/joint-v2-source"
+          python -B -m pytest -c /dev/null --rootdir=. --import-mode=importlib -p no:cacheprovider experiments/multimodal_output_portfolio/joint_hepta_20261029 -v 2>&1 | tee "$RUNNER_TEMP/joint-v2-source/tests.log"
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.observer_v2_audit --archive experiments/multimodal_output_portfolio/joint_hepta_20261029/evidence/observer --output "$RUNNER_TEMP/joint-v2-source/V1_SUPPORT_AUDIT.json"
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.process_meter_v2 --module controller_v2 --output "$RUNNER_TEMP/joint-v2-source/smoke" --timeout-seconds 600 -- --smoke
+          git diff --check
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: joint-v2-source-${{ github.sha }}
+          path: ${{ runner.temp }}/joint-v2-source/
+          retention-days: 30
+  controller-development:
+    if: contains(github.event.head_commit.message, '[joint-v2-development]')
+    needs: source-and-runtime
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        seed: [17, 29]
+        width: [32, 64]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            experiments/multimodal_output_portfolio/joint_hepta_20261029
+            experiments/multimodal_output_portfolio/unified_20261028
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - name: Install pinned training environment
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: --extra-index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu numpy==2.3.5 scipy==1.16.3 Pillow==12.3.0
+      - name: Execute every registered development arm and retain failed work
+        run: |
+          set -euo pipefail
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.process_meter_v2 --module controller_v2 --output "$RUNNER_TEMP/joint-v2-${{ matrix.seed }}-${{ matrix.width }}" --timeout-seconds 3000 -- --seed ${{ matrix.seed }} --width ${{ matrix.width }}
+          python -m pip freeze > "$RUNNER_TEMP/joint-v2-${{ matrix.seed }}-${{ matrix.width }}/environment.txt"
+      - name: Probe learned feedback response with identical-feedback controls
+        run: |
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.diagnostics_v2.controller_feedback --development-results "$RUNNER_TEMP/joint-v2-${{ matrix.seed }}-${{ matrix.width }}/run/RESULTS.json" --output "$RUNNER_TEMP/joint-v2-${{ matrix.seed }}-${{ matrix.width }}/feedback"
+      - name: Independently audit physical outputs and preserve compact original evidence
+        if: always()
+        run: |
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.diagnostics_v2.archive --run "$RUNNER_TEMP/joint-v2-${{ matrix.seed }}-${{ matrix.width }}" --output "$RUNNER_TEMP/compact-controller-${{ matrix.seed }}-${{ matrix.width }}"
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: joint-v2-compact-controller-${{ matrix.seed }}-${{ matrix.width }}-${{ github.sha }}
+          path: ${{ runner.temp }}/compact-controller-${{ matrix.seed }}-${{ matrix.width }}/
+          if-no-files-found: warn
+          retention-days: 30
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: joint-v2-controller-${{ matrix.seed }}-${{ matrix.width }}-${{ github.sha }}
+          path: ${{ runner.temp }}/joint-v2-${{ matrix.seed }}-${{ matrix.width }}/
+          if-no-files-found: warn
+          retention-days: 30
+  observer-development:
+    if: contains(github.event.head_commit.message, '[joint-v2-development]')
+    needs: source-and-runtime
+    runs-on: ubuntu-24.04
+    timeout-minutes: 135
+    env:
+      OMP_NUM_THREADS: "4"
+      MKL_NUM_THREADS: "4"
+      OPENBLAS_NUM_THREADS: "4"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /experiments/multimodal_output_portfolio/joint_hepta_20261029/
+            /experiments/multimodal_output_portfolio/unified_20261028/
+            /experiments/multimodal_output_portfolio/closure_20261028/*.py
+            /experiments/multimodal_output_portfolio/closure_20261028/*.json
+            /experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/PILOT.json
+            /experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - name: Install pinned media and feature environment
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: --extra-index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu torchvision==0.29.1+cpu numpy==2.3.5 scipy==1.16.3 Pillow==12.3.0
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y ffmpeg
+      - name: Execute train-only observer development with all confirmation media closed
+        run: |
+          set -euo pipefail
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.process_meter_v2 --module observer_v2 --output "$RUNNER_TEMP/joint-v2-observer" --timeout-seconds 7500 -- --registration-sha "${{ github.sha }}"
+          python -m pip freeze > "$RUNNER_TEMP/joint-v2-observer/environment.txt"
+      - name: Preserve observer models, original OOF predictions and source evidence
+        if: always()
+        run: |
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.diagnostics_v2.archive --run "$RUNNER_TEMP/joint-v2-observer" --output "$RUNNER_TEMP/compact-observer"
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: joint-v2-compact-observer-${{ github.sha }}
+          path: ${{ runner.temp }}/compact-observer/
+          if-no-files-found: warn
+          retention-days: 30
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: joint-v2-observer-${{ github.sha }}
+          path: ${{ runner.temp }}/joint-v2-observer/
+          if-no-files-found: warn
+          retention-days: 30
+  native-development:
+    if: contains(github.event.head_commit.message, '[joint-v2-development]')
+    needs: controller-development
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: src
+        shell: bash
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: src
+          persist-credentials: false
+          sparse-checkout: |
+            experiments/multimodal_output_portfolio/joint_hepta_20261029
+            experiments/multimodal_output_portfolio/unified_20261028
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: a50c8974ac23c20c5174f7c3ad542a96e5652854
+          path: native-source
+          persist-credentials: false
+          sparse-checkout: |
+            codex-rs/hepta-types
+            codex-rs/hepta-infer-core
+            codex-rs/hepta-neuron
+            codex-rs/hepta-agentd/src
+            experiments/multimodal_output_portfolio/continuation_20261027/control
+            experiments/multimodal_output_portfolio/abc_next/native
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: joint-v2-controller-17-32-${{ github.sha }}
+          path: ${{ runner.temp }}/native-input
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - name: Install registered numerical and native compiler runtimes
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: --extra-index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu numpy==2.3.5 scipy==1.16.3 Pillow==12.3.0
+          rustup toolchain install 1.95.0 --profile minimal
+      - name: Build unchanged owner and execute actual v2 checkpoints
+        run: |
+          set -euo pipefail
+          native_rustc="$(rustup which --toolchain 1.95.0 rustc)"
+          native_compiler_bin="${native_rustc%/*}"
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.native_build --repository "$GITHUB_WORKSPACE/native-source" --destination "$RUNNER_TEMP/native-build" --compiler "$native_compiler_bin"
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.process_meter_v2 --module diagnostics_v2.native_development --output "$RUNNER_TEMP/joint-v2-native" --timeout-seconds 600 -- --study "$RUNNER_TEMP/native-input" --binary "$RUNNER_TEMP/native-build/target/debug/examples/owner_host"
+          mkdir "$RUNNER_TEMP/joint-v2-native/build"
+          cp "$RUNNER_TEMP/native-build/BUILD_RECEIPT.json" "$RUNNER_TEMP/native-build/LOCK_IDENTITY_CHECK.json" "$RUNNER_TEMP/joint-v2-native/build/"
+          python -m pip freeze > "$RUNNER_TEMP/joint-v2-native/environment.txt"
+      - name: Audit actual owner trajectories and preserve compact evidence
+        if: always()
+        run: |
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.diagnostics_v2.archive --run "$RUNNER_TEMP/joint-v2-native" --output "$RUNNER_TEMP/compact-native"
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: joint-v2-compact-native-${{ github.sha }}
+          path: ${{ runner.temp }}/compact-native/
+          if-no-files-found: warn
+          retention-days: 30
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: joint-v2-native-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/joint-v2-native/
+            ${{ runner.temp }}/native-build/BUILD_RECEIPT.json
+            ${{ runner.temp }}/native-build/LOCK_IDENTITY_CHECK.json
+            ${{ runner.temp }}/native-build/BUILD.log
+          if-no-files-found: warn
+          retention-days: 30
+  preserve-evidence:
+    if: always() && contains(github.event.head_commit.message, '[joint-v2-development]')
+    needs: [controller-development, observer-development, native-development]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: experiments/multimodal_output_portfolio/joint_hepta_20261029
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: joint-v2-compact-*-${{ github.sha }}
+          path: ${{ runner.temp }}/compact-evidence
+      - name: Preserve original evidence without promoting any model or rewriting history
+        env:
+          EVIDENCE_SOURCE_SHA: ${{ github.sha }}
+          EVIDENCE_RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          evidence_dir="experiments/multimodal_output_portfolio/joint_hepta_20261029/evidence/v2/runs/$EVIDENCE_SOURCE_SHA"
+          mkdir -p "$evidence_dir"
+          cp -a "$RUNNER_TEMP/compact-evidence/." "$evidence_dir/"
+          python - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          root=Path('experiments/multimodal_output_portfolio/joint_hepta_20261029/evidence/v2/runs')/os.environ['EVIDENCE_SOURCE_SHA']
+          evidence=[]
+          for folder in sorted(root.iterdir()):
+              if not folder.is_dir(): continue
+              manifest=json.loads((folder/'MANIFEST.json').read_text())
+              for relative, identity in manifest['stored_files'].items():
+                  path=folder/relative
+                  if not path.resolve().is_relative_to(folder.resolve()) or path.is_symlink():
+                      raise ValueError('Unsafe compact artifact path')
+                  data=path.read_bytes()
+                  if len(data)!=identity['bytes'] or hashlib.sha256(data).hexdigest()!=identity['sha256']:
+                      raise ValueError('Compact evidence bytes changed')
+              evidence.append({'artifact_name':folder.name,'audit':manifest['audit'],
+                               'manifest_sha256':hashlib.sha256((folder/'MANIFEST.json').read_bytes()).hexdigest()})
+          if not evidence: raise ValueError('No retained evidence artifacts')
+          index={'source_commit':os.environ['EVIDENCE_SOURCE_SHA'],'run_id':int(os.environ['EVIDENCE_RUN_ID']),
+                 'expected_compact_artifacts':6,'actual_compact_artifacts':len(evidence),'artifacts':evidence,
+                 'scientific_qualification':False,'promotion':False,'failed_or_partial_evidence_retained':True}
+          (root/'INDEX.json').write_text(json.dumps(index,sort_keys=True,indent=2)+'\n')
+          print(json.dumps({'source_commit':index['source_commit'],'preserved_artifacts':len(evidence)}))
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --force "$evidence_dir"
+          git commit -m "research: preserve original v2 evidence for $EVIDENCE_SOURCE_SHA"
+          git push origin HEAD:refs/heads/research/joint-hepta-generation-20261029
