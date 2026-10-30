@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/usr/local/bin/python",
+    "-m",
+    "experiments.hcsn_conservative_acceleration_v1.study",
+    "preflight",
+    "--protocol",
+    "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+    "--output",
+    "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/hosted_preflight001"
+  ],
+  "complete_child_cpu_seconds": 5.212911999999999,
+  "cwd": "/__w/hepta-private-ci/hepta-private-ci",
+  "ended_utc": "2026-10-30T13:01:15.674967+00:00",
+  "exit_code": 0,
+  "log": "experiments/hcsn_conservative_acceleration_v1/results/hosted_prepare001/train_preflight.log",
+  "name": "train_preflight",
+  "peak_rss_bytes": 398802944,
+  "process_created": true,
+  "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+  "started_utc": "2026-10-30T13:01:10.460650+00:00",
+  "system_cpu_seconds": 0.412913,
+  "user_cpu_seconds": 4.799999,
+  "wall_seconds": 5.21431452500002
+}

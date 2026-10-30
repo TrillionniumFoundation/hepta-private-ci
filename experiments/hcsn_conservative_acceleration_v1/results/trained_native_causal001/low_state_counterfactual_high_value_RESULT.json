@@ -1,0 +1,302 @@
+{
+  "actual_action": "keep",
+  "actual_neural_values": {
+    "continuation": 0.25865116715431213,
+    "intervention": -0.2866993248462677,
+    "value_difference": 0.5453504323959351
+  },
+  "case": "low_state_counterfactual_high_value",
+  "common_native_event": {
+    "context": {
+      "external_budget": 0.0,
+      "external_read_fee": 0.0,
+      "kind": "identical_causal_prefix",
+      "threshold": 0.7456780076026917
+    },
+    "native": {
+      "activation_q24": [
+        11744051,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actual_model_calls": 1,
+      "actual_ndu_calls": 1,
+      "arm": "continuation_only",
+      "calibration_scope": "encoder-domain-not-task-success",
+      "case": "acceleration-value-causal-v1",
+      "checkpoint_after": "278892ddba058ad9bd33e1c03b11477565ac81f544f23920a192f0d287bd3f25",
+      "checkpoint_before": "0000000000000000000000000000000000000000000000000000000000000000",
+      "checkpoint_bytes": 448,
+      "confidence_ppm": 1000000,
+      "duplicate_event_ignored": false,
+      "effective_action": "keep",
+      "eligibility_q24": [
+        8220836,
+        0,
+        0,
+        0,
+        0
+      ],
+      "event_digest": "19b2ae4a54814e413f124ccacd599914eb6c496fd022e2916d6e40797025c812",
+      "event_kind": "continuous_readout",
+      "execution_micros": 217,
+      "input_feature_digest": "d2d976530b847b828c55bc97abc00fa47c8302ccf279f75e274c44c3f8205c70",
+      "journal_bytes_written": 384,
+      "model_latency_micros": 0,
+      "model_resident_bytes": 18629,
+      "native_abstain": false,
+      "native_transition_executed": true,
+      "ood_ppm": 0,
+      "owner_authority": "DENY_ALL",
+      "profile_masks": [
+        true,
+        true,
+        true
+      ],
+      "profile_sha256": "3d8d6d7edffb6e02e1f7845181e4434203407e1f158e3710cf68a249d1d4c062",
+      "queue_age_micros": 0,
+      "readout": {
+        "action": "keep",
+        "native_ndu_digest": "ecdcd61da175120ec01a56a9d5845a787c00474be0047b9da632e04b4347155d",
+        "native_ndu_frontier": [
+          "keep"
+        ],
+        "scores_q24": [
+          11744051,
+          -134217728,
+          0
+        ],
+        "tie": false
+      },
+      "receipt_digest": "6c78e296f00ab194598c7de0aa60a67dc67d9e7ad40a632fdc94b48c0863c76c",
+      "seed": 730017,
+      "step": 1,
+      "terminal": false,
+      "transient_allocation_bytes": 98,
+      "write_amplification_ppm": 857143
+    },
+    "signals": {
+      "activity": 0.0,
+      "continuation": 0.75,
+      "margin": 0.0,
+      "risk": 0.0
+    }
+  },
+  "expected_action": "keep",
+  "intervention": true,
+  "logits": [
+    [
+      0.10202087461948395,
+      0.5290949940681458,
+      -0.49545395374298096,
+      0.37545058131217957,
+      0.2902059853076935,
+      0.05754644423723221,
+      0.35062745213508606,
+      -0.2776889204978943
+    ]
+  ],
+  "native_event": {
+    "context": {
+      "external_budget": 0.0,
+      "external_read_fee": 0.0,
+      "kind": "causal_value_message",
+      "threshold": 0.7456780076026917
+    },
+    "native": {
+      "activation_q24": [
+        2985021,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actual_model_calls": 1,
+      "actual_ndu_calls": 1,
+      "arm": "continuation_only",
+      "calibration_scope": "encoder-domain-not-task-success",
+      "case": "acceleration-value-causal-v1",
+      "checkpoint_after": "c26f3ce606a9e7404bcbf1a15854026f4fdc5e71ecb23e21cc123c455e88245f",
+      "checkpoint_before": "278892ddba058ad9bd33e1c03b11477565ac81f544f23920a192f0d287bd3f25",
+      "checkpoint_bytes": 448,
+      "confidence_ppm": 1000000,
+      "duplicate_event_ignored": false,
+      "effective_action": "keep",
+      "eligibility_q24": [
+        531098,
+        0,
+        0,
+        0,
+        0
+      ],
+      "event_digest": "d545310000a092f564fdd090be5db13d99eff523700d37d5bc0ee211fe53b397",
+      "event_kind": "continuous_readout",
+      "execution_micros": 175,
+      "input_feature_digest": "1242409a9a22c8f519ee5eddf8fcf0512181f8d54246a95364b17ca7d6329109",
+      "journal_bytes_written": 384,
+      "model_latency_micros": 0,
+      "model_resident_bytes": 26464,
+      "native_abstain": false,
+      "native_transition_executed": true,
+      "ood_ppm": 0,
+      "owner_authority": "DENY_ALL",
+      "profile_masks": [
+        true,
+        true,
+        true
+      ],
+      "profile_sha256": "3d8d6d7edffb6e02e1f7845181e4434203407e1f158e3710cf68a249d1d4c062",
+      "queue_age_micros": 0,
+      "readout": {
+        "action": "keep",
+        "native_ndu_digest": "d47b7cc18140b8315efb1c032c3d4b4675f015bdc624ac38e58180b58137b4b4",
+        "native_ndu_frontier": [
+          "keep"
+        ],
+        "scores_q24": [
+          2985021,
+          -134217728,
+          0
+        ],
+        "tie": false
+      },
+      "receipt_digest": "354a509f617f2f94249e10d9fecc9ffc96a6cd1f7c45a28eff5e9080e4b37300",
+      "seed": 730017,
+      "step": 2,
+      "terminal": false,
+      "transient_allocation_bytes": 98,
+      "write_amplification_ppm": 857143
+    },
+    "signals": {
+      "activity": 0.0,
+      "continuation": 0.22792110234299245,
+      "margin": 0.0,
+      "risk": 0.0
+    }
+  },
+  "native_execution": {
+    "child_cpu_seconds": 0.003704,
+    "child_max_rss_kib": 270456,
+    "counters": {
+      "actual_kernel_calls": 2,
+      "actual_ndu_calls": 2,
+      "batch_ticks": 0,
+      "event_validation_kernel_steps": 0,
+      "event_validation_ndu_calls": 0,
+      "native_errors": 0,
+      "native_physical_rpc_micros": 2337,
+      "original_journal_replay_steps": 0,
+      "owner_ticks": 2,
+      "python_roundtrip_ns": 5001558,
+      "request_bytes": 1641,
+      "response_bytes": 6334,
+      "rpc_calls": 9,
+      "total_native_kernel_calls": 2,
+      "total_native_ndu_calls": 2
+    },
+    "cpu_scope": "this exact native child PID from wait4",
+    "exit_code": 0,
+    "hardware_energy_measured": false,
+    "identity": {
+      "binary_sha256": "1dc702aea6a448ad84407aeb71dc8f23066205fab79fe7c6859fc02c55e6f7a5",
+      "owner_authority": "DENY_ALL",
+      "schema": "hepta.continuous-boundary.native-identity.v1",
+      "source_commit": "5898cd8b0f724c3152b6cc52856721f72e5e08be",
+      "source_manifest_digest": "6addea031fa9ba2ca403137d8d10da6088c255474c681b106d9a2706c645dd09"
+    },
+    "schema": "hepta.continuous-boundary.native-process-cost.v1",
+    "wall_ns": 7027550
+  },
+  "neural_index": 2,
+  "neural_replay_steps": 3,
+  "prefix": {
+    "case": "acceleration-value-causal-v1",
+    "checkpoint": "278892ddba058ad9bd33e1c03b11477565ac81f544f23920a192f0d287bd3f25",
+    "profile_sha256": "3d8d6d7edffb6e02e1f7845181e4434203407e1f158e3710cf68a249d1d4c062",
+    "seed": 730017,
+    "step": 1
+  },
+  "retry": {
+    "duplicate": {
+      "activation_q24": [
+        2985021,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actual_model_calls": 0,
+      "actual_ndu_calls": 0,
+      "arm": "continuation_only",
+      "calibration_scope": "encoder-domain-not-task-success",
+      "case": "acceleration-value-causal-v1",
+      "checkpoint_after": "c26f3ce606a9e7404bcbf1a15854026f4fdc5e71ecb23e21cc123c455e88245f",
+      "checkpoint_before": "278892ddba058ad9bd33e1c03b11477565ac81f544f23920a192f0d287bd3f25",
+      "checkpoint_bytes": 448,
+      "confidence_ppm": 1000000,
+      "duplicate_event_ignored": true,
+      "effective_action": "keep",
+      "eligibility_q24": [
+        531098,
+        0,
+        0,
+        0,
+        0
+      ],
+      "event_digest": "d545310000a092f564fdd090be5db13d99eff523700d37d5bc0ee211fe53b397",
+      "event_kind": "continuous_readout",
+      "execution_micros": 175,
+      "input_feature_digest": "1242409a9a22c8f519ee5eddf8fcf0512181f8d54246a95364b17ca7d6329109",
+      "journal_bytes_written": 384,
+      "model_latency_micros": 0,
+      "model_resident_bytes": 26464,
+      "native_abstain": false,
+      "native_transition_executed": false,
+      "ood_ppm": 0,
+      "owner_authority": "DENY_ALL",
+      "profile_masks": [
+        true,
+        true,
+        true
+      ],
+      "profile_sha256": "3d8d6d7edffb6e02e1f7845181e4434203407e1f158e3710cf68a249d1d4c062",
+      "queue_age_micros": 0,
+      "readout": {
+        "action": "keep",
+        "native_ndu_digest": "d47b7cc18140b8315efb1c032c3d4b4675f015bdc624ac38e58180b58137b4b4",
+        "native_ndu_frontier": [
+          "keep"
+        ],
+        "scores_q24": [
+          2985021,
+          -134217728,
+          0
+        ],
+        "tie": false
+      },
+      "receipt_digest": "354a509f617f2f94249e10d9fecc9ffc96a6cd1f7c45a28eff5e9080e4b37300",
+      "seed": 730017,
+      "step": 2,
+      "terminal": false,
+      "transient_allocation_bytes": 98,
+      "write_amplification_ppm": 857143
+    },
+    "passed": true,
+    "status": {
+      "arm": "continuation_only",
+      "case": "acceleration-value-causal-v1",
+      "checkpoint": "c26f3ce606a9e7404bcbf1a15854026f4fdc5e71ecb23e21cc123c455e88245f",
+      "durable_event_count": 2,
+      "host_poisoned": false,
+      "owner_authority": "DENY_ALL",
+      "seed": 730017,
+      "step": 2,
+      "terminal": false
+    }
+  },
+  "sent_value": 0.9460055828094482,
+  "state_sha256": "9cf85be7c1f5792c129fd7af2c8ba0ce6b568be7f6760d54bb0a6920f1ecfd7c",
+  "terminal_guard": null
+}

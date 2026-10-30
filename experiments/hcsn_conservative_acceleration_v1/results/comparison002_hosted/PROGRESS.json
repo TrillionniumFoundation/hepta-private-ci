@@ -1,0 +1,1983 @@
+{
+  "completed": 70,
+  "dispatched": 70,
+  "expected": 70,
+  "memory": {
+    "current_bytes": 1495015424,
+    "estimated_nonreclaimable_bytes": 44627816,
+    "estimated_reclaimable_bytes": 1450387608,
+    "maximum_bytes": 8589934592,
+    "memory_stat": {
+      "active_anon": 39792640,
+      "active_file": 54140928,
+      "anon": 39800832,
+      "anon_thp": 0,
+      "file": 1350631424,
+      "file_dirty": 3383296,
+      "file_mapped": 10371072,
+      "file_thp": 0,
+      "file_writeback": 0,
+      "inactive_anon": 0,
+      "inactive_file": 1296498688,
+      "kernel": 104083456,
+      "kernel_stack": 65536,
+      "numa_hint_faults": 0,
+      "numa_pages_migrated": 0,
+      "numa_pte_updates": 0,
+      "pagetables": 409600,
+      "percpu": 2736,
+      "pgactivate": 0,
+      "pgdeactivate": 0,
+      "pgdemote_direct": 0,
+      "pgdemote_khugepaged": 0,
+      "pgdemote_kswapd": 0,
+      "pgdemote_proactive": 0,
+      "pgfault": 9909472,
+      "pglazyfree": 0,
+      "pglazyfreed": 0,
+      "pgmajfault": 834,
+      "pgpromote_success": 0,
+      "pgrefill": 0,
+      "pgscan": 0,
+      "pgscan_direct": 0,
+      "pgscan_khugepaged": 0,
+      "pgscan_kswapd": 0,
+      "pgscan_proactive": 0,
+      "pgsteal": 0,
+      "pgsteal_direct": 0,
+      "pgsteal_khugepaged": 0,
+      "pgsteal_kswapd": 0,
+      "pgsteal_proactive": 0,
+      "pswpin": 0,
+      "pswpout": 0,
+      "sec_pagetables": 0,
+      "shmem": 0,
+      "shmem_thp": 0,
+      "slab": 103576728,
+      "slab_reclaimable": 103139480,
+      "slab_unreclaimable": 437248,
+      "sock": 0,
+      "swapcached": 0,
+      "swpin_zero": 0,
+      "swpout_zero": 0,
+      "thp_collapse_alloc": 2,
+      "thp_fault_alloc": 451,
+      "thp_swpout": 0,
+      "thp_swpout_fallback": 0,
+      "unevictable": 0,
+      "vmalloc": 24576,
+      "workingset_activate_anon": 0,
+      "workingset_activate_file": 0,
+      "workingset_nodereclaim": 0,
+      "workingset_refault_anon": 0,
+      "workingset_refault_file": 0,
+      "workingset_restore_anon": 0,
+      "workingset_restore_file": 0,
+      "zswap": 0,
+      "zswapped": 0,
+      "zswpin": 0,
+      "zswpout": 0,
+      "zswpwb": 0
+    },
+    "oom": {
+      "oom": 0,
+      "oom_kill": 0
+    },
+    "reclaim_assumption": "Clean non-shmem file pages and slab_reclaimable may be reclaimed; dirty/writeback/shmem remain charged. Reservation is a forecast, not a hard memory guarantee."
+  },
+  "reason": null,
+  "records": [
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__mqar__transformer__98032",
+        "--job-index",
+        "0"
+      ],
+      "directory": "runs/cpu__mqar__transformer__98032",
+      "index": 0,
+      "job": {
+        "family": "cpu",
+        "model": "transformer",
+        "seed": 98032,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 371884032,
+      "returncode": 0,
+      "wall_seconds": 33.934342146000006,
+      "whole_worker_cpu_seconds": 33.680708
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__mqar__transformer__98033",
+        "--job-index",
+        "1"
+      ],
+      "directory": "runs/cpu__mqar__transformer__98033",
+      "index": 1,
+      "job": {
+        "family": "cpu",
+        "model": "transformer",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 374816768,
+      "returncode": 0,
+      "wall_seconds": 33.934516229999986,
+      "whole_worker_cpu_seconds": 33.711193
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__mqar__transformer__98031",
+        "--job-index",
+        "2"
+      ],
+      "directory": "runs/fixed__mqar__transformer__98031",
+      "index": 2,
+      "job": {
+        "family": "fixed",
+        "model": "transformer",
+        "seed": 98031,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 373972992,
+      "returncode": 0,
+      "wall_seconds": 3.7355016779999914,
+      "whole_worker_cpu_seconds": 3.642788
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__mqar__two_gates__98033",
+        "--job-index",
+        "3"
+      ],
+      "directory": "runs/fixed__mqar__two_gates__98033",
+      "index": 3,
+      "job": {
+        "family": "fixed",
+        "model": "two_gates",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 365133824,
+      "returncode": 0,
+      "wall_seconds": 3.937602720999962,
+      "whole_worker_cpu_seconds": 3.839741
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__selective_copy__two_gates__98033",
+        "--job-index",
+        "4"
+      ],
+      "directory": "runs/fixed__selective_copy__two_gates__98033",
+      "index": 4,
+      "job": {
+        "family": "fixed",
+        "model": "two_gates",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 365383680,
+      "returncode": 0,
+      "wall_seconds": 3.9377487350000138,
+      "whole_worker_cpu_seconds": 3.8573329999999997
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__cremad__two_gates__98041",
+        "--job-index",
+        "5"
+      ],
+      "directory": "runs/fixed__cremad__two_gates__98041",
+      "index": 5,
+      "job": {
+        "family": "fixed",
+        "model": "two_gates",
+        "seed": 98041,
+        "supplementary": true,
+        "task": "cremad"
+      },
+      "peak_rss_bytes": 381505536,
+      "returncode": 0,
+      "wall_seconds": 4.038963175999982,
+      "whole_worker_cpu_seconds": 3.998396
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__mqar__lif_snn__98033",
+        "--job-index",
+        "6"
+      ],
+      "directory": "runs/fixed__mqar__lif_snn__98033",
+      "index": 6,
+      "job": {
+        "family": "fixed",
+        "model": "lif_snn",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 366440448,
+      "returncode": 0,
+      "wall_seconds": 4.040619343000003,
+      "whole_worker_cpu_seconds": 3.9596620000000002
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__selective_copy__hcsn_reference__98033",
+        "--job-index",
+        "7"
+      ],
+      "directory": "runs/cpu__selective_copy__hcsn_reference__98033",
+      "index": 7,
+      "job": {
+        "family": "cpu",
+        "model": "hcsn_reference",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 829919232,
+      "returncode": 0,
+      "wall_seconds": 36.88060859699999,
+      "whole_worker_cpu_seconds": 36.654971
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__selective_copy__two_gates__98032",
+        "--job-index",
+        "8"
+      ],
+      "directory": "runs/cpu__selective_copy__two_gates__98032",
+      "index": 8,
+      "job": {
+        "family": "cpu",
+        "model": "two_gates",
+        "seed": 98032,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 365658112,
+      "returncode": 0,
+      "wall_seconds": 34.051394516000016,
+      "whole_worker_cpu_seconds": 33.839821
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__mqar__hcsn_reference__98032",
+        "--job-index",
+        "10"
+      ],
+      "directory": "runs/fixed__mqar__hcsn_reference__98032",
+      "index": 10,
+      "job": {
+        "family": "fixed",
+        "model": "hcsn_reference",
+        "seed": 98032,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 819752960,
+      "returncode": 0,
+      "wall_seconds": 23.645389856999998,
+      "whole_worker_cpu_seconds": 23.439953
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__irregular__two_gates__98041",
+        "--job-index",
+        "11"
+      ],
+      "directory": "runs/fixed__irregular__two_gates__98041",
+      "index": 11,
+      "job": {
+        "family": "fixed",
+        "model": "two_gates",
+        "seed": 98041,
+        "supplementary": true,
+        "task": "irregular"
+      },
+      "peak_rss_bytes": 366731264,
+      "returncode": 0,
+      "wall_seconds": 3.938649890000022,
+      "whole_worker_cpu_seconds": 3.839004
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__selective_copy__hcsn_accelerated__98033",
+        "--job-index",
+        "9"
+      ],
+      "directory": "runs/cpu__selective_copy__hcsn_accelerated__98033",
+      "index": 9,
+      "job": {
+        "family": "cpu",
+        "model": "hcsn_accelerated",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 559591424,
+      "returncode": 0,
+      "wall_seconds": 35.86705268399999,
+      "whole_worker_cpu_seconds": 35.625366
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__mqar__hcsn_reference__98033",
+        "--job-index",
+        "13"
+      ],
+      "directory": "runs/fixed__mqar__hcsn_reference__98033",
+      "index": 13,
+      "job": {
+        "family": "fixed",
+        "model": "hcsn_reference",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 811356160,
+      "returncode": 0,
+      "wall_seconds": 24.256229732999998,
+      "whole_worker_cpu_seconds": 24.061992
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__mqar__hcsn_reference__98032",
+        "--job-index",
+        "12"
+      ],
+      "directory": "runs/cpu__mqar__hcsn_reference__98032",
+      "index": 12,
+      "job": {
+        "family": "cpu",
+        "model": "hcsn_reference",
+        "seed": 98032,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 823844864,
+      "returncode": 0,
+      "wall_seconds": 36.98247527299998,
+      "whole_worker_cpu_seconds": 36.801343
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__selective_copy__transformer__98033",
+        "--job-index",
+        "14"
+      ],
+      "directory": "runs/cpu__selective_copy__transformer__98033",
+      "index": 14,
+      "job": {
+        "family": "cpu",
+        "model": "transformer",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 374276096,
+      "returncode": 0,
+      "wall_seconds": 34.24046317899996,
+      "whole_worker_cpu_seconds": 34.029182999999996
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__selective_copy__hcsn_accelerated__98031",
+        "--job-index",
+        "15"
+      ],
+      "directory": "runs/cpu__selective_copy__hcsn_accelerated__98031",
+      "index": 15,
+      "job": {
+        "family": "cpu",
+        "model": "hcsn_accelerated",
+        "seed": 98031,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 552767488,
+      "returncode": 0,
+      "wall_seconds": 35.559155594,
+      "whole_worker_cpu_seconds": 35.363303
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__irregular__transformer__98041",
+        "--job-index",
+        "17"
+      ],
+      "directory": "runs/fixed__irregular__transformer__98041",
+      "index": 17,
+      "job": {
+        "family": "fixed",
+        "model": "transformer",
+        "seed": 98041,
+        "supplementary": true,
+        "task": "irregular"
+      },
+      "peak_rss_bytes": 375312384,
+      "returncode": 0,
+      "wall_seconds": 3.6374705160000076,
+      "whole_worker_cpu_seconds": 3.530266
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__irregular__hcsn_accelerated__98041",
+        "--job-index",
+        "18"
+      ],
+      "directory": "runs/fixed__irregular__hcsn_accelerated__98041",
+      "index": 18,
+      "job": {
+        "family": "fixed",
+        "model": "hcsn_accelerated",
+        "seed": 98041,
+        "supplementary": true,
+        "task": "irregular"
+      },
+      "peak_rss_bytes": 544174080,
+      "returncode": 0,
+      "wall_seconds": 9.493318267999996,
+      "whole_worker_cpu_seconds": 9.402108
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__selective_copy__lif_snn__98033",
+        "--job-index",
+        "16"
+      ],
+      "directory": "runs/cpu__selective_copy__lif_snn__98033",
+      "index": 16,
+      "job": {
+        "family": "cpu",
+        "model": "lif_snn",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 367796224,
+      "returncode": 0,
+      "wall_seconds": 33.95273932200001,
+      "whole_worker_cpu_seconds": 33.691278999999994
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__selective_copy__hcsn_accelerated__98032",
+        "--job-index",
+        "20"
+      ],
+      "directory": "runs/fixed__selective_copy__hcsn_accelerated__98032",
+      "index": 20,
+      "job": {
+        "family": "fixed",
+        "model": "hcsn_accelerated",
+        "seed": 98032,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 553250816,
+      "returncode": 0,
+      "wall_seconds": 13.444697534,
+      "whole_worker_cpu_seconds": 13.387034000000002
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__selective_copy__transformer__98032",
+        "--job-index",
+        "21"
+      ],
+      "directory": "runs/fixed__selective_copy__transformer__98032",
+      "index": 21,
+      "job": {
+        "family": "fixed",
+        "model": "transformer",
+        "seed": 98032,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 373940224,
+      "returncode": 0,
+      "wall_seconds": 3.8401259759999675,
+      "whole_worker_cpu_seconds": 3.7358290000000003
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__mqar__two_gates__98032",
+        "--job-index",
+        "19"
+      ],
+      "directory": "runs/cpu__mqar__two_gates__98032",
+      "index": 19,
+      "job": {
+        "family": "cpu",
+        "model": "two_gates",
+        "seed": 98032,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 365293568,
+      "returncode": 0,
+      "wall_seconds": 33.86163484600007,
+      "whole_worker_cpu_seconds": 33.620664
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__selective_copy__hcsn_reference__98032",
+        "--job-index",
+        "23"
+      ],
+      "directory": "runs/fixed__selective_copy__hcsn_reference__98032",
+      "index": 23,
+      "job": {
+        "family": "fixed",
+        "model": "hcsn_reference",
+        "seed": 98032,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 825356288,
+      "returncode": 0,
+      "wall_seconds": 23.24412332700001,
+      "whole_worker_cpu_seconds": 23.094555
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__mqar__lif_snn__98031",
+        "--job-index",
+        "24"
+      ],
+      "directory": "runs/fixed__mqar__lif_snn__98031",
+      "index": 24,
+      "job": {
+        "family": "fixed",
+        "model": "lif_snn",
+        "seed": 98031,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 368173056,
+      "returncode": 0,
+      "wall_seconds": 3.945710780000013,
+      "whole_worker_cpu_seconds": 3.842446
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__mqar__two_gates__98033",
+        "--job-index",
+        "22"
+      ],
+      "directory": "runs/cpu__mqar__two_gates__98033",
+      "index": 22,
+      "job": {
+        "family": "cpu",
+        "model": "two_gates",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 365887488,
+      "returncode": 0,
+      "wall_seconds": 33.860881070000005,
+      "whole_worker_cpu_seconds": 33.699278
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__mqar__transformer__98033",
+        "--job-index",
+        "26"
+      ],
+      "directory": "runs/fixed__mqar__transformer__98033",
+      "index": 26,
+      "job": {
+        "family": "fixed",
+        "model": "transformer",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 372752384,
+      "returncode": 0,
+      "wall_seconds": 3.837794991999999,
+      "whole_worker_cpu_seconds": 3.813605
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__selective_copy__transformer__98031",
+        "--job-index",
+        "27"
+      ],
+      "directory": "runs/fixed__selective_copy__transformer__98031",
+      "index": 27,
+      "job": {
+        "family": "fixed",
+        "model": "transformer",
+        "seed": 98031,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 375136256,
+      "returncode": 0,
+      "wall_seconds": 3.839297106999993,
+      "whole_worker_cpu_seconds": 3.792417
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__selective_copy__hcsn_accelerated__98033",
+        "--job-index",
+        "25"
+      ],
+      "directory": "runs/fixed__selective_copy__hcsn_accelerated__98033",
+      "index": 25,
+      "job": {
+        "family": "fixed",
+        "model": "hcsn_accelerated",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 552722432,
+      "returncode": 0,
+      "wall_seconds": 13.436484758999995,
+      "whole_worker_cpu_seconds": 13.301082
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__selective_copy__two_gates__98031",
+        "--job-index",
+        "29"
+      ],
+      "directory": "runs/fixed__selective_copy__two_gates__98031",
+      "index": 29,
+      "job": {
+        "family": "fixed",
+        "model": "two_gates",
+        "seed": 98031,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 365502464,
+      "returncode": 0,
+      "wall_seconds": 4.1416199559999995,
+      "whole_worker_cpu_seconds": 4.0636339999999995
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__irregular__lif_snn__98041",
+        "--job-index",
+        "30"
+      ],
+      "directory": "runs/fixed__irregular__lif_snn__98041",
+      "index": 30,
+      "job": {
+        "family": "fixed",
+        "model": "lif_snn",
+        "seed": 98041,
+        "supplementary": true,
+        "task": "irregular"
+      },
+      "peak_rss_bytes": 368009216,
+      "returncode": 0,
+      "wall_seconds": 3.9406091050000214,
+      "whole_worker_cpu_seconds": 3.85256
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__mqar__hcsn_reference__98031",
+        "--job-index",
+        "28"
+      ],
+      "directory": "runs/fixed__mqar__hcsn_reference__98031",
+      "index": 28,
+      "job": {
+        "family": "fixed",
+        "model": "hcsn_reference",
+        "seed": 98031,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 834596864,
+      "returncode": 0,
+      "wall_seconds": 22.940493844999992,
+      "whole_worker_cpu_seconds": 22.789164
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__mqar__lif_snn__98032",
+        "--job-index",
+        "31"
+      ],
+      "directory": "runs/cpu__mqar__lif_snn__98032",
+      "index": 31,
+      "job": {
+        "family": "cpu",
+        "model": "lif_snn",
+        "seed": 98032,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 367718400,
+      "returncode": 0,
+      "wall_seconds": 33.96016169999996,
+      "whole_worker_cpu_seconds": 33.686612000000004
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__cremad__lif_snn__98041",
+        "--job-index",
+        "33"
+      ],
+      "directory": "runs/fixed__cremad__lif_snn__98041",
+      "index": 33,
+      "job": {
+        "family": "fixed",
+        "model": "lif_snn",
+        "seed": 98041,
+        "supplementary": true,
+        "task": "cremad"
+      },
+      "peak_rss_bytes": 383041536,
+      "returncode": 0,
+      "wall_seconds": 4.241221623000001,
+      "whole_worker_cpu_seconds": 4.184656
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__selective_copy__two_gates__98031",
+        "--job-index",
+        "32"
+      ],
+      "directory": "runs/cpu__selective_copy__two_gates__98031",
+      "index": 32,
+      "job": {
+        "family": "cpu",
+        "model": "two_gates",
+        "seed": 98031,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 365735936,
+      "returncode": 0,
+      "wall_seconds": 33.855373747000044,
+      "whole_worker_cpu_seconds": 33.628128000000004
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__mqar__hcsn_accelerated__98032",
+        "--job-index",
+        "34"
+      ],
+      "directory": "runs/fixed__mqar__hcsn_accelerated__98032",
+      "index": 34,
+      "job": {
+        "family": "fixed",
+        "model": "hcsn_accelerated",
+        "seed": 98032,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 544587776,
+      "returncode": 0,
+      "wall_seconds": 13.338412166000012,
+      "whole_worker_cpu_seconds": 13.277763
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__selective_copy__hcsn_accelerated__98032",
+        "--job-index",
+        "35"
+      ],
+      "directory": "runs/cpu__selective_copy__hcsn_accelerated__98032",
+      "index": 35,
+      "job": {
+        "family": "cpu",
+        "model": "hcsn_accelerated",
+        "seed": 98032,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 547033088,
+      "returncode": 0,
+      "wall_seconds": 35.575043703999995,
+      "whole_worker_cpu_seconds": 35.379737
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__mqar__hcsn_reference__98031",
+        "--job-index",
+        "36"
+      ],
+      "directory": "runs/cpu__mqar__hcsn_reference__98031",
+      "index": 36,
+      "job": {
+        "family": "cpu",
+        "model": "hcsn_reference",
+        "seed": 98031,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 825835520,
+      "returncode": 0,
+      "wall_seconds": 37.19343144100003,
+      "whole_worker_cpu_seconds": 36.981828
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__mqar__lif_snn__98032",
+        "--job-index",
+        "38"
+      ],
+      "directory": "runs/fixed__mqar__lif_snn__98032",
+      "index": 38,
+      "job": {
+        "family": "fixed",
+        "model": "lif_snn",
+        "seed": 98032,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 366477312,
+      "returncode": 0,
+      "wall_seconds": 4.243633881000051,
+      "whole_worker_cpu_seconds": 4.189946
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__irregular__hcsn_reference__98041",
+        "--job-index",
+        "37"
+      ],
+      "directory": "runs/fixed__irregular__hcsn_reference__98041",
+      "index": 37,
+      "job": {
+        "family": "fixed",
+        "model": "hcsn_reference",
+        "seed": 98041,
+        "supplementary": true,
+        "task": "irregular"
+      },
+      "peak_rss_bytes": 820240384,
+      "returncode": 0,
+      "wall_seconds": 15.155275470999982,
+      "whole_worker_cpu_seconds": 15.01211
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__selective_copy__hcsn_reference__98033",
+        "--job-index",
+        "40"
+      ],
+      "directory": "runs/fixed__selective_copy__hcsn_reference__98033",
+      "index": 40,
+      "job": {
+        "family": "fixed",
+        "model": "hcsn_reference",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 826015744,
+      "returncode": 0,
+      "wall_seconds": 22.836321766000083,
+      "whole_worker_cpu_seconds": 22.702241
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__mqar__two_gates__98032",
+        "--job-index",
+        "41"
+      ],
+      "directory": "runs/fixed__mqar__two_gates__98032",
+      "index": 41,
+      "job": {
+        "family": "fixed",
+        "model": "two_gates",
+        "seed": 98032,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 365916160,
+      "returncode": 0,
+      "wall_seconds": 3.93990432399994,
+      "whole_worker_cpu_seconds": 3.8310280000000003
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__selective_copy__two_gates__98033",
+        "--job-index",
+        "39"
+      ],
+      "directory": "runs/cpu__selective_copy__two_gates__98033",
+      "index": 39,
+      "job": {
+        "family": "cpu",
+        "model": "two_gates",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 368865280,
+      "returncode": 0,
+      "wall_seconds": 33.95113384299998,
+      "whole_worker_cpu_seconds": 33.753583
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__selective_copy__two_gates__98032",
+        "--job-index",
+        "42"
+      ],
+      "directory": "runs/fixed__selective_copy__two_gates__98032",
+      "index": 42,
+      "job": {
+        "family": "fixed",
+        "model": "two_gates",
+        "seed": 98032,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 367046656,
+      "returncode": 0,
+      "wall_seconds": 3.9393466200000375,
+      "whole_worker_cpu_seconds": 3.8442000000000003
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__mqar__hcsn_accelerated__98031",
+        "--job-index",
+        "43"
+      ],
+      "directory": "runs/fixed__mqar__hcsn_accelerated__98031",
+      "index": 43,
+      "job": {
+        "family": "fixed",
+        "model": "hcsn_accelerated",
+        "seed": 98031,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 550920192,
+      "returncode": 0,
+      "wall_seconds": 13.537274080999964,
+      "whole_worker_cpu_seconds": 13.466027
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__mqar__hcsn_accelerated__98033",
+        "--job-index",
+        "44"
+      ],
+      "directory": "runs/cpu__mqar__hcsn_accelerated__98033",
+      "index": 44,
+      "job": {
+        "family": "cpu",
+        "model": "hcsn_accelerated",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 553947136,
+      "returncode": 0,
+      "wall_seconds": 35.57340791800004,
+      "whole_worker_cpu_seconds": 35.355969
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__selective_copy__lif_snn__98031",
+        "--job-index",
+        "46"
+      ],
+      "directory": "runs/fixed__selective_copy__lif_snn__98031",
+      "index": 46,
+      "job": {
+        "family": "fixed",
+        "model": "lif_snn",
+        "seed": 98031,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 367890432,
+      "returncode": 0,
+      "wall_seconds": 4.346153828999945,
+      "whole_worker_cpu_seconds": 4.297019
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__selective_copy__hcsn_reference__98031",
+        "--job-index",
+        "45"
+      ],
+      "directory": "runs/cpu__selective_copy__hcsn_reference__98031",
+      "index": 45,
+      "job": {
+        "family": "cpu",
+        "model": "hcsn_reference",
+        "seed": 98031,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 801345536,
+      "returncode": 0,
+      "wall_seconds": 37.399340241000004,
+      "whole_worker_cpu_seconds": 37.198849
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__selective_copy__hcsn_reference__98031",
+        "--job-index",
+        "47"
+      ],
+      "directory": "runs/fixed__selective_copy__hcsn_reference__98031",
+      "index": 47,
+      "job": {
+        "family": "fixed",
+        "model": "hcsn_reference",
+        "seed": 98031,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 812576768,
+      "returncode": 0,
+      "wall_seconds": 23.44535439399999,
+      "whole_worker_cpu_seconds": 23.249245
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__cremad__transformer__98041",
+        "--job-index",
+        "49"
+      ],
+      "directory": "runs/fixed__cremad__transformer__98041",
+      "index": 49,
+      "job": {
+        "family": "fixed",
+        "model": "transformer",
+        "seed": 98041,
+        "supplementary": true,
+        "task": "cremad"
+      },
+      "peak_rss_bytes": 387461120,
+      "returncode": 0,
+      "wall_seconds": 3.7361716259999866,
+      "whole_worker_cpu_seconds": 3.6979699999999998
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__mqar__two_gates__98031",
+        "--job-index",
+        "50"
+      ],
+      "directory": "runs/fixed__mqar__two_gates__98031",
+      "index": 50,
+      "job": {
+        "family": "fixed",
+        "model": "two_gates",
+        "seed": 98031,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 366411776,
+      "returncode": 0,
+      "wall_seconds": 3.938153998999951,
+      "whole_worker_cpu_seconds": 3.840924
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__mqar__transformer__98031",
+        "--job-index",
+        "48"
+      ],
+      "directory": "runs/cpu__mqar__transformer__98031",
+      "index": 48,
+      "job": {
+        "family": "cpu",
+        "model": "transformer",
+        "seed": 98031,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 373440512,
+      "returncode": 0,
+      "wall_seconds": 34.24893371300004,
+      "whole_worker_cpu_seconds": 34.061926
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__selective_copy__lif_snn__98033",
+        "--job-index",
+        "52"
+      ],
+      "directory": "runs/fixed__selective_copy__lif_snn__98033",
+      "index": 52,
+      "job": {
+        "family": "fixed",
+        "model": "lif_snn",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 366690304,
+      "returncode": 0,
+      "wall_seconds": 4.344492887999991,
+      "whole_worker_cpu_seconds": 4.241959
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__selective_copy__hcsn_reference__98032",
+        "--job-index",
+        "51"
+      ],
+      "directory": "runs/cpu__selective_copy__hcsn_reference__98032",
+      "index": 51,
+      "job": {
+        "family": "cpu",
+        "model": "hcsn_reference",
+        "seed": 98032,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 818593792,
+      "returncode": 0,
+      "wall_seconds": 37.086323891000006,
+      "whole_worker_cpu_seconds": 36.839960000000005
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__mqar__hcsn_accelerated__98031",
+        "--job-index",
+        "53"
+      ],
+      "directory": "runs/cpu__mqar__hcsn_accelerated__98031",
+      "index": 53,
+      "job": {
+        "family": "cpu",
+        "model": "hcsn_accelerated",
+        "seed": 98031,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 547160064,
+      "returncode": 0,
+      "wall_seconds": 35.57127084599995,
+      "whole_worker_cpu_seconds": 35.30069
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__mqar__transformer__98032",
+        "--job-index",
+        "55"
+      ],
+      "directory": "runs/fixed__mqar__transformer__98032",
+      "index": 55,
+      "job": {
+        "family": "fixed",
+        "model": "transformer",
+        "seed": 98032,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 373104640,
+      "returncode": 0,
+      "wall_seconds": 3.639162801999987,
+      "whole_worker_cpu_seconds": 3.620399
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__mqar__hcsn_accelerated__98033",
+        "--job-index",
+        "56"
+      ],
+      "directory": "runs/fixed__mqar__hcsn_accelerated__98033",
+      "index": 56,
+      "job": {
+        "family": "fixed",
+        "model": "hcsn_accelerated",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 555720704,
+      "returncode": 0,
+      "wall_seconds": 13.24072726199995,
+      "whole_worker_cpu_seconds": 13.117303
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__mqar__two_gates__98031",
+        "--job-index",
+        "54"
+      ],
+      "directory": "runs/cpu__mqar__two_gates__98031",
+      "index": 54,
+      "job": {
+        "family": "cpu",
+        "model": "two_gates",
+        "seed": 98031,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 366608384,
+      "returncode": 0,
+      "wall_seconds": 33.85499284299999,
+      "whole_worker_cpu_seconds": 33.664599
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__selective_copy__transformer__98033",
+        "--job-index",
+        "57"
+      ],
+      "directory": "runs/fixed__selective_copy__transformer__98033",
+      "index": 57,
+      "job": {
+        "family": "fixed",
+        "model": "transformer",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 375402496,
+      "returncode": 0,
+      "wall_seconds": 3.634603359000039,
+      "whole_worker_cpu_seconds": 3.532604
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__cremad__hcsn_accelerated__98041",
+        "--job-index",
+        "58"
+      ],
+      "directory": "runs/fixed__cremad__hcsn_accelerated__98041",
+      "index": 58,
+      "job": {
+        "family": "fixed",
+        "model": "hcsn_accelerated",
+        "seed": 98041,
+        "supplementary": true,
+        "task": "cremad"
+      },
+      "peak_rss_bytes": 519127040,
+      "returncode": 0,
+      "wall_seconds": 12.322744367000041,
+      "whole_worker_cpu_seconds": 12.191336
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__mqar__lif_snn__98033",
+        "--job-index",
+        "59"
+      ],
+      "directory": "runs/cpu__mqar__lif_snn__98033",
+      "index": 59,
+      "job": {
+        "family": "cpu",
+        "model": "lif_snn",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 367173632,
+      "returncode": 0,
+      "wall_seconds": 33.851917992999915,
+      "whole_worker_cpu_seconds": 33.659543
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__mqar__hcsn_accelerated__98032",
+        "--job-index",
+        "60"
+      ],
+      "directory": "runs/cpu__mqar__hcsn_accelerated__98032",
+      "index": 60,
+      "job": {
+        "family": "cpu",
+        "model": "hcsn_accelerated",
+        "seed": 98032,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 551383040,
+      "returncode": 0,
+      "wall_seconds": 35.56840597799999,
+      "whole_worker_cpu_seconds": 35.371152
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__mqar__lif_snn__98031",
+        "--job-index",
+        "61"
+      ],
+      "directory": "runs/cpu__mqar__lif_snn__98031",
+      "index": 61,
+      "job": {
+        "family": "cpu",
+        "model": "lif_snn",
+        "seed": 98031,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 366665728,
+      "returncode": 0,
+      "wall_seconds": 33.85130389999995,
+      "whole_worker_cpu_seconds": 33.656736
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__selective_copy__lif_snn__98032",
+        "--job-index",
+        "63"
+      ],
+      "directory": "runs/fixed__selective_copy__lif_snn__98032",
+      "index": 63,
+      "job": {
+        "family": "fixed",
+        "model": "lif_snn",
+        "seed": 98032,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 366673920,
+      "returncode": 0,
+      "wall_seconds": 4.038900417999912,
+      "whole_worker_cpu_seconds": 3.963705
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__selective_copy__lif_snn__98031",
+        "--job-index",
+        "62"
+      ],
+      "directory": "runs/cpu__selective_copy__lif_snn__98031",
+      "index": 62,
+      "job": {
+        "family": "cpu",
+        "model": "lif_snn",
+        "seed": 98031,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 369098752,
+      "returncode": 0,
+      "wall_seconds": 33.85843391699996,
+      "whole_worker_cpu_seconds": 33.68461
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__cremad__hcsn_reference__98041",
+        "--job-index",
+        "65"
+      ],
+      "directory": "runs/fixed__cremad__hcsn_reference__98041",
+      "index": 65,
+      "job": {
+        "family": "fixed",
+        "model": "hcsn_reference",
+        "seed": 98041,
+        "supplementary": true,
+        "task": "cremad"
+      },
+      "peak_rss_bytes": 775725056,
+      "returncode": 0,
+      "wall_seconds": 19.609865850999995,
+      "whole_worker_cpu_seconds": 19.419444000000002
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__mqar__hcsn_reference__98033",
+        "--job-index",
+        "64"
+      ],
+      "directory": "runs/cpu__mqar__hcsn_reference__98033",
+      "index": 64,
+      "job": {
+        "family": "cpu",
+        "model": "hcsn_reference",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 804139008,
+      "returncode": 0,
+      "wall_seconds": 36.69073356900003,
+      "whole_worker_cpu_seconds": 36.526036000000005
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__selective_copy__hcsn_accelerated__98031",
+        "--job-index",
+        "67"
+      ],
+      "directory": "runs/fixed__selective_copy__hcsn_accelerated__98031",
+      "index": 67,
+      "job": {
+        "family": "fixed",
+        "model": "hcsn_accelerated",
+        "seed": 98031,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 547160064,
+      "returncode": 0,
+      "wall_seconds": 13.435826700000007,
+      "whole_worker_cpu_seconds": 13.377989
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__selective_copy__transformer__98032",
+        "--job-index",
+        "66"
+      ],
+      "directory": "runs/cpu__selective_copy__transformer__98032",
+      "index": 66,
+      "job": {
+        "family": "cpu",
+        "model": "transformer",
+        "seed": 98032,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 374300672,
+      "returncode": 0,
+      "wall_seconds": 34.04441823800005,
+      "whole_worker_cpu_seconds": 33.8592
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__selective_copy__lif_snn__98032",
+        "--job-index",
+        "68"
+      ],
+      "directory": "runs/cpu__selective_copy__lif_snn__98032",
+      "index": 68,
+      "job": {
+        "family": "cpu",
+        "model": "lif_snn",
+        "seed": 98032,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 366727168,
+      "returncode": 0,
+      "wall_seconds": 33.739079000999936,
+      "whole_worker_cpu_seconds": 33.515819
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/cpu__selective_copy__transformer__98031",
+        "--job-index",
+        "69"
+      ],
+      "directory": "runs/cpu__selective_copy__transformer__98031",
+      "index": 69,
+      "job": {
+        "family": "cpu",
+        "model": "transformer",
+        "seed": 98031,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 373092352,
+      "returncode": 0,
+      "wall_seconds": 33.72056880899993,
+      "whole_worker_cpu_seconds": 33.564634
+    }
+  ],
+  "running": [],
+  "stopped": false
+}

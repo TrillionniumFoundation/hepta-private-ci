@@ -1,0 +1,47 @@
+{
+  "backend": "accelerated",
+  "batch": 2,
+  "batch_stream_argmax_disagreements": 0,
+  "batch_stream_atol": 0.0001,
+  "batch_stream_max_abs_logit_error": 4.3213367462158203e-07,
+  "config": {
+    "depth": 1,
+    "input_dim": 64,
+    "name": "distribution_free_dual",
+    "output_dim": 8,
+    "seed": 98031,
+    "width": 32
+  },
+  "content_quality_claim": false,
+  "cut": 37,
+  "length": 128,
+  "max_normalization_l1": 5.585607141256332e-07,
+  "max_probability_mass_defect": 4.6566128730773926e-08,
+  "midpoint_refractory_mass": [
+    0.15735189616680145
+  ],
+  "original_checkpoint_sha256": "8679b9aecfe237055c449c92e46510b9832f8ccae03833a38657073c17ce665c",
+  "persistent_state_bytes_max": 968,
+  "persistent_state_bytes_min": 968,
+  "profile": "stable",
+  "resume_execution": {
+    "command": [
+      "/usr/local/bin/python",
+      "-m",
+      "experiments.hcsn_conservative_acceleration_v1.runtime",
+      "resume",
+      "--output",
+      "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/trained_stream001"
+    ],
+    "complete_child_cpu_seconds": 2.306075,
+    "exit_code": 0,
+    "maxrss_kib": 284004,
+    "scope": "Exact child wait4, including imports and its waited-for children",
+    "wall_seconds": 2.307039531999976
+  },
+  "schema": "hcsn-conservative-stream.v1",
+  "state_bytes_scope": "Elapsed, content, probability and boundary only; no weights/history/BPTT",
+  "suffix_logits_bitwise_equal": true,
+  "suffix_state_bitwise_equal": true,
+  "trained_weights": true
+}

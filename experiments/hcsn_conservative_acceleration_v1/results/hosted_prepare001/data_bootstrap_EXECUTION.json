@@ -1,0 +1,24 @@
+{
+  "command": [
+    "/usr/local/bin/python",
+    "-m",
+    "experiments.hcsn_conservative_acceleration_v1.hosted.restore_data",
+    "--repo",
+    "/__w/hepta-private-ci/hepta-private-ci",
+    "--receipt",
+    "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/hosted_prepare001/DATA_BOOTSTRAP.json"
+  ],
+  "complete_child_cpu_seconds": 0.478705,
+  "cwd": "/__w/hepta-private-ci/hepta-private-ci",
+  "ended_utc": "2026-10-30T13:00:57.655271+00:00",
+  "exit_code": 0,
+  "log": "experiments/hcsn_conservative_acceleration_v1/results/hosted_prepare001/data_bootstrap.log",
+  "name": "data_bootstrap",
+  "peak_rss_bytes": 28946432,
+  "process_created": true,
+  "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+  "started_utc": "2026-10-30T13:00:57.175951+00:00",
+  "system_cpu_seconds": 0.058962999999999995,
+  "user_cpu_seconds": 0.419742,
+  "wall_seconds": 0.47933303799999294
+}

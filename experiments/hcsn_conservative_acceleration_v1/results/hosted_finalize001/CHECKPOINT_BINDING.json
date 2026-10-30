@@ -1,0 +1,29 @@
+{
+  "analysis_sha256": "82c773d6d289477fbb723969d5169cc507d193aa3c3413f06266ddab927931ad",
+  "binding_plan_sha256": "b473b281b50a96a604a3866643349bf8e0ebc1db1dcac755d15b0714fdf3eb8b",
+  "checkpoint": "experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__selective_copy__hcsn_accelerated__98031/selected.npz",
+  "checkpoint_sha256": "8679b9aecfe237055c449c92e46510b9832f8ccae03833a38657073c17ce665c",
+  "config_sha256": "ade410d71fd09c9bf6b1dd7c02e4e4bc5be96ea1bf826a21198a8e6307bd1fc2",
+  "job": {
+    "family": "fixed",
+    "model": "hcsn_accelerated",
+    "seed": 98031,
+    "supplementary": false,
+    "task": "selective_copy"
+  },
+  "model_config": {
+    "depth": 1,
+    "input_dim": 64,
+    "name": "distribution_free_dual",
+    "output_dim": 8,
+    "seed": 98031,
+    "width": 32
+  },
+  "protocol_sha256": "e3b17755e4c2cd8bf11457f2d39732e1bb10868f2c7a4ac0e703bcc1027c8dbb",
+  "random_weights": false,
+  "scope": "Engineering runtime panels only; no claim that the owner threshold optimizes task utility",
+  "selected_validation_step": 32,
+  "selection_sha256": "81b9e46f8267f2f78202ea9b72ac5ff94b96c3d444e7e2319db71f44f9893ed3",
+  "selection_uses_test": false,
+  "trained_weights": true
+}

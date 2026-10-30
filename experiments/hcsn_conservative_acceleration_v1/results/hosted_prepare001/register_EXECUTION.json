@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/usr/local/bin/python",
+    "-m",
+    "experiments.hcsn_conservative_acceleration_v1.study",
+    "register",
+    "--protocol",
+    "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+    "--output",
+    "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted",
+    "--preflight",
+    "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/hosted_preflight001/PREFLIGHT.json",
+    "--kernel-proof",
+    "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/hosted_validation001/RESULTS.json",
+    "--av-cache",
+    "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_real_av_v1/data"
+  ],
+  "complete_child_cpu_seconds": 0.870544,
+  "cwd": "/__w/hepta-private-ci/hepta-private-ci",
+  "ended_utc": "2026-10-30T13:01:16.546530+00:00",
+  "exit_code": 0,
+  "log": "experiments/hcsn_conservative_acceleration_v1/results/hosted_prepare001/register.log",
+  "name": "register",
+  "peak_rss_bytes": 71102464,
+  "process_created": true,
+  "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+  "started_utc": "2026-10-30T13:01:15.675350+00:00",
+  "system_cpu_seconds": 0.089055,
+  "user_cpu_seconds": 0.781489,
+  "wall_seconds": 0.8711909699999865
+}
