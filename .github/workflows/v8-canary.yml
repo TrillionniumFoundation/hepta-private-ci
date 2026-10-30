@@ -299,6 +299,10 @@ jobs:
         env:
           SANDBOX: ${{ matrix.sandbox }}
           TARGET: ${{ matrix.target }}
+          # The pinned Cargo binary still invokes rustup-managed rustc in
+          # dependencies' build scripts; never let a nested toolchain select
+          # rusty_v8's 1.91 compiler against 1.95-compiled rlibs (E0514).
+          RUSTUP_TOOLCHAIN: "1.95.0"
         shell: bash
         run: |
           set -euo pipefail
@@ -327,6 +331,7 @@ jobs:
 
           (
             cd codex-rs
+            rustc --version --verbose | grep -Fx 'release: 1.95.0'
             CARGO_TARGET_DIR="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}" \
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
