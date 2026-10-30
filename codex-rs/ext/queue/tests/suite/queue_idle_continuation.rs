@@ -43,13 +43,13 @@ async fn queued_messages_continue_after_each_completion_owner_retires() -> anyho
         anyhow::Ok(ids)
     })
     .await??;
-    assert_eq!(completed_ids.iter().collect::<HashSet<_>>().len(), 6);
+    std::assert_eq!(completed_ids.iter().collect::<HashSet<_>>().len(), 6);
     let prompts = responses
         .requests()
         .into_iter()
         .map(|request| request.message_input_texts("user").pop().unwrap())
         .collect::<Vec<_>>();
-    assert_eq!(
+    std::assert_eq!(
         prompts,
         (0..6)
             .map(|index| format!("queued {index}"))
