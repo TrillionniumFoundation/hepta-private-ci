@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/restore_artifacts.py", line 253, in <module>
+    main()
+  File "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/restore_artifacts.py", line 245, in main
+    worker(args.worker_plan, args.plan_sha256)
+  File "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/restore_artifacts.py", line 148, in worker
+    result = (archive.restore(row['manifest'], row['destination'])
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/archive.py", line 200, in restore
+    raise FileExistsError(f"Refuse to overwrite different content: {target}")
+FileExistsError: Refuse to overwrite different content: /workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/reproduction_receipts/restore_smoke001/tiny_fixture_6sxcdj9f/explicit_raw/mnist/raw_fixture.txt

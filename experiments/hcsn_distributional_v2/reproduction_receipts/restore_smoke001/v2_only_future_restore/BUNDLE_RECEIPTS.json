@@ -1,0 +1,29 @@
+{
+  "body_times_nested_in_complete_worker_cpu": true,
+  "completed_bundles": 2,
+  "expected_bundles": 2,
+  "records": [
+    {
+      "body_cpu_seconds": 0.001255277000000006,
+      "body_wall_seconds": 0.0012362170000415063,
+      "destination": "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/reproduction_receipts/restore_smoke001/tiny_fixture_6sxcdj9f/checkout/experiments/hcsn_distributional_v2",
+      "input_manifest_sha256": "cf09f165b47774d694a3467021798521b3b85403140e30cb94ea53d70f49818a",
+      "manifest": "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/reproduction_receipts/restore_smoke001/tiny_fixture_6sxcdj9f/checkout/experiments/hcsn_distributional_v2/artifacts/nested_future/later_lif_bundle.json",
+      "result": {
+        "archive_sha256": "7caeef4b44c8bfa77695d176915b272aea2830ededce11cb3f263069c7c370a6",
+        "restored_or_already_identical": 1
+      }
+    },
+    {
+      "body_cpu_seconds": 0.00038158800000000215,
+      "body_wall_seconds": 0.00038193399996089283,
+      "destination": "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/reproduction_receipts/restore_smoke001/tiny_fixture_6sxcdj9f/checkout/experiments/hcsn_distributional_v2",
+      "input_manifest_sha256": "f1dbaa08c50a331f380b6737e80a19a715e9e8db10425bba735497bbb494a063",
+      "manifest": "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/reproduction_receipts/restore_smoke001/tiny_fixture_6sxcdj9f/checkout/experiments/hcsn_distributional_v2/artifacts/some_new_main_name.json",
+      "result": {
+        "archive_sha256": "b5b3fc488578cf7934d53787b32f1fd711f3f87975adf8a19a54841022053ef6",
+        "restored_or_already_identical": 1
+      }
+    }
+  ]
+}
