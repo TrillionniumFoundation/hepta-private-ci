@@ -1,0 +1,180 @@
+{
+  "inherited_supervised_base_preparation_CPU_seconds_used": {
+    "11": 0.21998193100000002
+  },
+  "no_coupled_trained_model_completed": true,
+  "no_residual_magnitudes_saved_at_failure": true,
+  "no_retry_or_domain_relaxation": true,
+  "no_validation_or_TEST_evaluation": true,
+  "planned_seed23_base_not_restored": true,
+  "qualification": {
+    "dataset_rows": 0,
+    "literal_tests": {
+      "errors": 0,
+      "failures": 0,
+      "run": 9
+    },
+    "loss_profile": {
+      "mode": "coupled-joint-law-exact-smooth-v1",
+      "relative_balance_tolerance": 1.4901161193847656e-08,
+      "residual_floor": 1.4210854715202004e-14,
+      "reward_range": [
+        -0.35,
+        1.0
+      ],
+      "rho": [
+        0.0,
+        1.5
+      ],
+      "schema": "rgb-coupled-law-loss-v1"
+    },
+    "measurements": {
+      "dyadic_accepted": [
+        {
+          "maximum_absolute_gradient": 0.1171875,
+          "residual": 0.0009765625,
+          "rho": 0.0
+        },
+        {
+          "maximum_absolute_gradient": 0.27108524520671795,
+          "residual": 0.0009765625,
+          "rho": 1.5
+        },
+        {
+          "maximum_absolute_gradient": 0.1171875,
+          "residual": 9.5367431640625e-07,
+          "rho": 0.0
+        },
+        {
+          "maximum_absolute_gradient": 0.2720060554519501,
+          "residual": 9.5367431640625e-07,
+          "rho": 1.5
+        },
+        {
+          "maximum_absolute_gradient": 0.1171875,
+          "residual": 9.094947017729282e-13,
+          "rho": 0.0
+        },
+        {
+          "maximum_absolute_gradient": 0.2720069586193,
+          "residual": 9.094947017729282e-13,
+          "rho": 1.5
+        }
+      ],
+      "full_gradient_rho0.0_head0_max_abs": 5.7109121685133823e-11,
+      "full_gradient_rho0.0_head1_max_abs": 4.26916275768352e-11,
+      "full_gradient_rho1.5_head0_max_abs": 6.036803218770204e-11,
+      "full_gradient_rho1.5_head1_max_abs": 8.709899294856438e-11,
+      "tie_one_sided_derivatives": [
+        {
+          "left": 0.9999999999177334,
+          "right": -1.0000000000287557
+        },
+        {
+          "left": 0.9999999999177334,
+          "right": -1.0000000000287557
+        }
+      ],
+      "value_rho0.0_max_abs": 1.0408340855860843e-17,
+      "value_rho1.5_max_abs": 1.6653345369377348e-16
+    },
+    "model_restores": 0,
+    "scope": "literal-only normalized coupled loss smooth-branch derivative qualification, explicit kink/domain refusals, not scientific benefit or total accuracy theorem",
+    "status": "COMPLETE_PAYLOAD_FREE_COUPLED_GRADIENT",
+    "training_updates": 0
+  },
+  "qualification_resource_receipt": {
+    "automatic_retry": false,
+    "complete_wait": true,
+    "exit_code": 0,
+    "limits": {
+      "AS_bytes": 536870912,
+      "CPU_seconds": 5,
+      "affinity": [
+        0
+      ],
+      "file_bytes": 4194304,
+      "numerical_threads": 1,
+      "wall_seconds": 30
+    },
+    "max_rss_kib": 28356,
+    "new_synthetic_only_shared_lock": true,
+    "not_original_digit_lock": true,
+    "preparation_review_and_shared_upstream_costs": "OUTSIDE_CHILD_NOT_ZERO",
+    "raw_wait_status": 0,
+    "status": "COMPLETE_PAYLOAD_FREE_COUPLED_GRADIENT",
+    "supervisor_CPU_observed_prefix_seconds": 0.003264123000000004,
+    "supervisor_final_tail": "UNKNOWN_NOT_ZERO",
+    "system_CPU_seconds": 0.027684,
+    "timed_out": false,
+    "user_CPU_seconds": 0.5404709999999999,
+    "wall_seconds": 0.5898548969998956,
+    "whole_child_CPU_seconds": 0.568155
+  },
+  "science_failure": {
+    "base_payload_open_events": 2,
+    "counts": {
+      "batch_serving_calls": 0,
+      "clones": 2,
+      "completed_training_coupled_objective_calls": 834,
+      "decoded_images": 12,
+      "decoder_observations": 1,
+      "forward_batches": 1253,
+      "forward_rows": 80192,
+      "joint_table_entries": 0,
+      "joint_tables": 0,
+      "normalized_marginal_checks": 0,
+      "profile_roundtrips": 0,
+      "restores": 1,
+      "scalar_serving_parity_checks": 0,
+      "training_coupled_objective_calls": 835,
+      "training_coupled_objective_rows": 53440,
+      "training_updates": 417
+    },
+    "distinct_base_payloads_opened": 1,
+    "message": "relative residual mass imbalance; no renormalization repair",
+    "progress": {
+      "cell": "11-independent-ndu",
+      "completed_training_updates": 417,
+      "coupled_auxiliary_loss": "additive",
+      "pre_update_step": 117
+    },
+    "status": "FAILED_NO_RETRY",
+    "type": "NumericalDomainError"
+  },
+  "science_model_completions": [
+    "seed11 independent-additive:300updates and exact control digest assertion passed before logged completion"
+  ],
+  "science_primary_gate": null,
+  "science_resource_receipt": {
+    "automatic_retry": false,
+    "complete_wait": true,
+    "exit_code": 1,
+    "limits": {
+      "AS_bytes": 536870912,
+      "CPU_seconds": 20,
+      "affinity": [
+        0
+      ],
+      "file_bytes": 4194304,
+      "numerical_threads": 1,
+      "wall_seconds": 90
+    },
+    "max_rss_kib": 42244,
+    "new_synthetic_only_shared_lock": true,
+    "not_original_digit_lock": true,
+    "preparation_review_and_shared_upstream_costs": "OUTSIDE_CHILD_NOT_ZERO",
+    "raw_wait_status": 256,
+    "status": "FAILED_OR_INCOMPLETE_NO_RETRY",
+    "supervisor_CPU_observed_prefix_seconds": 0.008612867,
+    "supervisor_final_tail": "UNKNOWN_NOT_ZERO",
+    "system_CPU_seconds": 0.029838999999999997,
+    "timed_out": false,
+    "user_CPU_seconds": 2.087196,
+    "wall_seconds": 2.141362709000532,
+    "whole_child_CPU_seconds": 2.117035
+  },
+  "science_status": "NOT_EVALUATED_DOMAIN_ABORT_BEFORE_FINAL_BARRIER_AND_VALIDATION",
+  "scope": "Smooth-domain helper qualified on fixed literal tests; fixed scientific campaign aborted in a control auxiliary evaluation. Not a demonstrated scientific-quality negative result and not a benefit claim. Original serving/batch successes and earlier NDU failures unchanged.",
+  "upstream_cost_limit": "Measured prior base-preparation prefix only; historical import/export/research/source/review and supervisor tails are additional,not zero"
+}
