@@ -16,7 +16,7 @@ From the exact parent source checkout with numpy and scipy installed, run:
 
     python -m unittest -v experiments.hcsn_hx_unified_v3.test_regenerative_grid
 
-Local run on 2026-10-30: 9 of 9 test methods passed, covering 36 deterministic seeded parameter samples, three models checked by both independent algorithms, mesh refinement to 1025 nodes, an advection-dominated upwind case, independently recomputed generator/obstacle QVI residuals, free-boundary slope convergence, lower-domain wall sweep, non-grid reset, long refractory one-shot limit and invalid-input rejection. This tested stopping.py against exact Git blob d165ed777990bbf8f3606b58e1b0991de59a1544.
+Local run on 2026-10-30: 10 of 10 test methods passed, covering 36 deterministic seeded parameter samples, three models checked by both independent algorithms, mesh refinement to 1025 nodes, an advection-dominated upwind case, independently recomputed generator/obstacle QVI residuals, free-boundary slope convergence, lower-domain wall sweep, non-grid reset, long refractory one-shot limit and invalid-input rejection. This tested stopping.py against exact Git blob d165ed777990bbf8f3606b58e1b0991de59a1544.
 
 ## Open gates
 
