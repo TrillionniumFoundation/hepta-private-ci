@@ -12,4 +12,7 @@ codex_rust_crate(
         ],
     ),
     crate_name = "codex_skills",
+    # The source uses serde_yaml; Cargo declares it, but Bazel's generated
+    # dependency bucket on this exact lock is missing the direct binding.
+    deps_extra = ["@crates//:serde_yaml"],
 )
