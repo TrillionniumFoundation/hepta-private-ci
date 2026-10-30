@@ -1,0 +1,72 @@
+name: Hepta Supervisor restart-budget exact-source native regression
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - ".github/workflows/hepta-supervisor-restart-budget-exact-native.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  restart-budget-exact:
+    name: Exact restart-budget recovery on ${{ matrix.os }}
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'audit/4333-supervisor-exact-restart-native-20261030'
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_TERM_COLOR: never
+      SOURCE_SHA: "885c4fa7d6abbfaf61c6995ec811767a40263b22"
+      TEST_BLOB: "4698994b45627a2b031aa93ee82f032fe1217acd"
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Checkout immutable candidate without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Reject drift from exact Supervisor source and dependency locks
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test "$(git merge-base "$SOURCE_SHA" HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse "HEAD:codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs")" = "$TEST_BLOB"
+          for path in codex-rs/Cargo.toml codex-rs/Cargo.lock codex-rs/hepta-supervisor/Cargo.toml MODULE.bazel MODULE.bazel.lock; do
+            test "$(git rev-parse "HEAD:$path")" = "$(git rev-parse "$SOURCE_SHA:$path")"
+          done
+          test "$(git diff --name-only "$SOURCE_SHA" HEAD)" = ".github/workflows/hepta-supervisor-restart-budget-exact-native.yml"
+          git diff --check "$SOURCE_SHA" HEAD
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+
+      - name: Execute exact persisted restart-budget recovery test
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="$(mktemp)"
+          trap 'rm -f "$log"' EXIT
+          cargo test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-supervisor --test restart_budget_recovery \
+            restart_budget_survives_repeated_supervisord_recovery \
+            -- --exact --nocapture --test-threads=1 2>&1 | tee "$log"
+          grep -Eq 'test result: ok\. 1 passed; 0 failed;' "$log"
+          git diff --check
+          test -z "$(git status --porcelain=v1 --untracked-files=no)"
