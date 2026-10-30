@@ -289,6 +289,8 @@ jobs:
 
       - name: Smoke test staged artifact with Cargo
         env:
+          # Keep rustc consistent when Cargo enters rusty_v8's toolchain-pinned directory.
+          RUSTUP_TOOLCHAIN: "1.96.0"
           SANDBOX: ${{ matrix.sandbox }}
           TARGET: ${{ matrix.target }}
         shell: bash

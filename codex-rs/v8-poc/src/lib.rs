@@ -26,6 +26,8 @@ pub fn linked_v8_has_sandbox() -> bool {
 #[cfg(test)]
 mod tests {
     use pretty_assertions::assert_eq;
+    use std::sync::Arc;
+    use std::sync::Barrier;
     use std::sync::Once;
 
     use super::bazel_target;
@@ -36,6 +38,10 @@ mod tests {
         INIT.call_once(|| {
             v8::V8::initialize_platform(v8::new_default_platform(0, false).make_shared());
             v8::V8::initialize();
+            // V8 lazily initializes the shared sandbox allocator without a lock.
+            // Warm it up before concurrent isolates create their default allocators.
+            // Dropping this wrapper does not destroy the process-wide backing pool.
+            drop(v8::new_default_allocator());
         });
     }
 
@@ -77,6 +83,26 @@ mod tests {
     #[test]
     fn evaluates_string_concatenation() {
         assert_eq!(evaluate_expression("'hello ' + 'world'"), "hello world");
+    }
+
+    #[test]
+    fn evaluates_array_buffers_on_concurrent_isolates() {
+        let barrier = Arc::new(Barrier::new(4));
+        let threads = (0..4)
+            .map(|_| {
+                let barrier = Arc::clone(&barrier);
+                std::thread::spawn(move || {
+                    barrier.wait();
+                    evaluate_expression("new Uint8Array([1, 2, 3]).join(',')")
+                })
+            })
+            .collect::<Vec<_>>();
+        for thread in threads {
+            assert_eq!(
+                thread.join().expect("isolate thread should finish"),
+                "1,2,3"
+            );
+        }
     }
 
     #[test]
