@@ -1,0 +1,69 @@
+{
+  "schema": "hcsn-conservative-acceleration-validation.v1",
+  "grid": {
+    "cells": 8,
+    "lower": -2.0,
+    "refractory_stages": 2,
+    "tolerance": 1e-10,
+    "max_poisson_mean": 12.0,
+    "max_terms": 160,
+    "validate": true,
+    "fixed_rate": 8.1,
+    "fixed_terms": 21,
+    "max_duration": 0.36,
+    "per_token_chunks": true,
+    "max_independent_chunks": 1048576
+  },
+  "parameter_names": [
+    "mu",
+    "sigma",
+    "boundary",
+    "reset",
+    "tau",
+    "duration",
+    "old_boundary",
+    "rho",
+    "cost"
+  ],
+  "gradient_parameters": [
+    0.237,
+    0.513,
+    0.8431,
+    -0.173,
+    0.417,
+    0.495755147934,
+    1.217,
+    0.437,
+    0.413
+  ],
+  "limits": {
+    "float32_transition_l1": 2e-05,
+    "float32_functional_scaled": 3e-05,
+    "float64_transition_l1": 8e-10,
+    "float64_functional_scaled": 2e-10,
+    "original_float64_scaled": 8e-10,
+    "original_float32_scaled": 2e-05,
+    "gradient_original_scaled": 2e-09,
+    "gradient_dense_scaled": 2e-05,
+    "gradient_absolute_floor": 1e-05,
+    "finite_difference_step": 1e-05,
+    "long_float32_state_l1": 2e-05,
+    "long_event_scaled": 5e-05,
+    "batch_float64_absolute": 3e-12
+  },
+  "source_sha256": {
+    "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/validation.py": "fc9ddcb52c4abe7c3a53275b510501e3174b43130974bbf068cce1e8cf1a3864",
+    "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/kernel.py": "d528d140b83e11e80b835853d94677e1a2293d6b7c16ec4b27e2fac5d2ffcf68",
+    "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/kernel_tests.py": "674db5e375fa6f83747ec62c726adeba3e8410a9c348394ac0797b33f941e414",
+    "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_distributional_v2/stable_probability.py": "d4bc918a5907a253007f8efd793ef379ab8c0e7ce9d5753af7feadcd8b836770"
+  },
+  "independent_reference": "scalar physical jump assembly, SciPy augmented expm and dense value solve",
+  "long_float32_observations": 4096,
+  "no_task_labels": true,
+  "excludes": [
+    "Brownian spatial exactness",
+    "global gradient error proof",
+    "GPU/energy performance"
+  ]
+}
