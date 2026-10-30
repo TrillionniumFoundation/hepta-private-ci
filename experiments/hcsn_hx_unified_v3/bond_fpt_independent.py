@@ -76,10 +76,29 @@ def integrate_passage(x: float, *, drift: float, sigma: float,
                 f0+=ff;g0+=gg;fe0+=eef;ge0+=eeg
         else:
             f0=g0=fe0=ge0=0.
-        f1, fe1=quad(lambda u: large(u,0.), uc,math.inf,
-                     epsabs=3e-13,epsrel=3e-12,limit=300)
-        g1, ge1=quad(lambda u: large(u,discount), uc,math.inf,
-                     epsabs=3e-13,epsrel=3e-12,limit=300)
+        # A single quad(uc, infinity) can miss a narrow peak far from uc.
+        # The exponent in large(u,q) is
+        #   -u*u/2 - a - (a*a/2 + q*scale*scale)/u**2.
+        # Its mode is (a*a+2*q*scale*scale)**(1/4), with curvature -4
+        # at the mode.  Always isolate a fixed-width window around that
+        # mode, even when the mode lies tens/hundreds of units from uc.
+        # math.hypot avoids an intermediate overflow from squaring a.
+        def peaked_integral(q):
+            mode=math.sqrt(math.hypot(a,math.sqrt(2*q)*scale))
+            cuts=[uc]
+            for edge in (mode-8.,mode+8.):
+                if math.isfinite(edge) and edge>cuts[-1]:
+                    cuts.append(edge)
+            cuts.append(math.inf)
+            total=error=0.
+            for lo,hi in zip(cuts,cuts[1:]):
+                part,estimated_error=quad(lambda u: large(u,q),lo,hi,
+                    epsabs=3e-13,epsrel=3e-12,limit=300)
+                total+=part
+                error+=estimated_error
+            return total,error
+        f1,fe1=peaked_integral(0.)
+        g1,ge1=peaked_integral(discount)
     f, g=f0+f1,g0+g1
     fe,ge=fe0+fe1,ge0+ge1
     err = fe+ge+1e-13
