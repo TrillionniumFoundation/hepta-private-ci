@@ -1,0 +1,32 @@
+{
+  "archive": {
+    "bytes": 31428,
+    "compression": "xz",
+    "metadata_mode": "lexical order; uid=gid=mtime=0; modes=0644/0755",
+    "name": "v11-migration-functional-01-sealed.tar.xz",
+    "sha256": "d71e89de06e67094e68fa44acce863620298462fa45aea2ec6b70f3cc38982a3"
+  },
+  "chunk_bytes": 131072,
+  "external_assets": "No external pretrained assets are fetched or followed; only declared archive members are packaged.",
+  "includes_all_declared_archive_members": true,
+  "inventory": {
+    "bytes": 8347,
+    "path": "INVENTORY.json",
+    "sha256": "b8f4fc2c2ec5a72e2d8ddb2b966eb8825f1748705a512f870bc32c45eb2ea156"
+  },
+  "parts": [
+    {
+      "binary_bytes": 31428,
+      "binary_sha256": "d71e89de06e67094e68fa44acce863620298462fa45aea2ec6b70f3cc38982a3",
+      "path": "part-00000.b64",
+      "text_bytes": 41905,
+      "text_sha256": "64cacea5cd22d099ca8e8a9e0ddf8f149712218ef32368d47badf60096fba62e"
+    }
+  ],
+  "schema": "hepta.evidence.text-archive.v1",
+  "source_manifests": [],
+  "tool_sha256": {
+    "pack.py": "e7ea888ab292fd60cb3b1e34c55e3216fe37350ce7a83ca48c5ba96d7528934e",
+    "restore.py": "fa7e0e3287b8bc540a069dc743f06ea4fe61f42962ca2a8d243c77f6f0a099ef"
+  }
+}

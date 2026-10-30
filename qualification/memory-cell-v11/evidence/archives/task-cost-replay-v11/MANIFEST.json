@@ -1,0 +1,32 @@
+{
+  "archive": {
+    "bytes": 111700,
+    "compression": "xz",
+    "metadata_mode": "lexical order; uid=gid=mtime=0; modes=0644/0755",
+    "name": "v11-task-cost-replay-01.tar.xz",
+    "sha256": "be7586045238a459acc06edc85c3dc88ee95679361840790eab79eff008c85f3"
+  },
+  "chunk_bytes": 131072,
+  "external_assets": "No external pretrained assets are fetched or followed; only declared archive members are packaged.",
+  "includes_all_declared_archive_members": true,
+  "inventory": {
+    "bytes": 11204,
+    "path": "INVENTORY.json",
+    "sha256": "57ba1474b3962332eba239d375705c19649d0df7061927de313719e2063111d3"
+  },
+  "parts": [
+    {
+      "binary_bytes": 111700,
+      "binary_sha256": "be7586045238a459acc06edc85c3dc88ee95679361840790eab79eff008c85f3",
+      "path": "part-00000.b64",
+      "text_bytes": 148937,
+      "text_sha256": "e974d48bba23ae4552c9969572e032611f22a4bdc02888930473c4b1eb047862"
+    }
+  ],
+  "schema": "hepta.evidence.text-archive.v1",
+  "source_manifests": [],
+  "tool_sha256": {
+    "pack.py": "e7ea888ab292fd60cb3b1e34c55e3216fe37350ce7a83ca48c5ba96d7528934e",
+    "restore.py": "fa7e0e3287b8bc540a069dc743f06ea4fe61f42962ca2a8d243c77f6f0a099ef"
+  }
+}

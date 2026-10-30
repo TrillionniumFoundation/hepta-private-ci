@@ -1,0 +1,53 @@
+{
+  "archive": {
+    "bytes": 443032,
+    "compression": "xz",
+    "metadata_mode": "lexical order; uid=gid=mtime=0; modes=0644/0755",
+    "name": "v11-native-success.tar.xz",
+    "sha256": "be6e58853bddf7fce6087b68ba72bb715e336b778fb6c430292bdd595612d5ba"
+  },
+  "chunk_bytes": 131072,
+  "external_assets": "No external pretrained assets are fetched or followed; only declared archive members are packaged.",
+  "includes_all_declared_archive_members": true,
+  "inventory": {
+    "bytes": 5111,
+    "path": "INVENTORY.json",
+    "sha256": "e96ce1ce78a580ef8aec17aa9171e8c4c5b7783872f95ff62be66ebad88b599c"
+  },
+  "parts": [
+    {
+      "binary_bytes": 131072,
+      "binary_sha256": "311de6a6e308fa225642a01601454f5ac4663fba1f5210a383855519a1307992",
+      "path": "part-00000.b64",
+      "text_bytes": 174765,
+      "text_sha256": "1876dc1421008c0aa396b3a91d2772a76974c2a020df7a2c7587d629704f6ed5"
+    },
+    {
+      "binary_bytes": 131072,
+      "binary_sha256": "0af8ad89efc0b06464e6bb8440813c995cac0e14bf1782f90ff94b9b3e10d5ea",
+      "path": "part-00001.b64",
+      "text_bytes": 174765,
+      "text_sha256": "8289e3ecf734b82e18997c9d4ec9078721b05f9c307288fb714146b916086f10"
+    },
+    {
+      "binary_bytes": 131072,
+      "binary_sha256": "d161375e77d7277dc65ebf83bac6ddddd0befa4e7f07cae058b94f37adb67f56",
+      "path": "part-00002.b64",
+      "text_bytes": 174765,
+      "text_sha256": "ce030f12541304528b879208ae15ea9148adfc2d0564e77893858793d36a820d"
+    },
+    {
+      "binary_bytes": 49816,
+      "binary_sha256": "71fe6300414abb602a04a32a38d116972ec461909f0540de0e9721e83912f5f0",
+      "path": "part-00003.b64",
+      "text_bytes": 66425,
+      "text_sha256": "ae64205711306d87863aafde1321b6e158bb7ab4d4822e396ddff46e924f3116"
+    }
+  ],
+  "schema": "hepta.evidence.text-archive.v1",
+  "source_manifests": [],
+  "tool_sha256": {
+    "pack.py": "e7ea888ab292fd60cb3b1e34c55e3216fe37350ce7a83ca48c5ba96d7528934e",
+    "restore.py": "fa7e0e3287b8bc540a069dc743f06ea4fe61f42962ca2a8d243c77f6f0a099ef"
+  }
+}

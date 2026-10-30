@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.memory.v11.workflow-validation-correction.v1",
+  "failed_commit": "7677c8a7424f0f888f53aefb1ea97ce38a1978a2",
+  "run_id": 41057002479,
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41057002479",
+  "annotation_source": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41057002479/annotations_partial",
+  "failure_class": "workflow_schema_validation_before_any_job",
+  "annotation": "(Line: 25, Col: 39): Unrecognized named-value: 'runner'. Located at position 1 within expression: runner.temp",
+  "jobs_executed": 0,
+  "tests_executed": false,
+  "correction": "Use /tmp/h11-native-${{ github.run_id }}-${{ github.run_attempt }} instead of runner context in job env",
+  "fixed_workflow_sha256": "5f294a9af7a9adf764487d35c3c07f679d4e84c2f3cb9c05fce4715968d7941b",
+  "validation": {
+    "yaml_parse": "passed",
+    "embedded_python_ast": "passed",
+    "job_env_context_allowlist": "passed",
+    "checked_expressions": [
+      {
+        "env": "CARGO_TARGET_DIR",
+        "expression": "github.workspace"
+      },
+      {
+        "env": "HEPTA_MEMORY_V11_NATIVE_OUTPUT",
+        "expression": "github.run_id"
+      },
+      {
+        "env": "HEPTA_MEMORY_V11_NATIVE_OUTPUT",
+        "expression": "github.run_attempt"
+      }
+    ],
+    "documentation": "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#context-availability",
+    "actionlint_executed": false,
+    "server_validation_pending_next_push": true
+  }
+}

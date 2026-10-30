@@ -1,0 +1,118 @@
+{
+  "schema": "hepta.memory.v11.native-ci-provider-status.v1",
+  "provider": "GitHub",
+  "run": {
+    "id": 41062425475,
+    "head_sha": "1bc02cb33a380cf53bb58333b2ee8b3d1a70f175",
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41062425475",
+    "created_at": "2026-10-30T13:20:30Z",
+    "updated_at": "2026-10-30T13:35:17Z",
+    "run_attempt": 1
+  },
+  "job": {
+    "id": 124085223772,
+    "name": "verify",
+    "status": "completed",
+    "conclusion": "success",
+    "run_id": 41062425475,
+    "logs_url": null,
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1
+      },
+      {
+        "name": "Checkout the exact source and formatter baseline",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2
+      },
+      {
+        "name": "Run ./.github/actions/setup-ci",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3
+      },
+      {
+        "name": "Install the pinned Rust toolchain",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4
+      },
+      {
+        "name": "Install the pinned nextest runner",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5
+      },
+      {
+        "name": "Restore scoped Rust dependencies and prior native build outputs",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6
+      },
+      {
+        "name": "Test exact sources, then final fix and format without further tests",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7
+      },
+      {
+        "name": "Upload immutable logs, source receipt, JUnit and finalization patches",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8
+      },
+      {
+        "name": "Save scoped build cache after immutable evidence upload",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9
+      },
+      {
+        "name": "Post Checkout the exact source and formatter baseline",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 18
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 19
+      }
+    ]
+  },
+  "artifact": {
+    "id": 12981851880,
+    "name": "memory-v11-native-1bc02cb33a380cf53bb58333b2ee8b3d1a70f175-41062425475-1",
+    "size_in_bytes": 454165,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12981851880",
+    "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12981851880/zip",
+    "expired": false,
+    "created_at": "2026-10-30T13:34:54Z",
+    "expires_at": "2026-11-29T13:34:53Z",
+    "updated_at": "2026-10-30T13:34:54Z",
+    "digest": "sha256:059eb9563458675dabddbcb0e3c12ec198bf5d2acf06836511afd544d570a585",
+    "workflow_run": {
+      "id": 41062425475,
+      "repository_id": 1320694176,
+      "head_repository_id": 1320694176,
+      "head_branch": "research/memory-cell-v11-20261030",
+      "head_sha": "1bc02cb33a380cf53bb58333b2ee8b3d1a70f175"
+    }
+  },
+  "cache_observations": {
+    "restore_hit": false,
+    "save_succeeded": true,
+    "log_lines": [
+      "2026-10-30T13:22:00.8286554Z Cache not found for input keys: memory-v11-native-rust-1.95-ebebab7dee5ac8db19add0184f91b2f0bc02a92e5ef70acd27ba5d368c5188eb-1bc02cb33a380cf53bb58333b2ee8b3d1a70f175, memory-v11-native-rust-1.95-ebebab7dee5ac8db19add0184f91b2f0bc02a92e5ef70acd27ba5d368c5188eb-, memory-v10-rust-1.95-verify-ebebab7dee5ac8db19add0184f91b2f0bc02a92e5ef70acd27ba5d368c5188eb-, memory-v10-rust-1.95-finalize-ebebab7dee5ac8db19add0184f91b2f0bc02a92e5ef70acd27ba5d368c5188eb-",
+      "2026-10-30T13:35:14.3155041Z Cache saved with key: memory-v11-native-rust-1.95-ebebab7dee5ac8db19add0184f91b2f0bc02a92e5ef70acd27ba5d368c5188eb-1bc02cb33a380cf53bb58333b2ee8b3d1a70f175"
+    ],
+    "no_cache_acceleration_claimed": true
+  }
+}

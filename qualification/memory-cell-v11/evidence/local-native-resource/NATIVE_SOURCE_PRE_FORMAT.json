@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.memory.v11.native-source-pre-format.v1",
+  "baseline_commit": "740dbff4e00b8b74a19c6b7ec487937c1f4c96ab",
+  "stage": "Before parent-owned final just fmt; hashes do not describe a subsequent formatted commit",
+  "sources": {
+    ".github/workflows/memory-cell-v11-native.yml": {
+      "sha256": "d1809511229d58139d9d944f347c6334cefb50e09cdaf7a7ac6a1197c9398bee",
+      "bytes": 10102
+    },
+    "codex-rs/hepta-memory/src/lib.rs": {
+      "sha256": "372346828afcb67c6f4be68d410ea66e3f92e88e0684a22f37728d1420fcb114",
+      "bytes": 24834
+    },
+    "codex-rs/hepta-memory/src/memory_training_projection_v11.rs": {
+      "sha256": "4c17aeff63cd19c0ec83266cf1f369a488e95ab496d6f403c4a3b0135fc08f04",
+      "bytes": 5226
+    },
+    "codex-rs/hepta-memory/src/memory_training_projection_v11_tests.rs": {
+      "sha256": "bc346c4b8dd2d0710e688b2391b51827bb6924d92272d1d67c0e356f6ba32a06",
+      "bytes": 6759
+    },
+    "codex-rs/hepta-agentd/src/lib.rs": {
+      "sha256": "43093222263be06199dbbe420e27744e393d524ec76a7953838a1b6236e70719",
+      "bytes": 16768
+    },
+    "codex-rs/hepta-agentd/src/memory_inventory_execution.rs": {
+      "sha256": "7e45b7f04d872b3bc879485e2c2e39a6b266004154ac2106c6d296fedc5e4788",
+      "bytes": 9281
+    },
+    "codex-rs/hepta-agentd/src/memory_inventory_runtime.rs": {
+      "sha256": "4cacdbac4715783f141a5af74dcafed282bba13f5ff26615dee613d8de423327",
+      "bytes": 10119
+    },
+    "codex-rs/hepta-agentd/src/memory_independent_cell_v11.rs": {
+      "sha256": "7b548cf6ffa365c49e5bfddc8cbafe581ac493c48192aed8cca01b776eb484cb",
+      "bytes": 12815
+    },
+    "codex-rs/hepta-agentd/src/memory_serving_plan_v11.rs": {
+      "sha256": "af47b7e2d8ef8555d688fdd3ece61297f1831c7bfe12e46e93414ead8bfa4b2f",
+      "bytes": 11662
+    },
+    "codex-rs/hepta-agentd/src/memory_serving_plan_v11_test_support.rs": {
+      "sha256": "847f10ad5e6e70ac8f437d26cf1c51329e7a5b8b7994ed93113814e81f275020",
+      "bytes": 11947
+    },
+    "codex-rs/hepta-agentd/src/memory_serving_plan_v11_tests.rs": {
+      "sha256": "dc904430b846803567a6cbba9bbe85a57cd210f5da2507cbcc2145d20b9d78eb",
+      "bytes": 14792
+    }
+  },
+  "required_case_names": [
+    "memory_v11_owner_projection_is_local_complete_and_recoverable",
+    "memory_v11_new_effective_version_and_tombstone_cannot_hide_behind_old_source_ids",
+    "memory_v11_candidate_binds_the_complete_owner_partition_and_acquisition_cut",
+    "memory_v11_independent_cells_reuse_weights_with_fresh_queries_and_replace_one_version",
+    "memory_v11_query_fences_reject_source_and_selected_version_races",
+    "memory_v11_return_fence_rechecks_timed_dependencies_outside_query_support",
+    "memory_v11_recovery_requires_live_signed_selection_and_withdrawal_frontier",
+    "memory_v11_plan_rejects_duplicate_and_ambiguous_ownership"
+  ],
+  "local_rust_build_status": "3 resource interruptions before test execution; compilation not validated",
+  "static_checks": {
+    "rustfmt_check_exit_code": 1,
+    "rustfmt_parse_errors": [],
+    "rustfmt_format_changes_required": true,
+    "workflow_yaml_parse": "passed",
+    "workflow_embedded_python_ast": "passed",
+    "workflow_required_tests_match": "8 of 8"
+  }
+}

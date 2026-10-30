@@ -1,0 +1,78 @@
+{
+  "schema": "hepta.memory.v11.native-ci-failure-audit.v1",
+  "run_id": 41059465673,
+  "job_id": 124075262576,
+  "artifact_id": 12979445753,
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41059465673",
+  "source_commit": "a2daab680ee1ec88a0e295ade3204ecb4158a27f",
+  "source_tree": "768ee4cdcca2e70c111b3bbb6913bdc4111c0192",
+  "artifact_zip_sha256": "f5bec48f9c04974886920fe5326d4ed2bd4fe82189ead67a1ab4fe5241915411",
+  "conclusion": "failure",
+  "native_compilation_succeeded": true,
+  "actual_tests_executed": true,
+  "executed_tests": 517,
+  "passed_tests": 515,
+  "failed_tests": 2,
+  "junit_skipped_cases": 0,
+  "nextest_reported_skipped_cases": 24,
+  "nextest_summary": "Summary [  48.516s] 517 tests run: 515 passed, 2 failed, 24 skipped",
+  "v11_tests_executed": [
+    "memory_serving_plan_v11::tests::memory_v11_candidate_binds_the_complete_owner_partition_and_acquisition_cut",
+    "memory_serving_plan_v11::tests::memory_v11_independent_cells_reuse_weights_with_fresh_queries_and_replace_one_version",
+    "memory_serving_plan_v11::tests::memory_v11_plan_rejects_duplicate_and_ambiguous_ownership",
+    "memory_serving_plan_v11::tests::memory_v11_query_fences_reject_source_and_selected_version_races",
+    "memory_serving_plan_v11::tests::memory_v11_recovery_requires_live_signed_selection_and_withdrawal_frontier",
+    "memory_serving_plan_v11::tests::memory_v11_return_fence_rechecks_timed_dependencies_outside_query_support",
+    "memory_training_projection_v11::tests::memory_v11_new_effective_version_and_tombstone_cannot_hide_behind_old_source_ids",
+    "memory_training_projection_v11::tests::memory_v11_owner_projection_is_local_complete_and_recoverable"
+  ],
+  "v11_tests_passed": 7,
+  "v11_tests_failed": 1,
+  "failures": [
+    {
+      "name": "memory_cell_context_tests::memory_prediction_reaches_real_untrusted_context_and_final_use_races_stop_before_effect",
+      "details": [
+        "Error: \"HEPTA_TEST_CODEX_EXECUTABLE must name a built Codex App Server executable\""
+      ]
+    },
+    {
+      "name": "memory_serving_plan_v11::tests::memory_v11_return_fence_rechecks_timed_dependencies_outside_query_support",
+      "details": [
+        "thread 'memory_serving_plan_v11::tests::memory_v11_return_fence_rechecks_timed_dependencies_outside_query_support' (21484) panicked at hepta-agentd/src/memory_serving_plan_v11_tests.rs:422:5:\nassertion failed: `(left == right)`: no source write occurred between the two fences\n\nDiff < left / right > :\n ContractDigestV1(\n     Digest32(\n<        \"5bbdc272699a51c62e0d1dc351acfc970d8b038a0e704e17ce6c9a1901f969d4\",\n>        \"d8fa8da9eecd02872191b5f707205c4aba814bbc4fed023d140c4eb208eac708\",\n     ),\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      ]
+    }
+  ],
+  "raw_receipt_erratum": {
+    "field": "tests_executed",
+    "recorded_value": false,
+    "correct_value": true,
+    "reason": "The failed command raised before the old post-success JUnit parser ran. Original receipt remains unchanged; JUnit and test log establish actual execution. Subsequent workflow parses JUnit in finally for success and failure."
+  },
+  "final_fix_executed": false,
+  "formatter_executed": false,
+  "tree_changed": false,
+  "corrections": [
+    "Build same-source codex-app-server and bind HEPTA_TEST_CODEX_EXECUTABLE; retain existing context regression.",
+    "Replace false full-cut equality premise: future-effective Lane C records alter visible cuts without writes. Query semantic dependency stays equal; final training-projection guard must reject timed procedure change.",
+    "Record actual JUnit execution and nextest skipped summary on failed commands."
+  ],
+  "additional_coverage": "Shared withdrawal frontier fanout to both artifact owners; affected cell rejects fresh admission, unchanged sibling requires same-version metadata re-admission and a new plan.",
+  "latest_corrections_not_yet_ci_validated": true,
+  "local_static_validation": {
+    "yaml_load": true,
+    "embedded_python_ast": true,
+    "job_env_context_check": true,
+    "paths_filter": true,
+    "pinned_cache_and_evidence_order": true,
+    "command_order_build_test_fix_fmt": true,
+    "required_eight_test_names_match_source": true,
+    "rustfmt_check_owned_tests": true
+  },
+  "corrected_source_sha256": {
+    ".github/workflows/memory-cell-v11-native.yml": "f813d6e1943df4ec505d8f6ba7fe139f1eac55d7676cd52389072734f68c1aef",
+    "codex-rs/hepta-agentd/src/memory_serving_plan_v11_test_support.rs": "12b144016d98050706f60c3dbf954cf3b1daff767f3f5d28539e77d386666b95",
+    "codex-rs/hepta-agentd/src/memory_serving_plan_v11_tests.rs": "0d9b2347d57d1b49764861bcd6fddcd27ab4c75bac6835eaeec3b837c34ab3ff"
+  },
+  "production_activation_allowed": false,
+  "trained_quality_claimed": false
+}

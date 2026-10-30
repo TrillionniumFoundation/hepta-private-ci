@@ -1,0 +1,49 @@
+{
+  "packages": [
+    {
+      "archive": {
+        "bytes": 111700,
+        "compression": "xz",
+        "metadata_mode": "lexical order; uid=gid=mtime=0; modes=0644/0755",
+        "name": "v11-task-cost-replay-01.tar.xz",
+        "sha256": "be7586045238a459acc06edc85c3dc88ee95679361840790eab79eff008c85f3"
+      },
+      "every_restored_file_matches_source": true,
+      "file_bytes": 621867,
+      "files": 57,
+      "full_restore": true,
+      "package": "qualification/memory-cell-v11/evidence/archives/task-cost-replay-v11",
+      "package_text_checksums_valid": true,
+      "restored_directory": "/workspace/scratch/fa15dc544533/v11-supplemental-restored-task-cost-replay",
+      "source_directory": "/workspace/scratch/fa15dc544533/v11-task-cost-replay-01",
+      "source_postrun_capture": true,
+      "source_postrun_identity": "PROTOCOL.sources verified before copying EXECUTED_SOURCE; original scientific outputs unchanged"
+    },
+    {
+      "archive": {
+        "bytes": 31428,
+        "compression": "xz",
+        "metadata_mode": "lexical order; uid=gid=mtime=0; modes=0644/0755",
+        "name": "v11-migration-functional-01-sealed.tar.xz",
+        "sha256": "d71e89de06e67094e68fa44acce863620298462fa45aea2ec6b70f3cc38982a3"
+      },
+      "every_restored_file_matches_source": true,
+      "file_bytes": 826269,
+      "files": 38,
+      "full_restore": true,
+      "package": "qualification/memory-cell-v11/evidence/archives/migration-v11",
+      "package_text_checksums_valid": true,
+      "restored_directory": "/workspace/scratch/fa15dc544533/v11-supplemental-restored-migration",
+      "source_directory": "/workspace/scratch/fa15dc544533/v11-migration-functional-01-sealed",
+      "source_postrun_capture": false,
+      "source_postrun_identity": "Uses separately verified sealed tree; inert SQLite sidecars retained; active aliases excluded"
+    }
+  ],
+  "schema": "hepta.memory.v11.supplemental-archive-verification.v1",
+  "scientific_experiments_rerun": false,
+  "tools": {
+    "pack.py": "e7ea888ab292fd60cb3b1e34c55e3216fe37350ce7a83ca48c5ba96d7528934e",
+    "restore.py": "fa7e0e3287b8bc540a069dc743f06ea4fe61f42962ca2a8d243c77f6f0a099ef"
+  },
+  "verified_at_utc": "2026-10-30T13:27:31.176816+00:00"
+}

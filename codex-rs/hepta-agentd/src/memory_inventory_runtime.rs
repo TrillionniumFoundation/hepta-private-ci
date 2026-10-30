@@ -8,11 +8,11 @@ use std::time::Instant;
 
 use codex_hepta_cognitive_store::DurableCognitiveStore;
 use codex_hepta_cognitive_store::MemoryInventoryOwnerSnapshotV1;
+use codex_hepta_cognitive_types::MemoryInventoryReadoutV1;
+use codex_hepta_cognitive_types::MemoryInventoryRequestV1;
 use codex_hepta_cognitive_types::MemoryOperationV1;
 use codex_hepta_cognitive_types::MemoryPredictionKindV1;
 use codex_hepta_cognitive_types::MemoryReadStatusV1;
-use codex_hepta_cognitive_types::MemoryInventoryReadoutV1;
-use codex_hepta_cognitive_types::MemoryInventoryRequestV1;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_memory::CognitiveAccess;
@@ -20,12 +20,12 @@ use codex_hepta_memory::CognitiveScope;
 use serde_json::Value;
 
 use crate::AgentdError;
-use crate::memory_cell_runtime::now_unix_seconds;
 use crate::LoadedMemoryInventoryBundleV1;
 use crate::MemoryInventoryReleaseHostV1;
+use crate::memory_cell_runtime::now_unix_seconds;
 
 #[path = "memory_inventory_execution.rs"]
-mod execution;
+pub(crate) mod execution;
 #[path = "memory_inventory_snapshot.rs"]
 pub(crate) mod snapshot;
 
@@ -39,7 +39,11 @@ pub trait MemoryInventoryAddressResolverV1: Send + Sync {
         request: &'a MemoryInventoryRequestV1,
         snapshot: &'a MemoryInventoryOwnerSnapshotV1,
     ) -> Pin<
-        Box<dyn Future<Output = Result<Option<MemoryInventoryResolvedAddressV1>, String>> + Send + 'a>,
+        Box<
+            dyn Future<Output = Result<Option<MemoryInventoryResolvedAddressV1>, String>>
+                + Send
+                + 'a,
+        >,
     >;
 }
 
@@ -279,4 +283,3 @@ fn failed(
         reason: Some(reason.to_string()),
     }
 }
-

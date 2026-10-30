@@ -1,0 +1,48 @@
+{
+  "attempts": [
+    {
+      "command": "just test --locked --lib -p codex-hepta-memory -E test(memory_v11)",
+      "exit_code": 130,
+      "disposition": "resource_budget_interruption_before_test_execution",
+      "reason": "Shared filesystem free space approximately 1 GiB; initial build omitted debug/incremental limits; stopped through session Ctrl-C, no test result claimed.",
+      "removed_directory": "/workspace/scratch/fa15dc544533/memory-v11-target",
+      "full_log_available": false,
+      "note": "Receipt preserves observed graceful interrupt and no-test-execution classification; first stdout file was replaced by the bounded second attempt."
+    },
+    {
+      "session_id": 26408,
+      "exit_code": 130,
+      "classification": "resource_budget_interruption_before_test_execution",
+      "reason": "Shared root overlay reached zero available bytes while scoped hepta-memory compilation was running; stopped gracefully via session Ctrl-C.",
+      "resource_settings": {
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_BUILD_JOBS": "2"
+      },
+      "target_path": "/workspace/scratch/fa15dc544533/memory-v11-target",
+      "target_bytes_approx": 1932735283,
+      "target_preserved": false,
+      "log_path": "/workspace/scratch/fa15dc544533/memory-v11-owner-tests.log",
+      "target_removed_after_exit": true,
+      "target_size_reported": "1.9G"
+    },
+    {
+      "session_id": 25298,
+      "exit_code": 130,
+      "classification": "resource_budget_interruption_before_test_execution",
+      "command": "just test --locked --lib -p codex-hepta-memory -p codex-hepta-agentd --retries 0",
+      "reason": "Available shared overlay space fell to 1.8 GiB, below the reserved 2 GiB. Graceful Ctrl-C occurred during dependency compilation; no crate test result claimed.",
+      "resource_settings": {
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_BUILD_JOBS": "2"
+      },
+      "target_path": "/workspace/scratch/fa15dc544533/memory-v11-target",
+      "target_size_reported": "2.0G",
+      "target_removed_after_exit": true,
+      "log_path": "third-bounded-build-interrupted.log"
+    }
+  ]
+}
