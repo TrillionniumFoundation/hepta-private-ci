@@ -14,6 +14,13 @@ _UNIT_TEST_DEPENDENCIES = {
 codex_rust_crate(
     name = "hepta-agentd",
     crate_name = "codex_hepta_agentd",
+    # The legacy write surface is required only by this existing E2E fixture;
+    # production Agentd and unrelated test targets retain normal ledger deps.
+    integration_test_dependency_replacements = {
+        "hepta-agentd-plasticity_process_e2e-test": {
+            "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+        },
+    },
     integration_test_timeout = "long",
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
 )
