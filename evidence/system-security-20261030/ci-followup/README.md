@@ -149,3 +149,11 @@ and supervisord failures remain unassigned, including the possibility of a
 shared-store effect. Same-byte test sources alone do not exclude a regression.
 The a38 review verifies immutable Git identities and retained component evidence;
 it does not execute the new pair or qualify the whole chain as post-quantum.
+
+## Later current-source readback
+
+[The a38 readback](a38-ci-readback/README.md) retains the original current-source
+CI observations read after the source fix was frozen. Both raw profiles have
+actual full-state failures; the older 24b depletion-only classification is not
+retargeted. Its separate byte index and original artifacts retain the precise
+source and execution scopes.
