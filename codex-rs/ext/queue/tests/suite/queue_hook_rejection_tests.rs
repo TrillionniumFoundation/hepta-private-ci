@@ -50,7 +50,7 @@ async fn rejected_head_allows_explicit_retry_and_changed_work(
     };
     let queue = install_registered_queue(&test, installed.as_ref())?;
     for _ in 0..2 {
-        let error = tokio::time::timeout(
+        let rejection = tokio::time::timeout(
             Duration::from_secs(10),
             queue.start(
                 test.codex.as_ref(),
@@ -58,8 +58,10 @@ async fn rejected_head_allows_explicit_retry_and_changed_work(
                 /*trace*/ None,
             ),
         )
-        .await?
-        .expect_err("an explicit retry must reach the hook and remain rejected");
+        .await?;
+        let Err(error) = rejection else {
+            anyhow::bail!("an explicit retry must reach the hook and remain rejected");
+        };
         let QueueServiceError::CoreSubmissionError(error) = error else {
             anyhow::bail!("unexpected definitive rejection result: {error:?}");
         };
