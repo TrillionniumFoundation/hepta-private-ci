@@ -94,6 +94,20 @@ class ObstacleTests(unittest.TestCase):
         self.assertFalse(normal_result.certified)
         self.assertEqual(normal_result.status,'LOCAL_NECESSARY_ONLY')
 
+    def test_hx_degenerate_payout_and_hazard_fail_closed(self):
+        # Structural limiting cases are still sampled, never certified.
+        from .hx import HX, boundary
+        for p in (HX(payout=0), HX(sale_fraction=0),
+                  HX(shock_intensity=0)):
+            b = boundary(p)
+            a = audit_candidate(p, b)
+            self.assertEqual(a.status, 'LOCAL_NECESSARY_ONLY')
+            self.assertFalse(a.certified)
+        bad = HX(payout=0, sale_fraction=.2)
+        a = audit_candidate(bad, boundary(bad))
+        self.assertEqual(a.status, 'REJECT_NEGATIVE_CONTINUATION_EQUITY')
+        self.assertGreater(a.boundary_cashflow, 0)
+
     def test_frozen_hx_bond_obstacle_and_independent_grid(self):
         from .hx import HX, boundary, equity_closed
         p=HX()
