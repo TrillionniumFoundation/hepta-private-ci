@@ -1,0 +1,20 @@
+{
+  "scope": "Full He-Xiong equity and explicitly smoothed first-hit risk compiled for float32 neural-state training",
+  "financial_parameters": "Fixed per compiled template; NOT trainable through the lookup table",
+  "coordinate": "z=log(Vb/V)/(sigma*sqrt(maturity)); financial continuation distance x=-sigma*sqrt(maturity)*z",
+  "call": "a(z)=E(-sigma*sqrt(maturity)*z)/(E(-sigma*sqrt(maturity)*z)+Vb) for z<0; zero otherwise",
+  "risk": "C1 cubic Hermite patch of original F in 0<x<0.02*sigma*sqrt(maturity), with F(0)=1 and Fprime(0)=0; original F outside the boundary layer",
+  "danger_extension": "With s=sigma*sqrt(maturity), q(z)=0.5*Fpatched(s*abs(z)) for z<0, 1-0.5*Fpatched(s*abs(z)) for z>=0; this is a new neural design, not the original financial put",
+  "table": "Float64 original financial formulas -> monotone C1 cubic interpolation -> float32 coefficients",
+  "initial_nodes": 4097,
+  "call_distance_limit": 8.0,
+  "risk_scaled_distance_limit": "max(16, 2*abs(a*s)+12)",
+  "tails": "Explicit bounded exponential extensions matching value and first derivative; approximation error checked separately",
+  "float32_normalized_value_abs_tolerance": 0.000005,
+  "float32_state_gradient_scaled_tolerance": 0.0005,
+  "gradient_scale": "max(1,abs(reference derivative))",
+  "bounds_tolerance": 0.000001,
+  "boundary_layer_bias": "Reported separately from numerical error; smoothing changes the original F inside the layer",
+  "precision_interpretation": "New normalized-neural-kernel tolerances, not a revision or pass of the prior raw financial float32 test",
+  "validation_plan": ["Original supported parameter cases", "Dense continuation and danger states", "All piecewise joins including boundary and tails", "Reference numerical state gradients", "FP32 and FP64 interpolation", "Large-state finite bounded outputs", "Short recurrent BPTT and finite differences"]
+}
