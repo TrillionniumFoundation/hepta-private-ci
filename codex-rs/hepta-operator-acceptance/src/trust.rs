@@ -383,6 +383,10 @@ fn invalid(message: impl Into<String>) -> AcceptanceError {
     AcceptanceError::Invalid(message.into())
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 #[path = "trust_tests.rs"]
+mod tests;
+
+#[cfg(all(test, windows))]
+#[path = "trust_windows_tests.rs"]
 mod tests;

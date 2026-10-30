@@ -12,6 +12,7 @@ use crate::receipt_store::signature_binding;
 use crate::receipt_store::validate_idempotent_replay;
 use crate::receipt_store::validate_receipt;
 use crate::test_support::private_tempdir;
+use crate::test_support::write_fixture_file;
 use crate::trust::VerifiedSignature;
 
 #[test]
@@ -175,7 +176,7 @@ fn unknown_or_noncanonical_stored_json_is_rejected() {
         .canonicalize()
         .expect("canonical test store");
     let unknown = root.join("unknown.json");
-    write_private_new(
+    write_fixture_file(
         &unknown,
         br#"{"extra":true,"last_observed_unix_seconds":1,"schema":"hepta_operator_acceptance_time_watermark_v1","schema_version":1,"trust_policy_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}"#,
     )
@@ -183,7 +184,7 @@ fn unknown_or_noncanonical_stored_json_is_rejected() {
     assert!(read_canonical::<TimeWatermark>(&unknown, "unknown test JSON").is_err());
 
     let noncanonical = root.join("noncanonical.json");
-    write_private_new(
+    write_fixture_file(
         &noncanonical,
         br#"{"schema":"hepta_operator_acceptance_time_watermark_v1","last_observed_unix_seconds":1,"schema_version":1,"trust_policy_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}"#,
     )
@@ -192,6 +193,7 @@ fn unknown_or_noncanonical_stored_json_is_rejected() {
 }
 
 #[test]
+#[cfg(unix)]
 fn durable_time_watermark_rejects_clock_rollback() {
     let temporary = private_tempdir("temporary sidecar");
     let sidecar = temporary.path().canonicalize().expect("canonical sidecar");
@@ -203,6 +205,34 @@ fn durable_time_watermark_rejects_clock_rollback() {
         read_canonical::<TimeWatermark>(&sidecar.join(WATERMARK_FILE), "test watermark")
             .expect("read watermark");
     assert_eq!(stored.last_observed_unix_seconds, 101);
+}
+
+#[test]
+#[cfg(windows)]
+fn durable_time_watermark_refuses_forward_commit_without_directory_flush() {
+    let temporary = private_tempdir("temporary sidecar");
+    let sidecar = temporary.path().canonicalize().expect("canonical sidecar");
+    let policy_sha256 = "a".repeat(64);
+    let path = sidecar.join(WATERMARK_FILE);
+    let bytes = canonical_json(&TimeWatermark {
+        last_observed_unix_seconds: 100,
+        schema: WATERMARK_SCHEMA.to_string(),
+        schema_version: 1,
+        trust_policy_sha256: policy_sha256.clone(),
+    })
+    .expect("canonical fixture watermark");
+    write_fixture_file(&path, &bytes).expect("seed existing test watermark");
+    assert!(advance_time_watermark(&sidecar, 99, &policy_sha256).is_err());
+    let error = advance_time_watermark(&sidecar, 101, &policy_sha256)
+        .expect_err("unqualified directory flush must not commit");
+    assert!(matches!(
+        error,
+        AcceptanceError::Io(ref source)
+            if matches!(source.kind(), std::io::ErrorKind::PermissionDenied | std::io::ErrorKind::Unsupported)
+    ));
+    assert_eq!(std::fs::read(&path).expect("original watermark"), bytes);
+    assert!(!sidecar.join(CLAIM_FILE).exists());
+    assert!(!sidecar.join(RECEIPT_FILE).exists());
 }
 
 #[test]
@@ -255,8 +285,8 @@ fn exact_replay_returns_same_receipt_and_conflicting_claim_fails() {
         .expect("canonical replay store");
     let receipt_path = root.join(RECEIPT_FILE);
     let claim_path = root.join(CLAIM_FILE);
-    write_private_new(&receipt_path, &canonical_json(&receipt).unwrap()).unwrap();
-    write_private_new(&claim_path, &canonical_json(&claim).unwrap()).unwrap();
+    write_fixture_file(&receipt_path, &canonical_json(&receipt).unwrap()).unwrap();
+    write_fixture_file(&claim_path, &canonical_json(&claim).unwrap()).unwrap();
     let replay = validate_idempotent_replay(
         &receipt_path,
         &claim_path,

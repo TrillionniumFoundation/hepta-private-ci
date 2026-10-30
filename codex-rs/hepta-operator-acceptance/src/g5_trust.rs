@@ -933,6 +933,10 @@ fn clear_g5_close_on_exec(fd: &std::os::fd::OwnedFd) -> Result<(), AcceptanceErr
     Ok(())
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 #[path = "g5_trust_tests.rs"]
+mod tests;
+
+#[cfg(all(test, windows))]
+#[path = "g5_trust_windows_tests.rs"]
 mod tests;
