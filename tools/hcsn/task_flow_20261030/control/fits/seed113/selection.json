@@ -1,0 +1,110 @@
+{
+  "candidates": [
+    {
+      "checkpoint": "fits/seed113/learned_value_ridge1e-05.npz",
+      "checkpoint_sha256": "29506e921efbaef68c02f03c3d590518eb9ef934da0f8d4a2678f2c40bdae499",
+      "policy": "learned_value",
+      "ridge": 1e-05,
+      "validation_action_disagreement": 0.5555555555555556,
+      "validation_mse": 0.5711607991162515
+    },
+    {
+      "checkpoint": "fits/seed113/learned_value_ridge0.001.npz",
+      "checkpoint_sha256": "00a288648739a0bfbfb68948122182643dec1fa5142bb858307aad01cf640f7f",
+      "policy": "learned_value",
+      "ridge": 0.001,
+      "validation_action_disagreement": 0.5555555555555556,
+      "validation_mse": 0.5711589499175562
+    },
+    {
+      "checkpoint": "fits/seed113/learned_value_ridge0.1.npz",
+      "checkpoint_sha256": "5e206c87d7ea2dbda6eba3ec936b3713ac8d64bc3c9679b23eff5735c54f0bba",
+      "policy": "learned_value",
+      "ridge": 0.1,
+      "validation_action_disagreement": 0.5555555555555556,
+      "validation_mse": 0.5709916037435517
+    },
+    {
+      "checkpoint": "fits/seed113/ordinary_boundary_ridge1e-05.npz",
+      "checkpoint_sha256": "9c9be1049e4a96abd8a239c52b32403f40047e8f7cb5719b42f53bb966a438aa",
+      "policy": "ordinary_boundary",
+      "ridge": 1e-05,
+      "validation_action_disagreement": 0.14351851851851852,
+      "validation_mse": 0.0697369621431204
+    },
+    {
+      "checkpoint": "fits/seed113/ordinary_boundary_ridge0.001.npz",
+      "checkpoint_sha256": "369ca4065a1aeff8d1afef7fd2d8fb6989cd26fdce98d5b15a2ac392eb738b06",
+      "policy": "ordinary_boundary",
+      "ridge": 0.001,
+      "validation_action_disagreement": 0.14351851851851852,
+      "validation_mse": 0.06973703864140526
+    },
+    {
+      "checkpoint": "fits/seed113/ordinary_boundary_ridge0.1.npz",
+      "checkpoint_sha256": "df2fbcec5b9b480bcff7471d5c08c7055b9ef8fb56d5575f5ab47da3af3b0856",
+      "policy": "ordinary_boundary",
+      "ridge": 0.1,
+      "validation_action_disagreement": 0.14351851851851852,
+      "validation_mse": 0.06974533240620662
+    },
+    {
+      "checkpoint": "fits/seed113/first_event_value_ridge1e-05.npz",
+      "checkpoint_sha256": "05f7417fe389feed824faded3648822379c3f103cd265ca18a2521cedef8da41",
+      "policy": "first_event_value",
+      "ridge": 1e-05,
+      "validation_action_disagreement": 0.5497685185185185,
+      "validation_mse": 0.5788428303978194
+    },
+    {
+      "checkpoint": "fits/seed113/first_event_value_ridge0.001.npz",
+      "checkpoint_sha256": "30b50ae91e41e94206b31be22407511ed52d4ddf6c46518ce05ed79d18820a02",
+      "policy": "first_event_value",
+      "ridge": 0.001,
+      "validation_action_disagreement": 0.5497685185185185,
+      "validation_mse": 0.5788407058859644
+    },
+    {
+      "checkpoint": "fits/seed113/first_event_value_ridge0.1.npz",
+      "checkpoint_sha256": "e8c30bc7a09f57d33d2213edd8a01a1d20fe3108b54b7aa387b7e3d6069fbfce",
+      "policy": "first_event_value",
+      "ridge": 0.1,
+      "validation_action_disagreement": 0.5497685185185185,
+      "validation_mse": 0.5786470095936757
+    }
+  ],
+  "feature_count": 40,
+  "fit_by_policy": {
+    "first_event_value": {
+      "cpu_seconds": 0.002915669000003618,
+      "wall_seconds": 0.0029142639996280195
+    },
+    "learned_value": {
+      "cpu_seconds": 0.002567812999998864,
+      "wall_seconds": 0.0025676539989945013
+    },
+    "ordinary_boundary": {
+      "cpu_seconds": 0.0019935710000140716,
+      "wall_seconds": 0.001992667999729747
+    }
+  },
+  "fit_cpu_seconds": 0.008072888000000944,
+  "fit_wall_seconds": 0.008075720999840996,
+  "frozen_content": true,
+  "learned_content_parameters": 0,
+  "oracle_label_cpu_seconds": 1.966513367999994,
+  "oracle_label_wall_seconds": 2.016124335001223,
+  "parameter_count_per_readout": 160,
+  "seed": 113,
+  "selected": {
+    "first_event_value": 0.1,
+    "learned_value": 0.1,
+    "ordinary_boundary": 1e-05
+  },
+  "shared_preprocessing_scalars": 80,
+  "targets_use_realized_future": false,
+  "train_states": 2160,
+  "train_states_sha256": "04278cb85d1fa59d1894b3e4ab4dd3c82f1617b7859e15243e1430ee69ed6a6f",
+  "validation_states": 864,
+  "validation_states_sha256": "53addf50cb302e1cbe5210db521dba4cf1eb175bf210e561cb2fbe0f6ee63ca6"
+}

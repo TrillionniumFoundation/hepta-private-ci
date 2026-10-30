@@ -1,0 +1,30 @@
+{
+  "complete": true,
+  "components": {
+    "source_import_wall_seconds": 1.610663776002184,
+    "runner_wall_seconds": 37.241696184999455,
+    "runner_cpu_seconds": 37.214521094000006,
+    "import_plus_runner_wall_seconds": 38.85235996100164,
+    "development_wall_seconds": 24.95628322199991,
+    "development_cpu_seconds": 24.936654902,
+    "development_data_wall_seconds": 0.5242563940009859,
+    "heldout_data_wall_seconds": 1.1810226239977055,
+    "heldout_data_cpu_seconds": 1.1774456220000005,
+    "frozen_content_load_wall_seconds": 0.0016699650004738942,
+    "calibration_wall_seconds": 4.297769712004083,
+    "oracle_labels_and_state_serialization_wall_seconds": 5.071633306994045,
+    "numerical_validation_wall_seconds": 1.3692158420017222,
+    "all_controller_fits_wall_seconds": 13.507256186996528,
+    "family_fits_wall_seconds": {
+      "full_value": 5.180290023003181,
+      "ordinary_boundary": 4.293009126999095,
+      "first_event_value": 4.033957036994252,
+      "model_dp": 0.0
+    },
+    "owner_sessions_wall_seconds": 10.870722760002536,
+    "owner_sessions_cpu_seconds": 10.867319762000005,
+    "runner_residual_wall_seconds": 0.23366757899930235,
+    "runner_residual_meaning": "Gate/checkpoint loading, scoring, orchestration and result serialization outside measured components; included in the actual runner total",
+    "component_overlap": "Development includes calibration, labels, numerical checks and all fits; do not add those components to development again"
+  }
+}

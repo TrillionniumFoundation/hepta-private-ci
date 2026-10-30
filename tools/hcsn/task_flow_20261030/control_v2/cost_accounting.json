@@ -1,0 +1,531 @@
+{
+  "allocation": "Each family is assigned all shared experimental setup plus its own five controller fits. DP conservatively includes oracle-label generation although deployment does not require supervised labels. Costs are study-reproduction scenarios, not minimal production costs. All-family total is the measured runner, not the sum of overlapping family allocations.",
+  "components": {
+    "all_controller_fits_wall_seconds": 13.507256186996528,
+    "calibration_wall_seconds": 4.297769712004083,
+    "component_overlap": "Development includes calibration, labels, numerical checks and all fits; do not add those components to development again",
+    "development_cpu_seconds": 24.936654902,
+    "development_data_wall_seconds": 0.5242563940009859,
+    "development_wall_seconds": 24.95628322199991,
+    "family_fits_wall_seconds": {
+      "first_event_value": 4.033957036994252,
+      "full_value": 5.180290023003181,
+      "model_dp": 0.0,
+      "ordinary_boundary": 4.293009126999095
+    },
+    "frozen_content_load_wall_seconds": 0.0016699650004738942,
+    "heldout_data_cpu_seconds": 1.1774456220000005,
+    "heldout_data_wall_seconds": 1.1810226239977055,
+    "import_plus_runner_wall_seconds": 38.85235996100164,
+    "numerical_validation_wall_seconds": 1.3692158420017222,
+    "oracle_labels_and_state_serialization_wall_seconds": 5.071633306994045,
+    "owner_sessions_cpu_seconds": 10.867319762000005,
+    "owner_sessions_wall_seconds": 10.870722760002536,
+    "runner_cpu_seconds": 37.214521094000006,
+    "runner_residual_meaning": "Gate/checkpoint loading, scoring, orchestration and result serialization outside measured components; included in the actual runner total",
+    "runner_residual_wall_seconds": 0.23366757899930235,
+    "runner_wall_seconds": 37.241696184999455,
+    "source_import_wall_seconds": 1.610663776002184
+  },
+  "correction": "Frozen confirmation.json's derived setup grid omitted heldout data generation; the actual total runner time already includes it. This separate ledger also allocates measured runner overhead. No scientific results or decisions changed.",
+  "inputs_sha256": {
+    "completion.json": "235c5e9e63876da3d8b3c381aa8cf413575df927aef1cd148158761343941093",
+    "confirmation.json": "69c1e71cd55ddbf91dabbf43ecc70d36a7a1f928a79cdcd12c99e29e1cfe9f61",
+    "development_results.json": "dde1d7093fa3bda14560e77aa877b77e24c41a046852c02f62754aa1a5becdd8",
+    "heldout_manifest.json": "a85bd33b6d0dc310cb60d67b605c393bb79d323e506ae4955eea03e78463ab2a"
+  },
+  "interpretation": "Wall and CPU timings are one run on one shared CPU host. No energy, GPU or native Rust claim. All timings include actual local files/content computation; OS caches are not flushed. Evaluation labels are read only after owner terminal state, outside timed owner runtime but inside the measured full runner.",
+  "runtime_and_setup_sensitivity": [
+    {
+      "family": "full_value",
+      "mean_runtime_plus_amortized_setup_seconds": 19.667831402450865,
+      "penalty": 0.0,
+      "sessions": 1,
+      "setup_wall_seconds": 19.654671037005755,
+      "utility": 0.79215
+    },
+    {
+      "family": "full_value",
+      "mean_runtime_plus_amortized_setup_seconds": 19.667831402450865,
+      "penalty": 0.1,
+      "sessions": 1,
+      "setup_wall_seconds": 19.654671037005755,
+      "utility": -1.1746331402450867
+    },
+    {
+      "family": "full_value",
+      "mean_runtime_plus_amortized_setup_seconds": 19.667831402450865,
+      "penalty": 1.0,
+      "sessions": 1,
+      "setup_wall_seconds": 19.654671037005755,
+      "utility": -18.875681402450866
+    },
+    {
+      "family": "full_value",
+      "mean_runtime_plus_amortized_setup_seconds": 19.667831402450865,
+      "penalty": 10.0,
+      "sessions": 1,
+      "setup_wall_seconds": 19.654671037005755,
+      "utility": -195.88616402450867
+    },
+    {
+      "family": "full_value",
+      "mean_runtime_plus_amortized_setup_seconds": 0.20970707581516762,
+      "penalty": 0.0,
+      "sessions": 100,
+      "setup_wall_seconds": 19.654671037005755,
+      "utility": 0.79215
+    },
+    {
+      "family": "full_value",
+      "mean_runtime_plus_amortized_setup_seconds": 0.20970707581516762,
+      "penalty": 0.1,
+      "sessions": 100,
+      "setup_wall_seconds": 19.654671037005755,
+      "utility": 0.7711792924184833
+    },
+    {
+      "family": "full_value",
+      "mean_runtime_plus_amortized_setup_seconds": 0.20970707581516762,
+      "penalty": 1.0,
+      "sessions": 100,
+      "setup_wall_seconds": 19.654671037005755,
+      "utility": 0.5824429241848323
+    },
+    {
+      "family": "full_value",
+      "mean_runtime_plus_amortized_setup_seconds": 0.20970707581516762,
+      "penalty": 10.0,
+      "sessions": 100,
+      "setup_wall_seconds": 19.654671037005755,
+      "utility": -1.3049207581516762
+    },
+    {
+      "family": "full_value",
+      "mean_runtime_plus_amortized_setup_seconds": 0.01512583254881065,
+      "penalty": 0.0,
+      "sessions": 10000,
+      "setup_wall_seconds": 19.654671037005755,
+      "utility": 0.79215
+    },
+    {
+      "family": "full_value",
+      "mean_runtime_plus_amortized_setup_seconds": 0.01512583254881065,
+      "penalty": 0.1,
+      "sessions": 10000,
+      "setup_wall_seconds": 19.654671037005755,
+      "utility": 0.790637416745119
+    },
+    {
+      "family": "full_value",
+      "mean_runtime_plus_amortized_setup_seconds": 0.01512583254881065,
+      "penalty": 1.0,
+      "sessions": 10000,
+      "setup_wall_seconds": 19.654671037005755,
+      "utility": 0.7770241674511894
+    },
+    {
+      "family": "full_value",
+      "mean_runtime_plus_amortized_setup_seconds": 0.01512583254881065,
+      "penalty": 10.0,
+      "sessions": 10000,
+      "setup_wall_seconds": 19.654671037005755,
+      "utility": 0.6408916745118935
+    },
+    {
+      "family": "ordinary_boundary",
+      "mean_runtime_plus_amortized_setup_seconds": 18.77718741732162,
+      "penalty": 0.0,
+      "sessions": 1,
+      "setup_wall_seconds": 18.76739014100167,
+      "utility": 0.58335
+    },
+    {
+      "family": "ordinary_boundary",
+      "mean_runtime_plus_amortized_setup_seconds": 18.77718741732162,
+      "penalty": 0.1,
+      "sessions": 1,
+      "setup_wall_seconds": 18.76739014100167,
+      "utility": -1.294368741732162
+    },
+    {
+      "family": "ordinary_boundary",
+      "mean_runtime_plus_amortized_setup_seconds": 18.77718741732162,
+      "penalty": 1.0,
+      "sessions": 1,
+      "setup_wall_seconds": 18.76739014100167,
+      "utility": -18.19383741732162
+    },
+    {
+      "family": "ordinary_boundary",
+      "mean_runtime_plus_amortized_setup_seconds": 18.77718741732162,
+      "penalty": 10.0,
+      "sessions": 1,
+      "setup_wall_seconds": 18.76739014100167,
+      "utility": -187.1885241732162
+    },
+    {
+      "family": "ordinary_boundary",
+      "mean_runtime_plus_amortized_setup_seconds": 0.19747117772996717,
+      "penalty": 0.0,
+      "sessions": 100,
+      "setup_wall_seconds": 18.76739014100167,
+      "utility": 0.58335
+    },
+    {
+      "family": "ordinary_boundary",
+      "mean_runtime_plus_amortized_setup_seconds": 0.19747117772996717,
+      "penalty": 0.1,
+      "sessions": 100,
+      "setup_wall_seconds": 18.76739014100167,
+      "utility": 0.5636028822270033
+    },
+    {
+      "family": "ordinary_boundary",
+      "mean_runtime_plus_amortized_setup_seconds": 0.19747117772996717,
+      "penalty": 1.0,
+      "sessions": 100,
+      "setup_wall_seconds": 18.76739014100167,
+      "utility": 0.3858788222700329
+    },
+    {
+      "family": "ordinary_boundary",
+      "mean_runtime_plus_amortized_setup_seconds": 0.19747117772996717,
+      "penalty": 10.0,
+      "sessions": 100,
+      "setup_wall_seconds": 18.76739014100167,
+      "utility": -1.3913617772996716
+    },
+    {
+      "family": "ordinary_boundary",
+      "mean_runtime_plus_amortized_setup_seconds": 0.011674015334050637,
+      "penalty": 0.0,
+      "sessions": 10000,
+      "setup_wall_seconds": 18.76739014100167,
+      "utility": 0.58335
+    },
+    {
+      "family": "ordinary_boundary",
+      "mean_runtime_plus_amortized_setup_seconds": 0.011674015334050637,
+      "penalty": 0.1,
+      "sessions": 10000,
+      "setup_wall_seconds": 18.76739014100167,
+      "utility": 0.5821825984665949
+    },
+    {
+      "family": "ordinary_boundary",
+      "mean_runtime_plus_amortized_setup_seconds": 0.011674015334050637,
+      "penalty": 1.0,
+      "sessions": 10000,
+      "setup_wall_seconds": 18.76739014100167,
+      "utility": 0.5716759846659494
+    },
+    {
+      "family": "ordinary_boundary",
+      "mean_runtime_plus_amortized_setup_seconds": 0.011674015334050637,
+      "penalty": 10.0,
+      "sessions": 10000,
+      "setup_wall_seconds": 18.76739014100167,
+      "utility": 0.4666098466594937
+    },
+    {
+      "family": "first_event_value",
+      "mean_runtime_plus_amortized_setup_seconds": 18.521787912571963,
+      "penalty": 0.0,
+      "sessions": 1,
+      "setup_wall_seconds": 18.508338050996826,
+      "utility": 0.5632
+    },
+    {
+      "family": "first_event_value",
+      "mean_runtime_plus_amortized_setup_seconds": 18.521787912571963,
+      "penalty": 0.1,
+      "sessions": 1,
+      "setup_wall_seconds": 18.508338050996826,
+      "utility": -1.2889787912571964
+    },
+    {
+      "family": "first_event_value",
+      "mean_runtime_plus_amortized_setup_seconds": 18.521787912571963,
+      "penalty": 1.0,
+      "sessions": 1,
+      "setup_wall_seconds": 18.508338050996826,
+      "utility": -17.958587912571964
+    },
+    {
+      "family": "first_event_value",
+      "mean_runtime_plus_amortized_setup_seconds": 18.521787912571963,
+      "penalty": 10.0,
+      "sessions": 1,
+      "setup_wall_seconds": 18.508338050996826,
+      "utility": -184.65467912571964
+    },
+    {
+      "family": "first_event_value",
+      "mean_runtime_plus_amortized_setup_seconds": 0.19853324208510456,
+      "penalty": 0.0,
+      "sessions": 100,
+      "setup_wall_seconds": 18.508338050996826,
+      "utility": 0.5632
+    },
+    {
+      "family": "first_event_value",
+      "mean_runtime_plus_amortized_setup_seconds": 0.19853324208510456,
+      "penalty": 0.1,
+      "sessions": 100,
+      "setup_wall_seconds": 18.508338050996826,
+      "utility": 0.5433466757914895
+    },
+    {
+      "family": "first_event_value",
+      "mean_runtime_plus_amortized_setup_seconds": 0.19853324208510456,
+      "penalty": 1.0,
+      "sessions": 100,
+      "setup_wall_seconds": 18.508338050996826,
+      "utility": 0.36466675791489545
+    },
+    {
+      "family": "first_event_value",
+      "mean_runtime_plus_amortized_setup_seconds": 0.19853324208510456,
+      "penalty": 10.0,
+      "sessions": 100,
+      "setup_wall_seconds": 18.508338050996826,
+      "utility": -1.4221324208510455
+    },
+    {
+      "family": "first_event_value",
+      "mean_runtime_plus_amortized_setup_seconds": 0.015300695380235993,
+      "penalty": 0.0,
+      "sessions": 10000,
+      "setup_wall_seconds": 18.508338050996826,
+      "utility": 0.5632
+    },
+    {
+      "family": "first_event_value",
+      "mean_runtime_plus_amortized_setup_seconds": 0.015300695380235993,
+      "penalty": 0.1,
+      "sessions": 10000,
+      "setup_wall_seconds": 18.508338050996826,
+      "utility": 0.5616699304619764
+    },
+    {
+      "family": "first_event_value",
+      "mean_runtime_plus_amortized_setup_seconds": 0.015300695380235993,
+      "penalty": 1.0,
+      "sessions": 10000,
+      "setup_wall_seconds": 18.508338050996826,
+      "utility": 0.547899304619764
+    },
+    {
+      "family": "first_event_value",
+      "mean_runtime_plus_amortized_setup_seconds": 0.015300695380235993,
+      "penalty": 10.0,
+      "sessions": 10000,
+      "setup_wall_seconds": 18.508338050996826,
+      "utility": 0.4101930461976401
+    },
+    {
+      "family": "model_dp",
+      "mean_runtime_plus_amortized_setup_seconds": 14.49232712446239,
+      "penalty": 0.0,
+      "sessions": 1,
+      "setup_wall_seconds": 14.474381014002574,
+      "utility": 1.2300000000000002
+    },
+    {
+      "family": "model_dp",
+      "mean_runtime_plus_amortized_setup_seconds": 14.49232712446239,
+      "penalty": 0.1,
+      "sessions": 1,
+      "setup_wall_seconds": 14.474381014002574,
+      "utility": -0.219232712446239
+    },
+    {
+      "family": "model_dp",
+      "mean_runtime_plus_amortized_setup_seconds": 14.49232712446239,
+      "penalty": 1.0,
+      "sessions": 1,
+      "setup_wall_seconds": 14.474381014002574,
+      "utility": -13.26232712446239
+    },
+    {
+      "family": "model_dp",
+      "mean_runtime_plus_amortized_setup_seconds": 14.49232712446239,
+      "penalty": 10.0,
+      "sessions": 1,
+      "setup_wall_seconds": 14.474381014002574,
+      "utility": -143.6932712446239
+    },
+    {
+      "family": "model_dp",
+      "mean_runtime_plus_amortized_setup_seconds": 0.16268992059984155,
+      "penalty": 0.0,
+      "sessions": 100,
+      "setup_wall_seconds": 14.474381014002574,
+      "utility": 1.2300000000000002
+    },
+    {
+      "family": "model_dp",
+      "mean_runtime_plus_amortized_setup_seconds": 0.16268992059984155,
+      "penalty": 0.1,
+      "sessions": 100,
+      "setup_wall_seconds": 14.474381014002574,
+      "utility": 1.213731007940016
+    },
+    {
+      "family": "model_dp",
+      "mean_runtime_plus_amortized_setup_seconds": 0.16268992059984155,
+      "penalty": 1.0,
+      "sessions": 100,
+      "setup_wall_seconds": 14.474381014002574,
+      "utility": 1.0673100794001587
+    },
+    {
+      "family": "model_dp",
+      "mean_runtime_plus_amortized_setup_seconds": 0.16268992059984155,
+      "penalty": 10.0,
+      "sessions": 100,
+      "setup_wall_seconds": 14.474381014002574,
+      "utility": -0.3968992059984153
+    },
+    {
+      "family": "model_dp",
+      "mean_runtime_plus_amortized_setup_seconds": 0.019393548561216084,
+      "penalty": 0.0,
+      "sessions": 10000,
+      "setup_wall_seconds": 14.474381014002574,
+      "utility": 1.2300000000000002
+    },
+    {
+      "family": "model_dp",
+      "mean_runtime_plus_amortized_setup_seconds": 0.019393548561216084,
+      "penalty": 0.1,
+      "sessions": 10000,
+      "setup_wall_seconds": 14.474381014002574,
+      "utility": 1.2280606451438787
+    },
+    {
+      "family": "model_dp",
+      "mean_runtime_plus_amortized_setup_seconds": 0.019393548561216084,
+      "penalty": 1.0,
+      "sessions": 10000,
+      "setup_wall_seconds": 14.474381014002574,
+      "utility": 1.2106064514387842
+    },
+    {
+      "family": "model_dp",
+      "mean_runtime_plus_amortized_setup_seconds": 0.019393548561216084,
+      "penalty": 10.0,
+      "sessions": 10000,
+      "setup_wall_seconds": 14.474381014002574,
+      "utility": 1.0360645143878393
+    }
+  ],
+  "schema": "hcsn.control.v2.post-run-complete-cost-accounting",
+  "summaries": [
+    {
+      "correct_fraction_of_possible_jobs": 0.6425,
+      "counts": {
+        "FIRE": 322,
+        "READ": 376,
+        "SKIP": 546,
+        "STOP": 16,
+        "content_invocations": 376,
+        "metadata_file_reads": 200,
+        "packet_file_reads": 376,
+        "payload_bytes": 220336
+      },
+      "family": "full_value",
+      "mean_completed_jobs": 1.61,
+      "mean_content_wall_seconds": 0.01172440875956454,
+      "mean_controller_wall_seconds": 0.0005579774598663789,
+      "mean_feature_wall_seconds": 6.763622999642394e-05,
+      "mean_io_wall_seconds": 0.00012467551499867113,
+      "mean_metadata_wall_seconds": 3.7618874939653326e-05,
+      "mean_reads": 1.88,
+      "mean_utility": 0.79215,
+      "mean_wall_seconds": 0.013160365445110074,
+      "setup_wall_seconds": 19.654671037005755,
+      "total_cpu_seconds": 2.631596085000048,
+      "total_wall_seconds": 2.6320730890220148
+    },
+    {
+      "correct_fraction_of_possible_jobs": 0.4775,
+      "counts": {
+        "FIRE": 244,
+        "READ": 273,
+        "SKIP": 898,
+        "STOP": 14,
+        "content_invocations": 273,
+        "metadata_file_reads": 200,
+        "packet_file_reads": 273,
+        "payload_bytes": 159978
+      },
+      "family": "ordinary_boundary",
+      "mean_completed_jobs": 1.22,
+      "mean_content_wall_seconds": 0.00849474154500058,
+      "mean_controller_wall_seconds": 0.0005665145999410016,
+      "mean_feature_wall_seconds": 4.846010504479636e-05,
+      "mean_io_wall_seconds": 7.976767008585739e-05,
+      "mean_metadata_wall_seconds": 3.892266022376134e-05,
+      "mean_reads": 1.365,
+      "mean_utility": 0.58335,
+      "mean_wall_seconds": 0.00979727631995047,
+      "setup_wall_seconds": 18.76739014100167,
+      "total_cpu_seconds": 1.9568138929999783,
+      "total_wall_seconds": 1.959455263990094
+    },
+    {
+      "correct_fraction_of_possible_jobs": 0.5025,
+      "counts": {
+        "FIRE": 259,
+        "READ": 372,
+        "SKIP": 715,
+        "STOP": 26,
+        "content_invocations": 372,
+        "metadata_file_reads": 200,
+        "packet_file_reads": 372,
+        "payload_bytes": 217992
+      },
+      "family": "first_event_value",
+      "mean_completed_jobs": 1.295,
+      "mean_content_wall_seconds": 0.011939083055058291,
+      "mean_controller_wall_seconds": 0.0006169120647427917,
+      "mean_feature_wall_seconds": 6.726154495481751e-05,
+      "mean_io_wall_seconds": 0.00012546357516839634,
+      "mean_metadata_wall_seconds": 3.960442509196582e-05,
+      "mean_reads": 1.86,
+      "mean_utility": 0.5632,
+      "mean_wall_seconds": 0.01344986157513631,
+      "setup_wall_seconds": 18.508338050996826,
+      "total_cpu_seconds": 2.689909192999977,
+      "total_wall_seconds": 2.689972315027262
+    },
+    {
+      "correct_fraction_of_possible_jobs": 0.835,
+      "counts": {
+        "FIRE": 389,
+        "READ": 403,
+        "SKIP": 599,
+        "STOP": 0,
+        "content_invocations": 403,
+        "metadata_file_reads": 200,
+        "packet_file_reads": 403,
+        "payload_bytes": 236158
+      },
+      "family": "model_dp",
+      "mean_completed_jobs": 1.945,
+      "mean_content_wall_seconds": 0.012919573375220351,
+      "mean_controller_wall_seconds": 0.00401388878488433,
+      "mean_feature_wall_seconds": 8.774552474278607e-05,
+      "mean_io_wall_seconds": 0.00016321578490533284,
+      "mean_metadata_wall_seconds": 3.713122492627008e-05,
+      "mean_reads": 2.015,
+      "mean_utility": 1.2300000000000002,
+      "mean_wall_seconds": 0.017946110459815826,
+      "setup_wall_seconds": 14.474381014002574,
+      "total_cpu_seconds": 3.5890005910000014,
+      "total_wall_seconds": 3.5892220919631654
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 [codespell]
 # Ref: https://github.com/codespell-project/codespell#using-a-config-file
-skip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new
+skip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new,./tools/hcsn/third/encoder/features/cifar10_features.npz.part0018,./tools/hcsn/third/encoder/features/cifar10_features.npz.part0019
 check-hidden = true
 ignore-regex = ^\s*"image/\S+": ".*|\b(afterAll)\b
-ignore-words-list = ratatui,ser,iTerm,iterm2,iterm,te,TE,PASE,SEH,disjointness
+ignore-words-list = ratatui,ser,iTerm,iterm2,iterm,te,TE,PASE,SEH,disjointness,retuned

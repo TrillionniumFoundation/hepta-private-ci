@@ -1,0 +1,40 @@
+{
+  "complete_training_matrix": true,
+  "measured_completed_run_cpu_seconds": 1280.685340321,
+  "measured_completed_run_wall_seconds": 1205.1826660810111,
+  "additional_numpy_audit_cpu_seconds": 152.77051522600001,
+  "additional_numpy_audit_wall_seconds": 153.04040867799995,
+  "additional_exploratory_diagnosis_cpu_seconds": 10.271380016999998,
+  "additional_exploratory_diagnosis_wall_seconds": 10.541097801000433,
+  "additional_archive_and_restore_cpu_seconds": 0.794463747,
+  "additional_archive_and_restore_wall_seconds": 0.9097661990017514,
+  "additional_independent_numerical_diagnosis_cpu_seconds": 11.286696743,
+  "additional_independent_numerical_diagnosis_wall_seconds": 11.512587853001605,
+  "measured_cpu_lower_bound_seconds": 1455.808396054,
+  "measured_nonoverlapping_wall_lower_bound_seconds": 1482.587008107017,
+  "separate_pretraining_validation_wall_seconds": 92.84253203499975,
+  "pretraining_validation_cpu_seconds": null,
+  "completed_admission_wait_wall_seconds": 20.008813460004603,
+  "interrupted_admission_wait_wall_seconds": null,
+  "interrupted_admission_wait_observed_lower_bound_wall_seconds": 340.156438127,
+  "data_generation_freshness_and_startup_cpu_seconds": null,
+  "summary_rendering_coordination_and_minor_reporting_repair_cpu_seconds": null,
+  "development_editing_download_or_network_cost": null,
+  "nested_training_components": {
+    "compilation_seconds": 529.6361509319959,
+    "optimizer_seconds": 186.51109480598643,
+    "validation_seconds": 68.8611342439981
+  },
+  "peak_process_rss_bytes": 759721984,
+  "source_inputs": {
+    "results.json": "cae161908c11fdbce7616aba87ecf31d1657ae326abad0e4c1412777d02183f3",
+    "audit.json": "d0420f878fa1a5655c124097fa4fc4b60597a527eba3ac3da8e94f7c92a259c1",
+    "validation.json": "c3d3e6fce88e3013f92e95b4bc5a38400caa345fc3388ddb0755dba397477a96",
+    "freeze.json": "b9370f92ad4b1a0ba5ffb2c7eb68e05fdc965112a8994ba87830b1d70e7a4ad0",
+    "diagnosis.json": "458bbbf37cd20aea16773ddf3872548b77d603837613018a4e5e755bdfa3c0d8",
+    "archive_validation.json": "f841f891834c675817150bfea2d5c32b44859f3121c6c7227a0b7239cb7fb4f0",
+    "replay_diagnosis.json": "8ba532aa3c700f9b6301f9a22fdc8b29bd8691c5cb8a519306c916f3be61b464"
+  },
+  "convention": "Completed-run scopes include init/compile/train/evaluate/latency/persistence; nested training components are not added again. Initial validation, completed admissions, runs and final audit were sequential. After the audit, address diagnosis then archive verification were one sequential branch; independent numerical diagnosis may overlap them, so the wall lower bound adds only max(branches), while CPU adds both. Interrupted admission is excluded because it briefly overlapped continuation. Null means unmeasured, never zero.",
+  "full_campaign_cost_known": false
+}

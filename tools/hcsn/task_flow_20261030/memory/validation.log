@@ -1,0 +1,171 @@
+{
+  "freeze_sha256": "b9370f92ad4b1a0ba5ffb2c7eb68e05fdc965112a8994ba87830b1d70e7a4ad0",
+  "deterministic": {
+    "orthogonal_before": 0.9999000099990001,
+    "orthogonal_after": 0.9999000099990001,
+    "normalized_fixed_read_after": 0.023820867079561693,
+    "normalized_mass_read_after": 0.9900990099009901,
+    "zero_write_exact": true,
+    "overwrite_error": 0.00019997000399962772,
+    "maximum_column_norm": 8.000000000000002,
+    "interference": [
+      {
+        "correlation": 0.0,
+        "target_after": 0.9999000099990001,
+        "target_change": 0.0
+      },
+      {
+        "correlation": 0.25,
+        "target_after": 0.9294747610369224,
+        "target_change": -0.07042524896207769
+      },
+      {
+        "correlation": 0.5,
+        "target_after": 0.682969402452224,
+        "target_change": -0.31693060754677604
+      },
+      {
+        "correlation": 0.9,
+        "target_after": -0.31758634454607493,
+        "target_change": -1.317486354545075
+      },
+      {
+        "correlation": 1.0,
+        "target_after": -0.9998000299960004,
+        "target_change": -1.9997000399950005
+      }
+    ],
+    "capacity": [
+      {
+        "items": 4,
+        "key_mode": "orthogonal",
+        "rmse": 5.4391821486922555e-05,
+        "max_error": 9.916384204555762e-05
+      },
+      {
+        "items": 8,
+        "key_mode": "orthogonal",
+        "rmse": 5.726986495193949e-05,
+        "max_error": 9.896832287148438e-05
+      },
+      {
+        "items": 16,
+        "key_mode": "orthogonal",
+        "rmse": 5.766031688740116e-05,
+        "max_error": 9.872643479325038e-05
+      },
+      {
+        "items": 24,
+        "key_mode": "random_overcomplete",
+        "rmse": 0.44373001489966246,
+        "max_error": 1.1058430258755179
+      },
+      {
+        "items": 32,
+        "key_mode": "random_overcomplete",
+        "rmse": 0.5921464050109617,
+        "max_error": 1.7949926577392628
+      }
+    ],
+    "passed": true
+  },
+  "checks": [
+    {
+      "dtype": "float64",
+      "variant": "full_delta",
+      "directional_error": 3.1034463193746475e-11,
+      "numpy_logit_error": 2.7755575615628914e-17,
+      "passed": true
+    },
+    {
+      "dtype": "float64",
+      "variant": "sigmoid_delta",
+      "directional_error": 4.944863962741408e-12,
+      "numpy_logit_error": 8.326672684688674e-17,
+      "passed": true
+    },
+    {
+      "dtype": "float64",
+      "variant": "c1_delta",
+      "directional_error": 5.400520308729284e-12,
+      "numpy_logit_error": 1.249000902703301e-16,
+      "passed": true
+    },
+    {
+      "dtype": "float64",
+      "variant": "full_fixed",
+      "directional_error": 3.440052062653187e-12,
+      "numpy_logit_error": 1.249000902703301e-16,
+      "passed": true
+    },
+    {
+      "dtype": "float64",
+      "variant": "full_mass",
+      "directional_error": 4.541163558438707e-11,
+      "numpy_logit_error": 2.636779683484747e-16,
+      "passed": true
+    },
+    {
+      "dtype": "float32",
+      "variant": "full_delta",
+      "directional_error": 2.693238319771696e-06,
+      "numpy_logit_error": 5.960464477539063e-08,
+      "passed": true
+    },
+    {
+      "dtype": "float32",
+      "variant": "sigmoid_delta",
+      "directional_error": 5.297188077218323e-06,
+      "numpy_logit_error": 4.470348358154297e-08,
+      "passed": true
+    },
+    {
+      "dtype": "float32",
+      "variant": "c1_delta",
+      "directional_error": 8.679294675583565e-08,
+      "numpy_logit_error": 4.470348358154297e-08,
+      "passed": true
+    },
+    {
+      "dtype": "float32",
+      "variant": "full_fixed",
+      "directional_error": 4.300195081203412e-06,
+      "numpy_logit_error": 5.960464477539063e-08,
+      "passed": true
+    },
+    {
+      "dtype": "float32",
+      "variant": "full_mass",
+      "directional_error": 5.775593910101184e-06,
+      "numpy_logit_error": 7.450580596923828e-08,
+      "passed": true
+    },
+    {
+      "projection_scale": 0.1,
+      "directional_error": 2.4766629741294205e-11,
+      "passed": true
+    },
+    {
+      "projection_scale": 10.0,
+      "directional_error": 1.4210850854763003e-09,
+      "passed": true
+    }
+  ],
+  "boundary_q_and_call_slopes": {
+    "full": [
+      0.0,
+      -0.0
+    ],
+    "sigmoid": [
+      0.5,
+      -0.0
+    ],
+    "c1": [
+      0.0,
+      -0.0
+    ]
+  },
+  "passed": true,
+  "wall_seconds": 92.84253203499975,
+  "limits": "Local derivatives away from gate/projection seams; no global C1 or long-time gradient theorem"
+}

@@ -1,0 +1,233 @@
+{
+  "source": "memory/results.json",
+  "source_sha256": "cae161908c11fdbce7616aba87ecf31d1657ae326abad0e4c1412777d02183f3",
+  "matplotlib": "3.10.8",
+  "records": [
+    {
+      "task": "memory",
+      "split": "test512",
+      "variant": "full_fixed",
+      "seeds": [
+        61,
+        73,
+        89
+      ],
+      "accuracy_percent": [
+        100.0,
+        100.0,
+        100.0
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "test512",
+      "variant": "full_fixed",
+      "seeds": [
+        61,
+        73,
+        89
+      ],
+      "accuracy_percent": [
+        98.6328125,
+        100.0,
+        95.3125
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "capacity8_512",
+      "variant": "full_fixed",
+      "seeds": [
+        61,
+        73,
+        89
+      ],
+      "accuracy_percent": [
+        96.875,
+        100.0,
+        90.8203125
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "overwrite128",
+      "variant": "full_fixed",
+      "seeds": [
+        61,
+        73,
+        89
+      ],
+      "accuracy_percent": [
+        52.34375,
+        50.390625,
+        53.3203125
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "interference128",
+      "variant": "full_fixed",
+      "seeds": [
+        61,
+        73,
+        89
+      ],
+      "accuracy_percent": [
+        100.0,
+        100.0,
+        99.609375
+      ]
+    },
+    {
+      "task": "memory",
+      "split": "test512",
+      "variant": "full_mass",
+      "seeds": [
+        61,
+        73,
+        89
+      ],
+      "accuracy_percent": [
+        100.0,
+        25.78125,
+        100.0
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "test512",
+      "variant": "full_mass",
+      "seeds": [
+        61,
+        73,
+        89
+      ],
+      "accuracy_percent": [
+        98.4375,
+        99.8046875,
+        100.0
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "capacity8_512",
+      "variant": "full_mass",
+      "seeds": [
+        61,
+        73,
+        89
+      ],
+      "accuracy_percent": [
+        94.140625,
+        99.0234375,
+        99.8046875
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "overwrite128",
+      "variant": "full_mass",
+      "seeds": [
+        61,
+        73,
+        89
+      ],
+      "accuracy_percent": [
+        50.1953125,
+        50.390625,
+        50.1953125
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "interference128",
+      "variant": "full_mass",
+      "seeds": [
+        61,
+        73,
+        89
+      ],
+      "accuracy_percent": [
+        63.0859375,
+        70.8984375,
+        70.703125
+      ]
+    },
+    {
+      "task": "memory",
+      "split": "test512",
+      "variant": "full_delta",
+      "seeds": [
+        61,
+        73,
+        89
+      ],
+      "accuracy_percent": [
+        39.84375,
+        25.5859375,
+        73.2421875
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "test512",
+      "variant": "full_delta",
+      "seeds": [
+        61,
+        73,
+        89
+      ],
+      "accuracy_percent": [
+        76.7578125,
+        97.265625,
+        89.2578125
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "capacity8_512",
+      "variant": "full_delta",
+      "seeds": [
+        61,
+        73,
+        89
+      ],
+      "accuracy_percent": [
+        72.8515625,
+        93.75,
+        88.28125
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "overwrite128",
+      "variant": "full_delta",
+      "seeds": [
+        61,
+        73,
+        89
+      ],
+      "accuracy_percent": [
+        100.0,
+        100.0,
+        76.3671875
+      ]
+    },
+    {
+      "task": "retrieval",
+      "split": "interference128",
+      "variant": "full_delta",
+      "seeds": [
+        61,
+        73,
+        89
+      ],
+      "accuracy_percent": [
+        45.8984375,
+        64.2578125,
+        59.375
+      ]
+    }
+  ],
+  "interpretation": "Descriptive paired-seed comparison, not population inference or an equal-cost claim"
+}

@@ -1,0 +1,165 @@
+{
+  "batch32": {
+    "jax_aux_plain_logit_error": 0.0,
+    "jax_plain_saved_logit_error": 0.0,
+    "numpy32_numpy64batch_audit_error": 0.0,
+    "numpy_jax_aux_logit_error": 0.003215312957763672
+  },
+  "checkpoint_sha256": "1cf8fb741693da592d1ce7fa33a82e8ce559243f74d5dcebee6e563c3a06829f",
+  "execution": {
+    "affinity": [
+      6
+    ],
+    "blas_threads": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "cpu_seconds": 11.286696743,
+    "jax": "0.4.38",
+    "max_rss_kib": 317084,
+    "numpy": "2.3.5",
+    "wall_seconds": 11.512587853001605
+  },
+  "exploratory": true,
+  "high_precision": {
+    "jax32_vs_jax64_maximum_worst_example": 0.0013788525941800245,
+    "jax_numpy_logit_maximum_batch": 3.61755070343861e-12,
+    "jax_numpy_logit_maximum_worst_example": 9.796607969292381e-13,
+    "numpy32_vs_numpy64_maximum_worst_example": 0.0018364603629708043,
+    "numpy_batch_diagnostics": {
+      "maximum_condition": 1212.7514860464987,
+      "maximum_read": 1.8096360969907666,
+      "maximum_relative_residual": 4.254713995992346e-16,
+      "maximum_write_mass": 138.1801712363731
+    },
+    "scope": "Same saved binary32 weights and shared rounded financial table, recurrence arithmetic promoted to binary64; diagnostic only",
+    "state_differences": {
+      "cross": 2.636779683484747e-16,
+      "fast": 1.4432899320127035e-15,
+      "gram": 2.949029909160572e-17,
+      "inverse_mass": 0.0,
+      "query": 2.7755575615628914e-17,
+      "slow": 8.881784197001252e-16
+    }
+  },
+  "interpretation": "One exposed worst case only. Same-input higher-precision solves and promoted recurrence diagnose arithmetic sensitivity; they neither replace saved predictions nor relax the failed frozen logit gate.",
+  "numpy_batch_diagnostics": {
+    "maximum_condition": 1212.9268436469447,
+    "maximum_read": 1.8097212314605713,
+    "maximum_relative_residual": 4.2470632804206195e-16,
+    "maximum_write_mass": 138.18001755075005
+  },
+  "original_audit_passed": false,
+  "original_worst_check": {
+    "accuracy_exact": true,
+    "labels_exact": true,
+    "logit_error": 0.003215312957763672,
+    "maximum_metric_error": 2.748850459477481e-07,
+    "passed": false,
+    "run_id": "memory_full_mass_seed61",
+    "split": "test512"
+  },
+  "protected_sha256": {
+    "audit.json": "d0420f878fa1a5655c124097fa4fc4b60597a527eba3ac3da8e94f7c92a259c1",
+    "freeze.json": "b9370f92ad4b1a0ba5ffb2c7eb68e05fdc965112a8994ba87830b1d70e7a4ad0",
+    "results.json": "cae161908c11fdbce7616aba87ecf31d1657ae326abad0e4c1412777d02183f3"
+  },
+  "protected_unchanged": {
+    "audit.json": true,
+    "freeze.json": true,
+    "results.json": true
+  },
+  "run_id": "memory_full_mass_seed61",
+  "selection": {
+    "example": 318,
+    "numpy_audit_batch_size": 64,
+    "original_jax_batch_size": 32,
+    "original_jax_batch_start": 288,
+    "output": 2,
+    "reproduced_numpy_audit_error": 0.003215312957763672
+  },
+  "source_sha256": "a6e28a3a371458213c553b62425704ad5409fcc91eff144c01903c248762f4e8",
+  "split": "test512",
+  "worst_example": {
+    "exact_perturbation_identity_error": 3.6798363835244263e-14,
+    "jax_decimal80_same_input_fitted_error": 4.769518113789672e-13,
+    "jax_decimal80_same_input_read_error": 5.2379367097792013e-14,
+    "jax_logits": [
+      6.293612957000732,
+      -1.8746575117111206,
+      3.350492238998413,
+      -5.680800914764404
+    ],
+    "jax_numpy_same_input_fitted_error": 4.030109579389318e-13,
+    "jax_solve": {
+      "condition_2": 1170.9874323272975,
+      "eigenvalue_minimum": 7.304483149107086e-05,
+      "relative_backward_error": 3.378393320636686e-17,
+      "relative_rhs_residual": 3.96168397507947e-16
+    },
+    "label": 0,
+    "numpy_decimal80_same_input_fitted_error": 4.776179451937423e-13,
+    "numpy_logits": [
+      6.292605876922607,
+      -1.8739283084869385,
+      3.3537075519561768,
+      -5.683121681213379
+    ],
+    "numpy_own_input_solve": {
+      "condition_2": 1171.0586032914323,
+      "eigenvalue_minimum": 7.304039603548863e-05,
+      "relative_backward_error": 3.2376082558507877e-17,
+      "relative_rhs_residual": 3.7965882166972257e-16
+    },
+    "numpy_same_input_solve": {
+      "condition_2": 1170.9874323272975,
+      "eigenvalue_minimum": 7.304483149107086e-05,
+      "relative_backward_error": 2.8091660924566065e-17,
+      "relative_rhs_residual": 3.29417780453242e-16
+    },
+    "read_difference_from_changed_states": 0.0010042554246365576,
+    "relative_matrix_difference": 3.1822300494938295e-07,
+    "relative_rhs_difference": 5.891153155236934e-07,
+    "ridge_jax": 7.305321196326986e-05,
+    "ridge_numpy": 7.305320468731225e-05,
+    "saved_logits": [
+      6.293612957000732,
+      -1.8746575117111206,
+      3.350492238998413,
+      -5.680800914764404
+    ],
+    "state_differences": {
+      "cross": {
+        "jax_dtype": "float32",
+        "maximum_absolute": 1.341104507446289e-07,
+        "numpy_dtype": "float32"
+      },
+      "fast": {
+        "jax_dtype": "float32",
+        "maximum_absolute": 1.6093254089355469e-06,
+        "numpy_dtype": "float32"
+      },
+      "gram": {
+        "jax_dtype": "float32",
+        "maximum_absolute": 1.4901161193847656e-08,
+        "numpy_dtype": "float32"
+      },
+      "inverse_mass": {
+        "jax_dtype": "float32",
+        "maximum_absolute": 9.313225746154785e-10,
+        "numpy_dtype": "float32"
+      },
+      "query": {
+        "jax_dtype": "float32",
+        "maximum_absolute": 1.4901161193847656e-08,
+        "numpy_dtype": "float32"
+      },
+      "slow": {
+        "jax_dtype": "float32",
+        "maximum_absolute": 5.960464477539062e-07,
+        "numpy_dtype": "float32"
+      }
+    }
+  }
+}

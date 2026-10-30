@@ -1,0 +1,88 @@
+{
+  "answers": [],
+  "budget": 3,
+  "charged_cost": 0.02,
+  "checkpoint_sha256": "4962cd6126dc5e393cf7dbe72bea5519125bfb7971a7e3665a36af908aff5fcb",
+  "confusion": [
+    [
+      0.9923076923076923,
+      0.007692307692307693
+    ],
+    [
+      0.007692307692307693,
+      0.9923076923076923
+    ]
+  ],
+  "counts": {
+    "FIRE": 0,
+    "READ": 1,
+    "SKIP": 1,
+    "STOP": 0,
+    "content_invocations": 1,
+    "metadata_file_reads": 1,
+    "packet_file_reads": 1,
+    "payload_bytes": 586
+  },
+  "events": [
+    {
+      "action": "READ",
+      "budget_after": 3,
+      "budget_before": 4,
+      "content_wall_seconds": 0.005606705000900547,
+      "feature_wall_seconds": 3.7566998798865825e-05,
+      "io_wall_seconds": 3.16380010190187e-05,
+      "job": 0,
+      "logits": [
+        7.440842628479004,
+        -2.6043195724487305,
+        -2.1061692237854004,
+        -1.816952109336853
+      ],
+      "next_job": 0,
+      "next_tick": 1,
+      "numerical": {
+        "maximum_condition": 28.237890381709875,
+        "maximum_read": 1.0753395557403564,
+        "maximum_relative_residual": 1.4393648662930907e-16,
+        "maximum_write_mass": 7.388973968989397
+      },
+      "observation": 0,
+      "packet": "symbol0.json",
+      "payload_bytes": 586,
+      "payload_sha256": "0519a2d5e08fbc009e0d1f04b233e6450519c6b725c81586c764bdfd63a9bd65",
+      "posterior_after": 0.10615384615384613,
+      "posterior_before": 0.5,
+      "terminal": false,
+      "tick": 0,
+      "total_cpu_seconds": 0.005683020000000205,
+      "total_wall_seconds": 0.00568987000042398
+    },
+    {
+      "action": "SKIP",
+      "budget_after": 3,
+      "budget_before": 3,
+      "job": 0,
+      "next_job": 0,
+      "next_tick": 2,
+      "posterior_after": 0.10615384615384613,
+      "posterior_before": 0.10615384615384613,
+      "terminal": false,
+      "tick": 1
+    }
+  ],
+  "job": 0,
+  "multiplier": 1.0,
+  "posterior": 0.10615384615384613,
+  "public_sha256": "74196d435a830a8479fba0fe7af59729c994e6eb254462fa1ddef8a2ba97e63b",
+  "reads_in_job": 1,
+  "schema": "hcsn.local-owner.snapshot.v1",
+  "session": "causality_only",
+  "terminal": false,
+  "tick": 2,
+  "times": {
+    "content_total_cpu_seconds": 0.005683020000000205,
+    "content_wall_seconds": 0.005606705000900547,
+    "feature_wall_seconds": 3.7566998798865825e-05,
+    "io_wall_seconds": 3.16380010190187e-05
+  }
+}

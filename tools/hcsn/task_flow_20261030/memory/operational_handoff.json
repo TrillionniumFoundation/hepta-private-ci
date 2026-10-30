@@ -1,0 +1,9 @@
+{
+  "original_session_exit": 130,
+  "original_log": "training.log",
+  "completed_before": 1,
+  "source_freeze_unchanged": true,
+  "scientific_run_interrupted": false,
+  "other_jobs_stopped": false,
+  "note": "Own original runner remained in between-run admission wait. Tool session control stopped it; wrapper resumes the frozen matrix without repeating the completed first run. A short overlap of an admission-waiting process and the wrapper occurred; there were no two concurrent training workers."
+}

@@ -1,0 +1,110 @@
+{
+  "candidates": [
+    {
+      "checkpoint": "fits/seed73/learned_value_ridge1e-05.npz",
+      "checkpoint_sha256": "19e87bb2c440becece2fad1a81d9047724535f94d5cd21cceba6c1afb6c6ca58",
+      "policy": "learned_value",
+      "ridge": 1e-05,
+      "validation_action_disagreement": 0.5567129629629629,
+      "validation_mse": 0.5425124157045146
+    },
+    {
+      "checkpoint": "fits/seed73/learned_value_ridge0.001.npz",
+      "checkpoint_sha256": "561a01f40dfabea63858d6a9f04c2f3506baa0285a5b8885a11006f3a8257a58",
+      "policy": "learned_value",
+      "ridge": 0.001,
+      "validation_action_disagreement": 0.5567129629629629,
+      "validation_mse": 0.542513466856058
+    },
+    {
+      "checkpoint": "fits/seed73/learned_value_ridge0.1.npz",
+      "checkpoint_sha256": "e585779c6f0189fc1a053dff753363015350156df48d06eac74425abc971f7e6",
+      "policy": "learned_value",
+      "ridge": 0.1,
+      "validation_action_disagreement": 0.5578703703703703,
+      "validation_mse": 0.5426235192656206
+    },
+    {
+      "checkpoint": "fits/seed73/ordinary_boundary_ridge1e-05.npz",
+      "checkpoint_sha256": "f7a854f43b2732f9d2765bd45280f866245a2238b0278cd742c501d51a76a83b",
+      "policy": "ordinary_boundary",
+      "ridge": 1e-05,
+      "validation_action_disagreement": 0.15393518518518517,
+      "validation_mse": 0.0739587734050491
+    },
+    {
+      "checkpoint": "fits/seed73/ordinary_boundary_ridge0.001.npz",
+      "checkpoint_sha256": "c9072cad091e7f76f7d440684af8d2abe4f6b92e9fbbaf941651384c54195014",
+      "policy": "ordinary_boundary",
+      "ridge": 0.001,
+      "validation_action_disagreement": 0.15393518518518517,
+      "validation_mse": 0.07395848001840488
+    },
+    {
+      "checkpoint": "fits/seed73/ordinary_boundary_ridge0.1.npz",
+      "checkpoint_sha256": "352c38990a54f4771bc011e3fd00a278d2cf804dbce51cdcb455f5aef31e13c7",
+      "policy": "ordinary_boundary",
+      "ridge": 0.1,
+      "validation_action_disagreement": 0.1550925925925926,
+      "validation_mse": 0.0739305089093651
+    },
+    {
+      "checkpoint": "fits/seed73/first_event_value_ridge1e-05.npz",
+      "checkpoint_sha256": "e43d37fbe1e7b36417f5bada057283920eaaf55c763b804d34488607fede5614",
+      "policy": "first_event_value",
+      "ridge": 1e-05,
+      "validation_action_disagreement": 0.5682870370370371,
+      "validation_mse": 0.5548757779970526
+    },
+    {
+      "checkpoint": "fits/seed73/first_event_value_ridge0.001.npz",
+      "checkpoint_sha256": "10fde9e1170fc72a2eec65e1c2d286fbd85753bd2b314f9c63f6f17d5bd7eef4",
+      "policy": "first_event_value",
+      "ridge": 0.001,
+      "validation_action_disagreement": 0.5682870370370371,
+      "validation_mse": 0.5548774397726496
+    },
+    {
+      "checkpoint": "fits/seed73/first_event_value_ridge0.1.npz",
+      "checkpoint_sha256": "6f239baedc1c24ac23c68de5ba26903a7095c4a500dd9761478a1981bffc8373",
+      "policy": "first_event_value",
+      "ridge": 0.1,
+      "validation_action_disagreement": 0.5648148148148148,
+      "validation_mse": 0.5550465477628185
+    }
+  ],
+  "feature_count": 40,
+  "fit_by_policy": {
+    "first_event_value": {
+      "cpu_seconds": 0.0024902179999983787,
+      "wall_seconds": 0.0024895440001273528
+    },
+    "learned_value": {
+      "cpu_seconds": 0.0027709250000000907,
+      "wall_seconds": 0.002771168001345359
+    },
+    "ordinary_boundary": {
+      "cpu_seconds": 0.0024731019999997272,
+      "wall_seconds": 0.0024720580004213843
+    }
+  },
+  "fit_cpu_seconds": 0.008461305000000863,
+  "fit_wall_seconds": 0.008463259000563994,
+  "frozen_content": true,
+  "learned_content_parameters": 0,
+  "oracle_label_cpu_seconds": 2.2698484689999994,
+  "oracle_label_wall_seconds": 2.2724858530000347,
+  "parameter_count_per_readout": 160,
+  "seed": 73,
+  "selected": {
+    "first_event_value": 1e-05,
+    "learned_value": 1e-05,
+    "ordinary_boundary": 1e-05
+  },
+  "shared_preprocessing_scalars": 80,
+  "targets_use_realized_future": false,
+  "train_states": 2160,
+  "train_states_sha256": "fcf30ed67795de445f439db6ecc21f2b269d7cb625d96fbdafaf81fd2db7a118",
+  "validation_states": 864,
+  "validation_states_sha256": "a881bc0945070e893d35f1f09a88af6094428830184dbe1636000556ddcbf741"
+}

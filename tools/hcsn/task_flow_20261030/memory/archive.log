@@ -1,0 +1,48 @@
+{
+  "manifest": {
+    "schema": "hcsn.memory.raw_evidence.v1",
+    "created_utc": "2026-10-30T12:46:58.914898+00:00",
+    "archive": "raw_evidence.zip",
+    "archive_sha256": "4d1359cf9b0983c40aedaa776d641bf0967f655398730c75898a47d31ed0bae4",
+    "archive_bytes": 11703056,
+    "results_sha256": "cae161908c11fdbce7616aba87ecf31d1657ae326abad0e4c1412777d02183f3",
+    "source_freeze_sha256": "b9370f92ad4b1a0ba5ffb2c7eb68e05fdc965112a8994ba87830b1d70e7a4ad0",
+    "total_uncompressed_bytes": 13371310,
+    "file_count": 585,
+    "counts": {
+      "candidate_checkpoints": 360,
+      "selected_checkpoints": 30,
+      "prediction_archives": 135,
+      "update_logs": 30,
+      "run_receipts": 30
+    },
+    "scope": "Lossless runs/ checkpoints, predictions, labels, update logs and run receipts. Original files are retained. Data generators and seeds remain separate frozen source."
+  },
+  "validation": {
+    "passed": true,
+    "original_files_retained_unchanged": true,
+    "new_empty_directory_restore": true,
+    "restore": {
+      "passed": true,
+      "files_verified": 585,
+      "files_restored": 585,
+      "total_uncompressed_bytes": 13371310,
+      "archive_sha256": "4d1359cf9b0983c40aedaa776d641bf0967f655398730c75898a47d31ed0bae4",
+      "manifest_sha256": "ee8efc74ea3b10fee29e97eb1a1f6ce4e907058e8240e261f4efe61ecc0f3573",
+      "verify_only": false
+    },
+    "counts": {
+      "candidate_checkpoints": 360,
+      "selected_checkpoints": 30,
+      "prediction_archives": 135,
+      "update_logs": 30,
+      "run_receipts": 30
+    },
+    "archive_source_sha256": "9a28157514be8ff2beaaab2ce1d4c0358c0e2d38a2cca270142794edb5e8795f",
+    "restore_source_sha256": "15f63c51d8711e883f609a7140aac3ce042c6b245b7075a747db1240b14abd0d",
+    "own_cpu_seconds": 0.539096536,
+    "subprocess_cpu_seconds": 0.255366,
+    "measured_cpu_seconds": 0.794463747,
+    "wall_seconds": 0.9097661990017514
+  }
+}

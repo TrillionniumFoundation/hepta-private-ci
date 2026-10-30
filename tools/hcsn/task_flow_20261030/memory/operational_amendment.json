@@ -1,0 +1,25 @@
+{
+  "created_utc": "2026-10-30T12:20:24.823668+00:00",
+  "reason": "Original conservative admission stalls on shared Rust build active-file/slab caches; first run own peak about504MB",
+  "original_freeze_sha256": "b9370f92ad4b1a0ba5ffb2c7eb68e05fdc965112a8994ba87830b1d70e7a4ad0",
+  "result_before_sha256": "1b3a90991e49accebdf18b5cf881c321264d7a17c2cd703edd48fa6567e8283c",
+  "completed_before": 1,
+  "operational_source_sha256": "6b9fea82c145e2eccbcc954179f109dc9358992329f55cc8d9ab46f89c0a5f66",
+  "observation": {
+    "current_bytes": 8589824000,
+    "maximum_bytes": 8589934592,
+    "anon_bytes": 5344096256,
+    "clean_inactive_bytes": 367820800,
+    "clean_active_bytes": 1764450304,
+    "reclaimable_slab_bytes": 1072642656,
+    "estimated_working_bytes": 6803456720,
+    "reserved_headroom_bytes": 1500000000,
+    "admissible": true
+  },
+  "rule": "Discount all clean inactive file, only half clean active file and half reclaimable slab; floor at anon+unreclaimable kernel+dirty+shmem+unevictable; reserve1.5GB",
+  "scientific_changes": false,
+  "data_changes": false,
+  "optimizer_or_quality_gate_changes": false,
+  "completed_run_repetition": false,
+  "concurrency": 1
+}

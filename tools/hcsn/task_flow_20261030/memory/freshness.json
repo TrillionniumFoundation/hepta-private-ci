@@ -1,0 +1,223 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "task": "memory",
+      "seed": 61,
+      "split": "validation32",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "memory",
+      "seed": 61,
+      "split": "test128",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "memory",
+      "seed": 61,
+      "split": "test512",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "memory",
+      "seed": 73,
+      "split": "validation32",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "memory",
+      "seed": 73,
+      "split": "test128",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "memory",
+      "seed": 73,
+      "split": "test512",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "memory",
+      "seed": 89,
+      "split": "validation32",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "memory",
+      "seed": 89,
+      "split": "test128",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "memory",
+      "seed": 89,
+      "split": "test512",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "retrieval",
+      "seed": 61,
+      "split": "validation32",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "retrieval",
+      "seed": 61,
+      "split": "test128",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "retrieval",
+      "seed": 61,
+      "split": "test512",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "retrieval",
+      "seed": 61,
+      "split": "capacity8_512",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "retrieval",
+      "seed": 61,
+      "split": "overwrite128",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "retrieval",
+      "seed": 61,
+      "split": "interference128",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "retrieval",
+      "seed": 73,
+      "split": "validation32",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "retrieval",
+      "seed": 73,
+      "split": "test128",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "retrieval",
+      "seed": 73,
+      "split": "test512",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "retrieval",
+      "seed": 73,
+      "split": "capacity8_512",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "retrieval",
+      "seed": 73,
+      "split": "overwrite128",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "retrieval",
+      "seed": 73,
+      "split": "interference128",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "retrieval",
+      "seed": 89,
+      "split": "validation32",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "retrieval",
+      "seed": 89,
+      "split": "test128",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "retrieval",
+      "seed": 89,
+      "split": "test512",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "retrieval",
+      "seed": 89,
+      "split": "capacity8_512",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "retrieval",
+      "seed": 89,
+      "split": "overwrite128",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    },
+    {
+      "task": "retrieval",
+      "seed": 89,
+      "split": "interference128",
+      "exact_input_overlap": 0,
+      "unique": 512,
+      "expected": 512
+    }
+  ],
+  "old_confirmation_constructed": false,
+  "scope": "Old benchmarks/v3/v4/third development plus current evaluations and train32; short finite-vocabulary training may repeat"
+}

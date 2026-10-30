@@ -1,0 +1,31 @@
+{
+  "integrity_passed": true,
+  "causal": {
+    "passed": true,
+    "skip_without_packets": true,
+    "stop_terminal_rejected": true,
+    "no_unread_payload_dependency": true,
+    "read_payload_logit_change": 11.078654289245605,
+    "decoder_observation_changed": true,
+    "recovered_final_state_and_answers_match": true,
+    "post_reset_second_job_executed": true,
+    "frozen_content_adapter": true
+  },
+  "mathematics": {
+    "passed": true,
+    "one_read_value": 0.4300000000000001,
+    "independently_enumerated_value": 0.4300000000000002,
+    "full_fire_value": 1.583024,
+    "first_event_fire_value": 0.8,
+    "post_reset_continuation": 0.7830239999999999,
+    "posterior_martingale_error": 0.0
+  },
+  "policy_sessions_verified": 4200,
+  "actual_test_content_invocations_verified": 6464,
+  "data_files_verified": 11793,
+  "results_sha256": "bf839d54ac3a5dc035b105c0df2dcd050f099457d6b64111e4e2b755d33b0b0c",
+  "scientific_freeze_sha256": "c78716ad970defd2294cb9795be109d82ba954af64f39b2d1ff97a171516275c",
+  "primary_scientific_gate_passed": false,
+  "audit_wall_seconds": 6.05478661899906,
+  "scope": "Local Python owner and frozen inherited decoder; no native Hepta Rust deployment claim"
+}

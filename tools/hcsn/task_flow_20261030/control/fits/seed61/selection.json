@@ -1,0 +1,110 @@
+{
+  "candidates": [
+    {
+      "checkpoint": "fits/seed61/learned_value_ridge1e-05.npz",
+      "checkpoint_sha256": "15158b7e85bab1f7b29fcac0269441edcb0d2372c3cc264c70580e6777450967",
+      "policy": "learned_value",
+      "ridge": 1e-05,
+      "validation_action_disagreement": 0.5659722222222222,
+      "validation_mse": 0.5148243078651439
+    },
+    {
+      "checkpoint": "fits/seed61/learned_value_ridge0.001.npz",
+      "checkpoint_sha256": "7b7c2456f1cc848bd0c86dd588332f22d9da72f5e670b5abe6f86bb5c11c634b",
+      "policy": "learned_value",
+      "ridge": 0.001,
+      "validation_action_disagreement": 0.5659722222222222,
+      "validation_mse": 0.514822404592316
+    },
+    {
+      "checkpoint": "fits/seed61/learned_value_ridge0.1.npz",
+      "checkpoint_sha256": "05a0d1c167a1093c7b4258bcc629b7e25a190adb9872a1843720e8319db3126c",
+      "policy": "learned_value",
+      "ridge": 0.1,
+      "validation_action_disagreement": 0.5659722222222222,
+      "validation_mse": 0.5146484383823241
+    },
+    {
+      "checkpoint": "fits/seed61/ordinary_boundary_ridge1e-05.npz",
+      "checkpoint_sha256": "b58cc1291a1617520593b5bdc334d68cb012e5bc2beeec80797a9cfab8a253b5",
+      "policy": "ordinary_boundary",
+      "ridge": 1e-05,
+      "validation_action_disagreement": 0.16666666666666666,
+      "validation_mse": 0.07337585242643604
+    },
+    {
+      "checkpoint": "fits/seed61/ordinary_boundary_ridge0.001.npz",
+      "checkpoint_sha256": "601612fcf7ac49830fa179df4409f1ffa0b63f965aa74d86b3fcc8c269b209ab",
+      "policy": "ordinary_boundary",
+      "ridge": 0.001,
+      "validation_action_disagreement": 0.16666666666666666,
+      "validation_mse": 0.07337595985659359
+    },
+    {
+      "checkpoint": "fits/seed61/ordinary_boundary_ridge0.1.npz",
+      "checkpoint_sha256": "3acd67cd212bfd390418fd87321b2534d00c4b9a4b03e8fe586389d2e736fa82",
+      "policy": "ordinary_boundary",
+      "ridge": 0.1,
+      "validation_action_disagreement": 0.16666666666666666,
+      "validation_mse": 0.07338625138625855
+    },
+    {
+      "checkpoint": "fits/seed61/first_event_value_ridge1e-05.npz",
+      "checkpoint_sha256": "04fc020d7c44f71d3e987c5c25f2a684d9e661e8c129653c67b0e542adea7f52",
+      "policy": "first_event_value",
+      "ridge": 1e-05,
+      "validation_action_disagreement": 0.5613425925925926,
+      "validation_mse": 0.5234963033427086
+    },
+    {
+      "checkpoint": "fits/seed61/first_event_value_ridge0.001.npz",
+      "checkpoint_sha256": "9185c5a94d98d49fa383d348a1b7418508aa9d7867e36cea92766716f80b2dfb",
+      "policy": "first_event_value",
+      "ridge": 0.001,
+      "validation_action_disagreement": 0.5613425925925926,
+      "validation_mse": 0.5234948612937468
+    },
+    {
+      "checkpoint": "fits/seed61/first_event_value_ridge0.1.npz",
+      "checkpoint_sha256": "f1637ca8c7479db89cb5049e319dbd7d51c73182737387ac2cb478381fd96e1e",
+      "policy": "first_event_value",
+      "ridge": 0.1,
+      "validation_action_disagreement": 0.5625,
+      "validation_mse": 0.5233625952425343
+    }
+  ],
+  "feature_count": 40,
+  "fit_by_policy": {
+    "first_event_value": {
+      "cpu_seconds": 0.003060014000000777,
+      "wall_seconds": 0.0030584199994336814
+    },
+    "learned_value": {
+      "cpu_seconds": 0.0038921599999994783,
+      "wall_seconds": 0.003891323000061675
+    },
+    "ordinary_boundary": {
+      "cpu_seconds": 0.0035725050000010583,
+      "wall_seconds": 0.0035701399992831284
+    }
+  },
+  "fit_cpu_seconds": 0.011557953999998816,
+  "fit_wall_seconds": 0.011560577999262023,
+  "frozen_content": true,
+  "learned_content_parameters": 0,
+  "oracle_label_cpu_seconds": 2.1771273840000003,
+  "oracle_label_wall_seconds": 3.6577633020006033,
+  "parameter_count_per_readout": 160,
+  "seed": 61,
+  "selected": {
+    "first_event_value": 0.1,
+    "learned_value": 0.1,
+    "ordinary_boundary": 1e-05
+  },
+  "shared_preprocessing_scalars": 80,
+  "targets_use_realized_future": false,
+  "train_states": 2160,
+  "train_states_sha256": "58275bfb13434d77ac117e6b9b887ca7c2ee162e95173bef008f5ab771a37193",
+  "validation_states": 864,
+  "validation_states_sha256": "a621d36b10aa21b8c407cc5bd6549aa48f9c93c840499a7105c94b959e98bbc3"
+}
