@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.round6.base-preservation.v1",
+  "observed_utc": "2026-10-30 13:22:09 UTC",
+  "base_commit": "d6a828eac92cc8df03f3ccce0a6d2fc04c7ce9f6",
+  "base_tree": "ef0c61469912aae83e5e81cf90ec7d527c73f4b0",
+  "checked_head": "b252b04662c2609456dbe6d728295c17fa5239f2",
+  "checked_tree": "ff8b46c38451db54b9582b246b606e926f339d50",
+  "checks": [
+    {
+      "level": "repository",
+      "preserved_entries": 52,
+      "changed_subtree": "experiments"
+    },
+    {
+      "level": "experiments",
+      "preserved_entries": 1,
+      "changed_subtree": "analytic_event_neuron"
+    },
+    {
+      "level": "experiments/analytic_event_neuron",
+      "preserved_entries": 37,
+      "changed_subtree": "round6"
+    }
+  ],
+  "all_existing_paths_outside_new_round6_subtree_preserved": true,
+  "git_merkle_subtree_equality": true
+}
