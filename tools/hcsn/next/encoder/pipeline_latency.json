@@ -1,0 +1,403 @@
+{
+  "protocol": {
+    "seed": 0,
+    "inputs_per_model": 50,
+    "batch_size": 1,
+    "warmup_inputs": 3,
+    "model_selection": "Fixed seed0, never best test score",
+    "included": "tokenization or PNG decode/resize, encoder, pooling, frozen PCA, CPU tensor conversion and Head logits",
+    "excluded": "source file I/O, model/session loading, JIT compilation, classification metrics",
+    "scope": "Shared CPU reference latency, not equal-quality or energy comparison"
+  },
+  "datasets": {
+    "ag_news": {
+      "model_session_load_seconds": 0.1643076469990774,
+      "batch1_vs_cached_batch16_feature_max_abs_error": 0.0,
+      "measurement": [
+        {
+          "kind": "hcsn",
+          "parameter_count": 6114,
+          "head_compile_seconds": 0.3107782170009159,
+          "end_to_end": {
+            "median_ms": 18.143347500881646,
+            "p95_ms": 21.841167398633843,
+            "p99_ms": 23.35951576984371,
+            "mean_ms": 18.79062317981152
+          },
+          "components": {
+            "preprocessing_seconds": {
+              "median_ms": 0.2585595011623809,
+              "p95_ms": 0.3663627487185294,
+              "p99_ms": 0.4009626490369555,
+              "mean_ms": 0.27272456012724433
+            },
+            "encoder_seconds": {
+              "median_ms": 16.756365999754053,
+              "p95_ms": 20.439275602984708,
+              "p99_ms": 21.98862475921487,
+              "mean_ms": 17.245643120331806
+            },
+            "pooling_projection_seconds": {
+              "median_ms": 0.21748299877799582,
+              "p95_ms": 0.2881379017708241,
+              "p99_ms": 0.39297877039643914,
+              "mean_ms": 0.22773510005208664
+            },
+            "head_seconds": {
+              "median_ms": 0.7428344997606473,
+              "p95_ms": 3.364086300643975,
+              "p99_ms": 3.5530557607489754,
+              "mean_ms": 1.0048920802364592
+            }
+          }
+        },
+        {
+          "kind": "sigmoid",
+          "parameter_count": 6114,
+          "head_compile_seconds": 0.2743913580015942,
+          "end_to_end": {
+            "median_ms": 18.686469500607927,
+            "p95_ms": 23.825414049861138,
+            "p99_ms": 31.09914267031852,
+            "mean_ms": 19.568723759948625
+          },
+          "components": {
+            "preprocessing_seconds": {
+              "median_ms": 0.307707499814569,
+              "p95_ms": 0.5002704518119572,
+              "p99_ms": 0.6657861108033098,
+              "mean_ms": 0.3384438800276257
+            },
+            "encoder_seconds": {
+              "median_ms": 17.225207498995587,
+              "p95_ms": 21.966081699974893,
+              "p99_ms": 23.283871260355223,
+              "mean_ms": 17.554407819843618
+            },
+            "pooling_projection_seconds": {
+              "median_ms": 0.24413299979642034,
+              "p95_ms": 0.3606689007938257,
+              "p99_ms": 0.5000947904773057,
+              "mean_ms": 0.2677593598491512
+            },
+            "head_seconds": {
+              "median_ms": 0.8822570016491227,
+              "p95_ms": 2.9960629508423087,
+              "p99_ms": 10.578849700359545,
+              "mean_ms": 1.364456640512799
+            }
+          }
+        },
+        {
+          "kind": "gru",
+          "parameter_count": 5900,
+          "head_compile_seconds": 0.08012277899979381,
+          "end_to_end": {
+            "median_ms": 18.14204500078631,
+            "p95_ms": 20.482716699189037,
+            "p99_ms": 21.670223769142467,
+            "mean_ms": 18.34738946003199
+          },
+          "components": {
+            "preprocessing_seconds": {
+              "median_ms": 0.2854095000657253,
+              "p95_ms": 0.401149499703024,
+              "p99_ms": 0.45388866888970364,
+              "mean_ms": 0.29704553962801583
+            },
+            "encoder_seconds": {
+              "median_ms": 16.771488499216503,
+              "p95_ms": 18.393965950053826,
+              "p99_ms": 19.743973439835823,
+              "mean_ms": 16.9234844201128
+            },
+            "pooling_projection_seconds": {
+              "median_ms": 0.2515740015951451,
+              "p95_ms": 0.37513764982577413,
+              "p99_ms": 0.38337601097737206,
+              "mean_ms": 0.26006816056906246
+            },
+            "head_seconds": {
+              "median_ms": 0.6586390009033494,
+              "p95_ms": 1.4225625001927238,
+              "p99_ms": 4.036351631330035,
+              "mean_ms": 0.8279260398558108
+            }
+          }
+        },
+        {
+          "kind": "transformer",
+          "parameter_count": 6007,
+          "head_compile_seconds": 0.1367932409993955,
+          "end_to_end": {
+            "median_ms": 19.388438000532915,
+            "p95_ms": 20.662531649031735,
+            "p99_ms": 21.576553701233934,
+            "mean_ms": 19.371598799916683
+          },
+          "components": {
+            "preprocessing_seconds": {
+              "median_ms": 0.3329799983475823,
+              "p95_ms": 0.3826076981567894,
+              "p99_ms": 0.4065759282457292,
+              "mean_ms": 0.32225723982264753
+            },
+            "encoder_seconds": {
+              "median_ms": 17.949017999853822,
+              "p95_ms": 19.319688751420472,
+              "p99_ms": 20.197607909867656,
+              "mean_ms": 18.002471399886417
+            },
+            "pooling_projection_seconds": {
+              "median_ms": 0.2711080014705658,
+              "p95_ms": 0.3193450997059699,
+              "p99_ms": 0.3238218091064482,
+              "mean_ms": 0.2628451203054283
+            },
+            "head_seconds": {
+              "median_ms": 0.7405755004583625,
+              "p95_ms": 0.8661305499117586,
+              "p99_ms": 0.9689810102645422,
+              "mean_ms": 0.7389181397593347
+            }
+          }
+        },
+        {
+          "kind": "global_mean_logistic_reference",
+          "parameter_count": 260,
+          "head_compile_seconds": 0.0,
+          "end_to_end": {
+            "median_ms": 18.016713502220227,
+            "p95_ms": 20.342822751263157,
+            "p99_ms": 20.578182111130445,
+            "mean_ms": 18.250978919968475
+          },
+          "components": {
+            "preprocessing_seconds": {
+              "median_ms": 0.28382649907143787,
+              "p95_ms": 0.4178771012448123,
+              "p99_ms": 0.4452074607252143,
+              "mean_ms": 0.2999359399836976
+            },
+            "encoder_seconds": {
+              "median_ms": 17.06501899752766,
+              "p95_ms": 19.262683198940067,
+              "p99_ms": 19.531817880197195,
+              "mean_ms": 17.290731639805017
+            },
+            "pooling_projection_seconds": {
+              "median_ms": 0.2251390014862409,
+              "p95_ms": 0.2996544992129202,
+              "p99_ms": 0.3209893313760403,
+              "mean_ms": 0.23619952000444755
+            },
+            "head_seconds": {
+              "median_ms": 0.3567555013432866,
+              "p95_ms": 0.5103173998577404,
+              "p99_ms": 0.5516805985098472,
+              "mean_ms": 0.3858197398221819
+            }
+          }
+        }
+      ],
+      "features_sha256": "df019257f7e8cbacac5f4a695f5ecbeafa735f37b811679c6b1a0049733ddbbe"
+    },
+    "cifar10": {
+      "model_session_load_seconds": 0.03281779899771209,
+      "batch1_vs_cached_batch16_feature_max_abs_error": 0.0,
+      "measurement": [
+        {
+          "kind": "hcsn",
+          "parameter_count": 6010,
+          "head_compile_seconds": 0.18263145699893357,
+          "end_to_end": {
+            "median_ms": 10.930348000329104,
+            "p95_ms": 13.962299150807667,
+            "p99_ms": 15.340791878697923,
+            "mean_ms": 11.625956919815508
+          },
+          "components": {
+            "preprocessing_seconds": {
+              "median_ms": 1.1925324997719144,
+              "p95_ms": 1.6244161499344045,
+              "p99_ms": 1.8493835981644218,
+              "mean_ms": 1.2564685395773267
+            },
+            "encoder_seconds": {
+              "median_ms": 8.122710500174435,
+              "p95_ms": 10.487591600212909,
+              "p99_ms": 11.725129329570333,
+              "mean_ms": 8.651875179930357
+            },
+            "pooling_projection_seconds": {
+              "median_ms": 0.8306145009555621,
+              "p95_ms": 1.2394332507028591,
+              "p99_ms": 1.5625697092036706,
+              "mean_ms": 0.9178313798474846
+            },
+            "head_seconds": {
+              "median_ms": 0.7066155012580566,
+              "p95_ms": 0.956565698106715,
+              "p99_ms": 1.9767287574359176,
+              "mean_ms": 0.7707307196687907
+            }
+          }
+        },
+        {
+          "kind": "sigmoid",
+          "parameter_count": 6010,
+          "head_compile_seconds": 0.17589218799912487,
+          "end_to_end": {
+            "median_ms": 11.631194000074174,
+            "p95_ms": 13.119758598986664,
+            "p99_ms": 14.154857350767996,
+            "mean_ms": 11.612810860169702
+          },
+          "components": {
+            "preprocessing_seconds": {
+              "median_ms": 1.259311500689364,
+              "p95_ms": 1.6190507500141393,
+              "p99_ms": 2.01509150701895,
+              "mean_ms": 1.315016479420592
+            },
+            "encoder_seconds": {
+              "median_ms": 8.539004000340356,
+              "p95_ms": 9.763714549808356,
+              "p99_ms": 10.622019007860217,
+              "mean_ms": 8.612136599913356
+            },
+            "pooling_projection_seconds": {
+              "median_ms": 0.8378949987672968,
+              "p95_ms": 1.16235924870125,
+              "p99_ms": 1.295134718857298,
+              "mean_ms": 0.9038232393504586
+            },
+            "head_seconds": {
+              "median_ms": 0.687747000483796,
+              "p95_ms": 0.903601250502106,
+              "p99_ms": 2.023441229648597,
+              "mean_ms": 0.7521877201361349
+            }
+          }
+        },
+        {
+          "kind": "gru",
+          "parameter_count": 6038,
+          "head_compile_seconds": 0.06638760199712124,
+          "end_to_end": {
+            "median_ms": 11.915702500118641,
+            "p95_ms": 12.89868125004432,
+            "p99_ms": 14.09788988086802,
+            "mean_ms": 11.464931700611487
+          },
+          "components": {
+            "preprocessing_seconds": {
+              "median_ms": 1.208090499858372,
+              "p95_ms": 1.5735864495582061,
+              "p99_ms": 1.696668148433673,
+              "mean_ms": 1.2917750401538797
+            },
+            "encoder_seconds": {
+              "median_ms": 8.866840500559192,
+              "p95_ms": 9.518107100484485,
+              "p99_ms": 10.824806209129742,
+              "mean_ms": 8.61782640007732
+            },
+            "pooling_projection_seconds": {
+              "median_ms": 0.8802235006442061,
+              "p95_ms": 1.1556774990822303,
+              "p99_ms": 1.2003405305949855,
+              "mean_ms": 0.8966075800708495
+            },
+            "head_seconds": {
+              "median_ms": 0.6078384994907537,
+              "p95_ms": 0.8163844993759993,
+              "p99_ms": 0.8438050189943169,
+              "mean_ms": 0.6312562801031163
+            }
+          }
+        },
+        {
+          "kind": "transformer",
+          "parameter_count": 6151,
+          "head_compile_seconds": 0.10337538800013135,
+          "end_to_end": {
+            "median_ms": 11.140990500280168,
+            "p95_ms": 15.177999799925601,
+            "p99_ms": 16.002185710203776,
+            "mean_ms": 12.227733219988295
+          },
+          "components": {
+            "preprocessing_seconds": {
+              "median_ms": 1.1970590021519456,
+              "p95_ms": 1.5896017008344643,
+              "p99_ms": 1.8549112717300877,
+              "mean_ms": 1.3058479401661316
+            },
+            "encoder_seconds": {
+              "median_ms": 8.492549501170288,
+              "p95_ms": 11.755808249472466,
+              "p99_ms": 12.434241489208942,
+              "mean_ms": 9.256891660261317
+            },
+            "pooling_projection_seconds": {
+              "median_ms": 0.8500279982399661,
+              "p95_ms": 1.128250048168411,
+              "p99_ms": 1.2915843715745716,
+              "mean_ms": 0.9198468596150633
+            },
+            "head_seconds": {
+              "median_ms": 0.694267000653781,
+              "p95_ms": 0.8507627027938723,
+              "p99_ms": 0.8836322493152693,
+              "mean_ms": 0.714265040223836
+            }
+          }
+        },
+        {
+          "kind": "global_mean_logistic_reference",
+          "parameter_count": 650,
+          "head_compile_seconds": 0.0,
+          "end_to_end": {
+            "median_ms": 10.269250498822657,
+            "p95_ms": 10.971198349761835,
+            "p99_ms": 11.754055540041008,
+            "mean_ms": 10.348399919530493
+          },
+          "components": {
+            "preprocessing_seconds": {
+              "median_ms": 1.1521574997459538,
+              "p95_ms": 1.197902500462078,
+              "p99_ms": 1.2970014304301,
+              "mean_ms": 1.1508099001366645
+            },
+            "encoder_seconds": {
+              "median_ms": 7.887250500061782,
+              "p95_ms": 8.38041755159793,
+              "p99_ms": 9.314781430621224,
+              "mean_ms": 7.940569920392591
+            },
+            "pooling_projection_seconds": {
+              "median_ms": 0.8102340016193921,
+              "p95_ms": 0.9312813494034343,
+              "p99_ms": 1.0494949909116253,
+              "mean_ms": 0.8245045399235096
+            },
+            "head_seconds": {
+              "median_ms": 0.38433100053225644,
+              "p95_ms": 0.43916314953094115,
+              "p99_ms": 0.9674538698891393,
+              "mean_ms": 0.40535529966291506
+            }
+          }
+        }
+      ],
+      "features_sha256": "4aa81cf9f6c2dfe451f2f02fda0c389f2f155c5321606e0661db930de292f2d8"
+    }
+  },
+  "complete": true,
+  "source_sha256": {
+    "measure_pipeline.py": "6a185f29cf09dab428d0f1939cc8a9f5fd296875453f2eafe7fbca2b88604f57",
+    "raw_pipeline.py": "2e8a903289670a37f9ddcb61b65738cdabe68259e963c785ed6be55e175301e5"
+  }
+}

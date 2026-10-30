@@ -1,0 +1,236 @@
+{
+  "training_repeated": false,
+  "datasets": {
+    "ag_news": {
+      "checkpoints_replayed": 20,
+      "runs": [
+        {
+          "kind": "hcsn",
+          "seed": 0,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "hcsn",
+          "seed": 1,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "hcsn",
+          "seed": 2,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "hcsn",
+          "seed": 3,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "hcsn",
+          "seed": 4,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "sigmoid",
+          "seed": 0,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "sigmoid",
+          "seed": 1,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "sigmoid",
+          "seed": 2,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "sigmoid",
+          "seed": 3,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "sigmoid",
+          "seed": 4,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "gru",
+          "seed": 0,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "gru",
+          "seed": 1,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "gru",
+          "seed": 2,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "gru",
+          "seed": 3,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "gru",
+          "seed": 4,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "transformer",
+          "seed": 0,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "transformer",
+          "seed": 1,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "transformer",
+          "seed": 2,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "transformer",
+          "seed": 3,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "transformer",
+          "seed": 4,
+          "max_metric_difference": 0.0
+        }
+      ],
+      "linear_max_metric_difference": 1.457167719820518e-16,
+      "features_sha256": "df019257f7e8cbacac5f4a695f5ecbeafa735f37b811679c6b1a0049733ddbbe",
+      "source_hashes_match": true,
+      "labels_match_manifest": true,
+      "exact_split_overlap": {
+        "train_validation": 0,
+        "train_test": 0,
+        "validation_test": 0
+      },
+      "global_corrupted_feature_changed_fraction": 0.999
+    },
+    "cifar10": {
+      "checkpoints_replayed": 20,
+      "runs": [
+        {
+          "kind": "hcsn",
+          "seed": 0,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "hcsn",
+          "seed": 1,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "hcsn",
+          "seed": 2,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "hcsn",
+          "seed": 3,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "hcsn",
+          "seed": 4,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "sigmoid",
+          "seed": 0,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "sigmoid",
+          "seed": 1,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "sigmoid",
+          "seed": 2,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "sigmoid",
+          "seed": 3,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "sigmoid",
+          "seed": 4,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "gru",
+          "seed": 0,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "gru",
+          "seed": 1,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "gru",
+          "seed": 2,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "gru",
+          "seed": 3,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "gru",
+          "seed": 4,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "transformer",
+          "seed": 0,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "transformer",
+          "seed": 1,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "transformer",
+          "seed": 2,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "transformer",
+          "seed": 3,
+          "max_metric_difference": 0.0
+        },
+        {
+          "kind": "transformer",
+          "seed": 4,
+          "max_metric_difference": 0.0
+        }
+      ],
+      "linear_max_metric_difference": 0.0,
+      "features_sha256": "4aa81cf9f6c2dfe451f2f02fda0c389f2f155c5321606e0661db930de292f2d8",
+      "source_hashes_match": true,
+      "labels_match_manifest": true,
+      "exact_split_overlap": {
+        "train_validation": 0,
+        "train_test": 0,
+        "validation_test": 0
+      },
+      "global_corrupted_feature_changed_fraction": 1.0
+    }
+  },
+  "all_passed": true
+}

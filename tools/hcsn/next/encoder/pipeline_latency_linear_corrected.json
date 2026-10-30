@@ -1,0 +1,120 @@
+{
+  "protocol": {
+    "seed": 0,
+    "inputs_per_model": 50,
+    "batch_size": 1,
+    "warmup_inputs": 3,
+    "model_selection": "Fixed seed0, never best test score",
+    "included": "tokenization or PNG decode/resize, encoder, pooling, frozen PCA, CPU tensor conversion and Head logits",
+    "excluded": "source file I/O, model/session loading, checkpoint array reading/decompression, JIT compilation, classification metrics",
+    "checkpoint_arrays_loaded_before_warmup_and_timing": true,
+    "scope": "Shared CPU reference latency, not equal-quality or energy comparison",
+    "linear_only": true
+  },
+  "datasets": {
+    "ag_news": {
+      "model_session_load_seconds": 0.16728194299867027,
+      "batch1_vs_cached_batch16_feature_max_abs_error": 0.0,
+      "measurement": [
+        {
+          "kind": "global_mean_logistic_reference",
+          "parameter_count": 260,
+          "checkpoint_load_seconds": 0.000430752999818651,
+          "head_compile_seconds": 0.0,
+          "end_to_end": {
+            "median_ms": 16.903735000596498,
+            "p95_ms": 18.45456720166112,
+            "p99_ms": 21.519157508228087,
+            "mean_ms": 17.207980459788814
+          },
+          "components": {
+            "preprocessing_seconds": {
+              "median_ms": 0.23895599952084012,
+              "p95_ms": 0.3297388511782628,
+              "p99_ms": 0.436202471719298,
+              "mean_ms": 0.24778680002782494
+            },
+            "encoder_seconds": {
+              "median_ms": 16.407616498327116,
+              "p95_ms": 17.899786900125036,
+              "p99_ms": 20.991150808367816,
+              "mean_ms": 16.689041259814985
+            },
+            "pooling_projection_seconds": {
+              "median_ms": 0.2046704976237379,
+              "p95_ms": 0.2787164003166253,
+              "p99_ms": 0.2880304789869115,
+              "mean_ms": 0.21944705993519165
+            },
+            "head_seconds": {
+              "median_ms": 0.014385999747901224,
+              "p95_ms": 0.01907554978970438,
+              "p99_ms": 0.03062621854041936,
+              "mean_ms": 0.015510840021306649
+            }
+          }
+        }
+      ],
+      "features_sha256": "df019257f7e8cbacac5f4a695f5ecbeafa735f37b811679c6b1a0049733ddbbe"
+    },
+    "cifar10": {
+      "model_session_load_seconds": 0.039272655001695966,
+      "batch1_vs_cached_batch16_feature_max_abs_error": 0.0,
+      "measurement": [
+        {
+          "kind": "global_mean_logistic_reference",
+          "parameter_count": 650,
+          "checkpoint_load_seconds": 0.00037489100213861093,
+          "head_compile_seconds": 0.0,
+          "end_to_end": {
+            "median_ms": 10.595402000035392,
+            "p95_ms": 11.789300800046476,
+            "p99_ms": 13.625058897741832,
+            "mean_ms": 10.726456420161412
+          },
+          "components": {
+            "preprocessing_seconds": {
+              "median_ms": 1.1833284988824744,
+              "p95_ms": 1.4790788503887597,
+              "p99_ms": 1.5822041099818307,
+              "mean_ms": 1.2148441196768545
+            },
+            "encoder_seconds": {
+              "median_ms": 8.492596998621593,
+              "p95_ms": 9.407300251041304,
+              "p99_ms": 11.270307621343811,
+              "mean_ms": 8.59599450013775
+            },
+            "pooling_projection_seconds": {
+              "median_ms": 0.8436290008830838,
+              "p95_ms": 1.0700411488869577,
+              "p99_ms": 1.182396308140596,
+              "mean_ms": 0.8701874998951098
+            },
+            "head_seconds": {
+              "median_ms": 0.014220999219105579,
+              "p95_ms": 0.020730848700623014,
+              "p99_ms": 0.07248776997585069,
+              "mean_ms": 0.016850020110723563
+            }
+          }
+        }
+      ],
+      "features_sha256": "4aa81cf9f6c2dfe451f2f02fda0c389f2f155c5321606e0661db930de292f2d8"
+    }
+  },
+  "complete": true,
+  "correction": "Original linear closure reread arrays from an NPZ archive on every call. Materialize arrays before warmup and timing. Predictions and trained parameters unchanged.",
+  "supersedes": "Only original linear measurements",
+  "source_sha256_base": "Paths relative to hcsn_research root",
+  "historical_artifacts": {
+    "next/encoder/pipeline_latency.json": "0732753f309f84929b002220123158a189bffddeaef7f3ad2fa554c9b8ea27c8",
+    "next/encoder/measure_pipeline.py": "6a185f29cf09dab428d0f1939cc8a9f5fd296875453f2eafe7fbca2b88604f57"
+  },
+  "source_sha256": {
+    "next/encoder/measure_pipeline_corrected.py": "0782243c8b651fa9d2a8982442bbc0f097568d972ce72899ad25a72f162c36bc",
+    "next/encoder/raw_pipeline.py": "2e8a903289670a37f9ddcb61b65738cdabe68259e963c785ed6be55e175301e5",
+    "benchmarks/v2_models.py": "4ca4309b9d52a911485490a0667f089a193f5aa4600ae724f596b71e07823a53",
+    "benchmarks/models.py": "212d0ed0c06bb9168c91363529fa30c25fa3668b1927ddc53483af8884ad5b88"
+  }
+}
