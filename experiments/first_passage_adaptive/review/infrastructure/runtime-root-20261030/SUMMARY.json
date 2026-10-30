@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.first-passage.runtime-root-verification.v1",
+  "base_commit": "9b71cf4e65194593d5e0fb2a507026d21527a740",
+  "fresh_local_results": [
+    {
+      "scope": "Research Python regression suite",
+      "passed": 50,
+      "failed": 0,
+      "raw": "RECONSTRUCTED_PYTHON_AFTER_RESTORE.log"
+    },
+    {
+      "scope": "Pinned historical native bridge",
+      "passed": 9,
+      "failed": 0,
+      "raw": "PINNED_OWNER_REPLAY_BUILD_20261030.log"
+    },
+    {
+      "scope": "Complete holdout CAS owner library",
+      "passed": 128,
+      "failed": 0,
+      "skipped": 0,
+      "raw": "CAS_RESTORED_OWNER_TESTS.log"
+    },
+    {
+      "scope": "Selected memory migration and recovery regressions",
+      "passed": 2,
+      "failed": 0,
+      "not_selected": 277,
+      "raw": "RESTORED_MEMORY_WITH_TOOLS.log"
+    },
+    {
+      "scope": "Selected automation migration regression",
+      "passed": 1,
+      "failed": 0,
+      "not_selected": 17,
+      "raw": "RESTORED_AUTOMATION_WITH_TOOLS.log"
+    },
+    {
+      "scope": "Complete Fleet owner library, including unsealed publication refusal",
+      "passed": 42,
+      "failed": 0,
+      "skipped": 0,
+      "raw": "FLEET_RENAME_PUBLICATION_TESTS_FRESH.log"
+    },
+    {
+      "scope": "Scoped canonical just fix for Fleet, memory, automation, holdout evaluation and operator acceptance",
+      "exit_code": 0,
+      "automatic_source_edits_reported": false,
+      "warnings": "Existing expect/unwrap-style warnings are retained in the raw log; this is not a warning-free claim.",
+      "raw": "ROOT_SCOPED_JUST_FIX.log"
+    },
+    {
+      "scope": "Canonical just fmt",
+      "exit_code": 0,
+      "files_formatted": 6,
+      "raw": "ROOT_CANONICAL_FMT.json"
+    },
+    {
+      "scope": "Post-format frozen scientific source hashes",
+      "verified": 39,
+      "raw": "FINAL_FROZEN_SOURCE_CHECK.json"
+    },
+    {
+      "scope": "Codespell preflight before this final package",
+      "exit_code": 0,
+      "paths": 138,
+      "raw": "FINAL_CODESPELL_SOURCE_AND_REVIEW.json"
+    }
+  ],
+  "failed_attempts": "The initial unrestored-data Python run, missing-tool attempts and ENOSPC Fleet attempt are preserved. Shared-target artifact failures are additionally retained by runtime-holder-20261030. None count as passing tests.",
+  "source_identity": "SOURCE_IDENTITY.json is a post-format snapshot. Earlier run and review snapshots remain intact; hosted CI must qualify the final submitted bytes.",
+  "acceptance_boundary": "Native macOS and Windows, the full queue owner, previously blocked build targets and complete repository gates remain the responsibility of new-head CI. No new-head success is claimed by this package.",
+  "confirmation_reopened": false,
+  "production_activation": false
+}

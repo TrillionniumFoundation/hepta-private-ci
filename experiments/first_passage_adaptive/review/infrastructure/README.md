@@ -7,6 +7,10 @@ current production dependency graph receives separate security qualification.
 
 ## Evidence and scope
 
+The table below records the earlier qualification retained at
+`9b71cf4e65194593d5e0fb2a507026d21527a740`. Its successful local runs are historical
+evidence, not results for the later runtime repairs.
+
 | Check | Observed result | Retained record |
 | --- | --- | --- |
 | Original dependency policy, all features | Advisories, bans, licenses and sources: zero errors; original policy unchanged | `security/SECURITY_MIGRATION_VERIFICATION.json` |
@@ -33,6 +37,48 @@ of a separate vulnerability surviving that dependency upgrade. Keyring review
 establishes the synchronous API and SecretService credential namespace from
 source. It does not establish live desktop unlock, legacy-entry access or
 restart persistence; see `KEYRING_FEATURE_COMPATIBILITY_REVIEW.json`.
+
+## Runtime repairs after full repository CI
+
+The first full CI run exposed additional compiler, platform and lifecycle
+failures. The follow-up changes preserve the original security policies and
+scientific evidence. They repair CLI crate entry attributes, current Matrix
+test APIs, qualification feature wiring, native binary/runfiles discovery,
+descriptor ownership, queue completion ordering, current migration fixtures,
+private temporary paths and Darwin release publication permissions.
+
+The transient workspace reset removed unpublished local logs. Published
+records were restored unchanged; new runs and newly retrieved original CI logs
+are identified separately. Reconstructed source is not presented as a recovery
+of missing raw logs.
+
+| Record | Contents and boundary |
+| --- | --- |
+| `ci-recovery-20261030/` | Actual Bazel update/strict lock checks, 12-target feature query, wrapper regressions, Windows operator type checking and Unix operator execution. The initial operator Clippy attempt stopped at ENOSPC before compilation. Supplements retain platform fixture and path-order reviews. |
+| `runtime-math-20261030/` | Actual Matrix owner type checking, the subsequent ENOSPC failure before behavioral execution, five bounded child-process diagnostic probes and independent runtime-owner review. Mac startup diagnostics are not a claim of root-cause closure. |
+| `runtime-holder-20261030/` | Protocol generation, platform contracts, queue and PTY observations. Each attempted command retains its actual result; an environment failure is not a test pass. |
+| `runtime-root-20261030/` | Historical source materialization, restored scientific audit, CAS ownership, migration/recovery fixtures, Darwin release publication and final local verification records. |
+| `linux-ci-9b71-20261030/` | Complete deduplicated GNU/musl failure inventory and the original Architecture job logs, with a source-owner mapping for every observed failure category. Coverage is distinct from successful new-head execution. |
+
+Fresh local checks include 303 protocol tests after both canonical schema
+generators, 27 PTY tests, 286 platform-contract owner tests, 128 holdout owner
+tests, 24 Unix operator tests and 42 Fleet tests. The selected memory and
+automation regressions also pass. These counts describe their recorded Linux
+executions; they do not qualify Windows or macOS execution. Scoped canonical
+Clippy and formatting completed, and all 39 frozen scientific source hashes
+still match after formatting.
+
+The test launcher canonicalizes temporary paths for unit tests and sharded
+integration tests that use its workspace wrapper. Unsharded native integration
+tests can be direct Rust tests and need self-contained canonical fixtures.
+The authorized-read repairs address those fixtures without changing production
+path authorization. Seatbelt tests compare complete exclusion path collections
+and verify each parameter's literal/subpath denial; exclusion numbering alone
+does not define authority.
+
+The existing source policies still reject unsupported platform authority and
+unqualified directory durability. Added Windows tests exercise that refusal;
+they do not manufacture an implementation of a missing platform capability.
 
 ## Acceptance boundary
 
