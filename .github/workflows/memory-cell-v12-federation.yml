@@ -4,7 +4,9 @@ on:
   push:
     branches: [research/memory-cell-v12-20261030]
     paths:
-      - 'qualification/memory-cell-v12/federation*.py'
+      - 'qualification/memory-cell-v12/federation.py'
+      - 'qualification/memory-cell-v12/federation_experiment.py'
+      - 'qualification/memory-cell-v12/federation_tests.py'
       - 'qualification/memory-cell-v12/evidence/content/model.json'
       - 'qualification/memory-cell-v12/evidence/content/probes.json'
       - '.github/workflows/memory-cell-v12-federation.yml'
