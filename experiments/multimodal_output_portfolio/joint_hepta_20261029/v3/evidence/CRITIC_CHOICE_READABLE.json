@@ -1,0 +1,396 @@
+{
+  "actual_continuations": 256,
+  "arms": {
+    "actor": {
+      "failures": 0,
+      "first_choices": {
+        "audio": 8,
+        "image": 9,
+        "shared": 8,
+        "stop": 8,
+        "text": 6,
+        "verify": 13,
+        "video": 12
+      },
+      "mean_cost": 0.01790868116196965,
+      "mean_planning_cost": 0.0,
+      "mean_utility": 0.5706382542848587
+    },
+    "calibrated_critic_first": {
+      "failures": 0,
+      "first_choices": {
+        "stop": 20,
+        "text": 16,
+        "verify": 28
+      },
+      "mean_cost": 0.01526783164634479,
+      "mean_planning_cost": 0.00020411681409350925,
+      "mean_utility": 0.5664151818491518
+    },
+    "original_critic_first": {
+      "failures": 0,
+      "first_choices": {
+        "shared": 12,
+        "stop": 4,
+        "text": 20,
+        "verify": 8,
+        "video": 20
+      },
+      "mean_cost": 0.01877632783876633,
+      "mean_planning_cost": 0.00018427097749949204,
+      "mean_utility": 0.5697752851992846
+    },
+    "stop": {
+      "failures": 0,
+      "first_choices": {
+        "stop": 64
+      },
+      "mean_cost": 0.007165439129922917,
+      "mean_planning_cost": 0.0,
+      "mean_utility": 0.5570238195359707
+    }
+  },
+  "comparisons": {
+    "actor__minus__actor": {
+      "bootstrap_replicates": 1000,
+      "bootstrap_unit": "original_source",
+      "ce_delta": 0.0,
+      "ce_delta_percentile_95": [
+        0.0,
+        0.0
+      ],
+      "ce_left": 0.5339087297394199,
+      "ce_right": 0.5339087297394199,
+      "confirmation": false,
+      "finite_sample_ce_bias": true,
+      "independent_units": 16,
+      "mean_paired_return_delta": 0.0,
+      "paired_draws": 64
+    },
+    "actor__minus__original_critic_first": {
+      "bootstrap_replicates": 1000,
+      "bootstrap_unit": "original_source",
+      "ce_delta": 0.0024039215200293285,
+      "ce_delta_percentile_95": [
+        -0.007699295171187109,
+        0.01358533515329771
+      ],
+      "ce_left": 0.5339087297394199,
+      "ce_right": 0.5315048082193906,
+      "confirmation": false,
+      "finite_sample_ce_bias": true,
+      "independent_units": 16,
+      "mean_paired_return_delta": 0.0017306157623708284,
+      "paired_draws": 64
+    },
+    "actor__minus__stop": {
+      "bootstrap_replicates": 1000,
+      "bootstrap_unit": "original_source",
+      "ce_delta": 0.002151843223871297,
+      "ce_delta_percentile_95": [
+        -0.007476910167057615,
+        0.012370952441267387
+      ],
+      "ce_left": 0.5339087297394199,
+      "ce_right": 0.5317568865155486,
+      "confirmation": false,
+      "finite_sample_ce_bias": true,
+      "independent_units": 16,
+      "mean_paired_return_delta": 0.0028711927168412763,
+      "paired_draws": 64
+    },
+    "calibrated_critic_first__minus__actor": {
+      "bootstrap_replicates": 1000,
+      "bootstrap_unit": "original_source",
+      "ce_delta": -0.001788196967138611,
+      "ce_delta_percentile_95": [
+        -0.015452643480643898,
+        0.011707994152869668
+      ],
+      "ce_left": 0.5321205327722813,
+      "ce_right": 0.5339087297394199,
+      "confirmation": false,
+      "finite_sample_ce_bias": true,
+      "independent_units": 16,
+      "mean_paired_return_delta": -0.0015822229200819918,
+      "paired_draws": 64
+    },
+    "calibrated_critic_first__minus__original_critic_first": {
+      "bootstrap_replicates": 1000,
+      "bootstrap_unit": "original_source",
+      "ce_delta": 0.0006157245528907174,
+      "ce_delta_percentile_95": [
+        -0.007073763201645977,
+        0.008870413389164876
+      ],
+      "ce_left": 0.5321205327722813,
+      "ce_right": 0.5315048082193906,
+      "confirmation": false,
+      "finite_sample_ce_bias": true,
+      "independent_units": 16,
+      "mean_paired_return_delta": 0.00014839284228883656,
+      "paired_draws": 64
+    },
+    "calibrated_critic_first__minus__stop": {
+      "bootstrap_replicates": 1000,
+      "bootstrap_unit": "original_source",
+      "ce_delta": 0.0003636462567326859,
+      "ce_delta_percentile_95": [
+        -0.00826641691079628,
+        0.009769452582563596
+      ],
+      "ce_left": 0.5321205327722813,
+      "ce_right": 0.5317568865155486,
+      "confirmation": false,
+      "finite_sample_ce_bias": true,
+      "independent_units": 16,
+      "mean_paired_return_delta": 0.0012889697967592845,
+      "paired_draws": 64
+    },
+    "original_critic_first__minus__actor": {
+      "bootstrap_replicates": 1000,
+      "bootstrap_unit": "original_source",
+      "ce_delta": -0.0024039215200293285,
+      "ce_delta_percentile_95": [
+        -0.013585335153297712,
+        0.007699295171187106
+      ],
+      "ce_left": 0.5315048082193906,
+      "ce_right": 0.5339087297394199,
+      "confirmation": false,
+      "finite_sample_ce_bias": true,
+      "independent_units": 16,
+      "mean_paired_return_delta": -0.0017306157623708284,
+      "paired_draws": 64
+    },
+    "original_critic_first__minus__original_critic_first": {
+      "bootstrap_replicates": 1000,
+      "bootstrap_unit": "original_source",
+      "ce_delta": 0.0,
+      "ce_delta_percentile_95": [
+        0.0,
+        0.0
+      ],
+      "ce_left": 0.5315048082193906,
+      "ce_right": 0.5315048082193906,
+      "confirmation": false,
+      "finite_sample_ce_bias": true,
+      "independent_units": 16,
+      "mean_paired_return_delta": 0.0,
+      "paired_draws": 64
+    },
+    "original_critic_first__minus__stop": {
+      "bootstrap_replicates": 1000,
+      "bootstrap_unit": "original_source",
+      "ce_delta": -0.00025207829615803146,
+      "ce_delta_percentile_95": [
+        -0.010332566167467411,
+        0.010516000288955217
+      ],
+      "ce_left": 0.5315048082193906,
+      "ce_right": 0.5317568865155486,
+      "confirmation": false,
+      "finite_sample_ce_bias": true,
+      "independent_units": 16,
+      "mean_paired_return_delta": 0.001140576954470448,
+      "paired_draws": 64
+    },
+    "stop__minus__actor": {
+      "bootstrap_replicates": 1000,
+      "bootstrap_unit": "original_source",
+      "ce_delta": -0.002151843223871297,
+      "ce_delta_percentile_95": [
+        -0.01237095244126739,
+        0.007476910167057614
+      ],
+      "ce_left": 0.5317568865155486,
+      "ce_right": 0.5339087297394199,
+      "confirmation": false,
+      "finite_sample_ce_bias": true,
+      "independent_units": 16,
+      "mean_paired_return_delta": -0.0028711927168412763,
+      "paired_draws": 64
+    },
+    "stop__minus__original_critic_first": {
+      "bootstrap_replicates": 1000,
+      "bootstrap_unit": "original_source",
+      "ce_delta": 0.00025207829615803146,
+      "ce_delta_percentile_95": [
+        -0.010516000288955224,
+        0.010332566167467411
+      ],
+      "ce_left": 0.5317568865155486,
+      "ce_right": 0.5315048082193906,
+      "confirmation": false,
+      "finite_sample_ce_bias": true,
+      "independent_units": 16,
+      "mean_paired_return_delta": -0.001140576954470448,
+      "paired_draws": 64
+    },
+    "stop__minus__stop": {
+      "bootstrap_replicates": 1000,
+      "bootstrap_unit": "original_source",
+      "ce_delta": 0.0,
+      "ce_delta_percentile_95": [
+        0.0,
+        0.0
+      ],
+      "ce_left": 0.5317568865155486,
+      "ce_right": 0.5317568865155486,
+      "confirmation": false,
+      "finite_sample_ce_bias": true,
+      "independent_units": 16,
+      "mean_paired_return_delta": 0.0,
+      "paired_draws": 64
+    }
+  },
+  "confirmation_sources_consumed": 0,
+  "model_parameters_unchanged": true,
+  "original_result_sha256": "67c454d344048e8ba8d2a7ef0b55e0b1fe1d590c5e8e6979a11ab781b35b9212",
+  "outer_cpu_seconds": 10.636431,
+  "outer_wall_seconds": 17.912280684002326,
+  "protocol": {
+    "arm_order": "cyclic rotate by (source*4+draw)%4",
+    "arms": [
+      "actor",
+      "original_critic_first",
+      "calibrated_critic_first",
+      "stop"
+    ],
+    "bootstrap_replicates": 1000,
+    "calibrated_checkpoint_sha256": "46011bbbf0050af8023e9ef5a64d053a9fb9b20859f8876aa8d83decdac001be",
+    "calibration_training_cost": "retained in preceding calibration study, not amortized into this per-request comparison",
+    "confirmation_sources_consumed": 0,
+    "consumer_source_sha256": "ded8469db0bafc6f44c06a0d0c1716843d804513379b206f047221f905bd1cc5",
+    "content_actor_sha256": "21d912170e923a3d90224d2b90d9600603c2a41793c6c552c1d434b1ec1093b7",
+    "continuation": "original actor after one selected action; no replanning or policy updates",
+    "cost_boundary": "shared encoded prefix plus all branch work through runtime seal and caller close; final receipt write outer",
+    "critic_rule": "min(service_tariff*gamma + conditional_dynamic_suffix_log_moment); preSTOP head includes STOP cost",
+    "draws_per_source": 4,
+    "evaluation_gamma": 2.0,
+    "global_optimum_claim": false,
+    "model_hashes": [
+      "086fa1df4fd7eb414697938032de7cb1e3fc6de93a407186d96a8a8aaf7cbcdd",
+      "e2fd5a793321baecbbe24d82d3b79ec013f3306d050898510984f093889fffb4"
+    ],
+    "original_checkpoint_sha256": "9032b0750ea07c9ad5f9d0fb657d0ce16fd67ccacde1a653908207cbfdb542dc",
+    "planning_budget": "shared origin; measured planning reduces successor budget before forced action",
+    "profile": {
+      "audio_rate": 2048,
+      "capability": "development_only_no_natural_or_global_optimum_claim",
+      "clock": "continuous_process_cpu_and_wall_boundaries",
+      "commitment": "buffered_bundle; native_stream_profile_is_separate",
+      "cost_boundary": "encode_identity_checks_control_transition_codec_observer_audit_draft_and_seal",
+      "final_seal_cost": "included_in_training_return; final_sidecar_is_outer_run_overhead",
+      "frame_ms": 120,
+      "horizon": 6,
+      "initial_budget": 100.0,
+      "initial_stop_legal": true,
+      "parent": {
+        "commitment": "buffered_bundle; one_immutable_final_file_per_modality",
+        "compute_clock": "measured_monotonic_microseconds",
+        "conditional_scope": "same_gamma_joint_selected_action_complete_return",
+        "event_clock": "monotone_decision_index",
+        "filtration": "bound_input_and_past_executed_events",
+        "generation_clock": "per_modality_transition_count",
+        "input_contract_sha256": "ccb03e8cf957dde7d28587d5fa9837d99bb2c7ba14425dc0a3ff2b4b2dba848b",
+        "max_events": 9,
+        "media_units": {
+          "audio": "sample",
+          "image": "none",
+          "text": "token",
+          "video": "frame"
+        },
+        "model_port_sha256": "fc8779e1c0976d45a33a3bffa251415933daae09f1f125a156fc233fea34e1b5",
+        "ndu": {
+          "aggregation": "population",
+          "continuation_sha256": "75155cc8f3e4f5b81a36874c1e90fa56d714c9bfafe6461e407602fc0fb6d397",
+          "cost_treatment": "actual_joint_increment_once",
+          "cost_unit": "normalized_utility",
+          "gamma": 2.0,
+          "objective_sha256": "40d25e5e8376050dc0dc151e7b364c50b1405a3b5a716395393b649a0240abb3",
+          "observer_sha256": "a8f65e79460a1dbf2b4fd70e59bdb0953401b99f663bc1398e92d47f08bad93b",
+          "required_modalities": [
+            "text",
+            "image",
+            "audio",
+            "video"
+          ],
+          "reward_source": "bound_external_post_codec_observer",
+          "schema": "hepta.ndu.unified-profile.v1",
+          "stopping": "explicit_delivered_terminal_outcome",
+          "time_discount": 1.0,
+          "utility_bounds": [
+            -1.0,
+            1.0
+          ]
+        },
+        "parameter_updates": "candidate_only; immutable_selected_snapshot_per_episode",
+        "parent_blob": "98c62c6cef43489dadc8d010ce9b59735a88fc66",
+        "parent_code": "experiments/multimodal_output_portfolio/unified_20261028/profile.py",
+        "parent_commit": "a50c8974ac23c20c5174f7c3ad542a96e5652854",
+        "parent_schema": "hepta.ndu.unified-profile.v1",
+        "population_scope": "log_after_expectation_over_tasks_and_actual_rollouts",
+        "randomness_contract_sha256": "11a79e0ef5e669dbe20d5d450eaac0748563bd3247ce9fadea2a55a14961deb6",
+        "resource_accounting_sha256": "84c50f8b53c6c11fb5f8a155ce043d17acd5c7b1469b5ef36ebf459af103c90f",
+        "runtime_feature_keys": [
+          "encoded_input",
+          "latent_state",
+          "committed_prefix",
+          "remaining_budget",
+          "remaining_steps",
+          "clocks",
+          "uncertainty"
+        ],
+        "schema": "hepta.joint-generation.contract.v1",
+        "stopping": "execute_delivery_then_observe; no_oracle_terminal_label",
+        "time_discount": 1.0
+      },
+      "physical_hard_budget_guarantee": false,
+      "prefix": "immutable_state_budget_named_rng_and_already_charged_events",
+      "randomness": "actor_seed; emission_seed_xor_0x5eed1234; conditional_sampling",
+      "risk": "finite_horizon_population_entropic_CE_gamma2; not_general_NDU",
+      "schema": "hepta.joint-generation.initial-stop.v3",
+      "source": {
+        "critic_choice/run.py": "ded8469db0bafc6f44c06a0d0c1716843d804513379b206f047221f905bd1cc5",
+        "model.py": "16e285818a0e70d60da50ebec6e1bd15ecdc75a09df1db08caf43772f60cf612",
+        "profile.py": "a9ee97c4c2ffc36c08ba12db32fde082856307a3c6b42fc57e9a9dc93b4a7bbc",
+        "runtime.py": "90d92d180d9663dcb733e9dfa9a9271cf12c61c34c0977a7f45371745d207b51"
+      },
+      "tariff": {
+        "audio": 0.0025,
+        "cpu_second": 0.02,
+        "delivery": 0.005,
+        "encode": 0.001,
+        "image": 0.0025,
+        "shared": 0.004,
+        "stop": 0.0005,
+        "text": 0.0025,
+        "verify": 0.003,
+        "video": 0.0025,
+        "wall_second": 0.001
+      },
+      "verification": "public_consistency_proxy; not_independent_new_evidence"
+    },
+    "randomness_coupling": "same initial named tape; forced choices consume no actor draw; emission stream independent",
+    "reference_arms": [
+      "actor",
+      "stop",
+      "original_critic_first"
+    ],
+    "research_effect_qualified": false,
+    "runtime": {
+      "python": "3.12.14",
+      "threads": 1,
+      "torch": "2.8.0+cpu"
+    },
+    "schema": "hepta.joint-generation.critic-first-choice.development.v3",
+    "seed_rule": "31000000+source*10000+draw*997",
+    "source_namespace": "joint-v3-critic-choice.fresh-analysis.20261030",
+    "sources": 16
+  },
+  "research_effect_qualified": false,
+  "schema": "hepta.joint-generation.critic-first-choice.development.v3",
+  "scope": "first choice only; approximate learned conditional values; original actor afterward",
+  "semantic_qualification": false
+}

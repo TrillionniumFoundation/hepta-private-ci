@@ -1,0 +1,29 @@
+{
+  "gamma": 2.0,
+  "gradient_clip": 5.0,
+  "learning_rate": 0.001,
+  "loss": "source_uniform_mean(exp(v)-exp(-2*R_suffix)*v)",
+  "model_before_sha256": "086fa1df4fd7eb414697938032de7cb1e3fc6de93a407186d96a8a8aaf7cbcdd",
+  "training_sources": [
+    "joint-v3-calibration.fit.20261030.0",
+    "joint-v3-calibration.fit.20261030.1",
+    "joint-v3-calibration.fit.20261030.2",
+    "joint-v3-calibration.fit.20261030.3",
+    "joint-v3-calibration.fit.20261030.4",
+    "joint-v3-calibration.fit.20261030.5",
+    "joint-v3-calibration.fit.20261030.6",
+    "joint-v3-calibration.fit.20261030.7"
+  ],
+  "updates": 100,
+  "validation_selection": false,
+  "validation_sources": [
+    "joint-v3-calibration.analysis.20261030.0",
+    "joint-v3-calibration.analysis.20261030.1",
+    "joint-v3-calibration.analysis.20261030.2",
+    "joint-v3-calibration.analysis.20261030.3",
+    "joint-v3-calibration.analysis.20261030.4",
+    "joint-v3-calibration.analysis.20261030.5",
+    "joint-v3-calibration.analysis.20261030.6",
+    "joint-v3-calibration.analysis.20261030.7"
+  ]
+}

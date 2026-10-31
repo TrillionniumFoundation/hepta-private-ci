@@ -1,0 +1,150 @@
+{
+  "schema": "hepta.free-text-development.v3",
+  "status": "registered_before_training",
+  "seed": 419,
+  "updates": 16,
+  "max_new_tokens": 64,
+  "threads": 2,
+  "arms": [
+    "state",
+    "zero_state",
+    "shuffled_state"
+  ],
+  "prefix_tokens": 2,
+  "prefix_scale": 0.05,
+  "base_checkpoint_sha256": "92b9ed2953a027b5eb8524371a06be8b73c45d0e36af29246792480299589e3e",
+  "code_sha256": "95da70dc80204afd4515e2b81f9fbbb0350fce1a4a8aca2774ba1e1b248024b8",
+  "source_split_unit": "CPython module; publisher and pretraining may overlap",
+  "never_seen_claim": false,
+  "fresh_calibration_access": false,
+  "all_data_roles": "public_development",
+  "checkpoint_selection": "last_update_only",
+  "full_prompt_identical_across_arms": true,
+  "lm_frozen": true,
+  "hepta_and_prefix_trained": true,
+  "optimizer": "Adam; lr=0.0003; clip_norm=1",
+  "hepta_action_schedule": [
+    "shared",
+    "text"
+  ],
+  "sources": [
+    {
+      "case_id": "json.loads",
+      "source_id": "cpython:json",
+      "source_uri": "https://docs.python.org/3/library/json.html",
+      "context_sha256": "fae833ac8cdf9e05df5e09d9ee74a413b8f11ce1ee6d8210c219a05245239432",
+      "context": "Deserialize ``s`` (a ``str``, ``bytes`` or ``bytearray`` instance\ncontaining a JSON document) to a Python object.\n\n``object_hook`` is an optional function that will be called with the\nresult of any object literal decode (a ``dict``). The return value of\n``object_hook`` will be used instead of the ``dict``. This feature\ncan be used to implement custom decoders (e.g. JSON-RPC class hinting).\n\n``object_pairs_hook`` is an optional function that will be called with the\nresult of any object literal decoded with an ordered list of pairs.  The\nreturn value of ``object_pairs_hook`` will be used instead of the ``dict``.\nThis feature can be used to implement custom decoders.  If ``object_hook``\nis also defined, the ``object_pairs_hook`` takes priority.\n\n``parse_float``, if specified, will be called with the string\nof every JSON float to be decoded. By default this is equivalent to\nfloat(num_str). This can be used to use another datatype or parser\nfor JSON floats (e.g. decimal.Decimal).\n\n``parse_int``, if specified, will be called with the string\nof every JSON int to be decoded. By default this is equivalent to\nint(num_str). This can be used to use another datatype or parser\nfor JSON integers (e.g. float).\n\n``parse_constant``, if specified, will be called with one of the\nfollowing strings: -Infinity, Infinity, NaN.\nThis can be used to raise an exception if invalid JSON numbers\nare encountered.\n\nTo use a custom ``JSONDecoder`` subclass, specify it with the ``cls``\nkwarg; otherwise ``JSONDecoder`` is used.",
+      "question": "What input does loads accept and what does it produce?",
+      "role": "fit",
+      "reference": "It converts a JSON document in a string, bytes, or bytearray into a Python object.",
+      "required_patterns": [],
+      "contradiction_patterns": []
+    },
+    {
+      "case_id": "textwrap.dedent",
+      "source_id": "cpython:textwrap",
+      "source_uri": "https://docs.python.org/3/library/textwrap.html",
+      "context_sha256": "74b3050ead75bef7e9a3d6923bd8a73b25566b8089f1385cb9946718d481f0a6",
+      "context": "Remove any common leading whitespace from every line in `text`.\n\nThis can be used to make triple-quoted strings line up with the left\nedge of the display, while still presenting them in the source code\nin indented form.\n\nNote that tabs and spaces are both treated as whitespace, but they\nare not equal: the lines \"  hello\" and \"\\thello\" are\nconsidered to have no common leading whitespace.\n\nEntirely blank lines are normalized to a newline character.",
+      "question": "What does dedent remove from the text?",
+      "role": "fit",
+      "reference": "It removes common leading whitespace from each line of the text.",
+      "required_patterns": [],
+      "contradiction_patterns": []
+    },
+    {
+      "case_id": "bisect.bisect_left",
+      "source_id": "cpython:bisect",
+      "source_uri": "https://docs.python.org/3/library/bisect.html",
+      "context_sha256": "3e9e863ce20ee02f134b756cab0daa7e6fff7a1b695e22154364a53132fb2eaa",
+      "context": "Return the index where to insert item x in list a, assuming a is sorted.\n\nThe return value i is such that all e in a[:i] have e < x, and all e in\na[i:] have e >= x.  So if x already appears in the list, a.insert(i, x) will\ninsert just before the leftmost x already there.\n\nOptional args lo (default 0) and hi (default len(a)) bound the\nslice of a to be searched.\n\nA custom key function can be supplied to customize the sort order.",
+      "question": "Where does bisect_left place a value already in a sorted list?",
+      "role": "fit",
+      "reference": "It returns an insertion index before the leftmost existing equal value in the sorted list.",
+      "required_patterns": [],
+      "contradiction_patterns": []
+    },
+    {
+      "case_id": "urllib.parse.urlsplit",
+      "source_id": "cpython:urllib.parse",
+      "source_uri": "https://docs.python.org/3/library/urllib.parse.html",
+      "context_sha256": "b949a2ad4831607e87af775b30b52be587031b1a15cd58d2968446e53e9b16a0",
+      "context": "Parse a URL into 5 components:\n<scheme>://<netloc>/<path>?<query>#<fragment>\n\nThe result is a named 5-tuple with fields corresponding to the\nabove. It is either a SplitResult or SplitResultBytes object,\ndepending on the type of the url parameter.\n\nThe username, password, hostname, and port sub-components of netloc\ncan also be accessed as attributes of the returned object.\n\nThe scheme argument provides the default value of the scheme\ncomponent when no scheme is found in url.\n\nIf allow_fragments is False, no attempt is made to separate the\nfragment component from the previous component, which can be either\npath or query.\n\nNote that % escapes are not expanded.",
+      "question": "What are the five components returned by urlsplit?",
+      "role": "fit",
+      "reference": "The five components are scheme, netloc, path, query, and fragment.",
+      "required_patterns": [],
+      "contradiction_patterns": []
+    },
+    {
+      "case_id": "statistics.mean",
+      "source_id": "cpython:statistics",
+      "source_uri": "https://docs.python.org/3/library/statistics.html",
+      "context_sha256": "fae429e0160a8317f60637b87e16ca4bf4d2121572dbf6db8bc3ab25660af8f9",
+      "context": "Return the sample arithmetic mean of data.\n\n>>> mean([1, 2, 3, 4, 4])\n2.8\n\n>>> from fractions import Fraction as F\n>>> mean([F(3, 7), F(1, 21), F(5, 3), F(1, 3)])\nFraction(13, 21)\n\n>>> from decimal import Decimal as D\n>>> mean([D(\"0.5\"), D(\"0.75\"), D(\"0.625\"), D(\"0.375\")])\nDecimal('0.5625')\n\nIf ``data`` is empty, StatisticsError will be raised.",
+      "question": "What does mean compute, and what happens when its input data is empty?",
+      "role": "development_evaluation",
+      "reference": "It computes the arithmetic mean and raises StatisticsError for empty data.",
+      "required_patterns": [
+        "arithmetic\\s+(?:mean|average)|(?:mean|average)\\s+of",
+        "(?:rais\\w*|throw\\w*|error|exception).*statisticserror|statisticserror"
+      ],
+      "contradiction_patterns": [
+        "(?:return\\w*|yield\\w*)\\s+(?:a\\s+)?(?:zero|0|null|none)\\b",
+        "(?:not|never|no)\\s+(?:rais\\w*|throw\\w*|error|exception)"
+      ]
+    },
+    {
+      "case_id": "functools.lru_cache",
+      "source_id": "cpython:functools",
+      "source_uri": "https://docs.python.org/3/library/functools.html",
+      "context_sha256": "5f9c2e53bcd5d5721a3b573a328e0f241a0e364a7a1d62f5f150bc1603414b13",
+      "context": "Least-recently-used cache decorator.\n\nIf *maxsize* is set to None, the LRU features are disabled and the cache\ncan grow without bound.\n\nIf *typed* is True, arguments of different types will be cached separately.\nFor example, f(3.0) and f(3) will be treated as distinct calls with\ndistinct results.\n\nArguments to the cached function must be hashable.\n\nView the cache statistics named tuple (hits, misses, maxsize, currsize)\nwith f.cache_info().  Clear the cache and statistics with f.cache_clear().\nAccess the underlying function with f.__wrapped__.\n\nSee:  https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_recently_used_(LRU)",
+      "question": "How large can the cache become with maxsize=None, and what property must arguments have?",
+      "role": "development_evaluation",
+      "reference": "With maxsize=None the cache can grow without bound, and the arguments must be hashable.",
+      "required_patterns": [
+        "without\\s+(?:a\\s+)?(?:bound|limit)|unbound\\w*|unlimit\\w*|indefinite",
+        "\\bhashable\\b"
+      ],
+      "contradiction_patterns": [
+        "unhashable|need\\s+not\\s+be\\s+hashable|not\\s+(?:need|require).*hashable",
+        "cach(?:e|ing)\\s+is\\s+disabled"
+      ]
+    },
+    {
+      "case_id": "gzip.open",
+      "source_id": "cpython:gzip",
+      "source_uri": "https://docs.python.org/3/library/gzip.html",
+      "context_sha256": "e743f220a4f4a28605d054cee79037c02e58afe0c4dc586fedb2a0b4462ae184",
+      "context": "Open a gzip-compressed file in binary or text mode.\n\nThe filename argument can be an actual filename (a str or bytes object), or\nan existing file object to read from or write to.\n\nThe mode argument can be \"r\", \"rb\", \"w\", \"wb\", \"x\", \"xb\", \"a\" or \"ab\" for\nbinary mode, or \"rt\", \"wt\", \"xt\" or \"at\" for text mode. The default mode is\n\"rb\", and the default compresslevel is 9.\n\nFor binary mode, this function is equivalent to the GzipFile constructor:\nGzipFile(filename, mode, compresslevel). In this case, the encoding, errors\nand newline arguments must not be provided.\n\nFor text mode, a GzipFile object is created, and wrapped in an\nio.TextIOWrapper instance with the specified encoding, error handling\nbehavior, and line ending(s).",
+      "question": "Which file format does open handle, and is its default mode text or binary?",
+      "role": "development_evaluation",
+      "reference": "It opens gzip-compressed files and defaults to binary read mode, rb.",
+      "required_patterns": [
+        "\\bgzip\\b",
+        "\\bbinary\\b|\\brb\\b"
+      ],
+      "contradiction_patterns": [
+        "default\\w*.{0,35}\\btext\\b"
+      ]
+    },
+    {
+      "case_id": "csv.reader",
+      "source_id": "cpython:csv",
+      "source_uri": "https://docs.python.org/3/library/csv.html",
+      "context_sha256": "2462c0fe753723737efdbbb52a0248fed0efd59cd38793ba83ee0fe85512d8f3",
+      "context": "csv_reader = reader(iterable [, dialect='excel']\n                        [optional keyword args])\n    for row in csv_reader:\n        process(row)\n\nThe \"iterable\" argument can be any object that returns a line\nof input for each iteration, such as a file object or a list.  The\noptional \"dialect\" parameter is discussed below.  The function\nalso accepts optional keyword arguments which override settings\nprovided by the dialect.\n\nThe returned object is an iterator.  Each iteration returns a row\nof the CSV file (which can span multiple input lines).",
+      "question": "What does reader return and what does each iteration provide?",
+      "role": "development_evaluation",
+      "reference": "It returns an iterator, and each iteration returns one CSV row.",
+      "required_patterns": [
+        "\\biterator\\b|iterable",
+        "(?:each|one|single|every).{0,45}\\brow\\b|\\brow\\s+at\\s+a\\s+time"
+      ],
+      "contradiction_patterns": [
+        "(?:return\\w*|yield\\w*).{0,30}(?:entire|whole)\\s+file"
+      ]
+    }
+  ]
+}

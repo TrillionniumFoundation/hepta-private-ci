@@ -1,0 +1,18 @@
+{
+  "command": "python -m unittest experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.packaging.test_evidence_pack -v",
+  "tests_run": 6,
+  "status": "PASS",
+  "elapsed_seconds_reported_by_unittest": 4.115,
+  "source_sha256": {
+    "evidence_pack.py": "54478111ddd3525aad6158e53daa1c6cb7b51a02d16a2781d8e9ac4cbd66767e",
+    "test_evidence_pack.py": "d4c63a4888f6df7c4d28a4893dfd222c66dd065a5571e8b56e956550d49209d2"
+  },
+  "coverage": [
+    "deterministic multichunk byte exact restore and permission preservation",
+    "corrupted chunk rejected before destination creation",
+    "trusted index mismatch and overwrite rejection",
+    "self-consistent malicious traversal, duplicate and symlink archives rejected",
+    "source symlink rejection",
+    "new source file during packaging rejects entire attempt"
+  ]
+}

@@ -1,0 +1,158 @@
+[
+  {
+    "blind_id": "review-000",
+    "question": "How large can the cache become with maxsize=None, and what property must arguments have?",
+    "context": "Least-recently-used cache decorator.\n\nIf *maxsize* is set to None, the LRU features are disabled and the cache\ncan grow without bound.\n\nIf *typed* is True, arguments of different types will be cached separately.\nFor example, f(3.0) and f(3) will be treated as distinct calls with\ndistinct results.\n\nArguments to the cached function must be hashable.\n\nView the cache statistics named tuple (hits, misses, maxsize, currsize)\nwith f.cache_info().  Clear the cache and statistics with f.cache_clear().\nAccess the underlying function with f.__wrapped__.\n\nSee:  https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_recently_used_(LRU)",
+    "completion": "The cache can grow without bound if the cache is not cached.\n\nThe cache statistics are stored in the cache_info() tuple.\n\nThe cache statistics are cleared when the cache is cleared.\n\nThe cache is cached only if the cache_cache_info() tuple is not empty.\n\nThe",
+    "rubric": [
+      "factual_correctness",
+      "coverage",
+      "unsupported_claims",
+      "fluency"
+    ],
+    "human_ratings": null
+  },
+  {
+    "blind_id": "review-001",
+    "question": "What does mean compute, and what happens when its input data is empty?",
+    "context": "Return the sample arithmetic mean of data.\n\n>>> mean([1, 2, 3, 4, 4])\n2.8\n\n>>> from fractions import Fraction as F\n>>> mean([F(3, 7), F(1, 21), F(5, 3), F(1, 3)])\nFraction(13, 21)\n\n>>> from decimal import Decimal as D\n>>> mean([D(\"0.5\"), D(\"0.75\"), D(\"0.625\"), D(\"0.375\")])\nDecimal('0.5625')\n\nIf ``data`` is empty, StatisticsError will be raised.",
+    "completion": "The documentation provides a clear and concise explanation of the `mean()` function in Python. It explains what it does, how to use it, and what happens when its input data is empty.",
+    "rubric": [
+      "factual_correctness",
+      "coverage",
+      "unsupported_claims",
+      "fluency"
+    ],
+    "human_ratings": null
+  },
+  {
+    "blind_id": "review-002",
+    "question": "How large can the cache become with maxsize=None, and what property must arguments have?",
+    "context": "Least-recently-used cache decorator.\n\nIf *maxsize* is set to None, the LRU features are disabled and the cache\ncan grow without bound.\n\nIf *typed* is True, arguments of different types will be cached separately.\nFor example, f(3.0) and f(3) will be treated as distinct calls with\ndistinct results.\n\nArguments to the cached function must be hashable.\n\nView the cache statistics named tuple (hits, misses, maxsize, currsize)\nwith f.cache_info().  Clear the cache and statistics with f.cache_clear().\nAccess the underlying function with f.__wrapped__.\n\nSee:  https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_recently_used_(LRU)",
+    "completion": "The documentation for the LRU cache decorator suggests that the cache can grow without bound if the cache size is set to None. This is because the cache can grow without bound if the cache size is set to None, and the cache can grow without bound if the cache size is set to None, but the cache size must",
+    "rubric": [
+      "factual_correctness",
+      "coverage",
+      "unsupported_claims",
+      "fluency"
+    ],
+    "human_ratings": null
+  },
+  {
+    "blind_id": "review-003",
+    "question": "What does mean compute, and what happens when its input data is empty?",
+    "context": "Return the sample arithmetic mean of data.\n\n>>> mean([1, 2, 3, 4, 4])\n2.8\n\n>>> from fractions import Fraction as F\n>>> mean([F(3, 7), F(1, 21), F(5, 3), F(1, 3)])\nFraction(13, 21)\n\n>>> from decimal import Decimal as D\n>>> mean([D(\"0.5\"), D(\"0.75\"), D(\"0.625\"), D(\"0.375\")])\nDecimal('0.5625')\n\nIf ``data`` is empty, StatisticsError will be raised.",
+    "completion": "The documentation provides a clear and concise explanation of the `mean()` function in Python. It explains what it does, how to use it, and what happens when its input data is empty.",
+    "rubric": [
+      "factual_correctness",
+      "coverage",
+      "unsupported_claims",
+      "fluency"
+    ],
+    "human_ratings": null
+  },
+  {
+    "blind_id": "review-004",
+    "question": "What does reader return and what does each iteration provide?",
+    "context": "csv_reader = reader(iterable [, dialect='excel']\n                        [optional keyword args])\n    for row in csv_reader:\n        process(row)\n\nThe \"iterable\" argument can be any object that returns a line\nof input for each iteration, such as a file object or a list.  The\noptional \"dialect\" parameter is discussed below.  The function\nalso accepts optional keyword arguments which override settings\nprovided by the dialect.\n\nThe returned object is an iterator.  Each iteration returns a row\nof the CSV file (which can span multiple input lines).",
+    "completion": "The \"iterable\" argument can be any object that returns a line of input for each iteration, such as a file object or a list. The optional \"dialect\" parameter is discussed below. The function also accepts optional keyword arguments which override settings provided by the dialect.",
+    "rubric": [
+      "factual_correctness",
+      "coverage",
+      "unsupported_claims",
+      "fluency"
+    ],
+    "human_ratings": null
+  },
+  {
+    "blind_id": "review-005",
+    "question": "How large can the cache become with maxsize=None, and what property must arguments have?",
+    "context": "Least-recently-used cache decorator.\n\nIf *maxsize* is set to None, the LRU features are disabled and the cache\ncan grow without bound.\n\nIf *typed* is True, arguments of different types will be cached separately.\nFor example, f(3.0) and f(3) will be treated as distinct calls with\ndistinct results.\n\nArguments to the cached function must be hashable.\n\nView the cache statistics named tuple (hits, misses, maxsize, currsize)\nwith f.cache_info().  Clear the cache and statistics with f.cache_clear().\nAccess the underlying function with f.__wrapped__.\n\nSee:  https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_recently_used_(LRU)",
+    "completion": "The cache can grow without bound if the cache is not cached.\n\nThe cache statistics are stored in the cache_info() tuple.\n\nThe cache statistics are cleared when the cache is cleared.\n\nThe cache is cached only if the cache_cache_info() tuple is not empty.\n\nThe",
+    "rubric": [
+      "factual_correctness",
+      "coverage",
+      "unsupported_claims",
+      "fluency"
+    ],
+    "human_ratings": null
+  },
+  {
+    "blind_id": "review-006",
+    "question": "What does reader return and what does each iteration provide?",
+    "context": "csv_reader = reader(iterable [, dialect='excel']\n                        [optional keyword args])\n    for row in csv_reader:\n        process(row)\n\nThe \"iterable\" argument can be any object that returns a line\nof input for each iteration, such as a file object or a list.  The\noptional \"dialect\" parameter is discussed below.  The function\nalso accepts optional keyword arguments which override settings\nprovided by the dialect.\n\nThe returned object is an iterator.  Each iteration returns a row\nof the CSV file (which can span multiple input lines).",
+    "completion": "The \"iterable\" argument can be any object that returns a line of input for each iteration, such as a file object or a list. The optional \"dialect\" parameter is discussed below. The function also accepts optional keyword arguments which override settings provided by the dialect.",
+    "rubric": [
+      "factual_correctness",
+      "coverage",
+      "unsupported_claims",
+      "fluency"
+    ],
+    "human_ratings": null
+  },
+  {
+    "blind_id": "review-007",
+    "question": "What does reader return and what does each iteration provide?",
+    "context": "csv_reader = reader(iterable [, dialect='excel']\n                        [optional keyword args])\n    for row in csv_reader:\n        process(row)\n\nThe \"iterable\" argument can be any object that returns a line\nof input for each iteration, such as a file object or a list.  The\noptional \"dialect\" parameter is discussed below.  The function\nalso accepts optional keyword arguments which override settings\nprovided by the dialect.\n\nThe returned object is an iterator.  Each iteration returns a row\nof the CSV file (which can span multiple input lines).",
+    "completion": "The \"iterable\" argument can be any object that returns a line of input for each iteration, such as a file object or a list. The optional \"dialect\" parameter is discussed below. The function also accepts optional keyword arguments which override settings provided by the dialect.",
+    "rubric": [
+      "factual_correctness",
+      "coverage",
+      "unsupported_claims",
+      "fluency"
+    ],
+    "human_ratings": null
+  },
+  {
+    "blind_id": "review-008",
+    "question": "Which file format does open handle, and is its default mode text or binary?",
+    "context": "Open a gzip-compressed file in binary or text mode.\n\nThe filename argument can be an actual filename (a str or bytes object), or\nan existing file object to read from or write to.\n\nThe mode argument can be \"r\", \"rb\", \"w\", \"wb\", \"x\", \"xb\", \"a\" or \"ab\" for\nbinary mode, or \"rt\", \"wt\", \"xt\" or \"at\" for text mode. The default mode is\n\"rb\", and the default compresslevel is 9.\n\nFor binary mode, this function is equivalent to the GzipFile constructor:\nGzipFile(filename, mode, compresslevel). In this case, the encoding, errors\nand newline arguments must not be provided.\n\nFor text mode, a GzipFile object is created, and wrapped in an\nio.TextIOWrapper instance with the specified encoding, error handling\nbehavior, and line ending(s).",
+    "completion": "The file format that open handles is binary or text mode.",
+    "rubric": [
+      "factual_correctness",
+      "coverage",
+      "unsupported_claims",
+      "fluency"
+    ],
+    "human_ratings": null
+  },
+  {
+    "blind_id": "review-009",
+    "question": "Which file format does open handle, and is its default mode text or binary?",
+    "context": "Open a gzip-compressed file in binary or text mode.\n\nThe filename argument can be an actual filename (a str or bytes object), or\nan existing file object to read from or write to.\n\nThe mode argument can be \"r\", \"rb\", \"w\", \"wb\", \"x\", \"xb\", \"a\" or \"ab\" for\nbinary mode, or \"rt\", \"wt\", \"xt\" or \"at\" for text mode. The default mode is\n\"rb\", and the default compresslevel is 9.\n\nFor binary mode, this function is equivalent to the GzipFile constructor:\nGzipFile(filename, mode, compresslevel). In this case, the encoding, errors\nand newline arguments must not be provided.\n\nFor text mode, a GzipFile object is created, and wrapped in an\nio.TextIOWrapper instance with the specified encoding, error handling\nbehavior, and line ending(s).",
+    "completion": "The file format that open handles is binary or text mode.",
+    "rubric": [
+      "factual_correctness",
+      "coverage",
+      "unsupported_claims",
+      "fluency"
+    ],
+    "human_ratings": null
+  },
+  {
+    "blind_id": "review-010",
+    "question": "Which file format does open handle, and is its default mode text or binary?",
+    "context": "Open a gzip-compressed file in binary or text mode.\n\nThe filename argument can be an actual filename (a str or bytes object), or\nan existing file object to read from or write to.\n\nThe mode argument can be \"r\", \"rb\", \"w\", \"wb\", \"x\", \"xb\", \"a\" or \"ab\" for\nbinary mode, or \"rt\", \"wt\", \"xt\" or \"at\" for text mode. The default mode is\n\"rb\", and the default compresslevel is 9.\n\nFor binary mode, this function is equivalent to the GzipFile constructor:\nGzipFile(filename, mode, compresslevel). In this case, the encoding, errors\nand newline arguments must not be provided.\n\nFor text mode, a GzipFile object is created, and wrapped in an\nio.TextIOWrapper instance with the specified encoding, error handling\nbehavior, and line ending(s).",
+    "completion": "The open function handles binary and text files. The default mode is text.",
+    "rubric": [
+      "factual_correctness",
+      "coverage",
+      "unsupported_claims",
+      "fluency"
+    ],
+    "human_ratings": null
+  },
+  {
+    "blind_id": "review-011",
+    "question": "What does mean compute, and what happens when its input data is empty?",
+    "context": "Return the sample arithmetic mean of data.\n\n>>> mean([1, 2, 3, 4, 4])\n2.8\n\n>>> from fractions import Fraction as F\n>>> mean([F(3, 7), F(1, 21), F(5, 3), F(1, 3)])\nFraction(13, 21)\n\n>>> from decimal import Decimal as D\n>>> mean([D(\"0.5\"), D(\"0.75\"), D(\"0.625\"), D(\"0.375\")])\nDecimal('0.5625')\n\nIf ``data`` is empty, StatisticsError will be raised.",
+    "completion": "The documentation provides a clear and concise explanation of the statistics functions in the `statistics` module. The `mean` function computes the arithmetic mean of a list of numbers, and the `statistics` module provides a `mean` function that computes the mean of a list of numbers.\n\nWhen the input data is empty",
+    "rubric": [
+      "factual_correctness",
+      "coverage",
+      "unsupported_claims",
+      "fluency"
+    ],
+    "human_ratings": null
+  }
+]

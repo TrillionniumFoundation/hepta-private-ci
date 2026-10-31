@@ -1,0 +1,61 @@
+name: Joint Hepta v3 execution contracts
+
+on:
+  push:
+    branches: [research/joint-hepta-portfolio-v3-20261030]
+    paths:
+      - experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/**
+      - .github/workflows/joint-hepta-v3.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: joint-hepta-v3-${{ github.sha }}
+  cancel-in-progress: false
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONNOUSERSITE: "1"
+  OMP_NUM_THREADS: "2"
+  MKL_NUM_THREADS: "2"
+  OPENBLAS_NUM_THREADS: "2"
+
+jobs:
+  initial-stop-and-native-content:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            experiments/multimodal_output_portfolio/joint_hepta_20261029
+            experiments/multimodal_output_portfolio/unified_20261028
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - name: Install declared numerical and native compiler runtimes
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: --extra-index-url https://download.pytorch.org/whl/cpu torch==2.8.0+cpu numpy==2.3.5 Pillow==12.3.0
+          rustup toolchain install 1.95.0 --profile minimal
+      - name: Execute real-file, conditional-moment and native recovery tests
+        run: |
+          set -euo pipefail
+          export HEPTA_NATIVE_RUSTC="$(rustup which --toolchain 1.95.0 rustc)"
+          mkdir -p "$RUNNER_TEMP/joint-v3"
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          python -B -m unittest experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.test_runtime experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.test_diagnostics experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.test_open_domain experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.test_native_bridge experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.critic_choice.test_run experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.packaging.test_evidence_pack -v 2>&1 | tee "$RUNNER_TEMP/joint-v3/tests.log"
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.study --smoke --output "$RUNNER_TEMP/joint-v3/smoke" 2>&1 | tee "$RUNNER_TEMP/joint-v3/smoke.log"
+          python -m pip freeze > "$RUNNER_TEMP/joint-v3/environment.txt"
+          git diff --check
+          git diff --exit-code
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: joint-v3-execution-${{ github.sha }}
+          path: ${{ runner.temp }}/joint-v3/
+          if-no-files-found: warn
+          retention-days: 30

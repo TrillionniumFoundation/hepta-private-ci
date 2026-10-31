@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.open-text.external-process-meter.v1",
+  "command": [
+    "/tmp/convergence-smollm-runtime/bin/python",
+    "-m",
+    "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.open_domain",
+    "--model-path",
+    "/tmp/cell-typed-convergence/consumer-materials",
+    "--checkpoint",
+    "/workspace/scratch/82c7d4c559ad/hepta-portfolio/experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/evidence/matrix_frozen_20261030/seed-17-width-32/dual.joint.dynamic/MODEL.pt",
+    "--output",
+    "/workspace/scratch/82c7d4c559ad/hepta-portfolio/experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/evidence/open_text_frozen_20261030",
+    "--updates",
+    "16",
+    "--max-new-tokens",
+    "64",
+    "--threads",
+    "2"
+  ],
+  "exit_code": 0,
+  "wall_seconds": 74.59044570600236,
+  "user_cpu_seconds": 136.344173,
+  "system_cpu_seconds": 3.764693,
+  "cpu_seconds": 140.108866,
+  "peak_rss_bytes": 1788358656,
+  "scope": "single fresh child; entire CLI including Python/dependency imports, loading, adaptation, inference, evaluation and writes; no other children spawned by meter"
+}
