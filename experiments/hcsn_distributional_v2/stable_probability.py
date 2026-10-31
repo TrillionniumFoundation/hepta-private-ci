@@ -105,10 +105,22 @@ def advance_probability(probability, transition, *, operator_kind,
         if not isinstance(vector, torch.Tensor) or vector.dtype != probability.dtype or \
                 vector.device != probability.device or vector.shape[-1] != probability.shape[-1]:
             raise TypeError(name + " must match probability dtype, device and state dimension")
+        # Compare to the already computed state output shape, not merely the
+        # last state dimension. A stray leading singleton dimension in a
+        # vector can silently turn [batch] counts into [batch,batch] counts.
+        # Use the broadcasted *pre-transition* state for event/reward, while
+        # allowing a shared 1-D start across independently batched operators.
+        try:
+            shape = torch.broadcast_shapes(probability.shape, vector.shape,
+                                           probability_next.shape)
+        except RuntimeError as exc:
+            raise ValueError(name + " has incompatible batch axes") from exc
+        if shape != probability_next.shape:
+            raise ValueError(name + " introduces unintended batch axes")
         _require(torch.isfinite(vector), "Nonfinite " + name)
         if nonnegative:
             _require(vector >= 0, "Negative " + name)
-        return (probability * vector).sum(-1)
+        return (probability.expand(shape) * vector).sum(-1)
 
     return dict(
         probability=probability_next,
