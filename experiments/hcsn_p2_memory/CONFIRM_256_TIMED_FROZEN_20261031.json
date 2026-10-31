@@ -1,0 +1,129 @@
+{
+  "all_scientific_blockers_closed": false,
+  "claim": "migration stress test only; NOT matched-budget retraining superiority",
+  "controls": "frozen aggregate-trained weights paired with timed-event forward",
+  "production_activation": false,
+  "records": [
+    {
+      "actors": 256,
+      "all_scientific_blockers_closed": false,
+      "data_seed": 200,
+      "disagreements": 8,
+      "events": 3016,
+      "inference_only": true,
+      "length": 16,
+      "mean_paired_delta": -0.03125,
+      "model_sha256": "e92c7f7d5efd75ba4bd7c3511da02bc157f13af127e48cd16ba72dea24dfa895",
+      "models": {
+        "aggregate": {
+          "accuracy": 1.0,
+          "correct": 256,
+          "cpu_seconds": 1.2945734960000006,
+          "wall_seconds": 1.295368268
+        },
+        "timed": {
+          "accuracy": 0.96875,
+          "correct": 248,
+          "cpu_seconds": 1.580787522000001,
+          "wall_seconds": 1.5816873779999998
+        }
+      },
+      "producer": "PyTorch 2.10.0 CPU; physical Brownian SpikeStream",
+      "queries": 256,
+      "streams_multi_fire": 256,
+      "task": "copy",
+      "trained_only_on_aggregate": true
+    },
+    {
+      "actors": 256,
+      "all_scientific_blockers_closed": false,
+      "data_seed": 300,
+      "disagreements": 16,
+      "events": 5755,
+      "inference_only": true,
+      "length": 32,
+      "mean_paired_delta": -0.0625,
+      "model_sha256": "e92c7f7d5efd75ba4bd7c3511da02bc157f13af127e48cd16ba72dea24dfa895",
+      "models": {
+        "aggregate": {
+          "accuracy": 0.90625,
+          "correct": 232,
+          "cpu_seconds": 2.8265198519999992,
+          "wall_seconds": 2.827346598999998
+        },
+        "timed": {
+          "accuracy": 0.84375,
+          "correct": 216,
+          "cpu_seconds": 3.4981996749999995,
+          "wall_seconds": 3.499947092999998
+        }
+      },
+      "producer": "PyTorch 2.10.0 CPU; physical Brownian SpikeStream",
+      "queries": 256,
+      "streams_multi_fire": 256,
+      "task": "copy",
+      "trained_only_on_aggregate": true
+    },
+    {
+      "actors": 256,
+      "all_scientific_blockers_closed": false,
+      "data_seed": 200,
+      "disagreements": 222,
+      "events": 2946,
+      "inference_only": true,
+      "length": 16,
+      "mean_paired_delta": -0.052734375,
+      "model_sha256": "bd8cf2b234e749b0320d2372a27a1c2dab1b7a2692b9ba3897e8e28966ec1a62",
+      "models": {
+        "aggregate": {
+          "accuracy": 0.6259765625,
+          "correct": 641,
+          "cpu_seconds": 1.3094596000000003,
+          "wall_seconds": 1.3101009800000003
+        },
+        "timed": {
+          "accuracy": 0.5732421875,
+          "correct": 587,
+          "cpu_seconds": 1.5919353130000007,
+          "wall_seconds": 1.5925800480000019
+        }
+      },
+      "producer": "PyTorch 2.10.0 CPU; physical Brownian SpikeStream",
+      "queries": 1024,
+      "streams_multi_fire": 256,
+      "task": "mqar4",
+      "trained_only_on_aggregate": true
+    },
+    {
+      "actors": 256,
+      "all_scientific_blockers_closed": false,
+      "data_seed": 300,
+      "disagreements": 281,
+      "events": 5839,
+      "inference_only": true,
+      "length": 32,
+      "mean_paired_delta": -0.0693359375,
+      "model_sha256": "bd8cf2b234e749b0320d2372a27a1c2dab1b7a2692b9ba3897e8e28966ec1a62",
+      "models": {
+        "aggregate": {
+          "accuracy": 0.638671875,
+          "correct": 654,
+          "cpu_seconds": 2.8606111719999996,
+          "wall_seconds": 2.863794556
+        },
+        "timed": {
+          "accuracy": 0.5693359375,
+          "correct": 583,
+          "cpu_seconds": 3.4787846150000004,
+          "wall_seconds": 3.4801263440000003
+        }
+      },
+      "producer": "PyTorch 2.10.0 CPU; physical Brownian SpikeStream",
+      "queries": 1024,
+      "streams_multi_fire": 256,
+      "task": "mqar4",
+      "trained_only_on_aggregate": true
+    }
+  ],
+  "schema": "hcsn-p2-timed-frozen-inference-v1"
+}
