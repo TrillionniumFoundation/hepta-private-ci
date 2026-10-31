@@ -74,9 +74,16 @@ def _killed_masses_are_subsets(active, no_fire_active, no_fire_refractory):
     and nonnegative entries alone do not establish this causal relationship.
     The ULP allowance is a diagnostic gate, not a certified forward bound.
     """
-    tolerance = 16 * math.ulp(1.0)
-    return (no_fire_active <= active + tolerance
-            and no_fire_refractory <= (1.0 - active) + tolerance)
+    # A fixed ULP at 1.0 admits impossible *relative* errors when either
+    # physical population is near zero (e.g. active=0, no_fire_active=1e-16).
+    # Use the local representable spacing of both compared populations;
+    # no absolute 1.0-scale allowance survives at vanishing mass.
+    refractory = 1.0 - active
+    active_slack = 8 * max(math.ulp(active), math.ulp(no_fire_active))
+    refractory_slack = 8 * max(math.ulp(refractory),
+                               math.ulp(no_fire_refractory))
+    return (no_fire_active <= active + active_slack
+            and no_fire_refractory <= refractory + refractory_slack)
 
 
 def advance(state: RenewalState, lam: float, gamma: float, dt: float) -> RenewalState:
