@@ -1,0 +1,283 @@
+{
+  "artifacts": {
+    "qualification/memory-cell-v13/evidence/run/seed-713/fixed/expert-0.npz": {
+      "bytes": 179207,
+      "sha256": "6800da9d4393df44085c67f99927c662b4f6d2f60a7f517b4fefdaf5022d3167"
+    },
+    "qualification/memory-cell-v13/evidence/run/seed-713/fixed/expert-1.npz": {
+      "bytes": 179140,
+      "sha256": "788c354e90681b726041f6d84adf7426237a4dba191065804e90e830ad5660bc"
+    },
+    "qualification/memory-cell-v13/evidence/run/seed-713/fixed/expert-2.npz": {
+      "bytes": 179151,
+      "sha256": "2c03002a507a051756ecb929b74d03465bd6f76d954448d3a235a5fe09c857e8"
+    },
+    "qualification/memory-cell-v13/evidence/run/seed-713/fixed/network.json": {
+      "bytes": 387,
+      "sha256": "8edefabc3a7b8b694238939857521cd3a56149ed30be29d158f03f0e311f48f9"
+    },
+    "qualification/memory-cell-v13/evidence/run/seed-713/fixed/router.npy": {
+      "bytes": 9368,
+      "sha256": "93bb0854561adf3bc757de9dbd9f9c91561bca10a69a037691311dea0b339fb8"
+    },
+    "qualification/memory-cell-v13/evidence/run/seed-713/single.npz": {
+      "bytes": 250047,
+      "sha256": "5f28dbda0393259005091a2fde9f56dd99837f4667e4924affd9906e8b0f7719"
+    }
+  },
+  "cost_scope": "local requests plus separately reported shared feature preparation and checkpoint files; training, queueing and deployment are not measured here",
+  "encoder_stats": {
+    "calls": 338,
+    "encode_seconds": 2.1428385269391583,
+    "encoded_tokens": 6308,
+    "examples": 338,
+    "input_tokens": 6308,
+    "load_seconds": 0.4009494719939539,
+    "padded_tokens": 6308,
+    "truncated_examples": 0
+  },
+  "encoder_timing": "live per-request encoding including stale-source contexts",
+  "families": {
+    "composition": {
+      "expert_disabled:0": {
+        "correct": 5,
+        "cpu_ms_sum": 120.327248,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 6,
+        "interpretation": "dependency/substitution diagnostic, not evidence of statistical superiority",
+        "wall_ms_sum": 120.338264
+      },
+      "expert_disabled:1": {
+        "correct": 8,
+        "cpu_ms_sum": 106.471762,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 8,
+        "interpretation": "dependency/substitution diagnostic, not evidence of statistical superiority",
+        "wall_ms_sum": 106.474008
+      },
+      "expert_disabled:2": {
+        "correct": 5,
+        "cpu_ms_sum": 108.779288,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 6,
+        "interpretation": "dependency/substitution diagnostic, not evidence of statistical superiority",
+        "wall_ms_sum": 108.788944
+      },
+      "full": {
+        "correct": 11,
+        "cpu_ms_sum": 132.201329,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 12,
+        "interpretation": "dependency/substitution diagnostic, not evidence of statistical superiority",
+        "wall_ms_sum": 132.205179
+      },
+      "procedure_disabled:sequence": {
+        "correct": 5,
+        "cpu_ms_sum": 119.182299,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 6,
+        "interpretation": "dependency/substitution diagnostic, not evidence of statistical superiority",
+        "wall_ms_sum": 119.185518
+      },
+      "procedure_disabled:serialization": {
+        "correct": 5,
+        "cpu_ms_sum": 95.75089,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 6,
+        "interpretation": "dependency/substitution diagnostic, not evidence of statistical superiority",
+        "wall_ms_sum": 95.753046
+      },
+      "procedure_disabled:text": {
+        "correct": 8,
+        "cpu_ms_sum": 117.884113,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 8,
+        "interpretation": "dependency/substitution diagnostic, not evidence of statistical superiority",
+        "wall_ms_sum": 117.886096
+      },
+      "procedure_generic": {
+        "correct": 11,
+        "cpu_ms_sum": 137.365717,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 12,
+        "interpretation": "substitute matches full; no exclusive capability shown",
+        "wall_ms_sum": 137.368277
+      },
+      "procedure_removed": {
+        "correct": 0,
+        "cpu_ms_sum": 63.687456,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 0,
+        "interpretation": "dependency/substitution diagnostic, not evidence of statistical superiority",
+        "wall_ms_sum": 63.689016
+      },
+      "semantic_bm25": {
+        "correct": 11,
+        "cpu_ms_sum": 7.717052,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 10,
+        "interpretation": "dependency/substitution diagnostic, not evidence of statistical superiority",
+        "wall_ms_sum": 7.717351
+      },
+      "semantic_nearest": {
+        "correct": 12,
+        "cpu_ms_sum": 126.532681,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 11,
+        "interpretation": "dependency/substitution diagnostic, not evidence of statistical superiority",
+        "wall_ms_sum": 126.544422
+      },
+      "semantic_single": {
+        "correct": 11,
+        "cpu_ms_sum": 123.714657,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 12,
+        "interpretation": "substitute matches full; no exclusive capability shown",
+        "wall_ms_sum": 123.718099
+      }
+    },
+    "profile": {
+      "current_exact_kv": {
+        "correct": 12,
+        "cpu_ms_sum": 0.487897,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 10,
+        "interpretation": "dependency/substitution diagnostic, not evidence of statistical superiority",
+        "wall_ms_sum": 0.487732
+      },
+      "full": {
+        "correct": 10,
+        "cpu_ms_sum": 108.206829,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 12,
+        "interpretation": "dependency/substitution diagnostic, not evidence of statistical superiority",
+        "wall_ms_sum": 107.334595
+      },
+      "memory_removed": {
+        "correct": 0,
+        "cpu_ms_sum": 0.068251,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 0,
+        "interpretation": "dependency/substitution diagnostic, not evidence of statistical superiority",
+        "wall_ms_sum": 0.068585
+      },
+      "memory_stale": {
+        "correct": 6,
+        "cpu_ms_sum": 101.323932,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 8,
+        "interpretation": "dependency/substitution diagnostic, not evidence of statistical superiority",
+        "wall_ms_sum": 101.335162
+      },
+      "procedure_disabled:sequence": {
+        "correct": 6,
+        "cpu_ms_sum": 98.981487,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 8,
+        "interpretation": "dependency/substitution diagnostic, not evidence of statistical superiority",
+        "wall_ms_sum": 98.991392
+      },
+      "procedure_disabled:serialization": {
+        "correct": 6,
+        "cpu_ms_sum": 107.326144,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 8,
+        "interpretation": "dependency/substitution diagnostic, not evidence of statistical superiority",
+        "wall_ms_sum": 107.32912
+      },
+      "procedure_disabled:text": {
+        "correct": 8,
+        "cpu_ms_sum": 125.089855,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 8,
+        "interpretation": "dependency/substitution diagnostic, not evidence of statistical superiority",
+        "wall_ms_sum": 125.883561
+      },
+      "procedure_generic": {
+        "correct": 10,
+        "cpu_ms_sum": 100.507033,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 12,
+        "interpretation": "substitute matches full; no exclusive capability shown",
+        "wall_ms_sum": 100.509322
+      },
+      "procedure_removed": {
+        "correct": 0,
+        "cpu_ms_sum": 99.105202,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 0,
+        "interpretation": "dependency/substitution diagnostic, not evidence of statistical superiority",
+        "wall_ms_sum": 99.125544
+      },
+      "semantic_bm25": {
+        "correct": 12,
+        "cpu_ms_sum": 9.498535,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 10,
+        "interpretation": "dependency/substitution diagnostic, not evidence of statistical superiority",
+        "wall_ms_sum": 9.498823
+      },
+      "semantic_fixed": {
+        "correct": 10,
+        "cpu_ms_sum": 105.068869,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 12,
+        "interpretation": "substitute matches full; no exclusive capability shown",
+        "wall_ms_sum": 105.070095
+      },
+      "semantic_nearest": {
+        "correct": 10,
+        "cpu_ms_sum": 107.007595,
+        "evaluated": 12,
+        "exclusive_functional_advantage_supported": false,
+        "identical_output_and_status_to_full": 12,
+        "interpretation": "substitute matches full; no exclusive capability shown",
+        "wall_ms_sum": 107.83119
+      }
+    }
+  },
+  "memory_kind": "current explicit journal read, not a parametric memory cell",
+  "preencoded_feature_reads": 0,
+  "preprocessing_ledger": {
+    "cpu_seconds": 2.375312928,
+    "stats": {
+      "calls": 17,
+      "encode_seconds": 1.9511335769784637,
+      "encoded_tokens": 6286,
+      "examples": 420,
+      "input_tokens": 6286,
+      "load_seconds": 0.29982085899973754,
+      "padded_tokens": 8088,
+      "truncated_examples": 0
+    },
+    "wall_seconds": 2.2946990359923802
+  },
+  "same_executor_limitation": "typed and generic procedure arms call the same exact operation; matching outputs cannot establish a specialized-procedure benefit",
+  "seed": 713,
+  "source_sha256": "0158334523a8372538a5c7775db3d15393446b1f8bf356f617a8820b3265f3a4",
+  "statistical_claim": "fixed finite functional audit; no new efficacy selection",
+  "training_added": false
+}
