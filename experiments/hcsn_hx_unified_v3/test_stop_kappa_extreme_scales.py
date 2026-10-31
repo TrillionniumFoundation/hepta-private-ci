@@ -63,5 +63,35 @@ class ExtremeScaleKappaTests(unittest.TestCase):
                 self.assertLessEqual(abs(b / expected_b - 1), 4e-14)
 
 
+    def test_nonzero_subnormal_noise_uses_normalized_root(self):
+        # sigma*sqrt(2*rho) is nonzero but poorly resolved. With mu=0,
+        # the old normal branch gives ~1.4143955 rather than ~1.4142057.
+        for drift in (0.,1e-320,-1e-320):
+            p=Stop(drift,1e-160,1e-320,0.,-.1,0.)
+            with self.subTest(drift=drift):
+                noise=math.sqrt(2.)*math.sqrt(p.discount)*p.diffusion
+                self.assertGreater(noise,0.)
+                self.assertLess(noise,float.fromhex('0x1.0p-1022'))
+                expected_k,_=decimal_boundary(p)
+                self.assertLessEqual(abs(p.kappa/expected_k-1),4e-14)
+
+    def test_ordinary_normal_noise_controls_are_preserved(self):
+        for drift in (-.2,0.,.2):
+            p=Stop(drift,1.,.5,0.,-.1,0.)
+            with self.subTest(drift=drift):
+                expected_k,_=decimal_boundary(p)
+                self.assertLessEqual(abs(p.kappa/expected_k-1),4e-14)
+
+    def test_existing_zero_and_overflow_noise_routes_remain_available(self):
+        cases=((Stop(0.,1e-320,1e-320,0.,-1e-160,0.),0.),
+               (Stop(0.,1e308,1e308,0.,-1e154,0.),math.inf))
+        for p,expected_noise in cases:
+            with self.subTest(sigma=p.diffusion,rho=p.discount):
+                noise=math.sqrt(2.)*math.sqrt(p.discount)*p.diffusion
+                self.assertEqual(noise,expected_noise)
+                expected_k,_=decimal_boundary(p)
+                self.assertLessEqual(abs(p.kappa/expected_k-1),4e-14)
+
+
 if __name__ == '__main__':
     unittest.main()
