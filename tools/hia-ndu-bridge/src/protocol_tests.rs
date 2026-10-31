@@ -94,11 +94,10 @@ fn stream_request_limit_is_a_hard_stop() {
     line.push(b'\n');
     let input = line.repeat(257);
     let mut output = Vec::new();
-    let failure = super::stream::run(std::io::Cursor::new(input), &mut output);
-    assert_eq!(
-        failure,
-        Err("stream request budget of 256 exhausted".into())
-    );
+    // The finite session closes immediately after its 256th response.
+    // Even an already buffered 257th request gets no evaluation/response.
+    let finished = super::stream::run(std::io::Cursor::new(input), &mut output);
+    assert_eq!(finished, Ok(()));
     assert_eq!(output.iter().filter(|byte| **byte == b'\n').count(), 257);
 }
 
