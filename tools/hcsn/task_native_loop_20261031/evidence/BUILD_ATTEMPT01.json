@@ -1,0 +1,377 @@
+{
+  "schema": "hcsn.task-native-loop.build.v1",
+  "success": false,
+  "pinned_task_base": "e7eaa5e0be835269636216c8fe8b1ae2f1a22361",
+  "upstream": {
+    "schema": "hepta.task-native.source.v1",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "commit": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "files": [
+      {
+        "path": "codex-rs/hepta-neuron/src/deletion.rs",
+        "git_blob_sha": "4c7d8a6d22b7daabc65e80e2d4f39b03737c6bf5"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/deletion_tests.rs",
+        "git_blob_sha": "d3a39d590a251f971c50d2162385ed498ebe8433"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/inference_control.rs",
+        "git_blob_sha": "8a85a1e433f29b1354b4ee3c73f27b85a1842b31"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/inference_control_tests.rs",
+        "git_blob_sha": "c9c80a99f0442ec4f91bd41e4a144202b5dde997"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/journal.rs",
+        "git_blob_sha": "4a1a9cbba6082e259da3b8df7414aea8f87c79bb"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/journal_anchor_tests.rs",
+        "git_blob_sha": "94b34ffce20dae73053185c05d1ff838747df25b"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/journal_lock.rs",
+        "git_blob_sha": "8cf8324008b4fdc4e50fbb2e3dfd65e2d26d9722"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/journal_segment_tests.rs",
+        "git_blob_sha": "d156c800f986628452d9401f3a7835bd2883e9fe"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/journal_tests.rs",
+        "git_blob_sha": "3cecd1ccfc52d7f498b3d84897678f0791b3b387"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/lib.rs",
+        "git_blob_sha": "6771c122520efe45049e99dea68ac3a046611b7b"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/lib_tests.rs",
+        "git_blob_sha": "4465317bc7d681527759d8f3af648ad9cd613e79"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/plasticity.rs",
+        "git_blob_sha": "0bcfab2466d4b03161e6f4c4eb66fcbcf110b6ec"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/plasticity_tests.rs",
+        "git_blob_sha": "5c9a3d33895e647b3666b12f27c0239ad150d6fe"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/population_v2.rs",
+        "git_blob_sha": "2222068405ee85e2adf0f550ae626f7f8fc1ea08"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/population_v2_tests.rs",
+        "git_blob_sha": "5dec0a2793fd1dab221c67864cf3a4cff326155c"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/protocol.rs",
+        "git_blob_sha": "7afd7cdb43063e35dab9ca89f5d3b94765f43665"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/protocol_tests.rs",
+        "git_blob_sha": "631d1b4932fc4aa1fb486adbd475ea54c08711a7"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/qualification.rs",
+        "git_blob_sha": "2794951279cdb1795623dfe420d7f9f4f5f6a6d1"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/qualification_tests.rs",
+        "git_blob_sha": "61badd8e4f810715f727522b135e1c83700079b8"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/runtime.rs",
+        "git_blob_sha": "d483e00a69756339254124a633eb4fdcd05664d7"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/runtime_tests.rs",
+        "git_blob_sha": "4e46c63f3c0d915ae5bbe5474dfe3ca6b13e99d6"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/runtime_types.rs",
+        "git_blob_sha": "d15b3a4f8be07c35d1884f660b6a20d494c8e5e4"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/sparse.rs",
+        "git_blob_sha": "d94d50088b4cac452ad259ab08e1813049e4a78f"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/sparse_body_scope_tests.rs",
+        "git_blob_sha": "e990e799865f996d7c981e311d0de4ef1341f154"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/sparse_tests.rs",
+        "git_blob_sha": "889e72b6102e0e82057c4f5f9c0477f1929f10e7"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/witness.rs",
+        "git_blob_sha": "c56bad3540aa606fcadf0d45dc4fea45145cb4c6"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/witness_tests.rs",
+        "git_blob_sha": "586bddeee18e2c9e9c8e1680397608410b23b0f0"
+      },
+      {
+        "path": "codex-rs/hepta-infer-core/src/durable_control.rs",
+        "git_blob_sha": "339ba148df339c48897aa977b27d2d995271b278"
+      },
+      {
+        "path": "codex-rs/hepta-infer-core/src/durable_control_tests.rs",
+        "git_blob_sha": "a5bba9c0835983dfcf1f141faaa1fa10adcd670c"
+      },
+      {
+        "path": "codex-rs/hepta-infer-core/src/durable_history_tests.rs",
+        "git_blob_sha": "4a9a07a782a33f0bee3f8373ba9bc9d3c7d11dae"
+      },
+      {
+        "path": "codex-rs/hepta-infer-core/src/lib.rs",
+        "git_blob_sha": "61a9a737d2f1899987530ce59e75f43a62a02bbe"
+      },
+      {
+        "path": "codex-rs/hepta-infer-core/src/lib_tests.rs",
+        "git_blob_sha": "1fc3f93f91b30cdc19526c03535b5195fdb51ed6"
+      },
+      {
+        "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+        "git_blob_sha": "d92b748a22b19046465bcfe0b4fd9f58cc0c09fa"
+      },
+      {
+        "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+        "git_blob_sha": "60094e54bdeb0f35d5004b1579c7fc5f71b740c3"
+      },
+      {
+        "path": "codex-rs/hepta-infer-core/src/neuron_feature.rs",
+        "git_blob_sha": "b8e380656fb7e4f3faaafe6181f25b4e603d132b"
+      },
+      {
+        "path": "codex-rs/hepta-infer-core/src/neuron_feature_tests.rs",
+        "git_blob_sha": "c8c012caa93186533ea56953df2295a745db1ead"
+      },
+      {
+        "path": "codex-rs/hepta-types/src/bounded.rs",
+        "git_blob_sha": "5b8afd7be362d5383283d03b785b57b6128fa28d"
+      },
+      {
+        "path": "codex-rs/hepta-types/src/bounded_tests.rs",
+        "git_blob_sha": "b82714a659ef1bc0505a9aa2fb1ebd2f443a9589"
+      },
+      {
+        "path": "codex-rs/hepta-types/src/canonical_digest.rs",
+        "git_blob_sha": "331d16b144b559d170c5e2919b6c042b45289f61"
+      },
+      {
+        "path": "codex-rs/hepta-types/src/canonical_digest_tests.rs",
+        "git_blob_sha": "3f85f0d52ad0198b83476d051d36f0992ac6c106"
+      },
+      {
+        "path": "codex-rs/hepta-types/src/digest.rs",
+        "git_blob_sha": "4b6fe231f9faa717067818f509ebb4b150dbfbce"
+      },
+      {
+        "path": "codex-rs/hepta-types/src/digest_stream_tests.rs",
+        "git_blob_sha": "b38ebda455df98d1380f0bae0a8e094630341217"
+      },
+      {
+        "path": "codex-rs/hepta-types/src/digest_tests.rs",
+        "git_blob_sha": "9479823a601803f9c43c4e9a465907f4d466fc2b"
+      },
+      {
+        "path": "codex-rs/hepta-types/src/fixed.rs",
+        "git_blob_sha": "3c2674dce405fd20f254f5f1816654aae99d7c13"
+      },
+      {
+        "path": "codex-rs/hepta-types/src/fixed_tests.rs",
+        "git_blob_sha": "0b6194dd7ec6f14c966faa951abbbc8289e3ffdb"
+      },
+      {
+        "path": "codex-rs/hepta-types/src/identity.rs",
+        "git_blob_sha": "d57e5c9d0ebe8dced59c096a3586830d52e3df4f"
+      },
+      {
+        "path": "codex-rs/hepta-types/src/identity_tests.rs",
+        "git_blob_sha": "a51092759c8ac8da9d494f920637a291ef1a38a1"
+      },
+      {
+        "path": "codex-rs/hepta-types/src/lib.rs",
+        "git_blob_sha": "80039df26ca8d1a4fc74d715e2b73423c6806365"
+      },
+      {
+        "path": "codex-rs/hepta-types/src/numeric_conversion.rs",
+        "git_blob_sha": "03f4df15838b6c71fc0017fdb75cb179fb1b70a7"
+      },
+      {
+        "path": "codex-rs/hepta-types/src/numeric_conversion_tests.rs",
+        "git_blob_sha": "dcaadc76f2563010e955cc5a61e64909bd3b7312"
+      },
+      {
+        "path": "codex-rs/hepta-types/src/numeric_profile.rs",
+        "git_blob_sha": "383ef3eb7a62873b74faa50f097f7aa11130b18a"
+      },
+      {
+        "path": "codex-rs/hepta-types/src/numeric_profile_tests.rs",
+        "git_blob_sha": "87f2a3388516610ac96da38fb2e1c36feba41a72"
+      },
+      {
+        "path": "codex-rs/hepta-types/src/prompt_delivery.rs",
+        "git_blob_sha": "11494905ff09b30a51e0131d81364df87cd41475"
+      },
+      {
+        "path": "codex-rs/hepta-types/src/prompt_delivery_tests.rs",
+        "git_blob_sha": "a87cfe27c12292278e4db2a7b3fc13c860255cf9"
+      },
+      {
+        "path": "codex-rs/hepta-types/src/registry.rs",
+        "git_blob_sha": "b9af7af31f2eb6dda29f78701ccc608563920f87"
+      },
+      {
+        "path": "codex-rs/hepta-types/src/registry_tests.rs",
+        "git_blob_sha": "3f1091284d412fdebd05ccb76c7a803349252c99"
+      },
+      {
+        "path": "codex-rs/hepta-types/src/topology.rs",
+        "git_blob_sha": "0089680a88f93b1b9245a6077cb95eaa14e6affe"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/Cargo.toml",
+        "git_blob_sha": "dbd650a75e7ebe47d2642bc653468355d42cd2e3"
+      },
+      {
+        "path": "codex-rs/hepta-infer-core/Cargo.toml",
+        "git_blob_sha": "d89bf7c4764cdaaa4b040a447a295965ea0142c5"
+      },
+      {
+        "path": "codex-rs/hepta-types/Cargo.toml",
+        "git_blob_sha": "753e54835f933be4bf647417b2fb4c90a5e55181"
+      }
+    ]
+  },
+  "source_sha256": {
+    "codex-rs/hepta-neuron/src/deletion.rs": "3df225977b194e17909a73127f298d84a983e074f3a8aef950dfdabf8c88d417",
+    "codex-rs/hepta-neuron/src/deletion_tests.rs": "71a50fc119072b8fe2a36e8431bc4bcbbda9dd5debf6ee24999caba188049745",
+    "codex-rs/hepta-neuron/src/inference_control.rs": "f7e89f69319e86d97d506bc3a656b6b061639470fb6475feb62d6f1694e8f4cd",
+    "codex-rs/hepta-neuron/src/inference_control_tests.rs": "121b4974d95688843b4962a74a7759c4d275ab504909d8d26dca7308246f8128",
+    "codex-rs/hepta-neuron/src/journal.rs": "d8bf3aa2183cec3773be8134117166df440a8e0220de33d318e4800a21d5ea1f",
+    "codex-rs/hepta-neuron/src/journal_anchor_tests.rs": "6630ce721c6cb875cdb95805a804f62338971afd3df7c4a22762186839dc7928",
+    "codex-rs/hepta-neuron/src/journal_lock.rs": "1162918fde01466d9d7b7abb33fd502dca289b970e84b37168ad4e2ca0692252",
+    "codex-rs/hepta-neuron/src/journal_segment_tests.rs": "d889a32c0a56dc36842acb1889abfe0e2fa03c8839ab4500ab7d2487a1ea0540",
+    "codex-rs/hepta-neuron/src/journal_tests.rs": "6fe8271500c11fd6e5e445d238e636a9de4edd17e08318ee38bf9b5189f7bab8",
+    "codex-rs/hepta-neuron/src/lib.rs": "dc441b025b4ddbc8fa1b5622c7f3092406c5a5067c9c1fd886d02578c9d01c37",
+    "codex-rs/hepta-neuron/src/lib_tests.rs": "add9642dfff13e663d4127d9d119ad6ff7dd19f0e3c8935b9de19f2b0c9a962e",
+    "codex-rs/hepta-neuron/src/plasticity.rs": "114cfb3367d01612e684021a8961cb7f4d742f8855f90dd792db108081eaa471",
+    "codex-rs/hepta-neuron/src/plasticity_tests.rs": "3d2175a990711873320ba65166aaa77cb45b328214b9356c35cff30ddd2a638b",
+    "codex-rs/hepta-neuron/src/population_v2.rs": "c397c867dac6877f6f9b24569798057e988b1c5aed0befbb6d8f2b1f59446b60",
+    "codex-rs/hepta-neuron/src/population_v2_tests.rs": "a7de122f8fd2d24118f3d894ceeca56c940113992ab972bf8e4f914cfa3f805e",
+    "codex-rs/hepta-neuron/src/protocol.rs": "240a3ae18713aea814dad483c9470c34212a1d4d50a9aae84007e8f3dbc6bf35",
+    "codex-rs/hepta-neuron/src/protocol_tests.rs": "5787899890bcd16aaea9042b5924583fa71a3d9f755debf6bc1b05bfa626ee69",
+    "codex-rs/hepta-neuron/src/qualification.rs": "b425d7a58aec3c4b29b18875141bcc2d1a6ec1c743ac941ff3cff48694fa4520",
+    "codex-rs/hepta-neuron/src/qualification_tests.rs": "c732fb1b35fad52b5108ebc4aa7dd2a4f007ae6ba4d48ac1352e02f91f3876cb",
+    "codex-rs/hepta-neuron/src/runtime.rs": "bace4a3c36a2a4199a975aeac73041011ed487b2d308c75c4e062b25e6451fad",
+    "codex-rs/hepta-neuron/src/runtime_tests.rs": "320be5a7bdb7b997844da3ca168536f9458b046151e5dbe3d675fe19ed564f9a",
+    "codex-rs/hepta-neuron/src/runtime_types.rs": "754e5b324af9762bab507ff9543484a91f2e67c8fbc88f9505a1d2bf194cba3b",
+    "codex-rs/hepta-neuron/src/sparse.rs": "bc5a1f64ddfda4e603e590d62b0ed01fa5b0b3cd54f1d1d4407477af5bed2810",
+    "codex-rs/hepta-neuron/src/sparse_body_scope_tests.rs": "055790ef7be81f8db53fb270d82fd845c3d530f2bb62d4fe220526dc8eb97bce",
+    "codex-rs/hepta-neuron/src/sparse_tests.rs": "40069dacc61797df327402da7a9f74e7838db5757a124587eaf3f158e6998a8b",
+    "codex-rs/hepta-neuron/src/witness.rs": "69bca85b5d839db1fb0552bd521515645045b04a2e696828c30efbce77f57213",
+    "codex-rs/hepta-neuron/src/witness_tests.rs": "fcd257565eb0017aebbfbbabb6b0d2c59367e044ba0330b018bb52ce976074ac",
+    "codex-rs/hepta-infer-core/src/durable_control.rs": "2cb7407a89d8ad4839e81abee4814b4a41af98435486308b705f365db264d99e",
+    "codex-rs/hepta-infer-core/src/durable_control_tests.rs": "f67623dae2e833d2fa4e27183ebb63be2ff838a6d3b87a0d833b296b4e345f0d",
+    "codex-rs/hepta-infer-core/src/durable_history_tests.rs": "2ed6f5f02e069824e72c2975661c92d9d850e7d9bab4ab24dd525abb315bd11c",
+    "codex-rs/hepta-infer-core/src/lib.rs": "85c8c13691909f22d864ac43ea322c5fc6d2a504b5a46e4c207d8574f12d73fb",
+    "codex-rs/hepta-infer-core/src/lib_tests.rs": "706c64c84039d9a043b4d3735403787400525575e16bc840c5f65e04a2b70dc8",
+    "codex-rs/hepta-infer-core/src/native_control.rs": "bdee48d7589675b597bb734850c08bb18fa94483029657612bee4e71650bd849",
+    "codex-rs/hepta-infer-core/src/native_control_tests.rs": "8a703e5b4c87e50a60c941a54dfb95365c550dccbc8394d039365406dd8f59ca",
+    "codex-rs/hepta-infer-core/src/neuron_feature.rs": "32fc64ae461621b4f6a8f20d3ff4e17ded53c6a00d9338fd8594c1539423e72b",
+    "codex-rs/hepta-infer-core/src/neuron_feature_tests.rs": "4119b9ca64eef5b6c283ffacc418b6e64d016a99e3ca63fc22cd0d0c164e0561",
+    "codex-rs/hepta-types/src/bounded.rs": "5907602ef8128b3237991e737e2fc687eb5ac9c716505cc7d884eed9523ea2a9",
+    "codex-rs/hepta-types/src/bounded_tests.rs": "3145c56c2882e91420bc994dd93f3375e1b532b03331826868d0ecfc019077bc",
+    "codex-rs/hepta-types/src/canonical_digest.rs": "d7df2b3581046fec4d7350747b1a8053a549c6feb33e462802107a4eb4acd391",
+    "codex-rs/hepta-types/src/canonical_digest_tests.rs": "9985f3ac27b0f357653206f4788cb366b623548c53502d277cd81f1a0f3d8fbe",
+    "codex-rs/hepta-types/src/digest.rs": "8bfa9aa8424a4a60d4f2f7044099a080a07e9bf3cff958690c3a4e9046a4b4e2",
+    "codex-rs/hepta-types/src/digest_stream_tests.rs": "9ff87ab6ffb17f27c2a23762893f641bb55edaff33f8bfb307729d9be8295a6c",
+    "codex-rs/hepta-types/src/digest_tests.rs": "838dc12e305735321c1028dabb7c5dd4e363f1bced8126d2c50eb7527febe37c",
+    "codex-rs/hepta-types/src/fixed.rs": "38de891c6a9dd6a2889c0d6a83fd0bcecf6ed17e2b7090739df8d2effe0b2cff",
+    "codex-rs/hepta-types/src/fixed_tests.rs": "cfa86da0bc63fa273c3124bbd0988fd6bd22383a0338b15ac2a944c80aa5544b",
+    "codex-rs/hepta-types/src/identity.rs": "5e73c7848a46cd72f22fed856890ff4978204a6a0d2a0088dfe4a974796515f3",
+    "codex-rs/hepta-types/src/identity_tests.rs": "c3bba7041a11ead1ccb655fb6491c5835a3020c3f26d4deb22edc94a4f8e34be",
+    "codex-rs/hepta-types/src/lib.rs": "6793a05230b404884f1e2aed89a4369c52ad9a7f7adbb52a39a3ff1bf0ef5283",
+    "codex-rs/hepta-types/src/numeric_conversion.rs": "d183cfb5f6981cb9d767a0d8a90cb895153f932ebc3c635ceb4f0b86e090cbfd",
+    "codex-rs/hepta-types/src/numeric_conversion_tests.rs": "554d51398fdef4cd69ccc43b3f0d4a002a2a8eed20552a8228770bfde364883a",
+    "codex-rs/hepta-types/src/numeric_profile.rs": "d656fa38fea5a18105da911107caae4d326a653854df0c5baed10d4ab3c6bbe9",
+    "codex-rs/hepta-types/src/numeric_profile_tests.rs": "fab0d6bd469412e77191e43cb17dde7f9638b07292ea5e2df5ad242cf616ea1a",
+    "codex-rs/hepta-types/src/prompt_delivery.rs": "f01b741add536a597bf9c87664f83909fd77989d19ff4e2fc2c752d98cfbf593",
+    "codex-rs/hepta-types/src/prompt_delivery_tests.rs": "1ad1075b9433c1a31629ba3df0509ce16ae7c70060797d2ea08f21b5a2c63f1a",
+    "codex-rs/hepta-types/src/registry.rs": "ad15fac503e3988c3fc5d8892136f91c45bb41a12266de5e037a31a6a690b005",
+    "codex-rs/hepta-types/src/registry_tests.rs": "d964bd53b636362da367fc9edf053c72272d62416ef231b632ee3dda6a5ec59a",
+    "codex-rs/hepta-types/src/topology.rs": "e1888c64c8682491837c907a91a960327530251450ecb38e70a60df792adba22",
+    "codex-rs/hepta-neuron/Cargo.toml": "1ebe7dcf2b82b8143aa298059afff3ea17ee76f7c6140aae41d099bed5031c48",
+    "codex-rs/hepta-infer-core/Cargo.toml": "7ca860f039344b7629db786ccb069d150ee87838ff8f1211e9a89935da00c16e",
+    "codex-rs/hepta-types/Cargo.toml": "0df592ec8d8b63b9c8e7f9ca9f74feca802ffbd3b71dd0959c4127b4ad3109b0",
+    "tools/hcsn/task_native_loop_20261031/native/main.rs": "bb0181325b6b4cb464b575f33bd0c6341ca4d6b69b69dc4ec6be9fd5cc6741f7",
+    "tools/hcsn/task_native_loop_20261031/native/native_tests.rs": "1ef1ba1dc2a2140b6984cb1a912885c0570b812c346712ef074fb52eebc24e53",
+    "tools/hcsn/task_native_loop_20261031/native/owner.rs": "9614e15444a2e55387242086addc2c723777a28bf3469d8a481c4b8cfa1125e9",
+    "tools/hcsn/task_native_loop_20261031/native/policy.rs": "d5ff342b87db7d1aedb1f3d87f67a3ef900785fd65ea31f468ff28b1ff883874",
+    "tools/hcsn/task_native_loop_20261031/native/port.rs": "a5fe0d0961b70c258205e1fc43db0981ea34d93b10e4412fc889faa449e5a0ac",
+    "tools/hcsn/task_native_loop_20261031/native/store.rs": "9cbbfd03a3c9c3ac0edbeaea9e469d4f277305d4e0e39038165190396e4ede48",
+    "tools/hcsn/task_native_loop_20261031/native/task.rs": "1a97dae909cbe35a75dd48f6c8382e0fdb7726742e54aff271065a579957ece6",
+    "tools/hcsn/round9_20261031/native/src/cell.rs": "7d4cd316379162e95ca06beec23219912ec53febc60107d93d781a9b9593d6a9",
+    "tools/hcsn/round9_20261031/native/src/content.rs": "93b34ac7ce743e3cafc5d54124dc477d03999f47b99fcc23ebc6439f7d22ae79",
+    "tools/hcsn/round9_20261031/native/src/native.rs": "418e50e1dd06f1b52fe5937288625db2c7a756acfbd730e732b1d063fbf31ef7",
+    "tools/hcsn/round9_20261031/native/src/owner.rs": "870aaa407f66eab55df98b0ef386a7a60e1209bae3368521454dac38248d294f",
+    "tools/hcsn/round9_20261031/native/src/schedule.rs": "2340e300afa93cc370843faa1aca84d0f03640f86daf1d4ebbf60113f0c0ca1a",
+    "tools/hcsn/task_native_loop_20261031/build.py": "b439f3a87d48e5549971b297537d55578387dec582e9d2d0bf3cd6b1919cf490"
+  },
+  "source_digest": "b5288be9df0d5c58819636dceecd29d41710833528b80f8a10b491f3a3579d6c",
+  "generated_manifest": "[package]\nname = \"codex-task-native-loop\"\nversion = \"0.1.0\"\nedition = \"2024\"\n[workspace]\nmembers = [\".\"]\n[workspace.package]\nversion = \"0.0.0\"\nedition = \"2024\"\nlicense = \"Apache-2.0\"\n[workspace.dependencies]\nserde = { version = \"=1.0.229\", features = [\"rc\"] }\nserde_json = \"=1.0.151\"\nsha2 = \"=0.10.9\"\npretty_assertions = \"1.4.1\"\n[workspace.lints]\nrust = {}\n[[bin]]\nname = \"codex-task-native-loop\"\npath = \"/workspace/scratch/5aabc7b0a3ce/hepta-hcsn/tools/hcsn/task_native_loop_20261031/native/main.rs\"\n[dependencies]\ncodex-hepta-neuron = { path = \"/workspace/scratch/5aabc7b0a3ce/native-loop-build/upstream/codex-rs/hepta-neuron\" }\ncodex-hepta-types = { path = \"/workspace/scratch/5aabc7b0a3ce/native-loop-build/upstream/codex-rs/hepta-types\" }\nserde = { version = \"=1.0.229\", features = [\"derive\"] }\nserde_json = { version = \"=1.0.151\", features = [\"float_roundtrip\"] }\nlibc = \"=0.2.186\"\n[dev-dependencies]\npretty_assertions = \"1.4.1\"\n[profile.dev]\ndebug = 0\nincremental = false\nopt-level = 2\n",
+  "generated_lock_sha256": "094407bca104908519cbd3be93a194a95501eb0231c6a04471092c0e5886f0ed",
+  "source_only_fresh_cargo_build": true,
+  "binary": "/workspace/scratch/5aabc7b0a3ce/native-loop-build/target/debug/codex-task-native-loop",
+  "binary_sha256": null,
+  "tests_requested": true,
+  "commands": [
+    {
+      "command": [
+        "/tmp/pq-r3-rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "--version",
+        "--verbose"
+      ],
+      "cwd": "/workspace/scratch/5aabc7b0a3ce/native-loop-build",
+      "returncode": 0,
+      "stdout": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.95.0\nLLVM version: 22.1.2\n",
+      "stderr": "",
+      "wall_seconds": 0.009858125005848706,
+      "child_cpu_seconds": 0.008499999999999999
+    },
+    {
+      "command": [
+        "just",
+        "--version"
+      ],
+      "cwd": "/workspace/scratch/5aabc7b0a3ce/hepta-hcsn/codex-rs",
+      "returncode": 0,
+      "stdout": "just 1.59.0\n",
+      "stderr": "",
+      "wall_seconds": 0.0010753690003184602,
+      "child_cpu_seconds": 0.0008500000000000001
+    },
+    {
+      "command": [
+        "cargo",
+        "build",
+        "--offline",
+        "--manifest-path",
+        "/workspace/scratch/5aabc7b0a3ce/native-loop-build/Cargo.toml"
+      ],
+      "cwd": "/workspace/scratch/5aabc7b0a3ce/native-loop-build",
+      "returncode": 101,
+      "stdout": "",
+      "stderr": "error: failed to download `cfg-if v1.0.5`\n\nCaused by:\n  attempting to make an HTTP request, but --offline was specified\n",
+      "wall_seconds": 0.06057357499958016,
+      "child_cpu_seconds": 0.050531
+    }
+  ],
+  "production_activation": false
+}

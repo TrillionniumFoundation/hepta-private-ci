@@ -1,0 +1,337 @@
+{
+  "audit_integrity_passed": true,
+  "complete_audit_process_costs": {
+    "cpu_seconds": 0.377127,
+    "energy_joules": null,
+    "scope": "All native invocations, including inspection, failure and rejection probes; audit Python/setup and independent solver CPU are additional research costs.",
+    "wall_seconds": 0.5161840010405285
+  },
+  "continuous_diffusion_qualified": false,
+  "findings": {
+    "constructed_sensitivity_witness": {
+      "actual_read_flow_changed": true,
+      "causal_content_gate": true,
+      "development_fixture_only": true,
+      "latent_changed": true,
+      "reason": "Latent changes without changed real READ flow fail the content gate.",
+      "task_successor_changed": true,
+      "trained_policy": false,
+      "utility_gain_proved": false
+    },
+    "failed_read_cost_persisted": {
+      "answers": [],
+      "budget": 4,
+      "charged_cost": 0.028499999999999998,
+      "job": 0,
+      "latency_cost": 0.006,
+      "posterior": 0.5,
+      "query_cost": 0.0225,
+      "reads_in_job": 0,
+      "task_elapsed": 0.4,
+      "terminal": true,
+      "tick": 0
+    },
+    "failed_read_process_costs": [
+      {
+        "native_action_stage_costs": [
+          {
+            "content_nanos": 37236,
+            "critic_nanos": 4616,
+            "decision_nanos": 60,
+            "persist_nanos": 1304845,
+            "propagation_nanos": 1482,
+            "query_nanos": 3154
+          }
+        ],
+        "native_artifact_load_nanos": 4912353,
+        "native_owner_load_nanos": 6425121,
+        "pid": 41,
+        "process_cpu_seconds": 0.007202,
+        "process_wall_seconds": 0.00945387000683695
+      },
+      {
+        "native_action_stage_costs": [],
+        "native_artifact_load_nanos": 11155415,
+        "native_owner_load_nanos": 12056076,
+        "pid": 42,
+        "process_cpu_seconds": 0.01252600000000001,
+        "process_wall_seconds": 0.013354511000216007
+      }
+    ],
+    "four_actions_distribution": {
+      "FIRE": {
+        "answers": [
+          {
+            "job": 0,
+            "posterior": 0.5,
+            "prediction": 1,
+            "reads": 0,
+            "tick": 0
+          }
+        ],
+        "budget": 4,
+        "charged_cost": 0.012,
+        "job": 1,
+        "latency_cost": 0.012,
+        "posterior": 0.5,
+        "query_cost": 0.0,
+        "reads_in_job": 0,
+        "task_elapsed": 0.8,
+        "terminal": false,
+        "tick": 2
+      },
+      "READ": {
+        "answers": [],
+        "budget": 3,
+        "charged_cost": 0.028499999999999998,
+        "job": 0,
+        "latency_cost": 0.006,
+        "posterior": 0.2647058823529412,
+        "query_cost": 0.0225,
+        "reads_in_job": 1,
+        "task_elapsed": 0.4,
+        "terminal": false,
+        "tick": 1
+      },
+      "SKIP": {
+        "answers": [],
+        "budget": 4,
+        "charged_cost": 0.006,
+        "job": 0,
+        "latency_cost": 0.006,
+        "posterior": 0.5,
+        "query_cost": 0.0,
+        "reads_in_job": 0,
+        "task_elapsed": 0.4,
+        "terminal": false,
+        "tick": 1
+      },
+      "STOP": {
+        "answers": [],
+        "budget": 4,
+        "charged_cost": 0.0,
+        "job": 0,
+        "latency_cost": 0.0,
+        "posterior": 0.5,
+        "query_cost": 0.0,
+        "reads_in_job": 0,
+        "task_elapsed": 0.0,
+        "terminal": true,
+        "tick": 0
+      }
+    },
+    "four_actions_ordinary": {
+      "FIRE": {
+        "answers": [
+          {
+            "job": 0,
+            "posterior": 0.5,
+            "prediction": 1,
+            "reads": 0,
+            "tick": 0
+          }
+        ],
+        "budget": 4,
+        "charged_cost": 0.012,
+        "job": 1,
+        "latency_cost": 0.012,
+        "posterior": 0.5,
+        "query_cost": 0.0,
+        "reads_in_job": 0,
+        "task_elapsed": 0.8,
+        "terminal": false,
+        "tick": 2
+      },
+      "READ": {
+        "answers": [],
+        "budget": 3,
+        "charged_cost": 0.028499999999999998,
+        "job": 0,
+        "latency_cost": 0.006,
+        "posterior": 0.2647058823529412,
+        "query_cost": 0.0225,
+        "reads_in_job": 1,
+        "task_elapsed": 0.4,
+        "terminal": false,
+        "tick": 1
+      },
+      "SKIP": {
+        "answers": [],
+        "budget": 4,
+        "charged_cost": 0.006,
+        "job": 0,
+        "latency_cost": 0.006,
+        "posterior": 0.5,
+        "query_cost": 0.0,
+        "reads_in_job": 0,
+        "task_elapsed": 0.4,
+        "terminal": false,
+        "tick": 1
+      },
+      "STOP": {
+        "answers": [],
+        "budget": 4,
+        "charged_cost": 0.0,
+        "job": 0,
+        "latency_cost": 0.0,
+        "posterior": 0.5,
+        "query_cost": 0.0,
+        "reads_in_job": 0,
+        "task_elapsed": 0.0,
+        "terminal": true,
+        "tick": 0
+      }
+    },
+    "identity_rejections_distribution": [
+      "policy",
+      "public",
+      "content",
+      "external_ack"
+    ],
+    "identity_rejections_ordinary": [
+      "policy",
+      "public",
+      "content",
+      "external_ack"
+    ],
+    "latent_only_negative_control": {
+      "actual_read_flow_changed": false,
+      "causal_content_gate": false,
+      "latent_changed": true,
+      "reason": "Latent changes without changed real READ flow fail the content gate.",
+      "task_successor_changed": false,
+      "utility_gain_proved": false
+    },
+    "missing_unread_SKIP": true,
+    "missing_unread_STOP": true,
+    "nonconstant_pre_read_causality": true,
+    "true_process_restore_distribution": {
+      "continuous_cost": {
+        "artifact_load_seconds": 0.005250202,
+        "cpu_seconds": 0.018965000000000044,
+        "energy_joules": null,
+        "owner_load_seconds": 0.009230744,
+        "processes": 1,
+        "wall_seconds": 0.0323068370053079
+      },
+      "final": {
+        "answers": [
+          {
+            "job": 0,
+            "posterior": 0.19739351557533377,
+            "prediction": 0,
+            "reads": 2,
+            "tick": 2
+          },
+          {
+            "job": 1,
+            "posterior": 0.3182061221761798,
+            "prediction": 0,
+            "reads": 2,
+            "tick": 6
+          }
+        ],
+        "budget": 0,
+        "charged_cost": 0.4545,
+        "job": 2,
+        "latency_cost": 0.10200000000000001,
+        "posterior": 0.5,
+        "query_cost": 0.3525,
+        "reads_in_job": 0,
+        "task_elapsed": 6.800000000000001,
+        "terminal": true,
+        "tick": 8
+      },
+      "overhead_cpu_seconds": 0.02787899999999991,
+      "overhead_wall_seconds": 0.028966131983906962,
+      "pids": [
+        57,
+        58,
+        59,
+        60,
+        61,
+        62
+      ],
+      "processes": 6,
+      "recovery_cost": {
+        "artifact_load_seconds": 0.028069558,
+        "cpu_seconds": 0.046843999999999955,
+        "energy_joules": null,
+        "owner_load_seconds": 0.034664036,
+        "processes": 6,
+        "wall_seconds": 0.06127296898921486
+      },
+      "scope": "One paired development fixture, not a performance confidence interval; includes all process startup and recovery work."
+    },
+    "true_process_restore_ordinary": {
+      "continuous_cost": {
+        "artifact_load_seconds": 0.00509568,
+        "cpu_seconds": 0.01696600000000001,
+        "energy_joules": null,
+        "owner_load_seconds": 0.008618262,
+        "processes": 1,
+        "wall_seconds": 0.037729597999714315
+      },
+      "final": {
+        "answers": [
+          {
+            "job": 0,
+            "posterior": 0.19739351557533377,
+            "prediction": 0,
+            "reads": 2,
+            "tick": 2
+          },
+          {
+            "job": 1,
+            "posterior": 0.3182061221761798,
+            "prediction": 0,
+            "reads": 2,
+            "tick": 6
+          }
+        ],
+        "budget": 0,
+        "charged_cost": 0.4545,
+        "job": 2,
+        "latency_cost": 0.10200000000000001,
+        "posterior": 0.5,
+        "query_cost": 0.3525,
+        "reads_in_job": 0,
+        "task_elapsed": 6.800000000000001,
+        "terminal": true,
+        "tick": 8
+      },
+      "overhead_cpu_seconds": 0.02999199999999999,
+      "overhead_wall_seconds": 0.03262608600198291,
+      "pids": [
+        46,
+        47,
+        48,
+        49,
+        50,
+        51
+      ],
+      "processes": 6,
+      "recovery_cost": {
+        "artifact_load_seconds": 0.028020608,
+        "cpu_seconds": 0.046958,
+        "energy_joules": null,
+        "owner_load_seconds": 0.036609171,
+        "processes": 6,
+        "wall_seconds": 0.07035568400169723
+      },
+      "scope": "One paired development fixture, not a performance confidence interval; includes all process startup and recovery work."
+    }
+  },
+  "inputs": {
+    "audit_source_sha256": "8bf8a17b2988cf6fc844620d194b301279fc0b71f3f4fab6c3c5eccfffaffe11",
+    "binary_sha256": "f53e90a388a6f97dfe5283535ed2b5877cf197a726a9842debc5f9ed097b5330",
+    "content_sha256": "66bb4fabc2fdca0b08d7e834f6a1dfdd73aedb4cfbd1b4c594b709f742092972",
+    "policy_sha256": "a87e47a7dfe9ace0152729efeb5e34c252545704d65525a2eb67f83325037fcb",
+    "public_sha256": "521fe9df5f7326cd6b6e2d26fc4e5d8569a841c91eed3c2d75068c5e06663116"
+  },
+  "native_invocations": 50,
+  "recovery_scope": "Acknowledged complete actions, distinct processes, externally supplied acknowledgement",
+  "schema": "hcsn.native-loop.independent-audit.v1",
+  "scientific_efficacy_proved": false,
+  "source_scope": "Independent task/feature/CTMC/critic arithmetic; actual content is executed by native owner"
+}
