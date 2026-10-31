@@ -41,3 +41,30 @@ Exact locally tested and remotely read-back Git blob identities:
 | P5 hybrid | **BLOCKED** | Prespecified equal data/tokens/FLOPs/training/inference budget net quality-and-cost advantage over tuned gate/Transformer/SSM baselines |
 
 Historical negative training and hardware results are **not erased, selected away, or promoted to success**. `production_activation=false`; `all_scientific_blockers_closed=false`. Keep this research PR draft, unmerged, and independent of production permission.
+
+## Additive P0 follow-up: coupled smooth-fit, implicit gradients, real CPU low-precision arithmetic
+
+Three **additional independent source/test pairs** were committed after the first five-method obstacle audit; the first source/test blobs and the historical negative observations are unchanged.
+
+1. `hx_coupled_smoothfit_independent.py` independently reconstructs the financial smooth-fit *algebraic* root from Brownian first-hit **density** quadrature and two-bond recovery scaling. It integrates the affine cashflow equation `I(b)=s*b+o=0` with a Gaussian first-hit tail envelope in log form and a 128/256-node Gauss-Legendre comparison. This does not use HX Eq.(8)/(12)/(A7) or the original Green resolvent. Five selected financial parameter regimes agree with the separate HX Eq.(12) boundary with maximum relative difference `2.63e-13`; worst reported 128→256 node root shift `5.98e-11`. The first-hit tail log10 envelope in these regimes lies below `-74`, but numerical quadrature error and tail arithmetic are **not** rigorous global interval enclosures.
+2. `hx_implicit_gradient_reference.py` differentiates the independent affine cashflow root by `db/dtheta=-(b*ds/dtheta+do/dtheta)/s`, with centered differences only for the coefficient Jacobian. Twelve comparisons (two regimes × six parameters) against **separate** finite differences of the original Eq.(12) root have worst normalized discrepancy `5.53e-8`. Unsupported perturbations and structural-domain boundary crossings refuse. This is not differentiating an admissible globally optimal *policy*, not certified active-set gradients, and not a native GPU/fused kernel.
+3. `scalar_precision_screen.py` measures actual PyTorch **CPU FP32/BF16** threshold comparisons and implicit-residual backward arithmetic for three **simplified scalar regenerative Brownian** regimes, with a conservative eight-epsilon *empirical* rejection band (not an interval theorem). Maximum measured normalized f64-to-FP32 implicit-gradient error `8.63e-8`, BF16 `4.18e-3`. The larger BF16 rejection band can remove practical utility near the boundary. These are neither full **financial HX** precision tests nor GPU proofs.
+
+### Updated local reproduction
+
+```sh
+python -m unittest -v \
+  experiments.hcsn_hx_unified_v3.test_hx_obstacle_grid_independent \
+  experiments.hcsn_hx_unified_v3.test_hx_coupled_smoothfit_independent \
+  experiments.hcsn_hx_unified_v3.test_hx_implicit_financial_gradient \
+  experiments.hcsn_hx_unified_v3.test_scalar_precision_screen
+```
+
+**13/13 focused test methods PASS, no skips** on local Python 3.13.5 / SciPy / PyTorch CPU, with a reconstructed HX subset rather than a byte-identical full repository checkout. Remote code has been read back at exact Git blob identities for all eight source/test files. This is **not** a successful full checkout/CI run, formal proof of HX equilibrium, or hardware certification.
+
+New exact blob pairs (source, test):
+- Coupled financial root: `7f05701d18fe9f8b2978142e45f5b0180c2f9404`, `959ee8bf0f7e215167e166a6a458652bd9d4b85b`.
+- Implicit financial coefficient sensitivity: `43033d4814395b525b84557ee1ae7275a13988a6`, `98e8b4f9f79bdc9750e2973a86885963432f355b`.
+- Scalar CPU precision screen: `d501166ec8dd842e59f22e5b7370d09102c43183`, `8aba099e1dc8d00e05c153fa8adb8691078156e9`.
+
+The complete endogenous financial equilibrium/global obstacle, interval or high-precision reference over all admissible parameters, physical FP32/BF16 *financial* kernels and active-set/AD gradients remain **P0 blockers**. No P1-P5 scientific acceptance status changes. `production_activation=false`; `all_scientific_blockers_closed=false`.
