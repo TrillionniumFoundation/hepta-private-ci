@@ -1,0 +1,382 @@
+{
+  "artifacts": {
+    "data/development_seed81031.tar.gz": "ce3a626618402195714b07ea54d31827a8f2204dc7fe3586d70e7b09beb03eca",
+    "data/development_seed81037.tar.gz": "7afb83a96824e9456c5daa2fef94c57c86d4b43326a202de529b9624a064a233",
+    "data/development_seed81043.tar.gz": "cd58a9b098540cec0a2fbf31a88abda820b5135004091365a72245373aed96b3",
+    "data/development_seed81049.tar.gz": "8a556811d0aa262a0bdf5a8f11ee7989326f7592afb3d6276a1a4a45d1c0877a",
+    "data/development_seed81057.tar.gz": "bc3786428751c9ee745664a0d9317f4211959cae132e5fcfe204d452493d2678",
+    "training/seed81031.json.gz": "2156ed0446060bbaaf3e5b96e269c187d14fe37dc20a9764cfbf84086c787ab4",
+    "training/seed81037.json.gz": "a555e4a87418a39b3ad22426b902384ac756d5da00ca406c2e3afd4fdcad37c1",
+    "training/seed81043.json.gz": "82f120311b3a239de919a6274d17c34e31e6106eb4353b759e23553f10bd8d1f",
+    "training/seed81049.json.gz": "4812e5bd62f1de22901b66718631509d609c1ab749fd498caa5a63f82dec7881",
+    "training/seed81057.json.gz": "e0d8edba4d28d50e8987b1dfd74c3da8e05c4da86e33b0224258193c6520d91e"
+  },
+  "at": "2026-10-31T10:20:44.897655+00:00",
+  "costs": {
+    "81031": {
+      "fit_cpu_seconds": {
+        "analytic": 3.780006799999999,
+        "ordinary": 1.188761011
+      },
+      "shared_cpu_seconds": 3.107581603
+    },
+    "81037": {
+      "fit_cpu_seconds": {
+        "analytic": 3.882381992999999,
+        "ordinary": 1.337444478
+      },
+      "shared_cpu_seconds": 3.289678083
+    },
+    "81043": {
+      "fit_cpu_seconds": {
+        "analytic": 3.318366889,
+        "ordinary": 1.1518746729999982
+      },
+      "shared_cpu_seconds": 3.1829292629999983
+    },
+    "81049": {
+      "fit_cpu_seconds": {
+        "analytic": 3.274334691,
+        "ordinary": 1.5713759869999997
+      },
+      "shared_cpu_seconds": 3.299302665999999
+    },
+    "81057": {
+      "fit_cpu_seconds": {
+        "analytic": 3.9085416019999997,
+        "ordinary": 1.461090107000004
+      },
+      "shared_cpu_seconds": 3.2610281110000017
+    }
+  },
+  "cpu_seconds": 44.280104528,
+  "grids": {
+    "81031": [
+      {
+        "cost": {
+          "backups": 77616,
+          "fit_cpu_seconds": 0.08346274500000073,
+          "schedules": 40
+        },
+        "metrics": {
+          "max_action_regret": 3.3306690738754696e-16,
+          "max_q_error": 0.006112029384756634,
+          "mean_action_regret": 6.717910021617189e-18,
+          "optimal_action_fraction": 1.0,
+          "stop_max_absolute": 0.0
+        },
+        "nodes": 33
+      },
+      {
+        "cost": {
+          "backups": 152880,
+          "fit_cpu_seconds": 0.08503221500000135,
+          "schedules": 40
+        },
+        "metrics": {
+          "max_action_regret": 3.3306690738754696e-16,
+          "max_q_error": 0.0036211703815008933,
+          "mean_action_regret": 6.717910021617189e-18,
+          "optimal_action_fraction": 1.0,
+          "stop_max_absolute": 0.0
+        },
+        "nodes": 65
+      },
+      {
+        "cost": {
+          "backups": 303408,
+          "fit_cpu_seconds": 0.07515292500000159,
+          "schedules": 40
+        },
+        "metrics": {
+          "max_action_regret": 3.3306690738754696e-16,
+          "max_q_error": 0.0004522810752149997,
+          "mean_action_regret": 6.717910021617189e-18,
+          "optimal_action_fraction": 1.0,
+          "stop_max_absolute": 0.0
+        },
+        "nodes": 129
+      }
+    ],
+    "81037": [
+      {
+        "cost": {
+          "backups": 77748,
+          "fit_cpu_seconds": 0.06386128300000671,
+          "schedules": 40
+        },
+        "metrics": {
+          "max_action_regret": 2.220446049250313e-16,
+          "max_q_error": 0.0072580070679242326,
+          "mean_action_regret": 1.8846378504439385e-18,
+          "optimal_action_fraction": 1.0,
+          "stop_max_absolute": 0.0
+        },
+        "nodes": 33
+      },
+      {
+        "cost": {
+          "backups": 153140,
+          "fit_cpu_seconds": 0.06657314699999439,
+          "schedules": 40
+        },
+        "metrics": {
+          "max_action_regret": 2.220446049250313e-16,
+          "max_q_error": 0.0036845958752732555,
+          "mean_action_regret": 1.8846378504439385e-18,
+          "optimal_action_fraction": 1.0,
+          "stop_max_absolute": 0.0
+        },
+        "nodes": 65
+      },
+      {
+        "cost": {
+          "backups": 303924,
+          "fit_cpu_seconds": 0.07126734099999865,
+          "schedules": 40
+        },
+        "metrics": {
+          "max_action_regret": 2.220446049250313e-16,
+          "max_q_error": 0.0018241580805128388,
+          "mean_action_regret": 1.8846378504439385e-18,
+          "optimal_action_fraction": 1.0,
+          "stop_max_absolute": 0.0
+        },
+        "nodes": 129
+      }
+    ],
+    "81043": [
+      {
+        "cost": {
+          "backups": 80520,
+          "fit_cpu_seconds": 0.06997419099998581,
+          "schedules": 40
+        },
+        "metrics": {
+          "max_action_regret": 2.220446049250313e-16,
+          "max_q_error": 0.00604591368227736,
+          "mean_action_regret": 1.3539305178355568e-18,
+          "optimal_action_fraction": 1.0,
+          "stop_max_absolute": 0.0
+        },
+        "nodes": 33
+      },
+      {
+        "cost": {
+          "backups": 158600,
+          "fit_cpu_seconds": 0.0696435070000021,
+          "schedules": 40
+        },
+        "metrics": {
+          "max_action_regret": 2.220446049250313e-16,
+          "max_q_error": 0.0024123813896541613,
+          "mean_action_regret": 2.7078610356711136e-18,
+          "optimal_action_fraction": 1.0,
+          "stop_max_absolute": 0.0
+        },
+        "nodes": 65
+      },
+      {
+        "cost": {
+          "backups": 314760,
+          "fit_cpu_seconds": 0.07754699400001286,
+          "schedules": 40
+        },
+        "metrics": {
+          "max_action_regret": 2.220446049250313e-16,
+          "max_q_error": 0.0014960138575843551,
+          "mean_action_regret": 2.7078610356711136e-18,
+          "optimal_action_fraction": 1.0,
+          "stop_max_absolute": 0.0
+        },
+        "nodes": 129
+      }
+    ],
+    "81049": [
+      {
+        "cost": {
+          "backups": 85140,
+          "fit_cpu_seconds": 0.07541885100000911,
+          "schedules": 40
+        },
+        "metrics": {
+          "max_action_regret": 5.551115123125783e-17,
+          "max_q_error": 0.009440376213930013,
+          "mean_action_regret": 3.066914432666178e-19,
+          "optimal_action_fraction": 1.0,
+          "stop_max_absolute": 0.0
+        },
+        "nodes": 33
+      },
+      {
+        "cost": {
+          "backups": 167700,
+          "fit_cpu_seconds": 0.0839323110000123,
+          "schedules": 40
+        },
+        "metrics": {
+          "max_action_regret": 5.551115123125783e-17,
+          "max_q_error": 0.0031689623507804576,
+          "mean_action_regret": 3.066914432666178e-19,
+          "optimal_action_fraction": 1.0,
+          "stop_max_absolute": 0.0
+        },
+        "nodes": 65
+      },
+      {
+        "cost": {
+          "backups": 332820,
+          "fit_cpu_seconds": 0.1100630380000105,
+          "schedules": 40
+        },
+        "metrics": {
+          "max_action_regret": 5.551115123125783e-17,
+          "max_q_error": 0.001900711662075505,
+          "mean_action_regret": 3.066914432666178e-19,
+          "optimal_action_fraction": 1.0,
+          "stop_max_absolute": 0.0
+        },
+        "nodes": 129
+      }
+    ],
+    "81057": [
+      {
+        "cost": {
+          "backups": 74712,
+          "fit_cpu_seconds": 0.06805475000002303,
+          "schedules": 40
+        },
+        "metrics": {
+          "max_action_regret": 0.006485217185630554,
+          "max_q_error": 0.009205693296602258,
+          "mean_action_regret": 8.226598344488794e-05,
+          "optimal_action_fraction": 0.9823529411764705,
+          "stop_max_absolute": 0.0
+        },
+        "nodes": 33
+      },
+      {
+        "cost": {
+          "backups": 147160,
+          "fit_cpu_seconds": 0.06914322599999423,
+          "schedules": 40
+        },
+        "metrics": {
+          "max_action_regret": 0.0014999999999999458,
+          "max_q_error": 0.006259871441689491,
+          "mean_action_regret": 8.823529411766999e-06,
+          "optimal_action_fraction": 0.9941176470588236,
+          "stop_max_absolute": 0.0
+        },
+        "nodes": 65
+      },
+      {
+        "cost": {
+          "backups": 292056,
+          "fit_cpu_seconds": 0.09088454499998733,
+          "schedules": 40
+        },
+        "metrics": {
+          "max_action_regret": 2.220446049250313e-16,
+          "max_q_error": 0.0004904457801153672,
+          "mean_action_regret": 2.6122894697062506e-18,
+          "optimal_action_fraction": 1.0,
+          "stop_max_absolute": 0.0
+        },
+        "nodes": 129
+      }
+    ]
+  },
+  "heldout_generated": false,
+  "models": {
+    "models/seed81031_analytic_constant.json": {
+      "identity": "b7702518753989e9efef09751406272959f1463ff758069d08ac116225d6a3ee",
+      "sha256": "9bdfa68914f66a31de26bb639ba6a7707ddf38331e126c83daf89f73d597b86d"
+    },
+    "models/seed81031_analytic_value.json": {
+      "identity": "41b8855490e18bfce2b45c0d4b1320042a3244e6fc80784a2d4ae8d2d60e86b3",
+      "sha256": "e5f3be95dc01095772d2e17c7e5ec3c1b9cbf198be25b042acf5e684ce37d396"
+    },
+    "models/seed81031_grid.json": {
+      "identity": "5dcab46d7fd5857517c3c051be3c3092deadf61856c12be5ad84e073cc9f6276",
+      "sha256": "0d17b2f56dca6a9f5a23e62b5b2d6ea8aaa81de39f585f28e176b66bf22b5d25"
+    },
+    "models/seed81031_ordinary_value.json": {
+      "identity": "051197df7bd252648de6f03bd98734fd89f7737876ea0815f8ef4e5bb6ea222d",
+      "sha256": "d18e4fc28279dcd18071f946b7cc38129e8df9bfc72ce78d36e264ada5ea120e"
+    },
+    "models/seed81037_analytic_constant.json": {
+      "identity": "cf0cd21f6b345f9a992254a405407dcc04cb504776f48e18cb9cca191f143860",
+      "sha256": "a05c7a711b1a6a42454ec4fe428950558120e4715c6b9a6f933613c61c66ad5f"
+    },
+    "models/seed81037_analytic_value.json": {
+      "identity": "46a77e65bd1937c63d9eeebde8c6805d6465fe6849f0f61eb4d6451a45bb22c2",
+      "sha256": "d070568303caa03f3b22a6afbe7bba6209a00591bf7ff79de59443d799123e9d"
+    },
+    "models/seed81037_grid.json": {
+      "identity": "23f057485a2f108e2f4f7b1949e9216c806086dd4c131f15e64fc25ee3ae8df0",
+      "sha256": "bf869d2cc99d171004b1e6f895a0df346034bdb24d2be6387417c593bada07b9"
+    },
+    "models/seed81037_ordinary_value.json": {
+      "identity": "af694c45cd008d4521c7d220a2afdf6f96b651fc848731f33f3e0846a3d75c39",
+      "sha256": "1dff6dd3d4fab9342b359e950973e33a796acc57c6aeee9f31f556cc525a7c50"
+    },
+    "models/seed81043_analytic_constant.json": {
+      "identity": "32791419395996761863bc040c27c9fcf0f350b539213911dd485ae8b156e16c",
+      "sha256": "addb4d03be22dc498137246f247cbc1ace662e5edcf53fcbc9b84d31fdc84858"
+    },
+    "models/seed81043_analytic_value.json": {
+      "identity": "c1a45d0619e2e2ec49f5d74103dfd3a3da5d9570ed1c9439fec460be3ab11647",
+      "sha256": "42e76089ed83e7f7044df68279b657506c4c0c5c3458ba99be124de4751a499a"
+    },
+    "models/seed81043_grid.json": {
+      "identity": "c6e9cea6690bf3d47b0ffaf7ce30eacd6884c4aa12f319e2b0b11cf4fa9a68d7",
+      "sha256": "c35243ae9dd12ff998bb6651b71e707c806ddb391ff865fb334b1272ff0f872e"
+    },
+    "models/seed81043_ordinary_value.json": {
+      "identity": "0be79daa61610785977c08506f569ad62ce042d5f1b3d2ee4dd76c8d9325a85f",
+      "sha256": "572832f93e7e59074cf9ee056046303375228337bdce3be877008ff68ac5efae"
+    },
+    "models/seed81049_analytic_constant.json": {
+      "identity": "f2422478b27571590249cff21bb1a2d7a7b8df8a4ec9b38ab39036e00d6e9eeb",
+      "sha256": "e340a24e855b253aed09e1c37c27dd836347f0d329ef3b579b7e643a175bef82"
+    },
+    "models/seed81049_analytic_value.json": {
+      "identity": "ee929b7205fa69eabd3d02567337f733860300064e6a97956e880b70bac08415",
+      "sha256": "6139106218ccd6c0e05f4c1cc3c46fdb53e35c774359c47cf438c918a318bd3b"
+    },
+    "models/seed81049_grid.json": {
+      "identity": "08b8e161c381b52880e65dca50afbea479b3ff3d64fec0ceaf6895aa720bd138",
+      "sha256": "a237414796b04da000dd27fe9115cc7bee3016c1ef8c0891fafb93ceb277ed00"
+    },
+    "models/seed81049_ordinary_value.json": {
+      "identity": "71eca8d413ecbc761085f9c434a0a86cf6cc0e760326c05976bfda628f122c1f",
+      "sha256": "bb537a107ff659609b513fa23071341f0ae0ffc2b1bcd364f77af22189d858da"
+    },
+    "models/seed81057_analytic_constant.json": {
+      "identity": "98000b58c318359629afc5cc57cc927cf1f1afbbf82ed1bf1adab642deda0e3f",
+      "sha256": "05572cea9a1ba730067c7639cc8d7064db144131c01913f1f43419e46a4d43c2"
+    },
+    "models/seed81057_analytic_value.json": {
+      "identity": "2043d4e7de2b9b6d972ab5087739668d8da9ed386c525aae915346cf84726e2f",
+      "sha256": "ffe683422cd1049546f5152a459b8703b5b13ded6a45a888b8cf9818dcb2250f"
+    },
+    "models/seed81057_grid.json": {
+      "identity": "290cd51ad1c951169acd416375a433b75f00e994bfc18fefe1b5ad6506db8054",
+      "sha256": "e75fe2179692f4061ee79ef841c72fdb1f68479c66bc1a2052bca290e1426041"
+    },
+    "models/seed81057_ordinary_value.json": {
+      "identity": "b98419e1945af06154e38b037c53a12395bbe9b9ce0c5fb33d40058c6d486d8c",
+      "sha256": "240411b8cdaecd35849390c38170e4487e13621363d319031bc2b2cc55b422bf"
+    }
+  },
+  "protocol_sha256": "d38df34d35b8637db5d5ec70db167595470ba8db5e4c89b687024a8047183e54",
+  "source": {
+    "PROTOCOL.json": "09435a34b538dea0b18913967942fd0d6c470c8827e357b8dbc6c551d0d2b045",
+    "model.py": "5a05b021a17013143ca9546365d0d4e9ea2c255a7fdf5a807c96c82940650cb9",
+    "propagation/finite.py": "feaef61ac3bb9571eef442641ab454503e2f2dd707d59874932daeaf2752d441",
+    "train.py": "0ac36adf5ae4cb302580089e3b84db62079ca08ff42944b62bedb4646463c7a8",
+    "value.py": "66c2baf8b7063ac17ea807fe921e484070101e5160b862a1d4df5bff264557a4"
+  },
+  "wall_seconds": 44.30226789599692
+}

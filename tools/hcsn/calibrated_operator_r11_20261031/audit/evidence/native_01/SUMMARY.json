@@ -1,0 +1,314 @@
+{
+  "audit_parent_cpu_seconds": 0.23376915999999992,
+  "audit_wall_seconds": 0.6223657939990517,
+  "authority": "DENY_ALL",
+  "efficacy_claim": false,
+  "energy_joules": null,
+  "findings": {
+    "baseline": {
+      "actions": [
+        "SKIP",
+        "SKIP",
+        "READ",
+        "FIRE",
+        "SKIP",
+        "READ",
+        "FIRE"
+      ],
+      "read_opens": [
+        "job0_tick2.json",
+        "job1_tick6.json"
+      ],
+      "successful_reads": 2,
+      "task": {
+        "answers": [
+          {
+            "job": 0,
+            "posterior": 0.8878787878787879,
+            "prediction": 1,
+            "reads": 1,
+            "tick": 3
+          },
+          {
+            "job": 1,
+            "posterior": 0.7424242424242424,
+            "prediction": 1,
+            "reads": 1,
+            "tick": 7
+          }
+        ],
+        "budget": 0,
+        "charged_cost": 0.2955,
+        "counts": {
+          "FIRE": 2,
+          "READ": 2,
+          "SKIP": 3,
+          "STOP": 0,
+          "content_invocations": 2,
+          "failed_read_attempts": 0,
+          "packet_file_reads": 2,
+          "payload_bytes": 916
+        },
+        "elapsed_micros": 9200000,
+        "history": [
+          {
+            "action": "SKIP",
+            "budget_before": 2,
+            "duration": 1.6,
+            "error": null,
+            "job": 0,
+            "latency_charge": 0.024,
+            "observation": null,
+            "payload_bytes": 0,
+            "payload_sha256": null,
+            "pending_packet": "job0_tick0.json",
+            "posterior_before": 0.5,
+            "query_charge": 0.0,
+            "tick": 0
+          },
+          {
+            "action": "SKIP",
+            "budget_before": 2,
+            "duration": 1.6,
+            "error": null,
+            "job": 0,
+            "latency_charge": 0.024,
+            "observation": null,
+            "payload_bytes": 0,
+            "payload_sha256": null,
+            "pending_packet": "job0_tick1.json",
+            "posterior_before": 0.5,
+            "query_charge": 0.0,
+            "tick": 1
+          },
+          {
+            "action": "READ",
+            "budget_before": 2,
+            "duration": 1.0,
+            "error": null,
+            "job": 0,
+            "latency_charge": 0.015,
+            "observation": 1,
+            "payload_bytes": 458,
+            "payload_sha256": "8dea804828ff0b753b730f1deec290f5352b9f30b2e70d03fff50488ed1efaa8",
+            "pending_packet": "job0_tick2.json",
+            "posterior_before": 0.5,
+            "query_charge": 0.0225,
+            "tick": 2
+          },
+          {
+            "action": "FIRE",
+            "budget_before": 1,
+            "duration": 2.0,
+            "error": null,
+            "job": 0,
+            "latency_charge": 0.03,
+            "observation": null,
+            "payload_bytes": 0,
+            "payload_sha256": null,
+            "pending_packet": "job0_tick3.json",
+            "posterior_before": 0.8878787878787879,
+            "query_charge": 0.0,
+            "tick": 3
+          },
+          {
+            "action": "SKIP",
+            "budget_before": 1,
+            "duration": 1.6,
+            "error": null,
+            "job": 1,
+            "latency_charge": 0.024,
+            "observation": null,
+            "payload_bytes": 0,
+            "payload_sha256": null,
+            "pending_packet": "job1_tick5.json",
+            "posterior_before": 0.5,
+            "query_charge": 0.0,
+            "tick": 5
+          },
+          {
+            "action": "READ",
+            "budget_before": 1,
+            "duration": 1.0,
+            "error": null,
+            "job": 1,
+            "latency_charge": 0.015,
+            "observation": 1,
+            "payload_bytes": 458,
+            "payload_sha256": "b328be6904e36b3e49785cdb0efd5c370c7742dadb164a26db64e8d5d932e743",
+            "pending_packet": "job1_tick6.json",
+            "posterior_before": 0.5,
+            "query_charge": 0.135,
+            "tick": 6
+          },
+          {
+            "action": "FIRE",
+            "budget_before": 0,
+            "duration": 0.4,
+            "error": null,
+            "job": 1,
+            "latency_charge": 0.006,
+            "observation": null,
+            "payload_bytes": 0,
+            "payload_sha256": null,
+            "pending_packet": "job1_tick7.json",
+            "posterior_before": 0.7424242424242424,
+            "query_charge": 0.0,
+            "tick": 7
+          }
+        ],
+        "in_flight": null,
+        "job": 2,
+        "latency_cost": 0.138,
+        "pending_observation": null,
+        "posterior": 0.5,
+        "query_cost": 0.1575,
+        "reads_in_job": 0,
+        "recovery_ticks_remaining": 0,
+        "task_elapsed": 9.200000000000001,
+        "terminal": true,
+        "tick": 9
+      }
+    },
+    "future_packet": {
+      "challenged_kernel_opens": [
+        "job0_tick2.json"
+      ],
+      "changed_payload_sha256": "657a76e9244fa931c40a7e4bf01b50de25fc5015461e0cbf08ea24de89ed4719",
+      "earlier_actions": 2,
+      "earlier_kernel_opens": [],
+      "error": "content packet digest mismatch",
+      "expected_payload_sha256": "8dea804828ff0b753b730f1deec290f5352b9f30b2e70d03fff50488ed1efaa8",
+      "failed_read_recovery_exact": true,
+      "identical_public_sha256": "b866f83a08c79c31c9a79f869d3f315f8325e729ea138116d398f08f9b6ed8bc",
+      "passed": true,
+      "read_sequence": 3,
+      "scope": "Declared public hash held fixed: no speculative access, then rejection at actual READ; not a changed-known-metadata experiment.",
+      "target": "job0_tick2.json"
+    },
+    "identity": {
+      "altered_policy_sha256": "24e6537c7f75089031ec7212443488ecfca4a8c7f73f5d6d2e9294668206c8af",
+      "bound_file_sha256": {
+        "state.json": "4e655b202941a7db70a1c2c32627077de88daab7511f9b50a33328bd046792d8",
+        "state.json.journal": "ec4f7d5699322f8e9686466cfbd9ccd1b82bb4b7154d01f4a3a4e5384eaf3b28",
+        "state.json.witness": "413f93a1cf6d622c8ad96f44067c90c067d3aabf435dffb96ca714848bc2e9e2"
+      },
+      "checkpoint_nonterminal": true,
+      "packet_opens_after_rejections": 0,
+      "passed": true,
+      "policy_error": "checkpoint source/public/model/policy identity mismatch",
+      "requested_steps": 1,
+      "snapshot_journal_witness_unchanged": true,
+      "stale_ack_error": "external acknowledged digest mismatch"
+    },
+    "labels": {
+      "changed": {
+        "labels": [
+          0,
+          1
+        ]
+      },
+      "exact_trajectory": true,
+      "kernel_observed_accesses": 0,
+      "original": {
+        "labels": [
+          1,
+          0
+        ]
+      },
+      "passed": true
+    },
+    "never_read_packet": {
+      "exact_trajectory": true,
+      "kernel_opens": 0,
+      "passed": true,
+      "target": "job0_tick0.json"
+    },
+    "recovery": {
+      "boundaries": 7,
+      "continuous_cost": {
+        "artifact_load_seconds": 0.004337892,
+        "cpu_seconds": 0.011786,
+        "energy_joules": null,
+        "owner_load_seconds": 0.006778697,
+        "processes": 1,
+        "wall_seconds": 0.020735630998387933
+      },
+      "excluded_fields": [
+        "native timing",
+        "native_checkpoint",
+        "acknowledged_sha256",
+        "journal byte cost"
+      ],
+      "fresh_process_pids": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "full_task_cell_content_exact_at_every_boundary": true,
+      "passed": true,
+      "restarted_cost": {
+        "artifact_load_seconds": 0.033097855,
+        "cpu_seconds": 0.051588,
+        "energy_joules": null,
+        "owner_load_seconds": 0.039844984,
+        "processes": 7,
+        "wall_seconds": 0.0671154339943314
+      },
+      "scope": "Acknowledged synchronous action boundaries; no mid-action crash/replay guarantee."
+    }
+  },
+  "heldout_data_accessed": false,
+  "inputs": {
+    "all_dependency_archives_verified": false,
+    "audit_source_sha256": "7bf19119ee75049cdc96e5601c283bc8dd00952f9ace8e1c2bd9577f26636b80",
+    "binary": "/tmp/hcsn-r11-native-build02/target/debug/codex-calibrated-operator",
+    "binary_sha256": "6f5d31cc8158690c7d1f29ddd0e53832bbd6119010249886f53b309dc3552fc5",
+    "build_report_sha256": "0af2e8ad2744f162768cfb1cb0cc59958ee19d5b0d908def2d5df85d0e2c747d",
+    "content_model_sha256": "66bb4fabc2fdca0b08d7e834f6a1dfdd73aedb4cfbd1b4c594b709f742092972",
+    "fixture_archive_sha256": "67d7770236de8879d1b0bd1985a8f015b90591acfb3a947571f7ff99fbbb3f4a",
+    "fixture_file_sha256": {
+      "evaluator_labels.json": "1efab25c4f8ef8baf73291dcf5868e1e21012414d84c99ef298b83f208f92fa3",
+      "job0_tick0.json": "9690489db77b691d9330b4dc1b8977c2fc1446e615b8b36b233b1c5038ef93d0",
+      "job0_tick1.json": "3865c460c3302ef6c5ea9a93ffca0b36c572889f459dd2f765b1687a09d2b0b7",
+      "job0_tick2.json": "8dea804828ff0b753b730f1deec290f5352b9f30b2e70d03fff50488ed1efaa8",
+      "job0_tick3.json": "433188ad47edea58b87c09b4e3b4c708aff4b11380369f0642a56cc22db261ae",
+      "job0_tick4.json": "ac2d5fb057ee7ae77e5bfb6e027fc48ce560423791229cf14313963c0c6617bf",
+      "job0_tick5.json": "78388975728281d98f2e891d5ffcb64c897a248543dcdf7848603739649ada5c",
+      "job0_tick6.json": "b16b875cbae99dfda01e68198b3dd508d79311efbba56dded24b6c2e96337ca5",
+      "job0_tick7.json": "132baf9c468723c1eecb10680467dffbe8eca37fac0b0125ecb2fa1f43d7f2b4",
+      "job1_tick0.json": "5572f0759d8c770d7457146fb79b277eeadd71cf1f75a989b8d4eb9b9a9b2f7f",
+      "job1_tick1.json": "3948ff9e552e58959e30699db32908add685d490a65e6173423696781ad93a96",
+      "job1_tick2.json": "af1925499c5fccacc9ce2d01a94ffd5357143dc07dc70c5c8110d7578aae2009",
+      "job1_tick3.json": "6f0aa7b02d503944768becce8bbe42e59a5e9fac0dbdd7caff305d9c74be269f",
+      "job1_tick4.json": "4eae8a24a4ac2c2c21d47cd2d5a32fa86392bff42cca835e9c6f6814bf83f2e7",
+      "job1_tick5.json": "735f538554933fc7d39a9166acebb43aeb042401207f5e9eb7b1a736e1228cf9",
+      "job1_tick6.json": "b328be6904e36b3e49785cdb0efd5c370c7742dadb164a26db64e8d5d932e743",
+      "job1_tick7.json": "4b2d8e2b1c5fd57278785ef789350c60f4f9b90483ff667e4cc2335e22d16bc3",
+      "public.json": "61c73bf2dc1a4a8303dbc676e8fabd5717875353348132fefb7fed88eef39643"
+    },
+    "fixture_id": "train_seed81031_0000",
+    "imported_runner_sha256": "8bf8a17b2988cf6fc844620d194b301279fc0b71f3f4fab6c3c5eccfffaffe11",
+    "policy_sha256": "e5f3be95dc01095772d2e17c7e5ec3c1b9cbf198be25b042acf5e684ce37d396",
+    "public_sha256": "b866f83a08c79c31c9a79f869d3f315f8325e729ea138116d398f08f9b6ed8bc",
+    "source_digest": "3e33f6e25a6da7188e9a9b0b7800b75c6b5020cd0de96a663ee414b9a9338c29",
+    "training_freeze_sha256": "179037fca15a4f1ff5f08a50fd7c306b6ef5fdca82c6e951caa4091e293cbb20"
+  },
+  "limitations": [
+    "One pre-existing development fixture and one frozen analytic policy; no efficacy estimate or confidence interval.",
+    "inotify observes regular-file OPEN/ACCESS during this isolated native execution; event coalescing is not a byte counter.",
+    "Exact task/cell/content comparison excludes timing-dependent native checkpoint anchors, each individually verified against its acknowledged snapshot.",
+    "Recovery scope is synchronous acknowledged action boundaries; incomplete-commit fault injection is outside this audit.",
+    "Policy and stale-ack rejection may load public/model artifacts; the asserted zero access concerns task packet files and evaluator labels."
+  ],
+  "native_child_cpu_seconds": 0.21360800000000002,
+  "native_child_wall_seconds": 0.30517955496907234,
+  "native_processes": 23,
+  "production_activation": false,
+  "schema": "hcsn.native-causal-recovery.audit.r11.v1",
+  "success": true
+}

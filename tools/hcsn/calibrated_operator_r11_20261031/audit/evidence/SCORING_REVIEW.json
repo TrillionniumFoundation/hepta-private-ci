@@ -1,0 +1,426 @@
+{
+  "answer_counts": {
+    "all": 5029,
+    "exact_half": 30,
+    "exact_half_prediction_one": 30,
+    "near_half_prediction_one": 30,
+    "near_half_prediction_zero": 0,
+    "within_1e_minus_12_of_half": 30
+  },
+  "archived_fitted_dp_runs_excluded": 640,
+  "checked_archive_sha256": {
+    "archives/seed81031_ood_part0000.tar.gz": "93f3a81d81b7adc415e437012c37b777027d992c2422dd4a18071a9bf4401eb2",
+    "archives/seed81031_ood_part0001.tar.gz": "65128b5b96813a1851e6ef7fd35193b7180c92a5bfb0dfa8544508d985c6701d",
+    "archives/seed81031_ood_part0002.tar.gz": "c73a1cde42de8058ffbd6cde9ce99a60f4313770ec38be427c1a6d8822ed46e8",
+    "archives/seed81031_ood_part0003.tar.gz": "b87d50872f610a96e885e9c92c1a0d0b2a077b31e15026196af5990eb97685aa",
+    "archives/seed81031_ood_part0004.tar.gz": "ee36bde2e885e071a08d9a5976b5b02f30f9c46329a90d85dfe5599fb24c4135",
+    "archives/seed81031_ood_part0005.tar.gz": "a6b49dd8ff7325ba3a35eba8998a167fb321ef3970f2fe2a8ccf8f056fc7d382",
+    "archives/seed81031_ood_part0006.tar.gz": "1cc1a848ae51e0b400c92919f4ba904e6052564b9ab87fc94478791b4bcc4380",
+    "archives/seed81031_ood_part0007.tar.gz": "5947d04a2a59bbb14ebd21cdf4ac968fe7f8efecc929d23898a16e592d2f8a36",
+    "archives/seed81031_ood_part0008.tar.gz": "690d36fdef1282732f77be5cb00845617f368927be14ca58822f44346b32ecd1",
+    "archives/seed81031_test_part0000.tar.gz": "1f881d2c7fecfea5a36a27d8457b6c0ab20dfabc3969b987b0f1d0098d18e733",
+    "archives/seed81031_test_part0001.tar.gz": "6a001496be94601ba1dc1e96459616f9db82a36dd28261b2802abe9b3082e56e",
+    "archives/seed81031_test_part0002.tar.gz": "d18992866ecf8701a0d2cb39ab2ce587807fcd211926ce9bc63b7f82d7ed8407",
+    "archives/seed81031_test_part0003.tar.gz": "3ab286679417ed54886295035ded30f3d04108f9c30ac121e0ae6b117e603742",
+    "archives/seed81031_test_part0004.tar.gz": "28d80ac1d0dbbcbbded4554b56b1e59f0f4be31e934b5a475d5064d99a37d8ee",
+    "archives/seed81031_test_part0005.tar.gz": "c2b5ba409383f5f6f8c9520bd6e899bbe93011317e60d92e01f3a29a8d909e70",
+    "archives/seed81031_test_part0006.tar.gz": "d333851dc925a870364139e4a9636567a041c70873a2c98daf81d71ec1793001",
+    "archives/seed81031_test_part0007.tar.gz": "f1568e0e1a2c748e91750b6c4ec799be65077f8abea95a23667f9399ce78cbc4",
+    "archives/seed81031_test_part0008.tar.gz": "75fda892ed97054ec43685398a3d55d4b48dcda0bff6c0d001ba2153b0727390",
+    "archives/seed81037_ood_part0000.tar.gz": "1289604d615c331cc6647f9aa23c241eae35507b03782890fb089199810b0ec0",
+    "archives/seed81037_ood_part0001.tar.gz": "15b7a5918b58ccc2004d548d46ed8ae582b22633c03587bc3901672d280171cf",
+    "archives/seed81037_ood_part0002.tar.gz": "3444b9499889dbfe1434eeca319c5cd8e9285ffb58c499d15d046b7548217e46",
+    "archives/seed81037_ood_part0003.tar.gz": "388044575294cceb4c0c4294b156f916e9e61d83a18067a929fda836907d0d7a",
+    "archives/seed81037_ood_part0004.tar.gz": "b2d9ba07c2b990ffe6bc5999d17ac5412c17e9eb7ba26785474ac36e26756f48",
+    "archives/seed81037_ood_part0005.tar.gz": "4702c5390238af69c51a51018c4e6b747d4af3372358577acb94ce66c47cefc2",
+    "archives/seed81037_ood_part0006.tar.gz": "013c85d362e74d53f211eb88cb6ba75df1096c72c5e4370af1c0bbe467a066c7",
+    "archives/seed81037_ood_part0007.tar.gz": "5059bec87040e680cb3867598e287f6b96ee3090b4949b4dac5f0a5e3bbceee0",
+    "archives/seed81037_ood_part0008.tar.gz": "16c2a05f9c5a9f89149a4f0bf5cad1342d5fcd9cafd871e398bb9211bca3f11f",
+    "archives/seed81037_test_part0000.tar.gz": "ddc12859c3ce43c32b95e2c7dc74eee9787d990b1ecb5452f4d7ee9aadcb474a",
+    "archives/seed81037_test_part0001.tar.gz": "bc1bba62a2327d344679e9a124b472d4a31fe6b2fa6e68867af7c8348d885c0d",
+    "archives/seed81037_test_part0002.tar.gz": "7c651e677450717c971cffd102d31489840164526ec7cf93079c9f1ac0495834",
+    "archives/seed81037_test_part0003.tar.gz": "6bcb4c5face506d0d4b54601c779b3a2c229426f30917c2f6f82e1fbb3604d1a",
+    "archives/seed81037_test_part0004.tar.gz": "2396116bba583718e56e83522d4e5bf42033d608a10929be9a6328e02525a0d4",
+    "archives/seed81037_test_part0005.tar.gz": "c37350cd139cd813a6e8f298fcbe6fc53d2e908ffd535f6241a0bb4489aa8064",
+    "archives/seed81037_test_part0006.tar.gz": "a4e7dbaf2a650b9ff30aecdfa6e18137eb70b05f4cd18dce1174233e94b9a6ec",
+    "archives/seed81037_test_part0007.tar.gz": "8ed49cd549362ad4fe26e2ca24b6dd72eec24c836e9e200dcc65ec55ef298070",
+    "archives/seed81037_test_part0008.tar.gz": "0284c5ce78fff750c0bf8079ba57ac97e6b7e122ef3a793b720c447c7bfa371f",
+    "archives/seed81043_ood_part0000.tar.gz": "183b3492fff5ff632e911c901f1bc6e6cf151ddf368bee4eb7e585b13fb022e1",
+    "archives/seed81043_ood_part0001.tar.gz": "7eff0dca742b7513f979a46b0d839b7cc2db2d0d2523c4377a0e593f2c8ecdf3",
+    "archives/seed81043_ood_part0002.tar.gz": "2642fe6391e0258b1147066675ff5266855814f5ac390565ca956e5a49a7df36",
+    "archives/seed81043_ood_part0003.tar.gz": "ad05e7ab6e763e66779eed4a6992cc3f87cd536943206f3f6ceb785e8c1b3c5d",
+    "archives/seed81043_ood_part0004.tar.gz": "810f2d9ba4c19c59f131d0eb794759d05ccf5d5b9165c99742cb7a78535a9617",
+    "archives/seed81043_ood_part0005.tar.gz": "f598e8f2b0d88abfc9b10051f2fcf191d97a691a842103f6a1c74a28845c9df6",
+    "archives/seed81043_ood_part0006.tar.gz": "899a15277ebb95e17f103d29adaa809cf58c352aeda6f3f2401c14a1fc9f3951",
+    "archives/seed81043_ood_part0007.tar.gz": "dc5ba75c11faa3db949496c2c947c47a165cb70b16c761fd06ba1082f653e056",
+    "archives/seed81043_ood_part0008.tar.gz": "a0814953cd9ed6d765302b3b8ca014d6b2ec4efef0718d499cbf78f71384548a",
+    "archives/seed81043_test_part0000.tar.gz": "ffca5882666f50f3b1b55238916b7c552303321c807a2762ebf78b593c6a7a09",
+    "archives/seed81043_test_part0001.tar.gz": "9d561690acdc1ac908d35ed6f891076acd39037f5a3f0b45e19044e19c85f2e9",
+    "archives/seed81043_test_part0002.tar.gz": "13463ddd9d0428b6ae8058e939745019d5c20bcf75699aad8782925291954d99",
+    "archives/seed81043_test_part0003.tar.gz": "58693496da9c1a13fa85e681431f38fae31dd6cb0287e6f78ae81317e1f4b4e1",
+    "archives/seed81043_test_part0004.tar.gz": "f4d6fa986c7fc1c9f3de0549b8cbe8c9856b79b7b8834578a9e6f1afffdd75a9",
+    "archives/seed81043_test_part0005.tar.gz": "db6e9d5a258d155984706db8734fb229aaf843808e5e06078d43bf19d4c491a0",
+    "archives/seed81043_test_part0006.tar.gz": "6ab5e6258f0d68b65de959dd727e90cd04f840f2f53cbadae996f285aa7a5fc2",
+    "archives/seed81043_test_part0007.tar.gz": "5ad8e809888b8ca33c66124db563fbaef90b5d57ceec7286454897e688da44f7",
+    "archives/seed81043_test_part0008.tar.gz": "91d5153bc8dfcb66b838953e6253cf52fb10ab22b3f5dc90ebf6e66b8bc33629",
+    "archives/seed81049_ood_part0000.tar.gz": "e4e5d825cb9c71e1456beba5b2b8f279d5604abf65d013f7c35b3611a77dec81",
+    "archives/seed81049_ood_part0001.tar.gz": "2b6a192288299f5e579573956f21a9e84a79495473be9d32029fb5ca9e8098a3",
+    "archives/seed81049_ood_part0002.tar.gz": "2899c4208f7d08ae04fecbe48b0b9478424353601baa766b52d85715c72759e3",
+    "archives/seed81049_ood_part0003.tar.gz": "b28f956acb778f876a66266f65303d7baaabeb75ab38cca096a5c0d07ee55e10",
+    "archives/seed81049_ood_part0004.tar.gz": "bc160a32bb0298de6e32a905b8ca2a605a62398543c0a13063d80fc75e125592",
+    "archives/seed81049_ood_part0005.tar.gz": "a8a57f5f429cb2ad4c6fdbe74dcbf39f2ea01bb1afda31aa898952855bc31052",
+    "archives/seed81049_ood_part0006.tar.gz": "b1d744899d88d6323164fc781fa0de9a892faa9483f08883d3e5797714a53b8c",
+    "archives/seed81049_ood_part0007.tar.gz": "ceee600467667c7cbbc201c2cd7a3e3a71c7b94a0227b4229a408a504acc5de9",
+    "archives/seed81049_ood_part0008.tar.gz": "67bc33c90b41ed5e7a4233ccb84a0cdb498658ae7a9fc4cdaebc69a03153953b",
+    "archives/seed81049_test_part0000.tar.gz": "20dbaa91d935adbb24dab221f5e696b9711e6322c2d81514766b782497bea729",
+    "archives/seed81049_test_part0001.tar.gz": "cf86e6744b8474b770034f552fccad7ccca23cc152d8c4bad29549dd016c2f92",
+    "archives/seed81049_test_part0002.tar.gz": "d04d7c7e0805fae8960d20c4665dec91456db857582f61ff55ad12e0003b9b15",
+    "archives/seed81049_test_part0003.tar.gz": "c5630bbbc8286354fc1737814a75f5c0fdd50ea051cec342480f0246973455a1",
+    "archives/seed81049_test_part0004.tar.gz": "094cd1da1d3bdcf69aa9908daf914372c7973d524191bdc01904d69898999c0f",
+    "archives/seed81049_test_part0005.tar.gz": "3b897af7aeb0055b5d384e54302fe38bbc642144c183d744722d96a07594fafd",
+    "archives/seed81049_test_part0006.tar.gz": "36dace2da82d08a15e3ef591ff888a899305f3e4d74b1d2833bc07e0db887808",
+    "archives/seed81049_test_part0007.tar.gz": "bac403e4f361dbe7f186020dd5d7274df1c6dcaf1e161088b63206f07fdb0ca1",
+    "archives/seed81049_test_part0008.tar.gz": "48236960208d8edb39dc89ee1fe084c36861880988a27663b84a2c88d22ff9fc",
+    "archives/seed81057_ood_part0000.tar.gz": "8a090b9968f268fe55e6af7dafb58e1de3a7e8e31b3bb35ff57619b8a116b4e2",
+    "archives/seed81057_ood_part0001.tar.gz": "1f4ecef0696a5f63b84d7757e004fd928b2a1d5e586d073a4b1e9f5af8545c6a",
+    "archives/seed81057_ood_part0002.tar.gz": "b0491ee1bce1003ac83eaa8890c27848808c3ceb82101150e8b91d28283dd5dd",
+    "archives/seed81057_ood_part0003.tar.gz": "8de3c44a453f719ee9e9334ca03482dff04423822d37771cb755620e1df66ae9",
+    "archives/seed81057_ood_part0004.tar.gz": "21b6292dee0a1a245d788d965d8ff8f356a95bee4123406c9395ca06047e9c05",
+    "archives/seed81057_ood_part0005.tar.gz": "5dcb483908384a9479c7af997e993064f870963f4e9b2f52960a4b57b54ade5b",
+    "archives/seed81057_ood_part0006.tar.gz": "f7bffcb7b30afdbb570eaacac853a4ce4fb4ee2bce78bb5347d1d42414d82b62",
+    "archives/seed81057_ood_part0007.tar.gz": "56c8a501ac41ad14047b3b46c148311f563e33402b0fb834ca2ee170eca542df",
+    "archives/seed81057_ood_part0008.tar.gz": "5337960b75b4a8e26adb430d1d764f50e1f39114103e984cfbd4493ccdb2bec5",
+    "archives/seed81057_test_part0000.tar.gz": "f3369b5a56235ccc928cb30391fb222b5b53d8b07325daeffffb609244201f6f",
+    "archives/seed81057_test_part0001.tar.gz": "2e3808bee4f9ca539f0fb7243b05be219e3b3fdb55c3a62ff6a7f850278aaf38",
+    "archives/seed81057_test_part0002.tar.gz": "711ae763b5d0b61ad2870d45f221dd9c7b771710a4ef3f4ec6f3b87580f7ad9e",
+    "archives/seed81057_test_part0003.tar.gz": "4c3951359709fd45fe2a7ab625da1de75beded635aed1ded2eff7119daa0e3db",
+    "archives/seed81057_test_part0004.tar.gz": "c9ad6ae56f48845faf2225f2ca24048127ebebd32831b4b1ef93564e6fcf3d44",
+    "archives/seed81057_test_part0005.tar.gz": "2ac6abad83470d8544cefdd47b56fae597b431135929215b44b1dadc934f2ade",
+    "archives/seed81057_test_part0006.tar.gz": "22e6f013b9a9da94b1cda163fcca147a58f6c0a2891ee911a2743754b03640ec",
+    "archives/seed81057_test_part0007.tar.gz": "fa82b6183116c77948e1ae1770a59fff2067100f74c2fcee3311282531cea3ea",
+    "archives/seed81057_test_part0008.tar.gz": "528d212efe487f6b65143d5aef0c0a6790dc720d14f4529c4506487fb880ebce"
+  },
+  "checked_members": 3200,
+  "checked_native_runs": 2560,
+  "detail": {
+    "path": "SCORING_REVIEW_ROWS.json.gz",
+    "sha256": "dd28fdd2735b0844c273f5ecf628dfb2a5065b4088afadcc3bcea55974282ed2"
+  },
+  "exact_discrete_score_mismatch_rows": 0,
+  "exact_numeric_mismatch_counts": {
+    "charged_cost": 0,
+    "latency_cost": 0,
+    "query_cost": 0,
+    "utility": 0
+  },
+  "groups": [
+    {
+      "arm": "analytic_constant",
+      "n": 64,
+      "native_mean_utility": 0.9065234375,
+      "seed": 81031,
+      "split": "ood"
+    },
+    {
+      "arm": "analytic_value",
+      "n": 64,
+      "native_mean_utility": 0.9065234375,
+      "seed": 81031,
+      "split": "ood"
+    },
+    {
+      "arm": "grid",
+      "n": 64,
+      "native_mean_utility": 0.9065234375,
+      "seed": 81031,
+      "split": "ood"
+    },
+    {
+      "arm": "ordinary_value",
+      "n": 64,
+      "native_mean_utility": 0.9065234375,
+      "seed": 81031,
+      "split": "ood"
+    },
+    {
+      "arm": "analytic_constant",
+      "n": 64,
+      "native_mean_utility": 1.0172890625,
+      "seed": 81031,
+      "split": "test"
+    },
+    {
+      "arm": "analytic_value",
+      "n": 64,
+      "native_mean_utility": 1.0172890625,
+      "seed": 81031,
+      "split": "test"
+    },
+    {
+      "arm": "grid",
+      "n": 64,
+      "native_mean_utility": 1.0172890625,
+      "seed": 81031,
+      "split": "test"
+    },
+    {
+      "arm": "ordinary_value",
+      "n": 64,
+      "native_mean_utility": 1.0172890625,
+      "seed": 81031,
+      "split": "test"
+    },
+    {
+      "arm": "analytic_constant",
+      "n": 64,
+      "native_mean_utility": 1.06521875,
+      "seed": 81037,
+      "split": "ood"
+    },
+    {
+      "arm": "analytic_value",
+      "n": 64,
+      "native_mean_utility": 1.06521875,
+      "seed": 81037,
+      "split": "ood"
+    },
+    {
+      "arm": "grid",
+      "n": 64,
+      "native_mean_utility": 1.06521875,
+      "seed": 81037,
+      "split": "ood"
+    },
+    {
+      "arm": "ordinary_value",
+      "n": 64,
+      "native_mean_utility": 1.06521875,
+      "seed": 81037,
+      "split": "ood"
+    },
+    {
+      "arm": "analytic_constant",
+      "n": 64,
+      "native_mean_utility": 1.2540546875,
+      "seed": 81037,
+      "split": "test"
+    },
+    {
+      "arm": "analytic_value",
+      "n": 64,
+      "native_mean_utility": 1.2540546875,
+      "seed": 81037,
+      "split": "test"
+    },
+    {
+      "arm": "grid",
+      "n": 64,
+      "native_mean_utility": 1.2853046875,
+      "seed": 81037,
+      "split": "test"
+    },
+    {
+      "arm": "ordinary_value",
+      "n": 64,
+      "native_mean_utility": 1.2540546875,
+      "seed": 81037,
+      "split": "test"
+    },
+    {
+      "arm": "analytic_constant",
+      "n": 64,
+      "native_mean_utility": 0.8728515625,
+      "seed": 81043,
+      "split": "ood"
+    },
+    {
+      "arm": "analytic_value",
+      "n": 64,
+      "native_mean_utility": 0.8728515625,
+      "seed": 81043,
+      "split": "ood"
+    },
+    {
+      "arm": "grid",
+      "n": 64,
+      "native_mean_utility": 0.8728515625,
+      "seed": 81043,
+      "split": "ood"
+    },
+    {
+      "arm": "ordinary_value",
+      "n": 64,
+      "native_mean_utility": 0.9041015625,
+      "seed": 81043,
+      "split": "ood"
+    },
+    {
+      "arm": "analytic_constant",
+      "n": 64,
+      "native_mean_utility": 1.1667890625,
+      "seed": 81043,
+      "split": "test"
+    },
+    {
+      "arm": "analytic_value",
+      "n": 64,
+      "native_mean_utility": 1.1355390625,
+      "seed": 81043,
+      "split": "test"
+    },
+    {
+      "arm": "grid",
+      "n": 64,
+      "native_mean_utility": 1.1355390625,
+      "seed": 81043,
+      "split": "test"
+    },
+    {
+      "arm": "ordinary_value",
+      "n": 64,
+      "native_mean_utility": 1.1355390625,
+      "seed": 81043,
+      "split": "test"
+    },
+    {
+      "arm": "analytic_constant",
+      "n": 64,
+      "native_mean_utility": 0.917421875,
+      "seed": 81049,
+      "split": "ood"
+    },
+    {
+      "arm": "analytic_value",
+      "n": 64,
+      "native_mean_utility": 0.917421875,
+      "seed": 81049,
+      "split": "ood"
+    },
+    {
+      "arm": "grid",
+      "n": 64,
+      "native_mean_utility": 0.854921875,
+      "seed": 81049,
+      "split": "ood"
+    },
+    {
+      "arm": "ordinary_value",
+      "n": 64,
+      "native_mean_utility": 0.902265625,
+      "seed": 81049,
+      "split": "ood"
+    },
+    {
+      "arm": "analytic_constant",
+      "n": 64,
+      "native_mean_utility": 1.156390625,
+      "seed": 81049,
+      "split": "test"
+    },
+    {
+      "arm": "analytic_value",
+      "n": 64,
+      "native_mean_utility": 1.156390625,
+      "seed": 81049,
+      "split": "test"
+    },
+    {
+      "arm": "grid",
+      "n": 64,
+      "native_mean_utility": 1.156390625,
+      "seed": 81049,
+      "split": "test"
+    },
+    {
+      "arm": "ordinary_value",
+      "n": 64,
+      "native_mean_utility": 1.156390625,
+      "seed": 81049,
+      "split": "test"
+    },
+    {
+      "arm": "analytic_constant",
+      "n": 64,
+      "native_mean_utility": 0.9629765625,
+      "seed": 81057,
+      "split": "ood"
+    },
+    {
+      "arm": "analytic_value",
+      "n": 64,
+      "native_mean_utility": 0.9786015625,
+      "seed": 81057,
+      "split": "ood"
+    },
+    {
+      "arm": "grid",
+      "n": 64,
+      "native_mean_utility": 0.9629765625,
+      "seed": 81057,
+      "split": "ood"
+    },
+    {
+      "arm": "ordinary_value",
+      "n": 64,
+      "native_mean_utility": 0.9786015625,
+      "seed": 81057,
+      "split": "ood"
+    },
+    {
+      "arm": "analytic_constant",
+      "n": 64,
+      "native_mean_utility": 1.1679453125,
+      "seed": 81057,
+      "split": "test"
+    },
+    {
+      "arm": "analytic_value",
+      "n": 64,
+      "native_mean_utility": 1.1679453125,
+      "seed": 81057,
+      "split": "test"
+    },
+    {
+      "arm": "grid",
+      "n": 64,
+      "native_mean_utility": 1.1679453125,
+      "seed": 81057,
+      "split": "test"
+    },
+    {
+      "arm": "ordinary_value",
+      "n": 64,
+      "native_mean_utility": 1.1679453125,
+      "seed": 81057,
+      "split": "test"
+    }
+  ],
+  "input_sha256": {
+    "archive_index": "48b2f1655889f2e892369ff8177b58a7f6d76acdb06be77b49ca5b26c28c631c",
+    "complete": "c093f4e642a40649048cc31b0e6bc3a038201d145e34e0e704e79fd99701d32a",
+    "results": "81917d7ccba572515fd9e05c2e6427a7b546a5a36d3fff8d636e499b0d36f751",
+    "training_freeze": "179037fca15a4f1ff5f08a50fd7c306b6ef5fdca82c6e951caa4091e293cbb20"
+  },
+  "limits": [
+    "This validates native outcome scoring for the completed corpus, not a universal runtime proof.",
+    "No native process or model replay is run; predictions and costs come only from preserved original native stdout.",
+    "Float score equality is reported both exactly and at 1e-12; discrete reward/correct/completed fields require exact equality."
+  ],
+  "material_mismatch_count": 0,
+  "material_mismatches": [],
+  "max_absolute_numeric_difference": {
+    "charged_cost": 0.0,
+    "latency_cost": 0.0,
+    "query_cost": 0.0,
+    "utility": 0.0
+  },
+  "parent_cpu_seconds": 2.7942813589999997,
+  "predictions_from": "raw native stdout end.task.answers",
+  "replay_used": false,
+  "schema": "hcsn.native-answer-scoring.review.r11.v1",
+  "score_formula": "correct=sum(native_prediction==evaluator_label); reward=2*correct-native_answer_count; utility=reward-native_charged_cost",
+  "source_sha256": "16926cd9f84d2408b05e886200fc48f5cda70b58dcea5f62f85b0c1983a7bc76",
+  "success": true,
+  "tolerance": 1e-12,
+  "wall_seconds": 2.8015796880063135
+}

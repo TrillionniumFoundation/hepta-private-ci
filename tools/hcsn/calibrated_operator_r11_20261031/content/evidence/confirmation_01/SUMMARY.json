@@ -1,0 +1,1328 @@
+{
+  "aggregates": [
+    {
+      "condition": "test",
+      "development_cpu_seconds": 0.7633007070000002,
+      "final": {
+        "accuracy": 0.99921875,
+        "brier": 0.0015624999999999994,
+        "ece": 0.00078125,
+        "nll": 0.02815086092699482
+      },
+      "inference_cpu_seconds": 0.014556826600001216,
+      "kind": "ordinary",
+      "mean_reads": 24.0,
+      "net_utility_declared_cpu_price": 0.8582006859657281,
+      "stream": {
+        "accuracy": 0.99921875,
+        "brier": 0.0015624999999999994,
+        "ece": 0.00078125,
+        "nll": 0.02815086092699482
+      },
+      "task": "marked_memory",
+      "task_utility": 0.8582007812500001
+    },
+    {
+      "condition": "test",
+      "development_cpu_seconds": 0.7940562787999994,
+      "final": {
+        "accuracy": 0.9994791666666666,
+        "brier": 0.0010416666666666667,
+        "ece": 0.0005208333333333482,
+        "nll": 0.020048385263053664
+      },
+      "inference_cpu_seconds": 0.016387413399999672,
+      "kind": "ordinary_dual",
+      "mean_reads": 24.0,
+      "net_utility_declared_cpu_price": 0.8587215138399277,
+      "stream": {
+        "accuracy": 0.9994791666666666,
+        "brier": 0.0010416666666666667,
+        "ece": 0.0005208333333333482,
+        "nll": 0.020048385263053664
+      },
+      "task": "marked_memory",
+      "task_utility": 0.8587216145833334
+    },
+    {
+      "condition": "test",
+      "development_cpu_seconds": 1.0375166544,
+      "final": {
+        "accuracy": 0.9997395833333332,
+        "brier": 0.0005208333333333333,
+        "ece": 0.0002604166666666741,
+        "nll": 0.011139739021207972
+      },
+      "inference_cpu_seconds": 0.02408467379999877,
+      "kind": "matched_slope",
+      "mean_reads": 24.0,
+      "net_utility_declared_cpu_price": 0.8592423128047489,
+      "stream": {
+        "accuracy": 0.9997395833333332,
+        "brier": 0.0005208333333333333,
+        "ece": 0.0002604166666666741,
+        "nll": 0.011139739021207972
+      },
+      "task": "marked_memory",
+      "task_utility": 0.8592424479166667
+    },
+    {
+      "condition": "test",
+      "development_cpu_seconds": 1.6493370932000004,
+      "final": {
+        "accuracy": 0.9927083333333334,
+        "brier": 0.014549981851365513,
+        "ece": 0.007234632019985079,
+        "nll": 0.18164837277950538
+      },
+      "inference_cpu_seconds": 0.028471678199998962,
+      "kind": "analytic_single",
+      "mean_reads": 24.0,
+      "net_utility_declared_cpu_price": 0.8451797459104597,
+      "stream": {
+        "accuracy": 0.9927083333333334,
+        "brier": 0.014549981851365513,
+        "ece": 0.007234632019985079,
+        "nll": 0.18164837277950538
+      },
+      "task": "marked_memory",
+      "task_utility": 0.8451799479166666
+    },
+    {
+      "condition": "test",
+      "development_cpu_seconds": 1.5800141224000004,
+      "final": {
+        "accuracy": 0.9966145833333332,
+        "brier": 0.006876313609115417,
+        "ece": 0.004184997589147614,
+        "nll": 0.0679324192056401
+      },
+      "inference_cpu_seconds": 0.02881256160000163,
+      "kind": "analytic_dual",
+      "mean_reads": 24.0,
+      "net_utility_declared_cpu_price": 0.8529922523988983,
+      "stream": {
+        "accuracy": 0.9966145833333332,
+        "brier": 0.006876313609115417,
+        "ece": 0.004184997589147614,
+        "nll": 0.0679324192056401
+      },
+      "task": "marked_memory",
+      "task_utility": 0.8529924479166666
+    },
+    {
+      "condition": "ood_long",
+      "development_cpu_seconds": 0.7633007070000002,
+      "final": {
+        "accuracy": 0.9997395833333332,
+        "brier": 0.0005208333333333333,
+        "ece": 0.0002604166666666741,
+        "nll": 0.00979311865039723
+      },
+      "inference_cpu_seconds": 0.04440707239999995,
+      "kind": "ordinary",
+      "mean_reads": 72.0,
+      "net_utility_declared_cpu_price": 0.5790602825148872,
+      "stream": {
+        "accuracy": 0.9997395833333332,
+        "brier": 0.0005208333333333333,
+        "ece": 0.0002604166666666741,
+        "nll": 0.00979311865039723
+      },
+      "task": "marked_memory",
+      "task_utility": 0.5790604166666667
+    },
+    {
+      "condition": "ood_long",
+      "development_cpu_seconds": 0.7940562787999994,
+      "final": {
+        "accuracy": 0.99921875,
+        "brier": 0.0015625,
+        "ece": 0.00078125,
+        "nll": 0.032521859572457644
+      },
+      "inference_cpu_seconds": 0.04920705220000201,
+      "kind": "ordinary_dual",
+      "mean_reads": 72.0,
+      "net_utility_declared_cpu_price": 0.5780186065226897,
+      "stream": {
+        "accuracy": 0.99921875,
+        "brier": 0.0015625,
+        "ece": 0.00078125,
+        "nll": 0.032521859572457644
+      },
+      "task": "marked_memory",
+      "task_utility": 0.57801875
+    },
+    {
+      "condition": "ood_long",
+      "development_cpu_seconds": 1.0375166544,
+      "final": {
+        "accuracy": 0.9997395833333332,
+        "brier": 0.0005208333333333333,
+        "ece": 0.0002604166666666741,
+        "nll": 0.00953913127582028
+      },
+      "inference_cpu_seconds": 0.07655080579999947,
+      "kind": "matched_slope",
+      "mean_reads": 72.0,
+      "net_utility_declared_cpu_price": 0.5790602132394729,
+      "stream": {
+        "accuracy": 0.9997395833333332,
+        "brier": 0.0005208333333333333,
+        "ece": 0.0002604166666666741,
+        "nll": 0.00953913127582028
+      },
+      "task": "marked_memory",
+      "task_utility": 0.5790604166666667
+    },
+    {
+      "condition": "ood_long",
+      "development_cpu_seconds": 1.6493370932000004,
+      "final": {
+        "accuracy": 0.9924479166666668,
+        "brier": 0.015058448481177017,
+        "ece": 0.004864677498993797,
+        "nll": 0.16038377583494706
+      },
+      "inference_cpu_seconds": 0.08837389920000191,
+      "kind": "analytic_single",
+      "mean_reads": 72.0,
+      "net_utility_declared_cpu_price": 0.5644768033294427,
+      "stream": {
+        "accuracy": 0.9924479166666668,
+        "brier": 0.015058448481177017,
+        "ece": 0.004864677498993797,
+        "nll": 0.16038377583494706
+      },
+      "task": "marked_memory",
+      "task_utility": 0.5644770833333334
+    },
+    {
+      "condition": "ood_long",
+      "development_cpu_seconds": 1.5800141224000004,
+      "final": {
+        "accuracy": 0.9953125,
+        "brier": 0.009370336933380635,
+        "ece": 0.0053580762591133755,
+        "nll": 0.10844833983386695
+      },
+      "inference_cpu_seconds": 0.0873204266000002,
+      "kind": "analytic_dual",
+      "mean_reads": 72.0,
+      "net_utility_declared_cpu_price": 0.5702059783001155,
+      "stream": {
+        "accuracy": 0.9953125,
+        "brier": 0.009370336933380635,
+        "ece": 0.0053580762591133755,
+        "nll": 0.10844833983386695
+      },
+      "task": "marked_memory",
+      "task_utility": 0.5702062499999999
+    },
+    {
+      "condition": "ood_shift",
+      "development_cpu_seconds": 0.7633007070000002,
+      "final": {
+        "accuracy": 0.978125,
+        "brier": 0.043749998817884626,
+        "ece": 0.02187499868227183,
+        "nll": 0.8185767735779692
+      },
+      "inference_cpu_seconds": 0.014855276200000845,
+      "kind": "ordinary",
+      "mean_reads": 24.0,
+      "net_utility_declared_cpu_price": 0.809837143910455,
+      "stream": {
+        "accuracy": 0.978125,
+        "brier": 0.043749998817884626,
+        "ece": 0.02187499868227183,
+        "nll": 0.8185767735779692
+      },
+      "task": "marked_memory",
+      "task_utility": 0.8098372395833333
+    },
+    {
+      "condition": "ood_shift",
+      "development_cpu_seconds": 0.7940562787999994,
+      "final": {
+        "accuracy": 0.9794270833333334,
+        "brier": 0.04114583333333333,
+        "ece": 0.02057291666666654,
+        "nll": 0.8558573025706394
+      },
+      "inference_cpu_seconds": 0.016984023599999887,
+      "kind": "ordinary_dual",
+      "mean_reads": 24.0,
+      "net_utility_declared_cpu_price": 0.8124413047297582,
+      "stream": {
+        "accuracy": 0.9794270833333334,
+        "brier": 0.04114583333333333,
+        "ece": 0.02057291666666654,
+        "nll": 0.8558573025706394
+      },
+      "task": "marked_memory",
+      "task_utility": 0.8124414062500002
+    },
+    {
+      "condition": "ood_shift",
+      "development_cpu_seconds": 1.0375166544,
+      "final": {
+        "accuracy": 0.9864583333333334,
+        "brier": 0.02709882254732323,
+        "ece": 0.013584741469111844,
+        "nll": 0.48371163893212615
+      },
+      "inference_cpu_seconds": 0.025101044999999544,
+      "kind": "matched_slope",
+      "mean_reads": 24.0,
+      "net_utility_declared_cpu_price": 0.8265037698146823,
+      "stream": {
+        "accuracy": 0.9864583333333334,
+        "brier": 0.02709882254732323,
+        "ece": 0.013584741469111844,
+        "nll": 0.48371163893212615
+      },
+      "task": "marked_memory",
+      "task_utility": 0.8265039062499999
+    },
+    {
+      "condition": "ood_shift",
+      "development_cpu_seconds": 1.6493370932000004,
+      "final": {
+        "accuracy": 0.8473958333333333,
+        "brier": 0.2964473994778751,
+        "ece": 0.14174320996720682,
+        "nll": 2.617133807784004
+      },
+      "inference_cpu_seconds": 0.030431446800000116,
+      "kind": "analytic_single",
+      "mean_reads": 24.0,
+      "net_utility_declared_cpu_price": 0.5483787016920109,
+      "stream": {
+        "accuracy": 0.8473958333333333,
+        "brier": 0.2964473994778751,
+        "ece": 0.14174320996720682,
+        "nll": 2.617133807784004
+      },
+      "task": "marked_memory",
+      "task_utility": 0.5483789062499999
+    },
+    {
+      "condition": "ood_shift",
+      "development_cpu_seconds": 1.5800141224000004,
+      "final": {
+        "accuracy": 0.9140625,
+        "brier": 0.1671681222118075,
+        "ece": 0.07836786478994807,
+        "nll": 1.9462666039234855
+      },
+      "inference_cpu_seconds": 0.030836171400001434,
+      "kind": "analytic_dual",
+      "mean_reads": 24.0,
+      "net_utility_declared_cpu_price": 0.6817120414306563,
+      "stream": {
+        "accuracy": 0.9140625,
+        "brier": 0.1671681222118075,
+        "ece": 0.07836786478994807,
+        "nll": 1.9462666039234855
+      },
+      "task": "marked_memory",
+      "task_utility": 0.6817122395833334
+    },
+    {
+      "condition": "test",
+      "development_cpu_seconds": 0.7655794266000001,
+      "final": {
+        "accuracy": 0.9731770833333332,
+        "brier": 0.04384829543928191,
+        "ece": 0.014520076429298187,
+        "nll": 0.08708784959153072
+      },
+      "inference_cpu_seconds": 0.007949202800003264,
+      "kind": "ordinary",
+      "mean_reads": 8.286979166666667,
+      "net_utility_declared_cpu_price": 0.881809288091533,
+      "stream": {
+        "accuracy": 0.9651041666666667,
+        "brier": 0.06493182587683859,
+        "ece": 0.02538496910560219,
+        "nll": 0.1565115697933691
+      },
+      "task": "noisy_evidence",
+      "task_utility": 0.8818093749999999
+    },
+    {
+      "condition": "test",
+      "development_cpu_seconds": 0.7615590464,
+      "final": {
+        "accuracy": 0.9739583333333333,
+        "brier": 0.04322434628976398,
+        "ece": 0.015178001952182673,
+        "nll": 0.0884166990200009
+      },
+      "inference_cpu_seconds": 0.009527025799999932,
+      "kind": "ordinary_dual",
+      "mean_reads": 11.306510416666665,
+      "net_utility_declared_cpu_price": 0.8636592343557805,
+      "stream": {
+        "accuracy": 0.96484375,
+        "brier": 0.06350482627414669,
+        "ece": 0.019451642259938492,
+        "nll": 0.14359828456286847
+      },
+      "task": "noisy_evidence",
+      "task_utility": 0.8636593229166667
+    },
+    {
+      "condition": "test",
+      "development_cpu_seconds": 0.9954152824000019,
+      "final": {
+        "accuracy": 0.9744791666666666,
+        "brier": 0.0439993666815841,
+        "ece": 0.013013643052616852,
+        "nll": 0.0877996950063532
+      },
+      "inference_cpu_seconds": 0.010877601199999276,
+      "kind": "matched_slope",
+      "mean_reads": 8.012500000000001,
+      "net_utility_declared_cpu_price": 0.8729882717115952,
+      "stream": {
+        "accuracy": 0.9598958333333332,
+        "brier": 0.0748042388885518,
+        "ece": 0.02023074033032334,
+        "nll": 0.17014426548218733
+      },
+      "task": "noisy_evidence",
+      "task_utility": 0.8729883854166666
+    },
+    {
+      "condition": "test",
+      "development_cpu_seconds": 1.5787402381999995,
+      "final": {
+        "accuracy": 0.9713541666666666,
+        "brier": 0.04786582616017811,
+        "ece": 0.014494417676978791,
+        "nll": 0.09256734660255359
+      },
+      "inference_cpu_seconds": 0.020291609199998107,
+      "kind": "analytic_single",
+      "mean_reads": 10.600781249999999,
+      "net_utility_declared_cpu_price": 0.8693261698712765,
+      "stream": {
+        "accuracy": 0.965625,
+        "brier": 0.062399332335715055,
+        "ece": 0.02345167144678379,
+        "nll": 0.14351177923408037
+      },
+      "task": "noisy_evidence",
+      "task_utility": 0.8693263541666667
+    },
+    {
+      "condition": "test",
+      "development_cpu_seconds": 1.5435710262000029,
+      "final": {
+        "accuracy": 0.9697916666666666,
+        "brier": 0.0460694949821009,
+        "ece": 0.012681995143576302,
+        "nll": 0.08591253367710162
+      },
+      "inference_cpu_seconds": 0.014002976399999057,
+      "kind": "analytic_dual",
+      "mean_reads": 9.408072916666667,
+      "net_utility_declared_cpu_price": 0.8705639940765219,
+      "stream": {
+        "accuracy": 0.9627604166666668,
+        "brier": 0.06626064628020123,
+        "ece": 0.020904266366997028,
+        "nll": 0.14945620833081485
+      },
+      "task": "noisy_evidence",
+      "task_utility": 0.8705641666666665
+    },
+    {
+      "condition": "ood_long",
+      "development_cpu_seconds": 0.7655794266000001,
+      "final": {
+        "accuracy": 0.98984375,
+        "brier": 0.016769500626201802,
+        "ece": 0.007051494723251163,
+        "nll": 0.035497903938225876
+      },
+      "inference_cpu_seconds": 0.014407451200003151,
+      "kind": "ordinary",
+      "mean_reads": 8.465364583333333,
+      "net_utility_declared_cpu_price": 0.8985232380156886,
+      "stream": {
+        "accuracy": 0.9739583333333333,
+        "brier": 0.05142169128105023,
+        "ece": 0.018798066005946266,
+        "nll": 0.13568375474848388
+      },
+      "task": "noisy_evidence",
+      "task_utility": 0.8985233333333333
+    },
+    {
+      "condition": "ood_long",
+      "development_cpu_seconds": 0.7615590464,
+      "final": {
+        "accuracy": 0.990625,
+        "brier": 0.015500001914313522,
+        "ece": 0.007631989939143294,
+        "nll": 0.034184029972466924
+      },
+      "inference_cpu_seconds": 0.020377159199998118,
+      "kind": "ordinary_dual",
+      "mean_reads": 21.087239583333332,
+      "net_utility_declared_cpu_price": 0.8326410431446692,
+      "stream": {
+        "accuracy": 0.9778645833333334,
+        "brier": 0.0434804242409094,
+        "ece": 0.009917632921427756,
+        "nll": 0.10754236283688964
+      },
+      "task": "noisy_evidence",
+      "task_utility": 0.8326411458333333
+    },
+    {
+      "condition": "ood_long",
+      "development_cpu_seconds": 0.9954152824000019,
+      "final": {
+        "accuracy": 0.9885416666666668,
+        "brier": 0.0169569732842135,
+        "ece": 0.006381744488776231,
+        "nll": 0.035875589719094596
+      },
+      "inference_cpu_seconds": 0.017117184600002132,
+      "kind": "matched_slope",
+      "mean_reads": 8.334375,
+      "net_utility_declared_cpu_price": 0.8940932635871377,
+      "stream": {
+        "accuracy": 0.9713541666666666,
+        "brier": 0.05544216471047257,
+        "ece": 0.010851595478013391,
+        "nll": 0.13130538971837216
+      },
+      "task": "noisy_evidence",
+      "task_utility": 0.8940933854166666
+    },
+    {
+      "condition": "ood_long",
+      "development_cpu_seconds": 1.5787402381999995,
+      "final": {
+        "accuracy": 0.98671875,
+        "brier": 0.02015830514832269,
+        "ece": 0.007472492266964529,
+        "nll": 0.04218652428989858
+      },
+      "inference_cpu_seconds": 0.02488254459999837,
+      "kind": "analytic_single",
+      "mean_reads": 11.422656250000001,
+      "net_utility_declared_cpu_price": 0.8885482472268296,
+      "stream": {
+        "accuracy": 0.9776041666666666,
+        "brier": 0.0440817392680413,
+        "ece": 0.015188154082117471,
+        "nll": 0.1162306345406996
+      },
+      "task": "noisy_evidence",
+      "task_utility": 0.8885484374999999
+    },
+    {
+      "condition": "ood_long",
+      "development_cpu_seconds": 1.5435710262000029,
+      "final": {
+        "accuracy": 0.98671875,
+        "brier": 0.02069539505259086,
+        "ece": 0.006424873412992624,
+        "nll": 0.04155726687571441
+      },
+      "inference_cpu_seconds": 0.022278569999997444,
+      "kind": "analytic_dual",
+      "mean_reads": 10.01953125,
+      "net_utility_declared_cpu_price": 0.8941493999676761,
+      "stream": {
+        "accuracy": 0.9763020833333333,
+        "brier": 0.04607757010501603,
+        "ece": 0.01144244896172148,
+        "nll": 0.11702651123712586
+      },
+      "task": "noisy_evidence",
+      "task_utility": 0.8941495833333333
+    },
+    {
+      "condition": "ood_shift",
+      "development_cpu_seconds": 0.7655794266000001,
+      "final": {
+        "accuracy": 0.8473958333333333,
+        "brier": 0.2484229514005501,
+        "ece": 0.09231986759729194,
+        "nll": 0.46752618305650745
+      },
+      "inference_cpu_seconds": 0.010463053600000194,
+      "kind": "ordinary",
+      "mean_reads": 13.153125,
+      "net_utility_declared_cpu_price": 0.592202461901623,
+      "stream": {
+        "accuracy": 0.8361979166666667,
+        "brier": 0.2943017347386597,
+        "ece": 0.13059823051915873,
+        "nll": 0.6605740217265696
+      },
+      "task": "noisy_evidence",
+      "task_utility": 0.5922025520833334
+    },
+    {
+      "condition": "ood_shift",
+      "development_cpu_seconds": 0.7615590464,
+      "final": {
+        "accuracy": 0.8497395833333334,
+        "brier": 0.24486438866465102,
+        "ece": 0.09127591650485117,
+        "nll": 0.4736844459080408
+      },
+      "inference_cpu_seconds": 0.013578092600002378,
+      "kind": "ordinary_dual",
+      "mean_reads": 15.34375,
+      "net_utility_declared_cpu_price": 0.5866094374142874,
+      "stream": {
+        "accuracy": 0.8401041666666668,
+        "brier": 0.280755371972708,
+        "ece": 0.1178275577631664,
+        "nll": 0.5884680906732173
+      },
+      "task": "noisy_evidence",
+      "task_utility": 0.5866095312499999
+    },
+    {
+      "condition": "ood_shift",
+      "development_cpu_seconds": 0.9954152824000019,
+      "final": {
+        "accuracy": 0.8341145833333332,
+        "brier": 0.26835230819314926,
+        "ece": 0.0973349161703891,
+        "nll": 0.49003308238517934
+      },
+      "inference_cpu_seconds": 0.016537886800000477,
+      "kind": "matched_slope",
+      "mean_reads": 13.2359375,
+      "net_utility_declared_cpu_price": 0.5615005560080982,
+      "stream": {
+        "accuracy": 0.82109375,
+        "brier": 0.3128546612602808,
+        "ece": 0.12872860105798828,
+        "nll": 0.6219624000055876
+      },
+      "task": "noisy_evidence",
+      "task_utility": 0.5615006770833333
+    },
+    {
+      "condition": "ood_shift",
+      "development_cpu_seconds": 1.5787402381999995,
+      "final": {
+        "accuracy": 0.8143229166666668,
+        "brier": 0.29907719918702486,
+        "ece": 0.11050794466940314,
+        "nll": 0.5382443710822614
+      },
+      "inference_cpu_seconds": 0.021661383200000727,
+      "kind": "analytic_single",
+      "mean_reads": 15.990364583333331,
+      "net_utility_declared_cpu_price": 0.5129311420460502,
+      "stream": {
+        "accuracy": 0.8052083333333334,
+        "brier": 0.3340864201781855,
+        "ece": 0.14341097465965164,
+        "nll": 0.7030699120356568
+      },
+      "task": "noisy_evidence",
+      "task_utility": 0.5129313281249999
+    },
+    {
+      "condition": "ood_shift",
+      "development_cpu_seconds": 1.5435710262000029,
+      "final": {
+        "accuracy": 0.8057291666666666,
+        "brier": 0.28789698914603123,
+        "ece": 0.09069910162893678,
+        "nll": 0.48550476029265743
+      },
+      "inference_cpu_seconds": 0.02119213020000075,
+      "kind": "analytic_dual",
+      "mean_reads": 15.959114583333331,
+      "net_utility_declared_cpu_price": 0.5240634378406445,
+      "stream": {
+        "accuracy": 0.8106770833333334,
+        "brier": 0.3083157883482933,
+        "ece": 0.11995183582617504,
+        "nll": 0.6088807053726306
+      },
+      "task": "noisy_evidence",
+      "task_utility": 0.5240636197916666
+    }
+  ],
+  "all_claims_passed": false,
+  "calibration_parameter_count_all_arms": 1,
+  "contrasts": [
+    {
+      "changed_final_choices": 16,
+      "changed_stop_episodes": 0,
+      "condition": "test",
+      "control": "ordinary",
+      "episodes": 3840,
+      "mean_final_nll_difference": 0.03978155827864528,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.012500101519991442,
+          0.00157542195493909
+        ],
+        "mean": -0.005208433566829816,
+        "nominal_familywise_one_sided_lower": -0.016666767034516236,
+        "seed_means": [
+          -0.002604265352331419,
+          -0.0026042653964260354,
+          0.005208233950277104,
+          -0.010416771168393388,
+          -0.01562509986727534
+        ]
+      },
+      "nominal_positive": false,
+      "task": "marked_memory"
+    },
+    {
+      "changed_final_choices": 15,
+      "changed_stop_episodes": 0,
+      "condition": "test",
+      "control": "ordinary_dual",
+      "episodes": 3840,
+      "mean_final_nll_difference": 0.04788403394258643,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.013020924881305828,
+          -0.0005209278338615334
+        ],
+        "mean": -0.005729261441029404,
+        "nominal_familywise_one_sided_lower": -0.016060206010268127,
+        "seed_means": [
+          -0.0026042681194079855,
+          -0.0026042595229142473,
+          -9.715861981618445e-08,
+          -0.007812583959661891,
+          -0.015625098444543076
+        ]
+      },
+      "nominal_positive": false,
+      "task": "marked_memory"
+    },
+    {
+      "changed_final_choices": 14,
+      "changed_stop_episodes": 0,
+      "condition": "test",
+      "control": "matched_slope",
+      "episodes": 3840,
+      "mean_final_nll_difference": 0.056792680184432114,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.013020896760791675,
+          -0.00052089785445321
+        ],
+        "mean": -0.006250060405850677,
+        "nominal_familywise_one_sided_lower": -0.01718755975769142,
+        "seed_means": [
+          -6.562668064478046e-08,
+          -0.0026042262658479234,
+          -0.00260423280585557,
+          -0.010416715749210706,
+          -0.015625061581658547
+        ]
+      },
+      "nominal_positive": false,
+      "task": "marked_memory"
+    },
+    {
+      "changed_final_choices": 29,
+      "changed_stop_episodes": 0,
+      "condition": "test",
+      "control": "analytic_single",
+      "episodes": 3840,
+      "mean_final_nll_difference": -0.1137159535738653,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          3.5155172795310723e-09,
+          0.018229178022882226
+        ],
+        "mean": 0.007812506488438451,
+        "nominal_familywise_one_sided_lower": -0.0026041638370886532,
+        "seed_means": [
+          0.0052083337771835145,
+          0.023437515308456044,
+          0.005208330334946127,
+          0.002604181238738323,
+          0.0026041717828682435
+        ]
+      },
+      "nominal_positive": false,
+      "task": "marked_memory"
+    },
+    {
+      "changed_final_choices": 19,
+      "changed_stop_episodes": 0,
+      "condition": "ood_long",
+      "control": "ordinary",
+      "episodes": 3840,
+      "mean_final_nll_difference": 0.09865522118346973,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.019270973008840217,
+          -1.3456331025001625e-07
+        ],
+        "mean": -0.008854304214771506,
+        "nominal_familywise_one_sided_lower": -0.025349532036408117,
+        "seed_means": [
+          -0.0052084772952298505,
+          -1.3368393247947807e-07,
+          0.0026040359232717795,
+          -0.020833473008229426,
+          -0.02083347300973755
+        ]
+      },
+      "nominal_positive": false,
+      "task": "marked_memory"
+    },
+    {
+      "changed_final_choices": 21,
+      "changed_stop_episodes": 0,
+      "condition": "ood_long",
+      "control": "ordinary_dual",
+      "episodes": 3840,
+      "mean_final_nll_difference": 0.0759264802614093,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.018229298352430354,
+          0.001562371763181779
+        ],
+        "mean": -0.007812628222573982,
+        "nominal_familywise_one_sided_lower": -0.02335190069716794,
+        "seed_means": [
+          -0.005208474352017392,
+          -1.2507003532835625e-07,
+          0.005208208319956902,
+          -0.020833449661987496,
+          -0.018229300348786597
+        ]
+      },
+      "nominal_positive": false,
+      "task": "marked_memory"
+    },
+    {
+      "changed_final_choices": 19,
+      "changed_stop_episodes": 0,
+      "condition": "ood_long",
+      "control": "matched_slope",
+      "episodes": 3840,
+      "mean_final_nll_difference": 0.09890920855804668,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.019270896696249592,
+          -7.067812142247041e-08
+        ],
+        "mean": -0.008854234939357232,
+        "nominal_familywise_one_sided_lower": -0.022916734450039864,
+        "seed_means": [
+          -0.005208398817550493,
+          -7.18925275977611e-08,
+          0.002604094603870936,
+          -0.02083339450287743,
+          -0.020833404087701585
+        ]
+      },
+      "nominal_positive": false,
+      "task": "marked_memory"
+    },
+    {
+      "changed_final_choices": 33,
+      "changed_stop_episodes": 0,
+      "condition": "ood_long",
+      "control": "analytic_single",
+      "episodes": 3840,
+      "mean_final_nll_difference": -0.051935436001080096,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.005729157269100409,
+          0.01666667596413995
+        ],
+        "mean": 0.005729174970672855,
+        "nominal_familywise_one_sided_lower": -0.010330934394348065,
+        "seed_means": [
+          0.005208333696594968,
+          0.015625014877829843,
+          0.02083333890338097,
+          -0.007812484259617121,
+          -0.0052083283648243885
+        ]
+      },
+      "nominal_positive": false,
+      "task": "marked_memory"
+    },
+    {
+      "changed_final_choices": 370,
+      "changed_stop_episodes": 0,
+      "condition": "ood_shift",
+      "control": "ordinary",
+      "episodes": 3840,
+      "mean_final_nll_difference": 1.1276898303455165,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.21093760180960522,
+          -0.06197926982284689
+        ],
+        "mean": -0.12812510247979883,
+        "nominal_familywise_one_sided_lower": -0.25330956482816375,
+        "seed_means": [
+          -0.03906260321679369,
+          -0.1484375993616355,
+          -0.09114593570164753,
+          -0.28385426950823206,
+          -0.07812510461068545
+        ]
+      },
+      "nominal_positive": false,
+      "task": "marked_memory"
+    },
+    {
+      "changed_final_choices": 377,
+      "changed_stop_episodes": 0,
+      "condition": "ood_shift",
+      "control": "ordinary_dual",
+      "episodes": 3840,
+      "mean_final_nll_difference": 1.0904093013528453,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.21096363198784157,
+          -0.05937510364951805
+        ],
+        "mean": -0.1307292632991018,
+        "nominal_familywise_one_sided_lower": -0.24906367244056743,
+        "seed_means": [
+          -0.08072927106410459,
+          -0.14843759212646632,
+          -0.13802093405957572,
+          -0.2708334166493169,
+          -0.0156251025960456
+        ]
+      },
+      "nominal_positive": false,
+      "task": "marked_memory"
+    },
+    {
+      "changed_final_choices": 356,
+      "changed_stop_episodes": 0,
+      "condition": "ood_shift",
+      "control": "matched_slope",
+      "episodes": 3840,
+      "mean_final_nll_difference": 1.462554964991359,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.21459640944401967,
+          -0.09062506668265717
+        ],
+        "mean": -0.144791728384026,
+        "nominal_familywise_one_sided_lower": -0.25052088572941567,
+        "seed_means": [
+          -0.07812506797104789,
+          -0.1510417280668817,
+          -0.104166734891823,
+          -0.2708333820156093,
+          -0.11979172897476803
+        ]
+      },
+      "nominal_positive": false,
+      "task": "marked_memory"
+    },
+    {
+      "changed_final_choices": 460,
+      "changed_stop_episodes": 0,
+      "condition": "ood_shift",
+      "control": "analytic_single",
+      "episodes": 3840,
+      "mean_final_nll_difference": -0.6708672038605191,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.008333321433739065,
+          0.2817838627805623
+        ],
+        "mean": 0.13333333973864525,
+        "nominal_familywise_one_sided_lower": -0.07283093454789326,
+        "seed_means": [
+          0.3932291659695781,
+          0.203125014994852,
+          0.020833330442809432,
+          -0.1041666506241939,
+          0.15364583791018077
+        ]
+      },
+      "nominal_positive": false,
+      "task": "marked_memory"
+    },
+    {
+      "changed_final_choices": 81,
+      "changed_stop_episodes": 2951,
+      "condition": "test",
+      "control": "ordinary",
+      "episodes": 3840,
+      "mean_final_nll_difference": -0.0011753159144290912,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.027771749154748754,
+          0.004680875163846027
+        ],
+        "mean": -0.01124529401501102,
+        "nominal_familywise_one_sided_lower": -0.03331706494846292,
+        "seed_means": [
+          -0.024296961113462686,
+          0.0074894852077292415,
+          -0.007945396201536817,
+          0.0012501730261471802,
+          -0.032723770993932026
+        ]
+      },
+      "nominal_positive": false,
+      "task": "noisy_evidence"
+    },
+    {
+      "changed_final_choices": 96,
+      "changed_stop_episodes": 3005,
+      "condition": "test",
+      "control": "ordinary_dual",
+      "episodes": 3840,
+      "mean_final_nll_difference": -0.002504165342899275,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.021069190708223787,
+          0.04549948274830585
+        ],
+        "mean": 0.00690475972074131,
+        "nominal_familywise_one_sided_lower": -0.02815005389207324,
+        "seed_means": [
+          -0.0300857628031387,
+          0.07704548695397401,
+          -0.004451910739276516,
+          -0.002790712650100615,
+          -0.005193302157751631
+        ]
+      },
+      "nominal_positive": false,
+      "task": "noisy_evidence"
+    },
+    {
+      "changed_final_choices": 87,
+      "changed_stop_episodes": 2427,
+      "condition": "test",
+      "control": "matched_slope",
+      "episodes": 3840,
+      "mean_final_nll_difference": -0.0018871613292515777,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.01219893128171975,
+          0.008732154281531979
+        ],
+        "mean": -0.0024242776350733527,
+        "nominal_familywise_one_sided_lower": -0.01609706404121016,
+        "seed_means": [
+          0.006467646616210579,
+          -0.006202932245693161,
+          -0.01107115393208321,
+          -0.0019839162122817517,
+          0.0006689675984807799
+        ]
+      },
+      "nominal_positive": false,
+      "task": "noisy_evidence"
+    },
+    {
+      "changed_final_choices": 67,
+      "changed_stop_episodes": 2044,
+      "condition": "test",
+      "control": "analytic_single",
+      "episodes": 3840,
+      "mean_final_nll_difference": -0.006654812925451953,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.01225026466770083,
+          0.013464171377535259
+        ],
+        "mean": 0.0012378242052451297,
+        "nominal_familywise_one_sided_lower": -0.01832388196892343,
+        "seed_means": [
+          -0.01245103291710159,
+          0.007977595068108871,
+          0.008696874978032345,
+          0.01438437770729162,
+          -0.012418693810105593
+        ]
+      },
+      "nominal_positive": false,
+      "task": "noisy_evidence"
+    },
+    {
+      "changed_final_choices": 79,
+      "changed_stop_episodes": 3017,
+      "condition": "ood_long",
+      "control": "ordinary",
+      "episodes": 3840,
+      "mean_final_nll_difference": 0.006059362937488534,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.020534103294415098,
+          0.015296756379985264
+        ],
+        "mean": -0.00437383804801257,
+        "nominal_familywise_one_sided_lower": -0.02417565775986131,
+        "seed_means": [
+          -0.023220662980108473,
+          0.03086448048480486,
+          -0.007254786273986104,
+          -0.012512853335852787,
+          -0.009745368134920334
+        ]
+      },
+      "nominal_positive": false,
+      "task": "noisy_evidence"
+    },
+    {
+      "changed_final_choices": 76,
+      "changed_stop_episodes": 3098,
+      "condition": "ood_long",
+      "control": "ordinary_dual",
+      "episodes": 3840,
+      "mean_final_nll_difference": 0.007373236903247492,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.020398921938796388,
+          0.2093471880639259
+        ],
+        "mean": 0.06150835682300673,
+        "nominal_familywise_one_sided_lower": -0.026108121734655185,
+        "seed_means": [
+          -0.021594358933039636,
+          0.35579344138975527,
+          -0.01790557095857072,
+          -0.009616499797569355,
+          0.0008647724144580822
+        ]
+      },
+      "nominal_positive": false,
+      "task": "noisy_evidence"
+    },
+    {
+      "changed_final_choices": 61,
+      "changed_stop_episodes": 2477,
+      "condition": "ood_long",
+      "control": "matched_slope",
+      "episodes": 3840,
+      "mean_final_nll_difference": 0.0056816771566198165,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.012363415783631966,
+          0.016426011230886998
+        ],
+        "mean": 5.6136380538386134e-05,
+        "nominal_familywise_one_sided_lower": -0.01748232122176595,
+        "seed_means": [
+          0.025880137366732735,
+          -0.0023360012953012586,
+          -0.01669017501601283,
+          -0.004616731657176304,
+          -0.001956547495550407
+        ]
+      },
+      "nominal_positive": false,
+      "task": "noisy_evidence"
+    },
+    {
+      "changed_final_choices": 51,
+      "changed_stop_episodes": 2160,
+      "condition": "ood_long",
+      "control": "analytic_single",
+      "episodes": 3840,
+      "mean_final_nll_difference": -0.0006292574141841684,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.006017606671352428,
+          0.016266985412307703
+        ],
+        "mean": 0.005601152740846471,
+        "nominal_familywise_one_sided_lower": -0.011041402693658853,
+        "seed_means": [
+          -0.0005296806988359259,
+          0.010379682038490429,
+          0.011157549611279764,
+          0.017005461281209628,
+          -0.010007248527911544
+        ]
+      },
+      "nominal_positive": false,
+      "task": "noisy_evidence"
+    },
+    {
+      "changed_final_choices": 450,
+      "changed_stop_episodes": 2851,
+      "condition": "ood_shift",
+      "control": "ordinary",
+      "episodes": 3840,
+      "mean_final_nll_difference": 0.01797857723615005,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.0977778433976079,
+          -0.036771463197166745
+        ],
+        "mean": -0.06813902406097844,
+        "nominal_familywise_one_sided_lower": -0.1100866303559951,
+        "seed_means": [
+          -0.09077391918394438,
+          -0.044059216747068856,
+          -0.09567391880823346,
+          -0.03382275245403765,
+          -0.07636531311160778
+        ]
+      },
+      "nominal_positive": false,
+      "task": "noisy_evidence"
+    },
+    {
+      "changed_final_choices": 481,
+      "changed_stop_episodes": 2772,
+      "condition": "ood_shift",
+      "control": "ordinary_dual",
+      "episodes": 3840,
+      "mean_final_nll_difference": 0.011820314384616653,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.1002068197442406,
+          -0.019878123694953058
+        ],
+        "mean": -0.06254599957364278,
+        "nominal_familywise_one_sided_lower": -0.11392529601801005,
+        "seed_means": [
+          -0.09332014297111257,
+          0.004556552792205811,
+          -0.10315061224345883,
+          -0.056849437731923504,
+          -0.06396635771392474
+        ]
+      },
+      "nominal_positive": false,
+      "task": "noisy_evidence"
+    },
+    {
+      "changed_final_choices": 458,
+      "changed_stop_episodes": 2625,
+      "condition": "ood_shift",
+      "control": "matched_slope",
+      "episodes": 3840,
+      "mean_final_nll_difference": -0.004528322092521903,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.06420202209405095,
+          -0.01248706840428749
+        ],
+        "mean": -0.03743711816745379,
+        "nominal_familywise_one_sided_lower": -0.0726018597383441,
+        "seed_means": [
+          -0.058425197280126656,
+          -0.028894855504477058,
+          -0.014076363163209477,
+          -0.037499412472483534,
+          -0.04828976241697225
+        ]
+      },
+      "nominal_positive": false,
+      "task": "noisy_evidence"
+    },
+    {
+      "changed_final_choices": 311,
+      "changed_stop_episodes": 1829,
+      "condition": "ood_shift",
+      "control": "analytic_single",
+      "episodes": 3840,
+      "mean_final_nll_difference": -0.052739610789604,
+      "net_utility_difference": {
+        "bootstrap_draws": 2000,
+        "caution": "five seed clusters; bootstrap nominal intervals, not exact finite-sample guarantees; adjusted tail has about four bootstrap draws",
+        "interval_95": [
+          -0.017909380055527727,
+          0.04328350564796206
+        ],
+        "mean": 0.011132295794594373,
+        "nominal_familywise_one_sided_lower": -0.031469541158995334,
+        "seed_means": [
+          -0.018676035252875027,
+          -0.022742454723051253,
+          0.04612330445720156,
+          0.037590616392566445,
+          0.013366048099130128
+        ]
+      },
+      "nominal_positive": false,
+      "task": "noisy_evidence"
+    }
+  ],
+  "identity_verification_passed": true,
+  "interpretation": "Causal synthetic content evidence only. A channel intervention changes behavior but does not establish independent information or retrained necessity.",
+  "nominal_positive_contrasts": 0,
+  "parameter_count_all_arms": 782,
+  "process_cost": {
+    "energy_joules": null,
+    "gpu": false,
+    "peak_rss_bytes": 83484672,
+    "total_process_cpu_seconds": 70.104318959,
+    "total_wall_seconds": 70.17235999798868
+  },
+  "total_primary_contrasts": 24
+}

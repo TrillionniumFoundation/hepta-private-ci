@@ -1,0 +1,42 @@
+{
+  "schema": "hcsn-full-hx-independent-lhs-stress-results-v1",
+  "protocol_sha256": "c651c8df1da469ad9a29c09146883311946748ae76a7a241500b61ac224fd7a4",
+  "kernel_sha256": "1a7fb9480bca8fd127241b2488834bc682626f817469f8a69e07097f74adf4b6",
+  "reference_sha256": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52",
+  "source_sha256": "6408561f8cb9772d50024bf1df6fcfb548c86aa2d391e39257c43dc7b6fe9a54",
+  "elapsed_seconds": 118.82824408799934,
+  "summary": {
+    "float64": {
+      "proposed_points": 128,
+      "admitted_points": 128,
+      "rejected_points": 0,
+      "numerical_failed_points": [],
+      "numerical_passed_rows": 512,
+      "numerical_rows": 512,
+      "maximum_value_error": 1.379206265254146e-13,
+      "maximum_jacobian_error": 5.171088834909909e-10,
+      "reference_halving_max": 3.3735378308748125e-62
+    },
+    "mixed32": {
+      "proposed_points": 128,
+      "admitted_points": 128,
+      "rejected_points": 0,
+      "numerical_failed_points": [],
+      "numerical_passed_rows": 512,
+      "numerical_rows": 512,
+      "maximum_value_error": 5.831520778306357e-08,
+      "maximum_jacobian_error": 5.824520863813188e-08,
+      "reference_halving_max": 7.402827700812115e-61
+    }
+  },
+  "no_kernel_tuning": true,
+  "all_admitted_numerical_fixtures_passed": true,
+  "failed_rows": [],
+  "rejections": [],
+  "posthoc_physical_diagnostic": {
+    "criterion": "E>=-1e-8,D>=-1e-8,0<=G<=F<=1 with1e-10 probability allowance; diagnostic only, not a newly optimized gate",
+    "violations": []
+  },
+  "raw_member": "STRESS_RESULTS.json",
+  "raw_sha256": "f65cf4be5b92b5c066470c94509d20e688cd529a6dda5c351daf404296f73db0"
+}

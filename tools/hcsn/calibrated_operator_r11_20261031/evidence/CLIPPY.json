@@ -1,0 +1,11 @@
+{
+  "fix_command": "just fix --manifest-path /tmp/hcsn-r11-native-build02/Cargo.toml -p codex-calibrated-operator --offline",
+  "fix_returncode": 101,
+  "fix_error": "failed to bind TCP listener to manage locking: Operation not permitted (os error 1)",
+  "fallback_command": "just clippy --manifest-path /tmp/hcsn-r11-native-build02/Cargo.toml -p codex-calibrated-operator --offline",
+  "fallback_returncode": 0,
+  "source_mutated": false,
+  "new_source_warning": "port.rs has identical constant-feature branches; behavior is intentional, lint is non-fatal",
+  "other_warnings": "pre-existing linked R9 source and cached dependencies",
+  "production_code_modified": false
+}

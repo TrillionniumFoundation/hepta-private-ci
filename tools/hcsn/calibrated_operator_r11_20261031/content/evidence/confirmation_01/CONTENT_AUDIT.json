@@ -1,0 +1,120 @@
+{
+  "channel_scope": {
+    "analytic_dual_outputs_not_competing": true,
+    "correction": "READ_ONLY_REVIEW.json max_observed_sum_of_marginal_channels aggregated every arm, not only analytic_dual. This supplement separates the scope without rewriting original evidence.",
+    "per_arm": {
+      "analytic_dual": {
+        "max_sum_of_mean_channels": 1.1544971623572249,
+        "original_member": "models/noisy_evidence_analytic_dual_111031/ood_shift_raw_00.npz"
+      },
+      "analytic_single": {
+        "max_sum_of_mean_channels": 1.4379524390566811,
+        "original_member": "models/noisy_evidence_analytic_single_111049/ood_shift_raw_00.npz"
+      },
+      "matched_slope": {
+        "max_sum_of_mean_channels": 1.1636342987870152,
+        "original_member": "models/noisy_evidence_matched_slope_111043/ood_shift_raw_00.npz"
+      },
+      "ordinary": {
+        "max_sum_of_mean_channels": 1.2894997055397164,
+        "original_member": "models/marked_memory_ordinary_111049/ood_shift_raw_01.npz"
+      },
+      "ordinary_dual": {
+        "max_sum_of_mean_channels": 1.1797403594459348,
+        "original_member": "models/marked_memory_ordinary_dual_111049/ood_shift_raw_02.npz"
+      }
+    }
+  },
+  "consolidation": {
+    "archive_count": 34,
+    "full_original_index_preserved": true,
+    "maximum_archive_bytes": 400000,
+    "preserved_all_member_bytes": true
+  },
+  "evidence_retirement": {
+    "first_pack_index_preserved_as": "packaging_history/INDEX_v1.json",
+    "later_observation": "Exact source-member duplicates appeared again after a later non-evidence apply_patch and metadata step, despite completed subprocess sessions. The cause remains unestablished. Final cleanup revalidates bytes, and publication is explicitly limited by DELIVERY_MANIFEST.json.",
+    "second_retirement": "All 950 bytes were checked against both archive and index, then retired; a subsequent separate tool call verified zero data/model duplicate files.",
+    "unexpected_duplicate_reappearance": "950 exact duplicate member files reappeared after initial retirement. Cause could not be established. All started study/summary/pack subprocesses had returned completion. Explicit restoration was to a distinct /tmp path. System ps inspection unavailable (fatal library error, lookup self)."
+  },
+  "final_archive_member_readback_verified": true,
+  "first_roundtrip_statistics_replay": {
+    "all_member_hashes_verified": true,
+    "index_sha256": "390c5a23130fc90fe13c59890c64df6935ba988224f6902ce69bcd2b502c5860",
+    "restored_original_bytes": 15295419,
+    "restored_original_files": 958,
+    "scope": "Postprocessing only. No model retraining, label reselection, policy change or heldout redraw.",
+    "statistics_replay_byte_identical": true,
+    "statistics_replay_cpu_seconds": 3.628635,
+    "statistics_replay_wall_seconds": 2.500437413007603,
+    "summary_sha256": "f3d7e6bd6b69fe98599d66f21b0285162fc6dd807b9e836a6806f88347238a1b"
+  },
+  "gradient_and_causality": {
+    "matched_value_and_partial_gradient_error": 5.551115123125783e-17,
+    "models": {
+      "analytic_dual": {
+        "future_mutation_prefix_error": 0.0,
+        "loss": 0.6902252608581374,
+        "max_directional_gradient_error": 1.2798408166592168e-11,
+        "nonzero_gradient_blocks": {
+          "b": true,
+          "bias": true,
+          "out": true,
+          "w": true
+        },
+        "parameter_count": 782
+      },
+      "analytic_single": {
+        "future_mutation_prefix_error": 0.0,
+        "loss": 0.6962249074445598,
+        "max_directional_gradient_error": 1.1990225422232013e-11,
+        "nonzero_gradient_blocks": {
+          "b": true,
+          "bias": true,
+          "out": true,
+          "w": true
+        },
+        "parameter_count": 782
+      },
+      "matched_slope": {
+        "future_mutation_prefix_error": 0.0,
+        "loss": 0.6904219339525717,
+        "max_directional_gradient_error": 1.0713166465059487e-11,
+        "nonzero_gradient_blocks": {
+          "b": true,
+          "bias": true,
+          "out": true,
+          "w": true
+        },
+        "parameter_count": 782
+      },
+      "ordinary": {
+        "future_mutation_prefix_error": 0.0,
+        "loss": 0.7041079181693478,
+        "max_directional_gradient_error": 9.613073358172297e-12,
+        "nonzero_gradient_blocks": {
+          "b": true,
+          "bias": true,
+          "out": true,
+          "w": true
+        },
+        "parameter_count": 782
+      },
+      "ordinary_dual": {
+        "future_mutation_prefix_error": 0.0,
+        "loss": 0.7069013632126822,
+        "max_directional_gradient_error": 1.376413566456236e-11,
+        "nonzero_gradient_blocks": {
+          "b": true,
+          "bias": true,
+          "out": true,
+          "w": true
+        },
+        "parameter_count": 782
+      }
+    },
+    "passed": true
+  },
+  "limitations": "Local slope match only; overlapping one-sided first-passage outputs; no raw real-media, full-HX regenerative, or deployed/native Bellman claim.",
+  "statistical_scope": "24 comparisons = 2 tasks x 3 conditions x 4 controls; independent training/data seed clusters=5; paired case resampling within resampled clusters; no episode-as-independent-model inference."
+}

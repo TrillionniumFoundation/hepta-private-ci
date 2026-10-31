@@ -1,0 +1,599 @@
+{
+  "schema": "hcsn-full-hx-numerics-r11-summary-v1",
+  "status": "PASS_REGISTERED_FP64_AND_MIXED32_FIXTURES_ONLY",
+  "full_equations": [
+    "8",
+    "9",
+    "12",
+    "A5",
+    "A7"
+  ],
+  "jacobian_columns": [
+    "r",
+    "delta",
+    "sigma",
+    "alpha",
+    "tax",
+    "liquidity",
+    "maturity",
+    "coupon",
+    "principal",
+    "state"
+  ],
+  "output_order": [
+    "boundary",
+    "equity",
+    "F",
+    "G",
+    "debt"
+  ],
+  "final_evidence_member": "FINAL_RESULTS.json",
+  "final_evidence_sha256": "aa35be2e7e8760518ca6d0865abb363256d04f937ab831f35c408e719e92bec0",
+  "summary": {
+    "float64": {
+      "passed_rows": 432,
+      "total_rows": 432,
+      "passed_cases": 18,
+      "total_cases": 18,
+      "cases": {
+        "baseline": true,
+        "liquidity_0.1": true,
+        "maturity_0.01": true,
+        "maturity_0.1": true,
+        "maturity_5": true,
+        "maturity_20": true,
+        "sigma_0.08": true,
+        "sigma_0.8": true,
+        "delta_0.2": true,
+        "recovery_0": true,
+        "recovery_1": true,
+        "tax_0": true,
+        "tax_0.6": true,
+        "lower_liquidity_limit": true,
+        "joint_m0.01_l0.0001": true,
+        "joint_m0.01_l0.1": true,
+        "joint_m20.0_l0.0001": true,
+        "joint_m20.0_l0.1": true
+      },
+      "max_value_error": 1.3218371709700083e-11,
+      "max_jacobian_error": 3.9858758717854085e-08,
+      "max_absolute_error_by_output": [
+        3.410605131648481e-13,
+        2.1959323248665896e-11,
+        3.2862601528904634e-14,
+        3.2862601528904634e-14,
+        7.275957614183426e-12
+      ]
+    },
+    "float32": {
+      "passed_rows": 136,
+      "total_rows": 432,
+      "passed_cases": 0,
+      "total_cases": 18,
+      "cases": {
+        "baseline": false,
+        "liquidity_0.1": false,
+        "maturity_0.01": false,
+        "maturity_0.1": false,
+        "maturity_5": false,
+        "maturity_20": false,
+        "sigma_0.08": false,
+        "sigma_0.8": false,
+        "delta_0.2": false,
+        "recovery_0": false,
+        "recovery_1": false,
+        "tax_0": false,
+        "tax_0.6": false,
+        "lower_liquidity_limit": false,
+        "joint_m0.01_l0.0001": false,
+        "joint_m0.01_l0.1": false,
+        "joint_m20.0_l0.0001": false,
+        "joint_m20.0_l0.1": false
+      },
+      "max_value_error": 0.0162872771445453,
+      "max_jacobian_error": 61.81494268103482,
+      "max_absolute_error_by_output": [
+        0.0001925532339299707,
+        0.0162872771445453,
+        2.494465611402319e-05,
+        2.5880400237876522e-05,
+        0.00437255822635052
+      ]
+    },
+    "mixed32": {
+      "passed_rows": 432,
+      "total_rows": 432,
+      "passed_cases": 18,
+      "total_cases": 18,
+      "cases": {
+        "baseline": true,
+        "liquidity_0.1": true,
+        "maturity_0.01": true,
+        "maturity_0.1": true,
+        "maturity_5": true,
+        "maturity_20": true,
+        "sigma_0.08": true,
+        "sigma_0.8": true,
+        "delta_0.2": true,
+        "recovery_0": true,
+        "recovery_1": true,
+        "tax_0": true,
+        "tax_0.6": true,
+        "lower_liquidity_limit": true,
+        "joint_m0.01_l0.0001": true,
+        "joint_m0.01_l0.1": true,
+        "joint_m20.0_l0.0001": true,
+        "joint_m20.0_l0.1": true
+      },
+      "max_value_error": 5.665080594681952e-08,
+      "max_jacobian_error": 6.8832148173229e-08,
+      "max_absolute_error_by_output": [
+        3.5946273868603384e-06,
+        1.8716569570642605e-05,
+        2.96900468654826e-08,
+        2.973268864447931e-08,
+        0.000237326633396151
+      ]
+    }
+  },
+  "cast_interface": {
+    "cotangent": [
+      0.20000000298023224,
+      -0.30000001192092896,
+      0.4000000059604645,
+      -0.5,
+      0.6000000238418579
+    ],
+    "vjp": [
+      -106.0716323852539,
+      64.98492431640625,
+      14.275410652160645,
+      -20.52081298828125,
+      -23.82160758972168,
+      171.09056091308594,
+      -40.92926788330078,
+      -0.06541518121957779,
+      1.1550894975662231,
+      -0.31715628504753113
+    ],
+    "reference_vjp": [
+      -106.07163262297304,
+      64.98492560966842,
+      14.275409066723208,
+      -20.52081287545303,
+      -23.821608398908918,
+      171.0905369957181,
+      -40.92926680450967,
+      -0.06541519159688948,
+      1.1550894669338354,
+      -0.3171563056993005
+    ],
+    "vjp_error": 1.3979363351519866e-07,
+    "secants": [
+      {
+        "relative_step": 0.001,
+        "jacobian": [
+          [
+            -126.60519698239732,
+            89.26739312657166,
+            -10.482150955620343,
+            -53.521955096363996,
+            -29.838410596026492,
+            238.42786625686878,
+            -10.417761883474892,
+            -0.5098127005447355,
+            1.1462057022697756,
+            0.0
+          ],
+          [
+            217.4938995995157,
+            -207.71835708298408,
+            -105.65908649173956,
+            58.6973971786211,
+            69.25562913907285,
+            -603.6993573623918,
+            7.324094769780957,
+            1.9195582419222446,
+            -1.7552105881625333,
+            1.3284122987716487
+          ],
+          [
+            -1.7720499208344975,
+            1.4067244109155257,
+            1.2298185941043085,
+            -0.525270713292271,
+            -0.2928532008830022,
+            2.3406910682686037,
+            0.01923707346148115,
+            -0.005003124766808447,
+            0.01124982605603315,
+            -0.00661923405670634
+          ],
+          [
+            -1.7163546614510572,
+            1.3270000931358852,
+            1.161904761904762,
+            -0.4968582356447447,
+            -0.27701434878587194,
+            2.1700661264785324,
+            0.014312323051706153,
+            -0.004732622565480188,
+            0.010641384555321912,
+            -0.006261228196288243
+          ],
+          [
+            -26.084008568501442,
+            -25.177982676725343,
+            -25.40097181729835,
+            12.922710113252533,
+            4.838852097130243,
+            -95.94337338176399,
+            -61.0818059901654,
+            1.020222371464816,
+            0.6668625146886017,
+            0.13481345845731288
+          ]
+        ],
+        "error": 0.001434911847974058
+      },
+      {
+        "relative_step": 0.0005,
+        "jacobian": [
+          [
+            -126.64108772583349,
+            89.2590799031477,
+            -10.481471883907748,
+            -53.521955096363996,
+            -29.838410596026492,
+            238.02421307506054,
+            -10.414257614591405,
+            -0.5098507462686567,
+            1.1461966604823748,
+            0.0
+          ],
+          [
+            217.47364499906874,
+            -207.69901285155524,
+            -105.66053381705105,
+            58.6973971786211,
+            69.25562913907285,
+            -603.8338610542,
+            7.324313047624725,
+            1.9194029850746268,
+            -1.755225726654298,
+            1.3284253890753739
+          ],
+          [
+            -1.7720245855839076,
+            1.4069659154404917,
+            1.2298199015288935,
+            -0.525270713292271,
+            -0.2928532008830022,
+            2.340100577388713,
+            0.019237646778327473,
+            -0.005003498134328358,
+            0.011249734268707482,
+            -0.006619213338228563
+          ],
+          [
+            -1.7163345129446825,
+            1.3268765133171914,
+            1.1618942731277533,
+            -0.4968582356447447,
+            -0.27701434878587194,
+            2.170236543117899,
+            0.01430529892114204,
+            -0.004732975746268657,
+            0.010641330395794681,
+            -0.006261160288564236
+          ],
+          [
+            -26.081579437511643,
+            -25.175637921400632,
+            -25.391033946618293,
+            12.925889131730578,
+            4.831788079470199,
+            -95.74371391320544,
+            -61.08171902008702,
+            1.0202985074626865,
+            0.666852195423624,
+            0.13480317363442174
+          ]
+        ],
+        "error": 0.0019612666798475833
+      }
+    ],
+    "interpretation": "FP32 quantization is not mathematically differentiable; AD uses the standard cast convention and differentiates the full FP64 function at represented input values.",
+    "passed": true
+  },
+  "rejected_extreme_count": 18,
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "autodiff": "local scalar forward-mode Dual; JAX is not installed or rerun"
+  },
+  "elapsed_seconds": 88.50940250100393,
+  "reference_halving_max": 6.131412444060524e-36,
+  "protocol_sha256": "07e4abe9e19da7b1617484a0697dbe7fb9767f3b5a33136976327e6b61711836",
+  "source_sha256": {
+    "kernel.py": "1a7fb9480bca8fd127241b2488834bc682626f817469f8a69e07097f74adf4b6",
+    "reference.py": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52",
+    "audit.py": "7e78e2ba7e46b76e5026b1eafc0de38eed587a79806b4464751bb628b40e5584"
+  },
+  "development_failures": [
+    {
+      "member": "DEVELOPMENT_AUDIT_01.json",
+      "sha256": "05d5ed7eb7f1a3ad64922901f9ada0d0e11214b6999bb6a66d88e33a1754cc57",
+      "qualified_registered_fixtures": false,
+      "summary": {
+        "float64": {
+          "passed_rows": 304,
+          "total_rows": 306,
+          "passed_cases": 17,
+          "total_cases": 18,
+          "cases": {
+            "baseline": true,
+            "liquidity_0.1": true,
+            "maturity_0.01": true,
+            "maturity_0.1": true,
+            "maturity_5": true,
+            "maturity_20": true,
+            "sigma_0.08": true,
+            "sigma_0.8": true,
+            "delta_0.2": true,
+            "recovery_0": true,
+            "recovery_1": true,
+            "tax_0": true,
+            "tax_0.6": true,
+            "lower_liquidity_limit": true,
+            "joint_m0.01_l0.0001": false,
+            "joint_m0.01_l0.1": true,
+            "joint_m20.0_l0.0001": true,
+            "joint_m20.0_l0.1": true
+          },
+          "max_value_error": 2.7698044153065486e-09,
+          "max_jacobian_error": 8.527273935834967e-05
+        },
+        "float32": {
+          "passed_rows": 69,
+          "total_rows": 306,
+          "passed_cases": 0,
+          "total_cases": 18,
+          "cases": {
+            "baseline": false,
+            "liquidity_0.1": false,
+            "maturity_0.01": false,
+            "maturity_0.1": false,
+            "maturity_5": false,
+            "maturity_20": false,
+            "sigma_0.08": false,
+            "sigma_0.8": false,
+            "delta_0.2": false,
+            "recovery_0": false,
+            "recovery_1": false,
+            "tax_0": false,
+            "tax_0.6": false,
+            "lower_liquidity_limit": false,
+            "joint_m0.01_l0.0001": false,
+            "joint_m0.01_l0.1": false,
+            "joint_m20.0_l0.0001": false,
+            "joint_m20.0_l0.1": false
+          },
+          "max_value_error": 1.3748051752682318,
+          "max_jacobian_error": 89734.2769823968
+        },
+        "mixed32": {
+          "passed_rows": 305,
+          "total_rows": 306,
+          "passed_cases": 17,
+          "total_cases": 18,
+          "cases": {
+            "baseline": true,
+            "liquidity_0.1": true,
+            "maturity_0.01": true,
+            "maturity_0.1": true,
+            "maturity_5": true,
+            "maturity_20": true,
+            "sigma_0.08": true,
+            "sigma_0.8": true,
+            "delta_0.2": true,
+            "recovery_0": true,
+            "recovery_1": true,
+            "tax_0": true,
+            "tax_0.6": true,
+            "lower_liquidity_limit": true,
+            "joint_m0.01_l0.0001": false,
+            "joint_m0.01_l0.1": true,
+            "joint_m20.0_l0.0001": true,
+            "joint_m20.0_l0.1": true
+          },
+          "max_value_error": 5.665080594681952e-08,
+          "max_jacobian_error": 8.296970233820367e-05
+        }
+      },
+      "source_sha256": {
+        "kernel.py": "bb056f3d23af307d6ddf35d1d2ca1544c26a700023d6db402c76aa56752a5257",
+        "reference.py": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52",
+        "audit.py": "a5a4dfa2672ef4955bf39f89a01cfa141213682b3a0a3e2aab6090513c587a95"
+      }
+    },
+    {
+      "member": "DEVELOPMENT_AUDIT_02.json",
+      "sha256": "4b648783ca2e656ad64dcac8d3ff6cd9b273ffdab7f5e321387e4b41ad480325",
+      "qualified_registered_fixtures": false,
+      "summary": {
+        "float64": {
+          "passed_rows": 431,
+          "total_rows": 432,
+          "passed_cases": 17,
+          "total_cases": 18,
+          "cases": {
+            "baseline": true,
+            "liquidity_0.1": true,
+            "maturity_0.01": true,
+            "maturity_0.1": true,
+            "maturity_5": true,
+            "maturity_20": true,
+            "sigma_0.08": true,
+            "sigma_0.8": true,
+            "delta_0.2": true,
+            "recovery_0": true,
+            "recovery_1": true,
+            "tax_0": true,
+            "tax_0.6": true,
+            "lower_liquidity_limit": true,
+            "joint_m0.01_l0.0001": false,
+            "joint_m0.01_l0.1": true,
+            "joint_m20.0_l0.0001": true,
+            "joint_m20.0_l0.1": true
+          },
+          "max_value_error": 2.3361877931303565e-09,
+          "max_jacobian_error": 2.3478463996444952e-05
+        },
+        "float32": {
+          "passed_rows": 133,
+          "total_rows": 432,
+          "passed_cases": 0,
+          "total_cases": 18,
+          "cases": {
+            "baseline": false,
+            "liquidity_0.1": false,
+            "maturity_0.01": false,
+            "maturity_0.1": false,
+            "maturity_5": false,
+            "maturity_20": false,
+            "sigma_0.08": false,
+            "sigma_0.8": false,
+            "delta_0.2": false,
+            "recovery_0": false,
+            "recovery_1": false,
+            "tax_0": false,
+            "tax_0.6": false,
+            "lower_liquidity_limit": false,
+            "joint_m0.01_l0.0001": false,
+            "joint_m0.01_l0.1": false,
+            "joint_m20.0_l0.0001": false,
+            "joint_m20.0_l0.1": false
+          },
+          "max_value_error": 0.9561354239831685,
+          "max_jacobian_error": 9589.142067736026
+        },
+        "mixed32": {
+          "passed_rows": 432,
+          "total_rows": 432,
+          "passed_cases": 18,
+          "total_cases": 18,
+          "cases": {
+            "baseline": true,
+            "liquidity_0.1": true,
+            "maturity_0.01": true,
+            "maturity_0.1": true,
+            "maturity_5": true,
+            "maturity_20": true,
+            "sigma_0.08": true,
+            "sigma_0.8": true,
+            "delta_0.2": true,
+            "recovery_0": true,
+            "recovery_1": true,
+            "tax_0": true,
+            "tax_0.6": true,
+            "lower_liquidity_limit": true,
+            "joint_m0.01_l0.0001": true,
+            "joint_m0.01_l0.1": true,
+            "joint_m20.0_l0.0001": true,
+            "joint_m20.0_l0.1": true
+          },
+          "max_value_error": 5.665080594681952e-08,
+          "max_jacobian_error": 1.2334935179904132e-05
+        }
+      },
+      "source_sha256": {
+        "kernel.py": "adb5fa26f107ea318568bda69c751167108f1d315e0e0d3bc15b682de4b98d9b",
+        "reference.py": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52",
+        "audit.py": "a5ce00e3f791d5a38b3462fe9c79454265f6c70049cb2154cdcb70cfd36a9419"
+      }
+    }
+  ],
+  "training": [
+    {
+      "mode": "float64",
+      "initial_loss": 0.009779552724001727,
+      "final_loss": 6.82389249226685e-05,
+      "relative_loss_reduction": 0.9930222856966463,
+      "accepted_updates": 30,
+      "invalid_proposals": 0,
+      "attempts": 49,
+      "last_theta": [
+        0.08,
+        0.02,
+        0.3048591548667312,
+        0.6,
+        0.27,
+        0.021309078933193414,
+        1.338500629961202,
+        6.39,
+        61.68
+      ],
+      "evidence": "TRAINING_FINAL_RESULTS.json",
+      "kind": "three-parameter full-HX analytic-output fitting; not a downstream content/control task"
+    },
+    {
+      "mode": "mixed32",
+      "initial_loss": 0.009779554888741254,
+      "final_loss": 6.823879896610891e-05,
+      "relative_loss_reduction": 0.9930223001207684,
+      "accepted_updates": 30,
+      "invalid_proposals": 0,
+      "attempts": 49,
+      "last_theta": [
+        0.08,
+        0.02,
+        0.3048591588332662,
+        0.6,
+        0.27,
+        0.02130908082518332,
+        1.3385006182676726,
+        6.39,
+        61.68
+      ],
+      "evidence": "TRAINING_FINAL_RESULTS.json",
+      "kind": "three-parameter full-HX analytic-output fitting; not a downstream content/control task"
+    }
+  ],
+  "qualification_scope": "Finite registered financial-kernel fixtures only. FP32 internal arithmetic is not admitted. No full-box error theorem, GPU timing, global optimal-stopping certificate, or full-HX task BPTT claim.",
+  "independent_lhs_stress": {
+    "summary_file": "STRESS_SUMMARY.json",
+    "report_file": "STRESS_REPORT.md",
+    "seed": 2026103111,
+    "points": 128,
+    "summary": {
+      "float64": {
+        "proposed_points": 128,
+        "admitted_points": 128,
+        "rejected_points": 0,
+        "numerical_failed_points": [],
+        "numerical_passed_rows": 512,
+        "numerical_rows": 512,
+        "maximum_value_error": 1.379206265254146e-13,
+        "maximum_jacobian_error": 5.171088834909909e-10,
+        "reference_halving_max": 3.3735378308748125e-62
+      },
+      "mixed32": {
+        "proposed_points": 128,
+        "admitted_points": 128,
+        "rejected_points": 0,
+        "numerical_failed_points": [],
+        "numerical_passed_rows": 512,
+        "numerical_rows": 512,
+        "maximum_value_error": 5.831520778306357e-08,
+        "maximum_jacobian_error": 5.824520863813188e-08,
+        "reference_halving_max": 7.402827700812115e-61
+      }
+    },
+    "all_admitted_numerical_fixtures_passed": true,
+    "kernel_unchanged": true,
+    "posthoc_physical_violations": 0,
+    "scope": "Fresh finite sample in the nine-parameter box; no uniform full-domain error or global stopping proof"
+  }
+}
