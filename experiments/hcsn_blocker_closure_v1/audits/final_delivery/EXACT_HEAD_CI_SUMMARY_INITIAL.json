@@ -1,0 +1,223 @@
+{
+  "additional_poll_wait_seconds": 45,
+  "all_required_checks_passed": false,
+  "bounded_rounds_completed": 6,
+  "checks_started": false,
+  "completed_jobs": 0,
+  "delivery_scope": "Local read-only CI evidence for the separate research/hcsn-final-checks-20261031 branch. This receipt does not claim CI closure or alter the scientific delivery.",
+  "exact_head_ci_conclusion": "unknown_pending_execution",
+  "failure_diagnosis": "No actual final-head test failure or failure log was available: architecture and blocking workflows remain pending without job objects; the only materialized V8 metadata job remains queued without a runner or executed steps. Exact scheduling/concurrency cause is not established by these responses.",
+  "hardware_polled_during_this_watch": false,
+  "last_observed_utc": "2026-10-31T04:37:12.181Z",
+  "main_scientific_ref_modified": false,
+  "maximum_raw_receipt_bytes": 50485,
+  "observed_failure_jobs": [],
+  "older_head_results_reused": false,
+  "pr_identity": {
+    "base_sha": "63fd568b177c0456ddd8b590e3ac77d35307c0c4",
+    "head_sha": "980b8d0a1ccd672a2aa84d8c75610d67528ff70d",
+    "merge_parents": [
+      "63fd568b177c0456ddd8b590e3ac77d35307c0c4",
+      "980b8d0a1ccd672a2aa84d8c75610d67528ff70d"
+    ],
+    "merge_sha": "2b988edd816fe642222c0a2bdaf30159d0fad89b",
+    "merge_tree": "28bd95d069c15fcb01912e8c5cc642f41ee50a3b",
+    "merge_tree_equals_final_source": true,
+    "mergeable_when_observed": true,
+    "number": 4362,
+    "observed_utc": "2026-10-31T04:31:59.743Z",
+    "qualification": "Mergeability is separate from CI success."
+  },
+  "quality_outcomes_opened": false,
+  "raw_receipt_bytes": 380693,
+  "raw_receipt_count": 27,
+  "raw_receipts": [
+    {
+      "bytes": 34050,
+      "file": "DELIVERY_VERIFICATION.json",
+      "sha256": "b39fe62a39b2c6c0dcae4f1c18855effa7c58d8246bb51ac014c9bdd138a426b"
+    },
+    {
+      "bytes": 231,
+      "file": "architecture_jobs_001.json",
+      "sha256": "76522d733add43b38d574effa0ea4d3466ffc9ba7c059f1eb0b4e7a847eec0a7"
+    },
+    {
+      "bytes": 231,
+      "file": "architecture_jobs_002.json",
+      "sha256": "277d0f34ca34976d129e890aa96651b1351885c3488672c24b5d5c1cfa461669"
+    },
+    {
+      "bytes": 231,
+      "file": "architecture_jobs_003.json",
+      "sha256": "9d5f185eadb9b4516f6180ad71c9eba3b3e75c8ca4fc6704cf1e14fee79027eb"
+    },
+    {
+      "bytes": 231,
+      "file": "architecture_jobs_004.json",
+      "sha256": "cb681ce4c5918da0ffdfa65324a3a09a4396fbb3fea87b1e1e687395ab92bd2d"
+    },
+    {
+      "bytes": 231,
+      "file": "architecture_jobs_005.json",
+      "sha256": "981c17d8f0f01d194d4e80998db519bcae6b454aead4018abadffd1bc41e9f11"
+    },
+    {
+      "bytes": 231,
+      "file": "architecture_jobs_006.json",
+      "sha256": "1d5b5271460ccf8e57242a7b067467736af27220b02369ae5c05a30caef09b15"
+    },
+    {
+      "bytes": 231,
+      "file": "blocking_jobs_001.json",
+      "sha256": "abd73a64225d1eb4df57798e903ce89f92e44faf326abd6669eb925d12f0dbfd"
+    },
+    {
+      "bytes": 231,
+      "file": "blocking_jobs_002.json",
+      "sha256": "4a69c5aa357bbe40d53129110a62e33772c571e3fb24b909561ca3d986410f77"
+    },
+    {
+      "bytes": 231,
+      "file": "blocking_jobs_003.json",
+      "sha256": "21d23dde42a44385209ef0155d3354a28494ad90f47f422cf55dd48e84c5501d"
+    },
+    {
+      "bytes": 231,
+      "file": "blocking_jobs_004.json",
+      "sha256": "206293b83dd1646200090715e01b5db479ee2b09011e31b1e628128eb9921556"
+    },
+    {
+      "bytes": 231,
+      "file": "blocking_jobs_005.json",
+      "sha256": "cc5c07deeb11a3d7b08935922b45f46b4ea5ac078e270830fcdae3a2d7f7f780"
+    },
+    {
+      "bytes": 231,
+      "file": "blocking_jobs_006.json",
+      "sha256": "209907515b587a94622c895c37e60eefb2506f85f1cbb554d1990a3c544eb3d7"
+    },
+    {
+      "bytes": 30423,
+      "file": "pr4362_initial.json",
+      "sha256": "0a5c9ac04e44bd9c01a48988233b977b40cbcadc1227ddb3ef94102dce86e241"
+    },
+    {
+      "bytes": 3101,
+      "file": "prospective_merge.json",
+      "sha256": "8823e88a58ce9664b560e2e007fcd69d9ee228b89ee13eaa28c1dc05e17833bf"
+    },
+    {
+      "bytes": 50476,
+      "file": "runs_001.json",
+      "sha256": "96afd70507a9f3dd0359f794960fb93c447ae2f5bafed3296b75ddd6750684bb"
+    },
+    {
+      "bytes": 50485,
+      "file": "runs_002.json",
+      "sha256": "e97cf484fe4258025f0a3db7cfd31bdc079744d1b574c3a6c5ea1242549745d5"
+    },
+    {
+      "bytes": 50485,
+      "file": "runs_003.json",
+      "sha256": "264e27893ae24073d0820f9301e23823b6ed15f9b7fe35e642d17ad3d5edc600"
+    },
+    {
+      "bytes": 50485,
+      "file": "runs_004.json",
+      "sha256": "87f30e60d5b45b809b372421ffa6d47e1b353da4ed0e539fd533fb2f65fa59a4"
+    },
+    {
+      "bytes": 50485,
+      "file": "runs_005.json",
+      "sha256": "a30c2ae32e9b6e22440b00398131be9fb84a86db7e1ced888adb9e85017a1780"
+    },
+    {
+      "bytes": 50485,
+      "file": "runs_006.json",
+      "sha256": "415daa8e8433184f8d823bdf3feaaf54272fcb843260a25bc9837d3c12d1761b"
+    },
+    {
+      "bytes": 1246,
+      "file": "v8_jobs_001.json",
+      "sha256": "d0ab30bc2789469d1223b02882f797f98cbaec7bc11af32205a182a07ae2bdfb"
+    },
+    {
+      "bytes": 1240,
+      "file": "v8_jobs_002.json",
+      "sha256": "8779348feb3db513e27b33f3b8699d0eae61f666b0b1745c7fb42d8a0d59398c"
+    },
+    {
+      "bytes": 1240,
+      "file": "v8_jobs_003.json",
+      "sha256": "bf2263e5fb9bfed883ade106b8eed779e3a951603b721d2874f9b681d3717743"
+    },
+    {
+      "bytes": 1240,
+      "file": "v8_jobs_004.json",
+      "sha256": "afb7571aefe8636d9bec22231b87a728d1d13a5346525bd5426c661b2a1e7dd9"
+    },
+    {
+      "bytes": 1240,
+      "file": "v8_jobs_005.json",
+      "sha256": "1f6e10b2b3e19d9c214043ef48f58760fe4f94a2b371106c973055c50f256c55"
+    },
+    {
+      "bytes": 1240,
+      "file": "v8_jobs_006.json",
+      "sha256": "e431e5c7773d0bb5be31af85211ca907d47b289e1bfd53dbae12474ba6603063"
+    }
+  ],
+  "retries_dispatches_cancellations": 0,
+  "schema": "hcsn-final-exact-head-ci-status.v1",
+  "scientific_delivery_head": "980b8d0a1ccd672a2aa84d8c75610d67528ff70d",
+  "scientific_delivery_tree": "28bd95d069c15fcb01912e8c5cc642f41ee50a3b",
+  "scientific_workflows_observed_for_final_head": 0,
+  "stopped_after_bound": true,
+  "workflow_or_gate_changes": false,
+  "workflows": [
+    {
+      "conclusion": null,
+      "event": "pull_request",
+      "head_sha": "980b8d0a1ccd672a2aa84d8c75610d67528ff70d",
+      "jobs": [],
+      "materialized_jobs": 0,
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "run_attempt": 1,
+      "run_id": 41168918628,
+      "status": "pending"
+    },
+    {
+      "conclusion": null,
+      "event": "pull_request",
+      "head_sha": "980b8d0a1ccd672a2aa84d8c75610d67528ff70d",
+      "jobs": [],
+      "materialized_jobs": 0,
+      "path": ".github/workflows/blocking-ci.yml",
+      "run_attempt": 1,
+      "run_id": 41168918608,
+      "status": "pending"
+    },
+    {
+      "conclusion": null,
+      "event": "pull_request",
+      "head_sha": "980b8d0a1ccd672a2aa84d8c75610d67528ff70d",
+      "jobs": [
+        {
+          "conclusion": null,
+          "executed_steps": 0,
+          "id": 124442434311,
+          "name": "metadata",
+          "runner_id": 0,
+          "runner_name": "",
+          "status": "queued"
+        }
+      ],
+      "materialized_jobs": 1,
+      "path": ".github/workflows/v8-canary.yml",
+      "run_attempt": 1,
+      "run_id": 41168918593,
+      "status": "queued"
+    }
+  ]
+}

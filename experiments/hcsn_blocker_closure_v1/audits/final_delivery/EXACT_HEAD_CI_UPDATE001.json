@@ -1,0 +1,78 @@
+{
+  "schema": "hcsn-final-head-ci-later-observation.v1",
+  "recorded_utc": "2026-10-31 04:42:38 UTC",
+  "api_observation_utc": "2026-10-31T04:40:19Z",
+  "scientific_head": "980b8d0a1ccd672a2aa84d8c75610d67528ff70d",
+  "earlier_summary": "EXACT_HEAD_CI_SUMMARY.json",
+  "conclusion": "PARTIAL_CI_V8_PASSED_OTHER_WORKFLOWS_PENDING",
+  "all_required_checks_passed": false,
+  "run_states": [
+    {
+      "id": 41168918628,
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "head_sha": "980b8d0a1ccd672a2aa84d8c75610d67528ff70d",
+      "status": "pending",
+      "conclusion": null,
+      "updated_at": "2026-10-31T04:31:35Z"
+    },
+    {
+      "id": 41168918608,
+      "path": ".github/workflows/blocking-ci.yml",
+      "head_sha": "980b8d0a1ccd672a2aa84d8c75610d67528ff70d",
+      "status": "pending",
+      "conclusion": null,
+      "updated_at": "2026-10-31T04:31:35Z"
+    },
+    {
+      "id": 41168918593,
+      "path": ".github/workflows/v8-canary.yml",
+      "head_sha": "980b8d0a1ccd672a2aa84d8c75610d67528ff70d",
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-10-31T04:39:57Z"
+    }
+  ],
+  "v8_jobs": [
+    {
+      "id": 124442434311,
+      "name": "metadata",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-31T04:38:01Z",
+      "completed_at": "2026-10-31T04:39:56Z"
+    },
+    {
+      "id": 124444142784,
+      "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-31T04:39:57Z",
+      "completed_at": "2026-10-31T04:39:56Z"
+    },
+    {
+      "id": 124444142875,
+      "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-31T04:39:57Z",
+      "completed_at": "2026-10-31T04:39:56Z"
+    }
+  ],
+  "raw_api_evidence": "SUPERSEDED_CI_OBSERVATION.json",
+  "superseded_ci_resolution": {
+    "old_blocking_run": 41160716750,
+    "old_architecture_run": 41160716778,
+    "automatic_cancel_in_progress": true,
+    "old_remaining_jobs_queued": true,
+    "manual_cancellation_performed": false,
+    "github_connector_cancel_operation_available": false,
+    "browser_page_opened": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41160716750",
+    "browser_observed_signed_out": true,
+    "authentication_started": false,
+    "user_credentials_requested": false,
+    "scope": "Only this PR's superseded CI was inspected. No completed scientific run or other project was modified.",
+    "provider_cause_proven": false
+  },
+  "final_head_changed": false,
+  "gates_changed": false
+}
