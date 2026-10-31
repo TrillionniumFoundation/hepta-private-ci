@@ -35,7 +35,7 @@
     "pairing": "Same private world and public task budget, keyed latent uniforms; randomized arm order",
     "arms": "Four families times baseline/readout/content_readout in hard deployment; corresponding mean policies; task DP and myopic DP; common-anchor Brownian projected three-contract controls and exact unbounded endpoint hard/mean.",
     "primary_contrasts": ["FPT content_readout minus direct content_readout", "FPT content_readout minus clocked content_readout", "FPT content_readout minus FPT baseline"],
-    "inference": "Report all five fit-level paired differences and fit-cluster bootstrap intervals. Three primary contrasts use 98.333333% intervals; secondary contrasts are descriptive. Five fits limit inferential strength.",
+    "inference": "Report all five fit-level paired differences and the enumerated fit-cluster bootstrap (5^5 resamples). The three primary contrasts in each of two regimes form six tests and use 99.166667% intervals; secondary contrasts use descriptive 95% intervals. This multiplicity clarification is frozen before any fresh confirmation or heldout execution. Five fits limit inferential strength.",
     "utility": "Task return - 0.0005 decisions - 0.0002 model events. Fees are proxies, separately from measured runtime.",
     "failures": "Retain every attempted arm and report any operational failure; no silent drop, no post-confirmation selection."
   },
