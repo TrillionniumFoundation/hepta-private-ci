@@ -83,6 +83,10 @@ the complete history, inference, decision and JSON output. Each batch contains
 2,048 queries; scalar measurements use 64 separately executed queries, with
 balanced randomized model order. Times are descriptive CPU measurements in
 this environment, not hardware energy or an entire Hepta application.
+These historical PyTorch serving measurements used **IID inputs only**.
+Applying their costs to the other three regimes is a common-IID-cost pricing
+scenario; it is not a measurement of each regime's serving work. In particular,
+the longer-history GRU's serving cost was not established by that IID benchmark.
 
 | Predictor | Batch CPU / episode | Scalar CPU / episode | Mean standalone training/setup CPU |
 |---|---:|---:|---:|
@@ -102,9 +106,17 @@ These quality gates compare recorded seed means with the registered margins;
 they are not confidence-interval noninferiority tests. The Boolean execution
 cost gate excludes training. Including the stated fitting/setup amortization,
 all 32 comparisons against the exact ordinary filter favor that control at
-the four registered deployment horizons, in both workloads and all regimes.
-This is a statement about the registered CPU-price model, not an absolute
-economic or hardware-energy cost claim.
+the four registered deployment horizons, in both workloads and all regimes,
+under this shared-IID-serving-cost scenario. This is a statement about the
+registered CPU-price model, not an absolute economic or hardware-energy cost
+claim.
+
+The reviewed replay independently reconciles the recorded fitting and
+teacher-generation totals with these setup summaries. The original
+`cost_analysis.py` retained family-mean setup costs without individual model
+loading measurements; the residual loading component is therefore inherited
+from those summaries, not independently remeasured or reconstructed. It is
+explicitly labelled in `evidence/RECOVERY_REPLAY_REVIEWED_20261031.json`.
 
 The original evaluator's benchmark included conversion of an unused target
 tensor. It remains in `confirmation.json` with its true scope; the new
@@ -115,6 +127,24 @@ its own complete execution fixture.
 
 Episode bootstrap intervals condition on these three frozen fits. They are
 descriptive, not a confidence guarantee over arbitrary training randomness.
+
+## Per-regime NumPy serving measurement
+
+`cost_replay.py` measures all four regimes separately using the independently
+validated NumPy forward implementation. It preloads the exact frozen weights
+as arrays and accepts only history, lengths and query at deployment. Each
+measurement includes input preparation, the complete observed-feature and
+predictor calculation, action selection and JSON output. Model loading,
+fixture loading and verification/warmup costs are recorded separately.
+
+The protocol is written before timing: 13 frozen predictors, four regimes,
+nine randomized balanced batch repeats and 64 scalar queries per predictor
+and regime. It retains every CPU/wall-time observation. Its NumPy backend
+differs from the original PyTorch measurement, and these timings belong to the
+current executor; a matched-hardware comparison is not established. It does
+not overwrite the original measurements or recompute their amortization as
+though the execution configuration had remained unchanged. See `NUMPY_COST_REPORT.md` and
+`evidence/NUMPY_COST_20261031.json` for the new measurements and their scope.
 
 ## Reproduction
 

@@ -4,6 +4,7 @@ This is a read-only audit of the original confirmation. It does not retrain,
 replace timing measurements, or count a replay as new confirmation samples.
 """
 
+import argparse
 import hashlib
 import json
 from pathlib import Path
@@ -95,6 +96,28 @@ def audit():
             raise ValueError("recovered evidence differs from archived bytes: " + name)
     protocol["data_seeds"].update(read("CONFIRMATION_AMENDMENT.json")["replacement_seeds"])
     original, costs = read("evidence/confirmation.json"), read("evidence/cost_and_gates.json")
+    if costs["upstream_confirmation_sha256"] != hashlib.sha256((HERE / "evidence/confirmation.json").read_bytes()).hexdigest():
+        raise ValueError("cost record identifies a different confirmation")
+    training, generation = read("evidence/training.json"), read("evidence/data/training_generation.json")
+    training_total = sum(row["cpu_seconds"] for row in training)
+    generation_total = sum(row["cpu_seconds"] for row in generation.values())
+    np.testing.assert_allclose(training_total, costs["campaign_training_cpu_seconds"], rtol=1e-13, atol=1e-14)
+    np.testing.assert_allclose(training_total, original["training_cpu_seconds_total"], rtol=1e-13, atol=1e-14)
+    np.testing.assert_allclose(generation_total, costs["shared_train_dev_target_generation_cpu_seconds"], rtol=1e-13, atol=1e-14)
+    setup_checks = {}
+    for family in protocol["models"] + ["fixed_ordinary_filter"]:
+        fits = [row["cpu_seconds"] for row in training if row["model"] == family]
+        mean_fit = float(np.mean(fits)) if fits else 0.
+        shared_generation = generation_total if fits else 0.
+        recorded_setup = costs["cpu_cost_summary"][family]["standalone_fit_and_setup_cpu"]
+        load_residual = recorded_setup - mean_fit - shared_generation
+        if not np.isfinite(load_residual) or load_residual < -1e-12:
+            raise ValueError("recorded setup is below its independently recorded components: " + family)
+        setup_checks[family] = {"mean_recorded_fit_cpu": mean_fit,
+            "shared_recorded_generation_cpu": shared_generation,
+            "recorded_standalone_fit_and_setup_cpu": recorded_setup,
+            "inherited_model_loading_cpu_residual": load_residual,
+            "model_loading_residual_independently_timed": False}
     states = {}
     for family in protocol["models"]:
         for seed in protocol["model_seeds"]:
@@ -154,8 +177,11 @@ def audit():
         cpu = summaries["analytic_filter"][workload] - summaries[other][workload]
         cpu += (summaries["analytic_filter"]["standalone_fit_and_setup_cpu"] - summaries[other]["standalone_fit_and_setup_cpu"]) / row["sessions"]
         np.testing.assert_allclose(row["net_at_preregistered_cpu_price"], utility - protocol["cost"]["compute_price_per_cpu_second"] * cpu, rtol=2e-12, atol=1e-15)
-    return {"schema": "hepta.r8.state-independent-replay.v1", "passed": True,
+    return {"schema": "hepta.r8.state-independent-replay.v2", "passed": True,
         "source_freeze_sha256": hashlib.sha256((HERE / "FREEZE.json").read_bytes()).hexdigest(),
+        "audit_identity": {"replay_source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+            "amendment_sha256": hashlib.sha256((HERE / "CONFIRMATION_AMENDMENT.json").read_bytes()).hexdigest(),
+            "evidence_manifest_sha256": hashlib.sha256((HERE.parent / "bundles/state_task.json").read_bytes()).hexdigest()},
         "frozen_hashes_verified": len(freeze["source_and_checkpoint_sha256"]),
         "original_evidence_hashes_verified": len(manifest["files"]),
         "predictor_episodes_replayed": sum(row["examples"] for row in rows),
@@ -163,7 +189,10 @@ def audit():
         "max_abs_prediction_difference": max(row["max_abs_prediction_difference"] for row in rows),
         "all_actions_identical": True, "rows": rows,
         "cost_gates_recomputed_from_original_raw_timings": True,
+        "setup_cost_checks": setup_checks,
+        "setup_cost_scope": "Training and teacher-generation sums independently checked against original records. Model loading is an inherited family-mean residual; original per-checkpoint loading timings were not retained by cost_analysis.py.",
         "amortization_rows_recomputed": len(costs["amortization"]),
+        "original_amortization_scope": "Original PyTorch serving measurements used IID inputs only. Their use in the other three regimes is a common-IID-cost pricing scenario, not measured regime-specific serving cost.",
         "new_hardware_timing_claim": False, "production_activation": False,
         "scope": "Independent NumPy float64 forward replay of frozen PyTorch float32 weights; original model and data bytes preserved. Exact ordinary filter still matches risk and actions; necessity of spikes remains unproved.",
         "audit_cpu_seconds": time.process_time() - start,
@@ -172,8 +201,14 @@ def audit():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", type=Path, default=HERE / "evidence/RECOVERY_REPLAY_REVIEWED_20261031.json")
+    args = parser.parse_args()
+    destination = args.output
+    if destination.exists():
+        raise FileExistsError("refusing to overwrite an audit record: " + str(destination))
     result = audit()
-    destination = HERE / "evidence/RECOVERY_REPLAY_20261031.json"
+    destination.parent.mkdir(parents=True, exist_ok=True)
     with destination.open("x") as stream:
         stream.write(json.dumps(result, indent=2) + "\n")
     print(json.dumps({key: value for key, value in result.items() if key != "rows"}, indent=2))
