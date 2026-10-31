@@ -1,0 +1,64 @@
+{
+  "archive_sha256": "6a28afaa0ae16459e313c9b4d9b6079e48780996ecd8fb93fa111b7e14ac6cba",
+  "compressed_bytes": 442420,
+  "format": "deterministic POSIX tar, xz, concatenated parts in declared order",
+  "members": [
+    {
+      "bytes": 233395,
+      "path": "aggregates.json",
+      "sha256": "372a71e3f6e71650f199c5ddfa42e6a8162905af2ba28c9fcecb2e10440662cb"
+    },
+    {
+      "bytes": 237993,
+      "path": "cost_aggregates.json",
+      "sha256": "a2582d000898bd12458212ab70ee7ddb28b3425b702f04dfbbd9cf41b2d26ff4"
+    },
+    {
+      "bytes": 144878,
+      "path": "diagnostics.json",
+      "sha256": "b8d4d9a40cdc73f53431aef20b7df89f5b77d82f4e57b3830bb9f911197b1e42"
+    },
+    {
+      "bytes": 1891517,
+      "path": "jobs.json",
+      "sha256": "2c08edb33ec8c9eb94b0e6dce5cee3d67258e30548e2d11c1aa5aa40a1c6dc97"
+    },
+    {
+      "bytes": 362468,
+      "path": "manifest.json",
+      "sha256": "c01dec2c4e322de39bf333a893c03d2314d28844c3089fb7095235ffbbc2d6fa"
+    },
+    {
+      "bytes": 1469785,
+      "path": "metrics.json",
+      "sha256": "a26eb8187416be91764a9cce72e78ceace42a9bc03f9ee8e12f642ae23ff842a"
+    },
+    {
+      "bytes": 509490,
+      "path": "paired_bootstrap.json",
+      "sha256": "b8b7f59a4fdf85122f46c73a2883937b180884d065730650cfde6bb34ecb65b5"
+    },
+    {
+      "bytes": 359151,
+      "path": "paired_seeds.json",
+      "sha256": "989455f89f4cf19f0f79e889edb9863be13421c6aaa37fd53b05893cd7704a87"
+    }
+  ],
+  "name": "content_analysis001",
+  "parts": [
+    {
+      "bytes": 262144,
+      "git_blob_sha1": "3a47434c4be2c98de2506ebfe6ada3bef5fd28f1",
+      "path": "content_analysis001.tar.xz.part0000",
+      "sha256": "af0f9a968fbd02484caf55d7e05c5b77d42cfbf6e3f1f240b4592e2a307a8f3e"
+    },
+    {
+      "bytes": 180276,
+      "git_blob_sha1": "28fe5e76451dcbd15b0e9a15578e3b0e38d4f59a",
+      "path": "content_analysis001.tar.xz.part0001",
+      "sha256": "edcb69de96aad66ce8779a566d63089bf912214d21241bdaa7a554059c263d12"
+    }
+  ],
+  "schema": "hcsn-evidence-bundle.v1",
+  "uncompressed_file_bytes": 5208677
+}

@@ -1,0 +1,29 @@
+{
+  "all_member_file_sets_and_sha256_match": true,
+  "archive_sha256": "6a28afaa0ae16459e313c9b4d9b6079e48780996ecd8fb93fa111b7e14ac6cba",
+  "checkpoint_files": 0,
+  "compressed_bytes": 442420,
+  "costs": {
+    "additional_per_file_sha_cpu_seconds": 0.009765652000000014,
+    "additional_per_file_sha_wall_seconds": 0.009767606999957934,
+    "archive_worker_body_cpu_seconds": 1.044392177,
+    "archive_worker_body_wall_seconds": 1.044417669007089,
+    "pack_cpu_seconds": 0.998825711,
+    "pack_wall_seconds": 0.9988529440015554,
+    "restore_cpu_seconds": 0.03579021800000004,
+    "restore_wall_seconds": 0.035793161994661205,
+    "scope": "pack + fresh restore + original/restored per-member SHA verification; phases nested in body; whole process separately metered"
+  },
+  "members": 8,
+  "original_unchanged": true,
+  "parts": 2,
+  "raw_prediction_tables": 0,
+  "restore_directory": "experiments/hcsn_mechanism_content_v2/results/archive_restore_content_analysis001",
+  "restore_verification": {
+    "archive_sha256": "6a28afaa0ae16459e313c9b4d9b6079e48780996ecd8fb93fa111b7e14ac6cba",
+    "restored_or_already_identical": 8
+  },
+  "schema": "hcsn-content-archive-verification.v1",
+  "source": "experiments/hcsn_mechanism_content_v2/results/content_analysis001",
+  "uncompressed_bytes": 5208677
+}

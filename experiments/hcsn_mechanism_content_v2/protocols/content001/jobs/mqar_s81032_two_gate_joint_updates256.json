@@ -1,0 +1,31 @@
+{
+  "allow_initial_selection": true,
+  "batch_size": 16,
+  "budget_label": "updates256",
+  "clip_grad_norm": 1.0,
+  "content_mode": "joint",
+  "data_seed": 2026110103,
+  "depth": 2,
+  "diagnostics": true,
+  "eval_batch_size": 16,
+  "eval_lengths": [
+    32,
+    64,
+    128
+  ],
+  "eval_size": 256,
+  "family": "two_gate",
+  "freeze_groups": [],
+  "learning_rate": 0.003,
+  "length": 32,
+  "physical": 1,
+  "pretrained_from": "experiments/hcsn_mechanism_content_v2/results/content001/jobs/mqar_s81032_shared",
+  "schema": "hcsn-content-v2.job",
+  "seed": 81032,
+  "task": "mqar",
+  "train_size": 512,
+  "updates": 256,
+  "validate_every": 32,
+  "validation_size": 128,
+  "width": 32
+}

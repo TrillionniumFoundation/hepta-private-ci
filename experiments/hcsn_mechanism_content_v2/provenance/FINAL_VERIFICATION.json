@@ -1,0 +1,91 @@
+{
+  "actor_disjoint": true,
+  "behavioral_tests_passed": 6,
+  "complete": true,
+  "cost_scope": {
+    "communication_energy_joules": null,
+    "direct_energy_joules": null,
+    "full_lifecycle_measured": false,
+    "gpu_energy_joules": null,
+    "local_byte_io": "Missing: environment denies child /proc/io; do not substitute block counts for bytes",
+    "preparation_body_cpu_seconds": 13.463281,
+    "preparation_body_wall_seconds": 28.767468609003117,
+    "preparation_clock_excludes": [
+      "First-clip download/preflight before prepare body",
+      "Interpreter imports",
+      "Behavioral tests",
+      "Cost-meter verification",
+      "Final artifact audit",
+      "Environment work"
+    ]
+  },
+  "data": {
+    "test": {
+      "actors": [
+        "1040",
+        "1023"
+      ],
+      "batch_time_and_targets_verified": true,
+      "clips": 12,
+      "events": 3313,
+      "sha256": "5400fc44408c4ecfd54483af4d0b0778af88b7cf74314e6475af8280b6141705"
+    },
+    "train": {
+      "actors": [
+        "1051",
+        "1043",
+        "1016",
+        "1050"
+      ],
+      "batch_time_and_targets_verified": true,
+      "clips": 24,
+      "events": 6913,
+      "sha256": "cc53d3185720157590fa47fd7b93103fe92b0186b587ec4ea763c61ee7de6da1"
+    },
+    "validation": {
+      "actors": [
+        "1011",
+        "1082"
+      ],
+      "batch_time_and_targets_verified": true,
+      "clips": 12,
+      "events": 3497,
+      "sha256": "e3c74e378df33592b0d40014deeb213e3639395ff0e0ecf3956dff57e7f39b2f"
+    }
+  },
+  "failures_retained": [
+    "TEST_ATTEMPT001_FAILURE.json",
+    "cost_meter_checks/VERIFICATION_FAILURE.json",
+    "cost_meter_checks002/failure.json",
+    "cost_meter_checks002/timeout.json",
+    "FINAL_AUDIT_ATTEMPT001_FAILURE.json"
+  ],
+  "fresh_confirmation": false,
+  "license_sha256": "e76747a4efa4b338914bb3f930b5d3d3c3ac15b886bbabf897f6a19731f987f8",
+  "maximum_prefix_error": 0.0,
+  "meter_verification": "cost_meter_checks002/VERIFICATION.json",
+  "meter_verification_sha256": "e44971efb31c3a7ccbe14542f2fec4207f688dea9b344b8725b4186539f8187b",
+  "model_quality_tested_by_this_receipt": false,
+  "normalization_nontraining_clips_used": 0,
+  "normalization_sha256": "4d46a144671c2e50c59a01362167baefb6b9e28f87d7044f20e37be193420fcd",
+  "old_heldout_previously_observed": true,
+  "prefix_checks": 48,
+  "prefix_checks_passed": 48,
+  "raw_media_bytes_present_at_final_verification": 0,
+  "residual_raw_bytes_removed_after_verification": 241304,
+  "schema": "hcsn-async-final-verification.v1",
+  "source_matches_preparation_receipt": true,
+  "source_sha256": {
+    "ASYNC_AV.md": "e89dc3399d028c58705cf4ab054d57764ebdb425ae051771f5242a707d9cf570",
+    "async_av.py": "82650e912388cfe5e7534676024e3133841061324537ee2fbe36cd04fc06788c",
+    "async_av_tests.py": "2cb15be6b55a0e2917667b656ab4b94a3030930e4b8c647148b2ebcd7494d39d",
+    "cost_meter.py": "4f7edbb020e6f36f31fd72d872f56ed9851c8690fc88661591448a7d48cf3aa9",
+    "data/async_manifest.json": "cad552f54212064d5d7620369f98f50f37c8f5b040c5b3bd49b3b216cb5447be"
+  },
+  "test_log_sha256": "14f929db0a5dbfd5fde53fda68a164ed3478962eae552b9e9d1b25c4331f5e0a",
+  "test_receipt": "TEST_ATTEMPT003_WHOLE_PROCESS.json",
+  "test_receipt_sha256": "fdfe7b914f7dd900f72f40c6e8e510aeb5b31ca2ccce23326b0a42c9d515658d",
+  "tests_source_sha256": "2cb15be6b55a0e2917667b656ab4b94a3030930e4b8c647148b2ebcd7494d39d",
+  "verified_at_utc": "2026-10-31T01:47:15.902298+00:00",
+  "verified_source_and_feature_pairs": 48
+}

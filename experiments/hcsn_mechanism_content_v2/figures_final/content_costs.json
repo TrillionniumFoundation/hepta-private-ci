@@ -1,0 +1,428 @@
+{
+  "schema": "hcsn_content_cost_figure.v1",
+  "figure_script_sha256": "c730ec103ab48a6f66c6947da634909cf216d3d89a0d5ad831096022e803720d",
+  "inputs": [
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/results/content_analysis001/cost_aggregates.json",
+      "sha256": "a2582d000898bd12458212ab70ee7ddb28b3425b702f04dfbbd9cf41b2d26ff4"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/results/content_analysis001/aggregates.json",
+      "sha256": "372a71e3f6e71650f199c5ddfa42e6a8162905af2ba28c9fcecb2e10440662cb"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/results/content_analysis001/jobs.json",
+      "sha256": "2c08edb33ec8c9eb94b0e6dce5cee3d67258e30548e2d11c1aa5aa40a1c6dc97"
+    }
+  ],
+  "rows": [
+    "selective_copy",
+    "mqar",
+    "async_av",
+    "av_binding"
+  ],
+  "columns": [
+    {
+      "mode": "frozen_shared",
+      "budget": "updates_256"
+    },
+    {
+      "mode": "joint",
+      "budget": "updates_256"
+    },
+    {
+      "mode": "frozen_shared",
+      "budget": "cpu_20.0"
+    },
+    {
+      "mode": "joint",
+      "budget": "cpu_20.0"
+    }
+  ],
+  "seeds": [
+    81031,
+    81032,
+    81033
+  ],
+  "group_count": 16,
+  "estimator": "ratio of arithmetic means across three seeds; not arithmetic mean of seed ratios",
+  "plotted_metrics": [
+    "single_request_p50_wall_seconds",
+    "worker_cpu_total_sec"
+  ],
+  "records": [
+    {
+      "task": "selective_copy",
+      "mode": "frozen_shared",
+      "budget": "updates_256",
+      "metrics": {
+        "single_request_p50_wall_seconds": {
+          "analytic_mean_seconds": 0.02119911549865113,
+          "two_gate_mean_seconds": 0.00286608150054235,
+          "ratio_of_means": 7.396550131124886
+        },
+        "worker_cpu_total_sec": {
+          "analytic_mean_seconds": 30.68723833333333,
+          "two_gate_mean_seconds": 7.500219666666666,
+          "ratio_of_means": 4.091511941939123
+        },
+        "standalone_pipeline_worker_cpu_seconds": {
+          "analytic_mean_seconds": 40.72819366666667,
+          "two_gate_mean_seconds": 17.541175,
+          "ratio_of_means": 2.3218623419848825
+        }
+      }
+    },
+    {
+      "task": "selective_copy",
+      "mode": "joint",
+      "budget": "updates_256",
+      "metrics": {
+        "single_request_p50_wall_seconds": {
+          "analytic_mean_seconds": 0.02154903166713969,
+          "two_gate_mean_seconds": 0.002824806833814364,
+          "ratio_of_means": 7.628497428279662
+        },
+        "worker_cpu_total_sec": {
+          "analytic_mean_seconds": 31.308840333333336,
+          "two_gate_mean_seconds": 8.417476666666667,
+          "ratio_of_means": 3.7195042615700746
+        },
+        "standalone_pipeline_worker_cpu_seconds": {
+          "analytic_mean_seconds": 41.349795666666665,
+          "two_gate_mean_seconds": 18.458432,
+          "ratio_of_means": 2.2401575424535882
+        }
+      }
+    },
+    {
+      "task": "selective_copy",
+      "mode": "frozen_shared",
+      "budget": "cpu_20.0",
+      "metrics": {
+        "single_request_p50_wall_seconds": {
+          "analytic_mean_seconds": 0.021219755998269346,
+          "two_gate_mean_seconds": 0.0028488951647887006,
+          "ratio_of_means": 7.448415884353256
+        },
+        "worker_cpu_total_sec": {
+          "analytic_mean_seconds": 29.407040666666663,
+          "two_gate_mean_seconds": 23.282470333333332,
+          "ratio_of_means": 1.263055004286415
+        },
+        "standalone_pipeline_worker_cpu_seconds": {
+          "analytic_mean_seconds": 39.447995999999996,
+          "two_gate_mean_seconds": 33.323425666666665,
+          "ratio_of_means": 1.18379173841841
+        }
+      }
+    },
+    {
+      "task": "selective_copy",
+      "mode": "joint",
+      "budget": "cpu_20.0",
+      "metrics": {
+        "single_request_p50_wall_seconds": {
+          "analytic_mean_seconds": 0.02189099649694981,
+          "two_gate_mean_seconds": 0.0030075510003371164,
+          "ratio_of_means": 7.27867839797099
+        },
+        "worker_cpu_total_sec": {
+          "analytic_mean_seconds": 29.581705333333332,
+          "two_gate_mean_seconds": 23.425468,
+          "ratio_of_means": 1.2628010391652937
+        },
+        "standalone_pipeline_worker_cpu_seconds": {
+          "analytic_mean_seconds": 39.62266066666666,
+          "two_gate_mean_seconds": 33.46642333333333,
+          "ratio_of_means": 1.1839526522453798
+        }
+      }
+    },
+    {
+      "task": "mqar",
+      "mode": "frozen_shared",
+      "budget": "updates_256",
+      "metrics": {
+        "single_request_p50_wall_seconds": {
+          "analytic_mean_seconds": 0.022018856997116625,
+          "two_gate_mean_seconds": 0.0028438761679960103,
+          "ratio_of_means": 7.742551256242855
+        },
+        "worker_cpu_total_sec": {
+          "analytic_mean_seconds": 31.388773666666665,
+          "two_gate_mean_seconds": 8.069763333333333,
+          "ratio_of_means": 3.8896771032938187
+        },
+        "standalone_pipeline_worker_cpu_seconds": {
+          "analytic_mean_seconds": 41.12874633333333,
+          "two_gate_mean_seconds": 17.809735999999997,
+          "ratio_of_means": 2.309340595129166
+        }
+      }
+    },
+    {
+      "task": "mqar",
+      "mode": "joint",
+      "budget": "updates_256",
+      "metrics": {
+        "single_request_p50_wall_seconds": {
+          "analytic_mean_seconds": 0.021281955002147395,
+          "two_gate_mean_seconds": 0.003163699002470821,
+          "ratio_of_means": 6.7269215514896885
+        },
+        "worker_cpu_total_sec": {
+          "analytic_mean_seconds": 32.40911566666667,
+          "two_gate_mean_seconds": 8.415011999999999,
+          "ratio_of_means": 3.851345151577523
+        },
+        "standalone_pipeline_worker_cpu_seconds": {
+          "analytic_mean_seconds": 42.14908833333333,
+          "two_gate_mean_seconds": 18.154984666666664,
+          "ratio_of_means": 2.321626214905093
+        }
+      }
+    },
+    {
+      "task": "mqar",
+      "mode": "frozen_shared",
+      "budget": "cpu_20.0",
+      "metrics": {
+        "single_request_p50_wall_seconds": {
+          "analytic_mean_seconds": 0.02127175449762338,
+          "two_gate_mean_seconds": 0.0029351789999054745,
+          "ratio_of_means": 7.2471745329018855
+        },
+        "worker_cpu_total_sec": {
+          "analytic_mean_seconds": 29.868634666666665,
+          "two_gate_mean_seconds": 23.558486333333335,
+          "ratio_of_means": 1.2678503297728847
+        },
+        "standalone_pipeline_worker_cpu_seconds": {
+          "analytic_mean_seconds": 39.60860733333334,
+          "two_gate_mean_seconds": 33.298459,
+          "ratio_of_means": 1.1895027134238656
+        }
+      }
+    },
+    {
+      "task": "mqar",
+      "mode": "joint",
+      "budget": "cpu_20.0",
+      "metrics": {
+        "single_request_p50_wall_seconds": {
+          "analytic_mean_seconds": 0.021659267171344254,
+          "two_gate_mean_seconds": 0.002926361000087733,
+          "ratio_of_means": 7.401433784380979
+        },
+        "worker_cpu_total_sec": {
+          "analytic_mean_seconds": 30.530462999999997,
+          "two_gate_mean_seconds": 23.584604333333335,
+          "ratio_of_means": 1.2945081701815842
+        },
+        "standalone_pipeline_worker_cpu_seconds": {
+          "analytic_mean_seconds": 40.270435666666664,
+          "two_gate_mean_seconds": 33.324577,
+          "ratio_of_means": 1.208430512611358
+        }
+      }
+    },
+    {
+      "task": "async_av",
+      "mode": "frozen_shared",
+      "budget": "updates_256",
+      "metrics": {
+        "single_request_p50_wall_seconds": {
+          "analytic_mean_seconds": 0.029365554835142877,
+          "two_gate_mean_seconds": 0.004104741329986912,
+          "ratio_of_means": 7.1540573386719375
+        },
+        "worker_cpu_total_sec": {
+          "analytic_mean_seconds": 33.981523333333335,
+          "two_gate_mean_seconds": 8.518427333333333,
+          "ratio_of_means": 3.989178049375468
+        },
+        "standalone_pipeline_worker_cpu_seconds": {
+          "analytic_mean_seconds": 39.942109333333335,
+          "two_gate_mean_seconds": 14.479013333333333,
+          "ratio_of_means": 2.758620937338272
+        }
+      }
+    },
+    {
+      "task": "async_av",
+      "mode": "joint",
+      "budget": "updates_256",
+      "metrics": {
+        "single_request_p50_wall_seconds": {
+          "analytic_mean_seconds": 0.029768228164660588,
+          "two_gate_mean_seconds": 0.004122839830718779,
+          "ratio_of_means": 7.2203212802159165
+        },
+        "worker_cpu_total_sec": {
+          "analytic_mean_seconds": 33.894761333333335,
+          "two_gate_mean_seconds": 9.821193,
+          "ratio_of_means": 3.4511857503801564
+        },
+        "standalone_pipeline_worker_cpu_seconds": {
+          "analytic_mean_seconds": 39.855347333333334,
+          "two_gate_mean_seconds": 15.781779,
+          "ratio_of_means": 2.5254027022766783
+        }
+      }
+    },
+    {
+      "task": "async_av",
+      "mode": "frozen_shared",
+      "budget": "cpu_20.0",
+      "metrics": {
+        "single_request_p50_wall_seconds": {
+          "analytic_mean_seconds": 0.0307964249974854,
+          "two_gate_mean_seconds": 0.0040279273356039385,
+          "ratio_of_means": 7.645725066901648
+        },
+        "worker_cpu_total_sec": {
+          "analytic_mean_seconds": 23.483341999999997,
+          "two_gate_mean_seconds": 22.517964666666668,
+          "ratio_of_means": 1.0428714294397299
+        },
+        "standalone_pipeline_worker_cpu_seconds": {
+          "analytic_mean_seconds": 29.443928,
+          "two_gate_mean_seconds": 28.478550666666663,
+          "ratio_of_means": 1.0338984011030898
+        }
+      }
+    },
+    {
+      "task": "async_av",
+      "mode": "joint",
+      "budget": "cpu_20.0",
+      "metrics": {
+        "single_request_p50_wall_seconds": {
+          "analytic_mean_seconds": 0.029311555672999628,
+          "two_gate_mean_seconds": 0.005483446332315604,
+          "ratio_of_means": 5.3454623053859
+        },
+        "worker_cpu_total_sec": {
+          "analytic_mean_seconds": 23.462204333333336,
+          "two_gate_mean_seconds": 22.56115433333333,
+          "ratio_of_means": 1.039938116050593
+        },
+        "standalone_pipeline_worker_cpu_seconds": {
+          "analytic_mean_seconds": 29.422790333333335,
+          "two_gate_mean_seconds": 28.521740333333337,
+          "ratio_of_means": 1.0315916907407976
+        }
+      }
+    },
+    {
+      "task": "av_binding",
+      "mode": "frozen_shared",
+      "budget": "updates_256",
+      "metrics": {
+        "single_request_p50_wall_seconds": {
+          "analytic_mean_seconds": 0.02122940566429558,
+          "two_gate_mean_seconds": 0.002904016332953082,
+          "ratio_of_means": 7.3103602839270145
+        },
+        "worker_cpu_total_sec": {
+          "analytic_mean_seconds": 21.019131,
+          "two_gate_mean_seconds": 5.7171606666666674,
+          "ratio_of_means": 3.6764982174718193
+        },
+        "standalone_pipeline_worker_cpu_seconds": {
+          "analytic_mean_seconds": 26.000101,
+          "two_gate_mean_seconds": 10.698130666666666,
+          "ratio_of_means": 2.430340571648779
+        }
+      }
+    },
+    {
+      "task": "av_binding",
+      "mode": "joint",
+      "budget": "updates_256",
+      "metrics": {
+        "single_request_p50_wall_seconds": {
+          "analytic_mean_seconds": 0.021319645832894214,
+          "two_gate_mean_seconds": 0.0028387613322896263,
+          "ratio_of_means": 7.510193122046888
+        },
+        "worker_cpu_total_sec": {
+          "analytic_mean_seconds": 21.182608333333334,
+          "two_gate_mean_seconds": 6.471385000000001,
+          "ratio_of_means": 3.2732727744267005
+        },
+        "standalone_pipeline_worker_cpu_seconds": {
+          "analytic_mean_seconds": 26.163578333333334,
+          "two_gate_mean_seconds": 11.452355000000003,
+          "ratio_of_means": 2.284558794530324
+        }
+      }
+    },
+    {
+      "task": "av_binding",
+      "mode": "frozen_shared",
+      "budget": "cpu_20.0",
+      "metrics": {
+        "single_request_p50_wall_seconds": {
+          "analytic_mean_seconds": 0.02179714867088478,
+          "two_gate_mean_seconds": 0.0028897321681142785,
+          "ratio_of_means": 7.542965023332496
+        },
+        "worker_cpu_total_sec": {
+          "analytic_mean_seconds": 23.520966666666666,
+          "two_gate_mean_seconds": 22.47397833333333,
+          "ratio_of_means": 1.0465866931882035
+        },
+        "standalone_pipeline_worker_cpu_seconds": {
+          "analytic_mean_seconds": 28.50193666666667,
+          "two_gate_mean_seconds": 27.454948333333334,
+          "ratio_of_means": 1.0381347770398888
+        }
+      }
+    },
+    {
+      "task": "av_binding",
+      "mode": "joint",
+      "budget": "cpu_20.0",
+      "metrics": {
+        "single_request_p50_wall_seconds": {
+          "analytic_mean_seconds": 0.021069993167960394,
+          "two_gate_mean_seconds": 0.0028647606620021784,
+          "ratio_of_means": 7.354887773847954
+        },
+        "worker_cpu_total_sec": {
+          "analytic_mean_seconds": 23.401092666666667,
+          "two_gate_mean_seconds": 22.48608733333333,
+          "ratio_of_means": 1.0406920652654823
+        },
+        "standalone_pipeline_worker_cpu_seconds": {
+          "analytic_mean_seconds": 28.38206266666667,
+          "two_gate_mean_seconds": 27.467057333333333,
+          "ratio_of_means": 1.0333128271525072
+        }
+      }
+    }
+  ],
+  "scope": {
+    "latency": "batch-1 whole-sequence validation prepared-feature request p50, then mean across seeds",
+    "cpu": "complete fresh adapter worker including all imports, training, selection, inference and serialization",
+    "donor": "common training is separate; standalone pipeline ratios retained as supplementary data",
+    "budget": "20 CPU seconds caps training loop, not complete worker",
+    "energy_measured": false,
+    "raw_media_decode_measured": false,
+    "quality": "AV emotion shared donors selected step 0; all analytic AV binding ID accuracies are 0.5"
+  },
+  "outputs": [
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/figures_final/content_costs.png",
+      "sha256": "9d1cc399b8d69035d95b8a6c7e19a29e4521f108c335cd06660a9af9f42ce02c",
+      "bytes": 252049
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/figures_final/content_costs.svg",
+      "sha256": "d97c0658707e198f63a75761d9c3479add8450bca1e2c699c685315a6b787299",
+      "bytes": 31717
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "recorded_at_utc": "2026-10-31T11:00:05.502451+00:00",
+  "just_fmt": {
+    "command": "/tmp/hcsn-r10-format-tools/just/just --justfile ../justfile fmt",
+    "cwd": "codex-rs",
+    "exit_code": 0,
+    "stdout": "No changed files need formatting. Use --all for a full repository check.\n",
+    "scope": "The repository formatter does not own experiments Python; no Rust code changed."
+  },
+  "full_staged_diff_check": {
+    "exit_code": 2,
+    "output": "experiments/hcsn_mechanism_content_v2/binding_data.py:139: new blank line at EOF.\nexperiments/hcsn_mechanism_content_v2/content.py:208: new blank line at EOF.\nexperiments/hcsn_mechanism_content_v2/content_tests.py:172: new blank line at EOF.\nexperiments/hcsn_mechanism_content_v2/content_train.py:330: trailing whitespace.\n+            scope=\"raw NPZ loading, feature preparation/compression or synthetic generation; no media decode\", \nexperiments/hcsn_mechanism_content_v2/content_train.py:380: new blank line at EOF.\nexperiments/hcsn_mechanism_content_v2/data.py:217: new blank line at EOF.\n"
+  },
+  "editable_analysis_and_report_diff_check": {
+    "exit_code": 0,
+    "output": ""
+  },
+  "frozen_source_whitespace_policy": "Preserve byte-identical preregistered candidate files and original source hashes. Full staged diff check reports original trailing/EOF whitespace; no behavioral defect is inferred and no source identity was changed to remove it.",
+  "rust_tests_run": false,
+  "additional_model_runs": false
+}

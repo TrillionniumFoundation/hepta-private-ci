@@ -1,0 +1,27 @@
+{
+  "recorded_at_utc": "2026-10-31T10:25:16.128192+00:00",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "supervisor_python": "3.12.14",
+  "training_python": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+  "torch": "2.8.0+cpu",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "cuda_available": false,
+  "thread_limits": {
+    "OMP_NUM_THREADS": 1,
+    "MKL_NUM_THREADS": 1,
+    "OPENBLAS_NUM_THREADS": 1,
+    "NUMEXPR_NUM_THREADS": 1
+  },
+  "max_formal_workers": 2,
+  "os_cpu_count": 9,
+  "allowed_cpu_count": 9,
+  "direct_energy_sensor_paths": [],
+  "direct_energy_joules": null,
+  "energy_estimated_from_flops": false,
+  "live_sensor_or_network_measurement": false,
+  "original_media_decode_repeated": false,
+  "peak_memory_source": "Linux wait4 per worker, includes runtime; not sum of independent peaks",
+  "source_base_commit": "9709af902dc029efc007e4122425c6a72f0559b9",
+  "preregistered_commit": "1a5434f361d2df8a0505b6069fe6d48736f9ff30"
+}

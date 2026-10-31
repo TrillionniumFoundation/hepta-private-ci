@@ -1,0 +1,95 @@
+{
+  "repository_root": "/workspace/scratch/355ce93c7251/hepta-hcsn-fourtrack",
+  "frozen_files": [
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/__init__.py",
+      "sha256": "9d7409cd830465f83202846e2d68976fb1cc33bf619e40115287555f38ead365"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/binding_data.py",
+      "sha256": "0b496b552a9686da23381640015acf43120eb5737ff895b022c32f3edf20e00c"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/content.py",
+      "sha256": "311f7b2a0894876b8381f51c07941c026f5d26ffdb9f10de9745b921b6203481"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/content_tests.py",
+      "sha256": "dadb0a9c91ae10811b46f2a1c0874db0b3628929f48d3133850eafba1c0bdba1"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/content_train.py",
+      "sha256": "e3070943a6a31b6791395b4ba02bd8f0f27b105af086946ba5324eadcfbff76a"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/data.py",
+      "sha256": "ca866b1dee8977255bedd8655b247bc8212db9c000ab221cd6b84d0c5721277e"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/mechanism.py",
+      "sha256": "65754d240a34c5acf5eaac68a4aa3be1acbcfb96e07d735c5fcf6d4ca24e7fc0"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/mechanism_diagnostics.py",
+      "sha256": "f5a60de69b1cd2dac310974892ed62bc594445b6749e88a3e0a691820a82cac3"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/mechanism_tests.py",
+      "sha256": "995d8f0d5e470000b44a4c66db07ad8988d381cdfbee0e7206e4e1a89a7302cc"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/protocol_content.py",
+      "sha256": "cfd15089418fd0deddea8b4ef251ab374cc7300befe9eab448bd7c2777168649"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/protocol_mechanism.py",
+      "sha256": "75e883a01cde77dd6032f682dbda3297af398f01612b705d0ec1874d866652e6"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/renewal.py",
+      "sha256": "aa6bedde8d15d473d0b8beef36805955447fa88cc906846ee48be927ecab0cb6"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/study.py",
+      "sha256": "55a6c0c75008e36789763b93db3d1c71fe09696926a333f670ad8dd550bfea58"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/study_tests.py",
+      "sha256": "6e2520f45139624dfb7cbf4d0859c2f5c79e1bf73507218da8b2692adeecfd6d"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/worker.py",
+      "sha256": "f44e390701f662aacb937ccf442e9ee740bedfe8701b93bac8a5020010ec2628"
+    }
+  ],
+  "jobs": [
+    {
+      "id": "content_and_meter_tests",
+      "argv": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "unittest",
+        "-v",
+        "experiments.hcsn_mechanism_content_v2.content_tests",
+        "experiments.hcsn_mechanism_content_v2.study_tests"
+      ]
+    },
+    {
+      "id": "independent_kernel_tests",
+      "argv": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_mechanism_content_v2.mechanism_tests",
+        "--output",
+        "experiments/hcsn_mechanism_content_v2/results/validation001/kernel",
+        "--samples",
+        "65536",
+        "--repeats",
+        "5"
+      ],
+      "outputs": [
+        "experiments/hcsn_mechanism_content_v2/results/validation001/kernel/diagnostics.json"
+      ]
+    }
+  ]
+}
