@@ -32,12 +32,17 @@ class SlopeMatch:
 
 
 def _profile(f: Callable[[float], float], anchor: float, step: float):
-    """Two 5-point derivatives plus one-sided checks; no automatic clipping."""
+    """Three 5-point stencils, two sided differences and roundoff guards.
+
+    A half-step grid and its parent share harmonic aliases. A third
+    incommensurate radius is an independent diagnostic only, not an analytic
+    derivative enclosure or a guarantee against arbitrary oscillations.
+    """
     if anchor - 2 * step == anchor or anchor + 2 * step == anchor:
         raise ArithmeticError('Stencil offsets erased in f64')
     samples = {}
-    for half in (False, True):
-        h = step / 2 if half else step
+    for ratio in (1., .5, math.sqrt(.5)):
+        h = step * ratio
         if h <= 0 or anchor - 2*h == anchor or anchor + 2*h == anchor:
             raise ArithmeticError('Unrepresentable derivative step')
         ys = []
@@ -62,13 +67,14 @@ def _profile(f: Callable[[float], float], anchor: float, step: float):
         # deliberately conservative heuristic, NOT an interval certificate.
         roundoff_floor = (8 * max(math.ulp(y) for y in ys) / h
                           / abs(derivative)) if derivative else math.inf
-        samples[half] = (ys[2], derivative, left, right, roundoff_floor)
-    coarser, finer = samples[False], samples[True]
-    if coarser[0] != finer[0]:
+        samples[ratio] = (ys[2], derivative, left, right, roundoff_floor)
+    finer = samples[.5]
+    if any(record[0] != finer[0] for record in samples.values()):
         raise ArithmeticError('Non-deterministic channel at anchor')
     return (finer[0], finer[1],
-            max(abs(coarser[1]-finer[1]), abs(finer[2]-finer[3])),
-            max(coarser[4], finer[4]))
+            max(max(abs(record[1]-finer[1]), abs(record[2]-record[3]))
+                for record in samples.values()),
+            max(record[4] for record in samples.values()))
 
 
 def match_local_slope(
@@ -84,7 +90,7 @@ def match_local_slope(
     """Fail closed unless value and signed local derivative can be matched.
 
     Both curves must be finite and smooth within the complete +/-2*step
-    window, with stable derivatives at steps h and h/2. This is a local
+    window, with stable derivatives at h, h/2, and h/sqrt(2). This is a local
     *numerical* agreement check, not an interval proof or causal experiment.
     """
     args=(anchor,step,slope_floor,relative_tolerance,maximum_abs_scale)
