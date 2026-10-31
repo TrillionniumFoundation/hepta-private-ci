@@ -60,6 +60,13 @@ class GridDtypeResolutionTests(unittest.TestCase):
                     self.assertAlmostEqual(float(out['reset_weights'].sum()),1.,
                                            delta=8*torch.finfo(dtype).eps)
 
+    def test_nonfinite_physical_parameter_preserves_original_refusal(self):
+        for boundary in (float('nan'),float('inf')):
+            with self.subTest(boundary=boundary):
+                with self.assertRaisesRegex(ValueError,'Finite physical parameters required'):
+                    make_flow(torch.tensor(.1,dtype=torch.float64),
+                              .5,boundary,0.,.3,Grid())
+
     def test_float64_large_interval_overflow_fails_closed(self):
         grid=Grid(lower=-1e308)
         with self.assertRaisesRegex(ValueError,'Cell grid is unresolved'):
