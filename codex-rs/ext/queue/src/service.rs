@@ -13,6 +13,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_core::CodexThread;
+use codex_core::NotSubmittedReason;
 use codex_core::StartIfIdleSubmission;
 use codex_core::ThreadManager;
 use codex_core::TurnInput;
@@ -682,6 +683,20 @@ impl QueuedItemService {
             .ok_or_else(|| QueueServiceError::DispatchInProgress {
                 client_id: client_id.clone(),
             })?;
+        // Core's capacity preflight rejects a still-fenced terminalizer with
+        // an error. Preserve start-if-idle semantics without waiting for that
+        // owner or claiming the queued input. Check after the process lock so
+        // an existing exact dispatch still reports DispatchInProgress.
+        // Readiness still requires normal Core admission below.
+        let mut completion = Box::pin(thread.current_turn_completion_barrier());
+        if poll_fn(|context| Poll::Ready(completion.as_mut().poll(context)))
+            .await
+            .is_pending()
+        {
+            return Ok(StartIfIdleSubmission::NotSubmitted {
+                reason: NotSubmittedReason::NotIdle,
+            });
+        }
         let (now_ms, lease_expires_at_ms) = dispatch_window()?;
         let claim = self
             .queue

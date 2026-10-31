@@ -1304,43 +1304,57 @@ async fn wait_for_guardian_review(
                 .is_ok();
                 return (GuardianReviewSessionOutcome::Aborted, keep_review_session, false);
             }
-            event = review_session.io.next_event() => {
+            event = review_session.session.receive_event_with_completion(&review_session.io) => {
                 match event {
-                    Ok(event) if !event_matches_turn(&event, expected_turn_id) => {}
-                    Ok(event) if matches!(&event.msg, EventMsg::ItemCompleted(_)) => {
+                    Ok((event, _completion)) if !event_matches_turn(&event, expected_turn_id) => {}
+                    Ok((event, _completion)) if matches!(&event.msg, EventMsg::ItemCompleted(_)) => {
                         review_session.admit_node_repl_evidence(&event).await;
                     }
-                    Ok(event) => match event.msg {
-                        EventMsg::TurnComplete(turn_complete) => {
-                            analytics_result.time_to_first_token_ms = turn_complete
-                                .time_to_first_token_ms
-                                .and_then(|ms| u64::try_from(ms).ok());
-                            if turn_complete.last_agent_message.is_none()
-                                && let Some(error) = last_error
-                            {
+                    Ok((event, completion)) => {
+                        if matches!(&event.msg, EventMsg::TurnComplete(_) | EventMsg::TurnAborted(_)) {
+                            // Publication precedes terminal cleanup. Keep the review
+                            // lock until this exact owner retires before reusing the
+                            // trunk; a stale event must not capture a later owner.
+                            if let Err(outcome) = run_before_review_deadline(
+                                deadline,
+                                external_cancel,
+                                completion,
+                            ).await {
+                                return (outcome, false, false);
+                            }
+                        }
+                        match event.msg {
+                            EventMsg::TurnComplete(turn_complete) => {
+                                analytics_result.time_to_first_token_ms = turn_complete
+                                    .time_to_first_token_ms
+                                    .and_then(|ms| u64::try_from(ms).ok());
+                                if turn_complete.last_agent_message.is_none()
+                                    && let Some(error) = last_error
+                                {
+                                    return (
+                                        GuardianReviewSessionOutcome::SessionFailed {
+                                            error: anyhow!(error.message),
+                                            error_info: error.codex_error_info,
+                                        },
+                                        true,
+                                        true,
+                                    );
+                                }
                                 return (
-                                    GuardianReviewSessionOutcome::SessionFailed {
-                                        error: anyhow!(error.message),
-                                        error_info: error.codex_error_info,
-                                    },
+                                    GuardianReviewSessionOutcome::Completed(Ok(turn_complete.last_agent_message)),
                                     true,
                                     true,
                                 );
                             }
-                            return (
-                                GuardianReviewSessionOutcome::Completed(Ok(turn_complete.last_agent_message)),
-                                true,
-                                true,
-                            );
+                            EventMsg::Error(error) => {
+                                last_error = Some(error);
+                            }
+                            EventMsg::TurnAborted(_) => {
+                                return (GuardianReviewSessionOutcome::Aborted, true, false);
+                            }
+                            _ => {}
                         }
-                        EventMsg::Error(error) => {
-                            last_error = Some(error);
-                        }
-                        EventMsg::TurnAborted(_) => {
-                            return (GuardianReviewSessionOutcome::Aborted, true, false);
-                        }
-                        _ => {}
-                    },
+                    }
                     Err(err) => {
                         return (
                             GuardianReviewSessionOutcome::Completed(Err(err.into())),
@@ -1501,7 +1515,10 @@ async fn interrupt_and_drain_turn(
 
     tokio::time::timeout(GUARDIAN_INTERRUPT_DRAIN_TIMEOUT, async {
         loop {
-            let event = review_session.io.next_event().await?;
+            let (event, completion) = review_session
+                .session
+                .receive_event_with_completion(&review_session.io)
+                .await?;
             if !event_matches_turn(&event, expected_turn_id) {
                 continue;
             }
@@ -1510,6 +1527,7 @@ async fn interrupt_and_drain_turn(
                 event.msg,
                 EventMsg::TurnAborted(_) | EventMsg::TurnComplete(_)
             ) {
+                completion.await;
                 return Ok::<(), anyhow::Error>(());
             }
         }
@@ -2273,24 +2291,53 @@ mod tests {
     #[tokio::test]
     async fn wait_for_guardian_review_ignores_prior_turn_completion() {
         let (review_session, tx_event, _rx_sub) = test_review_session().await;
+        let completion = crate::state::StartTransitionCompletion::new("current-turn".to_string());
+        review_session
+            .session
+            .pending_start_transition_completions
+            .lock()
+            .expect("completion registry")
+            .push((
+                Arc::new(()),
+                Arc::clone(&completion),
+                Arc::new(std::sync::Mutex::new(None)),
+            ));
         tx_event
             .send(turn_complete_event("prior-turn", Some("stale"), Some(9)))
             .await
             .expect("queue prior turn completion");
+        let current_event = turn_complete_event("current-turn", Some("fresh"), Some(42));
+        let publication = review_session
+            .session
+            .capture_terminal_event_completion(&current_event)
+            .await
+            .expect("terminal event captures the current owner");
         tx_event
-            .send(turn_complete_event("current-turn", Some("fresh"), Some(42)))
+            .send(current_event)
             .await
             .expect("queue current turn completion");
+        drop(publication);
 
         let mut analytics_result = GuardianReviewAnalyticsResult::without_session();
-        let (outcome, keep_review_session, capture_token_usage) = wait_for_guardian_review(
+        let mut review = Box::pin(wait_for_guardian_review(
             &review_session,
             "current-turn",
             tokio::time::Instant::now() + Duration::from_secs(1),
             /*external_cancel*/ None,
             &mut analytics_result,
-        )
-        .await;
+        ));
+        assert!(
+            futures::poll!(review.as_mut()).is_pending(),
+            "the matching terminal event cannot make an unfinished trunk reusable"
+        );
+        review_session
+            .session
+            .pending_start_transition_completions
+            .lock()
+            .expect("completion registry")
+            .clear();
+        completion.complete();
+        let (outcome, keep_review_session, capture_token_usage) = review.await;
 
         let GuardianReviewSessionOutcome::Completed(Ok(last_agent_message)) = outcome else {
             panic!("expected current turn completion");
