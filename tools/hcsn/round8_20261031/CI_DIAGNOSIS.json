@@ -1,0 +1,114 @@
+{
+  "schema": "hepta.hcsn.delivery-ci-diagnosis.v1",
+  "inspected_head": "00b94d54a9b85f285298d1a964777bdecfa85385",
+  "base": "3a0e62c61b595576f16313c9b6016ec62cf8088b",
+  "codespell": {
+    "run_id": 41173062429,
+    "job_id": 124454904028,
+    "log_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41173062429/job/124454904028",
+    "total_reported": 2780,
+    "changed_file_reports": 146,
+    "changed_file_paths": [
+      "tools/hcsn/round8_20261031/bundles/state_task.tar.gz.part001"
+    ],
+    "changed_nonbinary_reports": 0,
+    "unchanged_file_reports": 2634,
+    "unchanged_file_count": 234,
+    "example_reports": [
+      {
+        "path": "tools/hcsn/round8_20261031/bundles/state_task.tar.gz.part001",
+        "line": 8,
+        "message": "fo ==> of, for, to, do, go"
+      },
+      {
+        "path": "tools/hcsn/round8_20261031/bundles/state_task.tar.gz.part001",
+        "line": 271,
+        "message": "fo ==> of, for, to, do, go"
+      },
+      {
+        "path": "tools/hcsn/round8_20261031/bundles/state_task.tar.gz.part001",
+        "line": 275,
+        "message": "Ot ==> To, Of, Or, Not, It"
+      }
+    ],
+    "remediation": "Skip only R8 binary archive volumes via the existing codespell file-type exclusion mechanism. Do not exempt scientific text or add dictionary words.",
+    "skip_glob": "./tools/hcsn/round8_20261031/bundles/*.tar.gz.part*"
+  },
+  "blob_policy": {
+    "default_max_bytes": 512000,
+    "failed_job": 124454903968,
+    "log_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41173062429/job/124454903968",
+    "observed_failure": "Fence resident unsupported_resolver_layout before checkout; the job did not execute the size checker.",
+    "independent_size_review": "13 intentional research assets exceed the default budget. Register exact paths under the repository's existing checked-in research asset exception mechanism; each is content-addressed by the delivery manifest.",
+    "intentional_assets": [
+      {
+        "path": "tools/hcsn/round8_20261031/bundles/native_owner.tar.gz.part000",
+        "bytes": 4194304,
+        "sha256": "f1e1d3aec6ed862c576b8fcaa68f7d28212aa0cfe93abe5e27793239a4c4f202"
+      },
+      {
+        "path": "tools/hcsn/round8_20261031/bundles/native_owner.tar.gz.part001",
+        "bytes": 4194304,
+        "sha256": "d69a71350c93c50372a778013f39764a61958c5e8af94718cce7a5d7d0ba5c24"
+      },
+      {
+        "path": "tools/hcsn/round8_20261031/bundles/native_owner.tar.gz.part002",
+        "bytes": 4194304,
+        "sha256": "1a484756635c7410b87cbdaccf1aed005a84045ba1c03c15a3483b541ab7ba19"
+      },
+      {
+        "path": "tools/hcsn/round8_20261031/bundles/native_owner.tar.gz.part003",
+        "bytes": 1119091,
+        "sha256": "102522cfdefe33e0e594d67b7218a0281f061ad46dfc76e8ed48b578fcab774e"
+      },
+      {
+        "path": "tools/hcsn/round8_20261031/bundles/state_task.tar.gz.part000",
+        "bytes": 4194304,
+        "sha256": "5f412c046d4e82687a09ebb67d04ae12aa89f342c97ec47548c65dba8b838e04"
+      },
+      {
+        "path": "tools/hcsn/round8_20261031/bundles/state_task.tar.gz.part001",
+        "bytes": 1620749,
+        "sha256": "67e3a1123c2cf0c687d5cb417a467a2554f5d0e39594acc75e2dede7803adb71"
+      },
+      {
+        "path": "tools/hcsn/round8_20261031/bundles/value_calibration.tar.gz.part000",
+        "bytes": 4194304,
+        "sha256": "cc0d883cf8c7bab7079d34a2426943f2e2cae6cd312333bf98e567c2402328d9"
+      },
+      {
+        "path": "tools/hcsn/round8_20261031/bundles/value_calibration.tar.gz.part001",
+        "bytes": 4194304,
+        "sha256": "6ab71a40b6ff43d6f0f2f8aaa02f1e0a7839d1461b095ede8b21a7b69299d71b"
+      },
+      {
+        "path": "tools/hcsn/round8_20261031/bundles/value_calibration.tar.gz.part002",
+        "bytes": 4194304,
+        "sha256": "b08b272e81b3e823f340bd2c8b9abc030cfb66a80ae4ad15e72708fc09357163"
+      },
+      {
+        "path": "tools/hcsn/round8_20261031/bundles/value_calibration.tar.gz.part003",
+        "bytes": 4194304,
+        "sha256": "a5a0a4305876644e7a4c0c5485fc2393f87afd85b3493d5c0e7b2d98ebc7b03d"
+      },
+      {
+        "path": "tools/hcsn/round8_20261031/bundles/value_calibration.tar.gz.part004",
+        "bytes": 4194304,
+        "sha256": "c9718ea818d596feee37f2cfec11edcf4e3d803b92dadf074548b3d2419a5fdc"
+      },
+      {
+        "path": "tools/hcsn/round8_20261031/bundles/value_calibration.tar.gz.part005",
+        "bytes": 1903511,
+        "sha256": "92793af4dbe1fe60bb5ba129a0112aba1cd89035875ed04fa4ea647a7784f81e"
+      },
+      {
+        "path": "tools/hcsn/round8_20261031/state_task/evidence/NUMPY_COST_20261031_RAW.jsonl",
+        "bytes": 586637,
+        "sha256": "6f3d99ed8f09229883a0aa07e5a965a391bccffb83fadf199774979b68bf1013"
+      }
+    ],
+    "new_global_threshold": false
+  },
+  "scope": "This diagnosis describes the original CI attempt only. Configuration changes require a subsequent GitHub run; no claim that all repository CI is green.",
+  "production_activation": false
+}
