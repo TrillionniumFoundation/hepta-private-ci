@@ -6,8 +6,8 @@
 
 - audit_cpu_matched_v2.py is an independent Python stdlib validator of a lossless canonical 12-run archive. It rejects missing/duplicate/nonpaired observations, mismatched initialization or train/ID/OOD physical data, CPU caps, forged metrics and authority upgrades; recomputes all six paired accuracies without importing the model implementation.
 - TIMED_CPU_MATCHED_FOLLOWUP_12_RAW_20261031.json.gz.b64 contains all final-snapshot training records, loss traces and paired comparisons. The uncompressed canonical JSON SHA-256 is e1dafffc43f22e2ed774b414be860d36ab2e17fcb9a16d1b332f80c3e45e471f (Git blob 88c6c3ffe9d7f30e051ec27533b605007c3540cb). **This structured reserialization does NOT independently authenticate the byte-exact original output files.**
-- sealed_run_records_v1.py is a **future-run** local recorder: explicit safe run ID, fsync of staged file, atomic create-only hard-link, read-back SHA-256 receipt, collision/tamper/invalid-input denial, real new-Python-process readback. Not host signing, kernel crash recovery, distributed WAL or protection against a hostile local administrator. It is NOT yet wired into the training CLI.
-- Eight independent auditor/recorder test methods cover missing/duplicate records, adversarial metric/budget/authority changes, same-path overwrite denial, symlink directory refusal, new-process readback and post-publication byte mutation.
+- sealed_run_records_v1.py is a **future-run** local recorder: explicit safe run ID, fsync of staged file, atomic create-only hard-link, read-back SHA-256 receipt, collision/tamper/invalid-input denial, real new-Python-process readback. Not host signing, kernel crash recovery, distributed WAL or protection against a hostile local administrator. A new, separately versioned timed_cpu_sealed_entry_v1.py now invokes the actual v2 25s runner and publishes its result through this recorder, with per-source SHA256 seals and runtime version stamps. The new entry was exercised with mocked training and real filesystem/new-process receipt checks, **not yet with another 25s full live training**. The historical mutable v2 entry remains untouched and must not be used for future evidence.
+- Eleven independent auditor/recorder/sealed-entry test methods cover missing/duplicate records, adversarial metric/budget/authority changes, same-path overwrite denial, symlink directory refusal, new-process readback and post-publication byte mutation.
 
 ## Results inherited from upstream #4505; NOT retrained here
 
@@ -28,7 +28,7 @@ Python 3.13.5, NumPy 2.3.5, SciPy 1.17.0 and PyTorch 2.10.0 CPU, reconstructed H
 
 - P0 bounded numerical mathematics: **39/39 PASS**.
 - P1/P2: **35/35 PASS**, including all 8 new audit/recorder methods.
-- Total **74/74 locally targeted PASS**, zero skips. No claim of full CI, Rust, GPU, power-loss, physical energy or independent training replication.
+- Total **77/77 locally targeted PASS**, zero skips. No claim of full CI, Rust, GPU, power-loss, physical energy or independent training replication.
 
 To reproduce from an appropriate project checkout:
 
@@ -39,13 +39,15 @@ Remotely re-fetched exact Git blobs, matched to the locally executed sources:
 auditor cd104118043fb10774ae4a834fbc730b76ee8cc5;
 auditor tests 3af73712cc817a2fb725aa6dc88c54267968bc0e;
 recorder e587cf58abefa809c0f792e21c9b7486cb2c7242;
-recorder tests 28d8c16991cf2f307dc3f8036bf2416151376533.
+recorder tests 28d8c16991cf2f307dc3f8036bf2416151376533;
+new sealed runner 2a5f5d95c7562fd8752d611dea407de7cc953103;
+sealed-runner contract tests a894cb8dd284c66dd5cd608212b21583c878754b.
 
 ## Hard admission remains unchanged
 
 P0 **OPEN**: coupled financial HX equilibrium, global obstacle/continuum and interval proof, native precision/implicit-gradient safety.
 P1 **OPEN**: independent equal-total-compute Call/Risk/Margin causal OOD advantage.
-P2 **OPEN**: recorder integrated into actual training; complete provenance, robust overwrite/MQAR/long-memory, real host-crash journal and independent blinded confirmation.
+P2 **OPEN**: complete live run through sealed entrypoint and retirement of the old mutable writer; complete provenance, robust overwrite/MQAR/long-memory, real host-crash journal and independent blinded confirmation.
 P3 **OPEN**: four real pretrained encoders and cross-modal OOD.
 P4 **OPEN**: native Rust/GPU 64–4096 Cell, CPU/RSS/p95/p99/Joules/restart.
 P5 **BLOCKED**: matched-backbone net-value scaling only if P0–P4 close.
