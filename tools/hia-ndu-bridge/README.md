@@ -52,8 +52,9 @@ is rejected by this bridge profile.
 
 The original evaluator then rejects the supplied hard violation, risk ceiling
 and resource ceiling failures before Pareto comparison. Ties return the native
-unresolved frontier; no candidate ID is used as a hidden tie-break. `abstain`
-must have exactly zero utility, risk and cost. A negative-value optimization can
+unresolved frontier; no candidate ID is used as a hidden tie-break. A literal
+`abstain` candidate is mandatory in every request, with exactly zero utility,
+risk, uncertainty and cost. A negative-value optimization can
 therefore lose to stopping. Choosing an existing useful baseline is represented
 by a separate `stop` candidate with its actual terminal value.
 

@@ -169,6 +169,40 @@ fn abstention_and_equal_frontiers_remain_explicit_without_arbitrary_authority() 
 }
 
 #[test]
+fn mandatory_zero_abstain_guards_negative_only_plans() {
+    let mut missing = request(vec![path("negative", &[-10])]);
+    missing["candidates"]
+        .as_array_mut()
+        .expect("candidate array in fixture")
+        .retain(|candidate| candidate["id"] != "abstain");
+    let absent_wire = serde_json::to_vec(&missing).expect("encode missing-abstain fixture");
+    assert_eq!(
+        evaluate(&absent_wire),
+        Err("missing mandatory abstain candidate".into())
+    );
+
+    // The action-set guard runs before expensive or invalid path evaluation.
+    let mut malformed_path = missing;
+    malformed_path["candidates"][0]["events"][0]["discount_q32"] = json!(-1);
+    let malformed_wire = serde_json::to_vec(&malformed_path).expect("encode bad path");
+    assert_eq!(
+        evaluate(&malformed_wire),
+        Err("missing mandatory abstain candidate".into())
+    );
+
+    let mut uncertain = request(vec![path("negative", &[-10])]);
+    uncertain["candidates"][1]["uncertainty_q32"] = json!(Q32 / 2);
+    let uncertain_wire = serde_json::to_vec(&uncertain).expect("encode invalid abstain");
+    assert_eq!(
+        evaluate(&uncertain_wire),
+        Err("abstain must be an exact zero-effect, zero-cost alternative".into())
+    );
+
+    let valid = request(vec![path("negative", &[-10])]);
+    assert_eq!(response(&valid)["advisory_candidate_id"], json!("abstain"));
+}
+
+#[test]
 fn exact_request_snapshot_and_objective_bind_native_receipt_identity() {
     let mut payload = request(vec![path("candidate", &[2])]);
     let original = response(&payload);

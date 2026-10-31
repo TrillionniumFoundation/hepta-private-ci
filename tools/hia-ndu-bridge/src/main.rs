@@ -144,6 +144,10 @@ fn evaluate(input: &[u8]) -> Result<Value, String> {
         }))
         .map_err(|error| error.to_string())?,
     );
+    // Reject an incomplete action set before invoking any recursive evaluator.
+    if !request.candidates.iter().any(|candidate| candidate.id == "abstain") {
+        return Err("missing mandatory abstain candidate".into());
+    }
     let mut candidate_ids = BTreeSet::new();
     let mut contributions = Vec::new();
     let mut paths = Vec::new();
@@ -164,6 +168,7 @@ fn evaluate(input: &[u8]) -> Result<Value, String> {
             && (!candidate.verified
                 || candidate.resource_cost_q32 != 0
                 || candidate.risk_q32 != 0
+                || candidate.uncertainty_q32 != 0
                 || candidate.terminal_q32 != 0
                 || candidate.events.iter().any(|event| event.instant_q32 != 0))
         {
