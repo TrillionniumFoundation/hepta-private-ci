@@ -19,8 +19,8 @@ With `Grid.validate=True`, check strictly ordered finite edges *and* centers, po
 
 ## Verification and limitations
 
-- 10 local **standalone faithfully transcribed** f32/f64 scenarios executed, all meeting expected accept/refuse outcomes: collapsed 2/8-cell boundaries, one bad batch member, nonfinite diffusion, tiny refractory overflow, f64 unrepresentable span, and 4 valid f32/f64 × zero/positive sigma cases.
-- Added seven actual source-importing repository unittest methods in `test_grid_dtype_resolution.py`, but **the exact repository file and full kernel suite were not executed in this environment**. Do not describe the standalone verification as a source-exact full regression.
+- 12 local **standalone faithfully transcribed** f32/f64 scenarios executed, all meeting expected accept/refuse outcomes (including NaN/Inf physical input): collapsed 2/8-cell boundaries, one bad batch member, nonfinite diffusion, tiny refractory overflow, f64 unrepresentable span, and 4 valid f32/f64 × zero/positive sigma cases.
+- Added eight actual source-importing repository unittest methods, including preservation of the existing nonfinite-physical-parameter error in `test_grid_dtype_resolution.py`, but **the exact repository file and full kernel suite were not executed in this environment**. Do not describe the standalone verification as a source-exact full regression.
 - Replay in a checkout:
 
 ```sh
