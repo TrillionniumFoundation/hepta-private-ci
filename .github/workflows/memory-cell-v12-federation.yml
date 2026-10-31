@@ -1,0 +1,188 @@
+name: Memory cell V12 cross-runner serving and fencing
+
+on:
+  push:
+    branches: [research/memory-cell-v12-20261030]
+    paths:
+      - 'qualification/memory-cell-v12/federation*.py'
+      - 'qualification/memory-cell-v12/evidence/content/model.json'
+      - 'qualification/memory-cell-v12/evidence/content/probes.json'
+      - '.github/workflows/memory-cell-v12-federation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+  PYTHONUNBUFFERED: '1'
+
+# Rerun the entire workflow after a failure. Attempt binding deliberately rejects
+# mixing an earlier successful job's snapshots with a later failed-jobs-only rerun.
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      checkpoint: ${{ steps.run.outputs.checkpoint }}
+      nonce: ${{ steps.run.outputs.nonce }}
+      authority_sha256: ${{ steps.run.outputs.authority_sha256 }}
+      artifact_id: ${{ steps.upload.outputs.artifact-id }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          sparse-checkout: qualification/memory-cell-v12
+      - name: Verify the scoped protocol and actual SIGKILL recovery
+        run: python3 qualification/memory-cell-v12/federation_tests.py
+      - name: Seal the committed trained model; no synthetic fallback
+        id: run
+        run: python3 qualification/memory-cell-v12/federation_experiment.py source --input qualification/memory-cell-v12/evidence/content --out "$RUNNER_TEMP/federation-source"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        id: upload
+        if: always()
+        with:
+          name: memory-v12-fed-source-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/federation-source
+          if-no-files-found: error
+          retention-days: 30
+
+  replicas:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [replica-a, replica-b]
+    env:
+      FED_NONCE: ${{ needs.source.outputs.nonce }}
+      FED_CHECKPOINT: ${{ needs.source.outputs.checkpoint }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          sparse-checkout: qualification/memory-cell-v12
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          artifact-ids: ${{ needs.source.outputs.artifact_id }}
+          path: ${{ runner.temp }}/federation-input
+      - name: Independently load the actual checkpoint on this runner
+        run: python3 qualification/memory-cell-v12/federation_experiment.py replica --input "$RUNNER_TEMP/federation-input" --out "$RUNNER_TEMP/federation-replica" --node '${{ matrix.node }}'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-v12-fed-${{ matrix.node }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/federation-replica
+          if-no-files-found: error
+          retention-days: 30
+
+  controller:
+    needs: [source, replicas]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      FED_NONCE: ${{ needs.source.outputs.nonce }}
+      FED_CHECKPOINT: ${{ needs.source.outputs.checkpoint }}
+      FED_AUTHORITY_SHA256: ${{ needs.source.outputs.authority_sha256 }}
+    outputs:
+      authority_sha256: ${{ steps.run.outputs.authority_sha256 }}
+      artifact_id: ${{ steps.upload.outputs.artifact-id }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          sparse-checkout: qualification/memory-cell-v12
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          artifact-ids: ${{ needs.source.outputs.artifact_id }}
+          path: ${{ runner.temp }}/federation-input/source
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-v12-fed-replica-a-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/federation-input/replica-a
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-v12-fed-replica-b-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/federation-input/replica-b
+      - name: Commit migration, kill before acknowledgment, restore and fence old owner
+        id: run
+        run: python3 qualification/memory-cell-v12/federation_experiment.py migrate --input "$RUNNER_TEMP/federation-input" --out "$RUNNER_TEMP/federation-migrate"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        id: upload
+        if: always()
+        with:
+          name: memory-v12-fed-migrate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/federation-migrate
+          if-no-files-found: error
+          retention-days: 30
+
+  readback:
+    needs: [source, controller]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [replica-a, replica-b]
+    env:
+      FED_NONCE: ${{ needs.source.outputs.nonce }}
+      FED_CHECKPOINT: ${{ needs.source.outputs.checkpoint }}
+      FED_AUTHORITY_SHA256: ${{ needs.controller.outputs.authority_sha256 }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          sparse-checkout: qualification/memory-cell-v12
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          artifact-ids: ${{ needs.controller.outputs.artifact_id }}
+          path: ${{ runner.temp }}/federation-input
+      - name: Cold-restore owner or read-only replica and compute epoch-2 outputs
+        run: python3 qualification/memory-cell-v12/federation_experiment.py readback --input "$RUNNER_TEMP/federation-input" --out "$RUNNER_TEMP/federation-readback" --node '${{ matrix.node }}'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-v12-fed-readback-${{ matrix.node }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/federation-readback
+          if-no-files-found: error
+          retention-days: 30
+
+  final:
+    needs: [source, controller, readback]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      FED_NONCE: ${{ needs.source.outputs.nonce }}
+      FED_CHECKPOINT: ${{ needs.source.outputs.checkpoint }}
+      FED_AUTHORITY_SHA256: ${{ needs.controller.outputs.authority_sha256 }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          sparse-checkout: qualification/memory-cell-v12
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          artifact-ids: ${{ needs.source.outputs.artifact_id }}
+          path: ${{ runner.temp }}/federation-input/source
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          artifact-ids: ${{ needs.controller.outputs.artifact_id }}
+          path: ${{ runner.temp }}/federation-input/migrate
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-v12-fed-readback-replica-a-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/federation-input/replica-a
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-v12-fed-readback-replica-b-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/federation-input/replica-b
+      - name: Release fresh results, revoke, then reject queued and stale results
+        run: python3 qualification/memory-cell-v12/federation_experiment.py final --input "$RUNNER_TEMP/federation-input" --out "$RUNNER_TEMP/federation-final"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-v12-fed-final-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/federation-final
+          if-no-files-found: error
+          retention-days: 30
