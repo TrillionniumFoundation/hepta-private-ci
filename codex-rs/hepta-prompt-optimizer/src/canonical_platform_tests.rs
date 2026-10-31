@@ -9,7 +9,9 @@ use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_prompt_registry::DurablePromptRegistry;
 use codex_hepta_prompt_registry::DurableRegistryError;
 
-fn capture_tree(root: &Path) -> Result<BTreeMap<PathBuf, Option<Vec<u8>>>, Box<dyn std::error::Error>> {
+type Fixture<T> = Result<T, Box<dyn std::error::Error>>;
+
+fn capture_tree(root: &Path) -> Fixture<BTreeMap<PathBuf, Option<Vec<u8>>>> {
     let mut image = BTreeMap::new();
     let mut pending = vec![root.to_path_buf()];
     while let Some(directory) = pending.pop() {
@@ -27,7 +29,7 @@ fn capture_tree(root: &Path) -> Result<BTreeMap<PathBuf, Option<Vec<u8>>>, Box<d
     Ok(image)
 }
 
-fn existing_state(parent: &Path) -> Result<PathBuf, Box<dyn std::error::Error>> {
+fn existing_state(parent: &Path) -> Fixture<PathBuf> {
     let root = parent.join("existing");
     std::fs::create_dir(&root)?;
     for (name, content) in [
@@ -42,7 +44,7 @@ fn existing_state(parent: &Path) -> Result<PathBuf, Box<dyn std::error::Error>> 
 }
 
 #[test]
-fn unsupported_prompt_registry_rejects_without_creating_or_rewriting_state() -> Result<(), Box<dyn std::error::Error>> {
+fn unsupported_prompt_registry_rejects_without_creating_or_rewriting_state() -> Fixture<()> {
     let temporary = tempfile::tempdir()?;
     let existing = existing_state(temporary.path())?;
     let before = capture_tree(temporary.path())?;
@@ -57,7 +59,7 @@ fn unsupported_prompt_registry_rejects_without_creating_or_rewriting_state() -> 
 }
 
 #[test]
-fn unsupported_final_use_authority_rejects_without_creating_or_rewriting_state() -> Result<(), Box<dyn std::error::Error>> {
+fn unsupported_final_use_authority_rejects_without_creating_or_rewriting_state() -> Fixture<()> {
     let temporary = tempfile::tempdir()?;
     let existing = existing_state(temporary.path())?;
     let before = capture_tree(temporary.path())?;
