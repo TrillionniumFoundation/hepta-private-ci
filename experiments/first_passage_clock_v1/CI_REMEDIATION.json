@@ -351,5 +351,90 @@
       "pr4378_64ea_macos_clippy.log": "977388dea5d5f5c8402aab5d214f9f6d1b20c4a96f353ed0166910aa4c298add"
     },
     "scientific_scope": "The frozen research results and production_activation=false remain unchanged."
+  },
+  "second_native_followup": {
+    "source_head": "e43a11894d5c1d68b8027b5e8e9c3181aeeaeb61",
+    "focused_run": 41156922453,
+    "focused_job": 124405642268,
+    "log_sha256": "b7827c331a0aef13c3eeb936582151b82449c9162dfafdabc69b5fa7661ec859",
+    "windows_unit_result": {
+      "passed": 148,
+      "failed": 4,
+      "ignored": 2,
+      "seconds": 2.75,
+      "scope": "Native compilation and execution succeeded. Existing ignored tests and environment-dependent early returns are not proof of ConPTY/PowerShell or elevated-account startup qualification."
+    },
+    "delete_observations": {
+      "workspace_token": "Neither and TargetOnly refused outside file deletion, directory deletion and rename with Win32 5. ParentOnly and Both allowed all three; final contents confirmed deletion and movement.",
+      "complete_restriction": "All four finite routes preserved outside reads, refused outside mutations with Win32 5, and allowed the inside positive controls.",
+      "control_limit": "The raw host deleted the Neither reference objects. The complete-restriction test failed only in those two control fields; do not report the matrix as passing or its route isolation as fully qualified.",
+      "new_control": "Read back every exact protected DACL and its trustees/masks/flags. Compare an ordinary reference token with the subject user, groups and privileges, require zero restricting SIDs, and retain all raw host observations. Neither must still refuse; the three granted routes must still allow. Native qualification pending."
+    },
+    "owner_probe": {
+      "status": "PASS_FINITE_NATIVE_CASES",
+      "token_modes": 2,
+      "owner_cases_per_mode": 3,
+      "verified": "TokenUser ownership, same-ACL host positive controls, baseline deletion, WRITE_DAC handle access, DACL reauthorization, subsequent deletion, and unchanged owner/DACL serialization and contents. All sandbox refusals were Win32 5.",
+      "limit": "No WRITE_OWNER attack, arbitrary filesystem, dedicated elevated-account identity, registry/IPC or native startup qualification is implied."
+    },
+    "original_security_regressions": {
+      "status": "STILL_FAILING",
+      "token_error_kinds": [
+        "PermissionDenied",
+        "PermissionDenied",
+        null,
+        null
+      ],
+      "legacy_actual": [
+        0,
+        false,
+        false,
+        false,
+        null,
+        false
+      ],
+      "original_assertions_changed": false
+    },
+    "fork_history": {
+      "status": "PASS_IN_SECOND_EXACT_NATIVE_RUN",
+      "passed": 1,
+      "filtered_out": 2340,
+      "seconds": 1.72,
+      "limit": "Full-suite liveness and the earlier hang root cause remain unproven. Watchdog durations and failed-closed fences remain unchanged."
+    },
+    "core_runtime_ownership_repair": {
+      "status": "SOURCE_REVIEWED_NATIVE_QUALIFICATION_PENDING",
+      "stages": [
+        "Per-registration identity and replacement budget conservation",
+        "Captured runtime submission and atomic retirement, including bounded shutdown and InternalAgentDied",
+        "Same-agent close/reload ordering, detached startup lease, cold cleanup, restore recheck and nonblocking eviction"
+      ],
+      "invariants": [
+        "An old captured Arc cannot submit to or retire a replacement runtime",
+        "Cold retirement compares the metadata owner and excludes live/admitted startup owners",
+        "Caller cancellation retains the transition lease until detached delivery or cleanup finishes",
+        "Closed persistence failure returns before descendant shutdown",
+        "Replacement registration transfers rather than duplicates its counted budget",
+        "Eviction cannot wait for a second agent transition while holding the first"
+      ],
+      "scope": "Reviewed paths within one AgentControl tree. This independently proven identity race is not asserted to be the cause of the old fork-history hang.",
+      "qualification": "Focused Windows workflow now runs all three exact new regressions with a nonempty 3-pass receipt, followed by the complete Core unit target under normal sharding and unchanged timeout. Full repository gates remain in place."
+    },
+    "local_build": {
+      "locked_metadata": "PASS: 193 workspace members / 1400 resolved packages for x86_64-unknown-linux-gnu; dependency versions and lockfiles unchanged. The former http-auth resolution blocker is closed.",
+      "core_tests": "Default and dev-small attempts entered real dependency compilation, then were normally interrupted before Core compilation as shared disk capacity approached its bound. None of the three regressions executed locally.",
+      "scoped_fix": "Offline just fix -p codex-core -p codex-windows-sandbox --profile dev-small entered real dependency checks; normally interrupted with exit 130 before Core lint at 577 MiB free. No local lint pass is claimed.",
+      "cleanup": "Only task-generated canceled target directories were removed after commands exited. No unrelated workspace data was deleted.",
+      "final_format": "Repository just fmt PASS; git diff --check PASS; the three staged Core patches reconstruct the exact reviewed working tree."
+    },
+    "ci_queue": {
+      "old_run": 41155272361,
+      "old_completed_utc": "2026-10-31T02:03:44Z",
+      "old_conclusion": "cancelled",
+      "new_run": 41156928470,
+      "result": "The previous cancellation aggregates completed with faithful failure handling; the new run gained concurrency admission. No workflow or gate was weakened to resolve the 17m25s wait."
+    },
+    "remaining_product_boundary": "A token-only constructor has no explicit read preparation plan. Full restriction and an exact read capability are supported by finite evidence, but a complete replacement must preserve declared read semantics, prepare both ordinary and capability access synchronously, and qualify actual process startup. Merely changing token flags, using a dedicated account or accepting failed controls would not close the Windows DELETE blocker.",
+    "scientific_scope": "Frozen model comparisons, qualified convergence claims and production_activation=false remain unchanged."
   }
 }
