@@ -10,8 +10,12 @@ import unittest
 from unittest.mock import patch
 import zipfile
 
-import artifact_transport
-from artifact_transport import RAW_LOCKS, descriptor, logical_path, measured_client, readback, snapshot, validate_binding, write_json
+if __package__:
+    from . import artifact_transport
+    from .artifact_transport import RAW_LOCKS, descriptor, logical_path, measured_client, readback, snapshot, validate_binding, write_json
+else:
+    import artifact_transport
+    from artifact_transport import RAW_LOCKS, descriptor, logical_path, measured_client, readback, snapshot, validate_binding, write_json
 
 
 class ArchiveBoundaryTests(unittest.TestCase):
