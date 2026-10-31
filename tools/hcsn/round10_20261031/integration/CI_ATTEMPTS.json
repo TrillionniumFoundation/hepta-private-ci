@@ -1,0 +1,17 @@
+{
+  "schema": "hepta.r10.ci-attempts.v1",
+  "attempts": [
+    {
+      "run_id": 41184003954,
+      "source_commit": "5862469875e312925314585311dc0591257b0739",
+      "job_id": 124487070344,
+      "status": "failed",
+      "source_restore": "60 exact Git blobs restored and verified",
+      "compiler_install": "Rust 1.95.0 and just 1.43.0 succeeded",
+      "failure": "generated standalone owner Cargo manifest omitted direct libc dependency; four E0433 errors",
+      "repair": "prepare_native.py adds libc =0.2.182 to generated owner packages",
+      "counts_as_success": false,
+      "log_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41184003954"
+    }
+  ]
+}

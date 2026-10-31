@@ -9,9 +9,7 @@ import argparse
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
-import os
 from pathlib import Path
-import shutil
 import urllib.request
 
 
@@ -71,6 +69,7 @@ codex-hepta-neuron = {{path = "../hepta-neuron"}}
 codex-hepta-types = {{path = "../hepta-types"}}
 serde = {{workspace = true, features = ["derive"]}}
 serde_json.workspace = true
+libc = "=0.2.182"
 '''
         (dest / "Cargo.toml").write_text(manifest)
         members.append(name)

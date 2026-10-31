@@ -4,7 +4,8 @@ on:
   push:
     branches: [research/hcsn-causal-five-track-20261031]
     paths:
-      - tools/hcsn/round10_20261031/**
+      - tools/hcsn/round10_20261031/native/**
+      - tools/hcsn/round10_20261031/integration/**
       - .github/workflows/hcsn-causal-five-track.yml
   workflow_dispatch:
 
@@ -30,11 +31,17 @@ jobs:
           sparse-checkout: |
             tools/hcsn/round9_20261031/native
             tools/hcsn/round10_20261031
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/just
+            ~/.cargo/registry
+          key: hcsn-registry-just143-rust195-v1
       - name: Install fixed compiler and isolated test runner
         run: |
           rustup toolchain install 1.95.0 --profile minimal --component rustfmt
           rustup default 1.95.0
-          cargo install just --version 1.43.0 --locked
+          if ! command -v just >/dev/null; then cargo install just --version 1.43.0 --locked; fi
       - name: Verify upstream sources and prepare clean workspace
         run: python3 tools/hcsn/round10_20261031/integration/prepare_native.py --build /tmp/hcsn-build
       - name: Compile and test actual Hepta owner
