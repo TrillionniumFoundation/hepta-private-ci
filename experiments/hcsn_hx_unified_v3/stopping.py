@@ -73,14 +73,27 @@ class Stop:
 
 
 def one_shot_boundary(p: Stop) -> float:
-    return p.cost+1/p.kappa
+    """Finite, strictly distinguishable f64 threshold of the one-shot oracle.
+
+    A finite characteristic root does not imply 1/kappa or its sum with
+    cost is representable. Do not return infinite or cost-rounded boundaries
+    as if they solved the stopping problem.
+    """
+    displacement=1/p.kappa
+    b=p.cost+displacement
+    if not (math.isfinite(displacement) and math.isfinite(b) and b>p.cost):
+        raise ArithmeticError('One-shot boundary unresolved in f64')
+    return b
 
 
 def one_shot_value(p: Stop, x: float) -> float:
     if not math.isfinite(x):
         raise ValueError('State must be finite')
     b=one_shot_boundary(p)
-    return x-p.cost if x>=b else (b-p.cost)*math.exp(-p.kappa*(b-x))
+    value=x-p.cost if x>=b else (b-p.cost)*math.exp(-p.kappa*(b-x))
+    if not math.isfinite(value):
+        raise ArithmeticError('One-shot value unresolved in f64')
+    return value
 
 
 def regenerative_boundary(p: Stop) -> float:
