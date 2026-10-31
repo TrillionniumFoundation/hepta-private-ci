@@ -51,10 +51,10 @@ jobs:
           /opt/runtime/python/bin/python3.12 -m venv /opt/runtime/venv
           /opt/runtime/venv/bin/python -m pip install --disable-pip-version-check --no-cache-dir --only-binary=:all: -r tools/parameter_field_executor/packages.txt
           /opt/runtime/venv/bin/python -m pip install --disable-pip-version-check --no-cache-dir --no-deps --require-hashes -r tools/parameter_field_executor/torch-wheel.txt
-      - name: Verify the original finite cgroup gate and full runtime digest
+      - name: Measure full runtime and verify the original finite cgroup gate
         run: |
           /opt/runtime/venv/bin/python -B tools/parameter_field_executor/diagnose.py --output /work/qualification/runtime.json
-          /opt/runtime/venv/bin/python -B -c 'import json; r=json.load(open("/work/qualification/runtime.json")); assert r["runtime"]["exact_match"] and r["three_original_joint_passes"] and r["process"]["supported"] and all(r["filesystem"].get(k) is True for k in ["fsync","flock","xattr","atomic_rename","byte_readback"])'
+          /opt/runtime/venv/bin/python -B -c 'import json; r=json.load(open("/work/qualification/runtime.json")); assert r["three_original_joint_passes"] and r["process"]["supported"] and all(r["filesystem"].get(k) is True for k in ["fsync","flock","xattr","atomic_rename","byte_readback"])'
       - name: Install the integrity-pinned official artifact SDK
         working-directory: operational/parameter_field_recovery07
         run: npm ci --ignore-scripts --no-audit --no-fund
@@ -65,6 +65,8 @@ jobs:
         with:
           python: /opt/runtime/venv/bin/python
           output-directory: /work/parameter-field-transport-synthetic
+      - name: Require the original exact runtime identity independently of synthetic transport
+        run: /opt/runtime/venv/bin/python -B -c 'import json; r=json.load(open("/work/qualification/runtime.json")); print(json.dumps({"exact_runtime":r["runtime"]["exact_match"],"different_fields":r["runtime"].get("different_fields"),"science_admission":False})); assert r["runtime"]["exact_match"]'
       - name: Preserve synthetic verification receipts
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
