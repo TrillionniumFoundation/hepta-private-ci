@@ -1,0 +1,86 @@
+{
+  "schema": "hepta.r9.artifact-policy-readback.v1",
+  "passed": true,
+  "default_threshold_unchanged": 512000,
+  "large_assets": [
+    {
+      "path": "tools/hcsn/round9_20261031/integration/native_executables.tar.gz",
+      "bytes": 1493439,
+      "exact_path_allowlisted": true,
+      "sha256": "ecf5865ddd4e542e7796d362f20953358d47aea4871eeb2b102a3c10b22eacf6"
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/native/evidence/qualification-dev01/RAW_RECORDS.tar.gz",
+      "bytes": 1591523,
+      "exact_path_allowlisted": true,
+      "sha256": "a70478a7f069b3f8fe3607aa9778f20b3837c0f88b5cad93c288943aa9f2a00e"
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/RAW_RECORDS.tar.gz",
+      "bytes": 1591347,
+      "exact_path_allowlisted": true,
+      "sha256": "a83d3ee731a0d6c212904e6e57522e8c9aa2c9336a895cc911e1f620511649a0"
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/native/fixtures/fullhx.json",
+      "bytes": 784447,
+      "exact_path_allowlisted": true,
+      "sha256": "66bb4fabc2fdca0b08d7e834f6a1dfdd73aedb4cfbd1b4c594b709f742092972"
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/value/evidence/confirmation02/PAIRED.jsonl.gz",
+      "bytes": 1662446,
+      "exact_path_allowlisted": true,
+      "sha256": "b585d326b87ea5e5bb501cd6a145d878d8e0340a79081c593cadf66bdcdbeee6"
+    }
+  ],
+  "binary_exclusions": [
+    {
+      "path": "tools/hcsn/round9_20261031/integration/native_executables.tar.gz",
+      "non_utf8_binary": true,
+      "exact_skip_present": true
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/native/evidence/port-checks/owner/journal.bin",
+      "non_utf8_binary": true,
+      "exact_skip_present": true
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/native/evidence/port-checks/owner/witness.bin",
+      "non_utf8_binary": true,
+      "exact_skip_present": true
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/native/evidence/qualification-dev01/RAW_RECORDS.tar.gz",
+      "non_utf8_binary": true,
+      "exact_skip_present": true
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/RAW_RECORDS.tar.gz",
+      "non_utf8_binary": true,
+      "exact_skip_present": true
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/value/diagnostics/PAIRED.jsonl.gz",
+      "non_utf8_binary": true,
+      "exact_skip_present": true
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/value/evidence/PAIRED.jsonl.gz",
+      "non_utf8_binary": true,
+      "exact_skip_present": true
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/value/evidence/confirmation02/PAIRED.jsonl.gz",
+      "non_utf8_binary": true,
+      "exact_skip_present": true
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/value/evidence/confirmation_attempt01/PAIRED.jsonl.gz",
+      "non_utf8_binary": true,
+      "exact_skip_present": true
+    }
+  ],
+  "scope": "Independent exact-path registration check against the existing 512000-byte policy; not execution of the full GitHub workflow or a spelling-clean claim.",
+  "science_manifest_sha256": "7bf90ff72857f71c14800ac6f4ae632a37df7ea047664617b0993c33d1f079b2"
+}
