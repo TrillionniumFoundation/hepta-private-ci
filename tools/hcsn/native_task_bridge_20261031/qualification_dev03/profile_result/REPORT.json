@@ -1,0 +1,108 @@
+{
+  "schema": "hepta.task.native-bridge.q24-profile-qualification.v1",
+  "accepted": true,
+  "sample_selection": "Fixed validation rows 512:1024 in recorded order, previously unevaluated by native; development numeric qualification only",
+  "evaluated_rows": 512,
+  "model_sha256": "fce8e093bef9e6f8f3a55641469463822ea0c3c30827d53ed0aa5c9e033b3cc4",
+  "model_selected_update": 6000,
+  "binary_sha256": "20f1db337c544e7c2f1ea8c4c29ae7cc87f1d933258490833e6647d793b693a2",
+  "vectors_sha256": "4f15633973739ccaeed9a6c9228f105f347f440eec8d4e9b132b5e09a28a168a",
+  "trained_head_nonzero": true,
+  "numeric_contract": "hepta.task.native-q24-residual.v1",
+  "deployment_identity_sha256": "888c81ced0bba22211ecffb4e92c6a6e3a733f69ee23976b783a05ccc21a8b37",
+  "quantization_error_bound": {
+    "per_action_absolute": [
+      0.0,
+      1.678077628632688e-06,
+      7.621608845300435e-06,
+      7.047719370271012e-07
+    ],
+    "maximum_absolute": 7.621608845300435e-06,
+    "formula": "2^-25 * (2 + sum_j |v[j,a]| sum_i |w[i,j]|/scale[i])",
+    "assumptions": "Real arithmetic, identical legal mask, no input or score-envelope rejection; tanh, ReLU and clip are 1-Lipschitz",
+    "finite_arithmetic_tolerance": 2e-12,
+    "stable_argmax_condition": "The original top-two legal Q gap exceeds twice the maximum bound plus finite-arithmetic tolerance"
+  },
+  "original_float64_action_differences": [
+    {
+      "index": 936,
+      "float_action": 3,
+      "native_action": 1,
+      "original_score_gap": 2.220446049250313e-16
+    }
+  ],
+  "original_float64_action_equivalence_claim": false,
+  "maximum_original_float64_q_error": 1.0665615779448245e-07,
+  "maximum_q24_reference_q_error": 4.440892098500626e-16,
+  "action_mismatches": [],
+  "predeclared_tolerances": {
+    "original_q_absolute": 2e-06,
+    "q24_reference_absolute": 2e-12,
+    "action_mismatches": 0
+  },
+  "restart_after_acknowledged_sequence": 256,
+  "final_sequence": 512,
+  "injected_rejections": [
+    {
+      "index": 128,
+      "error": "nonfinite or outside native Q24 input envelope",
+      "durable_bytes_unchanged": true
+    }
+  ],
+  "process_accounting": [
+    {
+      "calls": 257,
+      "failed_calls": 1,
+      "request_bytes": 244344,
+      "response_bytes": 320681,
+      "process_setup_wall_seconds": 0.0008276560110971332,
+      "process_setup_parent_cpu_seconds": 0.0004948459999999932,
+      "transport_wall_seconds": 0.4396792259212816,
+      "transport_parent_cpu_seconds": 0.03016790299999987,
+      "native_execution_micros": 204398,
+      "model_execution_micros": 17030,
+      "journal_bytes_written": 98304,
+      "child_process_usage": {
+        "user_cpu_seconds": 0.19650499999999999,
+        "system_cpu_seconds": 0.017003,
+        "peak_rss_bytes": 25194496,
+        "voluntary_context_switches": 1822,
+        "involuntary_context_switches": 0
+      },
+      "child_usage_source": "Linux wait4 for this exact child; entire process lifetime",
+      "close_wall_seconds": 0.005530616006581113,
+      "native_physics_executed": false,
+      "production_activation": false
+    },
+    {
+      "calls": 256,
+      "failed_calls": 0,
+      "request_bytes": 244109,
+      "response_bytes": 320603,
+      "process_setup_wall_seconds": 0.001193005999084562,
+      "process_setup_parent_cpu_seconds": 0.0009590640000000095,
+      "transport_wall_seconds": 0.4341745007841382,
+      "transport_parent_cpu_seconds": 0.02403657600000003,
+      "native_execution_micros": 191099,
+      "model_execution_micros": 17893,
+      "journal_bytes_written": 98304,
+      "child_process_usage": {
+        "user_cpu_seconds": 0.22661299999999998,
+        "system_cpu_seconds": 0.021986,
+        "peak_rss_bytes": 26591232,
+        "voluntary_context_switches": 1827,
+        "involuntary_context_switches": 7
+      },
+      "child_usage_source": "Linux wait4 for this exact child; entire process lifetime",
+      "close_wall_seconds": 0.005167990995687433,
+      "native_physics_executed": false,
+      "production_activation": false
+    }
+  ],
+  "total_wall_seconds": 1.2474737800075673,
+  "parent_cpu_seconds": 0.414613812,
+  "native_physics_executed": false,
+  "task_utility_admission": false,
+  "production_activation": false,
+  "scope": "Native and Python share explicit Q24 numeric deployment model; original float64 model is separately reported. Native MLP and journal/witness are real; feature/planner/cell producers remain external"
+}

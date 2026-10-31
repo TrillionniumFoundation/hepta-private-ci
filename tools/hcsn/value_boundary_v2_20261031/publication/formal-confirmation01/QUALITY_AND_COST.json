@@ -1,0 +1,177 @@
+{
+  "important_limitations": [
+    "Fixed-policy accuracy 91.23948% versus hard/QVI 87.21497%; correct and completed counts increase together with error counts.",
+    "nominal_2 fit-cluster interval crosses zero; this is not an all-contract or future-contract guarantee.",
+    "Ordinary QVI has identical task paths with lower mean execution CPU in this implementation.",
+    "Stress-4 sampled hard-soft utility gap interval crosses zero; no soft-hard equivalence is inferred.",
+    "Finite verified payload support and per-contract model-based replanning; no natural-content or amortized OOD claim."
+  ],
+  "independent_analytic_task_gain": false,
+  "main_enrollment": false,
+  "pooled_descriptive": {
+    "direct_hard_analytic": {
+      "accuracy_among_submitted": 0.8721497090737538,
+      "cdf_cpu_seconds": 0.0007865992324214709,
+      "completion_fraction": 0.62099609375,
+      "correct_fraction": 0.5416015625,
+      "cpu_seconds": 0.011756305411132689,
+      "decoder_cpu_seconds": 0.009847046998633337,
+      "error_fraction": 0.07939453125,
+      "support_check_cpu_seconds": 0.0001175851896479681,
+      "utility": 0.774020454623496
+    },
+    "direct_soft_analytic": {
+      "accuracy_among_submitted": 0.8694832731270614,
+      "cdf_cpu_seconds": 0.0014029066214841528,
+      "completion_fraction": 0.62177734375,
+      "correct_fraction": 0.540625,
+      "cpu_seconds": 0.012545651185546961,
+      "decoder_cpu_seconds": 0.00980304026640581,
+      "error_fraction": 0.08115234375,
+      "support_check_cpu_seconds": 0.00011833632304644593,
+      "utility": 0.7715417804481757
+    },
+    "fixed_analytic": {
+      "accuracy_among_submitted": 0.9123947972456005,
+      "cdf_cpu_seconds": 0.0009536044843750085,
+      "completion_fraction": 0.5105468750000001,
+      "correct_fraction": 0.4658203125,
+      "cpu_seconds": 0.013815303710547145,
+      "decoder_cpu_seconds": 0.011699189359570645,
+      "error_fraction": 0.0447265625,
+      "support_check_cpu_seconds": 0.0001405343755860819,
+      "utility": 0.6337857507388688
+    },
+    "qvi_analytic": {
+      "accuracy_among_submitted": 0.8721497090737538,
+      "cdf_cpu_seconds": 0.0007860483517576052,
+      "completion_fraction": 0.62099609375,
+      "correct_fraction": 0.5416015625,
+      "cpu_seconds": 0.011733655025976775,
+      "decoder_cpu_seconds": 0.009842512581054882,
+      "error_fraction": 0.07939453125,
+      "support_check_cpu_seconds": 0.00012076572031250539,
+      "utility": 0.774020454623496
+    },
+    "qvi_ordinary": {
+      "accuracy_among_submitted": 0.8721497090737538,
+      "cdf_cpu_seconds": 0.0,
+      "completion_fraction": 0.62099609375,
+      "correct_fraction": 0.5416015625,
+      "cpu_seconds": 0.010801957753711146,
+      "decoder_cpu_seconds": 0.009728046628124761,
+      "error_fraction": 0.07939453125,
+      "support_check_cpu_seconds": 0.00011654625078138742,
+      "utility": 0.774020454623496
+    }
+  },
+  "primary_net": {
+    "direct_hard_analytic-minus-fixed_analytic": {
+      "conditional_episode": {
+        "confidence_interval": [
+          0.12777705519998764,
+          0.15594519909774576
+        ],
+        "contract_count": 8,
+        "degrees_of_freedom": 2987.5480038659034,
+        "mean": 0.1418611271488667,
+        "scope": "Equal weighting of exactly the eight public contracts; no random-contract population inference",
+        "standard_error": 0.007182971793360535,
+        "valid": true
+      },
+      "fit_cluster": {
+        "confidence_interval": [
+          0.12121459108262705,
+          0.16250766321510635
+        ],
+        "contract_count": 8,
+        "degrees_of_freedom": 13.057095162775834,
+        "mean": 0.1418611271488667,
+        "scope": "Equal weighting of exactly the eight public contracts; no random-contract population inference",
+        "standard_error": 0.009561198613959572,
+        "valid": true
+      }
+    },
+    "qvi_analytic-minus-fixed_analytic": {
+      "conditional_episode": {
+        "confidence_interval": [
+          0.1282290886244972,
+          0.15639940652299802
+        ],
+        "contract_count": 8,
+        "degrees_of_freedom": 2987.1700880377116,
+        "mean": 0.1423142475737476,
+        "scope": "Equal weighting of exactly the eight public contracts; no random-contract population inference",
+        "standard_error": 0.007183525802553679,
+        "valid": true
+      },
+      "fit_cluster": {
+        "confidence_interval": [
+          0.12162385541372642,
+          0.1630046397337688
+        ],
+        "contract_count": 8,
+        "degrees_of_freedom": 13.00653376581937,
+        "mean": 0.1423142475737476,
+        "scope": "Equal weighting of exactly the eight public contracts; no random-contract population inference",
+        "standard_error": 0.00957773973199193,
+        "valid": true
+      }
+    }
+  },
+  "primary_task": {
+    "direct_hard_analytic-minus-fixed_analytic": {
+      "conditional_episode": {
+        "confidence_interval": [
+          0.1261415841030376,
+          0.1543278236662169
+        ],
+        "contract_count": 8,
+        "degrees_of_freedom": 2983.158617464547,
+        "mean": 0.14023470388462725,
+        "scope": "Equal weighting of exactly the eight public contracts; no random-contract population inference",
+        "standard_error": 0.007187581962843441,
+        "valid": true
+      },
+      "fit_cluster": {
+        "confidence_interval": [
+          0.11957754790741602,
+          0.16089185986183843
+        ],
+        "contract_count": 8,
+        "degrees_of_freedom": 13.04818396714483,
+        "mean": 0.14023470388462722,
+        "scope": "Equal weighting of exactly the eight public contracts; no random-contract population inference",
+        "standard_error": 0.00956545562737224,
+        "valid": true
+      }
+    },
+    "qvi_analytic-minus-fixed_analytic": {
+      "conditional_episode": {
+        "confidence_interval": [
+          0.1261415841030376,
+          0.1543278236662169
+        ],
+        "contract_count": 8,
+        "degrees_of_freedom": 2983.158617464547,
+        "mean": 0.14023470388462725,
+        "scope": "Equal weighting of exactly the eight public contracts; no random-contract population inference",
+        "standard_error": 0.007187581962843441,
+        "valid": true
+      },
+      "fit_cluster": {
+        "confidence_interval": [
+          0.11957754790741602,
+          0.16089185986183843
+        ],
+        "contract_count": 8,
+        "degrees_of_freedom": 13.04818396714483,
+        "mean": 0.14023470388462722,
+        "scope": "Equal weighting of exactly the eight public contracts; no random-contract population inference",
+        "standard_error": 0.00956545562737224,
+        "valid": true
+      }
+    }
+  },
+  "quality_noninferiority_claim": false
+}

@@ -1,0 +1,793 @@
+{
+  "schema": "hcsn.independent.value-prepare-audit.v2",
+  "manifest_sha256": "d91df0ef83c9431777b17ec6f1071bd611e0ab3698e9efd86aef9db8a39ef356",
+  "artifact_count": 112,
+  "artifact_failures": [],
+  "source_count": 13,
+  "source_failures": [],
+  "contract_count": 8,
+  "fit_count": 40,
+  "deployment_artifact_count": 96,
+  "exports": [
+    {
+      "path": "deployment/contract0_fixed.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0004500490000000079,
+      "load_cpu_seconds": 0.00039809200000007205,
+      "bytes": 2784
+    },
+    {
+      "path": "deployment/contract0_qvi.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.00031073100000000853,
+      "load_cpu_seconds": 0.0002809570000000816,
+      "bytes": 2784
+    },
+    {
+      "path": "deployment/contract0_seed74031_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0004575390000000068,
+      "load_cpu_seconds": 0.00026515399999993416,
+      "bytes": 2784
+    },
+    {
+      "path": "deployment/contract0_seed74031_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0004925709999999972,
+      "load_cpu_seconds": 0.00029025100000001913,
+      "bytes": 5931
+    },
+    {
+      "path": "deployment/contract0_seed74037_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.00046139499999986455,
+      "load_cpu_seconds": 0.00031427699999997394,
+      "bytes": 2784
+    },
+    {
+      "path": "deployment/contract0_seed74037_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0004615050000000842,
+      "load_cpu_seconds": 0.0003811559999999936,
+      "bytes": 5925
+    },
+    {
+      "path": "deployment/contract0_seed74043_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0004548349999999868,
+      "load_cpu_seconds": 0.0002678670000000327,
+      "bytes": 2784
+    },
+    {
+      "path": "deployment/contract0_seed74043_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0005079239999998819,
+      "load_cpu_seconds": 0.0003337860000001136,
+      "bytes": 5924
+    },
+    {
+      "path": "deployment/contract0_seed74049_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.00047093899999994804,
+      "load_cpu_seconds": 0.00026838900000014654,
+      "bytes": 2784
+    },
+    {
+      "path": "deployment/contract0_seed74049_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0004874939999999217,
+      "load_cpu_seconds": 0.0002927349999999329,
+      "bytes": 5934
+    },
+    {
+      "path": "deployment/contract0_seed74057_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0006538009999998984,
+      "load_cpu_seconds": 0.0003349070000000509,
+      "bytes": 2784
+    },
+    {
+      "path": "deployment/contract0_seed74057_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0006322590000000794,
+      "load_cpu_seconds": 0.0003416669999998234,
+      "bytes": 5927
+    },
+    {
+      "path": "deployment/contract1_fixed.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0006316169999998067,
+      "load_cpu_seconds": 0.0009259849999998515,
+      "bytes": 5016
+    },
+    {
+      "path": "deployment/contract1_qvi.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0003426490000002502,
+      "load_cpu_seconds": 0.00034277899999990424,
+      "bytes": 5016
+    },
+    {
+      "path": "deployment/contract1_seed74031_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.000536726999999626,
+      "load_cpu_seconds": 0.0004685359999996308,
+      "bytes": 5016
+    },
+    {
+      "path": "deployment/contract1_seed74031_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0006855279999999908,
+      "load_cpu_seconds": 0.0004946049999996482,
+      "bytes": 11189
+    },
+    {
+      "path": "deployment/contract1_seed74037_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0006636959999997138,
+      "load_cpu_seconds": 0.00044228699999981913,
+      "bytes": 5016
+    },
+    {
+      "path": "deployment/contract1_seed74037_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0007963020000003596,
+      "load_cpu_seconds": 0.0005402320000000849,
+      "bytes": 11198
+    },
+    {
+      "path": "deployment/contract1_seed74043_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0006005820000001272,
+      "load_cpu_seconds": 0.0025609229999998817,
+      "bytes": 5016
+    },
+    {
+      "path": "deployment/contract1_seed74043_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0007126290000001312,
+      "load_cpu_seconds": 0.0005791400000001445,
+      "bytes": 11204
+    },
+    {
+      "path": "deployment/contract1_seed74049_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.000545128999999811,
+      "load_cpu_seconds": 0.00046602200000034344,
+      "bytes": 5016
+    },
+    {
+      "path": "deployment/contract1_seed74049_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0006947820000000604,
+      "load_cpu_seconds": 0.0007188469999999114,
+      "bytes": 11189
+    },
+    {
+      "path": "deployment/contract1_seed74057_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.000642494000000049,
+      "load_cpu_seconds": 0.0005081840000000781,
+      "bytes": 5016
+    },
+    {
+      "path": "deployment/contract1_seed74057_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0006934499999999844,
+      "load_cpu_seconds": 0.0004915099999998063,
+      "bytes": 11195
+    },
+    {
+      "path": "deployment/contract2_fixed.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0006516870000004005,
+      "load_cpu_seconds": 0.0003230500000004355,
+      "bytes": 2786
+    },
+    {
+      "path": "deployment/contract2_qvi.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0010665040000006343,
+      "load_cpu_seconds": 0.0003603849999995745,
+      "bytes": 2786
+    },
+    {
+      "path": "deployment/contract2_seed74031_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0004652710000003779,
+      "load_cpu_seconds": 0.0002641819999995576,
+      "bytes": 2786
+    },
+    {
+      "path": "deployment/contract2_seed74031_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0005101279999992769,
+      "load_cpu_seconds": 0.0002989539999997959,
+      "bytes": 5929
+    },
+    {
+      "path": "deployment/contract2_seed74037_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0004283460000005235,
+      "load_cpu_seconds": 0.00029603000000033575,
+      "bytes": 2786
+    },
+    {
+      "path": "deployment/contract2_seed74037_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0004707189999999528,
+      "load_cpu_seconds": 0.00032680499999937496,
+      "bytes": 5927
+    },
+    {
+      "path": "deployment/contract2_seed74043_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0006713369999999941,
+      "load_cpu_seconds": 0.00038264800000042953,
+      "bytes": 2786
+    },
+    {
+      "path": "deployment/contract2_seed74043_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0007057179999998553,
+      "load_cpu_seconds": 0.00045429499999993794,
+      "bytes": 5923
+    },
+    {
+      "path": "deployment/contract2_seed74049_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0004913690000005744,
+      "load_cpu_seconds": 0.0002828200000006831,
+      "bytes": 2786
+    },
+    {
+      "path": "deployment/contract2_seed74049_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0004737529999996326,
+      "load_cpu_seconds": 0.00034867799999993565,
+      "bytes": 5926
+    },
+    {
+      "path": "deployment/contract2_seed74057_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.00046205599999993296,
+      "load_cpu_seconds": 0.0003426290000003718,
+      "bytes": 2786
+    },
+    {
+      "path": "deployment/contract2_seed74057_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0004545650000000734,
+      "load_cpu_seconds": 0.0003221079999997656,
+      "bytes": 5928
+    },
+    {
+      "path": "deployment/contract3_fixed.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0004828369999998472,
+      "load_cpu_seconds": 0.00046359900000059184,
+      "bytes": 5017
+    },
+    {
+      "path": "deployment/contract3_qvi.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.00032569399999982096,
+      "load_cpu_seconds": 0.0003662740000001108,
+      "bytes": 5017
+    },
+    {
+      "path": "deployment/contract3_seed74031_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.004364069999999387,
+      "load_cpu_seconds": 0.0005110789999998033,
+      "bytes": 5017
+    },
+    {
+      "path": "deployment/contract3_seed74031_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0007636540000000025,
+      "load_cpu_seconds": 0.0005056310000002284,
+      "bytes": 11377
+    },
+    {
+      "path": "deployment/contract3_seed74037_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.000650775999999631,
+      "load_cpu_seconds": 0.0005073930000003557,
+      "bytes": 5017
+    },
+    {
+      "path": "deployment/contract3_seed74037_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.000766599000000312,
+      "load_cpu_seconds": 0.0006370159999997682,
+      "bytes": 11385
+    },
+    {
+      "path": "deployment/contract3_seed74043_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0005340230000001611,
+      "load_cpu_seconds": 0.0005286550000001,
+      "bytes": 5017
+    },
+    {
+      "path": "deployment/contract3_seed74043_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0007095829999990144,
+      "load_cpu_seconds": 0.0004907890000005466,
+      "bytes": 11378
+    },
+    {
+      "path": "deployment/contract3_seed74049_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0005249400000000293,
+      "load_cpu_seconds": 0.00046117499999986933,
+      "bytes": 5017
+    },
+    {
+      "path": "deployment/contract3_seed74049_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0007001490000000388,
+      "load_cpu_seconds": 0.0005423150000005705,
+      "bytes": 11378
+    },
+    {
+      "path": "deployment/contract3_seed74057_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0005273439999999852,
+      "load_cpu_seconds": 0.0004699679999990991,
+      "bytes": 5017
+    },
+    {
+      "path": "deployment/contract3_seed74057_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0007350709999993654,
+      "load_cpu_seconds": 0.0005784290000008241,
+      "bytes": 11370
+    },
+    {
+      "path": "deployment/contract4_fixed.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0003501900000006941,
+      "load_cpu_seconds": 0.00024101800000053686,
+      "bytes": 2783
+    },
+    {
+      "path": "deployment/contract4_qvi.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0002478580000015995,
+      "load_cpu_seconds": 0.00024866899999942405,
+      "bytes": 2783
+    },
+    {
+      "path": "deployment/contract4_seed74031_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0004663630000010244,
+      "load_cpu_seconds": 0.00026773699999971257,
+      "bytes": 2783
+    },
+    {
+      "path": "deployment/contract4_seed74031_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0004374299999998499,
+      "load_cpu_seconds": 0.0003341660000000246,
+      "bytes": 5729
+    },
+    {
+      "path": "deployment/contract4_seed74037_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0007377259999987729,
+      "load_cpu_seconds": 0.00037183200000079353,
+      "bytes": 2783
+    },
+    {
+      "path": "deployment/contract4_seed74037_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0007220730000003783,
+      "load_cpu_seconds": 0.0005657700000014643,
+      "bytes": 5728
+    },
+    {
+      "path": "deployment/contract4_seed74043_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0005870309999984613,
+      "load_cpu_seconds": 0.00039684999999956005,
+      "bytes": 2783
+    },
+    {
+      "path": "deployment/contract4_seed74043_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0005901870000002418,
+      "load_cpu_seconds": 0.00037903299999975104,
+      "bytes": 5722
+    },
+    {
+      "path": "deployment/contract4_seed74049_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0005027070000007683,
+      "load_cpu_seconds": 0.0003137960000003659,
+      "bytes": 2783
+    },
+    {
+      "path": "deployment/contract4_seed74049_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0005462709999992654,
+      "load_cpu_seconds": 0.0002940559999995429,
+      "bytes": 5728
+    },
+    {
+      "path": "deployment/contract4_seed74057_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0004370989999991082,
+      "load_cpu_seconds": 0.0003685669999988761,
+      "bytes": 2783
+    },
+    {
+      "path": "deployment/contract4_seed74057_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0004283560000004627,
+      "load_cpu_seconds": 0.00030907900000087807,
+      "bytes": 5726
+    },
+    {
+      "path": "deployment/contract5_fixed.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.00047433499999982587,
+      "load_cpu_seconds": 0.0005944929999994741,
+      "bytes": 5014
+    },
+    {
+      "path": "deployment/contract5_qvi.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0003498589999999524,
+      "load_cpu_seconds": 0.00034496199999978217,
+      "bytes": 5014
+    },
+    {
+      "path": "deployment/contract5_seed74031_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0005430970000013247,
+      "load_cpu_seconds": 0.0006820730000001163,
+      "bytes": 5014
+    },
+    {
+      "path": "deployment/contract5_seed74031_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0007347709999994123,
+      "load_cpu_seconds": 0.0004939239999988132,
+      "bytes": 11204
+    },
+    {
+      "path": "deployment/contract5_seed74037_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0005574880000001059,
+      "load_cpu_seconds": 0.00047792900000054317,
+      "bytes": 5014
+    },
+    {
+      "path": "deployment/contract5_seed74037_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0006967350000000039,
+      "load_cpu_seconds": 0.0004968279999992831,
+      "bytes": 11212
+    },
+    {
+      "path": "deployment/contract5_seed74043_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0006916370000009664,
+      "load_cpu_seconds": 0.0006065209999999155,
+      "bytes": 5014
+    },
+    {
+      "path": "deployment/contract5_seed74043_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0009348790000007767,
+      "load_cpu_seconds": 0.0006885529999998141,
+      "bytes": 11216
+    },
+    {
+      "path": "deployment/contract5_seed74049_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0005202920000009215,
+      "load_cpu_seconds": 0.00045982299999991483,
+      "bytes": 5014
+    },
+    {
+      "path": "deployment/contract5_seed74049_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0007052569999999037,
+      "load_cpu_seconds": 0.0005745130000001097,
+      "bytes": 11214
+    },
+    {
+      "path": "deployment/contract5_seed74057_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0006274610000005509,
+      "load_cpu_seconds": 0.0005480840000000597,
+      "bytes": 5014
+    },
+    {
+      "path": "deployment/contract5_seed74057_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.000696525000000392,
+      "load_cpu_seconds": 0.000492020999999454,
+      "bytes": 11202
+    },
+    {
+      "path": "deployment/contract6_fixed.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0004770179999997737,
+      "load_cpu_seconds": 0.0005128909999996267,
+      "bytes": 5012
+    },
+    {
+      "path": "deployment/contract6_qvi.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.00033995499999939227,
+      "load_cpu_seconds": 0.0003449330000009354,
+      "bytes": 5012
+    },
+    {
+      "path": "deployment/contract6_seed74031_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.000522085000000061,
+      "load_cpu_seconds": 0.00046061399999963726,
+      "bytes": 5012
+    },
+    {
+      "path": "deployment/contract6_seed74031_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0007387879999996017,
+      "load_cpu_seconds": 0.0005151049999998492,
+      "bytes": 11278
+    },
+    {
+      "path": "deployment/contract6_seed74037_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0008009990000008571,
+      "load_cpu_seconds": 0.0007873390000003866,
+      "bytes": 5012
+    },
+    {
+      "path": "deployment/contract6_seed74037_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0011567279999997737,
+      "load_cpu_seconds": 0.0008193170000012628,
+      "bytes": 11280
+    },
+    {
+      "path": "deployment/contract6_seed74043_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.000593151000000347,
+      "load_cpu_seconds": 0.0005503369999999563,
+      "bytes": 5012
+    },
+    {
+      "path": "deployment/contract6_seed74043_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0006977059999986324,
+      "load_cpu_seconds": 0.0007173050000002235,
+      "bytes": 11270
+    },
+    {
+      "path": "deployment/contract6_seed74049_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0006121690000000513,
+      "load_cpu_seconds": 0.00044071399999978667,
+      "bytes": 5012
+    },
+    {
+      "path": "deployment/contract6_seed74049_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.000753468999999285,
+      "load_cpu_seconds": 0.0004937529999988755,
+      "bytes": 11273
+    },
+    {
+      "path": "deployment/contract6_seed74057_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0005412030000009338,
+      "load_cpu_seconds": 0.0004345450000009521,
+      "bytes": 5012
+    },
+    {
+      "path": "deployment/contract6_seed74057_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0007009809999996008,
+      "load_cpu_seconds": 0.0004890569999993488,
+      "bytes": 11291
+    },
+    {
+      "path": "deployment/contract7_fixed.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.00038781599999992977,
+      "load_cpu_seconds": 0.0004570379999986329,
+      "bytes": 5015
+    },
+    {
+      "path": "deployment/contract7_qvi.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.000340795999999699,
+      "load_cpu_seconds": 0.0003636599999996548,
+      "bytes": 5015
+    },
+    {
+      "path": "deployment/contract7_seed74031_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.000601872999997255,
+      "load_cpu_seconds": 0.00048528099999956,
+      "bytes": 5015
+    },
+    {
+      "path": "deployment/contract7_seed74031_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0006984370000004958,
+      "load_cpu_seconds": 0.0005219250000010334,
+      "bytes": 11748
+    },
+    {
+      "path": "deployment/contract7_seed74037_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0005652900000008287,
+      "load_cpu_seconds": 0.00048678299999949104,
+      "bytes": 5015
+    },
+    {
+      "path": "deployment/contract7_seed74037_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0006920880000009788,
+      "load_cpu_seconds": 0.000680259999999322,
+      "bytes": 11749
+    },
+    {
+      "path": "deployment/contract7_seed74043_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0005256609999975126,
+      "load_cpu_seconds": 0.0005485749999998291,
+      "bytes": 5015
+    },
+    {
+      "path": "deployment/contract7_seed74043_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0006897049999992078,
+      "load_cpu_seconds": 0.0005272530000013376,
+      "bytes": 11761
+    },
+    {
+      "path": "deployment/contract7_seed74049_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0005717189999998595,
+      "load_cpu_seconds": 0.0004941540000018563,
+      "bytes": 5015
+    },
+    {
+      "path": "deployment/contract7_seed74049_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0009728350000024477,
+      "load_cpu_seconds": 0.0005115489999987233,
+      "bytes": 11757
+    },
+    {
+      "path": "deployment/contract7_seed74057_hard.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0005676729999990471,
+      "load_cpu_seconds": 0.0004561770000002241,
+      "bytes": 5015
+    },
+    {
+      "path": "deployment/contract7_seed74057_soft.json",
+      "sha256_matches": true,
+      "contract_matches": true,
+      "serialization_cpu_seconds": 0.0007994069999988085,
+      "load_cpu_seconds": 0.0005122300000017788,
+      "bytes": 11746
+    }
+  ],
+  "hard_initial_gap": 0.0,
+  "hard_envelope_residual": 0.0,
+  "independent_lp_error": 4.440892098500626e-16,
+  "pre_bundle_cpu_seconds": 17.520624212999998,
+  "complete_stage_cpu_seconds": 17.840955133999998,
+  "bundle_and_hash_tail_cpu_seconds": 0.32033092100000005,
+  "sum_fit_cpu_seconds": 17.212602816999993,
+  "sum_deployment_serialization_and_load_cpu_seconds": 0.1057902859999994,
+  "confirmation_episodes_generated": 0,
+  "cost_finding_status": "closed_for_declared_stage_and_deployment_cost_scope",
+  "stage_scope": "Outer preparation including source copying, deployable artifacts, all fits/certificates, bundle serialization and artifact hashing; excludes writing these final small receipts",
+  "passed": true
+}

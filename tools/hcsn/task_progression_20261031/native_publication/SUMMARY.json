@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.native-confirmation.publication.v1",
+  "attempts": [
+    {
+      "attempt": 1,
+      "returncode": 1,
+      "source_sha256": "c75258cde21ff42d82be4ac1b9fe2f7211bfc9732d8efff803b5bfddf58a9496",
+      "accepted_data": true,
+      "evaluated_models": 5,
+      "numeric_states": 2560,
+      "paired_episodes": 160,
+      "matching_pairs": 160,
+      "reads": 666,
+      "restored_rollouts": 320,
+      "python_mean_cpu_seconds": 0.02383774075624999,
+      "native_mean_cpu_seconds": 0.045514087318749986,
+      "complete_stage_cpu_seconds": 19.722267000000002,
+      "complete_stage_wall_seconds": 21.283687567003653
+    },
+    {
+      "attempt": 2,
+      "returncode": 0,
+      "source_sha256": "2e3b3305d20d211e528c51b48b4f42a9a8717657c1455c1a8631e3fd58fb0e22",
+      "accepted_data": true,
+      "evaluated_models": 5,
+      "numeric_states": 2560,
+      "paired_episodes": 160,
+      "matching_pairs": 160,
+      "reads": 666,
+      "restored_rollouts": 320,
+      "python_mean_cpu_seconds": 0.026134517637500097,
+      "native_mean_cpu_seconds": 0.04994223083125003,
+      "complete_stage_cpu_seconds": 21.208039999999997,
+      "complete_stage_wall_seconds": 22.618554025000776
+    }
+  ],
+  "archives": [
+    {
+      "path": "native-attempt-01.tar.gz",
+      "bytes": 2140793,
+      "files": 688,
+      "sha256": "3cd5b17e75d153ad2b1b9d53e4c871a6b4edc675d9da4c143af600f0a7cd0ca2"
+    },
+    {
+      "path": "native-attempt-02.tar.gz",
+      "bytes": 2141565,
+      "files": 688,
+      "sha256": "c9e05136472df5cd9e3a80668626868fd3f55f59173b900468444f97e0162844"
+    }
+  ],
+  "independent_numeric_states": 2560,
+  "independent_paired_episodes": 160,
+  "repeated_qualification_is_not_extra_independent_evidence": true,
+  "original_failure": "Attempt01 completed every computation and wrote the accepted-data report, then failed terminal CLI logging. Exact original source, output, process exit1 and costs are preserved.",
+  "repair": "One print-argument line only, newly versioned and published before repeating the same cases. Attempt02 process exit0; models and four candidate packages unchanged.",
+  "scope": "Native learned MLP and durable action owner; external content/planner/cell physics. Lifecycle costs include different durability work and are not a language speed benchmark.",
+  "packaging_cpu_seconds": 1.2880131400000001,
+  "packaging_wall_seconds": 1.2895027480117278,
+  "native_physics_executed": false,
+  "main_activation": false
+}

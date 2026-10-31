@@ -1,0 +1,66 @@
+{
+  "schema": "hcsn.progression.native-confirmation-audit.v1",
+  "passed": true,
+  "source_sha256": "52a00f2408f335fe36d20984744844bb766141a8a72e918bf7cfc3662514eff0",
+  "reporting_only_source_change_verified": true,
+  "original_failed_attempt_preserved": true,
+  "auditor_revision": "Retained failed audit01 arbitrary 10us field-sampling assumption; complete >= parent+child now checked, measured deltas reported without inventing a contract bound.",
+  "attempts": [
+    {
+      "attempt": "01",
+      "source_sha256": "c75258cde21ff42d82be4ac1b9fe2f7211bfc9732d8efff803b5bfddf58a9496",
+      "process_exit": 1,
+      "data_qualification_passed": true,
+      "process_success": false,
+      "numeric_rows": 2560,
+      "maximum_native_q_error": 4.440892098500626e-16,
+      "original_float_action_differences": 6,
+      "paired_tasks": 160,
+      "actual_file_reads": 666,
+      "restored_rollouts": 320,
+      "average_complete_cpu_seconds": {
+        "python": 0.02383774075624999,
+        "native": 0.045514087318749986
+      },
+      "task_native_child_cpu_seconds": 3.6126470000000017,
+      "numeric_native_child_cpu_seconds": 1.9430529999999997,
+      "successive_cpu_sampling_delta_maximum_seconds": 1.5422999998904174e-05,
+      "successive_cpu_sampling_delta_mean_seconds": 9.181562500231105e-07,
+      "enclosing_process_cpu_seconds": 19.722267000000002,
+      "enclosing_process_wall_seconds": 21.283687567003653,
+      "parent_report_cpu_seconds": 13.494835188000001
+    },
+    {
+      "attempt": "02",
+      "source_sha256": "2e3b3305d20d211e528c51b48b4f42a9a8717657c1455c1a8631e3fd58fb0e22",
+      "process_exit": 0,
+      "data_qualification_passed": true,
+      "process_success": true,
+      "numeric_rows": 2560,
+      "maximum_native_q_error": 4.440892098500626e-16,
+      "original_float_action_differences": 6,
+      "paired_tasks": 160,
+      "actual_file_reads": 666,
+      "restored_rollouts": 320,
+      "average_complete_cpu_seconds": {
+        "python": 0.026134517637500097,
+        "native": 0.04994223083125003
+      },
+      "task_native_child_cpu_seconds": 3.936474999999999,
+      "numeric_native_child_cpu_seconds": 2.0690639999999996,
+      "successive_cpu_sampling_delta_maximum_seconds": 3.926000000209484e-06,
+      "successive_cpu_sampling_delta_mean_seconds": 9.575562500435176e-07,
+      "enclosing_process_cpu_seconds": 21.208039999999997,
+      "enclosing_process_wall_seconds": 22.618554025000776,
+      "parent_report_cpu_seconds": 14.705088529
+    }
+  ],
+  "same_160_physical_cases_across_attempts": true,
+  "effective_independent_backend_cases": 160,
+  "effective_independent_numeric_vectors": 2560,
+  "measurement_scope": "Repeat is engineering verification on identical frozen data, not new independent efficacy. Nested child CPU is already represented by the enclosing process accounting and must not be added again.",
+  "native_physics_executed": false,
+  "production_activation": false,
+  "audit_cpu_seconds": 4.3053567710000005,
+  "audit_wall_seconds": 4.3138158159999875
+}

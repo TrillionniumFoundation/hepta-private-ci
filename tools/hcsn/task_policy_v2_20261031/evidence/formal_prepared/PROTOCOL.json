@@ -1,0 +1,130 @@
+{
+  "admission": "All five nonzero choices improve zero on VAL; both primary utility lower bounds positive and both Holm-adjusted p<0.05; quality NI both splits; both full CPU-adjusted lower bounds positive at 1.0 CPU-price/H=1000. Native/prod admission is external and main_activation remains false here.",
+  "amortization_sessions": [
+    128,
+    1000,
+    10000
+  ],
+  "calibration_packets": 128,
+  "candidate_updates": [
+    0,
+    100,
+    300,
+    1000,
+    6000
+  ],
+  "checkpoint_selection": "Minimum Q24 deployed validation teacher regret among updates 100/300/1000/6000; ties prefer earlier. Update zero and overall minimum retained. If nonzero does not strictly improve zero, learned admission fails. Float64 selection is diagnostic only.",
+  "cost_scope": "Real owner CPU includes metadata, priors, feature construction, model math, actual file reads/content inference, terminal scoring. Policy JSON model load and measured raw-row serialization charged separately. Residual-only preparation includes full TRAIN/VAL teacher-label generation, all optimizer candidates, Q24 selection, diagnostics and artifact serialization; common calibration/startup reported separately. Post-execution teacher diagnostics are experiment overhead, not deployed policy compute.",
+  "counterfactual_seeds": "seed*10000+101 TRAIN; seed*10000+102 VAL; seed*10000+103 optimizer",
+  "cpu_price_scope": "Prespecified research accounting utility per host CPU-second, not a measured production monetary/energy price; Bellman uses task time only, CPU enters post-execution admission",
+  "cpu_prices_utility_per_second": [
+    0.0,
+    0.1,
+    1.0,
+    10.0
+  ],
+  "data_seed_base": 487103100,
+  "date": "2026-10-31",
+  "deadlines": [
+    6,
+    8,
+    10
+  ],
+  "failure_policy": "Abort and preserve every failed attempt; no silent row dropping, replacement seed or confirmation-driven retuning",
+  "freeze_rule": "No test/ood cohort generation before externally verified remote source/protocol/model freeze receipt; confirm validates every prepared byte and current source hash before generating cohorts",
+  "inherited_frozen_commit": "8fef2abec58dc0b40287de1e656f9042371979b5",
+  "latency_price": 0.015,
+  "multiplier": 1.5,
+  "numeric_contract": "hepta.task.native-q24-residual.v1",
+  "ood": {
+    "deadlines": [
+      6,
+      8,
+      10
+    ],
+    "packet_length": 48,
+    "packet_prices": [
+      0.025,
+      0.06,
+      0.12
+    ],
+    "packet_reliabilities": [
+      0.55,
+      0.7,
+      0.85
+    ],
+    "read_budgets": [
+      2,
+      3,
+      4
+    ],
+    "step_durations": [
+      0.2,
+      0.8,
+      2.0
+    ]
+  },
+  "ood_sessions": 128,
+  "optimizer": {
+    "adam_betas": [
+      0.9,
+      0.999
+    ],
+    "adam_epsilon": 1e-08,
+    "batch": 256,
+    "gradient_clip": 2.0,
+    "l2": 1e-07,
+    "learning_rate": 0.001,
+    "mode": "q_mse",
+    "updates": 6000,
+    "width": 64
+  },
+  "packet_length": 24,
+  "packet_prices": [
+    0.015,
+    0.04,
+    0.09
+  ],
+  "packet_reliabilities": [
+    0.6,
+    0.75,
+    0.9
+  ],
+  "policies": [
+    "exact_teacher",
+    "one_read",
+    "nonzero_residual"
+  ],
+  "primary_amortization_sessions": 1000,
+  "primary_contrasts": [
+    "test:nonzero_residual-one_read",
+    "ood:nonzero_residual-one_read"
+  ],
+  "primary_cpu_price": 1.0,
+  "quality_gate": "Two-sided 95% paired seed-t lower bound for correct_jobs/2 difference exceeds -0.02 in both splits",
+  "quality_metric": "correct_jobs/2 per session; unsubmitted jobs count as not correct; completed/2, wrong/2 and conditional submitted accuracy reported separately",
+  "quality_noninferiority_margin": 0.02,
+  "read_budgets": [
+    2,
+    3,
+    4
+  ],
+  "schema": "hepta.task.policy.confirmation.v2",
+  "scientific_scope": "Real file/model actions on bounded synthetic two-job tasks; ordinary bounded planner and learned residual; no analytic-cell or production/energy claim",
+  "seeds": [
+    73031,
+    73037,
+    73043,
+    73049,
+    73057
+  ],
+  "step_durations": [
+    0.4,
+    1.0,
+    1.6
+  ],
+  "test_sessions": 128,
+  "train_environments": 1024,
+  "uncertainty": "Five paired seed means; two-sided 95% Student-t intervals (df=4); two-sided p values, Holm over the two primary utility contrasts. Sessions are not independent training replications.",
+  "validation_environments": 256
+}

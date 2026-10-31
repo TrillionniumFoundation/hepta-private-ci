@@ -1,0 +1,862 @@
+{
+  "confirmation_episodes_generated": 0,
+  "contracts": [
+    {
+      "contract": {
+        "arrival_rate": [
+          2.0,
+          2.5
+        ],
+        "budget": 4,
+        "deadline_rate": 0.1,
+        "fire_cost": 0.01,
+        "minimum_confidence": 0.75,
+        "query_cost": [
+          0.03,
+          0.04
+        ],
+        "recovery_phases": 2,
+        "recovery_rate": 5.0,
+        "reliability": [
+          0.8,
+          0.86
+        ],
+        "time_cost": 0.02
+      },
+      "fits": [
+        {
+          "converged_gradient": false,
+          "cpu_seconds": 0.273517935,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 1.1662027902839927,
+          "optimizer": "mirror",
+          "seed": 74031,
+          "soft_maximum_gradient": 5.29592679755257e-06,
+          "soft_value": 1.1661923181868368,
+          "updates": 600,
+          "wall_seconds": 0.25841560200206004
+        },
+        {
+          "converged_gradient": false,
+          "cpu_seconds": 0.31081396799999994,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 1.1662027902839927,
+          "optimizer": "mirror",
+          "seed": 74037,
+          "soft_maximum_gradient": 5.275110327025182e-06,
+          "soft_value": 1.1661923663414797,
+          "updates": 600,
+          "wall_seconds": 0.31092394499864895
+        },
+        {
+          "converged_gradient": false,
+          "cpu_seconds": 0.3388295560000001,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 1.1662027902839927,
+          "optimizer": "mirror",
+          "seed": 74043,
+          "soft_maximum_gradient": 5.337875061274169e-06,
+          "soft_value": 1.1661923371884495,
+          "updates": 600,
+          "wall_seconds": 0.33913981400837656
+        },
+        {
+          "converged_gradient": false,
+          "cpu_seconds": 0.25455275,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 1.1662027902839927,
+          "optimizer": "mirror",
+          "seed": 74049,
+          "soft_maximum_gradient": 5.246478075142248e-06,
+          "soft_value": 1.1661923006753738,
+          "updates": 600,
+          "wall_seconds": 0.25462112900277134
+        },
+        {
+          "converged_gradient": false,
+          "cpu_seconds": 0.34666633800000013,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 1.1662027902839927,
+          "optimizer": "mirror",
+          "seed": 74057,
+          "soft_maximum_gradient": 5.299655210827283e-06,
+          "soft_value": 1.1661922308501245,
+          "updates": 600,
+          "wall_seconds": 0.3490990249993047
+        }
+      ],
+      "fixed_initial": 0.9288776330784734,
+      "independent_lp_maximum_error": 2.220446049250313e-16,
+      "name": "nominal_1",
+      "qvi_initial": 1.1662027902839927,
+      "qvi_minus_fixed": 0.23732515720551928
+    },
+    {
+      "contract": {
+        "arrival_rate": [
+          2.5,
+          2.0
+        ],
+        "budget": 6,
+        "deadline_rate": 0.08,
+        "fire_cost": 0.01,
+        "minimum_confidence": 0.75,
+        "query_cost": [
+          0.02,
+          0.04
+        ],
+        "recovery_phases": 2,
+        "recovery_rate": 6.0,
+        "reliability": [
+          0.68,
+          0.88
+        ],
+        "time_cost": 0.02
+      },
+      "fits": [
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.4863837600000003,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.9549417483967266,
+          "optimizer": "mirror",
+          "seed": 74031,
+          "soft_maximum_gradient": 4.933085849953898e-18,
+          "soft_value": 0.9549417483967266,
+          "updates": 600,
+          "wall_seconds": 0.4863958360074321
+        },
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.5195680230000002,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.9549417483967266,
+          "optimizer": "mirror",
+          "seed": 74037,
+          "soft_maximum_gradient": 4.9670622150626716e-18,
+          "soft_value": 0.9549417483967266,
+          "updates": 600,
+          "wall_seconds": 0.5196666519914288
+        },
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.49269012499999976,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.9549417483967266,
+          "optimizer": "mirror",
+          "seed": 74043,
+          "soft_maximum_gradient": 5.021338824296602e-18,
+          "soft_value": 0.9549417483967266,
+          "updates": 600,
+          "wall_seconds": 0.4927026299992576
+        },
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.5860907160000002,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.9549417483967266,
+          "optimizer": "mirror",
+          "seed": 74049,
+          "soft_maximum_gradient": 4.875784161260775e-18,
+          "soft_value": 0.9549417483967266,
+          "updates": 600,
+          "wall_seconds": 0.586177374003455
+        },
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.6088497569999998,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.9549417483967266,
+          "optimizer": "mirror",
+          "seed": 74057,
+          "soft_maximum_gradient": 4.973416494113694e-18,
+          "soft_value": 0.9549417483967266,
+          "updates": 600,
+          "wall_seconds": 0.6092633290099911
+        }
+      ],
+      "fixed_initial": 0.9324824416461782,
+      "independent_lp_maximum_error": 4.440892098500626e-16,
+      "name": "nominal_2",
+      "qvi_initial": 0.9549417483967266,
+      "qvi_minus_fixed": 0.022459306750548413
+    },
+    {
+      "contract": {
+        "arrival_rate": [
+          1.2,
+          3.0
+        ],
+        "budget": 4,
+        "deadline_rate": 0.18,
+        "fire_cost": 0.01,
+        "minimum_confidence": 0.75,
+        "query_cost": [
+          0.06,
+          0.02
+        ],
+        "recovery_phases": 2,
+        "recovery_rate": 4.0,
+        "reliability": [
+          0.88,
+          0.78
+        ],
+        "time_cost": 0.02
+      },
+      "fits": [
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.46195862799999965,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 1.0507294184859026,
+          "optimizer": "mirror",
+          "seed": 74031,
+          "soft_maximum_gradient": 7.424727414255442e-22,
+          "soft_value": 1.0507294184859026,
+          "updates": 600,
+          "wall_seconds": 0.4620712110045133
+        },
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.2667292329999995,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 1.0507294184859026,
+          "optimizer": "mirror",
+          "seed": 74037,
+          "soft_maximum_gradient": 7.369889123522111e-22,
+          "soft_value": 1.0507294184859026,
+          "updates": 600,
+          "wall_seconds": 0.26673766199382953
+        },
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.3363781009999993,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 1.0507294184859026,
+          "optimizer": "mirror",
+          "seed": 74043,
+          "soft_maximum_gradient": 7.490552965289986e-22,
+          "soft_value": 1.0507294184859026,
+          "updates": 600,
+          "wall_seconds": 0.3389788330096053
+        },
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.32675508200000003,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 1.0507294184859026,
+          "optimizer": "mirror",
+          "seed": 74049,
+          "soft_maximum_gradient": 7.448119949305986e-22,
+          "soft_value": 1.0507294184859026,
+          "updates": 600,
+          "wall_seconds": 0.3268271319975611
+        },
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.24940331400000026,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 1.0507294184859026,
+          "optimizer": "mirror",
+          "seed": 74057,
+          "soft_maximum_gradient": 7.376410145036849e-22,
+          "soft_value": 1.0507294184859026,
+          "updates": 600,
+          "wall_seconds": 0.2494108300015796
+        }
+      ],
+      "fixed_initial": 0.7508277871243197,
+      "independent_lp_maximum_error": 2.220446049250313e-16,
+      "name": "nominal_3",
+      "qvi_initial": 1.0507294184859026,
+      "qvi_minus_fixed": 0.2999016313615829
+    },
+    {
+      "contract": {
+        "arrival_rate": [
+          3.0,
+          1.5
+        ],
+        "budget": 6,
+        "deadline_rate": 0.15,
+        "fire_cost": 0.01,
+        "minimum_confidence": 0.75,
+        "query_cost": [
+          0.025,
+          0.05
+        ],
+        "recovery_phases": 2,
+        "recovery_rate": 3.0,
+        "reliability": [
+          0.72,
+          0.82
+        ],
+        "time_cost": 0.02
+      },
+      "fits": [
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.46120631099999976,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.849033061438588,
+          "optimizer": "mirror",
+          "seed": 74031,
+          "soft_maximum_gradient": 3.593401865948144e-09,
+          "soft_value": 0.8490330543199943,
+          "updates": 600,
+          "wall_seconds": 0.4612563660048181
+        },
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.5092819829999993,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.849033061438588,
+          "optimizer": "mirror",
+          "seed": 74037,
+          "soft_maximum_gradient": 3.6194211589137473e-09,
+          "soft_value": 0.8490330543290474,
+          "updates": 600,
+          "wall_seconds": 0.5092946639924776
+        },
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.4960571749999989,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.849033061438588,
+          "optimizer": "mirror",
+          "seed": 74043,
+          "soft_maximum_gradient": 3.6582920542287152e-09,
+          "soft_value": 0.8490330541722847,
+          "updates": 600,
+          "wall_seconds": 0.4960759269888513
+        },
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.48799942900000026,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.849033061438588,
+          "optimizer": "mirror",
+          "seed": 74049,
+          "soft_maximum_gradient": 3.557019975352659e-09,
+          "soft_value": 0.8490330544085322,
+          "updates": 600,
+          "wall_seconds": 0.4880116150015965
+        },
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.487853372,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.849033061438588,
+          "optimizer": "mirror",
+          "seed": 74057,
+          "soft_maximum_gradient": 3.6245731580351433e-09,
+          "soft_value": 0.8490330542079767,
+          "updates": 600,
+          "wall_seconds": 0.48790036200080067
+        }
+      ],
+      "fixed_initial": 0.8185092662857173,
+      "independent_lp_maximum_error": 4.440892098500626e-16,
+      "name": "nominal_4",
+      "qvi_initial": 0.849033061438588,
+      "qvi_minus_fixed": 0.030523795152870736
+    },
+    {
+      "contract": {
+        "arrival_rate": [
+          0.7,
+          0.8
+        ],
+        "budget": 4,
+        "deadline_rate": 0.3,
+        "fire_cost": 0.01,
+        "minimum_confidence": 0.75,
+        "query_cost": [
+          0.1,
+          0.1
+        ],
+        "recovery_phases": 2,
+        "recovery_rate": 2.0,
+        "reliability": [
+          0.62,
+          0.64
+        ],
+        "time_cost": 0.02
+      },
+      "fits": [
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.2538559360000008,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.0,
+          "optimizer": "mirror",
+          "seed": 74031,
+          "soft_maximum_gradient": 1.935600001848556e-25,
+          "soft_value": -1.935600001848556e-25,
+          "updates": 600,
+          "wall_seconds": 0.2538631740026176
+        },
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.3492880730000003,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.0,
+          "optimizer": "mirror",
+          "seed": 74037,
+          "soft_maximum_gradient": 1.9635045925944135e-25,
+          "soft_value": -1.9635045925944135e-25,
+          "updates": 600,
+          "wall_seconds": 0.3495606670039706
+        },
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.340676534,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.0,
+          "optimizer": "mirror",
+          "seed": 74043,
+          "soft_maximum_gradient": 1.9227441087610997e-25,
+          "soft_value": -1.9227441087610997e-25,
+          "updates": 600,
+          "wall_seconds": 0.3406932060024701
+        },
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.2854830029999995,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.0,
+          "optimizer": "mirror",
+          "seed": 74049,
+          "soft_maximum_gradient": 1.9556676510676588e-25,
+          "soft_value": -1.9556676510676588e-25,
+          "updates": 600,
+          "wall_seconds": 0.28583661701122764
+        },
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.27828085300000005,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.0,
+          "optimizer": "mirror",
+          "seed": 74057,
+          "soft_maximum_gradient": 1.928310830262392e-25,
+          "soft_value": -1.928310830262392e-25,
+          "updates": 600,
+          "wall_seconds": 0.2782885280030314
+        }
+      ],
+      "fixed_initial": -0.1655471707606118,
+      "independent_lp_maximum_error": 2.220446049250313e-16,
+      "name": "stress_1_stop_control",
+      "qvi_initial": 0.0,
+      "qvi_minus_fixed": 0.1655471707606118
+    },
+    {
+      "contract": {
+        "arrival_rate": [
+          3.5,
+          0.7
+        ],
+        "budget": 6,
+        "deadline_rate": 0.05,
+        "fire_cost": 0.01,
+        "minimum_confidence": 0.75,
+        "query_cost": [
+          0.01,
+          0.1
+        ],
+        "recovery_phases": 2,
+        "recovery_rate": 8.0,
+        "reliability": [
+          0.62,
+          0.9
+        ],
+        "time_cost": 0.02
+      },
+      "fits": [
+        {
+          "converged_gradient": false,
+          "cpu_seconds": 0.4731177740000003,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.5167314175907205,
+          "optimizer": "mirror",
+          "seed": 74031,
+          "soft_maximum_gradient": 2.223275059470069e-07,
+          "soft_value": 0.516730977068679,
+          "updates": 600,
+          "wall_seconds": 0.47316535700520035
+        },
+        {
+          "converged_gradient": false,
+          "cpu_seconds": 0.4834369540000001,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.5167314175907205,
+          "optimizer": "mirror",
+          "seed": 74037,
+          "soft_maximum_gradient": 2.2880383767285336e-07,
+          "soft_value": 0.5167309744085746,
+          "updates": 600,
+          "wall_seconds": 0.4834487349871779
+        },
+        {
+          "converged_gradient": false,
+          "cpu_seconds": 0.49253202999999957,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.5167314175907205,
+          "optimizer": "mirror",
+          "seed": 74043,
+          "soft_maximum_gradient": 2.2304449220857435e-07,
+          "soft_value": 0.5167309734314127,
+          "updates": 600,
+          "wall_seconds": 0.4925750649999827
+        },
+        {
+          "converged_gradient": false,
+          "cpu_seconds": 0.4829946769999989,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.5167314175907205,
+          "optimizer": "mirror",
+          "seed": 74049,
+          "soft_maximum_gradient": 2.2718499833688726e-07,
+          "soft_value": 0.5167309741835953,
+          "updates": 600,
+          "wall_seconds": 0.4830066389986314
+        },
+        {
+          "converged_gradient": false,
+          "cpu_seconds": 0.48332646999999973,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.5167314175907205,
+          "optimizer": "mirror",
+          "seed": 74057,
+          "soft_maximum_gradient": 2.2462498170201148e-07,
+          "soft_value": 0.5167309705365821,
+          "updates": 600,
+          "wall_seconds": 0.48337099701166153
+        }
+      ],
+      "fixed_initial": 0.48722187526651206,
+      "independent_lp_maximum_error": 2.220446049250313e-16,
+      "name": "stress_2",
+      "qvi_initial": 0.5167314175907205,
+      "qvi_minus_fixed": 0.029509542324208438
+    },
+    {
+      "contract": {
+        "arrival_rate": [
+          0.7,
+          3.5
+        ],
+        "budget": 6,
+        "deadline_rate": 0.3,
+        "fire_cost": 0.01,
+        "minimum_confidence": 0.75,
+        "query_cost": [
+          0.1,
+          0.01
+        ],
+        "recovery_phases": 2,
+        "recovery_rate": 2.0,
+        "reliability": [
+          0.9,
+          0.8
+        ],
+        "time_cost": 0.02
+      },
+      "fits": [
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.49588943600000057,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.7922112127460118,
+          "optimizer": "mirror",
+          "seed": 74031,
+          "soft_maximum_gradient": 1.408192501061516e-19,
+          "soft_value": 0.7922112127460118,
+          "updates": 600,
+          "wall_seconds": 0.49590145000547636
+        },
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.5170250719999991,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.7922112127460118,
+          "optimizer": "mirror",
+          "seed": 74037,
+          "soft_maximum_gradient": 1.3939146099856736e-19,
+          "soft_value": 0.7922112127460118,
+          "updates": 600,
+          "wall_seconds": 0.5170442999951774
+        },
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.5514059069999995,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.7922112127460118,
+          "optimizer": "mirror",
+          "seed": 74043,
+          "soft_maximum_gradient": 1.4303618422071863e-19,
+          "soft_value": 0.7922112127460118,
+          "updates": 600,
+          "wall_seconds": 0.5514291739964392
+        },
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.5444489229999991,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.7922112127460118,
+          "optimizer": "mirror",
+          "seed": 74049,
+          "soft_maximum_gradient": 1.4515241910821066e-19,
+          "soft_value": 0.7922112127460118,
+          "updates": 600,
+          "wall_seconds": 0.544526803001645
+        },
+        {
+          "converged_gradient": true,
+          "cpu_seconds": 0.5156487540000008,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.7922112127460118,
+          "optimizer": "mirror",
+          "seed": 74057,
+          "soft_maximum_gradient": 1.4226864529061643e-19,
+          "soft_value": 0.7922112127460118,
+          "updates": 600,
+          "wall_seconds": 0.51570361899212
+        }
+      ],
+      "fixed_initial": 0.4467725922669866,
+      "independent_lp_maximum_error": 4.440892098500626e-16,
+      "name": "stress_3",
+      "qvi_initial": 0.7922112127460118,
+      "qvi_minus_fixed": 0.3454386204790252
+    },
+    {
+      "contract": {
+        "arrival_rate": [
+          3.5,
+          3.5
+        ],
+        "budget": 6,
+        "deadline_rate": 0.05,
+        "fire_cost": 0.01,
+        "minimum_confidence": 0.75,
+        "query_cost": [
+          0.1,
+          0.01
+        ],
+        "recovery_phases": 2,
+        "recovery_rate": 8.0,
+        "reliability": [
+          0.82,
+          0.64
+        ],
+        "time_cost": 0.02
+      },
+      "fits": [
+        {
+          "converged_gradient": false,
+          "cpu_seconds": 0.4600363430000005,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.8491298828411341,
+          "optimizer": "mirror",
+          "seed": 74031,
+          "soft_maximum_gradient": 0.0003213309394727451,
+          "soft_value": 0.8483361380854063,
+          "updates": 600,
+          "wall_seconds": 0.46043519899831153
+        },
+        {
+          "converged_gradient": false,
+          "cpu_seconds": 0.47136950899999874,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.8491298828411341,
+          "optimizer": "mirror",
+          "seed": 74037,
+          "soft_maximum_gradient": 0.0003152420423968024,
+          "soft_value": 0.848363629219591,
+          "updates": 600,
+          "wall_seconds": 0.4714052399940556
+        },
+        {
+          "converged_gradient": false,
+          "cpu_seconds": 0.4822594890000005,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.8491298828411341,
+          "optimizer": "mirror",
+          "seed": 74043,
+          "soft_maximum_gradient": 0.00032299750372694,
+          "soft_value": 0.848343708424406,
+          "updates": 600,
+          "wall_seconds": 0.48230870500265155
+        },
+        {
+          "converged_gradient": false,
+          "cpu_seconds": 0.48140184200000036,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.8491298828411341,
+          "optimizer": "mirror",
+          "seed": 74049,
+          "soft_maximum_gradient": 0.0003160144124763046,
+          "soft_value": 0.8483544715756751,
+          "updates": 600,
+          "wall_seconds": 0.48141358299471904
+        },
+        {
+          "converged_gradient": false,
+          "cpu_seconds": 0.4685396819999994,
+          "hard_bellman_residual": 0.0,
+          "hard_legal_reachable_bellman_residual": 0.0,
+          "hard_optimality_gap": 0.0,
+          "hard_policy_reachable_bellman_residual": 0.0,
+          "hard_value": 0.8491298828411341,
+          "optimizer": "mirror",
+          "seed": 74057,
+          "soft_maximum_gradient": 0.0003197679343915227,
+          "soft_value": 0.8483420468469435,
+          "updates": 600,
+          "wall_seconds": 0.46855791099369526
+        }
+      ],
+      "fixed_initial": 0.8315876765873825,
+      "independent_lp_maximum_error": 4.440892098500626e-16,
+      "name": "stress_4",
+      "qvi_initial": 0.8491298828411341,
+      "qvi_minus_fixed": 0.01754220625375158
+    }
+  ],
+  "latest_development": {
+    "checks": 71,
+    "passed": true,
+    "qualification_sha256": "7c4b077ee0bc8a5d9fbd913bf6e401a7bc756d60c4b95c7bc775679cf51687ce",
+    "run": 7
+  },
+  "preparation_stage": {
+    "cpu_seconds": 17.840955133999998,
+    "scope": "Outer preparation including source copying, deployable artifacts, all fits/certificates, bundle serialization and artifact hashing; excludes writing these final small receipts",
+    "wall_seconds": 17.817137207995984
+  },
+  "prepared_manifest_sha256": "d91df0ef83c9431777b17ec6f1071bd611e0ab3698e9efd86aef9db8a39ef356",
+  "schema": "hcsn.regenerative-evidence.prepared-public-summary.v1",
+  "superseded_attempt": {
+    "path": "evidence/superseded-prepare-01.tar.gz",
+    "reason": "Cost audit required adding deployable policy serialization/loading and outer experiment packaging timers; no policy/task/hyperparameter retuning"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "schema": "hcsn.native.terminal-report-repair.v1",
+  "original_sha256": "c75258cde21ff42d82be4ac1b9fe2f7211bfc9732d8efff803b5bfddf58a9496",
+  "corrected_sha256": "2e3b3305d20d211e528c51b48b4f42a9a8717657c1455c1a8631e3fd58fb0e22",
+  "original_frozen_commit": "a37c99a87a25fe8417ec29ddbebb1c035d356a53",
+  "diff": "--- native_confirmation.py\n+++ native_confirmation_reporting_fix.py\n@@ -120,7 +120,7 @@\n         cost_scope=\"Actual lifecycle cost; native has durable journal/witness and process recovery. Python restores trusted snapshots. This is not an equal-durability language-performance benchmark or a hardware-energy measurement.\",\n         scope=\"Post-freeze five-model backend qualification on prespecified existing data; no checkpoint selection, task-benefit retuning, or arbitrary-crash external-effect settlement guarantee\")\n     (out/\"REPORT.json\").write_text(json.dumps(report, indent=2, allow_nan=False)+\"\\n\")\n-    print(json.dumps(dict(accepted=report[\"accepted\"], models=len(summaries)), flush=True))\n+    print(json.dumps(dict(accepted=report[\"accepted\"], models=len(summaries))), flush=True)\n     return report[\"accepted\"]\n \n \n",
+  "reason": "All 2560 numeric rows and 160 actual pairs completed and REPORT.json was written. Terminal CLI logging passed flush to json.dumps and returned process exit1.",
+  "rerun_scope": "Exactly the same frozen models, validation rows and already generated confirmation episodes. No new cohort, training, selection, retuning or candidate-source edits.",
+  "original_attempt_preserved": true
+}

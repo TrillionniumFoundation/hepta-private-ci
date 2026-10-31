@@ -1,0 +1,18 @@
+{"seed": 73031, "model_sha256": "e8def9aec466f44ad0557e67848aecb37013b88836de69a53c2143b7f1816ee4", "selected_update": 6000, "numeric_passed": true, "pairs": 32, "equivalent_pairs": 32, "actual_file_reads": 138, "content_invocations": 138, "restored_rollouts": 64, "python_mean_cpu_seconds": 0.029197838125000028, "native_mean_cpu_seconds": 0.052980879312500014, "native_child_cpu_seconds": 0.741691, "accepted": true}
+{"seed": 73037, "model_sha256": "46c244fd5d1de7566f7f19735749141f68e4c705320b897fb4411f2e84cd3fb5", "selected_update": 6000, "numeric_passed": true, "pairs": 32, "equivalent_pairs": 32, "actual_file_reads": 126, "content_invocations": 126, "restored_rollouts": 64, "python_mean_cpu_seconds": 0.024731080781249942, "native_mean_cpu_seconds": 0.04366196859375, "native_child_cpu_seconds": 0.7145589999999999, "accepted": true}
+{"seed": 73043, "model_sha256": "8db0e645edcf7009cdc064eed7544082a0e2c58dffbd8e6bbfeb4b17ce93f016", "selected_update": 6000, "numeric_passed": true, "pairs": 32, "equivalent_pairs": 32, "actual_file_reads": 138, "content_invocations": 138, "restored_rollouts": 64, "python_mean_cpu_seconds": 0.023970678937500073, "native_mean_cpu_seconds": 0.042590938437499906, "native_child_cpu_seconds": 0.698508, "accepted": true}
+{"seed": 73049, "model_sha256": "b51449d4578aec26baf90edbf53891e692cd5d78aaebdce0fcf21c13448d5145", "selected_update": 6000, "numeric_passed": true, "pairs": 32, "equivalent_pairs": 32, "actual_file_reads": 134, "content_invocations": 134, "restored_rollouts": 64, "python_mean_cpu_seconds": 0.019763460093749907, "native_mean_cpu_seconds": 0.04427081359374999, "native_child_cpu_seconds": 0.75547, "accepted": true}
+{"seed": 73057, "model_sha256": "a980739362f5d88451035e24ad6aae4471d07c20c0d8c630ac5cdde1242bbf8c", "selected_update": 6000, "numeric_passed": true, "pairs": 32, "equivalent_pairs": 32, "actual_file_reads": 130, "content_invocations": 130, "restored_rollouts": 64, "python_mean_cpu_seconds": 0.021525645843749996, "native_mean_cpu_seconds": 0.044065836656249996, "native_child_cpu_seconds": 0.702419, "accepted": true}
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/c135db76929c/hepta-task-research/tools/hcsn/task_progression_20261031/native_confirmation.py", line 132, in <module>
+    raise SystemExit(0 if qualify(args.prepared, args.confirmed, args.binary, args.out) else 1)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/c135db76929c/hepta-task-research/tools/hcsn/task_progression_20261031/native_confirmation.py", line 123, in qualify
+    print(json.dumps(dict(accepted=report["accepted"], models=len(summaries)), flush=True))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/__init__.py", line 234, in dumps
+    return cls(
+           ^^^^
+TypeError: JSONEncoder.__init__() got an unexpected keyword argument 'flush'

@@ -1,0 +1,285 @@
+{
+  "formal_confirmation_episodes_generated": 0,
+  "note": "All development attempts and raw generated packet files retained. Run 01 Adam has two suboptimal hard-policy gaps despite consistency checks passing. Later runs are explicit development revisions, not fresh heldout confirmations.",
+  "prior_index_sha256": "4590ed5ed969b1d5f1d205d89b41c7856772db3e5aa582e76b52aac17c3922c4",
+  "runs": [
+    {
+      "archive": "development-01.tar.gz",
+      "archive_bytes": 610018,
+      "archive_sha256": "b2e88942528600eb56d27d70d17698210e6c5800eb9feaf6997abb86531df1bb",
+      "checks": 47,
+      "hard_envelope_residuals": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "hard_initial_gaps": [
+        0.0,
+        0.009844732206007456,
+        0.014078388047138068,
+        0.0,
+        0.0
+      ],
+      "passed": true,
+      "qualification_sha256": "fbdacc6c322656de8c906a99b104560758e803fdd278b7510d441067186fb0f2",
+      "run": 1,
+      "scope": "Development only; exact finite verified-support channel, exponential deadline, no heldout generalization claim",
+      "soft_maximum_gradients": [
+        0.00015070217840860276,
+        0.0002459586501608981,
+        0.00010722960046439884,
+        0.00024686717003054136,
+        0.0001768137545624023
+      ],
+      "source": {
+        "learn.py": "05c24216f100a20fdf28d27ef7775307d0e91213626abedb4ef173fa5e62b3bf",
+        "model.py": "8eae7481f4b5500ac36f910c4724218410b03ebb200382596bfad9be999169d8",
+        "owner.py": "1da96c338bac513a87ca4174dd2a5fff548e4ff7a60d6a8fc435595022d26338",
+        "qualification.py": "ff2469192b918c56c3e1719a57a9b71b73e20c6c86ada0db6b1bdeaaac83c304"
+      }
+    },
+    {
+      "archive": "development-02.tar.gz",
+      "archive_bytes": 609093,
+      "archive_sha256": "bee93ff887b2a7551c36ecccdca6fc852a615b0992fa224cf33be290d196bcb0",
+      "checks": 53,
+      "hard_envelope_residuals": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "hard_initial_gaps": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "passed": true,
+      "qualification_sha256": "2c1496e226cc339bbc673c3a3dd7d2c99bf3f144481bc65313f7a8a8e98269b0",
+      "run": 2,
+      "scope": "Development only; exact finite verified-support channel, exponential deadline, no heldout generalization claim",
+      "soft_maximum_gradients": [
+        2.1777861897355976e-06,
+        2.33536071031445e-05,
+        4.68630791878216e-06,
+        5.499568767245319e-06,
+        2.037729640401651e-33
+      ],
+      "source": {
+        "learn.py": "4cfc708dce43779a7cc4fef0c71be52079b174de46235887062a13d4af582532",
+        "model.py": "8eae7481f4b5500ac36f910c4724218410b03ebb200382596bfad9be999169d8",
+        "owner.py": "7c20d27876125a9b974494dd396a6b9d59f30dc45de22b89bb1f6fb3de7ef01e",
+        "qualification.py": "37bda90f1c9c7bd3605b1e71a0e59d164c22697a5aa3143ea3e37e05f3e62e0a"
+      }
+    },
+    {
+      "archive": "development-03.tar.gz",
+      "archive_bytes": 613085,
+      "archive_sha256": "cf0e42426b7012f79c1fec16d49f9d3c0e612005aaaf202ffdba36cabe33f95e",
+      "checks": 57,
+      "hard_envelope_residuals": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "hard_initial_gaps": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "passed": true,
+      "qualification_sha256": "384e6382de0ad0137ae47a2625dcf6ce15bc1034fe42822cb730811b0e23f773",
+      "run": 3,
+      "scope": "Development only; exact finite verified-support channel, exponential deadline, no heldout generalization claim",
+      "soft_maximum_gradients": [
+        2.1777861897355976e-06,
+        2.33536071031445e-05,
+        4.68630791878216e-06,
+        5.499568767245319e-06,
+        2.037729640401651e-33,
+        2.6306764871952737e-16
+      ],
+      "source": {
+        "learn.py": "54d36a428bafcd4146fa7b4289feeb2d714f54f9240dadb2f7a89f1f52a46e78",
+        "model.py": "1477a3a39dfe072558999277f6f696e424172133cc3d2d03c765bc6f35b6291e",
+        "owner.py": "c179ce69c6f2a7c85c004e42e5734d3bdbdb529999529b8e1c40b92adf8905e1",
+        "qualification.py": "78bd7ff60e96b1067ef94b3b5ce991607763414db068988b11eae31586f833be"
+      }
+    },
+    {
+      "archive": "development-04.tar.gz",
+      "archive_bytes": 894813,
+      "archive_sha256": "c1ed0593144643b4006f21efb670bbe9e1716dd3c1236607645afd36268c606c",
+      "checks": 67,
+      "hard_envelope_residuals": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "hard_initial_gaps": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "passed": true,
+      "qualification_sha256": "ea0a89dd47f2f737f202848e22171678356e5327e5d7078a0cc67f3fe7b354ff",
+      "run": 4,
+      "scope": "Development only; exact finite verified-support channel, exponential deadline, no heldout generalization claim",
+      "soft_maximum_gradients": [
+        2.1777861897355976e-06,
+        2.33536071031445e-05,
+        4.68630791878216e-06,
+        5.499568767245319e-06,
+        2.037729640401651e-33,
+        1.6520057022440976e-17
+      ],
+      "source": {
+        "learn.py": "83b321b7814eb8fce26f7d4dc99b004b1efaeb9fc5754647159fc6ce8943d6a6",
+        "model.py": "cce1bfd81e2dc72112f93632684e2aac9f37219b13ec56c7e17aa520df118e20",
+        "owner.py": "7b0f6db93df6d054cfda56b9240ad0d2d473cc8951e713ed47e60d539bcfa587",
+        "qualification.py": "48c3a0f57c00c08137b77844f7f1e5795fa395d3032f816000a18a6b13201062"
+      }
+    },
+    {
+      "archive": "development-05.tar.gz",
+      "archive_bytes": 856964,
+      "archive_sha256": "7355f445f7debf65662d4aaf8f7719351565925bfb4d84de0843692701f8b488",
+      "checks": 68,
+      "hard_envelope_residuals": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "hard_initial_gaps": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "passed": true,
+      "qualification_sha256": "2c6704eaeddab307cebe81960943b1762f0e515993e4bdb93cd203452a66fe23",
+      "run": 5,
+      "scope": "Development only; exact finite verified-support channel, exponential deadline, no heldout generalization claim",
+      "soft_maximum_gradients": [
+        5.342297384658934e-06,
+        1.366291392268996e-07,
+        1.6737215594272155e-17,
+        5.346551266501336e-06,
+        1.7084693759611276e-131,
+        4.9346598989200466e-18
+      ],
+      "source": {
+        "learn.py": "83b321b7814eb8fce26f7d4dc99b004b1efaeb9fc5754647159fc6ce8943d6a6",
+        "model.py": "6f26f3beb72683d60c7f6c5ad89e6df4426446abc1201add85eab8b03868e909",
+        "owner.py": "8cf8e8f378a2d4ea076b447142b6773e6cfcc73c86aa2760fe5776968c3d4768",
+        "qualification.py": "fd41d6f86f4af27b33d3612be6096f4de96bce30330eda41f67959809e884960"
+      }
+    },
+    {
+      "archive": "development-06.tar.gz",
+      "archive_bytes": 959461,
+      "archive_sha256": "e68b878363e44f007a493f8f028e3e7d6f7eaacd05be1aff3635055c0dee9012",
+      "checks": 69,
+      "hard_envelope_residuals": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "hard_initial_gaps": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "passed": true,
+      "qualification_sha256": "29b1fe8405890355cc0c8e73aaa0392a98615f4e754fcf017f02bca4bd9d933b",
+      "run": 6,
+      "scope": "Development only; exact finite verified-support channel, exponential deadline, no heldout generalization claim",
+      "soft_maximum_gradients": [
+        5.342297384658934e-06,
+        1.366291392268996e-07,
+        1.6737215594272155e-17,
+        5.346551266501336e-06,
+        1.7084693759611276e-131,
+        4.9346598989200466e-18
+      ],
+      "source": {
+        "campaign.py": "5326e5d75243c276c0f4ca79f2612d77922f1ba8c623952646ef8248c2063511",
+        "learn.py": "45ae00b6cb7bf88176b33cb650bb5b7ad6525738bc0de07331798b08957ec749",
+        "model.py": "6f26f3beb72683d60c7f6c5ad89e6df4426446abc1201add85eab8b03868e909",
+        "owner.py": "8685e379d32872afbd82b81939415347ecf3b38eedb6a9f9648979d27d3426bb",
+        "qualification.py": "160f28661837613d6d53490d81be2ed47d3b28eb0c3ce9f635a0abb304fee68d"
+      }
+    },
+    {
+      "archive": "development-07.tar.gz",
+      "archive_bytes": 962341,
+      "archive_sha256": "9a37bb458a1d80ca905578293ab7bd40b060898625b573450cf26f071760307b",
+      "checks": 71,
+      "hard_envelope_residuals": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "hard_initial_gaps": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "passed": true,
+      "qualification_sha256": "7c4b077ee0bc8a5d9fbd913bf6e401a7bc756d60c4b95c7bc775679cf51687ce",
+      "run": 7,
+      "scope": "Development only; exact finite verified-support channel, exponential deadline, no heldout generalization claim",
+      "soft_maximum_gradients": [
+        5.342297384658934e-06,
+        1.366291392268996e-07,
+        1.6737215594272155e-17,
+        5.346551266501336e-06,
+        1.7084693759611276e-131,
+        4.9346598989200466e-18
+      ],
+      "source": {
+        "campaign.py": "5f332c3dcd6260eac0ea4e4a8eee0333fe71f76e1724232f8edeb95f97f0d819",
+        "deployment.py": "21a7518986e950fab4d621aee756a7f6a5b584cf45ee70ed7adaed49f62bc3cf",
+        "learn.py": "45ae00b6cb7bf88176b33cb650bb5b7ad6525738bc0de07331798b08957ec749",
+        "model.py": "6f26f3beb72683d60c7f6c5ad89e6df4426446abc1201add85eab8b03868e909",
+        "owner.py": "8685e379d32872afbd82b81939415347ecf3b38eedb6a9f9648979d27d3426bb",
+        "qualification.py": "705fe638efea65a77dc20c68adbbdd58de74575701e455e2442c9f59c960de95"
+      }
+    }
+  ],
+  "schema": "hcsn.regenerative-evidence.development-archives.v1"
+}

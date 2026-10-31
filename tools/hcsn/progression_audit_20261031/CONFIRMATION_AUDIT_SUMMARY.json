@@ -1,0 +1,659 @@
+{
+  "schema": "hcsn.progression.confirmation-audit-summary.v1",
+  "all_independent_audits_passed": true,
+  "teacher": {
+    "episodes": 3840,
+    "paired_sessions": 1280,
+    "decisions": 23046,
+    "reads": 7792,
+    "decoder_reexecutions": 2935,
+    "gates": {
+      "all_nonzero_models_improve_validation_zero": true,
+      "positive_utility_both_splits": false,
+      "quality_noninferior_both_splits": true,
+      "positive_full_cpu_adjusted_both_splits": false
+    },
+    "splits": {
+      "test": {
+        "utility": {
+          "mean": 0.006627343749999959,
+          "lower": -0.04008954013902019,
+          "upper": 0.05334422763902011
+        },
+        "correct_fraction": {
+          "mean": 0.00234375,
+          "lower": -0.011202261034861915,
+          "upper": 0.015889761034861914
+        },
+        "teacher_regret": {
+          "mean": 0.0009860582191625101,
+          "lower": -0.0010160477096894385,
+          "upper": 0.002988164148014459
+        },
+        "full_cpu_primary": {
+          "mean": -0.03242075137807566,
+          "lower": -0.08117425882593363,
+          "upper": 0.016332756069782316
+        },
+        "holm_p": 1.0
+      },
+      "ood": {
+        "utility": {
+          "mean": 0.010215625000000016,
+          "lower": -0.03428741377207249,
+          "upper": 0.05471866377207253
+        },
+        "correct_fraction": {
+          "mean": 0.00703125,
+          "lower": -0.004029021695174005,
+          "upper": 0.018091521695174004
+        },
+        "teacher_regret": {
+          "mean": 0.0014572945405666746,
+          "lower": -0.0013418454390449824,
+          "upper": 0.004256434520178332
+        },
+        "full_cpu_primary": {
+          "mean": -0.028870791245262938,
+          "lower": -0.07514948515715353,
+          "upper": 0.017407902666627655
+        },
+        "holm_p": 1.0
+      }
+    },
+    "accounting": {
+      "policy_cpu": 67.7918226600002,
+      "raw_persistence_cpu": 1.2607747529998938,
+      "teacher_diagnostic_cpu": 14.866759921000021,
+      "internal_confirmation_cpu": 90.021008463,
+      "process_lifetime_cpu": 92.195951,
+      "accounting_rule": "Nested policy, persistence and diagnostics are not added to the enclosing process total; candidate preparation is amortized once, common setup cancels in paired net comparisons"
+    }
+  },
+  "value": {
+    "episodes": 5120,
+    "rollouts": 25600,
+    "decisions": 123908,
+    "reads": 81836,
+    "cdf_checks": 99649,
+    "physical_null_pairs": 5120,
+    "maximum_cdf_error": 2.9976021664879227e-15,
+    "primary": {
+      "direct_hard_analytic-minus-fixed_analytic": {
+        "conditional_episode": {
+          "mean": 0.14023470388462725,
+          "standard_error": 0.007187581962843441,
+          "degrees_of_freedom": 2983.158617464547,
+          "confidence_interval": [
+            0.1261415841030376,
+            0.1543278236662169
+          ],
+          "contract_count": 8
+        },
+        "fit_cluster": {
+          "mean": 0.14023470388462722,
+          "standard_error": 0.00956545562737224,
+          "degrees_of_freedom": 13.04818396714483,
+          "confidence_interval": [
+            0.11957754790741601,
+            0.16089185986183843
+          ],
+          "contract_count": 8
+        }
+      },
+      "qvi_analytic-minus-fixed_analytic": {
+        "conditional_episode": {
+          "mean": 0.14023470388462725,
+          "standard_error": 0.007187581962843441,
+          "degrees_of_freedom": 2983.158617464547,
+          "confidence_interval": [
+            0.1261415841030376,
+            0.1543278236662169
+          ],
+          "contract_count": 8
+        },
+        "fit_cluster": {
+          "mean": 0.14023470388462722,
+          "standard_error": 0.00956545562737224,
+          "degrees_of_freedom": 13.04818396714483,
+          "confidence_interval": [
+            0.11957754790741601,
+            0.16089185986183843
+          ],
+          "contract_count": 8
+        }
+      }
+    },
+    "primary_net": {
+      "direct_hard_analytic-minus-fixed_analytic": {
+        "conditional_episode": {
+          "mean": 0.1418611271488667,
+          "standard_error": 0.007182971793360535,
+          "degrees_of_freedom": 2987.5480038659034,
+          "confidence_interval": [
+            0.12777705519998764,
+            0.15594519909774576
+          ],
+          "contract_count": 8
+        },
+        "fit_cluster": {
+          "mean": 0.1418611271488667,
+          "standard_error": 0.009561198613959572,
+          "degrees_of_freedom": 13.057095162775834,
+          "confidence_interval": [
+            0.12121459108262705,
+            0.16250766321510635
+          ],
+          "contract_count": 8
+        }
+      },
+      "qvi_analytic-minus-fixed_analytic": {
+        "conditional_episode": {
+          "mean": 0.1423142475737476,
+          "standard_error": 0.007183525802553679,
+          "degrees_of_freedom": 2987.1700880377116,
+          "confidence_interval": [
+            0.1282290886244972,
+            0.15639940652299802
+          ],
+          "contract_count": 8
+        },
+        "fit_cluster": {
+          "mean": 0.1423142475737476,
+          "standard_error": 0.00957773973199193,
+          "degrees_of_freedom": 13.00653376581937,
+          "confidence_interval": [
+            0.1216238554137264,
+            0.16300463973376883
+          ],
+          "contract_count": 8
+        }
+      }
+    },
+    "quality_differences": {
+      "correct_fraction": 0.07578125000000001,
+      "error_fraction": 0.03466796875,
+      "completion_fraction": 0.11044921874999997
+    },
+    "per_contract": [
+      {
+        "name": "nominal_1",
+        "metrics": {
+          "direct_hard_analytic": {
+            "utility": 1.1698567872861232,
+            "correct_fraction": 0.7859375,
+            "error_fraction": 0.121875,
+            "completion_fraction": 0.9078125,
+            "cpu_seconds": 0.01206027646406252
+          },
+          "direct_soft_analytic": {
+            "utility": 1.1698567872861232,
+            "correct_fraction": 0.7859375,
+            "error_fraction": 0.121875,
+            "completion_fraction": 0.9078125,
+            "cpu_seconds": 0.012658916425000121
+          },
+          "fixed_analytic": {
+            "utility": 0.9571720813669057,
+            "correct_fraction": 0.5828125,
+            "error_fraction": 0.01875,
+            "completion_fraction": 0.6015625,
+            "cpu_seconds": 0.014347816553124976
+          },
+          "qvi_analytic": {
+            "utility": 1.1698567872861232,
+            "correct_fraction": 0.7859375,
+            "error_fraction": 0.121875,
+            "completion_fraction": 0.9078125,
+            "cpu_seconds": 0.012241301985937425
+          },
+          "qvi_ordinary": {
+            "utility": 1.1698567872861232,
+            "correct_fraction": 0.7859375,
+            "error_fraction": 0.121875,
+            "completion_fraction": 0.9078125,
+            "cpu_seconds": 0.011058991601562543
+          }
+        }
+      },
+      {
+        "name": "nominal_2",
+        "metrics": {
+          "direct_hard_analytic": {
+            "utility": 0.9758510354339418,
+            "correct_fraction": 0.678125,
+            "error_fraction": 0.10546875,
+            "completion_fraction": 0.78359375,
+            "cpu_seconds": 0.016252848564062495
+          },
+          "direct_soft_analytic": {
+            "utility": 0.9758510354339418,
+            "correct_fraction": 0.678125,
+            "error_fraction": 0.10546875,
+            "completion_fraction": 0.78359375,
+            "cpu_seconds": 0.01744128683906231
+          },
+          "fixed_analytic": {
+            "utility": 0.9445874456064187,
+            "correct_fraction": 0.65859375,
+            "error_fraction": 0.09453125,
+            "completion_fraction": 0.753125,
+            "cpu_seconds": 0.017053322021875084
+          },
+          "qvi_analytic": {
+            "utility": 0.9758510354339418,
+            "correct_fraction": 0.678125,
+            "error_fraction": 0.10546875,
+            "completion_fraction": 0.78359375,
+            "cpu_seconds": 0.01594432826718726
+          },
+          "qvi_ordinary": {
+            "utility": 0.9758510354339418,
+            "correct_fraction": 0.678125,
+            "error_fraction": 0.10546875,
+            "completion_fraction": 0.78359375,
+            "cpu_seconds": 0.014848328121874588
+          }
+        }
+      },
+      {
+        "name": "nominal_3",
+        "metrics": {
+          "direct_hard_analytic": {
+            "utility": 1.039298353834425,
+            "correct_fraction": 0.68125,
+            "error_fraction": 0.09453125,
+            "completion_fraction": 0.77578125,
+            "cpu_seconds": 0.009678965518749893
+          },
+          "direct_soft_analytic": {
+            "utility": 1.039298353834425,
+            "correct_fraction": 0.68125,
+            "error_fraction": 0.09453125,
+            "completion_fraction": 0.77578125,
+            "cpu_seconds": 0.010112469928125468
+          },
+          "fixed_analytic": {
+            "utility": 0.7695214882541448,
+            "correct_fraction": 0.4953125,
+            "error_fraction": 0.01796875,
+            "completion_fraction": 0.51328125,
+            "cpu_seconds": 0.01076102832343775
+          },
+          "qvi_analytic": {
+            "utility": 1.039298353834425,
+            "correct_fraction": 0.68125,
+            "error_fraction": 0.09453125,
+            "completion_fraction": 0.77578125,
+            "cpu_seconds": 0.009686154551562364
+          },
+          "qvi_ordinary": {
+            "utility": 1.039298353834425,
+            "correct_fraction": 0.68125,
+            "error_fraction": 0.09453125,
+            "completion_fraction": 0.77578125,
+            "cpu_seconds": 0.009126677409374895
+          }
+        }
+      },
+      {
+        "name": "nominal_4",
+        "metrics": {
+          "direct_hard_analytic": {
+            "utility": 0.8045598178471888,
+            "correct_fraction": 0.5875,
+            "error_fraction": 0.09296875,
+            "completion_fraction": 0.68046875,
+            "cpu_seconds": 0.014809899395312432
+          },
+          "direct_soft_analytic": {
+            "utility": 0.8045598178471888,
+            "correct_fraction": 0.5875,
+            "error_fraction": 0.09296875,
+            "completion_fraction": 0.68046875,
+            "cpu_seconds": 0.016060110785937897
+          },
+          "fixed_analytic": {
+            "utility": 0.7696680499257241,
+            "correct_fraction": 0.55078125,
+            "error_fraction": 0.065625,
+            "completion_fraction": 0.61640625,
+            "cpu_seconds": 0.01587216923437489
+          },
+          "qvi_analytic": {
+            "utility": 0.8045598178471888,
+            "correct_fraction": 0.5875,
+            "error_fraction": 0.09296875,
+            "completion_fraction": 0.68046875,
+            "cpu_seconds": 0.014755451385938612
+          },
+          "qvi_ordinary": {
+            "utility": 0.8045598178471888,
+            "correct_fraction": 0.5875,
+            "error_fraction": 0.09296875,
+            "completion_fraction": 0.68046875,
+            "cpu_seconds": 0.01365313710625018
+          }
+        }
+      },
+      {
+        "name": "stress_1_stop_control",
+        "metrics": {
+          "direct_hard_analytic": {
+            "utility": 0.0,
+            "correct_fraction": 0.0,
+            "error_fraction": 0.0,
+            "completion_fraction": 0.0,
+            "cpu_seconds": 0.000501687917188276
+          },
+          "direct_soft_analytic": {
+            "utility": 0.0,
+            "correct_fraction": 0.0,
+            "error_fraction": 0.0,
+            "completion_fraction": 0.0,
+            "cpu_seconds": 0.0007158408624998724
+          },
+          "fixed_analytic": {
+            "utility": -0.16446616576563547,
+            "correct_fraction": 0.0359375,
+            "error_fraction": 0.00703125,
+            "completion_fraction": 0.04296875,
+            "cpu_seconds": 0.006626012903125122
+          },
+          "qvi_analytic": {
+            "utility": 0.0,
+            "correct_fraction": 0.0,
+            "error_fraction": 0.0,
+            "completion_fraction": 0.0,
+            "cpu_seconds": 0.0005112341468743508
+          },
+          "qvi_ordinary": {
+            "utility": 0.0,
+            "correct_fraction": 0.0,
+            "error_fraction": 0.0,
+            "completion_fraction": 0.0,
+            "cpu_seconds": 0.00044830525625072504
+          }
+        }
+      },
+      {
+        "name": "stress_2",
+        "metrics": {
+          "direct_hard_analytic": {
+            "utility": 0.5084989543643612,
+            "correct_fraction": 0.3828125,
+            "error_fraction": 0.0640625,
+            "completion_fraction": 0.446875,
+            "cpu_seconds": 0.016151075998437302
+          },
+          "direct_soft_analytic": {
+            "utility": 0.5084989543643612,
+            "correct_fraction": 0.3828125,
+            "error_fraction": 0.0640625,
+            "completion_fraction": 0.446875,
+            "cpu_seconds": 0.017271861314062286
+          },
+          "fixed_analytic": {
+            "utility": 0.47687961774532195,
+            "correct_fraction": 0.38359375,
+            "error_fraction": 0.05703125,
+            "completion_fraction": 0.440625,
+            "cpu_seconds": 0.019724118671875023
+          },
+          "qvi_analytic": {
+            "utility": 0.5084989543643612,
+            "correct_fraction": 0.3828125,
+            "error_fraction": 0.0640625,
+            "completion_fraction": 0.446875,
+            "cpu_seconds": 0.016096620414062724
+          },
+          "qvi_ordinary": {
+            "utility": 0.5084989543643612,
+            "correct_fraction": 0.3828125,
+            "error_fraction": 0.0640625,
+            "completion_fraction": 0.446875,
+            "cpu_seconds": 0.014591951212500431
+          }
+        }
+      },
+      {
+        "name": "stress_3",
+        "metrics": {
+          "direct_hard_analytic": {
+            "utility": 0.8033356531851181,
+            "correct_fraction": 0.5140625,
+            "error_fraction": 0.04609375,
+            "completion_fraction": 0.56015625,
+            "cpu_seconds": 0.0072012803296873425
+          },
+          "direct_soft_analytic": {
+            "utility": 0.8033356531851181,
+            "correct_fraction": 0.5140625,
+            "error_fraction": 0.04609375,
+            "completion_fraction": 0.56015625,
+            "cpu_seconds": 0.007949509517186027
+          },
+          "fixed_analytic": {
+            "utility": 0.46034520549588065,
+            "correct_fraction": 0.33203125,
+            "error_fraction": 0.00546875,
+            "completion_fraction": 0.3375,
+            "cpu_seconds": 0.007753002089062999
+          },
+          "qvi_analytic": {
+            "utility": 0.8033356531851181,
+            "correct_fraction": 0.5140625,
+            "error_fraction": 0.04609375,
+            "completion_fraction": 0.56015625,
+            "cpu_seconds": 0.0071675179984374005
+          },
+          "qvi_ordinary": {
+            "utility": 0.8033356531851181,
+            "correct_fraction": 0.5140625,
+            "error_fraction": 0.04609375,
+            "completion_fraction": 0.56015625,
+            "cpu_seconds": 0.006681191993750568
+          }
+        }
+      },
+      {
+        "name": "stress_4",
+        "metrics": {
+          "direct_hard_analytic": {
+            "utility": 0.8907630350368102,
+            "correct_fraction": 0.703125,
+            "error_fraction": 0.11015625,
+            "completion_fraction": 0.81328125,
+            "cpu_seconds": 0.01739440910156125
+          },
+          "direct_soft_analytic": {
+            "utility": 0.8709336416342477,
+            "correct_fraction": 0.6953125,
+            "error_fraction": 0.12421875,
+            "completion_fraction": 0.81953125,
+            "cpu_seconds": 0.018155213812501715
+          },
+          "fixed_analytic": {
+            "utility": 0.8565782832821899,
+            "correct_fraction": 0.6875,
+            "error_fraction": 0.09140625,
+            "completion_fraction": 0.77890625,
+            "cpu_seconds": 0.018384959887501308
+          },
+          "qvi_analytic": {
+            "utility": 0.8907630350368102,
+            "correct_fraction": 0.703125,
+            "error_fraction": 0.11015625,
+            "completion_fraction": 0.81328125,
+            "cpu_seconds": 0.017466631457814064
+          },
+          "qvi_ordinary": {
+            "utility": 0.8907630350368102,
+            "correct_fraction": 0.703125,
+            "error_fraction": 0.11015625,
+            "completion_fraction": 0.81328125,
+            "cpu_seconds": 0.01600707932812524
+          }
+        }
+      }
+    ],
+    "complete_cost": {
+      "enclosing_policy_cpu": 310.54271020500335,
+      "confirmation_stage_cpu": 332.743770046,
+      "process_lifetime_cpu": 333.507513,
+      "rule": "Nested components are not added to enclosing CPU; per-policy preparation plus actual deployment load amortized once"
+    }
+  },
+  "native": {
+    "schema": "hcsn.progression.native-confirmation-audit.v1",
+    "passed": true,
+    "source_sha256": "52a00f2408f335fe36d20984744844bb766141a8a72e918bf7cfc3662514eff0",
+    "reporting_only_source_change_verified": true,
+    "original_failed_attempt_preserved": true,
+    "auditor_revision": "Retained failed audit01 arbitrary 10us field-sampling assumption; complete >= parent+child now checked, measured deltas reported without inventing a contract bound.",
+    "attempts": [
+      {
+        "attempt": "01",
+        "source_sha256": "c75258cde21ff42d82be4ac1b9fe2f7211bfc9732d8efff803b5bfddf58a9496",
+        "process_exit": 1,
+        "data_qualification_passed": true,
+        "process_success": false,
+        "numeric_rows": 2560,
+        "maximum_native_q_error": 4.440892098500626e-16,
+        "original_float_action_differences": 6,
+        "paired_tasks": 160,
+        "actual_file_reads": 666,
+        "restored_rollouts": 320,
+        "average_complete_cpu_seconds": {
+          "python": 0.02383774075624999,
+          "native": 0.045514087318749986
+        },
+        "task_native_child_cpu_seconds": 3.6126470000000017,
+        "numeric_native_child_cpu_seconds": 1.9430529999999997,
+        "successive_cpu_sampling_delta_maximum_seconds": 1.5422999998904174e-05,
+        "successive_cpu_sampling_delta_mean_seconds": 9.181562500231105e-07,
+        "enclosing_process_cpu_seconds": 19.722267000000002,
+        "enclosing_process_wall_seconds": 21.283687567003653,
+        "parent_report_cpu_seconds": 13.494835188000001
+      },
+      {
+        "attempt": "02",
+        "source_sha256": "2e3b3305d20d211e528c51b48b4f42a9a8717657c1455c1a8631e3fd58fb0e22",
+        "process_exit": 0,
+        "data_qualification_passed": true,
+        "process_success": true,
+        "numeric_rows": 2560,
+        "maximum_native_q_error": 4.440892098500626e-16,
+        "original_float_action_differences": 6,
+        "paired_tasks": 160,
+        "actual_file_reads": 666,
+        "restored_rollouts": 320,
+        "average_complete_cpu_seconds": {
+          "python": 0.026134517637500097,
+          "native": 0.04994223083125003
+        },
+        "task_native_child_cpu_seconds": 3.936474999999999,
+        "numeric_native_child_cpu_seconds": 2.0690639999999996,
+        "successive_cpu_sampling_delta_maximum_seconds": 3.926000000209484e-06,
+        "successive_cpu_sampling_delta_mean_seconds": 9.575562500435176e-07,
+        "enclosing_process_cpu_seconds": 21.208039999999997,
+        "enclosing_process_wall_seconds": 22.618554025000776,
+        "parent_report_cpu_seconds": 14.705088529
+      }
+    ],
+    "same_160_physical_cases_across_attempts": true,
+    "effective_independent_backend_cases": 160,
+    "effective_independent_numeric_vectors": 2560,
+    "measurement_scope": "Repeat is engineering verification on identical frozen data, not new independent efficacy. Nested child CPU is already represented by the enclosing process accounting and must not be added again.",
+    "native_physics_executed": false,
+    "production_activation": false,
+    "audit_cpu_seconds": 4.3053567710000005,
+    "audit_wall_seconds": 4.3138158159999875
+  },
+  "main_activation": false,
+  "audit_scope": "Post-freeze raw effects, actual contents, complete finite clocks/guards, independently rebuilt policies and first-event laws, declared statistics and cost differences. Does not establish analytic-cell causal gain, generic deep-Q convergence, hardware energy or production admission.",
+  "full_value_audit": {
+    "path": "VALUE_CONFIRMATION_AUDIT_01.json.gz",
+    "sha256": "f6a4e4d473feef5ad0103cf0816b650060429d5ea4ba8a67d2430fdd01b84ef2",
+    "uncompressed_sha256": "fdf91f5636230f46cb82452fcf4cc5f52b2277121a9932d3575d148e219d05ee",
+    "bytes": 1019508
+  },
+  "audit_source_sha256": {
+    "value_confirmation_audit.py": "c53656a69ae692bc4259699419f2a507344a4f9547e95c53254222510323e16a",
+    "native_confirmation_audit.py": "f5fd4cc3e308a8b0e805040bc6245cd6accb31c94e55798dd9a4def643ffea48",
+    "teacher_confirmation_audit.py": "bc62255fbac1c52ea36fd213661207392daf5aa706e9990dcd2438f6173e8367",
+    "native_confirmation_audit_v2.py": "52a00f2408f335fe36d20984744844bb766141a8a72e918bf7cfc3662514eff0"
+  },
+  "frozen_identity": {
+    "teacher_freeze": {
+      "manifest_sha256": "a6c002ff2d61ca0d387af8cbc7d45ab9399aeda8019ef2ea9ba1a46791fd9694",
+      "receipt": {
+        "commit": "a37c99a87a25fe8417ec29ddbebb1c035d356a53",
+        "publication_verification": "See FREEZE_VERIFIED.json; directory entries and prepared archive members were byte-identity verified.",
+        "remote_manifest_sha256": "a6c002ff2d61ca0d387af8cbc7d45ab9399aeda8019ef2ea9ba1a46791fd9694",
+        "remote_verified": true,
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "verified_at": "2026-10-31 02:42:31 UTC",
+        "verified_files": 104
+      },
+      "receipt_sha256": "2b84490ef659c7bfc72c8deab55caea451811ef179999764d425a4df5d946fc2",
+      "scope": "Remote publication independently verified by orchestrator; this runner verifies the supplied identity and every local prepared/source byte"
+    },
+    "teacher_prepared_manifest_sha256": "a6c002ff2d61ca0d387af8cbc7d45ab9399aeda8019ef2ea9ba1a46791fd9694",
+    "models": [
+      {
+        "seed": 73031,
+        "nonzero": {
+          "deployment_digest": "f60e3d777c7ffdb71301ebaaa2372a28a7a8744bd1600260ac38ee0a9f958b42",
+          "parameter_sha256": "061392009c1589237270f87c8b36c1f1e507d6455b9b6cd805c8ad92c86c6f3a",
+          "path": "seed73031/model_nonzero.json",
+          "sha256": "e8def9aec466f44ad0557e67848aecb37013b88836de69a53c2143b7f1816ee4",
+          "update": 6000
+        }
+      },
+      {
+        "seed": 73037,
+        "nonzero": {
+          "deployment_digest": "e1fd61cc8e9824caccee1557e20d7724a5759e6fe6a195bbd100a8fb4a00794b",
+          "parameter_sha256": "e61892b037d954232ed973fc2c9eea1aa261eeaa11ac0cf95daab8d4db6c0bc4",
+          "path": "seed73037/model_nonzero.json",
+          "sha256": "46c244fd5d1de7566f7f19735749141f68e4c705320b897fb4411f2e84cd3fb5",
+          "update": 6000
+        }
+      },
+      {
+        "seed": 73043,
+        "nonzero": {
+          "deployment_digest": "9927ede6c56fad70e25ec3fbd68de1ada3caefc08c6d8e112c87c49270002828",
+          "parameter_sha256": "825184610330aa27e2087b6ec357ed2faadf220f2afe7461af2c802b9315b4a9",
+          "path": "seed73043/model_nonzero.json",
+          "sha256": "8db0e645edcf7009cdc064eed7544082a0e2c58dffbd8e6bbfeb4b17ce93f016",
+          "update": 6000
+        }
+      },
+      {
+        "seed": 73049,
+        "nonzero": {
+          "deployment_digest": "e9844a59572341e23783ea43eea5dd41e796068f692f188d5a2fc2b7d18a6608",
+          "parameter_sha256": "ab6afe06f4eb13feac7030a9c35a3a8ccad4df5d43b9fe19191ffcd49d31073f",
+          "path": "seed73049/model_nonzero.json",
+          "sha256": "b51449d4578aec26baf90edbf53891e692cd5d78aaebdce0fcf21c13448d5145",
+          "update": 6000
+        }
+      },
+      {
+        "seed": 73057,
+        "nonzero": {
+          "deployment_digest": "1d78f289ac26dade37aa04dd65e9572aab2117bd1227c0cfea1946e35b2a12b8",
+          "parameter_sha256": "b3547aa7bf20fec44f1a29207db5f33d2bc8b7b2333dd360bf944bd61596ed92",
+          "path": "seed73057/model_nonzero.json",
+          "sha256": "a980739362f5d88451035e24ad6aae4471d07c20c0d8c630ac5cdde1242bbf8c",
+          "update": 6000
+        }
+      }
+    ],
+    "value_prepared_manifest_sha256": "d91df0ef83c9431777b17ec6f1071bd611e0ab3698e9efd86aef9db8a39ef356",
+    "native_binary_sha256": "20f1db337c544e7c2f1ea8c4c29ae7cc87f1d933258490833e6647d793b693a2",
+    "native_compiled_source_digest": "52df63ce0650c0e806e890b69c88b9202244422a1d1b7304a7af571ab5a1b2b5"
+  }
+}
