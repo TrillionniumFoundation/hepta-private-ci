@@ -1,0 +1,463 @@
+{
+  "status": "paused_after_unknown_create_tree_outcome",
+  "saved_at": "2026-10-31T02:22:53.705Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "target_branch": "research/hcsn-task-value-execution-20261031",
+  "pull_request_base_branch": "research/hcsn-conservative-acceleration-20261030",
+  "observed_base_branch_sha": "85bfc5e0e8fd0f6a1f3725a6872d4d9b9dc5ac71",
+  "target_branch_last_observation": "absent at pre-mutation ls-remote",
+  "local_base_sha": "1d959d8d82091e6014b13c2191f62bf74e778561",
+  "local_source_head": "af5907a607edc393a3678fc3eb70f1232fa3612f",
+  "local_source_tree": "14edd8647fe0c6422a2da7d85ec40346fa913217",
+  "confirmed_remote_commit_count": 0,
+  "confirmed_remote_commits": [],
+  "confirmed_remote_trees": [],
+  "remote_branch_create_or_update_called": false,
+  "pull_request_create_called": false,
+  "last_remote_write": {
+    "tool": "mcp__codex_apps__github_create_tree",
+    "request_base_tree": "f3a2e7286ca3585c0c6ee12e3b76a11f68dc15dc",
+    "expected_tree_if_successful": "a9dd63fc9844dcae9d43086e909666e5d861cd19",
+    "changed_paths": [
+      {
+        "path": "experiments/hcsn_hx_unified_v3/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "status": "A"
+      },
+      {
+        "path": "experiments/hcsn_hx_unified_v3/coupled_qvi.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8114e078f511e441d75df17ee334b0d9cee55ec0",
+        "status": "A"
+      },
+      {
+        "path": "experiments/hcsn_hx_unified_v3/erlang_async_qvi.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5d3367a543c6c24fed1e6793a32ee627f73b399e",
+        "status": "A"
+      },
+      {
+        "path": "experiments/hcsn_hx_unified_v3/hx.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b6afc3c957297ed9b37b4f0177e0343ee6607f83",
+        "status": "A"
+      },
+      {
+        "path": "experiments/hcsn_hx_unified_v3/matched_slope.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "46d0c86926c53de389c61f0c87727d90b30fb829",
+        "status": "A"
+      },
+      {
+        "path": "experiments/hcsn_hx_unified_v3/stopping.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d165ed777990bbf8f3606b58e1b0991de59a1544",
+        "status": "A"
+      },
+      {
+        "path": "experiments/hcsn_hx_unified_v3/test_erlang_async_qvi.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "efe4f4ae275c2653c6b90a1ab1dd826d40c63127",
+        "status": "A"
+      },
+      {
+        "path": "experiments/hcsn_hx_unified_v3/test_matched_slope.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4b97b68a9813b5125680175d31f55fc22aea804a",
+        "status": "A"
+      }
+    ],
+    "outcome": "unknown",
+    "tool_response": "aborted by user after 1363.9s",
+    "returned_object_sha": null,
+    "functions_cell_id": null
+  },
+  "explicit_auto_review_or_permission_rejection": false,
+  "metadata_limitation": "create_commit schema exposes no author/committer dates; any resumed publication must record local-to-remote commit mappings and verify exact tree identity.",
+  "local_manifest": {
+    "base": "1d959d8d82091e6014b13c2191f62bf74e778561",
+    "base_tree": "f3a2e7286ca3585c0c6ee12e3b76a11f68dc15dc",
+    "head": "af5907a607edc393a3678fc3eb70f1232fa3612f",
+    "head_tree": "14edd8647fe0c6422a2da7d85ec40346fa913217",
+    "commits": [
+      {
+        "local_sha": "13a71c06b8e0559f0625c1c275056a6f622a2f9e",
+        "tree": "a9dd63fc9844dcae9d43086e909666e5d861cd19",
+        "parents": [
+          "1d959d8d82091e6014b13c2191f62bf74e778561"
+        ],
+        "author": "Codex <codex@openai.com> 1793410555 +0200",
+        "committer": "Codex <codex@openai.com> 1793410555 +0200",
+        "message": "research: pin HCSN QVI and matched-control source dependencies\n",
+        "raw_local_commit": "tree a9dd63fc9844dcae9d43086e909666e5d861cd19\nparent 1d959d8d82091e6014b13c2191f62bf74e778561\nauthor Codex <codex@openai.com> 1793410555 +0200\ncommitter Codex <codex@openai.com> 1793410555 +0200\n\nresearch: pin HCSN QVI and matched-control source dependencies\n",
+        "changes": [
+          {
+            "path": "experiments/hcsn_hx_unified_v3/__init__.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_hx_unified_v3/coupled_qvi.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "8114e078f511e441d75df17ee334b0d9cee55ec0",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_hx_unified_v3/erlang_async_qvi.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5d3367a543c6c24fed1e6793a32ee627f73b399e",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_hx_unified_v3/hx.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b6afc3c957297ed9b37b4f0177e0343ee6607f83",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_hx_unified_v3/matched_slope.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "46d0c86926c53de389c61f0c87727d90b30fb829",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_hx_unified_v3/stopping.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d165ed777990bbf8f3606b58e1b0991de59a1544",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_hx_unified_v3/test_erlang_async_qvi.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "efe4f4ae275c2653c6b90a1ab1dd826d40c63127",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_hx_unified_v3/test_matched_slope.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "4b97b68a9813b5125680175d31f55fc22aea804a",
+            "status": "A"
+          }
+        ]
+      },
+      {
+        "local_sha": "6b3f842afd17b44079f78f91d4a75275b6ae98e0",
+        "tree": "b53494efc3c6f9de2ec858089948ef4a65e414f7",
+        "parents": [
+          "13a71c06b8e0559f0625c1c275056a6f622a2f9e"
+        ],
+        "author": "Codex <codex@openai.com> 1793410560 +0200",
+        "committer": "Codex <codex@openai.com> 1793410560 +0200",
+        "message": "research: record exact HCSN donor provenance\n",
+        "raw_local_commit": "tree b53494efc3c6f9de2ec858089948ef4a65e414f7\nparent 13a71c06b8e0559f0625c1c275056a6f622a2f9e\nauthor Codex <codex@openai.com> 1793410560 +0200\ncommitter Codex <codex@openai.com> 1793410560 +0200\n\nresearch: record exact HCSN donor provenance\n",
+        "changes": [
+          {
+            "path": "experiments/hcsn_task_value_v1/SOURCE_BASELINE.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "0f1922fd41661d644295ee6cfc1ae34f04441dd5",
+            "status": "A"
+          }
+        ]
+      },
+      {
+        "local_sha": "ecb326b2db9fa05a549892fd9bf5af5c151c8753",
+        "tree": "01a9223687ee9ab5e568e39c8ac6b6859be3e0e4",
+        "parents": [
+          "6b3f842afd17b44079f78f91d4a75275b6ae98e0"
+        ],
+        "author": "Codex <codex@openai.com> 1793411654 +0200",
+        "committer": "Codex <codex@openai.com> 1793411654 +0200",
+        "message": "research: add reward-aware asynchronous QVI and directional sensitivities\n",
+        "raw_local_commit": "tree 01a9223687ee9ab5e568e39c8ac6b6859be3e0e4\nparent 6b3f842afd17b44079f78f91d4a75275b6ae98e0\nauthor Codex <codex@openai.com> 1793411654 +0200\ncommitter Codex <codex@openai.com> 1793411654 +0200\n\nresearch: add reward-aware asynchronous QVI and directional sensitivities\n",
+        "changes": [
+          {
+            "path": "experiments/hcsn_task_value_v1/__init__.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "967548e16cd317829f9afeec6d13e366d4527fdc",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_task_value_v1/oracle.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "ce0b46e82f1cebcc1e75ce8b1a1241f3dde0db1a",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_task_value_v1/oracle_gradients.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d7fa263b5216a5dbfd30100bc8aaf98670faa94c",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_task_value_v1/oracle_tests.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "0ff64af51ad2b04216b3b3af8b66a85168d6a928",
+            "status": "A"
+          }
+        ]
+      },
+      {
+        "local_sha": "04e0b2062ea65d8dbceadcfdb154dcedc7f2d0bd",
+        "tree": "572f75bdeab7ad6c94aaeb69796c552a314c4e8d",
+        "parents": [
+          "ecb326b2db9fa05a549892fd9bf5af5c151c8753"
+        ],
+        "author": "Codex <codex@openai.com> 1793411654 +0200",
+        "committer": "Codex <codex@openai.com> 1793411654 +0200",
+        "message": "research: verify affine reward boundary against independent spatial QVI\n",
+        "raw_local_commit": "tree 572f75bdeab7ad6c94aaeb69796c552a314c4e8d\nparent ecb326b2db9fa05a549892fd9bf5af5c151c8753\nauthor Codex <codex@openai.com> 1793411654 +0200\ncommitter Codex <codex@openai.com> 1793411654 +0200\n\nresearch: verify affine reward boundary against independent spatial QVI\n",
+        "changes": [
+          {
+            "path": "experiments/hcsn_task_value_v1/CONTRACT.md",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "f6053cbdf71814b3f88a3790d5bf97e6ee18275b",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_task_value_v1/oracle_affine_validation.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "e5e37c3dfde9d76f6a7006f3668c411c8a8caccf",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_task_value_v1/oracle_validation.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "44e83c9e877054c5f258cd0c10c135fa50c164c6",
+            "status": "A"
+          }
+        ]
+      },
+      {
+        "local_sha": "5260470c4f062b70e3006a632d927af71a913efa",
+        "tree": "904032cb98d21c05f7a6e1f68874897563fb79fa",
+        "parents": [
+          "04e0b2062ea65d8dbceadcfdb154dcedc7f2d0bd"
+        ],
+        "author": "Codex <codex@openai.com> 1793411654 +0200",
+        "committer": "Codex <codex@openai.com> 1793411654 +0200",
+        "message": "fix: retain finite-maturity principal in HX resolvent tail\n",
+        "raw_local_commit": "tree 904032cb98d21c05f7a6e1f68874897563fb79fa\nparent 04e0b2062ea65d8dbceadcfdb154dcedc7f2d0bd\nauthor Codex <codex@openai.com> 1793411654 +0200\ncommitter Codex <codex@openai.com> 1793411654 +0200\n\nfix: retain finite-maturity principal in HX resolvent tail\n",
+        "changes": [
+          {
+            "path": "experiments/hcsn_hx_unified_v3/hx.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "55f4b4e9f5fd83cfa41b02f30b5a7520680f9086",
+            "status": "M"
+          },
+          {
+            "path": "experiments/hcsn_hx_unified_v3/test_hx_tail.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d01c27cd656d9ead94a09c8a920e78c889b67119",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_task_value_v1/gradient_audit.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "655a9dc88980d84603b86c6ea69e81ecd26405af",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_task_value_v1/gradient_audit_tests.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "7ffa597638a1091aadf2484d1ef3d8ceee3ddea8",
+            "status": "A"
+          }
+        ]
+      },
+      {
+        "local_sha": "3bb0e686015dd8687e20051182e3310ae4503ad4",
+        "tree": "af87f6bbdd2a35ec3f5ca322bb8b631a2bd5904e",
+        "parents": [
+          "5260470c4f062b70e3006a632d927af71a913efa"
+        ],
+        "author": "Codex <codex@openai.com> 1793411655 +0200",
+        "committer": "Codex <codex@openai.com> 1793411655 +0200",
+        "message": "research: add causal reward-aware probability-flow cell\n",
+        "raw_local_commit": "tree af87f6bbdd2a35ec3f5ca322bb8b631a2bd5904e\nparent 5260470c4f062b70e3006a632d927af71a913efa\nauthor Codex <codex@openai.com> 1793411655 +0200\ncommitter Codex <codex@openai.com> 1793411655 +0200\n\nresearch: add causal reward-aware probability-flow cell\n",
+        "changes": [
+          {
+            "path": "experiments/hcsn_task_value_v1/flow_audit_tests.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c23916cd87b12ffc428a107b85e0344c04d673e8",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_task_value_v1/model.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "6aedf85496c5960a50b8fb17032a1f27a18b73d9",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_task_value_v1/operators.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "ad65fb88bfce147c3e08f739a468cbaef1753946",
+            "status": "A"
+          }
+        ]
+      },
+      {
+        "local_sha": "6a5ee719f26c96dc719aaa79bfd58dd86e27c318",
+        "tree": "9f6bffe888f6084caf79388f5a9a6883f26ee979",
+        "parents": [
+          "3bb0e686015dd8687e20051182e3310ae4503ad4"
+        ],
+        "author": "Codex <codex@openai.com> 1793411655 +0200",
+        "committer": "Codex <codex@openai.com> 1793411655 +0200",
+        "message": "research: preserve native causal audio-video event times\n",
+        "raw_local_commit": "tree 9f6bffe888f6084caf79388f5a9a6883f26ee979\nparent 3bb0e686015dd8687e20051182e3310ae4503ad4\nauthor Codex <codex@openai.com> 1793411655 +0200\ncommitter Codex <codex@openai.com> 1793411655 +0200\n\nresearch: preserve native causal audio-video event times\n",
+        "changes": [
+          {
+            "path": "experiments/hcsn_task_value_v1/ASYNC_AV.md",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "bec66fd838cba38bbeca33461245e33e630cbfad",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_task_value_v1/async_av.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d57db5971bd85ac29e385324dd51a1dc0d69991c",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_task_value_v1/async_av_tests.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "46fb697c7221564ac788b541710812a2491b4759",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_task_value_v1/data/async_manifest.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "4f557ab21a535e734b5e81e9231bfd0bfa1d188e",
+            "status": "A"
+          }
+        ]
+      },
+      {
+        "local_sha": "0e0f8c629a2b866bc883fb7344e07d3559431823",
+        "tree": "5885bd3d07f3410333a0be050e23a4246476e1cd",
+        "parents": [
+          "6a5ee719f26c96dc719aaa79bfd58dd86e27c318"
+        ],
+        "author": "Codex <codex@openai.com> 1793411655 +0200",
+        "committer": "Codex <codex@openai.com> 1793411655 +0200",
+        "message": "research: meter complete worker execution and missing energy counters\n",
+        "raw_local_commit": "tree 5885bd3d07f3410333a0be050e23a4246476e1cd\nparent 6a5ee719f26c96dc719aaa79bfd58dd86e27c318\nauthor Codex <codex@openai.com> 1793411655 +0200\ncommitter Codex <codex@openai.com> 1793411655 +0200\n\nresearch: meter complete worker execution and missing energy counters\n",
+        "changes": [
+          {
+            "path": "experiments/hcsn_task_value_v1/cost_meter.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "9c84ec523a487915006acff35b2498097691a03f",
+            "status": "A"
+          }
+        ]
+      },
+      {
+        "local_sha": "75800f5b4d16b52d38d74abfe6cecf7ccf9e6666",
+        "tree": "99342c70dd5317472d5b66db78eeaa1c5bff1128",
+        "parents": [
+          "0e0f8c629a2b866bc883fb7344e07d3559431823"
+        ],
+        "author": "Codex <codex@openai.com> 1793411655 +0200",
+        "committer": "Codex <codex@openai.com> 1793411655 +0200",
+        "message": "research: jointly train content and physical parameters with fair controls\n",
+        "raw_local_commit": "tree 99342c70dd5317472d5b66db78eeaa1c5bff1128\nparent 0e0f8c629a2b866bc883fb7344e07d3559431823\nauthor Codex <codex@openai.com> 1793411655 +0200\ncommitter Codex <codex@openai.com> 1793411655 +0200\n\nresearch: jointly train content and physical parameters with fair controls\n",
+        "changes": [
+          {
+            "path": "experiments/hcsn_task_value_v1/experiment.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5a4d6cfbd7b372b4b04477f4c35c14112bb321c9",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_task_value_v1/experiment_tests.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "8ed4ac48412a46003d258c2b6e5fbd8d41f013f0",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_task_value_v1/training.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b0f258c17ea367d6390486893a2ce030c465d640",
+            "status": "A"
+          }
+        ]
+      },
+      {
+        "local_sha": "af5907a607edc393a3678fc3eb70f1232fa3612f",
+        "tree": "14edd8647fe0c6422a2da7d85ec40346fa913217",
+        "parents": [
+          "75800f5b4d16b52d38d74abfe6cecf7ccf9e6666"
+        ],
+        "author": "Codex <codex@openai.com> 1793411660 +0200",
+        "committer": "Codex <codex@openai.com> 1793411660 +0200",
+        "message": "research: register 168 HCSN mechanism capability and cost experiments\n",
+        "raw_local_commit": "tree 14edd8647fe0c6422a2da7d85ec40346fa913217\nparent 75800f5b4d16b52d38d74abfe6cecf7ccf9e6666\nauthor Codex <codex@openai.com> 1793411660 +0200\ncommitter Codex <codex@openai.com> 1793411660 +0200\n\nresearch: register 168 HCSN mechanism capability and cost experiments\n",
+        "changes": [
+          {
+            "path": "experiments/hcsn_task_value_v1/results/study001/protocol.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "27e4dd97e9c35972c0082d36a78a69a1cbe04501",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_task_value_v1/results/study001/registration_receipt.json",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "fba7af6f1f057b164ae45aac874999199220f362",
+            "status": "A"
+          },
+          {
+            "path": "experiments/hcsn_task_value_v1/study.py",
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5479cbb4b62b9c7080457fa4ff6f4bc679936a52",
+            "status": "A"
+          }
+        ]
+      }
+    ]
+  },
+  "note": "No new remote writes were attempted after the parent requested this status pause. The unknown tree is an unreferenced object at most; no commit, branch, or PR creation was attempted."
+}

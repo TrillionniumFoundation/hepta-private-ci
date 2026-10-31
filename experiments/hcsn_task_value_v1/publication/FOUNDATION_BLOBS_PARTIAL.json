@@ -1,0 +1,88 @@
+{
+  "archive_sha256": "cfd7cd8a1f50635bfac30f1c32def69493b7c46a523f683d32f964a31a062adb",
+  "compressed_bytes": 3435216,
+  "confirmed_blobs": [],
+  "confirmed_successful_blob_count": 0,
+  "get_repo_confirmed_success": true,
+  "local_parts_preverified": 11,
+  "local_verification": "Every part byte count, SHA256 and Git blob SHA1 matched manifest; concatenated SHA256 matched archive",
+  "manifest_path": "experiments/hcsn_task_value_v1/artifacts/foundations001/foundations001.json",
+  "manifest_sha256": "79a43c6b4d0d9015caf710c773862b38ff5f3f5ef75187d117a43c1b5e3e0fe1",
+  "member_count": 145,
+  "next_action_owner": "root; read-only lookup of expected Git blob SHA if desired, followed by explicit publication-gap record",
+  "parts_without_upload_attempt": [
+    {
+      "bytes": 327680,
+      "expected_git_blob_sha1": "5e1238d14fbe716632552b88a69bdef24319a6c2",
+      "path": "experiments/hcsn_task_value_v1/artifacts/foundations001/foundations001.tar.xz.part0001"
+    },
+    {
+      "bytes": 327680,
+      "expected_git_blob_sha1": "eda8d72cb0d8242c455671fd664ae9fc389d0775",
+      "path": "experiments/hcsn_task_value_v1/artifacts/foundations001/foundations001.tar.xz.part0002"
+    },
+    {
+      "bytes": 327680,
+      "expected_git_blob_sha1": "9e3f48d5790313a1d9fec70b20f5bef06fcccf31",
+      "path": "experiments/hcsn_task_value_v1/artifacts/foundations001/foundations001.tar.xz.part0003"
+    },
+    {
+      "bytes": 327680,
+      "expected_git_blob_sha1": "c83d64b34c97a142f751392eaccc747592ebc0b9",
+      "path": "experiments/hcsn_task_value_v1/artifacts/foundations001/foundations001.tar.xz.part0004"
+    },
+    {
+      "bytes": 327680,
+      "expected_git_blob_sha1": "442529b49fa25581b73e5a21c5cc73d8cfabfcc4",
+      "path": "experiments/hcsn_task_value_v1/artifacts/foundations001/foundations001.tar.xz.part0005"
+    },
+    {
+      "bytes": 327680,
+      "expected_git_blob_sha1": "b9198a952eecb8193b0ef6885758daca8aa4fffa",
+      "path": "experiments/hcsn_task_value_v1/artifacts/foundations001/foundations001.tar.xz.part0006"
+    },
+    {
+      "bytes": 327680,
+      "expected_git_blob_sha1": "c9d6c423c71408002186e633429dfe5e6d66ef9b",
+      "path": "experiments/hcsn_task_value_v1/artifacts/foundations001/foundations001.tar.xz.part0007"
+    },
+    {
+      "bytes": 327680,
+      "expected_git_blob_sha1": "a94fba89c196d109779e82319aebcad78aabb2af",
+      "path": "experiments/hcsn_task_value_v1/artifacts/foundations001/foundations001.tar.xz.part0008"
+    },
+    {
+      "bytes": 327680,
+      "expected_git_blob_sha1": "00fa67f549d163328301c0276d122299af11318a",
+      "path": "experiments/hcsn_task_value_v1/artifacts/foundations001/foundations001.tar.xz.part0009"
+    },
+    {
+      "bytes": 158416,
+      "expected_git_blob_sha1": "b755f702974d549a808c21017caa46094c5f550b",
+      "path": "experiments/hcsn_task_value_v1/artifacts/foundations001/foundations001.tar.xz.part0010"
+    }
+  ],
+  "permission_or_credential_changes": false,
+  "publication_complete": false,
+  "recorded_at_utc": "2026-10-31T02:24:07.877923+00:00",
+  "remote_write_calls_stopped": true,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hcsn-publication-foundation-blobs-partial.v1",
+  "scope": "Only the 11 registered foundations001 binary parts; no tree, commit, ref, PR or local index mutation by this agent",
+  "unknown_upload_chains": [
+    {
+      "bytes": 327680,
+      "dispatch_observability": "The local read and remote call were inside one awaited wrapper without an intermediate persisted marker; remote dispatch cannot be established independently from this receipt",
+      "expected_git_blob_sha1": "eafd17f05eb7d41572a35a2a4564795d0f55ebd8",
+      "interruption_context": "Parent/root reports interruption for a status check; not an end-user cancellation and not an automatic approval rejection",
+      "path": "experiments/hcsn_task_value_v1/artifacts/foundations001/foundations001.tar.xz.part0000",
+      "planned_encoding": "base64",
+      "planned_tool": "github_create_blob",
+      "remote_completion": "unknown; no response or returned SHA received",
+      "response_saved": false,
+      "retry_performed": false,
+      "sha256": "196ea0ecedde4126e633c1f950771b62c90670de1cbc2235a14b1d60f8f320c9",
+      "tool_terminal_text": "aborted by user after 543.0s"
+    }
+  ]
+}
