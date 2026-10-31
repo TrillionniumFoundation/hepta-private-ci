@@ -38,9 +38,9 @@ use serde::Serialize;
 
 use crate::memory_cell_release::core::MemoryReleaseBundle;
 use crate::memory_cell_release::core::MemoryReleaseSlot;
-use crate::memory_independent_model_v12::IndependentCellModel;
 use crate::memory_independent_model_v12::ENVELOPE_V11;
 use crate::memory_independent_model_v12::ENVELOPE_V12;
+use crate::memory_independent_model_v12::IndependentCellModel;
 
 const MAX_BYTES: usize = 40 * 1024 * 1024;
 
@@ -129,11 +129,24 @@ impl MemoryCellCandidateV12 {
         generation: ContractGenerationV1,
         payload: &[u8],
     ) -> Result<Self, String> {
-        MemoryCellCandidateV11::from_versioned_projection(projection, generation, payload, ENVELOPE_V12).map(Self)
+        MemoryCellCandidateV11::from_versioned_projection(
+            projection,
+            generation,
+            payload,
+            ENVELOPE_V12,
+        )
+        .map(Self)
     }
-    pub fn bytes(&self) -> &[u8] { self.0.bytes() }
-    pub fn digest(&self) -> ContractDigestV1 { self.0.digest() }
-    pub fn bind_manifest(&self, manifest: LearningArtifactManifestV2) -> Result<LearningArtifactManifestV2, String> {
+    pub fn bytes(&self) -> &[u8] {
+        self.0.bytes()
+    }
+    pub fn digest(&self) -> ContractDigestV1 {
+        self.0.digest()
+    }
+    pub fn bind_manifest(
+        &self,
+        manifest: LearningArtifactManifestV2,
+    ) -> Result<LearningArtifactManifestV2, String> {
         self.0.bind_manifest(manifest)
     }
 }
@@ -261,7 +274,9 @@ impl MemoryReleaseBundle for SelectedMemoryCellV11 {
         wire.selector
             .validate()
             .map_err(|error| error.to_string())?;
-        if !matches!(wire.schema.as_str(), ENVELOPE_V11 | ENVELOPE_V12) || wire.generation.get() >= 1_u64 << 53 {
+        if !matches!(wire.schema.as_str(), ENVELOPE_V11 | ENVELOPE_V12)
+            || wire.generation.get() >= 1_u64 << 53
+        {
             return Err("V11 cell schema or generation".to_string());
         }
         let model = decode_model(&wire)?;
@@ -297,7 +312,11 @@ impl MemoryReleaseBundle for SelectedMemoryCellV11 {
 }
 
 fn decode_model(wire: &CellWire) -> Result<IndependentCellModel, String> {
-    let model = IndependentCellModel::decode(&wire.schema, wire.payload.as_bytes(), wire.payload_digest.digest())?;
+    let model = IndependentCellModel::decode(
+        &wire.schema,
+        wire.payload.as_bytes(),
+        wire.payload_digest.digest(),
+    )?;
     let kind = match wire.selector.kind {
         MemoryInventoryKindV1::Semantic => MemoryCellKindV1::Semantic,
         MemoryInventoryKindV1::Procedure => MemoryCellKindV1::Procedure,

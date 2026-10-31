@@ -85,13 +85,19 @@ impl MemoryMlpCellV12 {
             MemoryCellKindV1::Procedure => (28, "hepta.memory.inventory-program.ops4x7.v1"),
             MemoryCellKindV1::Event => return Err("V12 event prediction forbidden".to_string()),
         };
-        if wire.schema != SCHEMA || wire.address_profile != ADDRESS || wire.numeric_profile != NUMERIC
-            || wire.output_profile != profile || !(1..=384).contains(&wire.dimension)
-            || !(1..=256).contains(&wire.hidden) || wire.arrays.len() != 4
+        if wire.schema != SCHEMA
+            || wire.address_profile != ADDRESS
+            || wire.numeric_profile != NUMERIC
+            || wire.output_profile != profile
+            || !(1..=384).contains(&wire.dimension)
+            || !(1..=256).contains(&wire.hidden)
+            || wire.arrays.len() != 4
             || !(1..=4096).contains(&wire.supports.len())
             || !wire.features.keys().eq(wire.supports.keys())
-            || !wire.minimum_margin.is_finite() || !(0.0..=1_000_000.0).contains(&wire.minimum_margin)
-            || wire.minimum_margin == 0.0 || !valid_sources(&wire.lineage_sources)
+            || !wire.minimum_margin.is_finite()
+            || !(0.0..=1_000_000.0).contains(&wire.minimum_margin)
+            || wire.minimum_margin == 0.0
+            || !valid_sources(&wire.lineage_sources)
         {
             return Err("V12 MLP profile, dimensions or dependencies invalid".to_string());
         }
@@ -101,8 +107,11 @@ impl MemoryMlpCellV12 {
         digest(&wire.training_receipt_sha256)?;
         for (key, sources) in &wire.supports {
             digest(key)?;
-            if sources.len() != 1 || !valid_sources(sources)
-                || sources.iter().any(|source| wire.lineage_sources.binary_search(source).is_err())
+            if sources.len() != 1
+                || !valid_sources(sources)
+                || sources
+                    .iter()
+                    .any(|source| wire.lineage_sources.binary_search(source).is_err())
             {
                 return Err("V12 MLP invalid support lineage".to_string());
             }
@@ -117,9 +126,12 @@ impl MemoryMlpCellV12 {
             ("hidden.weight", vec![wire.hidden, wire.dimension]),
         ] {
             let tensor = wire.arrays.get(name).ok_or("V12 MLP tensor missing")?;
-            if tensor.shape != shape { return Err("V12 MLP tensor shape differs".to_string()); }
+            if tensor.shape != shape {
+                return Err("V12 MLP tensor shape differs".to_string());
+            }
             let (values, raw) = decode(&tensor.f32le_hex, shape.iter().product())?;
-            let header = serde_json::to_vec(&(name, &shape, "float32")).map_err(|error| error.to_string())?;
+            let header = serde_json::to_vec(&(name, &shape, "float32"))
+                .map_err(|error| error.to_string())?;
             parameters.extend_from_slice(&header);
             parameters.extend_from_slice(&raw);
             if name.starts_with("head.") {
@@ -148,41 +160,85 @@ impl MemoryMlpCellV12 {
         wire.arrays.clear();
         wire.features.clear();
         Ok(Self {
-            wire, digest: expected, parameters_digest, encoder_digest, owner_cut_digest,
-            head_digest: Digest32::of_parts(&[b"hepta.memory.mlp-head.v12", profile.as_bytes(), encoder_digest.as_array(), &head]),
-            arrays, features,
+            wire,
+            digest: expected,
+            parameters_digest,
+            encoder_digest,
+            owner_cut_digest,
+            head_digest: Digest32::of_parts(&[
+                b"hepta.memory.mlp-head.v12",
+                profile.as_bytes(),
+                encoder_digest.as_array(),
+                &head,
+            ]),
+            arrays,
+            features,
         })
     }
 
-    pub fn kind(&self) -> MemoryCellKindV1 { self.wire.kind }
-    pub fn supports(&self) -> &BTreeMap<String, Vec<String>> { &self.wire.supports }
-    pub fn lineage_sources(&self) -> &[String] { &self.wire.lineage_sources }
-    pub fn output_profile(&self) -> &str { &self.wire.output_profile }
-    pub fn numeric_profile(&self) -> &str { NUMERIC }
-    pub fn address_profile(&self) -> &str { ADDRESS }
+    pub fn kind(&self) -> MemoryCellKindV1 {
+        self.wire.kind
+    }
+    pub fn supports(&self) -> &BTreeMap<String, Vec<String>> {
+        &self.wire.supports
+    }
+    pub fn lineage_sources(&self) -> &[String] {
+        &self.wire.lineage_sources
+    }
+    pub fn output_profile(&self) -> &str {
+        &self.wire.output_profile
+    }
+    pub fn numeric_profile(&self) -> &str {
+        NUMERIC
+    }
+    pub fn address_profile(&self) -> &str {
+        ADDRESS
+    }
 
     pub fn predict(&self, key: &str) -> Result<MemoryResidualPredictionV1, String> {
-        if key.is_empty() || key.len() > 4096 { return Err("V12 MLP query bound".to_string()); }
+        if key.is_empty() || key.len() > 4096 {
+            return Err("V12 MLP query bound".to_string());
+        }
         let mut result = MemoryResidualPredictionV1 {
-            kind: self.kind(), value: None, logits: Vec::new(), minimum_margin: 0.0,
-            source_ids: Vec::new(), artifact_digest: self.digest.to_string(),
+            kind: self.kind(),
+            value: None,
+            logits: Vec::new(),
+            minimum_margin: 0.0,
+            source_ids: Vec::new(),
+            artifact_digest: self.digest.to_string(),
             parameter_digest: self.parameters_digest.to_string(),
             abstain: Some(MemoryResidualAbstentionV1::OutsideWrittenSupport),
         };
         let address = Digest32::of_bytes(key.as_bytes()).to_string();
-        let Some(sources) = self.supports().get(&address) else { return Ok(result); };
-        let features = self.features.get(&address).ok_or("V12 MLP missing features")?;
-        let mut hidden: Vec<f64> = self.arrays["hidden.bias"].iter().copied().map(f64::from).collect();
+        let Some(sources) = self.supports().get(&address) else {
+            return Ok(result);
+        };
+        let features = self
+            .features
+            .get(&address)
+            .ok_or("V12 MLP missing features")?;
+        let mut hidden: Vec<f64> = self.arrays["hidden.bias"]
+            .iter()
+            .copied()
+            .map(f64::from)
+            .collect();
         for (row, value) in hidden.iter_mut().enumerate() {
             for (column, feature) in features.iter().enumerate() {
-                *value += f64::from(self.arrays["hidden.weight"][row * self.wire.dimension + column]) * f64::from(*feature);
+                *value +=
+                    f64::from(self.arrays["hidden.weight"][row * self.wire.dimension + column])
+                        * f64::from(*feature);
             }
             *value = value.max(0.0);
         }
-        result.logits = self.arrays["head.bias"].iter().copied().map(f64::from).collect();
+        result.logits = self.arrays["head.bias"]
+            .iter()
+            .copied()
+            .map(f64::from)
+            .collect();
         for (row, value) in result.logits.iter_mut().enumerate() {
             for (column, feature) in hidden.iter().enumerate() {
-                *value += f64::from(self.arrays["head.weight"][row * self.wire.hidden + column]) * feature;
+                *value += f64::from(self.arrays["head.weight"][row * self.wire.hidden + column])
+                    * feature;
             }
         }
         if result.logits.iter().any(|value| !value.is_finite()) {
@@ -190,14 +246,24 @@ impl MemoryMlpCellV12 {
         }
         let value = match self.kind() {
             MemoryCellKindV1::Semantic => {
-                result.minimum_margin = result.logits.iter().map(|value| value.abs()).fold(f64::INFINITY, f64::min);
+                result.minimum_margin = result
+                    .logits
+                    .iter()
+                    .map(|value| value.abs())
+                    .fold(f64::INFINITY, f64::min);
                 let mut values = [0_u8; 3];
                 for (group, value) in values.iter_mut().enumerate() {
                     for bit in 0..4 {
-                        if result.logits[4 * group + bit] >= 0.0 { *value |= 1 << bit; }
+                        if result.logits[4 * group + bit] >= 0.0 {
+                            *value |= 1 << bit;
+                        }
                     }
                 }
-                MemoryInventoryValueV1::Semantic(MemoryInventoryPolicyV1 { reserve: values[0], pack: values[1], limit: values[2] })
+                MemoryInventoryValueV1::Semantic(MemoryInventoryPolicyV1 {
+                    reserve: values[0],
+                    pack: values[1],
+                    limit: values[2],
+                })
             }
             MemoryCellKindV1::Procedure => {
                 let mut opcodes = [0_u8; 4];
@@ -205,8 +271,17 @@ impl MemoryMlpCellV12 {
                 for (group, opcode) in opcodes.iter_mut().enumerate() {
                     let scores = &result.logits[7 * group..7 * (group + 1)];
                     let mut winner = 0;
-                    for index in 1..7 { if scores[index] > scores[winner] { winner = index; } }
-                    let runner = scores.iter().enumerate().filter(|(index, _)| *index != winner).map(|(_, value)| *value).fold(f64::NEG_INFINITY, f64::max);
+                    for index in 1..7 {
+                        if scores[index] > scores[winner] {
+                            winner = index;
+                        }
+                    }
+                    let runner = scores
+                        .iter()
+                        .enumerate()
+                        .filter(|(index, _)| *index != winner)
+                        .map(|(_, value)| *value)
+                        .fold(f64::NEG_INFINITY, f64::max);
                     result.minimum_margin = result.minimum_margin.min(scores[winner] - runner);
                     *opcode = winner as u8;
                 }
@@ -225,37 +300,59 @@ impl MemoryMlpCellV12 {
 }
 
 fn decode(hex: &str, count: usize) -> Result<(Vec<f32>, Vec<u8>), String> {
-    if Some(hex.len()) != count.checked_mul(8) { return Err("V12 MLP tensor byte count".to_string()); }
+    if Some(hex.len()) != count.checked_mul(8) {
+        return Err("V12 MLP tensor byte count".to_string());
+    }
     let mut raw = Vec::with_capacity(count * 4);
     for pair in hex.as_bytes().chunks_exact(2) {
         let mut byte = 0;
         for nibble in pair {
-            byte = byte * 16 + match nibble {
-                b'0'..=b'9' => nibble - b'0', b'a'..=b'f' => nibble - b'a' + 10,
-                _ => return Err("V12 MLP hex encoding".to_string()),
-            };
+            byte = byte * 16
+                + match nibble {
+                    b'0'..=b'9' => nibble - b'0',
+                    b'a'..=b'f' => nibble - b'a' + 10,
+                    _ => return Err("V12 MLP hex encoding".to_string()),
+                };
         }
         raw.push(byte);
     }
-    let values: Vec<f32> = raw.chunks_exact(4).map(|bytes| f32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]])).collect();
-    if values.iter().any(|value| !value.is_finite()) { return Err("V12 MLP nonfinite parameters".to_string()); }
+    let values: Vec<f32> = raw
+        .chunks_exact(4)
+        .map(|bytes| f32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]))
+        .collect();
+    if values.iter().any(|value| !value.is_finite()) {
+        return Err("V12 MLP nonfinite parameters".to_string());
+    }
     Ok((values, raw))
 }
 
 fn digest(value: &str) -> Result<Digest32, String> {
-    if value.len() != 64 || value.bytes().any(|byte| !matches!(byte, b'0'..=b'9' | b'a'..=b'f')) {
+    if value.len() != 64
+        || value
+            .bytes()
+            .any(|byte| !matches!(byte, b'0'..=b'9' | b'a'..=b'f'))
+    {
         return Err("V12 MLP digest encoding".to_string());
     }
-    value.parse::<Digest32>().ok().filter(|digest| !digest.is_zero()).ok_or_else(|| "V12 MLP empty digest".to_string())
+    value
+        .parse::<Digest32>()
+        .ok()
+        .filter(|digest| !digest.is_zero())
+        .ok_or_else(|| "V12 MLP empty digest".to_string())
 }
 
 fn valid_sources(values: &[String]) -> bool {
-    !values.is_empty() && values.len() <= 4096 && values.iter().all(|value| digest(value).is_ok())
+    !values.is_empty()
+        && values.len() <= 4096
+        && values.iter().all(|value| digest(value).is_ok())
         && values.windows(2).all(|pair| pair[0] < pair[1])
 }
 
 fn unique_map<'de, D, T>(deserializer: D) -> Result<BTreeMap<String, T>, D::Error>
-where D: Deserializer<'de>, T: Deserialize<'de> {
+where
+    D: Deserializer<'de>,
+    T: Deserialize<'de>,
+{
     struct Unique<T>(PhantomData<T>);
     impl<'de, T: Deserialize<'de>> Visitor<'de> for Unique<T> {
         type Value = BTreeMap<String, T>;
@@ -265,7 +362,9 @@ where D: Deserializer<'de>, T: Deserialize<'de> {
         fn visit_map<M: MapAccess<'de>>(self, mut map: M) -> Result<Self::Value, M::Error> {
             let mut values = BTreeMap::new();
             while let Some((key, value)) = map.next_entry::<String, T>()? {
-                if values.insert(key, value).is_some() { return Err(serde::de::Error::custom("duplicate MLP map key")); }
+                if values.insert(key, value).is_some() {
+                    return Err(serde::de::Error::custom("duplicate MLP map key"));
+                }
             }
             Ok(values)
         }

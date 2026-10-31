@@ -63,7 +63,6 @@ mod memory_cell_training_tests;
 mod memory_cell_v9_continual_tests;
 mod memory_independent_cell_v11;
 mod memory_independent_model_v12;
-mod memory_mlp_v12;
 #[cfg(all(test, unix))]
 mod memory_inventory_actual_tests;
 mod memory_inventory_bundle;
@@ -77,6 +76,7 @@ mod memory_inventory_runtime;
 mod memory_inventory_test_support;
 #[cfg(test)]
 mod memory_inventory_withdrawal_test_support;
+mod memory_mlp_v12;
 mod memory_serving_plan_v11;
 mod neuron_runtime;
 mod objective_runtime;
