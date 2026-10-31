@@ -24,6 +24,17 @@ class DirectProbabilityOrderTests(unittest.TestCase):
         with self.assertRaisesRegex(ArithmeticError, 'Direct first-passage probability ordering unresolved'):
             integrate_passage(**self._WITNESS, compute_default_duration=True)
 
+    def test_opt_in_rejects_unresolved_discounted_probability_inversion(self):
+        # Independent 110-dps reflection: true F-G = 1.9998118040413e-17.
+        # Parent f64 quadrature instead reports G-F = one positive ULP.
+        kw=dict(x=0.0008205334528763317,
+                drift=0.07599208604968195,
+                sigma=0.19547770416678287,
+                discount=5.555215349483322e-14,
+                horizon=0.012741858595454054)
+        with self.assertRaisesRegex(ArithmeticError, 'Direct first-passage probability ordering unresolved'):
+            integrate_passage(**kw, compute_default_duration=True)
+
     def test_non_opt_in_preserves_frozen_reference_output(self):
         # Preserve historical observations; do not silently clamp to one.
         passage=integrate_passage(**self._WITNESS)
