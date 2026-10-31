@@ -14,6 +14,20 @@ retains the original host file. Unknown and duplicate format arguments fail.
 The two formats use distinct strict schemas; an old host-v1 JSON file cannot
 satisfy Cell-v2 admission.
 
+An explicitly selected Cell-v2 daemon must have a current executable path that
+can be reopened to the same device/inode as `/proc/self/exe`. This narrow check
+runs after original helper dispatch but before dotenv, PATH aliases, qualification
+or any model owner. The original `owner-v1` and helper dispatch behavior stays
+unchanged. It grants no new process or sandbox permission.
+
+Anonymous sealed ELF execution does not currently meet this requirement: its
+`current_exe()` path cannot supply the original aliases and later sandbox re-execs.
+A `/proc/<host-pid>/fd/...` alias alone would also be insufficient after the
+original sandbox creates its fresh PID namespace and `/proc`. This route is
+explicitly unavailable; the sandbox and its namespace policy are retained. A
+separately selected protected installed ELF may use the original stable paths;
+its installer/ownership policy remains the producer's responsibility.
+
 The new `hepta-smollm-cognitive-cell-host-v2` object contains these exact fields:
 
 | Field | Meaning |
@@ -92,6 +106,11 @@ mutated byte, missing member, wrong profile/generation and README case alias.
 Protected-file tests cover separate v1/v2 decoding, pinned-byte mismatch, missing
 or unknown fields, operation identity, and symlinks. Real CLI subprocess controls
 exercise format dispatch and strict rejection before any fleet/model owner.
+The actual CLI image control copies the native daemon into a sealed memfd and
+checks both `cell-v2 --help` and a cold config reject before creating aliases.
+Named-image help still reaches the normal parser, and an actual apply-patch alias
+retains original helper priority. These are executable/entry controls, not proof
+of a successful sandboxed model run.
 These controls do not count as a successful real-model installation or round.
 
 PN3 remains incomplete until the exact unified Chain/Hepta source pair passes its

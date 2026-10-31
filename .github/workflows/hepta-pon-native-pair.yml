@@ -962,7 +962,13 @@ jobs:
         env:
           CARGO_NET_OFFLINE: "true"
         run: |
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/cli-process.json" --minimum-tests 2 -- just test --locked -p codex-hepta-infer-worker-host --test cell_host_cli --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/cli-process.json" --minimum-tests 3 -- just test --locked -p codex-hepta-infer-worker-host --test cell_host_cli --no-capture
+      - name: Preserve original helper dispatch and alias owner controls
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' && steps.v8.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/arg0-owner.json" --minimum-tests 1 -- just test --locked -p codex-arg0 --lib --no-capture
       - name: Preserve original FinalUse and physical owner rejection controls
         if: ${{ !cancelled() && steps.dependencies.outcome == 'success' && steps.v8.outcome == 'success' }}
         env:
@@ -974,7 +980,7 @@ jobs:
         env:
           CARGO_NET_OFFLINE: "true"
         run: |
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/clippy-fix.json" -- just fix -p codex-hepta-infer-worker-host --locked -- -D warnings
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/clippy-fix.json" -- just fix -p codex-hepta-infer-worker-host -p codex-arg0 --locked -- -D warnings
       - name: Retain any formatter or Clippy changes as failed-source diagnostics
         if: failure()
         run: git diff --no-ext-diff --binary > "$RUNNER_TEMP/cell-host/non-qualifying-source-change.patch"

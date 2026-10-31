@@ -12,6 +12,8 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     use codex_hepta_types::Digest32;
     use codex_utils_absolute_path::AbsolutePathBuf;
     use std::io;
+    use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::OpenOptionsExt;
     use std::path::PathBuf;
 
     enum HostInputs {
@@ -20,7 +22,26 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     }
 
     // Helper re-execs must reach the original dispatch before daemon flags.
-    codex_arg0::arg0_dispatch_or_else(|arg0_paths| async move {
+    codex_arg0::arg0_dispatch_or_else_with_preflight(|| {
+        let arguments = std::env::args_os().skip(1).collect::<Vec<_>>();
+        let cell_v2 = arguments.windows(2)
+            .any(|pair| pair[0] == "--host-format" && pair[1] == "cell-v2");
+        if cell_v2 {
+            // An anonymous sealed ELF cannot supply the original path-based
+            // helper re-execs inside a fresh sandbox PID namespace. Reject this
+            // unsupported image before aliases, qualifications or model owners.
+            let message = "Cell-v2 requires a reopenable native image for original helper/sandbox routes; anonymous sealed-image execution is unavailable";
+            let image = std::fs::File::open("/proc/self/exe")?.metadata()?;
+            let path = std::env::current_exe()?;
+            let reopened = std::fs::OpenOptions::new().read(true)
+                .custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK)
+                .open(path).map_err(|_| io::Error::other(message))?.metadata()?;
+            if !reopened.is_file() || (image.dev(), image.ino()) != (reopened.dev(), reopened.ino()) {
+                return Err(io::Error::other(message).into());
+            }
+        }
+        Ok(())
+    }, |arg0_paths| async move {
         let mut path = None;
         let mut digest = None;
         let mut host_format = None;
