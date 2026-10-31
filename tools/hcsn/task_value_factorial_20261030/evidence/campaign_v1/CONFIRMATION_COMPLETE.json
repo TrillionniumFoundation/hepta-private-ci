@@ -1,0 +1,89 @@
+{
+  "adapter_setups": [
+    {
+      "checkpoint_sha256": "4962cd6126dc5e393cf7dbe72bea5519125bfb7971a7e3665a36af908aff5fcb",
+      "frozen_parameter_count": 6217,
+      "load_cpu_seconds": 0.007297465999999975,
+      "load_wall_seconds": 0.010710952999943402,
+      "seed": 61031,
+      "source_sha256": "eb9ae19aa3fb6c17d4a69e585f1b7789ae6c95b5f84283db498094cf3db6b47e",
+      "trainable_parameters": 0
+    },
+    {
+      "checkpoint_sha256": "4962cd6126dc5e393cf7dbe72bea5519125bfb7971a7e3665a36af908aff5fcb",
+      "frozen_parameter_count": 6217,
+      "load_cpu_seconds": 0.006523795999999749,
+      "load_wall_seconds": 0.00763580000057118,
+      "seed": 61037,
+      "source_sha256": "eb9ae19aa3fb6c17d4a69e585f1b7789ae6c95b5f84283db498094cf3db6b47e",
+      "trainable_parameters": 0
+    },
+    {
+      "checkpoint_sha256": "4962cd6126dc5e393cf7dbe72bea5519125bfb7971a7e3665a36af908aff5fcb",
+      "frozen_parameter_count": 6217,
+      "load_cpu_seconds": 0.0041502930000021365,
+      "load_wall_seconds": 0.004151884000748396,
+      "seed": 61043,
+      "source_sha256": "eb9ae19aa3fb6c17d4a69e585f1b7789ae6c95b5f84283db498094cf3db6b47e",
+      "trainable_parameters": 0
+    },
+    {
+      "checkpoint_sha256": "4962cd6126dc5e393cf7dbe72bea5519125bfb7971a7e3665a36af908aff5fcb",
+      "frozen_parameter_count": 6217,
+      "load_cpu_seconds": 0.004061370999998815,
+      "load_wall_seconds": 0.004062943997269031,
+      "seed": 61049,
+      "source_sha256": "eb9ae19aa3fb6c17d4a69e585f1b7789ae6c95b5f84283db498094cf3db6b47e",
+      "trainable_parameters": 0
+    },
+    {
+      "checkpoint_sha256": "4962cd6126dc5e393cf7dbe72bea5519125bfb7971a7e3665a36af908aff5fcb",
+      "frozen_parameter_count": 6217,
+      "load_cpu_seconds": 0.0043357680000042365,
+      "load_wall_seconds": 0.004337882994150277,
+      "seed": 61057,
+      "source_sha256": "eb9ae19aa3fb6c17d4a69e585f1b7789ae6c95b5f84283db498094cf3db6b47e",
+      "trainable_parameters": 0
+    }
+  ],
+  "archives": {
+    "data/confirmation_seed61031_ood.tar.gz": "dbc17dc88970c3775dae4170e8f283437b9f1fcc43c9f09c29a46fa9d1cb19fe",
+    "data/confirmation_seed61031_test.tar.gz": "a053ee115889c20311f27e413944ae7c0af709dcab3da16ef71c1d754d12e55a",
+    "data/confirmation_seed61037_ood.tar.gz": "f66c7e88b352128d2f75cf6b72cf400abad00f574814fccb9ed1f0a237bca182",
+    "data/confirmation_seed61037_test.tar.gz": "397247eae6bef54fab58dd6d709a7fcc7cd6a74114dea6ce4ff94a016a6d8c3a",
+    "data/confirmation_seed61043_ood.tar.gz": "ada0bd6e8463263f842e644b1d7ac2d8b7183b89e19881f7d537c0e3a1ebf4ff",
+    "data/confirmation_seed61043_test.tar.gz": "96acd45ce2958f734204344a41bbc36a9c135cfc15e0104547a836af92921b95",
+    "data/confirmation_seed61049_ood.tar.gz": "1a8cbf1694aedd535b8ee3bfad2c32b2549567774c5402fa145d262381a35b75",
+    "data/confirmation_seed61049_test.tar.gz": "2e425380888142931b6ae7496d0a04d2b329e3ebb85dbf739ed4c40d8d45e651",
+    "data/confirmation_seed61057_ood.tar.gz": "cef581c38feaf6239d433498b424145336accd9ff22aeecc9fc2a6eee29de60f",
+    "data/confirmation_seed61057_test.tar.gz": "dbb28506b3963ff80e3f5b9ea777e99992d7be21790c83f9a2a3431b9d241443"
+  },
+  "completed_at": "2026-10-31T01:46:00.609009+00:00",
+  "confirmation_cpu_seconds": 97.286413587,
+  "confirmation_wall_seconds": 98.78749120500288,
+  "cost_scope": "Enclosing timers include adapter setup, generation, all policy rollouts and evidence serialization; row timers are nested and must not be added again.",
+  "freeze_commit": "72db5c49809be2d7d5545489492e14e6f897282a",
+  "results": {
+    "results/seed61031_ood.json.gz": "6bd5dd12d17c9dc6a234369ffbdb60927fda21b7ed93054cedda8d1d063863c3",
+    "results/seed61031_test.json.gz": "632c29870e67d82ab1329486333a74d7122ad6d165d8d3c40de6403ce3a2705f",
+    "results/seed61037_ood.json.gz": "34611da279b18a48e538714535616f83f7345ebbd6ba56b00f138d75ed554fe1",
+    "results/seed61037_test.json.gz": "70edc5d57884736c9af58c1fb596fe1efd293e63920533a54153d6f9b8be53a4",
+    "results/seed61043_ood.json.gz": "0ee063263d6a38fe6767aa3e228fe6963e7e354cebed8456d6508ba8946c41b4",
+    "results/seed61043_test.json.gz": "64e9a01d009dd99f44894ff6a0b0ddd3f0847d30785967b880222b8ecdd13ada",
+    "results/seed61049_ood.json.gz": "ea1c65c9a5aad071856a50689163e76bf07dc59b34f8ddd5180d9856e6aa3cf9",
+    "results/seed61049_test.json.gz": "bcdd017ce98832d20b122b034b188783141fc92ba1ee7f7124f9bf19e85e0fcf",
+    "results/seed61057_ood.json.gz": "d9dcfb816e9f150b7a6b4033205d3bda2e4fd21fb59f991761f2bcdede72b926",
+    "results/seed61057_test.json.gz": "659da8c7e727c629490c7953f914d25da20d6c7b0085fcdb89cc9629db6bb992"
+  },
+  "runtime": {
+    "energy_joules": null,
+    "gpu_used": false,
+    "machine": "x86_64",
+    "max_rss_kib": 409680,
+    "native_rust_integration": false,
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "scipy": "1.17.0"
+  }
+}
