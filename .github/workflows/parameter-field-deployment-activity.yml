@@ -1,0 +1,155 @@
+name: Parameter field closed-study deployment activity
+run-name: Verify immutable completed evidence before descriptive activity
+
+on:
+  push:
+    branches:
+      - research/parameter-field-deployment-activity-20261031
+    paths:
+      - supplements/parameter_field_deployment_activity_20261031/**
+      - .github/workflows/parameter-field-deployment-activity.yml
+  workflow_dispatch:
+    inputs:
+      binding_commit:
+        description: Full commit containing the fixed binding JSON
+        required: false
+        type: string
+      binding_path:
+        description: Registered bindings directory JSON path
+        required: false
+        type: string
+      binding_sha256:
+        description: Externally fixed binding SHA256
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: parameter-field-deployment-activity
+  cancel-in-progress: false
+
+jobs:
+  verify-and-replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    container:
+      image: ubuntu:24.04@sha256:78d4744ead1f5b19b04d0df558ab182a5300903900755e515b2ca4d10eb2044d
+      options: --memory=8g --memory-swap=8g
+    defaults:
+      run:
+        shell: bash
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Prepare the independent replay environment
+        run: |
+          mkdir -p /work/replay_environment
+          date --utc --iso-8601=ns > /work/replay_environment/STARTED_AT.txt
+          apt-get update -qq
+          apt-get install -y --no-install-recommends ca-certificates curl git python3
+      - name: Checkout the additive source and activation metadata
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify pure reducers and portable refusal boundaries
+        run: |
+          python3 -B -m unittest supplements.parameter_field_deployment_activity_20261031.test_activity supplements.parameter_field_deployment_activity_20261031.test_provider supplements.parameter_field_deployment_activity_20261031.test_portable supplements.parameter_field_deployment_activity_20261031.test_binding supplements.parameter_field_deployment_activity_20261031.test_asset_replay -v
+      - name: Resolve only an explicitly committed activation
+        id: binding
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          INPUT_BINDING_COMMIT: ${{ inputs.binding_commit }}
+          INPUT_BINDING_PATH: ${{ inputs.binding_path }}
+          INPUT_BINDING_SHA256: ${{ inputs.binding_sha256 }}
+          TRIGGER_EVENT: ${{ github.event_name }}
+          PUSH_BEFORE_COMMIT: ${{ github.event.before }}
+        run: |
+          python3 -B supplements/parameter_field_deployment_activity_20261031/resolve_binding.py --binding-commit "$INPUT_BINDING_COMMIT" --binding-path "$INPUT_BINDING_PATH" --binding-sha256 "$INPUT_BINDING_SHA256" --event-name "$TRIGGER_EVENT" --before-commit "$PUSH_BEFORE_COMMIT"
+      - name: Record that fixtures do not admit scientific evidence
+        if: steps.binding.outputs.active != 'true'
+        run: |
+          python3 -B -c 'import json; json.dump({"status":"NOT_ACTIVATED","scientific_payloads_opened":False,"fixture_success_is_not_scientific_admission":True},open("/work/replay_environment/NOT_ACTIVATED.json","x"))'
+      - name: Preserve the clean additive checkout separately
+        if: steps.binding.outputs.active == 'true'
+        run: |
+          test ! -e /work/addon
+          mkdir /work/addon
+          cp -a "$GITHUB_WORKSPACE/." /work/addon/
+          git config --global --add safe.directory /work/addon
+      - name: Checkout the exact original producing source
+        if: steps.binding.outputs.active == 'true'
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ steps.binding.outputs.source_commit }}
+          path: original-producing-source
+          persist-credentials: false
+      - name: Restore the original canonical source path without edits
+        if: steps.binding.outputs.active == 'true'
+        env:
+          EXPECTED_SOURCE_COMMIT: ${{ steps.binding.outputs.source_commit }}
+        run: |
+          test ! -e /work/source
+          mkdir /work/source
+          cp -a "$GITHUB_WORKSPACE/original-producing-source/." /work/source/
+          git config --global --add safe.directory /work/source
+          test "$(git -C /work/source rev-parse HEAD)" = "$EXPECTED_SOURCE_COMMIT"
+      - name: Restore the exact original public Python and numerical runtime
+        if: steps.binding.outputs.active == 'true'
+        working-directory: /work/source
+        run: |
+          mkdir -p /opt/runtime
+          curl --fail --location --retry 2 --output /opt/runtime/python.tar.gz 'https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.12.14%2B20260825-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz'
+          echo '7ce4a71285d913955a76053cc7605ea96da8ecada54dba9cf395245961816421  /opt/runtime/python.tar.gz' | sha256sum --check --strict
+          tar -xzf /opt/runtime/python.tar.gz -C /opt/runtime
+          echo 'fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7  /opt/runtime/python/bin/python3.12' | sha256sum --check --strict
+          echo '7e177a680eabb11fcb7d3867f7a1b9c4b93a9bd5b18129ce1af51ec07977b024  /opt/runtime/python/lib/libpython3.12.so.1.0' | sha256sum --check --strict
+          /opt/runtime/python/bin/python3.12 -m venv /opt/runtime/venv
+          /opt/runtime/venv/bin/python -m pip install --disable-pip-version-check --no-cache-dir --only-binary=:all: -r tools/parameter_field_executor/packages.txt
+          /opt/runtime/venv/bin/python -m pip install --disable-pip-version-check --no-cache-dir --no-deps --require-hashes -r tools/parameter_field_executor/torch-wheel.txt
+      - name: Select Node24 for the pinned historical SDK replica
+        if: steps.binding.outputs.active == 'true'
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Reproduce SDK byte identity without loading the artifact client
+        if: steps.binding.outputs.active == 'true'
+        working-directory: /work/source
+        run: |
+          mkdir /work/transport-sdk
+          cp operational/parameter_field_recovery07/package.json operational/parameter_field_recovery07/package-lock.json /work/transport-sdk/
+          npm ci --prefix /work/transport-sdk --ignore-scripts --no-audit --no-fund
+          date --utc --iso-8601=ns > /work/replay_environment/READY_AT.txt
+      - name: Independently download, admit and describe the fully closed study
+        if: steps.binding.outputs.active == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          EXPECTED_BINDING_SHA256: ${{ steps.binding.outputs.binding_sha256 }}
+        working-directory: /work/addon
+        run: |
+          /opt/runtime/venv/bin/python -B supplements/parameter_field_deployment_activity_20261031/adapter.py --binding /work/binding/BINDING.json --expected-binding-sha256 "$EXPECTED_BINDING_SHA256" --output /work/deployment_activity
+      - name: Preserve actual replay results or refusal evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: deployment-activity-evidence-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            /work/binding
+            /work/replay_environment
+            /work/preparation
+            /work/deployment_activity/*.json
+            /work/deployment_activity/provider/REQUEST.json
+            /work/deployment_activity/provider/RECEIPT.json
+            /work/deployment_activity/runtime
+            /work/deployment_activity/assets_replay
+            /work/deployment_activity/measurements
+            /work/deployment_activity/logs
+          include-hidden-files: true
+          if-no-files-found: warn
+          compression-level: 6
+          retention-days: 90
