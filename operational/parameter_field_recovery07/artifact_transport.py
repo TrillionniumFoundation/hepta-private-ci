@@ -1,6 +1,7 @@
 """GitHub Actions archive barriers, with literal readback and owned-child wait4."""
 
 import hashlib
+import fcntl
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -20,6 +21,8 @@ MAX_FILES = 20000
 TRANSPORT_TIMEOUT_SECONDS = 900
 FORBIDDEN = {'.git', '.ssh', '.aws', '.env', '.netrc', 'credentials', 'credentials.json',
              'id_rsa', 'id_ed25519', 'token', 'secrets', 'authorization'}
+RAW_LOCKS = {'.ops-controller.lock', '.ops-phase.lock', '.ops-write.lock',
+             '.ops-slot-0.lock', '.ops-slot-1.lock'}
 
 
 def canonical(value):
@@ -48,10 +51,13 @@ def descriptor(path):
     return {'path': str(path), 'bytes': size, 'sha256': digest.hexdigest()}
 
 
-def logical_path(value):
+def logical_path(value, *, archive_member=False):
     path = PurePosixPath(value)
+    parts = path.parts[1:] if archive_member and path.parts[:1] == ('payload',) else path.parts
+    raw_lock = bool(parts) and parts[-1] in RAW_LOCKS and parts[:-1] in (('raw',), ('synthetic', 'raw'))
     if (not value or len(value) > 4096 or path.is_absolute() or str(path) != value or '\\' in value
-            or any(p in ('.', '..') or p.startswith('.') or p.lower() in FORBIDDEN for p in path.parts)):
+            or any(p in ('.', '..') or p.lower() in FORBIDDEN for p in path.parts)
+            or (any(p.startswith('.') for p in path.parts) and not raw_lock)):
         raise ValueError('Unsafe logical archive path')
     return path
 
@@ -154,10 +160,14 @@ def measured_client(operation, request, directory, health_check=None):
     return result['result'], cost
 
 
-def snapshot(source, target, health_check=None):
+def snapshot(source, target, health_check=None, *, raw_root=None):
     if health_check:
         health_check()
-    if not source.is_absolute() or source != source.resolve(strict=True) or any(p.lower() in FORBIDDEN for p in source.parts):
+    raw_lock = raw_root is not None and source.parent == raw_root and source.name in RAW_LOCKS
+    hidden = [p for p in source.parts if p.startswith('.')]
+    if (not source.is_absolute() or source != source.resolve(strict=True)
+            or any(p.lower() in FORBIDDEN for p in source.parts)
+            or (hidden and not (raw_lock and hidden == [source.name]))):
         raise ValueError('Source must be an explicit canonical ordinary file')
     target.parent.mkdir(parents=True, exist_ok=True)
     fd = os.open(source, os.O_RDONLY | os.O_NOFOLLOW)
@@ -166,6 +176,10 @@ def snapshot(source, target, health_check=None):
         before = os.fstat(incoming.fileno())
         if not stat.S_ISREG(before.st_mode):
             raise ValueError('Archive input is not a regular file')
+        if raw_lock:
+            # Preserve original literal-manifest members, but only at an actual
+            # quiescent boundary where no registered owner holds this lock.
+            fcntl.flock(incoming.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
         for block in iter(lambda: incoming.read(1024 * 1024), b''):
             outgoing.write(block)
             digest.update(block)
@@ -197,7 +211,7 @@ def readback(zip_path, upload_root, download_root, manifest, paths, health_check
         for member in members:
             if health_check:
                 health_check()
-            logical_path(member.filename.rstrip('/'))
+            logical_path(member.filename.rstrip('/'), archive_member=True)
             if stat.S_IFMT(member.external_attr >> 16) not in (0, stat.S_IFREG, stat.S_IFDIR) or member.flag_bits & 1:
                 raise ValueError('Downloaded archive contains a link or encrypted member')
             if member.is_dir():
@@ -242,14 +256,21 @@ def _archive(label, paths, binding, output_dir, terminal, health_check):
     validate_binding(label, binding, terminal, identity)
     output_dir = Path(output_dir).absolute()
     output_dir.mkdir(parents=True, exist_ok=False)
-    upload_root, raw_root, download_root = [output_dir / x for x in ('upload', 'download_raw', 'readback')]
-    for root in (upload_root, raw_root, download_root):
+    upload_root, download_archive_root, download_root = [output_dir / x for x in ('upload', 'download_raw', 'readback')]
+    for root in (upload_root, download_archive_root, download_root):
         root.mkdir()
     files, sources, total = [], {}, 0
     for relative, source in sorted(paths.items()):
-        logical_path(relative)
+        logical = logical_path(relative)
         source = Path(source)
-        item = {'path': relative, **snapshot(source, upload_root / 'payload' / relative, health_check)}
+        declared_raw_root = None
+        if logical.name in RAW_LOCKS:
+            config = json.loads(Path(binding['pipeline_config']['path']).read_text())
+            declared_raw_root = Path(config['raw_root'])
+            if (not declared_raw_root.is_absolute() or declared_raw_root != declared_raw_root.resolve(strict=True)
+                    or source != declared_raw_root / logical.name):
+                raise ValueError('Operational lock is outside the declared raw root')
+        item = {'path': relative, **snapshot(source, upload_root / 'payload' / relative, health_check, raw_root=declared_raw_root)}
         total += item['bytes']
         if total > MAX_BYTES:
             raise ValueError('Archive exceeds the transport bound')
@@ -265,8 +286,8 @@ def _archive(label, paths, binding, output_dir, terminal, health_check):
     uploaded, upload_cost = measured_client('upload', {'operation': 'upload', 'name': name,
         'root': str(upload_root), 'files': [str(manifest_path)] + [str(upload_root / 'payload' / f['path']) for f in files]}, output_dir, health_check)
     downloaded, download_cost = measured_client('download', {'operation': 'download', 'id': uploaded['id'],
-        'sha256': uploaded['sha256'], 'destination': str(raw_root)}, output_dir, health_check)
-    archives = list(raw_root.iterdir())
+        'sha256': uploaded['sha256'], 'destination': str(download_archive_root)}, output_dir, health_check)
+    archives = list(download_archive_root.iterdir())
     if len(archives) != 1 or archives[0].is_symlink() or not archives[0].is_file():
         raise ValueError('Expected one independently downloaded raw archive')
     archive = descriptor(archives[0])

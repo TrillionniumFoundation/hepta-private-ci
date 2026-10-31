@@ -76,15 +76,26 @@ def source_identity():
     }
 
 
-def fixture_literal(root):
+def fixture_literal(root, source_commit):
     raw, cas = root / "raw", root / "raw_cas"
+    # The real finalizer inventories the original lock files, including empty
+    # files. Exercise all five permitted names without acquiring any raw lock.
+    for name in (
+        ".ops-controller.lock",
+        ".ops-phase.lock",
+        ".ops-write.lock",
+        ".ops-slot-0.lock",
+        ".ops-slot-1.lock",
+    ):
+        with (raw / name).open("xb"):
+            pass
     frozen = write(
         root / "SYNTHETIC_FREEZE.json",
         {
             "synthetic_only": True,
             "scientific_source_executed": False,
             "operational_amendment_sha256": "0" * 64,
-            "registered_commit": os.environ["GITHUB_SHA"],
+            "registered_commit": source_commit,
         },
     )
     entries = {
@@ -112,7 +123,7 @@ def fixture_literal(root):
         "attempt_id": "attempt02",
         "source_freeze_sha256": frozen["sha256"],
         "operational_amendment_sha256": "0" * 64,
-        "registered_commit": os.environ["GITHUB_SHA"],
+        "registered_commit": source_commit,
     }
     manifest = write(
         raw / "evidence_v2/verification07/MANIFEST.json",
@@ -232,7 +243,7 @@ def stages(root):
         {"synthetic_only": True, "scientific_analysis_executed": False},
     )
     barrier("analysis")
-    fixture_literal(root)
+    fixture_literal(root, read(config)["source_head"])
     barrier("final_closure")
     write(
         root / "STAGES_COMPLETE.json",
@@ -301,6 +312,7 @@ def main():
             "synthetic_only": True,
             "science_admission": False,
             "source_head": os.environ["GITHUB_SHA"],
+            "raw_root": str(root / "raw"),
             "source_files": sources,
         },
     )
