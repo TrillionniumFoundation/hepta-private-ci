@@ -1,0 +1,206 @@
+{
+  "actual_remote_verification": [
+    {
+      "all_items_same_uploaded_version": true,
+      "closed_utc": "2026-10-31T01:44:29.153093+00:00",
+      "closure": {
+        "bytes": 10654,
+        "record": "REMOTE_BYTES_VERIFIED.json",
+        "sha256": "ee7a7d360cdc52f3019b50f5e6a4ed22de9288db0e43647224fdf13b7ffcf187"
+      },
+      "independent_readback_verified": true,
+      "objects": 8,
+      "production_stage_ack": false,
+      "scope": "original_prelaunch_batch",
+      "total_bytes": 13481379
+    },
+    {
+      "all_items_same_uploaded_version": true,
+      "closed_utc": "2026-10-31T01:56:30.447665+00:00",
+      "closure": {
+        "bytes": 4438,
+        "record": "REMOTE_BYTES_VERIFIED.json",
+        "sha256": "3c189ee9e2892c11d91c921cfe44030fa452a83d6f1c009770097ca2c851eab2"
+      },
+      "independent_readback_verified": true,
+      "objects": 3,
+      "production_stage_ack": false,
+      "scope": "followup_private_metadata_batch",
+      "total_bytes": 140884
+    }
+  ],
+  "bindings": {
+    "operational_code_C1": "058cd3d22aecbf67f9c5054f2131eeb0ccd55793",
+    "original_protocol_sha256": "2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55",
+    "pipeline_config_sha256": "d16bac3194b36d286f180976ddbc7dff16e544763e195d408a135b30af4fb86e",
+    "registration_C2": "bc4e757f5c90f6365f383c1127be710d2ded874a"
+  },
+  "cache_cleanup": {
+    "concurrent_work_changes_global_memory_and_disk": true,
+    "disk_deltas_are_per_operation_observations_not_a_global_capacity_guarantee": true,
+    "disk_operations": [
+      {
+        "all_selected_targets_removed": true,
+        "category": "idle_dependency_cache",
+        "completed_utc": "2026-10-31T01:39:06.641894+00:00",
+        "independently_reclaimable_subset_bytes_in_inventory": 8757424128,
+        "observed_disk_available_bytes_delta": 8757567488,
+        "source": {
+          "bytes": 1277,
+          "record": "cache_cleanup_hepta_deps_20261031.json",
+          "sha256": "0dad1d4b78d01a7c374006aad10bd3861d0f15c8975ebfd8ae714b5dbe86b604"
+        }
+      },
+      {
+        "all_selected_targets_removed": true,
+        "category": "idle_profile_children",
+        "completed_utc": "2026-10-31T01:42:12.117293+00:00",
+        "independently_reclaimable_subset_bytes_in_inventory": 2006360064,
+        "observed_disk_available_bytes_delta": 2020806656,
+        "source": {
+          "bytes": 2416,
+          "record": "cache_cleanup_idle_profiles_20261031.json",
+          "sha256": "63ea9a923cc6680b329e03f6fb6d257695ced16fc288e44b90f08434dd81afb4"
+        }
+      }
+    ],
+    "drop_caches_used": false,
+    "original_cargo_lock_inodes_preserved": true,
+    "processes_signaled": false,
+    "source_models_toolchains_scientific_evidence_unchanged": true,
+    "tmpfs_operations": [
+      {
+        "all_selected_targets_removed": true,
+        "category": "two_explicit_debug_profiles",
+        "completed_utc": "2026-10-31T01:47:52.890044+00:00",
+        "shmem_bytes_delta": -164585472,
+        "source": {
+          "bytes": 2913,
+          "record": "cache_cleanup_tmpfs_debug_20261031.json",
+          "sha256": "df7e56b338c981dc7b8ae728d89b2974b46a65e163ffffe941e9b242730468a9"
+        },
+        "tmpfs_available_bytes_delta": 164585472
+      },
+      {
+        "all_selected_targets_removed": true,
+        "category": "two_explicit_release_profiles",
+        "completed_utc": "2026-10-31T01:48:33.881618+00:00",
+        "shmem_bytes_delta": -263024640,
+        "source": {
+          "bytes": 2957,
+          "record": "cache_cleanup_tmpfs_release_20261031.json",
+          "sha256": "70ed0a7d8b4aad082bc5f3ab0c2157f586b4b998286bcde0f14bdfe388805b96"
+        },
+        "tmpfs_available_bytes_delta": 263024640
+      }
+    ],
+    "tmpfs_summary_source": {
+      "bytes": 2021,
+      "record": "cache_cleanup_four_tmpfs_targets_summary_20261031.json",
+      "sha256": "670f22cc139cfcd310ac737d84ec63fd43e3a6eda11b8c916547ae08083322b1"
+    },
+    "total_tmpfs_available_bytes_recovered": 427610112
+  },
+  "checkpoint_utc": "2026-10-31T02:01:37.528977+00:00",
+  "execution_episode": "execution06_detached_20261030",
+  "latest_complete_resource_sample": {
+    "advisory_watch_consecutive_passing_samples": 0,
+    "advisory_watch_elapsed_seconds": 690.6991334979975,
+    "available_inodes": 1429261,
+    "cgroup_oom_cumulative": 29,
+    "cgroup_oom_kill_cumulative": 6,
+    "clean_inactive_file_bytes": 253304832,
+    "complete_prefix_bytes": 20690,
+    "complete_prefix_lines": 70,
+    "complete_prefix_sha256": "6bb9a7fba0f70b0896ccf27c1726d2f890aa9a986f0a90562d7b4a3b5c6a40d6",
+    "disk_available_bytes": 3278442496,
+    "effective_memory_available_bytes": 255070208,
+    "last_complete_line_with_newline_sha256": "9da8ae837ddf9e964987d8ea9599fc9145d6f191f328aed40e7455e7eaeff941",
+    "later_samples_not_claimed_inside_earlier_private_archives": true,
+    "memory_current_bytes": 8588169216,
+    "memory_limit_bytes": 8589934592,
+    "sample_unix": 1793412090.12595,
+    "sample_utc": "2026-10-31T02:01:30.125950+00:00",
+    "snapshot_not_terminal": true,
+    "source_record": "SAMPLES.jsonl"
+  },
+  "new_scientific_conclusion": false,
+  "next_step": {
+    "actual_supervisor_requires_consecutive_samples": 3,
+    "actual_supervisor_sample_spacing_seconds": 10,
+    "advisory_watch_is_not_actual_supervisor_admission": true,
+    "do_not_directly_start_supervisor_or_wait4_launcher": true,
+    "do_not_repeat_initializer_or_A17_import": true,
+    "initial_disk_gate_bytes": 2415919104,
+    "initial_effective_memory_gate_bytes": 1879048192,
+    "inode_gate_minimum": 2000,
+    "latest_advisory_disk_sample_passes": true,
+    "latest_advisory_ram_sample_passes": false,
+    "launch_only_when_resources_recover_and_no_previous_launch_markers_exist": true,
+    "mode": "--execute with the unchanged registered pipeline configuration and exact expected SHA256",
+    "no_automatic_restart_after_unknown_launch_outcome": true,
+    "original_worker_backpressure_wait_seconds": 300,
+    "original_outer_window_seconds": 43200,
+    "sole_frozen_production_entrypoint": "operational/parameter_field_recovery06/daemon_bootstrap.py"
+  },
+  "public_record_boundary": {
+    "contains_library_or_transfer_identifiers": false,
+    "contains_private_absolute_workspace_paths": false,
+    "contains_scientific_endpoint_or_head_results": false,
+    "contains_transfer_urls_or_full_toolresponses": false,
+    "old_reports_not_overwritten": true,
+    "private_full_evidence_retained_separately": true
+  },
+  "registered_execution_state": {
+    "actual_initial_admission_complete": false,
+    "imported_A17_is_prior_completed_work_not_new_science": true,
+    "marker_presence": {
+      "COMPLETE.json": false,
+      "FAILED.json": false,
+      "STATUS.json": false,
+      "daemon_bootstrap": false,
+      "supervisor_run/START_POLICY.json": false,
+      "wait4_launcher": false
+    },
+    "new_production_stage_ACK_accepted": 0,
+    "new_production_stage_ACK_written": 0,
+    "new_registered_scientific_gradient_microsteps": 0,
+    "new_scientific_workers_started": 0,
+    "observed_utc": "2026-10-31T02:01:37.528977+00:00",
+    "original_12_hour_window_started": false,
+    "planned_production_archive_stages": 17,
+    "scientific_complete": false
+  },
+  "schema": "hepta.parameter-field.public-continuation-checkpoint.1",
+  "shared_environment_oom_history": {
+    "attribution": "Shared cgroup cumulative events observed before this registered execution06 started; no causal attribution to this project.",
+    "earlier_observation": {
+      "oom": 1,
+      "oom_kill": 1,
+      "sample_utc": "2026-10-31T01:42:49.659937+00:00",
+      "source": {
+        "bytes": 2049,
+        "record": "cache_resource_samples_20261031.json",
+        "sha256": "9921c1a2a841a0d0d168ced56db0567a412f027a814d076a0adb423d474ae34c"
+      }
+    },
+    "historical_events_not_reset_or_reclassified_as_science_failure": true,
+    "later_host_observation": {
+      "oom": 9,
+      "oom_kill": 2,
+      "sample_utc": "2026-10-31T01:45:35Z",
+      "source": {
+        "bytes": 2034,
+        "record": "host_resource_observation_20261031_014535.json",
+        "sha256": "1a218c80ab1439b39f3ee31cc76969a55beda0a542d04b279fbc174412269f06"
+      }
+    },
+    "latest_watch_observation": {
+      "oom": 29,
+      "oom_kill": 6,
+      "sample_utc": "2026-10-31T02:01:30.125950+00:00"
+    }
+  },
+  "snapshot_not_terminal": true,
+  "status": "PRELAUNCH_REMOTE_DURABILITY_COMPLETE_WAITING_FOR_MEMORY"
+}
