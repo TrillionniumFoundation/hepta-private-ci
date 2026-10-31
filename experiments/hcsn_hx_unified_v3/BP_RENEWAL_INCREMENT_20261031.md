@@ -19,11 +19,11 @@ python -m unittest -v experiments.hcsn_hx_unified_v3.test_signed_anchor_calibrat
 python -m unittest -v experiments.hcsn_distributional_v2.test_time_varying_refractory_reference_replay
 ```
 
-- New targeted tests: **14/14 PASS**, 0 skipped. An initially invalid test grid exceeded the declared hazard-per-step admission limit and was repaired before committing; that error is not counted as scientific success.
-- P0: three parameter sets compared to the existing Lambert-W boundary; 12 central differences for six physical parameters across two regimes; independent scalar QVI/obstacle comparison; task gradients of six parameters; fail-closed boundary/dtype/domain cases.
+- New targeted tests: **15/15 PASS**, 0 skipped. An initially invalid test grid exceeded the declared hazard-per-step admission limit and was repaired before committing; that error is not counted as scientific success.
+- P0: three parameter sets compared to the existing Lambert-W boundary; 12 central differences for six physical parameters across two regimes, plus a deterministic 250-case bounded numerical scan (245 accepted, five explicit refusals, no accepted gradient mismatch above the declared 2e-5 normalized tolerance); independent scalar QVI/obstacle comparison; task gradients of six parameters; fail-closed boundary/dtype/domain cases.
 - P1: four tests of exact affine value/signed slope matching on three illustrative smooth functions and explicit refusal on a kink, constant/near-zero derivative, nonfinite feature and excessive gain. These are synthetic control checks, **not** a fresh registered Call/Risk/Margin mechanism experiment.
 - P2: exact inhomogeneous Poisson zero-refractory limit; independent constant-rate Gamma renewal reference at 300/600/1200 steps; preserved prefix under different future rates; refractory suppression; invalid-input refusals.
-- The local test harness reconstructed the **byte-identical upstream `stopping.py` Git blob** from exact parent `f0ceb7c2d5384463b50271a9471a34c007ed76b2` (blob `d165ed777990bbf8f3606b58e1b0991de59a1544`, 4,294 bytes), then reran **all 14/14 tests PASS**. Each of the six new source/test blobs likewise matches the locally executed files. This verifies the relevant exact parent source only; it is **not** a complete repository checkout, full CI, or HX financial-equilibrium integration.
+- The local test harness reconstructed the **byte-identical upstream `stopping.py` Git blob** from exact parent `f0ceb7c2d5384463b50271a9471a34c007ed76b2` (blob `d165ed777990bbf8f3606b58e1b0991de59a1544`, 4,294 bytes), then reran **all 15/15 tests PASS**. Each of the six new source/test blobs likewise matches the locally executed files. This verifies the relevant exact parent source only; it is **not** a complete repository checkout, full CI, or HX financial-equilibrium integration.
 
 ## P0-P5 ledger (no inherited claims upgraded)
 
