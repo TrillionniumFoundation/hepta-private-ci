@@ -10,10 +10,36 @@ from .event_kernel import (DomainError, discounted_hit, first_hit, first_hit_gra
 from .generator import (ResolutionError, absorbing_generator, erlang_recovery,
                         hazard_from_reference_release, rates, require_local_resolution)
 from .renewal import expected_count, sample_counts
+from .tail_regression import audit as tail_audit
 from .validation import audit
 
 
 class EventLawTests(unittest.TestCase):
+    def test_near_boundary_survival_and_inclusive_event_budget(self):
+        result = tail_audit()
+        self.assertEqual([g["name"] for g in result["gates"] if not g["passed"]], [])
+
+    def test_insufficient_event_budget_still_rejects(self):
+        with self.assertRaises(DomainError):
+            sample_counts(.001, .001, 100., .1, 1., .0001,
+                          paths=1, seed=0, max_events=1)
+
+    def test_near_boundary_probability_gradient_contract(self):
+        # Differentiate survival, not the rounded-to-one float64 CDF. The
+        # analytic derivatives remain derivatives of the mathematical law.
+        for distance in (1e-8, 1e-15, 1e-30):
+            for drift in (-1., 0., 1.):
+                parameters = [distance, drift, 1., 1.]
+                gradient = first_hit_gradient(*parameters)
+                for i, name in enumerate(("distance", "drift", "sigma", "time")):
+                    h = 1e-4*distance if i == 0 else 1e-5
+                    plus, minus = parameters.copy(), parameters.copy()
+                    plus[i] += h
+                    minus[i] -= h
+                    numeric = -(first_hit(*plus)["survival"]-first_hit(*minus)["survival"])/(2*h)
+                    relative_error = abs(numeric-gradient[name])/max(1e-300, abs(gradient[name]))
+                    self.assertLess(relative_error, 4e-7, (parameters, name, numeric, gradient[name]))
+
     def test_independent_numerical_qualification(self):
         result = audit()
         self.assertEqual([g["name"] for g in result["gates"] if not g["passed"]], [])

@@ -10,7 +10,7 @@ import math
 
 import numpy as np
 from scipy.integrate import quad
-from scipy.special import erfcx, log_ndtr, ndtri
+from scipy.special import erfcx, exprel, log_ndtr, ndtri
 
 
 class DomainError(ValueError):
@@ -50,8 +50,10 @@ def first_hit(distance, drift, sigma, time, *, boundary_slope=0.0):
     """Return F,f,logF,logS for the first hit, without a reset or time atom.
 
     The reflected term uses erfcx to avoid cancellation between a large
-    exponential and a tiny normal tail. S is evaluated by its own log
-    difference when F is large. No numerical probability is normalized/clipped.
+    exponential and a tiny normal tail. S uses its own log difference; when
+    that subtraction is ill-conditioned, a positive integral resolves the
+    boundary layer. Quadrature is numerically checked, not interval certified.
+    No numerical probability is normalized/clipped.
     """
     if not math.isfinite(boundary_slope):
         raise DomainError("Finite affine-boundary slope required")
@@ -73,9 +75,37 @@ def first_hit(distance, drift, sigma, time, *, boundary_slope=0.0):
     else:
         log_free_survival = float(log_ndtr(-z))
         difference = log_reflected - log_free_survival
-        if difference >= 0:
-            raise ArithmeticError("Survival-tail difference unresolved at float64 precision")
-        log_s = log_free_survival + math.log(-math.expm1(difference))
+        if difference > -1e-3:
+            # Near the boundary two individually accurate log-CDFs can agree
+            # to all their bits. Never subtract them to recover a tiny mass.
+            log_a = math.log(a) if a else math.log(distance)-math.log(scale)
+            if v < 0:
+                # S = [Phi(a-v)-Phi(-a-v)] + (1-exp(2av))*Phi(-a-v).
+                integral, error = quad(lambda u: math.exp(v*a*u-.5*(a*u)**2),
+                                       -1., 1., epsabs=1e-13, epsrel=2e-13)
+                log_interval = log_a-.5*v*v-.5*math.log(2*math.pi)+math.log(integral)
+                # Factoring x out of 1-exp(-x) retains its logarithm even
+                # when the float64 product x=2*a*abs(v) underflows.
+                log_defect = (math.log(2.)+log_a+math.log(-v)
+                              +math.log(float(exprel(2*a*v)))+float(log_ndtr(w)))
+                log_s = float(np.logaddexp(log_interval, log_defect))
+            else:
+                # Integrate the positive killed density, with y=scale*u.
+                # Rescaling by max(1,v-a) resolves the large-positive-drift
+                # boundary layer while the integral remains of order one.
+                c = v-a
+                integration_scale = 1/max(1., c)
+                def integrand(u):
+                    y = integration_scale*u
+                    return u*math.exp(-c*y-.5*y*y)*float(exprel(-2*a*y))
+                integral, error = quad(integrand, 0., math.inf,
+                                       epsabs=1e-13, epsrel=2e-13, limit=200)
+                log_s = (-.5*c*c-.5*math.log(2*math.pi)+math.log(2.)+log_a
+                         +2*math.log(integration_scale)+math.log(integral))
+            if not math.isfinite(integral) or integral <= 0 or error > 1e-11*integral:
+                raise ArithmeticError("Positive survival quadrature unresolved")
+        else:
+            log_s = log_free_survival + math.log(-math.expm1(difference))
         log_f = _log_complement(log_s)
     log_density = math.log(distance) - math.log(scale) - math.log(time) - .5 * math.log(2 * math.pi) - .5 * z * z
     if log_density > math.log(np.finfo(float).max):
