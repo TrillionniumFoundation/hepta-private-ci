@@ -1,4 +1,5 @@
 use super::*;
+use pretty_assertions::assert_eq;
 use std::io::Write as _;
 use std::path::Path;
 use std::path::PathBuf;
@@ -9,6 +10,9 @@ use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_EXECUTE;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
 use windows_sys::Win32::Storage::FileSystem::WRITE_DAC;
+
+#[path = "token_owner_boundary_tests.rs"]
+mod owner_boundary;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum DeleteAuthority {
