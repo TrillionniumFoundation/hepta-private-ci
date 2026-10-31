@@ -1243,3 +1243,7 @@ fn host_error(error: AgentdPromptRuntimeError) -> PromptRuntimeHostError {
 #[cfg(test)]
 #[path = "prompt_runtime_tests.rs"]
 mod tests;
+
+#[cfg(all(test, not(unix)))]
+#[path = "prompt_runtime_unsupported_tests.rs"]
+mod unsupported_tests;

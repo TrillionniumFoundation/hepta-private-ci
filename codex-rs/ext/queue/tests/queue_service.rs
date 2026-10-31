@@ -12,6 +12,7 @@ use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 use anyhow::Context;
+use codex_core::CodexThread;
 use codex_core::NotSubmittedReason;
 use codex_core::StartIfIdleSubmission;
 use codex_core::StartThreadOptions;
@@ -187,11 +188,20 @@ fn install_registered_queue(
     Ok(service)
 }
 
-fn python_hook_command(script_path: &Path) -> String {
+fn prompt_hook_command(script_path: &Path) -> String {
     #[cfg(windows)]
     {
-        // Windows runners provide python.exe; python3 can resolve to an app alias.
-        format!("python \"{}\"", script_path.display())
+        // These fixtures use cmd explicitly, so quote both native paths for
+        // cmd and use the system interpreter instead of an optional PATH alias.
+        let system_root = std::env::var_os("SYSTEMROOT")
+            .unwrap_or_else(|| panic!("Windows prompt hook fixture requires SYSTEMROOT"));
+        let powershell =
+            Path::new(&system_root).join(r"System32\WindowsPowerShell\v1.0\powershell.exe");
+        format!(
+            "\"{}\" -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File \"{}\"",
+            powershell.display(),
+            script_path.display()
+        )
     }
     #[cfg(not(windows))]
     {
@@ -201,8 +211,22 @@ fn python_hook_command(script_path: &Path) -> String {
 }
 
 fn write_rejecting_prompt_hook(home: &Path) {
+    #[cfg(windows)]
+    let script_path = home.join("queue_prompt_hook.ps1");
+    #[cfg(not(windows))]
     let script_path = home.join("queue_prompt_hook.py");
+    #[cfg(not(windows))]
     let log_path = home.join("queue_prompt_hook.log");
+    #[cfg(windows)]
+    let script = r#"$ErrorActionPreference = 'Stop'
+$payload = [Console]::In.ReadToEnd() | ConvertFrom-Json
+$logPath = Join-Path $PSScriptRoot 'queue_prompt_hook.log'
+[IO.File]::AppendAllText($logPath, $payload.prompt + "`n")
+if ($payload.prompt -eq 'blocked') {
+    [Console]::Out.WriteLine('{"decision":"block","reason":"blocked by queue hook"}')
+}
+"#;
+    #[cfg(not(windows))]
     let script = format!(
         r#"import json
 from pathlib import Path
@@ -223,7 +247,7 @@ if payload["prompt"] == "blocked":
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": python_hook_command(&script_path),
+                    "command": prompt_hook_command(&script_path),
                 }]
             }]
         }
@@ -233,9 +257,34 @@ if payload["prompt"] == "blocked":
 }
 
 fn write_blocking_prompt_hook(home: &Path) {
+    #[cfg(windows)]
+    let script_path = home.join("queue_blocking_prompt_hook.ps1");
+    #[cfg(not(windows))]
     let script_path = home.join("queue_blocking_prompt_hook.py");
+    #[cfg(not(windows))]
     let entered_path = home.join("queue_blocking_prompt_hook.entered");
+    #[cfg(not(windows))]
     let release_path = home.join("queue_blocking_prompt_hook.release");
+    #[cfg(windows)]
+    let script = r#"$ErrorActionPreference = 'Stop'
+$payload = [Console]::In.ReadToEnd() | ConvertFrom-Json
+if ($payload.prompt -in @('delay exact persistence', 'delay exact rejection')) {
+    $enteredPath = Join-Path $PSScriptRoot 'queue_blocking_prompt_hook.entered'
+    $releasePath = Join-Path $PSScriptRoot 'queue_blocking_prompt_hook.release'
+    [IO.File]::WriteAllText($enteredPath, 'entered')
+    $timer = [Diagnostics.Stopwatch]::StartNew()
+    while (-not [IO.File]::Exists($releasePath)) {
+        if ($timer.Elapsed.TotalSeconds -ge 20) {
+            throw 'timed out waiting to release queue persistence hook'
+        }
+        Start-Sleep -Milliseconds 10
+    }
+    if ($payload.prompt -eq 'delay exact rejection') {
+        [Console]::Out.WriteLine('{"decision":"block","reason":"delayed queue rejection"}')
+    }
+}
+"#;
+    #[cfg(not(windows))]
     let script = format!(
         r#"import json
 from pathlib import Path
@@ -263,7 +312,7 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": python_hook_command(&script_path),
+                    "command": prompt_hook_command(&script_path),
                 }]
             }]
         }
@@ -272,18 +321,45 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
         .unwrap_or_else(|error| panic!("write blocking queue hooks: {error}"));
 }
 
-async fn wait_for_path(path: &Path) -> anyhow::Result<()> {
+async fn wait_for_prompt_hook_entry(thread: &CodexThread, path: &Path) -> anyhow::Result<()> {
     tokio::time::timeout(Duration::from_secs(10), async {
         loop {
             if path.exists() {
-                return;
+                return Ok::<(), anyhow::Error>(());
             }
-            tokio::time::sleep(Duration::from_millis(10)).await;
+            tokio::select! {
+                () = tokio::time::sleep(Duration::from_millis(10)) => {}
+                event = thread.next_event() => match event?.msg {
+                    EventMsg::HookStarted(started) => {
+                        eprintln!("waiting for queue prompt hook entry: {started:?}");
+                    }
+                    EventMsg::HookCompleted(completed) => {
+                        anyhow::bail!(
+                            "prompt hook completed before entering `{}`: {completed:?}",
+                            path.display()
+                        );
+                    }
+                    EventMsg::TurnComplete(completed) => {
+                        anyhow::bail!(
+                            "turn completed before entering prompt hook `{}`: {completed:?}",
+                            path.display()
+                        );
+                    }
+                    _ => {}
+                }
+            }
         }
     })
     .await
-    .with_context(|| format!("timed out waiting for `{}`", path.display()))?;
+    .with_context(|| format!("timed out waiting for `{}`", path.display()))??;
     Ok(())
+}
+
+fn completed_turn_with_hook_diagnostics(event: &EventMsg) -> Option<()> {
+    if let EventMsg::HookCompleted(completed) = event {
+        eprintln!("queue prompt hook result: {completed:?}");
+    }
+    matches!(event, EventMsg::TurnComplete(_)).then_some(())
 }
 
 async fn test_queue() -> anyhow::Result<(Arc<dyn QueueStore>, TempDir)> {
@@ -474,11 +550,10 @@ impl QueueStore for FailDeleteOnceQueueStore {
         now_ms: i64,
         lease_expires_at_ms: i64,
     ) -> ThreadStoreFuture<'a, QueuedClientDispatchClaimOutcome> {
-        let lease_expires_at_ms = if self.short_dispatch_lease {
-            now_ms + 250
-        } else {
-            lease_expires_at_ms
-        };
+        // Short leases exercise authority after submission, not expiry while
+        // the service is still inspecting persisted history. Start that fault
+        // window at the authorization boundary below so the intended Core or
+        // completion failure is actually reached under a loaded test runner.
         self.inner.claim_client_binding_dispatch(
             process_lock,
             queued_item_id,
@@ -885,6 +960,7 @@ async fn caller_abort_after_core_started_keeps_exact_authority_until_persistence
         responses::mount_sse_once(&server, responses::sse_completed("one-cancel-safe-owner")).await;
     let test = test_codex()
         .with_pre_build_hook(write_blocking_prompt_hook)
+        .with_windows_cmd_shell()
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)
         .build_with_auto_env(&server)
@@ -945,7 +1021,7 @@ async fn caller_abort_after_core_started_keeps_exact_authority_until_persistence
     let release = test
         .codex_home_path()
         .join("queue_blocking_prompt_hook.release");
-    wait_for_path(&entered).await?;
+    wait_for_prompt_hook_entry(test.codex.as_ref(), &entered).await?;
     owner_start.abort();
     let aborted = owner_start
         .await
@@ -996,6 +1072,7 @@ async fn core_error_after_started_never_releases_ambiguous_dispatch() -> anyhow:
         responses::mount_sse_once(&server, responses::sse_completed("must-not-run")).await;
     let test = test_codex()
         .with_pre_build_hook(write_blocking_prompt_hook)
+        .with_windows_cmd_shell()
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)
         .build_with_auto_env(&server)
@@ -1056,7 +1133,7 @@ async fn core_error_after_started_never_releases_ambiguous_dispatch() -> anyhow:
     let release = test
         .codex_home_path()
         .join("queue_blocking_prompt_hook.release");
-    wait_for_path(&entered).await?;
+    wait_for_prompt_hook_entry(test.codex.as_ref(), &entered).await?;
     tokio::time::sleep(Duration::from_millis(400)).await;
     let competing = competitor
         .start(test.codex.as_ref(), Some(item.id.clone()), None)
@@ -2224,8 +2301,16 @@ async fn registered_queue_waits_for_terminalization_and_dispatches_once() -> any
     );
     let queued = staging.enqueue(thread_id, user_input("B")).await?;
     let queue = install_registered_queue(&test, installed.as_ref())?;
-    test.submit_text_turn("A").await?;
-    tokio::time::timeout(Duration::from_secs(5), gate.entered.notified()).await?;
+    let first_turn = test.submit_text_turn("A");
+    tokio::pin!(first_turn);
+    tokio::time::timeout(Duration::from_secs(5), async {
+        tokio::select! {
+            biased;
+            result = &mut first_turn => panic!("turn completed before its finish owner retired: {result:?}"),
+            () = gate.entered.notified() => {}
+        }
+    })
+    .await?;
 
     // The queue callback has returned, but the finish owner remains fenced by
     // the next contributor. Neither an explicit start nor another wake may run B.
@@ -2249,13 +2334,14 @@ async fn registered_queue_waits_for_terminalization_and_dispatches_once() -> any
 
     gate.release.notify_one();
     tokio::time::timeout(Duration::from_secs(10), async {
+        first_turn.await?;
         wait_for_event_match(test.codex.as_ref(), |event| {
             matches!(event, EventMsg::TurnComplete(_)).then_some(())
         })
         .await;
-        test.codex.current_turn_completion_barrier().await;
+        Ok::<(), anyhow::Error>(())
     })
-    .await?;
+    .await??;
     let prompts = responses
         .requests()
         .into_iter()
@@ -2289,15 +2375,28 @@ async fn deferred_queue_dispatch_does_not_bypass_shutdown() -> anyhow::Result<()
     );
     let queued = staging.enqueue(thread_id, user_input("B")).await?;
     let queue = install_registered_queue(&test, installed.as_ref())?;
-    test.submit_text_turn("A").await?;
-    tokio::time::timeout(Duration::from_secs(5), gate.entered.notified()).await?;
+    let first_turn = test.submit_text_turn("A");
+    tokio::pin!(first_turn);
+    tokio::time::timeout(Duration::from_secs(5), async {
+        tokio::select! {
+            biased;
+            result = &mut first_turn => panic!("turn completed before its finish owner retired: {result:?}"),
+            () = gate.entered.notified() => {}
+        }
+    })
+    .await?;
     assert_eq!(responses.requests().len(), 1);
 
     // Shutdown enters Core before the deferred wake is released. The wake must
     // still traverse normal admission and cannot use completion as authority.
     test.codex.submit(Op::Shutdown).await?;
     gate.release.notify_one();
-    tokio::time::timeout(Duration::from_secs(10), test.codex.wait_until_terminated()).await?;
+    tokio::time::timeout(Duration::from_secs(10), async {
+        first_turn.await?;
+        test.codex.wait_until_terminated().await;
+        Ok::<(), anyhow::Error>(())
+    })
+    .await??;
     tokio::time::timeout(Duration::from_secs(5), emit_idle(&queue, thread_id)).await?;
     assert_eq!(responses.requests().len(), 1);
     assert_eq!(queue.list(thread_id).await?, vec![queued.clone()]);
@@ -2504,6 +2603,7 @@ async fn rejected_queue_messages_remain_durable_and_block_followups() -> anyhow:
     let test = test_codex()
         .with_extensions(extensions)
         .with_pre_build_hook(write_rejecting_prompt_hook)
+        .with_windows_cmd_shell()
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)
         .build_with_auto_env(&server)
@@ -2521,10 +2621,7 @@ async fn rejected_queue_messages_remain_durable_and_block_followups() -> anyhow:
     tokio::time::timeout(Duration::from_secs(10), async {
         test.submit_text_turn("A").await?;
         for _ in 0..2 {
-            wait_for_event_match(test.codex.as_ref(), |event| {
-                matches!(event, EventMsg::TurnComplete(_)).then_some(())
-            })
-            .await;
+            wait_for_event_match(test.codex.as_ref(), completed_turn_with_hook_diagnostics).await;
         }
         anyhow::Ok(())
     })
@@ -2558,6 +2655,7 @@ async fn explicitly_started_rejected_queue_messages_remain_durable() -> anyhow::
         responses::mount_sse_once(&server, responses::sse_completed("unexpected-turn")).await;
     let test = test_codex()
         .with_pre_build_hook(write_rejecting_prompt_hook)
+        .with_windows_cmd_shell()
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)
         .build_with_auto_env(&server)
@@ -2570,7 +2668,7 @@ async fn explicitly_started_rejected_queue_messages_remain_durable() -> anyhow::
     );
 
     let rejected = queue.enqueue(thread_id, user_input("blocked")).await?;
-    let error = tokio::time::timeout(
+    let submission = tokio::time::timeout(
         Duration::from_secs(10),
         queue.start(
             test.codex.as_ref(),
@@ -2578,8 +2676,11 @@ async fn explicitly_started_rejected_queue_messages_remain_durable() -> anyhow::
             /*trace*/ None,
         ),
     )
-    .await?
-    .expect_err("hook rejection must not consume an unpersisted queue item");
+    .await?;
+    // Drain the hook result before asserting the routing result, so a Windows
+    // interpreter/command failure reports its status and stderr entries.
+    wait_for_event_match(test.codex.as_ref(), completed_turn_with_hook_diagnostics).await;
+    let error = submission.expect_err("hook rejection must not consume an unpersisted queue item");
     let QueueServiceError::CoreSubmissionError(error) = error else {
         anyhow::bail!("unexpected hook rejection error: {error:?}");
     };
@@ -2588,10 +2689,6 @@ async fn explicitly_started_rejected_queue_messages_remain_durable() -> anyhow::
         CodexErrorDetails::InvalidRequest(message)
             if message == "user message was rejected by a hook"
     ));
-    wait_for_event_match(test.codex.as_ref(), |event| {
-        matches!(event, EventMsg::TurnComplete(_)).then_some(())
-    })
-    .await;
     assert_eq!(vec![rejected], queue.list(thread_id).await?);
     let hook_log = std::fs::read_to_string(test.codex_home_path().join("queue_prompt_hook.log"))?;
     assert_eq!(vec!["blocked"], hook_log.lines().collect::<Vec<_>>());

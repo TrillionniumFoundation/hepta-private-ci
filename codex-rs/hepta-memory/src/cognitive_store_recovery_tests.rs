@@ -153,48 +153,56 @@ async fn exact_current_cut_recovers_writable_generation_and_persists_activation(
     drop(store);
 
     let authority = recovery_authority(&owner);
-    let recovered = CognitiveStore::open_with_recovery(
-        &layout(&temp, &owner),
-        CognitiveRecoveryRequirement::ExactCurrentCut(&retained),
-        &authority,
-        &RecoveryVerifier,
-    )
-    .await
-    .expect("descriptor-bound writable recovery");
-    assert_ne!(recovered.path(), original.as_path());
-    assert_eq!(
-        recovered.recovery_anchor().await.expect("recovered anchor"),
-        retained
-    );
-
-    recovered
-        .append_source(
-            &access,
-            &source(
-                CognitiveScope::AgentPrivate,
-                "post-recovery-source",
-                "post recovery write",
-            ),
+    #[cfg(not(unix))]
+    {
+        let _ = (access, original);
+        assert_unsupported_recovery_unchanged(&temp, &owner, &retained, &authority).await;
+    }
+    #[cfg(unix)]
+    {
+        let recovered = CognitiveStore::open_with_recovery(
+            &layout(&temp, &owner),
+            CognitiveRecoveryRequirement::ExactCurrentCut(&retained),
+            &authority,
+            &RecoveryVerifier,
         )
         .await
-        .expect("recovered store is writable");
-    let advanced = recovered
-        .recovery_anchor()
-        .await
-        .expect("advanced current witness");
-    assert_ne!(advanced, retained);
-    let recovered_path = recovered.path().to_path_buf();
-    recovered.close().await;
-    drop(recovered);
+        .expect("descriptor-bound writable recovery");
+        assert_ne!(recovered.path(), original.as_path());
+        assert_eq!(
+            recovered.recovery_anchor().await.expect("recovered anchor"),
+            retained
+        );
 
-    let reopened = CognitiveStore::open(&layout(&temp, &owner))
-        .await
-        .expect("ordinary reopen follows activated generation");
-    assert_eq!(reopened.path(), recovered_path.as_path());
-    assert_eq!(
-        reopened.recovery_anchor().await.expect("reopen anchor"),
-        advanced
-    );
+        recovered
+            .append_source(
+                &access,
+                &source(
+                    CognitiveScope::AgentPrivate,
+                    "post-recovery-source",
+                    "post recovery write",
+                ),
+            )
+            .await
+            .expect("recovered store is writable");
+        let advanced = recovered
+            .recovery_anchor()
+            .await
+            .expect("advanced current witness");
+        assert_ne!(advanced, retained);
+        let recovered_path = recovered.path().to_path_buf();
+        recovered.close().await;
+        drop(recovered);
+
+        let reopened = CognitiveStore::open(&layout(&temp, &owner))
+            .await
+            .expect("ordinary reopen follows activated generation");
+        assert_eq!(reopened.path(), recovered_path.as_path());
+        assert_eq!(
+            reopened.recovery_anchor().await.expect("reopen anchor"),
+            advanced
+        );
+    }
 }
 
 #[tokio::test]
@@ -253,8 +261,16 @@ async fn writable_recovery_requires_exclusive_store_fence() {
             &RecoveryVerifier,
         )
         .await,
-        Err(CognitiveRecoveryError::Unavailable(_))
+        Err(CognitiveRecoveryError::Unavailable(message))
+            if message.contains("cannot fence active store handles")
     ));
+    assert_eq!(
+        store
+            .recovery_anchor()
+            .await
+            .expect("unchanged current witness"),
+        anchor
+    );
 }
 
 #[tokio::test]
@@ -288,29 +304,37 @@ async fn predecessor_witness_is_rejected_and_current_witness_recovers() {
     drop(store);
     let authority = recovery_authority(&owner);
 
-    assert!(matches!(
-        CognitiveStore::open_with_recovery(
+    #[cfg(not(unix))]
+    {
+        assert_unsupported_recovery_unchanged(&temp, &owner, &predecessor, &authority).await;
+        assert_unsupported_recovery_unchanged(&temp, &owner, &current, &authority).await;
+    }
+    #[cfg(unix)]
+    {
+        assert!(matches!(
+            CognitiveStore::open_with_recovery(
+                &layout(&temp, &owner),
+                CognitiveRecoveryRequirement::ExactCurrentCut(&predecessor),
+                &authority,
+                &RecoveryVerifier,
+            )
+            .await,
+            Err(CognitiveRecoveryError::AccessDenied(_))
+        ));
+
+        let recovered = CognitiveStore::open_with_recovery(
             &layout(&temp, &owner),
-            CognitiveRecoveryRequirement::ExactCurrentCut(&predecessor),
+            CognitiveRecoveryRequirement::ExactCurrentCut(&current),
             &authority,
             &RecoveryVerifier,
         )
-        .await,
-        Err(CognitiveRecoveryError::AccessDenied(_))
-    ));
-
-    let recovered = CognitiveStore::open_with_recovery(
-        &layout(&temp, &owner),
-        CognitiveRecoveryRequirement::ExactCurrentCut(&current),
-        &authority,
-        &RecoveryVerifier,
-    )
-    .await
-    .expect("current witness recovers");
-    assert_eq!(
-        recovered.recovery_anchor().await.expect("recovered anchor"),
-        current
-    );
+        .await
+        .expect("current witness recovers");
+        assert_eq!(
+            recovered.recovery_anchor().await.expect("recovered anchor"),
+            current
+        );
+    }
 }
 
 #[tokio::test]
@@ -362,6 +386,9 @@ async fn revoked_owner_profile_and_witness_checks_precede_recovery_admission() {
     drop(store);
     let mut tampered = anchor;
     tampered.state_digest = Sha256Digest::for_bytes(b"altered witness");
+    #[cfg(not(unix))]
+    assert_unsupported_recovery_unchanged(&temp, &owner, &tampered, &authority).await;
+    #[cfg(unix)]
     assert!(matches!(
         CognitiveStore::open_with_recovery(
             &layout(&temp, &owner),
@@ -527,6 +554,32 @@ fn recovery_failure(
         Err(error) => error,
         Ok(_) => panic!("fail-closed recovery unexpectedly returned a store"),
     }
+}
+
+#[cfg(not(unix))]
+async fn assert_unsupported_recovery_unchanged(
+    temp: &TempDir,
+    owner: &AgentId,
+    anchor: &CognitiveRecoveryAnchor,
+    authority: &crate::ProductionAuthorityLease,
+) {
+    let layout = layout(temp, owner);
+    let before = capture_recovery_tree(layout.cognitive_root());
+    let error = recovery_failure(
+        CognitiveStore::open_with_recovery(
+            &layout,
+            CognitiveRecoveryRequirement::ExactCurrentCut(anchor),
+            authority,
+            &RecoveryVerifier,
+        )
+        .await,
+    );
+    let CognitiveRecoveryError::Indeterminate(message) = error else {
+        panic!("unsupported identity binding must refuse recovery: {error:?}");
+    };
+    assert_eq!(message, SqliteRecoveryError::Indeterminate.to_string());
+    // No source, sidecar, activation pointer, candidate, or metadata changes.
+    assert_eq!(capture_recovery_tree(layout.cognitive_root()), before);
 }
 
 #[cfg(unix)]

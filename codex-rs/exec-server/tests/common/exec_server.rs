@@ -51,6 +51,8 @@ impl Drop for ExecServerHarness {
 pub(crate) struct TestCodexHelperPaths {
     pub(crate) codex_exe: PathBuf,
     pub(crate) codex_linux_sandbox_exe: Option<PathBuf>,
+    #[cfg(windows)]
+    _package: TempDir,
 }
 
 pub(crate) struct DisconnectableWebSocketProxy {
@@ -69,9 +71,28 @@ impl Drop for DisconnectableWebSocketProxy {
 
 pub(crate) fn test_codex_helper_paths() -> anyhow::Result<TestCodexHelperPaths> {
     let (helper_binary, codex_linux_sandbox_exe) = super::current_test_binary_helper_paths()?;
+    #[cfg(windows)]
+    let package = TempDir::new()?;
+    #[cfg(windows)]
+    let helper_binary = {
+        // Bazel runfiles place the sandbox helpers in another package. Keep
+        // the actual test helper and both native sandbox executables together,
+        // matching the release layout used by the production launcher.
+        for name in ["codex-windows-sandbox-setup", "codex-command-runner"] {
+            std::fs::copy(
+                codex_utils_cargo_bin::cargo_bin(name)?,
+                package.path().join(format!("{name}.exe")),
+            )?;
+        }
+        let packaged_helper = package.path().join("codex-exec-server-tests.exe");
+        std::fs::copy(helper_binary, &packaged_helper)?;
+        packaged_helper
+    };
     Ok(TestCodexHelperPaths {
         codex_exe: helper_binary,
         codex_linux_sandbox_exe,
+        #[cfg(windows)]
+        _package: package,
     })
 }
 

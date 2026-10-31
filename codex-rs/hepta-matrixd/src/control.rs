@@ -421,6 +421,13 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
         MatrixdControlError::Invalid("matrixd control socket has no parent directory".to_string())
     })?;
     codex_uds::prepare_private_socket_directory(parent).await?;
+    // A missing Windows AF_UNIX rendezvous can yield ConnectionRefused.
+    // Inspect the entry without following reparse points before the live probe.
+    match tokio::fs::symlink_metadata(socket_path).await {
+        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
+        Err(error) => return Err(error.into()),
+        Ok(_) => {}
+    }
     match UnixStream::connect(socket_path).await {
         Ok(_) => {
             return Err(MatrixdControlError::Io(std::io::Error::new(
@@ -433,7 +440,6 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
         }
         Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
         Err(error) if error.kind() == ErrorKind::ConnectionRefused => {}
-        Err(_) if !socket_path.exists() => return Ok(()),
         Err(error) => return Err(error.into()),
     }
     if codex_uds::is_stale_socket_path(socket_path).await? {
@@ -530,6 +536,10 @@ pub enum MatrixdControlError {
 }
 
 #[cfg(test)]
+#[path = "control_socket_tests.rs"]
+mod socket_tests;
+
+#[cfg(test)]
 mod tests {
     use std::error::Error;
     use std::fs;
@@ -542,7 +552,9 @@ mod tests {
     use codex_hepta_paths::HeptaFleetRoot;
     use pretty_assertions::assert_eq;
     use tempfile::TempDir;
+    #[cfg(unix)]
     use tokio::io::AsyncBufReadExt;
+    #[cfg(unix)]
     use tokio::io::AsyncWriteExt;
 
     use super::*;
@@ -857,20 +869,24 @@ mod tests {
         // The product fleet root deliberately leaves Darwin `sun_path`
         // headroom. The SSD test harness uses a much deeper TMPDIR, so put
         // this socket-binding fixture under the canonical short temp root.
+        #[cfg(unix)]
         let temp = tempfile::Builder::new()
             .prefix("hmx-control-")
             .tempdir_in("/tmp")?;
+        #[cfg(not(unix))]
+        let temp = tempfile::tempdir()?;
         let fake = Arc::new(FakeTransport::default());
-        let (state, connections) = state(&temp, fake).await?;
+        let (state, connections) = state(&temp, Arc::clone(&fake)).await?;
         let socket = layout(&temp, &agent_id()?)?
             .matrixd_control_socket()
             .to_path_buf();
         let cancel = CancellationToken::new();
         let server =
             MatrixdControlServer::bind(socket.clone(), Arc::clone(&state), cancel.clone()).await?;
+        #[cfg(unix)]
         let task = tokio::spawn(server.run());
 
-        let mut stream = UnixStream::connect(&socket).await?;
+        let stream = UnixStream::connect(&socket).await?;
         let request = MatrixdRequest {
             schema_version: MATRIXD_CONTROL_SCHEMA_VERSION,
             request_id: 41,
@@ -878,13 +894,40 @@ mod tests {
             fence: None,
             method: MatrixdMethod::Health,
         };
-        let mut bytes = serde_json::to_vec(&request)?;
-        bytes.push(b'\n');
-        stream.write_all(&bytes).await?;
-        let mut reader = BufReader::new(stream);
-        let mut response = Vec::new();
-        reader.read_until(b'\n', &mut response).await?;
-        let response: MatrixdResponse = serde_json::from_slice(&response)?;
+        #[cfg(unix)]
+        let response: MatrixdResponse = {
+            let mut stream = stream;
+            let mut bytes = serde_json::to_vec(&request)?;
+            bytes.push(b'\n');
+            stream.write_all(&bytes).await?;
+            let mut reader = BufReader::new(stream);
+            let mut response = Vec::new();
+            reader.read_until(b'\n', &mut response).await?;
+            serde_json::from_slice(&response)?
+        };
+        #[cfg(windows)]
+        let response = {
+            // Keep the real socket/peer boundary fail-closed on platforms
+            // without a kernel peer-identity implementation. An idle client
+            // proves rejection occurs before reading any protocol bytes.
+            let _idle_client = stream;
+            let mut server = server;
+            let accepted = server.listener.accept().await?;
+            let rejection = timeout(
+                Duration::from_secs(1),
+                serve_connection(accepted, Arc::clone(&state)),
+            )
+            .await?;
+            assert!(matches!(
+                rejection,
+                Err(MatrixdControlError::Io(error)) if error.kind() == ErrorKind::Unsupported
+            ));
+            assert!(fake.cancellations.lock().await.is_empty());
+            assert!(fake.resolutions.lock().await.is_empty());
+            // Health and lifecycle semantics remain exercised on Windows;
+            // this is the state API, not an unauthenticated wire response.
+            state.response(request).await
+        };
         assert_eq!(response.release_id, "release-1");
         assert!(matches!(
             response.payload,
@@ -901,7 +944,10 @@ mod tests {
         assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Ready);
         connections.set_fenced();
         assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Fenced);
+        assert!(fake.cancellations.lock().await.is_empty());
+        assert!(fake.resolutions.lock().await.is_empty());
         cancel.cancel();
+        #[cfg(unix)]
         task.await??;
         Ok(())
     }

@@ -55,7 +55,7 @@ fn listen_unix_socket_accepts_relative_custom_path() {
 
 #[tokio::test]
 async fn control_socket_acceptor_upgrades_and_forwards_websocket_text_messages_and_pings() {
-    let temp_dir = tempfile::TempDir::new().expect("temp dir");
+    let temp_dir = socket_temp_dir().expect("socket temp dir");
     let socket_path = test_socket_path(temp_dir.path());
     let (transport_event_tx, mut transport_event_rx) =
         mpsc::channel::<TransportEvent>(CHANNEL_CAPACITY);
@@ -143,7 +143,7 @@ async fn control_socket_acceptor_upgrades_and_forwards_websocket_text_messages_a
 
 #[tokio::test]
 async fn app_server_startup_lock_serializes_waiters() {
-    let temp_dir = tempfile::TempDir::new().expect("temp dir");
+    let temp_dir = socket_temp_dir().expect("socket temp dir");
     let lock_path = test_startup_lock_path(temp_dir.path());
     let first_lock = acquire_app_server_startup_lock(lock_path.clone())
         .await
@@ -168,7 +168,7 @@ async fn app_server_startup_lock_serializes_waiters() {
 async fn control_socket_file_is_private_after_bind() {
     use std::os::unix::fs::PermissionsExt;
 
-    let temp_dir = tempfile::TempDir::new().expect("temp dir");
+    let temp_dir = socket_temp_dir().expect("socket temp dir");
     let socket_path = test_socket_path(temp_dir.path());
     let (transport_event_tx, _transport_event_rx) =
         mpsc::channel::<TransportEvent>(CHANNEL_CAPACITY);
@@ -192,6 +192,18 @@ async fn control_socket_file_is_private_after_bind() {
 
 fn absolute_path(path: &str) -> AbsolutePathBuf {
     AbsolutePathBuf::from_absolute_path(path).expect("absolute path")
+}
+
+fn socket_temp_dir() -> IoResult<tempfile::TempDir> {
+    // Bazel's TMPDIR can exceed sockaddr_un's path limit before the socket
+    // suffix is added. Keep the real socket fixture under a short private root.
+    #[cfg(unix)]
+    let base = std::fs::canonicalize("/tmp")?;
+    #[cfg(not(unix))]
+    let base = std::env::temp_dir();
+    tempfile::Builder::new()
+        .prefix("codex-uds-")
+        .tempdir_in(base)
 }
 
 fn default_control_socket_path() -> AbsolutePathBuf {

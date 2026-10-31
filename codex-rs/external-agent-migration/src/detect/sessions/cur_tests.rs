@@ -251,6 +251,88 @@ fn rejects_ambiguous_cur_project_with_multiple_punctuated_ancestors() {
 }
 
 #[test]
+fn resolves_cur_project_below_multiple_punctuated_ancestors() {
+    let root = TempDir::new().expect("tempdir");
+    let parent = root.path().join("buildbuddy-execroot").join("other-parent");
+    let project = parent.join("my--project");
+    fs::create_dir_all(&project).expect("project root");
+    let encoded = format!("{}-my-project", encode_project_path(&parent));
+
+    assert_eq!(decode_cur_project_path(&encoded), Some(project));
+}
+
+#[test]
+fn rejects_ambiguous_cur_project_below_punctuated_ancestors() {
+    let root = TempDir::new().expect("tempdir");
+    let parent = root.path().join("buildbuddy-execroot").join("other-parent");
+    let nested = parent.join("workspace").join("nested");
+    let hyphenated = parent.join("workspace-nested");
+    fs::create_dir_all(&nested).expect("nested project");
+    fs::create_dir_all(&hyphenated).expect("hyphenated project");
+    let encoded = encode_project_path(&nested);
+
+    assert_eq!(encoded, encode_project_path(&hyphenated));
+    assert_eq!(decode_cur_project_path(&encoded), None);
+}
+
+#[test]
+fn resolves_cur_project_with_native_filesystem_case_semantics() {
+    let root = TempDir::new().expect("tempdir");
+    let project = root.path().join("CaseParent").join("ProjectCase");
+    fs::create_dir_all(&project).expect("project root");
+    let alias = root.path().join("caseparent").join("projectcase");
+
+    // This must agree with the host filesystem on both case-sensitive and
+    // case-insensitive volumes, without guessing a platform's case-fold rules.
+    let expected = alias.is_dir().then_some(alias.clone());
+    assert_eq!(
+        decode_cur_project_path(&encode_project_path(&alias)),
+        expected
+    );
+}
+
+#[test]
+fn resolves_cur_project_below_a_deep_native_path() {
+    let root = TempDir::new().expect("tempdir");
+    let mut project = root.path().to_path_buf();
+    for index in 0..24 {
+        project.push(format!("p{index}"));
+    }
+    fs::create_dir_all(&project).expect("project root");
+
+    assert_eq!(
+        decode_cur_project_path(&encode_project_path(&project)),
+        Some(project)
+    );
+}
+
+#[test]
+fn rejects_cur_project_when_unique_prefix_search_exceeds_its_budget() {
+    let root = TempDir::new().expect("tempdir");
+    let mut project = root.path().join("a-b").join("c-d");
+    for index in 0..8 {
+        project.push(format!("tail{index}"));
+    }
+    fs::create_dir_all(&project).expect("project root");
+    let encoded = encode_project_path(&project);
+    assert_eq!(decode_cur_project_path(&encoded), Some(project));
+
+    // These branches contain no complete alternate cwd. Nevertheless, the
+    // bounded decoder must reject once it cannot finish excluding them all.
+    for first in CUR_PROJECT_SEPARATORS {
+        for second in CUR_PROJECT_SEPARATORS {
+            fs::create_dir_all(
+                root.path()
+                    .join(format!("a{first}b"))
+                    .join(format!("c{second}d")),
+            )
+            .expect("alternate prefix");
+        }
+    }
+    assert_eq!(decode_cur_project_path(&encoded), None);
+}
+
+#[test]
 fn parses_windows_cursor_fixture_project_directory() {
     assert_eq!(
         decode_cur_windows_project_drive("C--Users-fixture-Cursor"),

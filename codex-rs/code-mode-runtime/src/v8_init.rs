@@ -49,6 +49,11 @@ fn initialize_v8_with_mode(jit_mode: V8JitMode) -> Result<V8Initialization, Stri
     let platform = v8::new_default_platform(0, false).make_shared();
     v8::V8::initialize_platform(platform.clone());
     v8::V8::initialize();
+    // V8's PA-backed sandbox allocator initializes its shared pool lazily,
+    // without a lock. Finish that initialization inside this OnceLock before
+    // runtime threads create their first isolates concurrently. Dropping the
+    // allocator wrapper leaves the process-wide backing pool alive.
+    drop(v8::new_default_allocator());
     Ok(V8Initialization {
         _platform: platform,
         jit_mode,

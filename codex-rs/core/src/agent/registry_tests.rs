@@ -4,6 +4,36 @@ use codex_protocol::error::CodexErrorDetails;
 use pretty_assertions::assert_eq;
 use std::collections::HashSet;
 
+#[test]
+fn replacement_registration_rejects_stale_release_and_preserves_budget() -> Result<()> {
+    let registry = Arc::new(AgentRegistry::default());
+    let thread_id = ThreadId::new();
+    registry
+        .reserve_spawn_slot(Some(2))?
+        .commit(agent_metadata(thread_id));
+    let original = registry
+        .registration_for_thread(thread_id)
+        .ok_or_else(|| CodexErr::ThreadNotFound(thread_id))?;
+    registry.reserve_spawn_slot(Some(2))?.commit(AgentMetadata {
+        agent_role: Some("replacement".to_string()),
+        ..agent_metadata(thread_id)
+    });
+    assert!(!registry.release_spawned_thread_if_current(thread_id, &original));
+    assert_eq!(
+        registry
+            .agent_metadata_for_thread(thread_id)
+            .and_then(|metadata| metadata.agent_role),
+        Some("replacement".to_string())
+    );
+    assert!(registry.reserve_spawn_slot(Some(1)).is_err());
+    let current = registry
+        .registration_for_thread(thread_id)
+        .ok_or_else(|| CodexErr::ThreadNotFound(thread_id))?;
+    assert!(registry.release_spawned_thread_if_current(thread_id, &current));
+    assert!(registry.live_agents().is_empty());
+    drop(registry.reserve_spawn_slot(Some(1))?);
+    Ok(())
+}
 fn agent_path(path: &str) -> AgentPath {
     AgentPath::try_from(path).expect("valid agent path")
 }

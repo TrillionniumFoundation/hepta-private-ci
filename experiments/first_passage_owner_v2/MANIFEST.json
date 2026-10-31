@@ -1,0 +1,143 @@
+{
+  "schema": "hepta.fpt.owner-adoption.deliverable.v2",
+  "baseline_commit": "eb5a1cc503e1ea6592d68e73c95b94d24564352a",
+  "source_digest": "d1983d9c684245ec7bd54ba685ef35e69bcbd7dff37e8aaed57373d6697be2df",
+  "binary_sha256": "8bf12a382dc80872fcd58ac2de8daabc2860ff1818599ad4e8058c35742fbc56",
+  "qualification": {
+    "rust_contract_tests": 10,
+    "process_tests": 21,
+    "subprocess_invocations": 108,
+    "real_sigkill_count": 9,
+    "success": true,
+    "post_format_source_identity_unchanged": true
+  },
+  "copied_native_profile": {
+    "original_path": "experiments/first_passage_adaptive/native/owner_bridge.rs",
+    "bytes": 4832,
+    "sha256": "ff968fc94008cf067dde39f09b9b61a444e7f037d5d07073dab604c620e0aa94",
+    "equal_to_original": true
+  },
+  "review_stage_files": [
+    [
+      "contract.rs",
+      "store.rs"
+    ],
+    [
+      "native.rs",
+      "settlement.rs"
+    ],
+    [
+      "engine.rs",
+      "main.rs",
+      "build.py",
+      "owner-Cargo.lock",
+      "fixture.json",
+      "rustfmt.toml"
+    ],
+    [
+      "contract_tests.rs",
+      "verify.py"
+    ],
+    [
+      "README.md",
+      "CONTRACT.md",
+      "REVIEW_STAGES.md",
+      "MANIFEST.json",
+      "evidence/BUILD_REPORT.json",
+      "evidence/COUNTEREXAMPLES_BEFORE_FIX.json",
+      "evidence/FORMAT_RESULT.json",
+      "evidence/INITIAL_FAILURE.json",
+      "evidence/PRE_FIX_BUILD_REPORT.json",
+      "evidence/PROCESS_QUALIFICATION.json"
+    ]
+  ],
+  "files": {
+    "CONTRACT.md": {
+      "sha256": "c8c1f6ff48ba7790d9c0b14e7064e78140b56faadfa49a7e2e255ce9b22b1974",
+      "bytes": 7484
+    },
+    "README.md": {
+      "sha256": "84bd81cb79c6bdb9df4fb1d7e1a9e3f04ba76d231ba236cb765be26280bdd8ea",
+      "bytes": 8131
+    },
+    "REVIEW_STAGES.md": {
+      "sha256": "8bd07746e1a4d0bc27493beb7d2db222a7bdbd28dfb4c943127ad7815c7079ce",
+      "bytes": 4060
+    },
+    "build.py": {
+      "sha256": "3a9e44a9b4f2d655a95baad521895a399bb0652338e594dd6732c88981dcab89",
+      "bytes": 5414
+    },
+    "contract.rs": {
+      "sha256": "7b48aaec25825ac9602fb02dfb7fb12ed14d0516864e1af90dbf11c955fbcd33",
+      "bytes": 9965
+    },
+    "contract_tests.rs": {
+      "sha256": "2f15d6b149a212014c794b755890eaf237eeb583469e1f780778e6b0addcd2fe",
+      "bytes": 5919
+    },
+    "engine.rs": {
+      "sha256": "13117ce945bacb453a49ce91c590fdbde5ab82c6c0560f914b27be11ce7b1b69",
+      "bytes": 9153
+    },
+    "evidence/BUILD_REPORT.json": {
+      "sha256": "fe64d31ea739e4057de09081a3e07a8f02a307391efd18ccaee5c57bb09c5d7f",
+      "bytes": 13380
+    },
+    "evidence/COUNTEREXAMPLES_BEFORE_FIX.json": {
+      "sha256": "f15a984bedbe91b9603a2a14150c1d0ca1b7e70de1234f44a4ef163ff652f09a",
+      "bytes": 45108
+    },
+    "evidence/FORMAT_RESULT.json": {
+      "sha256": "e1f86c17e9987667acba4dd42cf4138797545cd5f9a15ead2987d93ede14cbb3",
+      "bytes": 267
+    },
+    "evidence/INITIAL_FAILURE.json": {
+      "sha256": "eda61c04035480ee29a3c167477f9866aef9bcf30d7a15cb09526f9ab2a247ac",
+      "bytes": 3077
+    },
+    "evidence/PRE_FIX_BUILD_REPORT.json": {
+      "sha256": "e2137cbd469c7613d9035b6ba549a39ada448f249606f553d2fac7d7796af462",
+      "bytes": 13053
+    },
+    "evidence/PROCESS_QUALIFICATION.json": {
+      "sha256": "c0474ca66032bf915b943b93fdd246c1771df95956f591f52793946449861c15",
+      "bytes": 308143
+    },
+    "fixture.json": {
+      "sha256": "c374338352793f260c7d30f53c71d7d3551ace671ee4dedc298283646143acec",
+      "bytes": 1469
+    },
+    "main.rs": {
+      "sha256": "8f1bc98025036264d300926f50b4cc0fd8405b4115c647c7d466a75d560482d0",
+      "bytes": 2541
+    },
+    "native.rs": {
+      "sha256": "5d8ce57658e8ff99ca0b4e8f918327303774e71b205b1ba6739fb22f67d520aa",
+      "bytes": 9534
+    },
+    "owner-Cargo.lock": {
+      "sha256": "2e7f28444e04f3599e5f36f41247f947055894a9f161f352518694bdb43a4e1b",
+      "bytes": 5307
+    },
+    "rustfmt.toml": {
+      "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584",
+      "bytes": 17
+    },
+    "settlement.rs": {
+      "sha256": "4f88a24e81e2d62c9e954a5a3d4f7e924f64cab4b87afa409edb943503d27392",
+      "bytes": 7174
+    },
+    "store.rs": {
+      "sha256": "cca223f67589f6c8f0ac4ac42db8039ed20fd077dd4e9bc66c2cc84c74bcce5c",
+      "bytes": 6332
+    },
+    "verify.py": {
+      "sha256": "32ee6199b6be5fd116878f782c5d49726dda7fc22603e3405c3c82db8e6320ec",
+      "bytes": 22169
+    }
+  },
+  "scope": "Linux cooperative-process native state adoption and bounded local-file effects; trusted observer; no production activation",
+  "authority": "DENY_ALL",
+  "production_activation": false
+}

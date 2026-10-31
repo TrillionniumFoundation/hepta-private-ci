@@ -17,6 +17,9 @@ use windows_sys::Win32::Security::TokenRestrictedSids;
 use windows_sys::Win32::Storage::FileSystem::DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_ALL_ACCESS;
 
+#[path = "token_delete_boundary_tests.rs"]
+mod delete_boundary;
+
 struct OwnedToken(HANDLE);
 
 impl Drop for OwnedToken {

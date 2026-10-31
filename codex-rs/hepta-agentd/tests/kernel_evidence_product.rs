@@ -803,6 +803,8 @@ fn write_recovery_frontier(
     store_id: &str,
     snapshot: codex_hepta_evidence::EvidenceRecoverySnapshotV1,
 ) -> Result<(std::path::PathBuf, std::path::PathBuf)> {
+    // The external authority remains outside Agent home, with no host temp-dir alias.
+    let directory = directory.canonicalize()?;
     let signer_key = SigningKey::from_bytes(&[63; 32]);
     let mut frontier = EvidenceRecoveryFrontierV1 {
         schema_version: 1,

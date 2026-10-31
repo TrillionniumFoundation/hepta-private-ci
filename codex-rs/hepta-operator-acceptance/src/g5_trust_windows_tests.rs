@@ -10,8 +10,9 @@ use crate::test_support::private_tempdir;
 use crate::test_support::write_fixture_file;
 
 #[test]
-fn challenge_preparation_refuses_unqualified_durable_commit_without_authority() {
-    let fixture = TrustFixture::new();
+fn challenge_preparation_refuses_unqualified_durable_commit_without_authority()
+-> Result<(), Box<dyn std::error::Error>> {
+    let fixture = TrustFixture::new()?;
     let challenge_path = fixture.root.join("prepare.json");
     let error = prepare_g5_challenge(G5PrepareRequest {
         challenge_path: &challenge_path,
@@ -21,22 +22,24 @@ fn challenge_preparation_refuses_unqualified_durable_commit_without_authority() 
         now_unix_seconds: 1_000,
         trust: fixture.inputs(),
     })
-    .expect_err("Windows directory flush is not qualified");
+    .err()
+    .ok_or("Windows directory flush is not qualified")?;
     assert!(matches!(error, crate::AcceptanceError::Io(ref source)
         if matches!(source.kind(), std::io::ErrorKind::PermissionDenied | std::io::ErrorKind::Unsupported)));
     // A failed flush may leave an uncommitted challenge input. It cannot
     // create an acceptance, claim, ledger or successful assessment.
     if challenge_path.exists() {
-        let challenge: G5Challenge =
-            serde_json::from_slice(&std::fs::read(&challenge_path).unwrap()).unwrap();
+        let challenge: G5Challenge = serde_json::from_slice(&std::fs::read(&challenge_path)?)?;
         assert_eq!(challenge.authority, G5AuthorityBoundary::all_false());
     }
     fixture.assert_no_authority();
+    Ok(())
 }
 
 #[test]
-fn exact_signature_transport_refuses_windows_and_assessment_cannot_grant_authority() {
-    let fixture = TrustFixture::new();
+fn exact_signature_transport_refuses_windows_and_assessment_cannot_grant_authority()
+-> Result<(), Box<dyn std::error::Error>> {
+    let fixture = TrustFixture::new()?;
     let error = verify_sshsig_bytes(
         STATEMENT.as_bytes(),
         VALID_SIGNATURE.as_bytes(),
@@ -44,45 +47,45 @@ fn exact_signature_transport_refuses_windows_and_assessment_cannot_grant_authori
         "operator@example",
         SSHSIG_NAMESPACE,
     )
-    .expect_err("real valid SSHSIG still requires supported transport");
+    .err()
+    .ok_or("real valid SSHSIG still requires supported transport")?;
     assert_eq!(
         error.to_string(),
         "operator acceptance rejected: G5 SSHSIG verification requires Unix"
     );
-    let challenge = fixture.seed_challenge();
+    let challenge = fixture.seed_challenge()?;
     for (name, packet) in [
         ("valid-envelope", VALID_SIGNATURE),
         ("wrong-namespace", WRONG_NAMESPACE_SIGNATURE),
         ("corrupt", "not a signature"),
     ] {
         let signature = fixture.root.join(format!("{name}.sig"));
-        write_fixture_file(&signature, packet.as_bytes()).expect("signature fixture");
-        let before = fixture.snapshot();
-        let assessed = fixture
-            .assess(
-                &challenge,
-                G5SignatureInput::Detached(&signature),
-                /*time*/ 1_001,
-            )
-            .expect("failed verification assessment");
+        write_fixture_file(&signature, packet.as_bytes())?;
+        let before = fixture.snapshot()?;
+        let assessed = fixture.assess(
+            &challenge,
+            G5SignatureInput::Detached(&signature),
+            /*time*/ 1_001,
+        )?;
         assert_eq!(assessed.status, ASSESSMENT_STATUS_SIGNATURE_INVALID);
         assert!(!assessed.signature_verified);
         assert_eq!(assessed.assessment_path, None);
-        assert_eq!(fixture.snapshot(), before);
+        assert_eq!(fixture.snapshot()?, before);
         fixture.assert_no_authority();
     }
+    Ok(())
 }
 
 #[test]
-fn exact_head_and_predecessor_binding_is_required() {
-    let fixture = TrustFixture::new();
-    let challenge = fixture.seed_challenge();
+fn exact_head_and_predecessor_binding_is_required() -> Result<(), Box<dyn std::error::Error>> {
+    let fixture = TrustFixture::new()?;
+    let challenge = fixture.seed_challenge()?;
     for mutate in [
         |value: &mut G5HeadBinding| value.head = "f".repeat(40),
         |value: &mut G5HeadBinding| value.parent_head = "f".repeat(40),
         |value: &mut G5HeadBinding| value.parent_tree = "f".repeat(40),
     ] {
-        let before = fixture.snapshot();
+        let before = fixture.snapshot()?;
         let mut expected = candidate();
         mutate(&mut expected);
         assert!(
@@ -97,35 +100,36 @@ fn exact_head_and_predecessor_binding_is_required() {
             })
             .is_err()
         );
-        assert_eq!(fixture.snapshot(), before);
+        assert_eq!(fixture.snapshot()?, before);
     }
     fixture.assert_no_authority();
+    Ok(())
 }
 
 #[test]
-fn expiry_is_half_open_and_never_creates_acceptance() {
-    let fixture = TrustFixture::new();
-    let challenge = fixture.seed_challenge();
-    let before = fixture.snapshot();
-    let assessed = fixture
-        .assess(&challenge, G5SignatureInput::Absent, /*time*/ 1_120)
-        .expect("expired assessment");
+fn expiry_is_half_open_and_never_creates_acceptance() -> Result<(), Box<dyn std::error::Error>> {
+    let fixture = TrustFixture::new()?;
+    let challenge = fixture.seed_challenge()?;
+    let before = fixture.snapshot()?;
+    let assessed = fixture.assess(&challenge, G5SignatureInput::Absent, /*time*/ 1_120)?;
     assert_eq!(assessed.status, ASSESSMENT_STATUS_EXPIRED);
     assert!(!assessed.signature_verified);
-    assert_eq!(fixture.snapshot(), before);
+    assert_eq!(fixture.snapshot()?, before);
     fixture.assert_no_authority();
+    Ok(())
 }
 
 #[test]
-fn revocation_is_external_and_fail_closed_before_challenge_issuance() {
-    let mut fixture = TrustFixture::new();
+fn revocation_is_external_and_fail_closed_before_challenge_issuance()
+-> Result<(), Box<dyn std::error::Error>> {
+    let mut fixture = TrustFixture::new()?;
     fixture
         .revocation
         .revoked_key_fingerprints
         .push(FINGERPRINT.to_string());
-    fixture.rewrite_policy_and_revocation();
+    fixture.rewrite_policy_and_revocation()?;
     let path = fixture.root.join("revoked.json");
-    let before = fixture.snapshot();
+    let before = fixture.snapshot()?;
     let error = prepare_g5_challenge(G5PrepareRequest {
         challenge_path: &path,
         candidate: candidate(),
@@ -134,49 +138,55 @@ fn revocation_is_external_and_fail_closed_before_challenge_issuance() {
         now_unix_seconds: 1_000,
         trust: fixture.inputs(),
     })
-    .expect_err("revoked signer must not receive a challenge");
+    .err()
+    .ok_or("revoked signer must not receive a challenge")?;
     assert!(error.to_string().contains("revoked"));
     assert!(!path.exists());
-    assert_eq!(fixture.snapshot(), before);
+    assert_eq!(fixture.snapshot()?, before);
     fixture.assert_no_authority();
+    Ok(())
 }
 
 #[test]
-fn revocation_digest_change_invalidates_existing_challenge() {
-    let mut fixture = TrustFixture::new();
-    let challenge = fixture.seed_challenge();
+fn revocation_digest_change_invalidates_existing_challenge()
+-> Result<(), Box<dyn std::error::Error>> {
+    let mut fixture = TrustFixture::new()?;
+    let challenge = fixture.seed_challenge()?;
     fixture.revocation.revoked_nonces = vec!["f".repeat(64)];
-    fixture.rewrite_policy_and_revocation();
-    let before = fixture.snapshot();
+    fixture.rewrite_policy_and_revocation()?;
+    let before = fixture.snapshot()?;
     assert!(
         fixture
             .assess(&challenge, G5SignatureInput::Absent, /*time*/ 1_001)
             .is_err()
     );
-    assert_eq!(fixture.snapshot(), before);
+    assert_eq!(fixture.snapshot()?, before);
     fixture.assert_no_authority();
+    Ok(())
 }
 
 #[test]
-fn noncanonical_policy_and_revocation_are_rejected_even_with_matching_digests() {
-    let mut fixture = TrustFixture::new();
-    let mut bytes = canonical_json(&fixture.policy_value).expect("policy bytes");
+fn noncanonical_policy_and_revocation_are_rejected_even_with_matching_digests()
+-> Result<(), Box<dyn std::error::Error>> {
+    let mut fixture = TrustFixture::new()?;
+    let mut bytes = canonical_json(&fixture.policy_value)?;
     bytes.push(b' ');
-    std::fs::remove_file(&fixture.policy).expect("replace policy");
-    write_fixture_file(&fixture.policy, &bytes).expect("noncanonical policy");
+    std::fs::remove_file(&fixture.policy)?;
+    write_fixture_file(&fixture.policy, &bytes)?;
     fixture.policy_sha256 = sha256(&bytes);
     assert!(load_g5_trust(fixture.inputs()).is_err());
     fixture.assert_no_authority();
 
-    let mut fixture = TrustFixture::new();
-    let mut bytes = canonical_json(&fixture.revocation).expect("revocation bytes");
+    let mut fixture = TrustFixture::new()?;
+    let mut bytes = canonical_json(&fixture.revocation)?;
     bytes.push(b' ');
-    std::fs::remove_file(&fixture.revocation_path).expect("replace revocation");
-    write_fixture_file(&fixture.revocation_path, &bytes).expect("noncanonical revocation");
+    std::fs::remove_file(&fixture.revocation_path)?;
+    write_fixture_file(&fixture.revocation_path, &bytes)?;
     fixture.policy_value.revocation_sha256 = sha256(&bytes);
-    fixture.rewrite_policy();
+    fixture.rewrite_policy()?;
     assert!(load_g5_trust(fixture.inputs()).is_err());
     fixture.assert_no_authority();
+    Ok(())
 }
 
 fn candidate() -> G5HeadBinding {
@@ -209,15 +219,11 @@ struct TrustFixture {
 }
 
 impl TrustFixture {
-    fn new() -> Self {
+    fn new() -> Result<Self, Box<dyn std::error::Error>> {
         let temporary = private_tempdir("Windows G5 fixture");
-        let root = temporary
-            .path()
-            .canonicalize()
-            .expect("canonical fixture root");
+        let root = temporary.path().canonicalize()?;
         let allowed_signers = root.join("allowed_signers");
-        write_fixture_file(&allowed_signers, ALLOWED_SIGNERS.as_bytes())
-            .expect("allowed signers fixture");
+        write_fixture_file(&allowed_signers, ALLOWED_SIGNERS.as_bytes())?;
         let revocation = G5RevocationState {
             effective_at_unix_seconds: 1,
             revoked_challenge_sha256: Vec::new(),
@@ -230,8 +236,8 @@ impl TrustFixture {
             trust_root_revision: 1,
         };
         let revocation_path = root.join("revocations.json");
-        let bytes = canonical_json(&revocation).expect("canonical revocation");
-        write_fixture_file(&revocation_path, &bytes).expect("revocation fixture");
+        let bytes = canonical_json(&revocation)?;
+        write_fixture_file(&revocation_path, &bytes)?;
         let policy_value = G5TrustPolicy {
             allowed_signers_sha256: sha256(ALLOWED_SIGNERS.as_bytes()),
             key_fingerprint: FINGERPRINT.to_string(),
@@ -247,9 +253,9 @@ impl TrustFixture {
             trust_root_revision: 1,
         };
         let policy = root.join("trust-policy.json");
-        let bytes = canonical_json(&policy_value).expect("canonical policy");
-        write_fixture_file(&policy, &bytes).expect("policy fixture");
-        Self {
+        let bytes = canonical_json(&policy_value)?;
+        write_fixture_file(&policy, &bytes)?;
+        Ok(Self {
             _temporary: temporary,
             root,
             allowed_signers,
@@ -258,7 +264,7 @@ impl TrustFixture {
             policy_sha256: sha256(&bytes),
             revocation,
             revocation_path,
-        }
+        })
     }
 
     fn inputs(&self) -> G5TrustInputs<'_> {
@@ -270,10 +276,10 @@ impl TrustFixture {
         }
     }
 
-    fn seed_challenge(&self) -> PathBuf {
+    fn seed_challenge(&self) -> Result<PathBuf, Box<dyn std::error::Error>> {
         // This is fixture input for the read-only assessor, not a claim that
         // Windows successfully committed prepare_g5_challenge.
-        let trust = load_g5_trust(self.inputs()).expect("independently loaded trust");
+        let trust = load_g5_trust(self.inputs())?;
         let value = G5Challenge {
             authority: G5AuthorityBoundary::all_false(),
             candidate: candidate(),
@@ -291,12 +297,8 @@ impl TrustFixture {
             trust: trust.binding,
         };
         let path = self.root.join("challenge-fixture.json");
-        write_fixture_file(
-            &path,
-            &canonical_json(&value).expect("canonical challenge fixture"),
-        )
-        .expect("seed challenge fixture");
-        path
+        write_fixture_file(&path, &canonical_json(&value)?)?;
+        Ok(path)
     }
 
     fn assess(
@@ -316,28 +318,28 @@ impl TrustFixture {
         })
     }
 
-    fn rewrite_policy_and_revocation(&mut self) {
-        let bytes = canonical_json(&self.revocation).expect("canonical changed revocation");
-        std::fs::remove_file(&self.revocation_path).expect("replace revocation");
-        write_fixture_file(&self.revocation_path, &bytes).expect("changed revocation fixture");
+    fn rewrite_policy_and_revocation(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+        let bytes = canonical_json(&self.revocation)?;
+        std::fs::remove_file(&self.revocation_path)?;
+        write_fixture_file(&self.revocation_path, &bytes)?;
         self.policy_value.revocation_sha256 = sha256(&bytes);
-        self.rewrite_policy();
+        self.rewrite_policy()
     }
 
-    fn rewrite_policy(&mut self) {
-        let bytes = canonical_json(&self.policy_value).expect("canonical changed policy");
-        std::fs::remove_file(&self.policy).expect("replace policy");
-        write_fixture_file(&self.policy, &bytes).expect("changed policy fixture");
+    fn rewrite_policy(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+        let bytes = canonical_json(&self.policy_value)?;
+        std::fs::remove_file(&self.policy)?;
+        write_fixture_file(&self.policy, &bytes)?;
         self.policy_sha256 = sha256(&bytes);
+        Ok(())
     }
 
-    fn snapshot(&self) -> BTreeMap<PathBuf, Vec<u8>> {
-        std::fs::read_dir(&self.root)
-            .expect("fixture entries")
+    fn snapshot(&self) -> std::io::Result<BTreeMap<PathBuf, Vec<u8>>> {
+        std::fs::read_dir(&self.root)?
             .map(|entry| {
-                let path = entry.expect("fixture entry").path();
-                let bytes = std::fs::read(&path).expect("fixture bytes");
-                (path, bytes)
+                let path = entry?.path();
+                let bytes = std::fs::read(&path)?;
+                Ok((path, bytes))
             })
             .collect()
     }

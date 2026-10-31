@@ -19,21 +19,25 @@ use crate::prompt_delivery::tests::admitted_registry;
 use crate::prompt_delivery::tests::canonical_selection;
 use crate::prompt_delivery::tests::revoke_registry;
 
-fn fixture() -> (
-    tempfile::TempDir,
-    DurablePromptRegistry,
-    SelectedPromptPortfolioV1,
-    PromptExerciseRequestV1,
-) {
-    let temp = tempfile::tempdir().expect("tempdir");
-    let (registry, tuple, _, _, _) = admitted_registry(&temp.path().join("registry"), b"payload:a");
-    let selected = canonical_selection(&registry, &tuple, 100);
+fn fixture() -> Result<
     (
+        tempfile::TempDir,
+        DurablePromptRegistry,
+        SelectedPromptPortfolioV1,
+        PromptExerciseRequestV1,
+    ),
+    String,
+> {
+    let temp = tempfile::tempdir().map_err(|error| format!("tempdir: {error:?}"))?;
+    let (registry, tuple, _, _, _) =
+        admitted_registry(&temp.path().join("registry"), b"payload:a")?;
+    let selected = canonical_selection(&registry, &tuple, 100)?;
+    Ok((
         temp,
         registry,
         selected.portfolio,
         selected.exercise_request,
-    )
+    ))
 }
 
 fn compile_request(exercise: PromptExerciseRequestV1) -> PromptContextCompileRequestV1 {
@@ -59,14 +63,14 @@ fn compile_request(exercise: PromptExerciseRequestV1) -> PromptContextCompileReq
 }
 
 #[test]
-fn exercised_portfolio_compiles_attaches_and_observes_exact_delivery() {
-    let (_temp, registry, portfolio, exercise) = fixture();
+fn exercised_portfolio_compiles_attaches_and_observes_exact_delivery() -> Result<(), String> {
+    let (_temp, registry, portfolio, exercise) = fixture()?;
     let prepared = compile_exercised_prompt_context_v1(
         &registry,
         &portfolio,
         compile_request(exercise.clone()),
     )
-    .expect("compile exercised portfolio");
+    .map_err(|error| format!("compile exercised portfolio: {error:?}"))?;
     assert_eq!(
         prepared.compiled.receipt().selected_item_ids(),
         vec![id("realization:verify")]
@@ -92,7 +96,7 @@ fn exercised_portfolio_compiles_attaches_and_observes_exact_delivery() {
             attachment_id: id("attachment:1"),
         },
     )
-    .expect("prepare delivery");
+    .map_err(|error| format!("prepare delivery: {error:?}"))?;
     assert_eq!(delivery.serialized_payload, serialized_payload);
     assert_eq!(delivery.materialization, prepared.materialization);
     assert_eq!(delivery.serialization.payload_digest(), payload_digest);
@@ -116,19 +120,20 @@ fn exercised_portfolio_compiles_attaches_and_observes_exact_delivery() {
         observation,
         Err(PromptPipelineErrorV1::ProviderEvidenceRequired)
     );
+    Ok(())
 }
 
 #[test]
-fn materialization_drift_after_compilation_blocks_attachment_preparation() {
-    let (_temp, registry, portfolio, exercise) = fixture();
+fn materialization_drift_after_compilation_blocks_attachment_preparation() -> Result<(), String> {
+    let (_temp, registry, portfolio, exercise) = fixture()?;
     let mut prepared = compile_exercised_prompt_context_v1(
         &registry,
         &portfolio,
         compile_request(exercise.clone()),
     )
-    .expect("compile");
+    .map_err(|error| format!("compile: {error:?}"))?;
     prepared.materialization.payloads[0].payload = b"tampered".to_vec();
-    let error = prepare_prompt_delivery_v1(
+    let Err(error) = prepare_prompt_delivery_v1(
         &registry,
         &portfolio,
         &prepared,
@@ -138,22 +143,24 @@ fn materialization_drift_after_compilation_blocks_attachment_preparation() {
             serialized_payload: b"payload:a".to_vec(),
             attachment_id: id("attachment:drift"),
         },
-    )
-    .expect_err("materialization drift");
+    ) else {
+        return Err("materialization drift".to_owned());
+    };
     assert_eq!(error, PromptPipelineErrorV1::PayloadMaterializationDrift);
+    Ok(())
 }
 
 #[test]
-fn serialization_without_selected_prompt_bytes_fails_closed() {
-    let (_temp, registry, portfolio, exercise) = fixture();
+fn serialization_without_selected_prompt_bytes_fails_closed() -> Result<(), String> {
+    let (_temp, registry, portfolio, exercise) = fixture()?;
     let prepared = compile_exercised_prompt_context_v1(
         &registry,
         &portfolio,
         compile_request(exercise.clone()),
     )
-    .expect("compile exercised portfolio");
+    .map_err(|error| format!("compile exercised portfolio: {error:?}"))?;
 
-    let error = prepare_prompt_delivery_v1(
+    let Err(error) = prepare_prompt_delivery_v1(
         &registry,
         &portfolio,
         &prepared,
@@ -163,28 +170,30 @@ fn serialization_without_selected_prompt_bytes_fails_closed() {
             serialized_payload: b"provider-request-without-selected-realization".to_vec(),
             attachment_id: id("attachment:missing-prompt"),
         },
-    )
-    .expect_err("missing selected prompt bytes must fail");
+    ) else {
+        return Err("missing selected prompt bytes must fail".to_owned());
+    };
     assert_eq!(
         error,
         PromptPipelineErrorV1::SerializedPayloadMissing("realization:verify".to_string())
     );
+    Ok(())
 }
 
 #[test]
-fn revocation_after_compilation_blocks_attachment_preparation() {
-    let temp = tempfile::tempdir().expect("tempdir");
+fn revocation_after_compilation_blocks_attachment_preparation() -> Result<(), String> {
+    let temp = tempfile::tempdir().map_err(|error| format!("tempdir: {error:?}"))?;
     let (mut registry, tuple, authority, signing_key, now) =
-        admitted_registry(&temp.path().join("registry"), b"payload:a");
-    let selected = canonical_selection(&registry, &tuple, 100);
+        admitted_registry(&temp.path().join("registry"), b"payload:a")?;
+    let selected = canonical_selection(&registry, &tuple, 100)?;
     let prepared = compile_exercised_prompt_context_v1(
         &registry,
         &selected.portfolio,
         compile_request(selected.exercise_request.clone()),
     )
-    .expect("compile");
-    revoke_registry(&mut registry, &authority, &signing_key, now);
-    let error = prepare_prompt_delivery_v1(
+    .map_err(|error| format!("compile: {error:?}"))?;
+    revoke_registry(&mut registry, &authority, &signing_key, now)?;
+    let Err(error) = prepare_prompt_delivery_v1(
         &registry,
         &selected.portfolio,
         &prepared,
@@ -194,12 +203,14 @@ fn revocation_after_compilation_blocks_attachment_preparation() {
             serialized_payload: b"payload:a".to_vec(),
             attachment_id: id("attachment:revoked"),
         },
-    )
-    .expect_err("revocation must block attachment");
+    ) else {
+        return Err("revocation must block attachment".to_owned());
+    };
     assert_eq!(
         error,
         PromptPipelineErrorV1::ExerciseRejected(
             codex_hepta_prompt_optimizer::canonical::PromptExerciseActionV1::RejectStale
         )
     );
+    Ok(())
 }

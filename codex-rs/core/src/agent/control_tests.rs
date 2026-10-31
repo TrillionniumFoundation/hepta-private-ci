@@ -75,6 +75,9 @@ use tokio::time::sleep;
 use tokio::time::timeout;
 use toml::Value as TomlValue;
 
+#[path = "control_shutdown_tests.rs"]
+mod shutdown_tests;
+
 async fn test_config_with_cli_overrides(
     mut cli_overrides: Vec<(String, TomlValue)>,
 ) -> (TempDir, Config) {
@@ -1447,6 +1450,20 @@ async fn spawn_agent_numeric_fork_from_compacted_paginated_parent_clamps_to_prov
 
 #[tokio::test]
 async fn spawn_agent_can_fork_parent_thread_history_with_sanitized_items() {
+    use std::io::Write as _;
+    let diagnostic_started = std::time::Instant::now();
+
+    // Write directly so a process-level timeout preserves the last completed
+    // fixture stage instead of losing it in libtest's unfinished-test capture.
+    let report_stage = |stage: &str| {
+        writeln!(
+            std::io::stderr().lock(),
+            "fork history fixture: elapsed_ms={} {stage}",
+            diagnostic_started.elapsed().as_millis(),
+        )
+        .expect("write fork fixture progress");
+    };
+    report_stage("starting parent setup");
     let managed_fragment = "<managed_developer_instructions>\nParent developer instructions.\n</managed_developer_instructions>";
     let harness = AgentControlHarness::new().await;
     let mut parent_config = harness.config.clone();
@@ -1472,6 +1489,12 @@ async fn spawn_agent_can_fork_parent_thread_history_with_sanitized_items() {
         .expect("start parent thread");
     let parent_thread_id = new_thread.thread_id;
     let parent_thread = new_thread.thread;
+    let _parent_trace = crate::lifecycle_test_diagnostics::subscribe(parent_thread_id);
+    crate::lifecycle_test_diagnostics::record(
+        parent_thread_id,
+        format_args!("fixture role=parent"),
+    );
+    report_stage("parent started");
     parent_thread
         .session
         .inject_no_new_turn(
@@ -1599,6 +1622,7 @@ async fn spawn_agent_can_fork_parent_thread_history_with_sanitized_items() {
         .flush_rollout()
         .await
         .expect("parent rollout should flush");
+    report_stage("starting child with hints");
     let child_thread_id = harness
         .control
         .spawn_agent_with_metadata(
@@ -1620,6 +1644,12 @@ async fn spawn_agent_can_fork_parent_thread_history_with_sanitized_items() {
         .await
         .expect("forked spawn should succeed")
         .thread_id;
+    report_stage("child with hints started");
+    let _child_trace = crate::lifecycle_test_diagnostics::subscribe(child_thread_id);
+    crate::lifecycle_test_diagnostics::record(
+        child_thread_id,
+        format_args!("fixture role=child_with_hints"),
+    );
 
     let child_thread = harness
         .manager
@@ -1713,6 +1743,7 @@ async fn spawn_agent_can_fork_parent_thread_history_with_sanitized_items() {
         .multi_agent_v2
         .subagent_developer_instructions = Some(String::new());
     no_hint_child_config.multi_agent_v2.subagent_usage_hint_text = Some(String::new());
+    report_stage("starting child without hints");
     let no_hint_child_thread_id = harness
         .control
         .spawn_agent_with_metadata(
@@ -1734,6 +1765,12 @@ async fn spawn_agent_can_fork_parent_thread_history_with_sanitized_items() {
         .await
         .expect("forked spawn should honor an empty subagent usage hint")
         .thread_id;
+    report_stage("child without hints started");
+    let _no_hint_trace = crate::lifecycle_test_diagnostics::subscribe(no_hint_child_thread_id);
+    crate::lifecycle_test_diagnostics::record(
+        no_hint_child_thread_id,
+        format_args!("fixture role=child_without_hints"),
+    );
     let no_hint_child_thread = harness
         .manager
         .get_thread(no_hint_child_thread_id)
@@ -1773,20 +1810,24 @@ async fn spawn_agent_can_fork_parent_thread_history_with_sanitized_items() {
 
     wait_for_recorded_user_message(child_thread.as_ref(), "child task").await;
 
+    report_stage("shutting down child with hints");
     let _ = harness
         .control
         .shutdown_live_agent(child_thread_id)
         .await
         .expect("child shutdown should submit");
+    report_stage("shutting down child without hints");
     let _ = harness
         .control
         .shutdown_live_agent(no_hint_child_thread_id)
         .await
         .expect("no-hint child shutdown should submit");
+    report_stage("submitting parent shutdown");
     let _ = parent_thread
         .submit(Op::Shutdown {})
         .await
         .expect("parent shutdown should submit");
+    report_stage("parent shutdown submission returned; test body ending");
 }
 
 #[tokio::test]

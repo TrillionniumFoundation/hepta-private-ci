@@ -32,6 +32,8 @@ pub(super) struct StreamingRender {
     has_inline_visualization_directive: bool,
     /// Parser state for a directly appendable, open top-level code fence.
     open_code_fence: Option<OpenCodeFence>,
+    /// Theme used by both completed blocks and the mutable tail.
+    theme_revision: u64,
 }
 
 impl StreamingRender {
@@ -43,6 +45,7 @@ impl StreamingRender {
             has_reference_link_definition: false,
             has_inline_visualization_directive: false,
             open_code_fence: None,
+            theme_revision: syntax_theme_revision(),
         }
     }
 
@@ -53,6 +56,7 @@ impl StreamingRender {
         self.has_reference_link_definition = false;
         self.has_inline_visualization_directive = false;
         self.open_code_fence = None;
+        self.theme_revision = syntax_theme_revision();
     }
 
     /// Re-render the full source and reset both stable-prefix boundaries.
@@ -68,6 +72,7 @@ impl StreamingRender {
         inline_visualization_context: Option<&InlineVisualizationContext>,
     ) {
         self.open_code_fence = None;
+        self.theme_revision = syntax_theme_revision();
         self.has_inline_visualization_directive = contains_inline_visualization(source);
         self.lines = match (render_mode, inline_visualization_context) {
             (HistoryRenderMode::Rich, None) if !self.has_inline_visualization_directive => {
@@ -111,6 +116,19 @@ impl StreamingRender {
                 .extend(plain_hyperlink_lines(raw_lines_from_source(
                     committed_source,
                 )));
+            return;
+        }
+
+        // A theme swap affects completed code blocks as well as the open fence.
+        // Discard the entire retained render before appending under the new theme.
+        if self.theme_revision != syntax_theme_revision() {
+            self.recompute(
+                raw_source,
+                width,
+                cwd,
+                render_mode,
+                inline_visualization_context,
+            );
             return;
         }
 

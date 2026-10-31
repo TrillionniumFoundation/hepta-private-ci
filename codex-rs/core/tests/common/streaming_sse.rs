@@ -59,6 +59,16 @@ impl StreamingSseServer {
 pub async fn start_streaming_sse_server(
     responses: Vec<Vec<StreamingSseChunk>>,
 ) -> (StreamingSseServer, Vec<oneshot::Receiver<i64>>) {
+    start_streaming_sse_server_with_request_observer(responses, |_| Ok(())).await
+}
+
+/// Starts the gated server with a fallible observer for each complete request
+/// body, before recording the request or sending any response data. A failed
+/// observation returns HTTP 500 without consuming a queued response stream.
+pub async fn start_streaming_sse_server_with_request_observer(
+    responses: Vec<Vec<StreamingSseChunk>>,
+    observe_request: impl Fn(&[u8]) -> Result<(), String> + Send + Sync + 'static,
+) -> (StreamingSseServer, Vec<oneshot::Receiver<i64>>) {
     let listener = TcpListener::bind("127.0.0.1:0")
         .await
         .expect("bind streaming SSE server");
@@ -81,6 +91,7 @@ pub async fn start_streaming_sse_server(
     let request_notify = Arc::new(Notify::new());
     let requests_for_task = Arc::clone(&requests);
     let request_notify_for_task = Arc::clone(&request_notify);
+    let observe_request = Arc::new(observe_request);
     let (shutdown_tx, mut shutdown_rx) = oneshot::channel();
 
     let task = tokio::spawn(async move {
@@ -92,6 +103,7 @@ pub async fn start_streaming_sse_server(
                     let state = Arc::clone(&state);
                     let requests = Arc::clone(&requests_for_task);
                     let request_notify = Arc::clone(&request_notify_for_task);
+                    let observe_request = Arc::clone(&observe_request);
                     tokio::spawn(async move {
                         let (request, body_prefix) = read_http_request(&mut stream).await;
                         let Some((method, path)) = parse_request_line(&request) else {
@@ -126,6 +138,10 @@ pub async fn start_streaming_sse_server(
                                     return;
                                 }
                             };
+                            if observe_request(&body).is_err() {
+                                let _ = write_http_response(&mut stream, /*status*/ 500, "request observation failed", "text/plain").await;
+                                return;
+                            }
                             requests.lock().await.push(body);
                             request_notify.notify_one();
                             let Some((chunks, completion)) = take_next_stream(&state).await else {

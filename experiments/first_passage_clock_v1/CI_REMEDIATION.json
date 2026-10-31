@@ -1,0 +1,440 @@
+{
+  "schema": "fpt-research-ci-remediation-v1",
+  "pr": 4378,
+  "initial_research_head": "97fe2540dda08f6af0d0bcfc6f497a7ac4ca6cfb",
+  "initial_blocking_run": 41079898424,
+  "observed_failures": [
+    {
+      "job": 124146677180,
+      "platform": "macos-15 / aarch64-apple-darwin",
+      "gate": "Bazel release build",
+      "exit_code": 33,
+      "diagnostic": "java.lang.OutOfMemoryError: unable to create native thread",
+      "transport": "buildbuddy-generic-rbe",
+      "progress_before_failure": "15011 / 18048 actions; 800 actions, 13 running",
+      "correction": "ci-macos jobs=32 and loading_phase_threads=8, preserving all targets and assertion modes",
+      "scope": "Reduce coordinator concurrency pressure; successful completion still requires actual CI verification."
+    },
+    {
+      "job": 124146677222,
+      "platform": "Ubuntu / x86_64-unknown-linux-gnu",
+      "gate": "Bazel Clippy",
+      "exit_code": 1,
+      "diagnostic": "clippy::expect_used and clippy::unwrap_used in inherited operator trust and prompt delivery test fixtures",
+      "correction": "Explicit Result propagation and required Err checks; original assertions and strict lint levels retained"
+    },
+    {
+      "job": 124146677135,
+      "platform": "macos-15 / aarch64-apple-darwin",
+      "gate": "Bazel Clippy",
+      "exit_code": 1,
+      "diagnostic": "Same inherited test-fixture lint violations as the Ubuntu job"
+    }
+  ],
+  "local_validation": {
+    "buildbuddy_wrapper_tests": {
+      "passed": 16
+    },
+    "wrapper_order_and_target_transport": "Verified RBE defaults precede ci-macos and target/assertion arguments remain intact",
+    "operator_acceptance": {
+      "strict_clippy": "PASS",
+      "isolated_just_test": {
+        "passed": 24,
+        "skipped": 0
+      },
+      "changed_tests_retained": 11,
+      "original_assertions_retained": 34,
+      "qualification": "Real repository source with an isolated offline manifest; cached serde_json 1.0.151 differs from repository lock 1.0.154, so actual Bazel CI remains necessary"
+    },
+    "intelligence": {
+      "changed_tests_retained": 7,
+      "original_assertions_retained": 30,
+      "original_matches_retained": 2,
+      "rustfmt_parse": "PASS",
+      "local_just_test": "Workspace loading blocked by missing aws-auth manifest in sparse checkout; compilation and tests were not run locally"
+    },
+    "just_fmt": "PASS",
+    "diff_check": "PASS"
+  },
+  "preserved": [
+    "scientific freeze and trained bundle",
+    "confirmation and OOD results",
+    "native owner source identity",
+    "strict Clippy policy",
+    "complete Bazel targets",
+    "release debug-assertions gate"
+  ],
+  "bazel_reference": "https://bazel.build/versions/9.0.0/reference/command-line-reference",
+  "final_ci_authority": "GitHub check runs for the PR's current source head; this record does not relabel the initial failures as passing",
+  "followup_round": {
+    "source_head": "2e55f76cd632e097e255cebbce9569423f7d8e1c",
+    "blocking_run": 41083036123,
+    "architecture_run": 41083036165,
+    "proven_on_source_head": [
+      "Architecture source-head, base-merge and required fan-in succeeded",
+      "Release builds succeeded on Linux, Windows and macOS ARM",
+      "Bazel Clippy succeeded on Linux and macOS; Windows exposed additional fixture lint errors"
+    ],
+    "failed_jobs": [
+      124159460564,
+      124159460746,
+      124159460690,
+      124159460537,
+      124159460669,
+      124159460662
+    ],
+    "cancelled_after_job_timeout_jobs": [
+      124159460785,
+      124159460735,
+      124159460444
+    ],
+    "timeout_minutes_retained": 60,
+    "repairs_pending_new_head_ci": [
+      {
+        "area": "Windows trust fixtures",
+        "change": "Propagate setup, filesystem, serialization and expected-error failures through Result; retain all 11 tests and 29 assertions."
+      },
+      {
+        "area": "V8 first isolate startup",
+        "change": "Initialize the PA-backed sandbox allocator inside the existing process OnceLock, then exercise eight simultaneous first isolates in a fresh integration-test process; retain the V8 sandbox."
+      },
+      {
+        "area": "WebSocket prewarm and provider identity",
+        "change": "Use a typed connection-lifetime metadata projection and release an obsolete socket before the next handshake. Preserve the full recovery fingerprint and per-frame policy authorization. Cover both reuse and security-context reconnection with real WebSocket fixtures."
+      },
+      {
+        "area": "Attestation reverse RPC",
+        "change": "Service attestation requests from thread/start onward, preserving the original 100 ms response deadline."
+      },
+      {
+        "area": "Core terminalization and queue admission",
+        "change": "Await the exact terminal publication completion before guardian trunk reuse and sequential integration-test actions. Preserve NotIdle and DispatchInProgress semantics, and retain deterministic blocked-owner/FIFO/settlement tests."
+      },
+      {
+        "area": "Core metadata and scoped tracing",
+        "change": "Preserve context-window UUID on normal and compaction request paths; make the scoped tracing test exercise the callsite cache without changing production tracing."
+      },
+      {
+        "area": "Two-agent recovery fixture",
+        "change": "Replace fixed response delays with explicitly released asynchronous SSE gates; keep peer InProgress, one-dispatch, process identity, and poisoned-capture assertions."
+      },
+      {
+        "area": "Windows sandbox helper packaging",
+        "change": "Resolve real setup and runner binaries through the shared Cargo/Bazel resolver and stage the shipped sibling layout for CLI and exec-server tests. Add only existing workspace dependency edges."
+      },
+      {
+        "area": "Windows ACL idempotence",
+        "change": "Recognize Windows-normalized explicit deny ACE scope unions while retaining the exact installed permission mask, ancestor inheritance checks, and both unchanged DELETE security regressions."
+      },
+      {
+        "area": "App-server fixtures and existing Bedrock RPC",
+        "change": "Dispatch already-declared experimental Bedrock methods through existing account-policy guards; use portable SQLite paths, current-profile cold resume expectations, and explicit escalation with the supported approval policy."
+      },
+      {
+        "area": "Unix socket fixtures",
+        "change": "Use short private temporary roots and retain the 0600 socket assertion."
+      },
+      {
+        "area": "Remote authorized-read tests",
+        "change": "Check the existing exact redacted remote error contract while retaining successful exact-bound reads and refusal of oversized data, symlink escape and parent traversal."
+      },
+      {
+        "area": "Hepta platform capabilities",
+        "change": "Distinguish missing/live/stale sockets. On unsupported Windows final-use authority and Matrix peer authentication paths, require exact refusal before side effects; retain supported common readiness, ranking and retrieval checks."
+      },
+      {
+        "area": "Hepta durable state",
+        "change": "Use proper writable Windows directory/file handles for real flushes; retain mandatory owner locks, trusted recovery anchors, corruption refusal, reparse checks and unchanged non-Unix Indeterminate recovery."
+      },
+      {
+        "area": "Hepta generation and recovery-cut fixtures",
+        "change": "Read exact-generation revision_facts_v1 witnesses and selected heads; capture the recovery cut after the real authority-bound lease exists, preserving complete receipt/anchor comparisons."
+      },
+      {
+        "area": "macOS/Bazel fixture identity",
+        "change": "Canonicalize authority fixture parents and materialize trusted runfiles as real files before invoking unchanged strict product admission checks."
+      },
+      {
+        "area": "TUI theme and retained renders",
+        "change": "Coordinate parallel test theme mutations without changing color expectations; invalidate the complete retained render on a theme revision change and add a stale-style regression."
+      },
+      {
+        "area": "Cursor project-path resolution",
+        "change": "Search all bounded native filesystem path interpretations, including multiple encoded separators; delegate case and alias semantics to metadata calls, and reject ambiguity, unreadable candidates or exhausted budgets. Retain all original ambiguity assertions; enforce 128 unique search states and 4096 candidate metadata probes including misses. The latter replaces the prior directory-entry scan budget and may cost more on network filesystems."
+      },
+      {
+        "area": "macOS runner pressure",
+        "change": "Bound local_test_jobs to 4 independently of 32 remote/coordinator jobs. Retain every target, test assertion and timeout. This addresses observed concurrent local load; timing-only failures still require new-run verification."
+      }
+    ],
+    "unresolved_before_new_head_ci": [
+      {
+        "area": "Windows deletion confinement",
+        "status": "OPEN_SECURITY_BLOCKER",
+        "tests": [
+          "token_tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+          "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
+        ],
+        "evidence": "Real Windows calls can delete outside writable roots and remove protected metadata despite denied create/write. Both original tests remain unchanged. WRITE_RESTRICTED does not establish the required DELETE/parent DELETE_CHILD boundary. No blanket backend disable or test exclusion is used.",
+        "independent_review": "A second independent source audit found no bounded token-only fix preserving unrestricted host reads and arbitrary native commands. Full restricted tokens also need read/registry/IPC capabilities and mutation-specific deny masks; generic-write deny masks share SYNCHRONIZE with generic-read. Elevated runner uses the same token family and direct native spawn, not a per-file operation broker."
+      },
+      {
+        "area": "Core fork-parent-history hang",
+        "status": "OPEN_DIAGNOSTIC_BLOCKER",
+        "test": "agent::control::tests::spawn_agent_can_fork_parent_thread_history_with_sanitized_items",
+        "evidence": "The original unit shard left this test unfinished. Added phase diagnostics are not a claimed fix; the next run must identify or clear the remaining hang."
+      },
+      {
+        "area": "Full CI and performance-sensitive paths",
+        "status": "AWAITING_NEW_HEAD",
+        "evidence": "Independent reproductions and static review do not substitute for Windows/macOS/Linux compilation, runtime tests, lockfile drift and strict Clippy on the candidate head."
+      }
+    ],
+    "local_validation": {
+      "cargo_scope_commands": "Attempted repository just test for changed core, queue, app-server, exec-server, transport, TUI, Hepta and migration crates; workspace metadata fails on the missing aws-auth/Cargo.toml in the sparse checkout. No local workspace compilation/test pass is claimed.",
+      "bazel_lock_update": "Attempted just bazel-lock-update. Task-local profiler and cache settings allowed initialization, but downloads of V8 and the Bazel Central Registry were blocked by Operation not permitted. No lockfile-drift success or dependency change is inferred from that network failure.",
+      "cursor_resolver_reproducer": {
+        "same_cases": 31,
+        "old_failures": 17,
+        "new_passes": 31,
+        "qualification": "Standalone Rust harness automatically extracts actual old/new resolver functions; includes native filesystem case behavior, deep paths, ambiguity and budget exhaustion. Linux exercised the case-sensitive branch. Windows/macOS case-insensitive and Windows 8.3 behavior still require native CI; complete migration crate not built locally."
+      },
+      "protocol_tmpdir_reproducer": "Cached-library harness confirms full access differs with TMPDIR while the workspace-only intersection and requested-access bound stay invariant; not a build of the edited protocol crate.",
+      "tracing_callsite_reproducer": "Cached-library harness demonstrates the one-dispatcher Interest::Never fast path and the scoped two-dispatcher fix; not a build of core.",
+      "generation_sql_reproducer": "Actual edited SQL extracted into an independent five-generation relational fixture checks witnesses, future heads, multi-memory aggregation and tombstones; not the original Rust product test.",
+      "unix_socket_reproducer": {
+        "long_path_bytes": 146,
+        "long_result": "AF_UNIX path too long",
+        "short_path_bytes": 66,
+        "short_result": "Bound real local socket; permissions 0600",
+        "qualification": "Linux fixture mechanism validated; not the Rust transport test or macOS test."
+      },
+      "independent_source_reviews": "Cross-reviewed WebSocket recovery/security bindings, Hepta authority/lock/refusal paths, app-server policy/fixtures and real helper packaging.",
+      "integrated_format_and_diff_check": "PASS: repository just fmt with official DotSlash v0.5.8 and repository-pinned Buildifier v8.5.1; git diff --check clean.",
+      "gated_sse_and_join_reproducer": "Compiled the actual edited streaming SSE helper and extracted capture/join code against cached libraries; real TCP gates, concurrent recovery, cancelled old body, exact release, poison HTTP 500 with zero counts, and abort/join DropProbe all passed. Harness timeout was 10 ms only for its cancellation probe; repository EVENT_TIMEOUT remains 30 s.",
+      "scoped_just_fix": "Attempted eight changed crates through just fix; Cargo exited 101 at missing workspace aws-auth/Cargo.toml before compiling or fixing code."
+    }
+  },
+  "publication": {
+    "status": "GITHUB_WRITE_ACCESS_RESTORED",
+    "previous_rejected_attempt": {
+      "status": "BLOCKED_APPROVAL",
+      "action": "GitHub create_tree for the first two Windows trust fixture files",
+      "tool_response": "user rejected MCP tool call",
+      "remote_head_unchanged": "2e55f76cd632e097e255cebbce9569423f7d8e1c",
+      "new_head_ci_started": false,
+      "next_required_action": "Resolve the GitHub write approval block before publishing the complete reviewed repair series; do not retry through another write mechanism to bypass the rejection."
+    },
+    "authorized_retry": {
+      "result": "20 remote commits created; every tree matches the corresponding reviewed local commit",
+      "remote_repair_chain_head": "d5620ee3a663055b36cde91d72737b043fa5fad4",
+      "local_review_head": "d2eb5632600d5d152c78a828dc7c3cfce9fca860",
+      "matching_tree": "a8b7d6ef1403726c852b63ac04e1e2976a0d44d5"
+    },
+    "record_scope": "This evidence is recorded before the atomic branch update. GitHub branch refs and check runs remain authoritative for publication and candidate CI."
+  },
+  "continuation_round": {
+    "workspace_recovery": {
+      "head_at_recovery": "d2eb5632600d5d152c78a828dc7c3cfce9fca860",
+      "restored_files": 5370,
+      "restored_bytes": 49996433,
+      "restored_tree": "a8b7d6ef1403726c852b63ac04e1e2976a0d44d5",
+      "index_tree_matches_head": true,
+      "all_restored_blob_sha_verified": true,
+      "additional_existing_code_objects_restored": 4237,
+      "edited_file_baseline_objects_restored_without_worktree_overwrite": 4,
+      "cargo_metadata_no_deps_offline": {
+        "status": "PASS",
+        "exit_code": 0,
+        "workspace_members": 193,
+        "json": "/tmp/pr4378-cargo-metadata-restored.json"
+      },
+      "cargo_metadata_locked_full_offline": {
+        "status": "BLOCKED_MISSING_REGISTRY_INDEX",
+        "exit_code": 101,
+        "package": "ruma-federation-api",
+        "via": "ruma 0.17.2 / matrix-sdk 0.19.1 / codex-hepta-matrixd",
+        "compilation_performed": false
+      },
+      "remaining_missing_tracked_codex_paths": [],
+      "scope": "Restored exact indexed source and Git objects only. No dependency manifests, lock files, or existing working-tree edits were changed."
+    },
+    "windows_delete_matrix": {
+      "status": "NATIVE_EXECUTION_PENDING",
+      "routes": [
+        "neither",
+        "target DELETE only",
+        "parent DELETE_CHILD only",
+        "both"
+      ],
+      "modes": [
+        "actual production workspace token",
+        "test-only complete restricted token with explicit read/write capabilities"
+      ],
+      "checks": [
+        "same-ACL native host deletion controls",
+        "outside read/write/create/file delete/directory delete/rename into workspace",
+        "inside positive controls",
+        "exact resulting file bytes and directory state"
+      ],
+      "scope": "Original security assertions and production token remain unchanged. The finite explicit-read fixture does not prove arbitrary shell startup, full-disk reading, registry or IPC compatibility."
+    },
+    "core_fork_diagnostics": {
+      "status": "ROOT_CAUSE_UNCONFIRMED",
+      "changes": "cfg(test) exact ThreadId subscriptions, RAII uninstall, 128-record bound per thread, direct stderr identity/phase/completion events, shutdown await boundaries and final fixture-return marker",
+      "independent_module_tests": {
+        "passed": 3,
+        "failed": 0,
+        "source": "Actual new module and its two tests plus stderr smoke compiled against cached real codex_protocol and pretty_assertions rlibs",
+        "scope": "Not a build of codex-core or execution of the original fork-history test"
+      },
+      "preserved": "No watchdog, lifecycle state transition, completion fence or original assertion changes"
+    },
+    "focused_workflow": {
+      "path": ".github/workflows/fpt-owner-diagnostics.yml",
+      "trigger": "Only the research/fpt-clock-owner-20261030 branch; additive Windows native diagnostics",
+      "scope": "Original Windows sandbox unit regressions and new matrix, followed independently by the exact Core fork test. Actual MSVC host and target configuration. Failures are preserved; complete repository CI is unchanged."
+    },
+    "scoped_fix_recipe": {
+      "before": "just --dry-run fix -p codex-core emitted literal {args}, losing the requested scope",
+      "after": "The recipe interpolates {{args}} and dry-run forwards both requested -p selectors",
+      "actual_attempt": "Offline just fix -p codex-core -p codex-windows-sandbox with approved local TCP locking progressed to registry resolution and exited 101 for missing ruma-federation-api; no complete lint pass is claimed"
+    },
+    "remaining_local_build_limit": "Complete locked dependency resolution and compilation are not yet verified. Default-sandbox network attempts failed; an approved targeted fetch subsequently succeeded. The restored source metadata is no longer a blocker, while dependency-cache gaps and fluctuating disk capacity still constrain a full local build.",
+    "scientific_freeze": "Unchanged; no new confirmation run or superiority claim"
+  },
+  "first_native_followup": {
+    "source_head": "64ea585d8ad809cd09e0e61da5e0f3c7528b4774",
+    "focused_run": 41155268731,
+    "focused_job": 124400558335,
+    "fork_history": {
+      "status": "PASS_IN_EXACT_NATIVE_WINDOWS_RUN",
+      "test": "agent::control::tests::spawn_agent_can_fork_parent_thread_history_with_sanitized_items",
+      "passed": 1,
+      "failed": 0,
+      "filtered_out": 2340,
+      "seconds": 3.12,
+      "evidence": "Both child shutdown paths reached termination, persistence completion and registry cleanup. The parent shutdown submission returned and the original test body ended.",
+      "limit": "This isolated pass does not establish full-suite liveness or prove the previous intermittent hang fixed. No watchdog deadline was changed."
+    },
+    "windows_security_matrix": {
+      "status": "NOT_EXECUTED_COMPILE_ERROR",
+      "error": "E0659: assert_eq is ambiguous at token_delete_boundary_tests.rs:410 and :420",
+      "repair": "Explicitly import the already-declared pretty_assertions macro in each new test module.",
+      "owner_probe": "New native checks explicitly set and verify TokenUser ownership, test implicit and explicit WRITE_DAC plus an OWNER_RIGHTS control, attempt actual DACL reauthorization and deletion, and compare complete owner/DACL serialization and contents with same-ACL host positive controls.",
+      "scope": "Both modes use the host base token. These finite-object probes do not characterize the elevated runner dedicated account or prove full-read, registry, IPC and child startup compatibility. Original security assertions and the production token remain unchanged."
+    },
+    "agentd_test_compile": {
+      "status": "REPAIR_PENDING_NATIVE_CONFIRMATION",
+      "jobs": [
+        124401322553,
+        124401322745
+      ],
+      "error": "hepta-agentd/control_socket_tests.rs imported pretty_assertions without a crate dependency; native macOS release verification and Clippy both failed at that import.",
+      "repair": "Use the existing standard equality assertion without changing any test condition or dependency manifest."
+    },
+    "publication": {
+      "status": "PUBLISHED",
+      "published_repair_head": "64ea585d8ad809cd09e0e61da5e0f3c7528b4774",
+      "draft_pr": 4378,
+      "note": "The prior approval failure was superseded by an authorized successful publication and verified branch update. It is no longer the current blocker."
+    },
+    "local_probe_validation": {
+      "diff_check": "PASS",
+      "just_fmt": "PASS",
+      "scoped_fix": "just fix -p codex-hepta-agentd -p codex-windows-sandbox reached dependency resolution and exited 101 at the missing http-auth registry entry before linting.",
+      "native_execution": "Required on the next candidate head; no local Windows compilation or security pass is claimed."
+    },
+    "log_sha256": {
+      "pr4378_64ea_focused_windows.log": "d3b8594ce10178aa282015e895c7cbc4f9eb4bbae3d2824d07904012faf985b6",
+      "pr4378_64ea_macos_release.log": "9682e5736509db9ae600837602bf281c446359af572ef0fcbe07449da22f22a1",
+      "pr4378_64ea_macos_clippy.log": "977388dea5d5f5c8402aab5d214f9f6d1b20c4a96f353ed0166910aa4c298add"
+    },
+    "scientific_scope": "The frozen research results and production_activation=false remain unchanged."
+  },
+  "second_native_followup": {
+    "source_head": "e43a11894d5c1d68b8027b5e8e9c3181aeeaeb61",
+    "focused_run": 41156922453,
+    "focused_job": 124405642268,
+    "log_sha256": "b7827c331a0aef13c3eeb936582151b82449c9162dfafdabc69b5fa7661ec859",
+    "windows_unit_result": {
+      "passed": 148,
+      "failed": 4,
+      "ignored": 2,
+      "seconds": 2.75,
+      "scope": "Native compilation and execution succeeded. Existing ignored tests and environment-dependent early returns are not proof of ConPTY/PowerShell or elevated-account startup qualification."
+    },
+    "delete_observations": {
+      "workspace_token": "Neither and TargetOnly refused outside file deletion, directory deletion and rename with Win32 5. ParentOnly and Both allowed all three; final contents confirmed deletion and movement.",
+      "complete_restriction": "All four finite routes preserved outside reads, refused outside mutations with Win32 5, and allowed the inside positive controls.",
+      "control_limit": "The raw host deleted the Neither reference objects. The complete-restriction test failed only in those two control fields; do not report the matrix as passing or its route isolation as fully qualified.",
+      "new_control": "Read back every exact protected DACL and its trustees/masks/flags. Compare an ordinary reference token with the subject user, groups and privileges, require zero restricting SIDs, and retain all raw host observations. Neither must still refuse; the three granted routes must still allow. Native qualification pending."
+    },
+    "owner_probe": {
+      "status": "PASS_FINITE_NATIVE_CASES",
+      "token_modes": 2,
+      "owner_cases_per_mode": 3,
+      "verified": "TokenUser ownership, same-ACL host positive controls, baseline deletion, WRITE_DAC handle access, DACL reauthorization, subsequent deletion, and unchanged owner/DACL serialization and contents. All sandbox refusals were Win32 5.",
+      "limit": "No WRITE_OWNER attack, arbitrary filesystem, dedicated elevated-account identity, registry/IPC or native startup qualification is implied."
+    },
+    "original_security_regressions": {
+      "status": "STILL_FAILING",
+      "token_error_kinds": [
+        "PermissionDenied",
+        "PermissionDenied",
+        null,
+        null
+      ],
+      "legacy_actual": [
+        0,
+        false,
+        false,
+        false,
+        null,
+        false
+      ],
+      "original_assertions_changed": false
+    },
+    "fork_history": {
+      "status": "PASS_IN_SECOND_EXACT_NATIVE_RUN",
+      "passed": 1,
+      "filtered_out": 2340,
+      "seconds": 1.72,
+      "limit": "Full-suite liveness and the earlier hang root cause remain unproven. Watchdog durations and failed-closed fences remain unchanged."
+    },
+    "core_runtime_ownership_repair": {
+      "status": "SOURCE_REVIEWED_NATIVE_QUALIFICATION_PENDING",
+      "stages": [
+        "Per-registration identity and replacement budget conservation",
+        "Captured runtime submission and atomic retirement, including bounded shutdown and InternalAgentDied",
+        "Same-agent close/reload ordering, detached startup lease, cold cleanup, restore recheck and nonblocking eviction"
+      ],
+      "invariants": [
+        "An old captured Arc cannot submit to or retire a replacement runtime",
+        "Cold retirement compares the metadata owner and excludes live/admitted startup owners",
+        "Caller cancellation retains the transition lease until detached delivery or cleanup finishes",
+        "Closed persistence failure returns before descendant shutdown",
+        "Replacement registration transfers rather than duplicates its counted budget",
+        "Eviction cannot wait for a second agent transition while holding the first"
+      ],
+      "scope": "Reviewed paths within one AgentControl tree. This independently proven identity race is not asserted to be the cause of the old fork-history hang.",
+      "qualification": "Focused Windows workflow now runs all three exact new regressions with a nonempty 3-pass receipt, followed by the complete Core unit target under normal sharding and unchanged timeout. Full repository gates remain in place."
+    },
+    "local_build": {
+      "locked_metadata": "PASS: 193 workspace members / 1400 resolved packages for x86_64-unknown-linux-gnu; dependency versions and lockfiles unchanged. The former http-auth resolution blocker is closed.",
+      "core_tests": "Default and dev-small attempts entered real dependency compilation, then were normally interrupted before Core compilation as shared disk capacity approached its bound. None of the three regressions executed locally.",
+      "scoped_fix": "Offline just fix -p codex-core -p codex-windows-sandbox --profile dev-small entered real dependency checks; normally interrupted with exit 130 before Core lint at 577 MiB free. No local lint pass is claimed.",
+      "cleanup": "Only task-generated canceled target directories were removed after commands exited. No unrelated workspace data was deleted.",
+      "final_format": "Repository just fmt PASS; git diff --check PASS; the three staged Core patches reconstruct the exact reviewed working tree."
+    },
+    "ci_queue": {
+      "old_run": 41155272361,
+      "old_completed_utc": "2026-10-31T02:03:44Z",
+      "old_conclusion": "cancelled",
+      "new_run": 41156928470,
+      "result": "The previous cancellation aggregates completed with faithful failure handling; the new run gained concurrency admission. No workflow or gate was weakened to resolve the 17m25s wait."
+    },
+    "remaining_product_boundary": "A token-only constructor has no explicit read preparation plan. Full restriction and an exact read capability are supported by finite evidence, but a complete replacement must preserve declared read semantics, prepare both ordinary and capability access synchronously, and qualify actual process startup. Merely changing token flags, using a dedicated account or accepting failed controls would not close the Windows DELETE blocker.",
+    "scientific_scope": "Frozen model comparisons, qualified convergence claims and production_activation=false remain unchanged."
+  }
+}

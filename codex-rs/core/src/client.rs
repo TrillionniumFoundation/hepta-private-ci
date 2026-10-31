@@ -391,7 +391,7 @@ impl WebsocketConnectionIdentity {
         responses_metadata: &CodexResponsesMetadata,
     ) -> std::result::Result<Self, ApiError> {
         let compatibility_projection_json =
-            serde_json::to_vec(&responses_metadata.turn_recovery_compatibility_projection())
+            serde_json::to_vec(&responses_metadata.websocket_connection_compatibility_projection())
                 .map_err(|error| {
                     ApiError::Stream(format!(
                         "failed to bind websocket compatibility identity: {error}"
@@ -1798,10 +1798,10 @@ impl ModelClientSession {
         };
 
         if needs_new {
-            self.websocket_session.last_request = None;
-            self.websocket_session.last_response_rx = None;
-            self.websocket_session.last_response_from_untraced_warmup = false;
-            let new_conn = match self
+            // Release the old socket before awaiting another handshake. A peer
+            // may wait for this connection to close before accepting the next.
+            self.reset_websocket_session();
+            let new_conn = self
                 .client
                 .connect_websocket_future(
                     session_telemetry,
@@ -1811,16 +1811,7 @@ impl ModelClientSession {
                     auth_context,
                     request_route_telemetry,
                 )
-                .await
-            {
-                Ok(new_conn) => new_conn,
-                Err(err) => {
-                    if matches!(err, ApiError::Transport(TransportError::Timeout)) {
-                        self.reset_websocket_session();
-                    }
-                    return Err(err);
-                }
-            };
+                .await?;
             self.websocket_session.connection = Some(new_conn);
             self.websocket_session
                 .set_connection_reused(/*connection_reused*/ false);

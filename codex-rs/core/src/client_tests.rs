@@ -16,7 +16,9 @@ use crate::AttestationProvider;
 use crate::GenerateAttestationFuture;
 use crate::config::Config;
 use crate::model_provider_policy::ModelProviderPolicyContext;
+use crate::model_provider_policy::prepare_model_provider_policy;
 use crate::responses_metadata::CodexResponsesMetadata;
+use crate::responses_metadata::CodexResponsesRequestKind;
 use crate::test_support::TestCodexResponsesRequestKind;
 use crate::test_support::responses_metadata as test_responses_metadata;
 use codex_api::AgentIdentityTelemetry;
@@ -29,6 +31,7 @@ use codex_extension_api::ExtensionData;
 use codex_extension_api::ExtensionRegistry;
 use codex_extension_api::ExtensionRegistryBuilder;
 use codex_extension_api::ModelProviderRequestKind;
+use codex_extension_api::ModelProviderTransport;
 use codex_http_client::HttpClientFactory;
 use codex_http_client::OutboundProxyPolicy;
 use codex_login::AuthCredentialsStoreMode;
@@ -72,6 +75,7 @@ use codex_rollout_trace::RawTraceEventPayload;
 use codex_rollout_trace::RolloutTrace;
 use codex_rollout_trace::TraceWriter;
 use codex_rollout_trace::replay_bundle;
+use core_test_support::responses;
 use futures::StreamExt;
 use pretty_assertions::assert_eq;
 use serde_json::json;
@@ -305,7 +309,8 @@ fn websocket_transport_gate_uses_exact_active_turn_contributors() {
 }
 
 #[test]
-fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics() {
+fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
+-> anyhow::Result<()> {
     let provider = codex_api::Provider {
         name: "provider-a".to_string(),
         base_url: "https://deployment.example.test/v1".to_string(),
@@ -330,6 +335,7 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         "window-a".to_string(),
     );
     metadata_a.sandbox_mode = Some("workspace-write".to_string());
+    metadata_a.request_kind = Some(CodexResponsesRequestKind::Prewarm);
     metadata_a.turn_started_at_unix_ms = Some(1);
     let identity_a =
         WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &metadata_a)
@@ -349,6 +355,62 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         .expect("volatile identity")
     );
 
+    let registry = transport_selection_registry(None);
+    let stores = (
+        ExtensionData::new("session-1"),
+        ExtensionData::new("thread-1"),
+        ExtensionData::new("turn-1"),
+    );
+    let context = transport_selection_context(
+        &registry,
+        (&stores.0, &stores.1, &stores.2),
+        ModelProviderRequestKind::Turn,
+    );
+    let logical = json!({"model": "model-1", "input": []});
+    let prepared = prepare_model_provider_policy(
+        &context,
+        "provider-a",
+        "model-1",
+        ModelProviderTransport::WebSocket,
+        "wss://deployment.example.test/v1/responses",
+        &logical,
+        &logical,
+        /*previous_response_id*/ None,
+        /*generate*/ true,
+    )
+    .map_err(super::model_provider_policy_error)?;
+    let fingerprint = |metadata: &CodexResponsesMetadata| {
+        prepared
+            .turn_recovery_fingerprint(
+                &provider.headers,
+                Some("feature-a"),
+                &metadata.turn_recovery_compatibility_projection(),
+                /*routing_hint*/ None,
+                /*responses_lite*/ false,
+            )
+            .map_err(super::model_provider_policy_error)
+    };
+    let recovery_identity = fingerprint(&metadata_a)?;
+    let mut turn_kind = metadata_a.clone();
+    turn_kind.request_kind = Some(CodexResponsesRequestKind::Turn);
+    let mut parent_turn = metadata_a.clone();
+    parent_turn.parent_turn_id = Some("parent-turn".to_string());
+    let mut root_turn = metadata_a.clone();
+    root_turn.root_turn_id = Some("root-turn".to_string());
+    let mut extra = metadata_a.clone();
+    extra.extra.insert("origin".to_string(), "gaas".to_string());
+    for per_frame_metadata in [turn_kind, parent_turn, root_turn, extra] {
+        assert_eq!(
+            identity_a,
+            WebsocketConnectionIdentity::from_provider(
+                &provider,
+                Some("feature-a"),
+                &per_frame_metadata,
+            )?
+        );
+        assert_ne!(recovery_identity, fingerprint(&per_frame_metadata)?);
+    }
+
     let mut changed_metadata = metadata_a.clone();
     changed_metadata.sandbox_mode = Some("danger-full-access".to_string());
     assert_ne!(
@@ -366,7 +428,7 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
             .expect("changed beta identity")
     );
 
-    let mut changed_provider = provider;
+    let mut changed_provider = provider.clone();
     changed_provider.base_url = "https://other.example.test/v1".to_string();
     assert_ne!(
         identity_a,
@@ -377,6 +439,178 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         )
         .expect("changed provider identity")
     );
+    let mut changed_provider = provider.clone();
+    changed_provider.query_params = Some(HashMap::from([(
+        "api-version".to_string(),
+        "2026-09-01".to_string(),
+    )]));
+    assert_ne!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &changed_provider,
+            Some("feature-a"),
+            &metadata_a,
+        )?
+    );
+    let mut changed_provider = provider;
+    changed_provider.headers.insert(
+        "openai-organization",
+        http::HeaderValue::from_static("organization-b"),
+    );
+    assert_ne!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &changed_provider,
+            Some("feature-a"),
+            &metadata_a,
+        )?
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn websocket_prewarm_reuses_turn_metadata_but_reconnects_for_security_changes()
+-> anyhow::Result<()> {
+    for security_changed in [false, true] {
+        let warmup_events = vec![
+            responses::ev_response_created("warm-1"),
+            responses::ev_completed("warm-1"),
+        ];
+        let turn_events = vec![
+            responses::ev_response_created("turn-1"),
+            responses::ev_completed("turn-1"),
+        ];
+        let connections = if security_changed {
+            // Keep the old connection waiting for another request. The client
+            // must close it before the serial peer can accept the replacement.
+            vec![vec![warmup_events, Vec::new()], vec![turn_events]]
+        } else {
+            vec![vec![warmup_events, turn_events]]
+        };
+        let server = responses::start_websocket_server(connections).await;
+        let mut provider = create_oss_provider_with_base_url(
+            &server.uri().replacen("ws://", "http://", 1),
+            WireApi::Responses,
+        );
+        provider.supports_websockets = true;
+        let client = ModelClient::new(
+            /*auth_manager*/ None,
+            AgentIdentityAuthPolicy::JwtOnly,
+            ThreadId::new(),
+            provider,
+            SessionSource::Cli,
+            "test_originator".to_string(),
+            /*model_verbosity*/ None,
+            /*content_item_kinds_enabled*/ true,
+            /*enable_request_compression*/ false,
+            /*include_timing_metrics*/ false,
+            /*beta_features_header*/ None,
+            /*concurrent_reasoning_summaries_enabled*/ false,
+            /*attestation_provider*/ None,
+            HttpClientFactory::new(OutboundProxyPolicy::ReqwestDefault),
+        );
+        let mut metadata = test_responses_metadata_for_client(
+            &client,
+            Some("startup-prewarm"),
+            "window-1".to_string(),
+            /*parent_thread_id*/ None,
+            TestCodexResponsesRequestKind::Prewarm,
+        );
+        metadata.sandbox_mode = Some("read-only".to_string());
+        let model = test_model_info();
+        let telemetry = test_session_telemetry();
+        let mut session = client.new_session();
+        let mut prompt = Prompt::default();
+        tokio::time::timeout(Duration::from_secs(10), async {
+            session
+                .prewarm_websocket(
+                    &prompt,
+                    &model,
+                    &telemetry,
+                    /*effort*/ None,
+                    codex_protocol::config_types::ReasoningSummary::None,
+                    /*service_tier*/ None,
+                    &metadata,
+                )
+                .await?;
+            metadata.request_kind = Some(CodexResponsesRequestKind::Turn);
+            metadata.turn_id = Some("turn-1".to_string());
+            metadata.parent_turn_id = Some("parent-turn".to_string());
+            metadata.root_turn_id = Some("root-turn".to_string());
+            metadata
+                .extra
+                .insert("origin".to_string(), "gaas".to_string());
+            if security_changed {
+                metadata.sandbox_mode = Some("workspace-write".to_string());
+            }
+            prompt.input.push(ResponseItem::Message {
+                id: None,
+                role: "user".to_string(),
+                content: vec![ContentItem::InputText {
+                    text: "Hello".to_string(),
+                }],
+                phase: None,
+                internal_chat_message_metadata_passthrough: None,
+            });
+            let mut stream = session
+                .stream_unguarded_for_test(
+                    &prompt,
+                    &model,
+                    &telemetry,
+                    /*effort*/ None,
+                    codex_protocol::config_types::ReasoningSummary::None,
+                    /*service_tier*/ None,
+                    &metadata,
+                    &InferenceTraceContext::disabled(),
+                )
+                .await?;
+            while let Some(event) = stream.next().await {
+                if matches!(event?, ResponseEvent::Completed { .. }) {
+                    return anyhow::Ok(());
+                }
+            }
+            anyhow::bail!("WebSocket turn ended without completion")
+        })
+        .await??;
+        let connections = server.connections();
+        let expected_connections = if security_changed { 2 } else { 1 };
+        assert_eq!(connections.len(), expected_connections);
+        assert_eq!(server.handshakes().len(), expected_connections);
+        assert_eq!(
+            connections.iter().map(Vec::len).collect::<Vec<_>>(),
+            if security_changed {
+                vec![1, 1]
+            } else {
+                vec![2]
+            },
+        );
+        assert_eq!(connections[0][0].body_json()["generate"], false);
+        let request = connections
+            .last()
+            .and_then(|connection| connection.last())
+            .ok_or_else(|| anyhow::anyhow!("missing turn request"))?
+            .body_json();
+        assert_eq!(request["client_metadata"]["root_turn_id"], "root-turn");
+        let turn_metadata: serde_json::Value = serde_json::from_str(
+            request["client_metadata"][X_CODEX_TURN_METADATA_HEADER]
+                .as_str()
+                .ok_or_else(|| anyhow::anyhow!("missing turn metadata"))?,
+        )?;
+        assert_eq!(turn_metadata["request_kind"], "turn");
+        assert_eq!(turn_metadata["origin"], "gaas");
+        assert_eq!(
+            request
+                .get("previous_response_id")
+                .and_then(serde_json::Value::as_str),
+            if security_changed {
+                None
+            } else {
+                Some("warm-1")
+            },
+        );
+        server.shutdown().await;
+    }
+    Ok(())
 }
 
 #[tokio::test]

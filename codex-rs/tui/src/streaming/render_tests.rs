@@ -87,6 +87,7 @@ fn assert_rich_stream_matches_full_render(
 
 #[test]
 fn incremental_render_keeps_final_block_mutable_and_matches_full_render() {
+    let _theme_guard = crate::render::highlight::syntax_theme_test_guard();
     let chunks = [
         "# Heading\n",
         "\n",
@@ -111,6 +112,7 @@ fn incremental_render_keeps_final_block_mutable_and_matches_full_render() {
 
 #[test]
 fn growing_single_top_level_blocks_render_and_scan_in_one_pass() {
+    let _theme_guard = crate::render::highlight::syntax_theme_test_guard();
     let streams: &[&[&str]] = &[
         &[
             "A paragraph that keeps growing\n",
@@ -146,6 +148,7 @@ fn growing_single_top_level_blocks_render_and_scan_in_one_pass() {
 
 #[test]
 fn incremental_raw_render_preserves_blank_lines() {
+    let _theme_guard = crate::render::highlight::syntax_theme_test_guard();
     let cwd = test_cwd();
     let width = Some(80);
     let mut source = String::new();
@@ -170,6 +173,7 @@ fn incremental_raw_render_preserves_blank_lines() {
 
 #[test]
 fn inline_visualization_context_without_directives_keeps_stable_prefix() {
+    let _theme_guard = crate::render::highlight::syntax_theme_test_guard();
     let cwd = test_cwd();
     let context = InlineVisualizationContext::new(&cwd, ThreadId::new())
         .expect("UUIDv7 thread id should provide a timestamp");
@@ -205,6 +209,7 @@ fn inline_visualization_context_without_directives_keeps_stable_prefix() {
 
 #[test]
 fn inline_visualizations_use_canonical_full_render() {
+    let _theme_guard = crate::render::highlight::syntax_theme_test_guard();
     let cwd = test_cwd();
     let context = InlineVisualizationContext::new(&cwd, ThreadId::new())
         .expect("UUIDv7 thread id should provide a timestamp");
@@ -240,6 +245,7 @@ fn inline_visualizations_use_canonical_full_render() {
 
 #[test]
 fn inline_visualizations_without_context_use_canonical_full_render() {
+    let _theme_guard = crate::render::highlight::syntax_theme_test_guard();
     let (_, render) = assert_rich_stream_matches_full_render(
         &["Before.\n\n", "::codex-inline-vis{file=\"missing.html\"}\n"],
         Some(80),
@@ -255,6 +261,7 @@ fn inline_visualizations_without_context_use_canonical_full_render() {
 
 #[test]
 fn inline_visualization_content_references_use_canonical_full_render() {
+    let _theme_guard = crate::render::highlight::syntax_theme_test_guard();
     let (_, render) = assert_rich_stream_matches_full_render(
         &[
             "Before.\n\n",
@@ -269,6 +276,7 @@ fn inline_visualization_content_references_use_canonical_full_render() {
 
 #[test]
 fn inline_visualization_directive_survives_raw_to_rich_render_mode_switch() {
+    let _theme_guard = crate::render::highlight::syntax_theme_test_guard();
     let cwd = test_cwd();
     let width = Some(80);
     let mut source = String::new();
@@ -310,6 +318,7 @@ fn inline_visualization_directive_survives_raw_to_rich_render_mode_switch() {
 
 #[test]
 fn reference_link_definition_recomputes_earlier_and_later_blocks() {
+    let _theme_guard = crate::render::highlight::syntax_theme_test_guard();
     let streams: &[&[&str]] = &[
         &[
             "Earlier [reference][id].\n\n",
@@ -338,6 +347,7 @@ fn reference_link_definition_recomputes_earlier_and_later_blocks() {
 
 #[test]
 fn reference_link_definition_survives_raw_to_rich_render_mode_switch() {
+    let _theme_guard = crate::render::highlight::syntax_theme_test_guard();
     let cwd = test_cwd();
     let width = Some(80);
     let mut source = String::new();
@@ -367,6 +377,7 @@ fn reference_link_definition_survives_raw_to_rich_render_mode_switch() {
 
 #[test]
 fn incremental_render_does_not_add_blank_line_before_html_block() {
+    let _theme_guard = crate::render::highlight::syntax_theme_test_guard();
     let streams: &[&[&str]] = &[
         &[
             "Paragraph.\n\n",
@@ -386,6 +397,7 @@ fn incremental_render_does_not_add_blank_line_before_html_block() {
 
 #[test]
 fn incremental_render_preserves_heading_and_normalized_html_seams() {
+    let _theme_guard = crate::render::highlight::syntax_theme_test_guard();
     let streams: &[&[&str]] = &[
         &["Paragraph.\n\n# Heading\n\n", "Next paragraph.\n"],
         &[
@@ -407,6 +419,7 @@ fn incremental_render_preserves_heading_and_normalized_html_seams() {
 
 #[test]
 fn paragraphs_after_unwrapped_table_fence_advance_stable_source() {
+    let _theme_guard = crate::render::highlight::syntax_theme_test_guard();
     let cwd = test_cwd();
     let width = Some(80);
     let (mut source, mut render) = assert_rich_stream_matches_full_render(

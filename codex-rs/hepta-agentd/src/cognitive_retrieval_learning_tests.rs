@@ -170,8 +170,8 @@ fn sink() -> (tempfile::TempDir, CognitiveRetrievalLearningSink) {
         .expect("witness file");
     let ledger = DurableLedger::create(ledger_file, binding, 128).expect("ledger");
     let witness = LedgerWitnessStore::create(witness_file, binding).expect("witness");
-    let ledger_directory = File::open(temp.path()).expect("ledger directory");
-    let witness_directory = File::open(temp.path()).expect("witness directory");
+    let ledger_directory = open_directory(temp.path()).expect("ledger directory");
+    let witness_directory = open_directory(temp.path()).expect("witness directory");
     let writer = LedgerWriter::from_durable(
         ledger,
         witness,
@@ -181,6 +181,23 @@ fn sink() -> (tempfile::TempDir, CognitiveRetrievalLearningSink) {
     )
     .expect("product writer");
     (temp, CognitiveRetrievalLearningSink::new(writer))
+}
+
+fn open_directory(path: &std::path::Path) -> std::io::Result<File> {
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt;
+
+        // Match the ledger owner's fixture: an actual writable directory
+        // handle is required for the unchanged durability synchronization.
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
+            .open(path)
+    }
+    #[cfg(not(windows))]
+    File::open(path)
 }
 
 #[test]

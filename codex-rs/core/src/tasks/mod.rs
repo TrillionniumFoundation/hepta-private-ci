@@ -34,6 +34,8 @@ use crate::codex_thread::BackgroundTerminalInfo;
 use crate::config::Config;
 use crate::context::ContextualUserFragment;
 use crate::context_manager::ContextManager;
+#[cfg(test)]
+use crate::lifecycle_test_diagnostics::record;
 use crate::session::TurnInput;
 use crate::session::session::RecoveryCandidate;
 use crate::session::session::Session;
@@ -158,6 +160,10 @@ pub(crate) enum TaskAbortHandoffPhase {
 /// the same active-turn critical section that installs the typed marker, so a
 /// cancelled detached future cannot drop either witness.
 pub(crate) struct TaskAbortHandoff {
+    #[cfg(test)]
+    diagnostic_thread_id: codex_protocol::ThreadId,
+    #[cfg(test)]
+    diagnostic_turn_id: String,
     task: Option<RunningTask>,
     turn_state: Arc<Mutex<TurnState>>,
     terminalization_identity: Arc<()>,
@@ -201,6 +207,8 @@ pub(crate) enum TaskFinishHandoffPhase {
 /// continuation poll cannot abort the runner or lose the terminalization
 /// fence.  Shutdown can adopt a still-`Claimed` witness from the registry.
 pub(crate) struct TaskFinishHandoff {
+    #[cfg(test)]
+    diagnostic_thread_id: codex_protocol::ThreadId,
     task: Option<RunningTask>,
     turn_context: Arc<TurnContext>,
     task_result: Option<SessionTaskResult>,
@@ -256,6 +264,17 @@ impl Drop for TaskFinishHandoffOwner {
         if handoff.phase != TaskFinishHandoffPhase::Claimed {
             handoff.failed_closed = true;
         }
+        #[cfg(test)]
+        record(
+            handoff.diagnostic_thread_id,
+            format_args!(
+                "finish owner dropped turn={} phase={:?} failed_closed={} complete={}",
+                handoff.turn_context.sub_id,
+                handoff.phase,
+                handoff.failed_closed,
+                handoff.completion.is_complete(),
+            ),
+        );
         let mut slot = self
             .slot
             .lock()
@@ -363,6 +382,17 @@ impl Drop for TaskAbortHandoffOwner {
         if handoff.phase != TaskAbortHandoffPhase::Claimed {
             handoff.failed_closed = true;
         }
+        #[cfg(test)]
+        record(
+            handoff.diagnostic_thread_id,
+            format_args!(
+                "abort owner dropped turn={} phase={:?} failed_closed={} complete={}",
+                handoff.diagnostic_turn_id,
+                handoff.phase,
+                handoff.failed_closed,
+                handoff.completion.is_complete(),
+            ),
+        );
         let mut slot = self
             .slot
             .lock()
@@ -574,6 +604,17 @@ impl Drop for StartTransitionCleanupOwner {
         if self.side_effects_started {
             cleanup.failed_closed = true;
         }
+        #[cfg(test)]
+        record(
+            cleanup.session.thread_id,
+            format_args!(
+                "start cleanup owner dropped turn={} side_effects_started={} failed_closed={} complete={}",
+                cleanup.turn_context.sub_id,
+                self.side_effects_started,
+                cleanup.failed_closed,
+                cleanup.completion.is_complete(),
+            ),
+        );
         let mut slot = self.slot.lock().unwrap_or_else(|error| {
             panic!("start transition cleanup slot mutex poisoned: {error:?}")
         });
@@ -673,6 +714,18 @@ impl StartTransitionOwner {
                 .catch_unwind(),
             )
             .await;
+            #[cfg(test)]
+            {
+                let outcome = match &result {
+                    Ok(Ok(())) => "returned",
+                    Ok(Err(_)) => "panicked",
+                    Err(_) => "watchdog expired",
+                };
+                record(
+                    session.thread_id,
+                    format_args!("start cleanup {outcome} turn={turn_id}"),
+                );
+            }
             match result {
                 Ok(Err(_)) => warn!(
                     %turn_id,
@@ -1163,6 +1216,17 @@ impl Session {
                     continue;
                 };
                 if handoff.failed_closed || handoff.phase != TaskFinishHandoffPhase::Claimed {
+                    #[cfg(test)]
+                    record(
+                        self.thread_id,
+                        format_args!(
+                            "shutdown retaining finish turn={} phase={:?} failed_closed={} complete={}",
+                            handoff.turn_context.sub_id,
+                            handoff.phase,
+                            handoff.failed_closed,
+                            handoff.completion.is_complete(),
+                        ),
+                    );
                     Self::retain_finish_handoff(&slot, handoff);
                     continue;
                 }
@@ -1184,6 +1248,17 @@ impl Session {
                     continue;
                 };
                 if handoff.failed_closed || handoff.phase != TaskAbortHandoffPhase::Claimed {
+                    #[cfg(test)]
+                    record(
+                        self.thread_id,
+                        format_args!(
+                            "shutdown retaining abort turn={} phase={:?} failed_closed={} complete={}",
+                            handoff.diagnostic_turn_id,
+                            handoff.phase,
+                            handoff.failed_closed,
+                            handoff.completion.is_complete(),
+                        ),
+                    );
                     Self::retain_abort_handoff(&slot, handoff);
                     continue;
                 }
@@ -3037,6 +3112,16 @@ impl Session {
                     // could duplicate lifecycle/durable effects, while
                     // clearing the fence would publish teardown out of
                     // order.  Keep it registered and fail closed.
+                    #[cfg(test)]
+                    record(
+                        self.thread_id,
+                        format_args!(
+                            "shutdown retaining start cleanup turn={} failed_closed={} complete={}",
+                            cleanup.turn_context.sub_id,
+                            cleanup.failed_closed,
+                            cleanup.completion.is_complete(),
+                        ),
+                    );
                     cleanup_slot
                         .lock()
                         .unwrap_or_else(|error| {
@@ -3058,6 +3143,18 @@ impl Session {
                     .catch_unwind(),
                 )
                 .await;
+                #[cfg(test)]
+                {
+                    let outcome = match &result {
+                        Ok(Ok(())) => "returned",
+                        Ok(Err(_)) => "panicked",
+                        Err(_) => "watchdog expired",
+                    };
+                    record(
+                        session.thread_id,
+                        format_args!("shutdown start cleanup {outcome} turn={turn_id}"),
+                    );
+                }
                 match result {
                     Ok(Err(_)) => warn!(
                         %turn_id,
@@ -3283,6 +3380,8 @@ impl Session {
         );
         detached_handle.detach();
         *slot_guard = Some(TaskFinishHandoff {
+            #[cfg(test)]
+            diagnostic_thread_id: self.thread_id,
             task: Some(task),
             turn_context: task_context,
             task_result: Some(task_result),
@@ -3723,10 +3822,26 @@ impl Session {
             }
             Ok(Err(_)) => {
                 warn!("finish handoff panicked; retaining its completion fence");
+                #[cfg(test)]
+                record(
+                    self.thread_id,
+                    format_args!(
+                        "finish handoff panicked turn={}",
+                        owner.handoff_mut().turn_context.sub_id
+                    ),
+                );
                 owner.handoff_mut().failed_closed = true;
             }
             Err(_) => {
                 warn!("finish handoff watchdog expired; retaining its completion fence");
+                #[cfg(test)]
+                record(
+                    self.thread_id,
+                    format_args!(
+                        "finish handoff watchdog expired turn={}",
+                        owner.handoff_mut().turn_context.sub_id
+                    ),
+                );
             }
         }
     }
@@ -3783,11 +3898,27 @@ impl Session {
             }
             Ok(Err(_)) => {
                 warn!("abort handoff panicked; retaining its completion fence");
+                #[cfg(test)]
+                record(
+                    self.thread_id,
+                    format_args!(
+                        "abort handoff panicked turn={}",
+                        owner.handoff_mut().diagnostic_turn_id
+                    ),
+                );
                 owner.handoff_mut().failed_closed = true;
                 AbortTurnOutcome::Terminalizing
             }
             Err(_) => {
                 warn!("abort handoff watchdog expired; retaining its completion fence");
+                #[cfg(test)]
+                record(
+                    self.thread_id,
+                    format_args!(
+                        "abort handoff watchdog expired turn={}",
+                        owner.handoff_mut().diagnostic_turn_id
+                    ),
+                );
                 AbortTurnOutcome::Terminalizing
             }
         }
@@ -4001,6 +4132,10 @@ impl Session {
         )
         .unwrap_or_else(|| panic!("claimed abort task should remain attached"));
         *slot_guard = Some(TaskAbortHandoff {
+            #[cfg(test)]
+            diagnostic_thread_id: self.thread_id,
+            #[cfg(test)]
+            diagnostic_turn_id: task_context.sub_id.clone(),
             task: Some(task),
             turn_state,
             terminalization_identity,

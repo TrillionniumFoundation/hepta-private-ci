@@ -98,7 +98,32 @@ async fn sandbox_fetches_and_enforces_cloud_managed_permission_profile() -> Resu
         .mount(&server)
         .await;
 
+    #[cfg(not(windows))]
     let codex = codex_utils_cargo_bin::cargo_bin("codex")?;
+    #[cfg(windows)]
+    let package = TempDir::new()?;
+    #[cfg(windows)]
+    let codex = {
+        // Bazel builds these binaries in separate package directories. Exercise
+        // the shipped sibling layout so the real sandbox can find both helpers
+        // after the subprocess changes its working directory.
+        for name in [
+            "codex",
+            "codex-windows-sandbox-setup",
+            "codex-command-runner",
+        ] {
+            let source = codex_utils_cargo_bin::cargo_bin(name)?;
+            let destination = package.path().join(format!("{name}.exe"));
+            std::fs::copy(&source, &destination).with_context(|| {
+                format!(
+                    "stage Windows sandbox executable {} at {}",
+                    source.display(),
+                    destination.display(),
+                )
+            })?;
+        }
+        package.path().join("codex.exe")
+    };
     let chatgpt_base_url_override = format!("chatgpt_base_url=\"{chatgpt_base_url}\"");
     let output = Command::new(&codex)
         .current_dir(codex_home.path())

@@ -25,6 +25,7 @@ use codex_hepta_cognitive_store::MemoryVerification;
 use codex_hepta_cognitive_store::ProductionAuthorityLease;
 use codex_hepta_cognitive_store::ProductionAuthorityToken;
 use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
+use codex_hepta_cognitive_store::ProductionDurableWriter;
 use codex_hepta_cognitive_store::SourceDraft;
 use codex_hepta_cognitive_store::bind_canonical_event_to_durable_receipt;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
@@ -142,9 +143,8 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     )?;
 
     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
-    let expected = store.recovery_anchor().await?;
-    store.close().await;
-    drop(store);
+    let before_lease = store.recovery_anchor().await?;
+    let original_path = store.path().to_path_buf();
 
     let authority = ProductionAuthorityLease::from_verified_parts(
         owner.clone(),
@@ -174,6 +174,24 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         },
     );
 
+    // The exact owner cut includes the append-only writer lease. Establish
+    // that real authority-bound lease before retaining the recovery witness;
+    // a first acquisition after recovery would legitimately advance the cut.
+    let initial_writer = ProductionDurableWriter::open_with_live_verifier(
+        store.clone(),
+        authority.clone(),
+        Arc::clone(&verifier),
+        "agentd-product-recovery-test",
+        1,
+    )
+    .await?;
+    let expected = initial_writer.recovery_anchor().await?;
+    assert_ne!(expected, before_lease);
+    drop(initial_writer);
+    // Leave the witnessed lease active, as after a stopped writer process.
+    store.close().await;
+    drop(store);
+
     let host = AgentdProductionWriterHost::open_with_recovery(
         &config,
         CognitiveRecoveryRequirement::ExactCurrentCut(&expected),
@@ -185,6 +203,9 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     .await?;
     let recovered_anchor = host.writer().recovery_anchor().await?;
     assert_eq!(recovered_anchor, expected);
+    assert_ne!(host.writer().database_path(), original_path.as_path());
+    assert_eq!(host.writer().lease_id(), "agentd-product-recovery-test");
+    assert_eq!(host.writer().generation(), 1);
 
     let now = i64::try_from(now_unix_seconds()?)?;
     let access = CognitiveAccess::agent_private(owner.clone());

@@ -38,13 +38,19 @@ struct ActiveAgents {
 struct RegisteredAgent {
     path: String,
     evicted_environments: Option<Vec<TurnEnvironmentSelection>>,
+    owner: AgentRegistration,
 }
+
+/// Identity of one metadata registration, independent of its reusable thread ID.
+#[derive(Clone)]
+pub(crate) struct AgentRegistration(Arc<()>);
 
 impl RegisteredAgent {
     fn new(path: String) -> Self {
         Self {
             path,
             evicted_environments: None,
+            owner: AgentRegistration(Arc::new(())),
         }
     }
 }
@@ -55,6 +61,10 @@ pub(crate) struct AgentMetadata {
     pub(crate) agent_path: Option<AgentPath>,
     pub(crate) agent_nickname: Option<String>,
     pub(crate) agent_role: Option<String>,
+}
+
+fn is_counted_agent(metadata: &AgentMetadata) -> bool {
+    metadata.agent_id.is_some() && !metadata.agent_path.as_ref().is_some_and(AgentPath::is_root)
 }
 
 fn format_agent_nickname(name: &str, nickname_reset_count: usize) -> String {
@@ -115,22 +125,57 @@ impl AgentRegistry {
     }
 
     pub(crate) fn release_spawned_thread(&self, thread_id: ThreadId) {
-        let removed_counted_agent = {
+        self.release_registration(thread_id, /*expected*/ None);
+    }
+
+    pub(crate) fn registration_for_thread(&self, thread_id: ThreadId) -> Option<AgentRegistration> {
+        self.active_agents
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .thread_paths
+            .get(&thread_id)
+            .map(|agent| agent.owner.clone())
+    }
+
+    pub(crate) fn release_spawned_thread_if_current(
+        &self,
+        thread_id: ThreadId,
+        expected: &AgentRegistration,
+    ) -> bool {
+        self.release_registration(thread_id, Some(expected))
+    }
+
+    fn release_registration(
+        &self,
+        thread_id: ThreadId,
+        expected: Option<&AgentRegistration>,
+    ) -> bool {
+        let (removed, removed_counted_agent) = {
             let mut active_agents = self
                 .active_agents
                 .lock()
                 .unwrap_or_else(std::sync::PoisonError::into_inner);
-            active_agents
+            if expected.is_some_and(|expected| {
+                !active_agents
+                    .thread_paths
+                    .get(&thread_id)
+                    .is_some_and(|agent| Arc::ptr_eq(&agent.owner.0, &expected.0))
+            }) {
+                return false;
+            }
+            let metadata = active_agents
                 .thread_paths
                 .remove(&thread_id)
-                .and_then(|agent| active_agents.agent_tree.remove(agent.path.as_str()))
-                .is_some_and(|metadata| {
-                    !metadata.agent_path.as_ref().is_some_and(AgentPath::is_root)
-                })
+                .and_then(|agent| active_agents.agent_tree.remove(agent.path.as_str()));
+            (
+                metadata.is_some(),
+                metadata.as_ref().is_some_and(is_counted_agent),
+            )
         };
         if removed_counted_agent {
             self.total_count.fetch_sub(1, Ordering::AcqRel);
         }
+        removed
     }
 
     pub(crate) fn register_root_thread(&self, thread_id: ThreadId) {
@@ -228,9 +273,9 @@ impl AgentRegistry {
             .collect()
     }
 
-    fn register_spawned_thread(&self, agent_metadata: AgentMetadata) {
+    fn register_spawned_thread(&self, agent_metadata: AgentMetadata) -> usize {
         let Some(thread_id) = agent_metadata.agent_id else {
-            return;
+            return 0;
         };
         let mut active_agents = self
             .active_agents
@@ -244,21 +289,29 @@ impl AgentRegistry {
         if let Some(agent_nickname) = agent_metadata.agent_nickname.clone() {
             active_agents.used_agent_nicknames.insert(agent_nickname);
         }
+        let mut replaced_counted = 0;
         if let Some(previous_agent) = active_agents
             .thread_paths
             .insert(thread_id, RegisteredAgent::new(key.clone()))
             && previous_agent.path != key
         {
-            active_agents
-                .agent_tree
-                .remove(previous_agent.path.as_str());
+            replaced_counted += usize::from(
+                active_agents
+                    .agent_tree
+                    .remove(previous_agent.path.as_str())
+                    .as_ref()
+                    .is_some_and(is_counted_agent),
+            );
         }
-        if let Some(previous_metadata) = active_agents.agent_tree.insert(key, agent_metadata)
-            && let Some(previous_thread_id) = previous_metadata.agent_id
-            && previous_thread_id != thread_id
-        {
-            active_agents.thread_paths.remove(&previous_thread_id);
+        if let Some(previous_metadata) = active_agents.agent_tree.insert(key, agent_metadata) {
+            replaced_counted += usize::from(is_counted_agent(&previous_metadata));
+            if let Some(previous_thread_id) = previous_metadata.agent_id
+                && previous_thread_id != thread_id
+            {
+                active_agents.thread_paths.remove(&previous_thread_id);
+            }
         }
+        replaced_counted
     }
 
     fn reserve_agent_nickname(&self, names: &[&str], preferred: Option<&str>) -> Option<String> {
@@ -385,7 +438,13 @@ impl SpawnReservation {
     pub(crate) fn commit(mut self, agent_metadata: AgentMetadata) {
         self.reserved_agent_nickname = None;
         self.reserved_agent_path = None;
-        self.state.register_spawned_thread(agent_metadata);
+        let uncounted = usize::from(!is_counted_agent(&agent_metadata));
+        let replaced_counted = self.state.register_spawned_thread(agent_metadata);
+        // A reservation contributes one pending slot. Replacing an existing
+        // registration transfers that slot instead of counting the same ID twice.
+        self.state
+            .total_count
+            .fetch_sub(replaced_counted + uncounted, Ordering::AcqRel);
         self.active = false;
     }
 }

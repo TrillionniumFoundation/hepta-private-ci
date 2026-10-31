@@ -3,12 +3,18 @@ use super::common::detect_recent_sessions;
 use crate::model::ExternalAgentSessionImportLimits;
 use crate::sessions::ExternalAgentSessionMigration;
 use crate::sessions::SessionRecordFormat;
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::fs;
 use std::io;
 use std::path::Path;
 use std::path::PathBuf;
 
-const MAX_CUR_PROJECT_PATH_PROBES: usize = 128;
+// Bound both the search frontier and native metadata calls, including misses.
+// The latter can be comparatively expensive on a network filesystem.
+const MAX_CUR_PROJECT_PATH_PREFIXES: usize = 128;
+const MAX_CUR_PROJECT_PATH_PROBES: usize = 4096;
+const MAX_CUR_PROJECT_COMPONENT_PARTS: usize = 4;
 const CUR_PROJECT_SEPARATORS: [&str; 11] =
     ["-", "_", ".", " ", "--", "..", "__", "  ", "+", "@", "&"];
 
@@ -99,113 +105,86 @@ fn cur_project_cwd(project_storage: &Path, external_agent_home: &Path) -> Option
 
 fn decode_cur_project_path(encoded: &str) -> Option<PathBuf> {
     #[cfg(not(windows))]
-    let mut path = PathBuf::from("/");
+    let root = PathBuf::from("/");
 
     #[cfg(windows)]
-    let (encoded, mut path) = {
+    let (encoded, root) = {
         let (drive, encoded) = decode_cur_windows_project_drive(encoded)?;
         (encoded, PathBuf::from(format!("{drive}:\\")))
     };
 
     let encoded = encoded.strip_prefix('-').unwrap_or(encoded);
-    for component in encoded.split('-') {
+    let parts = encoded.split('-').collect::<Vec<_>>();
+    for component in &parts {
         if component.is_empty()
-            || matches!(component, "." | "..")
+            || matches!(*component, "." | "..")
             || component.contains(['/', '\\', ':'])
         {
             return None;
         }
-        path.push(component);
     }
 
     let mut matched_path = None;
     let mut probes = 0;
-    let mut inspect = |candidate: PathBuf| {
-        if probes >= MAX_CUR_PROJECT_PATH_PROBES {
+    let mut pending = vec![(root, 0)];
+    let mut visited = BTreeSet::new();
+    while let Some((parent, start)) = pending.pop() {
+        if !visited.insert((parent.clone(), start)) {
+            continue;
+        }
+        if visited.len() > MAX_CUR_PROJECT_PATH_PREFIXES {
             return None;
         }
-        probes += 1;
-        if candidate.is_dir() {
+        if start == parts.len() {
             if matched_path
                 .as_ref()
-                .is_some_and(|matched_path| matched_path != &candidate)
+                .is_some_and(|matched_path| matched_path != &parent)
             {
                 return None;
             }
-            matched_path = Some(candidate);
+            matched_path = Some(parent);
+            continue;
         }
-        Some(())
-    };
-    inspect(path.clone())?;
 
-    for suffix_length in 2..=4 {
-        let mut parent = path.as_path();
-        let mut suffix = Vec::with_capacity(suffix_length);
-        for _ in 0..suffix_length {
-            let Some(component) = parent.file_name().and_then(|name| name.to_str()) else {
-                break;
-            };
-            suffix.push(component);
-            let Some(ancestor) = parent.parent() else {
-                break;
-            };
-            parent = ancestor;
+        // Search every existing prefix, rather than repairing only one suffix
+        // or ancestor. Several components can contain encoded separators, and
+        // each complete interpretation must be considered before accepting it.
+        // Keep all consumed lengths if two spellings produce the same name.
+        let mut component_ends: BTreeMap<String, Vec<usize>> = BTreeMap::new();
+        component_ends.insert(parts[start].to_string(), vec![start + 1]);
+        for length in 2..=MAX_CUR_PROJECT_COMPONENT_PARTS.min(parts.len() - start) {
+            let end = start + length;
+            for separator in CUR_PROJECT_SEPARATORS {
+                component_ends
+                    .entry(parts[start..end].join(separator))
+                    .or_default()
+                    .push(end);
+            }
         }
-        if suffix.len() != suffix_length {
-            break;
-        }
-        suffix.reverse();
-
-        for separator in CUR_PROJECT_SEPARATORS {
-            inspect(parent.join(suffix.join(separator)))?;
-        }
-    }
-
-    let mut ancestor = path.parent();
-    while let Some(right) = ancestor {
-        let Some(right_name) = right.file_name().and_then(|name| name.to_str()) else {
-            break;
-        };
-        let Some(left) = right.parent() else {
-            break;
-        };
-        let Some(left_name) = left.file_name().and_then(|name| name.to_str()) else {
-            break;
-        };
-        let Some(prefix) = left.parent() else {
-            break;
-        };
-        let Ok(trailing) = path.strip_prefix(right) else {
-            return None;
-        };
-
-        for separator in CUR_PROJECT_SEPARATORS {
-            let merged_prefix = prefix.join(format!("{left_name}{separator}{right_name}"));
+        for (name, ends) in component_ends {
             if probes >= MAX_CUR_PROJECT_PATH_PROBES {
                 return None;
             }
             probes += 1;
-            if !merged_prefix.is_dir() {
-                continue;
+            let candidate = parent.join(name);
+            // Let the filesystem resolve case, aliases, and traversal rights.
+            // Comparing read_dir names would silently reject valid Windows
+            // short names or paths on a case-insensitive filesystem.
+            let metadata = match fs::metadata(&candidate) {
+                Ok(metadata) => metadata,
+                Err(error) if error.kind() == io::ErrorKind::NotFound => continue,
+                Err(_) => return None,
+            };
+            if metadata.is_dir() {
+                for end in ends {
+                    pending.push((candidate.clone(), end));
+                }
             }
-
-            if probes >= MAX_CUR_PROJECT_PATH_PROBES {
-                return None;
-            }
-            probes += 1;
-            let candidate = merged_prefix.join(trailing);
-            if !candidate.is_dir()
-                || matched_path
-                    .as_ref()
-                    .is_some_and(|matched_path| matched_path != &candidate)
-            {
-                return None;
-            }
-            matched_path = Some(candidate);
         }
-        ancestor = Some(left);
     }
 
+    // Exhausted budgets or unreadable candidates return above, even after a
+    // match: an incomplete search cannot establish that the cwd is unique.
     matched_path
 }
 

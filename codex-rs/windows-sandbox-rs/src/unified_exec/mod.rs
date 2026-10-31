@@ -52,20 +52,18 @@ enum WindowsSandboxBackend {
     Elevated,
 }
 
-/// Select the only backend that can enforce the requested filesystem policy.
+/// Select the launch path for the request's account and setup requirements.
 ///
-/// A `WRITE_RESTRICTED` token limits ordinary write access through restricting
-/// SIDs, but Windows can authorize deletion through a parent directory's
-/// `FILE_DELETE_CHILD` right. That alternate authorization path means the
-/// restricted-token backend cannot prove that deletion stays inside the
-/// declared writable roots. Explicit filesystem overrides have the same
-/// problem because their effective parent ACLs are not part of the token.
+/// The elevated path provisions a dedicated local sandbox account, prepares
+/// filesystem ACLs, and launches native children with restricted tokens. Its
+/// runner manages IPC and process lifetime; it does not broker individual
+/// filesystem operations. Backend selection alone does not establish deletion
+/// or owner/DACL confinement.
 ///
-/// Therefore the direct token backend is intentionally limited to an
-/// unrestricted-read, no-write, no-override profile. Every write-capable or
-/// path-restricted request is delegated to the elevated broker, which owns the
-/// authoritative filesystem mediation boundary. If that broker is unavailable,
-/// launch fails closed rather than falling back to the weaker backend.
+/// This selector chooses the direct token path only for unrestricted-read,
+/// no-write, no-override profiles. Writable roots, filesystem restrictions or
+/// overrides, and explicit elevated requests use the elevated path. A failed
+/// elevated launch is returned to the caller without a direct-token fallback.
 fn select_windows_sandbox_backend(
     request: &WindowsSandboxSessionRequest<'_>,
 ) -> Result<WindowsSandboxBackend> {

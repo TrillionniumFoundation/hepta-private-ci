@@ -1,0 +1,431 @@
+{
+  "version": "first-passage-clock-v1",
+  "freeze_commit": "0878c82563e2b2a5b483fe9d3777c2e75964d6a1",
+  "numerical": {
+    "status": "PASS",
+    "cases": 67,
+    "checks": 946,
+    "failure_count": 0
+  },
+  "training": {
+    "optimizer_attempts": 90,
+    "reported_converged_attempts": 90,
+    "total_seconds": 0.41778883100050734,
+    "fpt_selected_fits": [
+      {
+        "seed": 11001,
+        "class_id": 0,
+        "parameters": [
+          1.045151236447093,
+          0.5308054817704432,
+          0.4822250847269638
+        ],
+        "any_parameter_at_boundary": false
+      },
+      {
+        "seed": 11001,
+        "class_id": 1,
+        "parameters": [
+          1.4494780213691147,
+          0.8503836565338566,
+          0.6378580891717253
+        ],
+        "any_parameter_at_boundary": false
+      },
+      {
+        "seed": 11002,
+        "class_id": 0,
+        "parameters": [
+          0.7222866866853533,
+          0.5886336401096318,
+          0.34876558162001203
+        ],
+        "any_parameter_at_boundary": false
+      },
+      {
+        "seed": 11002,
+        "class_id": 1,
+        "parameters": [
+          1.6106071112134834,
+          0.8267293506363635,
+          0.5104622779597463
+        ],
+        "any_parameter_at_boundary": false
+      },
+      {
+        "seed": 11003,
+        "class_id": 0,
+        "parameters": [
+          0.8643720546529492,
+          0.6057572105569229,
+          0.5582131469544067
+        ],
+        "any_parameter_at_boundary": false
+      },
+      {
+        "seed": 11003,
+        "class_id": 1,
+        "parameters": [
+          1.74503484491157,
+          0.8947016298051765,
+          0.6569405769689701
+        ],
+        "any_parameter_at_boundary": false
+      },
+      {
+        "seed": 11004,
+        "class_id": 0,
+        "parameters": [
+          0.7153659901563143,
+          0.6346962156990255,
+          0.3166573169650003
+        ],
+        "any_parameter_at_boundary": false
+      },
+      {
+        "seed": 11004,
+        "class_id": 1,
+        "parameters": [
+          1.7185154275018872,
+          0.7899556490774321,
+          0.7333911944846363
+        ],
+        "any_parameter_at_boundary": false
+      },
+      {
+        "seed": 11005,
+        "class_id": 0,
+        "parameters": [
+          0.8081999583881142,
+          0.5517442136042696,
+          0.35364144526633945
+        ],
+        "any_parameter_at_boundary": false
+      },
+      {
+        "seed": 11005,
+        "class_id": 1,
+        "parameters": [
+          1.24119569590372,
+          0.9654576909037328,
+          0.5918064562641602
+        ],
+        "any_parameter_at_boundary": false
+      }
+    ]
+  },
+  "results": {
+    "dev": {
+      "independent_training_seeds": 5,
+      "episodes_per_seed": 96,
+      "paired_contrasts": [
+        {
+          "left": "fpt",
+          "right": "cure_weibull",
+          "seed_differences": [
+            0.13026226506151733,
+            0.033631194899941375,
+            -0.00055864211303841,
+            0.10209773810285577,
+            0.09135745679255558
+          ],
+          "mean": 0.07135800254876633,
+          "simultaneous_95_percent_interval": [
+            -0.012130035038386805,
+            0.15484604013591946
+          ]
+        },
+        {
+          "left": "fpt",
+          "right": "cure_loglogistic",
+          "seed_differences": [
+            -0.005448006487085322,
+            0.012271187338254441,
+            -0.05982069049360861,
+            0.03878213717946555,
+            0.06009842359870765
+          ],
+          "mean": 0.009176610227146742,
+          "simultaneous_95_percent_interval": [
+            -0.06268608645473965,
+            0.08103930690903315
+          ]
+        }
+      ],
+      "models": {
+        "fpt": {
+          "means": {
+            "utility": 0.5044206067781383,
+            "accuracy": 0.7979166666666667,
+            "queries": 2.51875,
+            "elapsed_task_time": 1.5030090622078018,
+            "observed_hits": 0.7083333333333334,
+            "resource_cost": 0.09141272655519504
+          },
+          "heldout_event_nll": 0.467863982243078,
+          "mean_costs": {
+            "controller_precompute_seconds": 0.00376578620125656,
+            "controller_table_bytes": 3216.0,
+            "quadrature_max_mass_residual": 1.5303314171433158e-12,
+            "controller_execution_seconds": 0.010864282998954877,
+            "fit_wall_seconds": 0.03824344360036776,
+            "model_parameter_bytes": 48.0
+          },
+          "max_quadrature_mass_residual": 5.2341464495953005e-12
+        },
+        "cure_weibull": {
+          "means": {
+            "utility": 0.43306260422937193,
+            "accuracy": 0.7583333333333333,
+            "queries": 2.1875,
+            "elapsed_task_time": 1.4201624974917897,
+            "observed_hits": 0.7270833333333334,
+            "resource_cost": 0.08360406243729475
+          },
+          "heldout_event_nll": 0.5063020728623562,
+          "mean_costs": {
+            "controller_precompute_seconds": 0.001307961400016211,
+            "controller_table_bytes": 3216.0,
+            "quadrature_max_mass_residual": 4.726160420798209e-08,
+            "controller_execution_seconds": 0.010335619199759094,
+            "fit_wall_seconds": 0.016942926198680652,
+            "model_parameter_bytes": 48.0
+          },
+          "max_quadrature_mass_residual": 1.2441409358299182e-07
+        },
+        "cure_loglogistic": {
+          "means": {
+            "utility": 0.49524399655099155,
+            "accuracy": 0.7916666666666666,
+            "queries": 2.3354166666666667,
+            "elapsed_task_time": 1.4900734712936718,
+            "observed_hits": 0.7333333333333334,
+            "resource_cost": 0.08808933678234179
+          },
+          "heldout_event_nll": 0.4753188961326811,
+          "mean_costs": {
+            "controller_precompute_seconds": 0.0012150212009146345,
+            "controller_table_bytes": 3216.0,
+            "quadrature_max_mass_residual": 2.7666295920880656e-10,
+            "controller_execution_seconds": 0.011194083801092347,
+            "fit_wall_seconds": 0.0188242629992601,
+            "model_parameter_bytes": 48.0
+          },
+          "max_quadrature_mass_residual": 1.3393849362941523e-09
+        }
+      },
+      "immediate_stop_utility": 0.2125
+    },
+    "confirm": {
+      "independent_training_seeds": 5,
+      "episodes_per_seed": 512,
+      "paired_contrasts": [
+        {
+          "left": "fpt",
+          "right": "cure_weibull",
+          "seed_differences": [
+            0.0038368784035206493,
+            0.006945431720183248,
+            0.03458874200686396,
+            0.007677923884009508,
+            0.019249188106021498
+          ],
+          "mean": 0.014459632824119772,
+          "simultaneous_95_percent_interval": [
+            -0.0053661078332353195,
+            0.03428537348147487
+          ]
+        },
+        {
+          "left": "fpt",
+          "right": "cure_loglogistic",
+          "seed_differences": [
+            0.0235444174940459,
+            -0.02753977429668797,
+            -0.002211565615933997,
+            0.0046235903514827426,
+            -0.00014984008746188326
+          ],
+          "mean": -0.0003466344309110414,
+          "simultaneous_95_percent_interval": [
+            -0.028941416274811657,
+            0.028248147412989574
+          ]
+        }
+      ],
+      "models": {
+        "fpt": {
+          "means": {
+            "utility": 0.45207825284637215,
+            "accuracy": 0.770703125,
+            "queries": 2.433984375,
+            "elapsed_task_time": 1.4475261361451117,
+            "observed_hits": 0.77734375,
+            "resource_cost": 0.08932799715362778
+          },
+          "heldout_event_nll": 0.473762882799167,
+          "mean_costs": {
+            "controller_precompute_seconds": 0.004140730398648884,
+            "controller_table_bytes": 3216.0,
+            "quadrature_max_mass_residual": 1.5303314171433158e-12,
+            "controller_execution_seconds": 0.06788619079961791,
+            "fit_wall_seconds": 0.03824344360036776,
+            "model_parameter_bytes": 48.0
+          },
+          "max_quadrature_mass_residual": 5.2341464495953005e-12
+        },
+        "cure_weibull": {
+          "means": {
+            "utility": 0.43761862002225244,
+            "accuracy": 0.759765625,
+            "queries": 2.11328125,
+            "elapsed_task_time": 1.3733801991099035,
+            "observed_hits": 0.794921875,
+            "resource_cost": 0.08191262997774759
+          },
+          "heldout_event_nll": 0.5043177081591972,
+          "mean_costs": {
+            "controller_precompute_seconds": 0.0014341575988510158,
+            "controller_table_bytes": 3216.0,
+            "quadrature_max_mass_residual": 4.726160420798209e-08,
+            "controller_execution_seconds": 0.08537434679965372,
+            "fit_wall_seconds": 0.016942926198680652,
+            "model_parameter_bytes": 48.0
+          },
+          "max_quadrature_mass_residual": 1.2441409358299182e-07
+        },
+        "cure_loglogistic": {
+          "means": {
+            "utility": 0.45242488727728325,
+            "accuracy": 0.769921875,
+            "queries": 2.287890625,
+            "elapsed_task_time": 1.4560982589086706,
+            "observed_hits": 0.81953125,
+            "resource_cost": 0.08741886272271676
+          },
+          "heldout_event_nll": 0.48396162397649506,
+          "mean_costs": {
+            "controller_precompute_seconds": 0.001778926799306646,
+            "controller_table_bytes": 3216.0,
+            "quadrature_max_mass_residual": 2.7666295920880656e-10,
+            "controller_execution_seconds": 0.08446683760048472,
+            "fit_wall_seconds": 0.0188242629992601,
+            "model_parameter_bytes": 48.0
+          },
+          "max_quadrature_mass_residual": 1.3393849362941523e-09
+        }
+      },
+      "immediate_stop_utility": 0.184375
+    },
+    "ood": {
+      "independent_training_seeds": 5,
+      "episodes_per_seed": 512,
+      "paired_contrasts": [
+        {
+          "left": "fpt",
+          "right": "cure_weibull",
+          "seed_differences": [
+            0.02279778295062118,
+            0.005337567255563225,
+            0.02437959034083792,
+            0.0056208405939743855,
+            0.07206590883509112
+          ],
+          "mean": 0.026040337995217565,
+          "simultaneous_95_percent_interval": [
+            -0.01660637915467713,
+            0.06868705514511225
+          ]
+        },
+        {
+          "left": "fpt",
+          "right": "cure_loglogistic",
+          "seed_differences": [
+            0.02458770831155538,
+            -0.014089315543252823,
+            0.030935649908749863,
+            0.00225104398337006,
+            0.0058597914437984455
+          ],
+          "mean": 0.009908975620844186,
+          "simultaneous_95_percent_interval": [
+            -0.018364343076763396,
+            0.03818229431845177
+          ]
+        }
+      ],
+      "models": {
+        "fpt": {
+          "means": {
+            "utility": 0.36034267209031706,
+            "accuracy": 0.728515625,
+            "queries": 2.233203125,
+            "elapsed_task_time": 1.213054291492073,
+            "observed_hits": 0.6640625,
+            "resource_cost": 0.09668857790968291
+          },
+          "heldout_event_nll": 0.5327625993157864,
+          "mean_costs": {
+            "controller_precompute_seconds": 0.004166403999988688,
+            "controller_table_bytes": 3216.0,
+            "quadrature_max_mass_residual": 1.5303314171433158e-12,
+            "controller_execution_seconds": 0.04918227400048636,
+            "fit_wall_seconds": 0.03824344360036776,
+            "model_parameter_bytes": 48.0
+          },
+          "max_quadrature_mass_residual": 5.2341464495953005e-12
+        },
+        "cure_weibull": {
+          "means": {
+            "utility": 0.3343023340950996,
+            "accuracy": 0.709765625,
+            "queries": 1.8734375,
+            "elapsed_task_time": 1.1018166476225115,
+            "observed_hits": 0.61953125,
+            "resource_cost": 0.08522891590490048
+          },
+          "heldout_event_nll": 0.5548453356299997,
+          "mean_costs": {
+            "controller_precompute_seconds": 0.0012394924000545871,
+            "controller_table_bytes": 3216.0,
+            "quadrature_max_mass_residual": 4.726160420798209e-08,
+            "controller_execution_seconds": 0.0508205292004277,
+            "fit_wall_seconds": 0.016942926198680652,
+            "model_parameter_bytes": 48.0
+          },
+          "max_quadrature_mass_residual": 1.2441409358299182e-07
+        },
+        "cure_loglogistic": {
+          "means": {
+            "utility": 0.35043369646947287,
+            "accuracy": 0.721484375,
+            "queries": 2.023828125,
+            "elapsed_task_time": 1.197575557013177,
+            "observed_hits": 0.68359375,
+            "resource_cost": 0.09253505353052707
+          },
+          "heldout_event_nll": 0.5357156940101976,
+          "mean_costs": {
+            "controller_precompute_seconds": 0.0013469859994074795,
+            "controller_table_bytes": 3216.0,
+            "quadrature_max_mass_residual": 2.7666295920880656e-10,
+            "controller_execution_seconds": 0.0647576420007681,
+            "fit_wall_seconds": 0.0188242629992601,
+            "model_parameter_bytes": 48.0
+          },
+          "max_quadrature_mass_residual": 1.3393849362941523e-09
+        }
+      },
+      "immediate_stop_utility": 0.20625
+    }
+  },
+  "conclusions": {
+    "identified_clock_fit_executed": true,
+    "confirmation_utility_superiority_to_both_baselines_established": false,
+    "ood_utility_superiority_to_both_baselines_established": false,
+    "end_to_end_snn_experiment": false,
+    "hardware_energy_measurement": false,
+    "truth_scope": "Synthetic FPT in-domain, unobserved clock mixture out-of-domain; not external-task generalization.",
+    "uncertainty_scope": "Five training replications; simultaneous intervals for two contrasts within each split."
+  }
+}
