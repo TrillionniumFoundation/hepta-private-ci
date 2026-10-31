@@ -188,6 +188,28 @@ def bond_value(p: HX, asset: float, tau: float, asset_boundary: float | None = N
     if tau==0:
         return p.per_bond_principal
     F,G=_first_passage_factors(p,_log_asset_ratio(asset,b),tau)
+    qt=p.q*tau
+    # When exp(-q*tau) rounds to one, the original coupon/q expression
+    # subtracts two enormous numbers. For F=G=0, use the exact no-first-hit
+    # cashflow limit, including the q*tau -> 0 annuity limit. With resolvable
+    # first-hit mass, the stopped-coupon F-G contribution is not determined
+    # by separately rounded f64 factors: refuse rather than invent a price.
+    # This narrowly repairs the unity-rounding path, NOT general f64
+    # F-G subtraction or full-domain first-passage precision.
+    if p.per_bond_coupon>0 and math.exp(-qt)==1.0:
+        if F!=0.0 or G!=0.0:
+            raise ArithmeticError('HX stopped coupon unresolved at unit discount rounding')
+        lost=-math.expm1(-qt)
+        annuity=tau if qt==0.0 else tau*(lost/qt)
+        try:
+            value=math.fsum((p.per_bond_principal,
+                             -p.per_bond_principal*lost,
+                             p.per_bond_coupon*annuity))
+        except (OverflowError,ValueError) as exc:
+            raise ArithmeticError('HX stopped coupon cashflow unresolved in f64') from exc
+        if not math.isfinite(value):
+            raise ArithmeticError('HX stopped coupon cashflow unresolved in f64')
+        return value
     base=p.per_bond_coupon/p.q
     return base+math.exp(-p.q*tau)*(p.per_bond_principal-base)*(1-F)+(recovery-base)*G
 
