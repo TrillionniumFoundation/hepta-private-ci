@@ -85,6 +85,15 @@ def two_segment_first_hit(x, b, mu, sigma, c1, c2, switch, T, q=0, *, dps=60):
             g = first.discounted + mp.exp(-q * switch) * continuation_G
         if not (mp.isfinite(p) and mp.isfinite(g) and 0 <= g <= p <= 1):
             raise ArithmeticError("invalid piecewise first-hit ordering")
+        if q > 0:
+            # Positive-discount first-hit loss must be resolvable at the
+            # working precision. In exact arithmetic: 0<F-G<=F*(-expm1(-q*T)).
+            # This detects cancellation and excessive apparent discount loss;
+            # do not silently accept G==F or clip to this necessary bound.
+            loss = p - g
+            upper = p * (-mp.expm1(-q * T))
+            if not (0 < g and 0 < loss <= upper):
+                raise ArithmeticError("unresolved piecewise discount-loss interval")
         # The exact pathwise bracket is a useful independent self-check.
         low = linear_boundary_first_hit(x,b,mu,sigma,min(c1,c2),T,q,dps=dps+15)
         high = linear_boundary_first_hit(x,b,mu,sigma,max(c1,c2),T,q,dps=dps+15)
