@@ -1,6 +1,6 @@
 # P0: r-harmonic fixed-barrier optional-stop enclosure (2026-10-31)
 
-**Research-only / DENY_ALL / NO_GO.** Exact parent: Draft PR #4516 HEAD be808f2a05ad6f3761e7b8d15c1792fcb958e3e6. Observed main: 732e934ba496d90fbe042b8d41d479ef901643e5. This increment adds four isolated research files only. No original HX equation, old scientific evidence, PDE, CI, Rust, GPU or deployment flag is changed.
+**Research-only / DENY_ALL / NO_GO.** Exact parent: Draft PR #4516 HEAD be808f2a05ad6f3761e7b8d15c1792fcb958e3e6. Observed main: 732e934ba496d90fbe042b8d41d479ef901643e5. This increment adds five isolated research files only. No original HX equation, old scientific evidence, PDE, CI, Rust, GPU or deployment flag is changed.
 
 ## New mathematical scope
 
