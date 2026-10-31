@@ -135,10 +135,14 @@ def regenerative_value(p: Stop, x: float, *, boundary: float | None = None) -> f
     if denom <= 0:
         raise ValueError('Renewal series not contractive')
     amplitude=(b-p.cost)/denom
+    if not math.isfinite(amplitude):
+        raise ArithmeticError('Regenerative reward amplitude unresolved in f64')
     # Immediate FIRE above the chosen threshold, followed by actual reset value.
-    if x>=b:
-        return x-p.cost+p.delay_discount*amplitude*hr
-    return amplitude*math.exp(-p.kappa*(b-x))
+    value=(x-p.cost+p.delay_discount*amplitude*hr if x>=b else
+           amplitude*math.exp(-p.kappa*(b-x)))
+    if not math.isfinite(value):
+        raise ArithmeticError('Regenerative value unresolved in f64')
+    return value
 
 
 def regenerative_boundary_independent(p: Stop) -> float:
@@ -153,21 +157,68 @@ def regenerative_boundary_independent(p: Stop) -> float:
     return brentq(residual,left,right,xtol=1e-13,rtol=1e-13)
 
 
-def qvi(p: Stop, x: float, *, boundary: float | None = None) -> dict[str,float|bool]:
-    """Classical max{L V-rho V, x-K + D V(reset)-V}=0 reference.
+def _obstacle_from_value(p: Stop, x: float, b: float, val: float) -> float:
+    """Stable exact *fixed-threshold* obstacle identity, not an optimality proof.
 
-    The active right/left second derivatives are only used within their open
-    regions; do not interpret the branch junction as a classical C2 point.
+    For x<b, D*V(reset)/V(x) = exp(-rho*tau-kappa*(x-reset)).
+    Subtracting D*V(reset)-V(x) directly loses O(1) obstacle values when
+    V(x) is large. The expm1 factor preserves small renewal differences.
+    For x>=b, the threshold policy fires immediately, so the obstacle is
+    exactly zero by construction; this does not verify an optimal policy.
+    """
+    if x>=b:
+        return 0.0
+    h=math.fsum((p.discount*p.refractory,p.kappa*(x-p.reset)))
+    if not math.isfinite(h):
+        raise ArithmeticError('Renewal obstacle exponent unresolved in f64')
+    try:
+        delta=val*math.expm1(-h)
+        obstacle=math.fsum((x-p.cost,delta))
+    except (OverflowError, ValueError) as exc:
+        raise ArithmeticError('Renewal obstacle subtraction unresolved') from exc
+    if not math.isfinite(obstacle):
+        raise ArithmeticError('Renewal obstacle outside finite f64 domain')
+    return obstacle
+
+
+def regenerative_obstacle(p: Stop, x: float, *, boundary: float | None = None) -> float:
+    """Read out the fixed-threshold intervention residual without cancellation.
+
+    Structural policy evidence only; a small obstacle alone never closes QVI.
+    """
+    b=regenerative_boundary(p) if boundary is None else boundary
+    val=regenerative_value(p,x,boundary=b)
+    return _obstacle_from_value(p,x,b,val)
+
+
+def qvi(p: Stop, x: float, *, boundary: float | None = None) -> dict[str,float|bool]:
+    """Sampled QVI; refuse unresolvable absolute generator error.
+
+    This verifies finite diagnostics in its stated f64 domain, not an
+    interval-certified coupled QVI. Continuation residuals above 1e-9
+    cannot be passed off as zero merely because model values are huge.
     """
     b=regenerative_boundary(p) if boundary is None else boundary
     if not (math.isfinite(x) and math.isfinite(b) and b>p.cost and b>p.reset):
         raise ValueError('Invalid QVI input')
     val=regenerative_value(p,x,boundary=b)
-    reset_val=regenerative_value(p,p.reset,boundary=b)
-    obstacle=x-p.cost+p.delay_discount*reset_val-val
+    obstacle=_obstacle_from_value(p,x,b,val)
     if x<b:
-        generator=(p.drift*p.kappa + .5*p.diffusion**2*p.kappa**2 - p.discount)*val
+        k=p.kappa
+        # (sigma*k)^2/2 preserves a finite term when sigma**2 or k**2
+        # would individually overflow/underflow. math.fsum mitigates the
+        # cancellation of mu*k + diffusion_term - discount.
+        noise=p.diffusion*k/math.sqrt(2.)
+        contributions=(p.drift*k,noise*noise,-p.discount)
+        if not all(math.isfinite(v) for v in contributions):
+            raise ArithmeticError('Continuation generator terms unresolved')
+        residual=math.fsum(contributions)
+        generator=residual*val
+        if not math.isfinite(generator) or abs(generator)>1e-9:
+            raise ArithmeticError('Continuation generator not resolved at 1e-9 absolute scale')
     else:
         generator=p.drift-p.discount*val
+        if not math.isfinite(generator):
+            raise ArithmeticError('Firing-region generator unresolved in f64')
     return dict(value=val,obstacle=obstacle,generator=generator,
                 complementarity=max(obstacle,generator),fire=x>=b)
