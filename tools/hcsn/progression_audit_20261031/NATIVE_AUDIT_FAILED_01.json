@@ -1,0 +1,12 @@
+{
+  "schema": "hcsn.independent.native-audit-attempt.v1",
+  "passed": false,
+  "source_sha256": "f5fd4cc3e308a8b0e805040bc6245cd6accb31c94e55798dd9a4def643ffea48",
+  "reason": "Auditor imposed a 10 microsecond simultaneous-sampling approximation although the candidate deliberately samples parent and complete fields at successive process_time calls.",
+  "observed_parent_plus_child": 0.04211263300000036,
+  "observed_complete_cpu": 0.04212805599999926,
+  "observed_sampling_delta_seconds": 1.5422999998904174e-05,
+  "exception": "AssertionError: ('numerical mismatch', 0.04211263300000036, 0.04212805599999926)",
+  "candidate_unchanged": true,
+  "next_audit": "Validate nonnegative successive-sampling delta and report its full empirical distribution; do not invent an unregistered upper-bound contract."
+}
