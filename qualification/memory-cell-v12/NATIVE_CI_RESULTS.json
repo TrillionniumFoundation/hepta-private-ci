@@ -1,7 +1,7 @@
 {
-  "as_of_utc": "2026-10-31T02:56:18.098269+00:00",
-  "native_gate_passed": false,
-  "native_gate_pending": true,
+  "as_of_utc": "2026-10-31T03:21:10.164349+00:00",
+  "native_gate_passed": true,
+  "native_gate_pending": false,
   "native_runs": [
     {
       "executed_cases": 519,
@@ -61,11 +61,23 @@
       "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41157391884"
     },
     {
-      "passed": null,
+      "all_finalization_patches_empty": true,
+      "executed_cases": 520,
+      "failed_cases": [],
+      "final_fix_executed": true,
+      "formatter_executed": true,
+      "independent_receipt_check": "evidence/native-ci/run-41160901114/INDEPENDENT_RECEIPT_CHECK.json",
+      "nextest_summary": "Summary [  50.619s] 520 tests run: 520 passed, 24 skipped",
+      "passed": true,
+      "raw_archive_manifest": "evidence-packs/native-ci-run-41160901114/manifest.json",
+      "receipt": "evidence/native-ci/run-41160901114/expanded/receipt.json",
       "run_id": 41160901114,
       "source_commit": "40330d860ac4202b04927f0d69e74348c6d7f8c4",
-      "status": "queued",
-      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41160901114"
+      "status": "completed",
+      "tests_executed_after_fix_or_format": false,
+      "tests_passed": 520,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41160901114",
+      "workflow_conclusion": "success"
     }
   ],
   "production_activation_allowed": false,

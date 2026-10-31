@@ -1,5 +1,16 @@
 {
-  "as_of_utc": "2026-10-31T02:56:18.098710+00:00",
+  "as_of_utc": "2026-10-31T03:21:10.164738+00:00",
+  "native_behavior": {
+    "all_finalization_patches_empty": true,
+    "executed_tests": 520,
+    "passed": true,
+    "passed_tests": 520,
+    "receipt": "evidence/native-ci/run-41160901114/expanded/receipt.json",
+    "run_id": 41160901114,
+    "skipped_tests": 24,
+    "source_commit": "40330d860ac4202b04927f0d69e74348c6d7f8c4",
+    "tests_after_finalization": false
+  },
   "native_gate": "See NATIVE_CI_RESULTS.json for exact submitted and tested commits; Python success is not a native pass.",
   "pinned_document_commit": "527218f9b823540830907f861a309310b71d38c9",
   "production_activation_allowed": false,
@@ -101,13 +112,29 @@
       "serial_seven_vm": {
         "actual_controller_sigkills_observed": 2,
         "complete_run_passed": false,
-        "completed_jobs": 4,
+        "distinct_boots_observed": 6,
         "final_pending": true,
-        "partial_audit": "evidence/federation-serial/run-41157593645/INDEPENDENT_AUDIT_PARTIAL_4.json",
-        "readback_jobs_pending": 2,
-        "run_id": 41157593645,
-        "source_commit": "024acd29eb46361619f01dcc2782a2ad076bc5e0"
+        "independently_verified_artifacts": 6,
+        "observed_completed_jobs": 6,
+        "partial_audit": "evidence/federation-serial/run-41157391919/INDEPENDENT_AUDIT_PARTIAL_6.json",
+        "readback_jobs_pending": 0,
+        "run_id": 41157391919,
+        "same_executed_protocol_as_024acd29": true,
+        "source_commit": "465aa2077076254a4fa75de7e85521e2bd8d117a",
+        "workflow_difference": "Only push path filters differ; jobs, steps and all three protocol source files are unchanged"
       },
+      "serial_seven_vm_prefix_history": [
+        {
+          "actual_controller_sigkills_observed": 2,
+          "complete_run_passed": false,
+          "completed_jobs": 4,
+          "final_pending": true,
+          "partial_audit": "evidence/federation-serial/run-41157593645/INDEPENDENT_AUDIT_PARTIAL_4.json",
+          "readback_jobs_pending": 2,
+          "run_id": 41157593645,
+          "source_commit": "024acd29eb46361619f01dcc2782a2ad076bc5e0"
+        }
+      ],
       "stage": 6,
       "trusted_single_authority": true
     }
