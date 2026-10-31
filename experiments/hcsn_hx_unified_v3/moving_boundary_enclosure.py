@@ -46,6 +46,15 @@ def linear_boundary_first_hit(x, b, mu, sigma, c, T, q=0, *, dps=100):
         g = mp.exp(-(nu+s)*gap/sigma**2)*F(-s)
         if not (mp.isfinite(p) and mp.isfinite(g) and 0 <= g <= p <= 1):
             raise ArithmeticError("invalid first-hit probability ordering")
+        # Necessary first-event discount envelope for any positive gap,
+        # positive horizon and q>0: 0 < F-G <= F*(-expm1(-q*T)).
+        # A rounded F==G or excessive difference is not a valid probability;
+        # do not clamp away a numerical loss of significance.
+        if q > 0:
+            loss = p - g
+            upper = p * (-mp.expm1(-q * T))
+            if not (0 < g and 0 < loss <= upper):
+                raise ArithmeticError("unresolved discounted first-hit loss")
         return FirstHit(+p, +g)
 
 

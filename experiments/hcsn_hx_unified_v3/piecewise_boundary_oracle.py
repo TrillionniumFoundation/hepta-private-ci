@@ -106,6 +106,14 @@ def two_segment_first_hit(x, b, mu, sigma, c1, c2, switch, T, q=0, *, dps=60):
             raise ArithmeticError("unresolved normalized Gaussian tail")
         if not (mp.isfinite(p) and mp.isfinite(g) and 0 <= g <= p <= 1):
             raise ArithmeticError("invalid piecewise first-hit ordering")
+        # The normalized killed-Gaussian integral still has a finite
+        # precision floor: physical ordering alone can accept F==G for
+        # positive q, or loss exceeding the maximum stopped discount.
+        if q > 0:
+            loss = p - g
+            upper = p * (-mp.expm1(-q * T))
+            if not (0 < g and 0 < loss <= upper):
+                raise ArithmeticError("unresolved piecewise discount-loss interval")
         # The exact pathwise bracket is a useful independent self-check.
         low = linear_boundary_first_hit(x,b,mu,sigma,min(c1,c2),T,q,dps=dps+15)
         high = linear_boundary_first_hit(x,b,mu,sigma,max(c1,c2),T,q,dps=dps+15)
