@@ -42,7 +42,7 @@ Run from repo root:
 **5/5 targeted test methods PASS, zero skips**, locally executed in a package-shaped Python 3.13.5/SciPy 1.17.0/mpmath 1.3.0 CPU environment. 12 bounded financial comparisons used an independently coded reflected Green-resolvent integral with normal-CDF debt plus rational sqrt/exponential enclosures, refused physical/precision domains, and a prohibition on full-P0 promotion. Not full-repository CI.
 
 Exact locally tested and remotely read-back Git blob IDs:
-- Source 11fa4aa0a5d596d05c4ec5c925bb767d4a37772f
+- Initial source 11fa4aa0a5d596d05c4ec5c925bb767d4a37772f (historical 160-term default; preserved Git history). Current tested source e2ed0a217fdaa4f336c6f4d35c117eb648a78835 (64-term default).
 - Tests 7d8a9fd14d3bfc81cfde18df92294c03b9ba3067
 
 ## Numerical cross-checks (independent floating check, NOT source of mathematical guarantee)
@@ -82,3 +82,14 @@ A subsequent new test file, test_hx_equity_upper_tail_stress.py, fixes RNG seed 
   python -m unittest -v experiments.hcsn_hx_unified_v3.test_hx_equity_upper_tail_stress
 
 No P0–P5 gate changes and no production admission.
+
+
+## Latest correction: exact-rational resource budget, combined 6/6 result
+
+A purely mechanical default change to the already proven positive Taylor envelope, from 160 terms to 64 terms, resolves the earlier combined-process runtime failure on the declared bounded panel. Every admissible 64-term call STILL proves its exponential tail bound; arguments beyond the 64-term resource domain explicitly REFUSE instead of silently weakening the inequality.
+
+The **current** source Git blob e2ed0a217fdaa4f336c6f4d35c117eb648a78835 was executed together with the unchanged primary tests 7d8a9fd14d3bfc81cfde18df92294c03b9ba3067 and stress tests bd8c4b258960c20dccb62f192dbcbf4e360f1030 in one package-shaped local process. Command:
+
+    python -m unittest -v experiments.hcsn_hx_unified_v3.test_hx_equity_upper_tail_certificate experiments.hcsn_hx_unified_v3.test_hx_equity_upper_tail_stress
+
+**6/6 tests PASS, zero skips, 10.770 seconds.** All 12 preregistered physical comparison subcases plus fixed-seed 32 additional crosschecks execute. The previous 160-term combined timeout remains an accurately recorded *historical negative performance observation*, but no longer describes the current 64-term default. Sample analytic bound outputs at L=3.6/6/10 for both standard and high-liquidity regimes remain equal at the displayed precision. This improvement is limited to the small reference CPU panel, not 64–4096 Cell throughput, GPU or the complete P0 financial/continuum mathematical gate. NO_GO and production prohibitions remain unchanged.
