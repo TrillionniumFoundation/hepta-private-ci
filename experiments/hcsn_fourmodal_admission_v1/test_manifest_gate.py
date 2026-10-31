@@ -11,6 +11,7 @@ import tempfile
 import unittest
 import wave
 from pathlib import Path
+from unittest.mock import patch
 
 from PIL import Image
 
@@ -210,6 +211,20 @@ class FourModalAdmissionTests(unittest.TestCase):
         with self.assertRaises(AdmissionError) as e:
             load_manifest(path)
         self.assertEqual(e.exception.code, "SCHEMA")
+
+    def test_reject_video_stream_with_no_decoded_frames(self):
+        # FFmpeg can exit 0 after outputting only a container header. Its
+        # successful process exit alone must not count as one decoded frame.
+        from experiments.hcsn_fourmodal_admission_v1.manifest_gate import _decode_video
+        good_probe = subprocess.CompletedProcess(
+            [], 0, '{"streams":[{"codec_type":"video","width":16,"height":16}]}', ""
+        )
+        no_frame = subprocess.CompletedProcess([], 0, "#software: ffmpeg\n#stream: 0\n", "")
+        with patch("experiments.hcsn_fourmodal_admission_v1.manifest_gate._run_probe",
+                   side_effect=[good_probe, no_frame]):
+            with self.assertRaises(AdmissionError) as exc:
+                _decode_video(self.root / "train" / "clip.mp4")
+            self.assertEqual(exc.exception.code, "MEDIA")
 
     def test_reject_missing_validation_split(self):
         m = self.manifest_copy()
