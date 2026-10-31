@@ -1,0 +1,52 @@
+{
+  "files": [
+    {
+      "bytes": 927,
+      "path": "experiments/hcsn_blocker_closure_v1/execution_binding/CAPABILITY_PRECHECK.json",
+      "sha256": "96f0f0bd3b3e03dc83b7863e1cabf6c24098ee0157f36caeacffee6e60c7f0b9"
+    },
+    {
+      "bytes": 2822,
+      "path": "experiments/hcsn_blocker_closure_v1/execution_binding/PROTOCOL.json",
+      "sha256": "fc5f299ebf43bf97ade4fde9120990a3500a702623e2c6741db354ab1c84a73d"
+    },
+    {
+      "bytes": 5588,
+      "path": "experiments/hcsn_blocker_closure_v1/execution_binding/README.md",
+      "sha256": "937a823389786fb7d11b448d1e560f70f5bb26f7b22d8ff0c80c24d7afe2f9bd"
+    },
+    {
+      "bytes": 28980,
+      "path": "experiments/hcsn_blocker_closure_v1/execution_binding/driver.py",
+      "sha256": "35a8eb630b0c8ce1042076c50242ba0617486512deba601a2e94e01aee50944f"
+    },
+    {
+      "bytes": 2592,
+      "path": "experiments/hcsn_blocker_closure_v1/execution_binding/measure.py",
+      "sha256": "3b2908d71fcd9a6cfb2abef6cf2095510de7eb41b94874f5fd608dc87d30d3bb"
+    },
+    {
+      "bytes": 1421,
+      "path": "experiments/hcsn_blocker_closure_v1/execution_binding/state_io.py",
+      "sha256": "8b4e953b4568ba0c795322d7ac2a6934a05e0f63dfa7928cbfb5f99f02a909e2"
+    }
+  ],
+  "formal_outcomes_accessed": false,
+  "old_packages_modified": false,
+  "preselected_job": "fixed/selective_copy__value_jg__seed881101",
+  "preserved_failed_import": {
+    "original_driver_sha256": "cf8b36d5ab956da2e493b1e68dd4fd18b9b6810d94117e39d34078e04f9b65f8",
+    "path": "experiments/hcsn_blocker_closure_v1/audits/execution_binding_preflight001/FAILURE.json"
+  },
+  "runtime_execution_authority": "Wait until root restores independently source-bound trained checkpoint, validation/data evidence and hosted preflight; require external commit/protocol/checkpoint pins",
+  "schema": "hcsn-trained-binding-prepared-source.v1",
+  "status": "prepared_repaired_synthetic_preflight_passed_awaiting_trained_evidence",
+  "synthetic_preflight": {
+    "checks": 18,
+    "passed": true,
+    "path": "experiments/hcsn_blocker_closure_v1/audits/execution_binding_preflight002/RESULT.json",
+    "scope": "Synthetic initialized model/tensors and synthetic protocol header only; no trained weights, study validation, formal test or OOD data accessed",
+    "sha256": "b20c363535214156fb9b535e50519a49c7a71c91d8e7abca8e40e56c6a676c03"
+  },
+  "target_hosted_run_id": "41156755829"
+}

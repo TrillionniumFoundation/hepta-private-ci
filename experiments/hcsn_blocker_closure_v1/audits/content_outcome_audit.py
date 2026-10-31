@@ -261,6 +261,7 @@ def audit(root, output):
     for key, value in totals.items():
         close("nonoverlapping cost scope / " + key, value, original["costs_nonoverlap"][key], 1e-8)
     result = dict(schema="hcsn-independent-content-outcome-audit.v1", passed=not failures,
+        check_count=len(checks),
         checks=checks, failed_checks=failures, input_files=source_files,
         audit_source_sha256=digest(Path(__file__)), worker_counts=job_counts,
         independent_mechanism_families=mechanism, independent_external_contrasts=external,
@@ -272,7 +273,23 @@ def audit(root, output):
                      "Exact sign-flip inference assumes sign exchangeability or symmetry under its null",
                      "No positive result is inferred from an audit passing"])
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(result, indent=2, sort_keys=True, allow_nan=False) + "\n")
+    encoded = json.dumps(result, indent=2, sort_keys=True, allow_nan=False) + "\n"
+    if len(encoded.encode()) > 480000:
+        shards = []
+        for index, offset in enumerate(range(0, len(checks), 500)):
+            path = output.with_name(output.stem + f"_checks_{index:03d}.json")
+            body = json.dumps(checks[offset:offset + 500], indent=2, sort_keys=True, allow_nan=False) + "\n"
+            if len(body.encode()) > 480000:
+                raise RuntimeError("Audit check shard exceeds publication budget")
+            path.write_text(body)
+            shards.append(dict(path=path.name, bytes=path.stat().st_size, sha256=digest(path),
+                               checks=len(checks[offset:offset + 500])))
+        result.pop("checks")
+        result["check_shards"] = shards
+        encoded = json.dumps(result, indent=2, sort_keys=True, allow_nan=False) + "\n"
+    if len(encoded.encode()) > 480000:
+        raise RuntimeError("Audit main record exceeds publication budget")
+    output.write_text(encoded)
     return result
 
 
@@ -282,7 +299,7 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     result = audit(args.root, args.output)
-    print(json.dumps(dict(passed=result["passed"], checks=len(result["checks"]),
+    print(json.dumps(dict(passed=result["passed"], checks=result["check_count"],
                          failures=len(result["failed_checks"]), **result["independent_gate_counts"])))
     if not result["passed"]:
         raise SystemExit(1)

@@ -1,0 +1,19 @@
+{
+  "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 /workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python -c \"from experiments.hcsn_blocker_closure_v1.execution_binding import driver\"",
+  "driver_sha256": "cf8b36d5ab956da2e493b1e68dd4fd18b9b6810d94117e39d34078e04f9b65f8",
+  "error_type": "ModuleNotFoundError",
+  "exit_code": 1,
+  "failure_preserved": true,
+  "fix_scope": "Only the new execution_binding package; frozen science sources unchanged",
+  "import_chain": [
+    "execution_binding.driver",
+    "hcsn_distributional_v2.runtime_eval",
+    "hcsn_free_boundary_v1.training",
+    "hcsn_free_boundary_v1.benchmark_models",
+    "continuous_spiking_network.cell"
+  ],
+  "missing_module": "experiments.continuous_spiking_network.cell",
+  "passed": false,
+  "schema": "hcsn-execution-binding-import-failure.v1",
+  "scope": "Import only; no data, trained weights, or formal outcomes accessed"
+}
