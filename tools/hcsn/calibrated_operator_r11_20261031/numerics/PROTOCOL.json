@@ -1,0 +1,339 @@
+{
+  "schema": "hcsn-full-hx-numerics-r11-v1",
+  "source_commit": "4f96f7a91895ba3aed12539d323b62f6705bbb36",
+  "frozen_before_matrix_run": true,
+  "cases": [
+    {
+      "name": "baseline",
+      "theta": [
+        0.08,
+        0.02,
+        0.23,
+        0.6,
+        0.27,
+        0.01,
+        1.0,
+        6.39,
+        61.68
+      ]
+    },
+    {
+      "name": "liquidity_0.1",
+      "theta": [
+        0.08,
+        0.02,
+        0.23,
+        0.6,
+        0.27,
+        0.1,
+        1.0,
+        6.39,
+        61.68
+      ]
+    },
+    {
+      "name": "maturity_0.01",
+      "theta": [
+        0.08,
+        0.02,
+        0.23,
+        0.6,
+        0.27,
+        0.01,
+        0.01,
+        6.39,
+        61.68
+      ]
+    },
+    {
+      "name": "maturity_0.1",
+      "theta": [
+        0.08,
+        0.02,
+        0.23,
+        0.6,
+        0.27,
+        0.01,
+        0.1,
+        6.39,
+        61.68
+      ]
+    },
+    {
+      "name": "maturity_5",
+      "theta": [
+        0.08,
+        0.02,
+        0.23,
+        0.6,
+        0.27,
+        0.01,
+        5.0,
+        6.39,
+        61.68
+      ]
+    },
+    {
+      "name": "maturity_20",
+      "theta": [
+        0.08,
+        0.02,
+        0.23,
+        0.6,
+        0.27,
+        0.01,
+        20.0,
+        6.39,
+        61.68
+      ]
+    },
+    {
+      "name": "sigma_0.08",
+      "theta": [
+        0.08,
+        0.02,
+        0.08,
+        0.6,
+        0.27,
+        0.01,
+        1.0,
+        6.39,
+        61.68
+      ]
+    },
+    {
+      "name": "sigma_0.8",
+      "theta": [
+        0.08,
+        0.02,
+        0.8,
+        0.6,
+        0.27,
+        0.01,
+        1.0,
+        6.39,
+        61.68
+      ]
+    },
+    {
+      "name": "delta_0.2",
+      "theta": [
+        0.08,
+        0.2,
+        0.23,
+        0.6,
+        0.27,
+        0.01,
+        1.0,
+        6.39,
+        61.68
+      ]
+    },
+    {
+      "name": "recovery_0",
+      "theta": [
+        0.08,
+        0.02,
+        0.23,
+        0.0,
+        0.27,
+        0.01,
+        1.0,
+        6.39,
+        61.68
+      ]
+    },
+    {
+      "name": "recovery_1",
+      "theta": [
+        0.08,
+        0.02,
+        0.23,
+        1.0,
+        0.27,
+        0.01,
+        1.0,
+        6.39,
+        61.68
+      ]
+    },
+    {
+      "name": "tax_0",
+      "theta": [
+        0.08,
+        0.02,
+        0.23,
+        0.6,
+        0.0,
+        0.01,
+        1.0,
+        6.39,
+        61.68
+      ]
+    },
+    {
+      "name": "tax_0.6",
+      "theta": [
+        0.08,
+        0.02,
+        0.23,
+        0.6,
+        0.6,
+        0.01,
+        1.0,
+        6.39,
+        61.68
+      ]
+    },
+    {
+      "name": "lower_liquidity_limit",
+      "theta": [
+        0.08,
+        0.02,
+        0.23,
+        0.6,
+        0.27,
+        0.0001,
+        1.0,
+        6.39,
+        61.68
+      ]
+    },
+    {
+      "name": "joint_m0.01_l0.0001",
+      "theta": [
+        0.08,
+        0.02,
+        0.23,
+        0.6,
+        0.27,
+        0.0001,
+        0.01,
+        6.39,
+        61.68
+      ]
+    },
+    {
+      "name": "joint_m0.01_l0.1",
+      "theta": [
+        0.08,
+        0.02,
+        0.23,
+        0.6,
+        0.27,
+        0.1,
+        0.01,
+        6.39,
+        61.68
+      ]
+    },
+    {
+      "name": "joint_m20.0_l0.0001",
+      "theta": [
+        0.08,
+        0.02,
+        0.23,
+        0.6,
+        0.27,
+        0.0001,
+        20.0,
+        6.39,
+        61.68
+      ]
+    },
+    {
+      "name": "joint_m20.0_l0.1",
+      "theta": [
+        0.08,
+        0.02,
+        0.23,
+        0.6,
+        0.27,
+        0.1,
+        20.0,
+        6.39,
+        61.68
+      ]
+    }
+  ],
+  "parameter_order": [
+    "r",
+    "delta",
+    "sigma",
+    "alpha",
+    "tax",
+    "liquidity",
+    "maturity",
+    "coupon",
+    "principal"
+  ],
+  "log_distances": [
+    0.0,
+    1e-12,
+    1e-08,
+    1e-05,
+    0.001,
+    0.1,
+    1.0,
+    2.0
+  ],
+  "join_multipliers": [
+    0.499999,
+    0.5,
+    0.500001,
+    0.75,
+    0.999999,
+    1.0,
+    1.000001
+  ],
+  "fixed_asset_values": [
+    "100",
+    "boundary*(1+1e-6)"
+  ],
+  "modes": [
+    "float64",
+    "float32",
+    "mixed32"
+  ],
+  "reference_digits": 80,
+  "reference_derivative_steps": [
+    "1e-18",
+    "5e-19"
+  ],
+  "gates": {
+    "float64": {
+      "value_scaled": 2e-08,
+      "jacobian_scaled": 2e-05
+    },
+    "mixed32": {
+      "value_scaled": 8e-07,
+      "jacobian_scaled": 2e-05
+    },
+    "float32": {
+      "value_scaled": 8e-07,
+      "jacobian_scaled": 2e-05
+    }
+  },
+  "reference_halving_scaled_max": 1e-12,
+  "cast_secant_relative_steps": [
+    0.001,
+    0.0005
+  ],
+  "cast_secant_scaled_max": 0.01,
+  "unqualified_extremes": {
+    "liquidity": [
+      0.0,
+      1e-08,
+      1.0
+    ],
+    "maturity": [
+      1e-06,
+      1000.0
+    ],
+    "sigma": [
+      1e-05
+    ]
+  },
+  "scope": "Full Eq8/9/12/A5/A7 with local ODE Taylor evaluation and C2 blend in log-distance; finite fixtures only, local admissibility is necessary not global optimal-stopping proof. Risk constant extension is non-C1. Pure FP32 and unregistered extremes are not admitted for training.",
+  "upstream_jax_evidence_sha256": "17f014416e66221d5bd09115a8fbdb91688b7fee972067b34fe8f64b9c35e05b"
+}

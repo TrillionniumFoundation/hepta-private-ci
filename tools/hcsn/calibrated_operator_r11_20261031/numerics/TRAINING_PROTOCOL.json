@@ -1,0 +1,19 @@
+{
+  "schema": "hcsn-full-hx-mini-optimization-r11-v1",
+  "purpose": "Full-equation differentiable optimization smoke, not a neural task benchmark or a parameter-identifiability claim",
+  "steps": 30,
+  "modes": ["float64", "mixed32"],
+  "fixed_assets": [75.0, 90.0, 110.0],
+  "trained_parameter_names": ["sigma", "liquidity", "maturity"],
+  "raw_sigmoid_lower": [0.15, 0.002, 0.5],
+  "raw_sigmoid_upper": [0.4, 0.04, 2.0],
+  "target_parameters": [0.3, 0.02, 1.3],
+  "other_parameters": "Inherited baseline r=.08,delta=.02,alpha=.6,tax=.27,coupon=6.39,principal=61.68",
+  "output_scales": [100.0, 100.0, 1.0, 1.0, 100.0],
+  "target": "80-digit literal Eq8/9/12/A5/A7 evaluated at the three fixed assets",
+  "loss": "mean squared scaled error over all five full-kernel outputs and all fixed asset states",
+  "optimizer": "Adam proposal with alpha=.08, betas=.9/.999, epsilon=1e-8 and at most 12 explicit step halvings; reject invalid or increasing-loss candidates",
+  "minimum_relative_loss_reduction": 0.1,
+  "require_all_accepted_states_in_domain": true,
+  "qualifier": "The actual task controller elsewhere uses a finite CTMC; this full-HX mini optimization does not certify that controller as full-HX BPTT. Cast gradients follow numerical AD conventions, not derivatives of rounding."
+}

@@ -1,0 +1,134 @@
+{
+  "amortization_sessions": [
+    100,
+    1000,
+    10000
+  ],
+  "arms": [
+    "grid",
+    "ordinary_value",
+    "analytic_value",
+    "analytic_constant"
+  ],
+  "base_commit": "6c6f25f736df040e0d447e0242fb9819e15b3022",
+  "batch_seed_base": 1150000,
+  "batch_size": 64,
+  "calibration_admission": "Heldout grid fitted-law mean decision regret <=0.001 per decision and max Q error <=0.004 on IID and OOD, STOP exactly0, native/reference parity <=1e-7. Neural residual bound does not establish unstructured neural-DP learning.",
+  "calibration_packets": 64,
+  "cell_init_seed_base": 1130000,
+  "cell_learning_rate": 0.025,
+  "cell_training": "Four next-observation updates plus twelve task-residual updates through complete causal recurrence. No L2 term in reported task gradients.",
+  "checkpoint_selection": "Minimum validation squared residual error, with action regret reported; same initialization, minibatches, budget and 1743 allocated parameters. STOP head is structurally inactive for both.",
+  "checkpoint_updates": [
+    200,
+    400,
+    800,
+    1200
+  ],
+  "cpu_prices": [
+    0.0,
+    0.001,
+    0.01,
+    0.1
+  ],
+  "critic_init_seed_base": 1140000,
+  "critic_updates": 1200,
+  "data_seed_base": 39813100,
+  "deadlines": [
+    6,
+    8,
+    10
+  ],
+  "failure_policy": "Preserve failures, freeze code/models before heldout generation, do not tune to heldout; a negative net result is a failed scientific claim, not a reason to omit the arm.",
+  "finite_difference_epsilon": 0.001,
+  "gradient_clip": 2.0,
+  "grid_candidates": [
+    33,
+    65,
+    129,
+    257,
+    513,
+    1025
+  ],
+  "grid_max_q_error": 0.002,
+  "grid_mean_action_regret": 0.0001,
+  "grid_selection": "First validation grid with max feasible-Q error <=0.002 and mean fitted-law action regret <=0.0001. Selection precedes all heldout generation.",
+  "joint_cell_batch_size": 48,
+  "joint_cell_every": 100,
+  "latency_price": 0.015,
+  "learning_rate": 0.003,
+  "multiplier": 1.5,
+  "net_admission": "Positive simultaneous lower confidence bound for analytic minus ordinary on IID and OOD, changed real actions under constant-state intervention, and positive lower bound including measured training/shared setup/native process CPU at price0.01 amortized over1000. No energy-equivalent claim without measurement.",
+  "ood": {
+    "deadlines": [
+      6,
+      8,
+      10
+    ],
+    "packet_length": 48,
+    "packet_prices": [
+      0.025,
+      0.06,
+      0.12
+    ],
+    "packet_reliabilities": [
+      0.55,
+      0.7,
+      0.85
+    ],
+    "read_budgets": [
+      2,
+      3,
+      4
+    ],
+    "step_durations": [
+      0.2,
+      0.8,
+      2.0
+    ]
+  },
+  "ood_sessions": 64,
+  "packet_length": 24,
+  "packet_prices": [
+    0.015,
+    0.04,
+    0.09
+  ],
+  "packet_reliabilities": [
+    0.6,
+    0.75,
+    0.9
+  ],
+  "pretrain_cell_updates": 4,
+  "pretrain_learning_rate": 0.05,
+  "primary_contrasts": [
+    "analytic_value-ordinary_value",
+    "analytic_value-grid",
+    "analytic_value-analytic_constant"
+  ],
+  "read_budgets": [
+    2,
+    3,
+    4
+  ],
+  "reference": "Independent exact finite posterior-tree Bellman recursion with the identical TRAIN-fitted observation law; unavailable evaluator labels never enter a controller.",
+  "residual_radius": 0.002,
+  "schema": "hcsn.calibrated.operator.protocol.v1",
+  "scope": "Fresh synthetic two-job native control; ordinary fitted belief-grid Bellman value plus capacity-matched trained bounded residuals. Content and full-HX numerical protocols are separately scoped.",
+  "seeds": [
+    81031,
+    81037,
+    81043,
+    81049,
+    81057
+  ],
+  "step_durations": [
+    0.4,
+    1.0,
+    1.6
+  ],
+  "test_sessions": 64,
+  "train_sessions": 80,
+  "uncertainty": "Two-sided paired Student-t intervals over five independent fits, Bonferroni three contrasts separately on IID/OOD; episodes are not independent model fits.",
+  "validation_sessions": 40
+}

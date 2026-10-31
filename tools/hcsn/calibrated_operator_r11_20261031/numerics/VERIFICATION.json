@@ -1,0 +1,45 @@
+{
+  "schema": "hcsn-full-hx-verification-r11-v1",
+  "unit_tests": {
+    "command": "PYTHONPATH=/tmp/hcsn_round10_deps python -B -m unittest discover -s tools/hcsn/calibrated_operator_r11_20261031/numerics -p 'test_kernel.py' -v",
+    "exit_code": 0,
+    "tests_run": 4,
+    "tests_passed": 4,
+    "observed_elapsed_seconds": 0.315,
+    "source_sha256": {
+      "kernel.py": "1a7fb9480bca8fd127241b2488834bc682626f817469f8a69e07097f74adf4b6",
+      "reference.py": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52",
+      "test_kernel.py": "bd742c02f225d14d3812845c3535a22ea526b523870755bb0b537cb0fa6e7b18"
+    }
+  },
+  "upstream_git_blob_verification": {
+    "verified": 9,
+    "total": 9,
+    "manifest": "UPSTREAM_FILES.json"
+  },
+  "final_matrix_source_consistency": true,
+  "matrix_archive_readback": "EVIDENCE_ARCHIVE.json: all compressed SHA256, raw chunk SHA256, offsets, complete member SHA256 and JSON parse verified before removal",
+  "development_source_snapshots": [
+    {
+      "archive": "DEVELOPMENT_KERNEL_01.py.gz",
+      "source_hash_verified": true
+    },
+    {
+      "archive": "DEVELOPMENT_AUDIT_RUNNER_01.py.gz",
+      "source_hash_verified": true
+    },
+    {
+      "archive": "DEVELOPMENT_KERNEL_02.py.gz",
+      "source_hash_verified": true
+    },
+    {
+      "archive": "DEVELOPMENT_AUDIT_02.py.gz",
+      "source_hash_verified": true
+    }
+  ],
+  "stress_source_unchanged": true,
+  "archive_indices_verified": [
+    "EVIDENCE_ARCHIVE.json",
+    "STRESS_EVIDENCE_ARCHIVE.json"
+  ]
+}

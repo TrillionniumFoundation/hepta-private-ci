@@ -1,0 +1,603 @@
+{
+  "schema": "hcsn.finite-resolution.r11.v1",
+  "cases": [
+    {
+      "name": "baseline",
+      "theta": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "driver": 0.0,
+      "duration": 3.0,
+      "spectral_terms": [
+        64,
+        128,
+        256
+      ],
+      "spectral_values": [
+        0.7599053773055832,
+        0.7599053773055832,
+        0.7599053773055832
+      ],
+      "grids": [
+        {
+          "nodes": 3,
+          "scheme": "native_upwind",
+          "first_hit": 0.6165933741870393,
+          "expected_count": 0.7302129451851155,
+          "probability_mass": 1.0000000000000009,
+          "generator_cpu_seconds": 0.00010786999999995439,
+          "full_count_and_first_hit_cpu_seconds": [
+            0.00027925499999997827,
+            4.099100000004574e-05,
+            3.279800000000055e-05,
+            2.713099999995805e-05,
+            2.6680000000001147e-05,
+            2.8542000000020273e-05,
+            2.7600999999988218e-05
+          ],
+          "median_cpu_seconds": 2.8542000000020273e-05,
+          "probability_state_bytes": 40,
+          "augmented_matrix_bytes": 288,
+          "upwind_extra_variance_ratio": 2.3703703703703702,
+          "measured_runtime": "Python/SciPy float64 dense expm, one BLAS thread; not native or energy",
+          "first_hit_absolute_error": 0.14331200311854386,
+          "first_hit_relative_error": 0.18859190551682772
+        },
+        {
+          "nodes": 32,
+          "scheme": "native_upwind",
+          "first_hit": 0.7372172224485666,
+          "expected_count": 0.7879594701585311,
+          "probability_mass": 0.9999999999999842,
+          "generator_cpu_seconds": 9.004299999998411e-05,
+          "full_count_and_first_hit_cpu_seconds": [
+            0.00027081200000000916,
+            0.00019072300000000375,
+            0.0001558119999999774,
+            0.0001459169999999954,
+            0.0001452349999999658,
+            0.0001459169999999954,
+            0.00017106399999999855
+          ],
+          "median_cpu_seconds": 0.0001558119999999774,
+          "probability_state_bytes": 272,
+          "augmented_matrix_bytes": 9800,
+          "upwind_extra_variance_ratio": 0.2222222222222222,
+          "measured_runtime": "Python/SciPy float64 dense expm, one BLAS thread; not native or energy",
+          "first_hit_absolute_error": 0.022688154857016585,
+          "first_hit_relative_error": 0.029856552584826525
+        },
+        {
+          "nodes": 64,
+          "scheme": "native_upwind",
+          "first_hit": 0.7481810132509418,
+          "expected_count": 0.7943668668648485,
+          "probability_mass": 0.9999999999999922,
+          "generator_cpu_seconds": 0.00012618699999999983,
+          "full_count_and_first_hit_cpu_seconds": [
+            0.0007968230000000021,
+            0.0006571560000000476,
+            0.0006692940000000425,
+            0.0006631250000000422,
+            0.0006930889999999801,
+            0.0006695939999999956,
+            0.0006630739999999857
+          ],
+          "median_cpu_seconds": 0.0006692940000000425,
+          "probability_state_bytes": 528,
+          "augmented_matrix_bytes": 35912,
+          "upwind_extra_variance_ratio": 0.1111111111111111,
+          "measured_runtime": "Python/SciPy float64 dense expm, one BLAS thread; not native or energy",
+          "first_hit_absolute_error": 0.01172436405464139,
+          "first_hit_relative_error": 0.01542871573854732
+        },
+        {
+          "nodes": 128,
+          "scheme": "native_upwind",
+          "first_hit": 0.7539181035470853,
+          "expected_count": 0.7978943948246171,
+          "probability_mass": 0.9999999999992415,
+          "generator_cpu_seconds": 0.00021189399999999026,
+          "full_count_and_first_hit_cpu_seconds": [
+            0.005507849000000009,
+            0.004847639000000015,
+            0.0054078509999999635,
+            0.005619925999999997,
+            0.0058753950000000055,
+            0.005799993000000003,
+            0.005805732000000008
+          ],
+          "median_cpu_seconds": 0.005619925999999997,
+          "probability_state_bytes": 1040,
+          "augmented_matrix_bytes": 137288,
+          "upwind_extra_variance_ratio": 0.05555555555555555,
+          "measured_runtime": "Python/SciPy float64 dense expm, one BLAS thread; not native or energy",
+          "first_hit_absolute_error": 0.005987273758497835,
+          "first_hit_relative_error": 0.007878972747537426
+        },
+        {
+          "nodes": 32,
+          "scheme": "central_face_candidate",
+          "first_hit": 0.759046945474341,
+          "expected_count": 0.8016944580168509,
+          "probability_mass": 1.0000000000000164,
+          "generator_cpu_seconds": 0.00021586099999998387,
+          "full_count_and_first_hit_cpu_seconds": [
+            0.0003317530000000457,
+            0.00023650100000000007,
+            0.0002248639999999913,
+            0.0002227209999999813,
+            0.0002528259999999838,
+            0.00022918999999999023,
+            0.00022318199999998845
+          ],
+          "median_cpu_seconds": 0.00022918999999999023,
+          "probability_state_bytes": 272,
+          "augmented_matrix_bytes": 9800,
+          "upwind_extra_variance_ratio": 0.0,
+          "measured_runtime": "Python/SciPy float64 dense expm, one BLAS thread; not native or energy",
+          "first_hit_absolute_error": 0.0008584318312421235,
+          "first_hit_relative_error": 0.001129656213627397
+        },
+        {
+          "nodes": 64,
+          "scheme": "central_face_candidate",
+          "first_hit": 0.7597263072260313,
+          "expected_count": 0.8016482217441783,
+          "probability_mass": 0.9999999999999338,
+          "generator_cpu_seconds": 0.0002807969999999993,
+          "full_count_and_first_hit_cpu_seconds": [
+            0.0011303289999999855,
+            0.0008782740000000122,
+            0.0009118840000000294,
+            0.0009168319999999786,
+            0.0009485689999999547,
+            0.0009057050000000344,
+            0.0009054450000000047
+          ],
+          "median_cpu_seconds": 0.0009118840000000294,
+          "probability_state_bytes": 528,
+          "augmented_matrix_bytes": 35912,
+          "upwind_extra_variance_ratio": 0.0,
+          "measured_runtime": "Python/SciPy float64 dense expm, one BLAS thread; not native or energy",
+          "first_hit_absolute_error": 0.0001790700795518685,
+          "first_hit_relative_error": 0.0002356478647207394
+        },
+        {
+          "nodes": 128,
+          "scheme": "central_face_candidate",
+          "first_hit": 0.7598526204163697,
+          "expected_count": 0.8016503800967744,
+          "probability_mass": 0.9999999999998561,
+          "generator_cpu_seconds": 0.0005202829999999548,
+          "full_count_and_first_hit_cpu_seconds": [
+            0.0062168520000000504,
+            0.005791360999999995,
+            0.0058205930000000405,
+            0.005782226000000001,
+            0.005792381999999985,
+            0.005776247000000012,
+            0.005850286999999954
+          ],
+          "median_cpu_seconds": 0.005792381999999985,
+          "probability_state_bytes": 1040,
+          "augmented_matrix_bytes": 137288,
+          "upwind_extra_variance_ratio": 0.0,
+          "measured_runtime": "Python/SciPy float64 dense expm, one BLAS thread; not native or energy",
+          "first_hit_absolute_error": 5.275688921346777e-05,
+          "first_hit_relative_error": 6.942560322514007e-05
+        }
+      ]
+    },
+    {
+      "name": "changed_coefficients",
+      "theta": [
+        0.7,
+        -0.4,
+        -0.3,
+        0.5,
+        -0.6,
+        0.4
+      ],
+      "driver": 0.8,
+      "duration": 3.0,
+      "spectral_terms": [
+        64,
+        128,
+        256
+      ],
+      "spectral_values": [
+        0.8263001103206732,
+        0.8263001103206732,
+        0.8263001103206732
+      ],
+      "grids": [
+        {
+          "nodes": 3,
+          "scheme": "native_upwind",
+          "first_hit": 0.6517541726375606,
+          "expected_count": 0.7745588920070424,
+          "probability_mass": 1.0,
+          "generator_cpu_seconds": 8.468600000000048e-05,
+          "full_count_and_first_hit_cpu_seconds": [
+            0.00016955200000001724,
+            5.499199999997595e-05,
+            5.060499999998136e-05,
+            4.8341000000007295e-05,
+            4.621799999998677e-05,
+            4.6458999999998696e-05,
+            4.5397000000002574e-05
+          ],
+          "median_cpu_seconds": 4.8341000000007295e-05,
+          "probability_state_bytes": 40,
+          "augmented_matrix_bytes": 288,
+          "upwind_extra_variance_ratio": 3.0925020165748145,
+          "measured_runtime": "Python/SciPy float64 dense expm, one BLAS thread; not native or energy",
+          "first_hit_absolute_error": 0.17454593768311255,
+          "first_hit_relative_error": 0.21123794551518843
+        },
+        {
+          "nodes": 32,
+          "scheme": "native_upwind",
+          "first_hit": 0.7960063908226592,
+          "expected_count": 0.8439390365427728,
+          "probability_mass": 0.9999999999999664,
+          "generator_cpu_seconds": 0.00016685699999996473,
+          "full_count_and_first_hit_cpu_seconds": [
+            0.0002809579999999978,
+            0.00022844899999996393,
+            0.00022376200000001623,
+            0.0002682880000000054,
+            0.0002300519999999806,
+            0.0002174329999999891,
+            0.00023115299999998395
+          ],
+          "median_cpu_seconds": 0.0002300519999999806,
+          "probability_state_bytes": 272,
+          "augmented_matrix_bytes": 9800,
+          "upwind_extra_variance_ratio": 0.2899220640538889,
+          "measured_runtime": "Python/SciPy float64 dense expm, one BLAS thread; not native or energy",
+          "first_hit_absolute_error": 0.03029371949801396,
+          "first_hit_relative_error": 0.036661884852293526
+        },
+        {
+          "nodes": 64,
+          "scheme": "native_upwind",
+          "first_hit": 0.8103867537662742,
+          "expected_count": 0.8523935944294009,
+          "probability_mass": 0.9999999999999883,
+          "generator_cpu_seconds": 0.00024172899999996833,
+          "full_count_and_first_hit_cpu_seconds": [
+            0.001064290999999995,
+            0.0009024209999999866,
+            0.0008992059999999857,
+            0.0009162499999999518,
+            0.0009286789999999878,
+            0.0009096809999999955,
+            0.0008967619999999954
+          ],
+          "median_cpu_seconds": 0.0009096809999999955,
+          "probability_state_bytes": 528,
+          "augmented_matrix_bytes": 35912,
+          "upwind_extra_variance_ratio": 0.14496103202694444,
+          "measured_runtime": "Python/SciPy float64 dense expm, one BLAS thread; not native or energy",
+          "first_hit_absolute_error": 0.01591335655439896,
+          "first_hit_relative_error": 0.01925856762650468
+        },
+        {
+          "nodes": 128,
+          "scheme": "native_upwind",
+          "first_hit": 0.8181286587571763,
+          "expected_count": 0.857145907175234,
+          "probability_mass": 1.000000000000353,
+          "generator_cpu_seconds": 0.00034290900000000235,
+          "full_count_and_first_hit_cpu_seconds": [
+            0.006147988999999965,
+            0.005775567000000037,
+            0.005765832999999998,
+            0.005751230999999968,
+            0.005806603000000021,
+            0.005754915999999999,
+            0.006204568999999993
+          ],
+          "median_cpu_seconds": 0.005775567000000037,
+          "probability_state_bytes": 1040,
+          "augmented_matrix_bytes": 137288,
+          "upwind_extra_variance_ratio": 0.07248051601347222,
+          "measured_runtime": "Python/SciPy float64 dense expm, one BLAS thread; not native or energy",
+          "first_hit_absolute_error": 0.008171451563496857,
+          "first_hit_relative_error": 0.009889205461107409
+        },
+        {
+          "nodes": 32,
+          "scheme": "central_face_candidate",
+          "first_hit": 0.8255797411641239,
+          "expected_count": 0.86276747892372,
+          "probability_mass": 1.0000000000000233,
+          "generator_cpu_seconds": 0.0001286409999999849,
+          "full_count_and_first_hit_cpu_seconds": [
+            0.00028367099999998535,
+            0.00015957699999996633,
+            0.00014660799999999252,
+            0.00014457400000000842,
+            0.00014226099999997688,
+            0.0001431129999999725,
+            0.0002559599999999995
+          ],
+          "median_cpu_seconds": 0.00014660799999999252,
+          "probability_state_bytes": 272,
+          "augmented_matrix_bytes": 9800,
+          "upwind_extra_variance_ratio": 0.0,
+          "measured_runtime": "Python/SciPy float64 dense expm, one BLAS thread; not native or energy",
+          "first_hit_absolute_error": 0.000720369156549272,
+          "first_hit_relative_error": 0.000871800871803961
+        },
+        {
+          "nodes": 64,
+          "scheme": "central_face_candidate",
+          "first_hit": 0.8261255647644999,
+          "expected_count": 0.8624544068925174,
+          "probability_mass": 0.9999999999999531,
+          "generator_cpu_seconds": 0.00017527999999999988,
+          "full_count_and_first_hit_cpu_seconds": [
+            0.0008606279999999744,
+            0.0007866380000000062,
+            0.0006997790000000115,
+            0.0006872709999999893,
+            0.0006625239999999977,
+            0.0006430449999999532,
+            0.0009070669999999836
+          ],
+          "median_cpu_seconds": 0.0006997790000000115,
+          "probability_state_bytes": 528,
+          "augmented_matrix_bytes": 35912,
+          "upwind_extra_variance_ratio": 0.0,
+          "measured_runtime": "Python/SciPy float64 dense expm, one BLAS thread; not native or energy",
+          "first_hit_absolute_error": 0.00017454555617324452,
+          "first_hit_relative_error": 0.00021123748380658732
+        },
+        {
+          "nodes": 128,
+          "scheme": "central_face_candidate",
+          "first_hit": 0.8262583312947375,
+          "expected_count": 0.862370019353572,
+          "probability_mass": 0.9999999999998997,
+          "generator_cpu_seconds": 0.0003257830000000239,
+          "full_count_and_first_hit_cpu_seconds": [
+            0.005196417000000009,
+            0.00489045199999999,
+            0.004791074999999978,
+            0.006849692000000018,
+            0.02008939300000001,
+            0.008183923000000037,
+            0.005176027000000083
+          ],
+          "median_cpu_seconds": 0.005196417000000009,
+          "probability_state_bytes": 1040,
+          "augmented_matrix_bytes": 137288,
+          "upwind_extra_variance_ratio": 0.0,
+          "measured_runtime": "Python/SciPy float64 dense expm, one BLAS thread; not native or energy",
+          "first_hit_absolute_error": 4.1779025935717584e-05,
+          "first_hit_relative_error": 5.056156402968874e-05
+        }
+      ]
+    },
+    {
+      "name": "short_horizon_tail",
+      "theta": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "driver": 0.0,
+      "duration": 0.25,
+      "spectral_terms": [
+        64,
+        128,
+        256
+      ],
+      "spectral_values": [
+        8.95583740501138e-09,
+        8.95583740501138e-09,
+        8.95583740501138e-09
+      ],
+      "grids": [
+        {
+          "nodes": 3,
+          "scheme": "native_upwind",
+          "first_hit": 0.015642259845648383,
+          "expected_count": 0.015643285476908443,
+          "probability_mass": 0.9999999999999998,
+          "generator_cpu_seconds": 5.64929999999908e-05,
+          "full_count_and_first_hit_cpu_seconds": [
+            9.68340000000456e-05,
+            2.6349000000092104e-05,
+            2.1723000000029025e-05,
+            2.0569999999997535e-05,
+            1.9959999999930034e-05,
+            2.009000000002814e-05,
+            1.9910000000011863e-05
+          ],
+          "median_cpu_seconds": 2.0569999999997535e-05,
+          "probability_state_bytes": 40,
+          "augmented_matrix_bytes": 288,
+          "upwind_extra_variance_ratio": 2.3703703703703702,
+          "measured_runtime": "Python/SciPy float64 dense expm, one BLAS thread; not native or energy",
+          "first_hit_absolute_error": 0.01564225088981098,
+          "first_hit_relative_error": 1746598.3561803065
+        },
+        {
+          "nodes": 32,
+          "scheme": "native_upwind",
+          "first_hit": 1.3570511693141924e-06,
+          "expected_count": 1.3570511693141926e-06,
+          "probability_mass": 0.9999999999999994,
+          "generator_cpu_seconds": 0.00011334900000004033,
+          "full_count_and_first_hit_cpu_seconds": [
+            0.00022241099999997793,
+            0.0001451749999999974,
+            0.00025961500000004634,
+            0.00023901500000000908,
+            0.00017636200000004099,
+            0.00012907200000000785,
+            0.00012729899999996963
+          ],
+          "median_cpu_seconds": 0.00017636200000004099,
+          "probability_state_bytes": 272,
+          "augmented_matrix_bytes": 9800,
+          "upwind_extra_variance_ratio": 0.2222222222222222,
+          "measured_runtime": "Python/SciPy float64 dense expm, one BLAS thread; not native or energy",
+          "first_hit_absolute_error": 1.348095331909181e-06,
+          "first_hit_relative_error": 150.52699942440145
+        },
+        {
+          "nodes": 64,
+          "scheme": "native_upwind",
+          "first_hit": 1.000140377316604e-07,
+          "expected_count": 1.000140377316604e-07,
+          "probability_mass": 0.9999999999999879,
+          "generator_cpu_seconds": 0.000124484999999952,
+          "full_count_and_first_hit_cpu_seconds": [
+            0.0008704529999999933,
+            0.0006937399999999982,
+            0.0006499749999999693,
+            0.0006533400000000578,
+            0.0006752729999999207,
+            0.0005885240000000902,
+            0.0005920289999999939
+          ],
+          "median_cpu_seconds": 0.0006533400000000578,
+          "probability_state_bytes": 528,
+          "augmented_matrix_bytes": 35912,
+          "upwind_extra_variance_ratio": 0.1111111111111111,
+          "measured_runtime": "Python/SciPy float64 dense expm, one BLAS thread; not native or energy",
+          "first_hit_absolute_error": 9.105820032664902e-08,
+          "first_hit_relative_error": 10.167469127531946
+        },
+        {
+          "nodes": 128,
+          "scheme": "native_upwind",
+          "first_hit": 2.5581893717218815e-08,
+          "expected_count": 2.5581893717218815e-08,
+          "probability_mass": 1.0000000000000036,
+          "generator_cpu_seconds": 0.0002120139999999271,
+          "full_count_and_first_hit_cpu_seconds": [
+            0.005588479000000035,
+            0.0044983599999999235,
+            0.00453799900000007,
+            0.004485120000000009,
+            0.004420934999999959,
+            0.004539180999999948,
+            0.004868260000000069
+          ],
+          "median_cpu_seconds": 0.00453799900000007,
+          "probability_state_bytes": 1040,
+          "augmented_matrix_bytes": 137288,
+          "upwind_extra_variance_ratio": 0.05555555555555555,
+          "measured_runtime": "Python/SciPy float64 dense expm, one BLAS thread; not native or energy",
+          "first_hit_absolute_error": 1.6626056312207435e-08,
+          "first_hit_relative_error": 1.856449102448428
+        },
+        {
+          "nodes": 32,
+          "scheme": "central_face_candidate",
+          "first_hit": 3.5993634677623556e-07,
+          "expected_count": 3.5993634677623556e-07,
+          "probability_mass": 0.9999999999999988,
+          "generator_cpu_seconds": 0.00012933199999998202,
+          "full_count_and_first_hit_cpu_seconds": [
+            0.0003800850000000855,
+            0.00014714900000001307,
+            0.0001308549999999853,
+            0.00013725399999997556,
+            0.00019992699999993313,
+            0.00014104999999997592,
+            0.00012663800000001224
+          ],
+          "median_cpu_seconds": 0.00014104999999997592,
+          "probability_state_bytes": 272,
+          "augmented_matrix_bytes": 9800,
+          "upwind_extra_variance_ratio": 0.0,
+          "measured_runtime": "Python/SciPy float64 dense expm, one BLAS thread; not native or energy",
+          "first_hit_absolute_error": 3.509805093712242e-07,
+          "first_hit_relative_error": 39.19013862118885
+        },
+        {
+          "nodes": 64,
+          "scheme": "central_face_candidate",
+          "first_hit": 3.5372294186892806e-08,
+          "expected_count": 3.5372294186892806e-08,
+          "probability_mass": 0.9999999999999956,
+          "generator_cpu_seconds": 0.00016687799999992592,
+          "full_count_and_first_hit_cpu_seconds": [
+            0.000858805000000018,
+            0.0007941399999999987,
+            0.000591767999999937,
+            0.0006415119999999552,
+            0.0005922099999999819,
+            0.0005677630000000544,
+            0.0005827959999999965
+          ],
+          "median_cpu_seconds": 0.0005922099999999819,
+          "probability_state_bytes": 528,
+          "augmented_matrix_bytes": 35912,
+          "upwind_extra_variance_ratio": 0.0,
+          "measured_runtime": "Python/SciPy float64 dense expm, one BLAS thread; not native or energy",
+          "first_hit_absolute_error": 2.6416456781881426e-08,
+          "first_hit_relative_error": 2.9496355937748135
+        },
+        {
+          "nodes": 128,
+          "scheme": "central_face_candidate",
+          "first_hit": 1.3614207919189687e-08,
+          "expected_count": 1.3614207919189687e-08,
+          "probability_mass": 1.0000000000000053,
+          "generator_cpu_seconds": 0.00027655000000004204,
+          "full_count_and_first_hit_cpu_seconds": [
+            0.004641632999999978,
+            0.004367896999999954,
+            0.00472036000000009,
+            0.004491909999999932,
+            0.004316109000000012,
+            0.00467929899999997,
+            0.005143027999999994
+          ],
+          "median_cpu_seconds": 0.004641632999999978,
+          "probability_state_bytes": 1040,
+          "augmented_matrix_bytes": 137288,
+          "upwind_extra_variance_ratio": 0.0,
+          "measured_runtime": "Python/SciPy float64 dense expm, one BLAS thread; not native or energy",
+          "first_hit_absolute_error": 4.6583705141783076e-09,
+          "first_hit_relative_error": 0.5201490718859683
+        }
+      ]
+    }
+  ],
+  "deployed_model": "native_upwind_3_active_2_erlang",
+  "deployed_model_changed": false,
+  "centered_candidate_deployed": false,
+  "continuum_equivalence": false,
+  "numerical_reference": "Robin/Dirichlet Sturm-Liouville first-hit series; positive drift only",
+  "validation": "64/128/256 spectral terms agree; no interval arithmetic guarantee",
+  "scope": "Constant coefficients, reflected lower wall, fixed upper boundary, initial reset state",
+  "not_established": [
+    "Uniform error bound over moving or learned boundaries",
+    "Continuous repeated-event distribution or all rewards",
+    "Native cost for refined grids",
+    "Quality or energy advantage"
+  ],
+  "source_sha256": {
+    "finite.py": "feaef61ac3bb9571eef442641ab454503e2f2dd707d59874932daeaf2752d441",
+    "resolution.py": "6446474beac15ff57a067cda834add2f087d1ddb1edf022b35dcbafd2a92e7e0"
+  },
+  "cpu_seconds": 0.320588759,
+  "wall_seconds": 0.3206003710074583
+}

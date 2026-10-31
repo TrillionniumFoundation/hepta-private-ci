@@ -1,0 +1,670 @@
+{
+  "checks": {
+    "all_selected_checkpoints_distinct": true,
+    "all_three_projection_heads_changed": true,
+    "exact_contrast_family": true,
+    "executed_frame_count_('marked_memory', 'analytic_dual', 111031)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'analytic_dual', 111031)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'analytic_dual', 111031)_test": true,
+    "executed_frame_count_('marked_memory', 'analytic_dual', 111037)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'analytic_dual', 111037)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'analytic_dual', 111037)_test": true,
+    "executed_frame_count_('marked_memory', 'analytic_dual', 111043)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'analytic_dual', 111043)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'analytic_dual', 111043)_test": true,
+    "executed_frame_count_('marked_memory', 'analytic_dual', 111049)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'analytic_dual', 111049)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'analytic_dual', 111049)_test": true,
+    "executed_frame_count_('marked_memory', 'analytic_dual', 111057)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'analytic_dual', 111057)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'analytic_dual', 111057)_test": true,
+    "executed_frame_count_('marked_memory', 'analytic_single', 111031)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'analytic_single', 111031)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'analytic_single', 111031)_test": true,
+    "executed_frame_count_('marked_memory', 'analytic_single', 111037)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'analytic_single', 111037)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'analytic_single', 111037)_test": true,
+    "executed_frame_count_('marked_memory', 'analytic_single', 111043)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'analytic_single', 111043)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'analytic_single', 111043)_test": true,
+    "executed_frame_count_('marked_memory', 'analytic_single', 111049)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'analytic_single', 111049)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'analytic_single', 111049)_test": true,
+    "executed_frame_count_('marked_memory', 'analytic_single', 111057)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'analytic_single', 111057)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'analytic_single', 111057)_test": true,
+    "executed_frame_count_('marked_memory', 'matched_slope', 111031)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'matched_slope', 111031)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'matched_slope', 111031)_test": true,
+    "executed_frame_count_('marked_memory', 'matched_slope', 111037)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'matched_slope', 111037)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'matched_slope', 111037)_test": true,
+    "executed_frame_count_('marked_memory', 'matched_slope', 111043)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'matched_slope', 111043)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'matched_slope', 111043)_test": true,
+    "executed_frame_count_('marked_memory', 'matched_slope', 111049)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'matched_slope', 111049)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'matched_slope', 111049)_test": true,
+    "executed_frame_count_('marked_memory', 'matched_slope', 111057)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'matched_slope', 111057)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'matched_slope', 111057)_test": true,
+    "executed_frame_count_('marked_memory', 'ordinary', 111031)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'ordinary', 111031)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'ordinary', 111031)_test": true,
+    "executed_frame_count_('marked_memory', 'ordinary', 111037)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'ordinary', 111037)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'ordinary', 111037)_test": true,
+    "executed_frame_count_('marked_memory', 'ordinary', 111043)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'ordinary', 111043)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'ordinary', 111043)_test": true,
+    "executed_frame_count_('marked_memory', 'ordinary', 111049)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'ordinary', 111049)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'ordinary', 111049)_test": true,
+    "executed_frame_count_('marked_memory', 'ordinary', 111057)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'ordinary', 111057)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'ordinary', 111057)_test": true,
+    "executed_frame_count_('marked_memory', 'ordinary_dual', 111031)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'ordinary_dual', 111031)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'ordinary_dual', 111031)_test": true,
+    "executed_frame_count_('marked_memory', 'ordinary_dual', 111037)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'ordinary_dual', 111037)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'ordinary_dual', 111037)_test": true,
+    "executed_frame_count_('marked_memory', 'ordinary_dual', 111043)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'ordinary_dual', 111043)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'ordinary_dual', 111043)_test": true,
+    "executed_frame_count_('marked_memory', 'ordinary_dual', 111049)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'ordinary_dual', 111049)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'ordinary_dual', 111049)_test": true,
+    "executed_frame_count_('marked_memory', 'ordinary_dual', 111057)_ood_long": true,
+    "executed_frame_count_('marked_memory', 'ordinary_dual', 111057)_ood_shift": true,
+    "executed_frame_count_('marked_memory', 'ordinary_dual', 111057)_test": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_dual', 111031)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_dual', 111031)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_dual', 111031)_test": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_dual', 111037)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_dual', 111037)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_dual', 111037)_test": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_dual', 111043)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_dual', 111043)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_dual', 111043)_test": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_dual', 111049)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_dual', 111049)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_dual', 111049)_test": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_dual', 111057)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_dual', 111057)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_dual', 111057)_test": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_single', 111031)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_single', 111031)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_single', 111031)_test": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_single', 111037)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_single', 111037)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_single', 111037)_test": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_single', 111043)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_single', 111043)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_single', 111043)_test": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_single', 111049)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_single', 111049)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_single', 111049)_test": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_single', 111057)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_single', 111057)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'analytic_single', 111057)_test": true,
+    "executed_frame_count_('noisy_evidence', 'matched_slope', 111031)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'matched_slope', 111031)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'matched_slope', 111031)_test": true,
+    "executed_frame_count_('noisy_evidence', 'matched_slope', 111037)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'matched_slope', 111037)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'matched_slope', 111037)_test": true,
+    "executed_frame_count_('noisy_evidence', 'matched_slope', 111043)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'matched_slope', 111043)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'matched_slope', 111043)_test": true,
+    "executed_frame_count_('noisy_evidence', 'matched_slope', 111049)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'matched_slope', 111049)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'matched_slope', 111049)_test": true,
+    "executed_frame_count_('noisy_evidence', 'matched_slope', 111057)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'matched_slope', 111057)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'matched_slope', 111057)_test": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary', 111031)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary', 111031)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary', 111031)_test": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary', 111037)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary', 111037)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary', 111037)_test": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary', 111043)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary', 111043)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary', 111043)_test": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary', 111049)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary', 111049)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary', 111049)_test": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary', 111057)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary', 111057)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary', 111057)_test": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary_dual', 111031)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary_dual', 111031)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary_dual', 111031)_test": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary_dual', 111037)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary_dual', 111037)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary_dual', 111037)_test": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary_dual', 111043)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary_dual', 111043)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary_dual', 111043)_test": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary_dual', 111049)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary_dual', 111049)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary_dual', 111049)_test": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary_dual', 111057)_ood_long": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary_dual', 111057)_ood_shift": true,
+    "executed_frame_count_('noisy_evidence', 'ordinary_dual', 111057)_test": true,
+    "heldout_not_generated_at_freeze": true,
+    "independent_metric_recomputation": true,
+    "model_count": true,
+    "registered_protocol_unchanged": true,
+    "source_registration_equals_freeze": true
+  },
+  "errors": [],
+  "max_independent_metric_error": 0.0,
+  "max_observed_sum_of_marginal_channels": 1.4379524390566811,
+  "parameter_heads": [
+    {
+      "head_weight_change": [
+        4.034800598483697,
+        2.769711388847127,
+        2.879247130177132
+      ],
+      "kind": "ordinary",
+      "seed": 111031,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        3.5320993165516956,
+        2.8966012444589557,
+        2.476613320257705
+      ],
+      "kind": "ordinary_dual",
+      "seed": 111031,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        3.4424475639626912,
+        4.382240708284817,
+        2.8033594763723797
+      ],
+      "kind": "matched_slope",
+      "seed": 111031,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        3.5898919617785277,
+        2.9725565780310177,
+        3.4955422172999238
+      ],
+      "kind": "analytic_single",
+      "seed": 111031,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        3.03337406661462,
+        3.4759427973125745,
+        2.7924224576462944
+      ],
+      "kind": "analytic_dual",
+      "seed": 111031,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        4.500665675947658,
+        3.2585927761631073,
+        3.039758070037527
+      ],
+      "kind": "ordinary",
+      "seed": 111037,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        3.574941068568142,
+        3.7014320137388634,
+        2.817702456444367
+      ],
+      "kind": "ordinary_dual",
+      "seed": 111037,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        3.224653930150124,
+        3.958502617203719,
+        2.644368018531039
+      ],
+      "kind": "matched_slope",
+      "seed": 111037,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        4.038737697908501,
+        3.2201133489506595,
+        3.492940575125183
+      ],
+      "kind": "analytic_single",
+      "seed": 111037,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        3.447595584841196,
+        3.8820154055180973,
+        3.1753328904373674
+      ],
+      "kind": "analytic_dual",
+      "seed": 111037,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        3.1927233829829778,
+        2.664835635714634,
+        2.82032311930419
+      ],
+      "kind": "ordinary",
+      "seed": 111043,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        3.293643669559168,
+        2.975639249700757,
+        2.7978959187211623
+      ],
+      "kind": "ordinary_dual",
+      "seed": 111043,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        3.1772245074830323,
+        3.7548836720588956,
+        2.6370788381418513
+      ],
+      "kind": "matched_slope",
+      "seed": 111043,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        3.1311754262386278,
+        2.834079773770183,
+        3.093352651285424
+      ],
+      "kind": "analytic_single",
+      "seed": 111043,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        3.1270395880385315,
+        3.6004774495740337,
+        2.8198892593851457
+      ],
+      "kind": "analytic_dual",
+      "seed": 111043,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        3.762280337561569,
+        2.906965825959892,
+        2.6062067132421367
+      ],
+      "kind": "ordinary",
+      "seed": 111049,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        3.219275759656683,
+        2.8601041661210678,
+        2.2506163604224074
+      ],
+      "kind": "ordinary_dual",
+      "seed": 111049,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        2.870246723474277,
+        3.623013429991508,
+        2.436406202367587
+      ],
+      "kind": "matched_slope",
+      "seed": 111049,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        3.6495467209351995,
+        2.8441953097552775,
+        2.942576867035021
+      ],
+      "kind": "analytic_single",
+      "seed": 111049,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        2.8868884430710504,
+        3.488923686375499,
+        2.6195506346598294
+      ],
+      "kind": "analytic_dual",
+      "seed": 111049,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        3.715624846084097,
+        2.5232805754508036,
+        2.6604344002851246
+      ],
+      "kind": "ordinary",
+      "seed": 111057,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        3.342334402221449,
+        2.763397150638363,
+        2.4121000501779415
+      ],
+      "kind": "ordinary_dual",
+      "seed": 111057,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        2.9486214660330856,
+        3.7935307835631016,
+        2.609898981483714
+      ],
+      "kind": "matched_slope",
+      "seed": 111057,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        3.2911761024611983,
+        2.401350123718765,
+        2.863058612999248
+      ],
+      "kind": "analytic_single",
+      "seed": 111057,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        2.185822578130835,
+        2.5610089712482798,
+        2.150181848191825
+      ],
+      "kind": "analytic_dual",
+      "seed": 111057,
+      "task": "marked_memory"
+    },
+    {
+      "head_weight_change": [
+        2.264435120487147,
+        2.3766796699832304,
+        1.99866236975769
+      ],
+      "kind": "ordinary",
+      "seed": 111031,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        2.1387939940992715,
+        2.0095982806875385,
+        1.9005295821446178
+      ],
+      "kind": "ordinary_dual",
+      "seed": 111031,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        2.149720119163814,
+        2.72489280624965,
+        1.7739595055264858
+      ],
+      "kind": "matched_slope",
+      "seed": 111031,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        2.7296425736755268,
+        2.558477864138306,
+        2.1885090841372223
+      ],
+      "kind": "analytic_single",
+      "seed": 111031,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        1.9943515300622607,
+        2.250230416610406,
+        1.719661131330356
+      ],
+      "kind": "analytic_dual",
+      "seed": 111031,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        2.1549532907930433,
+        2.605041549926302,
+        2.280178136851988
+      ],
+      "kind": "ordinary",
+      "seed": 111037,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        2.0228078139586847,
+        2.1230196948940194,
+        1.9001454478432984
+      ],
+      "kind": "ordinary_dual",
+      "seed": 111037,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        2.4213516073368915,
+        3.167290273884172,
+        1.9883829433825477
+      ],
+      "kind": "matched_slope",
+      "seed": 111037,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        2.658587534507904,
+        2.5623204759435882,
+        2.6158322481598617
+      ],
+      "kind": "analytic_single",
+      "seed": 111037,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        2.369612714973179,
+        2.81632597719824,
+        2.1588898230934404
+      ],
+      "kind": "analytic_dual",
+      "seed": 111037,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        2.1887398106587206,
+        2.2292093321665813,
+        2.1249619372973827
+      ],
+      "kind": "ordinary",
+      "seed": 111043,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        2.4351820916583478,
+        2.399940370581712,
+        1.7608541663771475
+      ],
+      "kind": "ordinary_dual",
+      "seed": 111043,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        2.467923242591198,
+        3.0093400913027035,
+        1.9844817783799282
+      ],
+      "kind": "matched_slope",
+      "seed": 111043,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        2.540818954019626,
+        2.122710451709425,
+        2.274720820830726
+      ],
+      "kind": "analytic_single",
+      "seed": 111043,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        2.366193859223842,
+        2.9862397001173946,
+        2.075328985128026
+      ],
+      "kind": "analytic_dual",
+      "seed": 111043,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        1.6802655740779104,
+        1.6485385991960788,
+        1.5382365444719714
+      ],
+      "kind": "ordinary",
+      "seed": 111049,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        1.6060460689253213,
+        1.5863595964593638,
+        1.202656957220513
+      ],
+      "kind": "ordinary_dual",
+      "seed": 111049,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        1.9337678162203469,
+        2.601693355815598,
+        1.3474577818987101
+      ],
+      "kind": "matched_slope",
+      "seed": 111049,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        2.382816034292787,
+        1.8793069248103076,
+        1.7406549043403576
+      ],
+      "kind": "analytic_single",
+      "seed": 111049,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        1.8772991121006344,
+        2.354286546996153,
+        1.312496796833307
+      ],
+      "kind": "analytic_dual",
+      "seed": 111049,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        2.089474609895225,
+        2.0052629614650956,
+        2.0757903341827837
+      ],
+      "kind": "ordinary",
+      "seed": 111057,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        2.2525943180909493,
+        1.9547543686696978,
+        1.8407952826294223
+      ],
+      "kind": "ordinary_dual",
+      "seed": 111057,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        2.2876538567375397,
+        3.365502051269079,
+        1.9185261958714523
+      ],
+      "kind": "matched_slope",
+      "seed": 111057,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        2.512719977657669,
+        2.0383738449636697,
+        2.3064368922617793
+      ],
+      "kind": "analytic_single",
+      "seed": 111057,
+      "task": "noisy_evidence"
+    },
+    {
+      "head_weight_change": [
+        2.403272470985916,
+        3.253562192904145,
+        2.128109228517141
+      ],
+      "kind": "analytic_dual",
+      "seed": 111057,
+      "task": "noisy_evidence"
+    }
+  ],
+  "passed": true,
+  "scope": "Read-only review of all 150 completed conditions, no retraining, hyperparameter selection or new acceptance thresholds.",
+  "statistical_unit": "Five independent training-seed/data cohorts; paired arm comparison within each cohort, then paired episodes nested inside resampled seed clusters. No 3840-independent-model claim."
+}

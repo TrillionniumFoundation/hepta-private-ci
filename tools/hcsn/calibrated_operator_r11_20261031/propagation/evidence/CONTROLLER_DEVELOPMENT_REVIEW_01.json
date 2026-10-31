@@ -1,0 +1,109 @@
+{
+  "schema": "hcsn.r11.independent.controller.development-review.v1",
+  "scope": "Read-only review of frozen development artifacts; no heldout tuning",
+  "training_freeze_sha256": "911dcbb4f2bc0ed70c7e846fb12c0d651d91ecc858f799224c56015b99a2b96e",
+  "source_sha256": {
+    "value.py": "d384506c918d3ac6b1dd36912364d9efe5e7e9b639c05024f25c0641c743f375",
+    "model.py": "cf0fe92e9690451c1a5208c00cc0a06523c6e0001e307155aab862eac40dbade",
+    "train.py": "0ac36adf5ae4cb302580089e3b84db62079ca08ff42944b62bedb4646463c7a8",
+    "propagation/finite.py": "feaef61ac3bb9571eef442641ab454503e2f2dd707d59874932daeaf2752d441"
+  },
+  "fit_checks": [
+    {
+      "seed": 81031,
+      "matched_critic_initial": true,
+      "matched_minibatches": true,
+      "matched_cell_batches": true,
+      "max_clock_microseconds_residual": 0.0,
+      "ordinary_fit_cpu": 1.1520665510000003,
+      "analytic_fit_cpu": 3.360927888000001
+    },
+    {
+      "seed": 81037,
+      "matched_critic_initial": true,
+      "matched_minibatches": true,
+      "matched_cell_batches": true,
+      "max_clock_microseconds_residual": 0.0,
+      "ordinary_fit_cpu": 1.390888327999999,
+      "analytic_fit_cpu": 3.8321938319999997
+    },
+    {
+      "seed": 81043,
+      "matched_critic_initial": true,
+      "matched_minibatches": true,
+      "matched_cell_batches": true,
+      "max_clock_microseconds_residual": 0.0,
+      "ordinary_fit_cpu": 1.2548709529999975,
+      "analytic_fit_cpu": 3.831599827999998
+    },
+    {
+      "seed": 81049,
+      "matched_critic_initial": true,
+      "matched_minibatches": true,
+      "matched_cell_batches": true,
+      "max_clock_microseconds_residual": 0.0,
+      "ordinary_fit_cpu": 1.2134666729999992,
+      "analytic_fit_cpu": 3.276293860999999
+    },
+    {
+      "seed": 81057,
+      "matched_critic_initial": true,
+      "matched_minibatches": true,
+      "matched_cell_batches": true,
+      "max_clock_microseconds_residual": 0.0,
+      "ordinary_fit_cpu": 1.2263985700000006,
+      "analytic_fit_cpu": 3.4784968419999984
+    }
+  ],
+  "residual_gradient_directions": [
+    {
+      "analytic": -0.0013777556319399876,
+      "numeric": -0.0013777556319611876,
+      "absolute_error": 2.120005559991256e-14
+    },
+    {
+      "analytic": 0.0004594743336590319,
+      "numeric": 0.000459474333689043,
+      "absolute_error": 3.001109560515913e-14
+    },
+    {
+      "analytic": 0.0002900587861425376,
+      "numeric": 0.00029005878623457326,
+      "absolute_error": 9.203564559773225e-14
+    },
+    {
+      "analytic": 0.0004519269096280062,
+      "numeric": 0.00045192690952878563,
+      "absolute_error": 9.922054497457644e-14
+    },
+    {
+      "analytic": 0.001185546398867196,
+      "numeric": 0.0011855463988340656,
+      "absolute_error": 3.3130399465508553e-14
+    },
+    {
+      "analytic": -0.00013122848278353987,
+      "numeric": -0.00013122848276786447,
+      "absolute_error": 1.5675395009795423e-14
+    },
+    {
+      "analytic": -0.0005875107656711038,
+      "numeric": -0.0005875107654984991,
+      "absolute_error": 1.726047690192578e-13
+    },
+    {
+      "analytic": 1.5243800885327908e-05,
+      "numeric": 1.5243800850512494e-05,
+      "absolute_error": 3.4815413965942794e-14
+    }
+  ],
+  "max_gradient_error": 1.726047690192578e-13,
+  "loss": 0.0009173385675780689,
+  "passed": true,
+  "cpu_seconds": 0.16264825300000002,
+  "limits": [
+    "Equal updates/parameter counts and randomness, not equal measured CPU",
+    "Posterior is sufficient for task teacher; cell does not add privileged information",
+    "Three-bin kernel is a finite model; continuum equivalence remains false"
+  ]
+}

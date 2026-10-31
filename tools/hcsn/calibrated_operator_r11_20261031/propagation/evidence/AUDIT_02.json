@@ -1,0 +1,805 @@
+{
+  "schema": "hcsn.finite-shared-kernel.audit.r11.v1",
+  "success": true,
+  "failures": [],
+  "native_cases": [
+    {
+      "parameters": 0,
+      "history": 0,
+      "family": "ordinary",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 0,
+      "history": 0,
+      "family": "distribution",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 5.551115123125783e-17,
+        "probability": 0.0,
+        "event_count": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 0,
+      "history": 1,
+      "family": "ordinary",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 5.551115123125783e-17
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 0,
+      "history": 1,
+      "family": "distribution",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 1.1102230246251565e-16,
+        "probability": 5.551115123125783e-17,
+        "event_count": 5.048709793414476e-29
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 0,
+      "history": 2,
+      "family": "ordinary",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 0,
+      "history": 2,
+      "family": "distribution",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 9.048317650695026e-15,
+        "probability": 7.105427357601002e-15,
+        "event_count": 2.1316282072803006e-13
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 0,
+      "history": 3,
+      "family": "ordinary",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 0,
+      "history": 3,
+      "family": "distribution",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 5.551115123125783e-16,
+        "probability": 6.106226635438361e-16,
+        "event_count": 2.220446049250313e-16
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 1,
+      "history": 0,
+      "family": "ordinary",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 1,
+      "history": 0,
+      "family": "distribution",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 2.0816681711721685e-17,
+        "probability": 0.0,
+        "event_count": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 1,
+      "history": 1,
+      "family": "ordinary",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 1,
+      "history": 1,
+      "family": "distribution",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 6.938893903907228e-18,
+        "probability": 1.1102230246251565e-16,
+        "event_count": 2.524354896707238e-29
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 1,
+      "history": 2,
+      "family": "ordinary",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 1,
+      "history": 2,
+      "family": "distribution",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 4.218847493575595e-15,
+        "probability": 3.552713678800501e-15,
+        "event_count": 1.7763568394002505e-14
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 1,
+      "history": 3,
+      "family": "ordinary",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 1,
+      "history": 3,
+      "family": "distribution",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 3.3306690738754696e-16,
+        "probability": 4.440892098500626e-16,
+        "event_count": 2.7755575615628914e-16
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 2,
+      "history": 0,
+      "family": "ordinary",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 2,
+      "history": 0,
+      "family": "distribution",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 8.326672684688674e-17,
+        "probability": 0.0,
+        "event_count": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 2,
+      "history": 1,
+      "family": "ordinary",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 2,
+      "history": 1,
+      "family": "distribution",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 5.551115123125783e-17,
+        "probability": 1.1102230246251565e-16,
+        "event_count": 2.0194839173657902e-28
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 2,
+      "history": 2,
+      "family": "ordinary",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 2.7755575615628914e-17
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 2,
+      "history": 2,
+      "family": "distribution",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 7.327471962526033e-15,
+        "probability": 5.717648576819556e-15,
+        "event_count": 4.263256414560601e-13
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 2,
+      "history": 3,
+      "family": "ordinary",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 2,
+      "history": 3,
+      "family": "distribution",
+      "errors": {
+        "generator": 4.440892098500626e-16,
+        "independent_generator": 0.0,
+        "features": 5.551115123125783e-17,
+        "probability": 1.1102230246251565e-16,
+        "event_count": 4.440892098500626e-16
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 3,
+      "history": 0,
+      "family": "ordinary",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 1.1102230246251565e-16
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 3,
+      "history": 0,
+      "family": "distribution",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 8.326672684688674e-17,
+        "probability": 0.0,
+        "event_count": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 3,
+      "history": 1,
+      "family": "ordinary",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 1.1102230246251565e-16
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 3,
+      "history": 1,
+      "family": "distribution",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 2.7755575615628914e-16,
+        "probability": 1.1102230246251565e-16,
+        "event_count": 5.048709793414476e-29
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 3,
+      "history": 2,
+      "family": "ordinary",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 1.1102230246251565e-16
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 3,
+      "history": 2,
+      "family": "distribution",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 2.7200464103316335e-15,
+        "probability": 2.220446049250313e-15,
+        "event_count": 7.105427357601002e-14
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 3,
+      "history": 3,
+      "family": "ordinary",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 1.1102230246251565e-16
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 3,
+      "history": 3,
+      "family": "distribution",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 2.220446049250313e-16,
+        "probability": 2.220446049250313e-16,
+        "event_count": 2.220446049250313e-16
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 4,
+      "history": 0,
+      "family": "ordinary",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 4,
+      "history": 0,
+      "family": "distribution",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 1.6653345369377348e-16,
+        "probability": 0.0,
+        "event_count": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 4,
+      "history": 1,
+      "family": "ordinary",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 4,
+      "history": 1,
+      "family": "distribution",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 1.6653345369377348e-16,
+        "probability": 1.0587911840678754e-22,
+        "event_count": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 4,
+      "history": 2,
+      "family": "ordinary",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 4,
+      "history": 2,
+      "family": "distribution",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 4.773959005888173e-15,
+        "probability": 3.3861802251067274e-15,
+        "event_count": 1.4921397450962104e-13
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 4,
+      "history": 3,
+      "family": "ordinary",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 5.551115123125783e-17
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 4,
+      "history": 3,
+      "family": "distribution",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 5.551115123125783e-17,
+        "probability": 1.1102230246251565e-16,
+        "event_count": 2.220446049250313e-16
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 5,
+      "history": 0,
+      "family": "ordinary",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 5,
+      "history": 0,
+      "family": "distribution",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 5.551115123125783e-17,
+        "probability": 0.0,
+        "event_count": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 5,
+      "history": 1,
+      "family": "ordinary",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 5,
+      "history": 1,
+      "family": "distribution",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 1.3877787807814457e-16,
+        "probability": 1.1102230246251565e-16,
+        "event_count": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 5,
+      "history": 2,
+      "family": "ordinary",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 5,
+      "history": 2,
+      "family": "distribution",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 4.107825191113079e-15,
+        "probability": 3.3306690738754696e-15,
+        "event_count": 8.881784197001252e-13
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 5,
+      "history": 3,
+      "family": "ordinary",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    },
+    {
+      "parameters": 5,
+      "history": 3,
+      "family": "distribution",
+      "errors": {
+        "generator": 0.0,
+        "independent_generator": 0.0,
+        "features": 4.996003610813204e-16,
+        "probability": 3.885780586188048e-16,
+        "event_count": 0.0
+      },
+      "recovery_exact": true,
+      "passed": true
+    }
+  ],
+  "maximum_errors": {
+    "generator": 4.440892098500626e-16,
+    "probability": 7.105427357601002e-15,
+    "features": 9.048317650695026e-15,
+    "event_count": 8.881784197001252e-13,
+    "ode": 1.4604983888943934e-13,
+    "frechet": 5.5707688462192095e-11,
+    "split": 7.744915819785092e-13,
+    "native_split": 8.668621376273222e-13
+  },
+  "derivatives": [
+    {
+      "parameter": 0,
+      "errors": [
+        6.882994174617352e-12,
+        1.2824359629792781e-11
+      ],
+      "maximum": 0.41300885853945457
+    },
+    {
+      "parameter": 1,
+      "errors": [
+        1.2128659188093138e-11,
+        1.0075801304409993e-11
+      ],
+      "maximum": 0.1560780426446978
+    },
+    {
+      "parameter": 2,
+      "errors": [
+        1.0660281685170858e-11,
+        2.249135838509886e-11
+      ],
+      "maximum": 0.028564126875350114
+    },
+    {
+      "parameter": 3,
+      "errors": [
+        2.7559038384694645e-11,
+        5.5707688462192095e-11
+      ],
+      "maximum": 0.07182168879607317
+    },
+    {
+      "parameter": 4,
+      "errors": [
+        8.17560602550671e-12,
+        6.883175453220591e-12
+      ],
+      "maximum": 0.033491946851831246
+    },
+    {
+      "parameter": 5,
+      "errors": [
+        8.943470963806988e-12,
+        1.61573358858913e-11
+      ],
+      "maximum": 0.03809987838338587
+    }
+  ],
+  "splits": [
+    {
+      "duration": 1e-06,
+      "exponential_error": 1.1102230246251565e-16,
+      "native_error": 0.0
+    },
+    {
+      "duration": 0.001,
+      "exponential_error": 1.1102230246251565e-16,
+      "native_error": 1.1102230246251565e-16
+    },
+    {
+      "duration": 0.47,
+      "exponential_error": 8.326672684688674e-16,
+      "native_error": 1.1102230246251565e-16
+    },
+    {
+      "duration": 7.0,
+      "exponential_error": 3.1086244689504383e-15,
+      "native_error": 3.1086244689504383e-15
+    },
+    {
+      "duration": 128.0,
+      "exponential_error": 7.744915819785092e-13,
+      "native_error": 8.668621376273222e-13
+    }
+  ],
+  "tiny_first_hit": {
+    "python": 4.458355989418368e-13,
+    "native": 4.458355989418369e-13
+  },
+  "negative_requests": [
+    {
+      "request": {
+        "parameters": [
+          0.35705594035770605,
+          -0.7206152904190704,
+          1.4488571773409278,
+          -1.7571021788555752,
+          -1.605801674605572,
+          0.18275307490459514,
+          0.5560105353409439,
+          -1.697177751724425,
+          -1.3827078377899935,
+          -0.8629993874052709,
+          -1.2778684256759978
+        ],
+        "family": "distribution",
+        "seed": 1,
+        "events": [
+          {
+            "driver": 1.1,
+            "micros": 1,
+            "reset": false
+          }
+        ],
+        "driver": 0.2,
+        "horizon_micros": 1000,
+        "restore_after": null
+      },
+      "returncode": 1,
+      "stdout": "{\"error\":\"driver/duration envelope\"}\n",
+      "rejected": true
+    },
+    {
+      "request": {
+        "parameters": [
+          0.35705594035770605,
+          -0.7206152904190704,
+          1.4488571773409278,
+          -1.7571021788555752,
+          -1.605801674605572,
+          0.18275307490459514,
+          0.5560105353409439,
+          -1.697177751724425,
+          -1.3827078377899935,
+          -0.8629993874052709,
+          -1.2778684256759978
+        ],
+        "family": "distribution",
+        "seed": 1,
+        "events": [
+          {
+            "driver": 0.0,
+            "micros": 128000001,
+            "reset": false
+          }
+        ],
+        "driver": 0.2,
+        "horizon_micros": 1000,
+        "restore_after": null
+      },
+      "returncode": 1,
+      "stdout": "{\"error\":\"driver/duration envelope\"}\n",
+      "rejected": true
+    }
+  ],
+  "binary_sha256": "8397e694b9a1929008e9596304a0e429214f2f41916154fe740d0e648ab35eaf",
+  "source_sha256": {
+    "tools/hcsn/calibrated_operator_r11_20261031/propagation/finite.py": "feaef61ac3bb9571eef442641ab454503e2f2dd707d59874932daeaf2752d441",
+    "tools/hcsn/calibrated_operator_r11_20261031/propagation/probe.rs": "8cae5dcb3647c14e5576a3296e877d769064d62e16f199a548577f590e26be07",
+    "tools/hcsn/calibrated_operator_r11_20261031/propagation/probe_tests.rs": "9b220c08e79d5bbde65598fb194c92dde3632f230c788f65957b8a1537266124",
+    "tools/hcsn/calibrated_operator_r11_20261031/propagation/audit.py": "d5b018b00656b03f23af4cc992fc410fe4adc07fcd318552b334f7c8c2ed4b0f",
+    "tools/hcsn/round9_20261031/native/src/cell.rs": "7d4cd316379162e95ca06beec23219912ec53febc60107d93d781a9b9593d6a9"
+  },
+  "cpu_seconds": 0.06073819199999997,
+  "wall_seconds": 0.15038936700148042,
+  "continuum_equivalence": false,
+  "scientific_efficacy_claim": false,
+  "limits": [
+    "Floating-point comparisons on declared cases, not a formal global error bound",
+    "Same finite dynamics do not prove that task observations follow a Brownian law",
+    "Recovery check restores the actual native Cell; task owner persistence is tested separately"
+  ]
+}

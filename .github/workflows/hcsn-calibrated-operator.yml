@@ -1,0 +1,75 @@
+# Proposed reproduction lane; a committed workflow is not a passing remote run.
+name: HCSN calibrated operator audit
+
+"on":
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/hcsn-calibrated-operator.yml
+      - tools/hcsn/calibrated_operator_r11_20261031/**
+      - tools/hcsn/task_native_loop_20261031/**
+      - tools/hcsn/task_value_factorial_20261030/**
+      - tools/hcsn/native_task_bridge_20261031/SOURCE_IDENTITY.json
+      - tools/hcsn/native_task_bridge_20261031/native-Cargo.lock
+      - tools/hcsn/round9_20261031/native/**
+      - codex-rs/hepta-neuron/**
+      - codex-rs/hepta-infer-core/**
+      - codex-rs/hepta-types/**
+      - justfile
+      - scripts/just-shell.py
+      - scripts/run-nextest.py
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcsn-calibrated-operator-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  calibrated-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_TERM_COLOR: never
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+
+      - name: Install pinned public toolchains and Python dependencies
+        working-directory: ${{ runner.temp }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal
+          cargo +1.95.0 install --locked just --version 1.59.0 --root "$RUNNER_TEMP/hcsn-r11-tools"
+          cargo +1.95.0 install --locked cargo-nextest --version 0.9.150 --root "$RUNNER_TEMP/hcsn-r11-tools"
+          python3 -m venv "$RUNNER_TEMP/hcsn-r11-python"
+          "$RUNNER_TEMP/hcsn-r11-python/bin/python" -m pip install --disable-pip-version-check numpy==2.3.5 scipy==1.17.0 mpmath==1.3.0
+
+      - name: Fetch fresh crates, run grid and numerical tests, audit native causality
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/hcsn-r11-python/bin/python" -m tools.hcsn.calibrated_operator_r11_20261031.ci \
+            --work "$RUNNER_TEMP/hcsn-calibrated-operator-ci" \
+            --tools "$RUNNER_TEMP/hcsn-r11-tools/bin"
+
+      - name: Preserve source and archive verification report in summary and logs
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          report="$RUNNER_TEMP/hcsn-calibrated-operator-ci/CI_REPORT.json"
+          if [[ -f "$report" ]]; then
+            printf '## Calibrated operator reproduction\n\n```json\n' >> "$GITHUB_STEP_SUMMARY"
+            cat "$report" >> "$GITHUB_STEP_SUMMARY"
+            printf '\n```\n' >> "$GITHUB_STEP_SUMMARY"
+            cat "$report"
+          else
+            printf 'Calibrated operator audit did not produce a report. See setup logs.\n' >> "$GITHUB_STEP_SUMMARY"
+          fi

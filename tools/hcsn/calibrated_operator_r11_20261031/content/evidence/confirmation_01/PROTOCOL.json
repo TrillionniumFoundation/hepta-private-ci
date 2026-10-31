@@ -1,0 +1,69 @@
+{
+  "amortization_queries": 10000,
+  "arms": [
+    "ordinary",
+    "ordinary_dual",
+    "matched_slope",
+    "analytic_single",
+    "analytic_dual"
+  ],
+  "batch_size": 32,
+  "cpu_price_per_second": 0.001,
+  "data_counts": {
+    "ood_long": 768,
+    "ood_shift": 768,
+    "test": 768,
+    "train": 512,
+    "validation": 256
+  },
+  "elapsed_price": 0.001,
+  "heldout_creation": "test/OOD RNG and arrays opened only after every selected model/calibration is hashed in FREEZE.json",
+  "hidden_width": 12,
+  "input_fields": [
+    "symbol_0",
+    "symbol_1",
+    "symbol_2",
+    "symbol_3",
+    "observed_marker",
+    "evidence_task",
+    "observed_query",
+    "log_dt"
+  ],
+  "learning_rate": 0.003,
+  "long_length": 72,
+  "minimum_reads": 2,
+  "objective": "CE at all already-observed target prefixes; no auxiliary posterior or future input",
+  "read_price": 0.005,
+  "schema": "hcsn.r11.causal.content.v1",
+  "scope": "synthetic raw-symbol causal content tasks; operator-gated recurrent models, not full HX/regenerative neuron, native two-job Bellman or real multimodal confirmation",
+  "seeds": [
+    111031,
+    111037,
+    111043,
+    111049,
+    111057
+  ],
+  "selection": "minimum validation final CE; earliest on ties; then validation-only scalar temperature and STOP threshold",
+  "selection_updates": [
+    80,
+    160,
+    240,
+    320
+  ],
+  "statistics": "paired bootstrap of seed clusters and within-seed episodes, 2000 draws; primary utility contrasts analytic_dual vs four controls, two tasks, three conditions; 24 one-sided familywise lower bounds",
+  "tasks": [
+    "marked_memory",
+    "noisy_evidence"
+  ],
+  "thresholds": [
+    0.6,
+    0.7,
+    0.8,
+    0.9,
+    0.95,
+    0.99,
+    1.01
+  ],
+  "train_length": 24,
+  "updates": 320
+}

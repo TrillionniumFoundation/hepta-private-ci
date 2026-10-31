@@ -1,0 +1,34 @@
+{
+  "metadata": {
+    "schema": "hcsn-full-hx-byte-chunks-v1",
+    "format": "independent gzip of consecutive original UTF-8 byte ranges",
+    "reconstruction": "decompress chunks in order, concatenate, verify member SHA-256, then parse JSON",
+    "maximum_chunk_file_bytes": 480000,
+    "lossless_readback_verified": true
+  },
+  "members": [
+    {
+      "member": "STRESS_RESULTS.json",
+      "bytes": 3934646,
+      "sha256": "f65cf4be5b92b5c066470c94509d20e688cd529a6dda5c351daf404296f73db0",
+      "chunks": [
+        {
+          "path": "runtimearchive_chunks/stress_results.part0000.bytes.gz",
+          "offset": 0,
+          "raw_bytes": 2000000,
+          "raw_sha256": "ec4ad2f2c9a7bdf134ef1db78482ddda5a3cf5ff66f233fce4d01b89d7466c3c",
+          "compressed_bytes": 360252,
+          "compressed_sha256": "f80bb2459f1a43a565e700eeaf29a47dab8b054e6f17da05455cece59e614137"
+        },
+        {
+          "path": "runtimearchive_chunks/stress_results.part0001.bytes.gz",
+          "offset": 2000000,
+          "raw_bytes": 1934646,
+          "raw_sha256": "2cca356c4853ed27ee82e12308952e891631d16e79e369c1e6093547d5f92162",
+          "compressed_bytes": 343073,
+          "compressed_sha256": "92924a163f6944d9904c5ad6c3ce61927aab868206f69340c1e9468c6c54d5d2"
+        }
+      ]
+    }
+  ]
+}
