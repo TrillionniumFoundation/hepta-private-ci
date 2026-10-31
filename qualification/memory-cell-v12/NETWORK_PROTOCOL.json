@@ -1,0 +1,38 @@
+{
+  "schema": "hepta.memory.network-protocol.v12",
+  "scope": "Executable research on real technical-document sections with authored prompts; no claim of production tasks, pretrained semantics, native activation, or parametric content compression.",
+  "seeds": [31031, 41033, 51047],
+  "dimension": 256,
+  "hidden": 32,
+  "steps": 240,
+  "batch_size": 32,
+  "evidence_limit": 3,
+  "sparse_top_k": 1,
+  "structure": {
+    "proposal_phase": 1,
+    "later_use_phase": 2,
+    "actions": ["split", "merge", "sleep", "wake"],
+    "max_active_cells": 4,
+    "max_parameter_bytes": 2000000,
+    "max_checkpoint_bytes": 16000000,
+    "max_candidate_wall_seconds": 120,
+    "normal_lower_bound_z": 3.2,
+    "minimum_lower_gain": 0.005,
+    "validation_status": "Exploratory paired normal bounds on authored tasks; no population or sequential-testing guarantee. All candidate selection precedes the next-phase test."
+  },
+  "prices": {
+    "active_weight_mib": 0.01,
+    "checkpoint_mib": 0.002,
+    "training_second_per_1000_queries": 0.001,
+    "decision_second": 0.001
+  },
+  "time_contract": {
+    "phase_0": "Initialization: phase-0 sources and train prompts; calibration separate; phase-0 test is an in-phase diagnostic.",
+    "phase_1_2": "Current sources arrive before maintenance; only earlier-phase query labels train the learner or router. Calibration comes from earlier phases. The new phase test is evaluated once after selection; its labels become available only for later phases.",
+    "meaning": "Document-arrival curriculum, not historical production chronology."
+  },
+  "controls": ["full_text_bm25", "dense_source_retrieval", "single_mlp", "fixed_typed", "learned_sparse", "continued_parent", "equal_capacity_single", "same_partition_fixed_experts"],
+  "calibration": "Select thresholds only from earlier-phase calibration confidence breakpoints, maximizing balanced known-source coverage and unsupported rejection; no finite-sample generalization guarantee.",
+  "cost_contract": "Actual source/index/model/optimizer/checkpoint bytes, fit wall/CPU, presentations, feature time, calibration and read time, selected-cell reads, all failed and successful candidate work. Shared resources and candidate exploration are separately visible; no equal-FLOPs claim.",
+  "integrity": "The runner writes a local protocol/corpus/source commitment before model fitting, rejects existing output directories, and stores all predictions and selection decisions. No test result selects a threshold, hyperparameter, or topology."
+}
