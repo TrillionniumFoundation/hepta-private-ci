@@ -35,6 +35,19 @@ class MeshGate:
     production_activation: bool = False
 
 
+def _within_one_local_cell(left: float | None, right: float | None,
+                           nodes: int, log_upper: float) -> bool:
+    """Use spacing at the actual STOP edge, not the much larger far-field."""
+    if (left is None) != (right is None):
+        return False
+    if left is None:
+        return True
+    if not all(math.isfinite(v) and v>0 for v in (left,right)):
+        return False
+    h=log_upper/(nodes-1)
+    return abs(left-right)<=max(left,right)*math.expm1(h)
+
+
 def financial_obstacle_mesh_gate(p, candidate_boundary: float, *,
                                  log_upper: float=3.6,
                                  meshes: tuple[tuple[int,int],...]=(
@@ -53,8 +66,7 @@ def financial_obstacle_mesh_gate(p, candidate_boundary: float, *,
         den=density_obstacle(p,candidate_boundary,nodes=n,log_upper=log_upper)
         left=pde.last_stop_asset;right=den.last_stop_asset
         same=(left is None)==(right is None)
-        step=candidate_boundary*math.exp(log_upper)*log_upper/(n-1)
-        near=(same and (left is None or abs(left-right)<=step))
+        near=_within_one_local_cell(left,right,n,log_upper)
         results.append(MeshComparison(n,nt,left,right,same,near,
                        pde.max_equity_bellman_residual,den.max_bellman_residual))
     has_mismatch=any(not x.endpoint_within_one_cell for x in results)
