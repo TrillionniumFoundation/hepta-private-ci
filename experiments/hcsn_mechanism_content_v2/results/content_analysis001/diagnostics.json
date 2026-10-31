@@ -1,0 +1,3932 @@
+[
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 0.04949951014468712,
+      "episode_exact_recall": -0.16666666666666669,
+      "query_accuracy": -0.16666666666666669
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 0.03362882567788339,
+      "episode_exact_recall": -0.08333333333333334,
+      "query_accuracy": -0.08333333333333334
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": -0.0021548471718535467,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.015051601661802971,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.022775784140012467,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 0.04949951014468712,
+      "episode_exact_recall": -0.16666666666666669,
+      "query_accuracy": -0.16666666666666669
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 0.03362882567788339,
+      "episode_exact_recall": -0.08333333333333334,
+      "query_accuracy": -0.08333333333333334
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": -0.0021548471718535467,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.015051601661802971,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.022775784140012467,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 0.05305486067956999,
+      "episode_exact_recall": -0.16666666666666669,
+      "query_accuracy": -0.16666666666666669
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 0.05107481757720067,
+      "episode_exact_recall": -0.08333333333333334,
+      "query_accuracy": -0.08333333333333334
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.014938761104730247,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.0180034698112419,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -0.0038099368647221965,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 0.05305486067956999,
+      "episode_exact_recall": -0.16666666666666669,
+      "query_accuracy": -0.16666666666666669
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 0.05107481757720067,
+      "episode_exact_recall": -0.08333333333333334,
+      "query_accuracy": -0.08333333333333334
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.014938761104730247,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.0180034698112419,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -0.0038099368647221965,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 0.053362496955144945,
+      "episode_exact_recall": -0.16666666666666669,
+      "query_accuracy": -0.16666666666666669
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_shared"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 0.05142197874197607,
+      "episode_exact_recall": -0.08333333333333334,
+      "query_accuracy": -0.08333333333333334
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_shared"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.010844315990953035,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_shared"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.016105327791585022,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_shared"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 0.05974092321775859,
+      "episode_exact_recall": -0.16666666666666669,
+      "query_accuracy": -0.16666666666666669
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 0.04262376125617062,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": -0.002940486802759601,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.014435811115871111,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.022743927760157545,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 0.05974092321775859,
+      "episode_exact_recall": -0.16666666666666669,
+      "query_accuracy": -0.16666666666666669
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 0.04262376125617062,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": -0.002940486802759601,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.014435811115871111,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.022743927760157545,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 0.05405800012157047,
+      "episode_exact_recall": -0.16666666666666669,
+      "query_accuracy": -0.16666666666666669
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 0.05147004273630951,
+      "episode_exact_recall": -0.08333333333333334,
+      "query_accuracy": -0.08333333333333334
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.011135759018291447,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.016315912270244093,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.0007222075574506714,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 0.05405800012157047,
+      "episode_exact_recall": -0.16666666666666669,
+      "query_accuracy": -0.16666666666666669
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 0.05147004273630951,
+      "episode_exact_recall": -0.08333333333333334,
+      "query_accuracy": -0.08333333333333334
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.011135759018291447,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.016315912270244093,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.0007222075574506714,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81031_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 0.046233601434693794,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -0.05015577571783414,
+      "episode_exact_recall": 0.08333333333333333,
+      "query_accuracy": 0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": -0.0017828039430487497,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.027222768974315414,
+      "episode_exact_recall": -0.08333333333333333,
+      "query_accuracy": -0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.04463679071735349,
+      "episode_exact_recall": -0.08333333333333333,
+      "query_accuracy": -0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 0.046233601434693794,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -0.05015577571783414,
+      "episode_exact_recall": 0.08333333333333333,
+      "query_accuracy": 0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": -0.0017828039430487497,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.027222768974315414,
+      "episode_exact_recall": -0.08333333333333333,
+      "query_accuracy": -0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.04463679071735349,
+      "episode_exact_recall": -0.08333333333333333,
+      "query_accuracy": -0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 0.014569236848178013,
+      "episode_exact_recall": 0.16666666666666666,
+      "query_accuracy": 0.16666666666666666
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -0.03501119634501948,
+      "episode_exact_recall": 0.16666666666666666,
+      "query_accuracy": 0.16666666666666666
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.0029188037766982866,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.035670947531662334,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.0010434068915665673,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 0.014569236848178013,
+      "episode_exact_recall": 0.16666666666666666,
+      "query_accuracy": 0.16666666666666666
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -0.03501119634501948,
+      "episode_exact_recall": 0.16666666666666666,
+      "query_accuracy": 0.16666666666666666
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.0029188037766982866,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.035670947531662334,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.0010434068915665673,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 0.013265925465831385,
+      "episode_exact_recall": 0.16666666666666666,
+      "query_accuracy": 0.16666666666666666
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_shared"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -0.03931379443238736,
+      "episode_exact_recall": 0.16666666666666666,
+      "query_accuracy": 0.16666666666666666
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_shared"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.05164690742994216,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_shared"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.034774390066101724,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_shared"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -0.03771749628376497,
+      "episode_exact_recall": -0.08333333333333333,
+      "query_accuracy": -0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -0.09895591484007449,
+      "episode_exact_recall": 0.08333333333333333,
+      "query_accuracy": 0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.010084619114397952,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.023335669472319243,
+      "episode_exact_recall": 0.08333333333333333,
+      "query_accuracy": 0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -0.0002568798968975994,
+      "episode_exact_recall": -0.08333333333333333,
+      "query_accuracy": -0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -0.03771749628376497,
+      "episode_exact_recall": -0.08333333333333333,
+      "query_accuracy": -0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -0.09895591484007449,
+      "episode_exact_recall": 0.08333333333333333,
+      "query_accuracy": 0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.010084619114397952,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.023335669472319243,
+      "episode_exact_recall": 0.08333333333333333,
+      "query_accuracy": 0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -0.0002568798968975994,
+      "episode_exact_recall": -0.08333333333333333,
+      "query_accuracy": -0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 0.012339901763657624,
+      "episode_exact_recall": 0.16666666666666666,
+      "query_accuracy": 0.16666666666666666
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -0.04145702355730996,
+      "episode_exact_recall": 0.16666666666666666,
+      "query_accuracy": 0.16666666666666666
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.052662562879669306,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.03512444533414394,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -0.0011381437263384697,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 0.012339901763657624,
+      "episode_exact_recall": 0.16666666666666666,
+      "query_accuracy": 0.16666666666666666
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -0.04145702355730996,
+      "episode_exact_recall": 0.16666666666666666,
+      "query_accuracy": 0.16666666666666666
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.052662562879669306,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.03512444533414394,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -0.0011381437263384697,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81032_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -0.011564670065685068,
+      "episode_exact_recall": -0.08333333333333333,
+      "query_accuracy": -0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -0.007425666572843381,
+      "episode_exact_recall": -0.08333333333333333,
+      "query_accuracy": -0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": -0.07161331524126413,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.007424108155908105,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.0474346876327707,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -0.011564670065685068,
+      "episode_exact_recall": -0.08333333333333333,
+      "query_accuracy": -0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -0.007425666572843381,
+      "episode_exact_recall": -0.08333333333333333,
+      "query_accuracy": -0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": -0.07161331524126413,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.007424108155908105,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.0474346876327707,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -0.028207220464573135,
+      "episode_exact_recall": -0.08333333333333333,
+      "query_accuracy": -0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -0.00018047507589891154,
+      "episode_exact_recall": -0.08333333333333333,
+      "query_accuracy": -0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": -0.0762026720816984,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.006679468547914125,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.0014713107615005327,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -0.028207220464573135,
+      "episode_exact_recall": -0.08333333333333333,
+      "query_accuracy": -0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -0.00018047507589891154,
+      "episode_exact_recall": -0.08333333333333333,
+      "query_accuracy": -0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": -0.0762026720816984,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.006679468547914125,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.0014713107615005327,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -0.02994501248116732,
+      "episode_exact_recall": -0.08333333333333333,
+      "query_accuracy": -0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_shared"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 0.0007352188800227033,
+      "episode_exact_recall": -0.08333333333333333,
+      "query_accuracy": -0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_shared"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": -0.0781870339602746,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_shared"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.007760250881615249,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_shared"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -0.00949325117823463,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 0.006934259299717027,
+      "episode_exact_recall": 0.08333333333333333,
+      "query_accuracy": 0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": -0.04608945120674135,
+      "episode_exact_recall": 0.08333333333333333,
+      "query_accuracy": 0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.0021041124400473787,
+      "episode_exact_recall": 0.08333333333333333,
+      "query_accuracy": 0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.07262786058397741,
+      "episode_exact_recall": 0.08333333333333333,
+      "query_accuracy": 0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -0.00949325117823463,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 0.006934259299717027,
+      "episode_exact_recall": 0.08333333333333333,
+      "query_accuracy": 0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": -0.04608945120674135,
+      "episode_exact_recall": 0.08333333333333333,
+      "query_accuracy": 0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.0021041124400473787,
+      "episode_exact_recall": 0.08333333333333333,
+      "query_accuracy": 0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.07262786058397741,
+      "episode_exact_recall": 0.08333333333333333,
+      "query_accuracy": 0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -0.02887601018001651,
+      "episode_exact_recall": -0.08333333333333333,
+      "query_accuracy": -0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 0.0010192158910391491,
+      "episode_exact_recall": -0.08333333333333333,
+      "query_accuracy": -0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": -0.07832449875693115,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.007741918478559651,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -0.0013553237563206366,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -0.02887601018001651,
+      "episode_exact_recall": -0.08333333333333333,
+      "query_accuracy": -0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 0.0010192158910391491,
+      "episode_exact_recall": -0.08333333333333333,
+      "query_accuracy": -0.08333333333333333
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": -0.07832449875693115,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_modality_mismatch",
+    "differences_from_normal": {
+      "ce": 0.007741918478559651,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -0.0013553237563206366,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "async_av_s81033_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -2.7728575231034114e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -0.00023136584443494979,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 8.422073419800391e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.001553693285369917,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.0002867477150849673,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -2.875887217301809e-05,
+      "episode_exact_recall": 0.04166666666666663,
+      "query_accuracy": 0.04166666666666663
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -0.00019882022039541258,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 3.928437865352574e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.00159418395055555,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.0003342491485484045,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -5.377766729153244e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -0.0003581235739797961,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 6.357391036204696e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.002276934502350003,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -5.62228098552886e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -5.377766729153244e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -0.0003581235739797961,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 6.357391036204696e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.002276934502350003,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -5.62228098552886e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -1.1039191115336244e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_shared"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -0.00034387108827371726,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_shared"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 0.000145709245835679,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_shared"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.002930346256311389,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_shared"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -1.5846267805375014e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -8.553516398923655e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 5.6438612335729665e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.0021380549275012983,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.0004726248684168155,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -2.1108242015954737e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -0.0003026978020483906,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 0.00013272463352420605,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.0026763726785082875,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.0001223889321653182,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -0.0008159159028989782,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -0.0012597224471092572,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 7.572235135655525e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": -0.0011702595430198581,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.00015493856382153837,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -1.044316697662584e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -0.00033529361616535525,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 0.00014981903750244108,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.0028492427384153585,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 3.399332046138959e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81031_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 8.62360010100982e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -5.8745421114059226e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -9.570417286330901e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.001308898824477267,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.00014239701856677556,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 8.62360010100982e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -5.8745421114059226e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -9.570417286330901e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.001308898824477267,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.00014239701856677556,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 1.8640658738910965e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -9.466773264232842e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -2.1963756185128247e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.0016013138909913849,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 8.716011163700799e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 1.8640658738910965e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -9.466773264232842e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -2.1963756185128247e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.0016013138909913849,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 8.716011163700799e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 1.8723294883726815e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_shared"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -9.983581640793382e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_shared"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -2.0758369144169286e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_shared"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.001658415852414108,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_shared"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -5.6412594117372095e-05,
+      "episode_exact_recall": -0.08333333333333337,
+      "query_accuracy": -0.08333333333333337
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -9.310387925598462e-05,
+      "episode_exact_recall": -0.08333333333333337,
+      "query_accuracy": -0.08333333333333337
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -4.9804554003718415e-05,
+      "episode_exact_recall": -0.08333333333333337,
+      "query_accuracy": -0.08333333333333337
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.001394674044283728,
+      "episode_exact_recall": -0.08333333333333337,
+      "query_accuracy": -0.08333333333333337
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.00010359250246905205,
+      "episode_exact_recall": -0.08333333333333337,
+      "query_accuracy": -0.08333333333333337
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 1.5933574679216633e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -8.931691677493969e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -1.2518476252165733e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.0014942065392444803,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 7.411420663816504e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -0.0004974416209320154,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -0.0028849855820848314,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -0.0028364687369241137,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": -3.6414367549753024e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -3.160868766904912e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 1.993677285239137e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -9.883266546795166e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -2.284685025255584e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.0016687738153020604,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -1.7671339278546583e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81032_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -3.8111704984133965e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": 7.950950696500314e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -2.9447451257436086e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": -7.064607104867449e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.00011228122369277838,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -3.8111704984133965e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": 7.950950696500314e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -2.9447451257436086e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": -7.064607104867449e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 0.00011228122369277838,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 1.225382328051694e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": 4.837059849460701e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": 3.7981520648600053e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 5.858808131287141e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 3.328338217145621e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -4.054013145404767e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -7.813038429138608e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -2.3855472817357892e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 2.4427557246520237e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 1.3544091237438494e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -4.976339258888629e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_shared"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -8.013992149324967e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_shared"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -2.2496403831673284e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_shared"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.00011828299748051219,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_shared"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 2.9525248712580776e-06,
+      "episode_exact_recall": 0.041666666666666685,
+      "query_accuracy": 0.041666666666666685
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -3.189894678179428e-05,
+      "episode_exact_recall": 0.041666666666666685,
+      "query_accuracy": 0.041666666666666685
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -8.533105987584833e-06,
+      "episode_exact_recall": 0.041666666666666685,
+      "query_accuracy": 0.041666666666666685
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 7.604090777335593e-05,
+      "episode_exact_recall": 0.041666666666666685,
+      "query_accuracy": 0.041666666666666685
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 8.853899013760991e-05,
+      "episode_exact_recall": 0.041666666666666685,
+      "query_accuracy": 0.041666666666666685
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -3.545320063191859e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -5.542293302829293e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -1.5156727532938952e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 9.56298702939895e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 5.894393446581603e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -0.03287770618070507,
+      "episode_exact_recall": 0.04166666666666663,
+      "query_accuracy": 0.04166666666666663
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -0.06040533337377474,
+      "episode_exact_recall": 0.08333333333333331,
+      "query_accuracy": 0.08333333333333331
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -0.02806379952397775,
+      "episode_exact_recall": 0.08333333333333331,
+      "query_accuracy": 0.08333333333333331
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": -0.05928521508300533,
+      "episode_exact_recall": 0.08333333333333331,
+      "query_accuracy": 0.08333333333333331
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -0.006620378985618958,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": -5.736851908522134e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_metadata_only",
+    "differences_from_normal": {
+      "ce": -8.406340329347728e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_audio",
+    "differences_from_normal": {
+      "ce": -2.113731002495456e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_missing_video",
+    "differences_from_normal": {
+      "ce": 0.0001116731411663352,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -6.2582120294862875e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "av_binding_s81033_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 6.945765337240744,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 1.9281844101478663e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": -3.574125485515916e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 6.947759450479157,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 2.108875148603903e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": -2.0337811867658542e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 8.769653079048336,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 4.029568347145766e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": -8.1146509928156e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 8.908248021479462,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 1.402218823319295e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": -3.649954583251744e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 6.895677179598698,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_shared"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": -3.3704983720412706e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_shared"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 6.979091692314534,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 4.049837537729482e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": -7.062563167213771e-10,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 6.946080234207307,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 2.3599802410673133e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": 2.1492234183903515e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 9.490147742247569,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -2.2768707856013303e-08,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": -1.1312468966622266e-09,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 8.62401884089663,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -7.345188230099345e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": 2.181279498946067e-08,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81031_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 6.867984289332197,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 3.221673156092892e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": -4.329778858911033e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 6.870384922153587,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 3.396553966588951e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": -4.6395284056331264e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 6.780699955138303,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -1.4832414236002863e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": 9.211684167293203e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 6.780699955138303,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -1.4832414236002863e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": 9.211684167293203e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 6.789199143632286,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_shared"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": 1.5317954043707143e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_shared"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 6.95096177076134,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 6.313680870790201e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": -3.4285801827591304e-08,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 6.888188116626622,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 4.139500614676724e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": -2.3790249068108248e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 9.42737391818151,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -7.125331994355056e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": -1.297464475180068e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 6.782577069868284,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -2.120647285624392e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": 1.6934962760404844e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81032_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 6.962018749423697,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 2.2988660181862266e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": -3.898492278290894e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 6.96689012133814,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 2.4280604515400226e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": -4.219446693189133e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 8.337802735755075,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -1.1805552214377239e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": -1.1912488159524295e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 8.731478948251835,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.6669921875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -5.089030723987073e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": 2.7076704266853585e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 6.9044757740875715,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_shared"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": -5.795598849346476e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_shared"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 7.034258407534547,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 4.392893717192195e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": -2.2061095992424815e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 6.981682501891905,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 2.819734992813954e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": -4.767129358955273e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 10.05223169275623,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -2.5851975169347298e-08,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": 3.416200378504448e-08,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 9.294903887462883,
+      "episode_exact_recall": -0.91015625,
+      "query_accuracy": -0.66796875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -2.5064521797832877e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_query_permute",
+    "differences_from_normal": {
+      "ce": 5.006180703849744e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "mqar_s81033_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 8.875477055458866,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81031_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 8.615494301930643e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81031_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 8.87606891235785,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81031_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 8.751447249726307e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81031_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 12.058395602754702,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81031_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 8.177653811181769e-09,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81031_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 12.12413905806827,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81031_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 1.0537505925749561e-08,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81031_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 8.853314895365527,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81031_shared"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 8.880996608338597,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81031_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 1.3598607841564843e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81031_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 8.870964416736383,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81031_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 8.852101998429616e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81031_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 14.70371596739467,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81031_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 8.592759150500763e-10,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81031_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 13.113049763447584,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81031_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 2.4794218074913023e-09,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81031_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 9.204914763990004,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81032_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 5.9045618362010604e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81032_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 9.20511077441748,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81032_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 6.3172865454088885e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81032_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 13.052591689543013,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81032_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 2.5474814817022274e-08,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81032_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 13.191374788604868,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81032_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 2.2395734697132228e-08,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81032_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 9.191352536070715,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81032_shared"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 9.222722385024275,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81032_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 1.146193478320835e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81032_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 9.20400248998348,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81032_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 6.305105899495568e-06,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81032_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 13.350686960005305,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81032_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 1.2736412041183008e-09,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81032_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 11.873754846497711,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81032_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -1.1611846632353303e-08,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81032_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 8.853936563865831,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81033_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 1.1003581931840758e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81033_analytic_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 8.856636576408313,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81033_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 1.141079829739981e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81033_analytic_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 11.40165679799645,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81033_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -2.1028675788644333e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81033_analytic_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 11.447848428044724,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81033_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -1.8562248490103998e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81033_analytic_joint_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 8.805347772345383,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81033_shared"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 8.88651336111202,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81033_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 1.9848837569893477e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81033_two_gate_frozen_shared_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 8.851291639690485,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81033_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": 1.2161542550812146e-05,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81033_two_gate_frozen_shared_updates256"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 12.972102024020243,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81033_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -1.2121855987931833e-08,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81033_two_gate_joint_cpu20"
+  },
+  {
+    "condition": "test_length32_content_shuffle",
+    "differences_from_normal": {
+      "ce": 12.039270132960203,
+      "episode_exact_recall": -1.0,
+      "query_accuracy": -0.8388671875
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81033_two_gate_joint_updates256"
+  },
+  {
+    "condition": "test_length32_normal_adapter_disabled",
+    "differences_from_normal": {
+      "ce": -1.7487057315321946e-07,
+      "episode_exact_recall": 0.0,
+      "query_accuracy": 0.0
+    },
+    "interpretation": "destructive or counterfactual sensitivity; not a new independently trained arm",
+    "job_id": "selective_copy_s81033_two_gate_joint_updates256"
+  }
+]

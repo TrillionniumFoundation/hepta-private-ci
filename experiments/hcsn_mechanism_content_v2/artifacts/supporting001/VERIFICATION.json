@@ -1,0 +1,34 @@
+{
+  "all_original_staging_restored_member_sha256_equal": true,
+  "all_source_file_sets_preserved": true,
+  "archive_sha256": "7e6510aec276893c00f75abad614f1a166ecc6057eea8a0ca9e6b53967f9d993",
+  "compressed_bytes": 1292476,
+  "costs": {
+    "additional_hash_cpu_seconds": 0.07523698699999937,
+    "additional_hash_wall_seconds": 0.07541435900202487,
+    "body_cpu_seconds": 4.606413303,
+    "body_wall_seconds": 4.607097932996112,
+    "pack_cpu_seconds": 4.378066199,
+    "pack_wall_seconds": 4.378542092992575,
+    "restore_cpu_seconds": 0.15310225600000038,
+    "restore_wall_seconds": 0.15313818500726484
+  },
+  "members": 146,
+  "parts": 5,
+  "restore_destination": "experiment root, retaining results/ paths",
+  "restore_verification": {
+    "archive_sha256": "7e6510aec276893c00f75abad614f1a166ecc6057eea8a0ca9e6b53967f9d993",
+    "restored_or_already_identical": 146
+  },
+  "schema": "hcsn-supporting-archive-verification.v1",
+  "source_prefixes": [
+    "results/validation001",
+    "results/audit_development001",
+    "results/audit_formal001",
+    "results/replay_blueprint_check001",
+    "results/analysis_replay_check001",
+    "audit_source_history",
+    "overview/content_meter.json"
+  ],
+  "uncompressed_bytes": 29176480
+}
