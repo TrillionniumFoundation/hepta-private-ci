@@ -1,7 +1,5 @@
 use super::*;
 
-use pretty_assertions::assert_eq;
-
 #[tokio::test]
 async fn absent_live_and_stale_socket_entries_remain_distinct()
 -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
