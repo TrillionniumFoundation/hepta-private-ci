@@ -1,0 +1,104 @@
+{
+  "schema": "hepta.ndu-abc.natural-av-source-and-clock-preparation.v1",
+  "status": "source_preparation_only_task_evaluation_not_authorized",
+  "scope": "Recorded natural human audiovisual speech stream and synchronization-control infrastructure",
+  "scientific_experiment_C_passed": false,
+  "speech_video_generator_joint_training_established": false,
+  "natural_open_world_audio_visual_generation_established": false,
+  "source_dataset": {
+    "name": "GRID audiovisual sentence corpus",
+    "doi": "10.5281/zenodo.3625687",
+    "official_page": "https://spandh.dcs.shef.ac.uk/gridcorpus/",
+    "official_record": "https://zenodo.org/records/3625687",
+    "official_api": "https://zenodo.org/api/records/3625687",
+    "metadata_file_sha256": "44a026e6d71a8ad8255bf5f31600ccbead3a982a071e01a89e06655b420f96cb",
+    "license_from_author_deposited_record": "CC-BY-4.0",
+    "license_field": "metadata.license.id=cc-by-4.0",
+    "credit": "Cooke, Barker, Cunningham and Shao; GRID corpus, 2006",
+    "annotation": "Provided spoken-word transcripts and estimated word alignment boundaries; not human lip-onset annotations or open-world visual-event labels",
+    "recording_provenance": "Human facial video and simultaneously recorded speech; the original paper describes matching camera audio to microphone audio and replacing the video audio track",
+    "paper_url": "https://zenodo.org/records/3625687/files/jasagrid.pdf",
+    "paper_sha256": "ecbf8f7ef7cb429e9621317bfc64a67002a4c465be3c1a3f6144eeed058ee634"
+  },
+  "source_selection": {
+    "excluded_speakers": [2, 21, 23],
+    "exclusion_reasons": {"2": "official example used for development format inspection", "21": "no video in original corpus", "23": "official example used for development format inspection"},
+    "candidate_speakers": "integers 1..34 except 2,21,23",
+    "speaker_ranking": "ascending SHA256 UTF8(hepta-temporal-speaker-v1|s{integer}); integer breaks hash ties",
+    "role_counts": {"fit": 10, "calibration": 5, "evaluation": 16},
+    "roles": {
+      "fit": [17, 15, 22, 3, 27, 30, 26, 7, 13, 25],
+      "calibration": [20, 5, 1, 19, 6],
+      "evaluation": [34, 9, 24, 31, 18, 4, 12, 29, 10, 8, 16, 32, 11, 33, 28, 14]
+    },
+    "clips_per_speaker": 1,
+    "eligible_member": "regular .mpg member with s{speaker} as a directory component; exclude __MACOSX and dot-prefixed basenames",
+    "clip_ranking": "ascending SHA256 UTF8(hepta-temporal-clip-v1|s{integer}|{exact_zip_member_path}); member path breaks hash ties",
+    "selection_before_payload": "Fetch ZIP directories only; freeze exact clip and alignment entry names, CRC, sizes and offsets for all 31 groups in selected-source-manifest.json before fetching any selected media or annotation member",
+    "missing_source_policy": "Retain failure without substituting another speaker or clip; no selection based on decoding, semantic quality or policy results",
+    "dependency_group": "speaker and original recording; every shift, dropout, replay, crop and model seed remains nested within its original group",
+    "independent_evaluation_speaker_groups": 16,
+    "official_examples_are_evaluation_units": false
+  },
+  "download": {
+    "method": "Public HTTPS byte ranges from author-deposited Zenodo ZIP assets; exact Content-Range and fixed file size required",
+    "maximum_range_bytes": 16777216,
+    "maximum_member_bytes": 2000000,
+    "maximum_member_compressed_bytes": 2000000,
+    "maximum_total_transferred_bytes": 100000000,
+    "maximum_concurrent_archives": 4,
+    "required_integrity": ["retained official metadata and its hash", "every requested byte range and response SHA256", "stable ETag when supplied", "ZIP member CRC32", "uncompressed member size", "new SHA256 for every retained original member"],
+    "full_zip_md5_verified_by_partial_download": false,
+    "no_account_or_paid_access": true
+  },
+  "preparation_only": {
+    "allowed": ["metadata and filename selection", "original member retrieval", "word alignment syntax and raw boundary retention", "ffprobe original stream and frame PTS inventory", "ffmpeg decode-to-null format validation", "complete subprocess wall and CPU receipts"],
+    "forbidden": ["offset-policy evaluation", "quality inference", "ASR or AVSync scoring", "choosing sources using outcomes", "using evaluation source metrics to tune policy"],
+    "retain_original_audio_video": true,
+    "nominal_frame_rate_is_authoritative": false,
+    "clock_policy": "Use actual per-frame PTS and sample clock; original pilots have 75 decoded frames spaced .04s although r_frame_rate reports 50/1",
+    "annotation_timebase": "Retain raw integers; mark an inferred candidate scale separately from a documented conversion. Do not equate word acoustic boundaries with lip motion truth."
+  },
+  "prospective_control_design_not_executed": {
+    "required_additional_freeze": "Root must approve and publish the full controller, observer qualification, cost and analysis protocol after source preparation and A/B review",
+    "task": "Causal repair or re-timing of recorded natural AV streams into actual serialized AV output",
+    "is_native_speech_or_video_synthesis": false,
+    "initial_offset_ms": [-160, -80, 0, 80, 160],
+    "condition_families": ["offset only", "offset plus predeclared packet loss", "offset plus predeclared delayed observations"],
+    "causal_input": "Only arrived audio samples and mouth-region visual features up to the current observation cutoff, their observed arrival history and uncommitted output buffer",
+    "prohibited_policy_inputs": ["injected offset or perturbation seed", "clean reference timestamps or original uncorrupted stream", "future samples or arrivals", "reference transcript/event labels", "offline oracle outcome"],
+    "public_clock": "Per-channel local increments and actual observed arrival times; no clean cross-channel time origin that discloses the injected label",
+    "candidate_actions": ["wait for the next observation within a fixed latency budget", "advance or delay only buffered uncommitted audio or video by one actual frame interval", "commit the next output chunk"],
+    "irreversibility": "Previously committed audio samples and video frames cannot be rewritten",
+    "comparison": ["fixed no-repair playout", "prespecified causal feature policy", "learned feedback policy after independent calibration"],
+    "oracle": "Offline full-clip diagnostic upper bound only; never a live policy or online target",
+    "delayed_shared_semantic_benefit": "Not established by clock repair. Requires a separately registered shared semantic state and future text/speech/video generation whose multiple future outputs respond to the same state update."
+  },
+  "evaluation_requirements_not_satisfied_by_preparation": {
+    "clock_endpoints": ["actual output stream continuity and PTS", "known injected relative offset recovered", "output latency and dropped required content"],
+    "semantic_endpoints": ["independent transcript or event success", "required modality completion", "cross-modal semantic consistency"],
+    "lip_sync": "Requires an independently qualified AVSync or causal content-based offset observer; equal container clocks alone do not establish lip synchronization",
+    "cost": "Measure separate whole-process download/decode preparation, training, controller/planner, all encoder/decoder calls, buffering, actual mux/write/fsync/reopen, P50/P95 latency and worst-case completion loss",
+    "statistics": "Resample speaker/source groups; shifts/windows/replays/model seeds do not increase independent speaker count; 16 evaluation groups provide a bounded pilot, not general-domain certification"
+  },
+  "unclosed_blockers": [
+    "Mouth-motion/energy correlation is an unqualified baseline and may fail to identify offsets because articulation can lead acoustics or repeat; it is not a factual lip-sync judge",
+    "No independent AVSync observer weights, license, source-disjoint calibration or calibrated error threshold are currently registered",
+    "Absolute original AV synchronization uncertainty and acoustic word-boundary precision need explicit treatment; injected relative offsets do not certify original physiological synchronization",
+    "Mouth ROI localization and all preprocessing must be fixed without evaluation-outcome selection",
+    "Packet loss/late-arrival law, learned control method, stopping/commitment rules and quality-versus-compute criterion still require prospective freeze",
+    "Existing v7_media is a bounded digit TTS plus independently generated digit-motion adapter, not a natural AV generator or joint speech/video training system",
+    "Old motion checkpoint, finite-PCM audit evidence, ASR qualification runner/weights identity and exact historical media training recipe are not recovered",
+    "Native multimodal generative training and the complete experiment C scientific claim remain unpassed"
+  ],
+  "sources": [
+    "https://spandh.dcs.shef.ac.uk/gridcorpus/",
+    "https://zenodo.org/records/3625687",
+    "https://zenodo.org/api/records/3625687",
+    "https://ultrasuite.github.io/data/tal_corpus/",
+    "https://ultrasuite.github.io/data/tal_corpus_sync/",
+    "https://github.com/CheyneyComputerScience/CREMA-D",
+    "https://github.com/YapengTian/AVE-ECCV18",
+    "https://www.robots.ox.ac.uk/~vgg/data/vggsound/"
+  ]
+}

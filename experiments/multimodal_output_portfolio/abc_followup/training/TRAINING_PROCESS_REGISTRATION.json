@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+    "-B",
+    "-m",
+    "experiments.multimodal_output_portfolio.abc_followup.training.train",
+    "run",
+    "--protocol",
+    "experiments/multimodal_output_portfolio/abc_followup/training/TRAINING_PROTOCOL.json"
+  ],
+  "cwd": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery",
+  "entrypoint_sha256": "21f4ef860de1a5569dfeb5e8bce0ddc2b873635dc76ff9fc528800eeaf3baa1a",
+  "schema": "hepta.abc4.exact-child-process-registration.v1",
+  "unix_ns": 1792915099365611198,
+  "wrapper_sha256": "eb348e00b48496559b6cc2953e4af7b8c82041425bf049991f55b8db0e91ba2d"
+}

@@ -1,0 +1,34 @@
+{
+  "all_checks_pass": true,
+  "frozen_candidate_source_changed": false,
+  "fresh_source_or_outcome_read": false,
+  "cases": [
+    {
+      "case": "identity_check",
+      "returncode": 0,
+      "expected_success": true,
+      "status": "passed",
+      "candidate_module_imported": false,
+      "receipt": "/tmp/hepta-ndu-next-media-cache/dependency-continuity-check-001/identity_check.json",
+      "error": null
+    },
+    {
+      "case": "wrong_manifest",
+      "returncode": 1,
+      "expected_success": false,
+      "status": "rejected",
+      "candidate_module_imported": false,
+      "receipt": "/tmp/hepta-ndu-next-media-cache/dependency-continuity-check-001/wrong_manifest.json",
+      "error": "ValueError('Dependency identity changed: /workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/dependency_continuity/ADDENDUM.json')"
+    },
+    {
+      "case": "wrong_qualification",
+      "returncode": 1,
+      "expected_success": false,
+      "status": "rejected",
+      "candidate_module_imported": false,
+      "receipt": "/tmp/hepta-ndu-next-media-cache/dependency-continuity-check-001/wrong_qualification.json",
+      "error": "ValueError('Actual qualification result does not belong to the bound execution')"
+    }
+  ]
+}

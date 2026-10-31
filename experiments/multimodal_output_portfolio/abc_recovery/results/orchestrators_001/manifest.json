@@ -1,0 +1,51 @@
+{
+  "purpose": "Exact provenance copies, without changing running source paths or rerunning scientific work. Scripts retain original absolute environment paths and refuse existing result directories. Relocation changes __file__ path identity; these copies are not claimed to reproduce original registration hashes if executed from a new location.",
+  "records": [
+    {
+      "binding_field": "source_sha256",
+      "binding_registration_copy": "training_audit_runner-registration.json",
+      "binding_registration_original_path": "/workspace/scratch/2b3c256bef7d/abc2-runs/training-audit-001/registration.json",
+      "binding_registration_sha256": "83b72ae3a59897c26c0e348716157e94901fa4917a5ad21189f73955d15b0936",
+      "byte_identical_to_executed_or_waiting_source": true,
+      "bytes": 14840,
+      "original_execution_path": "/workspace/scratch/2b3c256bef7d/training_audit_runner.py",
+      "script": "training_audit_runner.py",
+      "sha256": "8f5211eed1b6605d0ba34e8fa83d5e4329031ebe3694a27a1d0a3fa46de9cf44"
+    },
+    {
+      "binding_field": "checker_source_sha256",
+      "binding_registration_copy": "training_audit_binding-registration.json",
+      "binding_registration_original_path": "/workspace/scratch/2b3c256bef7d/abc2-runs/training-audit-001/producer-binding-registration.json",
+      "binding_registration_sha256": "79dd8fe191cf4c7ae6fd2c80a7ac5d2f6b432259d1044c118e8bc6ce458d5c62",
+      "byte_identical_to_executed_or_waiting_source": true,
+      "bytes": 7548,
+      "original_execution_path": "/workspace/scratch/2b3c256bef7d/training_audit_binding.py",
+      "script": "training_audit_binding.py",
+      "sha256": "1f1b16cf70a942eb972925f8c8a0c7ac17bbe0fb2a030c9a00d11630196d6423"
+    },
+    {
+      "binding_field": "source_sha256",
+      "binding_registration_copy": "resume_verification_runner-registration.json",
+      "binding_registration_original_path": "/workspace/scratch/2b3c256bef7d/abc2-runs/resume-verification-001/registration.json",
+      "binding_registration_sha256": "56fe4785a22e87aacbc9bf25b80b0c9b54d96e2a3468e49db98c0b7e9154f76b",
+      "byte_identical_to_executed_or_waiting_source": true,
+      "bytes": 8798,
+      "original_execution_path": "/workspace/scratch/2b3c256bef7d/resume_verification_runner.py",
+      "script": "resume_verification_runner.py",
+      "sha256": "ff943a8c162d60c1f926da123466c3f49100c28312f20dc67c3c182d60084df6"
+    },
+    {
+      "binding_field": "source_sha256",
+      "binding_registration_copy": "control_selected_audit_runner-registration.json",
+      "binding_registration_original_path": "/workspace/scratch/2b3c256bef7d/control-selected-audit-plan-001.json",
+      "binding_registration_sha256": "8ed9aae9fa97b96f0ca46db7fc58137608492b9a117b033e37f8ca5858cc24ca",
+      "byte_identical_to_executed_or_waiting_source": true,
+      "bytes": 18828,
+      "original_execution_path": "/workspace/scratch/2b3c256bef7d/control_selected_audit_runner.py",
+      "script": "control_selected_audit_runner.py",
+      "sha256": "b3d5af2daa97ad16ffaa7e9b553e6aea5f8ab839b5bdf7fc1e2b1b5e97f75cea"
+    }
+  ],
+  "schema": "hepta.abc.exact-orchestrator-source-archive.v1",
+  "selected_control_audit_state_at_archive": "Waiting for full control producer completion; final execution result will be archived separately."
+}

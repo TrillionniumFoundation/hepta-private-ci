@@ -1,0 +1,1205 @@
+{
+  "17": {
+    "exploration": {
+      "audit_trajectories_used_for_selection": false,
+      "endpoints": [
+        {
+          "adapter_sha256": "d59e92a72d0a1d4f76c33eaada97f79eead385b4f7a0f0d0626e471f679ef52e",
+          "final_value": 0.900593728214968,
+          "trajectory": 0
+        },
+        {
+          "adapter_sha256": "fba92c6eddeba29767f640e04d51a07442c9adb7d5893219dcc942dc4485ecb7",
+          "final_value": 0.9005936742913909,
+          "trajectory": 1
+        },
+        {
+          "adapter_sha256": "08e5c1748fdd75862ab7664acac062fa88d5b9bbd8bf684a364c6c71cc724fd8",
+          "final_value": 0.9005938248396852,
+          "trajectory": 2
+        },
+        {
+          "adapter_sha256": "d998d35127f924abcf02f3e8f73f51db43c56872432d2fa97700245583faded1",
+          "final_value": 0.9005938894269057,
+          "trajectory": 3
+        },
+        {
+          "adapter_sha256": "8093a62d6f1b00e31fb24b888a08c359d7b8c7bf6ea53ae656184866dd21b627",
+          "final_value": 0.9005939561445266,
+          "trajectory": 4
+        },
+        {
+          "adapter_sha256": "19bdb53e2dc477e2fc91dfe50b0aa883ea7e3d063570e4d77c389d26d6fae2ef",
+          "final_value": 0.9005939393574373,
+          "trajectory": 5
+        },
+        {
+          "adapter_sha256": "d828b33b8561d790d95873531995562468dcb7394577879673e81d6854706718",
+          "final_value": 0.9005935418806039,
+          "trajectory": 6
+        },
+        {
+          "adapter_sha256": "41ba5e197b0227efb9e5bd70c4f0dcc86451c913bc7d100adc55dfda8233e4a5",
+          "final_value": 0.9005936751528644,
+          "trajectory": 7
+        }
+      ],
+      "examples_per_gradient": 48,
+      "gradient_steps": 288,
+      "probe_examples_per_step": 48,
+      "value_examples_per_step": 32,
+      "wall_ns": 12842989472
+    },
+    "fixed_policy": {
+      "action": 2,
+      "action_name": "refine_text",
+      "development_action_mean_returns": [
+        0.7847739472319953,
+        0.7796392059980415,
+        0.7886333222319951,
+        0.7872477908772413,
+        0.7885733723692242
+      ],
+      "resources": [
+        {
+          "decoder_batches": 7,
+          "decoder_examples": 448,
+          "encoder_batches": 1,
+          "encoder_examples": 64,
+          "features_cpu_ns": 43034510,
+          "features_wall_ns": 19045088,
+          "media_cpu_ns": 19253208,
+          "media_wall_ns": 7244076,
+          "neural_cpu_ns": 38807498,
+          "neural_wall_ns": 22778613,
+          "observer_batches": 14,
+          "observer_digit_examples": 896,
+          "offline_action_rows": 320,
+          "offline_nonstop_continuations": 256,
+          "private_score_batches": 5,
+          "reward_cpu_ns": 141060959,
+          "reward_wall_ns": 69009117,
+          "target_accesses": 10,
+          "total_cpu_ns": 329851013,
+          "total_wall_ns": 166227904,
+          "transition_batches": 5,
+          "transition_examples": 320
+        },
+        {
+          "decoder_batches": 7,
+          "decoder_examples": 448,
+          "encoder_batches": 1,
+          "encoder_examples": 64,
+          "features_cpu_ns": 56556119,
+          "features_wall_ns": 28547848,
+          "media_cpu_ns": 24649569,
+          "media_wall_ns": 8615812,
+          "neural_cpu_ns": 62173591,
+          "neural_wall_ns": 32299590,
+          "observer_batches": 14,
+          "observer_digit_examples": 896,
+          "offline_action_rows": 320,
+          "offline_nonstop_continuations": 256,
+          "private_score_batches": 5,
+          "reward_cpu_ns": 131476090,
+          "reward_wall_ns": 67556417,
+          "target_accesses": 10,
+          "total_cpu_ns": 381544933,
+          "total_wall_ns": 191337198,
+          "transition_batches": 5,
+          "transition_examples": 320
+        },
+        {
+          "decoder_batches": 7,
+          "decoder_examples": 448,
+          "encoder_batches": 1,
+          "encoder_examples": 64,
+          "features_cpu_ns": 58498388,
+          "features_wall_ns": 30579539,
+          "media_cpu_ns": 16153363,
+          "media_wall_ns": 8157962,
+          "neural_cpu_ns": 57350138,
+          "neural_wall_ns": 26621173,
+          "observer_batches": 14,
+          "observer_digit_examples": 896,
+          "offline_action_rows": 320,
+          "offline_nonstop_continuations": 256,
+          "private_score_batches": 5,
+          "reward_cpu_ns": 122725349,
+          "reward_wall_ns": 62713780,
+          "target_accesses": 10,
+          "total_cpu_ns": 358933650,
+          "total_wall_ns": 179756565,
+          "transition_batches": 5,
+          "transition_examples": 320
+        },
+        {
+          "decoder_batches": 7,
+          "decoder_examples": 448,
+          "encoder_batches": 1,
+          "encoder_examples": 64,
+          "features_cpu_ns": 55873267,
+          "features_wall_ns": 27693109,
+          "media_cpu_ns": 15834061,
+          "media_wall_ns": 7884180,
+          "neural_cpu_ns": 55334129,
+          "neural_wall_ns": 27295239,
+          "observer_batches": 14,
+          "observer_digit_examples": 896,
+          "offline_action_rows": 320,
+          "offline_nonstop_continuations": 256,
+          "private_score_batches": 5,
+          "reward_cpu_ns": 104766789,
+          "reward_wall_ns": 52747570,
+          "target_accesses": 10,
+          "total_cpu_ns": 330320260,
+          "total_wall_ns": 166502652,
+          "transition_batches": 5,
+          "transition_examples": 320
+        }
+      ],
+      "source_ids_json_sha256": "558473a8c0bc60e910f7104c584d2d2942cb07a8b1b8253afc9b272b3ac1079c",
+      "source_pair_rows": 256,
+      "zero_adapter_exact_parity": true
+    },
+    "profiles": {
+      "field": {
+        "adapter_parameter_changes": {
+          "pixel_decoder.0.down": true,
+          "pixel_decoder.0.up": true,
+          "text_initial.down": true,
+          "text_initial.up": true,
+          "text_projection.down": true,
+          "text_projection.up": true
+        },
+        "choice_counts": [
+          14,
+          0,
+          13,
+          9
+        ],
+        "controller_fit_audit": {
+          "next_field_rmse": 0.41025420727794215,
+          "reward_mae": 1.436408674211477e-07,
+          "reward_rmse": 1.9006372685526038e-07,
+          "rows": 72
+        },
+        "controller_fit_wall_ns": 7530720,
+        "direct_gradient_of_deployed_hard_reward": false,
+        "final_adapter_sha256": "608f3d34922bf3cf8c9678eb47ed31f02d0692a62cb520c3326ea0ae8e54d30f",
+        "final_field": [
+          0.19105486571788788,
+          0.10492946952581406,
+          0.20809678733348846,
+          0.004746817592193736,
+          0.00119207072103157,
+          1.0,
+          0.2951352894306183,
+          0.17879188060760498,
+          0.027325386181473732,
+          0.10428130626678467,
+          0.15118199586868286,
+          0.08909241110086441,
+          0.00044999891542829573,
+          0.0058049260433184315
+        ],
+        "frozen_base_sha256": "d3cfa1bbe66b92928183297ea52b3823c9e5d0eb8dbd0a6ae543e5b2a8608717",
+        "gradient_examples": 1728,
+        "initial_adapter_sha256": "d59e92a72d0a1d4f76c33eaada97f79eead385b4f7a0f0d0626e471f679ef52e",
+        "mode": "field",
+        "ordinary_fixed_action": 3,
+        "probe_examples": 1776,
+        "reload_exact_output_parity": true,
+        "saved": {
+          "complete_optimizer_saved": true,
+          "file_sha256": "d074667548d1ef67b68da4c2bd27f7898f29d986553dba3dc889965305fb1e39",
+          "parameter_sha256": "608f3d34922bf3cf8c9678eb47ed31f02d0692a62cb520c3326ea0ae8e54d30f",
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_run/training/17/field.pt"
+        },
+        "schedule_sha256": "0f147cd2e28fc229d60db67b2f4632da267203cdda7c2054e588b88e15e3d3b0",
+        "seed": 17,
+        "steps": 36,
+        "trainable_parameters": 3424,
+        "value_examples": 1152,
+        "wall_ns": 1581044586
+      },
+      "generic": {
+        "adapter_parameter_changes": {
+          "pixel_decoder.0.down": true,
+          "pixel_decoder.0.up": true,
+          "text_initial.down": true,
+          "text_initial.up": true,
+          "text_projection.down": true,
+          "text_projection.up": true
+        },
+        "choice_counts": [
+          1,
+          0,
+          6,
+          29
+        ],
+        "controller_fit_audit": {
+          "next_field_rmse": 0.45204686462309923,
+          "reward_mae": 1.2360182405974425e-07,
+          "reward_rmse": 1.7244184349118222e-07,
+          "rows": 72
+        },
+        "controller_fit_wall_ns": 5150242,
+        "direct_gradient_of_deployed_hard_reward": false,
+        "final_adapter_sha256": "e351efb180c6ff3c4cc55e9455b8a7b6e1dd2a1abd3d44a9c54dc844f312e2e0",
+        "final_field": [
+          0.19103629887104034,
+          0.10197252035140991,
+          0.20830655097961426,
+          0.011695722998790797,
+          0.0011799954188789464,
+          1.0,
+          0.2951352894306183,
+          0.17879629135131836,
+          0.027736110612750053,
+          0.10428130626678467,
+          0.15116502344608307,
+          0.08830826729536057,
+          0.0010656954254955053,
+          0.014304441664277042
+        ],
+        "frozen_base_sha256": "d3cfa1bbe66b92928183297ea52b3823c9e5d0eb8dbd0a6ae543e5b2a8608717",
+        "gradient_examples": 1728,
+        "initial_adapter_sha256": "d59e92a72d0a1d4f76c33eaada97f79eead385b4f7a0f0d0626e471f679ef52e",
+        "mode": "generic",
+        "ordinary_fixed_action": 3,
+        "probe_examples": 1776,
+        "reload_exact_output_parity": true,
+        "saved": {
+          "complete_optimizer_saved": true,
+          "file_sha256": "7a250076acfb9fb015c18437b4ecdf92fb017c2b17aee4d1a02f5f7a0287b3bb",
+          "parameter_sha256": "e351efb180c6ff3c4cc55e9455b8a7b6e1dd2a1abd3d44a9c54dc844f312e2e0",
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_run/training/17/generic.pt"
+        },
+        "schedule_sha256": "0f147cd2e28fc229d60db67b2f4632da267203cdda7c2054e588b88e15e3d3b0",
+        "seed": 17,
+        "steps": 36,
+        "trainable_parameters": 3424,
+        "value_examples": 1152,
+        "wall_ns": 1337757054
+      },
+      "ordinary": {
+        "adapter_parameter_changes": {
+          "pixel_decoder.0.down": true,
+          "pixel_decoder.0.up": true,
+          "text_initial.down": true,
+          "text_initial.up": true,
+          "text_projection.down": true,
+          "text_projection.up": true
+        },
+        "choice_counts": [
+          0,
+          0,
+          0,
+          36
+        ],
+        "controller_fit_audit": null,
+        "controller_fit_wall_ns": 1423,
+        "direct_gradient_of_deployed_hard_reward": false,
+        "final_adapter_sha256": "28f15d82be9958ef6b525b583d21e0c41b1589a90976c81baab578c462657fdb",
+        "final_field": [
+          0.19103403389453888,
+          0.10145559906959534,
+          0.2083616703748703,
+          0.012657584515913376,
+          0.0011162146420747227,
+          1.0,
+          0.2951352894306183,
+          0.17879660427570343,
+          0.02784573845565319,
+          0.10428130626678467,
+          0.15116335451602936,
+          0.08821282535791397,
+          0.0011560495477169752,
+          0.015480744277580673
+        ],
+        "frozen_base_sha256": "d3cfa1bbe66b92928183297ea52b3823c9e5d0eb8dbd0a6ae543e5b2a8608717",
+        "gradient_examples": 1728,
+        "initial_adapter_sha256": "d59e92a72d0a1d4f76c33eaada97f79eead385b4f7a0f0d0626e471f679ef52e",
+        "mode": "ordinary",
+        "ordinary_fixed_action": 3,
+        "probe_examples": 1776,
+        "reload_exact_output_parity": true,
+        "saved": {
+          "complete_optimizer_saved": true,
+          "file_sha256": "6592eb32e92e97f37449fd338fc78d93325d0e4ddbe69c43b7da1267305fc808",
+          "parameter_sha256": "28f15d82be9958ef6b525b583d21e0c41b1589a90976c81baab578c462657fdb",
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_run/training/17/ordinary.pt"
+        },
+        "schedule_sha256": "0f147cd2e28fc229d60db67b2f4632da267203cdda7c2054e588b88e15e3d3b0",
+        "seed": 17,
+        "steps": 36,
+        "trainable_parameters": 3424,
+        "value_examples": 1152,
+        "wall_ns": 1361806507
+      },
+      "richer": {
+        "adapter_parameter_changes": {
+          "pixel_decoder.0.down": true,
+          "pixel_decoder.0.up": true,
+          "text_initial.down": true,
+          "text_initial.up": true,
+          "text_projection.down": true,
+          "text_projection.up": true
+        },
+        "choice_counts": [
+          31,
+          4,
+          0,
+          1
+        ],
+        "controller_fit_audit": {
+          "next_field_rmse": 0.6738509425915239,
+          "reward_mae": 2.0192087283691743e-07,
+          "reward_rmse": 2.740433956962369e-07,
+          "rows": 72
+        },
+        "controller_fit_wall_ns": 11985200,
+        "direct_gradient_of_deployed_hard_reward": false,
+        "final_adapter_sha256": "7f38e305807f2d3a6b67f2e4aad3819bc947683f63548d4d008f76be549dc28e",
+        "final_field": [
+          0.19106703996658325,
+          0.10658255219459534,
+          0.20797593891620636,
+          0.00024865878925589124,
+          0.0005204861733995786,
+          1.0,
+          0.2951352894306183,
+          0.17878872156143188,
+          0.027090074494481087,
+          0.10428130626678467,
+          0.1511934995651245,
+          0.0895080640912056,
+          2.3656692064832896e-05,
+          0.00030408382178534824
+        ],
+        "frozen_base_sha256": "d3cfa1bbe66b92928183297ea52b3823c9e5d0eb8dbd0a6ae543e5b2a8608717",
+        "gradient_examples": 1728,
+        "initial_adapter_sha256": "d59e92a72d0a1d4f76c33eaada97f79eead385b4f7a0f0d0626e471f679ef52e",
+        "mode": "richer",
+        "ordinary_fixed_action": 3,
+        "probe_examples": 1776,
+        "reload_exact_output_parity": true,
+        "saved": {
+          "complete_optimizer_saved": true,
+          "file_sha256": "a2b30ece15f963d4368cfc5d1309b1740f6fd541ca0fe35016c1c36f1ce7bfdf",
+          "parameter_sha256": "7f38e305807f2d3a6b67f2e4aad3819bc947683f63548d4d008f76be549dc28e",
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_run/training/17/richer.pt"
+        },
+        "schedule_sha256": "0f147cd2e28fc229d60db67b2f4632da267203cdda7c2054e588b88e15e3d3b0",
+        "seed": 17,
+        "steps": 36,
+        "trainable_parameters": 3424,
+        "value_examples": 1152,
+        "wall_ns": 1495928126
+      }
+    }
+  },
+  "29": {
+    "exploration": {
+      "audit_trajectories_used_for_selection": false,
+      "endpoints": [
+        {
+          "adapter_sha256": "a05318edb7714663743e4359f4daf7ef3884f050cf7d5535bfadf391e087548a",
+          "final_value": 0.9444862646088004,
+          "trajectory": 0
+        },
+        {
+          "adapter_sha256": "50f9901b4746457236eb14c053a22c116d7fab0985549e045455c85ec4dcb316",
+          "final_value": 0.9444861950040795,
+          "trajectory": 1
+        },
+        {
+          "adapter_sha256": "8e993eb9e3b4367de5ba70cc913aab80238df6fd52c16e4654ab3cafe73de857",
+          "final_value": 0.9444863754478283,
+          "trajectory": 2
+        },
+        {
+          "adapter_sha256": "ae5518c5505f8499772643b47f17940ed3ca87a9498c286461c5a1a6ffeeb02d",
+          "final_value": 0.9444862197190523,
+          "trajectory": 3
+        },
+        {
+          "adapter_sha256": "660e4722b1f2fffe2fffad2878b15e9c967c99bac46436a8b2ee54fd43e96d5e",
+          "final_value": 0.9444860727447084,
+          "trajectory": 4
+        },
+        {
+          "adapter_sha256": "b0631ab2c12b5e674d881c957d5804468e1fa2d4c7445bd1a214b0bc6abd10b9",
+          "final_value": 0.9444862784738652,
+          "trajectory": 5
+        },
+        {
+          "adapter_sha256": "1834100582dfab0e61dcde36a3f978a7cc6db6963d28428876464f58022c5c96",
+          "final_value": 0.9444864324447699,
+          "trajectory": 6
+        },
+        {
+          "adapter_sha256": "6bdc79cfe8bd6a3deeba5b6e552baba46353528fc37fc1d83de6dcd15fea5db0",
+          "final_value": 0.9444863235382364,
+          "trajectory": 7
+        }
+      ],
+      "examples_per_gradient": 48,
+      "gradient_steps": 288,
+      "probe_examples_per_step": 48,
+      "value_examples_per_step": 32,
+      "wall_ns": 11482418256
+    },
+    "fixed_policy": {
+      "action": 3,
+      "action_name": "refine_semantic",
+      "development_action_mean_returns": [
+        0.816610553821782,
+        0.8134362146251947,
+        0.8157824288217803,
+        0.823964668051572,
+        0.8028595233227821
+      ],
+      "resources": [
+        {
+          "decoder_batches": 7,
+          "decoder_examples": 448,
+          "encoder_batches": 1,
+          "encoder_examples": 64,
+          "features_cpu_ns": 55467965,
+          "features_wall_ns": 27508033,
+          "media_cpu_ns": 17236830,
+          "media_wall_ns": 9192661,
+          "neural_cpu_ns": 56362591,
+          "neural_wall_ns": 29132149,
+          "observer_batches": 14,
+          "observer_digit_examples": 896,
+          "offline_action_rows": 320,
+          "offline_nonstop_continuations": 256,
+          "private_score_batches": 5,
+          "reward_cpu_ns": 125311074,
+          "reward_wall_ns": 65271659,
+          "target_accesses": 10,
+          "total_cpu_ns": 368834201,
+          "total_wall_ns": 186387784,
+          "transition_batches": 5,
+          "transition_examples": 320
+        },
+        {
+          "decoder_batches": 7,
+          "decoder_examples": 448,
+          "encoder_batches": 1,
+          "encoder_examples": 64,
+          "features_cpu_ns": 54706004,
+          "features_wall_ns": 26698172,
+          "media_cpu_ns": 8915327,
+          "media_wall_ns": 8896085,
+          "neural_cpu_ns": 61029318,
+          "neural_wall_ns": 29240112,
+          "observer_batches": 14,
+          "observer_digit_examples": 896,
+          "offline_action_rows": 320,
+          "offline_nonstop_continuations": 256,
+          "private_score_batches": 5,
+          "reward_cpu_ns": 139933206,
+          "reward_wall_ns": 67997508,
+          "target_accesses": 10,
+          "total_cpu_ns": 381662942,
+          "total_wall_ns": 191340749,
+          "transition_batches": 5,
+          "transition_examples": 320
+        },
+        {
+          "decoder_batches": 7,
+          "decoder_examples": 448,
+          "encoder_batches": 1,
+          "encoder_examples": 64,
+          "features_cpu_ns": 52889871,
+          "features_wall_ns": 28878400,
+          "media_cpu_ns": 17072135,
+          "media_wall_ns": 9054354,
+          "neural_cpu_ns": 55178833,
+          "neural_wall_ns": 28517188,
+          "observer_batches": 14,
+          "observer_digit_examples": 896,
+          "offline_action_rows": 320,
+          "offline_nonstop_continuations": 256,
+          "private_score_batches": 5,
+          "reward_cpu_ns": 126997026,
+          "reward_wall_ns": 63023598,
+          "target_accesses": 10,
+          "total_cpu_ns": 371857236,
+          "total_wall_ns": 186539177,
+          "transition_batches": 5,
+          "transition_examples": 320
+        },
+        {
+          "decoder_batches": 7,
+          "decoder_examples": 448,
+          "encoder_batches": 1,
+          "encoder_examples": 64,
+          "features_cpu_ns": 51031693,
+          "features_wall_ns": 27015573,
+          "media_cpu_ns": 13005574,
+          "media_wall_ns": 8989397,
+          "neural_cpu_ns": 71551944,
+          "neural_wall_ns": 31786821,
+          "observer_batches": 14,
+          "observer_digit_examples": 896,
+          "offline_action_rows": 320,
+          "offline_nonstop_continuations": 256,
+          "private_score_batches": 5,
+          "reward_cpu_ns": 128351503,
+          "reward_wall_ns": 64323577,
+          "target_accesses": 10,
+          "total_cpu_ns": 374381750,
+          "total_wall_ns": 188139529,
+          "transition_batches": 5,
+          "transition_examples": 320
+        }
+      ],
+      "source_ids_json_sha256": "558473a8c0bc60e910f7104c584d2d2942cb07a8b1b8253afc9b272b3ac1079c",
+      "source_pair_rows": 256,
+      "zero_adapter_exact_parity": true
+    },
+    "profiles": {
+      "field": {
+        "adapter_parameter_changes": {
+          "pixel_decoder.0.down": true,
+          "pixel_decoder.0.up": true,
+          "text_initial.down": true,
+          "text_initial.up": true,
+          "text_projection.down": true,
+          "text_projection.up": true
+        },
+        "choice_counts": [
+          18,
+          0,
+          15,
+          3
+        ],
+        "controller_fit_audit": {
+          "next_field_rmse": 0.5332935117586175,
+          "reward_mae": 1.1753819581054407e-07,
+          "reward_rmse": 1.51736166250536e-07,
+          "rows": 72
+        },
+        "controller_fit_wall_ns": 7416767,
+        "direct_gradient_of_deployed_hard_reward": false,
+        "final_adapter_sha256": "5cd3c1e6f7b32df312e89b973dfa45c9322f73c238b07841cc743f87593829b5",
+        "final_field": [
+          0.19229908287525177,
+          0.2037372589111328,
+          0.22587774693965912,
+          0.00226697348575749,
+          0.000982359425935339,
+          1.0,
+          0.44645488262176514,
+          0.1792973279953003,
+          0.04663951322436333,
+          0.15507102012634277,
+          0.1535358875989914,
+          0.08449684083461761,
+          0.00031055451836436987,
+          0.002767766450272301
+        ],
+        "frozen_base_sha256": "ab732c3576ce4a767316183074f510335156a796b0edfe4165ed497ab7a59e35",
+        "gradient_examples": 1728,
+        "initial_adapter_sha256": "a05318edb7714663743e4359f4daf7ef3884f050cf7d5535bfadf391e087548a",
+        "mode": "field",
+        "ordinary_fixed_action": 2,
+        "probe_examples": 1776,
+        "reload_exact_output_parity": true,
+        "saved": {
+          "complete_optimizer_saved": true,
+          "file_sha256": "7b0455e284fd5bc48c8cbcac952ce9d7453a3b197d52a6928ac050554469c2d1",
+          "parameter_sha256": "5cd3c1e6f7b32df312e89b973dfa45c9322f73c238b07841cc743f87593829b5",
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_run/training/29/field.pt"
+        },
+        "schedule_sha256": "d1110647366877f7c9068eaccb52ed867d88b2742180e66a63b972e2141d5128",
+        "seed": 29,
+        "steps": 36,
+        "trainable_parameters": 3424,
+        "value_examples": 1152,
+        "wall_ns": 1629803909
+      },
+      "generic": {
+        "adapter_parameter_changes": {
+          "pixel_decoder.0.down": true,
+          "pixel_decoder.0.up": true,
+          "text_initial.down": true,
+          "text_initial.up": true,
+          "text_projection.down": true,
+          "text_projection.up": true
+        },
+        "choice_counts": [
+          1,
+          0,
+          21,
+          14
+        ],
+        "controller_fit_audit": {
+          "next_field_rmse": 0.2896018991532919,
+          "reward_mae": 1.2918009968048643e-07,
+          "reward_rmse": 1.7717346338360114e-07,
+          "rows": 72
+        },
+        "controller_fit_wall_ns": 9898822,
+        "direct_gradient_of_deployed_hard_reward": false,
+        "final_adapter_sha256": "467aee250724892db9d807791da2befa8afd1c43438651908c01a8c85540ffcf",
+        "final_field": [
+          0.1922832727432251,
+          0.20032285153865814,
+          0.2257881611585617,
+          0.0075355538118363746,
+          0.0011990615424097334,
+          1.0,
+          0.44645488262176514,
+          0.17929847538471222,
+          0.04645801708102226,
+          0.15507102012634277,
+          0.15350614488124847,
+          0.08429854363203049,
+          0.0008237249567173421,
+          0.009210732624197875
+        ],
+        "frozen_base_sha256": "ab732c3576ce4a767316183074f510335156a796b0edfe4165ed497ab7a59e35",
+        "gradient_examples": 1728,
+        "initial_adapter_sha256": "a05318edb7714663743e4359f4daf7ef3884f050cf7d5535bfadf391e087548a",
+        "mode": "generic",
+        "ordinary_fixed_action": 2,
+        "probe_examples": 1776,
+        "reload_exact_output_parity": true,
+        "saved": {
+          "complete_optimizer_saved": true,
+          "file_sha256": "1e7c9b2a7bc7d9569802b6db68293ad914390c5fbacbfb44585296d332845597",
+          "parameter_sha256": "467aee250724892db9d807791da2befa8afd1c43438651908c01a8c85540ffcf",
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_run/training/29/generic.pt"
+        },
+        "schedule_sha256": "d1110647366877f7c9068eaccb52ed867d88b2742180e66a63b972e2141d5128",
+        "seed": 29,
+        "steps": 36,
+        "trainable_parameters": 3424,
+        "value_examples": 1152,
+        "wall_ns": 1498096568
+      },
+      "ordinary": {
+        "adapter_parameter_changes": {
+          "pixel_decoder.0.down": true,
+          "pixel_decoder.0.up": true,
+          "text_initial.down": true,
+          "text_initial.up": true,
+          "text_projection.down": true,
+          "text_projection.up": true
+        },
+        "choice_counts": [
+          0,
+          0,
+          36,
+          0
+        ],
+        "controller_fit_audit": null,
+        "controller_fit_wall_ns": 781,
+        "direct_gradient_of_deployed_hard_reward": false,
+        "final_adapter_sha256": "5d51f7e9c84158655a2e3102164d80c018c46882871e9d9aca3f79133c3cfeb0",
+        "final_field": [
+          0.19228768348693848,
+          0.20136819779872894,
+          0.22580768167972565,
+          0.005830134341443793,
+          0.0010923007042956212,
+          1.0,
+          0.44645488262176514,
+          0.17929810285568237,
+          0.04649786651134491,
+          0.15507102012634277,
+          0.15351451933383942,
+          0.08436162024736404,
+          0.000662190024740994,
+          0.007125058023938482
+        ],
+        "frozen_base_sha256": "ab732c3576ce4a767316183074f510335156a796b0edfe4165ed497ab7a59e35",
+        "gradient_examples": 1728,
+        "initial_adapter_sha256": "a05318edb7714663743e4359f4daf7ef3884f050cf7d5535bfadf391e087548a",
+        "mode": "ordinary",
+        "ordinary_fixed_action": 2,
+        "probe_examples": 1776,
+        "reload_exact_output_parity": true,
+        "saved": {
+          "complete_optimizer_saved": true,
+          "file_sha256": "9048127ad0ec2d1ea8fcf7ab53ef143eed65f1c221b7cbf93e98786d8dfe4c51",
+          "parameter_sha256": "5d51f7e9c84158655a2e3102164d80c018c46882871e9d9aca3f79133c3cfeb0",
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_run/training/29/ordinary.pt"
+        },
+        "schedule_sha256": "d1110647366877f7c9068eaccb52ed867d88b2742180e66a63b972e2141d5128",
+        "seed": 29,
+        "steps": 36,
+        "trainable_parameters": 3424,
+        "value_examples": 1152,
+        "wall_ns": 1642903446
+      },
+      "richer": {
+        "adapter_parameter_changes": {
+          "pixel_decoder.0.down": true,
+          "pixel_decoder.0.up": true,
+          "text_initial.down": true,
+          "text_initial.up": true,
+          "text_projection.down": true,
+          "text_projection.up": true
+        },
+        "choice_counts": [
+          17,
+          0,
+          3,
+          16
+        ],
+        "controller_fit_audit": {
+          "next_field_rmse": 0.3412319540133382,
+          "reward_mae": 2.2565214588235153e-07,
+          "reward_rmse": 3.406761565327302e-07,
+          "rows": 72
+        },
+        "controller_fit_wall_ns": 10101802,
+        "direct_gradient_of_deployed_hard_reward": false,
+        "final_adapter_sha256": "0cb16c944871472d25ea24117e3a63c044a6df28e94aef2a969e44a35a6d793a",
+        "final_field": [
+          0.19229274988174438,
+          0.2025742381811142,
+          0.22586452960968018,
+          0.004134507253176059,
+          0.0010828381862244116,
+          1.0,
+          0.44645488262176514,
+          0.17929674685001373,
+          0.046614233404397964,
+          0.15507102012634277,
+          0.1535232961177826,
+          0.08441589772701263,
+          0.0005757395992986858,
+          0.005047324766324023
+        ],
+        "frozen_base_sha256": "ab732c3576ce4a767316183074f510335156a796b0edfe4165ed497ab7a59e35",
+        "gradient_examples": 1728,
+        "initial_adapter_sha256": "a05318edb7714663743e4359f4daf7ef3884f050cf7d5535bfadf391e087548a",
+        "mode": "richer",
+        "ordinary_fixed_action": 2,
+        "probe_examples": 1776,
+        "reload_exact_output_parity": true,
+        "saved": {
+          "complete_optimizer_saved": true,
+          "file_sha256": "1844ea30f9ec4510cffd61ac0b1cea0571785beb5c8db3137ec442ae71e6b5ab",
+          "parameter_sha256": "0cb16c944871472d25ea24117e3a63c044a6df28e94aef2a969e44a35a6d793a",
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_run/training/29/richer.pt"
+        },
+        "schedule_sha256": "d1110647366877f7c9068eaccb52ed867d88b2742180e66a63b972e2141d5128",
+        "seed": 29,
+        "steps": 36,
+        "trainable_parameters": 3424,
+        "value_examples": 1152,
+        "wall_ns": 1522792126
+      }
+    }
+  },
+  "43": {
+    "exploration": {
+      "audit_trajectories_used_for_selection": false,
+      "endpoints": [
+        {
+          "adapter_sha256": "3a25f033fac127fc3e1747ae91850c63156f5bf6d7e9c63240daf44857aa2544",
+          "final_value": 0.9006901863999665,
+          "trajectory": 0
+        },
+        {
+          "adapter_sha256": "2d53ba10a66ab411892d674a50b5ac70e71d69e21f45fefacd1ea29a74284afc",
+          "final_value": 0.900690416273661,
+          "trajectory": 1
+        },
+        {
+          "adapter_sha256": "f1a0764c4daa6c28174e52f67eb069695aa4eaef5b231a901df47f3daecb875a",
+          "final_value": 0.9006911504701711,
+          "trajectory": 2
+        },
+        {
+          "adapter_sha256": "9aa478f31da2921977e95c63b2e97662acd82e0211a4bfef45cf44fdae1179db",
+          "final_value": 0.894442308709491,
+          "trajectory": 3
+        },
+        {
+          "adapter_sha256": "9be4bd7c415b156aa5a743bce420628a7194c92caa1646d1b9b959e50f3fe317",
+          "final_value": 0.9006908307471313,
+          "trajectory": 4
+        },
+        {
+          "adapter_sha256": "db62d3d3d7801fab8565e1fcf50e9be2b3d97579b3fbc38cd7e61780561a6656",
+          "final_value": 0.9006908705960959,
+          "trajectory": 5
+        },
+        {
+          "adapter_sha256": "318d9162c0262197a2f567c4cb41526e1399b570ef8bc0c3f8589fc924e7287d",
+          "final_value": 0.9006908349147997,
+          "trajectory": 6
+        },
+        {
+          "adapter_sha256": "8956cba376a30a317b5dc0608fcd18398d6e2d63b5faa01c1e0ff2a21e5bc12a",
+          "final_value": 0.9006902361907996,
+          "trajectory": 7
+        }
+      ],
+      "examples_per_gradient": 48,
+      "gradient_steps": 288,
+      "probe_examples_per_step": 48,
+      "value_examples_per_step": 32,
+      "wall_ns": 11890655921
+    },
+    "fixed_policy": {
+      "action": 3,
+      "action_name": "refine_semantic",
+      "development_action_mean_returns": [
+        0.7789548643373999,
+        0.7761592975301896,
+        0.7761736143373998,
+        0.7890437315124431,
+        0.7782875629455656
+      ],
+      "resources": [
+        {
+          "decoder_batches": 7,
+          "decoder_examples": 448,
+          "encoder_batches": 1,
+          "encoder_examples": 64,
+          "features_cpu_ns": 50013468,
+          "features_wall_ns": 26088266,
+          "media_cpu_ns": 24196606,
+          "media_wall_ns": 8094447,
+          "neural_cpu_ns": 49768964,
+          "neural_wall_ns": 25714860,
+          "observer_batches": 14,
+          "observer_digit_examples": 896,
+          "offline_action_rows": 320,
+          "offline_nonstop_continuations": 256,
+          "private_score_batches": 5,
+          "reward_cpu_ns": 130664767,
+          "reward_wall_ns": 66631997,
+          "target_accesses": 10,
+          "total_cpu_ns": 345709732,
+          "total_wall_ns": 173717254,
+          "transition_batches": 5,
+          "transition_examples": 320
+        },
+        {
+          "decoder_batches": 7,
+          "decoder_examples": 448,
+          "encoder_batches": 1,
+          "encoder_examples": 64,
+          "features_cpu_ns": 50239148,
+          "features_wall_ns": 26222273,
+          "media_cpu_ns": 11115359,
+          "media_wall_ns": 7103025,
+          "neural_cpu_ns": 54801857,
+          "neural_wall_ns": 26760096,
+          "observer_batches": 14,
+          "observer_digit_examples": 896,
+          "offline_action_rows": 320,
+          "offline_nonstop_continuations": 256,
+          "private_score_batches": 5,
+          "reward_cpu_ns": 137598300,
+          "reward_wall_ns": 69575271,
+          "target_accesses": 10,
+          "total_cpu_ns": 359659277,
+          "total_wall_ns": 179686969,
+          "transition_batches": 5,
+          "transition_examples": 320
+        },
+        {
+          "decoder_batches": 7,
+          "decoder_examples": 448,
+          "encoder_batches": 1,
+          "encoder_examples": 64,
+          "features_cpu_ns": 66751447,
+          "features_wall_ns": 34781476,
+          "media_cpu_ns": 11494332,
+          "media_wall_ns": 7483776,
+          "neural_cpu_ns": 64022346,
+          "neural_wall_ns": 30110134,
+          "observer_batches": 14,
+          "observer_digit_examples": 896,
+          "offline_action_rows": 320,
+          "offline_nonstop_continuations": 256,
+          "private_score_batches": 5,
+          "reward_cpu_ns": 147495404,
+          "reward_wall_ns": 71461799,
+          "target_accesses": 10,
+          "total_cpu_ns": 390743958,
+          "total_wall_ns": 195811397,
+          "transition_batches": 5,
+          "transition_examples": 320
+        },
+        {
+          "decoder_batches": 7,
+          "decoder_examples": 448,
+          "encoder_batches": 1,
+          "encoder_examples": 64,
+          "features_cpu_ns": 63303378,
+          "features_wall_ns": 31300228,
+          "media_cpu_ns": 11103503,
+          "media_wall_ns": 7095382,
+          "neural_cpu_ns": 57713286,
+          "neural_wall_ns": 27903060,
+          "observer_batches": 14,
+          "observer_digit_examples": 896,
+          "offline_action_rows": 320,
+          "offline_nonstop_continuations": 256,
+          "private_score_batches": 5,
+          "reward_cpu_ns": 252240375,
+          "reward_wall_ns": 124204565,
+          "target_accesses": 10,
+          "total_cpu_ns": 494167650,
+          "total_wall_ns": 247576525,
+          "transition_batches": 5,
+          "transition_examples": 320
+        }
+      ],
+      "source_ids_json_sha256": "558473a8c0bc60e910f7104c584d2d2942cb07a8b1b8253afc9b272b3ac1079c",
+      "source_pair_rows": 256,
+      "zero_adapter_exact_parity": true
+    },
+    "profiles": {
+      "field": {
+        "adapter_parameter_changes": {
+          "pixel_decoder.0.down": true,
+          "pixel_decoder.0.up": true,
+          "text_initial.down": true,
+          "text_initial.up": true,
+          "text_projection.down": true,
+          "text_projection.up": true
+        },
+        "choice_counts": [
+          26,
+          5,
+          0,
+          5
+        ],
+        "controller_fit_audit": {
+          "next_field_rmse": 0.24470924156838486,
+          "reward_mae": 0.00030669158605829385,
+          "reward_rmse": 0.0007425123455621879,
+          "rows": 72
+        },
+        "controller_fit_wall_ns": 5717715,
+        "direct_gradient_of_deployed_hard_reward": false,
+        "final_adapter_sha256": "23f4f9851f79925b3bf9cffee014a15c1a819faa015050f892bfcde2a814dbc4",
+        "final_field": [
+          0.19773559272289276,
+          0.2544041872024536,
+          0.18782015144824982,
+          0.0038231805260157095,
+          0.0018271727753214554,
+          1.0,
+          0.7637110352516174,
+          0.1781112402677536,
+          0.010981906205415726,
+          0.028119945898652077,
+          0.14534443616867065,
+          0.09078013151884079,
+          0.0002835405175574124,
+          0.004678126375934096
+        ],
+        "frozen_base_sha256": "f247c86531e41373caf38cda46cf2a758355959962dfb6efc412013c9d30ea6a",
+        "gradient_examples": 1728,
+        "initial_adapter_sha256": "3a25f033fac127fc3e1747ae91850c63156f5bf6d7e9c63240daf44857aa2544",
+        "mode": "field",
+        "ordinary_fixed_action": 2,
+        "probe_examples": 1776,
+        "reload_exact_output_parity": true,
+        "saved": {
+          "complete_optimizer_saved": true,
+          "file_sha256": "2b167d16063d93b1caaaee9e0353b52b88acb464f28d360f7e3f59e204d85b16",
+          "parameter_sha256": "23f4f9851f79925b3bf9cffee014a15c1a819faa015050f892bfcde2a814dbc4",
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_run/training/43/field.pt"
+        },
+        "schedule_sha256": "a7a2f99794d08868c3c45ebbd8478665357b10d30911219e368c7b84d4bd1f8a",
+        "seed": 43,
+        "steps": 36,
+        "trainable_parameters": 3424,
+        "value_examples": 1152,
+        "wall_ns": 1361239448
+      },
+      "generic": {
+        "adapter_parameter_changes": {
+          "pixel_decoder.0.down": true,
+          "pixel_decoder.0.up": true,
+          "text_initial.down": true,
+          "text_initial.up": true,
+          "text_projection.down": true,
+          "text_projection.up": true
+        },
+        "choice_counts": [
+          34,
+          1,
+          0,
+          1
+        ],
+        "controller_fit_audit": {
+          "next_field_rmse": 0.18534273958369635,
+          "reward_mae": 0.00031475594818466496,
+          "reward_rmse": 0.0007911966401573867,
+          "rows": 72
+        },
+        "controller_fit_wall_ns": 8125954,
+        "direct_gradient_of_deployed_hard_reward": false,
+        "final_adapter_sha256": "5d5b35b98dfabe6dec83a156d42ecaec66969267334b2c2334a2552d088af5eb",
+        "final_field": [
+          0.19775445759296417,
+          0.25750041007995605,
+          0.18783342838287354,
+          0.00012904109648349037,
+          0.00031734129029758156,
+          1.0,
+          0.7637110352516174,
+          0.17810982465744019,
+          0.011011247523128986,
+          0.028119945898652077,
+          0.14535988867282867,
+          0.09069843590259552,
+          2.2852174879517406e-05,
+          0.00015721417214783844
+        ],
+        "frozen_base_sha256": "f247c86531e41373caf38cda46cf2a758355959962dfb6efc412013c9d30ea6a",
+        "gradient_examples": 1728,
+        "initial_adapter_sha256": "3a25f033fac127fc3e1747ae91850c63156f5bf6d7e9c63240daf44857aa2544",
+        "mode": "generic",
+        "ordinary_fixed_action": 2,
+        "probe_examples": 1776,
+        "reload_exact_output_parity": true,
+        "saved": {
+          "complete_optimizer_saved": true,
+          "file_sha256": "ba80267601bf2d3394244874aa0954107737217a8713ced0fcaf7b810aef6c28",
+          "parameter_sha256": "5d5b35b98dfabe6dec83a156d42ecaec66969267334b2c2334a2552d088af5eb",
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_run/training/43/generic.pt"
+        },
+        "schedule_sha256": "a7a2f99794d08868c3c45ebbd8478665357b10d30911219e368c7b84d4bd1f8a",
+        "seed": 43,
+        "steps": 36,
+        "trainable_parameters": 3424,
+        "value_examples": 1152,
+        "wall_ns": 1439163114
+      },
+      "ordinary": {
+        "adapter_parameter_changes": {
+          "pixel_decoder.0.down": true,
+          "pixel_decoder.0.up": true,
+          "text_initial.down": true,
+          "text_initial.up": true,
+          "text_projection.down": true,
+          "text_projection.up": true
+        },
+        "choice_counts": [
+          0,
+          0,
+          36,
+          0
+        ],
+        "controller_fit_audit": null,
+        "controller_fit_wall_ns": 511,
+        "direct_gradient_of_deployed_hard_reward": false,
+        "final_adapter_sha256": "b9f9ef6310ef2b9f0619178b45b349deef908042cbbb0bbf71c9c72f6af1ff8a",
+        "final_field": [
+          0.19769437611103058,
+          0.24518223106861115,
+          0.18779872357845306,
+          0.013397177376126149,
+          0.0024197294807690914,
+          1.0,
+          0.7637110352516174,
+          0.17811208963394165,
+          0.010937277227640152,
+          0.028119945898652077,
+          0.14532753825187683,
+          0.09112802892923355,
+          0.0009537194855511189,
+          0.016394259728408585
+        ],
+        "frozen_base_sha256": "f247c86531e41373caf38cda46cf2a758355959962dfb6efc412013c9d30ea6a",
+        "gradient_examples": 1728,
+        "initial_adapter_sha256": "3a25f033fac127fc3e1747ae91850c63156f5bf6d7e9c63240daf44857aa2544",
+        "mode": "ordinary",
+        "ordinary_fixed_action": 2,
+        "probe_examples": 1776,
+        "reload_exact_output_parity": true,
+        "saved": {
+          "complete_optimizer_saved": true,
+          "file_sha256": "0736ba9fc4ff2ae0032abc4ff708d61b67ee52d01c2eebf8319dd21e7414f5db",
+          "parameter_sha256": "b9f9ef6310ef2b9f0619178b45b349deef908042cbbb0bbf71c9c72f6af1ff8a",
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_run/training/43/ordinary.pt"
+        },
+        "schedule_sha256": "a7a2f99794d08868c3c45ebbd8478665357b10d30911219e368c7b84d4bd1f8a",
+        "seed": 43,
+        "steps": 36,
+        "trainable_parameters": 3424,
+        "value_examples": 1152,
+        "wall_ns": 1310007691
+      },
+      "richer": {
+        "adapter_parameter_changes": {
+          "pixel_decoder.0.down": true,
+          "pixel_decoder.0.up": true,
+          "text_initial.down": true,
+          "text_initial.up": true,
+          "text_projection.down": true,
+          "text_projection.up": true
+        },
+        "choice_counts": [
+          28,
+          7,
+          0,
+          1
+        ],
+        "controller_fit_audit": {
+          "next_field_rmse": 0.30625136324742086,
+          "reward_mae": 0.00034153050342863715,
+          "reward_rmse": 0.0009103396123194233,
+          "rows": 72
+        },
+        "controller_fit_wall_ns": 10080168,
+        "direct_gradient_of_deployed_hard_reward": false,
+        "final_adapter_sha256": "18007585adaa643b53604741f728e6242a3d220158c3b30be7fbb01b4e7bb4c1",
+        "final_field": [
+          0.19774816930294037,
+          0.25648632645606995,
+          0.18782371282577515,
+          0.0013405381634561243,
+          0.002256468038738385,
+          1.0,
+          0.7637110352516174,
+          0.17811040580272675,
+          0.010990663431584835,
+          0.028119945898652077,
+          0.14535465836524963,
+          0.0907452404499054,
+          8.885689021553844e-05,
+          0.0016406145428022054
+        ],
+        "frozen_base_sha256": "f247c86531e41373caf38cda46cf2a758355959962dfb6efc412013c9d30ea6a",
+        "gradient_examples": 1728,
+        "initial_adapter_sha256": "3a25f033fac127fc3e1747ae91850c63156f5bf6d7e9c63240daf44857aa2544",
+        "mode": "richer",
+        "ordinary_fixed_action": 2,
+        "probe_examples": 1776,
+        "reload_exact_output_parity": true,
+        "saved": {
+          "complete_optimizer_saved": true,
+          "file_sha256": "6dfdd7b2ad0b6f92a78f0e990fbe96fc3465c546cc37e56effcca536dec85d99",
+          "parameter_sha256": "18007585adaa643b53604741f728e6242a3d220158c3b30be7fbb01b4e7bb4c1",
+          "path": "/workspace/scratch/9b2cd2b58376/bridge_run/training/43/richer.pt"
+        },
+        "schedule_sha256": "a7a2f99794d08868c3c45ebbd8478665357b10d30911219e368c7b84d4bd1f8a",
+        "seed": 43,
+        "steps": 36,
+        "trainable_parameters": 3424,
+        "value_examples": 1152,
+        "wall_ns": 1479614399
+      }
+    }
+  }
+}

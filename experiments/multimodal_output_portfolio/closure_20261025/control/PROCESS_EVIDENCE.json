@@ -1,0 +1,484 @@
+{
+  "all_exit_codes_zero": true,
+  "receipts": {
+    "confirmation-001-process.json": {
+      "receipt": {
+        "child_cpu_ns": 38287604000,
+        "child_peak_rss_bytes_linux": 361476096,
+        "child_pid": 9,
+        "exit_code": 0,
+        "log_sha256": "4a9b8588584ff1a585cf8a872cd0cd45250740d8aee00bb98b537ea4c72245b7",
+        "parent_pid": 2,
+        "registration_sha256": "32b08128a90d688339d919ac99efec6a3dfdacf895221098979daed66151c523",
+        "schema": "hepta.closure.exact-child-receipt.v1",
+        "scope": "Entire child launch/imports/work/output/exit and log fsync; shared Linux host, excludes this receipt write",
+        "wall_ns": 42335311464,
+        "wrapper_cpu_ns": 423198
+      },
+      "registration": {
+        "command": [
+          "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+          "-B",
+          "-u",
+          "-m",
+          "experiments.multimodal_output_portfolio.closure_20261025.control.repair.confirmation_run",
+          "--asset-root",
+          "/workspace/scratch/2b3c256bef7d",
+          "--protocol",
+          "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/control/repair/CONFIRM_PROTOCOL.json",
+          "--output",
+          "/workspace/scratch/87e43aa872f5/ndu-runs/control/confirmation-001"
+        ],
+        "cwd": "/workspace/scratch/87e43aa872f5/hepta-ndu",
+        "entrypoint_sha256": "eaa369605e6b098a63ca8e1265608ce6ca40d3ca20ea17e63948d841aab16c2d",
+        "numpy": "2.3.5",
+        "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+        "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+        "schema": "hepta.closure.exact-child-registration.v1",
+        "torch": "2.14.1+cpu",
+        "unix_ns": 1792944583560669843,
+        "wrapper_parent_pid": 1,
+        "wrapper_pid": 2,
+        "wrapper_sha256": "e12b45b021afa6431ddfde638d526f8155e08b32b64e303aaa9c24e558c1d58b"
+      }
+    },
+    "confirmation-analysis-001-process.json": {
+      "receipt": {
+        "child_cpu_ns": 2480787000,
+        "child_peak_rss_bytes_linux": 267227136,
+        "child_pid": 9,
+        "exit_code": 0,
+        "log_sha256": "a4553e8eb937ea6fdc225e0fbef596240a517b3fa5dd5d7f5b5b94b21dc15ad4",
+        "parent_pid": 2,
+        "registration_sha256": "25a09f0f05ee3707c9ffca86bd863a0574f886488b568522ae3ee24a6cbec5e3",
+        "schema": "hepta.closure.exact-child-receipt.v1",
+        "scope": "Entire child launch/imports/work/output/exit and log fsync; shared Linux host, excludes this receipt write",
+        "wall_ns": 1991499157,
+        "wrapper_cpu_ns": 499883
+      },
+      "registration": {
+        "command": [
+          "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+          "-B",
+          "-u",
+          "-m",
+          "experiments.multimodal_output_portfolio.closure_20261025.control.repair.confirmation_analysis",
+          "--directory",
+          "/workspace/scratch/87e43aa872f5/ndu-runs/control/confirmation-001",
+          "--protocol",
+          "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/control/repair/CONFIRM_PROTOCOL.json"
+        ],
+        "cwd": "/workspace/scratch/87e43aa872f5/hepta-ndu",
+        "entrypoint_sha256": "74bbf7a6defb22c7e97d685d611dd055b0b16fcbe9467cb60b0ca076d4312edc",
+        "numpy": "2.3.5",
+        "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+        "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+        "schema": "hepta.closure.exact-child-registration.v1",
+        "torch": "2.14.1+cpu",
+        "unix_ns": 1792944631295476834,
+        "wrapper_parent_pid": 1,
+        "wrapper_pid": 2,
+        "wrapper_sha256": "e12b45b021afa6431ddfde638d526f8155e08b32b64e303aaa9c24e558c1d58b"
+      }
+    },
+    "development-001-process.json": {
+      "receipt": {
+        "child_cpu_ns": 29865703000,
+        "child_peak_rss_bytes_linux": 649732096,
+        "child_pid": 9,
+        "exit_code": 0,
+        "log_sha256": "939409987573a407a3dff031238378ffa75e027659ebea3ec56e56aaf0829b3c",
+        "parent_pid": 2,
+        "registration_sha256": "e113d07404293c9e1eb1ccc3f7f438de647bf1f4869a5e544f636ba34b480005",
+        "schema": "hepta.closure.exact-child-receipt.v1",
+        "scope": "Entire child launch/imports/work/output/exit and log fsync; shared Linux host, excludes this receipt write",
+        "wall_ns": 29794418417,
+        "wrapper_cpu_ns": 446395
+      },
+      "registration": {
+        "command": [
+          "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+          "-B",
+          "-u",
+          "-m",
+          "experiments.multimodal_output_portfolio.closure_20261025.control.development",
+          "--asset-root",
+          "/workspace/scratch/2b3c256bef7d",
+          "--output",
+          "/workspace/scratch/87e43aa872f5/ndu-runs/control/development-001"
+        ],
+        "cwd": "/workspace/scratch/87e43aa872f5/hepta-ndu",
+        "entrypoint_sha256": "6b6d502db7cd1910ea59172f3764cd108190a416a1e1f487d95818fce4cd1c26",
+        "numpy": "2.3.5",
+        "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+        "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+        "schema": "hepta.closure.exact-child-registration.v1",
+        "torch": "2.14.1+cpu",
+        "unix_ns": 1792943100978722239,
+        "wrapper_parent_pid": 1,
+        "wrapper_pid": 2,
+        "wrapper_sha256": "e12b45b021afa6431ddfde638d526f8155e08b32b64e303aaa9c24e558c1d58b"
+      }
+    },
+    "fresh-001-process.json": {
+      "receipt": {
+        "child_cpu_ns": 988790267000,
+        "child_peak_rss_bytes_linux": 635912192,
+        "child_pid": 9,
+        "exit_code": 0,
+        "log_sha256": "5f76125147d5d36dbbf1434d699d2bf7a5e07b06d5c8f42b238069e301e0cac7",
+        "parent_pid": 2,
+        "registration_sha256": "10e9c9162eff832fc032f5ec6d5ff658ec7a2e58f4d2dc301d158dcfb79bf52a",
+        "schema": "hepta.closure.exact-child-receipt.v1",
+        "scope": "Entire child launch/imports/work/output/exit and log fsync; shared Linux host, excludes this receipt write",
+        "wall_ns": 1148696269327,
+        "wrapper_cpu_ns": 303732
+      },
+      "registration": {
+        "command": [
+          "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+          "-B",
+          "-u",
+          "-m",
+          "experiments.multimodal_output_portfolio.closure_20261025.control.rollout",
+          "--asset-root",
+          "/workspace/scratch/2b3c256bef7d",
+          "--development",
+          "/workspace/scratch/87e43aa872f5/ndu-runs/control/development-001",
+          "--output",
+          "/workspace/scratch/87e43aa872f5/ndu-runs/control/fresh-001",
+          "--fresh-protocol",
+          "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/control/FRESH_PROTOCOL.json"
+        ],
+        "cwd": "/workspace/scratch/87e43aa872f5/hepta-ndu",
+        "entrypoint_sha256": "a728cf87629cbf192d5ffaddf91edfb01d636b4ade75eb35548d91e9e29f32f0",
+        "numpy": "2.3.5",
+        "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+        "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+        "schema": "hepta.closure.exact-child-registration.v1",
+        "torch": "2.14.1+cpu",
+        "unix_ns": 1792943288728772684,
+        "wrapper_parent_pid": 1,
+        "wrapper_pid": 2,
+        "wrapper_sha256": "e12b45b021afa6431ddfde638d526f8155e08b32b64e303aaa9c24e558c1d58b"
+      }
+    },
+    "fresh-analysis-001-process.json": {
+      "receipt": {
+        "child_cpu_ns": 11303249000,
+        "child_peak_rss_bytes_linux": 1078075392,
+        "child_pid": 9,
+        "exit_code": 0,
+        "log_sha256": "1002dc8966ef38c3664a9a45b477b573c55967a2679d44a4cf68d5b754d1ca9b",
+        "parent_pid": 2,
+        "registration_sha256": "3f12f683376118376b3b17d7c56b53e17bac6d6155e60aaef299f7a81fd5df92",
+        "schema": "hepta.closure.exact-child-receipt.v1",
+        "scope": "Entire child launch/imports/work/output/exit and log fsync; shared Linux host, excludes this receipt write",
+        "wall_ns": 9635826360,
+        "wrapper_cpu_ns": 394716
+      },
+      "registration": {
+        "command": [
+          "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+          "-B",
+          "-u",
+          "-m",
+          "experiments.multimodal_output_portfolio.closure_20261025.control.analysis",
+          "--directory",
+          "/workspace/scratch/87e43aa872f5/ndu-runs/control/fresh-001",
+          "--development",
+          "/workspace/scratch/87e43aa872f5/ndu-runs/control/development-001"
+        ],
+        "cwd": "/workspace/scratch/87e43aa872f5/hepta-ndu",
+        "entrypoint_sha256": "7709c45572401189fd59a17bc16b751f2621b14221d3b721b4fe7c55342cffca",
+        "numpy": "2.3.5",
+        "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+        "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+        "schema": "hepta.closure.exact-child-registration.v1",
+        "torch": "2.14.1+cpu",
+        "unix_ns": 1792944552523935051,
+        "wrapper_parent_pid": 1,
+        "wrapper_pid": 2,
+        "wrapper_sha256": "e12b45b021afa6431ddfde638d526f8155e08b32b64e303aaa9c24e558c1d58b"
+      }
+    },
+    "history-001-process.json": {
+      "receipt": {
+        "child_cpu_ns": 107686856000,
+        "child_peak_rss_bytes_linux": 376811520,
+        "child_pid": 9,
+        "exit_code": 0,
+        "log_sha256": "a0f64f2bc0da99f293089e85b04a9deeb7248ed7c9bc59859c14094c2618ba45",
+        "parent_pid": 2,
+        "registration_sha256": "10c64df5e23d681ab16b8e188a04800bd699558196416f1c900d631c4e37b6d4",
+        "schema": "hepta.closure.exact-child-receipt.v1",
+        "scope": "Entire child launch/imports/work/output/exit and log fsync; shared Linux host, excludes this receipt write",
+        "wall_ns": 120663168757,
+        "wrapper_cpu_ns": 388367
+      },
+      "registration": {
+        "command": [
+          "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+          "-B",
+          "-u",
+          "-m",
+          "experiments.multimodal_output_portfolio.closure_20261025.control.rollout",
+          "--asset-root",
+          "/workspace/scratch/2b3c256bef7d",
+          "--development",
+          "/workspace/scratch/87e43aa872f5/ndu-runs/control/development-001",
+          "--output",
+          "/workspace/scratch/87e43aa872f5/ndu-runs/control/history-001"
+        ],
+        "cwd": "/workspace/scratch/87e43aa872f5/hepta-ndu",
+        "entrypoint_sha256": "a728cf87629cbf192d5ffaddf91edfb01d636b4ade75eb35548d91e9e29f32f0",
+        "numpy": "2.3.5",
+        "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+        "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+        "schema": "hepta.closure.exact-child-registration.v1",
+        "torch": "2.14.1+cpu",
+        "unix_ns": 1792943166366877223,
+        "wrapper_parent_pid": 1,
+        "wrapper_pid": 2,
+        "wrapper_sha256": "e12b45b021afa6431ddfde638d526f8155e08b32b64e303aaa9c24e558c1d58b"
+      }
+    },
+    "history-analysis-001-process.json": {
+      "receipt": {
+        "child_cpu_ns": 3790415000,
+        "child_peak_rss_bytes_linux": 338173952,
+        "child_pid": 9,
+        "exit_code": 0,
+        "log_sha256": "026ffb954d3454f29dcb9622a3d403755db7721389f9662e36ffb1919d1902e2",
+        "parent_pid": 2,
+        "registration_sha256": "eb3bfd796d052ab3ce7a3a37d0398aa7f68e3f3823226d307a046e13876073c9",
+        "schema": "hepta.closure.exact-child-receipt.v1",
+        "scope": "Entire child launch/imports/work/output/exit and log fsync; shared Linux host, excludes this receipt write",
+        "wall_ns": 2882889039,
+        "wrapper_cpu_ns": 413123
+      },
+      "registration": {
+        "command": [
+          "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+          "-B",
+          "-u",
+          "-m",
+          "experiments.multimodal_output_portfolio.closure_20261025.control.analysis",
+          "--directory",
+          "/workspace/scratch/87e43aa872f5/ndu-runs/control/history-001",
+          "--development",
+          "/workspace/scratch/87e43aa872f5/ndu-runs/control/development-001"
+        ],
+        "cwd": "/workspace/scratch/87e43aa872f5/hepta-ndu",
+        "entrypoint_sha256": "7709c45572401189fd59a17bc16b751f2621b14221d3b721b4fe7c55342cffca",
+        "numpy": "2.3.5",
+        "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+        "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+        "schema": "hepta.closure.exact-child-registration.v1",
+        "torch": "2.14.1+cpu",
+        "unix_ns": 1792943295382413829,
+        "wrapper_parent_pid": 1,
+        "wrapper_pid": 2,
+        "wrapper_sha256": "e12b45b021afa6431ddfde638d526f8155e08b32b64e303aaa9c24e558c1d58b"
+      }
+    },
+    "repair-001-process.json": {
+      "receipt": {
+        "child_cpu_ns": 91083163000,
+        "child_peak_rss_bytes_linux": 728948736,
+        "child_pid": 9,
+        "exit_code": 0,
+        "log_sha256": "44ebebd36107c07c7cabbb69a0fe5c53a36e700701b3b4d88315974e13f159de",
+        "parent_pid": 2,
+        "registration_sha256": "594317dee66f2206919b9369bfd4a45fb45fc5ca58f6580a8a147518ad7636ac",
+        "schema": "hepta.closure.exact-child-receipt.v1",
+        "scope": "Entire child launch/imports/work/output/exit and log fsync; shared Linux host, excludes this receipt write",
+        "wall_ns": 92969323052,
+        "wrapper_cpu_ns": 452883
+      },
+      "registration": {
+        "command": [
+          "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+          "-B",
+          "-u",
+          "-m",
+          "experiments.multimodal_output_portfolio.closure_20261025.control.repair.run",
+          "--asset-root",
+          "/workspace/scratch/2b3c256bef7d",
+          "--development",
+          "/workspace/scratch/87e43aa872f5/ndu-runs/control/development-001",
+          "--output",
+          "/workspace/scratch/87e43aa872f5/ndu-runs/control/repair-001"
+        ],
+        "cwd": "/workspace/scratch/87e43aa872f5/hepta-ndu",
+        "entrypoint_sha256": "892b758b054a93cc1b77822dfca07439b3fd6ca6950691d8a90106ef8feef3d0",
+        "numpy": "2.3.5",
+        "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+        "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+        "schema": "hepta.closure.exact-child-registration.v1",
+        "torch": "2.14.1+cpu",
+        "unix_ns": 1792944133629563598,
+        "wrapper_parent_pid": 1,
+        "wrapper_pid": 2,
+        "wrapper_sha256": "e12b45b021afa6431ddfde638d526f8155e08b32b64e303aaa9c24e558c1d58b"
+      }
+    },
+    "supplement-001-process.json": {
+      "receipt": {
+        "child_cpu_ns": 649914315000,
+        "child_peak_rss_bytes_linux": 443838464,
+        "child_pid": 9,
+        "exit_code": 0,
+        "log_sha256": "ea6e7d329527d52e16fd299d9e8ec4c8faf64a50bb275cc6f93e57687230d00d",
+        "parent_pid": 2,
+        "registration_sha256": "89f5a7216a3e7fcb213aec68ebbc7994b87b86270453e0f9708a4f8d691538c6",
+        "schema": "hepta.closure.exact-child-receipt.v1",
+        "scope": "Entire child launch/imports/work/output/exit and log fsync; shared Linux host, excludes this receipt write",
+        "wall_ns": 736449161293,
+        "wrapper_cpu_ns": 485803
+      },
+      "registration": {
+        "command": [
+          "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+          "-B",
+          "-u",
+          "-m",
+          "experiments.multimodal_output_portfolio.closure_20261025.control.supplemental.run",
+          "--asset-root",
+          "/workspace/scratch/2b3c256bef7d",
+          "--protocol",
+          "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/control/supplemental/PROTOCOL.json",
+          "--output",
+          "/workspace/scratch/87e43aa872f5/ndu-runs/control/supplement-001"
+        ],
+        "cwd": "/workspace/scratch/87e43aa872f5/hepta-ndu",
+        "entrypoint_sha256": "300a3004502a70820d3cef18762a25b9c5518145700e04eeb69293d4ba9feb52",
+        "numpy": "2.3.5",
+        "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+        "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+        "schema": "hepta.closure.exact-child-registration.v1",
+        "torch": "2.14.1+cpu",
+        "unix_ns": 1792943563992425013,
+        "wrapper_parent_pid": 1,
+        "wrapper_pid": 2,
+        "wrapper_sha256": "e12b45b021afa6431ddfde638d526f8155e08b32b64e303aaa9c24e558c1d58b"
+      }
+    },
+    "supplement-analysis-001-process.json": {
+      "receipt": {
+        "child_cpu_ns": 12267631000,
+        "child_peak_rss_bytes_linux": 1446809600,
+        "child_pid": 9,
+        "exit_code": 0,
+        "log_sha256": "f80caf9a208ed5886a0f18ce066273fc7de1eddb112e540d3dbb6cc1021851f5",
+        "parent_pid": 2,
+        "registration_sha256": "d5f92a54f472e3eb55050c80673394d90fd26cc5a5c8f51b2995157502c948ce",
+        "schema": "hepta.closure.exact-child-receipt.v1",
+        "scope": "Entire child launch/imports/work/output/exit and log fsync; shared Linux host, excludes this receipt write",
+        "wall_ns": 11267213276,
+        "wrapper_cpu_ns": 361569
+      },
+      "registration": {
+        "command": [
+          "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+          "-B",
+          "-u",
+          "-m",
+          "experiments.multimodal_output_portfolio.closure_20261025.control.supplemental.analysis",
+          "--primary",
+          "/workspace/scratch/87e43aa872f5/ndu-runs/control/fresh-001",
+          "--supplement",
+          "/workspace/scratch/87e43aa872f5/ndu-runs/control/supplement-001",
+          "--protocol",
+          "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/control/supplemental/PROTOCOL.json"
+        ],
+        "cwd": "/workspace/scratch/87e43aa872f5/hepta-ndu",
+        "entrypoint_sha256": "88e3fe71ac0c7318f50da5ac4cea9359e862cd77ace53156aa880d142766fe18",
+        "numpy": "2.3.5",
+        "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+        "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+        "schema": "hepta.closure.exact-child-registration.v1",
+        "torch": "2.14.1+cpu",
+        "unix_ns": 1792944552531690138,
+        "wrapper_parent_pid": 1,
+        "wrapper_pid": 2,
+        "wrapper_sha256": "e12b45b021afa6431ddfde638d526f8155e08b32b64e303aaa9c24e558c1d58b"
+      }
+    },
+    "supplement-tests-001-process.json": {
+      "receipt": {
+        "child_cpu_ns": 2390991000,
+        "child_peak_rss_bytes_linux": 234655744,
+        "child_pid": 9,
+        "exit_code": 0,
+        "log_sha256": "a41e08b8782ccff561fc04da1c4aa92b79d00989913c15ae6639e0c2e9b7e03c",
+        "parent_pid": 2,
+        "registration_sha256": "1521a152f0a11be0f1f48fadc24591fad6373bc42d98dfc077d9db9d424a9b43",
+        "schema": "hepta.closure.exact-child-receipt.v1",
+        "scope": "Entire child launch/imports/work/output/exit and log fsync; shared Linux host, excludes this receipt write",
+        "wall_ns": 1774966839,
+        "wrapper_cpu_ns": 390119
+      },
+      "registration": {
+        "command": [
+          "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+          "-B",
+          "-u",
+          "-m",
+          "experiments.multimodal_output_portfolio.closure_20261025.control.supplemental.tests"
+        ],
+        "cwd": "/workspace/scratch/87e43aa872f5/hepta-ndu",
+        "entrypoint_sha256": "7cce8f851a01c52f7cfd629f3edaf836239d655589c10d6094267dea38233318",
+        "numpy": "2.3.5",
+        "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+        "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+        "schema": "hepta.closure.exact-child-registration.v1",
+        "torch": "2.14.1+cpu",
+        "unix_ns": 1792943526177863437,
+        "wrapper_parent_pid": 1,
+        "wrapper_pid": 2,
+        "wrapper_sha256": "e12b45b021afa6431ddfde638d526f8155e08b32b64e303aaa9c24e558c1d58b"
+      }
+    },
+    "tests-001.json": {
+      "receipt": {
+        "child_cpu_ns": 2544718000,
+        "child_peak_rss_bytes_linux": 243630080,
+        "child_pid": 9,
+        "exit_code": 0,
+        "log_sha256": "f9ac9d11ca408a88041b7ef3abfad4d4836dfed259a75dd305e3314381f0199e",
+        "parent_pid": 2,
+        "registration_sha256": "dcfe0c5c485e28a6a7b7db2ce1b9c63123cca1e7b2670bcc4bc482a89ce345b6",
+        "schema": "hepta.closure.exact-child-receipt.v1",
+        "scope": "Entire child launch/imports/work/output/exit and log fsync; shared Linux host, excludes this receipt write",
+        "wall_ns": 1850271194,
+        "wrapper_cpu_ns": 344321
+      },
+      "registration": {
+        "command": [
+          "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+          "-B",
+          "-u",
+          "-m",
+          "experiments.multimodal_output_portfolio.closure_20261025.control.control_tests"
+        ],
+        "cwd": "/workspace/scratch/87e43aa872f5/hepta-ndu",
+        "entrypoint_sha256": "2f3b0fd3f35b05ad8a714b6bd989247f28b84f3c073a4fbee2428194bf23574c",
+        "numpy": "2.3.5",
+        "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+        "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+        "schema": "hepta.closure.exact-child-registration.v1",
+        "torch": "2.14.1+cpu",
+        "unix_ns": 1792943071201686848,
+        "wrapper_parent_pid": 1,
+        "wrapper_pid": 2,
+        "wrapper_sha256": "e12b45b021afa6431ddfde638d526f8155e08b32b64e303aaa9c24e558c1d58b"
+      }
+    }
+  },
+  "schema": "hepta.closure.control-process-evidence.v1",
+  "scope": "Registered subprocesses only; overlapping executions make summed wall durations differ from elapsed overall time",
+  "summed_child_cpu_seconds": 1940.405699,
+  "summed_child_wall_seconds": 2200.310318175,
+  "wall_sum_is_elapsed_time": false
+}

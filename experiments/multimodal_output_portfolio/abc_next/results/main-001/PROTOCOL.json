@@ -1,0 +1,271 @@
+{
+  "action_proxy_cost": 0.002,
+  "architecture": {
+    "candidate": "enriched-32",
+    "controller_sha256": "bf54f14691edb6ff11cf64a72f492de5eccf2fe1891d80f1d3f7c72d66cb25df",
+    "hidden": 32,
+    "mode": "enriched"
+  },
+  "arms": [
+    "sft_continuation",
+    "output_mean",
+    "output_ndu"
+  ],
+  "bootstrap_replicates": 4000,
+  "bootstrap_seed": 2026102507,
+  "bootstrap_unit": "paired source-pair and training-seed axes; retain all within-source views/scenarios",
+  "controllers_directory": "/workspace/scratch/2b3c256bef7d/abc3-runs/controllers-001",
+  "controllers_result_sha256": "611847fdf94c6b253ec255f9e4a6bd48ee21613ca92cafcc4a4eb478aae1c5a6",
+  "descriptive_confidence": 0.95,
+  "fixed_seed_source_bootstrap_also_reported": true,
+  "formal_test_outcomes_opened": false,
+  "frozen_unix_ns": 1792910251601566634,
+  "future_source_ids": {
+    "qualification": {
+      "count": 208,
+      "sha256": "3e2ae4ac5a145c0caf52e2a1313f2979fb6ed1cbdbbff7588ba765e1583454d0"
+    },
+    "test": {
+      "count": 1024,
+      "sha256": "da957b2f80462746ea506a67e6293a58d681d714cd54e1499e370bb184020314"
+    }
+  },
+  "gamma": 2.0,
+  "large_raw_data_archival_required": false,
+  "legacy_sha256": {
+    "17/output_mean": "38efb28b68fc1fcf7fa053c6dde86659d55c771ec54d5087ae5412b24bd46b04",
+    "17/output_ndu": "52317881a889f8c3ce09bcb8a57424031deedfd644ec0f021ff61039f0e7e45b",
+    "17/sft_continuation": "28baf87459132fde10e6656246f7cffa322f28f1c82d1cb2a0f81fa93f973ce7",
+    "29/output_mean": "e4e6e5fead3f8297ecc30f06d3de06ea13c39b228f3e3a33b2a06e148666c620",
+    "29/output_ndu": "bc9cc7c2ea6caab3210ca553349c80f093df420dea77d6483e225dda66cf281a",
+    "29/sft_continuation": "382efa20cca933fad951ad7c9856ee90c1f91fb7350a24ff6f3eaff31a31fcac",
+    "43/output_mean": "801c1808ed4c6a12068fc7a0f5668ff464728cb31a36864c88080dc892efa4e4",
+    "43/output_ndu": "14ca4cda63f2b23146414b07c64034400a1fa32fc10d660c6d06677ead755023",
+    "43/sft_continuation": "8e915930266bd4dcb35e406afa9017611770d4db31b89bfa3077b26f911abe33",
+    "59/output_mean": "f61918ca41438c22845fa5c3ad1e345894077c94c15a9e20d47df9c5afd45099",
+    "59/output_ndu": "9c0513d1df16ec26a8d4f22809760d7b1d996a6e9abe9eecd8be41fc41392553",
+    "59/sft_continuation": "39d4a986ee27dcf8d145f7c1ffacbe5cc02643f859fc678921916849769b0f8f",
+    "71/output_mean": "a4803449ffe2dae438caa3b65cd364314d0bbd69ef5a4d43ae180bff6401aed7",
+    "71/output_ndu": "ecbe7c483118749b4d939d9b17027410615c323fbc8d2f405e941c3934c3b4f5",
+    "71/sft_continuation": "7cb90ddc891d001d23802bc8e149883b28447db59e3175347e94dbd523d4d0d8"
+  },
+  "negative_qualification_can_suppress_test": false,
+  "policies": [
+    "fixed",
+    "static",
+    "one_shot",
+    "feedback",
+    "legacy"
+  ],
+  "primary_comparisons": [
+    "output_ndu/fixed minus output_mean/fixed",
+    "output_ndu/feedback minus output_ndu/development_selected_nonfeedback"
+  ],
+  "primary_metric": "net_utility_joint_CE",
+  "primary_nominal_confidence": 0.975,
+  "qualification_can_select_or_refit": false,
+  "qualification_output": "/workspace/scratch/2b3c256bef7d/abc3-runs/qualification-001",
+  "resources": {
+    "manifest_sha256": "60c24d44e12eb3defb3b1b8146d91879b84918b057e0524117137d7e4f793058",
+    "model_sha256": {
+      "17/output_mean": "bb889c008ac9c034af75c60c989326180b33c5d864c178f23419020d080f5a1d",
+      "17/output_ndu": "2f766c9356333d86f7c78c1cb18e8c67e776019c1071ff7af4b112f294518549",
+      "17/sft_continuation": "fdf856dfbffd3f9fb1ea81057a341da5e31ce843bcd09c3dd2cb640d69f5d0da",
+      "29/output_mean": "2d3682288ec8006d5a2d94ac1258770ae2ee2a2c46e083d8fbdcb77f61973b10",
+      "29/output_ndu": "c990bd7c3121954b2f847496690af4bee3cea65cef840a9a42f78e44940ea140",
+      "29/sft_continuation": "87efad2c0c3596cca88b8da0b96a16a61a33847837e18652b307a1cf18c4318b",
+      "43/output_mean": "58161e2c7d1aa09b6c0f8983ef57edf5000f5c994a493fbc7d3be1243adcb25d",
+      "43/output_ndu": "2833b3501f311aa026e5f673e24eb7d48a37dc2627859c8e373b68da01dbdcd3",
+      "43/sft_continuation": "8f612973a4eeb1f504713636dd75cbf2f303ba9490498a6cea8c249a23026ca9",
+      "59/output_mean": "0bc555b7b04225a7b81dba2367904f6226e067ea16f23e1325e5964a5ac67159",
+      "59/output_ndu": "3be581e72e979d799fdbf5754a497a3a186095f8250388dd12e2dfaeaa3100a0",
+      "59/sft_continuation": "f369771801ee465f997bf49a145aabd91f8c2fd98873ab90e6c528c56f3b18bb",
+      "71/output_mean": "ce500d99f1aa2914323eed234dc142c2db2971139ac71febee300005cfac478f",
+      "71/output_ndu": "6e031528054ec32677eca3e1ca42bf933a5dee172d68b4026ca2e6ce1ab6fa3e",
+      "71/sft_continuation": "17d055c4a92e9221d7a3db848db8f7e062338eb10ab4a840cd9269211a97d954"
+    },
+    "observer_sha256": {
+      "primary": "8cfca1b0cd0a69bcfcc6a9d34d0a672c07c28f3342823ef8a3f6763e9430a003",
+      "secondary": "b0851ce56189d159b53449cfc914cf84b9b63e82a6f0050228096666752595fe"
+    },
+    "sensor_sha256": "982b23e560af025af212433ebcdefe87f49277f6d4944b74cdcaa802f7150e80"
+  },
+  "schema": "hepta.abc-next.formal-freeze.v1",
+  "seeds": [
+    17,
+    29,
+    43,
+    59,
+    71
+  ],
+  "source_ranges": {
+    "fit": {
+      "count": 256,
+      "role": "forecast_fit",
+      "scenarios": 2,
+      "start": 480
+    },
+    "qualification": {
+      "count": 104,
+      "role": "development",
+      "scenarios": 2,
+      "start": 896
+    },
+    "selection": {
+      "count": 128,
+      "role": "forecast_calibration",
+      "scenarios": 2,
+      "start": 448
+    },
+    "test": {
+      "count": 512,
+      "role": "test",
+      "scenarios": 4,
+      "start": 0
+    }
+  },
+  "source_sha256": {
+    "experiments/multimodal_output_portfolio/abc_next/analysis.py": "5f763fd9d33fb17288a1bbd43a8858fbdbffed2a48c3ad6f5e64b0be76442f89",
+    "experiments/multimodal_output_portfolio/abc_next/compact_tree.py": "6ff38c2a68a5103c4e5278087bbd1b9106a82e01857f26ea53d17056d25c1630",
+    "experiments/multimodal_output_portfolio/abc_next/development.py": "1ec5057dec7b7a0bd3532a474da2c7fca646d08805590b6293a242440b4aa79e",
+    "experiments/multimodal_output_portfolio/abc_next/execute.py": "589cb6338770cab1393126f4d933247633428d3bdf2d1926907be302d8ae6d97",
+    "experiments/multimodal_output_portfolio/abc_next/formal.py": "e3bb3a14061aa3793c7573af0b8a53a5a38a55c896c4ccfc7bba66fcb39dccc9",
+    "experiments/multimodal_output_portfolio/abc_next/observability.py": "6ffce394cfded8e90d294837b45b94b4443061100424034f57368c9e257b7846",
+    "experiments/multimodal_output_portfolio/abc_next/sensor_run.py": "23c48a999fa8d1a70dba6f4b33d7387dbd50a1dc762ad60c8453a16a8b3198c1",
+    "experiments/multimodal_output_portfolio/abc_next/settings.py": "1f96cd70794c0bd74e167c84a535963ad4e82037eafa7a8bcd8fab08a04b746e",
+    "experiments/multimodal_output_portfolio/abc_next/timing.py": "c97347d7b9d93340130ca6aa76feaedca15e60c6e933070cdd42b9f3dfe14fca",
+    "experiments/multimodal_output_portfolio/abc_next/value.py": "776d3464be56c5f97de32bc9b4c9ee294e2cc48d148e0d5f81cba841f188fc14",
+    "experiments/multimodal_output_portfolio/abc_recovery/analysis.py": "28328ba8012893ac669f2bae52103e90b2a037e465b04b853ec3b8f923200a8d",
+    "experiments/multimodal_output_portfolio/abc_recovery/control.py": "1c52f4a0d34e8d3bb87d271b4e27903331713efb5b92899f6d21973f475f1669",
+    "experiments/multimodal_output_portfolio/abc_recovery/critic.py": "afbd893c2c6cfceca6dfeb388c18df0d67bf886f64c6be2dcf2f4c612751a30a",
+    "experiments/multimodal_output_portfolio/abc_recovery/emission.py": "748cdafc6bca00fa07e88a7e294d331d5217c04d3e8208e094bdb906ec5fe1f3",
+    "experiments/multimodal_output_portfolio/abc_recovery/risk.py": "270543c98e769ba46a08df0125b932be50f1c749343cda74e1f7b5f7fdf1c28f",
+    "experiments/multimodal_output_portfolio/abc_recovery/runtime.py": "11e2e0859d706e3186ee5e4688330ad2f4da54d397fe6b33bd335d8ee69f5919",
+    "experiments/multimodal_output_portfolio/abc_recovery/statistics.py": "cadbec92b46ece422f415f82550235647248753adb1f8198ad112d4438277f09",
+    "experiments/multimodal_output_portfolio/abc_recovery/trees.py": "7bfc3f1c151fcc37499dab0760a5ba7924b9b2a530784de24a8aebf92ed74452",
+    "experiments/multimodal_output_portfolio/v6/data.py": "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29",
+    "experiments/multimodal_output_portfolio/v6/neural.py": "6447edf81da45695ab87a033c544ff7c554a15431e614474be7ad3b7c329e742",
+    "experiments/multimodal_output_portfolio/v6/observer.py": "5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e",
+    "experiments/multimodal_output_portfolio/v7/data.py": "41892eb63420a6288121b39f577597067c3e168d3c7467c868230c64ed092cb9",
+    "experiments/multimodal_output_portfolio/v7/evaluation.py": "9f229b3b1092cfc8f89b8376375a8bb5d7efe9c7bb91979026ee5f32182c79da",
+    "experiments/multimodal_output_portfolio/v7/model.py": "156aa5c73c7e9192ebefecafdc568cbbae3e906e7d1bbb2bf50f7535bd2d8fca",
+    "experiments/multimodal_output_portfolio/v7/snapshot.py": "01655335b9807a09005bde0ae11d9fbe1a0665bd0113d9f28e38310f1f4bb474",
+    "experiments/multimodal_output_portfolio/v7/sources.py": "b6b27b86ba71a4bafd9c2abe4af033e7cfe73079296bdd2ed1addad045881e9f"
+  },
+  "test_output": "/workspace/scratch/2b3c256bef7d/abc3-runs/evaluation-001",
+  "timing": {
+    "controllers_result_sha256": "611847fdf94c6b253ec255f9e4a6bd48ee21613ca92cafcc4a4eb478aae1c5a6",
+    "legacy_policy_sha256": {
+      "17/output_mean": "38efb28b68fc1fcf7fa053c6dde86659d55c771ec54d5087ae5412b24bd46b04",
+      "17/output_ndu": "52317881a889f8c3ce09bcb8a57424031deedfd644ec0f021ff61039f0e7e45b",
+      "17/sft_continuation": "28baf87459132fde10e6656246f7cffa322f28f1c82d1cb2a0f81fa93f973ce7",
+      "29/output_mean": "e4e6e5fead3f8297ecc30f06d3de06ea13c39b228f3e3a33b2a06e148666c620",
+      "29/output_ndu": "bc9cc7c2ea6caab3210ca553349c80f093df420dea77d6483e225dda66cf281a",
+      "29/sft_continuation": "382efa20cca933fad951ad7c9856ee90c1f91fb7350a24ff6f3eaff31a31fcac",
+      "43/output_mean": "801c1808ed4c6a12068fc7a0f5668ff464728cb31a36864c88080dc892efa4e4",
+      "43/output_ndu": "14ca4cda63f2b23146414b07c64034400a1fa32fc10d660c6d06677ead755023",
+      "43/sft_continuation": "8e915930266bd4dcb35e406afa9017611770d4db31b89bfa3077b26f911abe33",
+      "59/output_mean": "f61918ca41438c22845fa5c3ad1e345894077c94c15a9e20d47df9c5afd45099",
+      "59/output_ndu": "9c0513d1df16ec26a8d4f22809760d7b1d996a6e9abe9eecd8be41fc41392553",
+      "59/sft_continuation": "39d4a986ee27dcf8d145f7c1ffacbe5cc02643f859fc678921916849769b0f8f",
+      "71/output_mean": "a4803449ffe2dae438caa3b65cd364314d0bbd69ef5a4d43ae180bff6401aed7",
+      "71/output_ndu": "ecbe7c483118749b4d939d9b17027410615c323fbc8d2f405e941c3934c3b4f5",
+      "71/sft_continuation": "7cb90ddc891d001d23802bc8e149883b28447db59e3175347e94dbd523d4d0d8"
+    },
+    "profile": {
+      "additional_costs": "archive append per request; final archive close and fsync; closed-archive readback and scoring per row; setup and total process phases",
+      "arms": [
+        "sft_continuation",
+        "output_mean",
+        "output_ndu"
+      ],
+      "bootstrap": {
+        "confidence": 0.95,
+        "replicates": 4000,
+        "seed": 2026102507,
+        "unit": "paired crossed source and training_seed, retaining all views/scenarios"
+      },
+      "cpu_threads": 2,
+      "failure_rule": "retain every attempted row and actual cost; no dropped outliers; unavailable quality blocks that condition/observer's quality inference",
+      "main_request_excludes": [
+        "model/policy loading",
+        "source/observation construction",
+        "disk archive append and fsync",
+        "offline scoring",
+        "analysis"
+      ],
+      "main_request_timer": "owner RNG setup, public sensor if used, encoder, actual chosen transitions, policy decisions, lossless terminal NPZ memory serialization and payload SHA256",
+      "observation_stream": "abc-next-timing-observation,test,0,16; shared across views, arms, seeds and scenarios",
+      "owner_stream": "training_seed,case,view,scenario,committed_path; excludes arm and policy",
+      "pair_count": 16,
+      "pair_start": 0,
+      "policies": [
+        "fixed",
+        "static",
+        "one_shot",
+        "feedback",
+        "legacy"
+      ],
+      "policy_order": "cyclic rotation by global seed/arm/view/case/scenario group ordinal",
+      "quality_scope": "descriptive timing cohort only, not a replacement for main 512-source test",
+      "raw_media": "local ZIP_STORED container of per-request lossless NPZ bytes; no raw data in Git",
+      "scenarios": 2,
+      "schema": "hepta.abc-next.resident-timing-profile.v1",
+      "source_role": "test",
+      "training_seeds": [
+        17,
+        29,
+        43,
+        59,
+        71
+      ],
+      "views": [
+        "clean",
+        "noise",
+        "occlusion",
+        "missing_trusted",
+        "conflict_untrusted",
+        "missing_untrusted",
+        "missing_unknown",
+        "both_missing"
+      ]
+    },
+    "source_sha256": {
+      "experiments/multimodal_output_portfolio/abc_next/compact_tree.py": "6ff38c2a68a5103c4e5278087bbd1b9106a82e01857f26ea53d17056d25c1630",
+      "experiments/multimodal_output_portfolio/abc_next/development.py": "1ec5057dec7b7a0bd3532a474da2c7fca646d08805590b6293a242440b4aa79e",
+      "experiments/multimodal_output_portfolio/abc_next/observability.py": "6ffce394cfded8e90d294837b45b94b4443061100424034f57368c9e257b7846",
+      "experiments/multimodal_output_portfolio/abc_next/sensor_run.py": "23c48a999fa8d1a70dba6f4b33d7387dbd50a1dc762ad60c8453a16a8b3198c1",
+      "experiments/multimodal_output_portfolio/abc_next/settings.py": "1f96cd70794c0bd74e167c84a535963ad4e82037eafa7a8bcd8fab08a04b746e",
+      "experiments/multimodal_output_portfolio/abc_next/timing.py": "c97347d7b9d93340130ca6aa76feaedca15e60c6e933070cdd42b9f3dfe14fca",
+      "experiments/multimodal_output_portfolio/abc_next/timing_analysis.py": "2882eac701fee0d50d5167d30614504bbd8f7061ecfde932e2edc682d16167c2",
+      "experiments/multimodal_output_portfolio/abc_next/timing_tests.py": "6c3b5c83068b89abc2e0ff5dc350188378f5a8a4388b01a874df3298f3300318",
+      "experiments/multimodal_output_portfolio/abc_next/value.py": "776d3464be56c5f97de32bc9b4c9ee294e2cc48d148e0d5f81cba841f188fc14",
+      "experiments/multimodal_output_portfolio/abc_recovery/base_recovery.py": "bfe7f2f635db74075decb0e20dcb1d73d203d1d0445d902e8c4254fca46d80fb",
+      "experiments/multimodal_output_portfolio/abc_recovery/control.py": "1c52f4a0d34e8d3bb87d271b4e27903331713efb5b92899f6d21973f475f1669",
+      "experiments/multimodal_output_portfolio/abc_recovery/critic.py": "afbd893c2c6cfceca6dfeb388c18df0d67bf886f64c6be2dcf2f4c612751a30a",
+      "experiments/multimodal_output_portfolio/abc_recovery/emission.py": "748cdafc6bca00fa07e88a7e294d331d5217c04d3e8208e094bdb906ec5fe1f3",
+      "experiments/multimodal_output_portfolio/abc_recovery/risk.py": "270543c98e769ba46a08df0125b932be50f1c749343cda74e1f7b5f7fdf1c28f",
+      "experiments/multimodal_output_portfolio/abc_recovery/runtime.py": "11e2e0859d706e3186ee5e4688330ad2f4da54d397fe6b33bd335d8ee69f5919",
+      "experiments/multimodal_output_portfolio/abc_recovery/statistics.py": "cadbec92b46ece422f415f82550235647248753adb1f8198ad112d4438277f09",
+      "experiments/multimodal_output_portfolio/abc_recovery/trees.py": "7bfc3f1c151fcc37499dab0760a5ba7924b9b2a530784de24a8aebf92ed74452",
+      "experiments/multimodal_output_portfolio/v6/data.py": "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29",
+      "experiments/multimodal_output_portfolio/v6/neural.py": "6447edf81da45695ab87a033c544ff7c554a15431e614474be7ad3b7c329e742",
+      "experiments/multimodal_output_portfolio/v6/observer.py": "5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e",
+      "experiments/multimodal_output_portfolio/v7/data.py": "41892eb63420a6288121b39f577597067c3e168d3c7467c868230c64ed092cb9",
+      "experiments/multimodal_output_portfolio/v7/evaluation.py": "9f229b3b1092cfc8f89b8376375a8bb5d7efe9c7bb91979026ee5f32182c79da",
+      "experiments/multimodal_output_portfolio/v7/model.py": "156aa5c73c7e9192ebefecafdc568cbbae3e906e7d1bbb2bf50f7535bd2d8fca",
+      "experiments/multimodal_output_portfolio/v7/snapshot.py": "01655335b9807a09005bde0ae11d9fbe1a0665bd0113d9f28e38310f1f4bb474",
+      "experiments/multimodal_output_portfolio/v7/sources.py": "b6b27b86ba71a4bafd9c2abe4af033e7cfe73079296bdd2ed1addad045881e9f"
+    }
+  },
+  "views": [
+    "clean",
+    "noise",
+    "occlusion",
+    "missing_trusted",
+    "conflict_untrusted",
+    "missing_untrusted",
+    "missing_unknown",
+    "both_missing"
+  ]
+}

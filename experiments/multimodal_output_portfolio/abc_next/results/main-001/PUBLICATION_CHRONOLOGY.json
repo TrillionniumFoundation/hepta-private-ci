@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.abc-next.main-publication-chronology.v1",
+  "protocol_sha256": "e552230547779d3f92527d62272b115e7d940ff1b56400f5e9347dabfa16a834",
+  "published_commit_sha": "595d6ea7d728c0d293077bdf19dde31095ab5373",
+  "published_tree_sha": "f01e0b0f3884fcdc2221664f5855102758ce23ea",
+  "remote_commit_metadata_date_utc": "2026-10-25T06:43:19Z",
+  "remote_commit_metadata_source": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/595d6ea7d728c0d293077bdf19dde31095ab5373",
+  "actual_main_test_process_registration_sha256": "fa7d579a3051279bc508511ace7756075f0cc3441f330954f0881db53be1dbbe",
+  "actual_main_test_process_registration_unix_ns": 1792910609579532504,
+  "actual_main_test_process_registration_utc": "2026-10-25T06:43:29.579533+00:00",
+  "commit_metadata_to_process_registration_ns": 10579532504,
+  "actual_test_entrypoint_sha256": "e3bb3a14061aa3793c7573af0b8a53a5a38a55c896c4ccfc7bba66fcb39dccc9",
+  "actual_process_wrapper_sha256": "4120a33aad3a52558f1b9ddd8e83d9e48c60525d2b8d73a0ae20ee946a406886",
+  "protocol_includes_frozen_timing_profile": true,
+  "observed_branch_update_completed_before_main_process_launch": true,
+  "chronology_basis": "Successful GitHub branch CAS was observed before launching the test child; remote commit metadata was independently fetched after launch. Git metadata and the local run receipt are not an external cryptographic timestamp attestation.",
+  "later_timing_registration_scope": "The timing runner creates its local registration after the main test is complete. Its literal test_outcomes_materialized_before_registration=false only describes that timing invocation before it materializes its own cohort/output; it is not evidence that all test outcomes were globally unseen."
+}

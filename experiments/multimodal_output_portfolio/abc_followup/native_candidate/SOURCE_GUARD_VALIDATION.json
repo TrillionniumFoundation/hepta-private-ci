@@ -1,0 +1,19 @@
+{
+  "command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 /workspace/scratch/2b3c256bef7d/ndu-env/bin/python -B -m experiments.multimodal_output_portfolio.abc_followup.native_candidate.source_guard_tests",
+  "elapsed_seconds_reported_by_runner": 0.008,
+  "exit_code": 0,
+  "new_future_outcomes_opened": false,
+  "original_source_guards_modified": false,
+  "real_sources_materialized": false,
+  "schema": "hepta.abc4.source-reuse-guard-validation.v1",
+  "scope": "Synthetic completed20-model census, independent new access, prior-access rejection, role/census/protocol binding, output nonoverwrite. Real metadata-only registration additionally invokes unchanged original guards. No real source pixels/labels or new future outcomes materialized.",
+  "source_sha256": {
+    "REUSE_ASSIGNMENT.json": "235aa0c32ab0288b3262d808dbf16f1146782cf2f285a910d96aa2e04a8cd88d",
+    "TIMELINE.json": "9b59c33d5a9c896fb932a9f8139c29e0ec3c266abe25f6061f9ed807c11b7d82",
+    "source_guard.py": "2b16da7c67446e84450d1720b3ffa484d7c44e9a831eb3cf176be06ed1119196",
+    "source_guard_tests.py": "051b81310ec604dcdbf4ff7ab24856be8f4691966c765e9b7254cd78f07f8455"
+  },
+  "status": "passed",
+  "test_runner": "unittest",
+  "tests": 4
+}

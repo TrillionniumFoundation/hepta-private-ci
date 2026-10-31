@@ -1,0 +1,59 @@
+{
+  "authorization_scope": "User-authorized next research round; coordinator explicitly authorizes separate additive reuse registration before new branch generation.",
+  "candidate_construction_source_overlap": 0,
+  "loader_sha256": "ec95a0ce904c9c03e71c865f040974669614c1d8683c736f6777bd8aad45228a",
+  "new_future_outcomes_opened": false,
+  "origin_manifest_sha256": "60c24d44e12eb3defb3b1b8146d91879b84918b057e0524117137d7e4f793058",
+  "origin_role": "unallocated_test",
+  "original_guards_modified": false,
+  "pair_count": 1000,
+  "pair_start": 0,
+  "previous_study": "training_repair",
+  "prior_dependencies": {
+    "completed_execution": {
+      "path": "/workspace/scratch/2b3c256bef7d/abc4-repair-runs/evaluation-001/result.json",
+      "sha256": "7d6daac9c4692d2a30afeec244dd5318b399e37b1f0296036e2b96f861e17da6"
+    },
+    "original_access_registration": {
+      "path": "/workspace/scratch/2b3c256bef7d/abc4-repair-runs/evaluation-001/access-registration.json",
+      "sha256": "c2ef90028c8e46f995a06f1987ecb9de1100bdcb55cf8a4daae11cfce00c70bc"
+    },
+    "original_assignment": {
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_followup/training_repair/ROLE_ASSIGNMENT.json",
+      "sha256": "42c5bb90adefb4d536001d433a6fe8c8345a3547857ba7edb72555043ae3dc52"
+    },
+    "original_evaluation_protocol": {
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_followup/training_repair/EVALUATION_PROTOCOL.json",
+      "sha256": "d190976793423f59909eb3051ea78aa5b2824727762011a468dd3c6a67575474"
+    },
+    "source_allocation": {
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_followup/training_repair/SOURCE_ALLOCATION.json",
+      "sha256": "2449523451a9908f806ab16eb0e8abc638506263baa3bf259c7554e522401e3b"
+    }
+  },
+  "prior_metrics_used_as_future_labels": false,
+  "purpose": "Prospective new future branches for all fixed seq802 predictor candidates on an explicitly reused complete source cohort.",
+  "registered_unix_ns": 1792920325563043773,
+  "requires_new_reuse_protocol_and_access_registration": true,
+  "requires_original_complete_twenty_model_guard": true,
+  "schema": "hepta.abc4.explicit-source-reuse-assignment.v1",
+  "source_identity": {
+    "individual_sources": 2000,
+    "ordered_source_ids_sha256": "815890b1f35b3180583b672ad7cc352289f15ac088e1cd151b03c1b62eb2a6d2",
+    "pair_end_exclusive": 1000,
+    "pair_start": 0,
+    "pairing": "No-replacement adjacent IDs [2k,2k+1] in the original manifest order",
+    "sorted_pixel_hashes_sha256": "278631cc2224c21ca35ad81be067a847b24171eb77a2f9dd54ad0e76bba123a0",
+    "source_pairs": 1000,
+    "source_role": "unallocated_test",
+    "unique_pixel_sha256": 2000
+  },
+  "source_pairs_in_this_comparison": 1000,
+  "source_previously_observed": true,
+  "source_role": "repair_test",
+  "statistical_scope": "Candidates fixed before prior study access; sources reused across studies. New branch outcomes are prospective, not a new project-wide holdout or global error-control certificate.",
+  "study_role": "native_candidate_reuse",
+  "supersedes_prepublication_assignment_sha256": "235aa0c32ab0288b3262d808dbf16f1146782cf2f285a910d96aa2e04a8cd88d",
+  "timeline_sha256": "dc4b1f41feab9cf5be462968b45596e99d7035428b4ca6fea21f19c936482a4f",
+  "unique_new_source_pairs": 0
+}

@@ -1,0 +1,69 @@
+{
+  "auditor_sha256": "3f43f600ce0b0427ecc3a8e72eb3dae2dec77301da8fa0ad895e5763553f3d38",
+  "checks": [
+    {
+      "all_fold_choices_recomputed_without_targets": true,
+      "all_source_groups_disjoint": true,
+      "backup_labels": 16384,
+      "direct_total_cost_backup_max_absolute_error": 7.491399705017443e-07,
+      "fit_only_normalizer_max_absolute_error": 0.0,
+      "fold_choices_different_from_private_realized_best": 12450,
+      "seed": 17,
+      "width": 32
+    },
+    {
+      "all_fold_choices_recomputed_without_targets": true,
+      "all_source_groups_disjoint": true,
+      "backup_labels": 16384,
+      "direct_total_cost_backup_max_absolute_error": 7.148491345532193e-07,
+      "fit_only_normalizer_max_absolute_error": 0.0,
+      "fold_choices_different_from_private_realized_best": 12112,
+      "seed": 17,
+      "width": 128
+    },
+    {
+      "all_fold_choices_recomputed_without_targets": true,
+      "all_source_groups_disjoint": true,
+      "backup_labels": 16384,
+      "direct_total_cost_backup_max_absolute_error": 6.990391985262079e-07,
+      "fit_only_normalizer_max_absolute_error": 0.0,
+      "fold_choices_different_from_private_realized_best": 11619,
+      "seed": 29,
+      "width": 32
+    },
+    {
+      "all_fold_choices_recomputed_without_targets": true,
+      "all_source_groups_disjoint": true,
+      "backup_labels": 16384,
+      "direct_total_cost_backup_max_absolute_error": 6.990391985262079e-07,
+      "fit_only_normalizer_max_absolute_error": 0.0,
+      "fold_choices_different_from_private_realized_best": 12200,
+      "seed": 29,
+      "width": 128
+    },
+    {
+      "all_fold_choices_recomputed_without_targets": true,
+      "all_source_groups_disjoint": true,
+      "backup_labels": 16384,
+      "direct_total_cost_backup_max_absolute_error": 7.238541233078877e-07,
+      "fit_only_normalizer_max_absolute_error": 0.0,
+      "fold_choices_different_from_private_realized_best": 11978,
+      "seed": 43,
+      "width": 32
+    },
+    {
+      "all_fold_choices_recomputed_without_targets": true,
+      "all_source_groups_disjoint": true,
+      "backup_labels": 16384,
+      "direct_total_cost_backup_max_absolute_error": 7.747519976675221e-07,
+      "fit_only_normalizer_max_absolute_error": 0.0,
+      "fold_choices_different_from_private_realized_best": 11979,
+      "seed": 43,
+      "width": 128
+    }
+  ],
+  "development_result_sha256": "385e856609db4884f1b4c7e2d77d3fe7bd50da8815c08649f8d5f9b8f2c74802",
+  "fresh_sources_opened": false,
+  "scope": "Saved fold model/normalizer/action identity and direct terminal-cost labels. This verifies one approximate policy backup, not final-policy optimality.",
+  "status": "passed"
+}

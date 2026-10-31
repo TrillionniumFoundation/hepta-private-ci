@@ -1,0 +1,33 @@
+{
+  "binaries": [
+    "codex-native-continuous",
+    "codex-native-proposal"
+  ],
+  "cases": 6,
+  "config_file": "/workspace/scratch/2b3c256bef7d/abc3-native-runs/build-001/nextest-scoped.toml",
+  "entrypoint": "just test",
+  "failed": 0,
+  "failed_all_activity_assertion_retained": true,
+  "final_format_has_not_run": true,
+  "final_log_sha256": "dc2d1b1eb96608b1a2fc247dcb2318498ac0731beec4b1616402f658ae080a83",
+  "full_repository_or_CI_run": false,
+  "manifest": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/build-001/Cargo.toml",
+  "offline": true,
+  "packages": [
+    "codex-native-head"
+  ],
+  "passed": 6,
+  "prior_attempts": {
+    "native-tests-001.log": "db76124c9c02539181d78bef5fe59884bdf9911b819d0e024a6631114e67440a",
+    "native-tests-002.log": "54fcea7d969fc1f505c7e73895adeefc958a054a5ee36c273c5b587ae17885c0",
+    "native-tests-003.log": "f76bcda90b22f9818bda70c1d3afb81ff400210ac792af336b0dd6e3344549d4",
+    "native-tests-004.log": "d4f17e50c66a6fca16818602d08cbd8f656b9249ab868acdfc98438ae63e2429",
+    "native-tests-005.log": "ac4382e8f91503d665f653943f1ccbe293c2e43bcd1cf9b8adfd4b4ebd108d70",
+    "native-tests-006.log": "8eba69725ac95e60099ec76effb53c11b35fabaae99a3b1d8f1595a3beee516f"
+  },
+  "release": true,
+  "repeated_test_modules_are_not_new_statistical_samples": true,
+  "schema": "hepta.abc4.native-scoped-tests.v1",
+  "skipped": 0,
+  "test_threads": 1
+}

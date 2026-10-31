@@ -1,0 +1,1232 @@
+{
+  "actual_native_ticks": 128,
+  "all_tick_resources": {
+    "native_checkpoint_bytes": {
+      "count": 128,
+      "maximum": 1568,
+      "p95": 1568,
+      "p99": 1568
+    },
+    "native_execution_micros": {
+      "count": 128,
+      "maximum": 1317,
+      "p95": 818,
+      "p99": 1150
+    },
+    "native_transient_bytes": {
+      "count": 128,
+      "maximum": 13016,
+      "p95": 13016,
+      "p99": 13016
+    },
+    "native_write_amplification_ppm": {
+      "count": 128,
+      "maximum": 530613,
+      "p95": 530613,
+      "p99": 530613
+    },
+    "owner_micros": {
+      "count": 128,
+      "maximum": 1730,
+      "p95": 1422,
+      "p99": 1662
+    },
+    "owner_peak_bytes": {
+      "count": 128,
+      "maximum": 36057,
+      "p95": 24140,
+      "p99": 24140
+    }
+  },
+  "binary_sha256": "bd10a370c91d85fb6732d8de960d709959b63518163257c0a0e6c3812915db88",
+  "build_attempts": {
+    "build-001": {
+      "commands": [
+        {
+          "command": [
+            "/workspace/scratch/2b3c256bef7d/task-tools/rust-1.95.0/bin/rustc",
+            "--edition=2024",
+            "-C",
+            "opt-level=2",
+            "-C",
+            "debuginfo=0",
+            "-L",
+            "dependency=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps",
+            "--extern",
+            "codex_hepta_neuron=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_neuron-2f0c355b62be5eae.rlib",
+            "--extern",
+            "codex_hepta_types=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_types-17d3f3691422d6e5.rlib",
+            "--extern",
+            "codex_hepta_infer_core=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_infer_core-c72e3d5295189f9f.rlib",
+            "--extern",
+            "codex_hepta_ndu=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_ndu-cc4862f2ee41fc2e.rlib",
+            "--extern",
+            "codex_native_owner_bridge=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_native_owner_bridge-6d3b38a13af600a4.rlib",
+            "--extern",
+            "serde=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde-93ef7b2e0c96e7ec.rlib",
+            "--extern",
+            "serde_json=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde_json-6d058f81b7b562eb.rlib",
+            "--crate-name",
+            "hepta_online_agentd_owner",
+            "--crate-type",
+            "lib",
+            "/workspace/scratch/87e43aa872f5/ndu-runs/native/build-001/src/agentd_owner.rs",
+            "-o",
+            "/workspace/scratch/87e43aa872f5/ndu-runs/native/build-001/libhepta_online_agentd_owner.rlib"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "/workspace/scratch/2b3c256bef7d/task-tools/rust-1.95.0/bin/rustc",
+            "--edition=2024",
+            "-C",
+            "opt-level=2",
+            "-C",
+            "debuginfo=0",
+            "-L",
+            "dependency=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps",
+            "--extern",
+            "codex_hepta_neuron=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_neuron-2f0c355b62be5eae.rlib",
+            "--extern",
+            "codex_hepta_types=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_types-17d3f3691422d6e5.rlib",
+            "--extern",
+            "codex_hepta_infer_core=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_infer_core-c72e3d5295189f9f.rlib",
+            "--extern",
+            "codex_hepta_ndu=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_ndu-cc4862f2ee41fc2e.rlib",
+            "--extern",
+            "codex_native_owner_bridge=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_native_owner_bridge-6d3b38a13af600a4.rlib",
+            "--extern",
+            "serde=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde-93ef7b2e0c96e7ec.rlib",
+            "--extern",
+            "serde_json=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde_json-6d058f81b7b562eb.rlib",
+            "--crate-name",
+            "hepta_native_online",
+            "--extern",
+            "hepta_online_agentd_owner=/workspace/scratch/87e43aa872f5/ndu-runs/native/build-001/libhepta_online_agentd_owner.rlib",
+            "/workspace/scratch/87e43aa872f5/ndu-runs/native/build-001/src/online.rs",
+            "-C",
+            "strip=symbols",
+            "-o",
+            "/workspace/scratch/87e43aa872f5/ndu-runs/native/build-001/hepta-native-online"
+          ],
+          "returncode": 1,
+          "stderr": "error: this file contains an unclosed delimiter\n   --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-001/src/online.rs:289:12\n    |\n268 | fn main() -> Result<()> {\n    |                         - unclosed delimiter\n...\n289 |     Ok(())\n    |           ^\n\nerror: aborting due to 1 previous error\n\n",
+          "stdout": ""
+        }
+      ],
+      "compiler": "rustc 1.95.0 (59807616e 2026-04-14)",
+      "dependencies": {
+        "codex_hepta_infer_core": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_infer_core-c72e3d5295189f9f.rlib",
+          "sha256": "ce474943d8f08b236849e70fbe680156416f7c2ebd27ce31f378bf28c7150705"
+        },
+        "codex_hepta_ndu": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_ndu-cc4862f2ee41fc2e.rlib",
+          "sha256": "4129653abc09e28f4f762aa010bfe167caad71b1f0504e2f2a4fdd96cb40a1cb"
+        },
+        "codex_hepta_neuron": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_neuron-2f0c355b62be5eae.rlib",
+          "sha256": "dc89842770b606b275f9e03c6e23c581154862ac9dd5e5ecc64361935b8e0b1c"
+        },
+        "codex_hepta_types": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_types-17d3f3691422d6e5.rlib",
+          "sha256": "38779cb6724d8a291228491aeae90f32e566354666d41bff103ce919320cadef"
+        },
+        "codex_native_owner_bridge": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_native_owner_bridge-6d3b38a13af600a4.rlib",
+          "sha256": "82e472f8f3dd4615f5768ae6f17a9a6c34a15046598f57cfce2d9509f8032dc1"
+        },
+        "serde": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde-93ef7b2e0c96e7ec.rlib",
+          "sha256": "516b03b41b6a65b87c97a0cfdd53d8bee890fa7ba39e6fd431d2ad9ca3d708db"
+        },
+        "serde_json": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde_json-6d058f81b7b562eb.rlib",
+          "sha256": "c0514c87e4263b4a0e0852e1f680d8f1040c11122fd842e04cc76b0645acc910"
+        }
+      },
+      "dependency_source_commit": "9595221c21f1fe0775295a9c8756a1ba4d69ea49",
+      "original_sources_modified": false,
+      "owner_source_commit": "985a52e84cdaed7c8d4c363f30bc8841c5e3730c",
+      "schema": "hepta.closure.native-build.v1",
+      "source_sha256": {
+        "agentd_owner.rs": "4d56cc99d0edb1018734aebf70dc715de8df7846a2a9c4f2edb4230a0fc87faf",
+        "dynamics_profile.rs": "bbb85aea108723e4e526d5c71e6f81a1166a80cd932c2225843be3462c570d67",
+        "future_head.rs": "b53618d88c516059ae684fe0c3258c5dc9ed6f05bd5b30f4b38ae6b08c7be41f",
+        "head.rs": "8b9a169072c3192fc4a91cd7b427c4ac3b080cd28d244bca85654b48930ddbff",
+        "measure.rs": "27a8309398ef63818423ef7f06e8445a68954a6edb9160aa9d7bece9a8ab00b0",
+        "online.rs": "81caef404e609ac171948374571245720523866339721c3db0ef34142224a674",
+        "online_log.rs": "695ab2f2585e0a425fe57bea206989f8f863836730095e36c9e021d501a36856",
+        "online_port.rs": "66151da9fe3915c9a91cb461c45ef2156417ba33c343d93ca0aae929a0f53a0a",
+        "runtime_profile.rs": "9eddfae9d8c849ea12d84582db6371b4223366bd329f53c4c55d62652484503c",
+        "stream_io.rs": "8169bc9f7d47ef2f62b1fef079d80f3daa856b5f589bbb638350598bf705e2ca"
+      },
+      "wall_ns": 488841788,
+      "whole_agentd_daemon_built": false
+    },
+    "build-002": {
+      "binary_sha256": "3c597fc4bdfc251f9ef9db98fd10775d366eeee52b9302346ac69e5303847fa9",
+      "commands": [
+        {
+          "command": [
+            "/workspace/scratch/2b3c256bef7d/task-tools/rust-1.95.0/bin/rustc",
+            "--edition=2024",
+            "-C",
+            "opt-level=2",
+            "-C",
+            "debuginfo=0",
+            "-L",
+            "dependency=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps",
+            "--extern",
+            "codex_hepta_neuron=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_neuron-2f0c355b62be5eae.rlib",
+            "--extern",
+            "codex_hepta_types=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_types-17d3f3691422d6e5.rlib",
+            "--extern",
+            "codex_hepta_infer_core=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_infer_core-c72e3d5295189f9f.rlib",
+            "--extern",
+            "codex_hepta_ndu=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_ndu-cc4862f2ee41fc2e.rlib",
+            "--extern",
+            "codex_native_owner_bridge=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_native_owner_bridge-6d3b38a13af600a4.rlib",
+            "--extern",
+            "serde=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde-93ef7b2e0c96e7ec.rlib",
+            "--extern",
+            "serde_json=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde_json-6d058f81b7b562eb.rlib",
+            "--crate-name",
+            "hepta_online_agentd_owner",
+            "--crate-type",
+            "lib",
+            "/workspace/scratch/87e43aa872f5/ndu-runs/native/build-002/src/agentd_owner.rs",
+            "-o",
+            "/workspace/scratch/87e43aa872f5/ndu-runs/native/build-002/libhepta_online_agentd_owner.rlib"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "/workspace/scratch/2b3c256bef7d/task-tools/rust-1.95.0/bin/rustc",
+            "--edition=2024",
+            "-C",
+            "opt-level=2",
+            "-C",
+            "debuginfo=0",
+            "-L",
+            "dependency=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps",
+            "--extern",
+            "codex_hepta_neuron=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_neuron-2f0c355b62be5eae.rlib",
+            "--extern",
+            "codex_hepta_types=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_types-17d3f3691422d6e5.rlib",
+            "--extern",
+            "codex_hepta_infer_core=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_infer_core-c72e3d5295189f9f.rlib",
+            "--extern",
+            "codex_hepta_ndu=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_ndu-cc4862f2ee41fc2e.rlib",
+            "--extern",
+            "codex_native_owner_bridge=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_native_owner_bridge-6d3b38a13af600a4.rlib",
+            "--extern",
+            "serde=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde-93ef7b2e0c96e7ec.rlib",
+            "--extern",
+            "serde_json=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde_json-6d058f81b7b562eb.rlib",
+            "--crate-name",
+            "hepta_native_online",
+            "--extern",
+            "hepta_online_agentd_owner=/workspace/scratch/87e43aa872f5/ndu-runs/native/build-002/libhepta_online_agentd_owner.rlib",
+            "/workspace/scratch/87e43aa872f5/ndu-runs/native/build-002/src/online.rs",
+            "-C",
+            "strip=symbols",
+            "-o",
+            "/workspace/scratch/87e43aa872f5/ndu-runs/native/build-002/hepta-native-online"
+          ],
+          "returncode": 0,
+          "stderr": "warning: unused import: `std::fs::File`\n  --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-002/src/online.rs:11:5\n   |\n11 | use std::fs::File;\n   |     ^^^^^^^^^^^^^\n   |\n   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default\n\nwarning: struct `Weights` is never constructed\n  --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-002/src/head.rs:20:12\n   |\n20 | pub struct Weights {\n   |            ^^^^^^^\n   |\n   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: struct `Calibration` is never constructed\n  --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-002/src/head.rs:27:12\n   |\n27 | pub struct Calibration {\n   |            ^^^^^^^^^^^\n\nwarning: struct `LearnedHead` is never constructed\n  --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-002/src/head.rs:32:12\n   |\n32 | pub struct LearnedHead {\n   |            ^^^^^^^^^^^\n\nwarning: method `probability` is never used\n  --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-002/src/head.rs:40:12\n   |\n39 | impl LearnedHead {\n   | ---------------- method in this implementation\n40 |     pub fn probability(&self, x: &[i64]) -> Result<f64, NeuronModelError> {\n   |            ^^^^^^^^^^^\n\nwarning: fields `source_manifest` and `dataset` are never read\n  --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-002/src/runtime_profile.rs:19:9\n   |\n11 | pub struct Pins {\n   |            ---- fields in this struct\n...\n19 |     pub source_manifest: String,\n   |         ^^^^^^^^^^^^^^^\n20 |     pub dataset: String,\n   |         ^^^^^^^\n\nwarning: variant `HistoricalSemanticPrefix` is never constructed\n  --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-002/src/dynamics_profile.rs:22:5\n   |\n20 | pub enum DriveDomain {\n   |          ----------- variant in this enum\n21 |     // Initial boundedcontext plus exactly two .25*tanh shared-state updates.\n22 |     HistoricalSemanticPrefix,\n   |     ^^^^^^^^^^^^^^^^^^^^^^^^\n   |\n   = note: `DriveDomain` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis\n\nwarning: function `journal` is never used\n  --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-002/src/stream_io.rs:25:8\n   |\n25 | pub fn journal(root: &Path,native: SparseConfig,scope: JournalScope,anchor: JournalAnchor) -> Result<SparseJournal> {\n   |        ^^^^^^^\n\nwarning: 8 warnings emitted\n\n",
+          "stdout": ""
+        }
+      ],
+      "compiler": "rustc 1.95.0 (59807616e 2026-04-14)",
+      "dependencies": {
+        "codex_hepta_infer_core": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_infer_core-c72e3d5295189f9f.rlib",
+          "sha256": "ce474943d8f08b236849e70fbe680156416f7c2ebd27ce31f378bf28c7150705"
+        },
+        "codex_hepta_ndu": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_ndu-cc4862f2ee41fc2e.rlib",
+          "sha256": "4129653abc09e28f4f762aa010bfe167caad71b1f0504e2f2a4fdd96cb40a1cb"
+        },
+        "codex_hepta_neuron": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_neuron-2f0c355b62be5eae.rlib",
+          "sha256": "dc89842770b606b275f9e03c6e23c581154862ac9dd5e5ecc64361935b8e0b1c"
+        },
+        "codex_hepta_types": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_types-17d3f3691422d6e5.rlib",
+          "sha256": "38779cb6724d8a291228491aeae90f32e566354666d41bff103ce919320cadef"
+        },
+        "codex_native_owner_bridge": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_native_owner_bridge-6d3b38a13af600a4.rlib",
+          "sha256": "82e472f8f3dd4615f5768ae6f17a9a6c34a15046598f57cfce2d9509f8032dc1"
+        },
+        "serde": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde-93ef7b2e0c96e7ec.rlib",
+          "sha256": "516b03b41b6a65b87c97a0cfdd53d8bee890fa7ba39e6fd431d2ad9ca3d708db"
+        },
+        "serde_json": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde_json-6d058f81b7b562eb.rlib",
+          "sha256": "c0514c87e4263b4a0e0852e1f680d8f1040c11122fd842e04cc76b0645acc910"
+        }
+      },
+      "dependency_source_commit": "9595221c21f1fe0775295a9c8756a1ba4d69ea49",
+      "original_sources_modified": false,
+      "owner_source_commit": "985a52e84cdaed7c8d4c363f30bc8841c5e3730c",
+      "schema": "hepta.closure.native-build.v1",
+      "source_sha256": {
+        "agentd_owner.rs": "4d56cc99d0edb1018734aebf70dc715de8df7846a2a9c4f2edb4230a0fc87faf",
+        "dynamics_profile.rs": "bbb85aea108723e4e526d5c71e6f81a1166a80cd932c2225843be3462c570d67",
+        "future_head.rs": "b53618d88c516059ae684fe0c3258c5dc9ed6f05bd5b30f4b38ae6b08c7be41f",
+        "head.rs": "8b9a169072c3192fc4a91cd7b427c4ac3b080cd28d244bca85654b48930ddbff",
+        "measure.rs": "27a8309398ef63818423ef7f06e8445a68954a6edb9160aa9d7bece9a8ab00b0",
+        "online.rs": "371683e1b17c5a48537df5e24f61c5369ad38c099d900e3dbd2be94a734cac1e",
+        "online_log.rs": "695ab2f2585e0a425fe57bea206989f8f863836730095e36c9e021d501a36856",
+        "online_port.rs": "66151da9fe3915c9a91cb461c45ef2156417ba33c343d93ca0aae929a0f53a0a",
+        "runtime_profile.rs": "9eddfae9d8c849ea12d84582db6371b4223366bd329f53c4c55d62652484503c",
+        "stream_io.rs": "8169bc9f7d47ef2f62b1fef079d80f3daa856b5f589bbb638350598bf705e2ca"
+      },
+      "wall_ns": 2146207159,
+      "whole_agentd_daemon_built": false
+    },
+    "build-003": {
+      "binary_sha256": "f1ebc7a787734619757fce9fe50207e9d610dd40ec9c45e1d4bb9e43dc1b1e49",
+      "commands": [
+        {
+          "command": [
+            "/workspace/scratch/2b3c256bef7d/task-tools/rust-1.95.0/bin/rustc",
+            "--edition=2024",
+            "-C",
+            "opt-level=2",
+            "-C",
+            "debuginfo=0",
+            "-L",
+            "dependency=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps",
+            "--extern",
+            "codex_hepta_neuron=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_neuron-2f0c355b62be5eae.rlib",
+            "--extern",
+            "codex_hepta_types=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_types-17d3f3691422d6e5.rlib",
+            "--extern",
+            "codex_hepta_infer_core=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_infer_core-c72e3d5295189f9f.rlib",
+            "--extern",
+            "codex_hepta_ndu=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_ndu-cc4862f2ee41fc2e.rlib",
+            "--extern",
+            "codex_native_owner_bridge=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_native_owner_bridge-6d3b38a13af600a4.rlib",
+            "--extern",
+            "serde=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde-93ef7b2e0c96e7ec.rlib",
+            "--extern",
+            "serde_json=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde_json-6d058f81b7b562eb.rlib",
+            "--crate-name",
+            "hepta_online_agentd_owner",
+            "--crate-type",
+            "lib",
+            "/workspace/scratch/87e43aa872f5/ndu-runs/native/build-003/src/agentd_owner.rs",
+            "-o",
+            "/workspace/scratch/87e43aa872f5/ndu-runs/native/build-003/libhepta_online_agentd_owner.rlib"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "/workspace/scratch/2b3c256bef7d/task-tools/rust-1.95.0/bin/rustc",
+            "--edition=2024",
+            "-C",
+            "opt-level=2",
+            "-C",
+            "debuginfo=0",
+            "-L",
+            "dependency=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps",
+            "--extern",
+            "codex_hepta_neuron=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_neuron-2f0c355b62be5eae.rlib",
+            "--extern",
+            "codex_hepta_types=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_types-17d3f3691422d6e5.rlib",
+            "--extern",
+            "codex_hepta_infer_core=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_infer_core-c72e3d5295189f9f.rlib",
+            "--extern",
+            "codex_hepta_ndu=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_ndu-cc4862f2ee41fc2e.rlib",
+            "--extern",
+            "codex_native_owner_bridge=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_native_owner_bridge-6d3b38a13af600a4.rlib",
+            "--extern",
+            "serde=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde-93ef7b2e0c96e7ec.rlib",
+            "--extern",
+            "serde_json=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde_json-6d058f81b7b562eb.rlib",
+            "--crate-name",
+            "hepta_native_online",
+            "--extern",
+            "hepta_online_agentd_owner=/workspace/scratch/87e43aa872f5/ndu-runs/native/build-003/libhepta_online_agentd_owner.rlib",
+            "/workspace/scratch/87e43aa872f5/ndu-runs/native/build-003/src/online.rs",
+            "-C",
+            "strip=symbols",
+            "-o",
+            "/workspace/scratch/87e43aa872f5/ndu-runs/native/build-003/hepta-native-online"
+          ],
+          "returncode": 0,
+          "stderr": "warning: struct `Weights` is never constructed\n  --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-003/src/head.rs:20:12\n   |\n20 | pub struct Weights {\n   |            ^^^^^^^\n   |\n   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: struct `Calibration` is never constructed\n  --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-003/src/head.rs:27:12\n   |\n27 | pub struct Calibration {\n   |            ^^^^^^^^^^^\n\nwarning: struct `LearnedHead` is never constructed\n  --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-003/src/head.rs:32:12\n   |\n32 | pub struct LearnedHead {\n   |            ^^^^^^^^^^^\n\nwarning: method `probability` is never used\n  --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-003/src/head.rs:40:12\n   |\n39 | impl LearnedHead {\n   | ---------------- method in this implementation\n40 |     pub fn probability(&self, x: &[i64]) -> Result<f64, NeuronModelError> {\n   |            ^^^^^^^^^^^\n\nwarning: fields `source_manifest` and `dataset` are never read\n  --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-003/src/runtime_profile.rs:19:9\n   |\n11 | pub struct Pins {\n   |            ---- fields in this struct\n...\n19 |     pub source_manifest: String,\n   |         ^^^^^^^^^^^^^^^\n20 |     pub dataset: String,\n   |         ^^^^^^^\n\nwarning: variant `HistoricalSemanticPrefix` is never constructed\n  --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-003/src/dynamics_profile.rs:22:5\n   |\n20 | pub enum DriveDomain {\n   |          ----------- variant in this enum\n21 |     // Initial boundedcontext plus exactly two .25*tanh shared-state updates.\n22 |     HistoricalSemanticPrefix,\n   |     ^^^^^^^^^^^^^^^^^^^^^^^^\n   |\n   = note: `DriveDomain` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis\n\nwarning: function `journal` is never used\n  --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-003/src/stream_io.rs:25:8\n   |\n25 | pub fn journal(root: &Path,native: SparseConfig,scope: JournalScope,anchor: JournalAnchor) -> Result<SparseJournal> {\n   |        ^^^^^^^\n\nwarning: 7 warnings emitted\n\n",
+          "stdout": ""
+        }
+      ],
+      "compiler": "rustc 1.95.0 (59807616e 2026-04-14)",
+      "dependencies": {
+        "codex_hepta_infer_core": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_infer_core-c72e3d5295189f9f.rlib",
+          "sha256": "ce474943d8f08b236849e70fbe680156416f7c2ebd27ce31f378bf28c7150705"
+        },
+        "codex_hepta_ndu": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_ndu-cc4862f2ee41fc2e.rlib",
+          "sha256": "4129653abc09e28f4f762aa010bfe167caad71b1f0504e2f2a4fdd96cb40a1cb"
+        },
+        "codex_hepta_neuron": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_neuron-2f0c355b62be5eae.rlib",
+          "sha256": "dc89842770b606b275f9e03c6e23c581154862ac9dd5e5ecc64361935b8e0b1c"
+        },
+        "codex_hepta_types": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_types-17d3f3691422d6e5.rlib",
+          "sha256": "38779cb6724d8a291228491aeae90f32e566354666d41bff103ce919320cadef"
+        },
+        "codex_native_owner_bridge": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_native_owner_bridge-6d3b38a13af600a4.rlib",
+          "sha256": "82e472f8f3dd4615f5768ae6f17a9a6c34a15046598f57cfce2d9509f8032dc1"
+        },
+        "serde": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde-93ef7b2e0c96e7ec.rlib",
+          "sha256": "516b03b41b6a65b87c97a0cfdd53d8bee890fa7ba39e6fd431d2ad9ca3d708db"
+        },
+        "serde_json": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde_json-6d058f81b7b562eb.rlib",
+          "sha256": "c0514c87e4263b4a0e0852e1f680d8f1040c11122fd842e04cc76b0645acc910"
+        }
+      },
+      "dependency_source_commit": "9595221c21f1fe0775295a9c8756a1ba4d69ea49",
+      "original_sources_modified": false,
+      "owner_source_commit": "985a52e84cdaed7c8d4c363f30bc8841c5e3730c",
+      "schema": "hepta.closure.native-build.v1",
+      "source_sha256": {
+        "agentd_owner.rs": "4d56cc99d0edb1018734aebf70dc715de8df7846a2a9c4f2edb4230a0fc87faf",
+        "dynamics_profile.rs": "bbb85aea108723e4e526d5c71e6f81a1166a80cd932c2225843be3462c570d67",
+        "future_head.rs": "b53618d88c516059ae684fe0c3258c5dc9ed6f05bd5b30f4b38ae6b08c7be41f",
+        "head.rs": "8b9a169072c3192fc4a91cd7b427c4ac3b080cd28d244bca85654b48930ddbff",
+        "measure.rs": "27a8309398ef63818423ef7f06e8445a68954a6edb9160aa9d7bece9a8ab00b0",
+        "online.rs": "0646d7425960b02797a124064feddc33ece0c9e20136af8c2a4091574005f316",
+        "online_log.rs": "695ab2f2585e0a425fe57bea206989f8f863836730095e36c9e021d501a36856",
+        "online_port.rs": "66151da9fe3915c9a91cb461c45ef2156417ba33c343d93ca0aae929a0f53a0a",
+        "runtime_profile.rs": "9eddfae9d8c849ea12d84582db6371b4223366bd329f53c4c55d62652484503c",
+        "stream_io.rs": "8169bc9f7d47ef2f62b1fef079d80f3daa856b5f589bbb638350598bf705e2ca"
+      },
+      "wall_ns": 3023026360,
+      "whole_agentd_daemon_built": false
+    },
+    "build-004": {
+      "binary_sha256": "bd10a370c91d85fb6732d8de960d709959b63518163257c0a0e6c3812915db88",
+      "commands": [
+        {
+          "command": [
+            "/workspace/scratch/2b3c256bef7d/task-tools/rust-1.95.0/bin/rustc",
+            "--edition=2024",
+            "-C",
+            "opt-level=2",
+            "-C",
+            "debuginfo=0",
+            "-L",
+            "dependency=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps",
+            "--extern",
+            "codex_hepta_neuron=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_neuron-2f0c355b62be5eae.rlib",
+            "--extern",
+            "codex_hepta_types=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_types-17d3f3691422d6e5.rlib",
+            "--extern",
+            "codex_hepta_infer_core=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_infer_core-c72e3d5295189f9f.rlib",
+            "--extern",
+            "codex_hepta_ndu=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_ndu-cc4862f2ee41fc2e.rlib",
+            "--extern",
+            "codex_native_owner_bridge=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_native_owner_bridge-6d3b38a13af600a4.rlib",
+            "--extern",
+            "serde=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde-93ef7b2e0c96e7ec.rlib",
+            "--extern",
+            "serde_json=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde_json-6d058f81b7b562eb.rlib",
+            "--crate-name",
+            "hepta_online_agentd_owner",
+            "--crate-type",
+            "lib",
+            "/workspace/scratch/87e43aa872f5/ndu-runs/native/build-004/src/agentd_owner.rs",
+            "-o",
+            "/workspace/scratch/87e43aa872f5/ndu-runs/native/build-004/libhepta_online_agentd_owner.rlib"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "/workspace/scratch/2b3c256bef7d/task-tools/rust-1.95.0/bin/rustc",
+            "--edition=2024",
+            "-C",
+            "opt-level=2",
+            "-C",
+            "debuginfo=0",
+            "-L",
+            "dependency=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps",
+            "--extern",
+            "codex_hepta_neuron=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_neuron-2f0c355b62be5eae.rlib",
+            "--extern",
+            "codex_hepta_types=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_types-17d3f3691422d6e5.rlib",
+            "--extern",
+            "codex_hepta_infer_core=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_infer_core-c72e3d5295189f9f.rlib",
+            "--extern",
+            "codex_hepta_ndu=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_ndu-cc4862f2ee41fc2e.rlib",
+            "--extern",
+            "codex_native_owner_bridge=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_native_owner_bridge-6d3b38a13af600a4.rlib",
+            "--extern",
+            "serde=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde-93ef7b2e0c96e7ec.rlib",
+            "--extern",
+            "serde_json=/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde_json-6d058f81b7b562eb.rlib",
+            "--crate-name",
+            "hepta_native_online",
+            "--extern",
+            "hepta_online_agentd_owner=/workspace/scratch/87e43aa872f5/ndu-runs/native/build-004/libhepta_online_agentd_owner.rlib",
+            "/workspace/scratch/87e43aa872f5/ndu-runs/native/build-004/src/online.rs",
+            "-C",
+            "strip=symbols",
+            "-o",
+            "/workspace/scratch/87e43aa872f5/ndu-runs/native/build-004/hepta-native-online"
+          ],
+          "returncode": 0,
+          "stderr": "warning: struct `Weights` is never constructed\n  --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-004/src/head.rs:20:12\n   |\n20 | pub struct Weights {\n   |            ^^^^^^^\n   |\n   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: struct `Calibration` is never constructed\n  --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-004/src/head.rs:27:12\n   |\n27 | pub struct Calibration {\n   |            ^^^^^^^^^^^\n\nwarning: struct `LearnedHead` is never constructed\n  --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-004/src/head.rs:32:12\n   |\n32 | pub struct LearnedHead {\n   |            ^^^^^^^^^^^\n\nwarning: method `probability` is never used\n  --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-004/src/head.rs:40:12\n   |\n39 | impl LearnedHead {\n   | ---------------- method in this implementation\n40 |     pub fn probability(&self, x: &[i64]) -> Result<f64, NeuronModelError> {\n   |            ^^^^^^^^^^^\n\nwarning: fields `source_manifest` and `dataset` are never read\n  --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-004/src/runtime_profile.rs:19:9\n   |\n11 | pub struct Pins {\n   |            ---- fields in this struct\n...\n19 |     pub source_manifest: String,\n   |         ^^^^^^^^^^^^^^^\n20 |     pub dataset: String,\n   |         ^^^^^^^\n\nwarning: variant `HistoricalSemanticPrefix` is never constructed\n  --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-004/src/dynamics_profile.rs:22:5\n   |\n20 | pub enum DriveDomain {\n   |          ----------- variant in this enum\n21 |     // Initial boundedcontext plus exactly two .25*tanh shared-state updates.\n22 |     HistoricalSemanticPrefix,\n   |     ^^^^^^^^^^^^^^^^^^^^^^^^\n   |\n   = note: `DriveDomain` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis\n\nwarning: function `journal` is never used\n  --> /workspace/scratch/87e43aa872f5/ndu-runs/native/build-004/src/stream_io.rs:25:8\n   |\n25 | pub fn journal(root: &Path,native: SparseConfig,scope: JournalScope,anchor: JournalAnchor) -> Result<SparseJournal> {\n   |        ^^^^^^^\n\nwarning: 7 warnings emitted\n\n",
+          "stdout": ""
+        }
+      ],
+      "compiler": "rustc 1.95.0 (59807616e 2026-04-14)",
+      "dependencies": {
+        "codex_hepta_infer_core": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_infer_core-c72e3d5295189f9f.rlib",
+          "sha256": "ce474943d8f08b236849e70fbe680156416f7c2ebd27ce31f378bf28c7150705"
+        },
+        "codex_hepta_ndu": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_ndu-cc4862f2ee41fc2e.rlib",
+          "sha256": "4129653abc09e28f4f762aa010bfe167caad71b1f0504e2f2a4fdd96cb40a1cb"
+        },
+        "codex_hepta_neuron": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_neuron-2f0c355b62be5eae.rlib",
+          "sha256": "dc89842770b606b275f9e03c6e23c581154862ac9dd5e5ecc64361935b8e0b1c"
+        },
+        "codex_hepta_types": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_types-17d3f3691422d6e5.rlib",
+          "sha256": "38779cb6724d8a291228491aeae90f32e566354666d41bff103ce919320cadef"
+        },
+        "codex_native_owner_bridge": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_native_owner_bridge-6d3b38a13af600a4.rlib",
+          "sha256": "82e472f8f3dd4615f5768ae6f17a9a6c34a15046598f57cfce2d9509f8032dc1"
+        },
+        "serde": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde-93ef7b2e0c96e7ec.rlib",
+          "sha256": "516b03b41b6a65b87c97a0cfdd53d8bee890fa7ba39e6fd431d2ad9ca3d708db"
+        },
+        "serde_json": {
+          "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde_json-6d058f81b7b562eb.rlib",
+          "sha256": "c0514c87e4263b4a0e0852e1f680d8f1040c11122fd842e04cc76b0645acc910"
+        }
+      },
+      "dependency_source_commit": "9595221c21f1fe0775295a9c8756a1ba4d69ea49",
+      "original_sources_modified": false,
+      "owner_source_commit": "985a52e84cdaed7c8d4c363f30bc8841c5e3730c",
+      "schema": "hepta.closure.native-build.v1",
+      "source_sha256": {
+        "agentd_owner.rs": "4d56cc99d0edb1018734aebf70dc715de8df7846a2a9c4f2edb4230a0fc87faf",
+        "dynamics_profile.rs": "bbb85aea108723e4e526d5c71e6f81a1166a80cd932c2225843be3462c570d67",
+        "future_head.rs": "b53618d88c516059ae684fe0c3258c5dc9ed6f05bd5b30f4b38ae6b08c7be41f",
+        "head.rs": "8b9a169072c3192fc4a91cd7b427c4ac3b080cd28d244bca85654b48930ddbff",
+        "measure.rs": "27a8309398ef63818423ef7f06e8445a68954a6edb9160aa9d7bece9a8ab00b0",
+        "online.rs": "9fa5a740c9ae499cdf80cbb78fc643ccce5e17c60f551295deb9a86364cfd864",
+        "online_log.rs": "695ab2f2585e0a425fe57bea206989f8f863836730095e36c9e021d501a36856",
+        "online_port.rs": "66151da9fe3915c9a91cb461c45ef2156417ba33c343d93ca0aae929a0f53a0a",
+        "runtime_profile.rs": "9eddfae9d8c849ea12d84582db6371b4223366bd329f53c4c55d62652484503c",
+        "stream_io.rs": "8169bc9f7d47ef2f62b1fef079d80f3daa856b5f589bbb638350598bf705e2ca"
+      },
+      "wall_ns": 1915111354,
+      "whole_agentd_daemon_built": false
+    }
+  },
+  "build_cost_limit": "Incremental rustc wall only; reused original compiled dependencies, no full daemon build",
+  "by_view": {
+    "both_missing": {
+      "abstained": 10,
+      "actions": {},
+      "actual_generated": 0,
+      "pairs": 10
+    },
+    "clean": {
+      "abstained": 3,
+      "actions": {
+        "couple": 6,
+        "refine_text": 2
+      },
+      "actual_generated": 8,
+      "pairs": 11
+    },
+    "conflict_untrusted": {
+      "abstained": 2,
+      "actions": {
+        "couple": 7,
+        "refine_text": 1
+      },
+      "actual_generated": 8,
+      "pairs": 10
+    },
+    "missing_trusted": {
+      "abstained": 1,
+      "actions": {
+        "couple": 7,
+        "refine_text": 3
+      },
+      "actual_generated": 10,
+      "pairs": 11
+    },
+    "noise": {
+      "abstained": 5,
+      "actions": {
+        "couple": 2,
+        "refine_text": 4
+      },
+      "actual_generated": 6,
+      "pairs": 11
+    },
+    "occlusion": {
+      "abstained": 6,
+      "actions": {
+        "couple": 3,
+        "refine_text": 2
+      },
+      "actual_generated": 5,
+      "pairs": 11
+    }
+  },
+  "development72": {
+    "abstained": 31,
+    "generated": 41,
+    "negative_cases": 20,
+    "rollover_final_sequence": 144,
+    "ticks": 144
+  },
+  "first_smoke12": {
+    "generated": 6,
+    "observed_failure": "Second process p95=3847us exceeded unchanged 3000us ceiling; retained, not overwritten",
+    "resource_summary_passed": [
+      true,
+      false
+    ]
+  },
+  "frozen_inputs_still_exact": true,
+  "new_source_pairs": 64,
+  "online_results": {
+    "abstained_without_generation": 27,
+    "actual_output_generations": 37,
+    "all_decisions_precede_generation": true,
+    "complete_agentd_daemon": false,
+    "correctness_action_scope": [
+      "refine_text",
+      "couple"
+    ],
+    "descriptor_sha256": "b23a46df707b77a0a588d7a5237da717c1e51f5cb3802e7162b323efe1ee1564",
+    "negative_cases": [
+      {
+        "case": "generation",
+        "owner_state_unchanged": true,
+        "result": {
+          "error": "Request identity, candidate set or bounded lifetime rejected",
+          "fatal": false,
+          "ok": false
+        }
+      },
+      {
+        "case": "weights",
+        "owner_state_unchanged": true,
+        "result": {
+          "error": "Request identity, candidate set or bounded lifetime rejected",
+          "fatal": false,
+          "ok": false
+        }
+      },
+      {
+        "case": "objective",
+        "owner_state_unchanged": true,
+        "result": {
+          "error": "Request identity, candidate set or bounded lifetime rejected",
+          "fatal": false,
+          "ok": false
+        }
+      },
+      {
+        "case": "future_field",
+        "owner_state_unchanged": true,
+        "result": {
+          "error": "unknown field `target`, expected one of `request_id`, `generation`, `weights_sha256`, `objective_digest`, `prefix_digest`, `candidates`",
+          "fatal": false,
+          "ok": false
+        }
+      },
+      {
+        "case": "candidate_set",
+        "owner_state_unchanged": true,
+        "result": {
+          "error": "Request identity, candidate set or bounded lifetime rejected",
+          "fatal": false,
+          "ok": false
+        }
+      },
+      {
+        "case": "prefix_mismatch",
+        "owner_state_unchanged": true,
+        "result": {
+          "error": "Candidate actions do not share the same public prefix",
+          "fatal": false,
+          "ok": false
+        }
+      },
+      {
+        "case": "action_bits",
+        "owner_state_unchanged": true,
+        "result": {
+          "error": "Invalid public prefix or action encoding",
+          "fatal": false,
+          "ok": false
+        }
+      },
+      {
+        "case": "feature_width",
+        "owner_state_unchanged": true,
+        "result": {
+          "error": "Invalid public prefix or action encoding",
+          "fatal": false,
+          "ok": false
+        }
+      },
+      {
+        "case": "pending_blocks_decision",
+        "owner_state_unchanged": true,
+        "result": {
+          "error": "Pending outcome or repeated request",
+          "fatal": false,
+          "ok": false
+        }
+      },
+      {
+        "case": "pending_blocks_shutdown",
+        "owner_state_unchanged": true,
+        "result": {
+          "error": "Pending outcome or cancellation required",
+          "fatal": false,
+          "ok": false
+        }
+      },
+      {
+        "case": "outcome_binding",
+        "owner_state_unchanged": true,
+        "result": {
+          "error": "Outcome is not bound to the pending decision",
+          "fatal": false,
+          "ok": false
+        }
+      },
+      {
+        "case": "outcome_hash",
+        "owner_state_unchanged": true,
+        "result": {
+          "error": "Pinned input file changed",
+          "fatal": false,
+          "ok": false
+        }
+      },
+      {
+        "case": "observer",
+        "owner_state_unchanged": true,
+        "result": {
+          "error": "Observed outcome identity or causal order rejected",
+          "fatal": false,
+          "ok": false
+        }
+      },
+      {
+        "case": "outcome_action",
+        "owner_state_unchanged": true,
+        "result": {
+          "error": "Observed outcome identity or causal order rejected",
+          "fatal": false,
+          "ok": false
+        }
+      },
+      {
+        "case": "causal_time",
+        "owner_state_unchanged": true,
+        "result": {
+          "error": "Observed outcome identity or causal order rejected",
+          "fatal": false,
+          "ok": false
+        }
+      },
+      {
+        "case": "observed_time",
+        "owner_state_unchanged": true,
+        "result": {
+          "error": "Observed outcome identity or causal order rejected",
+          "fatal": false,
+          "ok": false
+        }
+      },
+      {
+        "case": "media_hash",
+        "owner_state_unchanged": true,
+        "result": {
+          "error": "Pinned input file changed",
+          "fatal": false,
+          "ok": false
+        }
+      },
+      {
+        "case": "utility_bound",
+        "owner_state_unchanged": true,
+        "result": {
+          "error": "Observed utility outside registered bounded score",
+          "fatal": false,
+          "ok": false
+        }
+      },
+      {
+        "case": "duplicate_outcome",
+        "owner_state_unchanged": true,
+        "result": {
+          "error": "Outcome is not bound to the pending decision",
+          "fatal": false,
+          "ok": false
+        }
+      },
+      {
+        "case": "duplicate_decision",
+        "result": {
+          "error": "Pending outcome or repeated request",
+          "fatal": false,
+          "ok": false
+        }
+      }
+    ],
+    "new_calibration_or_independent_policy_efficacy_claim": false,
+    "process_ids": [
+      17,
+      18,
+      19
+    ],
+    "process_status": [
+      {
+        "anchor": "96ac7672f9505e51792c674864211d8e353c5bb0e7837a5f814dfb99e59096c3",
+        "authority": "deny_all",
+        "daemon_deployment": false,
+        "history_digest": "723c56dac850006e03aac48762bae3f5b6f1fda178f1aadeba52ca614613c197",
+        "model_forwards_in_process": 2,
+        "modulator": "1791f11372d3c4038df21e102ac7e026df45f8304fea42cd3891c235c8c368dc",
+        "native_resource_summary": {
+          "maximum_checkpoint_bytes": 1568,
+          "maximum_transient_allocation_bytes": 13016,
+          "maximum_write_amplification_ppm": 530613,
+          "p95_execution_micros": 783,
+          "p99_execution_micros": 783,
+          "pilot_ceiling_passed_for_supplied_samples": true,
+          "sample_count": 2,
+          "sample_set_digest": "0a90a7284919c8891cd18261794977ff276634e85c7afb35bc615c5831608312"
+        },
+        "native_resource_summary_passed": true,
+        "native_sequence": 2,
+        "objective_digest": "b23a46df707b77a0a588d7a5237da717c1e51f5cb3802e7162b323efe1ee1564",
+        "outcomes": 0,
+        "pending": [
+          "closure.case.0",
+          "723c56dac850006e03aac48762bae3f5b6f1fda178f1aadeba52ca614613c197",
+          "refine_text"
+        ],
+        "requests": 1,
+        "ticks_in_process": 2,
+        "training_steps": 0,
+        "weights_decoded_in_process": 1,
+        "whole_owner_peak_bytes": 24138
+      },
+      {
+        "anchor": "4451acca943e352036887944a30107bd486d2c4fa84d4573a6e0f977cb5a3886",
+        "authority": "deny_all",
+        "daemon_deployment": false,
+        "history_digest": "ea7f2403eda744a830c3a9103ff08a667024e04d7918df3a70c826ef01cd8f2d",
+        "model_forwards_in_process": 62,
+        "modulator": "47812e08cf341c704168630424b0b25c3e54e39266d4ed6e0855301bf638a22c",
+        "native_resource_summary": {
+          "maximum_checkpoint_bytes": 1568,
+          "maximum_transient_allocation_bytes": 13016,
+          "maximum_write_amplification_ppm": 530613,
+          "p95_execution_micros": 995,
+          "p99_execution_micros": 1317,
+          "pilot_ceiling_passed_for_supplied_samples": true,
+          "sample_count": 62,
+          "sample_set_digest": "3a83fb678c51ecd4aef387a2ce10c1b180bbe2e1814175eb103559088abdfdfd"
+        },
+        "native_resource_summary_passed": true,
+        "native_sequence": 64,
+        "objective_digest": "b23a46df707b77a0a588d7a5237da717c1e51f5cb3802e7162b323efe1ee1564",
+        "outcomes": 19,
+        "pending": null,
+        "requests": 32,
+        "ticks_in_process": 62,
+        "training_steps": 0,
+        "weights_decoded_in_process": 1,
+        "whole_owner_peak_bytes": 24140
+      },
+      {
+        "anchor": "c4308c7cbf7bb9ecf67c3e55062ab91855839b9bac2b2615e45d133d8b2a451d",
+        "authority": "deny_all",
+        "daemon_deployment": false,
+        "history_digest": "fb76ca6b00698522f0566255a1040c6b1944cb2ae6adb813531ba4689037ed4b",
+        "model_forwards_in_process": 64,
+        "modulator": "39f8ecdf9ae2e4be2c69412bdd7f3bc9ec46a0414797937da2793c71e7c1de41",
+        "native_resource_summary": {
+          "maximum_checkpoint_bytes": 1568,
+          "maximum_transient_allocation_bytes": 13016,
+          "maximum_write_amplification_ppm": 530613,
+          "p95_execution_micros": 769,
+          "p99_execution_micros": 884,
+          "pilot_ceiling_passed_for_supplied_samples": true,
+          "sample_count": 64,
+          "sample_set_digest": "26a59a5dcc78336b90a7160a663d85b55a3ed1b8b2bc633398a8fb3db7df1ab2"
+        },
+        "native_resource_summary_passed": true,
+        "native_sequence": 128,
+        "objective_digest": "b23a46df707b77a0a588d7a5237da717c1e51f5cb3802e7162b323efe1ee1564",
+        "outcomes": 37,
+        "pending": null,
+        "requests": 64,
+        "ticks_in_process": 64,
+        "training_steps": 0,
+        "weights_decoded_in_process": 1,
+        "whole_owner_peak_bytes": 36057
+      }
+    ],
+    "production_authority": false,
+    "python_cpu_ns": 1350823555,
+    "raw_controller_log_sha256": "bf375536e33156609dbfecfb920eea6ca3665ea0a126dd5eaa80c73bbd0c467e",
+    "raw_rollouts_sha256": "3009e9d174decd04dff80e5f300f4a12edaaeff28d0a3eac5afab8365cc27355",
+    "recoveries": [
+      {
+        "after": {
+          "anchor": "96ac7672f9505e51792c674864211d8e353c5bb0e7837a5f814dfb99e59096c3",
+          "history_digest": "723c56dac850006e03aac48762bae3f5b6f1fda178f1aadeba52ca614613c197",
+          "modulator": "1791f11372d3c4038df21e102ac7e026df45f8304fea42cd3891c235c8c368dc",
+          "native_sequence": 2,
+          "objective_digest": "b23a46df707b77a0a588d7a5237da717c1e51f5cb3802e7162b323efe1ee1564",
+          "outcomes": 0,
+          "pending": [
+            "closure.case.0",
+            "723c56dac850006e03aac48762bae3f5b6f1fda178f1aadeba52ca614613c197",
+            "refine_text"
+          ],
+          "requests": 1
+        },
+        "before": {
+          "anchor": "96ac7672f9505e51792c674864211d8e353c5bb0e7837a5f814dfb99e59096c3",
+          "history_digest": "723c56dac850006e03aac48762bae3f5b6f1fda178f1aadeba52ca614613c197",
+          "modulator": "1791f11372d3c4038df21e102ac7e026df45f8304fea42cd3891c235c8c368dc",
+          "native_sequence": 2,
+          "objective_digest": "b23a46df707b77a0a588d7a5237da717c1e51f5cb3802e7162b323efe1ee1564",
+          "outcomes": 0,
+          "pending": [
+            "closure.case.0",
+            "723c56dac850006e03aac48762bae3f5b6f1fda178f1aadeba52ca614613c197",
+            "refine_text"
+          ],
+          "requests": 1
+        },
+        "kind": "abrupt_pending_decision"
+      },
+      {
+        "after": {
+          "anchor": "4451acca943e352036887944a30107bd486d2c4fa84d4573a6e0f977cb5a3886",
+          "history_digest": "ea7f2403eda744a830c3a9103ff08a667024e04d7918df3a70c826ef01cd8f2d",
+          "modulator": "47812e08cf341c704168630424b0b25c3e54e39266d4ed6e0855301bf638a22c",
+          "native_sequence": 64,
+          "objective_digest": "b23a46df707b77a0a588d7a5237da717c1e51f5cb3802e7162b323efe1ee1564",
+          "outcomes": 19,
+          "pending": null,
+          "requests": 32
+        },
+        "before": {
+          "anchor": "4451acca943e352036887944a30107bd486d2c4fa84d4573a6e0f977cb5a3886",
+          "history_digest": "ea7f2403eda744a830c3a9103ff08a667024e04d7918df3a70c826ef01cd8f2d",
+          "modulator": "47812e08cf341c704168630424b0b25c3e54e39266d4ed6e0855301bf638a22c",
+          "native_sequence": 64,
+          "objective_digest": "b23a46df707b77a0a588d7a5237da717c1e51f5cb3802e7162b323efe1ee1564",
+          "outcomes": 19,
+          "pending": null,
+          "requests": 32
+        },
+        "kind": "graceful_committed_outcomes"
+      }
+    ],
+    "registration": {
+      "binary_sha256": "bd10a370c91d85fb6732d8de960d709959b63518163257c0a0e6c3812915db88",
+      "code_sha256": {
+        "PROTOCOL.json": "cc9e4f47fedcb26577ab7815a20c32109c782b3ce83f6f74853ebcc2dabbb0bf",
+        "__init__.py": "3ae59624f6e1763396934abe389955dbf4482046b590f3cfd00863e51fe0a1f5",
+        "boundaries.py": "931258939f588c16f8a3da794936f38d8fb5c2beb45488e4ec45816a731e9267",
+        "build.py": "668b84f8d5481d4f5a1f35772f1344f05d6157fa5864989c6c31536f4d00a076",
+        "freeze.py": "51c6aa67065ae1737ecac531c7520cae14220f6d4fc6727b4c2db803d27edc81",
+        "online.rs": "9fa5a740c9ae499cdf80cbb78fc643ccce5e17c60f551295deb9a86364cfd864",
+        "online_log.rs": "695ab2f2585e0a425fe57bea206989f8f863836730095e36c9e021d501a36856",
+        "online_port.rs": "66151da9fe3915c9a91cb461c45ef2156417ba33c343d93ca0aae929a0f53a0a",
+        "process.py": "e174fd8503ac8d24fdddbb8e090a49b380d5f650ddaea42de529b1918882e9bc",
+        "run.py": "18d72016dfda1a779ecc3d16b646f5a1be539e031d80f5e90130fca29d41ff97"
+      },
+      "frozen_ns": 1792943202206077404,
+      "new_independent_source_pairs": 64,
+      "new_policy_calibration_claim": false,
+      "online_carrier": "one correctness reference plus 32 predicted coordinates; no observed future supplied",
+      "pair_count": 64,
+      "pair_start": 0,
+      "production_authority": false,
+      "protocol_sha256": "cc9e4f47fedcb26577ab7815a20c32109c782b3ce83f6f74853ebcc2dabbb0bf",
+      "purpose": "causal-owner-mechanism-fresh",
+      "selection": "maximum frozen correctness probability among actual admitted actions; refine_text breaks ties",
+      "source_allocation_sha256": "fcee8983689b78e6f7bb131130dbc075d0c745d7e3e560acdf64f2a26da729e8",
+      "source_role": "closure_native",
+      "views": [
+        "clean",
+        "noise",
+        "occlusion",
+        "missing_trusted",
+        "conflict_untrusted",
+        "both_missing"
+      ]
+    },
+    "schema": "hepta.closure.native-online-results.v1",
+    "source_pairs": 64,
+    "wall_ns": 1764425591
+  },
+  "pre_source_access_attempts": [
+    "build-001 failed before compilation completed; exact diagnostic retained",
+    "Old abc_followup process wrapper refused new module before launch; own scoped wrapper added",
+    "Freeze attempt referenced absent v6/model.py before writing protocol; corrected to actual v7/model.py and v6/neural.py",
+    "39-file draft protocol extended to41 by pinning emission.py and public feature encoder before any fresh source access"
+  ],
+  "process_costs": {
+    "boundaries-001.process": {
+      "child_pid": 8,
+      "child_system_seconds": 0.157251,
+      "child_user_seconds": 2.273367,
+      "command": [
+        "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+        "-B",
+        "-m",
+        "experiments.multimodal_output_portfolio.closure_20261025.native.boundaries",
+        "--binary",
+        "/workspace/scratch/87e43aa872f5/ndu-runs/native/build-004/hepta-native-online",
+        "--study",
+        "/workspace/scratch/87e43aa872f5/ndu-runs/native/smoke-002",
+        "--output",
+        "/workspace/scratch/87e43aa872f5/ndu-runs/native/boundaries-001"
+      ],
+      "cost_scope": "Python child including waited native subprocesses; Linux wait4 ru_maxrss is peak, not sum",
+      "exit_code": 0,
+      "log_sha256": "064016bbfc6171f59d7b8ea4bedf1ae946f39de5b06a7ca141a5a598e9fac125",
+      "peak_rss_bytes": 226807808,
+      "registration_sha256": "4bbd27318793f9a4bded6c37367e29d078dde6705ad264bdf4920539a8fd08c2",
+      "schema": "hepta.closure.native-process-cost.v1",
+      "waited_pid": 8,
+      "wall_ns": 1615326131,
+      "wrapper_cpu_ns": 792557
+    },
+    "fresh-001.process": {
+      "child_pid": 8,
+      "child_system_seconds": 0.377609,
+      "child_user_seconds": 3.688753,
+      "command": [
+        "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+        "-B",
+        "-m",
+        "experiments.multimodal_output_portfolio.closure_20261025.native.run",
+        "--binary",
+        "/workspace/scratch/87e43aa872f5/ndu-runs/native/build-004/hepta-native-online",
+        "--output",
+        "/workspace/scratch/87e43aa872f5/ndu-runs/native/fresh-001",
+        "--count",
+        "64",
+        "--mode",
+        "fresh",
+        "--protocol",
+        "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/native/PROTOCOL.json",
+        "--allocation",
+        "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/closure_20261025/SOURCE_ALLOCATION.json"
+      ],
+      "cost_scope": "Python child including waited native subprocesses; Linux wait4 ru_maxrss is peak, not sum",
+      "exit_code": 0,
+      "log_sha256": "3fbfebd646d4f27dde9f3df2d9f55cfe5f9d100e2f6b709f811446ec1f3641b1",
+      "peak_rss_bytes": 399777792,
+      "registration_sha256": "feab77b11e7c63f3a9bdc8b353df6a51d3f038022f9d961016327f55f2140eac",
+      "schema": "hepta.closure.native-process-cost.v1",
+      "waited_pid": 8,
+      "wall_ns": 3588250360,
+      "wrapper_cpu_ns": 621885
+    },
+    "smoke-001.process": {
+      "child_pid": 8,
+      "child_system_seconds": 0.42666099999999996,
+      "child_user_seconds": 3.080498,
+      "command": [
+        "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+        "-B",
+        "-m",
+        "experiments.multimodal_output_portfolio.closure_20261025.native.run",
+        "--binary",
+        "/workspace/scratch/87e43aa872f5/ndu-runs/native/build-003/hepta-native-online",
+        "--output",
+        "/workspace/scratch/87e43aa872f5/ndu-runs/native/smoke-001",
+        "--count",
+        "12"
+      ],
+      "cost_scope": "Python child including waited native subprocesses; Linux wait4 ru_maxrss is peak, not sum",
+      "exit_code": 0,
+      "log_sha256": "a5c6524539fa4d65cf766bcacec3762811ac21b1e314994d54c6c3dbb53b74c2",
+      "peak_rss_bytes": 405856256,
+      "registration_sha256": "3fa2fe6a6d54337d57d7bc1dfaa04a408362043ef57c41ffbfe179a5fc7cdbdb",
+      "schema": "hepta.closure.native-process-cost.v1",
+      "waited_pid": 8,
+      "wall_ns": 3502878958,
+      "wrapper_cpu_ns": 689586
+    },
+    "smoke-002.process": {
+      "child_pid": 8,
+      "child_system_seconds": 0.391657,
+      "child_user_seconds": 4.037362,
+      "command": [
+        "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+        "-B",
+        "-m",
+        "experiments.multimodal_output_portfolio.closure_20261025.native.run",
+        "--binary",
+        "/workspace/scratch/87e43aa872f5/ndu-runs/native/build-004/hepta-native-online",
+        "--output",
+        "/workspace/scratch/87e43aa872f5/ndu-runs/native/smoke-002",
+        "--count",
+        "72"
+      ],
+      "cost_scope": "Python child including waited native subprocesses; Linux wait4 ru_maxrss is peak, not sum",
+      "exit_code": 0,
+      "log_sha256": "d58840be855aead132a770b4c057fe080addce02bb60d62b3d185005d06394d3",
+      "peak_rss_bytes": 406134784,
+      "registration_sha256": "ca145eb3d1dab6fe60ade7a92b0717d6963acd3ed35094b091db9bc7f97e5e03",
+      "schema": "hepta.closure.native-process-cost.v1",
+      "waited_pid": 8,
+      "wall_ns": 4206792626,
+      "wrapper_cpu_ns": 737548
+    }
+  },
+  "protocol_sha256": "cc9e4f47fedcb26577ab7815a20c32109c782b3ce83f6f74853ebcc2dabbb0bf",
+  "raw_evidence": {
+    "archive": "RAW_EVIDENCE.tar.gz",
+    "bytes": 3326823,
+    "files": 566,
+    "sha256": "22c48b6ff284535547f785324c7438e7023b24f9f726760230698503fe1e4ac7"
+  },
+  "recovery_and_absent_evidence_probes": {
+    "all_expected_outcomes_observed": true,
+    "binary_sha256": "bd10a370c91d85fb6732d8de960d709959b63518163257c0a0e6c3812915db88",
+    "cases": [
+      {
+        "accepted": true,
+        "case": "intact_after_segment_rollover",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "{\"ready\":true,\"status\":{\"anchor\":\"9ffeddbd3c735cbebaf67e8ec5d9ccbdbd4cc9603251e0e96581ca496c0981db\",\"authority\":\"deny_all\",\"daemon_deployment\":false,\"history_digest\":\"4a866b3f5dd71881dfbbd54024a2e9d3c25ff176eed7777a5617661ae8bf3129\",\"model_forwards_in_process\":0,\"modulator\":\"07ea2c616ca39d7da0aa5e6eab058d97728f467667b03cec5abcfe4424673f62\",\"native_resource_summary\":null,\"native_resource_summary_passed\":null,\"native_sequence\":144,\"objective_digest\":\"983641d04be9cc17b22da7c3c8e9cf8cf76b299ec3223281dd579c2ed92db0c8\",\"outcomes\":41,\"pending\":null,\"requests\":72,\"ticks_in_process\":0,\"training_steps\":0,\"weights_decoded_in_process\":1,\"whole_owner_peak_bytes\":0}}\n{\"ok\":true,\"value\":{\"anchor\":\"9ffeddbd3c735cbebaf67e8ec5d9ccbdbd4cc9603251e0e96581ca496c0981db\",\"authority\":\"deny_all\",\"daemon_deployment\":false,\"history_digest\":\"4a866b3f5dd71881dfbbd54024a2e9d3c25ff176eed7777a5617661ae8bf3129\",\"model_forwards_in_process\":0,\"modulator\":\"07ea2c616ca39d7da0aa5e6eab058d97728f467667b03cec5abcfe4424673f62\",\"native_resource_summary\":null,\"native_resource_summary_passed\":null,\"native_sequence\":144,\"objective_digest\":\"983641d04be9cc17b22da7c3c8e9cf8cf76b299ec3223281dd579c2ed92db0c8\",\"outcomes\":41,\"pending\":null,\"requests\":72,\"ticks_in_process\":0,\"training_steps\":0,\"weights_decoded_in_process\":1,\"whole_owner_peak_bytes\":0}}\n"
+      },
+      {
+        "accepted": false,
+        "case": "binary_identity",
+        "returncode": 1,
+        "stderr": "Error: \"Resume descriptor or executable identity mismatch\"\n",
+        "stdout": ""
+      },
+      {
+        "accepted": false,
+        "case": "truncated_controller",
+        "returncode": 1,
+        "stderr": "Error: \"Incomplete controller history; reconciliation required\"\n",
+        "stdout": ""
+      },
+      {
+        "accepted": false,
+        "case": "controller_digest",
+        "returncode": 1,
+        "stderr": "Error: \"Controller history digest or sequence mismatch\"\n",
+        "stdout": ""
+      },
+      {
+        "accepted": false,
+        "case": "missing_segment",
+        "returncode": 1,
+        "stderr": "Error: RecoveryWitnessMismatch\n",
+        "stdout": ""
+      },
+      {
+        "accepted": false,
+        "case": "swapped_segments",
+        "returncode": 1,
+        "stderr": "Error: Journal(Corrupt)\n",
+        "stdout": ""
+      },
+      {
+        "accepted": false,
+        "case": "ndu_frontier",
+        "returncode": 1,
+        "stderr": "Error: \"NDU/controller frontier mismatch; reconciliation required\"\n",
+        "stdout": ""
+      },
+      {
+        "accepted": false,
+        "case": "missing_verification",
+        "returncode": 1,
+        "stderr": "Error: Os { code: 2, kind: NotFound, message: \"No such file or directory\" }\n",
+        "stdout": ""
+      },
+      {
+        "accepted": false,
+        "case": "missing_observer",
+        "returncode": 1,
+        "stderr": "Error: Os { code: 2, kind: NotFound, message: \"No such file or directory\" }\n",
+        "stdout": ""
+      },
+      {
+        "accepted": false,
+        "case": "changed_weights",
+        "returncode": 1,
+        "stderr": "Error: \"Pinned input file changed\"\n",
+        "stdout": ""
+      }
+    ],
+    "production_trust_credentials_generated": false,
+    "schema": "hepta.closure.native-boundaries.v1",
+    "source_run": "/workspace/scratch/87e43aa872f5/ndu-runs/native/smoke-002"
+  },
+  "schema": "hepta.closure.native-final.v1",
+  "scope": {
+    "actual_generation_after_native_decision": true,
+    "global_optimal_control_proved": false,
+    "ndu_use": "Observed utility committed to original NDU store and bound to subsequent tick; no NDU action-value optimization",
+    "new_calibration_qualification": false,
+    "new_policy_training_steps": 0,
+    "original_owner_executed": true,
+    "production_authority": "deny_all",
+    "production_dataset_or_signer_credentials_created": false,
+    "production_resolver_invoked_in_this_study": false,
+    "selection": "maximum frozen correctness probability among actions admitted by original native gates; refine_text breaks ties",
+    "weights_decodes_per_native_process": 1,
+    "whole_daemon_built_or_deployed": false
+  },
+  "source_independence_scope": "Available execution metadata; no attestation of unknown external use"
+}

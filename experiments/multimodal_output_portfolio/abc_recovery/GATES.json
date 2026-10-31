@@ -1,0 +1,436 @@
+{
+  "all_blockers_closed": false,
+  "engineering": {
+    "actual_output_training": {
+      "evidence": "results/recovery-and-training-001/training-media-audit.json",
+      "finetuning_updates": 6000,
+      "models": 15,
+      "retained_empty_text_outputs": 6,
+      "status": "completed_and_audited",
+      "terminal_image_text_pairs": 768000,
+      "training_audit_observer": "frozen primary only"
+    },
+    "complete_local_inventory": {
+      "directory_count": 1258,
+      "does_not_establish_durable_upload": true,
+      "evidence": "results/evidence-inventory-001/review.json",
+      "file_count": 47770,
+      "manifest_sha256": "fee203e32ba48cccb6725bb9ad1204f76b939e8660440dfafcd99955486b2e9a",
+      "status": "completed_without_symlink_special_file_or_census_drift",
+      "total_logical_bytes": 5448401856
+    },
+    "finite_actual_paths_and_freezing": {
+      "additional_intervention_outputs": 40960,
+      "candidate_plans": 21,
+      "candidate_terminal_nodes": 1290240,
+      "online_oracle_input_allowed": false,
+      "policies_frozen_before_evaluation": true,
+      "status": "completed"
+    },
+    "real_av_codec_clock_and_commit": {
+      "actual_evaluation_mkv_bytes": 565504105,
+      "actual_evaluation_mkv_count": 192,
+      "audio_samples_per_channel": 25214976,
+      "commit_chain_records": 14400,
+      "evidence": "CAUSAL_AV_EVALUATION.json",
+      "new_220_media_outputs": 0,
+      "status": "passed_declared_transport_scope"
+    },
+    "resume_continuity": {
+      "adds_independent_sources": 0,
+      "evidence": "results/recovery-and-training-001/resume-verification.json",
+      "replayed_terminal_pairs": 38400,
+      "status": "exact_for_registered_seed17_three_arm_300_to_400_replay"
+    },
+    "selected_media_audit": {
+      "evidence": "results/ab-001/control-selected-media-audit.json",
+      "export_rows_exactly_reconstructed": 491520,
+      "intervention_outputs": 40960,
+      "observers": 2,
+      "selected_unique_tree_outputs": 322090,
+      "status": "passed_registered_selected_output_scope",
+      "total_actual_outputs_rescored": 363050,
+      "unselected_candidate_media_independently_rescored": 0
+    },
+    "timing_and_matched_costs": {
+      "evidence": "results/cost-001/execution-receipts.json",
+      "hardware_exclusivity_guaranteed": false,
+      "independent_sources": 8,
+      "registered_three_view_rows": 8640,
+      "rows_are_independent_sources": false,
+      "status": "completed",
+      "supplementary_eight_view_rows": 23040
+    }
+  },
+  "global_optimality_proved": false,
+  "image_text_task_scope": {
+    "constructed_task": "pair reconstruction and structured left/right/relation caption",
+    "dataset": "MNIST source-disjoint handwritten digit pairs",
+    "open_domain_natural_image_text_large_model_validation": false,
+    "output_image_height": 28,
+    "output_image_width": 56
+  },
+  "input_pins": [
+    {
+      "path": "protocol.json",
+      "sha256": "48e7e9fbf940e425825be880de2cc5bec233fd1db5ae198dc88f0a8bbf153e1d",
+      "size_bytes": 9233
+    },
+    {
+      "path": "protocol-amendment-001.json",
+      "sha256": "298e2fd0fe7387dab984b2176a908eb9cf8ed00a6fbe2dc477579f4142e96239",
+      "size_bytes": 2979
+    },
+    {
+      "path": "protocol-amendment-002.json",
+      "sha256": "626061f0b6a62c8692d94fabf217a65886a6cbd57c39524b3273234697f7544b",
+      "size_bytes": 1720
+    },
+    {
+      "path": "protocol-amendment-003.json",
+      "sha256": "7747563f5c5350fb5348fb3476f0a1c1c1feded13a8e4a98f6f8d33fa5dd79ab",
+      "size_bytes": 4849
+    },
+    {
+      "path": "results/ab-001/summary.json",
+      "sha256": "0b102adbb6d0b2a86f7cd4e01fbcb955071236a0b97cd41cc1520f1ae4b24edd",
+      "size_bytes": 185311
+    },
+    {
+      "path": "results/ab-001/analysis-report.json.gz",
+      "sha256": "04851b4aaeb25287d9e753eec35365c06e82f353bba33a608edb211847cd3c43",
+      "size_bytes": 211026
+    },
+    {
+      "path": "results/ab-001/control-selected-media-audit.json",
+      "sha256": "c1c5db60010da29f8e924de1cb035f74799a07e5c9fd03bc54976c32cdf7e744",
+      "size_bytes": 26270
+    },
+    {
+      "path": "results/recovery-and-training-001/training-media-audit.json",
+      "sha256": "2591232a4f0fabd5057d317fe835d5a616914d4282b309809b1a40af49db6c70",
+      "size_bytes": 31819
+    },
+    {
+      "path": "results/recovery-and-training-001/resume-verification.json",
+      "sha256": "09767772fa09567357219283b8e50cfa655620921d7a5dc8575caad2079948d0",
+      "size_bytes": 8000
+    },
+    {
+      "path": "results/cost-001/cost-analysis-report.json.gz",
+      "sha256": "a3593069debbfe333421ab47c5627201cbd9fac0edc9d1637425b4a9512e1e57",
+      "size_bytes": 87021
+    },
+    {
+      "path": "results/cost-001/execution-receipts.json",
+      "sha256": "46998baf9a1e7c96b815a043d0f6f3330ff5cb2d6640dd50fe5d7c136bce9bcb",
+      "size_bytes": 441281
+    },
+    {
+      "path": "CAUSAL_AV_EVALUATION.json",
+      "sha256": "ef2b46fb1cd1246c9d44348972c76775cda6aa9a29250051024cd1f11bde1df8",
+      "size_bytes": 344291
+    },
+    {
+      "path": "CAUSAL_AV_STATIC_220_DIAGNOSTIC_RESULT.json",
+      "sha256": "c981595ae00ddbe7da37ce54ebb0f1dc92ab43223f6d95d483c353558425404d",
+      "size_bytes": 63298
+    },
+    {
+      "path": "results/evidence-inventory-001/review.json",
+      "sha256": "aa8b245f3bd53bd2db121e566faf0bdf3c1f4625bbd70acac740f19543e6bf25",
+      "size_bytes": 4599
+    },
+    {
+      "path": "results/native-review-001/FETCH_METADATA.json",
+      "sha256": "e93c328c822cc10c271d09106483a50ab99362adf13339accfd719faa6da5a3a",
+      "size_bytes": 3425
+    },
+    {
+      "path": "results/native-review-001/REVIEW.md",
+      "sha256": "c55bca3994a686567c4810b2fd050eb68b90a6fc0c8db279e80e141fd9df081f",
+      "size_bytes": 19416
+    }
+  ],
+  "interpretation": "Review ledger only. Completed execution, descriptive support, unsupported primary hypotheses, native qualification, and raw persistence are separate. This file grants no production authority.",
+  "native_hepta": {
+    "acknowledged_checkpoint": {
+      "journal_bytes": 0,
+      "status": "missing_in_bound_historical_receipt",
+      "witness_anchor": null
+    },
+    "current_contracts_read_at_commit": "73d0ae78e46a19cca7a6b616715cd91ecb9d9b8f",
+    "current_driver": {
+      "audio_video_generation_in_reviewed_driver_established": false,
+      "new_ABC_control_integration_established": false,
+      "reviewed_contract_scope": "v6 text/image backend"
+    },
+    "evidence": "results/native-review-001/REVIEW.md",
+    "external_observer_trust": "not_authenticated_for_production",
+    "native_generator_gradient_ownership": "not_established",
+    "native_online_output_control": "not_established_by_old_selected_action_replay",
+    "neuron_calibration_admission": {
+      "admitted_tick_established": false,
+      "error": "InvalidCalibration",
+      "maximum_ECE_ppm": 30000,
+      "maximum_OOD_FAR_ppm": 4999,
+      "status": "historically_executed_and_rejected_no_replacement_success",
+      "verification_ECE_ppm": 612707,
+      "verification_OOD_FAR_ppm": 1000000
+    },
+    "new_Rust_execution_performed_in_this_review": false,
+    "paired_evaluation_profile": "previously_observed_engineering_only_DENY_ALL_no_promotion",
+    "production_host_evidence_adapter": "not_provided_in_reviewed_contract",
+    "production_or_daemon_activation": false,
+    "same_context_plasticity": {
+      "MissingAcknowledgedNeuronCheckpoint_is_proposal_owner_return_error": false,
+      "proposal_admission_called": false,
+      "status": "not_attempted_due_to_missing_prerequisite",
+      "updates_produced": 0
+    },
+    "target_host_full_tick_resources": "not_qualified"
+  },
+  "production_approved": false,
+  "publishing_branch": "research/ndu-abc-recovery-20261024",
+  "raw_evidence_persistence": {
+    "approval_cannot_change_scientific_or_native_gate_status": true,
+    "destination_folder_created": false,
+    "existing_local_bytes": 5448401856,
+    "existing_local_files": 47770,
+    "local_manifest": "/workspace/scratch/2b3c256bef7d/evidence-inventory-001.json",
+    "local_manifest_sha256": "fee203e32ba48cccb6725bb9ad1204f76b939e8660440dfafcd99955486b2e9a",
+    "local_receipt": "/workspace/scratch/2b3c256bef7d/evidence-inventory-001-receipt.json",
+    "proposed_destination": "User ChatGPT Library /Hepta-ABC-20261025-raw-evidence",
+    "raw_evidence_uploaded": false,
+    "scope_roots": [
+      "abc2-runs",
+      "abc2-assets",
+      "runtime-receipts"
+    ],
+    "status": "awaiting_explicit_payload_destination_authorization_after_automatic_approval_rejection"
+  },
+  "schema": "hepta.abc.final-evidence-review.v1",
+  "scientific": {
+    "AB_primary": {
+      "census": {
+        "conditions": 24,
+        "generation_scenarios": 4,
+        "independent_n_is_not_rows_or_seed_times_sources": true,
+        "observer_re_evaluation_adds_no_sources": true,
+        "policy_replay_rows": 491520,
+        "rows_per_condition": 20480,
+        "source_pairs": 128,
+        "training_seeds": 5,
+        "views": 8
+      },
+      "checks": {
+        "feedback_under_output_ndu": {
+          "confidence": 0.975,
+          "gain": 0.009788598603028664,
+          "interval": [
+            -0.0009432235960438588,
+            0.019873952139535682
+          ],
+          "lower_bound_positive": false
+        },
+        "risk_training_under_fixed": {
+          "confidence": 0.975,
+          "gain": 0.004788902791690419,
+          "interval": [
+            -0.0006191394783226934,
+            0.010267203800956267
+          ],
+          "lower_bound_positive": false
+        }
+      },
+      "nominal_bootstrap_coverage_guaranteed": false,
+      "secondary_descriptive_checks": {
+        "feedback_under_output_ndu": {
+          "confidence": 0.95,
+          "direction_positive": true,
+          "gain": 0.00855410213927496,
+          "interval": [
+            -0.0003742744416929276,
+            0.017610635619493224
+          ],
+          "lower_bound_positive": false
+        },
+        "risk_training_under_fixed": {
+          "confidence": 0.95,
+          "direction_positive": true,
+          "gain": 0.00423458753243508,
+          "interval": [
+            -0.0008816307536519722,
+            0.009453764338214635
+          ],
+          "lower_bound_positive": false
+        }
+      },
+      "status": "registered_positive_lower_bound_criteria_not_met",
+      "zero_effect_established": false
+    },
+    "C_full_temporal_generation": {
+      "actual_joint_audio_video_neural_training": false,
+      "actual_joint_text_speech_neural_training": false,
+      "delayed_shared_semantic_generation_benefit": false,
+      "independent_lip_sync_qualification": false,
+      "network_time_is_simulated": true,
+      "status": "not_established"
+    },
+    "C_posthoc_fixed220": {
+      "best_static_strategy_proved": false,
+      "dynamic_feedback_necessity_proved": false,
+      "exactly_reproduced_original_cells": 64,
+      "finite_arrival_binding_verified": true,
+      "gain": 0.006589091234763367,
+      "interval_95": [
+        0.0035887091117931405,
+        0.009853829317883997
+      ],
+      "new_actual_service_timing": false,
+      "new_independent_sources": 0,
+      "original_registered_gate_changed": false,
+      "posthoc": true,
+      "status": "descriptively_positive_single_stronger_baseline"
+    },
+    "C_registered_transport_benefit": {
+      "coverage_difference_interval_95": [
+        -0.014510982044956136,
+        -0.010485425804093566
+      ],
+      "coverage_noninferiority_margin": -0.02,
+      "fixed_family_ms": [
+        80,
+        240
+      ],
+      "interval_95": [
+        0.007865233802189437,
+        0.015219159851682755
+      ],
+      "ndu_gain": 0.011401068441257545,
+      "no_quality_loss_claim": false,
+      "selected_reference_ms": 240,
+      "status": "passed_limited_registered_fixed_family"
+    },
+    "general_quality_cost_dominance": {
+      "MPC_wall_mean_relative_to_feedback": 4.98226961537951,
+      "all_15_raw_CE_comparison_CIs_cross_zero_both_observers": true,
+      "evidence": "results/cost-001/REVIEW.md",
+      "externally_calibrated_price": false,
+      "matched_source_pairs": 8,
+      "price_grid_primary_success": false,
+      "status": "not_established"
+    },
+    "hindsight_oracle": {
+      "causal_attainability_proved": false,
+      "secondary_rescore_is_secondary_upper_bound": false,
+      "status": "offline_diagnostic_upper_bound_for_fixed_realized_native_paths"
+    },
+    "neural_global_optimality": {
+      "finite_known_law_Bellman_result_is_not_neural_optimization_certificate": true,
+      "joint_generator_policy_parameter_optimization_executed": false,
+      "status": "not_proved"
+    },
+    "old_v6_risk_surrogate_by_content_gate_factorial": {
+      "new_mean_vs_ndu_profile_increment_separated": true,
+      "new_training_objective_is_pure_CE_plus_same_fixed_auxiliary_weight": false,
+      "status": "not_executed_in_this_new_actual_output_design"
+    },
+    "shared_state_fixed_path": {
+      "all_modality_components_improve": false,
+      "includes_couple_shared_update": true,
+      "isolated_delayed_semantic_effect_proved": false,
+      "primary_net_ce": {
+        "confidence": 0.95,
+        "gain": 0.009680235692597156,
+        "interval": [
+          0.006202925061513411,
+          0.013579528575760957
+        ],
+        "per_seed_gain": [
+          0.012763011305417571,
+          0.008817264402911584,
+          0.007256390627816245,
+          0.009784699865220958,
+          0.009779812261619336
+        ]
+      },
+      "secondary_net_ce": {
+        "confidence": 0.95,
+        "gain": 0.006859127591037739,
+        "interval": [
+          0.003104321175617181,
+          0.01083302317888942
+        ],
+        "per_seed_gain": [
+          0.005813809209496368,
+          0.008379440982913822,
+          0.0052316968816142895,
+          0.0067284283200098605,
+          0.008142262561154134
+        ]
+      },
+      "status": "supported_descriptively_for_declared_intervention"
+    },
+    "training_inference_interaction": {
+      "primary": {
+        "bootstrap": {
+          "confirmatory_coverage_guaranteed": false,
+          "generator": "PCG64",
+          "numpy_version": "2.3.5",
+          "paired_indices_sha256": "679f648ec404ca82b666dca4f389fbc955749e40eaa1346619f3b2a6a4c9c321",
+          "random_seed": 20261024,
+          "replicates": 4000,
+          "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+          "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+        },
+        "confidence": 0.95,
+        "estimand": "[CE(NDU,feedback)-CE(NDU,fixed)]-[CE(SFT,feedback)-CE(SFT,fixed)]",
+        "gain": -0.001442708051546493,
+        "interval": [
+          -0.0113429931720956,
+          0.008067828183085102
+        ],
+        "per_seed_gain": [
+          -0.0013199598365408738,
+          -0.0038878470409703936,
+          0.006688767039670196,
+          -0.0009281545459101648,
+          -0.0077663458739812286
+        ],
+        "positive_means": "feedback CE increment is greater under NDU than under SFT; does not imply either increment is positive",
+        "scope": "descriptive four-cell contrast"
+      },
+      "secondary": {
+        "bootstrap": {
+          "confirmatory_coverage_guaranteed": false,
+          "generator": "PCG64",
+          "numpy_version": "2.3.5",
+          "paired_indices_sha256": "679f648ec404ca82b666dca4f389fbc955749e40eaa1346619f3b2a6a4c9c321",
+          "random_seed": 20261024,
+          "replicates": 4000,
+          "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+          "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+        },
+        "confidence": 0.95,
+        "estimand": "[CE(NDU,feedback)-CE(NDU,fixed)]-[CE(SFT,feedback)-CE(SFT,fixed)]",
+        "gain": -0.0031005392653529417,
+        "interval": [
+          -0.013301283118326781,
+          0.00628573187447214
+        ],
+        "per_seed_gain": [
+          -0.001472282945026937,
+          -0.004153393822552809,
+          7.40585505039082e-05,
+          0.0012308060021078981,
+          -0.01118188411179677
+        ],
+        "positive_means": "feedback CE increment is greater under NDU than under SFT; does not imply either increment is positive",
+        "scope": "descriptive four-cell contrast"
+      },
+      "status": "not_established"
+    }
+  },
+  "study_scope": "New prospective development experiment after exact v7 code/model recovery; not recovered historical ABC outcomes or an untouched production qualification cohort."
+}

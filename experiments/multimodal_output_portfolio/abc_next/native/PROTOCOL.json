@@ -1,0 +1,90 @@
+{
+  "additional_nonvacuity": {
+    "false_acceptance_one_sided_alpha": 0.05,
+    "minimum_ID_confidence_acceptance_fraction": 0.25,
+    "no_calibration_success_implies_production_activation": true,
+    "ood_FAR_upper_bound_must_not_exceed": 0.004999,
+    "zero_of800_upper": "1-.05**(1/800)"
+  },
+  "calibration": {
+    "complete_absence": "one separate public-absence bin with same Jeffreys smoothing; no forced-zero probability or direct abstention override",
+    "ece": "ten fixed equal-width bins on runtime-quantized probabilities; report ID separately and full population; native field is maximum ECE across calibration/verification and ID/full",
+    "id": "three bins with 1/3,2/3 quantile cuts fixed using development ID predictions, then calibrated probability is (successes+.5)/(count+1) on calibration role ID bin",
+    "verification": "only once after immutable calibrator freeze; no fitting or threshold changes"
+  },
+  "continuation_actions": [
+    "refine_image",
+    "refine_text"
+  ],
+  "cost_scope": {
+    "native_tick": "actual resident head, sparse kernel, journal fsync and separate outer wall including durable witness; measure real global allocator peak delta",
+    "new_profile_limit": "does not qualify old cold Python generation feature driver, Agentd/fleet, intuition, target production host or mutation authority",
+    "upstream": "full generation and public draft encoder feature preparation separately retained; batched timing is throughput only; additional serial end-to-end sample measured"
+  },
+  "development_design": "train pairs4000..4999:200 per same five ID views;5000..5999:complete absence; these are development only, not external validation",
+  "fit_design": "train pairs 0..2999:600 per clean/noise/occlusion/missing_trusted/conflict_untrusted;3000..3999:complete absence",
+  "frozen_unix_ns": 1792907938307043835,
+  "immutable_gates": {
+    "checkpoint_bytes": 1048576,
+    "maximum_ece_ppm": 30000,
+    "maximum_false_acceptance_ppm": 4999,
+    "maximum_ood_ppm": 500000,
+    "minimum_confidence_ppm": 750000,
+    "p95_latency_micros": 3000,
+    "p99_latency_micros": 8000,
+    "transient_allocation_bytes": 524288,
+    "write_amplification_ppm": 4000000
+  },
+  "independent_unit": "one previously registered no-replacement original image pair; exactly one generated output and label per pair",
+  "input_sha256": {
+    "manifest": "60c24d44e12eb3defb3b1b8146d91879b84918b057e0524117137d7e4f793058",
+    "model": "2f766c9356333d86f7c78c1cb18e8c67e776019c1071ff7af4b112f294518549",
+    "observer": "8cfca1b0cd0a69bcfcc6a9d34d0a672c07c28f3342823ef8a3f6763e9430a003"
+  },
+  "native_mapping": {
+    "confidence": "1-residual=p up to Q24/ppm rounding",
+    "drive": "[Q24(1),first31 public Q24 features]",
+    "maximum_in_domain_error_q24": 16777216,
+    "observation": "the508 bounded Q24 public features, bound to original generator/sources/profile",
+    "ood": "residual=1-p; this is correctness-risk used for declared absence detection, not universal epistemic OOD probability",
+    "prediction": "[Q24(calibrated predicted probability of actual joint correctness),same first31 features]",
+    "residual": "max absolute difference =1-p; first component is a constant success reference; this is an explicit confidence encoding adapter, NOT a measured future latent-dynamics prediction",
+    "state": "32-wide native sparse/eligibility state",
+    "zero_confidence_error_q24": 16777216
+  },
+  "paths": {
+    "cache": "/workspace/scratch/2b3c256bef7d/abc2-assets/mnist",
+    "manifest": "/workspace/scratch/2b3c256bef7d/abc2-runs/source-recovery-001/source-manifest.json",
+    "model": "/workspace/scratch/2b3c256bef7d/abc2-runs/training-001/seed-17/output_ndu/model.pt",
+    "observer": "/workspace/scratch/2b3c256bef7d/abc2-runs/base-recovery-001/reward-observer.pt"
+  },
+  "predictor": {
+    "architecture": "affine(508,32),tanh,affine(32,1),sigmoid",
+    "features": 508,
+    "hidden": 32,
+    "labels": "actual reopened PNG and UTF-8 joint correctness under frozen independent primary observer and original target; labels are offline only",
+    "prediction_freeze": "exact selected parameters and all dependency pins before neuron_calibration access",
+    "profile": "resident observed-output correctness head; not a future-dynamics predictor",
+    "training": "Adam lr .002 weight_decay .0001 batch128 2000 steps; evaluate development BCE every100 and choose lowest; tie earliest"
+  },
+  "qualification_design": {
+    "ood_definition": "both visual panels and masks zero; both digit hints unknown; keep/swap command visible",
+    "per_role": "first800 pairs:160 per five ID views;last800 disjoint pairs:complete absence",
+    "roles_disjoint": true,
+    "scope_limit": "Only this complete-absence mechanism. Semantic failure is not relabeled as OOD. No general OOD claim."
+  },
+  "schema": "hepta.abc3.resident-correctness-protocol.v1",
+  "seed": 91017,
+  "source_pins": {
+    "collect.py": "6c7ce9b3ca8eeed5b4ef69fb2a02f6dab6b89bb509085a6f0b5486c81906f839",
+    "features.py": "fdf2e8ab36f5fe7d38fd10edcb2a48cdb31f05b2572ac2d341df5ec7782d9a95"
+  },
+  "source_ref": "9595221c21f1fe0775295a9c8756a1ba4d69ea49",
+  "source_roles": {
+    "neuron_calibration": "ace53c420755d0b21267f0950380b61afd0b082b2ffa06e5c87171b5dc06aa67",
+    "neuron_verification": "c5d9dfc65c222522beeb3ed77bef71586123f24e963c85f6e3603d6f25279de6",
+    "train": "741052fa18b1d59996fe8f806bd5cec2e13e48125d2d9ace32a736d6b926471a"
+  },
+  "status": "prospective_before_reserved_outcomes",
+  "threads": 1
+}

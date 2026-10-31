@@ -1,0 +1,223 @@
+{
+  "all_other_manifest_roles_excluded": [
+    {
+      "individual_id_overlap": 0,
+      "individual_sources_excluded": 5000,
+      "ordered_source_ids_sha256": "df90a3dff883b6fe806ae39053e58d887901235f580fa91709eafeb7b8c79d37",
+      "pixel_sha256_overlap": 0,
+      "role": "audit"
+    },
+    {
+      "individual_id_overlap": 0,
+      "individual_sources_excluded": 2000,
+      "ordered_source_ids_sha256": "140c75f04f6a33d93b58e4498f5658201443d8cca3e3360880576126b796bd73",
+      "pixel_sha256_overlap": 0,
+      "role": "development"
+    },
+    {
+      "individual_id_overlap": 0,
+      "individual_sources_excluded": 2000,
+      "ordered_source_ids_sha256": "20168c4dcba782f77d5f3568c450cd776a6ef7043017d524ff4210538574f4c0",
+      "pixel_sha256_overlap": 0,
+      "role": "excluded_v6_test"
+    },
+    {
+      "individual_id_overlap": 0,
+      "individual_sources_excluded": 23000,
+      "ordered_source_ids_sha256": "77ee7fa8e314ea2e7bb4724928e00b2649439693edef13b5d2fd699379ec4e39",
+      "pixel_sha256_overlap": 0,
+      "role": "excluded_v6_train"
+    },
+    {
+      "individual_id_overlap": 0,
+      "individual_sources_excluded": 2000,
+      "ordered_source_ids_sha256": "989a3cfca2cd1f9c9c2483b45ff11a799eb658e57367f81e6f30441f1e39cc1b",
+      "pixel_sha256_overlap": 0,
+      "role": "forecast_calibration"
+    },
+    {
+      "individual_id_overlap": 0,
+      "individual_sources_excluded": 2000,
+      "ordered_source_ids_sha256": "e1daa62454fcb4be018d14a1ce365ae234f14e0d80c6d2fc287fca5b2d8fd435",
+      "pixel_sha256_overlap": 0,
+      "role": "forecast_fit"
+    },
+    {
+      "individual_id_overlap": 0,
+      "individual_sources_excluded": 3200,
+      "ordered_source_ids_sha256": "ace53c420755d0b21267f0950380b61afd0b082b2ffa06e5c87171b5dc06aa67",
+      "pixel_sha256_overlap": 0,
+      "role": "neuron_calibration"
+    },
+    {
+      "individual_id_overlap": 0,
+      "individual_sources_excluded": 3200,
+      "ordered_source_ids_sha256": "c5d9dfc65c222522beeb3ed77bef71586123f24e963c85f6e3603d6f25279de6",
+      "pixel_sha256_overlap": 0,
+      "role": "neuron_verification"
+    },
+    {
+      "individual_id_overlap": 0,
+      "individual_sources_excluded": 1000,
+      "ordered_source_ids_sha256": "2fc33ac2da30699cb8c4b3c08d6091ba9529708e1999dc4bbecee55cb4ce8304",
+      "pixel_sha256_overlap": 0,
+      "role": "retention"
+    },
+    {
+      "individual_id_overlap": 0,
+      "individual_sources_excluded": 5000,
+      "ordered_source_ids_sha256": "c21bebdbd621769b02d16a234d79a5be0411a358591fd7bae091e459ba43bfb7",
+      "pixel_sha256_overlap": 0,
+      "role": "reward"
+    },
+    {
+      "individual_id_overlap": 0,
+      "individual_sources_excluded": 6000,
+      "ordered_source_ids_sha256": "471a80c64ca10a984f9d81cbc2c9a46c212405fa3a2af91142ebba5b3bb27c62",
+      "pixel_sha256_overlap": 0,
+      "role": "test"
+    },
+    {
+      "individual_id_overlap": 0,
+      "individual_sources_excluded": 12000,
+      "ordered_source_ids_sha256": "741052fa18b1d59996fe8f806bd5cec2e13e48125d2d9ace32a736d6b926471a",
+      "pixel_sha256_overlap": 0,
+      "role": "train"
+    },
+    {
+      "individual_id_overlap": 0,
+      "individual_sources_excluded": 1600,
+      "ordered_source_ids_sha256": "ad0a0c48454c0a4f8d1de8a0450cc6dab8ef9124869b8d82d9577942a85be7a5",
+      "pixel_sha256_overlap": 0,
+      "role": "unallocated_train"
+    }
+  ],
+  "allocation": {
+    "individual_sources": 2000,
+    "ordered_source_ids_sha256": "815890b1f35b3180583b672ad7cc352289f15ac088e1cd151b03c1b62eb2a6d2",
+    "pair_end_exclusive": 1000,
+    "pair_start": 0,
+    "pairing": "No-replacement adjacent IDs [2k,2k+1] in the original manifest order",
+    "sorted_pixel_hashes_sha256": "278631cc2224c21ca35ad81be067a847b24171eb77a2f9dd54ad0e76bba123a0",
+    "source_pairs": 1000,
+    "source_role": "unallocated_test",
+    "unique_pixel_sha256": 2000
+  },
+  "audit_code_sha256": "33e1520de9e0c5366c44c7d0cc5ea6adf47cf885d33427c43d78c7b6727f1cd1",
+  "audit_completed_unix_ns": 1792917099231769611,
+  "audit_started_unix_ns": 1792917085158857477,
+  "exclude_current_test_role_entirely": {
+    "individual_sources": 6000,
+    "scope": "Entire test role, including prior main, current control/training and all native calibration/verification reservations",
+    "source_pairs": 3000
+  },
+  "manifest_sha256": "60c24d44e12eb3defb3b1b8146d91879b84918b057e0524117137d7e4f793058",
+  "metadata_scan": {
+    "bytes_read": 1880634756,
+    "candidate_individual_id_overlap": 0,
+    "candidate_pixel_sha256_overlap": 0,
+    "catalog_occurrences_containing_reserve_ids": [
+      {
+        "bound_source_ids_sha256": "38d2cf2aef696c6affb756a1ff7c9083057de30ea8e84dc8a3aee1e205c12207",
+        "bytes_read": 5922737,
+        "candidate_pixel_matches": 2000,
+        "candidate_source_id_matches": 2000,
+        "changed_during_read": false,
+        "complete_file_at_open": true,
+        "declared_role_values": [],
+        "distinct_bound_source_ids": 70000,
+        "file": "abc2-runs/source-recovery-001/source-manifest.json",
+        "sha256": "60c24d44e12eb3defb3b1b8146d91879b84918b057e0524117137d7e4f793058",
+        "source_catalog_only": true
+      }
+    ],
+    "directories": {
+      "abc2-assets": {
+        "bytes_read": 83796332,
+        "files_growing_during_read": 0,
+        "large_files_over_200000_bytes": 99,
+        "metadata_files": 250
+      },
+      "abc2-runs": {
+        "bytes_read": 658400627,
+        "files_growing_during_read": 0,
+        "large_files_over_200000_bytes": 136,
+        "metadata_files": 12565
+      },
+      "abc3-diagnostic-runs": {
+        "bytes_read": 1955634,
+        "files_growing_during_read": 0,
+        "large_files_over_200000_bytes": 2,
+        "metadata_files": 6
+      },
+      "abc3-native-runs": {
+        "bytes_read": 16634637,
+        "files_growing_during_read": 0,
+        "large_files_over_200000_bytes": 6,
+        "metadata_files": 49
+      },
+      "abc3-runs": {
+        "bytes_read": 863953344,
+        "files_growing_during_read": 0,
+        "large_files_over_200000_bytes": 589,
+        "metadata_files": 2095
+      },
+      "abc3-temporal-assets": {
+        "bytes_read": 2144415,
+        "files_growing_during_read": 0,
+        "large_files_over_200000_bytes": 1,
+        "metadata_files": 7
+      },
+      "abc3-temporal-runs": {
+        "bytes_read": 43259580,
+        "files_growing_during_read": 0,
+        "large_files_over_200000_bytes": 5,
+        "metadata_files": 6031
+      },
+      "abc4-control-runs": {
+        "bytes_read": 135888340,
+        "files_growing_during_read": 1,
+        "large_files_over_200000_bytes": 82,
+        "metadata_files": 115
+      },
+      "abc4-native-runs": {
+        "bytes_read": 29666120,
+        "files_growing_during_read": 0,
+        "large_files_over_200000_bytes": 10,
+        "metadata_files": 65
+      },
+      "abc4-temporal-runs": {
+        "bytes_read": 12813837,
+        "files_growing_during_read": 0,
+        "large_files_over_200000_bytes": 3,
+        "metadata_files": 2933
+      },
+      "abc4-training-runs": {
+        "bytes_read": 20037567,
+        "files_growing_during_read": 0,
+        "large_files_over_200000_bytes": 15,
+        "metadata_files": 74
+      },
+      "hepta-ndu-recovery/experiments/multimodal_output_portfolio": {
+        "bytes_read": 12084323,
+        "files_growing_during_read": 0,
+        "large_files_over_200000_bytes": 21,
+        "metadata_files": 168
+      }
+    },
+    "distinct_non_catalog_bound_ids": 20943,
+    "excluded_because_large": 0,
+    "full_local_file_index_bytes": 14176434,
+    "full_local_file_index_sha256": "8877c285f5edf64945e9ac52577d4515379e770fa2094c71fbc9c8bcbb3ce34f",
+    "metadata_files": 24358,
+    "non_catalog_bound_ids_sha256": "7112a9a61d28093d5f057ac29bd02d28244c75b8b23e57a0e327644dfbab0b44",
+    "non_catalog_unallocated_test_mentions_for_review": []
+  },
+  "new_source_images_or_tensors_materialized": false,
+  "new_source_outcomes_opened": false,
+  "previous_control_allocation_sha256": "85ba9a409a31a6ff6c6b4df5f6f06867d14be9442d3434c0c143e0cdb9a4e76d",
+  "reservation_not_execution": true,
+  "schema": "hepta.abc4.training-repair.source-allocation.v1",
+  "snapshot_scope": "All available JSON/JSONL metadata under local abc* execution/asset roots and repository experiment artifacts, as enumerated at audit. Growing logs are hashed to file-open byte length. Excludes binary weights/media, caches, build trees, new prospective repair directory and unknown external runs.",
+  "source_units": "1000 original-image pairs; retain each pair across views, draws, policies, arms and training seeds. Original writer clusters unavailable."
+}

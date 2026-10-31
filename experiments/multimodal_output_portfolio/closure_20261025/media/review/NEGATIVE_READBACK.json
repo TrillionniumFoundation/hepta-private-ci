@@ -1,0 +1,49 @@
+{
+  "actual_clock": {
+    "audio_samples": 16000,
+    "duration_ns": 2000000000,
+    "sample_rate": 8000,
+    "video_fps": 10,
+    "video_frames": 20
+  },
+  "baseline_expected_labels": [
+    9,
+    2
+  ],
+  "baseline_mode": "text",
+  "baseline_source_pair": 0,
+  "frozen_media_files_sha_checked": 20,
+  "method": "Decoded existing baseline and four mutation bundles with the frozen read_media/ffprobe/ffmpeg parser; independently compared numpy PCM/frame arrays to exact event flips, zeros, and repeated first frames.",
+  "missing_modality": {
+    "recorded_error": "Invalid actual audio file",
+    "reported_rejected": true
+  },
+  "negative_summary_sha256": "1e1a2bfc7fc98088cd53bc6ea6cc140aa6f6a7e827102f35f1e9fe98f10b9bc5",
+  "new_generation_or_source_access": false,
+  "physical_mutations": {
+    "repeated_video_frames": {
+      "actual_clock_unchanged": true,
+      "actual_mutation_exact": true,
+      "reported_required_failure": true
+    },
+    "silence": {
+      "actual_clock_unchanged": true,
+      "actual_mutation_exact": true,
+      "reported_required_failure": true
+    },
+    "swapped_audio_events": {
+      "actual_clock_unchanged": true,
+      "actual_mutation_exact": true,
+      "reported_required_failure": true
+    },
+    "swapped_video_events": {
+      "actual_clock_unchanged": true,
+      "actual_mutation_exact": true,
+      "reported_required_failure": true
+    }
+  },
+  "read_only_existing_development_media": true,
+  "reviewed_unix_ns": 1792945869586123704,
+  "schema": "hepta.closure.independent-media-negative-readback.v1",
+  "scope": "Physical content/event mutations with valid presentation timestamps; no new corrupted-PTS or arbitrary-clock test was run."
+}

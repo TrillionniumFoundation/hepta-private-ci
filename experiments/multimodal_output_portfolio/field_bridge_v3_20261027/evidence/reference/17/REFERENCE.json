@@ -1,0 +1,294 @@
+{
+  "candidates": [
+    {
+      "action_index": 0,
+      "checkpoint": {
+        "file_sha256": "93f71a372fe00f0e4dd21c962afd4235eff25f7454183cb7b9addb63302c9992",
+        "metadata": {
+          "action_index": 0,
+          "schedule_id": 4000,
+          "seed": 17,
+          "source_roles": [
+            "fit_gradient",
+            "fit_rehearsal",
+            "fit_probe",
+            "fit_guard",
+            "reference_task",
+            "reference_clean"
+          ],
+          "stage": "reference"
+        },
+        "optimizer": "b7f803b4bd3ed33000beb35f4b431a0e19e56b3e8a6fcc1ba99ed03b4e04b307",
+        "parameters": "270f12442e3779641f0660f259e5c216bf25dfa5083bdc3d9ad376d17c230e45"
+      },
+      "eligible": true,
+      "resources": {
+        "accepted_blocks": 6,
+        "candidate_guard_generator_calls": 12,
+        "candidate_guard_generator_examples": 1536,
+        "candidate_guard_generator_refinement_examples": 1536,
+        "candidate_guard_reward_observer_calls": 24,
+        "candidate_guard_reward_observer_digit_examples": 3072,
+        "gradient_backward_calls": 288,
+        "gradient_backward_examples": 27648,
+        "gradient_generator_calls": 576,
+        "gradient_generator_examples": 27648,
+        "gradient_generator_refinement_examples": 27648,
+        "gradient_teacher_calls": 576,
+        "gradient_teacher_examples": 27648,
+        "gradient_teacher_refinement_examples": 27648,
+        "reference_endpoint_clean_generator_calls": 2,
+        "reference_endpoint_clean_generator_examples": 256,
+        "reference_endpoint_clean_generator_refinement_examples": 256,
+        "reference_endpoint_clean_reward_observer_calls": 4,
+        "reference_endpoint_clean_reward_observer_digit_examples": 512,
+        "reference_endpoint_task_generator_calls": 8,
+        "reference_endpoint_task_generator_examples": 1024,
+        "reference_endpoint_task_generator_refinement_examples": 1024,
+        "reference_endpoint_task_reward_observer_calls": 16,
+        "reference_endpoint_task_reward_observer_digit_examples": 2048,
+        "scheduled_gradient_microsteps": 288,
+        "transaction_snapshots": 6
+      },
+      "scores": {
+        "clean": {
+          "file_sha256": "f79480a622bad382156d738f766930acf26f1b12f8c5086d41a7e7a4517dc80f",
+          "means": {
+            "reward": 0.8927663925711823
+          },
+          "paired_delta": 0.0,
+          "rows": 256
+        },
+        "task": {
+          "file_sha256": "cfd6bac2a9c4660f51fe92d3004fe65aec7b093ae5faaafc79beb2d0d7fc4ad5",
+          "means": {
+            "reward": 0.779386607947752
+          },
+          "paired_delta": 0.0,
+          "rows": 1024
+        }
+      }
+    },
+    {
+      "action_index": 1,
+      "checkpoint": {
+        "file_sha256": "61e9f95889c332826f455f98c3406e67f2bd2e373f71caf7a69f4e8640641046",
+        "metadata": {
+          "action_index": 1,
+          "schedule_id": 4000,
+          "seed": 17,
+          "source_roles": [
+            "fit_gradient",
+            "fit_rehearsal",
+            "fit_probe",
+            "fit_guard",
+            "reference_task",
+            "reference_clean"
+          ],
+          "stage": "reference"
+        },
+        "optimizer": "3ade20eb60b1bdf0e4c332f8b7d1aeceeacbaa37c11ce35aa0b1462054959250",
+        "parameters": "6c1e49d0edd59e353ed2d18158965f13cf000f8b38c8751b322cde94ce28d840"
+      },
+      "eligible": true,
+      "resources": {
+        "accepted_blocks": 4,
+        "candidate_guard_generator_calls": 12,
+        "candidate_guard_generator_examples": 1536,
+        "candidate_guard_generator_refinement_examples": 1536,
+        "candidate_guard_reward_observer_calls": 24,
+        "candidate_guard_reward_observer_digit_examples": 3072,
+        "discarded_gradient_microsteps": 96,
+        "gradient_backward_calls": 288,
+        "gradient_backward_examples": 27648,
+        "gradient_generator_calls": 576,
+        "gradient_generator_examples": 27648,
+        "gradient_generator_refinement_examples": 27648,
+        "gradient_teacher_calls": 576,
+        "gradient_teacher_examples": 27648,
+        "gradient_teacher_refinement_examples": 27648,
+        "optimizer_steps": 288,
+        "reference_endpoint_clean_generator_calls": 2,
+        "reference_endpoint_clean_generator_examples": 256,
+        "reference_endpoint_clean_generator_refinement_examples": 256,
+        "reference_endpoint_clean_reward_observer_calls": 4,
+        "reference_endpoint_clean_reward_observer_digit_examples": 512,
+        "reference_endpoint_task_generator_calls": 8,
+        "reference_endpoint_task_generator_examples": 1024,
+        "reference_endpoint_task_generator_refinement_examples": 1024,
+        "reference_endpoint_task_reward_observer_calls": 16,
+        "reference_endpoint_task_reward_observer_digit_examples": 2048,
+        "rejected_blocks": 2,
+        "scheduled_gradient_microsteps": 288,
+        "transaction_snapshots": 6
+      },
+      "scores": {
+        "clean": {
+          "file_sha256": "a20d47d6a8d10fd837f95809ecb20d6eb077b287e50b2606eb4d9d84443c5c3d",
+          "means": {
+            "reward": 0.8975014664978953
+          },
+          "paired_delta": 0.004735073926713084,
+          "rows": 256
+        },
+        "task": {
+          "file_sha256": "2dd35157777f740fdb27717c3cd89746d891bc7263a2e3ab42950e8401280885",
+          "means": {
+            "reward": 0.7990560984259428
+          },
+          "paired_delta": 0.01966949047819071,
+          "rows": 1024
+        }
+      }
+    },
+    {
+      "action_index": 2,
+      "checkpoint": {
+        "file_sha256": "d95aba5c9da8edf63bae9d0a2447e02b32f2d613016b0dac8d7241da3af07c35",
+        "metadata": {
+          "action_index": 2,
+          "schedule_id": 4000,
+          "seed": 17,
+          "source_roles": [
+            "fit_gradient",
+            "fit_rehearsal",
+            "fit_probe",
+            "fit_guard",
+            "reference_task",
+            "reference_clean"
+          ],
+          "stage": "reference"
+        },
+        "optimizer": "a2a1002712ed6fdd2c33a424ea77c4f692a04a0aa5d974707b5785f829e96f84",
+        "parameters": "9952b706a4403a25854b1514fc8275ee79273eb113687aa6833e5fb4766609d1"
+      },
+      "eligible": true,
+      "resources": {
+        "accepted_blocks": 6,
+        "candidate_guard_generator_calls": 12,
+        "candidate_guard_generator_examples": 1536,
+        "candidate_guard_generator_refinement_examples": 1536,
+        "candidate_guard_reward_observer_calls": 24,
+        "candidate_guard_reward_observer_digit_examples": 3072,
+        "gradient_backward_calls": 288,
+        "gradient_backward_examples": 27648,
+        "gradient_generator_calls": 576,
+        "gradient_generator_examples": 27648,
+        "gradient_generator_refinement_examples": 27648,
+        "gradient_teacher_calls": 576,
+        "gradient_teacher_examples": 27648,
+        "gradient_teacher_refinement_examples": 27648,
+        "optimizer_steps": 288,
+        "reference_endpoint_clean_generator_calls": 2,
+        "reference_endpoint_clean_generator_examples": 256,
+        "reference_endpoint_clean_generator_refinement_examples": 256,
+        "reference_endpoint_clean_reward_observer_calls": 4,
+        "reference_endpoint_clean_reward_observer_digit_examples": 512,
+        "reference_endpoint_task_generator_calls": 8,
+        "reference_endpoint_task_generator_examples": 1024,
+        "reference_endpoint_task_generator_refinement_examples": 1024,
+        "reference_endpoint_task_reward_observer_calls": 16,
+        "reference_endpoint_task_reward_observer_digit_examples": 2048,
+        "scheduled_gradient_microsteps": 288,
+        "transaction_snapshots": 6
+      },
+      "scores": {
+        "clean": {
+          "file_sha256": "3a9b03540d8ff9171c563c7f766bf572aa25cbbaeb03c31dfc1fb736efa1966f",
+          "means": {
+            "reward": 0.9026444139137748
+          },
+          "paired_delta": 0.009878021342592549,
+          "rows": 256
+        },
+        "task": {
+          "file_sha256": "2381f041b24e892b723ee219bb282206c62014e6a4e0bba49f1c637e30dcb979",
+          "means": {
+            "reward": 0.7981403927512001
+          },
+          "paired_delta": 0.01875378480344807,
+          "rows": 1024
+        }
+      }
+    },
+    {
+      "action_index": 3,
+      "checkpoint": {
+        "file_sha256": "e4fd41698e28550fbbbf5fcec4d3cda8b417c31d3bd82d15ea148bcd4e1d3ca7",
+        "metadata": {
+          "action_index": 3,
+          "schedule_id": 4000,
+          "seed": 17,
+          "source_roles": [
+            "fit_gradient",
+            "fit_rehearsal",
+            "fit_probe",
+            "fit_guard",
+            "reference_task",
+            "reference_clean"
+          ],
+          "stage": "reference"
+        },
+        "optimizer": "7a9cdc77f685eb472d79f36994f294e3b42c025cd5ba216b9ba3c0f259595892",
+        "parameters": "885e7126cd68c0bb9f83ba701f6ef83ecd576d5f17423065b1dad948dbf06e8a"
+      },
+      "eligible": true,
+      "resources": {
+        "accepted_blocks": 4,
+        "candidate_guard_generator_calls": 12,
+        "candidate_guard_generator_examples": 1536,
+        "candidate_guard_generator_refinement_examples": 1536,
+        "candidate_guard_reward_observer_calls": 24,
+        "candidate_guard_reward_observer_digit_examples": 3072,
+        "discarded_gradient_microsteps": 96,
+        "gradient_backward_calls": 288,
+        "gradient_backward_examples": 27648,
+        "gradient_generator_calls": 576,
+        "gradient_generator_examples": 27648,
+        "gradient_generator_refinement_examples": 27648,
+        "gradient_teacher_calls": 576,
+        "gradient_teacher_examples": 27648,
+        "gradient_teacher_refinement_examples": 27648,
+        "optimizer_steps": 288,
+        "reference_endpoint_clean_generator_calls": 2,
+        "reference_endpoint_clean_generator_examples": 256,
+        "reference_endpoint_clean_generator_refinement_examples": 256,
+        "reference_endpoint_clean_reward_observer_calls": 4,
+        "reference_endpoint_clean_reward_observer_digit_examples": 512,
+        "reference_endpoint_task_generator_calls": 8,
+        "reference_endpoint_task_generator_examples": 1024,
+        "reference_endpoint_task_generator_refinement_examples": 1024,
+        "reference_endpoint_task_reward_observer_calls": 16,
+        "reference_endpoint_task_reward_observer_digit_examples": 2048,
+        "rejected_blocks": 2,
+        "scheduled_gradient_microsteps": 288,
+        "transaction_snapshots": 6
+      },
+      "scores": {
+        "clean": {
+          "file_sha256": "772cfaac712bd934c46b74f21a71b37fa9ebeaa88f2f58d83f57907f964d9e5d",
+          "means": {
+            "reward": 0.8955499804146239
+          },
+          "paired_delta": 0.002783587843441635,
+          "rows": 256
+        },
+        "task": {
+          "file_sha256": "a866cb54ee55a9ea2e5c397a10a699ac62a0c1e6b55f6aa69d5241f776601c6e",
+          "means": {
+            "reward": 0.7946091308768228
+          },
+          "paired_delta": 0.015222522929070692,
+          "rows": 1024
+        }
+      }
+    }
+  ],
+  "fixed_output_action": 0,
+  "reference_policy": "guarded constant multiplier through all remaining 48-step blocks",
+  "schema": "hepta.field-bridge.v3.frozen-reference.1",
+  "seed": 17,
+  "selected_action_index": 1,
+  "selection_rule": "highest reward mean among clean delta >=0; lowest action index tie",
+  "training_configuration_sha256": "10204e7f2ef6cae3600728a97252a8491e0d6f4ba720ff0e43e14681cf448d55"
+}

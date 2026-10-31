@@ -1,0 +1,144 @@
+{
+  "by_root": {
+    "abc2-assets": {
+      "file_count": 1002,
+      "total_bytes": 194125554
+    },
+    "abc2-runs": {
+      "file_count": 46767,
+      "total_bytes": 5254183627
+    },
+    "runtime-receipts": {
+      "file_count": 1,
+      "total_bytes": 92675
+    }
+  },
+  "by_run": {
+    "abc2-runs/(root-files)": {
+      "file_count": 12,
+      "total_bytes": 56067
+    },
+    "abc2-runs/analysis-001": {
+      "file_count": 5,
+      "total_bytes": 2116572
+    },
+    "abc2-runs/base-recovery-001": {
+      "file_count": 16,
+      "total_bytes": 6902723
+    },
+    "abc2-runs/causal-av-codec-pilot-001": {
+      "file_count": 28,
+      "total_bytes": 3337863
+    },
+    "abc2-runs/causal-av-evaluation-001": {
+      "file_count": 2891,
+      "total_bytes": 653309116
+    },
+    "abc2-runs/causal-av-evidence-audit-001": {
+      "file_count": 1,
+      "total_bytes": 344291
+    },
+    "abc2-runs/causal-av-fit-001": {
+      "file_count": 91,
+      "total_bytes": 3585402
+    },
+    "abc2-runs/causal-av-qualification-001": {
+      "file_count": 470,
+      "total_bytes": 118203646
+    },
+    "abc2-runs/causal-av-static220-diagnostic-001": {
+      "file_count": 7,
+      "total_bytes": 941748
+    },
+    "abc2-runs/causal-av-static220-fixtures-001": {
+      "file_count": 6,
+      "total_bytes": 32411
+    },
+    "abc2-runs/causal-av-static220-fixtures-002": {
+      "file_count": 3,
+      "total_bytes": 2399
+    },
+    "abc2-runs/control-001": {
+      "file_count": 11136,
+      "total_bytes": 3102545351
+    },
+    "abc2-runs/control-audit-001": {
+      "file_count": 29,
+      "total_bytes": 812249
+    },
+    "abc2-runs/cost-analysis-001": {
+      "file_count": 5,
+      "total_bytes": 1281666
+    },
+    "abc2-runs/qualification-001": {
+      "file_count": 11,
+      "total_bytes": 1749154
+    },
+    "abc2-runs/resume-verification-001": {
+      "file_count": 25,
+      "total_bytes": 38659922
+    },
+    "abc2-runs/source-recovery-001": {
+      "file_count": 2,
+      "total_bytes": 5924206
+    },
+    "abc2-runs/timing-registered-three-001": {
+      "file_count": 8648,
+      "total_bytes": 33043825
+    },
+    "abc2-runs/timing-supplementary-all-001": {
+      "file_count": 23048,
+      "total_bytes": 87816396
+    },
+    "abc2-runs/training-001": {
+      "file_count": 310,
+      "total_bytes": 1193361563
+    },
+    "abc2-runs/training-audit-001": {
+      "file_count": 23,
+      "total_bytes": 157057
+    }
+  },
+  "complete_child_process_cost": {
+    "child_peak_rss_bytes": 137850880,
+    "complete_child_process_cpu_seconds": 8.319897000000001,
+    "complete_child_process_wall_ns": 10898054216,
+    "returncode": 0
+  },
+  "consistency": "Quiescent producers required; all metadata census and per-read checks must match; not an atomic filesystem snapshot",
+  "detailed_manifest_copied_to_repository": false,
+  "directory_count": 1258,
+  "exact_invocation_source_sha256": "8aa0298842a072f54b3a1d990cd510e3c869eb5cc4bebf97fd0769a49ad9c3b8",
+  "existing_failure_raw_weights_and_checkpoints_excluded": false,
+  "export_authorization_status": "No external evidence export performed; separate explicit authorization required",
+  "file_count": 47770,
+  "inventory_call_cost": {
+    "inventory_call_cpu_ns": 8260035433,
+    "inventory_call_wall_ns": 10837811002
+  },
+  "inventory_source_sha256": "0d39bffcc7398a3ba039974b408163c244103ad161b97e3107b00eb41062182c",
+  "manifest_bytes": 10582422,
+  "manifest_census_sha256": "1ee11854fd8b7d3c7e997868bc22aa55b3020a4eec21ec46e323c0cfc7e87871",
+  "manifest_local_path": "/workspace/scratch/2b3c256bef7d/evidence-inventory-001.json",
+  "manifest_sha256": "fee203e32ba48cccb6725bb9ad1204f76b939e8660440dfafcd99955486b2e9a",
+  "metadata_mutation_checks_passed": true,
+  "process_receipt_local_path": "/workspace/scratch/2b3c256bef7d/evidence-inventory-001-receipt.json",
+  "process_receipt_sha256": "17de0e07d079a8d247224064acadabea4e7de3fdcc1ce31ca14e2b6eb45f8251",
+  "raw_evidence_copied_archived_or_uploaded": false,
+  "scan_cost": {
+    "cpu_ns": 7898209329,
+    "scope": "Initial census, streamed hashes, and first final census; publication cost is in CLI receipt",
+    "wall_ns": 10459832522
+  },
+  "schema": "hepta.abc.local-evidence-inventory-review.v1",
+  "size_semantics": "Logical bytes per listed path; hard links are not deduplicated",
+  "source_roots": [
+    "/workspace/scratch/2b3c256bef7d/abc2-runs",
+    "/workspace/scratch/2b3c256bef7d/abc2-assets",
+    "/workspace/scratch/2b3c256bef7d/runtime-receipts"
+  ],
+  "status": "complete",
+  "symlinks_followed": false,
+  "total_bytes": 5448401856,
+  "total_gib": 5.074219644069672
+}

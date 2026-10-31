@@ -1,0 +1,65 @@
+{
+  "all_blockers_closed": false,
+  "baseline_commit": "ab417dfc97aad4fd51e2ae77515936d6ef6464b7",
+  "finite_execution": {
+    "maximum_moment_error": 2.6645352591003757e-15,
+    "models": 64,
+    "policies": 248,
+    "receipt": "control/VERIFICATION.json"
+  },
+  "focused_unit_tests": {
+    "evidence": 7,
+    "natural_av": 2,
+    "natural_document": 2,
+    "passed": true,
+    "risk_feedback": 4,
+    "total": 15
+  },
+  "format_command": {
+    "command": "just fmt",
+    "cwd": "codex-rs",
+    "exit_code": 0
+  },
+  "full_workspace_test_claim": false,
+  "natural_av": {
+    "efficiency_gain_over_strong_fixed_baseline": false,
+    "report": "natural/README.md",
+    "test_speakers": 8,
+    "test_video_sources": 2
+  },
+  "natural_document": {
+    "delivered_json_png_pairs_reaudited": 36,
+    "general_complex_visual_reasoning_validated": false,
+    "report": "natural/document/README.md",
+    "test_merchant_strings": 12
+  },
+  "nonempty_joint_run_directory_preservation_check": true,
+  "original_neuron_feedback": {
+    "evaluation_episodes": 1280,
+    "evaluation_media_files_reopened": 8272,
+    "evaluation_native_ticks_replayed": 2560,
+    "report": "control/neuron_feedback_probe/README.md",
+    "same_information_history_unique_advantage": false
+  },
+  "product_owner_complete_episode_reproduction": false,
+  "real_audio_likelihood": {
+    "model_pair_scores": 25000,
+    "post_scoring_ece_amendment_retained": true,
+    "report": "evidence/REAL_AUDIO_REPORT.md",
+    "source_wav_hashes": 3000
+  },
+  "real_generator_training": {
+    "delivered_bundles_reaudited": 5760,
+    "gradient_max_error": 1.2318353628804068e-10,
+    "maximum_audit_utility_error": 0.0,
+    "receipt": "joint/INDEPENDENT_AUDIT.json",
+    "scientific_acceptance": false
+  },
+  "real_joint_prior": {
+    "maximum_metric_error": 4.440892098500626e-16,
+    "report": "evidence/REAL_V6_REPORT.md",
+    "rescored_predictions": 14000
+  },
+  "recorded_utc": "2026-10-26T19:11:55.265476+00:00",
+  "schema": "hepta.ndu.repair.validation-summary.v1"
+}

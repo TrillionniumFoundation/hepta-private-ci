@@ -1,0 +1,56 @@
+{
+  "cgroup_after": {
+    "current": 8364326912,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3783155,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "cgroup_before": {
+    "current": 8561516544,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3780482,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "child_system_seconds": 0.26221,
+  "child_user_seconds": 2.45991,
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-B",
+    "-m",
+    "experiments.multimodal_output_portfolio.next_20261025.native_h2.prospective_v2",
+    "freeze",
+    "--study",
+    "native_h2_calibration",
+    "--predictor",
+    "/tmp/hepta-ndu-next-native-h2/development-002/predictor.json",
+    "--development",
+    "/tmp/hepta-ndu-next-native-h2/expanded-old-001/development.json",
+    "--output",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/CALIBRATION_PROTOCOL_V2.json",
+    "--extra",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/SOURCE_CONTAINER_AMENDMENT_V2.json",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/CALIBRATION_PROTOCOL.json",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/EXPANDED_OLD_PROTOCOL.json",
+    "/tmp/hepta-ndu-next-native-h2/calibration-001-process.json",
+    "/tmp/hepta-ndu-next-native-h2/calibration-001/access-registration.json",
+    "/tmp/hepta-ndu-next-native-h2/expanded-old-001/STRUCTURAL_AUDIT.json"
+  ],
+  "context": "Versioned API-only retry freeze; one concurrent ASR qualification process; prior source pixels read but zero generated/scored outputs",
+  "exit_code": 0,
+  "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "peak_rss_bytes": 234393600,
+  "registration_sha256": "58b7beab15c5a406d6bcb844bf7edcb8f656f653c676c99328f26d0fc28092b3",
+  "schema": "hepta.next.native-h2-stage-cost.v1",
+  "wall_ns": 2301481604,
+  "wrapper_sha256": "08040b095fbb311c5cf5ca1334ee8e56b893d39a4b79c766f5e53ab6167f8604"
+}

@@ -1,0 +1,38 @@
+{
+  "ECE_amendment": {
+    "ECE_bins": "floor(10 * round(confidence,12)), capped at 9; scalar sum of confidence errors",
+    "changes": [
+      {
+        "model": "alias_corrected_product_identity",
+        "original": 0.17039749281301375,
+        "partition": "aliased",
+        "reviewed": 0.17100397139190596
+      },
+      {
+        "model": "paired_joint_identity",
+        "original": 0.17039749281301375,
+        "partition": "aliased",
+        "reviewed": 0.17100397139190596
+      }
+    ],
+    "metadata_clarification": "Raw WAV bytes were extracted and hashed before fitting; old not-opened flags mean model features/observer outputs were not computed. They do not mean bytes were unread.",
+    "original_results_retained": true,
+    "post_score_numerical_ECE_amendment": true,
+    "training_or_likelihood_changes": false
+  },
+  "actual_WAV_hashes_checked": 3000,
+  "actual_alias_check_records_validated": 10,
+  "distinct_observer_fit_test_speakers": true,
+  "joint_columns_independently_reconstructed": 100,
+  "maximum_fit_probability_error": 3.3306690738754696e-16,
+  "maximum_non_ECE_metric_error": 8.881784197001252e-16,
+  "model_pair_rescores": 25000,
+  "observer_predictions_recomputed": false,
+  "passed": true,
+  "registration_sha256": "9c65680e4d63a3c5db386d2df2e55b4b8b377d54f788e411090c3a9b41ec837e",
+  "result_sha256": "2a496444d280227bbd213248f082ab601a0b6ed982098a59e244049bb241124d",
+  "reviewed_results_sha256": "26dd4cbd9e97ae8d9d6576e4cf58fb46b961081c0cfdf29491efada42971b472",
+  "scope": "Independent count and scalar probability rescore; no new test source or population qualification",
+  "source_sha256": "29125abdfd35b24fbd759a016fd2e61811ed86b082cd4750444e26962a2e8e26",
+  "test_source_groups": 1
+}

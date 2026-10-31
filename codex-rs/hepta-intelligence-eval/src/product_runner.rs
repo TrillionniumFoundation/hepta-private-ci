@@ -363,6 +363,43 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         self.holdout.anchor()
     }
 
+    /// Distinct paired full-information profile, sharing this owner's exact
+    /// fenced CAS/journal. Existing temporal/OPE entry points stay unchanged.
+    #[allow(clippy::too_many_arguments)]
+    pub fn evaluate_paired_profile<P, E, F>(
+        &mut self,
+        plan: &crate::FrozenPairedPlanV1,
+        manifest: &crate::PairedManifestV1,
+        provider: &mut P,
+        generator_plan: &codex_hepta_learning_ledger::SignedLearningEvidenceV1,
+        verifier: &LearningEvidenceVerifierV1,
+        evaluator_attest: F,
+        sink: &mut E,
+        now: u64,
+    ) -> Result<crate::PublishedPairedEvaluationV1, crate::PairedEvaluationError>
+    where
+        P: crate::PairedFinalHoldoutProviderV1,
+        E: crate::PairedEvaluationEvidenceSinkV1,
+        F: FnOnce(
+            &crate::PairedEvaluationReceiptV1,
+        ) -> Result<
+            codex_hepta_learning_ledger::SignedLearningEvidenceV1,
+            codex_hepta_learning_ledger::SignedEvidenceError,
+        >,
+    {
+        crate::evaluate_paired_full_information_v1(
+            &mut self.holdout,
+            plan,
+            manifest,
+            provider,
+            generator_plan,
+            verifier,
+            evaluator_attest,
+            sink,
+            now,
+        )
+    }
+
     pub fn evaluate_temporal_comparison<P: FinalHoldoutProviderV1>(
         &mut self,
         product_plan: &ProductFrozenEvaluationPlanV1,

@@ -1,0 +1,226 @@
+{
+  "schema": "hepta.closure.artifact-custody.v1",
+  "source_repository": "https://github.com/TrillionniumFoundation/hepta-private-ci",
+  "source_pr": 3963,
+  "all_new_archives_persisted": false,
+  "upload_approval": {
+    "status": "blocked_by_automatic_approval_review",
+    "action": "Upload completed research archives through the file-service prepared-upload helper",
+    "reason": "User-authored instructions did not explicitly authorize transfer of identified research/model/raw-output payloads to this destination.",
+    "transfer_started": false,
+    "new_files_uploaded": 0,
+    "next_action_requires_explicit_user_authorization": true
+  },
+  "artifacts": [
+    {
+      "file_name": "hepta-ndu-control-runs-20261025.tar.gz",
+      "local_path": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-control-runs-20261025.tar.gz",
+      "bytes": 60191493,
+      "sha256": "6f29c7065f17c9f3863aae37980f18038032f352971a85a167ba8fd39f35de35",
+      "library_file_id": null,
+      "persistent_retention": "not_uploaded_auto_review_blocked",
+      "package_receipt": {
+        "archive": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-control-runs-20261025.tar.gz",
+        "archive_bytes": 60191493,
+        "archive_sha256": "6f29c7065f17c9f3863aae37980f18038032f352971a85a167ba8fd39f35de35",
+        "manifest_sha256": "e7d833b97d0f3381e90d68cddc3a2eaab361b86d0e3fedef94987b46bb88388e",
+        "member_count": 111,
+        "schema": "hepta.closure.evidence-package.v1",
+        "study": "closure-20261025-control-runs",
+        "uncompressed_input_bytes": 83549791
+      },
+      "archive_verification": {
+        "all_restored_member_sha256_verified": true,
+        "archive": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-control-runs-20261025.tar.gz",
+        "archive_sha256": "6f29c7065f17c9f3863aae37980f18038032f352971a85a167ba8fd39f35de35",
+        "embedded_manifest_sha256_verified": true,
+        "filesystem_extraction_performed": false,
+        "gzip_crc_and_complete_stream_read": true,
+        "regular_members_verified": 111,
+        "schema": "hepta.closure.package-roundtrip-verification.v1",
+        "uncompressed_bytes_verified": 83549791,
+        "verified_unix_ns": 1792945393222705636
+      }
+    },
+    {
+      "file_name": "hepta-ndu-shared-inputs-20261025.tar.gz",
+      "local_path": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-shared-inputs-20261025.tar.gz",
+      "bytes": 245494160,
+      "sha256": "f4360ba4625a52274120ffd7f50101efccedf58e05a403d189ba160b3ace565e",
+      "library_file_id": null,
+      "persistent_retention": "not_uploaded_auto_review_blocked",
+      "package_receipt": {
+        "archive": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-shared-inputs-20261025.tar.gz",
+        "archive_bytes": 245494160,
+        "archive_sha256": "f4360ba4625a52274120ffd7f50101efccedf58e05a403d189ba160b3ace565e",
+        "manifest_sha256": "9c2a0a3a25c3f89f4d43f00ee87a702a2f5679f49c0feeaa85a69a0195e3f2b8",
+        "member_count": 200,
+        "schema": "hepta.closure.evidence-package.v1",
+        "study": "closure-20261025-shared-inputs",
+        "uncompressed_input_bytes": 661362822
+      },
+      "archive_verification": {
+        "all_restored_member_sha256_verified": true,
+        "archive": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-shared-inputs-20261025.tar.gz",
+        "archive_sha256": "f4360ba4625a52274120ffd7f50101efccedf58e05a403d189ba160b3ace565e",
+        "embedded_manifest_sha256_verified": true,
+        "filesystem_extraction_performed": false,
+        "gzip_crc_and_complete_stream_read": true,
+        "regular_members_verified": 200,
+        "schema": "hepta.closure.package-roundtrip-verification.v1",
+        "uncompressed_bytes_verified": 661362822,
+        "verified_unix_ns": 1792945395451631031
+      }
+    },
+    {
+      "file_name": "hepta-ndu-factorial-runs-20261025.tar.gz",
+      "local_path": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-factorial-runs-20261025.tar.gz",
+      "bytes": 162835824,
+      "sha256": "31c75d80104322361ebdc8258d91c296ff1de2e02050bf6255dc8727f7028e4b",
+      "library_file_id": null,
+      "persistent_retention": "not_uploaded_auto_review_blocked",
+      "package_receipt": {
+        "archive": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-factorial-runs-20261025.tar.gz",
+        "archive_bytes": 162835824,
+        "archive_sha256": "31c75d80104322361ebdc8258d91c296ff1de2e02050bf6255dc8727f7028e4b",
+        "manifest_sha256": "9eaf5a0dee77ad128bb65fd6701e5cb27bf398ef79f1a70bf024c9360147860c",
+        "member_count": 335,
+        "schema": "hepta.closure.evidence-package.v1",
+        "study": "factorial",
+        "uncompressed_input_bytes": 205746146
+      },
+      "archive_verification": {
+        "all_restored_member_bytes_verified": true,
+        "all_restored_member_sha256_verified": true,
+        "archive": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-factorial-runs-20261025.tar.gz",
+        "archive_bytes": 162835824,
+        "archive_sha256": "31c75d80104322361ebdc8258d91c296ff1de2e02050bf6255dc8727f7028e4b",
+        "archive_unchanged_during_verification": true,
+        "embedded_manifest_sha256_verified": true,
+        "filesystem_extraction_performed": false,
+        "gzip_crc_and_complete_stream_read": true,
+        "nested_archive_bytes_match_original_declarations": [],
+        "nested_archive_scientific_validation_repeated": false,
+        "regular_members_verified": 335,
+        "schema": "hepta.closure.package-roundtrip-verification.v1",
+        "uncompressed_bytes_verified": 205746146,
+        "verified_unix_ns": 1792945784449299709
+      }
+    },
+    {
+      "file_name": "hepta-ndu-v6-oracle-runs-20261025.tar.gz",
+      "local_path": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-v6-oracle-runs-20261025.tar.gz",
+      "bytes": 34364574,
+      "sha256": "a4bf9b6f94df27d3f5b20d925d8a1d16e740d3ee7eff7485a113f974eb8f0095",
+      "library_file_id": null,
+      "persistent_retention": "not_uploaded_auto_review_blocked"
+    },
+    {
+      "file_name": "hepta-ndu-native-online-20261025.tar.gz",
+      "local_path": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-native-online-20261025.tar.gz",
+      "bytes": 6182779,
+      "sha256": "50d369cdeed05c5313446f19881fd4ecbd16f0174ec36fd402bfdb214934aeaf",
+      "library_file_id": null,
+      "persistent_retention": "not_uploaded_auto_review_blocked",
+      "package_receipt": {
+        "archive": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-native-online-20261025.tar.gz",
+        "archive_bytes": 6182779,
+        "archive_sha256": "50d369cdeed05c5313446f19881fd4ecbd16f0174ec36fd402bfdb214934aeaf",
+        "manifest_sha256": "68d3563fc9d05a7e44e41438194299ea5a87ea42651b4f38daf815c991ba90f4",
+        "member_count": 12,
+        "schema": "hepta.closure.evidence-package.v1",
+        "study": "native-online",
+        "uncompressed_input_bytes": 19125127
+      },
+      "archive_verification": {
+        "all_restored_member_bytes_verified": true,
+        "all_restored_member_sha256_verified": true,
+        "archive": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-native-online-20261025.tar.gz",
+        "archive_bytes": 6182779,
+        "archive_sha256": "50d369cdeed05c5313446f19881fd4ecbd16f0174ec36fd402bfdb214934aeaf",
+        "archive_unchanged_during_verification": true,
+        "embedded_manifest_sha256_verified": true,
+        "filesystem_extraction_performed": false,
+        "gzip_crc_and_complete_stream_read": true,
+        "nested_archive_bytes_match_original_declarations": [
+          {
+            "bytes": 3326823,
+            "declaration": "RAW_MANIFEST.json",
+            "matches": true,
+            "member": "evidence/RAW_EVIDENCE.tar.gz",
+            "sha256": "22c48b6ff284535547f785324c7438e7023b24f9f726760230698503fe1e4ac7"
+          },
+          {
+            "bytes": 3326823,
+            "declaration": "RESULTS.json/raw_evidence",
+            "matches": true,
+            "member": "evidence/RAW_EVIDENCE.tar.gz",
+            "sha256": "22c48b6ff284535547f785324c7438e7023b24f9f726760230698503fe1e4ac7"
+          },
+          {
+            "bytes": 662732,
+            "declaration": "FORMAT_ONLY_VALIDATION.json/archive",
+            "matches": true,
+            "member": "evidence/FORMAT_ONLY_VALIDATION.tar.gz",
+            "sha256": "0e241e14a5279acbc7c12dabbae0cdeafc01ec236835b3a5f0b474fe15d7dfbe"
+          }
+        ],
+        "nested_archive_scientific_validation_repeated": false,
+        "regular_members_verified": 12,
+        "schema": "hepta.closure.package-roundtrip-verification.v1",
+        "uncompressed_bytes_verified": 19125127,
+        "verified_unix_ns": 1792945784514610355
+      }
+    },
+    {
+      "file_name": "hepta-ndu-media-runs-20261025.tar.gz",
+      "local_path": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-media-runs-20261025.tar.gz",
+      "bytes": 302191376,
+      "sha256": "53cb30f96e03ced895dd98576b00f147d13c3748b6acdc6418580320a4525e15",
+      "library_file_id": null,
+      "persistent_retention": "not_uploaded_auto_review_blocked",
+      "package_receipt": {
+        "all_original_runs_preserved": true,
+        "archive_bytes": 302191376,
+        "archive_path": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-media-runs-20261025.tar.gz",
+        "archive_sha256": "53cb30f96e03ced895dd98576b00f147d13c3748b6acdc6418580320a4525e15",
+        "cpu_ns": 11691080379,
+        "full_readback_verified": true,
+        "manifest_bytes": 1446964,
+        "manifest_sha256": "7329d72bec90199e09e4aa2da9a4ec33c47b19b72842c1d428219af88e5ff82f",
+        "network_upload": false,
+        "no_extraction_during_verification": true,
+        "original_build_path": "/dev/shm/hepta-ndu-closure-20261025/hepta-ndu-media-runs-20261025.tar.gz",
+        "schema": "hepta.closure.media-archive-receipt.v1",
+        "shared_dependencies": {
+          "bytes": 245494160,
+          "manifest_sha256": "9c2a0a3a25c3f89f4d43f00ee87a702a2f5679f49c0feeaa85a69a0195e3f2b8",
+          "name": "hepta-ndu-shared-inputs-20261025.tar.gz",
+          "sha256": "f4360ba4625a52274120ffd7f50101efccedf58e05a403d189ba160b3ace565e"
+        },
+        "source_deletion": false,
+        "status": "complete_verified_local",
+        "temporary_build_copy_removed": true,
+        "verified_regular_files_including_manifest": 7664,
+        "verified_uncompressed_bytes": 355312307,
+        "wall_ns": 12819773137,
+        "workspace_copy_hash_verified": true,
+        "workspace_copy_wall_ns": 593096675
+      },
+      "dependencies": [
+        "hepta-ndu-shared-inputs-20261025.tar.gz"
+      ]
+    }
+  ],
+  "upstream_original_v6_archive": {
+    "file_name": "ndu_v6_full002_evidence.tar.gz",
+    "bytes": 62166608,
+    "sha256": "ddbdf10b4397c8538183df8fa7c16f08c5fba226a304ff7cb55574ddb97e951e",
+    "library_file_id": "libfile_07ecbd6ae3208191a9d87172d1188d23",
+    "url": "https://chatgpt.com/library?file_id=libfile_07ecbd6ae3208191a9d87172d1188d23&account_id=personal",
+    "already_persistent_before_this_delivery": true
+  },
+  "scope": "Only requested research data, model assets, actual outputs, timing/recovery records and historical execution provenance; no full repository, environments, secrets or production trust material.",
+  "new_artifact_count": 6,
+  "new_artifact_total_bytes": 811260206
+}

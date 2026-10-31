@@ -1,0 +1,61 @@
+{
+  "calibration": {
+    "id_acceptance_fraction": 0.6575,
+    "id_accepted_rows": 526,
+    "id_source_pairs": 400,
+    "native_ece_full": 0.0018339743750000325,
+    "native_ece_id": 0.0024209487500000647,
+    "ood_false_acceptance_pair_rate": 0.0,
+    "ood_false_acceptance_pair_upper95": 0.007461355528799602,
+    "ood_false_accepted_rows": 0,
+    "ood_false_accepted_source_pairs": 0,
+    "ood_source_pairs": 400,
+    "prospective_brier": 0.06836894393120756,
+    "rows": 1600,
+    "source_pairs": 800
+  },
+  "calibrator_freeze_sha256": "42e90963a5d5f7ccccb78606572011ac238abffabd40ebc78a698b0364a0b454",
+  "data_sha256": "e71599c687be4a1129aee1afe0fdb6023bc50f026b676ffbabee573731704c96",
+  "ece_source_bootstrap_descriptive95": {
+    "full": [
+      0.005264924973812843,
+      0.021943142955656404
+    ],
+    "id": [
+      0.011977984909018977,
+      0.04902084456091765
+    ]
+  },
+  "gates": {
+    "calibration_and_verification_id_nonvacuity": true,
+    "calibration_and_verification_point_ece": true,
+    "calibration_and_verification_point_far": true,
+    "verification_ood_source_pair_upper95": true
+  },
+  "id_acceptance_fraction": 0.6534810126582279,
+  "id_acceptance_source_bootstrap_descriptive95": [
+    0.6170886075949367,
+    0.689873417721519
+  ],
+  "id_accepted_rows": 826,
+  "id_source_pairs": 632,
+  "native_config_point_qualified": true,
+  "native_ece_full": 0.011861513966480459,
+  "native_ece_id": 0.02608874683544307,
+  "native_measured_ece_ppm": 26089,
+  "native_measured_false_acceptance_ppm": 0,
+  "new_independent_samples_beyond_primary": 0,
+  "ood_false_acceptance_pair_rate": 0.0,
+  "ood_false_acceptance_pair_upper95": 0.0037376628261006077,
+  "ood_false_accepted_rows": 0,
+  "ood_false_accepted_source_pairs": 0,
+  "ood_source_pairs": 800,
+  "original_protocol_sha256": "b94df6feac7cace3beb8f1f9f95b7a299f60dbb9b86c4fe414df5925c8c5416b",
+  "prospective_brier": 0.056494279457203665,
+  "rows": 2864,
+  "schema": "hepta.abc4.future-correctness-verification.v1",
+  "scope": "same frozen genuine future-correctness probability; observed state cancels only in confidence carrier; no future-latent forecast claim for copied coordinates",
+  "source_pairs": 1432,
+  "study_qualified": true,
+  "supplement_sha256": "e0b6687bf9e4f79c1085605591911a722745915f25047a128d034519d1283b1b"
+}

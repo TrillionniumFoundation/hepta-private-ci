@@ -1,0 +1,422 @@
+{
+  "claim_scope": "Frozen profile is independently registered; ordinary/field are only components of the prespecified all-three-profile conjunction",
+  "elapsed_seconds": 37.66487426799722,
+  "freeze_sha256": "4eb4b0ee0824951e27dae401317c1a9b7833ad2571371f336ae9a7fbe3473a2a",
+  "generator_forwards": 0,
+  "independent_gate": {
+    "all_executed_comparisons_pass": false,
+    "comparisons": [
+      {
+        "kind": "gain",
+        "left": "native",
+        "name": "native-fixed",
+        "observers": {
+          "audit": {
+            "interval": [
+              -0.0026602118962284747,
+              0.004219490926680924
+            ],
+            "lower_pass": false,
+            "mean": 0.0008399456902116071,
+            "pass": false,
+            "per_seed_mean": [
+              0.0018412950679085052,
+              -0.0021051932463306,
+              0.0027837352490569156
+            ],
+            "seed_signs_pass": false,
+            "strict_lower_threshold": 0.0
+          },
+          "reward": {
+            "interval": [
+              0.0032544465441550455,
+              0.010618963642580834
+            ],
+            "lower_pass": true,
+            "mean": 0.006894633190211608,
+            "pass": true,
+            "per_seed_mean": [
+              0.007529771630408504,
+              0.0007024239411693991,
+              0.012451703999056915
+            ],
+            "seed_signs_pass": true,
+            "strict_lower_threshold": 0.0
+          }
+        },
+        "panel": "runtime",
+        "pass": false,
+        "right": "fixed"
+      },
+      {
+        "kind": "gain",
+        "left": "native",
+        "name": "native-history",
+        "observers": {
+          "audit": {
+            "interval": [
+              -0.002880846433045197,
+              0.003234268323063042
+            ],
+            "lower_pass": false,
+            "mean": 0.0001980213017159258,
+            "pass": false,
+            "per_seed_mean": [
+              -0.0008153927887869924,
+              0.001674566444882657,
+              -0.0002651097509478865
+            ],
+            "seed_signs_pass": false,
+            "strict_lower_threshold": 0.0
+          },
+          "reward": {
+            "interval": [
+              -0.0021938373889640317,
+              0.004081909641117112
+            ],
+            "lower_pass": false,
+            "mean": 0.0009548572392159253,
+            "pass": false,
+            "per_seed_mean": [
+              0.0035791384612130074,
+              -0.003110589805117344,
+              0.0023960230615521134
+            ],
+            "seed_signs_pass": false,
+            "strict_lower_threshold": 0.0
+          }
+        },
+        "panel": "runtime",
+        "pass": false,
+        "right": "history"
+      },
+      {
+        "condition_indices": [
+          3
+        ],
+        "kind": "noninferiority",
+        "left": "native",
+        "margin": 0.01,
+        "name": "native-fixed-clean",
+        "observers": {
+          "audit": {
+            "interval": [
+              -0.003440686986748035,
+              0.0073217178339757966
+            ],
+            "lower_pass": true,
+            "mean": 0.001937520961490615,
+            "pass": true,
+            "per_seed_mean": [
+              0.002723210181720791,
+              0.0023612039943545814,
+              0.000728148708396472
+            ],
+            "seed_signs_pass": true,
+            "strict_lower_threshold": -0.01
+          },
+          "reward": {
+            "interval": [
+              0.0014574021883561128,
+              0.013517945678674944
+            ],
+            "lower_pass": true,
+            "mean": 0.007569031378157281,
+            "pass": true,
+            "per_seed_mean": [
+              0.0059458664317207895,
+              -0.0001778585056454202,
+              0.016939086208396476
+            ],
+            "seed_signs_pass": true,
+            "strict_lower_threshold": -0.01
+          }
+        },
+        "panel": "runtime",
+        "pass": true,
+        "right": "fixed"
+      },
+      {
+        "condition_indices": [
+          3
+        ],
+        "kind": "noninferiority",
+        "left": "history",
+        "margin": 0.01,
+        "name": "history-fixed-clean",
+        "observers": {
+          "audit": {
+            "interval": [
+              -0.009570161321524058,
+              0.0013161431227705143
+            ],
+            "lower_pass": true,
+            "mean": -0.004033480500904262,
+            "pass": true,
+            "per_seed_mean": [
+              -0.0076122954933089204,
+              -0.00044700492691481593,
+              -0.004041141082489051
+            ],
+            "seed_signs_pass": true,
+            "strict_lower_threshold": -0.01
+          },
+          "reward": {
+            "interval": [
+              -0.0007451573708759811,
+              0.010501437399092322
+            ],
+            "lower_pass": true,
+            "mean": 0.004820686165762404,
+            "pass": true,
+            "per_seed_mean": [
+              -0.005659170493308921,
+              0.006974870073085184,
+              0.01314635891751095
+            ],
+            "seed_signs_pass": true,
+            "strict_lower_threshold": -0.01
+          }
+        },
+        "panel": "runtime",
+        "pass": true,
+        "right": "fixed"
+      }
+    ],
+    "complete_family_pass": false,
+    "draw_order": "each replicate: paired rollout matrix if R>1; then one paired source-index vector per panel in declared order",
+    "draw_sha256": "5000d68247d2ff3fe5b5f889c62d6e26aa162ae1680cf9a4bf5a01672ebd6efe",
+    "draws": 4000,
+    "family_alpha": 0.05,
+    "family_comparisons": 4,
+    "interpretation": "Conjunction across observers; fixed historical model seeds; source/rollout bootstrap is approximate, not simultaneous coverage of both observers' intervals",
+    "interval_coverage_per_observer": 0.9875,
+    "observer_order": [
+      "reward",
+      "audit"
+    ],
+    "panel_order": [
+      "runtime"
+    ],
+    "panel_shapes": {
+      "runtime": [
+        3,
+        1,
+        512,
+        4
+      ]
+    },
+    "quantile": "linear",
+    "rng": "numpy.random.default_rng(PCG64)",
+    "rng_seed": 271034,
+    "schema": "hepta.field-bridge.v3.paired-bootstrap-family.1",
+    "unrun_family_comparisons": 0
+  },
+  "observer_forwards": 0,
+  "passed": false,
+  "profile": "frozen",
+  "protocol_sha256": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7",
+  "reviewer_source_files": {
+    "analysis_contract.py": "3bd14691fb73ba8cc6892aa514536f69dce471be38fca90c577022b567962317",
+    "runtime_audit_support.py": "54cffe180ee2fef003a3489803124e180e0faf08ca4d877efece4b85cdda8867",
+    "runtime_results_audit.py": "10f9575b8b2dbdda4e2673f40caae5641de3ddadf27f8e078d52734718e0eb07"
+  },
+  "schema": "hepta.field-bridge.v3.independent-runtime-results.1",
+  "scientific_acceptance_requires": "Matching complete media/feedback and native replay audits; this arithmetic receipt alone is insufficient",
+  "seeds": [
+    {
+      "decisions_by_arm": {
+        "current": 4637,
+        "fixed": 6144,
+        "history": 4701,
+        "native": 4253,
+        "reset_native": 4737
+      },
+      "depths_by_arm": {
+        "current": {
+          "0": 492,
+          "1": 523,
+          "2": 178,
+          "3": 855
+        },
+        "fixed": {
+          "2": 2048
+        },
+        "history": {
+          "0": 528,
+          "1": 387,
+          "2": 157,
+          "3": 976
+        },
+        "native": {
+          "0": 853,
+          "1": 185,
+          "2": 112,
+          "3": 898
+        },
+        "reset_native": {
+          "0": 518,
+          "1": 371,
+          "2": 166,
+          "3": 993
+        }
+      },
+      "episodes": 10240,
+      "events_sha256": "6d2724704a33a1375aa2ee359b6f355477f440549ff845b74cb1825bcbd526d4",
+      "fit_complete_sha256": "c4943da3747c29b469e63d2d94274f7188714be9f062c7b88a3ef6a08626c95a",
+      "parent_complete_sha256": "e09894c39b4131a0db545287fb86c93a91ee8a8a2e79adcd44c5fde1cf052a60",
+      "profile": "frozen",
+      "readouts_sha256": "65f1bf3b2dd3e09dee5efdfbdbbfc965ccc79a74f983be6d7d5f5c78689ebf46",
+      "resources_reconstructed": {
+        "audit_outcome_observer_digit_examples": 20480,
+        "decoder_batches": 28194,
+        "decoder_examples": 28194,
+        "encoder_batches": 10240,
+        "encoder_examples": 10240,
+        "media_logical_deliveries_read_back": 28194,
+        "native_tick_calls": 17980,
+        "public_feature_observer_digit_examples": 48944,
+        "reward_outcome_observer_digit_examples": 20480,
+        "selection_batches": 960,
+        "selection_rows": 24472,
+        "simulated_feedback_packets": 14232,
+        "transition_batches": 28194,
+        "transition_examples": 28194,
+        "unchosen_continuations_executed": 0
+      },
+      "rows_sha256": "04e04684e9f094875f81c75093e6fed452c29548ba18afda49cf31efc7aa329f",
+      "seed": 17,
+      "selected_complete_sha256": "4ec68ff4bce7114ebc3015ce1b66de32209635369e9da410bdf0a87d1d3fe744"
+    },
+    {
+      "decisions_by_arm": {
+        "current": 4704,
+        "fixed": 6144,
+        "history": 4258,
+        "native": 4833,
+        "reset_native": 4485
+      },
+      "depths_by_arm": {
+        "current": {
+          "0": 488,
+          "1": 464,
+          "2": 233,
+          "3": 863
+        },
+        "fixed": {
+          "2": 2048
+        },
+        "history": {
+          "0": 789,
+          "1": 308,
+          "2": 178,
+          "3": 773
+        },
+        "native": {
+          "0": 545,
+          "1": 221,
+          "2": 277,
+          "3": 1005
+        },
+        "reset_native": {
+          "0": 752,
+          "1": 155,
+          "2": 214,
+          "3": 927
+        }
+      },
+      "episodes": 10240,
+      "events_sha256": "b97bf7ab6a654bd3361ab4fd51a8f1a52e49a117c6dbf535ff7d7938619da1ae",
+      "fit_complete_sha256": "4b6afc20b45d3dd1a2d16bc4745e05cb94a21d36efb372421e285608c0d4497e",
+      "parent_complete_sha256": "a8cd6f5aae56316efdc548e743a06e76a6279d25ecf8fc11a30de5c8e9cb9422",
+      "profile": "frozen",
+      "readouts_sha256": "04e27e29e7b09e8d811cdafe794d9ac10f145604cc25755ada8cd2d07b92f1cc",
+      "resources_reconstructed": {
+        "audit_outcome_observer_digit_examples": 20480,
+        "decoder_batches": 27992,
+        "decoder_examples": 27992,
+        "encoder_batches": 10240,
+        "encoder_examples": 10240,
+        "media_logical_deliveries_read_back": 27992,
+        "native_tick_calls": 18636,
+        "public_feature_observer_digit_examples": 48848,
+        "reward_outcome_observer_digit_examples": 20480,
+        "selection_batches": 960,
+        "selection_rows": 24424,
+        "simulated_feedback_packets": 14184,
+        "transition_batches": 27992,
+        "transition_examples": 27992,
+        "unchosen_continuations_executed": 0
+      },
+      "rows_sha256": "956141af3dce0212ef4e1d6416079fca9428ab9daee68a5aec7df7e99c9b899a",
+      "seed": 29,
+      "selected_complete_sha256": "77d979cd85c81b07a462ca944f9954689d69a0081fd79e3742b64c8e64eac4f5"
+    },
+    {
+      "decisions_by_arm": {
+        "current": 4249,
+        "fixed": 4096,
+        "history": 4300,
+        "native": 4419,
+        "reset_native": 4438
+      },
+      "depths_by_arm": {
+        "current": {
+          "0": 722,
+          "1": 451,
+          "2": 167,
+          "3": 708
+        },
+        "fixed": {
+          "1": 2048
+        },
+        "history": {
+          "0": 726,
+          "1": 392,
+          "2": 192,
+          "3": 738
+        },
+        "native": {
+          "0": 729,
+          "1": 267,
+          "2": 187,
+          "3": 865
+        },
+        "reset_native": {
+          "0": 679,
+          "1": 348,
+          "2": 150,
+          "3": 871
+        }
+      },
+      "episodes": 10240,
+      "events_sha256": "985fb6af702c3d6dbdd54eb507ca35edd86b0d127e25cba0e19575178e209759",
+      "fit_complete_sha256": "78ba7cdee13a4932c961057f2ae70a3f610916d0d274cec11dad6356b88dec74",
+      "parent_complete_sha256": "274406cf159aaaab9fd36b5d258f88eb59fe29cfbf0b1b83ed3d66521551e86b",
+      "profile": "frozen",
+      "readouts_sha256": "ae2b76da23e7547f68cf408fabb3d3b259bd19d29737dab9cb66d55ed02a7e2a",
+      "resources_reconstructed": {
+        "audit_outcome_observer_digit_examples": 20480,
+        "decoder_batches": 24684,
+        "decoder_examples": 24684,
+        "encoder_batches": 10240,
+        "encoder_examples": 10240,
+        "media_logical_deliveries_read_back": 24684,
+        "native_tick_calls": 17714,
+        "public_feature_observer_digit_examples": 43004,
+        "reward_outcome_observer_digit_examples": 20480,
+        "selection_batches": 896,
+        "selection_rows": 21502,
+        "simulated_feedback_packets": 11262,
+        "transition_batches": 24684,
+        "transition_examples": 24684,
+        "unchosen_continuations_executed": 0
+      },
+      "rows_sha256": "be105dfada48f5a8f46bee2e32e9d6b9cbea05e4581f7432ab38ea55f632dc61",
+      "seed": 43,
+      "selected_complete_sha256": "216cc7998f224d13b015e76a2781ec0926b16133a9bb12d15a4d455eb726d317"
+    }
+  ],
+  "source_manifest_sha256": "9bfcb279d5efdc7bd6c14af41c64c04a78fc97f7827f7464280d8997d8fead41",
+  "status": "pass"
+}

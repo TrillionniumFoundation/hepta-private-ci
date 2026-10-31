@@ -1,0 +1,529 @@
+{
+  "all_metadata_bound_distinct_ids": 256,
+  "all_metadata_bound_ids_sha256": "d095c7faa50ccbb1184f2fba834ae7ff5581cf894c4a606800b70e6b2a713b57",
+  "all_metadata_vs_prospective_individual_id_overlap": 0,
+  "baseline_remote_commit": "39faddd747e87c31d01301d353526623eae0da83",
+  "disjointness": [
+    {
+      "individual_id_overlap": 0,
+      "left": "historical_main_test",
+      "pixel_hash_overlap": 0,
+      "right": "control_and_generator_final"
+    },
+    {
+      "individual_id_overlap": 0,
+      "left": "historical_main_test",
+      "pixel_hash_overlap": 0,
+      "right": "native_new_calibration"
+    },
+    {
+      "individual_id_overlap": 0,
+      "left": "historical_main_test",
+      "pixel_hash_overlap": 0,
+      "right": "native_new_verification"
+    },
+    {
+      "individual_id_overlap": 0,
+      "left": "historical_main_test",
+      "pixel_hash_overlap": 0,
+      "right": "all_non_test_manifest_roles"
+    },
+    {
+      "individual_id_overlap": 0,
+      "left": "control_and_generator_final",
+      "pixel_hash_overlap": 0,
+      "right": "native_new_calibration"
+    },
+    {
+      "individual_id_overlap": 0,
+      "left": "control_and_generator_final",
+      "pixel_hash_overlap": 0,
+      "right": "native_new_verification"
+    },
+    {
+      "individual_id_overlap": 0,
+      "left": "control_and_generator_final",
+      "pixel_hash_overlap": 0,
+      "right": "all_non_test_manifest_roles"
+    },
+    {
+      "individual_id_overlap": 0,
+      "left": "native_new_calibration",
+      "pixel_hash_overlap": 0,
+      "right": "native_new_verification"
+    },
+    {
+      "individual_id_overlap": 0,
+      "left": "native_new_calibration",
+      "pixel_hash_overlap": 0,
+      "right": "all_non_test_manifest_roles"
+    },
+    {
+      "individual_id_overlap": 0,
+      "left": "native_new_verification",
+      "pixel_hash_overlap": 0,
+      "right": "all_non_test_manifest_roles"
+    }
+  ],
+  "groups": {
+    "control_and_generator_final": {
+      "individual_sources": 512,
+      "ordered_source_ids_sha256": "c82036258ad83ef409e30a9a2297b7e54ed3416cdaf7ad3bf757f4635658dad4",
+      "pair_end_exclusive": 768,
+      "pair_start": 512,
+      "sorted_pixel_hashes_sha256": "b85f163642a8e42b79afc2f4f088c90471ce5d97c295ff4099c3b9d1a015e732",
+      "source_pairs": 256
+    },
+    "historical_main_test": {
+      "individual_sources": 1024,
+      "ordered_source_ids_sha256": "da957b2f80462746ea506a67e6293a58d681d714cd54e1499e370bb184020314",
+      "pair_end_exclusive": 512,
+      "pair_start": 0,
+      "sorted_pixel_hashes_sha256": "ca4104f1a7f9155988af399196413171381ae3fa1739e37e64f33bc9ce0bf468",
+      "source_pairs": 512
+    },
+    "native_new_calibration": {
+      "individual_sources": 1600,
+      "ordered_source_ids_sha256": "d8d931f23c4abc2aa7488d2fde6a38772dd6289fff04a0a49c8966cdbf09df54",
+      "pair_end_exclusive": 1568,
+      "pair_start": 768,
+      "sorted_pixel_hashes_sha256": "1cefc42d0024cb1dcc0b2457dff77c359311a986b96720cb6c714d9eccc75ff6",
+      "source_pairs": 800
+    },
+    "native_new_verification": {
+      "individual_sources": 2864,
+      "ordered_source_ids_sha256": "d513ca3dd2f1ca363a65b917dd40098a6c36065fbccc21b34f0384381d1fe8e7",
+      "pair_end_exclusive": 3000,
+      "pair_start": 1568,
+      "sorted_pixel_hashes_sha256": "249513e6c66e5b1667d920b014cf2f0e5069e57b6ea1d15ff79efac3e9abbd89",
+      "source_pairs": 1432
+    }
+  },
+  "historical_access_evidence": [
+    {
+      "declared_or_executed_ranges": [
+        {
+          "at": "/source_ranges/test",
+          "count": 512,
+          "role": "test",
+          "start": 0
+        }
+      ],
+      "file": "abc3-runs/architecture-001/registration.json",
+      "sha256": "c2c7d432e11344d95811a0109c4ceb4e2b9c1c671b670401b85bd41bd8b31671"
+    },
+    {
+      "declared_or_executed_ranges": [
+        {
+          "at": "/source_ranges/test",
+          "count": 512,
+          "role": "test",
+          "start": 0
+        }
+      ],
+      "file": "abc3-runs/controllers-001/registration.json",
+      "sha256": "b4ec018c331094b5c9989b67f81de606ee4ecaec9b8d6b304049a47c672a9bef"
+    },
+    {
+      "declared_or_executed_ranges": [
+        {
+          "at": "/source_range",
+          "count": 512,
+          "role": "test",
+          "start": 0
+        }
+      ],
+      "file": "abc3-runs/evaluation-001/result.json",
+      "sha256": "0f2271ff4024427e98de4d34e596e965c91ba6ac800f210ef7dae4ef73e50d0b"
+    },
+    {
+      "declared_or_executed_ranges": [
+        {
+          "at": "",
+          "count": 512,
+          "role": "test",
+          "start": 0
+        }
+      ],
+      "file": "abc3-runs/evaluation-001/seed-17/output_mean/registration.json",
+      "sha256": "2ab6cf36b77ab5df842d7a17299c707f1c21709c3a377d9e83c5b3176336b3d6"
+    },
+    {
+      "declared_or_executed_ranges": [
+        {
+          "at": "",
+          "count": 512,
+          "role": "test",
+          "start": 0
+        }
+      ],
+      "file": "abc3-runs/evaluation-001/seed-17/output_ndu/registration.json",
+      "sha256": "0c52426e49ba9a2fdaad88aa0d2244ddd2d4a8680beb44d3f7aeabcceac6cd6d"
+    },
+    {
+      "declared_or_executed_ranges": [
+        {
+          "at": "",
+          "count": 512,
+          "role": "test",
+          "start": 0
+        }
+      ],
+      "file": "abc3-runs/evaluation-001/seed-17/sft_continuation/registration.json",
+      "sha256": "206463dddac897f18ac797ae4b215bb033076b669b95baa26e468bec79c6d05d"
+    },
+    {
+      "declared_or_executed_ranges": [
+        {
+          "at": "",
+          "count": 512,
+          "role": "test",
+          "start": 0
+        }
+      ],
+      "file": "abc3-runs/evaluation-001/seed-29/output_mean/registration.json",
+      "sha256": "e52a840f8e9341a6e7a1028be8a4144ed9b799a34ec9c23c65cb43003031d952"
+    },
+    {
+      "declared_or_executed_ranges": [
+        {
+          "at": "",
+          "count": 512,
+          "role": "test",
+          "start": 0
+        }
+      ],
+      "file": "abc3-runs/evaluation-001/seed-29/output_ndu/registration.json",
+      "sha256": "44891af6d1b46e32f960acdabc44caf1a9086cdf94bc5f043e4c4535b9d7dc84"
+    },
+    {
+      "declared_or_executed_ranges": [
+        {
+          "at": "",
+          "count": 512,
+          "role": "test",
+          "start": 0
+        }
+      ],
+      "file": "abc3-runs/evaluation-001/seed-29/sft_continuation/registration.json",
+      "sha256": "f421f97a630e04b9e92c09b28b98d55a7d1dd3e0b515b51d032e0d7fbdf26456"
+    },
+    {
+      "declared_or_executed_ranges": [
+        {
+          "at": "",
+          "count": 512,
+          "role": "test",
+          "start": 0
+        }
+      ],
+      "file": "abc3-runs/evaluation-001/seed-43/output_mean/registration.json",
+      "sha256": "17481c8b034ed372b9af5f5dee59e35f6d0ba1de1b70463d0c6c5d8e855ca919"
+    },
+    {
+      "declared_or_executed_ranges": [
+        {
+          "at": "",
+          "count": 512,
+          "role": "test",
+          "start": 0
+        }
+      ],
+      "file": "abc3-runs/evaluation-001/seed-43/output_ndu/registration.json",
+      "sha256": "33be4e42955a71ef58bb0b072b12ebed060ac4efcacb65582f7a04d6848deaf1"
+    },
+    {
+      "declared_or_executed_ranges": [
+        {
+          "at": "",
+          "count": 512,
+          "role": "test",
+          "start": 0
+        }
+      ],
+      "file": "abc3-runs/evaluation-001/seed-43/sft_continuation/registration.json",
+      "sha256": "7da9e6c43fdbede029b586c5b729b7b8dc7d1f0cf739a6b52dfe5079121ec701"
+    },
+    {
+      "declared_or_executed_ranges": [
+        {
+          "at": "",
+          "count": 512,
+          "role": "test",
+          "start": 0
+        }
+      ],
+      "file": "abc3-runs/evaluation-001/seed-59/output_mean/registration.json",
+      "sha256": "f2d98c5b5f19be44845a09d2ae990fcc918b7a8b0f6ace29fe540e039700a6a0"
+    },
+    {
+      "declared_or_executed_ranges": [
+        {
+          "at": "",
+          "count": 512,
+          "role": "test",
+          "start": 0
+        }
+      ],
+      "file": "abc3-runs/evaluation-001/seed-59/output_ndu/registration.json",
+      "sha256": "00153a696ac8d21743f1ee03f349714957d414d82f786a9df3cec8015c62fc39"
+    },
+    {
+      "declared_or_executed_ranges": [
+        {
+          "at": "",
+          "count": 512,
+          "role": "test",
+          "start": 0
+        }
+      ],
+      "file": "abc3-runs/evaluation-001/seed-59/sft_continuation/registration.json",
+      "sha256": "3a0dccaf751605e15b460e0d621d01dd6a8d22a5964326902dedd790640b772c"
+    },
+    {
+      "declared_or_executed_ranges": [
+        {
+          "at": "",
+          "count": 512,
+          "role": "test",
+          "start": 0
+        }
+      ],
+      "file": "abc3-runs/evaluation-001/seed-71/output_mean/registration.json",
+      "sha256": "7652e3dabcc43b6dca10a6e91ccceb97ba3d51babac7ebb7e833bd1e8b9d5e51"
+    },
+    {
+      "declared_or_executed_ranges": [
+        {
+          "at": "",
+          "count": 512,
+          "role": "test",
+          "start": 0
+        }
+      ],
+      "file": "abc3-runs/evaluation-001/seed-71/output_ndu/registration.json",
+      "sha256": "d2a818ea4c98f891baf412e43aab378bd9a1d4aa438f559ecc78113454661eea"
+    },
+    {
+      "declared_or_executed_ranges": [
+        {
+          "at": "",
+          "count": 512,
+          "role": "test",
+          "start": 0
+        }
+      ],
+      "file": "abc3-runs/evaluation-001/seed-71/sft_continuation/registration.json",
+      "sha256": "295f7760a5ff08a6b78fd9395c1ba9946b9f66515f2dadaf5bcb2e0e6d389f34"
+    },
+    {
+      "declared_or_executed_ranges": [
+        {
+          "at": "/timing/profile",
+          "count": 16,
+          "role": "test",
+          "start": 0
+        }
+      ],
+      "file": "abc3-runs/timing-001/registration.json",
+      "sha256": "12300961af2359bc76a43cbf0e95a91be95eb50d4b5fd435509c853c735c3b4e"
+    },
+    {
+      "declared_or_executed_ranges": [
+        {
+          "at": "/profile",
+          "count": 16,
+          "role": "test",
+          "start": 0
+        }
+      ],
+      "file": "abc3-runs/timing-001/summary.json",
+      "sha256": "0c84458bb9744d6f5c065af0032ac0debc24c48ac6e38413e7a08b2e4f11b070"
+    }
+  ],
+  "large_metadata_excluded_from_recursive_scan": [],
+  "large_metadata_explicitly_inspected": [
+    {
+      "bytes": 2419835,
+      "declared_source_roles_read": [
+        "development",
+        "forecast_fit",
+        "forecast_calibration"
+      ],
+      "distinct_bound_source_ids": 0,
+      "file": "abc2-runs/control-001/registration.json",
+      "ordered_bound_ids_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "prospective_individual_id_overlap": 0,
+      "sha256": "94e3225928db6e6c5a3d24392bc1d71ab9301a05a7b953f1c28464c0d871bee0",
+      "test_or_unallocated_ranges": []
+    },
+    {
+      "bytes": 802028,
+      "declared_source_roles_read": null,
+      "distinct_bound_source_ids": 256,
+      "file": "abc2-runs/control-001/seed-17/output_ndu/encoder_initial_only_fixed/registration.json",
+      "ordered_bound_ids_sha256": "d095c7faa50ccbb1184f2fba834ae7ff5581cf894c4a606800b70e6b2a713b57",
+      "prospective_individual_id_overlap": 0,
+      "sha256": "56b1ee18a0c8ad780dd2219c02837c0109f7040a53f4cc7e1dc4b9c51aeb730f",
+      "test_or_unallocated_ranges": []
+    },
+    {
+      "bytes": 802015,
+      "declared_source_roles_read": null,
+      "distinct_bound_source_ids": 256,
+      "file": "abc2-runs/control-001/seed-17/output_ndu/shared_state_clamp_semantic_couple/registration.json",
+      "ordered_bound_ids_sha256": "d095c7faa50ccbb1184f2fba834ae7ff5581cf894c4a606800b70e6b2a713b57",
+      "prospective_individual_id_overlap": 0,
+      "sha256": "9059fff422c3a70836ee5fe38a710dff430de727cc20694e938a81f9b94c23e4",
+      "test_or_unallocated_ranges": []
+    },
+    {
+      "bytes": 802028,
+      "declared_source_roles_read": null,
+      "distinct_bound_source_ids": 256,
+      "file": "abc2-runs/control-001/seed-29/output_ndu/encoder_initial_only_fixed/registration.json",
+      "ordered_bound_ids_sha256": "d095c7faa50ccbb1184f2fba834ae7ff5581cf894c4a606800b70e6b2a713b57",
+      "prospective_individual_id_overlap": 0,
+      "sha256": "72bc2564a53a75251a00dfb4feba4ac0d59625bac3fbbf7091a26435baa85675",
+      "test_or_unallocated_ranges": []
+    },
+    {
+      "bytes": 802015,
+      "declared_source_roles_read": null,
+      "distinct_bound_source_ids": 256,
+      "file": "abc2-runs/control-001/seed-29/output_ndu/shared_state_clamp_semantic_couple/registration.json",
+      "ordered_bound_ids_sha256": "d095c7faa50ccbb1184f2fba834ae7ff5581cf894c4a606800b70e6b2a713b57",
+      "prospective_individual_id_overlap": 0,
+      "sha256": "2aa9b58d9d9e7041d1d55ad4cf9cfc86e1a72207c5eba820b8953c3a21849a7e",
+      "test_or_unallocated_ranges": []
+    },
+    {
+      "bytes": 802028,
+      "declared_source_roles_read": null,
+      "distinct_bound_source_ids": 256,
+      "file": "abc2-runs/control-001/seed-43/output_ndu/encoder_initial_only_fixed/registration.json",
+      "ordered_bound_ids_sha256": "d095c7faa50ccbb1184f2fba834ae7ff5581cf894c4a606800b70e6b2a713b57",
+      "prospective_individual_id_overlap": 0,
+      "sha256": "354825bc368d76c9d8c66538a75cb8a65c0e652f004b700c8d402b38b0e53d94",
+      "test_or_unallocated_ranges": []
+    },
+    {
+      "bytes": 802015,
+      "declared_source_roles_read": null,
+      "distinct_bound_source_ids": 256,
+      "file": "abc2-runs/control-001/seed-43/output_ndu/shared_state_clamp_semantic_couple/registration.json",
+      "ordered_bound_ids_sha256": "d095c7faa50ccbb1184f2fba834ae7ff5581cf894c4a606800b70e6b2a713b57",
+      "prospective_individual_id_overlap": 0,
+      "sha256": "3407c5574417f44cc00b36fc443061fa2da59fd5253fbeb235717e374fb4983a",
+      "test_or_unallocated_ranges": []
+    },
+    {
+      "bytes": 802028,
+      "declared_source_roles_read": null,
+      "distinct_bound_source_ids": 256,
+      "file": "abc2-runs/control-001/seed-59/output_ndu/encoder_initial_only_fixed/registration.json",
+      "ordered_bound_ids_sha256": "d095c7faa50ccbb1184f2fba834ae7ff5581cf894c4a606800b70e6b2a713b57",
+      "prospective_individual_id_overlap": 0,
+      "sha256": "b19b651b51d445cb0d3175ed65d328136bbae081eb530149345115dad11f69f7",
+      "test_or_unallocated_ranges": []
+    },
+    {
+      "bytes": 802015,
+      "declared_source_roles_read": null,
+      "distinct_bound_source_ids": 256,
+      "file": "abc2-runs/control-001/seed-59/output_ndu/shared_state_clamp_semantic_couple/registration.json",
+      "ordered_bound_ids_sha256": "d095c7faa50ccbb1184f2fba834ae7ff5581cf894c4a606800b70e6b2a713b57",
+      "prospective_individual_id_overlap": 0,
+      "sha256": "a32116e4d5ec393746eb9910a19c100e40b182797d73d927becaaac8c0eeda9d",
+      "test_or_unallocated_ranges": []
+    },
+    {
+      "bytes": 802028,
+      "declared_source_roles_read": null,
+      "distinct_bound_source_ids": 256,
+      "file": "abc2-runs/control-001/seed-71/output_ndu/encoder_initial_only_fixed/registration.json",
+      "ordered_bound_ids_sha256": "d095c7faa50ccbb1184f2fba834ae7ff5581cf894c4a606800b70e6b2a713b57",
+      "prospective_individual_id_overlap": 0,
+      "sha256": "554b04ced2b73ef46c8e903dde880ea8308e48945bb579d70991adae1f09c461",
+      "test_or_unallocated_ranges": []
+    },
+    {
+      "bytes": 802015,
+      "declared_source_roles_read": null,
+      "distinct_bound_source_ids": 256,
+      "file": "abc2-runs/control-001/seed-71/output_ndu/shared_state_clamp_semantic_couple/registration.json",
+      "ordered_bound_ids_sha256": "d095c7faa50ccbb1184f2fba834ae7ff5581cf894c4a606800b70e6b2a713b57",
+      "prospective_individual_id_overlap": 0,
+      "sha256": "d279c8063533c64ba011e9e8329e1a00ab5f91fba6fb664250e1e4c50c8556ef",
+      "test_or_unallocated_ranges": []
+    },
+    {
+      "bytes": 585498,
+      "declared_source_roles_read": [
+        "development"
+      ],
+      "distinct_bound_source_ids": 0,
+      "file": "abc2-runs/control-audit-001/registration.json",
+      "ordered_bound_ids_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "prospective_individual_id_overlap": 0,
+      "sha256": "9496353b61f7eacb7b148b69855f20af7a84fde0a6bd8caf52f058d53f99b9ed",
+      "test_or_unallocated_ranges": []
+    },
+    {
+      "bytes": 1564684,
+      "declared_source_roles_read": null,
+      "distinct_bound_source_ids": 0,
+      "file": "abc2-runs/timing-registered-three-001/benchmark/registration.json",
+      "ordered_bound_ids_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "prospective_individual_id_overlap": 0,
+      "sha256": "fb6b233dc253521391152add0430a36d176b4624a5138220e0eea128ab9b2a73",
+      "test_or_unallocated_ranges": []
+    },
+    {
+      "bytes": 4211033,
+      "declared_source_roles_read": null,
+      "distinct_bound_source_ids": 0,
+      "file": "abc2-runs/timing-supplementary-all-001/benchmark/registration.json",
+      "ordered_bound_ids_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "prospective_individual_id_overlap": 0,
+      "sha256": "c5b3e7c4ebbabcf370f2333a3e5d33a4e9afbfe463bd759dcb5550bc3e748b36",
+      "test_or_unallocated_ranges": []
+    },
+    {
+      "bytes": 2415879,
+      "declared_source_roles_read": null,
+      "distinct_bound_source_ids": 0,
+      "file": "abc2-runs/training-001/result.json",
+      "ordered_bound_ids_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "prospective_individual_id_overlap": 0,
+      "sha256": "0e82d0a746b771baca86d11b18b0299ab0a2d56f08802afe6e72f9a5acde0cd5",
+      "test_or_unallocated_ranges": []
+    },
+    {
+      "bytes": 662923,
+      "declared_source_roles_read": null,
+      "distinct_bound_source_ids": 0,
+      "file": "abc3-runs/timing-001/summary.json",
+      "ordered_bound_ids_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "prospective_individual_id_overlap": 0,
+      "sha256": "0c84458bb9744d6f5c065af0032ac0debc24c48ac6e38413e7a08b2e4f11b070",
+      "test_or_unallocated_ranges": [
+        {
+          "at": "/profile",
+          "count": 16,
+          "role": "test",
+          "start": 0
+        }
+      ]
+    }
+  ],
+  "manifest_sha256": "60c24d44e12eb3defb3b1b8146d91879b84918b057e0524117137d7e4f793058",
+  "metadata_files_inspected": 613,
+  "metadata_only_no_prospective_outcomes_materialized": true,
+  "new_native_ranges_are_reservations_not_already_executed": true,
+  "non_test_roles_ordered_ids_sha256": "5485c169f485fc6420ab011bb9b70493d6a849c12da0d240dc17d5d4f14617f8",
+  "schema": "hepta.abc-followup.source-allocation.v1",
+  "scope": "Frozen repository experiment code, role manifest and available local execution metadata; does not attest unknown external experiments. Role declarations are conservatively included as used.",
+  "shared_control_training_final": "Both experiments use exactly the control_and_generator_final identities, with separately frozen candidates; they do not create independent extra N.",
+  "source_units": "No-replacement adjacent original image pairs; views/scenarios/policies/seeds retain source clustering. Unknown original writer clusters are not invented."
+}

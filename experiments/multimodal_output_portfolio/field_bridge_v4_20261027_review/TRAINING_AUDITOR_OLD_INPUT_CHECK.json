@@ -1,0 +1,332 @@
+{
+  "auditor_io_read_bytes": 11461902,
+  "auditor_io_read_calls": 32,
+  "cpu_ns": 2262269075,
+  "generator_observer_training_or_network_calls": 0,
+  "input_files": {
+    "/tmp/hepta-field-v3-run/bank/17/BANK.json": {
+      "bytes": 247649,
+      "sha256": "c85d2253b3ccbf05b1a4f3e5da57cf012549a57bf1aaf6b5706784fa35d96a8f"
+    },
+    "/tmp/hepta-field-v3-run/bank/29/BANK.json": {
+      "bytes": 248261,
+      "sha256": "8ee6976dacb3ffdd0271b43c3c125b06d1221d39c729fd1fa3268cd9bec2ef57"
+    },
+    "/tmp/hepta-field-v3-run/bank/43/BANK.json": {
+      "bytes": 247022,
+      "sha256": "f87666fc1b15505b43d686257050c9b821366da26bd98b139fd642075e3e1445"
+    },
+    "/tmp/hepta-field-v3-run/fit/17/CONTROLLERS.json": {
+      "bytes": 1482994,
+      "sha256": "f750695fef1f7f7d9f20e7abdbd6547845c8ce59e5fd77788b85a5be1548a1e5"
+    },
+    "/tmp/hepta-field-v3-run/fit/29/CONTROLLERS.json": {
+      "bytes": 1483070,
+      "sha256": "98c93a2a1b6a765eb3c422a1255c95d3efb489ba691ebb2b583c1bfb60c488a3"
+    },
+    "/tmp/hepta-field-v3-run/fit/43/CONTROLLERS.json": {
+      "bytes": 1481779,
+      "sha256": "9efa768f3de6d7913a9cf3447659d329bb9a8e6b7f63644d70832df46ca49215"
+    },
+    "/tmp/hepta-field-v3-run/reference/17/COMPLETE.json": {
+      "bytes": 82214,
+      "sha256": "5acb1cea51a7f99d5f36a6cab2150680aeee6ab978c4d769862337a347182e37"
+    },
+    "/tmp/hepta-field-v3-run/reference/17/REFERENCE.json": {
+      "bytes": 11449,
+      "sha256": "96565d1cdc10b607a6741c92d319f1e950e8ee9e4c96b2574b9754512584a16a"
+    },
+    "/tmp/hepta-field-v3-run/reference/17/constant-0.pt": {
+      "bytes": 81333,
+      "sha256": "93f71a372fe00f0e4dd21c962afd4235eff25f7454183cb7b9addb63302c9992"
+    },
+    "/tmp/hepta-field-v3-run/reference/29/COMPLETE.json": {
+      "bytes": 82208,
+      "sha256": "a7e0c339508de686382c72bc92a7241f71cf41a158b485176e38f1fc828f8760"
+    },
+    "/tmp/hepta-field-v3-run/reference/29/REFERENCE.json": {
+      "bytes": 11380,
+      "sha256": "9f1e2597bcf802b1f5d04cfa8d492d1a7ba8c686f3a3c6def94f5b8fb71da555"
+    },
+    "/tmp/hepta-field-v3-run/reference/29/constant-0.pt": {
+      "bytes": 81333,
+      "sha256": "903fc76ec77743bbf5aeafcc9aa4a29c8ae1b15f13d24e21c5f2a90505e6d1e8"
+    },
+    "/tmp/hepta-field-v3-run/reference/43/COMPLETE.json": {
+      "bytes": 82205,
+      "sha256": "461e2c781951b8b6ba0fc2cda7e7020512793eca3c567fd18c86a6b5e6c1e787"
+    },
+    "/tmp/hepta-field-v3-run/reference/43/REFERENCE.json": {
+      "bytes": 11401,
+      "sha256": "e3c4e013e79e34bec46312d72d18e0b7030604434ba69098c347ffa525e7265d"
+    },
+    "/tmp/hepta-field-v3-run/reference/43/constant-0.pt": {
+      "bytes": 81333,
+      "sha256": "7b4b501d6bb723a5ff48686be32799fd30e2d3b525e388069c2468031c809ca3"
+    },
+    "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v4_20261027/PROTOCOL.json": {
+      "bytes": 15320,
+      "sha256": "5516ec1c6ac97737d25cb35c0ddd6e87e418257a899d7cb7932082fcbaa613e8"
+    }
+  },
+  "passed": true,
+  "rows": [
+    {
+      "four_head_shapes_checked": true,
+      "old_zero_checkpoint": {
+        "bytes": 81333,
+        "file_sha256": "93f71a372fe00f0e4dd21c962afd4235eff25f7454183cb7b9addb63302c9992",
+        "frozen_base_sha256": "97afb838b6b31c3ba7d0691d50efe0813c0dee74597b645fad91768b8bb5185d",
+        "gradient_tensor_sha256": null,
+        "identity": {
+          "optimizer": "b7f803b4bd3ed33000beb35f4b431a0e19e56b3e8a6fcc1ba99ed03b4e04b307",
+          "parameters": "270f12442e3779641f0660f259e5c216bf25dfa5083bdc3d9ad376d17c230e45"
+        },
+        "learning_rate": 0.2,
+        "momentum_state_parameters": 0,
+        "parameter_count": 18144,
+        "parameter_shapes": {
+          "coupling_cell.0.down": [
+            8,
+            384
+          ],
+          "coupling_cell.0.up": [
+            288,
+            8
+          ],
+          "digit_head.down": [
+            8,
+            96
+          ],
+          "digit_head.up": [
+            20,
+            8
+          ],
+          "fuse.0.down": [
+            8,
+            144
+          ],
+          "fuse.0.up": [
+            96,
+            8
+          ],
+          "initial_image.down": [
+            8,
+            96
+          ],
+          "initial_image.up": [
+            96,
+            8
+          ],
+          "initial_text.down": [
+            8,
+            96
+          ],
+          "initial_text.up": [
+            96,
+            8
+          ],
+          "pixel_decoder.0.down": [
+            8,
+            192
+          ],
+          "pixel_decoder.0.up": [
+            256,
+            8
+          ],
+          "text_initial.down": [
+            8,
+            192
+          ],
+          "text_initial.up": [
+            96,
+            8
+          ],
+          "text_projection.down": [
+            8,
+            96
+          ],
+          "text_projection.up": [
+            24,
+            8
+          ]
+        },
+        "rng_sha256": null
+      },
+      "seed": 17
+    },
+    {
+      "four_head_shapes_checked": true,
+      "old_zero_checkpoint": {
+        "bytes": 81333,
+        "file_sha256": "903fc76ec77743bbf5aeafcc9aa4a29c8ae1b15f13d24e21c5f2a90505e6d1e8",
+        "frozen_base_sha256": "8c5511c97890a04f8bf08c50118f3a2985f620a38a1e0a7775d3b165c9e9c049",
+        "gradient_tensor_sha256": null,
+        "identity": {
+          "optimizer": "b7f803b4bd3ed33000beb35f4b431a0e19e56b3e8a6fcc1ba99ed03b4e04b307",
+          "parameters": "e5b257776c869f20fe34f00b632f30e1eb3e6ace8628519f4cc78a5e66ae1fb6"
+        },
+        "learning_rate": 0.2,
+        "momentum_state_parameters": 0,
+        "parameter_count": 18144,
+        "parameter_shapes": {
+          "coupling_cell.0.down": [
+            8,
+            384
+          ],
+          "coupling_cell.0.up": [
+            288,
+            8
+          ],
+          "digit_head.down": [
+            8,
+            96
+          ],
+          "digit_head.up": [
+            20,
+            8
+          ],
+          "fuse.0.down": [
+            8,
+            144
+          ],
+          "fuse.0.up": [
+            96,
+            8
+          ],
+          "initial_image.down": [
+            8,
+            96
+          ],
+          "initial_image.up": [
+            96,
+            8
+          ],
+          "initial_text.down": [
+            8,
+            96
+          ],
+          "initial_text.up": [
+            96,
+            8
+          ],
+          "pixel_decoder.0.down": [
+            8,
+            192
+          ],
+          "pixel_decoder.0.up": [
+            256,
+            8
+          ],
+          "text_initial.down": [
+            8,
+            192
+          ],
+          "text_initial.up": [
+            96,
+            8
+          ],
+          "text_projection.down": [
+            8,
+            96
+          ],
+          "text_projection.up": [
+            24,
+            8
+          ]
+        },
+        "rng_sha256": null
+      },
+      "seed": 29
+    },
+    {
+      "four_head_shapes_checked": true,
+      "old_zero_checkpoint": {
+        "bytes": 81333,
+        "file_sha256": "7b4b501d6bb723a5ff48686be32799fd30e2d3b525e388069c2468031c809ca3",
+        "frozen_base_sha256": "77618ccc21de1d602729ab2ae1836a4aa2e06e3e46a4365656d279eeb5a750f6",
+        "gradient_tensor_sha256": null,
+        "identity": {
+          "optimizer": "b7f803b4bd3ed33000beb35f4b431a0e19e56b3e8a6fcc1ba99ed03b4e04b307",
+          "parameters": "61ae43f4da69e11110a1dac5994f34d71ab4315d3b8c4ec30ce5535be80974a5"
+        },
+        "learning_rate": 0.2,
+        "momentum_state_parameters": 0,
+        "parameter_count": 18144,
+        "parameter_shapes": {
+          "coupling_cell.0.down": [
+            8,
+            384
+          ],
+          "coupling_cell.0.up": [
+            288,
+            8
+          ],
+          "digit_head.down": [
+            8,
+            96
+          ],
+          "digit_head.up": [
+            20,
+            8
+          ],
+          "fuse.0.down": [
+            8,
+            144
+          ],
+          "fuse.0.up": [
+            96,
+            8
+          ],
+          "initial_image.down": [
+            8,
+            96
+          ],
+          "initial_image.up": [
+            96,
+            8
+          ],
+          "initial_text.down": [
+            8,
+            96
+          ],
+          "initial_text.up": [
+            96,
+            8
+          ],
+          "pixel_decoder.0.down": [
+            8,
+            192
+          ],
+          "pixel_decoder.0.up": [
+            256,
+            8
+          ],
+          "text_initial.down": [
+            8,
+            192
+          ],
+          "text_initial.up": [
+            96,
+            8
+          ],
+          "text_projection.down": [
+            8,
+            96
+          ],
+          "text_projection.up": [
+            24,
+            8
+          ]
+        },
+        "rng_sha256": null
+      },
+      "seed": 43
+    }
+  ],
+  "schema": "hepta.field-bridge.v4.auditor-old-input-precheck.1",
+  "scope": "Only already released V3 heads/bank/reference metadata and three zero adapter checkpoint files; no new V4 run or role loaded",
+  "source_sha256": "640c75e7589e66d7f3123026ae092014720d1f275f693d5fa0493f255f13f046",
+  "wall_ns": 2284691265,
+  "weights_only_checkpoint_loads": 3
+}

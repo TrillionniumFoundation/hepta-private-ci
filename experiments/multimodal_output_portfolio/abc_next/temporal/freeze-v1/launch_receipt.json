@@ -1,0 +1,19 @@
+{
+  "declared_scope_preserved": "No frozen code, source role, model, threshold, comparator or metric changed",
+  "evidence_scope": "Post-launch transcription of the actual functions.exec/exec_command invocation; not independently sampled per-worker environment attestation",
+  "explicit_shell_assignments": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "final_protocol_sha256": "9d74cc54fec42e9828b1b5bc110e861456d1d3bec1d0634507dd207cee038c2b",
+  "module": "experiments.multimodal_output_portfolio.abc_next.temporal.parallel_matrix",
+  "output": "/workspace/scratch/2b3c256bef7d/abc3-temporal-runs/evaluation-001",
+  "python": "/workspace/scratch/2b3c256bef7d/speech-env/bin/python",
+  "python_flags": [
+    "-B"
+  ],
+  "schema": "hepta.abc3.temporal.launch-command-receipt.v1",
+  "tool_session_id": 90832,
+  "working_directory": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery"
+}

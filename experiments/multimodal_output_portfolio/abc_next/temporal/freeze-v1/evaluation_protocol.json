@@ -1,0 +1,119 @@
+{
+  "bootstrap_replicates": 4000,
+  "bootstrap_seed": 2026102503,
+  "census": {
+    "fact_groups": 64,
+    "real_generator_actions": 4,
+    "role": "evaluation",
+    "scenarios_per_group": 4,
+    "shared_clamp_actions": 1,
+    "value_training_seeds": [
+      17,
+      29,
+      43,
+      59,
+      71
+    ]
+  },
+  "confidence": 0.975,
+  "cost_scope": "declared proxy action penalties are not measured CPU, milliseconds, money, or a demonstrated deployment price",
+  "delayed_effect": "neutral text/audio prefix committed before real draft/probe and fresh evidence; shared revision changes only later two committed chunks",
+  "execution": {
+    "case_assignment": "source index modulo 2; all scenarios in increasing order on that logical shard",
+    "engine_limits": "Piper ONNX intra/inter threads 1; Whisper CPU threads/workers 1; OMP/BLAS 1; Vosk library default additionally bounded by one-CPU process affinity",
+    "randomness": "public source/scenario hash seed frozen in facts.py; Piper noise_scale/noise_w_scale 0; Whisper temperature 0 beam 5; fixed Vosk decoding; five frozen critic seeds",
+    "runner": "parallel_matrix",
+    "start_method": "spawn",
+    "worker_affinity": "last two CPUs in sorted permitted affinity; one distinct CPU per logical shard",
+    "workers": 2
+  },
+  "feedback_claim_boundary": "A gain versus a single best-fixed action alone is not evidence of necessity of online feedback; initial-only and draft-masked contrasts remain explicit, descriptive diagnostics",
+  "gamma": 2.0,
+  "generation_boundary": "fixed pretrained Piper neural acoustic synthesis; template text decoder; learned shared-state action critic only",
+  "independent_unit": "unique number/color/direction tuple; all scenarios, actions, policy seeds and replays grouped",
+  "latency": "matrix component sums labelled as such; separate sequential selected-policy run measures actual end-to-end wall/CPU",
+  "media_scope": "genuine text and fresh speech, no video, no audiovisual alignment or end-to-end acoustic co-training claim",
+  "net_cost": ".02 for semantic fuse (including clamped intervention) + .01 for slow acoustic action",
+  "nonanticipation": "initial decisions before draft; feedback decisions fsynced before future candidate audio and offline scoring",
+  "offline_cost_components": [
+    "terminal Vosk measurement",
+    "terminal independent Whisper",
+    "all executed alternative paths",
+    "conditional critic fit"
+  ],
+  "online_cost_components": [
+    "actual prefix TTS and immutable commit",
+    "internal draft TTS",
+    "unrestricted online Vosk",
+    "all public policy decisions",
+    "two newly synthesized future chunks",
+    "fsync and exact output readback"
+  ],
+  "policies_sha256": "bdd0e423b67d4618fd639df427beb18e4964544ddfad7f1cbf1d737bc19ad1cb",
+  "primary_comparisons": [
+    {
+      "candidate": "fixed/fuse_normal",
+      "name": "shared_state_effect",
+      "reference": "mechanism/clamped_fuse"
+    },
+    {
+      "candidate": "feedback",
+      "name": "learned_feedback_increment",
+      "reference": "fixed/best_fit"
+    }
+  ],
+  "primary_estimand": "joint_ce",
+  "primary_metric": "net_utility",
+  "primary_observer": "frozen offline Whisper tiny.en; zero controller/fit/fixed-selection access",
+  "primary_positive_gate": "nominal paired interval lower endpoint > 0; do not reinterpret a failure as success",
+  "qualification_protocol_sha256": "a3e0382c0fde40ceff2301e9d0e5c72d8993e42ea02b1accd5d2ce6a552f9950",
+  "qualification_sha256": "1883c94026582d2ea6e3b652cf7e4c3a8d27ac7f39f4dcb35bc7a799c7b77404",
+  "schema": "hepta.abc3.text-speech-evaluation.v1",
+  "secondary": [
+    "feedback vs initial-only gate",
+    "feedback vs draft-masked feedback",
+    "feedback vs declared-prior reference",
+    "all four fixed actions",
+    "realized-target positive-value MSE/bias for online and external observers; not conditional-value ground truth",
+    "offline all-information realized oracle; diagnostic only"
+  ],
+  "secondary_confidence": 0.95,
+  "secondary_observer": "online Vosk, including its actual errors; used in fit labels only",
+  "shared_vocabulary_and_templates": "no independent template/voice/source-domain inference; one controlled task family",
+  "source_hashes": {
+    "analysis.py": "720b77b019a1cfbd9f209713e33ce50c86f842455ae6c8f351bec116c2953501",
+    "audit.py": "a3159b5a1968e58e0bb886b759cf98f91859eecffc4c61733aef310e0b56138a",
+    "episodes.py": "34c60755d856e313a67ea1edf579593d34f31ba32c1d2b7431e6fed3fb24f2e1",
+    "external.py": "5d373cbb613a95affccf10449e8a4c181b21a28f0b5bc928cff8621dd6361292",
+    "facts.py": "a42288fc764d9e22d88a8aa12e19bc7340f1e796fef3f234f9a812d3f03886e1",
+    "parallel_matrix.py": "216f4ae861301d38f781df01c5b444c0421aceb29b903530f87da114ab0e881b",
+    "policy.py": "81df8ea4e68f63767a21f063f07c6da77c77640df596f12a9af5369d679f72e6",
+    "registration.py": "de6742c13cd0196d88ace501412760d49d2d73674cb79134c8872c41cfe5aff6",
+    "speech.py": "eca5e7c4a19a79a92fa329436a8fad9df614373e8167e739ca01c0340dfe7e4d",
+    "stream.py": "f842f8db05e52537ee5b950f90bbc0b953cbb93a64ef799ef71335663034af5c",
+    "timing.py": "cfde8257b73aaf2234de733e5773342a27caf24fd830cfc58f9d47047c826a06"
+  },
+  "source_manifest_sha256": "33371f7332a70ca9957ab70dca6eb5770311b6caae54913fc839429c456af490",
+  "statistical_scope": "crossed seed/fact percentile bootstrap, nominal few-seed coverage, no guaranteed population coverage",
+  "statistics_sha256": "cadbec92b46ece422f415f82550235647248753adb1f8198ad112d4438277f09",
+  "stop_rule": "complete full census; preserve errors; no post-evaluation template/threshold/controller/observer changes",
+  "strong_baseline_information": "all fuse actions, including fixed/open-loop, receive identical lawful fresh cue and same operator; initial-only means action gate only",
+  "timing_design": {
+    "groups": "first 16 frozen evaluation groups",
+    "order": "alternate by group+scenario+round; no outlier deletion",
+    "policies": [
+      "fixed/best_fit",
+      "feedback/17"
+    ],
+    "process_affinity": "single last CPU in sorted permitted affinity; same engine limits as an evaluation worker",
+    "quality": "unchanged models and decisions; timing repetitions never increase scientific N",
+    "rounds": 2,
+    "scenarios": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  "utility": ".6*(text_fact_accuracy+external_audio_fact_accuracy)/2 + .2*nonmissing_fact_agreement + .2*joint_exact_success"
+}

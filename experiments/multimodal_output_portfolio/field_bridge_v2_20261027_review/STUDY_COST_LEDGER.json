@@ -1,0 +1,2155 @@
+{
+  "H7_banks": {
+    "audit": {
+      "classification": "frozen-predictor development qualification; separate from fitting",
+      "complete_four_action_branch_sets": 864,
+      "count_once_across_controller_modes": true,
+      "gradient_calls_in_zero_update_branches": 6912,
+      "individual_branch_hard_values": 1769472,
+      "optimizer_step_invocations": 20736,
+      "per_seed": [
+        {
+          "resources": {
+            "audit_observer_calls": 0,
+            "candidate_backward_calls": 9216,
+            "candidate_gradient_examples": 589824,
+            "candidate_gradient_forward_calls": 9216,
+            "count_definition": "Actual example-level network calls; each fixed_output includes encode, first couple, selected fixed continuation if non-stop, and one decoder call. This is not FLOPs, energy or money.",
+            "current_and_branch_hard_value_examples": 737280,
+            "current_and_branch_hard_value_forward_calls": 5760,
+            "fixed_refinements_per_forward_example": 1,
+            "frozen_teacher_examples": 589824,
+            "frozen_teacher_forward_calls": 9216,
+            "hard_value_and_margin_observer_digit_calls": 13824,
+            "hard_value_and_margin_observer_digit_examples": 1769472,
+            "rich_margin_examples": 147456,
+            "rich_margin_forward_calls": 1152,
+            "teacher_forced_field_probe_calls": 1440,
+            "teacher_forced_field_probe_examples": 184320,
+            "test_retention_forward_calls": 0,
+            "zero_branches_compute_gradients_but_hold_weights_and_momentum": true
+          },
+          "seed": 17,
+          "snapshots": 288,
+          "wall_ns": 691891156160
+        },
+        {
+          "resources": {
+            "audit_observer_calls": 0,
+            "candidate_backward_calls": 9216,
+            "candidate_gradient_examples": 589824,
+            "candidate_gradient_forward_calls": 9216,
+            "count_definition": "Actual example-level network calls; each fixed_output includes encode, first couple, selected fixed continuation if non-stop, and one decoder call. This is not FLOPs, energy or money.",
+            "current_and_branch_hard_value_examples": 737280,
+            "current_and_branch_hard_value_forward_calls": 5760,
+            "fixed_refinements_per_forward_example": 2,
+            "frozen_teacher_examples": 589824,
+            "frozen_teacher_forward_calls": 9216,
+            "hard_value_and_margin_observer_digit_calls": 13824,
+            "hard_value_and_margin_observer_digit_examples": 1769472,
+            "rich_margin_examples": 147456,
+            "rich_margin_forward_calls": 1152,
+            "teacher_forced_field_probe_calls": 1440,
+            "teacher_forced_field_probe_examples": 184320,
+            "test_retention_forward_calls": 0,
+            "zero_branches_compute_gradients_but_hold_weights_and_momentum": true
+          },
+          "seed": 29,
+          "snapshots": 288,
+          "wall_ns": 659822438151
+        },
+        {
+          "resources": {
+            "audit_observer_calls": 0,
+            "candidate_backward_calls": 9216,
+            "candidate_gradient_examples": 589824,
+            "candidate_gradient_forward_calls": 9216,
+            "count_definition": "Actual example-level network calls; each fixed_output includes encode, first couple, selected fixed continuation if non-stop, and one decoder call. This is not FLOPs, energy or money.",
+            "current_and_branch_hard_value_examples": 737280,
+            "current_and_branch_hard_value_forward_calls": 5760,
+            "fixed_refinements_per_forward_example": 1,
+            "frozen_teacher_examples": 589824,
+            "frozen_teacher_forward_calls": 9216,
+            "hard_value_and_margin_observer_digit_calls": 13824,
+            "hard_value_and_margin_observer_digit_examples": 1769472,
+            "rich_margin_examples": 147456,
+            "rich_margin_forward_calls": 1152,
+            "teacher_forced_field_probe_calls": 1440,
+            "teacher_forced_field_probe_examples": 184320,
+            "test_retention_forward_calls": 0,
+            "zero_branches_compute_gradients_but_hold_weights_and_momentum": true
+          },
+          "seed": 43,
+          "snapshots": 288,
+          "wall_ns": 676022873601
+        }
+      ],
+      "predictor_calls": 2592,
+      "resources": {
+        "audit_observer_calls": 0,
+        "candidate_backward_calls": 27648,
+        "candidate_gradient_examples": 1769472,
+        "candidate_gradient_forward_calls": 27648,
+        "current_and_branch_hard_value_examples": 2211840,
+        "current_and_branch_hard_value_forward_calls": 17280,
+        "frozen_teacher_examples": 1769472,
+        "frozen_teacher_forward_calls": 27648,
+        "hard_value_and_margin_observer_digit_calls": 41472,
+        "hard_value_and_margin_observer_digit_examples": 5308416,
+        "rich_margin_examples": 442368,
+        "rich_margin_forward_calls": 3456,
+        "teacher_forced_field_probe_calls": 4320,
+        "teacher_forced_field_probe_examples": 552960,
+        "test_retention_forward_calls": 0
+      },
+      "snapshots": 864,
+      "sum_profile_wall_ns": 2027736467912
+    },
+    "fit": {
+      "classification": "shared fitting search",
+      "complete_four_action_branch_sets": 864,
+      "count_once_across_controller_modes": true,
+      "gradient_calls_in_zero_update_branches": 6912,
+      "individual_branch_hard_values": 1769472,
+      "optimizer_step_invocations": 20736,
+      "per_seed": [
+        {
+          "resources": {
+            "audit_observer_calls": 0,
+            "candidate_backward_calls": 9216,
+            "candidate_gradient_examples": 589824,
+            "candidate_gradient_forward_calls": 9216,
+            "count_definition": "Actual example-level network calls; each fixed_output includes encode, first couple, selected fixed continuation if non-stop, and one decoder call. This is not FLOPs, energy or money.",
+            "current_and_branch_hard_value_examples": 737280,
+            "current_and_branch_hard_value_forward_calls": 5760,
+            "fixed_refinements_per_forward_example": 1,
+            "frozen_teacher_examples": 589824,
+            "frozen_teacher_forward_calls": 9216,
+            "hard_value_and_margin_observer_digit_calls": 13824,
+            "hard_value_and_margin_observer_digit_examples": 1769472,
+            "rich_margin_examples": 147456,
+            "rich_margin_forward_calls": 1152,
+            "teacher_forced_field_probe_calls": 1440,
+            "teacher_forced_field_probe_examples": 184320,
+            "test_retention_forward_calls": 0,
+            "zero_branches_compute_gradients_but_hold_weights_and_momentum": true
+          },
+          "seed": 17,
+          "snapshots": 288,
+          "wall_ns": 743624576504
+        },
+        {
+          "resources": {
+            "audit_observer_calls": 0,
+            "candidate_backward_calls": 9216,
+            "candidate_gradient_examples": 589824,
+            "candidate_gradient_forward_calls": 9216,
+            "count_definition": "Actual example-level network calls; each fixed_output includes encode, first couple, selected fixed continuation if non-stop, and one decoder call. This is not FLOPs, energy or money.",
+            "current_and_branch_hard_value_examples": 737280,
+            "current_and_branch_hard_value_forward_calls": 5760,
+            "fixed_refinements_per_forward_example": 2,
+            "frozen_teacher_examples": 589824,
+            "frozen_teacher_forward_calls": 9216,
+            "hard_value_and_margin_observer_digit_calls": 13824,
+            "hard_value_and_margin_observer_digit_examples": 1769472,
+            "rich_margin_examples": 147456,
+            "rich_margin_forward_calls": 1152,
+            "teacher_forced_field_probe_calls": 1440,
+            "teacher_forced_field_probe_examples": 184320,
+            "test_retention_forward_calls": 0,
+            "zero_branches_compute_gradients_but_hold_weights_and_momentum": true
+          },
+          "seed": 29,
+          "snapshots": 288,
+          "wall_ns": 739353624053
+        },
+        {
+          "resources": {
+            "audit_observer_calls": 0,
+            "candidate_backward_calls": 9216,
+            "candidate_gradient_examples": 589824,
+            "candidate_gradient_forward_calls": 9216,
+            "count_definition": "Actual example-level network calls; each fixed_output includes encode, first couple, selected fixed continuation if non-stop, and one decoder call. This is not FLOPs, energy or money.",
+            "current_and_branch_hard_value_examples": 737280,
+            "current_and_branch_hard_value_forward_calls": 5760,
+            "fixed_refinements_per_forward_example": 1,
+            "frozen_teacher_examples": 589824,
+            "frozen_teacher_forward_calls": 9216,
+            "hard_value_and_margin_observer_digit_calls": 13824,
+            "hard_value_and_margin_observer_digit_examples": 1769472,
+            "rich_margin_examples": 147456,
+            "rich_margin_forward_calls": 1152,
+            "teacher_forced_field_probe_calls": 1440,
+            "teacher_forced_field_probe_examples": 184320,
+            "test_retention_forward_calls": 0,
+            "zero_branches_compute_gradients_but_hold_weights_and_momentum": true
+          },
+          "seed": 43,
+          "snapshots": 288,
+          "wall_ns": 758237643300
+        }
+      ],
+      "predictor_calls": 0,
+      "resources": {
+        "audit_observer_calls": 0,
+        "candidate_backward_calls": 27648,
+        "candidate_gradient_examples": 1769472,
+        "candidate_gradient_forward_calls": 27648,
+        "current_and_branch_hard_value_examples": 2211840,
+        "current_and_branch_hard_value_forward_calls": 17280,
+        "frozen_teacher_examples": 1769472,
+        "frozen_teacher_forward_calls": 27648,
+        "hard_value_and_margin_observer_digit_calls": 41472,
+        "hard_value_and_margin_observer_digit_examples": 5308416,
+        "rich_margin_examples": 442368,
+        "rich_margin_forward_calls": 3456,
+        "teacher_forced_field_probe_calls": 4320,
+        "teacher_forced_field_probe_examples": 552960,
+        "test_retention_forward_calls": 0
+      },
+      "snapshots": 864,
+      "sum_profile_wall_ns": 2241215843857
+    }
+  },
+  "H7_predictor_fitting": {
+    "controllers": 9,
+    "count_once": true,
+    "cross_validation_fits": 1440,
+    "interpretation": "One fit means one ridge/kernel estimator fit, not equal FLOPs or equal parameter count across model families",
+    "model_candidates_per_controller": 20,
+    "selected_final_fits": 9,
+    "total_fits": 1449,
+    "wall_ns": 2618075948,
+    "whole_trajectory_folds": 8
+  },
+  "created_utc": "2026-10-27T09:37:09.692480+00:00",
+  "final_training": {
+    "new_field_generic_richer": {
+      "by_mode": {
+        "field": {
+          "audit_observer_calls": 0,
+          "backward_calls": 864,
+          "current_hard_value_examples": 55296,
+          "current_hard_value_forward_calls": 432,
+          "frozen_teacher_examples": 55296,
+          "frozen_teacher_forward_calls": 864,
+          "gradient_examples": 55296,
+          "gradient_forward_calls": 864,
+          "hard_value_and_margin_observer_digit_calls": 1728,
+          "hard_value_and_margin_observer_digit_examples": 221184,
+          "optimizer_steps": 288,
+          "predictor_calls": 108,
+          "rich_margin_examples": 55296,
+          "rich_margin_forward_calls": 432,
+          "teacher_forced_field_probe_calls": 540,
+          "teacher_forced_field_probe_examples": 69120,
+          "test_retention_forward_calls": 0
+        },
+        "generic": {
+          "audit_observer_calls": 0,
+          "backward_calls": 864,
+          "current_hard_value_examples": 55296,
+          "current_hard_value_forward_calls": 432,
+          "frozen_teacher_examples": 55296,
+          "frozen_teacher_forward_calls": 864,
+          "gradient_examples": 55296,
+          "gradient_forward_calls": 864,
+          "hard_value_and_margin_observer_digit_calls": 1728,
+          "hard_value_and_margin_observer_digit_examples": 221184,
+          "optimizer_steps": 384,
+          "predictor_calls": 108,
+          "rich_margin_examples": 55296,
+          "rich_margin_forward_calls": 432,
+          "teacher_forced_field_probe_calls": 540,
+          "teacher_forced_field_probe_examples": 69120,
+          "test_retention_forward_calls": 0
+        },
+        "richer": {
+          "audit_observer_calls": 0,
+          "backward_calls": 864,
+          "current_hard_value_examples": 55296,
+          "current_hard_value_forward_calls": 432,
+          "frozen_teacher_examples": 55296,
+          "frozen_teacher_forward_calls": 864,
+          "gradient_examples": 55296,
+          "gradient_forward_calls": 864,
+          "hard_value_and_margin_observer_digit_calls": 1728,
+          "hard_value_and_margin_observer_digit_examples": 221184,
+          "optimizer_steps": 168,
+          "predictor_calls": 108,
+          "rich_margin_examples": 55296,
+          "rich_margin_forward_calls": 432,
+          "teacher_forced_field_probe_calls": 540,
+          "teacher_forced_field_probe_examples": 69120,
+          "test_retention_forward_calls": 0
+        }
+      },
+      "per_seed_mode": [
+        {
+          "mode": "field",
+          "resources": {
+            "audit_observer_calls": 0,
+            "backward_calls": 288,
+            "current_hard_value_examples": 18432,
+            "current_hard_value_forward_calls": 144,
+            "fixed_refinements_per_forward_example": 1,
+            "frozen_teacher_examples": 18432,
+            "frozen_teacher_forward_calls": 288,
+            "gradient_examples": 18432,
+            "gradient_forward_calls": 288,
+            "hard_value_and_margin_observer_digit_calls": 576,
+            "hard_value_and_margin_observer_digit_examples": 73728,
+            "optimizer_steps": 64,
+            "predictor_calls": 36,
+            "rich_margin_examples": 18432,
+            "rich_margin_forward_calls": 144,
+            "teacher_forced_field_probe_calls": 180,
+            "teacher_forced_field_probe_examples": 23040,
+            "test_retention_forward_calls": 0
+          },
+          "seed": 17,
+          "wall_ns": 22498868710
+        },
+        {
+          "mode": "generic",
+          "resources": {
+            "audit_observer_calls": 0,
+            "backward_calls": 288,
+            "current_hard_value_examples": 18432,
+            "current_hard_value_forward_calls": 144,
+            "fixed_refinements_per_forward_example": 1,
+            "frozen_teacher_examples": 18432,
+            "frozen_teacher_forward_calls": 288,
+            "gradient_examples": 18432,
+            "gradient_forward_calls": 288,
+            "hard_value_and_margin_observer_digit_calls": 576,
+            "hard_value_and_margin_observer_digit_examples": 73728,
+            "optimizer_steps": 88,
+            "predictor_calls": 36,
+            "rich_margin_examples": 18432,
+            "rich_margin_forward_calls": 144,
+            "teacher_forced_field_probe_calls": 180,
+            "teacher_forced_field_probe_examples": 23040,
+            "test_retention_forward_calls": 0
+          },
+          "seed": 17,
+          "wall_ns": 22346816839
+        },
+        {
+          "mode": "richer",
+          "resources": {
+            "audit_observer_calls": 0,
+            "backward_calls": 288,
+            "current_hard_value_examples": 18432,
+            "current_hard_value_forward_calls": 144,
+            "fixed_refinements_per_forward_example": 1,
+            "frozen_teacher_examples": 18432,
+            "frozen_teacher_forward_calls": 288,
+            "gradient_examples": 18432,
+            "gradient_forward_calls": 288,
+            "hard_value_and_margin_observer_digit_calls": 576,
+            "hard_value_and_margin_observer_digit_examples": 73728,
+            "optimizer_steps": 88,
+            "predictor_calls": 36,
+            "rich_margin_examples": 18432,
+            "rich_margin_forward_calls": 144,
+            "teacher_forced_field_probe_calls": 180,
+            "teacher_forced_field_probe_examples": 23040,
+            "test_retention_forward_calls": 0
+          },
+          "seed": 17,
+          "wall_ns": 24958717497
+        },
+        {
+          "mode": "field",
+          "resources": {
+            "audit_observer_calls": 0,
+            "backward_calls": 288,
+            "current_hard_value_examples": 18432,
+            "current_hard_value_forward_calls": 144,
+            "fixed_refinements_per_forward_example": 2,
+            "frozen_teacher_examples": 18432,
+            "frozen_teacher_forward_calls": 288,
+            "gradient_examples": 18432,
+            "gradient_forward_calls": 288,
+            "hard_value_and_margin_observer_digit_calls": 576,
+            "hard_value_and_margin_observer_digit_examples": 73728,
+            "optimizer_steps": 168,
+            "predictor_calls": 36,
+            "rich_margin_examples": 18432,
+            "rich_margin_forward_calls": 144,
+            "teacher_forced_field_probe_calls": 180,
+            "teacher_forced_field_probe_examples": 23040,
+            "test_retention_forward_calls": 0
+          },
+          "seed": 29,
+          "wall_ns": 21973819121
+        },
+        {
+          "mode": "generic",
+          "resources": {
+            "audit_observer_calls": 0,
+            "backward_calls": 288,
+            "current_hard_value_examples": 18432,
+            "current_hard_value_forward_calls": 144,
+            "fixed_refinements_per_forward_example": 2,
+            "frozen_teacher_examples": 18432,
+            "frozen_teacher_forward_calls": 288,
+            "gradient_examples": 18432,
+            "gradient_forward_calls": 288,
+            "hard_value_and_margin_observer_digit_calls": 576,
+            "hard_value_and_margin_observer_digit_examples": 73728,
+            "optimizer_steps": 168,
+            "predictor_calls": 36,
+            "rich_margin_examples": 18432,
+            "rich_margin_forward_calls": 144,
+            "teacher_forced_field_probe_calls": 180,
+            "teacher_forced_field_probe_examples": 23040,
+            "test_retention_forward_calls": 0
+          },
+          "seed": 29,
+          "wall_ns": 22897734125
+        },
+        {
+          "mode": "richer",
+          "resources": {
+            "audit_observer_calls": 0,
+            "backward_calls": 288,
+            "current_hard_value_examples": 18432,
+            "current_hard_value_forward_calls": 144,
+            "fixed_refinements_per_forward_example": 2,
+            "frozen_teacher_examples": 18432,
+            "frozen_teacher_forward_calls": 288,
+            "gradient_examples": 18432,
+            "gradient_forward_calls": 288,
+            "hard_value_and_margin_observer_digit_calls": 576,
+            "hard_value_and_margin_observer_digit_examples": 73728,
+            "optimizer_steps": 24,
+            "predictor_calls": 36,
+            "rich_margin_examples": 18432,
+            "rich_margin_forward_calls": 144,
+            "teacher_forced_field_probe_calls": 180,
+            "teacher_forced_field_probe_examples": 23040,
+            "test_retention_forward_calls": 0
+          },
+          "seed": 29,
+          "wall_ns": 23462285681
+        },
+        {
+          "mode": "field",
+          "resources": {
+            "audit_observer_calls": 0,
+            "backward_calls": 288,
+            "current_hard_value_examples": 18432,
+            "current_hard_value_forward_calls": 144,
+            "fixed_refinements_per_forward_example": 1,
+            "frozen_teacher_examples": 18432,
+            "frozen_teacher_forward_calls": 288,
+            "gradient_examples": 18432,
+            "gradient_forward_calls": 288,
+            "hard_value_and_margin_observer_digit_calls": 576,
+            "hard_value_and_margin_observer_digit_examples": 73728,
+            "optimizer_steps": 56,
+            "predictor_calls": 36,
+            "rich_margin_examples": 18432,
+            "rich_margin_forward_calls": 144,
+            "teacher_forced_field_probe_calls": 180,
+            "teacher_forced_field_probe_examples": 23040,
+            "test_retention_forward_calls": 0
+          },
+          "seed": 43,
+          "wall_ns": 20566984334
+        },
+        {
+          "mode": "generic",
+          "resources": {
+            "audit_observer_calls": 0,
+            "backward_calls": 288,
+            "current_hard_value_examples": 18432,
+            "current_hard_value_forward_calls": 144,
+            "fixed_refinements_per_forward_example": 1,
+            "frozen_teacher_examples": 18432,
+            "frozen_teacher_forward_calls": 288,
+            "gradient_examples": 18432,
+            "gradient_forward_calls": 288,
+            "hard_value_and_margin_observer_digit_calls": 576,
+            "hard_value_and_margin_observer_digit_examples": 73728,
+            "optimizer_steps": 128,
+            "predictor_calls": 36,
+            "rich_margin_examples": 18432,
+            "rich_margin_forward_calls": 144,
+            "teacher_forced_field_probe_calls": 180,
+            "teacher_forced_field_probe_examples": 23040,
+            "test_retention_forward_calls": 0
+          },
+          "seed": 43,
+          "wall_ns": 22889764606
+        },
+        {
+          "mode": "richer",
+          "resources": {
+            "audit_observer_calls": 0,
+            "backward_calls": 288,
+            "current_hard_value_examples": 18432,
+            "current_hard_value_forward_calls": 144,
+            "fixed_refinements_per_forward_example": 1,
+            "frozen_teacher_examples": 18432,
+            "frozen_teacher_forward_calls": 288,
+            "gradient_examples": 18432,
+            "gradient_forward_calls": 288,
+            "hard_value_and_margin_observer_digit_calls": 576,
+            "hard_value_and_margin_observer_digit_examples": 73728,
+            "optimizer_steps": 56,
+            "predictor_calls": 36,
+            "rich_margin_examples": 18432,
+            "rich_margin_forward_calls": 144,
+            "teacher_forced_field_probe_calls": 180,
+            "teacher_forced_field_probe_examples": 23040,
+            "test_retention_forward_calls": 0
+          },
+          "seed": 43,
+          "wall_ns": 23406474225
+        }
+      ],
+      "resources": {
+        "audit_observer_calls": 0,
+        "backward_calls": 2592,
+        "current_hard_value_examples": 165888,
+        "current_hard_value_forward_calls": 1296,
+        "frozen_teacher_examples": 165888,
+        "frozen_teacher_forward_calls": 2592,
+        "gradient_examples": 165888,
+        "gradient_forward_calls": 2592,
+        "hard_value_and_margin_observer_digit_calls": 5184,
+        "hard_value_and_margin_observer_digit_examples": 663552,
+        "optimizer_steps": 840,
+        "predictor_calls": 324,
+        "rich_margin_examples": 165888,
+        "rich_margin_forward_calls": 1296,
+        "teacher_forced_field_probe_calls": 1620,
+        "teacher_forced_field_probe_examples": 207360,
+        "test_retention_forward_calls": 0
+      },
+      "sum_profile_wall_ns": 205001465138,
+      "zero_update_calls": 1752,
+      "zero_update_cost": "All 288 calls per path compute model/teacher forwards and clipped gradients even when multiplier zero holds both weights and momentum"
+    },
+    "ordinary": {
+      "actual_new_boundary_probe_calls": 0,
+      "actual_new_gradient_calls": 0,
+      "deduplication": "Three selected ordinary endpoints and their 864 logical gradient calls already exist in shared H7 fit; new selection rescoring is charged separately",
+      "logical_reused_path_resources_not_added": {
+        "audit_observer_calls": 0,
+        "backward_calls": 864,
+        "current_hard_value_examples": 55296,
+        "current_hard_value_forward_calls": 432,
+        "frozen_teacher_examples": 55296,
+        "frozen_teacher_forward_calls": 864,
+        "gradient_examples": 55296,
+        "gradient_forward_calls": 864,
+        "hard_value_and_margin_observer_digit_calls": 1728,
+        "hard_value_and_margin_observer_digit_examples": 221184,
+        "optimizer_steps": 864,
+        "rich_margin_examples": 55296,
+        "rich_margin_forward_calls": 432,
+        "teacher_forced_field_probe_calls": 540,
+        "teacher_forced_field_probe_examples": 69120,
+        "test_retention_forward_calls": 0
+      },
+      "new_selection_resources": {
+        "audit_observer_calls": 0,
+        "hard_value_examples": 15360,
+        "hard_value_forward_calls": 60,
+        "reward_observer_digit_calls": 120,
+        "reward_observer_digit_examples": 30720,
+        "test_retention_forward_calls": 0
+      },
+      "per_seed": [
+        {
+          "actual_new_boundary_probe_calls": 0,
+          "actual_new_gradient_calls": 0,
+          "logical_reused_path_resources_not_added": {
+            "audit_observer_calls": 0,
+            "backward_calls": 288,
+            "current_hard_value_examples": 18432,
+            "current_hard_value_forward_calls": 144,
+            "fixed_refinements_per_forward_example": 1,
+            "frozen_teacher_examples": 18432,
+            "frozen_teacher_forward_calls": 288,
+            "gradient_examples": 18432,
+            "gradient_forward_calls": 288,
+            "hard_value_and_margin_observer_digit_calls": 576,
+            "hard_value_and_margin_observer_digit_examples": 73728,
+            "optimizer_steps": 288,
+            "rich_margin_examples": 18432,
+            "rich_margin_forward_calls": 144,
+            "teacher_forced_field_probe_calls": 180,
+            "teacher_forced_field_probe_examples": 23040,
+            "test_retention_forward_calls": 0
+          },
+          "new_selection_resources": {
+            "audit_observer_calls": 0,
+            "hard_value_examples": 5120,
+            "hard_value_forward_calls": 20,
+            "reward_observer_digit_calls": 40,
+            "reward_observer_digit_examples": 10240,
+            "test_retention_forward_calls": 0
+          },
+          "seed": 17
+        },
+        {
+          "actual_new_boundary_probe_calls": 0,
+          "actual_new_gradient_calls": 0,
+          "logical_reused_path_resources_not_added": {
+            "audit_observer_calls": 0,
+            "backward_calls": 288,
+            "current_hard_value_examples": 18432,
+            "current_hard_value_forward_calls": 144,
+            "fixed_refinements_per_forward_example": 2,
+            "frozen_teacher_examples": 18432,
+            "frozen_teacher_forward_calls": 288,
+            "gradient_examples": 18432,
+            "gradient_forward_calls": 288,
+            "hard_value_and_margin_observer_digit_calls": 576,
+            "hard_value_and_margin_observer_digit_examples": 73728,
+            "optimizer_steps": 288,
+            "rich_margin_examples": 18432,
+            "rich_margin_forward_calls": 144,
+            "teacher_forced_field_probe_calls": 180,
+            "teacher_forced_field_probe_examples": 23040,
+            "test_retention_forward_calls": 0
+          },
+          "new_selection_resources": {
+            "audit_observer_calls": 0,
+            "hard_value_examples": 5120,
+            "hard_value_forward_calls": 20,
+            "reward_observer_digit_calls": 40,
+            "reward_observer_digit_examples": 10240,
+            "test_retention_forward_calls": 0
+          },
+          "seed": 29
+        },
+        {
+          "actual_new_boundary_probe_calls": 0,
+          "actual_new_gradient_calls": 0,
+          "logical_reused_path_resources_not_added": {
+            "audit_observer_calls": 0,
+            "backward_calls": 288,
+            "current_hard_value_examples": 18432,
+            "current_hard_value_forward_calls": 144,
+            "fixed_refinements_per_forward_example": 1,
+            "frozen_teacher_examples": 18432,
+            "frozen_teacher_forward_calls": 288,
+            "gradient_examples": 18432,
+            "gradient_forward_calls": 288,
+            "hard_value_and_margin_observer_digit_calls": 576,
+            "hard_value_and_margin_observer_digit_examples": 73728,
+            "optimizer_steps": 288,
+            "rich_margin_examples": 18432,
+            "rich_margin_forward_calls": 144,
+            "teacher_forced_field_probe_calls": 180,
+            "teacher_forced_field_probe_examples": 23040,
+            "test_retention_forward_calls": 0
+          },
+          "new_selection_resources": {
+            "audit_observer_calls": 0,
+            "hard_value_examples": 5120,
+            "hard_value_forward_calls": 20,
+            "reward_observer_digit_calls": 40,
+            "reward_observer_digit_examples": 10240,
+            "test_retention_forward_calls": 0
+          },
+          "seed": 43
+        }
+      ]
+    }
+  },
+  "inactive_D1": {
+    "additional_directional_work": {
+      "clean_probe_forward_calls": 864,
+      "clean_probe_forward_examples": 110592,
+      "clean_probe_reverse_calls": 864,
+      "clean_probe_reverse_examples": 110592,
+      "next_gradient_backward_calls": 864,
+      "next_gradient_backward_examples": 55296,
+      "next_gradient_forward_calls": 864,
+      "next_gradient_forward_examples": 55296,
+      "response_probe_forward_calls": 3456,
+      "response_probe_forward_examples": 442368,
+      "response_probe_reverse_calls": 1728,
+      "response_probe_reverse_examples": 884736,
+      "teacher_forward_calls": 864,
+      "teacher_forward_examples": 55296
+    },
+    "base_replay_and_H25_resources": {
+      "audit_observer_calls": 0,
+      "candidate_backward_calls": 6912,
+      "candidate_gradient_examples": 442368,
+      "candidate_gradient_forward_calls": 6912,
+      "current_and_branch_hard_value_examples": 442368,
+      "current_and_branch_hard_value_forward_calls": 3456,
+      "frozen_teacher_examples": 442368,
+      "frozen_teacher_forward_calls": 6912,
+      "hard_value_and_margin_observer_digit_calls": 13824,
+      "hard_value_and_margin_observer_digit_examples": 1769472,
+      "rich_margin_examples": 442368,
+      "rich_margin_forward_calls": 3456,
+      "teacher_forced_H25_probe_calls": 4320,
+      "teacher_forced_H25_probe_examples": 552960,
+      "test_retention_forward_calls": 0
+    },
+    "classification": "incurred conditional-development preparation; inactive in the primary treatment",
+    "deduplication": "Original H7 fit labels and inherited_parent_fitting_resources reference shared work above; not charged twice",
+    "enriched_fit_snapshots": 864,
+    "fresh_audit_trajectories": 0,
+    "new_branch_labels": 0,
+    "optimizer_step_invocations": 5160,
+    "per_seed": [
+      {
+        "additional_directional_work": {
+          "clean_probe_forward_calls": 288,
+          "clean_probe_forward_examples": 36864,
+          "clean_probe_reverse_calls": 288,
+          "clean_probe_reverse_examples": 36864,
+          "next_gradient_backward_calls": 288,
+          "next_gradient_backward_examples": 18432,
+          "next_gradient_forward_calls": 288,
+          "next_gradient_forward_examples": 18432,
+          "response_probe_forward_calls": 1152,
+          "response_probe_forward_examples": 147456,
+          "response_probe_reverse_calls": 576,
+          "response_probe_reverse_examples": 294912,
+          "teacher_forward_calls": 288,
+          "teacher_forward_examples": 18432
+        },
+        "base_replay_and_H25_resources": {
+          "audit_observer_calls": 0,
+          "candidate_backward_calls": 2304,
+          "candidate_gradient_examples": 147456,
+          "candidate_gradient_forward_calls": 2304,
+          "current_and_branch_hard_value_examples": 147456,
+          "current_and_branch_hard_value_forward_calls": 1152,
+          "fixed_refinements_per_forward_example": 1,
+          "frozen_teacher_examples": 147456,
+          "frozen_teacher_forward_calls": 2304,
+          "hard_value_and_margin_observer_digit_calls": 4608,
+          "hard_value_and_margin_observer_digit_examples": 589824,
+          "rich_margin_examples": 147456,
+          "rich_margin_forward_calls": 1152,
+          "teacher_forced_H25_probe_calls": 1440,
+          "teacher_forced_H25_probe_examples": 184320,
+          "test_retention_forward_calls": 0
+        },
+        "optimizer_step_invocations": 1736,
+        "seed": 17,
+        "wall_ns": 382970698030
+      },
+      {
+        "additional_directional_work": {
+          "clean_probe_forward_calls": 288,
+          "clean_probe_forward_examples": 36864,
+          "clean_probe_reverse_calls": 288,
+          "clean_probe_reverse_examples": 36864,
+          "next_gradient_backward_calls": 288,
+          "next_gradient_backward_examples": 18432,
+          "next_gradient_forward_calls": 288,
+          "next_gradient_forward_examples": 18432,
+          "response_probe_forward_calls": 1152,
+          "response_probe_forward_examples": 147456,
+          "response_probe_reverse_calls": 576,
+          "response_probe_reverse_examples": 294912,
+          "teacher_forward_calls": 288,
+          "teacher_forward_examples": 18432
+        },
+        "base_replay_and_H25_resources": {
+          "audit_observer_calls": 0,
+          "candidate_backward_calls": 2304,
+          "candidate_gradient_examples": 147456,
+          "candidate_gradient_forward_calls": 2304,
+          "current_and_branch_hard_value_examples": 147456,
+          "current_and_branch_hard_value_forward_calls": 1152,
+          "fixed_refinements_per_forward_example": 2,
+          "frozen_teacher_examples": 147456,
+          "frozen_teacher_forward_calls": 2304,
+          "hard_value_and_margin_observer_digit_calls": 4608,
+          "hard_value_and_margin_observer_digit_examples": 589824,
+          "rich_margin_examples": 147456,
+          "rich_margin_forward_calls": 1152,
+          "teacher_forced_H25_probe_calls": 1440,
+          "teacher_forced_H25_probe_examples": 184320,
+          "test_retention_forward_calls": 0
+        },
+        "optimizer_step_invocations": 1728,
+        "seed": 29,
+        "wall_ns": 384343211396
+      },
+      {
+        "additional_directional_work": {
+          "clean_probe_forward_calls": 288,
+          "clean_probe_forward_examples": 36864,
+          "clean_probe_reverse_calls": 288,
+          "clean_probe_reverse_examples": 36864,
+          "next_gradient_backward_calls": 288,
+          "next_gradient_backward_examples": 18432,
+          "next_gradient_forward_calls": 288,
+          "next_gradient_forward_examples": 18432,
+          "response_probe_forward_calls": 1152,
+          "response_probe_forward_examples": 147456,
+          "response_probe_reverse_calls": 576,
+          "response_probe_reverse_examples": 294912,
+          "teacher_forward_calls": 288,
+          "teacher_forward_examples": 18432
+        },
+        "base_replay_and_H25_resources": {
+          "audit_observer_calls": 0,
+          "candidate_backward_calls": 2304,
+          "candidate_gradient_examples": 147456,
+          "candidate_gradient_forward_calls": 2304,
+          "current_and_branch_hard_value_examples": 147456,
+          "current_and_branch_hard_value_forward_calls": 1152,
+          "fixed_refinements_per_forward_example": 1,
+          "frozen_teacher_examples": 147456,
+          "frozen_teacher_forward_calls": 2304,
+          "hard_value_and_margin_observer_digit_calls": 4608,
+          "hard_value_and_margin_observer_digit_examples": 589824,
+          "rich_margin_examples": 147456,
+          "rich_margin_forward_calls": 1152,
+          "teacher_forced_H25_probe_calls": 1440,
+          "teacher_forced_H25_probe_examples": 184320,
+          "test_retention_forward_calls": 0
+        },
+        "optimizer_step_invocations": 1696,
+        "seed": 43,
+        "wall_ns": 374018731022
+      }
+    ],
+    "primary_treatment": false,
+    "real_predictor_fits": 0,
+    "sum_profile_wall_ns": 1141332640448
+  },
+  "interrupted_primary_attempt": {
+    "classification": "additional interrupted physical execution, outside final scientific sample count",
+    "completed_extra_outcome_rows_lower_bound": 11808,
+    "cost_bound": "At least 11,808 completed extra rows plus unknown unflushed/incomplete work",
+    "independent_replicate": false,
+    "models_predictors_thresholds_refitted": false,
+    "native_count_derivation": "Each preserved original native receipt contains the same two-tick episode path verified against recovered records; unflushed work remains unknown",
+    "per_seed": {
+      "17": {
+        "complete_grid": false,
+        "complete_rows": 5824,
+        "distinct_row_ids": 5824
+      },
+      "29": {
+        "complete_grid": false,
+        "complete_rows": 3296,
+        "distinct_row_ids": 3296
+      },
+      "43": {
+        "complete_grid": false,
+        "complete_rows": 2688,
+        "distinct_row_ids": 2688
+      }
+    },
+    "preserved_complete_native_receipts": 6560,
+    "recorded_extra_native_ticks_lower_bound": 13120,
+    "unflushed_or_incomplete_additional_work": null,
+    "unknown_work_is_zero": false
+  },
+  "known_native_work": {
+    "additional_verification_ticks": 282624,
+    "excludes": "Unflushed interrupted work, earlier V1/development/normalization and native engineering benchmarks; excluded work is not zero",
+    "interrupted_extra_ticks_lower_bound": 13120,
+    "runtime_fitting_ticks": 221184,
+    "scientific_deployment_ticks": 61440,
+    "study_ticks_lower_bound": 295744
+  },
+  "logical_tariff": {
+    "definition": "Common first couple is charged once; a non-stop final continuation adds one charge. Final decoding still runs for stop.",
+    "do_not_sum_as_financial_bill": true,
+    "nonstop_charge": 0.004,
+    "not_a_measure_of": [
+      "latency",
+      "FLOPs",
+      "energy",
+      "money"
+    ],
+    "stop_charge": 0.002,
+    "utility_charge_per_refinement": 0.002
+  },
+  "nonduplicated_predeployment_work": {
+    "directional_probe_reverse_calls_additional_to_training_gradients": 2592,
+    "excludes": "verification, original V1/pretraining, unmetered development, interrupted and recovered primary deployment; these are separate, not zero",
+    "frozen_teacher_examples": 4375296,
+    "frozen_teacher_forward_calls": 68364,
+    "gradient_examples": 4375296,
+    "gradient_forward_backward_calls": 68364,
+    "optimizer_step_invocations": 50172,
+    "predictor_model_fits": 1449,
+    "runtime_ridge_head_fits": 432
+  },
+  "outcome_statistics_used": false,
+  "pilot": {
+    "classification": "shared actuator and fixed-action search; counted once",
+    "derivation": "Recorded gradients; hard-forward counts reconstructed from baseline five-action selection, initial/checkpoint response panels and final selection/clean panels in frozen pilot.py",
+    "per_seed": [
+      {
+        "backward_calls": 900,
+        "completed_candidates": 6,
+        "fixed_action": 0,
+        "frozen_teacher_examples": 57600,
+        "frozen_teacher_forward_calls": 900,
+        "gradient_examples": 57600,
+        "gradient_forward_calls": 900,
+        "hard_value_examples": 54144,
+        "hard_value_forward_calls": 379,
+        "optimizer_step_invocations": 900,
+        "reward_observer_digit_calls": 758,
+        "reward_observer_digit_examples": 108288,
+        "seed": 17
+      },
+      {
+        "backward_calls": 900,
+        "completed_candidates": 6,
+        "fixed_action": 3,
+        "frozen_teacher_examples": 57600,
+        "frozen_teacher_forward_calls": 900,
+        "gradient_examples": 57600,
+        "gradient_forward_calls": 900,
+        "hard_value_examples": 54144,
+        "hard_value_forward_calls": 379,
+        "optimizer_step_invocations": 900,
+        "reward_observer_digit_calls": 758,
+        "reward_observer_digit_examples": 108288,
+        "seed": 29
+      },
+      {
+        "backward_calls": 900,
+        "completed_candidates": 6,
+        "fixed_action": 0,
+        "frozen_teacher_examples": 57600,
+        "frozen_teacher_forward_calls": 900,
+        "gradient_examples": 57600,
+        "gradient_forward_calls": 900,
+        "hard_value_examples": 54144,
+        "hard_value_forward_calls": 379,
+        "optimizer_step_invocations": 900,
+        "reward_observer_digit_calls": 758,
+        "reward_observer_digit_examples": 108288,
+        "seed": 43
+      }
+    ],
+    "totals": {
+      "backward_calls": 2700,
+      "completed_candidates": 18,
+      "frozen_teacher_examples": 172800,
+      "frozen_teacher_forward_calls": 2700,
+      "gradient_examples": 172800,
+      "gradient_forward_calls": 2700,
+      "hard_value_examples": 162432,
+      "hard_value_forward_calls": 1137,
+      "optimizer_step_invocations": 2700,
+      "reward_observer_digit_calls": 2274,
+      "reward_observer_digit_examples": 324864
+    },
+    "wall_ns": 101563064610
+  },
+  "primary_deployment_rows_read": false,
+  "recovered_primary_deployment": {
+    "additional_postdecision_observer_work": {
+      "derivation": "Frozen deploy_batch calls observe_tensors for reward and audit after finish; each observer classifies left/right digits. This work is outside prepare/finish counters.",
+      "digit_batches": 10560,
+      "digit_examples": 337920,
+      "separate_timing_available": false
+    },
+    "aggregation_rule": "For each resource sum group mean times rows_with_measurement over 22 disjoint split/arm groups; integer recovery tolerance 0.001. No global median or p95 inferred from group quantiles.",
+    "concurrent_seed_wall_ns_range": [
+      312823141345,
+      314297814021
+    ],
+    "disjoint_resource_summary_groups": 22,
+    "global_elapsed_interpretation": "The three seed jobs ran concurrently; duration-only metadata does not identify shared start/end elapsed time. Do not sum their approximately 313-second durations.",
+    "global_elapsed_ns": null,
+    "logical_media_references": 506880,
+    "observer_digit_examples_including_postdecision_scoring": 675840,
+    "per_seed": [
+      {
+        "media": {
+          "archive": "media.zip",
+          "logical_files": 168960,
+          "schema": "hepta.field-bridge.v2.media-store.1",
+          "storage": "ZIP_STORED; exact original PNG and UTF-8 bytes; duplicate content stored once",
+          "unique_files": 32328,
+          "unique_payload_bytes": 27050787
+        },
+        "registered_pretest_commit": "2953686f0a137f23b77d1ae3e3c6d4c80daebe25",
+        "registered_recovery_commit": "e302fadaec3427e6d4d027e684cbbcd8f6c8134f",
+        "reported_output_files_sha256": {
+          "media.zip": "5308705ccad3afd26a4a0fa75e72059c65edd5631fc17ba6472c38a508fc53f6",
+          "native.jsonl.gz": "b3e8f337d6926ad0abecc1554690d9123050979d328c9df3e682d3675e4fc96e",
+          "rows.jsonl.gz": "1f60457826a122c712e6f09167d540a9abe2062b18d36f69333e7dafc36fc231"
+        },
+        "rows": 28160,
+        "seed": 17,
+        "wall_ns": 314016196986
+      },
+      {
+        "media": {
+          "archive": "media.zip",
+          "logical_files": 168960,
+          "schema": "hepta.field-bridge.v2.media-store.1",
+          "storage": "ZIP_STORED; exact original PNG and UTF-8 bytes; duplicate content stored once",
+          "unique_files": 42566,
+          "unique_payload_bytes": 36005854
+        },
+        "registered_pretest_commit": "2953686f0a137f23b77d1ae3e3c6d4c80daebe25",
+        "registered_recovery_commit": "e302fadaec3427e6d4d027e684cbbcd8f6c8134f",
+        "reported_output_files_sha256": {
+          "media.zip": "bfde80b512392e7270f4732736561b5f888aa3505e114b2aa5420ecf97b5ac7d",
+          "native.jsonl.gz": "872035b04bc15d474b0461be75930e315bb4524f1ed4f6ccb678c14cf11f6ca6",
+          "rows.jsonl.gz": "891871287fa26df0b9e23b659271f9843f5b84a1518b3f9a9940ca3ba0ca63dc"
+        },
+        "rows": 28160,
+        "seed": 29,
+        "wall_ns": 312823141345
+      },
+      {
+        "media": {
+          "archive": "media.zip",
+          "logical_files": 168960,
+          "schema": "hepta.field-bridge.v2.media-store.1",
+          "storage": "ZIP_STORED; exact original PNG and UTF-8 bytes; duplicate content stored once",
+          "unique_files": 33899,
+          "unique_payload_bytes": 28605715
+        },
+        "registered_pretest_commit": "2953686f0a137f23b77d1ae3e3c6d4c80daebe25",
+        "registered_recovery_commit": "e302fadaec3427e6d4d027e684cbbcd8f6c8134f",
+        "reported_output_files_sha256": {
+          "media.zip": "09a7c90a9b1594708e126ed638d48fac211d0c51803ac7bed80a01d7e92481f4",
+          "native.jsonl.gz": "0601f386102ffa7f584bafd42d45acc28df923d6219c91a4dffd11457ea22e8a",
+          "rows.jsonl.gz": "3b25a65be13ca509ef96add1d2743537e4e929854c80cac31373073ff9c0ad3c"
+        },
+        "rows": 28160,
+        "seed": 43,
+        "wall_ns": 314297814021
+      }
+    ],
+    "prepare_plus_finish_event_totals": {
+      "decoder_batches": 7920,
+      "decoder_examples": 253440,
+      "encoder_batches": 2640,
+      "encoder_examples": 84480,
+      "observer_batches": 10560,
+      "observer_digit_examples": 337920,
+      "png_reads": 253440,
+      "png_writes": 253440,
+      "target_accesses": 0,
+      "transition_batches": 7761,
+      "transition_examples": 132066,
+      "utf8_reads": 253440,
+      "utf8_writes": 253440
+    },
+    "primary_rows_or_media_opened_by_ledger": false,
+    "recorded_interval_aggregates": {
+      "decision_python_cpu_ns": {
+        "rows_with_measurement": 84480,
+        "sum_of_recorded_intervals_ns": 12573714234,
+        "weighted_mean_per_scientific_row_ns": 148836.5794744318
+      },
+      "decision_wall_ns": {
+        "rows_with_measurement": 84480,
+        "sum_of_recorded_intervals_ns": 7853302236,
+        "weighted_mean_per_scientific_row_ns": 92960.49048295454
+      },
+      "finish_media_cpu_ns": {
+        "rows_with_measurement": 84480,
+        "sum_of_recorded_intervals_ns": 178321214894,
+        "weighted_mean_per_scientific_row_ns": 2110809.8353929925
+      },
+      "finish_media_wall_ns": {
+        "rows_with_measurement": 84480,
+        "sum_of_recorded_intervals_ns": 151955460139,
+        "weighted_mean_per_scientific_row_ns": 1798715.2005089961
+      },
+      "finish_neural_cpu_ns": {
+        "rows_with_measurement": 84480,
+        "sum_of_recorded_intervals_ns": 31313736933,
+        "weighted_mean_per_scientific_row_ns": 370664.49968039774
+      },
+      "finish_neural_wall_ns": {
+        "rows_with_measurement": 84480,
+        "sum_of_recorded_intervals_ns": 21991352219,
+        "weighted_mean_per_scientific_row_ns": 260314.3018347538
+      },
+      "finish_total_cpu_ns": {
+        "rows_with_measurement": 84480,
+        "sum_of_recorded_intervals_ns": 282876221350,
+        "weighted_mean_per_scientific_row_ns": 3348440.1201467803
+      },
+      "finish_total_wall_ns": {
+        "rows_with_measurement": 84480,
+        "sum_of_recorded_intervals_ns": 236721664918,
+        "weighted_mean_per_scientific_row_ns": 2802103.0411695074
+      },
+      "native_evidence_compress_wall_ns": {
+        "rows_with_measurement": 84480,
+        "sum_of_recorded_intervals_ns": 5954410001,
+        "weighted_mean_per_scientific_row_ns": 70483.07292850378
+      },
+      "native_kernel_ns": {
+        "rows_with_measurement": 84480,
+        "sum_of_recorded_intervals_ns": 504520910,
+        "weighted_mean_per_scientific_row_ns": 5972.075165719697
+      },
+      "prepare_features_cpu_ns": {
+        "rows_with_measurement": 84480,
+        "sum_of_recorded_intervals_ns": 141284152532,
+        "weighted_mean_per_scientific_row_ns": 1672397.638873106
+      },
+      "prepare_features_wall_ns": {
+        "rows_with_measurement": 84480,
+        "sum_of_recorded_intervals_ns": 96671172885,
+        "weighted_mean_per_scientific_row_ns": 1144308.3911576704
+      },
+      "prepare_media_cpu_ns": {
+        "rows_with_measurement": 84480,
+        "sum_of_recorded_intervals_ns": 363153850706,
+        "weighted_mean_per_scientific_row_ns": 4298696.149455492
+      },
+      "prepare_media_wall_ns": {
+        "rows_with_measurement": 84480,
+        "sum_of_recorded_intervals_ns": 315597809972,
+        "weighted_mean_per_scientific_row_ns": 3735769.5309185605
+      },
+      "prepare_neural_cpu_ns": {
+        "rows_with_measurement": 84480,
+        "sum_of_recorded_intervals_ns": 82993325459,
+        "weighted_mean_per_scientific_row_ns": 982402.0532552083
+      },
+      "prepare_neural_wall_ns": {
+        "rows_with_measurement": 84480,
+        "sum_of_recorded_intervals_ns": 55385978478,
+        "weighted_mean_per_scientific_row_ns": 655610.5406960227
+      },
+      "prepare_total_cpu_ns": {
+        "rows_with_measurement": 84480,
+        "sum_of_recorded_intervals_ns": 638228944550,
+        "weighted_mean_per_scientific_row_ns": 7554793.377722538
+      },
+      "prepare_total_wall_ns": {
+        "rows_with_measurement": 84480,
+        "sum_of_recorded_intervals_ns": 498918318920,
+        "weighted_mean_per_scientific_row_ns": 5905756.616003788
+      },
+      "preserve_media_wall_ns": {
+        "rows_with_measurement": 84480,
+        "sum_of_recorded_intervals_ns": 32257874256,
+        "weighted_mean_per_scientific_row_ns": 381840.36761363636
+      }
+    },
+    "recorded_resource_totals": {
+      "finish_decision_json_writes": 84480,
+      "finish_decoder_batches": 2640,
+      "finish_decoder_examples": 84480,
+      "finish_encoder_batches": 0,
+      "finish_encoder_examples": 0,
+      "finish_observer_batches": 0,
+      "finish_observer_digit_examples": 0,
+      "finish_png_reads": 84480,
+      "finish_png_writes": 84480,
+      "finish_target_accesses": 0,
+      "finish_transition_batches": 5121,
+      "finish_transition_examples": 47586,
+      "finish_unchosen_continuations_executed": 0,
+      "finish_utf8_reads": 84480,
+      "finish_utf8_writes": 84480,
+      "native_tick_calls": 61440,
+      "prepare_decoder_batches": 5280,
+      "prepare_decoder_examples": 168960,
+      "prepare_encoder_batches": 2640,
+      "prepare_encoder_examples": 84480,
+      "prepare_observer_batches": 10560,
+      "prepare_observer_digit_examples": 337920,
+      "prepare_png_reads": 168960,
+      "prepare_png_writes": 168960,
+      "prepare_target_accesses": 0,
+      "prepare_transition_batches": 2640,
+      "prepare_transition_examples": 84480,
+      "prepare_utf8_reads": 168960,
+      "prepare_utf8_writes": 168960
+    },
+    "scientific_rows": 84480,
+    "source_files_verified_unchanged": 35,
+    "status": "completed and independently verified",
+    "storage_deduplication": "Physical ZIP members only; all six logical file references per row still require actual output generation and readback",
+    "timing_scope": "Per-phase timers overlap/nest and can run concurrently across seeds. Their totals are interval sums, not additive end-to-end elapsed time. Postdecision scoring and other bookkeeping may be outside phase timers.",
+    "unique_media_members": 108793,
+    "unique_media_payload_bytes": 91662356
+  },
+  "runtime_fitting": {
+    "classification": "nine shared checkpoint-specific runtime banks; same banks fit native and history",
+    "deduplication": "Each public bank and native feature extraction is generated once per profile/transform and reused across fitted families/penalties",
+    "generation_resources": {
+      "decoder_batches": 504,
+      "decoder_examples": 193536,
+      "encoder_batches": 72,
+      "encoder_examples": 27648,
+      "features_cpu_ns": 30422821013,
+      "features_wall_ns": 15716074997,
+      "media_cpu_ns": 6962614389,
+      "media_wall_ns": 3562722654,
+      "neural_cpu_ns": 14300380005,
+      "neural_wall_ns": 7492190948,
+      "observer_batches": 1008,
+      "observer_digit_examples": 387072,
+      "offline_action_rows": 138240,
+      "offline_nonstop_continuations": 110592,
+      "private_score_batches": 360,
+      "reward_cpu_ns": 71587984501,
+      "reward_wall_ns": 36638390808,
+      "target_accesses": 720,
+      "total_cpu_ns": 131881777038,
+      "total_wall_ns": 67897828914,
+      "transition_batches": 360,
+      "transition_examples": 138240
+    },
+    "grid": "2 representations x2 families x4 transforms x3 ridges x3 seeds x3 checkpoints=432; no fixed fallback or refit",
+    "hard_action_label_rows": 138240,
+    "heads_fitted": 432,
+    "native_fitting_ticks": 221184,
+    "per_seed_profile": [
+      {
+        "bank_and_fit_wall_ns": 9981377468,
+        "fit_python_cpu_ns": 1427321105,
+        "fit_wall_ns": 1429610816,
+        "generation_resources": {
+          "decoder_batches": 56,
+          "decoder_examples": 21504,
+          "encoder_batches": 8,
+          "encoder_examples": 3072,
+          "features_cpu_ns": 3645817978,
+          "features_wall_ns": 1858249188,
+          "media_cpu_ns": 785801741,
+          "media_wall_ns": 390649990,
+          "neural_cpu_ns": 1644808439,
+          "neural_wall_ns": 862164229,
+          "observer_batches": 112,
+          "observer_digit_examples": 43008,
+          "offline_action_rows": 15360,
+          "offline_nonstop_continuations": 12288,
+          "private_score_batches": 40,
+          "reward_cpu_ns": 8125064404,
+          "reward_wall_ns": 4091529170,
+          "target_accesses": 80,
+          "total_cpu_ns": 15186986895,
+          "total_wall_ns": 7720417775,
+          "transition_batches": 40,
+          "transition_examples": 15360
+        },
+        "hard_action_label_rows": 15360,
+        "heads_fitted": 48,
+        "native_fitting_ticks": 24576,
+        "profile": "frozen",
+        "seed": 17
+      },
+      {
+        "bank_and_fit_wall_ns": 10154285130,
+        "fit_python_cpu_ns": 1255677898,
+        "fit_wall_ns": 1256845008,
+        "generation_resources": {
+          "decoder_batches": 56,
+          "decoder_examples": 21504,
+          "encoder_batches": 8,
+          "encoder_examples": 3072,
+          "features_cpu_ns": 3816224992,
+          "features_wall_ns": 2101199545,
+          "media_cpu_ns": 787033752,
+          "media_wall_ns": 398427440,
+          "neural_cpu_ns": 1711851392,
+          "neural_wall_ns": 887904669,
+          "observer_batches": 112,
+          "observer_digit_examples": 43008,
+          "offline_action_rows": 15360,
+          "offline_nonstop_continuations": 12288,
+          "private_score_batches": 40,
+          "reward_cpu_ns": 8126143235,
+          "reward_wall_ns": 4136608555,
+          "target_accesses": 80,
+          "total_cpu_ns": 15407577503,
+          "total_wall_ns": 8019682854,
+          "transition_batches": 40,
+          "transition_examples": 15360
+        },
+        "hard_action_label_rows": 15360,
+        "heads_fitted": 48,
+        "native_fitting_ticks": 24576,
+        "profile": "ordinary",
+        "seed": 17
+      },
+      {
+        "bank_and_fit_wall_ns": 9684792658,
+        "fit_python_cpu_ns": 1107225546,
+        "fit_wall_ns": 1107266383,
+        "generation_resources": {
+          "decoder_batches": 56,
+          "decoder_examples": 21504,
+          "encoder_batches": 8,
+          "encoder_examples": 3072,
+          "features_cpu_ns": 3415044973,
+          "features_wall_ns": 1788448456,
+          "media_cpu_ns": 847113002,
+          "media_wall_ns": 429147236,
+          "neural_cpu_ns": 1679540832,
+          "neural_wall_ns": 907814342,
+          "observer_batches": 112,
+          "observer_digit_examples": 43008,
+          "offline_action_rows": 15360,
+          "offline_nonstop_continuations": 12288,
+          "private_score_batches": 40,
+          "reward_cpu_ns": 7838532153,
+          "reward_wall_ns": 4113699810,
+          "target_accesses": 80,
+          "total_cpu_ns": 14737837729,
+          "total_wall_ns": 7762934819,
+          "transition_batches": 40,
+          "transition_examples": 15360
+        },
+        "hard_action_label_rows": 15360,
+        "heads_fitted": 48,
+        "native_fitting_ticks": 24576,
+        "profile": "field",
+        "seed": 17
+      },
+      {
+        "bank_and_fit_wall_ns": 9498524876,
+        "fit_python_cpu_ns": 1328348320,
+        "fit_wall_ns": 1328474792,
+        "generation_resources": {
+          "decoder_batches": 56,
+          "decoder_examples": 21504,
+          "encoder_batches": 8,
+          "encoder_examples": 3072,
+          "features_cpu_ns": 3289749869,
+          "features_wall_ns": 1653338786,
+          "media_cpu_ns": 779305800,
+          "media_wall_ns": 392980687,
+          "neural_cpu_ns": 1417072298,
+          "neural_wall_ns": 738944029,
+          "observer_batches": 112,
+          "observer_digit_examples": 43008,
+          "offline_action_rows": 15360,
+          "offline_nonstop_continuations": 12288,
+          "private_score_batches": 40,
+          "reward_cpu_ns": 8010212670,
+          "reward_wall_ns": 4078068304,
+          "target_accesses": 80,
+          "total_cpu_ns": 14471832629,
+          "total_wall_ns": 7362885848,
+          "transition_batches": 40,
+          "transition_examples": 15360
+        },
+        "hard_action_label_rows": 15360,
+        "heads_fitted": 48,
+        "native_fitting_ticks": 24576,
+        "profile": "frozen",
+        "seed": 29
+      },
+      {
+        "bank_and_fit_wall_ns": 9556670213,
+        "fit_python_cpu_ns": 1377103252,
+        "fit_wall_ns": 1380819316,
+        "generation_resources": {
+          "decoder_batches": 56,
+          "decoder_examples": 21504,
+          "encoder_batches": 8,
+          "encoder_examples": 3072,
+          "features_cpu_ns": 3215253733,
+          "features_wall_ns": 1629691762,
+          "media_cpu_ns": 758019079,
+          "media_wall_ns": 374300508,
+          "neural_cpu_ns": 1599481041,
+          "neural_wall_ns": 822959042,
+          "observer_batches": 112,
+          "observer_digit_examples": 43008,
+          "offline_action_rows": 15360,
+          "offline_nonstop_continuations": 12288,
+          "private_score_batches": 40,
+          "reward_cpu_ns": 7889132393,
+          "reward_wall_ns": 4039406192,
+          "target_accesses": 80,
+          "total_cpu_ns": 14398416662,
+          "total_wall_ns": 7334989684,
+          "transition_batches": 40,
+          "transition_examples": 15360
+        },
+        "hard_action_label_rows": 15360,
+        "heads_fitted": 48,
+        "native_fitting_ticks": 24576,
+        "profile": "ordinary",
+        "seed": 29
+      },
+      {
+        "bank_and_fit_wall_ns": 9506496689,
+        "fit_python_cpu_ns": 1343289333,
+        "fit_wall_ns": 1343530515,
+        "generation_resources": {
+          "decoder_batches": 56,
+          "decoder_examples": 21504,
+          "encoder_batches": 8,
+          "encoder_examples": 3072,
+          "features_cpu_ns": 3224716295,
+          "features_wall_ns": 1700628414,
+          "media_cpu_ns": 746723717,
+          "media_wall_ns": 405754645,
+          "neural_cpu_ns": 1417618479,
+          "neural_wall_ns": 749110515,
+          "observer_batches": 112,
+          "observer_digit_examples": 43008,
+          "offline_action_rows": 15360,
+          "offline_nonstop_continuations": 12288,
+          "private_score_batches": 40,
+          "reward_cpu_ns": 7651302591,
+          "reward_wall_ns": 3964547571,
+          "target_accesses": 80,
+          "total_cpu_ns": 14002553018,
+          "total_wall_ns": 7305839341,
+          "transition_batches": 40,
+          "transition_examples": 15360
+        },
+        "hard_action_label_rows": 15360,
+        "heads_fitted": 48,
+        "native_fitting_ticks": 24576,
+        "profile": "field",
+        "seed": 29
+      },
+      {
+        "bank_and_fit_wall_ns": 9625305387,
+        "fit_python_cpu_ns": 1342229695,
+        "fit_wall_ns": 1342415705,
+        "generation_resources": {
+          "decoder_batches": 56,
+          "decoder_examples": 21504,
+          "encoder_batches": 8,
+          "encoder_examples": 3072,
+          "features_cpu_ns": 3459603229,
+          "features_wall_ns": 1747585086,
+          "media_cpu_ns": 730620612,
+          "media_wall_ns": 372927475,
+          "neural_cpu_ns": 1588821954,
+          "neural_wall_ns": 812778251,
+          "observer_batches": 112,
+          "observer_digit_examples": 43008,
+          "offline_action_rows": 15360,
+          "offline_nonstop_continuations": 12288,
+          "private_score_batches": 40,
+          "reward_cpu_ns": 7900452822,
+          "reward_wall_ns": 3987988626,
+          "target_accesses": 80,
+          "total_cpu_ns": 14699430155,
+          "total_wall_ns": 7453731823,
+          "transition_batches": 40,
+          "transition_examples": 15360
+        },
+        "hard_action_label_rows": 15360,
+        "heads_fitted": 48,
+        "native_fitting_ticks": 24576,
+        "profile": "frozen",
+        "seed": 43
+      },
+      {
+        "bank_and_fit_wall_ns": 9456843722,
+        "fit_python_cpu_ns": 1174204147,
+        "fit_wall_ns": 1178493794,
+        "generation_resources": {
+          "decoder_batches": 56,
+          "decoder_examples": 21504,
+          "encoder_batches": 8,
+          "encoder_examples": 3072,
+          "features_cpu_ns": 3135023394,
+          "features_wall_ns": 1578287398,
+          "media_cpu_ns": 768406973,
+          "media_wall_ns": 394858485,
+          "neural_cpu_ns": 1706965854,
+          "neural_wall_ns": 882277541,
+          "observer_batches": 112,
+          "observer_digit_examples": 43008,
+          "offline_action_rows": 15360,
+          "offline_nonstop_continuations": 12288,
+          "private_score_batches": 40,
+          "reward_cpu_ns": 8193994617,
+          "reward_wall_ns": 4178649323,
+          "target_accesses": 80,
+          "total_cpu_ns": 14728065990,
+          "total_wall_ns": 7505860690,
+          "transition_batches": 40,
+          "transition_examples": 15360
+        },
+        "hard_action_label_rows": 15360,
+        "heads_fitted": 48,
+        "native_fitting_ticks": 24576,
+        "profile": "ordinary",
+        "seed": 43
+      },
+      {
+        "bank_and_fit_wall_ns": 9565826337,
+        "fit_python_cpu_ns": 1326621321,
+        "fit_wall_ns": 1326713806,
+        "generation_resources": {
+          "decoder_batches": 56,
+          "decoder_examples": 21504,
+          "encoder_batches": 8,
+          "encoder_examples": 3072,
+          "features_cpu_ns": 3221386550,
+          "features_wall_ns": 1658646362,
+          "media_cpu_ns": 759589713,
+          "media_wall_ns": 403676188,
+          "neural_cpu_ns": 1534219716,
+          "neural_wall_ns": 828238330,
+          "observer_batches": 112,
+          "observer_digit_examples": 43008,
+          "offline_action_rows": 15360,
+          "offline_nonstop_continuations": 12288,
+          "private_score_batches": 40,
+          "reward_cpu_ns": 7853149616,
+          "reward_wall_ns": 4047893257,
+          "target_accesses": 80,
+          "total_cpu_ns": 14249076457,
+          "total_wall_ns": 7431486080,
+          "transition_batches": 40,
+          "transition_examples": 15360
+        },
+        "hard_action_label_rows": 15360,
+        "heads_fitted": 48,
+        "native_fitting_ticks": 24576,
+        "profile": "field",
+        "seed": 43
+      }
+    ],
+    "sum_bank_and_fit_wall_ns": 87030122480
+  },
+  "schema": "hepta.field-bridge-v2.study-cost-ledger.v1",
+  "scope": "Completed V2 pilot, H7 fit/audit, predictor search, inactive D1 enrichment, final training, runtime fitting and recovered primary deployment; selected verification and interrupted-attempt lower bound",
+  "sources": {
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_20261027/__init__.py": {
+      "bytes": 80,
+      "sha256": "bd7dd4dfde2e00c99b998bfd6a1cd822820fbd970fe5bd4d2245a8661aa9053b",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_20261027/adaptation.py": {
+      "bytes": 13972,
+      "sha256": "95c2acfe820febb905c11b5057f7817af4d244db1e52adab7744d2c1d931b2d8",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_20261027/adapters.py": {
+      "bytes": 4335,
+      "sha256": "2818464ba927b8e0ed5c92315a5bf26832672391c1fbbba709d6ed72cdc76b7b",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_20261027/analyze.py": {
+      "bytes": 16079,
+      "sha256": "7137dfa130f06e4b137b9d72a5ef85d8519c41d3bf43c74b336e5b6eb38b29e6",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_20261027/audit.py": {
+      "bytes": 19672,
+      "sha256": "3bc683cfc22fbbf062d4970ef9b3534fbd766e06f93b37b43a4a965c9ae8c318",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_20261027/controls.py": {
+      "bytes": 11137,
+      "sha256": "6536f597319009a71bc735ba88da7aa46aa8d0933d0bcdd688f264e3a6673fb6",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_20261027/controls_tests.py": {
+      "bytes": 5376,
+      "sha256": "43cb44f43035fcc143de5bb2ff1697ab45f33837ef1c35d0cfb09d5c18b87872",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_20261027/native_bridge.py": {
+      "bytes": 4599,
+      "sha256": "06644f441810d2b5d9db50b450b8fe9c7f12309cb04255f13d1916298c6391d2",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_20261027/protocol.py": {
+      "bytes": 6275,
+      "sha256": "36e131e2f4c6dd4221631813dfe360d185cf532218597218e2791700e8e93911",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_20261027/restore_native.py": {
+      "bytes": 13489,
+      "sha256": "399d6ef187e1dbfb029b2187607d326fd232281c5379c564b5228081494ddf95",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_20261027/run.py": {
+      "bytes": 19729,
+      "sha256": "198aed455cbb01191928c0b5c5642e86fb23194e49d69df1e50bb970eebea2ff",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_20261027/scientific_contract_tests.py": {
+      "bytes": 5967,
+      "sha256": "a3de34f66d005dc93cd375fe384663d9e7f61942061042bfd4202c2f8ba4c05e",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_20261027/task.py": {
+      "bytes": 17742,
+      "sha256": "4999eb8220847239db194c8a87bc5353802abc74e685eb9079f872ea8ef7d953",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027/BANK_PROTOCOL.json": {
+      "bytes": 3630,
+      "sha256": "1ad0bc5f7ef07564ac1383a72ed82e778f6123f780665f228b21092104080e02",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027/PILOT_PROTOCOL.json": {
+      "bytes": 3951,
+      "sha256": "1ed65b7b3e3fffd637666049922b9f07c0ce2fbb3248d3357a27707a82ced241",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027/PRIMARY_PROTOCOL.json": {
+      "bytes": 15596,
+      "sha256": "41abc477e3827ca4222c6831e60e6d2eed59b93b9a2b9b629f29b5886eb624c3",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027/__init__.py": {
+      "bytes": 77,
+      "sha256": "01649269a195944483fb2076b7e1bd4eec98dbf1883ab88f4168dd71ada1a05c",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027/directional_bank.py": {
+      "bytes": 15965,
+      "sha256": "9395d5fee78d2172c5dbdf7d959a2891933c2dfb13131cae301990dd47377ce4",
+      "used_fields": "frozen implementation of recorded work counts; no execution"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027/field_bank.py": {
+      "bytes": 11682,
+      "sha256": "33700d9a2b43bc96af1aa8a788cadf56a35346466d2486ff04032bcacad043c5",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027/field_fit.py": {
+      "bytes": 3847,
+      "sha256": "c3e7191c070d5f4c4b53ebb84d5269aeb83aed9bc02bb26ff65cd2c157ab63d3",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027/field_predictor.py": {
+      "bytes": 12188,
+      "sha256": "27436472fc4ea6cb4c52fe25e11872a4ab7a6aed09f82eac0bdae7ba3add529b",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027/learning.py": {
+      "bytes": 7741,
+      "sha256": "894fea3f87ddabaf1c5a98ff6db78da069aa2e610e7eaf31b3065e27dd985e93",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027/native_fast.py": {
+      "bytes": 12337,
+      "sha256": "d4c6472e95c860360f932f93044c76acdd6eee6d944146fe18af189cb980db93",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027/native_ffi.rs": {
+      "bytes": 7975,
+      "sha256": "9317a4bc0a01fff39e1cb0ffc27fe412c1b1aaaa862d05bf95c1d124090cb9b8",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027/pilot.py": {
+      "bytes": 8474,
+      "sha256": "7186a0f3e043ab41a582314c71a8ce78965ab9f6abfc80cc53bc4aa2d1c1bb4a",
+      "used_fields": "frozen implementation of recorded work counts; no execution"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027/primary_analyze.py": {
+      "bytes": 16239,
+      "sha256": "f6eae6764d9132f7c7217854a5047eb9a25dcbaa410670cb84fdfbc087b45ad4",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027/primary_common.py": {
+      "bytes": 5531,
+      "sha256": "68b53366b3726322e9def4a69c2c1978323edde2228401bb5a6dca177383575e",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027/primary_evaluate.py": {
+      "bytes": 14448,
+      "sha256": "0e229eaaaa26c5634084e0341ebcc09b21d3a32f69eead35340c34cbcdc1a886",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027/primary_media.py": {
+      "bytes": 3007,
+      "sha256": "a8475e1c79d1648200f97b3a0480ccd3da257cb084175816d5a13885073aa5f6",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027/primary_runtime.py": {
+      "bytes": 19286,
+      "sha256": "4b7cd8010b5fae915c0b76ccaee40daef7118a8ba1ecfde035465421b19dd0ca",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027/primary_training.py": {
+      "bytes": 19196,
+      "sha256": "654684b1a4f5f70ce9690b81fe45467aaad1d759841c445015f7baaa268c1daf",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027_review/build_study_cost_ledger.py": {
+      "bytes": 43967,
+      "sha256": "93f73f3c10c804f8d1d094dba70eaa6b1be8afece69000227890c5a042e39e8a",
+      "used_fields": "cost aggregation implementation"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027_review/gate_audit.py": {
+      "bytes": 12416,
+      "sha256": "5334a47ab934d6d4a10048ef990c472c023d6956c0ff8b7b57808246bfeffa05",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027_review/primary_audit_support.py": {
+      "bytes": 10413,
+      "sha256": "b502d97f57a86732882d1f45f281b0314d5f1ec68ce04e2b90d9e75af18007c3",
+      "used_fields": "frozen implementation of recorded work counts; no execution"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027_review/primary_io_recovery.py": {
+      "bytes": 7626,
+      "sha256": "62757bc13d0c036674132a3d3c895355b8551259b6a3a826e3950ae1555edefb",
+      "used_fields": "frozen implementation of recorded work counts; no execution"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027_review/primary_media_audit.py": {
+      "bytes": 21772,
+      "sha256": "a542df4f078a50aa6abd27529dde1e1f41e68c7f1d579e76825026869d539a3e",
+      "used_fields": "frozen implementation of recorded work counts; no execution"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v2_20261027_review/primary_recovery_parity.py": {
+      "bytes": 8827,
+      "sha256": "e9695b87c22efca12d132465be9ec4ef2cf983fa9322c70046eb9dee74dbfa09",
+      "used_fields": "frozen implementation of recorded work counts; no execution"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/v6/conditioned.py": {
+      "bytes": 6426,
+      "sha256": "ccb5f9a78e58d6f1d1511a95f50de3602e1f39e7254fce5566e97a994d5b4cba",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/v6/data.py": {
+      "bytes": 11933,
+      "sha256": "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/v6/neural.py": {
+      "bytes": 19994,
+      "sha256": "6447edf81da45695ab87a033c544ff7c554a15431e614474be7ad3b7c329e742",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/v6/observer.py": {
+      "bytes": 7652,
+      "sha256": "5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e",
+      "used_fields": "frozen implementation of recorded work counts; no execution"
+    },
+    "bridge_repo/experiments/multimodal_output_portfolio/v6/plan_training.py": {
+      "bytes": 18967,
+      "sha256": "b43ff714960139d4b58d02dec86b69d27ac51d5abfd75509936ee2c5c355997b",
+      "used_fields": "current byte identity checked against 35-file pretest and evaluation source freeze"
+    },
+    "bridge_v2_bank/PREDICTOR_FREEZE.json": {
+      "bytes": 10970,
+      "sha256": "e7bb79a8c1e42bd49a4969c155841e23497b885fc6124eeec380e4124d238578",
+      "used_fields": "fit_candidate_evaluations, wall_ns, controller file identities"
+    },
+    "bridge_v2_bank/audit-17/BANK.json": {
+      "bytes": 1186582,
+      "sha256": "c5380f3ed94017d90dc3576dbc30d86ae422321f493dd6904b4e4b6f28dfca2d",
+      "used_fields": "resources, wall_ns, fixed_action, record count only"
+    },
+    "bridge_v2_bank/audit-17/COMPLETE.json": {
+      "bytes": 2976,
+      "sha256": "3b7df9baf234715631872df69a03d809bf954a3a4d67758b56d2c217bf2a901f",
+      "used_fields": "bank_sha256, rows, wall_ns"
+    },
+    "bridge_v2_bank/audit-29/BANK.json": {
+      "bytes": 1187482,
+      "sha256": "a3de83459701637adc6d8622f232ca23ca42e99d6de3075e96a4e856c11bc037",
+      "used_fields": "resources, wall_ns, fixed_action, record count only"
+    },
+    "bridge_v2_bank/audit-29/COMPLETE.json": {
+      "bytes": 2976,
+      "sha256": "4367ea939283ee0eeaef5ba37cfbe6b45c0204131c33c9ebe28e2b52e2d9a99b",
+      "used_fields": "bank_sha256, rows, wall_ns"
+    },
+    "bridge_v2_bank/audit-43/BANK.json": {
+      "bytes": 1186902,
+      "sha256": "2f822ad5b6657be7be77285e1cc805f8265519911b8830b579da597c77c80b02",
+      "used_fields": "resources, wall_ns, fixed_action, record count only"
+    },
+    "bridge_v2_bank/audit-43/COMPLETE.json": {
+      "bytes": 2976,
+      "sha256": "b8e0e3c17895e8f420d2a320924c90b47a6e5f7600b8782e07bea6a36e9e3811",
+      "used_fields": "bank_sha256, rows, wall_ns"
+    },
+    "bridge_v2_bank/fit-17/BANK.json": {
+      "bytes": 954275,
+      "sha256": "fe6b77ed4c7ffbc79420287d87fd867b4fafbd5c8b2f7030ed2ecf23b5de9905",
+      "used_fields": "resources, wall_ns, fixed_action, record count only"
+    },
+    "bridge_v2_bank/fit-17/COMPLETE.json": {
+      "bytes": 2976,
+      "sha256": "8d0e1f9e4a90878f8e301af774fb446e00dc20051b8d0045a82120ca2c440ad0",
+      "used_fields": "bank_sha256, rows, wall_ns"
+    },
+    "bridge_v2_bank/fit-29/BANK.json": {
+      "bytes": 954775,
+      "sha256": "08cf7d79f5d0911fc923056f74e4266c174939b568e48253d807091f930d35b0",
+      "used_fields": "resources, wall_ns, fixed_action, record count only"
+    },
+    "bridge_v2_bank/fit-29/COMPLETE.json": {
+      "bytes": 2976,
+      "sha256": "16f9bfe788e963d0333fc299a8dfee9fbade20606f194e968d4be3699fc012fc",
+      "used_fields": "bank_sha256, rows, wall_ns"
+    },
+    "bridge_v2_bank/fit-43/BANK.json": {
+      "bytes": 953589,
+      "sha256": "0f1dbe1c2e791b138ae986b4836eafd36525fbbe9008f7ffc0a0b184dcc8b7d3",
+      "used_fields": "resources, wall_ns, fixed_action, record count only"
+    },
+    "bridge_v2_bank/fit-43/COMPLETE.json": {
+      "bytes": 2976,
+      "sha256": "8feaaa3aed03419540e8885d88b6687a1c336703a77e49612ac10225c929513b",
+      "used_fields": "bank_sha256, rows, wall_ns"
+    },
+    "bridge_v2_directional/FIT_INTEGRITY_AUDIT.json": {
+      "bytes": 2477,
+      "sha256": "7fc1142efe78dca91cadce77b16996d17b09b81f7933eb7c10f28169d089db40",
+      "used_fields": "extra work totals, predictors_fitted, fresh audit count"
+    },
+    "bridge_v2_directional/NOT_ACTIVATED.json": {
+      "bytes": 21309,
+      "sha256": "e5c05144e51120a65529e27b1e1740fec2ef741bacaf9f0e5b191a5b172d344f",
+      "used_fields": "activation decision booleans; inherited metadata not counted again"
+    },
+    "bridge_v2_directional/fit-17/BANK.json": {
+      "bytes": 1026501,
+      "sha256": "44fedec963a36fe7d17742f1b0868edfd3b08ed5ac4e80153a5291c979925143",
+      "used_fields": "resources, wall_ns, measurement counts and inherited source/hash bindings; no outcomes used"
+    },
+    "bridge_v2_directional/fit-17/COMPLETE.json": {
+      "bytes": 3590,
+      "sha256": "6b23aa9a9fe2c610abccc3ba77fcf710a05e48ffaae656349ea4465a34c967e8",
+      "used_fields": "bank_sha256, rows, wall_ns"
+    },
+    "bridge_v2_directional/fit-29/BANK.json": {
+      "bytes": 1026990,
+      "sha256": "0bd35c6286ad9fd2f38a6e79b0ac5a1d33e8068e12c6acabfb0d4bc42c2f4fdd",
+      "used_fields": "resources, wall_ns, measurement counts and inherited source/hash bindings; no outcomes used"
+    },
+    "bridge_v2_directional/fit-29/COMPLETE.json": {
+      "bytes": 3590,
+      "sha256": "a5dc9b937d01e0e5df606b757bd20e50424a8614223fa1cbe887fc61c4672772",
+      "used_fields": "bank_sha256, rows, wall_ns"
+    },
+    "bridge_v2_directional/fit-43/BANK.json": {
+      "bytes": 1025583,
+      "sha256": "6e5abb438daad7466accb6c112f31ddf0b7c4192ade48e0ff4a58c6e1452027b",
+      "used_fields": "resources, wall_ns, measurement counts and inherited source/hash bindings; no outcomes used"
+    },
+    "bridge_v2_directional/fit-43/COMPLETE.json": {
+      "bytes": 3590,
+      "sha256": "612d72c1cb3a23e7b454c437246ecedf6ff2dbc0eb7bce04f7fbc101f109e30e",
+      "used_fields": "bank_sha256, rows, wall_ns"
+    },
+    "bridge_v2_pilot/PILOT_RESULT.json": {
+      "bytes": 7209829,
+      "sha256": "11e3b0a53d6e99bbff7a0ddd6fab3b109a8fe19e1dbec8fcc8f43b759b69f164",
+      "used_fields": "completed candidate recipe/history counts, gradient_examples, wall_ns; no outcome ranking used"
+    },
+    "bridge_v2_primary/EVALUATION_COMPLETE.json": {
+      "bytes": 20503,
+      "sha256": "87df3da85742ae010841016e127de9d0fcb59cc3cdbece2fcf189b4e2ece3969",
+      "used_fields": "rows, per-seed wall/media counts, frozen source identities and completion bindings"
+    },
+    "bridge_v2_primary/INDEPENDENT_MEDIA_AUDIT.json": {
+      "bytes": 12305,
+      "sha256": "e2fc5a17469e1cba7436ec24b24e766f6b6465533260c99179f7bd78b71bbf6c",
+      "used_fields": "passed, row/batch/media counts, actual auditor observer/native work, wall_ns, source/hash bindings only"
+    },
+    "bridge_v2_primary/IO_RECOVERY_REGISTRATION.json": {
+      "bytes": 32069,
+      "sha256": "1fa8ccc5f70d780a28e8ab1caf2db8c30422347c6717e547e3cbb8b279f17767",
+      "used_fields": "partial_attempt_counts and recovery/deduplication declarations only"
+    },
+    "bridge_v2_primary/PRETEST_FREEZE.json": {
+      "bytes": 392247,
+      "sha256": "d3c287b90f2832bc7b071fcbbca1054aa94f3d11a2283abf15c6bc61137a3035",
+      "used_fields": "source_files and source/protocol identities only"
+    },
+    "bridge_v2_primary/RECOVERY_PARITY_AUDIT.json": {
+      "bytes": 31900,
+      "sha256": "bfd31950dd73af1f9df160b484f501ef91d18e77b4785b77367ba955b74e0f2c",
+      "used_fields": "passed, original complete row/native receipt counts and source bindings only; no raw records"
+    },
+    "bridge_v2_primary/RESULT.json": {
+      "bytes": 774629,
+      "sha256": "ae10b12185c64d366019f3b73c522e9d6b364523174864a9424a65ffafc547e2",
+      "used_fields": "summaries[*].rows and summaries[*].descriptive_resources only; no efficacy fields"
+    },
+    "bridge_v2_primary/TRAINING_COMPLETE.json": {
+      "bytes": 47942,
+      "sha256": "b26de3c8f014763e2cd9ceb825fc55227937349b2b2792bcacec0a2d70e8ce4a",
+      "used_fields": "completed checkpoint/resources and source/hash bindings only"
+    },
+    "bridge_v2_primary/eval_recovered/17/COMPLETE.json": {
+      "bytes": 4925,
+      "sha256": "c76bf28595c70ad00932f6000d24c10422370d3a2ca35e20788c3d0acb946928",
+      "used_fields": "completion identity only; no deployment rows"
+    },
+    "bridge_v2_primary/eval_recovered/29/COMPLETE.json": {
+      "bytes": 4925,
+      "sha256": "3fbdf7610b82ecb527175c34fee030dfa9fd8a61d039c367b01bdee8e131c35a",
+      "used_fields": "completion identity only; no deployment rows"
+    },
+    "bridge_v2_primary/eval_recovered/43/COMPLETE.json": {
+      "bytes": 4925,
+      "sha256": "07f0821deb27c5e8b3575d4692b23751aa8563a3bcfc34de5646d0cad1bc36dc",
+      "used_fields": "completion identity only; no deployment rows"
+    },
+    "bridge_v2_primary/runtime/17-field/BANK_IDENTITIES.json": {
+      "bytes": 610077,
+      "sha256": "9d10184ec60487cf17dca73f27f42ac02845fb949c7f6378ce5c796518693575",
+      "used_fields": "train_resources, development_resources and fixed data/count metadata"
+    },
+    "bridge_v2_primary/runtime/17-field/READOUTS.json": {
+      "bytes": 2510598,
+      "sha256": "008a895d769db43f234903b3eaa02d2fea518be3e04472926ece8a9fce247fe7",
+      "used_fields": "heads_fitted, native ticks, label counts, feature construction and wall/cpu times only"
+    },
+    "bridge_v2_primary/runtime/17-frozen/BANK_IDENTITIES.json": {
+      "bytes": 610074,
+      "sha256": "3df6c129587344d49d9195518fcdefb246b80ce9ca3a64194de1fe44e95ecbce",
+      "used_fields": "train_resources, development_resources and fixed data/count metadata"
+    },
+    "bridge_v2_primary/runtime/17-frozen/READOUTS.json": {
+      "bytes": 2520934,
+      "sha256": "bf3a7363d499cc5dc38422ed2f7c8b1599347b4c4a70a0e886d9927cf0ee2127",
+      "used_fields": "heads_fitted, native ticks, label counts, feature construction and wall/cpu times only"
+    },
+    "bridge_v2_primary/runtime/17-ordinary/BANK_IDENTITIES.json": {
+      "bytes": 610077,
+      "sha256": "734cd872a4f2ab55b52928c7cbe35db52cfc9a0de3df94c66ba51ca0e586ec34",
+      "used_fields": "train_resources, development_resources and fixed data/count metadata"
+    },
+    "bridge_v2_primary/runtime/17-ordinary/READOUTS.json": {
+      "bytes": 2515100,
+      "sha256": "ada6cd81116dbf16052649c467e7dcb03b0dda32bb80859be36fcdc8608fea40",
+      "used_fields": "heads_fitted, native ticks, label counts, feature construction and wall/cpu times only"
+    },
+    "bridge_v2_primary/runtime/29-field/BANK_IDENTITIES.json": {
+      "bytes": 610076,
+      "sha256": "0a11023e97660d2240625f0c7666f1bcce269f9931247a1bea580e8222407a83",
+      "used_fields": "train_resources, development_resources and fixed data/count metadata"
+    },
+    "bridge_v2_primary/runtime/29-field/READOUTS.json": {
+      "bytes": 2521547,
+      "sha256": "89f2904d8bdcb8af4602ef3704b1aa9e85cdcb9b9f8659d9219e937e41698a36",
+      "used_fields": "heads_fitted, native ticks, label counts, feature construction and wall/cpu times only"
+    },
+    "bridge_v2_primary/runtime/29-frozen/BANK_IDENTITIES.json": {
+      "bytes": 610076,
+      "sha256": "ac46b08c8958a5036a8a05adad46551f77fb4c2664f88179a62155fbccc041ed",
+      "used_fields": "train_resources, development_resources and fixed data/count metadata"
+    },
+    "bridge_v2_primary/runtime/29-frozen/READOUTS.json": {
+      "bytes": 2512563,
+      "sha256": "23b9734d6fb7ad66a807e629bd075a0f36a0a99de554c4427ab4638c53fd7c6b",
+      "used_fields": "heads_fitted, native ticks, label counts, feature construction and wall/cpu times only"
+    },
+    "bridge_v2_primary/runtime/29-ordinary/BANK_IDENTITIES.json": {
+      "bytes": 610077,
+      "sha256": "c9d90b6ce1f522f6df49618fc2c41be9d0fa1aa64b352d804c1af6ac6d49ce03",
+      "used_fields": "train_resources, development_resources and fixed data/count metadata"
+    },
+    "bridge_v2_primary/runtime/29-ordinary/READOUTS.json": {
+      "bytes": 2514022,
+      "sha256": "9c2ef808042b94f1377d91f73ecdad95573d211619ae2c64b51d7aaaff6c5860",
+      "used_fields": "heads_fitted, native ticks, label counts, feature construction and wall/cpu times only"
+    },
+    "bridge_v2_primary/runtime/43-field/BANK_IDENTITIES.json": {
+      "bytes": 610077,
+      "sha256": "3f35a9ae0feaeb99d2603c8f969ab3cdcb646184f2f7fac1cede45497237485c",
+      "used_fields": "train_resources, development_resources and fixed data/count metadata"
+    },
+    "bridge_v2_primary/runtime/43-field/READOUTS.json": {
+      "bytes": 2522711,
+      "sha256": "60f0f354607027d5aa32ad4d8eae14fdb7ba4333160a52ff15947ce04ac2ee05",
+      "used_fields": "heads_fitted, native ticks, label counts, feature construction and wall/cpu times only"
+    },
+    "bridge_v2_primary/runtime/43-frozen/BANK_IDENTITIES.json": {
+      "bytes": 610077,
+      "sha256": "7e3dd217e3d0ddc34febc859f93d473f961f174318028092d1403c5313d7d6aa",
+      "used_fields": "train_resources, development_resources and fixed data/count metadata"
+    },
+    "bridge_v2_primary/runtime/43-frozen/READOUTS.json": {
+      "bytes": 2517754,
+      "sha256": "a66009b32357f2fb10da483b8d4a1dac387734795f6425337c5bebf984626b1f",
+      "used_fields": "heads_fitted, native ticks, label counts, feature construction and wall/cpu times only"
+    },
+    "bridge_v2_primary/runtime/43-ordinary/BANK_IDENTITIES.json": {
+      "bytes": 610075,
+      "sha256": "531b0da06d78ef00b96dc8ee920b4bc889060e8b80d83658a9f631c621af7e50",
+      "used_fields": "train_resources, development_resources and fixed data/count metadata"
+    },
+    "bridge_v2_primary/runtime/43-ordinary/READOUTS.json": {
+      "bytes": 2521265,
+      "sha256": "31afbef1a24762d70da92b62eaf71435c92aad287b4a70e6fd424468863e935f",
+      "used_fields": "heads_fitted, native ticks, label counts, feature construction and wall/cpu times only"
+    },
+    "bridge_v2_primary/training/17/COMPLETE.json": {
+      "bytes": 13585,
+      "sha256": "7754eb603c5c5a962a39d6bfa283159622656f4e59a03a40a5f07300fdfabe80",
+      "used_fields": "resources, checkpoint and completion bindings"
+    },
+    "bridge_v2_primary/training/17/field.json": {
+      "bytes": 69965,
+      "sha256": "8c1ef9bbc7e8d9a190ed596d1dae0aaf4b7cec1585056ae35072dd15ced87327",
+      "used_fields": "resources and wall_ns only; no decision values"
+    },
+    "bridge_v2_primary/training/17/generic.json": {
+      "bytes": 70128,
+      "sha256": "09ff8bd1054b7aa811f6cbf062936b0ece3070b0d49d53aea937bcc2d2926258",
+      "used_fields": "resources and wall_ns only; no decision values"
+    },
+    "bridge_v2_primary/training/17/ordinary.json": {
+      "bytes": 120665,
+      "sha256": "fd35f215b57590f097528e34a66b090b53e5a3e03881a758646934253592686d",
+      "used_fields": "reuse declarations and logical_path_resources_already_in_shared_bank"
+    },
+    "bridge_v2_primary/training/17/richer.json": {
+      "bytes": 69946,
+      "sha256": "b4e14ae6574203a7f72a3623ff41a208739bc74329d3a01764741f5109e063e2",
+      "used_fields": "resources and wall_ns only; no decision values"
+    },
+    "bridge_v2_primary/training/29/COMPLETE.json": {
+      "bytes": 13587,
+      "sha256": "cdc3e3cd4b3f592c0446c8da8031f76cfecde349ef3e6bfe8aa39d67e5b086b2",
+      "used_fields": "resources, checkpoint and completion bindings"
+    },
+    "bridge_v2_primary/training/29/field.json": {
+      "bytes": 69865,
+      "sha256": "7aa750b0bf82f9ee0cf65325a67d9bf70230bd3a648dff38feec0d5a7a485ae2",
+      "used_fields": "resources and wall_ns only; no decision values"
+    },
+    "bridge_v2_primary/training/29/generic.json": {
+      "bytes": 70010,
+      "sha256": "8a6f07929cb881245af28d468a9d252925c8079e4e0d8cc20b783f740c187c2e",
+      "used_fields": "resources and wall_ns only; no decision values"
+    },
+    "bridge_v2_primary/training/29/ordinary.json": {
+      "bytes": 120688,
+      "sha256": "160a7e3a05a3bf31e16c06e1c96c7f024fffd008a10535502fdd04a1f658bdfa",
+      "used_fields": "reuse declarations and logical_path_resources_already_in_shared_bank"
+    },
+    "bridge_v2_primary/training/29/richer.json": {
+      "bytes": 69962,
+      "sha256": "46d72e286213177364647551f7cca20df1a6a8278d9a78bbeef53b1de87d2487",
+      "used_fields": "resources and wall_ns only; no decision values"
+    },
+    "bridge_v2_primary/training/43/COMPLETE.json": {
+      "bytes": 13586,
+      "sha256": "96c7b56214058629a53490a039ac96b8e61c8a1728ca5db35661ee58f17de0c0",
+      "used_fields": "resources, checkpoint and completion bindings"
+    },
+    "bridge_v2_primary/training/43/field.json": {
+      "bytes": 69778,
+      "sha256": "9d5c147f5cfa620ac09e62bc3e326be6912c4f6f62589b93e8db6a4a14be9e39",
+      "used_fields": "resources and wall_ns only; no decision values"
+    },
+    "bridge_v2_primary/training/43/generic.json": {
+      "bytes": 70065,
+      "sha256": "0a8cf009a92622811e98e5914b58c1a81d1f3fda6b0404ff0413b84bd1ab7929",
+      "used_fields": "resources and wall_ns only; no decision values"
+    },
+    "bridge_v2_primary/training/43/ordinary.json": {
+      "bytes": 120497,
+      "sha256": "f70aefa6c559b06f57400f4f225a8422c9f79a46ff089893d09165900d94d167",
+      "used_fields": "reuse declarations and logical_path_resources_already_in_shared_bank"
+    },
+    "bridge_v2_primary/training/43/richer.json": {
+      "bytes": 69871,
+      "sha256": "f8157d8139b2d2ab3dd2899bbafce00613fa4badc807c4aa7701f48f0ae6d892",
+      "used_fields": "resources and wall_ns only; no decision values"
+    },
+    "bridge_v2_replay_audit/REPLAY_AUDIT.json": {
+      "bytes": 110621,
+      "sha256": "a8e053263efb3698d900e0bcc7713ff6b43739758562db3b0b67d85e7941446e",
+      "used_fields": "actual replay gradient calls/examples and wall time"
+    },
+    "bridge_v2_replay_fit/REPLAY_AUDIT.json": {
+      "bytes": 109071,
+      "sha256": "292dfc2b5db640af759b3daf910306e3671fc66e4079b077cbef446fe3ec3a5a",
+      "used_fields": "actual replay gradient calls/examples and wall time"
+    },
+    "bridge_v2_review/PRIMARY_RUNTIME_AUDIT.json": {
+      "bytes": 57438,
+      "sha256": "173193a0a987bd73cb5573c8f7450e77379942024312f53ff81c6249f3d23f9e",
+      "used_fields": "auditor-specific work fields and counts only"
+    },
+    "bridge_v2_review/primary-training-audit/PRIMARY_TRAINING_AUDIT.json": {
+      "bytes": 13686,
+      "sha256": "67beb08e38f8ff60817de637e346f753698fbf007f9316f4b44b467d95d7be21",
+      "used_fields": "auditor model_inference_calls and reconstructed prediction rows; verified study counts not added again"
+    },
+    "bridge_v2_review/primary-training-audit/PRIMARY_TRAINING_REPLAY.json": {
+      "bytes": 8995,
+      "sha256": "98b516042409a5f0cac01ac8c00c1bf7257fe76b5d4236d1ccc439ceba8c99aa",
+      "used_fields": "actual replay gradient calls/examples and wall time"
+    }
+  },
+  "timing_interpretation": "Receipt wall intervals include host contention and may overlap across seeds or stages; their sums are not end-to-end elapsed time or latency advantages. Counts are calls/examples, not FLOPs.",
+  "verification": {
+    "classification": "additional verification work; not independent scientific replicates or treatment benefit",
+    "deployment_media_audit": {
+      "audit_wall_ns": 191321452419,
+      "batches": 2640,
+      "counting": "Extra observer/native execution; media entries/rows describe verified study coverage, not new generated samples or media",
+      "generator_forward_calls": 0,
+      "independently_rescored_rows": 168960,
+      "logical_media_files": 506880,
+      "native_replayed_ticks": 61440,
+      "observer_digit_examples": 675840,
+      "rows": 84480,
+      "unique_media_entries": 108793,
+      "unique_payload_bytes": 91662356
+    },
+    "gradient_replays": [
+      {
+        "actual_gradient_calls": 576,
+        "actual_gradient_examples": 36864,
+        "other_network_work": "Not fully metered in this replay receipt; not assumed zero",
+        "source": "bridge_v2_replay_fit/REPLAY_AUDIT.json",
+        "wall_ns": 20993088157
+      },
+      {
+        "actual_gradient_calls": 576,
+        "actual_gradient_examples": 36864,
+        "other_network_work": "Not fully metered in this replay receipt; not assumed zero",
+        "source": "bridge_v2_replay_audit/REPLAY_AUDIT.json",
+        "wall_ns": 82380318257
+      },
+      {
+        "actual_gradient_calls": 16,
+        "actual_gradient_examples": 1024,
+        "other_network_work": "Not fully metered in this replay receipt; not assumed zero",
+        "source": "bridge_v2_review/primary-training-audit/PRIMARY_TRAINING_REPLAY.json",
+        "wall_ns": 1297741525
+      }
+    ],
+    "known_replay_gradient_calls": 1168,
+    "known_replay_gradient_examples": 74752,
+    "recovery_parity": {
+      "additional_model_forward_calls": 0,
+      "additional_native_replay_ticks": 0,
+      "complete_partial_rows_compared": 11808,
+      "native_receipts_compared": 6560,
+      "scope": "Hash/JSON comparison of preserved repeated execution only; no model/native reexecution. Comparator work was not separately timed in its receipt."
+    },
+    "runtime_audit": {
+      "independent_least_squares_solves": 432,
+      "native_replay_ticks": 221184,
+      "reward_observer_digit_examples": 276480,
+      "sum_profile_wall_ns": 44465139182
+    },
+    "training_arithmetic_audit": {
+      "do_not_double_count": "new_final_gradient_calls and selection calls in this audit describe original treatment work already counted above",
+      "model_inference_calls": 0,
+      "predictor_reconstruction_calls": 324
+    },
+    "unmetered_additional_verification": "Other synthetic contracts, derivative checks, arithmetic-only passes, native engineering benchmarks and development diagnoses are outside this receipt-level subtotal; they are not zero-cost"
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "all_28_original_assets_exact": true,
+  "all_original_substantive_blockers_closed": false,
+  "archive": {
+    "bytes": 415960474,
+    "filename": "hepta_field_bridge_v4_20261027_evidence.tar.gz",
+    "manifest_bytes": 237115,
+    "manifest_sha256": "fd05cac4184a7c468b4da057ea0f84e7ffe0e8978dd25287840f6117fb215cd0",
+    "path": "/tmp/hepta-v4-final-20261027/hepta_field_bridge_v4_20261027_evidence.tar.gz",
+    "payload_bytes": 487105575,
+    "payload_members": 945,
+    "regular_members_including_manifest": 946,
+    "sha256": "716b1291ee2fe1271f50589222fec9793b87a5bcae156c7af8e498c6c80f9df7"
+  },
+  "archive_self_and_postpackage_receipts_excluded": true,
+  "complete_training_traces_retained": 108,
+  "durable_raw_archive_copy_confirmed": false,
+  "exact_reanalysis_match": true,
+  "excluded_scope": [
+    {
+      "category": "prior V2/V3 tar payloads",
+      "reason": "explicit identities only; no nested multi-gigabyte historical archives"
+    },
+    {
+      "category": "temporary Torch/dependency runtime",
+      "reason": "reproducible environment; exact restoration source/receipt retained; no 612MB runtime payload",
+      "source": "/tmp/hepta-field-v4-python"
+    },
+    {
+      "category": "archive, manifest-self and postpackage archive receipts",
+      "reason": "kept outside the package; independent receipts bind the final archive without a hash cycle"
+    }
+  ],
+  "final_or_runtime_authorized": false,
+  "inner_gzip_files_verified": 119,
+  "input_index_receipt": {
+    "bytes": 440565,
+    "filename": "ARCHIVE_INPUTS.json",
+    "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ARCHIVE_INPUTS.json",
+    "sha256": "358baa650c000b1f2a7d304b3f13aa9344351d3acbf08716327d15e416912db8"
+  },
+  "input_postflight_receipt": {
+    "bytes": 892,
+    "filename": "ARCHIVE_INPUT_POSTFLIGHT.json",
+    "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ARCHIVE_INPUT_POSTFLIGHT.json",
+    "sha256": "1ca0de5ef61cb0891ca01178c8daf5b3b2282dac90a65d4f1cf08826f7d232f3"
+  },
+  "integrity_receipt": {
+    "bytes": 314321,
+    "filename": "ARCHIVE_INTEGRITY.json",
+    "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ARCHIVE_INTEGRITY.json",
+    "sha256": "4c6908684d98c7fa0b521b38be80a42ec72e25060a5bf91e27753e908887328e"
+  },
+  "large_original_asset_manifest_should_not_be_duplicated_in_git": true,
+  "library_file_id": null,
+  "local_archive_verified": true,
+  "new_library_upload_attempts": 0,
+  "new_outcome_look": false,
+  "new_policy_selection": false,
+  "original_asset_archive_reference": {
+    "archive_bytes": 62166608,
+    "archive_sha256": "ddbdf10b4397c8538183df8fa7c16f08c5fba226a304ff7cb55574ddb97e951e",
+    "library_file_id": "libfile_07ecbd6ae3208191a9d87172d1188d23",
+    "manifest_sha256": "c452c96798d45618d6509695e52b8587a080ac26e721b2a566e6d3746e425205",
+    "nested": false
+  },
+  "original_asset_manifest_archived_path": "operations/original-asset-recovery/ORIGINAL_ASSET_MANIFEST.json",
+  "preservation_scope": "Complete terminal V4 raw execution, original restored assets, all frozen inputs and source bindings; exact archived statistical replay. Earlier V1-V3 generated histories and large prior archives are referenced by identity, not nested. This is not a complete historical model-training rerun.",
+  "prior_archive_references": [
+    {
+      "bytes": 550161476,
+      "filename": "hepta_field_bridge_v2_20261027_evidence.tar.gz",
+      "identity_from_prior_verified_receipt_not_rehashed_now": true,
+      "manifest_sha256": "8712ca4831d92bdf06c64656709cf76c3c0cf91edb9fc1f38adc0e0a91b10ffc",
+      "payload_included": false,
+      "receipt": "legacy/archive-references/V2_EVIDENCE_ARCHIVE.json",
+      "receipt_sha256": "4232d8f50f13e586510ca9523493ce533c63a4cfc19fbea3e7a57098439d6920",
+      "sha256": "7351ff2b694bb37bcd50e7d5be08e601f525516c9ba214a8d912d34f007a4607"
+    },
+    {
+      "bytes": 1254389884,
+      "filename": "hepta_field_bridge_v3_20261027_evidence.tar.gz",
+      "identity_from_prior_verified_receipt_not_rehashed_now": true,
+      "manifest_sha256": "d31df0debb1a54091fa61cd275b20daf1b6fadc7b46a6ccd59507f8d642ea90a",
+      "payload_included": false,
+      "receipt": "legacy/archive-references/V3_EVIDENCE_ARCHIVE.json",
+      "receipt_sha256": "fd1911c3f0653fbde9e40d8c5da97dac6e7e01c4a6c8c34c946292997714ab5b",
+      "sha256": "37ef2e8de1a795ada43a92afc7403018e82ac23368e8ee6f7319569099abf4cf"
+    }
+  ],
+  "qualification_sha256": "0634e0f89ad5c07dfa36c74c475b593b8b9aa8c29990bb86b078995ab63b3b58",
+  "qualification_status": "QUALIFICATION_FAILED",
+  "raw_archive_storage_scope": "Local verified file only; no upload was performed by this archive chain. Existing historical original-asset archive was downloaded read-only.",
+  "raw_archive_uploaded": false,
+  "raw_media_files_retained": 222,
+  "reanalysis_receipt": {
+    "bytes": 12500,
+    "filename": "ARCHIVE_REANALYSIS.json",
+    "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ARCHIVE_REANALYSIS.json",
+    "sha256": "9e14fd53c756759060224d9690d6e4ceb798ef1af878b879626f29f18890e15f"
+  },
+  "recorded_unix_ns": 1793118566440657159,
+  "restored_files": 280,
+  "restored_payload_bytes": 15622988,
+  "schema": "hepta.field-bridge.v4.evidence-archive.1",
+  "source_protocol_sha256": "561c8110c51fe5705f3966cc806221927497897f9498745466ec4966ea2f2797",
+  "status": "LOCAL_COMPLETE_VERIFIED_AND_LITERAL_STATISTICS_REPLAYED",
+  "study_id": "hepta.field-bridge.v4.panel-origin-qualification.20261027.1",
+  "trained_checkpoints_retained": 108,
+  "verification_receipt": {
+    "bytes": 12600,
+    "filename": "ARCHIVE_AND_RESTORE_VERIFICATION.json",
+    "path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ARCHIVE_AND_RESTORE_VERIFICATION.json",
+    "sha256": "6bfedf6728710b3afedacf5f040b622b496e372b7e99dd3b1227675bfa3ce9d8"
+  }
+}

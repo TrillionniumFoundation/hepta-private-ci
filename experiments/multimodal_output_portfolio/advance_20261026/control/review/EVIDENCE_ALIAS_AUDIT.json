@@ -1,0 +1,112 @@
+{
+  "audit_source_sha256": "bce8b5d7066787fcf831e86a63c46e963a532bdb48d0fbdd975584786ad771bc",
+  "candidate_or_protocol_modified": false,
+  "causal_attribution": "No attribution of the dynamic selected-action ECE failure or any primary outcome to this discrepancy is established by this metadata audit.",
+  "frozen_model_argument": "The registered pair law is kron(L,L). For target(t,t), its off-diagonal mass equals 1-sum_o L(o|t)^2 and is strictly positive in every frozen target-diagonal column.",
+  "identity_argument": "Two identical SHA-bound WAVs pass through the same deterministic normalization, frozen eval-mode CNN and argmax. Their observed labels are equal. Thus P(left_observation != right_observation | equal target and the registered identical-WAV mechanism)=0, regardless of unknown per-digit error rates.",
+  "new_model_or_waveform_observations_opened": false,
+  "per_digit_unsupported_probability": [
+    {
+      "actual_allowed_off_diagonal_probability_for_identical_waveform": 0.0,
+      "formula_one_minus_sum_squared_digit_likelihood": 0.2861224489795918,
+      "kron_off_diagonal_probability": 0.2861224489795918,
+      "target_code": 0,
+      "true_equal_digit": 0
+    },
+    {
+      "actual_allowed_off_diagonal_probability_for_identical_waveform": 0.0,
+      "formula_one_minus_sum_squared_digit_likelihood": 0.37591836734693884,
+      "kron_off_diagonal_probability": 0.3759183673469388,
+      "target_code": 11,
+      "true_equal_digit": 1
+    },
+    {
+      "actual_allowed_off_diagonal_probability_for_identical_waveform": 0.0,
+      "formula_one_minus_sum_squared_digit_likelihood": 0.48857142857142866,
+      "kron_off_diagonal_probability": 0.4885714285714285,
+      "target_code": 22,
+      "true_equal_digit": 2
+    },
+    {
+      "actual_allowed_off_diagonal_probability_for_identical_waveform": 0.0,
+      "formula_one_minus_sum_squared_digit_likelihood": 0.2861224489795918,
+      "kron_off_diagonal_probability": 0.2861224489795918,
+      "target_code": 33,
+      "true_equal_digit": 3
+    },
+    {
+      "actual_allowed_off_diagonal_probability_for_identical_waveform": 0.0,
+      "formula_one_minus_sum_squared_digit_likelihood": 0.2861224489795918,
+      "kron_off_diagonal_probability": 0.2861224489795918,
+      "target_code": 44,
+      "true_equal_digit": 4
+    },
+    {
+      "actual_allowed_off_diagonal_probability_for_identical_waveform": 0.0,
+      "formula_one_minus_sum_squared_digit_likelihood": 0.2861224489795918,
+      "kron_off_diagonal_probability": 0.2861224489795918,
+      "target_code": 55,
+      "true_equal_digit": 5
+    },
+    {
+      "actual_allowed_off_diagonal_probability_for_identical_waveform": 0.0,
+      "formula_one_minus_sum_squared_digit_likelihood": 0.4542857142857144,
+      "kron_off_diagonal_probability": 0.4542857142857143,
+      "target_code": 66,
+      "true_equal_digit": 6
+    },
+    {
+      "actual_allowed_off_diagonal_probability_for_identical_waveform": 0.0,
+      "formula_one_minus_sum_squared_digit_likelihood": 0.2387755102040816,
+      "kron_off_diagonal_probability": 0.23877551020408164,
+      "target_code": 77,
+      "true_equal_digit": 7
+    },
+    {
+      "actual_allowed_off_diagonal_probability_for_identical_waveform": 0.0,
+      "formula_one_minus_sum_squared_digit_likelihood": 0.33183673469387764,
+      "kron_off_diagonal_probability": 0.33183673469387753,
+      "target_code": 88,
+      "true_equal_digit": 8
+    },
+    {
+      "actual_allowed_off_diagonal_probability_for_identical_waveform": 0.0,
+      "formula_one_minus_sum_squared_digit_likelihood": 0.2861224489795918,
+      "kron_off_diagonal_probability": 0.2861224489795918,
+      "target_code": 99,
+      "true_equal_digit": 9
+    }
+  ],
+  "recorded_ns": 1792991604784356157,
+  "schema": "hepta.advance.evidence-alias-support-audit.v1",
+  "scientific_conclusion": "Conditional independence is known to fail for this source subset. The frozen joint observation law does not have the correct support; this is stronger than an unverified same-speaker correlation assumption.",
+  "scope": "Only immutable metadata and the already frozen likelihood were read. Original qualification, confirmation and failed results remain intact. Any corrected alias-conditioned or joint observation model requires a separately registered candidate and independent qualification.",
+  "source_and_frozen_model_sha256": {
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/SOURCE_ALLOCATION.json": "42d0c47056dda930cb851c9ae59f330747de8bb863f18b79c47eea830f69b262",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/cases.py": "39fece37565e754ef357085e77f1314739f87eb81aa3cffc8aa5bd5d0bbca04c",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/control/AUDIO_LIKELIHOOD.json": "1fff72a9ad1470b1ead327a82811642f0b14c45ca61f454b2f60292e246d5946",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/control/audio_likelihood.py": "543d90ecd70efaa0c8008dec5ecc593cd628ee0a1360139dc171cc5a1e258590",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/native/host.py": "3b5df866c33ef2c2a842c950a23be4ecaf1936a3673b8f5ed2d09decf3dcd4db",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/audio_sources.py": "82b4aba5b547fa6c0c56c9e75a2f0b8d5020052169aed028457e7007ba4bfb10",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/model.py": "2b3b76c10411f93c8b2ffa2189e3a0f53874fc33a9b841afd1371bf4c51b6615"
+  },
+  "source_census": {
+    "confirmation": {
+      "affected_writer_clusters": 11,
+      "all_equal_digit_pairs_reuse_identical_WAV": true,
+      "equal_digit_pairs": 11,
+      "fraction": 0.06470588235294118,
+      "pairs": 170,
+      "same_WAV_pairs": 11
+    },
+    "qualification_id": {
+      "affected_writer_clusters": 4,
+      "all_equal_digit_pairs_reuse_identical_WAV": true,
+      "equal_digit_pairs": 4,
+      "fraction": 0.1,
+      "pairs": 40,
+      "same_WAV_pairs": 4
+    }
+  },
+  "status": "known_observation_support_misspecification"
+}

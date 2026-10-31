@@ -1,0 +1,281 @@
+{
+  "schema": "hepta.field-bridge.v3.verified-v2-duplicate-reclaim.1",
+  "archive_path": "/tmp/hepta-v2-final-20261027/hepta_field_bridge_v2_20261027_evidence.tar.gz",
+  "archive_sha256": "7351ff2b694bb37bcd50e7d5be08e601f525516c9ba214a8d912d34f007a4607",
+  "manifest_sha256": "8712ca4831d92bdf06c64656709cf76c3c0cf91edb9fc1f38adc0e0a91b10ffc",
+  "archive_verified_unchanged_before_reclaim": true,
+  "separate_selective_restoration_receipt_sha256": "3f9c0e7ccaa1bb05533385edc30ae6d21e4a38a5fa60b9094ee5ee2549f82543",
+  "only_archive_duplicate_payloads_reclaimed": true,
+  "durable_upload_still_blocked": true,
+  "archive_retained": true,
+  "files": [
+    {
+      "bytes": 10362198,
+      "mode": 420,
+      "path": "bridge_v2_primary/eval/17/media.zip",
+      "sha256": "240787026e75a1a4954721785efd4cc1ab8c86a809aca53ed6c6637e1d570a1f"
+    },
+    {
+      "bytes": 2249522,
+      "mode": 420,
+      "path": "bridge_v2_primary/eval/17/native.jsonl.gz",
+      "sha256": "9f166dc43c203c191552c2a5bc2c88ac466facbc2ea352eb77b955c40fbf1dac"
+    },
+    {
+      "bytes": 10657023,
+      "mode": 420,
+      "path": "bridge_v2_primary/eval/17/rows.jsonl.gz",
+      "sha256": "3ab7b972dff8424b5845fa01b14d60212668e8355fe8e05db3a6ed5d683f4c39"
+    },
+    {
+      "bytes": 9147998,
+      "mode": 420,
+      "path": "bridge_v2_primary/eval/29/media.zip",
+      "sha256": "a4bb6cbdc34c7a626f0c6b80c830045f2ffa6d51c9141b5ba78a7a047f875180"
+    },
+    {
+      "bytes": 2271150,
+      "mode": 420,
+      "path": "bridge_v2_primary/eval/29/native.jsonl.gz",
+      "sha256": "529a06ed53ac91c60ae4ec5aee2d9a3c8f2f0454e51102ab8f2082f9c98ccaa1"
+    },
+    {
+      "bytes": 6045897,
+      "mode": 420,
+      "path": "bridge_v2_primary/eval/29/rows.jsonl.gz",
+      "sha256": "3f847321582021efde71ec4b4d231b3b1e6136319658b9b788643b6aec7e38bf"
+    },
+    {
+      "bytes": 5820538,
+      "mode": 420,
+      "path": "bridge_v2_primary/eval/43/media.zip",
+      "sha256": "f919407c8369ddcee268783f55f9b1c4e028670ba1ebef919fef2370169de1d0"
+    },
+    {
+      "bytes": 4739035,
+      "mode": 420,
+      "path": "bridge_v2_primary/eval/43/rows.jsonl.gz",
+      "sha256": "cff92c1c711eed21512ac83e923876bc760a9e27f0a0dd2489d85051f219a886"
+    },
+    {
+      "bytes": 34550905,
+      "mode": 420,
+      "path": "bridge_v2_primary/eval_recovered/17/media.zip",
+      "sha256": "5308705ccad3afd26a4a0fa75e72059c65edd5631fc17ba6472c38a508fc53f6"
+    },
+    {
+      "bytes": 6945106,
+      "mode": 420,
+      "path": "bridge_v2_primary/eval_recovered/17/native.jsonl.gz",
+      "sha256": "b3e8f337d6926ad0abecc1554690d9123050979d328c9df3e682d3675e4fc96e"
+    },
+    {
+      "bytes": 50569928,
+      "mode": 420,
+      "path": "bridge_v2_primary/eval_recovered/17/rows.jsonl.gz",
+      "sha256": "1f60457826a122c712e6f09167d540a9abe2062b18d36f69333e7dafc36fc231"
+    },
+    {
+      "bytes": 45881188,
+      "mode": 420,
+      "path": "bridge_v2_primary/eval_recovered/29/media.zip",
+      "sha256": "bfde80b512392e7270f4732736561b5f888aa3505e114b2aa5420ecf97b5ac7d"
+    },
+    {
+      "bytes": 6957027,
+      "mode": 420,
+      "path": "bridge_v2_primary/eval_recovered/29/native.jsonl.gz",
+      "sha256": "872035b04bc15d474b0461be75930e315bb4524f1ed4f6ccb678c14cf11f6ca6"
+    },
+    {
+      "bytes": 51281693,
+      "mode": 420,
+      "path": "bridge_v2_primary/eval_recovered/29/rows.jsonl.gz",
+      "sha256": "891871287fa26df0b9e23b659271f9843f5b84a1518b3f9a9940ca3ba0ca63dc"
+    },
+    {
+      "bytes": 36470305,
+      "mode": 420,
+      "path": "bridge_v2_primary/eval_recovered/43/media.zip",
+      "sha256": "09a7c90a9b1594708e126ed638d48fac211d0c51803ac7bed80a01d7e92481f4"
+    },
+    {
+      "bytes": 6891700,
+      "mode": 420,
+      "path": "bridge_v2_primary/eval_recovered/43/native.jsonl.gz",
+      "sha256": "0601f386102ffa7f584bafd42d45acc28df923d6219c91a4dffd11457ea22e8a"
+    },
+    {
+      "bytes": 50681902,
+      "mode": 420,
+      "path": "bridge_v2_primary/eval_recovered/43/rows.jsonl.gz",
+      "sha256": "3b25a65be13ca509ef96add1d2743537e4e929854c80cac31373073ff9c0ad3c"
+    },
+    {
+      "bytes": 2510598,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/17-field/READOUTS.json",
+      "sha256": "008a895d769db43f234903b3eaa02d2fea518be3e04472926ece8a9fce247fe7"
+    },
+    {
+      "bytes": 6265921,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/17-field/features.npz",
+      "sha256": "67ce5f1f70cef52b92ecfeef4a981f8b0b91e61cf69927abf27ad6c7f543cbc2"
+    },
+    {
+      "bytes": 9143782,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/17-field/hard-bank-outputs.npz",
+      "sha256": "56d1a90e75ca7b7994815e294682a7bf72dd63fe1f0e7532dc65f7d483383909"
+    },
+    {
+      "bytes": 2520934,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/17-frozen/READOUTS.json",
+      "sha256": "bf3a7363d499cc5dc38422ed2f7c8b1599347b4c4a70a0e886d9927cf0ee2127"
+    },
+    {
+      "bytes": 6258260,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/17-frozen/features.npz",
+      "sha256": "eef6fa02ff728adc0d17c9158e672cdf0860c1bdfa7a1c05db72db82a08e1673"
+    },
+    {
+      "bytes": 9382674,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/17-frozen/hard-bank-outputs.npz",
+      "sha256": "20ac4b05b9ec243f31d748b623152191160bca54a86193033751a85d96856f48"
+    },
+    {
+      "bytes": 2515100,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/17-ordinary/READOUTS.json",
+      "sha256": "ada6cd81116dbf16052649c467e7dcb03b0dda32bb80859be36fcdc8608fea40"
+    },
+    {
+      "bytes": 6258978,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/17-ordinary/features.npz",
+      "sha256": "2d6d3462a98347c8eb4cda8842fe33b8ae9bbf5decda46807ace0fc9a80bfe3e"
+    },
+    {
+      "bytes": 9094700,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/17-ordinary/hard-bank-outputs.npz",
+      "sha256": "edbe018cf61b123577b03790ecdfc0d9d2e666235d9bd587685c83abd625c83a"
+    },
+    {
+      "bytes": 2521547,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/29-field/READOUTS.json",
+      "sha256": "89f2904d8bdcb8af4602ef3704b1aa9e85cdcb9b9f8659d9219e937e41698a36"
+    },
+    {
+      "bytes": 6264049,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/29-field/features.npz",
+      "sha256": "2a7218299235c44f4420f8b62cf578b57d4331f7b6f60ca37d5de99c344d144b"
+    },
+    {
+      "bytes": 9386118,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/29-field/hard-bank-outputs.npz",
+      "sha256": "a595d0201b1dfadd2184e31036c3243f51208e88c22d2e385a0615602690fe17"
+    },
+    {
+      "bytes": 2512563,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/29-frozen/READOUTS.json",
+      "sha256": "23b9734d6fb7ad66a807e629bd075a0f36a0a99de554c4427ab4638c53fd7c6b"
+    },
+    {
+      "bytes": 6261104,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/29-frozen/features.npz",
+      "sha256": "49962adb8a965c45d6bccd323aab75ccfbde774a2373cc5b522cfa491c76c60d"
+    },
+    {
+      "bytes": 9573204,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/29-frozen/hard-bank-outputs.npz",
+      "sha256": "1717cbe35cf04ad1b3dd0852281ed687fffe18282f3996e90d1863937061ee48"
+    },
+    {
+      "bytes": 2514022,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/29-ordinary/READOUTS.json",
+      "sha256": "9c2ef808042b94f1377d91f73ecdad95573d211619ae2c64b51d7aaaff6c5860"
+    },
+    {
+      "bytes": 6264178,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/29-ordinary/features.npz",
+      "sha256": "308e7e7fdc3644a662f427baa505d5452a815c4e027d2ddf3009be13db163432"
+    },
+    {
+      "bytes": 9280314,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/29-ordinary/hard-bank-outputs.npz",
+      "sha256": "d400bf5199cc8f508c9bc64f739294153dfeb8ee930def09a28fafbcbc20580b"
+    },
+    {
+      "bytes": 2522711,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/43-field/READOUTS.json",
+      "sha256": "60f0f354607027d5aa32ad4d8eae14fdb7ba4333160a52ff15947ce04ac2ee05"
+    },
+    {
+      "bytes": 6255961,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/43-field/features.npz",
+      "sha256": "8bcb43df5bc961c9bd41245405bdd0a6f4774d198015beb6967a8083225e652e"
+    },
+    {
+      "bytes": 9312041,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/43-field/hard-bank-outputs.npz",
+      "sha256": "f791f3ffa0984a5e62569700e773a58771269a49f1fc7173b4f600b65546bc67"
+    },
+    {
+      "bytes": 2517754,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/43-frozen/READOUTS.json",
+      "sha256": "a66009b32357f2fb10da483b8d4a1dac387734795f6425337c5bebf984626b1f"
+    },
+    {
+      "bytes": 6263091,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/43-frozen/features.npz",
+      "sha256": "e1197dc8dc041d07060d4299829656e92b52feb6c6884df310662540fb777f53"
+    },
+    {
+      "bytes": 9452277,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/43-frozen/hard-bank-outputs.npz",
+      "sha256": "431ab52c37fd0799c725ac0a3480921beefe6978662f2a2cde57635940da7fec"
+    },
+    {
+      "bytes": 2521265,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/43-ordinary/READOUTS.json",
+      "sha256": "31afbef1a24762d70da92b62eaf71435c92aad287b4a70e6fd424468863e935f"
+    },
+    {
+      "bytes": 6256017,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/43-ordinary/features.npz",
+      "sha256": "277bd513f002a5d474a1d160a54d1646eb6e00394e2e3e7388d1af7f12b273f8"
+    },
+    {
+      "bytes": 9169673,
+      "mode": 420,
+      "path": "bridge_v2_primary/runtime/43-ordinary/hard-bank-outputs.npz",
+      "sha256": "60ffb74178c705abdd34dcf8f89851db53c7f56e877a8b73562ff3d5ce9efdbd"
+    }
+  ],
+  "payload_bytes": 504321951,
+  "free_bytes_before": 933552128,
+  "restore_rule": "Read the retained verified archive; extract the exact manifest path and check its original byte length and SHA256. Zero-byte local placeholders are reclaimed copies, never experimental evidence.",
+  "free_bytes_after": 1437995008
+}

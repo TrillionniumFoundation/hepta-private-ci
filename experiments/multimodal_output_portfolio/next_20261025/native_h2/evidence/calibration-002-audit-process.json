@@ -1,0 +1,47 @@
+{
+  "cgroup_after": {
+    "current": 8364654592,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3795727,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "cgroup_before": {
+    "current": 8531423232,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3793567,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "child_system_seconds": 2.429374,
+  "child_user_seconds": 5.084221,
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-B",
+    "/tmp/hepta-ndu-next-native-h2/audit_prospective.py",
+    "--directory",
+    "/tmp/hepta-ndu-next-native-h2/calibration-002",
+    "--allocation",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/NATIVE_H2_ALLOCATION.json",
+    "--protocol",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/CALIBRATION_PROTOCOL_V2.json",
+    "--output",
+    "/tmp/hepta-ndu-next-native-h2/calibration-002/STRUCTURAL_AUDIT.json"
+  ],
+  "context": "Read-only calibration row/array/media audit; one concurrent ASR qualification; no model inference",
+  "exit_code": 0,
+  "log_sha256": "5d8292bebebe9a79ae815bbf3a068553b20a1671e8a98dd3d8d77341eb2fe6fe",
+  "peak_rss_bytes": 110145536,
+  "registration_sha256": "7f176afa31ede87a72023f065cab46ca170c762a08fba56b2fed58a0115335a1",
+  "schema": "hepta.next.native-h2-stage-cost.v1",
+  "wall_ns": 13213441779,
+  "wrapper_sha256": "08040b095fbb311c5cf5ca1334ee8e56b893d39a4b79c766f5e53ab6167f8604"
+}

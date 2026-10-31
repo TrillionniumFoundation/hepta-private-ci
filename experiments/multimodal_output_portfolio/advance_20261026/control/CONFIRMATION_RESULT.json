@@ -1,0 +1,299 @@
+{
+  "H1_same_state_diagnostics": {
+    "actual_alternatives_per_node": 5,
+    "alternative_generation_failures": 0,
+    "candidate_visited_H1_nodes": 1404,
+    "delta_MSE": {
+      "candidate": 0.0033805510987653486,
+      "teacher": 0.0047129408606353985,
+      "zero": 0.0033098055321993205
+    },
+    "executable_action_minus_executable_stop_count": 959,
+    "mean_realized_feasible_moment_regret": {
+      "candidate": 0.0032383964417598355,
+      "teacher": 0.0029457941517194663
+    },
+    "nodes_with_realized_admitted_improvement_over_admitted_stop": 54,
+    "selected_actual_delta_mean": 0.009213094423647112,
+    "selected_delta_MSE": 0.002801169182000415,
+    "selected_nonstop_with_admitted_stop": 117,
+    "selected_prediction_bias": -0.018158605802978154,
+    "selected_terminal_reused": 542
+  },
+  "actual_cost_scope": "Measured online requests include actual initialization, generation, shared feature/admission computation, only the selected value head, durable choice, and output persistence/readback. Candidate H1 retains a diagnostic public clone. Offline counterfactuals, private judges, resident loading and source decoding are separate within the whole-process receipt. Unit action cost is the fixed training cost, not a conversion of measured CPU or wall time.",
+  "analysis_wall_ns": 488585537,
+  "cost_sensitivity_descriptive_only": {
+    "cpu": [
+      {
+        "cost_adjusted_CE_difference": 0.011077026256393174,
+        "utility_price_per_ms": 0.0
+      },
+      {
+        "cost_adjusted_CE_difference": 0.011077392182695767,
+        "utility_price_per_ms": 1e-06
+      },
+      {
+        "cost_adjusted_CE_difference": 0.011080685593209072,
+        "utility_price_per_ms": 1e-05
+      },
+      {
+        "cost_adjusted_CE_difference": 0.011113626999556092,
+        "utility_price_per_ms": 0.0001
+      },
+      {
+        "cost_adjusted_CE_difference": 0.011443766824124402,
+        "utility_price_per_ms": 0.001
+      },
+      {
+        "cost_adjusted_CE_difference": 0.01481046466881697,
+        "utility_price_per_ms": 0.01
+      }
+    ],
+    "wall": [
+      {
+        "cost_adjusted_CE_difference": 0.011077026256393174,
+        "utility_price_per_ms": 0.0
+      },
+      {
+        "cost_adjusted_CE_difference": 0.011077466604981656,
+        "utility_price_per_ms": 1e-06
+      },
+      {
+        "cost_adjusted_CE_difference": 0.011081418172457447,
+        "utility_price_per_ms": 1e-05
+      },
+      {
+        "cost_adjusted_CE_difference": 0.011119483434246291,
+        "utility_price_per_ms": 0.0001
+      },
+      {
+        "cost_adjusted_CE_difference": 0.010510712383135168,
+        "utility_price_per_ms": 0.001
+      },
+      {
+        "cost_adjusted_CE_difference": 3.4956574857111224,
+        "utility_price_per_ms": 0.01
+      }
+    ]
+  },
+  "diagnostic_scope": "Same-public-state ex-post feasible regret on candidate-visited H1 nodes only; private realized alternatives never enter online choice. Secondary results do not substitute for primary failure.",
+  "fixed_training_seed": 17,
+  "interval_scope": "Paired writer-cluster percentile bootstrap; all pairs/views/future draws stay together. The three studies share this panel; alpha=.05/3 was fixed before opening. Conditional on this trained seed and known source panel, not a finite-sample or training-seed population guarantee.",
+  "native_owner_executed": false,
+  "policies": {
+    "constrained_paired": {
+      "action_cost_CE": -0.6065577286743781,
+      "initial_nonstop_selected_H2_moment": {
+        "MSE": 3.8845961648091425,
+        "count": 1404,
+        "mean_actual_minus_prediction_residual": 0.2613978213435063,
+        "mean_actual_moment": 4.626279839307581,
+        "mean_prediction": 4.3648820179640735,
+        "mean_prediction_minus_actual_bias": -0.2613978213435063
+      },
+      "initial_prediction_scope": "Actual realized terminal utility includes future attempted-action costs and later rejection/failure. Candidate H2 training used cross-fit H1 continuation choices; deployment uses the full-fit frozen H1 head. These descriptive residuals include that policy difference and source error, and do not inherit admission calibration qualification.",
+      "initial_selected_H2_moment": {
+        "MSE": 2.292736143587871,
+        "count": 2380,
+        "mean_actual_minus_prediction_residual": 0.15406580103703552,
+        "mean_actual_moment": 2.7889332229570716,
+        "mean_prediction": 2.634867421920036,
+        "mean_prediction_minus_actual_bias": -0.15406580103703552
+      },
+      "initial_selected_terminal_correctness": {
+        "ECE": 0.27685146890756307,
+        "bins": [
+          {
+            "bin": 7,
+            "confidence": 0.7581106225596529,
+            "count": 922,
+            "signed_error": 0.6453123579175705,
+            "success": 0.11279826464208242
+          },
+          {
+            "bin": 9,
+            "confidence": 0.9608563113854596,
+            "count": 1458,
+            "signed_error": 0.04384670919067224,
+            "success": 0.9170096021947873
+          }
+        ],
+        "count": 2380
+      },
+      "initial_selected_then_rejected_or_failed": 862,
+      "mean_continuations": 0.606985294117647,
+      "mean_cpu_ms": 12.350262034191177,
+      "mean_decision_cpu_ms_feature_admission_head": [
+        1.3181906782250217,
+        2.3955329226479156,
+        0.030012744180407364
+      ],
+      "mean_wall_ms": 14.483864216544118,
+      "operational_failures": 0,
+      "raw_CE": -0.6051267263686961,
+      "rejections": 1202,
+      "secondary_CE": -0.6050589800791184,
+      "selected_final_decision_correctness": {
+        "ECE": 0.013597443346508604,
+        "bins": [
+          {
+            "bin": 8,
+            "confidence": 0.894627,
+            "count": 44,
+            "signed_error": 0.2809906363636363,
+            "success": 0.6136363636363636
+          },
+          {
+            "bin": 9,
+            "confidence": 0.9649099938941655,
+            "count": 1474,
+            "signed_error": 0.005615556987788373,
+            "success": 0.9592944369063772
+          }
+        ],
+        "count": 1518
+      },
+      "strict_success": 0.5297794117647059,
+      "wall_p50_p95_p99_max_ms": [
+        12.938416,
+        21.96133129999999,
+        32.00895961999998,
+        1259.574133
+      ]
+    },
+    "masked_teacher": {
+      "action_cost_CE": -0.6176347549307712,
+      "initial_nonstop_selected_H2_moment": {
+        "MSE": 21.21095550964338,
+        "count": 1990,
+        "mean_actual_minus_prediction_residual": 3.10676889321389,
+        "mean_actual_moment": 3.4106754723910235,
+        "mean_prediction": 0.303906579177134,
+        "mean_prediction_minus_actual_bias": -3.10676889321389
+      },
+      "initial_prediction_scope": "Actual realized terminal utility includes future attempted-action costs and later rejection/failure. Candidate H2 training used cross-fit H1 continuation choices; deployment uses the full-fit frozen H1 head. These descriptive residuals include that policy difference and source error, and do not inherit admission calibration qualification.",
+      "initial_selected_H2_moment": {
+        "MSE": 17.73606539412327,
+        "count": 2380,
+        "mean_actual_minus_prediction_residual": 2.6076814439375817,
+        "mean_actual_moment": 2.875055211592392,
+        "mean_prediction": 0.26737376765481063,
+        "mean_prediction_minus_actual_bias": -2.6076814439375817
+      },
+      "initial_selected_terminal_correctness": {
+        "ECE": 0.2658792285714286,
+        "bins": [
+          {
+            "bin": 7,
+            "confidence": 0.7581038913857678,
+            "count": 1068,
+            "signed_error": 0.5567930299625469,
+            "success": 0.20131086142322097
+          },
+          {
+            "bin": 9,
+            "confidence": 0.9505622012195122,
+            "count": 1312,
+            "signed_error": 0.029068298780487778,
+            "success": 0.9214939024390244
+          }
+        ],
+        "count": 2380
+      },
+      "initial_selected_then_rejected_or_failed": 891,
+      "mean_continuations": 1.011764705882353,
+      "mean_cpu_ms": 14.233356288602943,
+      "mean_decision_cpu_ms_feature_admission_head": [
+        1.287609676433123,
+        2.3890784394904485,
+        0.1701166974522293
+      ],
+      "mean_wall_ms": 17.629753839338235,
+      "operational_failures": 0,
+      "raw_CE": -0.6161574389805529,
+      "rejections": 1231,
+      "secondary_CE": -0.6162507103744703,
+      "selected_final_decision_correctness": {
+        "ECE": 0.013885331094694402,
+        "bins": [
+          {
+            "bin": 8,
+            "confidence": 0.894627,
+            "count": 132,
+            "signed_error": 0.04614215151515144,
+            "success": 0.8484848484848485
+          },
+          {
+            "bin": 9,
+            "confidence": 0.9560910140014739,
+            "count": 1357,
+            "signed_error": -0.010747600589535722,
+            "success": 0.9668386145910096
+          }
+        ],
+        "count": 1489
+      },
+      "strict_success": 0.5235294117647059,
+      "wall_p50_p95_p99_max_ms": [
+        15.350654,
+        24.63275499999999,
+        35.49886781,
+        1807.561867
+      ]
+    }
+  },
+  "primary": {
+    "confidence_interval": [
+      0.0019457451377810687,
+      0.020595022148230165
+    ],
+    "confidence_level": 0.9833333333333333,
+    "contrast": "constrained_paired minus masked_teacher",
+    "efficacy_gate": true,
+    "estimand": "CE(U - .002 * attempted non-stop actions), gamma=2",
+    "lower_bound_positive": true,
+    "operational_gate": true,
+    "point": 0.011077026256393174
+  },
+  "production_authority": false,
+  "requests": 5440,
+  "schema": "hepta.advance.old-five-confirmation-result.v1",
+  "source_and_implementation_sha256": {
+    "allocation": "42d0c47056dda930cb851c9ae59f330747de8bb863f18b79c47eea830f69b262",
+    "completion": "851c1d79b98d7de51d9400f15b8f35a9977482c2783c86fcf498aad0a3f9e994",
+    "protocol": "be0b345d8ad76758292b4c675bc41e28528aaf2bebee6aef3470f3d91461a28d"
+  },
+  "source_pairs": 170,
+  "whole_execution": {
+    "cpu_ns": 102896515554,
+    "diagnostic_failures": 0,
+    "diagnostic_nodes": 1404,
+    "expected_content_rejections": 2433,
+    "files_sha256": {
+      "commitments.jsonl.gz": "a0a13a2e7befe67ac472cb2c8974e72b5a442fe3251e96191a2bbd73b905c913",
+      "counterfactual-scored.jsonl.gz": "6709d5cce177d5c650d88e98fde42fc4aff35e344ca86795c61e43c11bb1de03",
+      "counterfactuals.jsonl.gz": "67a38ada8a948157831c4ccdad65bfb4c81ead41425aa4e546d7093cf31d035a",
+      "diagnostic-commitments.jsonl.gz": "a5b0aa2c93a2afeff0168f56827ce1173556d0f22796be813217b8d6bfbc1f59",
+      "media.bin": "69b4b3082cf12699845f0de26ba4041619e2c71bdf3821e9c9fec183fa614cf7",
+      "registration.json": "b524e3b3b8c4c7e19a814832bee0d3a536011003a02590198638e16d68a846ae",
+      "requests.jsonl.gz": "ca9680b4eda7b6b2e486f07e7d88f63edc734f3af3d8b55d97f9ef47396fdd46",
+      "scored.jsonl.gz": "fa6fc62f853667e646d70048aec26ffaa993d6e785eb899305ea0b4f48bcfebd"
+    },
+    "model_load_wall_ns": 57467928,
+    "native_owner_executed": false,
+    "numpy_version": "2.3.5",
+    "offline_counterfactual_cpu_ns": 11214306679,
+    "offline_counterfactual_wall_ns": 23337235246,
+    "operational_failures": 0,
+    "production_authority": false,
+    "requests": 5440,
+    "schema": "hepta.advance.old-five-execution.v1",
+    "scoring_wall_ns": 16551372240,
+    "source_pairs": 170,
+    "status": "completed",
+    "torch_version": "2.14.1+cpu",
+    "wall_ns": 137732490064,
+    "writer_clusters": 85
+  },
+  "writer_clusters": 85
+}

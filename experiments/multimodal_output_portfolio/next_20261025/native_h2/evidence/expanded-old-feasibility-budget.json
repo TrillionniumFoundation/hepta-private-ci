@@ -1,0 +1,32 @@
+{
+  "ID_base_rate": {
+    "difference": -0.04906250000000001,
+    "old64_calibration": 0.8838125,
+    "old64_held": 0.83475
+  },
+  "cached_pilot_pair_interval": [
+    448,
+    576
+  ],
+  "current_pilot_source_ids_verified": true,
+  "current_predictor_fit_source_ids_verified": true,
+  "eligible_old_forecast_calibration_pairs": 872,
+  "held_ID_Brier": {
+    "calibration_frequency_transfer_component": 0.003639509867790997,
+    "held_oracle_bin_means_diagnostic_only": 0.11460131945184923,
+    "old_calibrated_3bin": 0.11824082870458985,
+    "raw_continuous": 0.10832734234550316
+  },
+  "oracle_is_only_bias_decomposition_never_deployed_or_selection_target": true,
+  "proposal": {
+    "actions_per_state": 5,
+    "actual_outputs": 40000,
+    "calibration_pairs": 400,
+    "future_draws": 1,
+    "held_validation_pairs": 400,
+    "new_source_outcomes_opened": false,
+    "states_per_request": 5,
+    "unallocated_old_pairs": 72,
+    "views_per_pair": 2
+  }
+}

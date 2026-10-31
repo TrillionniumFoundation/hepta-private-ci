@@ -1,0 +1,65 @@
+{
+  "actions": [
+    "refine_text",
+    "couple"
+  ],
+  "allocation_sha256": "2e10e724f83fa4673081a5d890b50592e73c318dd9b7a7da471571904c7e14e0",
+  "gates": {
+    "checkpoint_bytes": 1048576,
+    "maximum_ece_ppm": 30000,
+    "maximum_false_acceptance_ppm": 4999,
+    "maximum_ood_ppm": 500000,
+    "minimum_confidence_ppm": 750000,
+    "p95_latency_micros": 3000,
+    "p99_latency_micros": 8000,
+    "transient_allocation_bytes": 524288,
+    "write_amplification_ppm": 4000000
+  },
+  "id_views": [
+    "clean",
+    "noise",
+    "occlusion",
+    "missing_trusted",
+    "conflict_untrusted"
+  ],
+  "input_sha256": {
+    "manifest": "60c24d44e12eb3defb3b1b8146d91879b84918b057e0524117137d7e4f793058",
+    "model": "2f766c9356333d86f7c78c1cb18e8c67e776019c1071ff7af4b112f294518549",
+    "observer": "8cfca1b0cd0a69bcfcc6a9d34d0a672c07c28f3342823ef8a3f6763e9430a003"
+  },
+  "native_mapping": "drive[1,actual future state32];prediction[calibrated future correctness,committed forecast32];max residual unchanged Q24 scale;this post-outcome residual is not an exante confidence probability",
+  "paths": {
+    "cache": "/workspace/scratch/2b3c256bef7d/abc2-assets/mnist",
+    "manifest": "/workspace/scratch/2b3c256bef7d/abc2-runs/source-recovery-001/source-manifest.json",
+    "model": "/workspace/scratch/2b3c256bef7d/abc2-runs/training-001/seed-17/output_ndu/model.pt",
+    "observer": "/workspace/scratch/2b3c256bef7d/abc2-runs/base-recovery-001/reward-observer.pt"
+  },
+  "predictor": {
+    "forecast": "current actual-draft state + bounded learned residual;refine_text preserves actual image by original transition contract",
+    "future_state_dim": 32,
+    "hidden": 64,
+    "input_dim": 478,
+    "targets": "future emitted image encoder16 and bounded token-embedding16;future actual joint correctness label offline only",
+    "training": "historical train4000fit2000selection;Adam2000steps,batch128,lr.002,decay.0001;selection every100 by stateMSE+.05correctnessBCE"
+  },
+  "primary": "mean source-level paired MSE(persistence)-MSE(forecast), two actions averaged;nominal95% percentile bootstrap4000 sources; no tuning after verification",
+  "schema": "hepta.abc4.future-output-protocol.v1",
+  "secondary": "separate image/text MSE,ID/OOD,action,max-error tails,calibrated prospective correctness and native confidence,ECE source bootstrap,source-max error90% coverage",
+  "seed": 94017,
+  "source_pins": {},
+  "source_ranges": {
+    "calibration": {
+      "id_pairs": 400,
+      "ood_pairs": 400,
+      "role": "test",
+      "start": 768
+    },
+    "verification": {
+      "id_pairs": 632,
+      "ood_pairs": 800,
+      "role": "test",
+      "start": 1568
+    }
+  },
+  "status": "development_protocol_no_reserved_access"
+}

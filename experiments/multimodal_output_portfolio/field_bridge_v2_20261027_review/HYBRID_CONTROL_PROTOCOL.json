@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.field-bridge.v2.hybrid-control-development.1",
+  "created_utc": "2026-10-27T08:34:06Z",
+  "purpose": "Development-only information-preservation repair of the fixed sparse-kernel readout; no heldout efficacy claim",
+  "original_source_commit": "e8ce0f538857f8bd869e275aa7fd258aa7989113",
+  "source_archive_sha256": "5d855b0a9f4cbf273979fe2071837041aed0489cd56aa555e828564b98a56c47",
+  "native_library_sha256": "bfad6ca9d91d958296fa47c7f8ace4414b7ddf659e079ae5394c37bd104ceac3",
+  "seeds": [17, 29, 43],
+  "allowed_banks": {
+    "17-frozen-banks.npz": "105fa1367c35eec21e0352e79c5304153ace969ade16ec8e37bb524051ef40a9",
+    "29-frozen-banks.npz": "e42d0e62ec4326aa97302e0909dc8412efafc46178df4008857b6ca9580e37f4",
+    "43-frozen-banks.npz": "3f8b777d7dfae6a0afdcc8cf386c8ab60310f85e94485874eea3416efb88ba67"
+  },
+  "allowed_keys": ["train_x0", "train_x1", "train_returns", "dev_x0", "dev_x1", "dev_returns"],
+  "expected_shapes": {"train_x0": [768, 8], "train_x1": [768, 8], "train_returns": [768, 5], "dev_x0": [384, 8], "dev_x1": [384, 8], "dev_returns": [384, 5]},
+  "conditions": ["heavy_noise", "missing", "occlusion", "clean"],
+  "common_transform": {
+    "fit_scope": "Concatenate train_x0 and train_x1; common eight-coordinate mean and population standard deviation; never fit on development",
+    "formula": "raw: u=x; k variants: u=(clip((x-mean)/(max(std,1e-6)*k),-1,1)+1)/2",
+    "grid_order": [{"name": "raw", "k": null}, {"name": "common_standardization_k1", "k": 1}, {"name": "common_standardization_k2", "k": 2}, {"name": "common_standardization_k4", "k": 4}]
+  },
+  "representations": {
+    "native": {
+      "family_order": ["pure_native40", "raw16_native24"],
+      "pure_native40": "Actual unchanged sparse_tick via pinned FFI, two transformed 8D events, final20 activations+20 eligibility coordinates divided byQ24",
+      "raw16_native24": "First16 coordinates are original untransformed [x0,x1], preserving all raw public inputs; remaining24 are native40 coordinates with highest training population variance; descending variance and ascending original index tie-break; selection never reads labels or development"
+    },
+    "history": {
+      "family_order": ["original_history40", "raw16_rff24"],
+      "original_history40": "Existing [u0,u1,u0^2,u1^2,u1-u0]",
+      "raw16_rff24": "First16 coordinates are original untransformed [x0,x1]; remaining24 are the frozen Fourier features defined below"
+    }
+  },
+  "fourier_features": {
+    "seed": 271029,
+    "frequencies": 12,
+    "weights": "numpy.default_rng(271029).normal(size=(16,12))/sqrt(16); the same fixed matrix for every transform and seed",
+    "input": "For each common transform, concatenate [u0,u1], fit its16-coordinate mean/std ontraining rows only, standardize using max(std,1e-6); no additional clipping",
+    "features": "[cos(z@W),sin(z@W)]/sqrt(12), ordered12cos then12sin; no phase, bandwidth, frequency, or feature selection tuning"
+  },
+  "head": {
+    "family": "41x5 ridge with train-only feature standardization max(std,1e-6), unpenalized intercept, same existing V1 prediction rule",
+    "alpha_order": [0.0001, 0.01, 1.0],
+    "feature_width": 40,
+    "coefficient_count": 205,
+    "normalizer_statistic_count": 80,
+    "candidates_per_representation_per_seed": 24,
+    "total_heads": 144,
+    "selection": "Maximize development mean recorded net return separately within each representation and seed; family order then transform order then alpha order breaks exact ties; no development refit",
+    "family_reporting": "Also report best pure-native, hybrid-native, original-history and Fourier-history heads separately; do not attribute a hybrid improvement to the old pure-state representation"
+  },
+  "baselines": ["stop action0", "fixed action maximizing training mean and reused on development", "best fixed action maximizing development mean", "per-row oracle, diagnostic upper benchmark only"],
+  "metrics": ["all144 trained coefficient matrices and all normalizers", "train/development net return and oracle regret", "actual per-row selected actions and condition decomposition", "native coordinate variance/ranking and Fourier transform identity", "40D feature ranks and exact constant columns", "actual native ticks and shared extraction wall time; per-family feature construction and fit wall time"],
+  "feature_budget_scope": "Equal head coefficients and equal24-candidate development search opportunities, not identical transform cost or total stored constants; record native coordinate selectors and Fourier weights/normalizers separately",
+  "source_correlation": "384development rows are96sourcepairs under4conditions; seed models and conditions are paired. This analysis reports descriptive development statistics, no row-iid inference or p-values.",
+  "existing_outcome_reuse": "V1 training/development returns already include declared action charges; no new generator call, target scoring, or audit-observer access",
+  "exclusions": "Never open V1/V2test orretention outputs; do not modify frozen pilot, fitbank, auditbank, or scientific gates; no production activation",
+  "preservation": "Freeze this protocol and actual source hashes before fitting; save all144 heads, their predictions/actions, input/feature hashes and timing. Retain adverse seeds and both pure/hybrid families.",
+  "interpretation": "A favorable result is a selected-development candidate for prospective validation. An unfavorable or mixed result preserves the blocker. Neither outcome changes prior confirmatory results or proves neuron-specific superiority."
+}

@@ -1,0 +1,26 @@
+{
+  "actual_array_census_and_values_recomputed": true,
+  "actual_execution_failed_runs": 0,
+  "all_action_history_ledger_cells_present": true,
+  "all_conditional_array_sha256_verified": true,
+  "all_future_draws_preceded_by_commitment": true,
+  "detailed_report_copied_without_byte_change": true,
+  "detailed_report_sha256": "92c4b96cd21294cf4123fcc7c7da74e2747d01902f8e560a6f5552f36cbbb128",
+  "deterministic_H1_semantic_equals_stop_minus_cost": true,
+  "fit_choices_recomputed_from_primary_fit_only": true,
+  "postrun_verification_numeric_note": {
+    "corrected_float64_reduction_tolerance": 1e-12,
+    "initial_check_rejected_due_to_reduction_order": true,
+    "initial_independent_sum_check_tolerance": 2e-15,
+    "main_execution_repeated": false,
+    "maximum_actual_absolute_reduction_difference": 6.394884621840902e-14,
+    "model_outcomes_or_selections_changed": false
+  },
+  "raw_archives_are_local_only": true,
+  "schema": "hepta.abc-next.common-history-verification.v1",
+  "unit_and_synthetic_tests": {
+    "command": "python -B -m unittest experiments.multimodal_output_portfolio.abc_next.design.conditional_information_tests experiments.multimodal_output_portfolio.abc_next.design.common_history_tests",
+    "count": 9,
+    "passed": 9
+  }
+}

@@ -1,0 +1,280 @@
+{
+  "observation": {
+    "audit_wall_ns": 152967796,
+    "caption_digits": [
+      1,
+      6
+    ],
+    "caption_relation": "less",
+    "clock": {
+      "audio_samples": 32000,
+      "duration_ns": 4000000000,
+      "events": [
+        {
+          "audio_sample": 0,
+          "slot": 0,
+          "time_ns": 0,
+          "video_frame": 0
+        },
+        {
+          "audio_sample": 16000,
+          "slot": 1,
+          "time_ns": 2000000000,
+          "video_frame": 10
+        }
+      ],
+      "sample_rate": 8000,
+      "video_fps": 5,
+      "video_frames": 20
+    },
+    "content_checks": {
+      "audio_rms": [
+        0.0,
+        0.0
+      ],
+      "distinct_frames_per_event": [
+        10,
+        10
+      ],
+      "moving_video": true,
+      "nonempty_audio": false
+    },
+    "image_digits": [
+      1,
+      6
+    ],
+    "speech": {
+      "cache_hit": true,
+      "clock_boundaries_samples": [
+        0,
+        16000,
+        32000
+      ],
+      "ensemble_rule": "Accept equal nonempty digits or the sole nonempty digit; reject disagreement or two abstentions",
+      "events": [
+        {
+          "actual_event_pcm_sha256": "0c92bddb4e96f3ea9ec9f0f64a668255a6c15527ac09f6f119cafde60c7c4a39",
+          "actual_event_samples": 16000,
+          "cache_hit": true,
+          "cache_manifest_sha256": "1883c9bc8476ae4f016a2cebdea78140c29d522f1767c1e833de37c7ffa862d1",
+          "historical_asr_wall_ns": 4179868151,
+          "observations": {
+            "base.en": {
+              "cpu_ns": 1632263988,
+              "prediction": null,
+              "segments": [
+                {
+                  "avg_logprob": -0.6875959485769272,
+                  "end": 2.0,
+                  "no_speech_probability": 0.7832679748535156,
+                  "start": 0.0,
+                  "text": " You"
+                }
+              ],
+              "transcript": "You",
+              "wall_ns": 1003643499
+            },
+            "small.en": {
+              "cpu_ns": 3648870484,
+              "prediction": null,
+              "segments": [
+                {
+                  "avg_logprob": -0.6202978044748306,
+                  "end": 2.0,
+                  "no_speech_probability": 0.8980363607406616,
+                  "start": 0.0,
+                  "text": " You"
+                }
+              ],
+              "transcript": "You",
+              "wall_ns": 3176224652
+            }
+          },
+          "predictions": {
+            "base.en": null,
+            "consensus_or_single_v3": null,
+            "small.en": null
+          },
+          "primary_observer": "consensus_or_single_v3",
+          "request_wall_ns": 79588,
+          "target_supplied": false
+        },
+        {
+          "actual_event_pcm_sha256": "0c92bddb4e96f3ea9ec9f0f64a668255a6c15527ac09f6f119cafde60c7c4a39",
+          "actual_event_samples": 16000,
+          "cache_hit": true,
+          "cache_manifest_sha256": "1883c9bc8476ae4f016a2cebdea78140c29d522f1767c1e833de37c7ffa862d1",
+          "historical_asr_wall_ns": 4179868151,
+          "observations": {
+            "base.en": {
+              "cpu_ns": 1632263988,
+              "prediction": null,
+              "segments": [
+                {
+                  "avg_logprob": -0.6875959485769272,
+                  "end": 2.0,
+                  "no_speech_probability": 0.7832679748535156,
+                  "start": 0.0,
+                  "text": " You"
+                }
+              ],
+              "transcript": "You",
+              "wall_ns": 1003643499
+            },
+            "small.en": {
+              "cpu_ns": 3648870484,
+              "prediction": null,
+              "segments": [
+                {
+                  "avg_logprob": -0.6202978044748306,
+                  "end": 2.0,
+                  "no_speech_probability": 0.8980363607406616,
+                  "start": 0.0,
+                  "text": " You"
+                }
+              ],
+              "transcript": "You",
+              "wall_ns": 3176224652
+            }
+          },
+          "predictions": {
+            "base.en": null,
+            "consensus_or_single_v3": null,
+            "small.en": null
+          },
+          "primary_observer": "consensus_or_single_v3",
+          "request_wall_ns": 38777,
+          "target_supplied": false
+        }
+      ],
+      "observer_family_independence_claimed": false,
+      "predictions": {
+        "base.en": [
+          null,
+          null
+        ],
+        "consensus_or_single_v3": [
+          null,
+          null
+        ],
+        "small.en": [
+          null,
+          null
+        ]
+      },
+      "primary_observer": "consensus_or_single_v3",
+      "request_wall_ns": 118365,
+      "secondary_observers": [
+        "base.en",
+        "small.en"
+      ],
+      "target_supplied": false
+    },
+    "target_supplied": false,
+    "video_digits": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6
+    ]
+  },
+  "output": {
+    "all_required_complete": true,
+    "authority": "deny_all",
+    "bindings": {
+      "request_sha256": "0bd1b66cf196b6a3eebaf64f036e22deee29a45043e12202a8066b878ea62ef9",
+      "state_sha256": "70ab1f320f447366940be5a081205faccd75828a514746b3441162c5128837b8"
+    },
+    "clock": {
+      "audio_samples": 32000,
+      "duration_ns": 4000000000,
+      "events": [
+        {
+          "audio_sample": 0,
+          "slot": 0,
+          "time_ns": 0,
+          "video_frame": 0
+        },
+        {
+          "audio_sample": 16000,
+          "slot": 1,
+          "time_ns": 2000000000,
+          "video_frame": 10
+        }
+      ],
+      "sample_rate": 8000,
+      "video_fps": 5,
+      "video_frames": 20
+    },
+    "codec_wall_ns": 84949953,
+    "files": {
+      "audio": {
+        "bytes": 64044,
+        "path": "/tmp/hepta-ndu-next-media-cache/repair-confirmation-001/negative-controls/silence/audio.wav",
+        "sha256": "bff9ae2d1c0defb0f2b9070f43439fcb723621dbeb1cca5e2dbadcd9bfb13c68"
+      },
+      "image": {
+        "bytes": 745,
+        "path": "/tmp/hepta-ndu-next-media-cache/repair-confirmation-001/negative-controls/silence/image.png",
+        "sha256": "cd00b7b7d9805ec45e3e52353938128b7e19f80c15ef9ff6dc670c6bfe8b7ab6"
+      },
+      "text": {
+        "bytes": 28,
+        "path": "/tmp/hepta-ndu-next-media-cache/repair-confirmation-001/negative-controls/silence/caption.txt",
+        "sha256": "4d2525704c36097218d88643248ee3edb29b23cc883c15a81006415bd88c76de"
+      },
+      "video": {
+        "bytes": 22788,
+        "path": "/tmp/hepta-ndu-next-media-cache/repair-confirmation-001/negative-controls/silence/video.mp4",
+        "sha256": "80f0bab67c3b145f66d549480db77e84504ee16fed0f3336a3368fdce0389a81"
+      }
+    },
+    "lossless_roundtrip": true,
+    "required_modalities": [
+      "text",
+      "image",
+      "audio",
+      "video"
+    ],
+    "schema": "hepta.closure.four-second-carrier-media.v1",
+    "verification_wall_ns": 172144313
+  },
+  "rejected": true,
+  "score": {
+    "expected_after_observation": [
+      1,
+      6
+    ],
+    "joint_success": false,
+    "primary_observer": "consensus_or_single_v3",
+    "secondary_audio_by_model": {
+      "base.en": false,
+      "small.en": false
+    },
+    "secondary_audio_success": false,
+    "secondary_observer": "base.en",
+    "success": {
+      "audio": false,
+      "image": true,
+      "text": true,
+      "video": true
+    }
+  },
+  "valid_clock_retained": true
+}

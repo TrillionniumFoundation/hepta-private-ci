@@ -1,0 +1,31 @@
+{
+  "CI_waited": false,
+  "fresh_final_outcomes_opened": false,
+  "full_repository_test_suite_claimed": false,
+  "independent_read_review": "control_cost_v2: no fatal gradient, information-boundary, role/census or primary-statistical problem found",
+  "schema": "hepta.abc4.training-local-validation.v1",
+  "smokes": {
+    "evaluation": "8 real output pairs from historical train source only; both judges after exact media readback",
+    "training": "2 updates x 3 arms x seed17; actual candidate/reference emissions persisted/fsynced/reopened before scoring"
+  },
+  "source_sha256": {
+    "analysis.py": "31a6ba26123e0c0ea6218312f329974d5152b0b17a04bb1c2eee5fa332d84830",
+    "evaluate.py": "839187a84f6b0bbe300a3334e5ebecac5d8ee17e9695977aa07e0c9ae06e6d90",
+    "evaluation_tests.py": "86107d339adf26ecded7389c355cba53f920b887cd90e249dd4f0c3f75aaa0df",
+    "objective.py": "4e2800bf03bc3841699cf92e52c6dc5108b3f84d802726741374cc7d40d38360",
+    "objective_tests.py": "5047ada16e79bffcdc6ea961ec3cddb3f472e90e77be0b65a3e5abc0b7eebee8"
+  },
+  "test_commands": [
+    {
+      "exit_code": 0,
+      "methods": 4,
+      "module": "experiments.multimodal_output_portfolio.abc_followup.training.objective_tests"
+    },
+    {
+      "exit_code": 0,
+      "methods": 4,
+      "module": "experiments.multimodal_output_portfolio.abc_followup.training.evaluation_tests"
+    }
+  ],
+  "test_execution_evidence": "Actual interactive Python unittest outputs in this session; no reconstructed timing claims."
+}

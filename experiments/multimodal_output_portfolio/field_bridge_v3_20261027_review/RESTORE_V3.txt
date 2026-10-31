@@ -1,0 +1,74 @@
+V3 EVIDENCE RESTORE AND EXACT ARITHMETIC REPLAY
+
+1. Preserve the complete immutable .tar.gz archive and its external receipt.
+   The final archive verification receipt lives OUTSIDE the package it verifies.
+   Do not insert that receipt into the archive: this would create a self-hash cycle.
+   Read the exact archive SHA256 and MANIFEST.json SHA256 from the external receipt.
+   The placeholders below are inputs, not asserted or guessed hash values.
+
+2. Archive layout: MANIFEST.json first, followed by five payload roots:
+   run/        completed outputs, checkpoints, media, traces, gates and audit receipts
+   repository/ frozen scientific/review algorithms and preserved source
+   freezes/    phase registrations and source/artifact bindings
+   native/     pinned native artifacts, kernel source/build provenance
+   assets/     original data/model/observer assets and restoration identities
+   Keep all five roots in the full package for model, media and kernel recovery.
+
+3. Primary replay restores exactly 50 planned files / 76,679,272 payload bytes.
+   MANIFEST.json is restored in addition; receipts are separate small files.
+   The exact list is ARCHIVE_SELECTIVE_RESTORE.json; the payload limit is 80,000,000 B.
+   It contains ENDPOINTS, selected runtime rows/readouts, source identities,
+   frozen arithmetic modules, phase metadata and bound existing proof receipts.
+   Remaining bytes are verified while streaming but are not extracted by this plan.
+
+4. Use an existing Python environment with NumPy 2.3.5. No download is performed.
+   Selective publication requires Linux libc renameat2(RENAME_NOREPLACE).
+   Unsupported platforms fail without an overwrite fallback; verify-only is portable.
+   Run each command in a fresh process; keep the published helper/plan identities.
+
+python -c 'import numpy; assert numpy.__version__ == "2.3.5"; print(numpy.__version__)'
+
+5. Set local paths and copy the two exact hashes from the external receipt:
+
+V3_ARCHIVE='/absolute/path/to/the-complete-v3-archive.tar.gz'
+V3_ARCHIVE_SHA256='COPY_ARCHIVE_SHA256_FROM_EXTERNAL_RECEIPT'
+V3_MANIFEST_SHA256='COPY_MANIFEST_SHA256_FROM_EXTERNAL_RECEIPT'
+V3_REVIEW_TOOLS='/absolute/path/to/published/field_bridge_v3_20261027_review'
+V3_RESTORE_PLAN='/absolute/path/to/ARCHIVE_SELECTIVE_RESTORE.json'
+V3_RESTORE='/tmp/hepta-v3-selective-restore'
+V3_INTEGRITY='/tmp/V3_ARCHIVE_INTEGRITY.json'
+
+6. Require fresh output paths. Verify the ENTIRE archive, restoring only the plan:
+
+python "$V3_REVIEW_TOOLS/archive_integrity.py" --archive "$V3_ARCHIVE" --expected-sha256 "$V3_ARCHIVE_SHA256" --expected-manifest-sha256 "$V3_MANIFEST_SHA256" --restore-plan "$V3_RESTORE_PLAN" --restore-dir "$V3_RESTORE" --max-restore-bytes 80000000 --output "$V3_INTEGRITY"
+
+   Acceptance covers every member length/SHA256, outer gzip CRC to physical EOF,
+   every inner .gz CRC, complete inventory, and safe unique regular member names.
+   There are no gzip exceptions. The destination is published atomically only after
+   complete verification and restored-byte readback; existing destinations survive.
+   On failure preserve the .partial attempt and receipt/log; do not silently retry.
+   To verify without restoring, omit --restore-plan, --restore-dir and their values.
+
+7. Hash the successful integrity receipt, then use that exact result below:
+
+sha256sum "$V3_INTEGRITY"
+V3_INTEGRITY_SHA256='COPY_EXACT_SUCCESSFUL_INTEGRITY_RECEIPT_SHA256'
+V3_RESTORED_REVIEW="$V3_RESTORE/repository/experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review"
+
+python "$V3_RESTORED_REVIEW/archive_reanalysis.py" --restore "$V3_RESTORE" --integrity "$V3_INTEGRITY" --expected-integrity-sha256 "$V3_INTEGRITY_SHA256" --output /tmp/V3_ARCHIVE_REANALYSIS.json
+
+8. Reanalysis must load exact archived algorithms from the restored directory.
+   Live-workspace algorithm substitutions or previously imported alternatives fail.
+   Require exact development selection/numerics and runtime gate/bootstrap identity,
+   with restored_files=50 and restored_payload_bytes=76679272.
+   Both scientific qualification gates remain FALSE; do not convert them to success.
+   The replay performs zero generator calls, observer calls, Hepta native ticks
+   and network calls. Existing hard-media/observer/native proofs remain bound;
+   they are preserved, not re-executed by this small arithmetic-only restoration.
+
+9. Keep the whole original package, external receipt, plan, integrity receipt and
+   reanalysis receipt. Full model/media/kernel recovery uses the complete verified
+   manifest, with a separate explicit regular-file restore plan and sufficient space.
+   Full restoration is evidence recovery, not authorization to execute more stages.
+   Do not invoke unqualified learning-audit/final/non-frozen-runtime/confirmation
+   stages or score the sealed primary/retention roles. No upload is part of this plan.

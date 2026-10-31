@@ -1,0 +1,1268 @@
+{
+  "branch": "research/parameter-field-neuron-bridge-20261027",
+  "differences": [],
+  "direct_git_blob_and_size_matches": 246,
+  "exact_gzip_equivalents": 3,
+  "files": [
+    {
+      "bytes": 11725,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/PAPER_HEPTA_COMMENTS.md",
+      "sha": "4c192f51bb6ac7f2b43a4cc26c188bfdb6358fa9"
+    },
+    {
+      "bytes": 12633,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/PROTOCOL.json",
+      "sha": "5b3e6fd6989d59f75a0a0a038a79d489181b72da"
+    },
+    {
+      "bytes": 17708,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/README.md",
+      "sha": "728aeab2f09472349218e417890019395ee71c60"
+    },
+    {
+      "bytes": 2177,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/RUNTIME_IMPLEMENTATION.json",
+      "sha": "3fb7626bcfb4a5912e379e8ea0d2ba0b6575b913"
+    },
+    {
+      "bytes": 8713,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/SOURCE_ALLOCATION.json",
+      "sha": "3f94b951ac61d29e1606e4ab8a7eab9f2d8a3208"
+    },
+    {
+      "bytes": 1185009,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/SOURCE_IDENTITIES.json.gz",
+      "sha": "590d6a27d006382b03dff2b34ae1bc1059aa194a"
+    },
+    {
+      "bytes": 76,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/__init__.py",
+      "sha": "69262d9113498f768c62e2dfae57ac2a50e2171e"
+    },
+    {
+      "bytes": 3106,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/assets.py",
+      "sha": "39619c546ea3e6faff0583518fad8fa772cf3fff"
+    },
+    {
+      "bytes": 695743,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/ARCHIVE_AND_RESTORE_VERIFICATION.json",
+      "sha": "6602c50111156ea85bc524d27603c35fd74abebc"
+    },
+    {
+      "bytes": 893,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/ARCHIVE_BUILD.log",
+      "sha": "3de49f686409590974ed095173e4057ee60a35e6"
+    },
+    {
+      "bytes": 24157,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/ARCHIVE_BUILD_RECEIPT.json",
+      "sha": "0b11c9801c8acf8cec163b0b4051bc91d09e94f6"
+    },
+    {
+      "bytes": 31507,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/ARCHIVE_INPUTS.json.gz",
+      "sha": "baca2d95730ba38f71b39ef4b881b1ac2abc61e3"
+    },
+    {
+      "bytes": 574882,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/ARCHIVE_INTEGRITY.json",
+      "sha": "c6a5cab59e9616f786e7c770cdaf30edacb66be7"
+    },
+    {
+      "bytes": 371385,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/ARCHIVE_LEDGER_BINDINGS.json",
+      "sha": "d9e2ce0cf414dd905536284573002b700173f6dc"
+    },
+    {
+      "bytes": 16406,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/ARCHIVE_REANALYSIS.json",
+      "sha": "94674b1f37c34fcfd8c7786b6566489ad7ff6125"
+    },
+    {
+      "bytes": 1444,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/ARCHIVE_RUNTIME_ENVIRONMENT.json",
+      "sha": "97be05ca9b6c3b74597574d7b1d6334beba8c88f"
+    },
+    {
+      "bytes": 1181,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/BANK_AUDIT_17.json",
+      "sha": "477b9988d7da478320ba3e45b383f496bb7c113e"
+    },
+    {
+      "bytes": 1181,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/BANK_AUDIT_29.json",
+      "sha": "3ddfb43aa765a3aa7c73dd17c4ecf7711b67de4d"
+    },
+    {
+      "bytes": 1181,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/BANK_AUDIT_43.json",
+      "sha": "ee023f29d365f04a548c23b6914f6e56111403f4"
+    },
+    {
+      "bytes": 4543,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/BANK_FREEZE.json",
+      "sha": "27aa13272c60694809445a54b661fc5a892c0b01"
+    },
+    {
+      "bytes": 1335,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/CONFIRMATION_QUALIFICATION.json",
+      "sha": "64719a5306cbf100410382606cb8ba462a6d0c15"
+    },
+    {
+      "bytes": 1316,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/DELIVERY_ENVIRONMENT_LIMITS.json",
+      "sha": "ecda197a590eac1be1322049a75b7100821e43f1"
+    },
+    {
+      "bytes": 1531,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/DEVELOPMENT_AUDIT_JOIN.json",
+      "sha": "c073e419ea5720f6c323cc4b200b9512fa29cf66"
+    },
+    {
+      "bytes": 6119,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/DEVELOPMENT_SELECTION.json",
+      "sha": "665a27ecc86a96b6ca4d38f6972e81b5825c8e31"
+    },
+    {
+      "bytes": 2740,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/EVIDENCE_ARCHIVE.json",
+      "sha": "bc16099b722c8a2d21b05f0fa475307b07962af6"
+    },
+    {
+      "bytes": 1816,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/EXECUTION_LEDGER_SCHEMA_PREFLIGHT.json",
+      "sha": "1d3d24aa8eccf3995df2bfc00ece7a1afa19ff3b"
+    },
+    {
+      "bytes": 10795,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/FINAL_DELIVERY_REVIEW.json",
+      "sha": "dde1ac2204d07c3e4c4125897d2eec0d2e3b3b25"
+    },
+    {
+      "bytes": 1673,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/FIT_AUDIT_17.json",
+      "sha": "43a069f99fd432a966212da92190877393c07e54"
+    },
+    {
+      "bytes": 1669,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/FIT_AUDIT_29.json",
+      "sha": "cea32b6140f896ca7fea3f4c8993c9025cbaf576"
+    },
+    {
+      "bytes": 1669,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/FIT_AUDIT_43.json",
+      "sha": "2f9965eaf8fb818132f7b5dc3e5f7b8fa48304d1"
+    },
+    {
+      "bytes": 8646,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/INDEPENDENT_DEVELOPMENT_ENDPOINT_AUDIT.json",
+      "sha": "6de65de00957fc747da7b2d41a2626e98fa671db"
+    },
+    {
+      "bytes": 12183,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/INDEPENDENT_RUNTIME_BANK_MEDIA-frozen.json",
+      "sha": "2a33e30e7fdebbeccc1489b48550da1da0487c2a"
+    },
+    {
+      "bytes": 117395,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/INDEPENDENT_RUNTIME_FIT_AUDIT-frozen.json",
+      "sha": "e8b3d7de694afe517ea46efb54de00c47c09b21e"
+    },
+    {
+      "bytes": 13335,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/INDEPENDENT_RUNTIME_MEDIA-frozen.json",
+      "sha": "f06550688f3090492fe629742ddb5dc5ae8d1b3a"
+    },
+    {
+      "bytes": 13160,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/INDEPENDENT_RUNTIME_RESULTS-frozen.json",
+      "sha": "952634cd57365a1fc3b700798eb1498a4f2ab1e2"
+    },
+    {
+      "bytes": 217246,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/INDEPENDENT_TRAINING_HARD_SCORE_AUDIT-development.json",
+      "sha": "02e9763363203f63f36a247aae1d12be69f5c8a7"
+    },
+    {
+      "bytes": 9919,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/LEDGER_ARCHIVE_COVERAGE_REVIEW.json",
+      "sha": "6dedecd5e6a41e1afb4758deaf4aeab506129057"
+    },
+    {
+      "bytes": 4581,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/NATIVE_BUILD_RECEIPT.json",
+      "sha": "adc3315645693588a1e0ef3f60deb0061d234590"
+    },
+    {
+      "bytes": 8826,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/NATIVE_DEPENDENCY_BUILD_RECEIPT.json",
+      "sha": "99abd29626a1ed6becb9839d0e41e3ef2afff44e"
+    },
+    {
+      "bytes": 12557,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/NATIVE_SESSION_AUDIT-frozen.json",
+      "sha": "fab700d79459636bbeeb3ff14fc76f46c193b7e1"
+    },
+    {
+      "bytes": 1085,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/NATIVE_STREAM_CONTRACT.json",
+      "sha": "476ab4643514149c07f46a43c11479332fc53ec3"
+    },
+    {
+      "bytes": 2352,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/PERSISTENCE_REQUEST.json",
+      "sha": "fb6193030e68b0c701e0e76c52b1edb5b6c8ef74"
+    },
+    {
+      "bytes": 1125,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/REFERENCE_AUDIT_17.json",
+      "sha": "99160f6016e1b134afb1afbaad9f56e0a8ae8d2a"
+    },
+    {
+      "bytes": 1125,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/REFERENCE_AUDIT_29.json",
+      "sha": "6b2b42543e0b7e07150573c462e3d85809565732"
+    },
+    {
+      "bytes": 1125,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/REFERENCE_AUDIT_43.json",
+      "sha": "3faf256e72b6875121eea9677036a599730b215d"
+    },
+    {
+      "bytes": 3871,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/REFERENCE_FREEZE.json",
+      "sha": "64020905f1a50eb45f4462b463fcf22c8e8ef432"
+    },
+    {
+      "bytes": 5427,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/RUNTIME_BANK_FREEZE.json",
+      "sha": "968d2d62a6a35ad7f65436ef48cb07571505b9ab"
+    },
+    {
+      "bytes": 1210,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/RUNTIME_CONTROLLER_CONTRACT.json",
+      "sha": "ce6f491bafef67bd7f19ded9e069e6ed3f902600"
+    },
+    {
+      "bytes": 4425,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/RUNTIME_MEDIA_INTEGRATION_CONTRACT.json",
+      "sha": "2dec2d2f8a1f9e2869bbeaeb415569e9a01f07ae"
+    },
+    {
+      "bytes": 1432,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/RUNTIME_QUALIFICATION-frozen.json",
+      "sha": "bf836b6556a02a43d18ece355c3d30c5e09bc078"
+    },
+    {
+      "bytes": 451,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/RUSTFMT_RESTORE_RECEIPT.json",
+      "sha": "5df7a1c7d8ec73d6d58aeddd3e18d0829e2813f0"
+    },
+    {
+      "bytes": 3962,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/STUDY_DISPOSITION.json",
+      "sha": "73ee9a329a216a10c59318e88bd1d6c6e1f3be10"
+    },
+    {
+      "bytes": 1551,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/TRAINING_QUALIFICATION.json",
+      "sha": "3344f1a303277328a01da3c6f81d60571a80f224"
+    },
+    {
+      "bytes": 712,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/V3_DURABLE_V1_DUPLICATE_RECLAIM.json",
+      "sha": "efa5e5b5534ec40482339593402e05a6959eee4a"
+    },
+    {
+      "bytes": 87573,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/V3_EXECUTION_INDEX.json",
+      "sha": "af47e38f1afc953bb28506af7c6ba9e72faaeae4"
+    },
+    {
+      "bytes": 293148,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/V3_EXECUTION_LEDGER.json",
+      "sha": "82a86990fccfbb505461d323e36310d0fc5cd6d8"
+    },
+    {
+      "bytes": 1392,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/V3_PUBLIC_GRANITE_CACHE_RECLAIM.json",
+      "sha": "0fd8b23da9fa38280a055062c9767cdd4a543be3"
+    },
+    {
+      "bytes": 2683,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/V3_PUBLIC_TORCH_RUNTIME_RECLAIM.json",
+      "sha": "1a9628797261ec9a3dd068ac0eb4cdcab724dc36"
+    },
+    {
+      "bytes": 978350,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/V3_PUBLIC_TORCH_RUNTIME_RECLAIM_IDENTITIES.json.gz",
+      "sha": "010546b082d0b93d286c1b1601760cc64532fbe0"
+    },
+    {
+      "bytes": 10020,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/V3_VERIFIED_V2_DUPLICATE_RECLAIM.json",
+      "sha": "2874cdd28288bf09b9d37bc80ccff3ecad260fbe"
+    },
+    {
+      "bytes": 193,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/archive_integrity.first-attempt.log",
+      "sha": "239ebf90ebd422b787218f6bbe546bff9861b7dc"
+    },
+    {
+      "bytes": 178,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/archive_reanalysis.first-attempt.log",
+      "sha": "d962f63be852faa42652ad897e17526ffc319bf8"
+    },
+    {
+      "bytes": 110350,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/development/17/COMPLETE.json",
+      "sha": "3fb4ebd1a28fc6239b85b80b9fea4f8623a122b4"
+    },
+    {
+      "bytes": 774322,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/development/17/ENDPOINTS.npz",
+      "sha": "72f2735a7828b2c8a8a61cf546de1e84f0e38232"
+    },
+    {
+      "bytes": 223440,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/development/17/ENDPOINT_IDENTITIES.json.gz",
+      "sha": "f647209dc6a34bd63cbfd54b090895ce1ac02754"
+    },
+    {
+      "bytes": 4122,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/development/17/START.json",
+      "sha": "ba122fb4c94bff15ed862adbce88600adb89a79f"
+    },
+    {
+      "bytes": 110361,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/development/29/COMPLETE.json",
+      "sha": "c5853343aacf34924ada9bfa90fabca40a68ade2"
+    },
+    {
+      "bytes": 599300,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/development/29/ENDPOINTS.npz",
+      "sha": "dd2b148c8d14d5a36b82104c1e3233005e192b50"
+    },
+    {
+      "bytes": 223452,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/development/29/ENDPOINT_IDENTITIES.json.gz",
+      "sha": "e8d6fd9f3a862c5c7e8b9b166c09edef231299b4"
+    },
+    {
+      "bytes": 4122,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/development/29/START.json",
+      "sha": "16e572de48e0599d6018cf8ab6c846c6785a9603"
+    },
+    {
+      "bytes": 110382,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/development/43/COMPLETE.json",
+      "sha": "2258fb01d04362dbd3537e24e23e1923aecf0409"
+    },
+    {
+      "bytes": 633943,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/development/43/ENDPOINTS.npz",
+      "sha": "3b1400aa0508f89fe31e034aadba39d9b8e5c1af"
+    },
+    {
+      "bytes": 223442,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/development/43/ENDPOINT_IDENTITIES.json.gz",
+      "sha": "eb9ff03c088679abcd3386c4b09a8a7294c0d11e"
+    },
+    {
+      "bytes": 4122,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/development/43/START.json",
+      "sha": "cdb7bb926b4df5acc572d086cbea15158bbc5517"
+    },
+    {
+      "bytes": 2602,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/development/ARRAY_EXPORTS.json",
+      "sha": "2b43102777f521af7af7531a7c27d06d6e9ee5ec"
+    },
+    {
+      "bytes": 4841,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/freezes/DEVELOPMENT_FREEZE.json",
+      "sha": "809b3745d2f2b56ac648fd500272feb5aeaebaa6"
+    },
+    {
+      "bytes": 4643,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/freezes/FIT_FREEZE.json",
+      "sha": "9c9ca872722b9e2418b73818337d1179ecb6e8f8"
+    },
+    {
+      "bytes": 6143,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/freezes/RUNTIME_AUDIT_FREEZE.json",
+      "sha": "34904fc601dc381611e10152bc42b4e37f195cda"
+    },
+    {
+      "bytes": 5826,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/freezes/RUNTIME_FIT_FREEZE.json",
+      "sha": "e81e0e3bca2d2ae050861bb1c2d3311093719e90"
+    },
+    {
+      "bytes": 9267,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/prespecified-bank-replay/REPLAY.json",
+      "sha": "3857a5802c746e74d491f4350e3fa456aafc1321"
+    },
+    {
+      "bytes": 5222,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/prespecified-bank-replay/START.json",
+      "sha": "aeaf353b2775447d44328bef4692753d562fb3e7"
+    },
+    {
+      "bytes": 1627,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/reference/17/ASSET_IDENTITIES.json",
+      "sha": "4acd77136d2d3aa256c5f85285513c69a4cdd5e8"
+    },
+    {
+      "bytes": 82214,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/reference/17/COMPLETE.json",
+      "sha": "69d09b1c9d7bda826568acf25dd730200f945703"
+    },
+    {
+      "bytes": 11449,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/reference/17/REFERENCE.json",
+      "sha": "e29f96c0fd7409d3ed222a6f86b4266f9173b1c2"
+    },
+    {
+      "bytes": 4084,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/reference/17/START.json",
+      "sha": "954c6f9452659a1a28fa55256deb1702501d65b1"
+    },
+    {
+      "bytes": 1627,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/reference/29/ASSET_IDENTITIES.json",
+      "sha": "9f13fc790bae8fce71e4eb93621157bbc168983e"
+    },
+    {
+      "bytes": 82208,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/reference/29/COMPLETE.json",
+      "sha": "2fe564f1bcf5fdc32c5727f5d264a2d103f1d82d"
+    },
+    {
+      "bytes": 11380,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/reference/29/REFERENCE.json",
+      "sha": "5ff5e8f4a1818ef5c66fb3915965b2d04f68ca13"
+    },
+    {
+      "bytes": 4084,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/reference/29/START.json",
+      "sha": "eb85374c82ad24b73b616c581de7c8084db260dd"
+    },
+    {
+      "bytes": 1627,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/reference/43/ASSET_IDENTITIES.json",
+      "sha": "e8fef3cd997ce83e13a26fee7fa952de091dc2d7"
+    },
+    {
+      "bytes": 82205,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/reference/43/COMPLETE.json",
+      "sha": "19208fc9b403bd14e1305d6d3c43eb5466b48590"
+    },
+    {
+      "bytes": 11401,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/reference/43/REFERENCE.json",
+      "sha": "7112decb9aada83271c27647c967a3e5f701d865"
+    },
+    {
+      "bytes": 4084,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/reference/43/START.json",
+      "sha": "45b42141fdc1679215a2e76a11e70d8d1181453d"
+    },
+    {
+      "bytes": 1640,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_audit/17-frozen/ASSET_IDENTITIES.json",
+      "sha": "d9748ed78c5db0893aabcd6ec34d014594741b87"
+    },
+    {
+      "bytes": 2919,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_audit/17-frozen/COMPLETE.json",
+      "sha": "8474f3afd72e1bd2391954160583cc03a330d296"
+    },
+    {
+      "bytes": 5486,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_audit/17-frozen/START.json",
+      "sha": "d2e79943177db168a3d72f41700cc9215e64d5ad"
+    },
+    {
+      "bytes": 2611,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_audit/17-frozen/selected/COMPLETE.json",
+      "sha": "3fe48aff66157d52eec07bf637adff09eadd4aad"
+    },
+    {
+      "bytes": 1640,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_audit/29-frozen/ASSET_IDENTITIES.json",
+      "sha": "9a26c0c7759522d1f9db1b21e7147891d7034829"
+    },
+    {
+      "bytes": 2919,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_audit/29-frozen/COMPLETE.json",
+      "sha": "c67b91cc02e48dcb293d52e020309dc7ae9f0030"
+    },
+    {
+      "bytes": 5486,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_audit/29-frozen/START.json",
+      "sha": "1c05b23b37573338eb713cbe119520a80da1e17c"
+    },
+    {
+      "bytes": 2611,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_audit/29-frozen/selected/COMPLETE.json",
+      "sha": "ed4eecbb5ff15d702253e2244c8c7d4737d802cb"
+    },
+    {
+      "bytes": 1640,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_audit/43-frozen/ASSET_IDENTITIES.json",
+      "sha": "65b8c09b2a0133243d07df631001b8e3cf753d1f"
+    },
+    {
+      "bytes": 2919,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_audit/43-frozen/COMPLETE.json",
+      "sha": "50cfaa64e4254fe8cda92ce8090799f23b6b45d0"
+    },
+    {
+      "bytes": 5486,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_audit/43-frozen/START.json",
+      "sha": "fb9b5df5dbf2c70b49d5cca88a88908861b56661"
+    },
+    {
+      "bytes": 2611,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_audit/43-frozen/selected/COMPLETE.json",
+      "sha": "84f4594a2c8b117eb1609c802706e9decec99160"
+    },
+    {
+      "bytes": 1627,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_bank/17-frozen/ASSET_IDENTITIES.json",
+      "sha": "4acd77136d2d3aa256c5f85285513c69a4cdd5e8"
+    },
+    {
+      "bytes": 1238,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_bank/17-frozen/COMPLETE.json",
+      "sha": "0c07a3bd7d129a4f52d532e75f7db33d315e65e3"
+    },
+    {
+      "bytes": 5485,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_bank/17-frozen/START.json",
+      "sha": "99d53f10b4b18d1803d18237ad7734971ffba1db"
+    },
+    {
+      "bytes": 4774,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_bank/17-frozen/runtime_fit/COMPLETE.json",
+      "sha": "f549b57e3d929b609670942140d43f56feaa636e"
+    },
+    {
+      "bytes": 4773,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_bank/17-frozen/runtime_select/COMPLETE.json",
+      "sha": "1d060b5116ead67737789f1c990cd69c1cecc97b"
+    },
+    {
+      "bytes": 1627,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_bank/29-frozen/ASSET_IDENTITIES.json",
+      "sha": "9f13fc790bae8fce71e4eb93621157bbc168983e"
+    },
+    {
+      "bytes": 1238,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_bank/29-frozen/COMPLETE.json",
+      "sha": "7089a36cd476b088e98c5d36ba09beaf160751ef"
+    },
+    {
+      "bytes": 5485,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_bank/29-frozen/START.json",
+      "sha": "f5780bd3019be953caadb9628b5226ecc2b52994"
+    },
+    {
+      "bytes": 4774,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_bank/29-frozen/runtime_fit/COMPLETE.json",
+      "sha": "5fbcafa699c62dea3830ab76bf878fad5f76f581"
+    },
+    {
+      "bytes": 4774,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_bank/29-frozen/runtime_select/COMPLETE.json",
+      "sha": "e7901053cbffc3ca223ff3c6376f9aa7eb067afd"
+    },
+    {
+      "bytes": 1627,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_bank/43-frozen/ASSET_IDENTITIES.json",
+      "sha": "e8fef3cd997ce83e13a26fee7fa952de091dc2d7"
+    },
+    {
+      "bytes": 1238,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_bank/43-frozen/COMPLETE.json",
+      "sha": "030379eaacf4cae4fce997abc93351fe9818f86a"
+    },
+    {
+      "bytes": 5485,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_bank/43-frozen/START.json",
+      "sha": "5345b53a95f6936d1afa6764ac32cb7be96bcf8c"
+    },
+    {
+      "bytes": 4774,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_bank/43-frozen/runtime_fit/COMPLETE.json",
+      "sha": "9abc2295fc4f0741c481b171f1b6bd59b2be37d4"
+    },
+    {
+      "bytes": 4773,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_bank/43-frozen/runtime_select/COMPLETE.json",
+      "sha": "a49d1e5e558c0988a03cd6dcafb5615aba4931be"
+    },
+    {
+      "bytes": 461,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_fit/17-frozen/COMPLETE.json",
+      "sha": "7af51307150af3d689804b93a6d992f47b8333c6"
+    },
+    {
+      "bytes": 1086994,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_fit/17-frozen/READOUTS.json.gz",
+      "sha": "5e276c2101bbaae78e2e185f64b6ab15c1e077c8"
+    },
+    {
+      "bytes": 5484,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_fit/17-frozen/START.json",
+      "sha": "92e575d644721952bb3b610aaf16d625789d3586"
+    },
+    {
+      "bytes": 461,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_fit/29-frozen/COMPLETE.json",
+      "sha": "c5393d35f701fd93e356953c2fdfe9e19d792b5b"
+    },
+    {
+      "bytes": 1086140,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_fit/29-frozen/READOUTS.json.gz",
+      "sha": "c6a998992515241fb1a23f62a8ac53523901ba53"
+    },
+    {
+      "bytes": 5484,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_fit/29-frozen/START.json",
+      "sha": "8e2825692b32bac02a7785ce0e0f11d5923deb44"
+    },
+    {
+      "bytes": 461,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_fit/43-frozen/COMPLETE.json",
+      "sha": "eea1563c43fe70995591d5788965521d84daf048"
+    },
+    {
+      "bytes": 1087141,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_fit/43-frozen/READOUTS.json.gz",
+      "sha": "84b80320a156c79df91f88124c8d83b4d9d1ae45"
+    },
+    {
+      "bytes": 5484,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_fit/43-frozen/START.json",
+      "sha": "e5542f2f42ea48b3e3b8b992e31b3a113ee6ce81"
+    },
+    {
+      "bytes": 1329,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/runtime_fit/READOUT_ARCHIVES.json",
+      "sha": "c4c7adb5a68f9e7f876332adae79297b31235312"
+    },
+    {
+      "bytes": 247649,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_bank/17/BANK.json",
+      "sha": "4ec2053af66b4a3338deb6b0be6680e8fac14c09"
+    },
+    {
+      "bytes": 98122,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_bank/17/COMPLETE.json",
+      "sha": "c10a3e4be1edccdd2932db82a2166da14e7744ff"
+    },
+    {
+      "bytes": 4034,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_bank/17/START.json",
+      "sha": "77bf328ff89292e8cd28c08c2979601ac921e45b"
+    },
+    {
+      "bytes": 248261,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_bank/29/BANK.json",
+      "sha": "e0e40550194474077e302698aede6076e019c08d"
+    },
+    {
+      "bytes": 98117,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_bank/29/COMPLETE.json",
+      "sha": "9b9ed3335b4324740adff11418f7d24c612add3c"
+    },
+    {
+      "bytes": 4034,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_bank/29/START.json",
+      "sha": "92533b0ac23ebeb10e6812ae7de2712cfd44e3cc"
+    },
+    {
+      "bytes": 247022,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_bank/43/BANK.json",
+      "sha": "0675c9ac9d90be7eb096452b4ca00933ebcf44ea"
+    },
+    {
+      "bytes": 98113,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_bank/43/COMPLETE.json",
+      "sha": "910baa676d3b2af2e4a7448c0d282bae5eb2bf52"
+    },
+    {
+      "bytes": 4034,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_bank/43/START.json",
+      "sha": "005cd77508d239a6169eeaec1ba0d342d69480a0"
+    },
+    {
+      "bytes": 431,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_fit/17/COMPLETE.json",
+      "sha": "2dd6aaae1f51adc2aefc449869b1a1f44c1a6407"
+    },
+    {
+      "bytes": 1482994,
+      "exact_gzip_equivalent": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_fit/17/CONTROLLERS.json.gz",
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_fit/17/CONTROLLERS.json",
+      "sha": "0a251f2367b7fa185fb4231b6d8d47a57832a07f"
+    },
+    {
+      "bytes": 153321,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_fit/17/CONTROLLERS.json.gz",
+      "sha": "20cae1ec3d1ca13e3d2065b2960304dae3f68a6b"
+    },
+    {
+      "bytes": 63035,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_fit/17/SELECTED_CONTROLLERS.json",
+      "sha": "1d70889ee256d4396caf33aee4cf10f9156bd4ff"
+    },
+    {
+      "bytes": 3956,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_fit/17/START.json",
+      "sha": "cca474dba94a334b8cbbe7b22c69d69d1481ae84"
+    },
+    {
+      "bytes": 431,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_fit/29/COMPLETE.json",
+      "sha": "f9568ebe4bee63b5814394c267ef51b14fbe404a"
+    },
+    {
+      "bytes": 1483070,
+      "exact_gzip_equivalent": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_fit/29/CONTROLLERS.json.gz",
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_fit/29/CONTROLLERS.json",
+      "sha": "cc1475d12012e0131cafd79dd42e113debdd6e64"
+    },
+    {
+      "bytes": 153507,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_fit/29/CONTROLLERS.json.gz",
+      "sha": "d06bb131650340b5f8bd5be39ecf4f3e9865c919"
+    },
+    {
+      "bytes": 62958,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_fit/29/SELECTED_CONTROLLERS.json",
+      "sha": "0cc1b72f21c1f27e50a1c1ff68c4deceb30fc491"
+    },
+    {
+      "bytes": 3956,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_fit/29/START.json",
+      "sha": "451664cae1b1e63cca8cb095bd559ecaebda52c2"
+    },
+    {
+      "bytes": 431,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_fit/43/COMPLETE.json",
+      "sha": "5ebc5e631be8502f4f8917a384663907ecabe378"
+    },
+    {
+      "bytes": 1481779,
+      "exact_gzip_equivalent": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_fit/43/CONTROLLERS.json.gz",
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_fit/43/CONTROLLERS.json",
+      "sha": "28559e87236fb73ed23064ef0b3c41b46826a16a"
+    },
+    {
+      "bytes": 153460,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_fit/43/CONTROLLERS.json.gz",
+      "sha": "0cf1a547e699b3d6e30f35b335a1b36d9c5475af"
+    },
+    {
+      "bytes": 62923,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_fit/43/SELECTED_CONTROLLERS.json",
+      "sha": "07e3155c939142b9f125956870c27310d9942723"
+    },
+    {
+      "bytes": 3956,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_fit/43/START.json",
+      "sha": "ada3cfe17c4fd7a9549b0c39b2df363c3be5c445"
+    },
+    {
+      "bytes": 1314,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/training_fit/CONTROLLER_ARCHIVES.json",
+      "sha": "9e1095b8e324604e8baa498514f69f1584fddf55"
+    },
+    {
+      "bytes": 7267,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/feedback_bank.py",
+      "sha": "7103de71aea1b417ddf9a07549ce6f5e4d6f7e91"
+    },
+    {
+      "bytes": 6054,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/feedback_media.py",
+      "sha": "3b4ac8636beb52fc7809b965732583c65d70fe47"
+    },
+    {
+      "bytes": 11945,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/feedback_rollout.py",
+      "sha": "7a6c6a33435847a1b32b086c4b08a2ad5fca82fe"
+    },
+    {
+      "bytes": 10634,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/feedback_task.py",
+      "sha": "0a5c1eb01070b4b608e088df1e9e9632dc86b0b4"
+    },
+    {
+      "bytes": 15506,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/learning.py",
+      "sha": "8c1aa05d0e09729c0ab4b1c34e1369602f895580"
+    },
+    {
+      "bytes": 12254,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/native_stream.py",
+      "sha": "9cced40c6c17f028488380a2ba7560dbd47f0eb4"
+    },
+    {
+      "bytes": 10178,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/native_stream.rs",
+      "sha": "714507d0bc32798f0e5663e2ca987f9068145d45"
+    },
+    {
+      "bytes": 10264,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/native_stream_tests.py",
+      "sha": "98d4d5fd160e4dcc929a78aec5b0fe5eef3b165a"
+    },
+    {
+      "bytes": 22474,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/runtime_controller.py",
+      "sha": "d80730c4b53a3b2dc227a45eee3e21b97fb0947e"
+    },
+    {
+      "bytes": 14475,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/runtime_controller_tests.py",
+      "sha": "c938a9421b03d6765044fdca37a6daecf7ff70dc"
+    },
+    {
+      "bytes": 19797,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/runtime_integration_tests.py",
+      "sha": "fdecb26cc83127755176c1c1ab02ce0a513ff0a5"
+    },
+    {
+      "bytes": 13002,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/runtime_run.py",
+      "sha": "542827aaac895fdc863ac1c8167e95c8844b546b"
+    },
+    {
+      "bytes": 10974,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/source_roles.py",
+      "sha": "866c1f527f514e407313dd2ce65dd314dc0f628e"
+    },
+    {
+      "bytes": 13431,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_bank.py",
+      "sha": "6a24d17d8e22b9aa3673586ff37bc1db2800bd73"
+    },
+    {
+      "bytes": 6073,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_common.py",
+      "sha": "b1da53a9762a6795e4d6dd4f922f029e929fcb21"
+    },
+    {
+      "bytes": 9527,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_features.py",
+      "sha": "07556e6318e921ba5844aa6117b38e94efc98571"
+    },
+    {
+      "bytes": 9016,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_policy.py",
+      "sha": "620fafebcdcd6eda023eb05bc97f123b770cae24"
+    },
+    {
+      "bytes": 8853,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_run.py",
+      "sha": "b4d7178842a16d524bd912cd12a1bf5e2b9efaa9"
+    },
+    {
+      "bytes": 10583,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_stages.py",
+      "sha": "fbfbb25693a14de15e2e3f9438767b1f37d85ad8"
+    },
+    {
+      "bytes": 3533,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/ANALYSIS_CONTRACT_TESTS.json",
+      "sha": "fa15b2caf599637401d6bad60c5329a12b60b90b"
+    },
+    {
+      "bytes": 3213,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/ANALYSIS_CONTRACT_TESTS_BEFORE_RUNTIME_SUBSET.json",
+      "sha": "3fd4faf08db0780339a028bbea4b451e4b13cc7a"
+    },
+    {
+      "bytes": 854,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/ARCHIVE_BUILD_CONTRACT.json",
+      "sha": "df011da306f3d60809cbeb9f04c3f08af2c7ead5"
+    },
+    {
+      "bytes": 1820,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/ARCHIVE_INTEGRITY_CONTRACT.json",
+      "sha": "5d27a7431d37195d63843819db7345f943e786cb"
+    },
+    {
+      "bytes": 1236,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/ARCHIVE_REANALYSIS_CONTRACT.json",
+      "sha": "03f65ac75e05e0b9f0c4589246ea83b0e97ff8f2"
+    },
+    {
+      "bytes": 5888,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/ARCHIVE_RESTORE_PLAN.md",
+      "sha": "abaf6da3d803541a0ffb94f1fad47a17dfbfc683"
+    },
+    {
+      "bytes": 12716,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/ARCHIVE_SELECTIVE_RESTORE.json",
+      "sha": "d924351b8bc74ff528ac09ae214bd1f8a0ae27cf"
+    },
+    {
+      "bytes": 25139,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/BLOCKERS.json",
+      "sha": "1fbf621b2598f749cb6ebacac97258f50c1abc89"
+    },
+    {
+      "bytes": 2783,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/ENDPOINT_ARRAY_CONTRACT_TESTS.json",
+      "sha": "c96d374453992dbd6f4d29d146ec7bc60714e968"
+    },
+    {
+      "bytes": 2783,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/ENDPOINT_ARRAY_CONTRACT_TESTS_BEFORE_POLICY_BINDING.json",
+      "sha": "c96d374453992dbd6f4d29d146ec7bc60714e968"
+    },
+    {
+      "bytes": 3095,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/ENDPOINT_POLICY_BINDING_CONTRACT_TESTS.json",
+      "sha": "b2bebeef654da6c22f08424faf37614f9ecfacce"
+    },
+    {
+      "bytes": 8882,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/EXECUTION_LEDGER.md",
+      "sha": "d608516a676552615807d8c5f82edfa28f45a715"
+    },
+    {
+      "bytes": 1817,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/EXECUTION_LEDGER_COMPATIBILITY_CONTRACT.json",
+      "sha": "0aeee217f30cfa53195adcec8d6cbf32cea3e10f"
+    },
+    {
+      "bytes": 1875,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/EXECUTION_LEDGER_CONTRACT.json",
+      "sha": "3f5d06237eafbc66bb13c61be90d50d6b5ffb0cd"
+    },
+    {
+      "bytes": 12360,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/EXECUTION_LEDGER_INDEX_TEMPLATE.json",
+      "sha": "66ff267c937d9fa40cd4e405022d0345f5c6d4d1"
+    },
+    {
+      "bytes": 2217,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/FEEDBACK_EVIDENCE_CONTRACT_TESTS.json",
+      "sha": "71600edd0722e11cf387eda0ed3f09060d4028d0"
+    },
+    {
+      "bytes": 9474,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/FINAL_SOURCE_ROLE_AUDIT.json",
+      "sha": "7306d75e03d915a3a667414cd98e9305b5c1a0e6"
+    },
+    {
+      "bytes": 1838,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/NATIVE_SESSION_AUDIT_CONTRACT.json",
+      "sha": "50f0d7b90b08829ab69c6a9ba97d552103e0089f"
+    },
+    {
+      "bytes": 14449,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/PROTOCOL_REVIEW.md",
+      "sha": "b20a4d5191a31e90a4cf6f70fb2d363991a68d08"
+    },
+    {
+      "bytes": 4871,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/RESTORE_V3.txt",
+      "sha": "65399d9790673c1c43d4ac8120a2a62811e156e9"
+    },
+    {
+      "bytes": 5542,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/RUNTIME_BANK_MEDIA_CONTRACT_TESTS.json",
+      "sha": "890720142f7eec6042165d8d493391ede78ea5c8"
+    },
+    {
+      "bytes": 3982,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/RUNTIME_BANK_MEDIA_REVIEW.md",
+      "sha": "660dc04c628fc78c1fc174686a58c289030294ca"
+    },
+    {
+      "bytes": 1086,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/RUNTIME_FIT_AUDIT_CONTRACT.json",
+      "sha": "70bf6161a948a8aba1a71ddebb261baf47fee4c8"
+    },
+    {
+      "bytes": 3528,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/RUNTIME_SELECTED_MEDIA_CONTRACT_TESTS.json",
+      "sha": "552826ea14c35c99bca4a0fd8aa557d299c1738f"
+    },
+    {
+      "bytes": 9475,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/SOURCE_ROLE_AUDIT.json",
+      "sha": "4a96c839a2d5ba74974c726709ccf33f005e34ec"
+    },
+    {
+      "bytes": 2607,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/SOURCE_ROLE_CONTRACTS.json",
+      "sha": "e249332c9c6c76d5f3d4a5c851df162e7ab5ff6e"
+    },
+    {
+      "bytes": 3474,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/SOURCE_ROLE_CONTRACTS_INITIAL_FIXTURE_ERROR.json",
+      "sha": "8df722fd19b698621b454fefe7ed4c0c8c8c7832"
+    },
+    {
+      "bytes": 2241,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/TRAINING_AUDITOR_BINDING_CONTRACT.json",
+      "sha": "33e55f2a9a98afc9fbe9f8bd29a05efca7e6add9"
+    },
+    {
+      "bytes": 2414,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/TRAINING_AUDITOR_CONTRACT.json",
+      "sha": "fa232bf99fcee87cf5fe07b8d2eca79d2c3be82c"
+    },
+    {
+      "bytes": 14791,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/TRAINING_DESIGN_PROPOSAL.md",
+      "sha": "3abdc433d17a2be446a77d355ced33f20b314690"
+    },
+    {
+      "bytes": 6592,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/TRAINING_FIT_REVIEW.md",
+      "sha": "d93fe1c8504e41d1d84cc23dcb8de25227fdcf47"
+    },
+    {
+      "bytes": 1130,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/TRAINING_HARD_SCORE_AUDIT_CONTRACT.json",
+      "sha": "8f175e11457ba84874a57a9b7e86fc71e635d06a"
+    },
+    {
+      "bytes": 2990,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/TRAINING_IMPLEMENTATION_CONTRACT.json",
+      "sha": "fda3c03cc0255c81042c1a4746cd0e4ee36d32eb"
+    },
+    {
+      "bytes": 2065,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/TRAINING_REPLAY_PROTOCOL.json",
+      "sha": "ea4e9eefdf6d43c3866366800cdbf17db8a613b3"
+    },
+    {
+      "bytes": 6256,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/V3_EXECUTION_LEDGER_REVIEW.md",
+      "sha": "703305386949099705d00d49cb1381e5a1f8ec1e"
+    },
+    {
+      "bytes": 13156,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/V3_RESULTS_REVIEW.md",
+      "sha": "d518364a3df38de64524641d66671d16ec187cfe"
+    },
+    {
+      "bytes": 12569,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/analysis_contract.py",
+      "sha": "c381b49313d82fe14c86a1a9ccfaef6a8868d684"
+    },
+    {
+      "bytes": 8918,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/analysis_contract_tests.py",
+      "sha": "dc7f15870f180ed85d44e6fb41cf9b4aa84c5c3d"
+    },
+    {
+      "bytes": 6529,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/archive_build.py",
+      "sha": "e7bd405afafecadd3cbb2def5780d4a3086e6dc0"
+    },
+    {
+      "bytes": 4216,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/archive_build_tests.py",
+      "sha": "4b0ba84aa5e16e8a1caa2cc422d55c071c93f4e3"
+    },
+    {
+      "bytes": 16252,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/archive_integrity.py",
+      "sha": "01c133f7743539701f666f5e588685aba218e0b3"
+    },
+    {
+      "bytes": 10632,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/archive_integrity_tests.py",
+      "sha": "e644598bdbf671a2980d2b122127bca3b5156769"
+    },
+    {
+      "bytes": 17242,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/archive_reanalysis.py",
+      "sha": "6723f17b3fee1e7982aeb9a7028f282c8f99d5fa"
+    },
+    {
+      "bytes": 16615,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/archive_reanalysis_tests.py",
+      "sha": "6e31c063b67a4a2d4de27e3f793573bdf73a796d"
+    },
+    {
+      "bytes": 10698,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/endpoint_array_tests.py",
+      "sha": "efb540d3e5052f25c3dcf8a169cca2e5bb61dd2b"
+    },
+    {
+      "bytes": 10051,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/endpoint_arrays.py",
+      "sha": "3d39964ada6948c1685365104eb6755425640e7d"
+    },
+    {
+      "bytes": 21858,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/execution_ledger.py",
+      "sha": "a02e563beb11593c4ea012006f3433852f9589e2"
+    },
+    {
+      "bytes": 15869,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/execution_ledger_tests.py",
+      "sha": "b54842b3ec6f794193a383dd5ed4ead8b75a3015"
+    },
+    {
+      "bytes": 12242,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/feedback_evidence.py",
+      "sha": "95ddb3012577c64f081f2296706fa44c4e7947ef"
+    },
+    {
+      "bytes": 8937,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/feedback_evidence_tests.py",
+      "sha": "a9b31bcc6f4eaae03a17392ae77be1713f0abb89"
+    },
+    {
+      "bytes": 9008,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/learning_contract_tests.py",
+      "sha": "528fbd1c725379b37b1ccd0ee07e1e0b7087661b"
+    },
+    {
+      "bytes": 26280,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/native_session_audit.py",
+      "sha": "f63e4b6d239fe3bd3843a87fe8ccde31499d7b83"
+    },
+    {
+      "bytes": 14869,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/native_session_audit_tests.py",
+      "sha": "725d1b007b6d091b2afa111e25cd0aaf57771d43"
+    },
+    {
+      "bytes": 11402,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/runtime_audit_support.py",
+      "sha": "960f985794049085d4e3fe93bdf1c5b63e146020"
+    },
+    {
+      "bytes": 16902,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/runtime_bank_media_audit.py",
+      "sha": "6ea5a01978f51b0faa1e2349ead9303301da2397"
+    },
+    {
+      "bytes": 6731,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/runtime_bank_media_tests.py",
+      "sha": "6f4a9f511d1c6c694e31262a2cb4808aaa2ece75"
+    },
+    {
+      "bytes": 28893,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/runtime_fit_audit.py",
+      "sha": "2f487ed2e1ed1eafeb4cd317f1c179399e95b7ae"
+    },
+    {
+      "bytes": 7825,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/runtime_fit_audit_tests.py",
+      "sha": "d3005d49ac28fec748581382bbbeb8236007a2bd"
+    },
+    {
+      "bytes": 8071,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/runtime_media_audit.py",
+      "sha": "76c71da161aa27af7a48336a748322df6d629bea"
+    },
+    {
+      "bytes": 3914,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/runtime_media_context.py",
+      "sha": "751c94f7e8674a40b3813092d40b4f4181c289cc"
+    },
+    {
+      "bytes": 13803,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/runtime_media_trace.py",
+      "sha": "63112172ea743b40399d5571a79f8bc4d8e5e41c"
+    },
+    {
+      "bytes": 12027,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/runtime_media_trace_tests.py",
+      "sha": "4ffc6c6c5c523a2ad9d5f880b16e6b5457b9e5e9"
+    },
+    {
+      "bytes": 9409,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/runtime_results_audit.py",
+      "sha": "40ba40feb2edbc0da9696c89cb9e8ee9cf93c6e8"
+    },
+    {
+      "bytes": 8470,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/runtime_results_tests.py",
+      "sha": "eb7f41b771da98e06c5c7562ba27d74db075f5d9"
+    },
+    {
+      "bytes": 14543,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/source_role_audit.py",
+      "sha": "87a58538844d8585c785ce5763ed6955c90f2c9a"
+    },
+    {
+      "bytes": 7194,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/source_role_audit_tests.py",
+      "sha": "aafaeaaa8b9b8f4ba3151e9375bf3ed66e53958e"
+    },
+    {
+      "bytes": 16596,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_audit_common.py",
+      "sha": "620795a65e92481b32bd725c9d79b3b8a47c05e9"
+    },
+    {
+      "bytes": 11368,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_audit_contract_tests.py",
+      "sha": "9874c0e1feb43619447e535a5b2c04cf580a5e8d"
+    },
+    {
+      "bytes": 17429,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_endpoint_audit.py",
+      "sha": "f9177f2f4039faea80dbc5ee99486cf9673c0e78"
+    },
+    {
+      "bytes": 18977,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_evidence_audit.py",
+      "sha": "e7e0587104407ec177f50969a22b955ae8bcf3f6"
+    },
+    {
+      "bytes": 8710,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_fit_audit.py",
+      "sha": "8b0fc5a4e5eb04d8235713d8d6c447fe512588c0"
+    },
+    {
+      "bytes": 25071,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_hard_score_audit.py",
+      "sha": "f31224b589fbd6dd6bb30b37d945507c3e458709"
+    },
+    {
+      "bytes": 9511,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_hard_score_audit_tests.py",
+      "sha": "e57437d510ff766d7f6e6fd6e04fd70f461133e2"
+    },
+    {
+      "bytes": 7570,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_policy_contract_tests.py",
+      "sha": "39771206971681600c4be69961d4300021507d8f"
+    },
+    {
+      "bytes": 14774,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027_review/training_replay.py",
+      "sha": "9c0d19a4666f1fcc9bcf7f9e956675bd9c673196"
+    }
+  ],
+  "local_research_files": 249,
+  "passed": true,
+  "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4086",
+  "pull_request_draft": true,
+  "pull_request_head": "88e5a3e0e7a08494a25aafbeb70a9be529c034c3",
+  "pull_request_mergeable": true,
+  "remote_tree_complete": true,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hepta.field-bridge.v3.remote-publication-verification.1",
+  "scope": "Every local V3 science/review deliverable has identical Git blob identity and size, or a byte-exact local gzip expansion whose compressed Git blob identity and size are verified. No raw evidence archive upload is implied.",
+  "verified_commit": "88e5a3e0e7a08494a25aafbeb70a9be529c034c3",
+  "verified_tree_sha": "cce45ec26340e1256d783532a946bae44ef0a10c"
+}

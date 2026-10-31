@@ -1,0 +1,30 @@
+{
+  "artifact_sha256": {
+    "DEVELOPMENT_AUDIT_JOIN.json": "f1664b4af4bb4301aa240309a7d193abef679190a172a803abe1b07b2e11834d",
+    "DEVELOPMENT_SELECTION.json": "a7d9604ad2de6f71fa02ad543d02e121fe3071d7eb62a650e0fae7473c8474ef",
+    "INDEPENDENT_DEVELOPMENT_ENDPOINT_AUDIT.json": "28f727de261179a7f2b7df47395347dc4b3b00e949538634569b86f6e25ceeae",
+    "INDEPENDENT_TRAINING_HARD_SCORE_AUDIT-development.json": "0265f8a7d26ed56caf61d074bb67516ab5a7cdfb320e26709d64f8ac93bb0045"
+  },
+  "authority": "DENY_ALL",
+  "development_checks": {
+    "eligible_adaptive_exists": true,
+    "field_clean_eligible": true,
+    "field_over_ordinary": false,
+    "field_over_selected_adaptive": true,
+    "ordinary_each_seed_nonnegative": true,
+    "ordinary_pooled_gain": true
+  },
+  "development_gate_passed": false,
+  "development_integrity_passed": true,
+  "final_training_authorized": false,
+  "independent_learning_audit_executed": false,
+  "independent_learning_audit_passed": null,
+  "interpretation": "Development screening failed; no confirmatory training endpoint estimate or inferiority theorem is asserted.",
+  "native_owner_integration": false,
+  "passed": false,
+  "protocol_sha256": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7",
+  "reason": "Prospective H12 failed the complete development field-over-ordinary gate under both observers.",
+  "requires_calibration": true,
+  "schema": "hepta.field-bridge.v3.training-qualification.1",
+  "source_manifest_sha256": "9bfcb279d5efdc7bd6c14af41c64c04a78fc97f7827f7464280d8997d8fead41"
+}

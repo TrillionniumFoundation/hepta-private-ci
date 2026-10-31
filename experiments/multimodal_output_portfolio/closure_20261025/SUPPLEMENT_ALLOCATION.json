@@ -1,0 +1,28 @@
+{
+  "allocator_sha256": "8edc35e23318921984cf8000c162fa6f3bf365e7d82b02f2c1092ed148ded473",
+  "basis": "Original metadata audit and unchanged named-role guards; prior studies restricted to pairs[0,640)",
+  "changes_previous_protocol_or_guard": false,
+  "manifest_file_sha256": "60c24d44e12eb3defb3b1b8146d91879b84918b057e0524117137d7e4f793058",
+  "origin_role": "unallocated_train",
+  "original_allocation_sha256": "fcee8983689b78e6f7bb131130dbc075d0c745d7e3e560acdf64f2a26da729e8",
+  "outcomes_opened": false,
+  "registered_unix_ns": 1792944412791858834,
+  "remaining_unassigned_pairs": 0,
+  "roles": {
+    "control_repair": {
+      "pair_count": 96,
+      "pair_end_exclusive": 736,
+      "pair_start": 640,
+      "role": "closure_control_repair",
+      "source_ids_sha256": "f48f2994ad418f85ce3f2b2a4d9d445f5ad700a46e8e0afed305c2201c45000c"
+    },
+    "v6_oracle": {
+      "pair_count": 64,
+      "pair_end_exclusive": 800,
+      "pair_start": 736,
+      "role": "closure_v6_oracle",
+      "source_ids_sha256": "60e828bfaa4c86b6b55c4ce9234f2e298337619130997850f9e0796c1edf2531"
+    }
+  },
+  "schema": "hepta.closure.supplement-source-allocation.v1"
+}

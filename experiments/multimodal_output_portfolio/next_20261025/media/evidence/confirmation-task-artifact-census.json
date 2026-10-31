@@ -1,0 +1,12 @@
+{
+  "schema": "hepta.media.task-artifact-census.v1",
+  "recorded_unix_ns": 1792985464267633614,
+  "source_tasks": 128,
+  "generated_output_bundles": 640,
+  "input_codec_artifacts": 512,
+  "generated_output_codec_artifacts": 2560,
+  "disjoint_task_artifacts": 3072,
+  "independent_analysis_sha256": "51b1c28636a0f65ed6bd8eaa0120b8d0ab6a5bd96360d1ab2a7c7fecab45142e",
+  "interpretation": "3072 unique task artifacts = 512 input materializations + 2560 actual generated output files; input bundles are reused across the five routes. It is not 768 generated bundles. Conditional-head and negative-control artifacts are separate.",
+  "status": "passed"
+}

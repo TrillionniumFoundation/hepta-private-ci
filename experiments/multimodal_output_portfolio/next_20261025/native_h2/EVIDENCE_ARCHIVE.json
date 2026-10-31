@@ -1,0 +1,88 @@
+{
+  "all_member_bytes_rehashed_after_archive_close": true,
+  "allowed_source_roots": [
+    "/workspace/scratch/87e43aa872f5",
+    "/tmp/hepta-ndu-next-native-h2"
+  ],
+  "archive": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-next-native-h2-20261026.tar.gz",
+  "archive_bytes": 62575673,
+  "archive_sha256": "0fa928448405e1d65ead9642b7b6db2d79e5eedbc34966b15e069d3f15bb171e",
+  "completed_unix_ns": 1792986724761001574,
+  "definition_sha256": "45f964df22290e1b71e2795d29e6206b334ca379ce4ae4d61b6330741830f1f7",
+  "expanded_inputs": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-next-native-h2-20261026.tar.gz.inputs.json",
+  "external_frozen_inputs": {
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc2-runs/base-recovery-001/reward-observer.pt": {
+      "bytes": 427965,
+      "sha256": "8cfca1b0cd0a69bcfcc6a9d34d0a672c07c28f3342823ef8a3f6763e9430a003"
+    },
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc2-runs/source-recovery-001/source-manifest.json": {
+      "bytes": 5922737,
+      "sha256": "60c24d44e12eb3defb3b1b8146d91879b84918b057e0524117137d7e4f793058"
+    },
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc2-runs/training-001/seed-17/output_ndu/model.pt": {
+      "bytes": 1403607,
+      "sha256": "2f766c9356333d86f7c78c1cb18e8c67e776019c1071ff7af4b112f294518549"
+    },
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc3-runs/controllers-001/seed-17/output_ndu/controller.pt": {
+      "bytes": 324397,
+      "sha256": "af83aa182ed037f8a0792093f69c19c8ddd51f0622f5851ef037277113a561ce"
+    },
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc3-runs/public-sensor-001/sensor.pt": {
+      "bytes": 428549,
+      "sha256": "982b23e560af025af212433ebcdefe87f49277f6d4944b74cdcaa802f7150e80"
+    },
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc4-control-runs/development-001/seed-17/fit/data.pt": {
+      "bytes": 65718981,
+      "sha256": "5a01bde7946110030e0fabf30c1008830b053f337eb4b25a32aa62a5eaa30f8c"
+    },
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc4-control-runs/development-001/seed-17/selection/data.pt": {
+      "bytes": 32860101,
+      "sha256": "5ce003835c39699471f317e42dd9a1407f9f871ff80d3544801db470d5dd9e01"
+    }
+  },
+  "external_scope": "Frozen generator, teacher, public sensor, private audit observer and historical development inputs are retained in the verified shared archive. Official new source bytes and allocations have separate complete custody. The verified H1 archive retains original upstream Rust source, direct dependency artifacts and rebuild provenance. H2 executed sources and final binary are in this archive. Compiler, Python runtime and system libraries are represented by exact build/runtime provenance, not a complete operating-system image. Linked archives are not uploaded or duplicated into this package.",
+  "historical_exact_source_snapshots_verified": [],
+  "linked_complete_archives": [
+    {
+      "bytes": 245494160,
+      "path": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-shared-inputs-20261025.tar.gz",
+      "sha256": "f4360ba4625a52274120ffd7f50101efccedf58e05a403d189ba160b3ace565e",
+      "verified": true
+    },
+    {
+      "bytes": 6182779,
+      "path": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-native-online-20261025.tar.gz",
+      "sha256": "50d369cdeed05c5313446f19881fd4ecbd16f0174ec36fd402bfdb214934aeaf",
+      "verified": true
+    },
+    {
+      "bytes": 63637614,
+      "path": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-next-sources-20261026.tar.gz",
+      "sha256": "3485a9b0246160f9cad7b3330ce6dd51463bd8d54a8889f0b74fbd91d30e0c36",
+      "verified": true
+    },
+    {
+      "bytes": 25505892,
+      "path": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-next-native-h1-20261026.tar.gz",
+      "sha256": "8eee1f8c9ce8b5f410775af6fe21861eba93438f2a8dd2f64f7935504b278fee",
+      "verified": true
+    }
+  ],
+  "manifest_sha256": "deb6d182bc8ea117ecc25bab1311a300649eaea8e4202db19f300725a8f81622",
+  "member_count": 266616,
+  "member_manifest": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-next-native-h2-20261026.tar.gz.manifest.json",
+  "original_files_retained": true,
+  "protocols_verified": {
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/CALIBRATION_PROTOCOL.json": "eb2163bdbc21f9b95f214963c9bbde6765b86afe72452040c2fee91f1daada17",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/CALIBRATION_PROTOCOL_V2.json": "c06e77687dcd7215edabcd41235e5e7383dcb739d05e045b086f20f710482a76",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/EXPANDED_OLD_PROTOCOL.json": "893625ee94b3549c5f91ceb9c91815148b3fb1bb0278b0f4142fe592ee056cf4",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/NATIVE_PROTOCOL.json": "88e2785e85c55496c41e039b36d01380138686d34de7d61cdad8b4cf2c79dc44",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/QUALIFICATION_PROTOCOL.json": "a1c539b539d9b39a1e2f757d52748cb1d1b32ceb490ee47fd3febe753a3dcd39"
+  },
+  "schema": "hepta.next.closed-evidence.v1",
+  "status": "passed",
+  "study": "next-native-h2-20261026",
+  "uncompressed_input_bytes": 147305326,
+  "upload_performed": false,
+  "verified_members_including_manifest": 266617
+}

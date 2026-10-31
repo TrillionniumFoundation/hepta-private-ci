@@ -1,0 +1,262 @@
+{
+  "additional_independent_sources": 0,
+  "analysis_cpu_ns": 9183445433,
+  "analysis_wall_ns": 9044388908,
+  "cost_scope": "Actual full requests, policies alternated within supplemental blocks; run separately from primary, no randomized interleaved cost superiority claim",
+  "failures": 0,
+  "identical_public_root_pairs": 40960,
+  "policies": {
+    "cached_teacher": {
+      "CE": 0.16355035491016912,
+      "mean_cpu_ms": 11.453975773828125,
+      "mean_wall_ms": 12.971615613378907,
+      "per_seed": {
+        "17": {
+          "CE": 0.1625347823293639,
+          "success": 0.533447265625
+        },
+        "29": {
+          "CE": 0.15334506480957866,
+          "success": 0.5419921875
+        },
+        "43": {
+          "CE": 0.15991322549385145,
+          "success": 0.544921875
+        },
+        "59": {
+          "CE": 0.16161998160134528,
+          "success": 0.5400390625
+        },
+        "71": {
+          "CE": 0.18075421164476446,
+          "success": 0.545654296875
+        }
+      },
+      "secondary_CE": 0.16344008221897321,
+      "success": 0.5412109375,
+      "work": {
+        "bernoulli_sample_calls": 41327,
+        "categorical_sample_calls": 289260,
+        "committed_image_examples": 34594,
+        "committed_text_examples": 34760,
+        "couple_calls": 28027,
+        "discarded_image_examples": 6733,
+        "discarded_text_examples": 6567,
+        "draft_pixel_encoder_calls": 27916,
+        "draft_pixel_encoder_panel_examples": 55832,
+        "emission_calls": 41327,
+        "encoder_calls": 20480,
+        "encoder_examples": 20480,
+        "exact_pixel_cache_examples": 6556,
+        "exact_pixel_cache_hits": 6556,
+        "input_pixel_encoder_panel_examples": 40960,
+        "pixel_decoder_calls": 41327,
+        "pixel_decoder_panel_examples": 82654,
+        "public_draft_sensor_calls": 27916,
+        "public_draft_sensor_panel_examples": 55832,
+        "public_feature_calls": 34472,
+        "public_feature_examples": 34472,
+        "public_input_sensor_calls": 20480,
+        "public_input_sensor_panel_examples": 40960,
+        "refine_image_calls": 6567,
+        "refine_semantic_calls": 23524,
+        "refine_text_calls": 6733,
+        "sampled_bernoulli_variables": 64800736,
+        "sampled_categorical_variables": 289260,
+        "state_transition_calls": 64851,
+        "state_transition_examples": 64851,
+        "teacher_calls": 34472,
+        "text_decoder_example_steps": 289289,
+        "text_decoder_step_calls": 289289,
+        "token_onehot_examples": 34472,
+        "token_projection_example_steps": 289289
+      }
+    },
+    "fixed_allocation": {
+      "CE": 0.1441511470383816,
+      "mean_cpu_ms": 14.739515337548829,
+      "mean_wall_ms": 16.46163178222656,
+      "per_seed": {
+        "17": {
+          "CE": 0.14114238585062844,
+          "success": 0.525634765625
+        },
+        "29": {
+          "CE": 0.13030202148510495,
+          "success": 0.5283203125
+        },
+        "43": {
+          "CE": 0.15545424005665487,
+          "success": 0.53515625
+        },
+        "59": {
+          "CE": 0.15003454118718107,
+          "success": 0.530029296875
+        },
+        "71": {
+          "CE": 0.1441864816902625,
+          "success": 0.532958984375
+        }
+      },
+      "secondary_CE": 0.1452706040908852,
+      "success": 0.530419921875,
+      "work": {
+        "bernoulli_sample_calls": 61440,
+        "categorical_sample_calls": 430024,
+        "committed_image_examples": 40960,
+        "committed_text_examples": 40960,
+        "couple_calls": 20480,
+        "discarded_image_examples": 20480,
+        "discarded_text_examples": 20480,
+        "draft_pixel_encoder_calls": 40960,
+        "draft_pixel_encoder_panel_examples": 81920,
+        "emission_calls": 61440,
+        "encoder_calls": 20480,
+        "encoder_examples": 20480,
+        "input_pixel_encoder_panel_examples": 40960,
+        "pixel_decoder_calls": 61440,
+        "pixel_decoder_panel_examples": 122880,
+        "public_draft_sensor_calls": 40960,
+        "public_draft_sensor_panel_examples": 81920,
+        "public_feature_calls": 40960,
+        "public_feature_examples": 40960,
+        "public_input_sensor_calls": 20480,
+        "public_input_sensor_panel_examples": 40960,
+        "refine_image_calls": 20480,
+        "refine_semantic_calls": 20480,
+        "refine_text_calls": 20480,
+        "sampled_bernoulli_variables": 96337920,
+        "sampled_categorical_variables": 430024,
+        "state_transition_calls": 81920,
+        "state_transition_examples": 81920,
+        "text_decoder_example_steps": 430080,
+        "text_decoder_step_calls": 430080,
+        "token_onehot_examples": 40960,
+        "token_projection_example_steps": 430080
+      }
+    },
+    "strong_nonfeedback": {
+      "CE": 0.15122833304477168,
+      "mean_cpu_ms": 13.473135948535155,
+      "mean_wall_ms": 15.097597166943359,
+      "per_seed": {
+        "17": {
+          "CE": 0.14114238585062844,
+          "success": 0.525634765625
+        },
+        "29": {
+          "CE": 0.15209915388769246,
+          "success": 0.5341796875
+        },
+        "43": {
+          "CE": 0.15482923504150148,
+          "success": 0.540771484375
+        },
+        "59": {
+          "CE": 0.1463588352351537,
+          "success": 0.536376953125
+        },
+        "71": {
+          "CE": 0.16196643733893223,
+          "success": 0.53955078125
+        }
+      },
+      "secondary_CE": 0.153171678884231,
+      "success": 0.535302734375,
+      "work": {
+        "bernoulli_sample_calls": 55990,
+        "categorical_sample_calls": 391884,
+        "committed_image_examples": 40190,
+        "committed_text_examples": 42914,
+        "couple_calls": 27114,
+        "discarded_image_examples": 15800,
+        "discarded_text_examples": 13076,
+        "draft_pixel_encoder_calls": 32288,
+        "draft_pixel_encoder_panel_examples": 64576,
+        "emission_calls": 55990,
+        "encoder_calls": 20480,
+        "encoder_examples": 20480,
+        "exact_pixel_cache_examples": 7764,
+        "exact_pixel_cache_hits": 7764,
+        "input_pixel_encoder_panel_examples": 40960,
+        "pixel_decoder_calls": 55990,
+        "pixel_decoder_panel_examples": 111980,
+        "public_draft_sensor_calls": 32288,
+        "public_draft_sensor_panel_examples": 64576,
+        "public_feature_calls": 40052,
+        "public_feature_examples": 40052,
+        "public_input_sensor_calls": 20480,
+        "public_input_sensor_panel_examples": 40960,
+        "refine_image_calls": 13076,
+        "refine_semantic_calls": 22314,
+        "refine_text_calls": 15800,
+        "route_head_calls": 8192,
+        "sampled_bernoulli_variables": 87792320,
+        "sampled_categorical_variables": 391884,
+        "state_transition_calls": 78304,
+        "state_transition_examples": 78304,
+        "text_decoder_example_steps": 391930,
+        "text_decoder_step_calls": 391930,
+        "token_onehot_examples": 40052,
+        "token_projection_example_steps": 391930
+      }
+    }
+  },
+  "primary_completion_sha256": "d1e049fa3a2406fc0a50452b65cc208e1ba815eccd4215534a5a42c1d04ee78a",
+  "same_path_identical_terminal_pairs": 1667,
+  "schema": "hepta.closure.control-supplement-analysis.v1",
+  "scope": "exploratory_registered_after_primary_collection_started",
+  "source_pairs": 256,
+  "statistical_scope": "Exploratory 2000 crossed seed/source bootstrap, 97.5% nominal component intervals; no finite-five-seed coverage guarantee",
+  "status": "completed",
+  "supplement_completion_sha256": "69aa46a5d743d9734de8739bd5d63810545cbaab05c6cb9ddfced83ccae6653a",
+  "supplement_requests": 40960,
+  "teacher_minus_baselines": {
+    "fixed_allocation": {
+      "causal_clock_superiority_claim_permitted": false,
+      "descriptive_teacher_minus_baseline_cpu_ms": -3.285539563720704,
+      "descriptive_teacher_minus_baseline_wall_ms": -3.4900161688476548,
+      "teacher_minus_baseline_raw_CE": {
+        "estimate": 0.019399207871787505,
+        "lower": 0.004624775151000221,
+        "nominal_level": 0.975,
+        "upper": 0.03472203336628969
+      },
+      "teacher_minus_baseline_secondary_CE": {
+        "estimate": 0.018169478128088,
+        "lower": 0.00035969651980175313,
+        "nominal_level": 0.975,
+        "upper": 0.034664982610034686
+      },
+      "teacher_minus_baseline_success": {
+        "estimate": 0.010791015625000067,
+        "lower": 0.0044921875000000205,
+        "nominal_level": 0.975,
+        "upper": 0.018164672851562633
+      }
+    },
+    "strong_nonfeedback": {
+      "causal_clock_superiority_claim_permitted": false,
+      "descriptive_teacher_minus_baseline_cpu_ms": -2.0191601747070305,
+      "descriptive_teacher_minus_baseline_wall_ms": -2.1259815535644524,
+      "teacher_minus_baseline_raw_CE": {
+        "estimate": 0.012322021865397437,
+        "lower": -0.00027239947123836413,
+        "nominal_level": 0.975,
+        "upper": 0.02508230880307385
+      },
+      "teacher_minus_baseline_secondary_CE": {
+        "estimate": 0.010268403334742215,
+        "lower": -0.005588412989937652,
+        "nominal_level": 0.975,
+        "upper": 0.02662497799329548
+      },
+      "teacher_minus_baseline_success": {
+        "estimate": 0.005908203125000067,
+        "lower": -0.0009765625,
+        "nominal_level": 0.975,
+        "upper": 0.012550048828125026
+      }
+    }
+  }
+}

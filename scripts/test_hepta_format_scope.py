@@ -344,6 +344,81 @@ class FormatterScopeTests(unittest.TestCase):
         command = FMT.rust_file_command("codex-rs/explicit/src/lib.rs", check=False)
         self.assertEqual(command.args[command.args.index("--edition") + 1], "2021")
 
+    def test_standalone_rust_uses_nearest_config_and_preserves_source_context(self):
+        self.write("rustfmt.toml", 'edition = "2018"\n')
+        source = self.write("experiments/native/deeper/example.rs", "fn main() {}\n")
+        for name in ("rustfmt.toml", ".rustfmt.toml"):
+            with self.subTest(name=name):
+                config = self.write(f"experiments/native/{name}", 'edition = "2024"\n')
+                command = FMT.rust_file_command(str(source.relative_to(self.root)), check=True)
+                self.assertEqual(command.args[command.args.index("--edition") + 1], "2024")
+                self.assertEqual(command.args[command.args.index("--config-path") + 1], str(config))
+                self.assertEqual(command.cwd, source.parent)
+                self.assertIn("--check", command.args)
+                config.unlink()
+
+    def test_standalone_nearest_config_without_edition_keeps_original_default(self):
+        self.write("rustfmt.toml", 'edition = "2024"\n')
+        self.write("standalone/rustfmt.toml", "max_width = 88\n")
+        command = FMT.rust_file_command("standalone/example.rs", check=False)
+        self.assertEqual(command.args[command.args.index("--edition") + 1], "2021")
+
+    def test_standalone_config_search_stops_at_repository_boundary(self):
+        self.write("rustfmt.toml", 'edition = "2024"\n')
+        nested_repo = self.root / "repo"
+        nested_repo.mkdir()
+        with patch.object(FMT, "REPO_ROOT", nested_repo):
+            command = FMT.rust_file_command("example.rs", check=False)
+        self.assertEqual(command.args[command.args.index("--edition") + 1], "2021")
+        self.assertNotIn("--config-path", command.args)
+
+    def test_manifest_edition_takes_priority_over_standalone_config(self):
+        self.write("crate/Cargo.toml", '[package]\nname="fixture"\nedition="2018"\n')
+        self.write("crate/src/rustfmt.toml", 'edition = "2024"\n')
+        command = FMT.rust_file_command("crate/src/example.rs", check=True)
+        self.assertEqual(command.args[command.args.index("--edition") + 1], "2018")
+        self.assertEqual(command.cwd, self.root / "crate")
+
+    @unittest.skipIf(os.name == "nt", "POSIX symlink fixture")
+    def test_standalone_config_symlink_and_source_cannot_escape_repository(self):
+        outside = self.write("outside.toml", 'edition = "2024"\n')
+        nested_repo = self.root / "repo"
+        nested_repo.mkdir()
+        (nested_repo / "rustfmt.toml").symlink_to(outside)
+        with patch.object(FMT, "REPO_ROOT", nested_repo):
+            with self.assertRaisesRegex(ValueError, "configuration escapes"):
+                FMT.rust_file_command("example.rs", check=True)
+            with self.assertRaisesRegex(ValueError, "source escapes"):
+                FMT.rust_file_command("../outside.rs", check=True)
+
+    def test_standalone_invalid_edition_or_malformed_toml_is_rejected(self):
+        for document in ('edition="2027"\n', "edition=2024\n", "edition=true\n", "edition=[]\n", 'edition="2024'):
+            with self.subTest(document=document):
+                self.write("rustfmt.toml", document)
+                with self.assertRaises(ValueError):
+                    FMT.rust_file_command("example.rs", check=False)
+
+    def test_python_310_standalone_does_not_silently_override_declared_edition(self):
+        with patch.object(FMT, "tomllib", None):
+            command = FMT.rust_file_command("example.rs", check=False)
+            self.assertEqual(command.args[command.args.index("--edition") + 1], "2021")
+            self.write("rustfmt.toml", 'edition = "2024"\n')
+            with self.assertRaisesRegex(ValueError, "Python 3.11"):
+                FMT.rust_file_command("example.rs", check=False)
+
+    def test_python_310_manifest_keeps_cargo_metadata_priority(self):
+        import json
+
+        manifest = self.write("crate/Cargo.toml", '[package]\nname="fixture"\nedition="2021"\n')
+        self.write("crate/src/rustfmt.toml", 'edition = "2024"\n')
+        metadata = {"packages": [{"manifest_path": str(manifest), "edition": "2021"}]}
+        with patch.object(FMT, "tomllib", None), patch.object(
+            subprocess, "check_output", return_value=json.dumps(metadata)
+        ) as cargo:
+            command = FMT.rust_file_command("crate/src/example.rs", check=True)
+        self.assertEqual(command.args[command.args.index("--edition") + 1], "2021")
+        self.assertEqual(cargo.call_args.args[0][:2], ["cargo", "metadata"])
+
     def test_rust_does_not_guess_an_inherited_edition_without_its_owner(self):
         self.write("codex-rs/Cargo.toml", "[workspace]\nmembers=[]\n")
         self.write(
@@ -356,3 +431,4 @@ class FormatterScopeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

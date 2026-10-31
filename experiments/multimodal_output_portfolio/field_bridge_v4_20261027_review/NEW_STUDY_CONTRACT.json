@@ -1,0 +1,392 @@
+{
+  "active_model_execution_permission": false,
+  "all_original_substantive_blockers_closed": false,
+  "authority": "DENY_ALL",
+  "baseline_commit": "74ebc1ed6947a4cd913ee162c88a81ac3677474f",
+  "chosen_candidate_proposal": {
+    "all_adaptive_comparators_receive_same_baseline_information": true,
+    "calibration_context_float64_payload_bytes": 112,
+    "calibration_context_values": 14,
+    "context_scope": "Readonly per seed/panel/path calibration in addition to the 12-dimensional readout; not a claim of an unconditioned 12-dimensional Markov sufficient state.",
+    "formula": "x_prime[I] = x[I] - (observed_initial[I] - frozen_fit_initial[I]); x_prime[not I] = x[not I]",
+    "frozen_fit_initial": "Each seed BANK.json step-zero states; all four trajectories must match exactly on I. No averaging or new-panel fitting.",
+    "name": "initial_panel_translation_H12",
+    "no_new_head_fit_or_ridge_selection": true,
+    "observed_initial": "Exactly one pre-update measurement from the new phase authorized probe/guard inputs. Reuse the already scheduled step-zero raw measurement when possible. Never use qualification endpoint task/clean outcomes.",
+    "raw_state_dimension": 30,
+    "same_baseline_measurement_accounting_for_all_methods": true,
+    "single_intervention": true,
+    "translated_indices": [
+      0,
+      1,
+      2,
+      3,
+      12,
+      13,
+      14,
+      15,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29
+    ],
+    "unchanged": [
+      "V3 selected heads and normalizers",
+      "V3 ridges and reference policies",
+      "four training multipliers",
+      "rank8 trainable capacity",
+      "288 steps and 48-step blocks",
+      "learning rate, momentum, clipping, rehearsal and teacher anchor",
+      "raw clean guard, full optimizer rollback and zero-action accounting",
+      "fixed training deployment action and hard scoring"
+    ]
+  },
+  "current_review_model_observer_native_network_calls": 0,
+  "frozen_v3_learning_artifacts": {
+    "17": {
+      "bank/17/BANK.json": {
+        "bytes": 247649,
+        "sha256": "c85d2253b3ccbf05b1a4f3e5da57cf012549a57bf1aaf6b5706784fa35d96a8f"
+      },
+      "fit/17/CONTROLLERS.json": {
+        "bytes": 1482994,
+        "sha256": "f750695fef1f7f7d9f20e7abdbd6547845c8ce59e5fd77788b85a5be1548a1e5"
+      },
+      "reference/17/REFERENCE.json": {
+        "bytes": 11449,
+        "sha256": "96565d1cdc10b607a6741c92d319f1e950e8ee9e4c96b2574b9754512584a16a"
+      }
+    },
+    "29": {
+      "bank/29/BANK.json": {
+        "bytes": 248261,
+        "sha256": "8ee6976dacb3ffdd0271b43c3c125b06d1221d39c729fd1fa3268cd9bec2ef57"
+      },
+      "fit/29/CONTROLLERS.json": {
+        "bytes": 1483070,
+        "sha256": "98c93a2a1b6a765eb3c422a1255c95d3efb489ba691ebb2b583c1bfb60c488a3"
+      },
+      "reference/29/REFERENCE.json": {
+        "bytes": 11380,
+        "sha256": "9f1e2597bcf802b1f5d04cfa8d492d1a7ba8c686f3a3c6def94f5b8fb71da555"
+      }
+    },
+    "43": {
+      "bank/43/BANK.json": {
+        "bytes": 247022,
+        "sha256": "f87666fc1b15505b43d686257050c9b821366da26bd98b139fd642075e3e1445"
+      },
+      "fit/43/CONTROLLERS.json": {
+        "bytes": 1481779,
+        "sha256": "9efa768f3de6d7913a9cf3447659d329bb9a8e6b7f63644d70832df46ca49215"
+      },
+      "reference/43/REFERENCE.json": {
+        "bytes": 11401,
+        "sha256": "e3c4e013e79e34bec46312d72d18e0b7030604434ba69098c347ffa525e7265d"
+      }
+    }
+  },
+  "future_confirmation": {
+    "all_checkpoints_policies_and_diagnostic_status_frozen_before_any_final_output": true,
+    "checkpoint_specific_native_readout_mediation_must_be_reported": true,
+    "genuine_independent_primary_and_retention_required": true,
+    "minimum_gain_family_denominator": 6,
+    "minimum_retention_family_denominator": 10,
+    "new_epoch_alpha_proposal": {
+      "epoch_begins_after_all_V3_outcomes": "No retrospective family-wise coverage claim for V1-V3.",
+      "first_final_total_alpha": 0.025,
+      "first_gain_family_alpha": 0.0125,
+      "first_gain_two_sided_coverage_per_observer": 0.9979166666666667,
+      "first_partial_final_outcome_consumes_entire_study_allocation": true,
+      "first_retention_family_alpha": 0.0125,
+      "first_retention_two_sided_coverage_per_observer": 0.99875,
+      "no_budget_recycling_after_failure": true,
+      "preferred_first_final_bootstrap_samples": 32000,
+      "qualification_screen_alpha_is_not_final_success_alpha": true,
+      "root_must_freeze_exact_choice_before_final_outcomes": true,
+      "statistical_scope": "Nominal plan; source/rollout bootstrap is approximate. A rigorous across-study bound additionally requires valid conditional per-study tests. Individual intervals do not claim simultaneous coverage of both full observer families.",
+      "study_k_allocation": "0.05 / 2**k for k=1,2,...",
+      "total_nominal_future_budget": 0.05
+    },
+    "original_gain_family": [
+      "B-A",
+      "C-B",
+      "D-A",
+      "E-C",
+      "E-G",
+      "E-F"
+    ],
+    "original_retention_family_candidates": [
+      "B",
+      "C",
+      "D",
+      "E",
+      "F",
+      "G",
+      "H",
+      "I",
+      "J",
+      "K"
+    ],
+    "retention_margin": 0.01,
+    "same_literal_fixed_deployment_for_A_B_C": true,
+    "status": "NOT_REGISTERED_NOT_AUTHORIZED",
+    "unrun_contrasts_not_established": true
+  },
+  "historical_boundary": {
+    "historical_v2_shared_panel_clause_cannot_be_rewritten": true,
+    "new_success_updates_new_scope_only": true,
+    "v1_v2_v3_sources_and_results_immutable": true,
+    "v3_failure_policy": {
+      "never_mark_scientific_success_for_engineering_completion": true,
+      "next_study_requires_new_protocol_and_unused_sources": true,
+      "no_audit_retry": true,
+      "no_primary_resampling_until_success": true,
+      "no_threshold_or_feature_selection_after_audit": true,
+      "preserve_all_candidates_and_failed_gates": true
+    },
+    "v3_final_confirmation_executed": false,
+    "v3_frozen_runtime_gate_passed": false,
+    "v3_training_gate_passed": false
+  },
+  "native_owner_integration": false,
+  "new_source_budget": {
+    "allocation_role_order": [
+      "gradient",
+      "rehearsal",
+      "probe",
+      "guard",
+      "task",
+      "clean"
+    ],
+    "allocation_salt": "hepta-field-v4-20261027-panel-origin-qualification-1",
+    "allocation_status": "NOT_ALLOCATED",
+    "available_unassigned_images_by_origin": {
+      "test": 3952,
+      "train": 9000
+    },
+    "new_namespace": "V4 qualification; distinct registry and run root, never an altered V3 role/gate",
+    "pre_model_requirements": [
+      "Exact new allocation and source-registry hashes",
+      "No overlap with V2, V3 assigned roles, or between V4 roles",
+      "Independent duplicate/conflicting-label audit",
+      "New protocol and executable source commit",
+      "Bound heads, three fit-origin anchors and model/optimizer inputs",
+      "Phase-specific access whitelist and sealed endpoint loaders",
+      "One-shot START marker and complete cost ledger"
+    ],
+    "proposed_pairs_by_role": {
+      "clean": 1024,
+      "gradient": 1000,
+      "guard": 256,
+      "probe": 128,
+      "rehearsal": 256,
+      "task": 512
+    },
+    "proposed_train_images_by_role": {
+      "clean": 2048,
+      "gradient": 2000,
+      "guard": 512,
+      "probe": 256,
+      "rehearsal": 512,
+      "task": 1024
+    },
+    "remaining_unassigned_images_after_proposed_allocation": {
+      "test": 3952,
+      "train": 2648
+    },
+    "source_pool": "Only images unassigned in the complete frozen V3 allocation, after excluding all V2 identities and all V3 assigned identities.",
+    "source_selection_rule": "Within the unassigned official train pool, sort distinct pixel identities by (SHA256(UTF8(allocation_salt + \":train:\" + pixel_sha256)), pixel_sha256); assign consecutive prefixes in the declared role order, then pair adjacent identities in each role. No outcome/class stratification or reallocation. Conflicting duplicate labels may only be excluded under the prior declared duplicate policy.",
+    "total_new_train_images": 6352,
+    "v3_eight_unmaterialized_roles_default": "Remain sealed and unassigned to V4. No transfer is authorized by this proposal.",
+    "v3_unmaterialized_role_images": {
+      "audit_clean": 2048,
+      "audit_gradient": 2000,
+      "audit_guard": 512,
+      "audit_probe": 256,
+      "audit_rehearsal": 512,
+      "audit_task": 1024,
+      "primary": 2048,
+      "retention": 4096
+    }
+  },
+  "ordinary_only_alternative": {
+    "after_main_qualification_allocation": "The original 7376-train-image alternative no longer fits the remaining 2648 unassigned train images; identify a different audited unused cohort or external data before any separate launch. Do not silently reuse qualification or sealed V3 outcomes.",
+    "not_an_automatic_fallback": true,
+    "preregister_before_using_new_outputs": true,
+    "same_final_samples_as_field_study_forbidden_unless_all_methods_frozen_jointly_before_first_peek": true,
+    "standalone_original_budget_before_main_allocation": {
+      "gradient_microsteps": 3456,
+      "ordinary_complete_paths": 12,
+      "test_images": 2048,
+      "train_images": 7376
+    },
+    "status": "INACTIVE_SEPARATE_TRACK_NO_SOURCES_ASSIGNED"
+  },
+  "proposed_study_id": "hepta.field-bridge.v4.panel-origin-qualification.20261027.1",
+  "purpose": "One prospective full-path qualification of a single legal initial-panel translation, retaining all V3 failures and original closure criteria. This review does not authorize execution or open protected sources.",
+  "qualification_design": {
+    "adaptive_comparator": "translated richer30, fixed from released V3 selection; no new winner selection",
+    "bootstrap_samples": 4000,
+    "bootstrap_seed": 271042,
+    "clean_rule": "All three corrected lower bounds strictly above -0.01, under both observers.",
+    "comparisons": 6,
+    "complete_paths": 108,
+    "complete_rollouts_per_seed": 4,
+    "counting_scope": "Scheduled gradient/examples only; model, teacher, guard, observer, storage, rejected updates, zero actions, initial measurement and verifier costs remain separately measured. No FLOPs or wall-time equivalence inferred.",
+    "diagnostic_only": [
+      "raw_H12 contrast",
+      "translated_H7 contrast",
+      "translated_generic12 contrast",
+      "unselected ordinary constants",
+      "logged-state policy replay",
+      "fit/select clairvoyant tree maxima"
+    ],
+    "directional_measurements": 648,
+    "extra_head_fits": 0,
+    "family_alpha": 0.05,
+    "fixed_model_seeds": [
+      17,
+      29,
+      43
+    ],
+    "formal_clean_noninferiority_candidates": [
+      "selected_ordinary",
+      "translated_H12",
+      "translated_richer30"
+    ],
+    "formal_clean_reference": "frozen",
+    "formal_gain_contrasts": [
+      "selected_ordinary-frozen",
+      "translated_H12-selected_ordinary",
+      "translated_H12-translated_richer30"
+    ],
+    "gain_or_retention_claims_are_not_automatically_final_confirmation": true,
+    "gain_rule": "All three corrected lower bounds strictly above zero and every fixed-model mean strictly positive, under both observers.",
+    "max_qualification_outcome_looks": 1,
+    "methods": [
+      "ordinary_0",
+      "ordinary_0.25",
+      "ordinary_1",
+      "ordinary_2",
+      "raw_H12",
+      "translated_H12",
+      "translated_generic12",
+      "translated_richer30",
+      "translated_H7"
+    ],
+    "no_substitution_after_new_outcomes": true,
+    "ordinary_selected_action_indices": {
+      "17": 2,
+      "29": 3,
+      "43": 3
+    },
+    "ordinary_selected_multipliers": {
+      "17": 1.0,
+      "29": 2.0,
+      "43": 2.0
+    },
+    "passed_means": "Eligible to prepare an independently registered final evaluation; it does not close B03-B07 or certify feedback-task effects.",
+    "per_observer_two_sided_coverage": 0.9916666666666667,
+    "preferred_schedule_ids": [
+      14000,
+      14001,
+      14002,
+      14003
+    ],
+    "quantile": "numpy.quantile(method=linear)",
+    "resample_or_retune_after_failure": false,
+    "resampling": "Paired complete rollout indices within each fixed model, shared across methods/observers/task-clean; shared source-pair clusters across methods/seeds/conditions within each panel; equal fixed model/condition weights. Separate task and clean source draws.",
+    "rollout_schedule_policy": "Exactly four newly declared schedule IDs 14000,14001,14002,14003, frozen before any new model outcomes. No schedule search.",
+    "scheduled_gradient_examples": 2985984,
+    "scheduled_gradient_microsteps": 31104,
+    "stop_on_any_failed_formal_comparison": true
+  },
+  "required_before_registration": [
+    "Root fixes the exact single method and source namespace without opening model holdouts",
+    "Record source inventory and unchanged-original identity check",
+    "Mechanism/helper review including legal initial-panel capture, raw endpoint isolation and ordinary/raw-policy parity",
+    "Declare numerical precision, execution batching, seeds, episode/trajectory identities and resource ceiling",
+    "Register one-shot qualification and preserve every method regardless of result",
+    "Keep final/runtime confirmations separately locked pending their own complete prospective designs"
+  ],
+  "requires_calibration": true,
+  "reviewed_input_sha256": {
+    "field_bridge_v3_20261027/PAPER_HEPTA_COMMENTS.md": "37059c42bc8937b418cde65c5692e13b046c952613cdb3d2b1fff613d41c33fd",
+    "field_bridge_v3_20261027/PROTOCOL.json": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7",
+    "field_bridge_v3_20261027/SOURCE_ALLOCATION.json": "068381327c437aa2edfc4c3db204bf836aa87e0d681bd15a4dbde7a119810f48",
+    "field_bridge_v3_20261027/evidence/CONFIRMATION_QUALIFICATION.json": "ac47ff0661def0092a7674d6e99a146e2b76421c0741b8e42502ab72feea4075",
+    "field_bridge_v3_20261027/evidence/STUDY_DISPOSITION.json": "56a973140854352afab83c769916197d9352f82e8aad73e76281c805b6f834a7",
+    "field_bridge_v3_20261027_review/BLOCKERS.json": "59c7c7aa111eb156291c76e76c1fdce389f7d517eed75b9df5b6aada72ee5a88",
+    "field_bridge_v4_20261027_review/RUNTIME_DIAGNOSIS.json": "638ce04cd3c8baf2442fd15d292fea3814ddbd596a16ce757c36c15ee44d9a34",
+    "field_bridge_v4_20261027_review/TRAINING_DIAGNOSIS.json": "14aca2bc217b3563ef3c264625f5b7d0c773b38df3b5a5bbf5bea6ed4089f197",
+    "field_bridge_v4_20261027_review/TRAINING_PANEL_ORIGIN_CONTRACT.json": "5ee22d9347d3670e52e41e06863f3aacebf6c24418a14abca0f8b07eceda44d0",
+    "field_bridge_v4_20261027_review/training_panel_origin.py": "70ea67fa66ae24c36920749a61e9da646990da7c5c8fb40803392d79d164ff98"
+  },
+  "runtime_boundary": {
+    "common_target_centering_with_fixed_linear_ridge_is_policy_invariant": true,
+    "current_history_source_difference_sd_audit": 0.028389539477775682,
+    "do_not_launch_new_runtime_holdout_from_these_pilots": true,
+    "new_native_candidate_qualified": false,
+    "planning_effect_to_approximate_pairs_at_old_four_comparison_threshold": {
+      "0.001": 8988,
+      "0.002": 2247
+    },
+    "planning_limitations": [
+      "Single-observer normal approximation, using released-data dispersion",
+      "Ignores dual-observer and per-model-sign conjunction penalties",
+      "No guarantee of a positive true effect or generalization",
+      "More source pairs do not force mixed per-model true effects to become positive",
+      "No outcome-dependent sample-size enlargement"
+    ],
+    "released_v3_runtime_audit_is_exploratory_for_v4": true,
+    "six_stage_split_selection_deltas": [
+      {
+        "seed": 17,
+        "selection_delta_vs_original": -0.017971402878523807,
+        "strategy": "history_honest_stages"
+      },
+      {
+        "seed": 17,
+        "selection_delta_vs_original": -0.008990687427460217,
+        "strategy": "native_honest_stages"
+      },
+      {
+        "seed": 29,
+        "selection_delta_vs_original": -0.003361594698566476,
+        "strategy": "history_honest_stages"
+      },
+      {
+        "seed": 29,
+        "selection_delta_vs_original": -0.005696314632194111,
+        "strategy": "native_honest_stages"
+      },
+      {
+        "seed": 43,
+        "selection_delta_vs_original": -0.005159729895531198,
+        "strategy": "history_honest_stages"
+      },
+      {
+        "seed": 43,
+        "selection_delta_vs_original": -0.012491018105356487,
+        "strategy": "native_honest_stages"
+      }
+    ],
+    "stage_split_pilot_budget_not_matched": true
+  },
+  "revision_history": [
+    {
+      "date_utc": "2026-10-27",
+      "revision": 2,
+      "previous_proposal_sha256": "949a5e72b60759227a4696c225517cd23fc2229c9b6d1826cef8de6f5b5d4c3f",
+      "changed_field": "reviewed_input_sha256.field_bridge_v4_20261027_review/TRAINING_DIAGNOSIS.json",
+      "previous_input_sha256": "6bf84b894f8ac7908dd5f58eef827e595be233c4f242b4538f649f9e577656d5",
+      "current_input_sha256": "14aca2bc217b3563ef3c264625f5b7d0c773b38df3b5a5bbf5bea6ed4089f197",
+      "reason": "Refresh the binding after the diagnostic author revised its exploratory-only wording. No hypothesis, method, data budget, multiplicity, stopping rule, or execution authorization changed; this document remains a proposal."
+    }
+  ],
+  "schema": "hepta.field-bridge.v4.new-study-proposal.1",
+  "status": "PROPOSAL_NOT_REGISTERED_NOT_EXECUTED"
+}

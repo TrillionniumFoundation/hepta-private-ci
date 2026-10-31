@@ -1,0 +1,62 @@
+{
+  "allowed_phases": [
+    "runtime-bank"
+  ],
+  "artifacts": {},
+  "native_library_sha256": "253fb6a5d2115283148f99c83007363aa09ef3c66dcaf51e172563b0891d2a00",
+  "primary_retention_outcomes_opened": false,
+  "protocol_sha256": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7",
+  "registered_commit": "c2d700dc84625da89a02d76a6b2d8ad0a4aefc4e",
+  "runtime_contracts": {
+    "NATIVE_STREAM_CONTRACT.json": "544becd12e0bdb225d9880f06685b5fb877a33fd0edf2fce2321828c2044e7fa",
+    "RUNTIME_CONTROLLER_CONTRACT.json": "057a244880e698cd34497466175ebb7882a1a92248d340ebf45007eeb7f00787",
+    "RUNTIME_MEDIA_INTEGRATION_CONTRACT.json": "389d2805367291516d02193718306bea01da34de7d64c6e77b96faebaca706bd"
+  },
+  "schema": "hepta.field-bridge.v3.source-freeze.1",
+  "scopes": [
+    "frozen"
+  ],
+  "source_files": {
+    "field_bridge_20261027/PROTOCOL.json": "614a70f4fced58be5599fc323f61ac6fa22f1fb390887b23b195fafd1ce94c26",
+    "field_bridge_20261027/__init__.py": "bd7dd4dfde2e00c99b998bfd6a1cd822820fbd970fe5bd4d2245a8661aa9053b",
+    "field_bridge_20261027/adaptation.py": "95c2acfe820febb905c11b5057f7817af4d244db1e52adab7744d2c1d931b2d8",
+    "field_bridge_20261027/adapters.py": "2818464ba927b8e0ed5c92315a5bf26832672391c1fbbba709d6ed72cdc76b7b",
+    "field_bridge_20261027/analyze.py": "7137dfa130f06e4b137b9d72a5ef85d8519c41d3bf43c74b336e5b6eb38b29e6",
+    "field_bridge_20261027/audit.py": "3bc683cfc22fbbf062d4970ef9b3534fbd766e06f93b37b43a4a965c9ae8c318",
+    "field_bridge_20261027/controls.py": "6536f597319009a71bc735ba88da7aa46aa8d0933d0bcdd688f264e3a6673fb6",
+    "field_bridge_20261027/controls_tests.py": "43cb44f43035fcc143de5bb2ff1697ab45f33837ef1c35d0cfb09d5c18b87872",
+    "field_bridge_20261027/native_bridge.py": "06644f441810d2b5d9db50b450b8fe9c7f12309cb04255f13d1916298c6391d2",
+    "field_bridge_20261027/protocol.py": "36e131e2f4c6dd4221631813dfe360d185cf532218597218e2791700e8e93911",
+    "field_bridge_20261027/restore_native.py": "399d6ef187e1dbfb029b2187607d326fd232281c5379c564b5228081494ddf95",
+    "field_bridge_20261027/run.py": "198aed455cbb01191928c0b5c5642e86fb23194e49d69df1e50bb970eebea2ff",
+    "field_bridge_20261027/scientific_contract_tests.py": "a3de34f66d005dc93cd375fe384663d9e7f61942061042bfd4202c2f8ba4c05e",
+    "field_bridge_20261027/task.py": "4999eb8220847239db194c8a87bc5353802abc74e685eb9079f872ea8ef7d953",
+    "field_bridge_v3_20261027/PROTOCOL.json": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7",
+    "field_bridge_v3_20261027/RUNTIME_IMPLEMENTATION.json": "383428e7271eb417046e455c312530fae92dbebce1af2665485c58071280d916",
+    "field_bridge_v3_20261027/SOURCE_ALLOCATION.json": "068381327c437aa2edfc4c3db204bf836aa87e0d681bd15a4dbde7a119810f48",
+    "field_bridge_v3_20261027/SOURCE_IDENTITIES.json.gz": "8ceec51e530a52b601dfd5ba84fe73da49ae3ed8a37beea06ea5bb78c033fe29",
+    "field_bridge_v3_20261027/__init__.py": "476928d856b1abac9c21b0f5b491fcfa024e0a352d1e7e16bd947eb7568ae232",
+    "field_bridge_v3_20261027/assets.py": "ee8851e2b7f18200a58ee2ffe4e555d242886732a50bb6e169f49a46dc0b8e21",
+    "field_bridge_v3_20261027/feedback_bank.py": "775d1cb3cc1734b3fa9d10d3dd5bf40572c81d97b83d78f406dd50a1c809b309",
+    "field_bridge_v3_20261027/feedback_media.py": "03974950aee527913df0dbf80fdd1c0b2e7e7ede70df15f32feb2257dcf7d7d3",
+    "field_bridge_v3_20261027/feedback_rollout.py": "cbaaf8c821fc70bafada6fec3b530a22f592cf17915808c32a9e5ab9ee001807",
+    "field_bridge_v3_20261027/feedback_task.py": "3596bdd3386717fea8c46d5c7a4cf5dc6e088a4ef573a0e1c2bee900056a3f8d",
+    "field_bridge_v3_20261027/learning.py": "97c3baabe208fd8d5e8ac9beb5ae4a244b3c8d6aac565e727fd64eed8c1371b7",
+    "field_bridge_v3_20261027/native_stream.py": "81d4355a7482642317a1a45f26140ff5c7a8c47748b857f9cce300251d7171bf",
+    "field_bridge_v3_20261027/native_stream.rs": "92675a6b992b8e202168b235531f42763a0e27672184527daa15a59f10cfc63d",
+    "field_bridge_v3_20261027/runtime_controller.py": "ff38cd6ac178fa6550c4df03788401471e013895abbfd2417876c4f4fd193f5e",
+    "field_bridge_v3_20261027/runtime_run.py": "33ccf5648d7905b1f2d2ac014fde81dbd458d8fb9a6fdaf94dd0374003170d29",
+    "field_bridge_v3_20261027/source_roles.py": "0bf34863b1c6f43423484d115acb590bc6ea515c12c30a105e6e45c41f9a97cb",
+    "field_bridge_v3_20261027/training_bank.py": "9e6bb320ccaf087120a5cded8e2110478b87a4073febbb8bb999f2853073d7f1",
+    "field_bridge_v3_20261027/training_common.py": "e686e59dd34a0d8f2a31b192c1f47c59fd86cbc22fe42d60d821c4474db56591",
+    "field_bridge_v3_20261027/training_features.py": "8e3dfee7a0a77e74c16b459f8e15a0cad1cfa999a4187e975178bb2d2f0cd2a9",
+    "field_bridge_v3_20261027/training_policy.py": "824095a842ec6d4ab11ea560a5e763ce3d6cc524a92d4801b547d0f67b2451e4",
+    "field_bridge_v3_20261027/training_run.py": "a44e2069b2333bf5ac0e082c12f75360e96847b1d2b58bf311fc8dacc3c2c18d",
+    "field_bridge_v3_20261027/training_stages.py": "ed3fcc45531fe2fdb7ea6033ee7067a8e5221e52a69ec3abf1a23e1f65d2f2ef",
+    "v6/conditioned.py": "ccb5f9a78e58d6f1d1511a95f50de3602e1f39e7254fce5566e97a994d5b4cba",
+    "v6/data.py": "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29",
+    "v6/neural.py": "6447edf81da45695ab87a033c544ff7c554a15431e614474be7ad3b7c329e742",
+    "v6/observer.py": "5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e",
+    "v6/plan_training.py": "b43ff714960139d4b58d02dec86b69d27ac51d5abfd75509936ee2c5c355997b"
+  }
+}

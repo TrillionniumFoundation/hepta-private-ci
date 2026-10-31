@@ -1,0 +1,4558 @@
+{
+  "actual_media_sha256": "659697973bc56da835e1ad40648415bcbe59f3094d585334df6d327f6ad08d21",
+  "actual_price_sensitivity": {
+    "primary": {
+      "cpu_ms": {
+        "bootstrap_max_absolute_centered_radius": 1.7514542579987773,
+        "certified_economic_optimality": false,
+        "coverage": "Nominal max-deviation bootstrap band over this frozen 8-price grid; finite-five-seed coverage not guaranteed; no continuum or project-wide guarantee",
+        "definition": "CE_gamma2(U - lambda * actual_per_request_cost_ms), computed jointly before risk aggregation",
+        "grid": [
+          {
+            "CE_gain": 0.01210810563155068,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -1.7393461523672267,
+              1.763562363630328
+            ],
+            "pointwise_descriptive_95_interval": [
+              0.002139734865806506,
+              0.021851129126725884
+            ],
+            "utility_per_ms": 0.0
+          },
+          {
+            "CE_gain": 0.011617938918357384,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -1.7398363190804198,
+              1.7630721969171348
+            ],
+            "pointwise_descriptive_95_interval": [
+              0.0016291603286521176,
+              0.021269511203644176
+            ],
+            "utility_per_ms": 0.0005
+          },
+          {
+            "CE_gain": 0.011117264429248624,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -1.7403369935695288,
+              1.7625715224280258
+            ],
+            "pointwise_descriptive_95_interval": [
+              0.0010801775806405993,
+              0.020750475447434667
+            ],
+            "utility_per_ms": 0.001
+          },
+          {
+            "CE_gain": 0.010076206823548872,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -1.7413780511752284,
+              1.7615304648223262
+            ],
+            "pointwise_descriptive_95_interval": [
+              9.532783120013721e-06,
+              0.01993838479318039
+            ],
+            "utility_per_ms": 0.002
+          },
+          {
+            "CE_gain": 0.00637905311581774,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -1.7450752048829596,
+              1.757833311114595
+            ],
+            "pointwise_descriptive_95_interval": [
+              -0.004561102448628014,
+              0.017104557735363318
+            ],
+            "utility_per_ms": 0.005
+          },
+          {
+            "CE_gain": -0.006777045871577611,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -1.758231303870355,
+              1.7446772121271996
+            ],
+            "pointwise_descriptive_95_interval": [
+              -0.044296378640715166,
+              0.01343246288145131
+            ],
+            "utility_per_ms": 0.01
+          },
+          {
+            "CE_gain": -0.20603447804474573,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -1.9574887360435231,
+              1.5454197799540315
+            ],
+            "pointwise_descriptive_95_interval": [
+              -0.6428667752352718,
+              0.006948190248773904
+            ],
+            "utility_per_ms": 0.02
+          },
+          {
+            "CE_gain": -1.5694644376998634,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -3.3209186956986407,
+              0.18198982029891386
+            ],
+            "pointwise_descriptive_95_interval": [
+              -4.404468392257592,
+              0.07376473939067979
+            ],
+            "utility_per_ms": 0.05
+          }
+        ],
+        "prices_are_sensitivity_parameters_not_user_valuations": true
+      },
+      "wall_ms": {
+        "bootstrap_max_absolute_centered_radius": 2.4044385906912913,
+        "certified_economic_optimality": false,
+        "coverage": "Nominal max-deviation bootstrap band over this frozen 8-price grid; finite-five-seed coverage not guaranteed; no continuum or project-wide guarantee",
+        "definition": "CE_gamma2(U - lambda * actual_per_request_cost_ms), computed jointly before risk aggregation",
+        "grid": [
+          {
+            "CE_gain": 0.01210810563155068,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -2.3923304850597407,
+              2.416546696322842
+            ],
+            "pointwise_descriptive_95_interval": [
+              0.002139734865806506,
+              0.021851129126725884
+            ],
+            "utility_per_ms": 0.0
+          },
+          {
+            "CE_gain": 0.011599615210636294,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -2.392838975480655,
+              2.4160382059019274
+            ],
+            "pointwise_descriptive_95_interval": [
+              0.0016058155320609058,
+              0.021245591000824533
+            ],
+            "utility_per_ms": 0.0005
+          },
+          {
+            "CE_gain": 0.011076775322171079,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -2.3933618153691203,
+              2.4155153660134623
+            ],
+            "pointwise_descriptive_95_interval": [
+              0.0010380287265264008,
+              0.020717121111038184
+            ],
+            "utility_per_ms": 0.001
+          },
+          {
+            "CE_gain": 0.009977230815170934,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -2.39446135987612,
+              2.4144158215064624
+            ],
+            "pointwise_descriptive_95_interval": [
+              -5.7028350058903675e-05,
+              0.019745724683079256
+            ],
+            "utility_per_ms": 0.002
+          },
+          {
+            "CE_gain": 0.005922275688579642,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -2.398516315002712,
+              2.410360866379871
+            ],
+            "pointwise_descriptive_95_interval": [
+              -0.0047854093979606965,
+              0.016590887222689556
+            ],
+            "utility_per_ms": 0.005
+          },
+          {
+            "CE_gain": -0.009396238183835962,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -2.4138348288751272,
+              2.3950423525074553
+            ],
+            "pointwise_descriptive_95_interval": [
+              -0.046735468284580986,
+              0.011158211669306943
+            ],
+            "utility_per_ms": 0.01
+          },
+          {
+            "CE_gain": -0.2475663031289487,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -2.65200489382024,
+              2.1568722875623427
+            ],
+            "pointwise_descriptive_95_interval": [
+              -0.692971870464691,
+              0.002592770406127271
+            ],
+            "utility_per_ms": 0.02
+          },
+          {
+            "CE_gain": -2.2912352309520077,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -4.6956738216432985,
+              0.11320335973928364
+            ],
+            "pointwise_descriptive_95_interval": [
+              -4.607403362948586,
+              0.1241099438386447
+            ],
+            "utility_per_ms": 0.05
+          }
+        ],
+        "prices_are_sensitivity_parameters_not_user_valuations": true
+      }
+    },
+    "secondary": {
+      "cpu_ms": {
+        "bootstrap_max_absolute_centered_radius": 1.7477006162468125,
+        "certified_economic_optimality": false,
+        "coverage": "Nominal max-deviation bootstrap band over this frozen 8-price grid; finite-five-seed coverage not guaranteed; no continuum or project-wide guarantee",
+        "definition": "CE_gamma2(U - lambda * actual_per_request_cost_ms), computed jointly before risk aggregation",
+        "grid": [
+          {
+            "CE_gain": 0.011055337177001134,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -1.7366452790698115,
+              1.7587559534238135
+            ],
+            "pointwise_descriptive_95_interval": [
+              0.0006444148915568107,
+              0.02164053588201884
+            ],
+            "utility_per_ms": 0.0
+          },
+          {
+            "CE_gain": 0.010571016505797781,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -1.7371295997410148,
+              1.7582716327526102
+            ],
+            "pointwise_descriptive_95_interval": [
+              0.00011645705745090772,
+              0.02115793383907927
+            ],
+            "utility_per_ms": 0.0005
+          },
+          {
+            "CE_gain": 0.010076375020100725,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -1.7376242412267118,
+              1.7577769912669132
+            ],
+            "pointwise_descriptive_95_interval": [
+              -0.0004275818476320338,
+              0.02067305125878053
+            ],
+            "utility_per_ms": 0.001
+          },
+          {
+            "CE_gain": 0.009048106623707725,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -1.7386525096231047,
+              1.7567487228705203
+            ],
+            "pointwise_descriptive_95_interval": [
+              -0.0015360230543216993,
+              0.01970880718127895
+            ],
+            "utility_per_ms": 0.002
+          },
+          {
+            "CE_gain": 0.005400136645765802,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -1.7423004796010466,
+              1.7531007528925784
+            ],
+            "pointwise_descriptive_95_interval": [
+              -0.006085993024521124,
+              0.016790527328558198
+            ],
+            "utility_per_ms": 0.005
+          },
+          {
+            "CE_gain": -0.007544622556395153,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -1.7552452388032076,
+              1.7401559936904174
+            ],
+            "pointwise_descriptive_95_interval": [
+              -0.04523046801051487,
+              0.012857562253469004
+            ],
+            "utility_per_ms": 0.01
+          },
+          {
+            "CE_gain": -0.205149068566724,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -1.9528496848135366,
+              1.5425515476800884
+            ],
+            "pointwise_descriptive_95_interval": [
+              -0.6432476207863739,
+              0.006080715101437099
+            ],
+            "utility_per_ms": 0.02
+          },
+          {
+            "CE_gain": -1.5678358217885366,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -3.315536438035349,
+              0.17986479445827586
+            ],
+            "pointwise_descriptive_95_interval": [
+              -4.399010542597812,
+              0.07216879881881631
+            ],
+            "utility_per_ms": 0.05
+          }
+        ],
+        "prices_are_sensitivity_parameters_not_user_valuations": true
+      },
+      "wall_ms": {
+        "bootstrap_max_absolute_centered_radius": 2.3846219152737826,
+        "certified_economic_optimality": false,
+        "coverage": "Nominal max-deviation bootstrap band over this frozen 8-price grid; finite-five-seed coverage not guaranteed; no continuum or project-wide guarantee",
+        "definition": "CE_gamma2(U - lambda * actual_per_request_cost_ms), computed jointly before risk aggregation",
+        "grid": [
+          {
+            "CE_gain": 0.011055337177001134,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -2.3735665780967814,
+              2.395677252450784
+            ],
+            "pointwise_descriptive_95_interval": [
+              0.0006444148915568107,
+              0.02164053588201884
+            ],
+            "utility_per_ms": 0.0
+          },
+          {
+            "CE_gain": 0.010554127472772151,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -2.3740677878010104,
+              2.395176042746555
+            ],
+            "pointwise_descriptive_95_interval": [
+              9.635596216882248e-05,
+              0.021146175494875945
+            ],
+            "utility_per_ms": 0.0005
+          },
+          {
+            "CE_gain": 0.010038816560336339,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -2.374583098713446,
+              2.394660731834119
+            ],
+            "pointwise_descriptive_95_interval": [
+              -0.0004557510195736733,
+              0.020580211721011495
+            ],
+            "utility_per_ms": 0.001
+          },
+          {
+            "CE_gain": 0.008955261887804516,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -2.375666653385978,
+              2.3935771771615872
+            ],
+            "pointwise_descriptive_95_interval": [
+              -0.001477727813864188,
+              0.01968430758379934
+            ],
+            "utility_per_ms": 0.002
+          },
+          {
+            "CE_gain": 0.004961399348352963,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -2.37966051592543,
+              2.3895833146221355
+            ],
+            "pointwise_descriptive_95_interval": [
+              -0.006350411480251345,
+              0.016087615593359028
+            ],
+            "utility_per_ms": 0.005
+          },
+          {
+            "CE_gain": -0.01011002609162548,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -2.394731941365408,
+              2.3745118891821573
+            ],
+            "pointwise_descriptive_95_interval": [
+              -0.04697948401778869,
+              0.010400469283984439
+            ],
+            "utility_per_ms": 0.01
+          },
+          {
+            "CE_gain": -0.2463447115171125,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -2.630966626790895,
+              2.13827720375667
+            ],
+            "pointwise_descriptive_95_interval": [
+              -0.6882081682334489,
+              0.0019105674511492325
+            ],
+            "utility_per_ms": 0.02
+          },
+          {
+            "CE_gain": -2.3147282894140706,
+            "nominal_simultaneous_95_interval_over_frozen_grid": [
+              -4.699350204687853,
+              0.06989362585971204
+            ],
+            "pointwise_descriptive_95_interval": [
+              -4.603341729468398,
+              0.08159429402237334
+            ],
+            "utility_per_ms": 0.05
+          }
+        ],
+        "prices_are_sensitivity_parameters_not_user_valuations": true
+      }
+    }
+  },
+  "bootstrap_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+  "census": {
+    "cache_identity_mismatches": [],
+    "cache_matched_pairs": 20480,
+    "failures": [],
+    "quality_inference_allowed": true,
+    "requests": 81920,
+    "required_completion": {
+      "cached_feedback": 1.0,
+      "compact_feedback": 1.0,
+      "old_feedback": 1.0,
+      "reference": 1.0,
+      "selected_feedback": 1.0
+    }
+  },
+  "clock_rows_sha256": "33359a34121ecb38862958967542f78ea247eccb95cf4059c62fcc67d849a9ff",
+  "cost": {
+    "cached_feedback": {
+      "cpu_ms": {
+        "maximum": 216.295762,
+        "mean": 9.464790952929688,
+        "p50": 9.416206500000001,
+        "p95": 13.815881249999999
+      },
+      "wall_ms": {
+        "maximum": 216.720131,
+        "mean": 9.995732597607423,
+        "p50": 9.87059,
+        "p95": 14.48423245
+      }
+    },
+    "cached_feedback_minus_old_feedback": {
+      "cpu_ms": {
+        "bootstrap": {
+          "confirmatory_coverage_guaranteed": false,
+          "generator": "PCG64",
+          "numpy_version": "2.3.5",
+          "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+          "random_seed": 2026102519,
+          "replicates": 4000,
+          "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+          "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+        },
+        "candidate": {
+          "mean": 9.464790952929688,
+          "p50": 9.416206500000001,
+          "p95": 13.815881249999999
+        },
+        "confidence": 0.95,
+        "counts": {
+          "observed_rows": 20480,
+          "rows_or_seed_times_sources_are_independent_n": false,
+          "source_pairs": 256,
+          "training_seeds": 5,
+          "within_source_shape": [
+            8,
+            2
+          ]
+        },
+        "estimand": "candidate_minus_reference_cost",
+        "intervals": {
+          "mean": [
+            -0.7110108682189943,
+            -0.5004416547705101
+          ],
+          "p50": [
+            -0.9246901874999995,
+            -0.7423320000000003
+          ],
+          "p95": [
+            -1.0323458412500002,
+            -0.5122859649999875
+          ]
+        },
+        "outlier_deletion": false,
+        "point_estimates": {
+          "mean": -0.6105553455078123,
+          "p50": -0.8418504999999996,
+          "p95": -0.7829429500000007
+        },
+        "positive_difference_is_greater_cost": true,
+        "quantile_method": "linear",
+        "reference": {
+          "mean": 10.0753462984375,
+          "p50": 10.258057,
+          "p95": 14.5988242
+        },
+        "unit": "ms"
+      },
+      "wall_ms": {
+        "bootstrap": {
+          "confirmatory_coverage_guaranteed": false,
+          "generator": "PCG64",
+          "numpy_version": "2.3.5",
+          "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+          "random_seed": 2026102519,
+          "replicates": 4000,
+          "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+          "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+        },
+        "candidate": {
+          "mean": 9.995732597607423,
+          "p50": 9.87059,
+          "p95": 14.48423245
+        },
+        "confidence": 0.95,
+        "counts": {
+          "observed_rows": 20480,
+          "rows_or_seed_times_sources_are_independent_n": false,
+          "source_pairs": 256,
+          "training_seeds": 5,
+          "within_source_shape": [
+            8,
+            2
+          ]
+        },
+        "estimand": "candidate_minus_reference_cost",
+        "intervals": {
+          "mean": [
+            -0.7469485451416024,
+            -0.5225660669116203
+          ],
+          "p50": [
+            -0.9396053000000002,
+            -0.7475639499999991
+          ],
+          "p95": [
+            -1.0327655749999993,
+            -0.5606896937499988
+          ]
+        },
+        "outlier_deletion": false,
+        "point_estimates": {
+          "mean": -0.6371703307128893,
+          "p50": -0.8666894999999997,
+          "p95": -0.7937905999999941
+        },
+        "positive_difference_is_greater_cost": true,
+        "quantile_method": "linear",
+        "reference": {
+          "mean": 10.632902928320313,
+          "p50": 10.7372795,
+          "p95": 15.278023049999994
+        },
+        "unit": "ms"
+      }
+    },
+    "compact_feedback": {
+      "cpu_ms": {
+        "maximum": 93.580937,
+        "mean": 6.831119107568358,
+        "p50": 7.0082665,
+        "p95": 9.88848855
+      },
+      "wall_ms": {
+        "maximum": 116.150336,
+        "mean": 7.333039071679687,
+        "p50": 7.4087689999999995,
+        "p95": 10.555639549999999
+      }
+    },
+    "compact_feedback_minus_old_feedback": {
+      "cpu_ms": {
+        "bootstrap": {
+          "confirmatory_coverage_guaranteed": false,
+          "generator": "PCG64",
+          "numpy_version": "2.3.5",
+          "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+          "random_seed": 2026102519,
+          "replicates": 4000,
+          "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+          "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+        },
+        "candidate": {
+          "mean": 6.831119107568358,
+          "p50": 7.0082665,
+          "p95": 9.88848855
+        },
+        "confidence": 0.95,
+        "counts": {
+          "observed_rows": 20480,
+          "rows_or_seed_times_sources_are_independent_n": false,
+          "source_pairs": 256,
+          "training_seeds": 5,
+          "within_source_shape": [
+            8,
+            2
+          ]
+        },
+        "estimand": "candidate_minus_reference_cost",
+        "intervals": {
+          "mean": [
+            -3.4361870220361315,
+            -3.0505427925598134
+          ],
+          "p50": [
+            -3.669962075000001,
+            -2.900662712499999
+          ],
+          "p95": [
+            -5.071545734999999,
+            -4.422951573750002
+          ]
+        },
+        "outlier_deletion": false,
+        "point_estimates": {
+          "mean": -3.2442271908691422,
+          "p50": -3.2497905000000005,
+          "p95": -4.710335649999999
+        },
+        "positive_difference_is_greater_cost": true,
+        "quantile_method": "linear",
+        "reference": {
+          "mean": 10.0753462984375,
+          "p50": 10.258057,
+          "p95": 14.5988242
+        },
+        "unit": "ms"
+      },
+      "wall_ms": {
+        "bootstrap": {
+          "confirmatory_coverage_guaranteed": false,
+          "generator": "PCG64",
+          "numpy_version": "2.3.5",
+          "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+          "random_seed": 2026102519,
+          "replicates": 4000,
+          "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+          "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+        },
+        "candidate": {
+          "mean": 7.333039071679687,
+          "p50": 7.4087689999999995,
+          "p95": 10.555639549999999
+        },
+        "confidence": 0.95,
+        "counts": {
+          "observed_rows": 20480,
+          "rows_or_seed_times_sources_are_independent_n": false,
+          "source_pairs": 256,
+          "training_seeds": 5,
+          "within_source_shape": [
+            8,
+            2
+          ]
+        },
+        "estimand": "candidate_minus_reference_cost",
+        "intervals": {
+          "mean": [
+            -3.518819231873779,
+            -3.0905399920861805
+          ],
+          "p50": [
+            -3.681272687499999,
+            -2.9476727625000003
+          ],
+          "p95": [
+            -5.089171737499998,
+            -4.4586476475
+          ]
+        },
+        "outlier_deletion": false,
+        "point_estimates": {
+          "mean": -3.2998638566406253,
+          "p50": -3.3285105,
+          "p95": -4.722383499999996
+        },
+        "positive_difference_is_greater_cost": true,
+        "quantile_method": "linear",
+        "reference": {
+          "mean": 10.632902928320313,
+          "p50": 10.7372795,
+          "p95": 15.278023049999994
+        },
+        "unit": "ms"
+      }
+    },
+    "old_feedback": {
+      "cpu_ms": {
+        "maximum": 277.979365,
+        "mean": 10.0753462984375,
+        "p50": 10.258057,
+        "p95": 14.5988242
+      },
+      "wall_ms": {
+        "maximum": 278.320305,
+        "mean": 10.632902928320313,
+        "p50": 10.7372795,
+        "p95": 15.278023049999994
+      }
+    },
+    "reference": {
+      "cpu_ms": {
+        "maximum": 100.097287,
+        "mean": 8.404293751513672,
+        "p50": 7.818892,
+        "p95": 11.8158
+      },
+      "wall_ms": {
+        "maximum": 100.574042,
+        "mean": 8.909821096826173,
+        "p50": 8.2548175,
+        "p95": 12.47711925
+      }
+    },
+    "selected_feedback": {
+      "cpu_ms": {
+        "maximum": 216.295762,
+        "mean": 9.464790952929688,
+        "p50": 9.416206500000001,
+        "p95": 13.815881249999999
+      },
+      "wall_ms": {
+        "maximum": 216.720131,
+        "mean": 9.995732597607423,
+        "p50": 9.87059,
+        "p95": 14.48423245
+      }
+    },
+    "selected_feedback_minus_old_feedback": {
+      "cpu_ms": {
+        "bootstrap": {
+          "confirmatory_coverage_guaranteed": false,
+          "generator": "PCG64",
+          "numpy_version": "2.3.5",
+          "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+          "random_seed": 2026102519,
+          "replicates": 4000,
+          "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+          "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+        },
+        "candidate": {
+          "mean": 9.464790952929688,
+          "p50": 9.416206500000001,
+          "p95": 13.815881249999999
+        },
+        "confidence": 0.975,
+        "counts": {
+          "observed_rows": 20480,
+          "rows_or_seed_times_sources_are_independent_n": false,
+          "source_pairs": 256,
+          "training_seeds": 5,
+          "within_source_shape": [
+            8,
+            2
+          ]
+        },
+        "estimand": "candidate_minus_reference_cost",
+        "intervals": {
+          "mean": [
+            -0.7289520505310064,
+            -0.4801401325909411
+          ],
+          "p50": [
+            -0.9381231562500009,
+            -0.7296141750000001
+          ],
+          "p95": [
+            -1.0742164625000004,
+            -0.47631842687500014
+          ]
+        },
+        "outlier_deletion": false,
+        "point_estimates": {
+          "mean": -0.6105553455078123,
+          "p50": -0.8418504999999996,
+          "p95": -0.7829429500000007
+        },
+        "positive_difference_is_greater_cost": true,
+        "quantile_method": "linear",
+        "reference": {
+          "mean": 10.0753462984375,
+          "p50": 10.258057,
+          "p95": 14.5988242
+        },
+        "unit": "ms"
+      },
+      "wall_ms": {
+        "bootstrap": {
+          "confirmatory_coverage_guaranteed": false,
+          "generator": "PCG64",
+          "numpy_version": "2.3.5",
+          "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+          "random_seed": 2026102519,
+          "replicates": 4000,
+          "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+          "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+        },
+        "candidate": {
+          "mean": 9.995732597607423,
+          "p50": 9.87059,
+          "p95": 14.48423245
+        },
+        "confidence": 0.975,
+        "counts": {
+          "observed_rows": 20480,
+          "rows_or_seed_times_sources_are_independent_n": false,
+          "source_pairs": 256,
+          "training_seeds": 5,
+          "within_source_shape": [
+            8,
+            2
+          ]
+        },
+        "estimand": "candidate_minus_reference_cost",
+        "intervals": {
+          "mean": [
+            -0.7647258137481703,
+            -0.5025320660205065
+          ],
+          "p50": [
+            -0.9488739499999999,
+            -0.7352149999999994
+          ],
+          "p95": [
+            -1.0797105050000002,
+            -0.5198920218750002
+          ]
+        },
+        "outlier_deletion": false,
+        "point_estimates": {
+          "mean": -0.6371703307128893,
+          "p50": -0.8666894999999997,
+          "p95": -0.7937905999999941
+        },
+        "positive_difference_is_greater_cost": true,
+        "quantile_method": "linear",
+        "reference": {
+          "mean": 10.632902928320313,
+          "p50": 10.7372795,
+          "p95": 15.278023049999994
+        },
+        "unit": "ms"
+      }
+    },
+    "selected_feedback_minus_reference": {
+      "cpu_ms": {
+        "bootstrap": {
+          "confirmatory_coverage_guaranteed": false,
+          "generator": "PCG64",
+          "numpy_version": "2.3.5",
+          "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+          "random_seed": 2026102519,
+          "replicates": 4000,
+          "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+          "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+        },
+        "candidate": {
+          "mean": 9.464790952929688,
+          "p50": 9.416206500000001,
+          "p95": 13.815881249999999
+        },
+        "confidence": 0.975,
+        "counts": {
+          "observed_rows": 20480,
+          "rows_or_seed_times_sources_are_independent_n": false,
+          "source_pairs": 256,
+          "training_seeds": 5,
+          "within_source_shape": [
+            8,
+            2
+          ]
+        },
+        "estimand": "candidate_minus_reference_cost",
+        "intervals": {
+          "mean": [
+            0.19130514009826782,
+            1.818978152701416
+          ],
+          "p50": [
+            0.3111793562499998,
+            2.2131233
+          ],
+          "p95": [
+            0.8015479931249997,
+            3.8245219062499993
+          ]
+        },
+        "outlier_deletion": false,
+        "point_estimates": {
+          "mean": 1.060497201416016,
+          "p50": 1.5973145000000013,
+          "p95": 2.000081249999999
+        },
+        "positive_difference_is_greater_cost": true,
+        "quantile_method": "linear",
+        "reference": {
+          "mean": 8.404293751513672,
+          "p50": 7.818892,
+          "p95": 11.8158
+        },
+        "unit": "ms"
+      },
+      "wall_ms": {
+        "bootstrap": {
+          "confirmatory_coverage_guaranteed": false,
+          "generator": "PCG64",
+          "numpy_version": "2.3.5",
+          "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+          "random_seed": 2026102519,
+          "replicates": 4000,
+          "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+          "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+        },
+        "candidate": {
+          "mean": 9.995732597607423,
+          "p50": 9.87059,
+          "p95": 14.48423245
+        },
+        "confidence": 0.975,
+        "counts": {
+          "observed_rows": 20480,
+          "rows_or_seed_times_sources_are_independent_n": false,
+          "source_pairs": 256,
+          "training_seeds": 5,
+          "within_source_shape": [
+            8,
+            2
+          ]
+        },
+        "estimand": "candidate_minus_reference_cost",
+        "intervals": {
+          "mean": [
+            0.216321563118899,
+            1.8275844095611573
+          ],
+          "p50": [
+            0.3187188937500009,
+            2.242598681249999
+          ],
+          "p95": [
+            0.7618767343750007,
+            3.820889335000005
+          ]
+        },
+        "outlier_deletion": false,
+        "point_estimates": {
+          "mean": 1.0859115007812505,
+          "p50": 1.6157725000000003,
+          "p95": 2.007113200000001
+        },
+        "positive_difference_is_greater_cost": true,
+        "quantile_method": "linear",
+        "reference": {
+          "mean": 8.909821096826173,
+          "p50": 8.2548175,
+          "p95": 12.47711925
+        },
+        "unit": "ms"
+      }
+    }
+  },
+  "inference": {
+    "actual_time_prices_utility_per_ms": [
+      0.0,
+      0.0005,
+      0.001,
+      0.002,
+      0.005,
+      0.01,
+      0.02,
+      0.05
+    ],
+    "bootstrap_seed": 2026102519,
+    "component_intersection_rule": "Every inequality in a family must hold; family conclusions use the corresponding endpoints",
+    "development_amortization": "report entire new development wall/CPU separately; do not equate request-only prices to full lifetime economics",
+    "economic_scope": "Sensitivity over predeclared prices, not calibrated user value; CE(U-lambda*measured cost), not CE(U)-lambda*mean cost",
+    "failures": "retain attempts and costs, no dropped outliers; any unavailable quality or cache identity mismatch blocks quality inference",
+    "finite_five_seed_bootstrap_coverage_guaranteed": false,
+    "gamma": 2.0,
+    "keep_all_views_and_scenarios": true,
+    "price_bands": "nominal95 max-absolute-centered bootstrap over frozen finite grid; separate wall and CPU bands, no combined family claim",
+    "primary_families": {
+      "quality_vs_reference": "rawCE>0 AND success difference>=0, zero margin",
+      "replacement_vs_old_feedback": "rawCE and success differences>=-.005 AND mean wall difference<0"
+    },
+    "primary_nominal_two_sided_confidence": 0.975,
+    "primary_observer": "primary",
+    "replicates": 4000,
+    "source_and_seed_crossed_bootstrap": true
+  },
+  "launch_sha256": "d920370e4d593ee53b798cf16d49b4536757fdb88b46553b19bcd3c69eebf2aa",
+  "phases": {
+    "analysis": {
+      "cpu_ns": 28171725574,
+      "wall_ns": 28173410061
+    },
+    "closed_media_readback_and_scoring": {
+      "cpu_ns": 143447887024,
+      "wall_ns": 143470594377
+    },
+    "source_and_reader_setup": {
+      "cpu_ns": 861208790,
+      "wall_ns": 861655520
+    }
+  },
+  "primary_comparisons": {
+    "primary": {
+      "cached_feedback_minus_old_feedback": {
+        "raw_CE": {
+          "bootstrap": {
+            "confirmatory_coverage_guaranteed": false,
+            "generator": "PCG64",
+            "numpy_version": "2.3.5",
+            "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+            "random_seed": 2026102519,
+            "replicates": 4000,
+            "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+            "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+          },
+          "candidate_value": 0.18511895101712642,
+          "confidence": 0.95,
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "estimand": "joint_ce",
+          "gain": 0.0,
+          "gain_direction": "candidate minus reference",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "per_seed_gain": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "positive_gain_favors_candidate": true,
+          "reference_value": 0.18511895101712642
+        },
+        "success": {
+          "bootstrap": {
+            "confirmatory_coverage_guaranteed": false,
+            "generator": "PCG64",
+            "numpy_version": "2.3.5",
+            "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+            "random_seed": 2026102519,
+            "replicates": 4000,
+            "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+            "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+          },
+          "candidate_value": 0.55576171875,
+          "confidence": 0.95,
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "estimand": "success_rate",
+          "gain": 0.0,
+          "gain_direction": "candidate minus reference",
+          "gain_percentage_points": 0.0,
+          "gain_units": "probability difference, not relative percent change",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "interval_percentage_points": [
+            0.0,
+            0.0
+          ],
+          "per_seed_gain": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "positive_gain_favors_candidate": true,
+          "reference_value": 0.55576171875
+        }
+      },
+      "compact_feedback_minus_old_feedback": {
+        "raw_CE": {
+          "bootstrap": {
+            "confirmatory_coverage_guaranteed": false,
+            "generator": "PCG64",
+            "numpy_version": "2.3.5",
+            "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+            "random_seed": 2026102519,
+            "replicates": 4000,
+            "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+            "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+          },
+          "candidate_value": 0.18445291999127206,
+          "confidence": 0.95,
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "estimand": "joint_ce",
+          "gain": -0.0006660310258543578,
+          "gain_direction": "candidate minus reference",
+          "interval": [
+            -0.010560148771721947,
+            0.00897185935733439
+          ],
+          "per_seed_gain": [
+            0.00994192695126822,
+            -0.011780268490586054,
+            -0.010064901233840073,
+            0.0056403860236072245,
+            0.0029327016202790324
+          ],
+          "positive_gain_favors_candidate": true,
+          "reference_value": 0.18511895101712642
+        },
+        "success": {
+          "bootstrap": {
+            "confirmatory_coverage_guaranteed": false,
+            "generator": "PCG64",
+            "numpy_version": "2.3.5",
+            "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+            "random_seed": 2026102519,
+            "replicates": 4000,
+            "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+            "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+          },
+          "candidate_value": 0.54755859375,
+          "confidence": 0.95,
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "estimand": "success_rate",
+          "gain": -0.008203124999999978,
+          "gain_direction": "candidate minus reference",
+          "gain_percentage_points": -0.8203124999999978,
+          "gain_units": "probability difference, not relative percent change",
+          "interval": [
+            -0.014550781249999978,
+            -0.00244140625
+          ],
+          "interval_percentage_points": [
+            -1.4550781249999978,
+            -0.244140625
+          ],
+          "per_seed_gain": [
+            -0.009521484375,
+            -0.014404296875,
+            -0.003173828125,
+            -0.0048828125,
+            -0.009033203125
+          ],
+          "positive_gain_favors_candidate": true,
+          "reference_value": 0.55576171875
+        }
+      },
+      "selected_feedback_minus_old_feedback": {
+        "raw_CE": {
+          "bootstrap": {
+            "confirmatory_coverage_guaranteed": false,
+            "generator": "PCG64",
+            "numpy_version": "2.3.5",
+            "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+            "random_seed": 2026102519,
+            "replicates": 4000,
+            "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+            "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+          },
+          "candidate_value": 0.18511895101712642,
+          "confidence": 0.975,
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "estimand": "joint_ce",
+          "gain": 0.0,
+          "gain_direction": "candidate minus reference",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "per_seed_gain": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "positive_gain_favors_candidate": true,
+          "reference_value": 0.18511895101712642
+        },
+        "success": {
+          "bootstrap": {
+            "confirmatory_coverage_guaranteed": false,
+            "generator": "PCG64",
+            "numpy_version": "2.3.5",
+            "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+            "random_seed": 2026102519,
+            "replicates": 4000,
+            "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+            "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+          },
+          "candidate_value": 0.55576171875,
+          "confidence": 0.975,
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "estimand": "success_rate",
+          "gain": 0.0,
+          "gain_direction": "candidate minus reference",
+          "gain_percentage_points": 0.0,
+          "gain_units": "probability difference, not relative percent change",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "interval_percentage_points": [
+            0.0,
+            0.0
+          ],
+          "per_seed_gain": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "positive_gain_favors_candidate": true,
+          "reference_value": 0.55576171875
+        }
+      },
+      "selected_feedback_minus_reference": {
+        "raw_CE": {
+          "bootstrap": {
+            "confirmatory_coverage_guaranteed": false,
+            "generator": "PCG64",
+            "numpy_version": "2.3.5",
+            "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+            "random_seed": 2026102519,
+            "replicates": 4000,
+            "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+            "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+          },
+          "candidate_value": 0.18511895101712642,
+          "confidence": 0.975,
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "estimand": "joint_ce",
+          "gain": 0.01210810563155068,
+          "gain_direction": "candidate minus reference",
+          "interval": [
+            0.0008761731384002694,
+            0.023571472071090768
+          ],
+          "per_seed_gain": [
+            0.005083059919559152,
+            0.01632344862802687,
+            0.007387250814469559,
+            0.022532296515858974,
+            0.009214472279838792
+          ],
+          "positive_gain_favors_candidate": true,
+          "reference_value": 0.17301084538557573
+        },
+        "success": {
+          "bootstrap": {
+            "confirmatory_coverage_guaranteed": false,
+            "generator": "PCG64",
+            "numpy_version": "2.3.5",
+            "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+            "random_seed": 2026102519,
+            "replicates": 4000,
+            "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+            "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+          },
+          "candidate_value": 0.55576171875,
+          "confidence": 0.975,
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "estimand": "success_rate",
+          "gain": 0.009326171875000067,
+          "gain_direction": "candidate minus reference",
+          "gain_percentage_points": 0.9326171875000067,
+          "gain_units": "probability difference, not relative percent change",
+          "interval": [
+            0.0025878906250000875,
+            0.016259765624999978
+          ],
+          "interval_percentage_points": [
+            0.25878906250000877,
+            1.6259765624999978
+          ],
+          "per_seed_gain": [
+            0.005615234375,
+            0.0107421875,
+            0.01123046875,
+            0.01318359375,
+            0.005859375
+          ],
+          "positive_gain_favors_candidate": true,
+          "reference_value": 0.546435546875
+        }
+      }
+    },
+    "secondary": {
+      "cached_feedback_minus_old_feedback": {
+        "raw_CE": {
+          "bootstrap": {
+            "confirmatory_coverage_guaranteed": false,
+            "generator": "PCG64",
+            "numpy_version": "2.3.5",
+            "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+            "random_seed": 2026102519,
+            "replicates": 4000,
+            "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+            "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+          },
+          "candidate_value": 0.17898046478034738,
+          "confidence": 0.95,
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "estimand": "joint_ce",
+          "gain": 0.0,
+          "gain_direction": "candidate minus reference",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "per_seed_gain": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "positive_gain_favors_candidate": true,
+          "reference_value": 0.17898046478034738
+        },
+        "success": {
+          "bootstrap": {
+            "confirmatory_coverage_guaranteed": false,
+            "generator": "PCG64",
+            "numpy_version": "2.3.5",
+            "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+            "random_seed": 2026102519,
+            "replicates": 4000,
+            "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+            "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+          },
+          "candidate_value": 0.56015625,
+          "confidence": 0.95,
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "estimand": "success_rate",
+          "gain": 0.0,
+          "gain_direction": "candidate minus reference",
+          "gain_percentage_points": 0.0,
+          "gain_units": "probability difference, not relative percent change",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "interval_percentage_points": [
+            0.0,
+            0.0
+          ],
+          "per_seed_gain": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "positive_gain_favors_candidate": true,
+          "reference_value": 0.56015625
+        }
+      },
+      "compact_feedback_minus_old_feedback": {
+        "raw_CE": {
+          "bootstrap": {
+            "confirmatory_coverage_guaranteed": false,
+            "generator": "PCG64",
+            "numpy_version": "2.3.5",
+            "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+            "random_seed": 2026102519,
+            "replicates": 4000,
+            "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+            "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+          },
+          "candidate_value": 0.17731186660715842,
+          "confidence": 0.95,
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "estimand": "joint_ce",
+          "gain": -0.0016685981731889565,
+          "gain_direction": "candidate minus reference",
+          "interval": [
+            -0.011073711215220773,
+            0.007299572897311854
+          ],
+          "per_seed_gain": [
+            0.007864266867339764,
+            -0.008685653540619898,
+            -0.01206537436452959,
+            0.0025890096605168944,
+            0.0019547605113481303
+          ],
+          "positive_gain_favors_candidate": true,
+          "reference_value": 0.17898046478034738
+        },
+        "success": {
+          "bootstrap": {
+            "confirmatory_coverage_guaranteed": false,
+            "generator": "PCG64",
+            "numpy_version": "2.3.5",
+            "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+            "random_seed": 2026102519,
+            "replicates": 4000,
+            "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+            "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+          },
+          "candidate_value": 0.552734375,
+          "confidence": 0.95,
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "estimand": "success_rate",
+          "gain": -0.007421875000000022,
+          "gain_direction": "candidate minus reference",
+          "gain_percentage_points": -0.7421875000000022,
+          "gain_units": "probability difference, not relative percent change",
+          "interval": [
+            -0.01416015625,
+            -0.0010253906249999556
+          ],
+          "interval_percentage_points": [
+            -1.416015625,
+            -0.10253906249999556
+          ],
+          "per_seed_gain": [
+            -0.008056640625,
+            -0.015869140625,
+            -0.001708984375,
+            -0.005126953125,
+            -0.00634765625
+          ],
+          "positive_gain_favors_candidate": true,
+          "reference_value": 0.56015625
+        }
+      },
+      "selected_feedback_minus_old_feedback": {
+        "raw_CE": {
+          "bootstrap": {
+            "confirmatory_coverage_guaranteed": false,
+            "generator": "PCG64",
+            "numpy_version": "2.3.5",
+            "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+            "random_seed": 2026102519,
+            "replicates": 4000,
+            "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+            "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+          },
+          "candidate_value": 0.17898046478034738,
+          "confidence": 0.95,
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "estimand": "joint_ce",
+          "gain": 0.0,
+          "gain_direction": "candidate minus reference",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "per_seed_gain": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "positive_gain_favors_candidate": true,
+          "reference_value": 0.17898046478034738
+        },
+        "success": {
+          "bootstrap": {
+            "confirmatory_coverage_guaranteed": false,
+            "generator": "PCG64",
+            "numpy_version": "2.3.5",
+            "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+            "random_seed": 2026102519,
+            "replicates": 4000,
+            "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+            "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+          },
+          "candidate_value": 0.56015625,
+          "confidence": 0.95,
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "estimand": "success_rate",
+          "gain": 0.0,
+          "gain_direction": "candidate minus reference",
+          "gain_percentage_points": 0.0,
+          "gain_units": "probability difference, not relative percent change",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "interval_percentage_points": [
+            0.0,
+            0.0
+          ],
+          "per_seed_gain": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "positive_gain_favors_candidate": true,
+          "reference_value": 0.56015625
+        }
+      },
+      "selected_feedback_minus_reference": {
+        "raw_CE": {
+          "bootstrap": {
+            "confirmatory_coverage_guaranteed": false,
+            "generator": "PCG64",
+            "numpy_version": "2.3.5",
+            "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+            "random_seed": 2026102519,
+            "replicates": 4000,
+            "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+            "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+          },
+          "candidate_value": 0.17898046478034738,
+          "confidence": 0.95,
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "estimand": "joint_ce",
+          "gain": 0.011055337177001134,
+          "gain_direction": "candidate minus reference",
+          "interval": [
+            0.0006444148915568137,
+            0.02164053588201884
+          ],
+          "per_seed_gain": [
+            0.0062609274627938305,
+            0.01482803325645371,
+            0.005061694515225534,
+            0.022459394627501517,
+            0.006666636023031192
+          ],
+          "positive_gain_favors_candidate": true,
+          "reference_value": 0.16792512760334624
+        },
+        "success": {
+          "bootstrap": {
+            "confirmatory_coverage_guaranteed": false,
+            "generator": "PCG64",
+            "numpy_version": "2.3.5",
+            "paired_indices_sha256": "59de03386a9520706376a90658498bc8e1104b74a563586a6e60c50ba36fd441",
+            "random_seed": 2026102519,
+            "replicates": 4000,
+            "resampling": "independently resample seed and source axes; use identical indices for both conditions; keep all within-source observations together",
+            "scope": "few-seed crossed percentile bootstrap; 97.5% is nominal for the registered two-comparison family, other intervals are descriptive"
+          },
+          "candidate_value": 0.56015625,
+          "confidence": 0.95,
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "estimand": "success_rate",
+          "gain": 0.010791015625000067,
+          "gain_direction": "candidate minus reference",
+          "gain_percentage_points": 1.0791015625000067,
+          "gain_units": "probability difference, not relative percent change",
+          "interval": [
+            0.005175781249999956,
+            0.016357421875
+          ],
+          "interval_percentage_points": [
+            0.5175781249999956,
+            1.6357421875
+          ],
+          "per_seed_gain": [
+            0.008056640625,
+            0.015380859375,
+            0.009765625,
+            0.0126953125,
+            0.008056640625
+          ],
+          "positive_gain_favors_candidate": true,
+          "reference_value": 0.549365234375
+        }
+      }
+    }
+  },
+  "profile": {
+    "arm": "original_output_ndu",
+    "clock_scope": "shared Linux container; same-census paired cyclic policy order; no outlier removal or isolated-host claim",
+    "decision_commit_scope": "Original runtime commits public action in process before future draws; this is not a crash-durable action journal",
+    "excluded_costs_are_separately_recorded": true,
+    "pair_count": 256,
+    "pair_start": 512,
+    "policies": [
+      "reference",
+      "old_feedback",
+      "cached_feedback",
+      "compact_feedback"
+    ],
+    "request_endpoint": "actual selected generation, public policy, lossless NPZ, append+fsync, same-open-descriptor exact readback and hash verification",
+    "request_excludes": [
+      "resident model load",
+      "source construction",
+      "offline scoring",
+      "analysis",
+      "development training"
+    ],
+    "requests": 81920,
+    "scenarios": 2,
+    "selected_feedback": "preselected per seed as cached or compact; references an actually executed policy row, no extra N",
+    "source_pairs_are_primary_resampling_unit": true,
+    "source_role": "test",
+    "threads": 1,
+    "training_seeds": [
+      17,
+      29,
+      43,
+      59,
+      71
+    ],
+    "views": [
+      "clean",
+      "noise",
+      "occlusion",
+      "missing_trusted",
+      "conflict_untrusted",
+      "missing_untrusted",
+      "missing_unknown",
+      "both_missing"
+    ],
+    "within_source_replays_are_independent_n": false
+  },
+  "protocol_sha256": "35601464db2dce9a31e79dc28443f689e4a91c29b706e3e41a45cd865e52c9ef",
+  "quality": {
+    "primary": {
+      "cached_feedback": {
+        "by_view": {
+          "both_missing": {
+            "mean_loss": 0.7494379906682298,
+            "raw_CE": -0.5632664051195416,
+            "success": 0.0
+          },
+          "clean": {
+            "mean_loss": 0.037065080866250356,
+            "raw_CE": 0.8681991591499092,
+            "success": 0.895703125
+          },
+          "conflict_untrusted": {
+            "mean_loss": 0.036641839446565426,
+            "raw_CE": 0.8728707256640786,
+            "success": 0.89765625
+          },
+          "missing_trusted": {
+            "mean_loss": 0.036293551459857555,
+            "raw_CE": 0.8880227243903352,
+            "success": 0.89609375
+          },
+          "missing_unknown": {
+            "mean_loss": 0.40311062039945683,
+            "raw_CE": 0.12475744776086073,
+            "success": 0.0390625
+          },
+          "missing_untrusted": {
+            "mean_loss": 0.3686347687902526,
+            "raw_CE": 0.17721438365371334,
+            "success": 0.07109375
+          },
+          "noise": {
+            "mean_loss": 0.04049621859512627,
+            "raw_CE": 0.8437185852323772,
+            "success": 0.89140625
+          },
+          "occlusion": {
+            "mean_loss": 0.0864208898941797,
+            "raw_CE": 0.6874056057049963,
+            "success": 0.755078125
+          }
+        },
+        "loss_tails": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "output_level": {
+            "equal_seed_mixture": {
+              "boundary_mass": 0.0,
+              "cvar": 0.8091968503722455,
+              "full_tail_observations": 2048,
+              "mean": 0.2197626200149898,
+              "n": 20480,
+              "p95": 0.81550555229187,
+              "quantile_method": "linear",
+              "tail_fraction": 0.1,
+              "tail_mass": 2048.0
+            },
+            "mean_across_seed_summaries": {
+              "cvar": 0.8089605346263852,
+              "mean": 0.2197626200149898,
+              "p95": 0.824861153960228
+            },
+            "per_seed": [
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8188997762918007,
+                "full_tail_observations": 409,
+                "mean": 0.22253581744092799,
+                "n": 4096,
+                "p95": 0.8624894022941589,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8030544318025932,
+                "full_tail_observations": 409,
+                "mean": 0.21607675837907436,
+                "n": 4096,
+                "p95": 0.8144833296537399,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8108958658704069,
+                "full_tail_observations": 409,
+                "mean": 0.21941930501776596,
+                "n": 4096,
+                "p95": 0.8146906197071075,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8105979412212037,
+                "full_tail_observations": 409,
+                "mean": 0.2213926969780573,
+                "n": 4096,
+                "p95": 0.8184441030025482,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8013546579459216,
+                "full_tail_observations": 409,
+                "mean": 0.21938852225912342,
+                "n": 4096,
+                "p95": 0.8141983151435852,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              }
+            ]
+          },
+          "scope": "descriptive exact empirical tails; source averaging changes the estimand; equal-seed mixture is not the generation-risk CE and is not the average per-seed tail",
+          "source_mean_level": {
+            "mean_across_seed_summaries": {
+              "cvar": 0.3547665556578977,
+              "mean": 0.2197626200149898,
+              "p95": 0.31903640344826273
+            },
+            "per_seed": [
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3586684630427044,
+                "full_tail_observations": 25,
+                "mean": 0.22253581744092799,
+                "n": 256,
+                "p95": 0.31507104297634214,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3352561693848201,
+                "full_tail_observations": 25,
+                "mean": 0.21607675837907436,
+                "n": 256,
+                "p95": 0.3223496465070639,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3581464097881053,
+                "full_tail_observations": 25,
+                "mean": 0.21941930501776596,
+                "n": 256,
+                "p95": 0.3222008290758822,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3685903257373866,
+                "full_tail_observations": 25,
+                "mean": 0.2213926969780573,
+                "n": 256,
+                "p95": 0.32080962780310074,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.35317141033647204,
+                "full_tail_observations": 25,
+                "mean": 0.21938852225912342,
+                "n": 256,
+                "p95": 0.3147508708789246,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              }
+            ],
+            "source_means_averaged_across_seeds": {
+              "boundary_mass": 0.6000000000000014,
+              "cvar": 0.3355349994498284,
+              "full_tail_observations": 25,
+              "mean": 0.2197626200149898,
+              "n": 256,
+              "p95": 0.3093015638980432,
+              "quantile_method": "linear",
+              "tail_fraction": 0.1,
+              "tail_mass": 25.6
+            }
+          }
+        },
+        "proxy_net_utility": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "gamma": 2.0,
+          "joint_ce": 0.18289682343197664,
+          "joint_ce_per_seed": [
+            0.16904222174735484,
+            0.19592238825667546,
+            0.18068262129973395,
+            0.17780763688125983,
+            0.19102924897485907
+          ],
+          "mean_conditional_ce": 0.5463897914855836,
+          "mean_conditional_ce_per_seed": [
+            0.5408387780762295,
+            0.5538008000411744,
+            0.5460313081825084,
+            0.5429766574269438,
+            0.5483014137010622
+          ],
+          "mean_utility": 0.5581767130238069,
+          "risk_hierarchy": "CE within each trained seed, then arithmetic mean across seeds; conditional CE uses generation scenarios within each source/view only"
+        },
+        "raw_utility": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "gamma": 2.0,
+          "joint_ce": 0.18511895101712642,
+          "joint_ce_per_seed": [
+            0.17146360927563792,
+            0.198065436493362,
+            0.18289476540560828,
+            0.18016477980617368,
+            0.1930061641048501
+          ],
+          "mean_conditional_ce": 0.5486958763292193,
+          "mean_conditional_ce_per_seed": [
+            0.5431498005548612,
+            0.5561769416687465,
+            0.5483300518413725,
+            0.5452826642834931,
+            0.5505399232976231
+          ],
+          "mean_utility": 0.5604747598988069,
+          "risk_hierarchy": "CE within each trained seed, then arithmetic mean across seeds; conditional CE uses generation scenarios within each source/view only"
+        },
+        "success": 0.55576171875
+      },
+      "compact_feedback": {
+        "by_view": {
+          "both_missing": {
+            "mean_loss": 0.7469393472361844,
+            "raw_CE": -0.5577188436382265,
+            "success": 0.0
+          },
+          "clean": {
+            "mean_loss": 0.03778827473825004,
+            "raw_CE": 0.8684320543300524,
+            "success": 0.89140625
+          },
+          "conflict_untrusted": {
+            "mean_loss": 0.03964018228871282,
+            "raw_CE": 0.8627929977482832,
+            "success": 0.8859375
+          },
+          "missing_trusted": {
+            "mean_loss": 0.038815272512147204,
+            "raw_CE": 0.8786999124326027,
+            "success": 0.8875
+          },
+          "missing_unknown": {
+            "mean_loss": 0.4068966205624747,
+            "raw_CE": 0.11317746956361727,
+            "success": 0.0390625
+          },
+          "missing_untrusted": {
+            "mean_loss": 0.3737270721969253,
+            "raw_CE": 0.1673647888156315,
+            "success": 0.063671875
+          },
+          "noise": {
+            "mean_loss": 0.04370962890170631,
+            "raw_CE": 0.8426668518985625,
+            "success": 0.876171875
+          },
+          "occlusion": {
+            "mean_loss": 0.08993342510993899,
+            "raw_CE": 0.6832863033194257,
+            "success": 0.73671875
+          }
+        },
+        "loss_tails": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "output_level": {
+            "equal_seed_mixture": {
+              "boundary_mass": 0.0,
+              "cvar": 0.8067124384979252,
+              "full_tail_observations": 2048,
+              "mean": 0.22218122794329248,
+              "n": 20480,
+              "p95": 0.8153594583272934,
+              "quantile_method": "linear",
+              "tail_fraction": 0.1,
+              "tail_mass": 2048.0
+            },
+            "mean_across_seed_summaries": {
+              "cvar": 0.8064490938268136,
+              "mean": 0.22218122794329248,
+              "p95": 0.8089122712612152
+            },
+            "per_seed": [
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8105641137517523,
+                "full_tail_observations": 409,
+                "mean": 0.22301607943711588,
+                "n": 4096,
+                "p95": 0.8177503496408463,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8052140917861834,
+                "full_tail_observations": 409,
+                "mean": 0.22253727501464482,
+                "n": 4096,
+                "p95": 0.8147352784872055,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8151864336396101,
+                "full_tail_observations": 409,
+                "mean": 0.2219536412302432,
+                "n": 4096,
+                "p95": 0.8172882199287415,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8023797203786671,
+                "full_tail_observations": 409,
+                "mean": 0.22271713909452728,
+                "n": 4096,
+                "p95": 0.7796044647693634,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.7989011095778551,
+                "full_tail_observations": 409,
+                "mean": 0.22068200493993118,
+                "n": 4096,
+                "p95": 0.8151830434799194,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              }
+            ]
+          },
+          "scope": "descriptive exact empirical tails; source averaging changes the estimand; equal-seed mixture is not the generation-risk CE and is not the average per-seed tail",
+          "source_mean_level": {
+            "mean_across_seed_summaries": {
+              "cvar": 0.35677894130380994,
+              "mean": 0.22218122794329248,
+              "p95": 0.32415764265460895
+            },
+            "per_seed": [
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.35013506824134305,
+                "full_tail_observations": 25,
+                "mean": 0.22301607943711588,
+                "n": 256,
+                "p95": 0.31143448696820997,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.35333398973534713,
+                "full_tail_observations": 25,
+                "mean": 0.22253727501464482,
+                "n": 256,
+                "p95": 0.3242980972354417,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3643651352656434,
+                "full_tail_observations": 25,
+                "mean": 0.2219536412302432,
+                "n": 256,
+                "p95": 0.3346948059333954,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3655202057834685,
+                "full_tail_observations": 25,
+                "mean": 0.22271713909452728,
+                "n": 256,
+                "p95": 0.3397700613786583,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3505403074932474,
+                "full_tail_observations": 25,
+                "mean": 0.22068200493993118,
+                "n": 256,
+                "p95": 0.31059076175733935,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              }
+            ],
+            "source_means_averaged_across_seeds": {
+              "boundary_mass": 0.6000000000000014,
+              "cvar": 0.3364201110239719,
+              "full_tail_observations": 25,
+              "mean": 0.22218122794329248,
+              "n": 256,
+              "p95": 0.31390221014735287,
+              "quantile_method": "linear",
+              "tail_fraction": 0.1,
+              "tail_mass": 25.6
+            }
+          }
+        },
+        "proxy_net_utility": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "gamma": 2.0,
+          "joint_ce": 0.18146344770630335,
+          "joint_ce_per_seed": [
+            0.17854782934460944,
+            0.1828956069922102,
+            0.16937760398776458,
+            0.1831833316917238,
+            0.19331286651520868
+          ],
+          "mean_conditional_ce": 0.5400824460083566,
+          "mean_conditional_ce_per_seed": [
+            0.5391643101481787,
+            0.5381487731949557,
+            0.5412271395554944,
+            0.538878410521177,
+            0.5429935966219772
+          ],
+          "mean_utility": 0.5527130326942072,
+          "risk_hierarchy": "CE within each trained seed, then arithmetic mean across seeds; conditional CE uses generation scenarios within each source/view only"
+        },
+        "raw_utility": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "gamma": 2.0,
+          "joint_ce": 0.18445291999127206,
+          "joint_ce_per_seed": [
+            0.18140553622690614,
+            0.18628516800277595,
+            0.1728298641717682,
+            0.1858051658297809,
+            0.19593886572512914
+          ],
+          "mean_conditional_ce": 0.5430097516007091,
+          "mean_conditional_ce_per_seed": [
+            0.5421441934279507,
+            0.5412156245933233,
+            0.5441923431426481,
+            0.5417580118320375,
+            0.5457385850075862
+          ],
+          "mean_utility": 0.5556375444129571,
+          "risk_hierarchy": "CE within each trained seed, then arithmetic mean across seeds; conditional CE uses generation scenarios within each source/view only"
+        },
+        "success": 0.54755859375
+      },
+      "old_feedback": {
+        "by_view": {
+          "both_missing": {
+            "mean_loss": 0.7494379906682298,
+            "raw_CE": -0.5632664051195416,
+            "success": 0.0
+          },
+          "clean": {
+            "mean_loss": 0.037065080866250356,
+            "raw_CE": 0.8681991591499092,
+            "success": 0.895703125
+          },
+          "conflict_untrusted": {
+            "mean_loss": 0.036641839446565426,
+            "raw_CE": 0.8728707256640786,
+            "success": 0.89765625
+          },
+          "missing_trusted": {
+            "mean_loss": 0.036293551459857555,
+            "raw_CE": 0.8880227243903352,
+            "success": 0.89609375
+          },
+          "missing_unknown": {
+            "mean_loss": 0.40311062039945683,
+            "raw_CE": 0.12475744776086073,
+            "success": 0.0390625
+          },
+          "missing_untrusted": {
+            "mean_loss": 0.3686347687902526,
+            "raw_CE": 0.17721438365371334,
+            "success": 0.07109375
+          },
+          "noise": {
+            "mean_loss": 0.04049621859512627,
+            "raw_CE": 0.8437185852323772,
+            "success": 0.89140625
+          },
+          "occlusion": {
+            "mean_loss": 0.0864208898941797,
+            "raw_CE": 0.6874056057049963,
+            "success": 0.755078125
+          }
+        },
+        "loss_tails": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "output_level": {
+            "equal_seed_mixture": {
+              "boundary_mass": 0.0,
+              "cvar": 0.8091968503722455,
+              "full_tail_observations": 2048,
+              "mean": 0.2197626200149898,
+              "n": 20480,
+              "p95": 0.81550555229187,
+              "quantile_method": "linear",
+              "tail_fraction": 0.1,
+              "tail_mass": 2048.0
+            },
+            "mean_across_seed_summaries": {
+              "cvar": 0.8089605346263852,
+              "mean": 0.2197626200149898,
+              "p95": 0.824861153960228
+            },
+            "per_seed": [
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8188997762918007,
+                "full_tail_observations": 409,
+                "mean": 0.22253581744092799,
+                "n": 4096,
+                "p95": 0.8624894022941589,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8030544318025932,
+                "full_tail_observations": 409,
+                "mean": 0.21607675837907436,
+                "n": 4096,
+                "p95": 0.8144833296537399,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8108958658704069,
+                "full_tail_observations": 409,
+                "mean": 0.21941930501776596,
+                "n": 4096,
+                "p95": 0.8146906197071075,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8105979412212037,
+                "full_tail_observations": 409,
+                "mean": 0.2213926969780573,
+                "n": 4096,
+                "p95": 0.8184441030025482,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8013546579459216,
+                "full_tail_observations": 409,
+                "mean": 0.21938852225912342,
+                "n": 4096,
+                "p95": 0.8141983151435852,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              }
+            ]
+          },
+          "scope": "descriptive exact empirical tails; source averaging changes the estimand; equal-seed mixture is not the generation-risk CE and is not the average per-seed tail",
+          "source_mean_level": {
+            "mean_across_seed_summaries": {
+              "cvar": 0.3547665556578977,
+              "mean": 0.2197626200149898,
+              "p95": 0.31903640344826273
+            },
+            "per_seed": [
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3586684630427044,
+                "full_tail_observations": 25,
+                "mean": 0.22253581744092799,
+                "n": 256,
+                "p95": 0.31507104297634214,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3352561693848201,
+                "full_tail_observations": 25,
+                "mean": 0.21607675837907436,
+                "n": 256,
+                "p95": 0.3223496465070639,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3581464097881053,
+                "full_tail_observations": 25,
+                "mean": 0.21941930501776596,
+                "n": 256,
+                "p95": 0.3222008290758822,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3685903257373866,
+                "full_tail_observations": 25,
+                "mean": 0.2213926969780573,
+                "n": 256,
+                "p95": 0.32080962780310074,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.35317141033647204,
+                "full_tail_observations": 25,
+                "mean": 0.21938852225912342,
+                "n": 256,
+                "p95": 0.3147508708789246,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              }
+            ],
+            "source_means_averaged_across_seeds": {
+              "boundary_mass": 0.6000000000000014,
+              "cvar": 0.3355349994498284,
+              "full_tail_observations": 25,
+              "mean": 0.2197626200149898,
+              "n": 256,
+              "p95": 0.3093015638980432,
+              "quantile_method": "linear",
+              "tail_fraction": 0.1,
+              "tail_mass": 25.6
+            }
+          }
+        },
+        "proxy_net_utility": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "gamma": 2.0,
+          "joint_ce": 0.18289682343197664,
+          "joint_ce_per_seed": [
+            0.16904222174735484,
+            0.19592238825667546,
+            0.18068262129973395,
+            0.17780763688125983,
+            0.19102924897485907
+          ],
+          "mean_conditional_ce": 0.5463897914855836,
+          "mean_conditional_ce_per_seed": [
+            0.5408387780762295,
+            0.5538008000411744,
+            0.5460313081825084,
+            0.5429766574269438,
+            0.5483014137010622
+          ],
+          "mean_utility": 0.5581767130238069,
+          "risk_hierarchy": "CE within each trained seed, then arithmetic mean across seeds; conditional CE uses generation scenarios within each source/view only"
+        },
+        "raw_utility": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "gamma": 2.0,
+          "joint_ce": 0.18511895101712642,
+          "joint_ce_per_seed": [
+            0.17146360927563792,
+            0.198065436493362,
+            0.18289476540560828,
+            0.18016477980617368,
+            0.1930061641048501
+          ],
+          "mean_conditional_ce": 0.5486958763292193,
+          "mean_conditional_ce_per_seed": [
+            0.5431498005548612,
+            0.5561769416687465,
+            0.5483300518413725,
+            0.5452826642834931,
+            0.5505399232976231
+          ],
+          "mean_utility": 0.5604747598988069,
+          "risk_hierarchy": "CE within each trained seed, then arithmetic mean across seeds; conditional CE uses generation scenarios within each source/view only"
+        },
+        "success": 0.55576171875
+      },
+      "reference": {
+        "by_view": {
+          "both_missing": {
+            "mean_loss": 0.7556743793851638,
+            "raw_CE": -0.5758028235160251,
+            "success": 0.000390625
+          },
+          "clean": {
+            "mean_loss": 0.04030481058080113,
+            "raw_CE": 0.8593427823592137,
+            "success": 0.88359375
+          },
+          "conflict_untrusted": {
+            "mean_loss": 0.041442549662133385,
+            "raw_CE": 0.8561005234086597,
+            "success": 0.88203125
+          },
+          "missing_trusted": {
+            "mean_loss": 0.03728765752211984,
+            "raw_CE": 0.8857786270462192,
+            "success": 0.8921875
+          },
+          "missing_unknown": {
+            "mean_loss": 0.41045919584030344,
+            "raw_CE": 0.10919857191583934,
+            "success": 0.0296875
+          },
+          "missing_untrusted": {
+            "mean_loss": 0.3753475566565612,
+            "raw_CE": 0.1666625117598921,
+            "success": 0.058984375
+          },
+          "noise": {
+            "mean_loss": 0.044109169984494656,
+            "raw_CE": 0.8384442941940676,
+            "success": 0.876171875
+          },
+          "occlusion": {
+            "mean_loss": 0.08817558850678324,
+            "raw_CE": 0.6759443460491777,
+            "success": 0.7484375
+          }
+        },
+        "loss_tails": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "output_level": {
+            "equal_seed_mixture": {
+              "boundary_mass": 0.0,
+              "cvar": 0.8157079942466225,
+              "full_tail_observations": 2048,
+              "mean": 0.22410011351729509,
+              "n": 20480,
+              "p95": 0.81534423828125,
+              "quantile_method": "linear",
+              "tail_fraction": 0.1,
+              "tail_mass": 2048.0
+            },
+            "mean_across_seed_summaries": {
+              "cvar": 0.8155482979665976,
+              "mean": 0.22410011351729509,
+              "p95": 0.8244806796312332
+            },
+            "per_seed": [
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8181418456370011,
+                "full_tail_observations": 409,
+                "mean": 0.2262728815832702,
+                "n": 4096,
+                "p95": 0.8145269602537155,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8132850131660233,
+                "full_tail_observations": 409,
+                "mean": 0.22119295477216383,
+                "n": 4096,
+                "p95": 0.8624760806560516,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8151815787132364,
+                "full_tail_observations": 409,
+                "mean": 0.22266316478174986,
+                "n": 4096,
+                "p95": 0.8135530203580856,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8213288843107875,
+                "full_tail_observations": 409,
+                "mean": 0.22927217393061028,
+                "n": 4096,
+                "p95": 0.8161586970090866,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8098041680059396,
+                "full_tail_observations": 409,
+                "mean": 0.22109939251868127,
+                "n": 4096,
+                "p95": 0.8156886398792267,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              }
+            ]
+          },
+          "scope": "descriptive exact empirical tails; source averaging changes the estimand; equal-seed mixture is not the generation-risk CE and is not the average per-seed tail",
+          "source_mean_level": {
+            "mean_across_seed_summaries": {
+              "cvar": 0.3588907805863073,
+              "mean": 0.22410011351729509,
+              "p95": 0.32430623079126236
+            },
+            "per_seed": [
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3619670947900886,
+                "full_tail_observations": 25,
+                "mean": 0.2262728815832702,
+                "n": 256,
+                "p95": 0.3205336914397776,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3463814310052839,
+                "full_tail_observations": 25,
+                "mean": 0.22119295477216383,
+                "n": 256,
+                "p95": 0.31714693902176805,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.36020172075836854,
+                "full_tail_observations": 25,
+                "mean": 0.22266316478174986,
+                "n": 256,
+                "p95": 0.3243424588581547,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3706789747343464,
+                "full_tail_observations": 25,
+                "mean": 0.22927217393061028,
+                "n": 256,
+                "p95": 0.3353941519453656,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.355224681643449,
+                "full_tail_observations": 25,
+                "mean": 0.22109939251868127,
+                "n": 256,
+                "p95": 0.3241139126912458,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              }
+            ],
+            "source_means_averaged_across_seeds": {
+              "boundary_mass": 0.6000000000000014,
+              "cvar": 0.3392932115776147,
+              "full_tail_observations": 25,
+              "mean": 0.22410011351729509,
+              "n": 256,
+              "p95": 0.31745107887254564,
+              "quantile_method": "linear",
+              "tail_fraction": 0.1,
+              "tail_mass": 25.6
+            }
+          }
+        },
+        "proxy_net_utility": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "gamma": 2.0,
+          "joint_ce": 0.1693105275596803,
+          "joint_ce_per_seed": [
+            0.16238054935607876,
+            0.17822240287245095,
+            0.17150751459113872,
+            0.1536324832903147,
+            0.18080968768841832
+          ],
+          "mean_conditional_ce": 0.5344696891006555,
+          "mean_conditional_ce_per_seed": [
+            0.5306468032715472,
+            0.5402879691501814,
+            0.5364312751900939,
+            0.5236826366008018,
+            0.5412997612906534
+          ],
+          "mean_utility": 0.5481505542355325,
+          "risk_hierarchy": "CE within each trained seed, then arithmetic mean across seeds; conditional CE uses generation scenarios within each source/view only"
+        },
+        "raw_utility": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "gamma": 2.0,
+          "joint_ce": 0.17301084538557573,
+          "joint_ce_per_seed": [
+            0.16638054935607877,
+            0.18174198786533513,
+            0.17550751459113872,
+            0.1576324832903147,
+            0.18379169182501132
+          ],
+          "mean_conditional_ce": 0.5381202532775662,
+          "mean_conditional_ce_per_seed": [
+            0.5346468032715472,
+            0.5435595665139339,
+            0.5404312751900939,
+            0.5276826366008018,
+            0.5442809848114545
+          ],
+          "mean_utility": 0.5517997729855324,
+          "risk_hierarchy": "CE within each trained seed, then arithmetic mean across seeds; conditional CE uses generation scenarios within each source/view only"
+        },
+        "success": 0.546435546875
+      },
+      "selected_feedback": {
+        "by_view": {
+          "both_missing": {
+            "mean_loss": 0.7494379906682298,
+            "raw_CE": -0.5632664051195416,
+            "success": 0.0
+          },
+          "clean": {
+            "mean_loss": 0.037065080866250356,
+            "raw_CE": 0.8681991591499092,
+            "success": 0.895703125
+          },
+          "conflict_untrusted": {
+            "mean_loss": 0.036641839446565426,
+            "raw_CE": 0.8728707256640786,
+            "success": 0.89765625
+          },
+          "missing_trusted": {
+            "mean_loss": 0.036293551459857555,
+            "raw_CE": 0.8880227243903352,
+            "success": 0.89609375
+          },
+          "missing_unknown": {
+            "mean_loss": 0.40311062039945683,
+            "raw_CE": 0.12475744776086073,
+            "success": 0.0390625
+          },
+          "missing_untrusted": {
+            "mean_loss": 0.3686347687902526,
+            "raw_CE": 0.17721438365371334,
+            "success": 0.07109375
+          },
+          "noise": {
+            "mean_loss": 0.04049621859512627,
+            "raw_CE": 0.8437185852323772,
+            "success": 0.89140625
+          },
+          "occlusion": {
+            "mean_loss": 0.0864208898941797,
+            "raw_CE": 0.6874056057049963,
+            "success": 0.755078125
+          }
+        },
+        "loss_tails": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "output_level": {
+            "equal_seed_mixture": {
+              "boundary_mass": 0.0,
+              "cvar": 0.8091968503722455,
+              "full_tail_observations": 2048,
+              "mean": 0.2197626200149898,
+              "n": 20480,
+              "p95": 0.81550555229187,
+              "quantile_method": "linear",
+              "tail_fraction": 0.1,
+              "tail_mass": 2048.0
+            },
+            "mean_across_seed_summaries": {
+              "cvar": 0.8089605346263852,
+              "mean": 0.2197626200149898,
+              "p95": 0.824861153960228
+            },
+            "per_seed": [
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8188997762918007,
+                "full_tail_observations": 409,
+                "mean": 0.22253581744092799,
+                "n": 4096,
+                "p95": 0.8624894022941589,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8030544318025932,
+                "full_tail_observations": 409,
+                "mean": 0.21607675837907436,
+                "n": 4096,
+                "p95": 0.8144833296537399,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8108958658704069,
+                "full_tail_observations": 409,
+                "mean": 0.21941930501776596,
+                "n": 4096,
+                "p95": 0.8146906197071075,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8105979412212037,
+                "full_tail_observations": 409,
+                "mean": 0.2213926969780573,
+                "n": 4096,
+                "p95": 0.8184441030025482,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8013546579459216,
+                "full_tail_observations": 409,
+                "mean": 0.21938852225912342,
+                "n": 4096,
+                "p95": 0.8141983151435852,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              }
+            ]
+          },
+          "scope": "descriptive exact empirical tails; source averaging changes the estimand; equal-seed mixture is not the generation-risk CE and is not the average per-seed tail",
+          "source_mean_level": {
+            "mean_across_seed_summaries": {
+              "cvar": 0.3547665556578977,
+              "mean": 0.2197626200149898,
+              "p95": 0.31903640344826273
+            },
+            "per_seed": [
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3586684630427044,
+                "full_tail_observations": 25,
+                "mean": 0.22253581744092799,
+                "n": 256,
+                "p95": 0.31507104297634214,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3352561693848201,
+                "full_tail_observations": 25,
+                "mean": 0.21607675837907436,
+                "n": 256,
+                "p95": 0.3223496465070639,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3581464097881053,
+                "full_tail_observations": 25,
+                "mean": 0.21941930501776596,
+                "n": 256,
+                "p95": 0.3222008290758822,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3685903257373866,
+                "full_tail_observations": 25,
+                "mean": 0.2213926969780573,
+                "n": 256,
+                "p95": 0.32080962780310074,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.35317141033647204,
+                "full_tail_observations": 25,
+                "mean": 0.21938852225912342,
+                "n": 256,
+                "p95": 0.3147508708789246,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              }
+            ],
+            "source_means_averaged_across_seeds": {
+              "boundary_mass": 0.6000000000000014,
+              "cvar": 0.3355349994498284,
+              "full_tail_observations": 25,
+              "mean": 0.2197626200149898,
+              "n": 256,
+              "p95": 0.3093015638980432,
+              "quantile_method": "linear",
+              "tail_fraction": 0.1,
+              "tail_mass": 25.6
+            }
+          }
+        },
+        "proxy_net_utility": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "gamma": 2.0,
+          "joint_ce": 0.18289682343197664,
+          "joint_ce_per_seed": [
+            0.16904222174735484,
+            0.19592238825667546,
+            0.18068262129973395,
+            0.17780763688125983,
+            0.19102924897485907
+          ],
+          "mean_conditional_ce": 0.5463897914855836,
+          "mean_conditional_ce_per_seed": [
+            0.5408387780762295,
+            0.5538008000411744,
+            0.5460313081825084,
+            0.5429766574269438,
+            0.5483014137010622
+          ],
+          "mean_utility": 0.5581767130238069,
+          "risk_hierarchy": "CE within each trained seed, then arithmetic mean across seeds; conditional CE uses generation scenarios within each source/view only"
+        },
+        "raw_utility": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "gamma": 2.0,
+          "joint_ce": 0.18511895101712642,
+          "joint_ce_per_seed": [
+            0.17146360927563792,
+            0.198065436493362,
+            0.18289476540560828,
+            0.18016477980617368,
+            0.1930061641048501
+          ],
+          "mean_conditional_ce": 0.5486958763292193,
+          "mean_conditional_ce_per_seed": [
+            0.5431498005548612,
+            0.5561769416687465,
+            0.5483300518413725,
+            0.5452826642834931,
+            0.5505399232976231
+          ],
+          "mean_utility": 0.5604747598988069,
+          "risk_hierarchy": "CE within each trained seed, then arithmetic mean across seeds; conditional CE uses generation scenarios within each source/view only"
+        },
+        "success": 0.55576171875
+      }
+    },
+    "secondary": {
+      "cached_feedback": {
+        "by_view": {
+          "both_missing": {
+            "mean_loss": 0.7568793967198871,
+            "raw_CE": -0.5779206739135414,
+            "success": 0.000390625
+          },
+          "clean": {
+            "mean_loss": 0.03413539336588656,
+            "raw_CE": 0.882216195143171,
+            "success": 0.905859375
+          },
+          "conflict_untrusted": {
+            "mean_loss": 0.03487426127630897,
+            "raw_CE": 0.8788653558700809,
+            "success": 0.905078125
+          },
+          "missing_trusted": {
+            "mean_loss": 0.030815035853811422,
+            "raw_CE": 0.9051224853943787,
+            "success": 0.91875
+          },
+          "missing_unknown": {
+            "mean_loss": 0.40555202667565027,
+            "raw_CE": 0.12245486389166704,
+            "success": 0.030859375
+          },
+          "missing_untrusted": {
+            "mean_loss": 0.3649824248670484,
+            "raw_CE": 0.1844792562336623,
+            "success": 0.075390625
+          },
+          "noise": {
+            "mean_loss": 0.03937317166082721,
+            "raw_CE": 0.8548147034453079,
+            "success": 0.892578125
+          },
+          "occlusion": {
+            "mean_loss": 0.08712401483553549,
+            "raw_CE": 0.6878987288562861,
+            "success": 0.75234375
+          }
+        },
+        "loss_tails": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "output_level": {
+            "equal_seed_mixture": {
+              "boundary_mass": 0.0,
+              "cvar": 0.8154104331333656,
+              "full_tail_observations": 2048,
+              "mean": 0.21921696565686943,
+              "n": 20480,
+              "p95": 0.816345602273941,
+              "quantile_method": "linear",
+              "tail_fraction": 0.1,
+              "tail_mass": 2048.0
+            },
+            "mean_across_seed_summaries": {
+              "cvar": 0.8152658815728501,
+              "mean": 0.21921696565686943,
+              "p95": 0.8256075024604798
+            },
+            "per_seed": [
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8220803974545561,
+                "full_tail_observations": 409,
+                "mean": 0.22152873759301883,
+                "n": 4096,
+                "p95": 0.8629450500011444,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.814302068320103,
+                "full_tail_observations": 409,
+                "mean": 0.21395883825442752,
+                "n": 4096,
+                "p95": 0.8156218230724335,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8169662696018349,
+                "full_tail_observations": 409,
+                "mean": 0.21995031065529247,
+                "n": 4096,
+                "p95": 0.8158434927463531,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8148351986019406,
+                "full_tail_observations": 409,
+                "mean": 0.22101427898797965,
+                "n": 4096,
+                "p95": 0.8184441030025482,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8081454738858155,
+                "full_tail_observations": 409,
+                "mean": 0.2196326627936287,
+                "n": 4096,
+                "p95": 0.8151830434799194,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              }
+            ]
+          },
+          "scope": "descriptive exact empirical tails; source averaging changes the estimand; equal-seed mixture is not the generation-risk CE and is not the average per-seed tail",
+          "source_mean_level": {
+            "mean_across_seed_summaries": {
+              "cvar": 0.3485575087548568,
+              "mean": 0.21921696565686943,
+              "p95": 0.31773312124278164
+            },
+            "per_seed": [
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.35356524421058566,
+                "full_tail_observations": 25,
+                "mean": 0.22152873759301883,
+                "n": 256,
+                "p95": 0.313968185626436,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3268678686401927,
+                "full_tail_observations": 25,
+                "mean": 0.21395883825442752,
+                "n": 256,
+                "p95": 0.29952554913325,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3615594599666565,
+                "full_tail_observations": 25,
+                "mean": 0.21995031065529247,
+                "n": 256,
+                "p95": 0.34321586281294003,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3614165080973635,
+                "full_tail_observations": 25,
+                "mean": 0.22101427898797965,
+                "n": 256,
+                "p95": 0.33041685598436743,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3393784628594858,
+                "full_tail_observations": 25,
+                "mean": 0.2196326627936287,
+                "n": 256,
+                "p95": 0.30153915265691467,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              }
+            ],
+            "source_means_averaged_across_seeds": {
+              "boundary_mass": 0.6000000000000014,
+              "cvar": 0.3302906843568052,
+              "full_tail_observations": 25,
+              "mean": 0.21921696565686943,
+              "n": 256,
+              "p95": 0.3002777497007628,
+              "quantile_method": "linear",
+              "tail_fraction": 0.1,
+              "tail_mass": 25.6
+            }
+          }
+        },
+        "proxy_net_utility": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "gamma": 2.0,
+          "joint_ce": 0.17677125122042137,
+          "joint_ce_per_seed": [
+            0.16636725141592973,
+            0.1857772943415711,
+            0.17292441533122255,
+            0.17486587784843038,
+            0.18392141716495303
+          ],
+          "mean_conditional_ce": 0.5467265218626383,
+          "mean_conditional_ce_per_seed": [
+            0.5422893758078324,
+            0.5578820211073241,
+            0.543446805317432,
+            0.5430032602466894,
+            0.5470111468339137
+          ],
+          "mean_utility": 0.5592680215935281,
+          "risk_hierarchy": "CE within each trained seed, then arithmetic mean across seeds; conditional CE uses generation scenarios within each source/view only"
+        },
+        "raw_utility": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "gamma": 2.0,
+          "joint_ce": 0.17898046478034738,
+          "joint_ce_per_seed": [
+            0.16878276493778133,
+            0.18790560795567235,
+            0.17512541690753192,
+            0.1772067950898949,
+            0.18588173901085636
+          ],
+          "mean_conditional_ce": 0.5490313541994497,
+          "mean_conditional_ce_per_seed": [
+            0.5446001583045181,
+            0.5602579840748139,
+            0.5457441912670702,
+            0.5453085023988122,
+            0.549245934952034
+          ],
+          "mean_utility": 0.5615660684685281,
+          "risk_hierarchy": "CE within each trained seed, then arithmetic mean across seeds; conditional CE uses generation scenarios within each source/view only"
+        },
+        "success": 0.56015625
+      },
+      "compact_feedback": {
+        "by_view": {
+          "both_missing": {
+            "mean_loss": 0.7549178628447407,
+            "raw_CE": -0.5723434573430972,
+            "success": 0.000390625
+          },
+          "clean": {
+            "mean_loss": 0.036421087293911115,
+            "raw_CE": 0.8769788950211346,
+            "success": 0.89609375
+          },
+          "conflict_untrusted": {
+            "mean_loss": 0.0398647917290873,
+            "raw_CE": 0.8639214293327161,
+            "success": 0.884765625
+          },
+          "missing_trusted": {
+            "mean_loss": 0.03346370995986945,
+            "raw_CE": 0.8972009782440418,
+            "success": 0.90703125
+          },
+          "missing_unknown": {
+            "mean_loss": 0.41020716730017737,
+            "raw_CE": 0.10797181285762505,
+            "success": 0.032421875
+          },
+          "missing_untrusted": {
+            "mean_loss": 0.3715395721070308,
+            "raw_CE": 0.17096161009030292,
+            "success": 0.069140625
+          },
+          "noise": {
+            "mean_loss": 0.04128775381141168,
+            "raw_CE": 0.8539217123275818,
+            "success": 0.883984375
+          },
+          "occlusion": {
+            "mean_loss": 0.08803889372584309,
+            "raw_CE": 0.6843862122327192,
+            "success": 0.748046875
+          }
+        },
+        "loss_tails": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "output_level": {
+            "equal_seed_mixture": {
+              "boundary_mass": 0.0,
+              "cvar": 0.8131485527555924,
+              "full_tail_observations": 2048,
+              "mean": 0.22196760484650896,
+              "n": 20480,
+              "p95": 0.8160118401050568,
+              "quantile_method": "linear",
+              "tail_fraction": 0.1,
+              "tail_mass": 2048.0
+            },
+            "mean_across_seed_summaries": {
+              "cvar": 0.8130739390151576,
+              "mean": 0.22196760484650896,
+              "p95": 0.8179593712091446
+            },
+            "per_seed": [
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8136294294672552,
+                "full_tail_observations": 409,
+                "mean": 0.22257662625327157,
+                "n": 4096,
+                "p95": 0.8168558478355408,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8140862424625084,
+                "full_tail_observations": 409,
+                "mean": 0.22053532177648094,
+                "n": 4096,
+                "p95": 0.8153195679187775,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8244777082290966,
+                "full_tail_observations": 409,
+                "mean": 0.22280202983347408,
+                "n": 4096,
+                "p95": 0.863281786441803,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8071392328420188,
+                "full_tail_observations": 409,
+                "mean": 0.22325424852220976,
+                "n": 4096,
+                "p95": 0.7789200097322464,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8060370820749085,
+                "full_tail_observations": 409,
+                "mean": 0.22066979784710838,
+                "n": 4096,
+                "p95": 0.8154196441173553,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              }
+            ]
+          },
+          "scope": "descriptive exact empirical tails; source averaging changes the estimand; equal-seed mixture is not the generation-risk CE and is not the average per-seed tail",
+          "source_mean_level": {
+            "mean_across_seed_summaries": {
+              "cvar": 0.35093377763596434,
+              "mean": 0.22196760484650896,
+              "p95": 0.32443030962022024
+            },
+            "per_seed": [
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.34805993029067395,
+                "full_tail_observations": 25,
+                "mean": 0.22257662625327157,
+                "n": 256,
+                "p95": 0.3211035167478258,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.34014962461969844,
+                "full_tail_observations": 25,
+                "mean": 0.22053532177648094,
+                "n": 256,
+                "p95": 0.31243244621146005,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.36323620655457484,
+                "full_tail_observations": 25,
+                "mean": 0.22280202983347408,
+                "n": 256,
+                "p95": 0.33864350443764124,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3657738475508267,
+                "full_tail_observations": 25,
+                "mean": 0.22325424852220976,
+                "n": 256,
+                "p95": 0.3441553991578985,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.33744927916404777,
+                "full_tail_observations": 25,
+                "mean": 0.22066979784710838,
+                "n": 256,
+                "p95": 0.3058166815462755,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              }
+            ],
+            "source_means_averaged_across_seeds": {
+              "boundary_mass": 0.6000000000000014,
+              "cvar": 0.3316031492287948,
+              "full_tail_observations": 25,
+              "mean": 0.22196760484650896,
+              "n": 256,
+              "p95": 0.30510655454709196,
+              "quantile_method": "linear",
+              "tail_fraction": 0.1,
+              "tail_mass": 25.6
+            }
+          }
+        },
+        "proxy_net_utility": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "gamma": 2.0,
+          "joint_ce": 0.17432682563889493,
+          "joint_ce_per_seed": [
+            0.17379710476195798,
+            0.17583079959425507,
+            0.15960216848540965,
+            0.17719018334325787,
+            0.18521387200959405
+          ],
+          "mean_conditional_ce": 0.5395046898484411,
+          "mean_conditional_ce_per_seed": [
+            0.5394870193977824,
+            0.5416769016449478,
+            0.5380191372868623,
+            0.537023608747638,
+            0.5413167821649751
+          ],
+          "mean_utility": 0.5531402787767704,
+          "risk_hierarchy": "CE within each trained seed, then arithmetic mean across seeds; conditional CE uses generation scenarios within each source/view only"
+        },
+        "raw_utility": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "gamma": 2.0,
+          "joint_ce": 0.17731186660715842,
+          "joint_ce_per_seed": [
+            0.1766470318051211,
+            0.17921995441505245,
+            0.16306004254300233,
+            0.1797958047504118,
+            0.1878364995222045
+          ],
+          "mean_conditional_ce": 0.5424314213162688,
+          "mean_conditional_ce_per_seed": [
+            0.5424662273832144,
+            0.5447429048431774,
+            0.5409844870261254,
+            0.5399018136248956,
+            0.5440616737039305
+          ],
+          "mean_utility": 0.5560647904955204,
+          "risk_hierarchy": "CE within each trained seed, then arithmetic mean across seeds; conditional CE uses generation scenarios within each source/view only"
+        },
+        "success": 0.552734375
+      },
+      "old_feedback": {
+        "by_view": {
+          "both_missing": {
+            "mean_loss": 0.7568793967198871,
+            "raw_CE": -0.5779206739135414,
+            "success": 0.000390625
+          },
+          "clean": {
+            "mean_loss": 0.03413539336588656,
+            "raw_CE": 0.882216195143171,
+            "success": 0.905859375
+          },
+          "conflict_untrusted": {
+            "mean_loss": 0.03487426127630897,
+            "raw_CE": 0.8788653558700809,
+            "success": 0.905078125
+          },
+          "missing_trusted": {
+            "mean_loss": 0.030815035853811422,
+            "raw_CE": 0.9051224853943787,
+            "success": 0.91875
+          },
+          "missing_unknown": {
+            "mean_loss": 0.40555202667565027,
+            "raw_CE": 0.12245486389166704,
+            "success": 0.030859375
+          },
+          "missing_untrusted": {
+            "mean_loss": 0.3649824248670484,
+            "raw_CE": 0.1844792562336623,
+            "success": 0.075390625
+          },
+          "noise": {
+            "mean_loss": 0.03937317166082721,
+            "raw_CE": 0.8548147034453079,
+            "success": 0.892578125
+          },
+          "occlusion": {
+            "mean_loss": 0.08712401483553549,
+            "raw_CE": 0.6878987288562861,
+            "success": 0.75234375
+          }
+        },
+        "loss_tails": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "output_level": {
+            "equal_seed_mixture": {
+              "boundary_mass": 0.0,
+              "cvar": 0.8154104331333656,
+              "full_tail_observations": 2048,
+              "mean": 0.21921696565686943,
+              "n": 20480,
+              "p95": 0.816345602273941,
+              "quantile_method": "linear",
+              "tail_fraction": 0.1,
+              "tail_mass": 2048.0
+            },
+            "mean_across_seed_summaries": {
+              "cvar": 0.8152658815728501,
+              "mean": 0.21921696565686943,
+              "p95": 0.8256075024604798
+            },
+            "per_seed": [
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8220803974545561,
+                "full_tail_observations": 409,
+                "mean": 0.22152873759301883,
+                "n": 4096,
+                "p95": 0.8629450500011444,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.814302068320103,
+                "full_tail_observations": 409,
+                "mean": 0.21395883825442752,
+                "n": 4096,
+                "p95": 0.8156218230724335,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8169662696018349,
+                "full_tail_observations": 409,
+                "mean": 0.21995031065529247,
+                "n": 4096,
+                "p95": 0.8158434927463531,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8148351986019406,
+                "full_tail_observations": 409,
+                "mean": 0.22101427898797965,
+                "n": 4096,
+                "p95": 0.8184441030025482,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8081454738858155,
+                "full_tail_observations": 409,
+                "mean": 0.2196326627936287,
+                "n": 4096,
+                "p95": 0.8151830434799194,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              }
+            ]
+          },
+          "scope": "descriptive exact empirical tails; source averaging changes the estimand; equal-seed mixture is not the generation-risk CE and is not the average per-seed tail",
+          "source_mean_level": {
+            "mean_across_seed_summaries": {
+              "cvar": 0.3485575087548568,
+              "mean": 0.21921696565686943,
+              "p95": 0.31773312124278164
+            },
+            "per_seed": [
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.35356524421058566,
+                "full_tail_observations": 25,
+                "mean": 0.22152873759301883,
+                "n": 256,
+                "p95": 0.313968185626436,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3268678686401927,
+                "full_tail_observations": 25,
+                "mean": 0.21395883825442752,
+                "n": 256,
+                "p95": 0.29952554913325,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3615594599666565,
+                "full_tail_observations": 25,
+                "mean": 0.21995031065529247,
+                "n": 256,
+                "p95": 0.34321586281294003,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3614165080973635,
+                "full_tail_observations": 25,
+                "mean": 0.22101427898797965,
+                "n": 256,
+                "p95": 0.33041685598436743,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3393784628594858,
+                "full_tail_observations": 25,
+                "mean": 0.2196326627936287,
+                "n": 256,
+                "p95": 0.30153915265691467,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              }
+            ],
+            "source_means_averaged_across_seeds": {
+              "boundary_mass": 0.6000000000000014,
+              "cvar": 0.3302906843568052,
+              "full_tail_observations": 25,
+              "mean": 0.21921696565686943,
+              "n": 256,
+              "p95": 0.3002777497007628,
+              "quantile_method": "linear",
+              "tail_fraction": 0.1,
+              "tail_mass": 25.6
+            }
+          }
+        },
+        "proxy_net_utility": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "gamma": 2.0,
+          "joint_ce": 0.17677125122042137,
+          "joint_ce_per_seed": [
+            0.16636725141592973,
+            0.1857772943415711,
+            0.17292441533122255,
+            0.17486587784843038,
+            0.18392141716495303
+          ],
+          "mean_conditional_ce": 0.5467265218626383,
+          "mean_conditional_ce_per_seed": [
+            0.5422893758078324,
+            0.5578820211073241,
+            0.543446805317432,
+            0.5430032602466894,
+            0.5470111468339137
+          ],
+          "mean_utility": 0.5592680215935281,
+          "risk_hierarchy": "CE within each trained seed, then arithmetic mean across seeds; conditional CE uses generation scenarios within each source/view only"
+        },
+        "raw_utility": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "gamma": 2.0,
+          "joint_ce": 0.17898046478034738,
+          "joint_ce_per_seed": [
+            0.16878276493778133,
+            0.18790560795567235,
+            0.17512541690753192,
+            0.1772067950898949,
+            0.18588173901085636
+          ],
+          "mean_conditional_ce": 0.5490313541994497,
+          "mean_conditional_ce_per_seed": [
+            0.5446001583045181,
+            0.5602579840748139,
+            0.5457441912670702,
+            0.5453085023988122,
+            0.549245934952034
+          ],
+          "mean_utility": 0.5615660684685281,
+          "risk_hierarchy": "CE within each trained seed, then arithmetic mean across seeds; conditional CE uses generation scenarios within each source/view only"
+        },
+        "success": 0.56015625
+      },
+      "reference": {
+        "by_view": {
+          "both_missing": {
+            "mean_loss": 0.7600982073214254,
+            "raw_CE": -0.5836825785885594,
+            "success": 0.00078125
+          },
+          "clean": {
+            "mean_loss": 0.03935754500025723,
+            "raw_CE": 0.8629684971375411,
+            "success": 0.8875
+          },
+          "conflict_untrusted": {
+            "mean_loss": 0.0399972371846161,
+            "raw_CE": 0.8606423222667609,
+            "success": 0.8875
+          },
+          "missing_trusted": {
+            "mean_loss": 0.035178282513606975,
+            "raw_CE": 0.8919886021924329,
+            "success": 0.901171875
+          },
+          "missing_unknown": {
+            "mean_loss": 0.4135646645518136,
+            "raw_CE": 0.10273768802364935,
+            "success": 0.027734375
+          },
+          "missing_untrusted": {
+            "mean_loss": 0.3732967754116544,
+            "raw_CE": 0.16583121746616228,
+            "success": 0.069140625
+          },
+          "noise": {
+            "mean_loss": 0.04282010747947425,
+            "raw_CE": 0.8473896169568184,
+            "success": 0.88046875
+          },
+          "occlusion": {
+            "mean_loss": 0.09106621347600594,
+            "raw_CE": 0.6681698057979731,
+            "success": 0.740625
+          }
+        },
+        "loss_tails": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "output_level": {
+            "equal_seed_mixture": {
+              "boundary_mass": 0.0,
+              "cvar": 0.8193913949944545,
+              "full_tail_observations": 2048,
+              "mean": 0.22442237911735674,
+              "n": 20480,
+              "p95": 0.8155508249998092,
+              "quantile_method": "linear",
+              "tail_fraction": 0.1,
+              "tail_mass": 2048.0
+            },
+            "mean_across_seed_summaries": {
+              "cvar": 0.8193309359892738,
+              "mean": 0.22442237911735674,
+              "p95": 0.8243226110935211
+            },
+            "per_seed": [
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8204567335778847,
+                "full_tail_observations": 409,
+                "mean": 0.22665740294365833,
+                "n": 4096,
+                "p95": 0.8146064132452011,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8215427596587688,
+                "full_tail_observations": 409,
+                "mean": 0.22041170476097705,
+                "n": 4096,
+                "p95": 0.8628670573234558,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.820575838908553,
+                "full_tail_observations": 409,
+                "mean": 0.2229805476269462,
+                "n": 4096,
+                "p95": 0.8149013817310333,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8224213640205561,
+                "full_tail_observations": 409,
+                "mean": 0.22989473244086867,
+                "n": 4096,
+                "p95": 0.8138147592544556,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8116579837806057,
+                "full_tail_observations": 409,
+                "mean": 0.22216750781433348,
+                "n": 4096,
+                "p95": 0.8154234439134598,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              }
+            ]
+          },
+          "scope": "descriptive exact empirical tails; source averaging changes the estimand; equal-seed mixture is not the generation-risk CE and is not the average per-seed tail",
+          "source_mean_level": {
+            "mean_across_seed_summaries": {
+              "cvar": 0.357906099331376,
+              "mean": 0.22442237911735674,
+              "p95": 0.32929533111455384
+            },
+            "per_seed": [
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.35843618936883104,
+                "full_tail_observations": 25,
+                "mean": 0.22665740294365833,
+                "n": 256,
+                "p95": 0.3200569128675852,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.33941475233291385,
+                "full_tail_observations": 25,
+                "mean": 0.22041170476097705,
+                "n": 256,
+                "p95": 0.3087851078744279,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3633132394472795,
+                "full_tail_observations": 25,
+                "mean": 0.2229805476269462,
+                "n": 256,
+                "p95": 0.33573872927809134,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3806856990001961,
+                "full_tail_observations": 25,
+                "mean": 0.22989473244086867,
+                "n": 256,
+                "p95": 0.3675648260687012,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3476806165076596,
+                "full_tail_observations": 25,
+                "mean": 0.22216750781433348,
+                "n": 256,
+                "p95": 0.31433107948396355,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              }
+            ],
+            "source_means_averaged_across_seeds": {
+              "boundary_mass": 0.6000000000000014,
+              "cvar": 0.33695500905296283,
+              "full_tail_observations": 25,
+              "mean": 0.22442237911735674,
+              "n": 256,
+              "p95": 0.30647701576235703,
+              "quantile_method": "linear",
+              "tail_fraction": 0.1,
+              "tail_mass": 25.6
+            }
+          }
+        },
+        "proxy_net_utility": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "gamma": 2.0,
+          "joint_ce": 0.16422696910839035,
+          "joint_ce_per_seed": [
+            0.1585218374749875,
+            0.16956148945580357,
+            0.16606372239230638,
+            0.15074740046239338,
+            0.1762403957564609
+          ],
+          "mean_conditional_ce": 0.5326696244914387,
+          "mean_conditional_ce_per_seed": [
+            0.5285967319818672,
+            0.5412680449372392,
+            0.5340774573344944,
+            0.5214059528805983,
+            0.5379999353229945
+          ],
+          "mean_utility": 0.5475060229501441,
+          "risk_hierarchy": "CE within each trained seed, then arithmetic mean across seeds; conditional CE uses generation scenarios within each source/view only"
+        },
+        "raw_utility": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "gamma": 2.0,
+          "joint_ce": 0.16792512760334624,
+          "joint_ce_per_seed": [
+            0.1625218374749875,
+            0.17307757469921864,
+            0.17006372239230638,
+            0.15474740046239338,
+            0.17921510298782517
+          ],
+          "mean_conditional_ce": 0.5363198822270817,
+          "mean_conditional_ce_per_seed": [
+            0.5325967319818672,
+            0.5445374391154281,
+            0.5380774573344945,
+            0.5254059528805983,
+            0.5409818298230206
+          ],
+          "mean_utility": 0.551155241700144,
+          "risk_hierarchy": "CE within each trained seed, then arithmetic mean across seeds; conditional CE uses generation scenarios within each source/view only"
+        },
+        "success": 0.549365234375
+      },
+      "selected_feedback": {
+        "by_view": {
+          "both_missing": {
+            "mean_loss": 0.7568793967198871,
+            "raw_CE": -0.5779206739135414,
+            "success": 0.000390625
+          },
+          "clean": {
+            "mean_loss": 0.03413539336588656,
+            "raw_CE": 0.882216195143171,
+            "success": 0.905859375
+          },
+          "conflict_untrusted": {
+            "mean_loss": 0.03487426127630897,
+            "raw_CE": 0.8788653558700809,
+            "success": 0.905078125
+          },
+          "missing_trusted": {
+            "mean_loss": 0.030815035853811422,
+            "raw_CE": 0.9051224853943787,
+            "success": 0.91875
+          },
+          "missing_unknown": {
+            "mean_loss": 0.40555202667565027,
+            "raw_CE": 0.12245486389166704,
+            "success": 0.030859375
+          },
+          "missing_untrusted": {
+            "mean_loss": 0.3649824248670484,
+            "raw_CE": 0.1844792562336623,
+            "success": 0.075390625
+          },
+          "noise": {
+            "mean_loss": 0.03937317166082721,
+            "raw_CE": 0.8548147034453079,
+            "success": 0.892578125
+          },
+          "occlusion": {
+            "mean_loss": 0.08712401483553549,
+            "raw_CE": 0.6878987288562861,
+            "success": 0.75234375
+          }
+        },
+        "loss_tails": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "output_level": {
+            "equal_seed_mixture": {
+              "boundary_mass": 0.0,
+              "cvar": 0.8154104331333656,
+              "full_tail_observations": 2048,
+              "mean": 0.21921696565686943,
+              "n": 20480,
+              "p95": 0.816345602273941,
+              "quantile_method": "linear",
+              "tail_fraction": 0.1,
+              "tail_mass": 2048.0
+            },
+            "mean_across_seed_summaries": {
+              "cvar": 0.8152658815728501,
+              "mean": 0.21921696565686943,
+              "p95": 0.8256075024604798
+            },
+            "per_seed": [
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8220803974545561,
+                "full_tail_observations": 409,
+                "mean": 0.22152873759301883,
+                "n": 4096,
+                "p95": 0.8629450500011444,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.814302068320103,
+                "full_tail_observations": 409,
+                "mean": 0.21395883825442752,
+                "n": 4096,
+                "p95": 0.8156218230724335,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8169662696018349,
+                "full_tail_observations": 409,
+                "mean": 0.21995031065529247,
+                "n": 4096,
+                "p95": 0.8158434927463531,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8148351986019406,
+                "full_tail_observations": 409,
+                "mean": 0.22101427898797965,
+                "n": 4096,
+                "p95": 0.8184441030025482,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              },
+              {
+                "boundary_mass": 0.6000000000000227,
+                "cvar": 0.8081454738858155,
+                "full_tail_observations": 409,
+                "mean": 0.2196326627936287,
+                "n": 4096,
+                "p95": 0.8151830434799194,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 409.6
+              }
+            ]
+          },
+          "scope": "descriptive exact empirical tails; source averaging changes the estimand; equal-seed mixture is not the generation-risk CE and is not the average per-seed tail",
+          "source_mean_level": {
+            "mean_across_seed_summaries": {
+              "cvar": 0.3485575087548568,
+              "mean": 0.21921696565686943,
+              "p95": 0.31773312124278164
+            },
+            "per_seed": [
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.35356524421058566,
+                "full_tail_observations": 25,
+                "mean": 0.22152873759301883,
+                "n": 256,
+                "p95": 0.313968185626436,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3268678686401927,
+                "full_tail_observations": 25,
+                "mean": 0.21395883825442752,
+                "n": 256,
+                "p95": 0.29952554913325,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3615594599666565,
+                "full_tail_observations": 25,
+                "mean": 0.21995031065529247,
+                "n": 256,
+                "p95": 0.34321586281294003,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3614165080973635,
+                "full_tail_observations": 25,
+                "mean": 0.22101427898797965,
+                "n": 256,
+                "p95": 0.33041685598436743,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              },
+              {
+                "boundary_mass": 0.6000000000000014,
+                "cvar": 0.3393784628594858,
+                "full_tail_observations": 25,
+                "mean": 0.2196326627936287,
+                "n": 256,
+                "p95": 0.30153915265691467,
+                "quantile_method": "linear",
+                "tail_fraction": 0.1,
+                "tail_mass": 25.6
+              }
+            ],
+            "source_means_averaged_across_seeds": {
+              "boundary_mass": 0.6000000000000014,
+              "cvar": 0.3302906843568052,
+              "full_tail_observations": 25,
+              "mean": 0.21921696565686943,
+              "n": 256,
+              "p95": 0.3002777497007628,
+              "quantile_method": "linear",
+              "tail_fraction": 0.1,
+              "tail_mass": 25.6
+            }
+          }
+        },
+        "proxy_net_utility": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "gamma": 2.0,
+          "joint_ce": 0.17677125122042137,
+          "joint_ce_per_seed": [
+            0.16636725141592973,
+            0.1857772943415711,
+            0.17292441533122255,
+            0.17486587784843038,
+            0.18392141716495303
+          ],
+          "mean_conditional_ce": 0.5467265218626383,
+          "mean_conditional_ce_per_seed": [
+            0.5422893758078324,
+            0.5578820211073241,
+            0.543446805317432,
+            0.5430032602466894,
+            0.5470111468339137
+          ],
+          "mean_utility": 0.5592680215935281,
+          "risk_hierarchy": "CE within each trained seed, then arithmetic mean across seeds; conditional CE uses generation scenarios within each source/view only"
+        },
+        "raw_utility": {
+          "counts": {
+            "observed_rows": 20480,
+            "rows_or_seed_times_sources_are_independent_n": false,
+            "source_pairs": 256,
+            "training_seeds": 5,
+            "within_source_shape": [
+              8,
+              2
+            ]
+          },
+          "gamma": 2.0,
+          "joint_ce": 0.17898046478034738,
+          "joint_ce_per_seed": [
+            0.16878276493778133,
+            0.18790560795567235,
+            0.17512541690753192,
+            0.1772067950898949,
+            0.18588173901085636
+          ],
+          "mean_conditional_ce": 0.5490313541994497,
+          "mean_conditional_ce_per_seed": [
+            0.5446001583045181,
+            0.5602579840748139,
+            0.5457441912670702,
+            0.5453085023988122,
+            0.549245934952034
+          ],
+          "mean_utility": 0.5615660684685281,
+          "risk_hierarchy": "CE within each trained seed, then arithmetic mean across seeds; conditional CE uses generation scenarios within each source/view only"
+        },
+        "success": 0.56015625
+      }
+    }
+  },
+  "registered_gates": {
+    "actual_cost_price_is_user_calibrated": false,
+    "all_priced_economic_claims_are_sensitivity_only": true,
+    "efficient_replacement_of_old_feedback": {
+      "mean_wall_cost_upper_negative": true,
+      "raw_CE_loss_within_.005": true,
+      "success_loss_within_.005": true
+    },
+    "new_feedback_quality_over_strong_nonfeedback": {
+      "raw_CE_lower_positive": true,
+      "success_zero_margin_lower_nonnegative": true
+    }
+  },
+  "resident_loads": [
+    {
+      "cpu_ns": 14153736,
+      "loadavg": [
+        1.7880859375,
+        3.4375,
+        3.482421875
+      ],
+      "seed": 17,
+      "wall_ns": 14151054
+    },
+    {
+      "cpu_ns": 18018372,
+      "loadavg": [
+        2.3642578125,
+        2.92333984375,
+        3.2666015625
+      ],
+      "seed": 29,
+      "wall_ns": 18018093
+    },
+    {
+      "cpu_ns": 19205566,
+      "loadavg": [
+        1.38720703125,
+        2.2705078125,
+        2.95947265625
+      ],
+      "seed": 43,
+      "wall_ns": 19429944
+    },
+    {
+      "cpu_ns": 16059199,
+      "loadavg": [
+        1.41259765625,
+        1.93505859375,
+        2.724609375
+      ],
+      "seed": 59,
+      "wall_ns": 16057884
+    },
+    {
+      "cpu_ns": 18645805,
+      "loadavg": [
+        1.1845703125,
+        1.64794921875,
+        2.505859375
+      ],
+      "seed": 71,
+      "wall_ns": 18644843
+    }
+  ],
+  "runner_cpu_ns": 897530601103,
+  "runner_wall_ns": 940794090262,
+  "schema": "hepta.abc4.control-quality-cost-result.v1",
+  "scored_rows_sha256": "8fbbc1b8f09031dd90144baeb4bcbc628df846c11a8a87b80eea8c75da955481",
+  "status": "complete"
+}

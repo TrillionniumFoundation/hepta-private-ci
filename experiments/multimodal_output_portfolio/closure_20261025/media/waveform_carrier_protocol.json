@@ -1,0 +1,19 @@
+{
+  "schema": "hepta.closure.frozen-neural-waveform-carrier-reference.v2",
+  "backend": "Piper en_US-ljspeech-medium",
+  "voice_model_sha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+  "voice_revision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+  "trained_in_this_experiment": false,
+  "trigger": "Original two-second bare-word reference retained: strict Vosk/Whisper consensus 6/10 pairs; especially standalone eight/nine poorly recognized",
+  "text_pattern": "The digit is {word}.",
+  "uniform_carrier": "One identical grammatical rule for every predicted digit; no expected class or audio template",
+  "synthesis": {"length_scale": 1.0, "noise_scale": 0.0, "noise_w_scale": 0.0, "volume": 0.8, "sample_rate": 8000, "trim_mode": "none", "max_word_samples": 15360, "word_samples": 16000, "onnx_threads": 1},
+  "clock": {"duration_seconds": 4, "events": 2, "event_seconds": 2, "audio_samples": 32000, "video_frames": 20, "video_fps": 5},
+  "profile_separation": "New explicit four-second execution profile; original two-second acceptance failures remain failures and are not rescored",
+  "output_observer": "Unrestricted target-free Vosk plus Whisper consensus; extract all recognized digit tokens without a candidate list, require exactly two and the same ordered values",
+  "event_audit": "Each Vosk digit token must lie in its actual two-second event within 0.08s ASR timestamp tolerance; carrier words do not substitute for digit observations",
+  "audit_cache": "Only completed independent observations may be cached by actual full PCM bytes; every neural synthesis call still runs",
+  "thresholds": {"real_input_audio_observer_min": 0.85, "audio_input_min": 0.85, "conditional_output_audio_min": 0.8, "video_min": 0.9, "per_mode_joint_min": 0.75, "distinct_video_frames_min": 6},
+  "scope": "Frozen pretrained neural acoustic reference integrated with learned multimodal input/shared state/image and motion modules; not a newly successful VAE or end-to-end four-modal NDU training",
+  "test_opened": false
+}

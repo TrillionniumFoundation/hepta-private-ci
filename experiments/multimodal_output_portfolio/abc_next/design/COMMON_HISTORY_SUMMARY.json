@@ -1,0 +1,365 @@
+{
+  "complete_terminal_media_rows": 3840,
+  "fit_selection_seal_sha256": "d966b68a501e38c4c94075cd8eabd4cb5bb149a1a14f161eb383da546bbc1ec8",
+  "generation_draw_examples": 2312,
+  "input_report_file_sha256": "92c4b96cd21294cf4123fcc7c7da74e2747d01902f8e560a6f5552f36cbbb128",
+  "interpretation": "Post-run presentation only; no new policy selection, no independent task confidence claim, no change to registered simultaneous bounds",
+  "legacy_Q1_maximum_history_conditional_Z_MSE_estimate": 2.7942033003085225,
+  "legacy_Q1_mean_conditional_Z_MSE_estimate": 0.8145728515863679,
+  "legacy_structurally_dominated_H1_semantic_histories": [
+    2,
+    3
+  ],
+  "observers": {
+    "primary": {
+      "causal_optimum_mean_conditional_CE_simultaneous_interval": [
+        -0.5867858928762397,
+        -0.040438368114930553
+      ],
+      "causal_optimum_uniform_fixed_history_mixture_CE_simultaneous_interval": [
+        -0.5963286649125757,
+        -0.05090949500948142
+      ],
+      "descriptive_comparisons": {
+        "fit_only_public_lookup minus fixed_h1_couple": {
+          "mean_conditional_CE_difference": 0.03368393171130668,
+          "mean_conditional_CE_simultaneous_difference_interval": [
+            -0.3494332043685041,
+            0.3143572234779357
+          ],
+          "uniform_fixed_history_mixture_CE_difference": 0.03237689140447031,
+          "uniform_fixed_history_mixture_CE_simultaneous_difference_interval": [
+            -0.5432600293115111,
+            0.4497493687636135
+          ]
+        },
+        "fit_only_public_lookup minus fixed_h1_stop": {
+          "mean_conditional_CE_difference": 0.05079405909925483,
+          "mean_conditional_CE_simultaneous_difference_interval": [
+            -0.06540437440178974,
+            0.27483730039220083
+          ],
+          "uniform_fixed_history_mixture_CE_difference": 0.05883907912118058,
+          "uniform_fixed_history_mixture_CE_simultaneous_difference_interval": [
+            -0.07697680801512985,
+            0.24589771375106606
+          ]
+        },
+        "fit_only_public_lookup minus legacy_feedback_q1": {
+          "mean_conditional_CE_difference": 0.01417716495069099,
+          "mean_conditional_CE_simultaneous_difference_interval": [
+            -0.23172012583397733,
+            0.21496394845463784
+          ],
+          "uniform_fixed_history_mixture_CE_difference": 0.016306022029556666,
+          "uniform_fixed_history_mixture_CE_simultaneous_difference_interval": [
+            -0.35660565739344896,
+            0.3635404389494845
+          ]
+        },
+        "legacy_feedback_q1 minus fixed_h1_stop": {
+          "mean_conditional_CE_difference": 0.03661689414856384,
+          "mean_conditional_CE_simultaneous_difference_interval": [
+            -0.11392480521701065,
+            0.3401139085867612
+          ],
+          "uniform_fixed_history_mixture_CE_difference": 0.042533057091623916,
+          "uniform_fixed_history_mixture_CE_simultaneous_difference_interval": [
+            -0.11764272519841845,
+            0.2796288493783191
+          ]
+        }
+      },
+      "empirical_information_lattice": {
+        "full_future_table_known": {
+          "mean_conditional_CE": -0.5099591838606043,
+          "uniform_fixed_history_mixture_CE": -0.5105370136295874
+        },
+        "private_target_known": {
+          "mean_conditional_CE": -0.48521397625012774,
+          "uniform_fixed_history_mixture_CE": -0.4870000546817228
+        },
+        "public_only": {
+          "mean_conditional_CE": -0.5349078531885869,
+          "uniform_fixed_history_mixture_CE": -0.5363356105610605
+        },
+        "target_and_future_known": {
+          "mean_conditional_CE": -0.39435890937857987,
+          "uniform_fixed_history_mixture_CE": -0.3953346658643128
+        }
+      },
+      "fit_lookup_regret_mean_conditional_CE_simultaneous_interval": [
+        0.0,
+        0.6117518991630989
+      ],
+      "frozen_policies": {
+        "fit_only_public_lookup": {
+          "actions": [
+            "stop",
+            "stop",
+            "refine_text",
+            "stop",
+            "couple",
+            "stop",
+            "refine_text",
+            "couple"
+          ],
+          "mean_conditional_CE": -0.5359918337769849,
+          "mean_conditional_CE_simultaneous_interval": [
+            -0.6521902672780295,
+            -0.3119485924840389
+          ],
+          "uniform_fixed_history_mixture_CE": -0.5374895857913952,
+          "uniform_fixed_history_mixture_CE_simultaneous_interval": [
+            -0.6733054729277056,
+            -0.3504309511615097
+          ]
+        },
+        "fixed_h1_couple": {
+          "actions": [
+            "couple",
+            "couple",
+            "couple",
+            "couple",
+            "couple",
+            "couple",
+            "couple",
+            "couple"
+          ],
+          "mean_conditional_CE": -0.5696757654882916,
+          "mean_conditional_CE_simultaneous_interval": [
+            -0.8001039731165482,
+            -0.1289589057549517
+          ],
+          "uniform_fixed_history_mixture_CE": -0.5698664771958655,
+          "uniform_fixed_history_mixture_CE_simultaneous_interval": [
+            -0.8001803199251232,
+            -0.1300454436161945
+          ]
+        },
+        "fixed_h1_stop": {
+          "actions": [
+            "stop",
+            "stop",
+            "stop",
+            "stop",
+            "stop",
+            "stop",
+            "stop",
+            "stop"
+          ],
+          "mean_conditional_CE": -0.5867858928762397,
+          "mean_conditional_CE_simultaneous_interval": [
+            -0.5867858928762397,
+            -0.5867858928762397
+          ],
+          "uniform_fixed_history_mixture_CE": -0.5963286649125757,
+          "uniform_fixed_history_mixture_CE_simultaneous_interval": [
+            -0.5963286649125757,
+            -0.5963286649125757
+          ]
+        },
+        "legacy_feedback_q1": {
+          "actions": [
+            "refine_image",
+            "stop",
+            "refine_semantic",
+            "refine_semantic",
+            "couple",
+            "refine_image",
+            "couple",
+            "couple"
+          ],
+          "mean_conditional_CE": -0.5501689987276759,
+          "mean_conditional_CE_simultaneous_interval": [
+            -0.7007106980932505,
+            -0.2466719842894785
+          ],
+          "uniform_fixed_history_mixture_CE": -0.5537956078209518,
+          "uniform_fixed_history_mixture_CE_simultaneous_interval": [
+            -0.7139713901109942,
+            -0.31669981553425663
+          ]
+        }
+      }
+    },
+    "secondary": {
+      "causal_optimum_mean_conditional_CE_simultaneous_interval": [
+        -0.5867858928762397,
+        -0.07173293856091463
+      ],
+      "causal_optimum_uniform_fixed_history_mixture_CE_simultaneous_interval": [
+        -0.5963286649125757,
+        -0.07919334605137086
+      ],
+      "descriptive_comparisons": {
+        "fit_only_public_lookup minus fixed_h1_couple": {
+          "mean_conditional_CE_difference": 0.03801376054492156,
+          "mean_conditional_CE_simultaneous_difference_interval": [
+            -0.3390693779961108,
+            0.3170939115800667
+          ],
+          "uniform_fixed_history_mixture_CE_difference": 0.036571978479921885,
+          "uniform_fixed_history_mixture_CE_simultaneous_difference_interval": [
+            -0.5300621968905299,
+            0.4508021994732833
+          ]
+        },
+        "fit_only_public_lookup minus fixed_h1_stop": {
+          "mean_conditional_CE_difference": 0.048943911515260785,
+          "mean_conditional_CE_simultaneous_difference_interval": [
+            -0.06656728961803034,
+            0.27031143176553063
+          ],
+          "uniform_fixed_history_mixture_CE_difference": 0.0568883645470033,
+          "uniform_fixed_history_mixture_CE_simultaneous_difference_interval": [
+            -0.07846420494115913,
+            0.2430644487171461
+          ]
+        },
+        "fit_only_public_lookup minus legacy_feedback_q1": {
+          "mean_conditional_CE_difference": 0.019453751448304857,
+          "mean_conditional_CE_simultaneous_difference_interval": [
+            -0.21767826093393083,
+            0.21822416845345885
+          ],
+          "uniform_fixed_history_mixture_CE_difference": 0.02136579707087194,
+          "uniform_fixed_history_mixture_CE_simultaneous_difference_interval": [
+            -0.34687661607149545,
+            0.3658058030086711
+          ]
+        },
+        "legacy_feedback_q1 minus fixed_h1_stop": {
+          "mean_conditional_CE_difference": 0.02949016006695593,
+          "mean_conditional_CE_simultaneous_difference_interval": [
+            -0.1183479404320722,
+            0.3215461750600445
+          ],
+          "uniform_fixed_history_mixture_CE_difference": 0.03552256747613136,
+          "uniform_fixed_history_mixture_CE_simultaneous_difference_interval": [
+            -0.122741354291525,
+            0.2684124111303363
+          ]
+        }
+      },
+      "empirical_information_lattice": {
+        "full_future_table_known": {
+          "mean_conditional_CE": -0.5107485698574568,
+          "uniform_fixed_history_mixture_CE": -0.5114378823055616
+        },
+        "private_target_known": {
+          "mean_conditional_CE": -0.48071814834627624,
+          "uniform_fixed_history_mixture_CE": -0.4825007228695146
+        },
+        "public_only": {
+          "mean_conditional_CE": -0.5375066109959538,
+          "uniform_fixed_history_mixture_CE": -0.5390826481346132
+        },
+        "target_and_future_known": {
+          "mean_conditional_CE": -0.38494893583137135,
+          "uniform_fixed_history_mixture_CE": -0.38595031084575243
+        }
+      },
+      "fit_lookup_regret_mean_conditional_CE_simultaneous_interval": [
+        0.0,
+        0.5816202439333554
+      ],
+      "frozen_policies": {
+        "fit_only_public_lookup": {
+          "actions": [
+            "stop",
+            "stop",
+            "refine_text",
+            "stop",
+            "couple",
+            "stop",
+            "refine_text",
+            "couple"
+          ],
+          "mean_conditional_CE": -0.5378419813609789,
+          "mean_conditional_CE_simultaneous_interval": [
+            -0.65335318249427,
+            -0.3164744611107091
+          ],
+          "uniform_fixed_history_mixture_CE": -0.5394403003655724,
+          "uniform_fixed_history_mixture_CE_simultaneous_interval": [
+            -0.6747928698537349,
+            -0.35326421619542964
+          ]
+        },
+        "fixed_h1_couple": {
+          "actions": [
+            "couple",
+            "couple",
+            "couple",
+            "couple",
+            "couple",
+            "couple",
+            "couple",
+            "couple"
+          ],
+          "mean_conditional_CE": -0.5758557419059005,
+          "mean_conditional_CE_simultaneous_interval": [
+            -0.8040035764349198,
+            -0.14384860075401523
+          ],
+          "uniform_fixed_history_mixture_CE": -0.5760122788454943,
+          "uniform_fixed_history_mixture_CE_simultaneous_interval": [
+            -0.804066415668713,
+            -0.144730672963205
+          ]
+        },
+        "fixed_h1_stop": {
+          "actions": [
+            "stop",
+            "stop",
+            "stop",
+            "stop",
+            "stop",
+            "stop",
+            "stop",
+            "stop"
+          ],
+          "mean_conditional_CE": -0.5867858928762397,
+          "mean_conditional_CE_simultaneous_interval": [
+            -0.5867858928762397,
+            -0.5867858928762397
+          ],
+          "uniform_fixed_history_mixture_CE": -0.5963286649125757,
+          "uniform_fixed_history_mixture_CE_simultaneous_interval": [
+            -0.5963286649125757,
+            -0.5963286649125757
+          ]
+        },
+        "legacy_feedback_q1": {
+          "actions": [
+            "refine_image",
+            "stop",
+            "refine_semantic",
+            "refine_semantic",
+            "couple",
+            "refine_image",
+            "couple",
+            "couple"
+          ],
+          "mean_conditional_CE": -0.5572957328092838,
+          "mean_conditional_CE_simultaneous_interval": [
+            -0.7051338333083119,
+            -0.2652397178161952
+          ],
+          "uniform_fixed_history_mixture_CE": -0.5608060974364444,
+          "uniform_fixed_history_mixture_CE_simultaneous_interval": [
+            -0.7190700192041007,
+            -0.32791625378223943
+          ]
+        }
+      }
+    }
+  },
+  "offline_target_scoring_rows_both_observers": 245760,
+  "presentation_source_file_sha256": "d262badc88a7aba25d365fa006996c193da72b9ef7ab1a2d8ac0928d188f39e4",
+  "protocol_sha256": "e61349ad3297bbd3992b9923712a7ce50dc93382ca9ccde6c2eaafe4d29b1cee",
+  "schema": "hepta.abc-next.common-history-descriptive-summary.v1",
+  "total_cpu_seconds": 94.385290138,
+  "total_wall_seconds": 48.126874021
+}

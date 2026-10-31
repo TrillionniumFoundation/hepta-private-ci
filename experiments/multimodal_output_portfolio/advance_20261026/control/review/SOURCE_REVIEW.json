@@ -1,0 +1,97 @@
+{
+  "actual_official_label_metadata_matched": true,
+  "allocation_sha256": "42d0c47056dda930cb851c9ae59f330747de8bb863f18b79c47eea830f69b262",
+  "allocator_sha256": "a1b1304b72fc27fa8827f4453c7b479e470645c80adcc6518af699d4a15aa436",
+  "between_role_intersections": [
+    {
+      "audio": 0,
+      "first": "confirmation",
+      "pixels": 0,
+      "second": "qualification_id",
+      "speakers": 0,
+      "writers": 0
+    },
+    {
+      "audio": 0,
+      "first": "confirmation",
+      "pixels": 0,
+      "second": "qualification_ood",
+      "speakers": 0,
+      "writers": 0
+    },
+    {
+      "audio": 0,
+      "first": "qualification_id",
+      "pixels": 0,
+      "second": "qualification_ood",
+      "speakers": 0,
+      "writers": 0
+    }
+  ],
+  "guard_runtime_negative_cases_executed_in_this_review": false,
+  "models_or_new_role_loader_called": false,
+  "new_audio_waveforms_read_by_this_review": false,
+  "new_pixel_bytes_redecoded_by_this_review": false,
+  "no_allocation_or_candidate_modified": true,
+  "official_compressed_archive_hashes_match": {
+    "qmnist-test-images-idx3-ubyte.gz": true,
+    "qmnist-test-labels-idx2-int.gz": true,
+    "qmnist-train-labels-idx2-int.gz": true,
+    "xnist-images-idx3-ubyte.xz": true,
+    "xnist-labels-idx2-int.xz": true
+  },
+  "original_pixel_identity_scope": "This audit independently checks official compressed archives, actual label metadata and declared SHA intersections. The allocator/loader separately recompute selected pixel bytes; this review does not duplicate their full pixel census.",
+  "prior_source_overlap": {
+    "declared_audio_sha": 0,
+    "declared_pixel_sha": 0,
+    "speakers": 0,
+    "writers": 0
+  },
+  "recorded_unix_ns": 1792988936331499822,
+  "review_source_sha256": "b4901361aa7e9e3be81a5eecf824589ae322ea4fc70f66964d9a48d24d4e22ba",
+  "roles": {
+    "confirmation": {
+      "registered_audio_rows": 340,
+      "source_digits": 340,
+      "source_pairs": 170,
+      "speakers": 85,
+      "unique_audio_hashes": 296,
+      "unique_pixel_hashes": 340,
+      "within_cluster_repeated_audio_preserved": 44,
+      "writers": 85
+    },
+    "qualification_id": {
+      "registered_audio_rows": 80,
+      "source_digits": 80,
+      "source_pairs": 40,
+      "speakers": 10,
+      "unique_audio_hashes": 58,
+      "unique_pixel_hashes": 80,
+      "within_cluster_repeated_audio_preserved": 22,
+      "writers": 10
+    },
+    "qualification_ood": {
+      "registered_audio_rows": 600,
+      "source_digits": 0,
+      "source_pairs": 0,
+      "speakers": 600,
+      "unique_audio_hashes": 600,
+      "unique_pixel_hashes": 0,
+      "within_cluster_repeated_audio_preserved": 0,
+      "writers": 0
+    }
+  },
+  "schema": "hepta.advance.independent-source-review.v1",
+  "source_guard_static_review": [
+    "load_rows requires named allowed role, nonempty frozen candidate pins, exact allocation and allocator SHA, immutable previous ledger identities, and actual SHA for every listed absolute pin.",
+    "load_images additionally hashes official archives and verifies actual selected pixel SHA and label/writer/digit metadata.",
+    "Caller remains responsible for freezing a complete executable dependency closure and not opening a role before that registration."
+  ],
+  "statistical_limits": [
+    "The same final panel is shared across studies; repeated routes, policies and seeds do not create new independent units.",
+    "Repeated same-digit recordings within a writer/speaker remain in that cluster; there is no result-dependent deduplication.",
+    "600 all-missing OOD speaker identities are not automatically 600 distinct informative model inputs. Exact public-input/initial-state/RNG duplicates must be recorded; a population binomial interpretation needs its sampling/randomization assumptions. This is not natural-OOD coverage.",
+    "Public dataset identities do not certify unknown external ASR pretraining-disjointness."
+  ],
+  "status": "passed_with_scope_limits"
+}

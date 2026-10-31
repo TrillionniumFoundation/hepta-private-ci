@@ -1,0 +1,942 @@
+{
+  "asr_revision": "0d3d19a32d3338f10357c0889762bd8d64bbdeba",
+  "dataset_revision": "71cacbfb7e2354c4226d01e70d77d5fca3d04ba1",
+  "files": [
+    {
+      "bytes": 17142,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/dataset-metadata.json",
+      "sha256": "70b81188579fff7ae253ead7aa467428ee974cba37a1e95225e90d3ddd3f74b0",
+      "source_url": "https://huggingface.co/api/datasets/openslr/librispeech_asr"
+    },
+    {
+      "bytes": 3481,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/metadata/fit-0.json",
+      "sha256": "c2b651e9439e7e76c4d349d4c8335c8a67ef7d09dee359ee06f67f92556e607d",
+      "source_url": "https://datasets-server.huggingface.co/rows?dataset=openslr%2Flibrispeech_asr&config=clean&split=validation&offset=0&length=3"
+    },
+    {
+      "bytes": 127816,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/2277-149896-0000.flac",
+      "sha256": "fead3e0c481f1c637fe6ec8edef42506c7c2d33a3fb7519bfdf5815b31150303",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/0/audio/audio.flac"
+    },
+    {
+      "bytes": 133145,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/2277-149896-0001.flac",
+      "sha256": "f9c3371b4d1c6e95e7c01298a26215c2be97bee22c5408885d8d29b6e0e4171c",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/1/audio/audio.flac"
+    },
+    {
+      "bytes": 90701,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/2277-149896-0002.flac",
+      "sha256": "ade2caad47934462292358ba49acf7f048ced0595615492b4b20866d118bf901",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/2/audio/audio.flac"
+    },
+    {
+      "bytes": 3452,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/metadata/fit-300.json",
+      "sha256": "7561271ab19c1529a922975b3440522e12a87a563571bfd8df4b9a432d9c7637",
+      "source_url": "https://datasets-server.huggingface.co/rows?dataset=openslr%2Flibrispeech_asr&config=clean&split=validation&offset=300&length=3"
+    },
+    {
+      "bytes": 238573,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/7976-110523-0017.flac",
+      "sha256": "6f4d807a74740e3ca847ff3dd90923f8e95721ba777c4f53064c64d4da335ed0",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/300/audio/audio.flac"
+    },
+    {
+      "bytes": 55190,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/7976-110523-0018.flac",
+      "sha256": "00637563c1489b6315fbd0d584b658078df8dbcc5b04f8fb992bdd85c831a1cc",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/301/audio/audio.flac"
+    },
+    {
+      "bytes": 51703,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/7976-110523-0019.flac",
+      "sha256": "16edfe9e4dab8b603d7b5f0b86752c6a62ca55878793b3898275b67974ce7da3",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/302/audio/audio.flac"
+    },
+    {
+      "bytes": 3310,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/metadata/fit-600.json",
+      "sha256": "0b4f1eb3ef4564cb5560f2513bd0d51d277f5bcdad4a48622967d85d86a92d00",
+      "source_url": "https://datasets-server.huggingface.co/rows?dataset=openslr%2Flibrispeech_asr&config=clean&split=validation&offset=600&length=3"
+    },
+    {
+      "bytes": 68863,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/8297-275154-0017.flac",
+      "sha256": "d84d1a47cc89a981c80f5c1b6ca3f023b33830785a20e5242bfb21dc8756bdcd",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/600/audio/audio.flac"
+    },
+    {
+      "bytes": 42511,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/8297-275154-0018.flac",
+      "sha256": "21960bffe5b9470ba19e299c0d5c32469bd6f7ed5b5786d9a0526704b847ee34",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/601/audio/audio.flac"
+    },
+    {
+      "bytes": 143726,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/8297-275154-0019.flac",
+      "sha256": "6557ca40c916bcc774a5219f9d9f7465b43c0497adaf63e9548b3e0b5c2bb27d",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/602/audio/audio.flac"
+    },
+    {
+      "bytes": 3345,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/metadata/fit-900.json",
+      "sha256": "05b251f8df04557b1fa425ec5a280b61fa46d3eca7811ada9a90e65798a309ef",
+      "source_url": "https://datasets-server.huggingface.co/rows?dataset=openslr%2Flibrispeech_asr&config=clean&split=validation&offset=900&length=3"
+    },
+    {
+      "bytes": 118843,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/6313-76958-0018.flac",
+      "sha256": "df767fe71053257851c12e3bafc645c078a602d78e9d67b374c25257057d412b",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/900/audio/audio.flac"
+    },
+    {
+      "bytes": 67377,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/6313-76958-0019.flac",
+      "sha256": "a3f2d24894d97ce19f03bd5231c4903071f7672916dcfc1d0f4f2d31da32348b",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/901/audio/audio.flac"
+    },
+    {
+      "bytes": 46306,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/6313-76958-0020.flac",
+      "sha256": "6cb29cce4227cb101fad2492db81e65a38054c4002921954ac7dd0f3bf3fbf75",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/902/audio/audio.flac"
+    },
+    {
+      "bytes": 3489,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/metadata/test-0.json",
+      "sha256": "31acc4b77b31b8ce438006a3d7e94fd4a34650eaf822e729298b7a4578e8f11d",
+      "source_url": "https://datasets-server.huggingface.co/rows?dataset=openslr%2Flibrispeech_asr&config=clean&split=test&offset=0&length=3"
+    },
+    {
+      "bytes": 74138,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/6930-75918-0000.flac",
+      "sha256": "9ce35224156f071ab58eb7feb8a5ceae600f6f9f353da2a6cbf797b6b1ac8a23",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/0/audio/audio.flac"
+    },
+    {
+      "bytes": 287636,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/6930-75918-0001.flac",
+      "sha256": "3dfad7eb0793eddd5040d04f1f2f3046ceeee39e0ec461794856a350e1bd728e",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/1/audio/audio.flac"
+    },
+    {
+      "bytes": 104971,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/6930-75918-0002.flac",
+      "sha256": "74ecfd628f49dca71995972c075fcc9904df804d49a4eb5b11fb712b3584f789",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/2/audio/audio.flac"
+    },
+    {
+      "bytes": 3620,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/metadata/test-300.json",
+      "sha256": "e8bba7987cd4d14c894c3d88723d478d32f98c3be8a5dedb37ef50d8272d5fa0",
+      "source_url": "https://datasets-server.huggingface.co/rows?dataset=openslr%2Flibrispeech_asr&config=clean&split=test&offset=300&length=3"
+    },
+    {
+      "bytes": 122054,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/7729-102255-0039.flac",
+      "sha256": "33f5a3ea8ef8e5d58e0a543ae208b21d081b98e4cfe27d7f61a5cae8217dd91b",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/300/audio/audio.flac"
+    },
+    {
+      "bytes": 224508,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/7729-102255-0040.flac",
+      "sha256": "398dbabc383294fc4dbd069be5a1372e23230abec32358fb38d8186b75e1a988",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/301/audio/audio.flac"
+    },
+    {
+      "bytes": 241422,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/7729-102255-0041.flac",
+      "sha256": "e8743423540b2a32a4a51473ba5812455c854920875c0fa2ce59736936274042",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/302/audio/audio.flac"
+    },
+    {
+      "bytes": 3296,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/metadata/test-600.json",
+      "sha256": "eae914e320c37f273a5d8e4fc0e42446caf903ebbaa0e2782f5619e11bf76389",
+      "source_url": "https://datasets-server.huggingface.co/rows?dataset=openslr%2Flibrispeech_asr&config=clean&split=test&offset=600&length=3"
+    },
+    {
+      "bytes": 53476,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/8463-294828-0022.flac",
+      "sha256": "4b0b7f62860ac9f04945b08f79183b52c26f80eedd14ff829e2ff2aaa5143e3f",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/600/audio/audio.flac"
+    },
+    {
+      "bytes": 103442,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/8463-294828-0023.flac",
+      "sha256": "37bdaab194ec7ab3a639624c6df75778d24f37c87ec5a64cd74795c8461f6688",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/601/audio/audio.flac"
+    },
+    {
+      "bytes": 48381,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/8463-294828-0024.flac",
+      "sha256": "9be0e1d445bbe223ddcb48d19cf0f761e2c732137f2480ba27f8826422a22633",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/602/audio/audio.flac"
+    },
+    {
+      "bytes": 3298,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/metadata/test-900.json",
+      "sha256": "de3759df5530a176a6db42a24574383ea876c37fbff2d5151973e253ad12ef84",
+      "source_url": "https://datasets-server.huggingface.co/rows?dataset=openslr%2Flibrispeech_asr&config=clean&split=test&offset=900&length=3"
+    },
+    {
+      "bytes": 68962,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/5142-33396-0002.flac",
+      "sha256": "3056f3669c45871eb8bb876d8166a102b47a473f45612ea029eb164d34507556",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/900/audio/audio.flac"
+    },
+    {
+      "bytes": 65655,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/5142-33396-0003.flac",
+      "sha256": "2618bf436a91f8321d675f372553b15375206d3d6a0bcba9af4e2cb00f9edda4",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/901/audio/audio.flac"
+    },
+    {
+      "bytes": 43939,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/5142-33396-0004.flac",
+      "sha256": "b3fbfbc2b3c95cff0f23c07325888c65c85cad25742718e3f622f20c920f5f28",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/902/audio/audio.flac"
+    },
+    {
+      "bytes": 3479,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/metadata/test-1200.json",
+      "sha256": "a9c6f869d48368bf562babce179c06066b44d5569a1b3f6d9c16f6811cf16779",
+      "source_url": "https://datasets-server.huggingface.co/rows?dataset=openslr%2Flibrispeech_asr&config=clean&split=test&offset=1200&length=3"
+    },
+    {
+      "bytes": 100362,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/4446-2275-0005.flac",
+      "sha256": "1a42e9752f8df18ed25054c64be970067491284131a2238a3e8c2682ef932620",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/1200/audio/audio.flac"
+    },
+    {
+      "bytes": 81599,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/4446-2275-0006.flac",
+      "sha256": "177a704d676c041757a35d6efdfc092c28d7c662ae959d19a0bd436b4f7af49b",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/1201/audio/audio.flac"
+    },
+    {
+      "bytes": 191294,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/4446-2275-0007.flac",
+      "sha256": "59d5214f129dcf429e0aab6af36a1bc8c251946e3dde650e20bf0c8993274b8f",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/1202/audio/audio.flac"
+    },
+    {
+      "bytes": 3728,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/metadata/test-1500.json",
+      "sha256": "87bce6fcfa4c1d92a6546254d2e494825575dffb244546f3bafa870d6d770e10",
+      "source_url": "https://datasets-server.huggingface.co/rows?dataset=openslr%2Flibrispeech_asr&config=clean&split=test&offset=1500&length=3"
+    },
+    {
+      "bytes": 268675,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/4507-16021-0031.flac",
+      "sha256": "c76e682d374b296c709d2c1a9484e4c7176886cb6aab2cd99795d4d9925b7dfa",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/1500/audio/audio.flac"
+    },
+    {
+      "bytes": 504695,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/4507-16021-0032.flac",
+      "sha256": "cf872613e0d590501ff569c17e5f9d525920c4babeda14ac94577f60cfc54401",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/1501/audio/audio.flac"
+    },
+    {
+      "bytes": 100275,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/4507-16021-0033.flac",
+      "sha256": "1a95f7d0613cb1b284ce711f82f46383f9f2e3969d63d356906b7e6ea5a15a62",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/1502/audio/audio.flac"
+    },
+    {
+      "bytes": 3278,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/metadata/test-1800.json",
+      "sha256": "7791faa534bb41b4d0ffb766cf17f75830825c8d84737a83c0c0ded162b1e6a4",
+      "source_url": "https://datasets-server.huggingface.co/rows?dataset=openslr%2Flibrispeech_asr&config=clean&split=test&offset=1800&length=3"
+    },
+    {
+      "bytes": 59115,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/1188-133604-0029.flac",
+      "sha256": "dda0cac1d5c1bfa95fe61e8a1baff50facd58923a0d6f18f262f783dd2cf8dc1",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/1800/audio/audio.flac"
+    },
+    {
+      "bytes": 34095,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/1188-133604-0030.flac",
+      "sha256": "6c568a355c878517157dac880701f60b1b85e5c6215aff31519408e24c1d7c5f",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/1801/audio/audio.flac"
+    },
+    {
+      "bytes": 70565,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/1188-133604-0031.flac",
+      "sha256": "08584f8b87cd859e9212f1730979ed141623f35e38995a88ba50747d04cdc222",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/1802/audio/audio.flac"
+    },
+    {
+      "bytes": 3409,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/metadata/test-2100.json",
+      "sha256": "1aa5eac6a2222b87bb8ee427305a72bcc2fa19af5655145b17aaadbd536a4edf",
+      "source_url": "https://datasets-server.huggingface.co/rows?dataset=openslr%2Flibrispeech_asr&config=clean&split=test&offset=2100&length=3"
+    },
+    {
+      "bytes": 121622,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/4970-29093-0007.flac",
+      "sha256": "cfc5dab205cbb3ef4aa2f97e86cfe181999aa2e1eb2bddfc8e6f7a0b350b5696",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/2100/audio/audio.flac"
+    },
+    {
+      "bytes": 55949,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/4970-29093-0008.flac",
+      "sha256": "516ac4e539db97cf47ff6ec3e9699630f4c4800151f9521a9ef8481d58e84e62",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/2101/audio/audio.flac"
+    },
+    {
+      "bytes": 159118,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/4970-29093-0009.flac",
+      "sha256": "d99381971fe5644aae85f7174a2b53846f6978e3017dbf4eb339fab1830ef52a",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/2102/audio/audio.flac"
+    },
+    {
+      "bytes": 3917558,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/video/david.webm",
+      "sha256": "4bbe69b7d097379af4d7ad128f02692820dc57a6d8275ea2b9e7eef4399a3e61",
+      "source_url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/david/data/david.webm"
+    },
+    {
+      "bytes": 6101,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/video/david.gt.txt",
+      "sha256": "8e46f079b39f7877f9650bcf2fc42879b03f22d77ef832ca1d3e1ed258269588",
+      "source_url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/david/gt.txt"
+    },
+    {
+      "bytes": 87,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/video/david.yml",
+      "sha256": "b66f1b8ec8fd2dedf1ebde197323da0d23249eab95778aaa42fad7d8ac78c713",
+      "source_url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/david/david.yml"
+    },
+    {
+      "bytes": 5902992,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/video/dudek.webm",
+      "sha256": "679c95a22c71e259971ccaaabf805fdba55c70e224b28eafa7536b7989c722e1",
+      "source_url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/dudek/data/dudek.webm"
+    },
+    {
+      "bytes": 17623,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/video/dudek.gt.txt",
+      "sha256": "6645d041ab014a2b3b7f34ca271c1ac42d3d72a9546443c7cc9c542f772f56c4",
+      "source_url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/dudek/gt.txt"
+    },
+    {
+      "bytes": 85,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/video/dudek.yml",
+      "sha256": "08e6bfe53a749e2660798627448d166c30553e9d8e4620386a51bc5f760bc7a9",
+      "source_url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/dudek/dudek.yml"
+    },
+    {
+      "bytes": 4134756,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/video/faceocc2.webm",
+      "sha256": "5ffedeca4fb3acfd65e6f6aa71f016f748628727be1e24914fde2198b42089c5",
+      "source_url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/faceocc2/data/faceocc2.webm"
+    },
+    {
+      "bytes": 10509,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/video/faceocc2.gt.txt",
+      "sha256": "7d7b2dc7251e20fbb2fedfc36356ffbc7146ce59f49c21dfe251b8714b87ab88",
+      "source_url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/faceocc2/gt.txt"
+    },
+    {
+      "bytes": 85,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/video/faceocc2.yml",
+      "sha256": "dbdba70a8b3188609292b5291d8409378baaff50df9340c340aa44adee88b42c",
+      "source_url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/faceocc2/faceocc2.yml"
+    },
+    {
+      "bytes": 2317,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/whisper/config.json",
+      "sha256": "14b1b421a90349bc551b881461426b561a874049cb9e4c4864f2ca384f6a7cc5",
+      "source_url": "https://huggingface.co/Systran/faster-whisper-tiny.en/resolve/0d3d19a32d3338f10357c0889762bd8d64bbdeba/config.json"
+    },
+    {
+      "bytes": 75537502,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/whisper/model.bin",
+      "sha256": "1a5afae06a4db91c975c9a9d78be5cc110ee4ea022ad57d55492e4550e936b2a",
+      "source_url": "https://huggingface.co/Systran/faster-whisper-tiny.en/resolve/0d3d19a32d3338f10357c0889762bd8d64bbdeba/model.bin"
+    },
+    {
+      "bytes": 2128466,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/whisper/tokenizer.json",
+      "sha256": "929c5252409436dce1b38a75d1abbcb5e132d170d8e324e4e04ed915fa2d22df",
+      "source_url": "https://huggingface.co/Systran/faster-whisper-tiny.en/resolve/0d3d19a32d3338f10357c0889762bd8d64bbdeba/tokenizer.json"
+    },
+    {
+      "bytes": 422309,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/whisper/vocabulary.txt",
+      "sha256": "ff77588746d3a2595d32ab5b69ffd7b95ce2441ac57533cb66fc3eb575a115cf",
+      "source_url": "https://huggingface.co/Systran/faster-whisper-tiny.en/resolve/0d3d19a32d3338f10357c0889762bd8d64bbdeba/vocabulary.txt"
+    },
+    {
+      "bytes": 1323,
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/whisper/README.md",
+      "sha256": "1b7816626bf0548e4b71a467f4112b4592924bc818e3117f19aefcc50ce4b6aa",
+      "source_url": "https://huggingface.co/Systran/faster-whisper-tiny.en/resolve/0d3d19a32d3338f10357c0889762bd8d64bbdeba/README.md"
+    }
+  ],
+  "fit_speakers": [
+    2277,
+    6313,
+    7976,
+    8297
+  ],
+  "schema": "hepta.repair.natural.assets.v1",
+  "scope": "Natural ASR and annotated visual tracking; not natural multimodal generation",
+  "speaker_overlap": [],
+  "speech": [
+    {
+      "bytes": 127816,
+      "chapter_id": 149896,
+      "id": "2277-149896-0000",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/2277-149896-0000.flac",
+      "reference": "HE WAS IN A FEVERED STATE OF MIND OWING TO THE BLIGHT HIS WIFE'S ACTION THREATENED TO CAST UPON HIS ENTIRE FUTURE",
+      "role": "fit",
+      "row_index": 0,
+      "sha256": "fead3e0c481f1c637fe6ec8edef42506c7c2d33a3fb7519bfdf5815b31150303",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/0/audio/audio.flac",
+      "speaker_id": 2277,
+      "split": "validation"
+    },
+    {
+      "bytes": 133145,
+      "chapter_id": 149896,
+      "id": "2277-149896-0001",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/2277-149896-0001.flac",
+      "reference": "HE WOULD HAVE TO PAY HER THE MONEY WHICH SHE WOULD NOW REGULARLY DEMAND OR THERE WOULD BE TROUBLE IT DID NOT MATTER WHAT HE DID",
+      "role": "fit",
+      "row_index": 1,
+      "sha256": "f9c3371b4d1c6e95e7c01298a26215c2be97bee22c5408885d8d29b6e0e4171c",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/1/audio/audio.flac",
+      "speaker_id": 2277,
+      "split": "validation"
+    },
+    {
+      "bytes": 90701,
+      "chapter_id": 149896,
+      "id": "2277-149896-0002",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/2277-149896-0002.flac",
+      "reference": "HURSTWOOD WALKED THE FLOOR MENTALLY ARRANGING THE CHIEF POINTS OF HIS SITUATION",
+      "role": "fit",
+      "row_index": 2,
+      "sha256": "ade2caad47934462292358ba49acf7f048ced0595615492b4b20866d118bf901",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/2/audio/audio.flac",
+      "speaker_id": 2277,
+      "split": "validation"
+    },
+    {
+      "bytes": 238573,
+      "chapter_id": 110523,
+      "id": "7976-110523-0017",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/7976-110523-0017.flac",
+      "reference": "CREEP IN SAID THE WITCH AND SEE IF IT IS HOT ENOUGH AND THEN WE WILL PUT IN THE BREAD BUT SHE INTENDED WHEN GRETHEL GOT IN TO SHUT UP THE OVEN AND LET HER BAKE SO THAT SHE MIGHT EAT HER AS WELL AS HANSEL",
+      "role": "fit",
+      "row_index": 300,
+      "sha256": "6f4d807a74740e3ca847ff3dd90923f8e95721ba777c4f53064c64d4da335ed0",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/300/audio/audio.flac",
+      "speaker_id": 7976,
+      "split": "validation"
+    },
+    {
+      "bytes": 55190,
+      "chapter_id": 110523,
+      "id": "7976-110523-0018",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/7976-110523-0018.flac",
+      "reference": "SEE I COULD EVEN GET IN MYSELF",
+      "role": "fit",
+      "row_index": 301,
+      "sha256": "00637563c1489b6315fbd0d584b658078df8dbcc5b04f8fb992bdd85c831a1cc",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/301/audio/audio.flac",
+      "speaker_id": 7976,
+      "split": "validation"
+    },
+    {
+      "bytes": 51703,
+      "chapter_id": 110523,
+      "id": "7976-110523-0019",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/7976-110523-0019.flac",
+      "reference": "AND SHE GOT UP AND PUT HER HEAD INTO THE OVEN",
+      "role": "fit",
+      "row_index": 302,
+      "sha256": "16edfe9e4dab8b603d7b5f0b86752c6a62ca55878793b3898275b67974ce7da3",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/302/audio/audio.flac",
+      "speaker_id": 7976,
+      "split": "validation"
+    },
+    {
+      "bytes": 68863,
+      "chapter_id": 275154,
+      "id": "8297-275154-0017",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/8297-275154-0017.flac",
+      "reference": "OH WHY DID I ENGAGE THAT GOVERNESS",
+      "role": "fit",
+      "row_index": 600,
+      "sha256": "d84d1a47cc89a981c80f5c1b6ca3f023b33830785a20e5242bfb21dc8756bdcd",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/600/audio/audio.flac",
+      "speaker_id": 8297,
+      "split": "validation"
+    },
+    {
+      "bytes": 42511,
+      "chapter_id": 275154,
+      "id": "8297-275154-0018",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/8297-275154-0018.flac",
+      "reference": "I'M AFRAID HE SAID",
+      "role": "fit",
+      "row_index": 601,
+      "sha256": "21960bffe5b9470ba19e299c0d5c32469bd6f7ed5b5786d9a0526704b847ee34",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/601/audio/audio.flac",
+      "speaker_id": 8297,
+      "split": "validation"
+    },
+    {
+      "bytes": 143726,
+      "chapter_id": 275154,
+      "id": "8297-275154-0019",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/8297-275154-0019.flac",
+      "reference": "I TRIED IT YESTERDAY IT SET MY BRAINS ON FIRE I'M FEELING THAT GLASS I TOOK JUST NOW",
+      "role": "fit",
+      "row_index": 602,
+      "sha256": "6557ca40c916bcc774a5219f9d9f7465b43c0497adaf63e9548b3e0b5c2bb27d",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/602/audio/audio.flac",
+      "speaker_id": 8297,
+      "split": "validation"
+    },
+    {
+      "bytes": 118843,
+      "chapter_id": 76958,
+      "id": "6313-76958-0018",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/6313-76958-0018.flac",
+      "reference": "HI THERE HISSED LUMPY FILLED WITH INDIGNATION THAT ANYONE SHOULD ATTEMPT TO MOUNT A PONY FROM THE RIGHT SIDE",
+      "role": "fit",
+      "row_index": 900,
+      "sha256": "df767fe71053257851c12e3bafc645c078a602d78e9d67b374c25257057d412b",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/900/audio/audio.flac",
+      "speaker_id": 6313,
+      "split": "validation"
+    },
+    {
+      "bytes": 67377,
+      "chapter_id": 76958,
+      "id": "6313-76958-0019",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/6313-76958-0019.flac",
+      "reference": "STACY BROWN'S LEFT LEG SWUNG OVER THE SADDLE",
+      "role": "fit",
+      "row_index": 901,
+      "sha256": "a3f2d24894d97ce19f03bd5231c4903071f7672916dcfc1d0f4f2d31da32348b",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/901/audio/audio.flac",
+      "speaker_id": 6313,
+      "split": "validation"
+    },
+    {
+      "bytes": 46306,
+      "chapter_id": 76958,
+      "id": "6313-76958-0020",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/6313-76958-0020.flac",
+      "reference": "WHERE ARE THEY ASKED THE BOY",
+      "role": "fit",
+      "row_index": 902,
+      "sha256": "6cb29cce4227cb101fad2492db81e65a38054c4002921954ac7dd0f3bf3fbf75",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/validation/902/audio/audio.flac",
+      "speaker_id": 6313,
+      "split": "validation"
+    },
+    {
+      "bytes": 74138,
+      "chapter_id": 75918,
+      "id": "6930-75918-0000",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/6930-75918-0000.flac",
+      "reference": "CONCORD RETURNED TO ITS PLACE AMIDST THE TENTS",
+      "role": "test",
+      "row_index": 0,
+      "sha256": "9ce35224156f071ab58eb7feb8a5ceae600f6f9f353da2a6cbf797b6b1ac8a23",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/0/audio/audio.flac",
+      "speaker_id": 6930,
+      "split": "test"
+    },
+    {
+      "bytes": 287636,
+      "chapter_id": 75918,
+      "id": "6930-75918-0001",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/6930-75918-0001.flac",
+      "reference": "THE ENGLISH FORWARDED TO THE FRENCH BASKETS OF FLOWERS OF WHICH THEY HAD MADE A PLENTIFUL PROVISION TO GREET THE ARRIVAL OF THE YOUNG PRINCESS THE FRENCH IN RETURN INVITED THE ENGLISH TO A SUPPER WHICH WAS TO BE GIVEN THE NEXT DAY",
+      "role": "test",
+      "row_index": 1,
+      "sha256": "3dfad7eb0793eddd5040d04f1f2f3046ceeee39e0ec461794856a350e1bd728e",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/1/audio/audio.flac",
+      "speaker_id": 6930,
+      "split": "test"
+    },
+    {
+      "bytes": 104971,
+      "chapter_id": 75918,
+      "id": "6930-75918-0002",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/6930-75918-0002.flac",
+      "reference": "CONGRATULATIONS WERE POURED IN UPON THE PRINCESS EVERYWHERE DURING HER JOURNEY",
+      "role": "test",
+      "row_index": 2,
+      "sha256": "74ecfd628f49dca71995972c075fcc9904df804d49a4eb5b11fb712b3584f789",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/2/audio/audio.flac",
+      "speaker_id": 6930,
+      "split": "test"
+    },
+    {
+      "bytes": 122054,
+      "chapter_id": 102255,
+      "id": "7729-102255-0039",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/7729-102255-0039.flac",
+      "reference": "THE INMATES BEING REMOVED AT THE APPOINTED HOUR A FEW CANNON BALLS WERE FIRED THROUGH THE STONE WALLS",
+      "role": "test",
+      "row_index": 300,
+      "sha256": "33f5a3ea8ef8e5d58e0a543ae208b21d081b98e4cfe27d7f61a5cae8217dd91b",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/300/audio/audio.flac",
+      "speaker_id": 7729,
+      "split": "test"
+    },
+    {
+      "bytes": 224508,
+      "chapter_id": 102255,
+      "id": "7729-102255-0040",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/7729-102255-0040.flac",
+      "reference": "IN THIS INCIDENT CONTRASTING THE CREATIVE AND THE DESTRUCTIVE SPIRIT OF THE FACTIONS THE EMIGRANT AID SOCIETY OF MASSACHUSETTS FINDS ITS MOST HONORABLE AND TRIUMPHANT VINDICATION",
+      "role": "test",
+      "row_index": 301,
+      "sha256": "398dbabc383294fc4dbd069be5a1372e23230abec32358fb38d8186b75e1a988",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/301/audio/audio.flac",
+      "speaker_id": 7729,
+      "split": "test"
+    },
+    {
+      "bytes": 241422,
+      "chapter_id": 102255,
+      "id": "7729-102255-0041",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/7729-102255-0041.flac",
+      "reference": "THE WHOLE PROCEEDING WAS SO CHILDISH THE MISERABLE PLOT SO TRANSPARENT THE OUTRAGE SO GROSS AS TO BRING DISGUST TO THE BETTER CLASS OF BORDER RUFFIANS WHO WERE WITNESSES AND ACCESSORIES",
+      "role": "test",
+      "row_index": 302,
+      "sha256": "e8743423540b2a32a4a51473ba5812455c854920875c0fa2ce59736936274042",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/302/audio/audio.flac",
+      "speaker_id": 7729,
+      "split": "test"
+    },
+    {
+      "bytes": 53476,
+      "chapter_id": 294828,
+      "id": "8463-294828-0022",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/8463-294828-0022.flac",
+      "reference": "WE'RE LEAVING ON THE ABRAHAM LINCOLN",
+      "role": "test",
+      "row_index": 600,
+      "sha256": "4b0b7f62860ac9f04945b08f79183b52c26f80eedd14ff829e2ff2aaa5143e3f",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/600/audio/audio.flac",
+      "speaker_id": 8463,
+      "split": "test"
+    },
+    {
+      "bytes": 103442,
+      "chapter_id": 294828,
+      "id": "8463-294828-0023",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/8463-294828-0023.flac",
+      "reference": "YOU SEE MY FRIEND IT'S AN ISSUE OF THE MONSTER THE NOTORIOUS NARWHALE",
+      "role": "test",
+      "row_index": 601,
+      "sha256": "37bdaab194ec7ab3a639624c6df75778d24f37c87ec5a64cd74795c8461f6688",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/601/audio/audio.flac",
+      "speaker_id": 8463,
+      "split": "test"
+    },
+    {
+      "bytes": 48381,
+      "chapter_id": 294828,
+      "id": "8463-294828-0024",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/8463-294828-0024.flac",
+      "reference": "WE DON'T KNOW WHERE IT WILL TAKE US",
+      "role": "test",
+      "row_index": 602,
+      "sha256": "9be0e1d445bbe223ddcb48d19cf0f761e2c732137f2480ba27f8826422a22633",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/602/audio/audio.flac",
+      "speaker_id": 8463,
+      "split": "test"
+    },
+    {
+      "bytes": 68962,
+      "chapter_id": 33396,
+      "id": "5142-33396-0002",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/5142-33396-0002.flac",
+      "reference": "TWO HUNDRED WARRIORS FEASTED IN HIS HALL AND FOLLOWED HIM TO BATTLE",
+      "role": "test",
+      "row_index": 900,
+      "sha256": "3056f3669c45871eb8bb876d8166a102b47a473f45612ea029eb164d34507556",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/900/audio/audio.flac",
+      "speaker_id": 5142,
+      "split": "test"
+    },
+    {
+      "bytes": 65655,
+      "chapter_id": 33396,
+      "id": "5142-33396-0003",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/5142-33396-0003.flac",
+      "reference": "THE REST OF YOU OFF A VIKING HE HAD THREE SHIPS",
+      "role": "test",
+      "row_index": 901,
+      "sha256": "2618bf436a91f8321d675f372553b15375206d3d6a0bcba9af4e2cb00f9edda4",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/901/audio/audio.flac",
+      "speaker_id": 5142,
+      "split": "test"
+    },
+    {
+      "bytes": 43939,
+      "chapter_id": 33396,
+      "id": "5142-33396-0004",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/5142-33396-0004.flac",
+      "reference": "THESE HE GAVE TO THREE OF MY BROTHERS",
+      "role": "test",
+      "row_index": 902,
+      "sha256": "b3fbfbc2b3c95cff0f23c07325888c65c85cad25742718e3f622f20c920f5f28",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/902/audio/audio.flac",
+      "speaker_id": 5142,
+      "split": "test"
+    },
+    {
+      "bytes": 100362,
+      "chapter_id": 2275,
+      "id": "4446-2275-0005",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/4446-2275-0005.flac",
+      "reference": "I FELT IT IN MY BONES WHEN I WOKE THIS MORNING THAT SOMETHING SPLENDID WAS GOING TO TURN UP",
+      "role": "test",
+      "row_index": 1200,
+      "sha256": "1a42e9752f8df18ed25054c64be970067491284131a2238a3e8c2682ef932620",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/1200/audio/audio.flac",
+      "speaker_id": 4446,
+      "split": "test"
+    },
+    {
+      "bytes": 81599,
+      "chapter_id": 2275,
+      "id": "4446-2275-0006",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/4446-2275-0006.flac",
+      "reference": "I THOUGHT IT MIGHT BE SISTER KATE OR COUSIN MIKE WOULD BE HAPPENING ALONG",
+      "role": "test",
+      "row_index": 1201,
+      "sha256": "177a704d676c041757a35d6efdfc092c28d7c662ae959d19a0bd436b4f7af49b",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/1201/audio/audio.flac",
+      "speaker_id": 4446,
+      "split": "test"
+    },
+    {
+      "bytes": 191294,
+      "chapter_id": 2275,
+      "id": "4446-2275-0007",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/4446-2275-0007.flac",
+      "reference": "SHE PUSHED HIM TOWARD THE BIG CHAIR BY THE FIRE AND SAT DOWN ON A STOOL AT THE OPPOSITE SIDE OF THE HEARTH HER KNEES DRAWN UP TO HER CHIN LAUGHING LIKE A HAPPY LITTLE GIRL",
+      "role": "test",
+      "row_index": 1202,
+      "sha256": "59d5214f129dcf429e0aab6af36a1bc8c251946e3dde650e20bf0c8993274b8f",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/1202/audio/audio.flac",
+      "speaker_id": 4446,
+      "split": "test"
+    },
+    {
+      "bytes": 268675,
+      "chapter_id": 16021,
+      "id": "4507-16021-0031",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/4507-16021-0031.flac",
+      "reference": "AND THEN WE INSIST UPON IT THE STUDY OF SOCIAL DEFORMITIES AND INFIRMITIES AND THE TASK OF POINTING THEM OUT WITH A VIEW TO REMEDY IS NOT A BUSINESS IN WHICH CHOICE IS PERMITTED",
+      "role": "test",
+      "row_index": 1500,
+      "sha256": "c76e682d374b296c709d2c1a9484e4c7176886cb6aab2cd99795d4d9925b7dfa",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/1500/audio/audio.flac",
+      "speaker_id": 4507,
+      "split": "test"
+    },
+    {
+      "bytes": 504695,
+      "chapter_id": 16021,
+      "id": "4507-16021-0032",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/4507-16021-0032.flac",
+      "reference": "HE MUST DESCEND WITH HIS HEART FULL OF CHARITY AND SEVERITY AT THE SAME TIME AS A BROTHER AND AS A JUDGE TO THOSE IMPENETRABLE CASEMATES WHERE CRAWL PELL MELL THOSE WHO BLEED AND THOSE WHO DEAL THE BLOW THOSE WHO WEEP AND THOSE WHO CURSE THOSE WHO FAST AND THOSE WHO DEVOUR THOSE WHO ENDURE EVIL AND THOSE WHO INFLICT IT",
+      "role": "test",
+      "row_index": 1501,
+      "sha256": "cf872613e0d590501ff569c17e5f9d525920c4babeda14ac94577f60cfc54401",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/1501/audio/audio.flac",
+      "speaker_id": 4507,
+      "split": "test"
+    },
+    {
+      "bytes": 100275,
+      "chapter_id": 16021,
+      "id": "4507-16021-0033",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/4507-16021-0033.flac",
+      "reference": "DO WE REALLY KNOW THE MOUNTAIN WELL WHEN WE ARE NOT ACQUAINTED WITH THE CAVERN",
+      "role": "test",
+      "row_index": 1502,
+      "sha256": "1a95f7d0613cb1b284ce711f82f46383f9f2e3969d63d356906b7e6ea5a15a62",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/1502/audio/audio.flac",
+      "speaker_id": 4507,
+      "split": "test"
+    },
+    {
+      "bytes": 59115,
+      "chapter_id": 133604,
+      "id": "1188-133604-0029",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/1188-133604-0029.flac",
+      "reference": "ONLY THERE ARE TWO SORTS OF CLOUD AND FIRE",
+      "role": "test",
+      "row_index": 1800,
+      "sha256": "dda0cac1d5c1bfa95fe61e8a1baff50facd58923a0d6f18f262f783dd2cf8dc1",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/1800/audio/audio.flac",
+      "speaker_id": 1188,
+      "split": "test"
+    },
+    {
+      "bytes": 34095,
+      "chapter_id": 133604,
+      "id": "1188-133604-0030",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/1188-133604-0030.flac",
+      "reference": "HE KNOWS THEM BOTH",
+      "role": "test",
+      "row_index": 1801,
+      "sha256": "6c568a355c878517157dac880701f60b1b85e5c6215aff31519408e24c1d7c5f",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/1801/audio/audio.flac",
+      "speaker_id": 1188,
+      "split": "test"
+    },
+    {
+      "bytes": 70565,
+      "chapter_id": 133604,
+      "id": "1188-133604-0031",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/1188-133604-0031.flac",
+      "reference": "THERE'S ONE AND THERE'S ANOTHER THE DUDLEY AND THE FLINT",
+      "role": "test",
+      "row_index": 1802,
+      "sha256": "08584f8b87cd859e9212f1730979ed141623f35e38995a88ba50747d04cdc222",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/1802/audio/audio.flac",
+      "speaker_id": 1188,
+      "split": "test"
+    },
+    {
+      "bytes": 121622,
+      "chapter_id": 29093,
+      "id": "4970-29093-0007",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/4970-29093-0007.flac",
+      "reference": "IT IS SUCH A NOBLE AMBITION THAT IT IS A PITY IT HAS USUALLY SUCH A SHALLOW FOUNDATION",
+      "role": "test",
+      "row_index": 2100,
+      "sha256": "cfc5dab205cbb3ef4aa2f97e86cfe181999aa2e1eb2bddfc8e6f7a0b350b5696",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/2100/audio/audio.flac",
+      "speaker_id": 4970,
+      "split": "test"
+    },
+    {
+      "bytes": 55949,
+      "chapter_id": 29093,
+      "id": "4970-29093-0008",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/4970-29093-0008.flac",
+      "reference": "HE WANTED TO BEGIN AT THE TOP OF THE LADDER",
+      "role": "test",
+      "row_index": 2101,
+      "sha256": "516ac4e539db97cf47ff6ec3e9699630f4c4800151f9521a9ef8481d58e84e62",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/2101/audio/audio.flac",
+      "speaker_id": 4970,
+      "split": "test"
+    },
+    {
+      "bytes": 159118,
+      "chapter_id": 29093,
+      "id": "4970-29093-0009",
+      "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/speech/4970-29093-0009.flac",
+      "reference": "PHILIP THEREFORE READ DILIGENTLY IN THE ASTOR LIBRARY PLANNED LITERARY WORKS THAT SHOULD COMPEL ATTENTION AND NURSED HIS GENIUS",
+      "role": "test",
+      "row_index": 2102,
+      "sha256": "d99381971fe5644aae85f7174a2b53846f6978e3017dbf4eb339fab1830ef52a",
+      "source_url": "https://datasets-server.huggingface.co/cached-assets/openslr/librispeech_asr/--/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/--/clean/test/2102/audio/audio.flac",
+      "speaker_id": 4970,
+      "split": "test"
+    }
+  ],
+  "test_speakers": [
+    1188,
+    4446,
+    4507,
+    4970,
+    5142,
+    6930,
+    7729,
+    8463
+  ],
+  "video": [
+    {
+      "annotation": {
+        "bytes": 6101,
+        "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/video/david.gt.txt",
+        "sha256": "8e46f079b39f7877f9650bcf2fc42879b03f22d77ef832ca1d3e1ed258269588",
+        "source_url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/david/gt.txt"
+      },
+      "config": {
+        "bytes": 87,
+        "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/video/david.yml",
+        "sha256": "b66f1b8ec8fd2dedf1ebde197323da0d23249eab95778aaa42fad7d8ac78c713",
+        "source_url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/david/david.yml"
+      },
+      "name": "david",
+      "role": "fit",
+      "video": {
+        "bytes": 3917558,
+        "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/video/david.webm",
+        "sha256": "4bbe69b7d097379af4d7ad128f02692820dc57a6d8275ea2b9e7eef4399a3e61",
+        "source_url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/david/data/david.webm"
+      }
+    },
+    {
+      "annotation": {
+        "bytes": 17623,
+        "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/video/dudek.gt.txt",
+        "sha256": "6645d041ab014a2b3b7f34ca271c1ac42d3d72a9546443c7cc9c542f772f56c4",
+        "source_url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/dudek/gt.txt"
+      },
+      "config": {
+        "bytes": 85,
+        "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/video/dudek.yml",
+        "sha256": "08e6bfe53a749e2660798627448d166c30553e9d8e4620386a51bc5f760bc7a9",
+        "source_url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/dudek/dudek.yml"
+      },
+      "name": "dudek",
+      "role": "test",
+      "video": {
+        "bytes": 5902992,
+        "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/video/dudek.webm",
+        "sha256": "679c95a22c71e259971ccaaabf805fdba55c70e224b28eafa7536b7989c722e1",
+        "source_url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/dudek/data/dudek.webm"
+      }
+    },
+    {
+      "annotation": {
+        "bytes": 10509,
+        "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/video/faceocc2.gt.txt",
+        "sha256": "7d7b2dc7251e20fbb2fedfc36356ffbc7146ce59f49c21dfe251b8714b87ab88",
+        "source_url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/faceocc2/gt.txt"
+      },
+      "config": {
+        "bytes": 85,
+        "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/video/faceocc2.yml",
+        "sha256": "dbdba70a8b3188609292b5291d8409378baaff50df9340c340aa44adee88b42c",
+        "source_url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/faceocc2/faceocc2.yml"
+      },
+      "name": "faceocc2",
+      "role": "test",
+      "video": {
+        "bytes": 4134756,
+        "path": "/workspace/scratch/95988d8d3ab1/natural_assets_001/video/faceocc2.webm",
+        "sha256": "5ffedeca4fb3acfd65e6f6aa71f016f748628727be1e24914fde2198b42089c5",
+        "source_url": "https://raw.githubusercontent.com/opencv/opencv_extra/579424605134b7d7027377bdc51f3c23536c4414/testdata/cv/tracking/faceocc2/data/faceocc2.webm"
+      }
+    }
+  ],
+  "video_revision": "579424605134b7d7027377bdc51f3c23536c4414"
+}

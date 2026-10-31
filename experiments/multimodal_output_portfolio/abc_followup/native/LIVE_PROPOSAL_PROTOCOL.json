@@ -1,0 +1,35 @@
+{
+  "applied_update": false,
+  "checkpoint_selection": "first actual nonabstaining ID tick with sequence>=800; no fallback if absent",
+  "frozen_unix_ns": 1792918055513488743,
+  "historical_oldhead_smoke_sha256": "c89950b29a16311bb6146255c1e40b97be9d7fb80133370c6cbb6c93553f6cf2",
+  "hook_config_sha256": "6fcc773dcdfb1e573131249624ad282d122d8e627d2cfbc227fd5ec6777355f2",
+  "lifecycle": [
+    "finish admitted tick and retain exact currentcontext",
+    "drop live runtime owner",
+    "original native candidate generation and genuine observed gate history",
+    "evaluate candidates on historical development selection only",
+    "original propose_v2 pendingregistry+witness+reopen",
+    "recover same runtime anchor and eligibility",
+    "continue all1600 ticks with unchanged baseline weights"
+  ],
+  "native_binaries": {
+    "codex-native-continuous": "b30b813104776c6af619f3004cc8475e9d4f4916650fae2e1afcfed8b79480b6",
+    "codex-native-proposal": "82e5b79d27f7a777fe0dbbf31e525bd4d44b411ee2c3c97ddc53b20269c9bfe1"
+  },
+  "no_hook_outcome": "preserve actual failure, do not change thresholds or selection",
+  "oldhead_smoke_is_futurehead_execution_evidence": false,
+  "schema": "hepta.abc4.same-head-live-proposal-plan.v1",
+  "scope": "only future-correctness model and its own acknowledged journal/eligibility/NDU context",
+  "source_pins": {
+    "continuous.rs": "8fe2d052123bc0dfd7a1ab0262baf4292a655f8639895e927a2d163b14764b37",
+    "future_candidate.py": "21fc9a344550957c99fc8f937e4e458662d4eff3979000cf2a08b643d936ca5b",
+    "ledger_probe.rs": "739b442e0caef21ca49f376b720ed23b92f366e0e3a76dc0fbb383225276d51b",
+    "native_run.py": "7a2fa04bd200f4e9d6b3e0227faea79b94b1624f169d29773448c8db3ec8ef21",
+    "parameter_geometry.rs": "e5f6f1fbb8c89544a18a9a07920c8cddd91c9768e5e1ce508cae2b0b28190532",
+    "proposal.rs": "f2592918091683b947874beea5a42e75342cc2654e9d6711971aa369ccb2d16a",
+    "proposal_hook.rs": "7a036e15bbff384b0b4b99fcfae3ab5e038c578021fe1a21ab846b8e77b78cc8"
+  },
+  "statistical_use": "functional lifecycle only; no additional N, no independent efficacy for newfuture candidates",
+  "typed_surface": "w2[32][0..32],33 explicit diagonal eligibility mappings; full64-row+bias norm; not gradient or globaloptimal learning"
+}

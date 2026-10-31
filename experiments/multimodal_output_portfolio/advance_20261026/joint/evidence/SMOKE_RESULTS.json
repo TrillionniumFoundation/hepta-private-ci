@@ -1,0 +1,2438 @@
+{
+  "ASR_exact_PCM_cache_hits": 512,
+  "ASR_new_event_calls": 0,
+  "actual_output_file_count": 1024,
+  "all_frozen_components_unchanged": true,
+  "all_physical_clocks_pass": true,
+  "all_registered_branches_retained": true,
+  "analysis": {
+    "all_additional_contrasts_descriptive": true,
+    "arms": {
+      "brier-17": {
+        "CE": 0.4857402316213351,
+        "actual_bundles": 32,
+        "actual_wall_ns": {
+          "audit_wall_ns": {
+            "mean": 199712508.3125,
+            "p50": 201667507.5,
+            "p95": 228460977.45
+          },
+          "codec_wall_ns": {
+            "mean": 81293062.8125,
+            "p50": 80502265.5,
+            "p95": 97520897.8
+          },
+          "decision_wall_ns": {
+            "mean": 761883.875,
+            "p50": 403608.0,
+            "p95": 3009849.099999998
+          },
+          "deployment_wall_ns_charging_full_input": {
+            "mean": 519534858.625,
+            "p50": 493378353.5,
+            "p95": 693694015.3
+          },
+          "generation_verification_wall_ns": {
+            "mean": 205691827.90625,
+            "p50": 203864283.0,
+            "p95": 273003065.59999996
+          },
+          "generation_wall_ns": {
+            "mean": 291698599.78125,
+            "p50": 289326338.5,
+            "p95": 364827175.54999995
+          },
+          "input_preparation_wall_ns": {
+            "mean": 16566725.5625,
+            "p50": 1296842.0,
+            "p95": 44647359.599999994
+          },
+          "shared_input_encode_wall_ns": {
+            "mean": 10795141.09375,
+            "p50": 3487126.5,
+            "p95": 42936648.4
+          }
+        },
+        "calibration": {
+          "available": true,
+          "bins": [
+            {
+              "confidence": 0.2105925764888525,
+              "count": 5,
+              "lower": 0.0,
+              "strict_success": 0.0,
+              "upper": 0.5
+            },
+            {
+              "confidence": 0.6497492591540018,
+              "count": 6,
+              "lower": 0.5,
+              "strict_success": 0.8333333333333334,
+              "upper": 0.8
+            },
+            {
+              "confidence": 0.8737538556257883,
+              "count": 6,
+              "lower": 0.8,
+              "strict_success": 0.6666666666666666,
+              "upper": 0.95
+            },
+            {
+              "confidence": 0.9889903505643208,
+              "count": 15,
+              "lower": 0.95,
+              "strict_success": 0.9333333333333333,
+              "upper": 1.000001
+            }
+          ],
+          "endpoint_regret": 0.28125,
+          "posterior_Brier": 0.34806509534741403,
+          "posterior_NLL_finite_mean": 0.8948134478971541,
+          "posterior_NLL_infinite_cases": 0,
+          "scope": "Descriptive selected prediction calibration; not the separate native qualification certificate",
+          "selected_ECE": 0.13224517874186856,
+          "selected_moment_RMSE": 0.2969797391403072
+        },
+        "mean_utility": 0.71875,
+        "modality_success": {
+          "audio": 0.71875,
+          "image": 0.71875,
+          "text": 0.71875,
+          "video": 0.71875
+        },
+        "physical_execution_position_counts": {
+          "0": 4,
+          "1": 4,
+          "2": 4,
+          "3": 4,
+          "4": 4,
+          "5": 4,
+          "6": 4,
+          "7": 4
+        },
+        "strict_success": 0.71875
+      },
+      "brier-29": {
+        "CE": 0.5227707036033796,
+        "actual_bundles": 32,
+        "actual_wall_ns": {
+          "audit_wall_ns": {
+            "mean": 200263001.40625,
+            "p50": 198286107.5,
+            "p95": 229472566.5
+          },
+          "codec_wall_ns": {
+            "mean": 81753881.375,
+            "p50": 76370573.0,
+            "p95": 120654312.2
+          },
+          "decision_wall_ns": {
+            "mean": 430034.125,
+            "p50": 375201.5,
+            "p95": 761029.6
+          },
+          "deployment_wall_ns_charging_full_input": {
+            "mean": 510847850.5,
+            "p50": 496051535.0,
+            "p95": 664616945.65
+          },
+          "generation_verification_wall_ns": {
+            "mean": 196342869.25,
+            "p50": 188769325.5,
+            "p95": 222866496.29999998
+          },
+          "generation_wall_ns": {
+            "mean": 282792948.3125,
+            "p50": 270218991.5,
+            "p95": 349850879.65
+          },
+          "input_preparation_wall_ns": {
+            "mean": 16566725.5625,
+            "p50": 1296842.0,
+            "p95": 44647359.599999994
+          },
+          "shared_input_encode_wall_ns": {
+            "mean": 10795141.09375,
+            "p50": 3487126.5,
+            "p95": 42936648.4
+          }
+        },
+        "calibration": {
+          "available": true,
+          "bins": [
+            {
+              "confidence": 0.17111336216330528,
+              "count": 5,
+              "lower": 0.0,
+              "strict_success": 0.2,
+              "upper": 0.5
+            },
+            {
+              "confidence": 0.6585355997085571,
+              "count": 7,
+              "lower": 0.5,
+              "strict_success": 0.7142857142857143,
+              "upper": 0.8
+            },
+            {
+              "confidence": 0.8981035607201713,
+              "count": 7,
+              "lower": 0.8,
+              "strict_success": 0.7142857142857143,
+              "upper": 0.95
+            },
+            {
+              "confidence": 0.9936008132421054,
+              "count": 13,
+              "lower": 0.95,
+              "strict_success": 1.0,
+              "upper": 1.000001
+            }
+          ],
+          "endpoint_regret": 0.25,
+          "posterior_Brier": 0.32204892863855883,
+          "posterior_NLL_finite_mean": 0.8688713225198015,
+          "posterior_NLL_infinite_cases": 0,
+          "scope": "Descriptive selected prediction calibration; not the separate native qualification certificate",
+          "selected_ECE": 0.05951869825366884,
+          "selected_moment_RMSE": 0.2900082183929928
+        },
+        "mean_utility": 0.75,
+        "modality_success": {
+          "audio": 0.75,
+          "image": 0.75,
+          "text": 0.75,
+          "video": 0.75
+        },
+        "physical_execution_position_counts": {
+          "0": 4,
+          "1": 4,
+          "2": 4,
+          "3": 4,
+          "4": 4,
+          "5": 4,
+          "6": 4,
+          "7": 4
+        },
+        "strict_success": 0.75
+      },
+      "brier-43": {
+        "CE": 0.5227707036033796,
+        "actual_bundles": 32,
+        "actual_wall_ns": {
+          "audit_wall_ns": {
+            "mean": 199966477.21875,
+            "p50": 193637053.0,
+            "p95": 261434929.45
+          },
+          "codec_wall_ns": {
+            "mean": 88990157.9375,
+            "p50": 75515152.0,
+            "p95": 96639393.55
+          },
+          "decision_wall_ns": {
+            "mean": 573129.40625,
+            "p50": 346553.5,
+            "p95": 1436715.8999999992
+          },
+          "deployment_wall_ns_charging_full_input": {
+            "mean": 521778436.21875,
+            "p50": 479827137.0,
+            "p95": 736787785.1999998
+          },
+          "generation_verification_wall_ns": {
+            "mean": 200179151.71875,
+            "p50": 192710972.0,
+            "p95": 244336039.04999998
+          },
+          "generation_wall_ns": {
+            "mean": 293876962.9375,
+            "p50": 269454028.0,
+            "p95": 367603167.54999995
+          },
+          "input_preparation_wall_ns": {
+            "mean": 16566725.5625,
+            "p50": 1296842.0,
+            "p95": 44647359.599999994
+          },
+          "shared_input_encode_wall_ns": {
+            "mean": 10795141.09375,
+            "p50": 3487126.5,
+            "p95": 42936648.4
+          }
+        },
+        "calibration": {
+          "available": true,
+          "bins": [
+            {
+              "confidence": 0.2255529888595144,
+              "count": 6,
+              "lower": 0.0,
+              "strict_success": 0.16666666666666666,
+              "upper": 0.5
+            },
+            {
+              "confidence": 0.6626032761165074,
+              "count": 7,
+              "lower": 0.5,
+              "strict_success": 0.7142857142857143,
+              "upper": 0.8
+            },
+            {
+              "confidence": 0.9073887169361115,
+              "count": 6,
+              "lower": 0.8,
+              "strict_success": 0.8333333333333334,
+              "upper": 0.95
+            },
+            {
+              "confidence": 0.9939487805733314,
+              "count": 13,
+              "lower": 0.95,
+              "strict_success": 1.0,
+              "upper": 1.000001
+            }
+          ],
+          "endpoint_regret": 0.25,
+          "posterior_Brier": 0.3117016561970291,
+          "posterior_NLL_finite_mean": 0.8449628727295502,
+          "posterior_NLL_infinite_cases": 0,
+          "scope": "Descriptive selected prediction calibration; not the separate native qualification certificate",
+          "selected_ECE": 0.03869041107827799,
+          "selected_moment_RMSE": 0.27800887958540954
+        },
+        "mean_utility": 0.75,
+        "modality_success": {
+          "audio": 0.75,
+          "image": 0.75,
+          "text": 0.75,
+          "video": 0.75
+        },
+        "physical_execution_position_counts": {
+          "0": 4,
+          "1": 4,
+          "2": 4,
+          "3": 4,
+          "4": 4,
+          "5": 4,
+          "6": 4,
+          "7": 4
+        },
+        "strict_success": 0.75
+      },
+      "canonical_no_training": {
+        "CE": 0.5227707036033796,
+        "actual_bundles": 32,
+        "actual_wall_ns": {
+          "audit_wall_ns": {
+            "mean": 205681617.03125,
+            "p50": 201205770.5,
+            "p95": 242150125.9
+          },
+          "codec_wall_ns": {
+            "mean": 80844803.03125,
+            "p50": 81346577.0,
+            "p95": 92575868.45
+          },
+          "decision_wall_ns": {
+            "mean": 415686.75,
+            "p50": 261948.5,
+            "p95": 529799.4
+          },
+          "deployment_wall_ns_charging_full_input": {
+            "mean": 518917589.6875,
+            "p50": 509990601.0,
+            "p95": 660098191.1999999
+          },
+          "generation_verification_wall_ns": {
+            "mean": 199483571.5,
+            "p50": 202029396.5,
+            "p95": 236975245.95
+          },
+          "generation_wall_ns": {
+            "mean": 285458419.25,
+            "p50": 285969477.5,
+            "p95": 326324323.75
+          },
+          "input_preparation_wall_ns": {
+            "mean": 16566725.5625,
+            "p50": 1296842.0,
+            "p95": 44647359.599999994
+          },
+          "shared_input_encode_wall_ns": {
+            "mean": 10795141.09375,
+            "p50": 3487126.5,
+            "p95": 42936648.4
+          }
+        },
+        "calibration": {
+          "available": true,
+          "bins": [
+            {
+              "confidence": 0.17273687664419413,
+              "count": 5,
+              "lower": 0.0,
+              "strict_success": 0.2,
+              "upper": 0.5
+            },
+            {
+              "confidence": 0.6741628289222718,
+              "count": 10,
+              "lower": 0.5,
+              "strict_success": 0.8,
+              "upper": 0.8
+            },
+            {
+              "confidence": 0.8714199463526408,
+              "count": 3,
+              "lower": 0.8,
+              "strict_success": 0.6666666666666666,
+              "upper": 0.95
+            },
+            {
+              "confidence": 0.9923998883792332,
+              "count": 14,
+              "lower": 0.95,
+              "strict_success": 0.9285714285714286,
+              "upper": 1.000001
+            }
+          ],
+          "endpoint_regret": 0.25,
+          "posterior_Brier": 0.3498509195617916,
+          "posterior_NLL_finite_mean": 0.9717750028654852,
+          "posterior_NLL_infinite_cases": 0,
+          "scope": "Descriptive selected prediction calibration; not the separate native qualification certificate",
+          "selected_ECE": 0.09070455012260935,
+          "selected_moment_RMSE": 0.30387422017216403
+        },
+        "mean_utility": 0.75,
+        "modality_success": {
+          "audio": 0.75,
+          "image": 0.75,
+          "text": 0.75,
+          "video": 0.75
+        },
+        "physical_execution_position_counts": {
+          "0": 4,
+          "1": 4,
+          "2": 4,
+          "3": 4,
+          "4": 4,
+          "5": 4,
+          "6": 4,
+          "7": 4
+        },
+        "strict_success": 0.75
+      },
+      "nll-17": {
+        "CE": 0.5627646257270961,
+        "actual_bundles": 32,
+        "actual_wall_ns": {
+          "audit_wall_ns": {
+            "mean": 210401509.0,
+            "p50": 195233644.0,
+            "p95": 286412371.29999995
+          },
+          "codec_wall_ns": {
+            "mean": 78958741.375,
+            "p50": 75833372.0,
+            "p95": 96168280.95
+          },
+          "decision_wall_ns": {
+            "mean": 654690.4375,
+            "p50": 394775.5,
+            "p95": 2305196.85
+          },
+          "deployment_wall_ns_charging_full_input": {
+            "mean": 522135971.1875,
+            "p50": 499501393.5,
+            "p95": 722202607.4499999
+          },
+          "generation_verification_wall_ns": {
+            "mean": 200344816.25,
+            "p50": 193542851.5,
+            "p95": 241008445.0
+          },
+          "generation_wall_ns": {
+            "mean": 283717905.09375,
+            "p50": 275650340.5,
+            "p95": 340709674.2
+          },
+          "input_preparation_wall_ns": {
+            "mean": 16566725.5625,
+            "p50": 1296842.0,
+            "p95": 44647359.599999994
+          },
+          "shared_input_encode_wall_ns": {
+            "mean": 10795141.09375,
+            "p50": 3487126.5,
+            "p95": 42936648.4
+          }
+        },
+        "calibration": {
+          "available": true,
+          "bins": [
+            {
+              "confidence": 0.21348300793518624,
+              "count": 6,
+              "lower": 0.0,
+              "strict_success": 0.3333333333333333,
+              "upper": 0.5
+            },
+            {
+              "confidence": 0.6864354610443115,
+              "count": 6,
+              "lower": 0.5,
+              "strict_success": 1.0,
+              "upper": 0.8
+            },
+            {
+              "confidence": 0.8801440298557281,
+              "count": 4,
+              "lower": 0.8,
+              "strict_success": 0.5,
+              "upper": 0.95
+            },
+            {
+              "confidence": 0.9879742488265038,
+              "count": 16,
+              "lower": 0.95,
+              "strict_success": 0.9375,
+              "upper": 1.000001
+            }
+          ],
+          "endpoint_regret": 0.21875,
+          "posterior_Brier": 0.3414139288497794,
+          "posterior_NLL_finite_mean": 0.9654552693648315,
+          "posterior_NLL_infinite_cases": 0,
+          "scope": "Descriptive selected prediction calibration; not the separate native qualification certificate",
+          "selected_ECE": 0.15402041521156207,
+          "selected_moment_RMSE": 0.3036173125859646
+        },
+        "mean_utility": 0.78125,
+        "modality_success": {
+          "audio": 0.78125,
+          "image": 0.78125,
+          "text": 0.78125,
+          "video": 0.78125
+        },
+        "physical_execution_position_counts": {
+          "0": 4,
+          "1": 4,
+          "2": 4,
+          "3": 4,
+          "4": 4,
+          "5": 4,
+          "6": 4,
+          "7": 4
+        },
+        "strict_success": 0.78125
+      },
+      "nll-29": {
+        "CE": 0.5627646257270961,
+        "actual_bundles": 32,
+        "actual_wall_ns": {
+          "audit_wall_ns": {
+            "mean": 202796652.4375,
+            "p50": 202305075.5,
+            "p95": 240900985.49999997
+          },
+          "codec_wall_ns": {
+            "mean": 77907691.0625,
+            "p50": 76922180.0,
+            "p95": 95379081.25
+          },
+          "decision_wall_ns": {
+            "mean": 399617.0625,
+            "p50": 341916.5,
+            "p95": 887607.2499999999
+          },
+          "deployment_wall_ns_charging_full_input": {
+            "mean": 515554889.4375,
+            "p50": 506664954.5,
+            "p95": 672507661.3
+          },
+          "generation_verification_wall_ns": {
+            "mean": 202573635.375,
+            "p50": 199858520.5,
+            "p95": 242681080.55
+          },
+          "generation_wall_ns": {
+            "mean": 284996753.28125,
+            "p50": 288080297.0,
+            "p95": 331438271.05
+          },
+          "input_preparation_wall_ns": {
+            "mean": 16566725.5625,
+            "p50": 1296842.0,
+            "p95": 44647359.599999994
+          },
+          "shared_input_encode_wall_ns": {
+            "mean": 10795141.09375,
+            "p50": 3487126.5,
+            "p95": 42936648.4
+          }
+        },
+        "calibration": {
+          "available": true,
+          "bins": [
+            {
+              "confidence": 0.1271430249325931,
+              "count": 4,
+              "lower": 0.0,
+              "strict_success": 0.0,
+              "upper": 0.5
+            },
+            {
+              "confidence": 0.6947143599390984,
+              "count": 8,
+              "lower": 0.5,
+              "strict_success": 1.0,
+              "upper": 0.8
+            },
+            {
+              "confidence": 0.904368233680725,
+              "count": 5,
+              "lower": 0.8,
+              "strict_success": 0.6,
+              "upper": 0.95
+            },
+            {
+              "confidence": 0.9902721246083578,
+              "count": 15,
+              "lower": 0.95,
+              "strict_success": 0.9333333333333333,
+              "upper": 1.000001
+            }
+          ],
+          "endpoint_regret": 0.21875,
+          "posterior_Brier": 0.31617024437373575,
+          "posterior_NLL_finite_mean": 0.9192602683704673,
+          "posterior_NLL_infinite_cases": 0,
+          "scope": "Descriptive selected prediction calibration; not the separate native qualification certificate",
+          "selected_ECE": 0.16646188305458054,
+          "selected_moment_RMSE": 0.2795548072240828
+        },
+        "mean_utility": 0.78125,
+        "modality_success": {
+          "audio": 0.78125,
+          "image": 0.78125,
+          "text": 0.78125,
+          "video": 0.78125
+        },
+        "physical_execution_position_counts": {
+          "0": 4,
+          "1": 4,
+          "2": 4,
+          "3": 4,
+          "4": 4,
+          "5": 4,
+          "6": 4,
+          "7": 4
+        },
+        "strict_success": 0.78125
+      },
+      "nll-43": {
+        "CE": 0.5627646257270961,
+        "actual_bundles": 32,
+        "actual_wall_ns": {
+          "audit_wall_ns": {
+            "mean": 206373432.1875,
+            "p50": 197825276.5,
+            "p95": 264729714.85
+          },
+          "codec_wall_ns": {
+            "mean": 78958313.6875,
+            "p50": 80182530.5,
+            "p95": 96123265.25
+          },
+          "decision_wall_ns": {
+            "mean": 457785.34375,
+            "p50": 375206.0,
+            "p95": 959003.25
+          },
+          "deployment_wall_ns_charging_full_input": {
+            "mean": 515565066.90625,
+            "p50": 487997690.0,
+            "p95": 669604495.3
+          },
+          "generation_verification_wall_ns": {
+            "mean": 197625313.78125,
+            "p50": 193078859.5,
+            "p95": 241412588.04999998
+          },
+          "generation_wall_ns": {
+            "mean": 281371982.71875,
+            "p50": 276320090.5,
+            "p95": 343139689.2
+          },
+          "input_preparation_wall_ns": {
+            "mean": 16566725.5625,
+            "p50": 1296842.0,
+            "p95": 44647359.599999994
+          },
+          "shared_input_encode_wall_ns": {
+            "mean": 10795141.09375,
+            "p50": 3487126.5,
+            "p95": 42936648.4
+          }
+        },
+        "calibration": {
+          "available": true,
+          "bins": [
+            {
+              "confidence": 0.1970099162310362,
+              "count": 5,
+              "lower": 0.0,
+              "strict_success": 0.2,
+              "upper": 0.5
+            },
+            {
+              "confidence": 0.7193481773138046,
+              "count": 4,
+              "lower": 0.5,
+              "strict_success": 0.75,
+              "upper": 0.8
+            },
+            {
+              "confidence": 0.85658298432827,
+              "count": 8,
+              "lower": 0.8,
+              "strict_success": 0.75,
+              "upper": 0.95
+            },
+            {
+              "confidence": 0.9884004950523376,
+              "count": 15,
+              "lower": 0.95,
+              "strict_success": 1.0,
+              "upper": 1.000001
+            }
+          ],
+          "endpoint_regret": 0.21875,
+          "posterior_Brier": 0.29270759499793325,
+          "posterior_NLL_finite_mean": 0.9052096982816892,
+          "posterior_NLL_infinite_cases": 0,
+          "scope": "Descriptive selected prediction calibration; not the separate native qualification certificate",
+          "selected_ECE": 0.03638169245095925,
+          "selected_moment_RMSE": 0.2617945143485889
+        },
+        "mean_utility": 0.78125,
+        "modality_success": {
+          "audio": 0.78125,
+          "image": 0.78125,
+          "text": 0.78125,
+          "video": 0.78125
+        },
+        "physical_execution_position_counts": {
+          "0": 4,
+          "1": 4,
+          "2": 4,
+          "3": 4,
+          "4": 4,
+          "5": 4,
+          "6": 4,
+          "7": 4
+        },
+        "strict_success": 0.78125
+      },
+      "unchanged_full_reference": {
+        "CE": 0.5363366869572469,
+        "actual_bundles": 32,
+        "actual_wall_ns": {
+          "audit_wall_ns": {
+            "mean": 205468399.75,
+            "p50": 194172852.5,
+            "p95": 260130009.7
+          },
+          "codec_wall_ns": {
+            "mean": 84601484.25,
+            "p50": 79939578.0,
+            "p95": 111122596.05
+          },
+          "decision_wall_ns": {
+            "mean": 1121.6875,
+            "p50": 1051.5,
+            "p95": 1535.5
+          },
+          "deployment_wall_ns_charging_full_input": {
+            "mean": 527669117.40625,
+            "p50": 484518530.5,
+            "p95": 719657844.55
+          },
+          "generation_verification_wall_ns": {
+            "mean": 204691867.78125,
+            "p50": 201958546.0,
+            "p95": 267232515.1
+          },
+          "generation_wall_ns": {
+            "mean": 294837729.3125,
+            "p50": 284118512.5,
+            "p95": 365716237.5
+          },
+          "input_preparation_wall_ns": {
+            "mean": 16566725.5625,
+            "p50": 1296842.0,
+            "p95": 44647359.599999994
+          },
+          "shared_input_encode_wall_ns": {
+            "mean": 10795141.09375,
+            "p50": 3487126.5,
+            "p95": 42936648.4
+          }
+        },
+        "calibration": {
+          "available": false,
+          "reason": "Unchanged mixed renderer has no registered canonical-endpoint confidence law"
+        },
+        "mean_utility": 0.71875,
+        "modality_success": {
+          "audio": 0.75,
+          "image": 0.6875,
+          "text": 0.8125,
+          "video": 0.625
+        },
+        "physical_execution_position_counts": {
+          "0": 4,
+          "1": 4,
+          "2": 4,
+          "3": 4,
+          "4": 4,
+          "5": 4,
+          "6": 4,
+          "7": 4
+        },
+        "strict_success": 0.625
+      }
+    },
+    "binary_endpoint_risk_superiority_identifiable": false,
+    "by_route": {
+      "audio": {
+        "brier-17": {
+          "CE": 0.7064868085844401,
+          "actual_bundles": 16,
+          "actual_wall_ns": {
+            "audit_wall_ns": {
+              "mean": 201046171.8125,
+              "p50": 196997286.0,
+              "p95": 235942783.5
+            },
+            "codec_wall_ns": {
+              "mean": 83954941.0,
+              "p50": 84245025.0,
+              "p95": 101083976.5
+            },
+            "decision_wall_ns": {
+              "mean": 725078.5,
+              "p50": 405616.0,
+              "p95": 2006156.75
+            },
+            "deployment_wall_ns_charging_full_input": {
+              "mean": 552557053.75,
+              "p50": 522601109.5,
+              "p95": 756980088.0
+            },
+            "generation_verification_wall_ns": {
+              "mean": 211928036.9375,
+              "p50": 209584742.5,
+              "p95": 260434660.0
+            },
+            "generation_wall_ns": {
+              "mean": 300737845.375,
+              "p50": 297079901.0,
+              "p95": 351750415.75
+            },
+            "input_preparation_wall_ns": {
+              "mean": 33133451.125,
+              "p50": 12008632.0,
+              "p95": 116690580.25
+            },
+            "shared_input_encode_wall_ns": {
+              "mean": 16914506.9375,
+              "p50": 4355795.5,
+              "p95": 49688500.0
+            }
+          },
+          "calibration": {
+            "available": true,
+            "bins": [
+              {
+                "confidence": 0.4916594922542572,
+                "count": 1,
+                "lower": 0.0,
+                "strict_success": 0.0,
+                "upper": 0.5
+              },
+              {
+                "confidence": 0.659590482711792,
+                "count": 3,
+                "lower": 0.5,
+                "strict_success": 1.0,
+                "upper": 0.8
+              },
+              {
+                "confidence": 0.8841297626495361,
+                "count": 5,
+                "lower": 0.8,
+                "strict_success": 0.8,
+                "upper": 0.95
+              },
+              {
+                "confidence": 0.984061028276171,
+                "count": 7,
+                "lower": 0.95,
+                "strict_success": 1.0,
+                "upper": 1.000001
+              }
+            ],
+            "endpoint_regret": 0.125,
+            "posterior_Brier": 0.17483736629103944,
+            "posterior_NLL_finite_mean": 0.30794171504454815,
+            "posterior_NLL_infinite_cases": 0,
+            "scope": "Descriptive selected prediction calibration; not the separate native qualification certificate",
+            "selected_ECE": 0.12781935371458528,
+            "selected_moment_RMSE": 0.2515275152765595
+          },
+          "mean_utility": 0.875,
+          "modality_success": {
+            "audio": 0.875,
+            "image": 0.875,
+            "text": 0.875,
+            "video": 0.875
+          },
+          "physical_execution_position_counts": {
+            "0": 2,
+            "1": 2,
+            "2": 2,
+            "3": 2,
+            "4": 2,
+            "5": 2,
+            "6": 2,
+            "7": 2
+          },
+          "strict_success": 0.875
+        },
+        "brier-29": {
+          "CE": 0.8320082248892808,
+          "actual_bundles": 16,
+          "actual_wall_ns": {
+            "audit_wall_ns": {
+              "mean": 203811905.25,
+              "p50": 203299740.0,
+              "p95": 235618377.0
+            },
+            "codec_wall_ns": {
+              "mean": 85475791.0,
+              "p50": 78891208.0,
+              "p95": 132998323.0
+            },
+            "decision_wall_ns": {
+              "mean": 440575.6875,
+              "p50": 401495.5,
+              "p95": 749660.0
+            },
+            "deployment_wall_ns_charging_full_input": {
+              "mean": 537447316.0,
+              "p50": 505595266.0,
+              "p95": 716027717.75
+            },
+            "generation_verification_wall_ns": {
+              "mean": 192718093.9375,
+              "p50": 189329806.0,
+              "p95": 221963541.5
+            },
+            "generation_wall_ns": {
+              "mean": 283146877.0,
+              "p50": 274825248.0,
+              "p95": 330336257.75
+            },
+            "input_preparation_wall_ns": {
+              "mean": 33133451.125,
+              "p50": 12008632.0,
+              "p95": 116690580.25
+            },
+            "shared_input_encode_wall_ns": {
+              "mean": 16914506.9375,
+              "p50": 4355795.5,
+              "p95": 49688500.0
+            }
+          },
+          "calibration": {
+            "available": true,
+            "bins": [
+              {
+                "confidence": 0.36674708127975464,
+                "count": 1,
+                "lower": 0.0,
+                "strict_success": 1.0,
+                "upper": 0.5
+              },
+              {
+                "confidence": 0.7038463751475016,
+                "count": 3,
+                "lower": 0.5,
+                "strict_success": 1.0,
+                "upper": 0.8
+              },
+              {
+                "confidence": 0.8950571417808533,
+                "count": 6,
+                "lower": 0.8,
+                "strict_success": 0.8333333333333334,
+                "upper": 0.95
+              },
+              {
+                "confidence": 0.9918859601020813,
+                "count": 6,
+                "lower": 0.95,
+                "strict_success": 1.0,
+                "upper": 1.000001
+              }
+            ],
+            "endpoint_regret": 0.0625,
+            "posterior_Brier": 0.14724404361035603,
+            "posterior_NLL_finite_mean": 0.2682973084715157,
+            "posterior_NLL_infinite_cases": 0,
+            "scope": "Descriptive selected prediction calibration; not the separate native qualification certificate",
+            "selected_ECE": 0.12129630520939827,
+            "selected_moment_RMSE": 0.25451447390716003
+          },
+          "mean_utility": 0.9375,
+          "modality_success": {
+            "audio": 0.9375,
+            "image": 0.9375,
+            "text": 0.9375,
+            "video": 0.9375
+          },
+          "physical_execution_position_counts": {
+            "0": 2,
+            "1": 2,
+            "2": 2,
+            "3": 2,
+            "4": 2,
+            "5": 2,
+            "6": 2,
+            "7": 2
+          },
+          "strict_success": 0.9375
+        },
+        "brier-43": {
+          "CE": 0.7064868085844401,
+          "actual_bundles": 16,
+          "actual_wall_ns": {
+            "audit_wall_ns": {
+              "mean": 200457704.5,
+              "p50": 197438255.5,
+              "p95": 261559740.25
+            },
+            "codec_wall_ns": {
+              "mean": 104649423.8125,
+              "p50": 78646630.5,
+              "p95": 199495680.0
+            },
+            "decision_wall_ns": {
+              "mean": 493219.875,
+              "p50": 386022.0,
+              "p95": 942885.5
+            },
+            "deployment_wall_ns_charging_full_input": {
+              "mean": 561451082.1875,
+              "p50": 511291225.5,
+              "p95": 930660650.5
+            },
+            "generation_verification_wall_ns": {
+              "mean": 201150820.875,
+              "p50": 205998476.5,
+              "p95": 235089461.25
+            },
+            "generation_wall_ns": {
+              "mean": 310452199.75,
+              "p50": 294576556.5,
+              "p95": 439603916.0
+            },
+            "input_preparation_wall_ns": {
+              "mean": 33133451.125,
+              "p50": 12008632.0,
+              "p95": 116690580.25
+            },
+            "shared_input_encode_wall_ns": {
+              "mean": 16914506.9375,
+              "p50": 4355795.5,
+              "p95": 49688500.0
+            }
+          },
+          "calibration": {
+            "available": true,
+            "bins": [
+              {
+                "confidence": 0.4246360957622528,
+                "count": 1,
+                "lower": 0.0,
+                "strict_success": 0.0,
+                "upper": 0.5
+              },
+              {
+                "confidence": 0.6883435100317001,
+                "count": 4,
+                "lower": 0.5,
+                "strict_success": 0.75,
+                "upper": 0.8
+              },
+              {
+                "confidence": 0.9068422794342041,
+                "count": 5,
+                "lower": 0.8,
+                "strict_success": 1.0,
+                "upper": 0.95
+              },
+              {
+                "confidence": 0.9934744040171305,
+                "count": 6,
+                "lower": 0.95,
+                "strict_success": 1.0,
+                "upper": 1.000001
+              }
+            ],
+            "endpoint_regret": 0.125,
+            "posterior_Brier": 0.1500313433230855,
+            "posterior_NLL_finite_mean": 0.26902692515283955,
+            "posterior_NLL_infinite_cases": 0,
+            "scope": "Descriptive selected prediction calibration; not the separate native qualification certificate",
+            "selected_ECE": 0.07351276464760303,
+            "selected_moment_RMSE": 0.23739761119683153
+          },
+          "mean_utility": 0.875,
+          "modality_success": {
+            "audio": 0.875,
+            "image": 0.875,
+            "text": 0.875,
+            "video": 0.875
+          },
+          "physical_execution_position_counts": {
+            "0": 2,
+            "1": 2,
+            "2": 2,
+            "3": 2,
+            "4": 2,
+            "5": 2,
+            "6": 2,
+            "7": 2
+          },
+          "strict_success": 0.875
+        },
+        "canonical_no_training": {
+          "CE": 0.8320082248892808,
+          "actual_bundles": 16,
+          "actual_wall_ns": {
+            "audit_wall_ns": {
+              "mean": 207444151.875,
+              "p50": 201032695.5,
+              "p95": 259993447.25
+            },
+            "codec_wall_ns": {
+              "mean": 82132982.0,
+              "p50": 82722089.0,
+              "p95": 94111040.5
+            },
+            "decision_wall_ns": {
+              "mean": 297398.625,
+              "p50": 273776.5,
+              "p95": 529513.0
+            },
+            "deployment_wall_ns_charging_full_input": {
+              "mean": 546158843.5625,
+              "p50": 517731217.0,
+              "p95": 720970119.5
+            },
+            "generation_verification_wall_ns": {
+              "mean": 201075108.375,
+              "p50": 202400753.0,
+              "p95": 235363847.75
+            },
+            "generation_wall_ns": {
+              "mean": 288369335.0,
+              "p50": 291265319.0,
+              "p95": 328335056.0
+            },
+            "input_preparation_wall_ns": {
+              "mean": 33133451.125,
+              "p50": 12008632.0,
+              "p95": 116690580.25
+            },
+            "shared_input_encode_wall_ns": {
+              "mean": 16914506.9375,
+              "p50": 4355795.5,
+              "p95": 49688500.0
+            }
+          },
+          "calibration": {
+            "available": true,
+            "bins": [
+              {
+                "confidence": 0.6881171124322074,
+                "count": 7,
+                "lower": 0.5,
+                "strict_success": 1.0,
+                "upper": 0.8
+              },
+              {
+                "confidence": 0.8648574650287628,
+                "count": 2,
+                "lower": 0.8,
+                "strict_success": 1.0,
+                "upper": 0.95
+              },
+              {
+                "confidence": 0.98910049029759,
+                "count": 7,
+                "lower": 0.95,
+                "strict_success": 0.8571428571428571,
+                "upper": 1.000001
+              }
+            ],
+            "endpoint_regret": 0.0625,
+            "posterior_Brier": 0.18900334554363987,
+            "posterior_NLL_finite_mean": 0.38662944570576907,
+            "posterior_NLL_infinite_cases": 0,
+            "scope": "Descriptive selected prediction calibration; not the separate native qualification certificate",
+            "selected_ECE": 0.21107304468750954,
+            "selected_moment_RMSE": 0.2801093407014786
+          },
+          "mean_utility": 0.9375,
+          "modality_success": {
+            "audio": 0.9375,
+            "image": 0.9375,
+            "text": 0.9375,
+            "video": 0.9375
+          },
+          "physical_execution_position_counts": {
+            "0": 2,
+            "1": 2,
+            "2": 2,
+            "3": 2,
+            "4": 2,
+            "5": 2,
+            "6": 2,
+            "7": 2
+          },
+          "strict_success": 0.9375
+        },
+        "nll-17": {
+          "CE": 0.8320082248892808,
+          "actual_bundles": 16,
+          "actual_wall_ns": {
+            "audit_wall_ns": {
+              "mean": 219969809.25,
+              "p50": 202310888.5,
+              "p95": 321143097.5
+            },
+            "codec_wall_ns": {
+              "mean": 79340365.5,
+              "p50": 73790875.5,
+              "p95": 107101767.0
+            },
+            "decision_wall_ns": {
+              "mean": 645784.75,
+              "p50": 396743.0,
+              "p95": 2298822.25
+            },
+            "deployment_wall_ns_charging_full_input": {
+              "mean": 550940120.0625,
+              "p50": 505615589.5,
+              "p95": 771429226.25
+            },
+            "generation_verification_wall_ns": {
+              "mean": 196305281.75,
+              "p50": 192702078.5,
+              "p95": 240361717.0
+            },
+            "generation_wall_ns": {
+              "mean": 280276568.0,
+              "p50": 279725261.0,
+              "p95": 340063311.0
+            },
+            "input_preparation_wall_ns": {
+              "mean": 33133451.125,
+              "p50": 12008632.0,
+              "p95": 116690580.25
+            },
+            "shared_input_encode_wall_ns": {
+              "mean": 16914506.9375,
+              "p50": 4355795.5,
+              "p95": 49688500.0
+            }
+          },
+          "calibration": {
+            "available": true,
+            "bins": [
+              {
+                "confidence": 0.3966560959815979,
+                "count": 1,
+                "lower": 0.0,
+                "strict_success": 1.0,
+                "upper": 0.5
+              },
+              {
+                "confidence": 0.6951205283403397,
+                "count": 4,
+                "lower": 0.5,
+                "strict_success": 1.0,
+                "upper": 0.8
+              },
+              {
+                "confidence": 0.8669791221618652,
+                "count": 2,
+                "lower": 0.8,
+                "strict_success": 1.0,
+                "upper": 0.95
+              },
+              {
+                "confidence": 0.9831854303677877,
+                "count": 9,
+                "lower": 0.95,
+                "strict_success": 0.8888888888888888,
+                "upper": 1.000001
+              }
+            ],
+            "endpoint_regret": 0.0625,
+            "posterior_Brier": 0.19073418647027862,
+            "posterior_NLL_finite_mean": 0.3878440879141007,
+            "posterior_NLL_infinite_cases": 0,
+            "scope": "Descriptive selected prediction calibration; not the separate native qualification certificate",
+            "selected_ECE": 0.1835982762277127,
+            "selected_moment_RMSE": 0.284059644737103
+          },
+          "mean_utility": 0.9375,
+          "modality_success": {
+            "audio": 0.9375,
+            "image": 0.9375,
+            "text": 0.9375,
+            "video": 0.9375
+          },
+          "physical_execution_position_counts": {
+            "0": 2,
+            "1": 2,
+            "2": 2,
+            "3": 2,
+            "4": 2,
+            "5": 2,
+            "6": 2,
+            "7": 2
+          },
+          "strict_success": 0.9375
+        },
+        "nll-29": {
+          "CE": 0.8320082248892808,
+          "actual_bundles": 16,
+          "actual_wall_ns": {
+            "audit_wall_ns": {
+              "mean": 194582239.4375,
+              "p50": 191196224.0,
+              "p95": 219354395.5
+            },
+            "codec_wall_ns": {
+              "mean": 78682183.8125,
+              "p50": 78823014.5,
+              "p95": 91834168.5
+            },
+            "decision_wall_ns": {
+              "mean": 402175.625,
+              "p50": 345306.5,
+              "p95": 768200.5
+            },
+            "deployment_wall_ns_charging_full_input": {
+              "mean": 533149560.3125,
+              "p50": 500873902.5,
+              "p95": 714511064.0
+            },
+            "generation_verification_wall_ns": {
+              "mean": 204780843.0625,
+              "p50": 197451943.5,
+              "p95": 252557315.5
+            },
+            "generation_wall_ns": {
+              "mean": 288117187.1875,
+              "p50": 285443304.0,
+              "p95": 346523587.25
+            },
+            "input_preparation_wall_ns": {
+              "mean": 33133451.125,
+              "p50": 12008632.0,
+              "p95": 116690580.25
+            },
+            "shared_input_encode_wall_ns": {
+              "mean": 16914506.9375,
+              "p50": 4355795.5,
+              "p95": 49688500.0
+            }
+          },
+          "calibration": {
+            "available": true,
+            "bins": [
+              {
+                "confidence": 0.7082632064819336,
+                "count": 5,
+                "lower": 0.5,
+                "strict_success": 1.0,
+                "upper": 0.8
+              },
+              {
+                "confidence": 0.929751992225647,
+                "count": 3,
+                "lower": 0.8,
+                "strict_success": 1.0,
+                "upper": 0.95
+              },
+              {
+                "confidence": 0.9871586784720421,
+                "count": 8,
+                "lower": 0.95,
+                "strict_success": 0.875,
+                "upper": 1.000001
+              }
+            ],
+            "endpoint_regret": 0.0625,
+            "posterior_Brier": 0.16036394574237,
+            "posterior_NLL_finite_mean": 0.3217651658875506,
+            "posterior_NLL_infinite_cases": 0,
+            "scope": "Descriptive selected prediction calibration; not the separate native qualification certificate",
+            "selected_ECE": 0.160418588668108,
+            "selected_moment_RMSE": 0.2550271320321046
+          },
+          "mean_utility": 0.9375,
+          "modality_success": {
+            "audio": 0.9375,
+            "image": 0.9375,
+            "text": 0.9375,
+            "video": 0.9375
+          },
+          "physical_execution_position_counts": {
+            "0": 2,
+            "1": 2,
+            "2": 2,
+            "3": 2,
+            "4": 2,
+            "5": 2,
+            "6": 2,
+            "7": 2
+          },
+          "strict_success": 0.9375
+        },
+        "nll-43": {
+          "CE": 0.8320082248892808,
+          "actual_bundles": 16,
+          "actual_wall_ns": {
+            "audit_wall_ns": {
+              "mean": 204935212.6875,
+              "p50": 202526697.5,
+              "p95": 252605599.75
+            },
+            "codec_wall_ns": {
+              "mean": 79097181.625,
+              "p50": 80182530.5,
+              "p95": 93017569.5
+            },
+            "decision_wall_ns": {
+              "mean": 464833.625,
+              "p50": 411540.0,
+              "p95": 782650.5
+            },
+            "deployment_wall_ns_charging_full_input": {
+              "mean": 537188006.25,
+              "p50": 507098929.5,
+              "p95": 733310908.0
+            },
+            "generation_verification_wall_ns": {
+              "mean": 197343995.875,
+              "p50": 195850633.5,
+              "p95": 226292800.75
+            },
+            "generation_wall_ns": {
+              "mean": 281740001.875,
+              "p50": 279015149.5,
+              "p95": 318861312.0
+            },
+            "input_preparation_wall_ns": {
+              "mean": 33133451.125,
+              "p50": 12008632.0,
+              "p95": 116690580.25
+            },
+            "shared_input_encode_wall_ns": {
+              "mean": 16914506.9375,
+              "p50": 4355795.5,
+              "p95": 49688500.0
+            }
+          },
+          "calibration": {
+            "available": true,
+            "bins": [
+              {
+                "confidence": 0.49782198667526245,
+                "count": 1,
+                "lower": 0.0,
+                "strict_success": 1.0,
+                "upper": 0.5
+              },
+              {
+                "confidence": 0.7728477120399475,
+                "count": 1,
+                "lower": 0.5,
+                "strict_success": 1.0,
+                "upper": 0.8
+              },
+              {
+                "confidence": 0.8475591043631235,
+                "count": 6,
+                "lower": 0.8,
+                "strict_success": 0.8333333333333334,
+                "upper": 0.95
+              },
+              {
+                "confidence": 0.9839103519916534,
+                "count": 8,
+                "lower": 0.95,
+                "strict_success": 1.0,
+                "upper": 1.000001
+              }
+            ],
+            "endpoint_regret": 0.0625,
+            "posterior_Brier": 0.13936458523244571,
+            "posterior_NLL_finite_mean": 0.2623190110968219,
+            "posterior_NLL_infinite_cases": 0,
+            "scope": "Descriptive selected prediction calibration; not the separate native qualification certificate",
+            "selected_ECE": 0.05896263197064397,
+            "selected_moment_RMSE": 0.24008062274501846
+          },
+          "mean_utility": 0.9375,
+          "modality_success": {
+            "audio": 0.9375,
+            "image": 0.9375,
+            "text": 0.9375,
+            "video": 0.9375
+          },
+          "physical_execution_position_counts": {
+            "0": 2,
+            "1": 2,
+            "2": 2,
+            "3": 2,
+            "4": 2,
+            "5": 2,
+            "6": 2,
+            "7": 2
+          },
+          "strict_success": 0.9375
+        },
+        "unchanged_full_reference": {
+          "CE": 0.8320082248892808,
+          "actual_bundles": 16,
+          "actual_wall_ns": {
+            "audit_wall_ns": {
+              "mean": 211996182.1875,
+              "p50": 200095656.0,
+              "p95": 310567702.25
+            },
+            "codec_wall_ns": {
+              "mean": 83396814.5,
+              "p50": 83106932.5,
+              "p95": 100890469.5
+            },
+            "decision_wall_ns": {
+              "mean": 1141.75,
+              "p50": 1136.5,
+              "p95": 1529.5
+            },
+            "deployment_wall_ns_charging_full_input": {
+              "mean": 548012018.0,
+              "p50": 501212571.0,
+              "p95": 814928974.0
+            },
+            "generation_verification_wall_ns": {
+              "mean": 196254209.375,
+              "p50": 199818698.5,
+              "p95": 234287320.0
+            },
+            "generation_wall_ns": {
+              "mean": 285966736.0,
+              "p50": 284013699.0,
+              "p95": 335324536.75
+            },
+            "input_preparation_wall_ns": {
+              "mean": 33133451.125,
+              "p50": 12008632.0,
+              "p95": 116690580.25
+            },
+            "shared_input_encode_wall_ns": {
+              "mean": 16914506.9375,
+              "p50": 4355795.5,
+              "p95": 49688500.0
+            }
+          },
+          "calibration": {
+            "available": false,
+            "reason": "Unchanged mixed renderer has no registered canonical-endpoint confidence law"
+          },
+          "mean_utility": 0.9375,
+          "modality_success": {
+            "audio": 0.9375,
+            "image": 0.9375,
+            "text": 0.9375,
+            "video": 0.9375
+          },
+          "physical_execution_position_counts": {
+            "0": 2,
+            "1": 2,
+            "2": 2,
+            "3": 2,
+            "4": 2,
+            "5": 2,
+            "6": 2,
+            "7": 2
+          },
+          "strict_success": 0.9375
+        }
+      },
+      "image": {
+        "brier-17": {
+          "CE": 0.3331298581653356,
+          "actual_bundles": 16,
+          "actual_wall_ns": {
+            "audit_wall_ns": {
+              "mean": 198378844.8125,
+              "p50": 201667507.5,
+              "p95": 227512313.25
+            },
+            "codec_wall_ns": {
+              "mean": 78631184.625,
+              "p50": 77692891.0,
+              "p95": 91981839.5
+            },
+            "decision_wall_ns": {
+              "mean": 798689.25,
+              "p50": 348456.5,
+              "p95": 2852126.25
+            },
+            "deployment_wall_ns_charging_full_input": {
+              "mean": 486512663.5,
+              "p50": 489941261.5,
+              "p95": 572811448.25
+            },
+            "generation_verification_wall_ns": {
+              "mean": 199455618.875,
+              "p50": 193707797.5,
+              "p95": 251487371.5
+            },
+            "generation_wall_ns": {
+              "mean": 282659354.1875,
+              "p50": 282222429.0,
+              "p95": 341685758.75
+            },
+            "input_preparation_wall_ns": {
+              "mean": 0.0,
+              "p50": 0.0,
+              "p95": 0.0
+            },
+            "shared_input_encode_wall_ns": {
+              "mean": 4675775.25,
+              "p50": 2101641.0,
+              "p95": 14071507.75
+            }
+          },
+          "calibration": {
+            "available": true,
+            "bins": [
+              {
+                "confidence": 0.14032584754750133,
+                "count": 4,
+                "lower": 0.0,
+                "strict_success": 0.0,
+                "upper": 0.5
+              },
+              {
+                "confidence": 0.6399080355962118,
+                "count": 3,
+                "lower": 0.5,
+                "strict_success": 0.6666666666666666,
+                "upper": 0.8
+              },
+              {
+                "confidence": 0.8218743205070496,
+                "count": 1,
+                "lower": 0.8,
+                "strict_success": 0.0,
+                "upper": 0.95
+              },
+              {
+                "confidence": 0.993303507566452,
+                "count": 8,
+                "lower": 0.95,
+                "strict_success": 0.875,
+                "upper": 1.000001
+              }
+            ],
+            "endpoint_regret": 0.4375,
+            "posterior_Brier": 0.5212928244037888,
+            "posterior_NLL_finite_mean": 1.4816851807497602,
+            "posterior_NLL_infinite_cases": 0,
+            "scope": "Descriptive selected prediction calibration; not the separate native qualification certificate",
+            "selected_ECE": 0.15061760402750224,
+            "selected_moment_RMSE": 0.33634482302911983
+          },
+          "mean_utility": 0.5625,
+          "modality_success": {
+            "audio": 0.5625,
+            "image": 0.5625,
+            "text": 0.5625,
+            "video": 0.5625
+          },
+          "physical_execution_position_counts": {
+            "0": 2,
+            "1": 2,
+            "2": 2,
+            "3": 2,
+            "4": 2,
+            "5": 2,
+            "6": 2,
+            "7": 2
+          },
+          "strict_success": 0.5625
+        },
+        "brier-29": {
+          "CE": 0.3331298581653356,
+          "actual_bundles": 16,
+          "actual_wall_ns": {
+            "audit_wall_ns": {
+              "mean": 196714097.5625,
+              "p50": 195878078.0,
+              "p95": 224772804.0
+            },
+            "codec_wall_ns": {
+              "mean": 78031971.75,
+              "p50": 73534091.0,
+              "p95": 103210097.0
+            },
+            "decision_wall_ns": {
+              "mean": 419492.5625,
+              "p50": 346568.0,
+              "p95": 758459.25
+            },
+            "deployment_wall_ns_charging_full_input": {
+              "mean": 484248385.0,
+              "p50": 476554778.0,
+              "p95": 590833938.75
+            },
+            "generation_verification_wall_ns": {
+              "mean": 199967644.5625,
+              "p50": 188769325.5,
+              "p95": 251297506.25
+            },
+            "generation_wall_ns": {
+              "mean": 282439019.625,
+              "p50": 268476448.5,
+              "p95": 368266606.0
+            },
+            "input_preparation_wall_ns": {
+              "mean": 0.0,
+              "p50": 0.0,
+              "p95": 0.0
+            },
+            "shared_input_encode_wall_ns": {
+              "mean": 4675775.25,
+              "p50": 2101641.0,
+              "p95": 14071507.75
+            }
+          },
+          "calibration": {
+            "available": true,
+            "bins": [
+              {
+                "confidence": 0.12220493238419294,
+                "count": 4,
+                "lower": 0.0,
+                "strict_success": 0.0,
+                "upper": 0.5
+              },
+              {
+                "confidence": 0.6245525181293488,
+                "count": 4,
+                "lower": 0.5,
+                "strict_success": 0.5,
+                "upper": 0.8
+              },
+              {
+                "confidence": 0.9163820743560791,
+                "count": 1,
+                "lower": 0.8,
+                "strict_success": 0.0,
+                "upper": 0.95
+              },
+              {
+                "confidence": 0.9950706873621259,
+                "count": 7,
+                "lower": 0.95,
+                "strict_success": 1.0,
+                "upper": 1.000001
+              }
+            ],
+            "endpoint_regret": 0.4375,
+            "posterior_Brier": 0.4968538136667617,
+            "posterior_NLL_finite_mean": 1.4694453365680873,
+            "posterior_NLL_infinite_cases": 0,
+            "scope": "Descriptive selected prediction calibration; not the separate native qualification certificate",
+            "selected_ECE": 0.1211198165547103,
+            "selected_moment_RMSE": 0.3216083270730364
+          },
+          "mean_utility": 0.5625,
+          "modality_success": {
+            "audio": 0.5625,
+            "image": 0.5625,
+            "text": 0.5625,
+            "video": 0.5625
+          },
+          "physical_execution_position_counts": {
+            "0": 2,
+            "1": 2,
+            "2": 2,
+            "3": 2,
+            "4": 2,
+            "5": 2,
+            "6": 2,
+            "7": 2
+          },
+          "strict_success": 0.5625
+        },
+        "brier-43": {
+          "CE": 0.3887161726795079,
+          "actual_bundles": 16,
+          "actual_wall_ns": {
+            "audit_wall_ns": {
+              "mean": 199475249.9375,
+              "p50": 192784720.0,
+              "p95": 259626153.25
+            },
+            "codec_wall_ns": {
+              "mean": 73330892.0625,
+              "p50": 72269358.0,
+              "p95": 85338354.25
+            },
+            "decision_wall_ns": {
+              "mean": 653038.9375,
+              "p50": 333374.5,
+              "p95": 1854143.25
+            },
+            "deployment_wall_ns_charging_full_input": {
+              "mean": 482105790.25,
+              "p50": 470523653.0,
+              "p95": 585302193.75
+            },
+            "generation_verification_wall_ns": {
+              "mean": 199207482.5625,
+              "p50": 188346638.0,
+              "p95": 267888127.25
+            },
+            "generation_wall_ns": {
+              "mean": 277301726.125,
+              "p50": 265918412.0,
+              "p95": 347908180.75
+            },
+            "input_preparation_wall_ns": {
+              "mean": 0.0,
+              "p50": 0.0,
+              "p95": 0.0
+            },
+            "shared_input_encode_wall_ns": {
+              "mean": 4675775.25,
+              "p50": 2101641.0,
+              "p95": 14071507.75
+            }
+          },
+          "calibration": {
+            "available": true,
+            "bins": [
+              {
+                "confidence": 0.1857363674789667,
+                "count": 5,
+                "lower": 0.0,
+                "strict_success": 0.2,
+                "upper": 0.5
+              },
+              {
+                "confidence": 0.6282829642295837,
+                "count": 3,
+                "lower": 0.5,
+                "strict_success": 0.6666666666666666,
+                "upper": 0.8
+              },
+              {
+                "confidence": 0.9101209044456482,
+                "count": 1,
+                "lower": 0.8,
+                "strict_success": 0.0,
+                "upper": 0.95
+              },
+              {
+                "confidence": 0.994355389050075,
+                "count": 7,
+                "lower": 0.95,
+                "strict_success": 1.0,
+                "upper": 1.000001
+              }
+            ],
+            "endpoint_regret": 0.375,
+            "posterior_Brier": 0.4733719690709728,
+            "posterior_NLL_finite_mean": 1.420898820306261,
+            "posterior_NLL_infinite_cases": 0,
+            "scope": "Descriptive selected prediction calibration; not the separate native qualification certificate",
+            "selected_ECE": 0.07100640318822113,
+            "selected_moment_RMSE": 0.3134010983623182
+          },
+          "mean_utility": 0.625,
+          "modality_success": {
+            "audio": 0.625,
+            "image": 0.625,
+            "text": 0.625,
+            "video": 0.625
+          },
+          "physical_execution_position_counts": {
+            "0": 2,
+            "1": 2,
+            "2": 2,
+            "3": 2,
+            "4": 2,
+            "5": 2,
+            "6": 2,
+            "7": 2
+          },
+          "strict_success": 0.625
+        },
+        "canonical_no_training": {
+          "CE": 0.3331298581653356,
+          "actual_bundles": 16,
+          "actual_wall_ns": {
+            "audit_wall_ns": {
+              "mean": 203919082.1875,
+              "p50": 202473608.5,
+              "p95": 237729109.0
+            },
+            "codec_wall_ns": {
+              "mean": 79556624.0625,
+              "p50": 80102259.0,
+              "p95": 89647172.0
+            },
+            "decision_wall_ns": {
+              "mean": 533974.875,
+              "p50": 242234.5,
+              "p95": 1473805.25
+            },
+            "deployment_wall_ns_charging_full_input": {
+              "mean": 491676335.8125,
+              "p50": 490729197.0,
+              "p95": 549417013.0
+            },
+            "generation_verification_wall_ns": {
+              "mean": 197892034.625,
+              "p50": 202029396.5,
+              "p95": 232717881.75
+            },
+            "generation_wall_ns": {
+              "mean": 282547503.5,
+              "p50": 283681767.5,
+              "p95": 318178024.75
+            },
+            "input_preparation_wall_ns": {
+              "mean": 0.0,
+              "p50": 0.0,
+              "p95": 0.0
+            },
+            "shared_input_encode_wall_ns": {
+              "mean": 4675775.25,
+              "p50": 2101641.0,
+              "p95": 14071507.75
+            }
+          },
+          "calibration": {
+            "available": true,
+            "bins": [
+              {
+                "confidence": 0.17273687664419413,
+                "count": 5,
+                "lower": 0.0,
+                "strict_success": 0.2,
+                "upper": 0.5
+              },
+              {
+                "confidence": 0.6416028340657552,
+                "count": 3,
+                "lower": 0.5,
+                "strict_success": 0.3333333333333333,
+                "upper": 0.8
+              },
+              {
+                "confidence": 0.8845449090003967,
+                "count": 1,
+                "lower": 0.8,
+                "strict_success": 0.0,
+                "upper": 0.95
+              },
+              {
+                "confidence": 0.9956992864608765,
+                "count": 7,
+                "lower": 0.95,
+                "strict_success": 1.0,
+                "upper": 1.000001
+              }
+            ],
+            "endpoint_regret": 0.4375,
+            "posterior_Brier": 0.5106984935799433,
+            "posterior_NLL_finite_mean": 1.5569205600252012,
+            "posterior_NLL_infinite_cases": 0,
+            "scope": "Descriptive selected prediction calibration; not the separate native qualification certificate",
+            "selected_ECE": 0.1234858764219098,
+            "selected_moment_RMSE": 0.3259107862932196
+          },
+          "mean_utility": 0.5625,
+          "modality_success": {
+            "audio": 0.5625,
+            "image": 0.5625,
+            "text": 0.5625,
+            "video": 0.5625
+          },
+          "physical_execution_position_counts": {
+            "0": 2,
+            "1": 2,
+            "2": 2,
+            "3": 2,
+            "4": 2,
+            "5": 2,
+            "6": 2,
+            "7": 2
+          },
+          "strict_success": 0.5625
+        },
+        "nll-17": {
+          "CE": 0.3887161726795079,
+          "actual_bundles": 16,
+          "actual_wall_ns": {
+            "audit_wall_ns": {
+              "mean": 200833208.75,
+              "p50": 191424736.0,
+              "p95": 249805590.25
+            },
+            "codec_wall_ns": {
+              "mean": 78577117.25,
+              "p50": 79835602.0,
+              "p95": 94446012.0
+            },
+            "decision_wall_ns": {
+              "mean": 663596.125,
+              "p50": 388085.5,
+              "p95": 1699645.25
+            },
+            "deployment_wall_ns_charging_full_input": {
+              "mean": 493331822.3125,
+              "p50": 481605269.0,
+              "p95": 627234660.25
+            },
+            "generation_verification_wall_ns": {
+              "mean": 204384350.75,
+              "p50": 197272660.0,
+              "p95": 275901680.25
+            },
+            "generation_wall_ns": {
+              "mean": 287159242.1875,
+              "p50": 273239638.5,
+              "p95": 365388104.25
+            },
+            "input_preparation_wall_ns": {
+              "mean": 0.0,
+              "p50": 0.0,
+              "p95": 0.0
+            },
+            "shared_input_encode_wall_ns": {
+              "mean": 4675775.25,
+              "p50": 2101641.0,
+              "p95": 14071507.75
+            }
+          },
+          "calibration": {
+            "available": true,
+            "bins": [
+              {
+                "confidence": 0.17684839032590388,
+                "count": 5,
+                "lower": 0.0,
+                "strict_success": 0.2,
+                "upper": 0.5
+              },
+              {
+                "confidence": 0.6690653264522552,
+                "count": 2,
+                "lower": 0.5,
+                "strict_success": 1.0,
+                "upper": 0.8
+              },
+              {
+                "confidence": 0.8933089375495911,
+                "count": 2,
+                "lower": 0.8,
+                "strict_success": 0.0,
+                "upper": 0.95
+              },
+              {
+                "confidence": 0.9941313011305672,
+                "count": 7,
+                "lower": 0.95,
+                "strict_success": 1.0,
+                "upper": 1.000001
+              }
+            ],
+            "endpoint_regret": 0.375,
+            "posterior_Brier": 0.4920936712292802,
+            "posterior_NLL_finite_mean": 1.5430664508155618,
+            "posterior_NLL_infinite_cases": 0,
+            "scope": "Descriptive selected prediction calibration; not the separate native qualification certificate",
+            "selected_ECE": 0.16283288516569885,
+            "selected_moment_RMSE": 0.3219892284466633
+          },
+          "mean_utility": 0.625,
+          "modality_success": {
+            "audio": 0.625,
+            "image": 0.625,
+            "text": 0.625,
+            "video": 0.625
+          },
+          "physical_execution_position_counts": {
+            "0": 2,
+            "1": 2,
+            "2": 2,
+            "3": 2,
+            "4": 2,
+            "5": 2,
+            "6": 2,
+            "7": 2
+          },
+          "strict_success": 0.625
+        },
+        "nll-29": {
+          "CE": 0.3887161726795079,
+          "actual_bundles": 16,
+          "actual_wall_ns": {
+            "audit_wall_ns": {
+              "mean": 211011065.4375,
+              "p50": 206840870.5,
+              "p95": 261229745.75
+            },
+            "codec_wall_ns": {
+              "mean": 77133198.3125,
+              "p50": 75167724.5,
+              "p95": 94950065.0
+            },
+            "decision_wall_ns": {
+              "mean": 397058.5,
+              "p50": 317420.5,
+              "p95": 851090.25
+            },
+            "deployment_wall_ns_charging_full_input": {
+              "mean": 497960218.5625,
+              "p50": 507940412.5,
+              "p95": 533787643.75
+            },
+            "generation_verification_wall_ns": {
+              "mean": 200366427.6875,
+              "p50": 203235919.5,
+              "p95": 231813690.5
+            },
+            "generation_wall_ns": {
+              "mean": 281876319.375,
+              "p50": 289643627.5,
+              "p95": 312028335.25
+            },
+            "input_preparation_wall_ns": {
+              "mean": 0.0,
+              "p50": 0.0,
+              "p95": 0.0
+            },
+            "shared_input_encode_wall_ns": {
+              "mean": 4675775.25,
+              "p50": 2101641.0,
+              "p95": 14071507.75
+            }
+          },
+          "calibration": {
+            "available": true,
+            "bins": [
+              {
+                "confidence": 0.1271430249325931,
+                "count": 4,
+                "lower": 0.0,
+                "strict_success": 0.0,
+                "upper": 0.5
+              },
+              {
+                "confidence": 0.6721329490343729,
+                "count": 3,
+                "lower": 0.5,
+                "strict_success": 1.0,
+                "upper": 0.8
+              },
+              {
+                "confidence": 0.8662925958633423,
+                "count": 2,
+                "lower": 0.8,
+                "strict_success": 0.0,
+                "upper": 0.95
+              },
+              {
+                "confidence": 0.9938303487641471,
+                "count": 7,
+                "lower": 0.95,
+                "strict_success": 1.0,
+                "upper": 1.000001
+              }
+            ],
+            "endpoint_regret": 0.375,
+            "posterior_Brier": 0.47197654300510156,
+            "posterior_NLL_finite_mean": 1.5167553708533836,
+            "posterior_NLL_infinite_cases": 0,
+            "scope": "Descriptive selected prediction calibration; not the separate native qualification certificate",
+            "selected_ECE": 0.20424662518780679,
+            "selected_moment_RMSE": 0.30209757101252527
+          },
+          "mean_utility": 0.625,
+          "modality_success": {
+            "audio": 0.625,
+            "image": 0.625,
+            "text": 0.625,
+            "video": 0.625
+          },
+          "physical_execution_position_counts": {
+            "0": 2,
+            "1": 2,
+            "2": 2,
+            "3": 2,
+            "4": 2,
+            "5": 2,
+            "6": 2,
+            "7": 2
+          },
+          "strict_success": 0.625
+        },
+        "nll-43": {
+          "CE": 0.3887161726795079,
+          "actual_bundles": 16,
+          "actual_wall_ns": {
+            "audit_wall_ns": {
+              "mean": 207811651.6875,
+              "p50": 190039531.0,
+              "p95": 274722002.5
+            },
+            "codec_wall_ns": {
+              "mean": 78819445.75,
+              "p50": 80208626.0,
+              "p95": 94723984.25
+            },
+            "decision_wall_ns": {
+              "mean": 450737.0625,
+              "p50": 348532.0,
+              "p95": 1083726.75
+            },
+            "deployment_wall_ns_charging_full_input": {
+              "mean": 493942127.5625,
+              "p50": 466913209.0,
+              "p95": 634531951.0
+            },
+            "generation_verification_wall_ns": {
+              "mean": 197906631.6875,
+              "p50": 188036275.0,
+              "p95": 258589532.0
+            },
+            "generation_wall_ns": {
+              "mean": 281003963.5625,
+              "p50": 274571739.5,
+              "p95": 346442471.25
+            },
+            "input_preparation_wall_ns": {
+              "mean": 0.0,
+              "p50": 0.0,
+              "p95": 0.0
+            },
+            "shared_input_encode_wall_ns": {
+              "mean": 4675775.25,
+              "p50": 2101641.0,
+              "p95": 14071507.75
+            }
+          },
+          "calibration": {
+            "available": true,
+            "bins": [
+              {
+                "confidence": 0.12180689861997962,
+                "count": 4,
+                "lower": 0.0,
+                "strict_success": 0.0,
+                "upper": 0.5
+              },
+              {
+                "confidence": 0.701514999071757,
+                "count": 3,
+                "lower": 0.5,
+                "strict_success": 0.6666666666666666,
+                "upper": 0.8
+              },
+              {
+                "confidence": 0.8836546242237091,
+                "count": 2,
+                "lower": 0.8,
+                "strict_success": 0.5,
+                "upper": 0.95
+              },
+              {
+                "confidence": 0.993532087121691,
+                "count": 7,
+                "lower": 0.95,
+                "strict_success": 1.0,
+                "upper": 1.000001
+              }
+            ],
+            "endpoint_regret": 0.375,
+            "posterior_Brier": 0.44605060476342073,
+            "posterior_NLL_finite_mean": 1.5481003854665563,
+            "posterior_NLL_infinite_cases": 0,
+            "scope": "Descriptive selected prediction calibration; not the separate native qualification certificate",
+            "selected_ECE": 0.08777232689317314,
+            "selected_moment_RMSE": 0.2818404337003319
+          },
+          "mean_utility": 0.625,
+          "modality_success": {
+            "audio": 0.625,
+            "image": 0.625,
+            "text": 0.625,
+            "video": 0.625
+          },
+          "physical_execution_position_counts": {
+            "0": 2,
+            "1": 2,
+            "2": 2,
+            "3": 2,
+            "4": 2,
+            "5": 2,
+            "6": 2,
+            "7": 2
+          },
+          "strict_success": 0.625
+        },
+        "unchanged_full_reference": {
+          "CE": 0.35179205209840875,
+          "actual_bundles": 16,
+          "actual_wall_ns": {
+            "audit_wall_ns": {
+              "mean": 198940617.3125,
+              "p50": 193512488.5,
+              "p95": 243827297.5
+            },
+            "codec_wall_ns": {
+              "mean": 85806154.0,
+              "p50": 76225384.5,
+              "p95": 126951369.25
+            },
+            "decision_wall_ns": {
+              "mean": 1101.625,
+              "p50": 1001.5,
+              "p95": 1532.25
+            },
+            "deployment_wall_ns_charging_full_input": {
+              "mean": 507326216.8125,
+              "p50": 473527788.0,
+              "p95": 603231719.25
+            },
+            "generation_verification_wall_ns": {
+              "mean": 213129526.1875,
+              "p50": 203204372.0,
+              "p95": 279673057.5
+            },
+            "generation_wall_ns": {
+              "mean": 303708722.625,
+              "p50": 286861724.5,
+              "p95": 380822888.25
+            },
+            "input_preparation_wall_ns": {
+              "mean": 0.0,
+              "p50": 0.0,
+              "p95": 0.0
+            },
+            "shared_input_encode_wall_ns": {
+              "mean": 4675775.25,
+              "p50": 2101641.0,
+              "p95": 14071507.75
+            }
+          },
+          "calibration": {
+            "available": false,
+            "reason": "Unchanged mixed renderer has no registered canonical-endpoint confidence law"
+          },
+          "mean_utility": 0.5,
+          "modality_success": {
+            "audio": 0.5625,
+            "image": 0.4375,
+            "text": 0.6875,
+            "video": 0.3125
+          },
+          "physical_execution_position_counts": {
+            "0": 2,
+            "1": 2,
+            "2": 2,
+            "3": 2,
+            "4": 2,
+            "5": 2,
+            "6": 2,
+            "7": 2
+          },
+          "strict_success": 0.3125
+        }
+      }
+    },
+    "failed_Brier_panel_retained": {
+      "CE": 0.5104272129426981,
+      "mean_utility": 0.7395833333333334,
+      "strict_success": 0.7395833333333334
+    },
+    "mechanism_descriptive_differences": {
+      "NLL_minus_Brier": {
+        "CE": 0.05233741278439796,
+        "mean_utility": 0.04166666666666663,
+        "strict_success": 0.04166666666666663
+      },
+      "canonical_minus_unchanged": {
+        "CE": -0.013565983353867272,
+        "mean_utility": 0.03125,
+        "strict_success": 0.125
+      }
+    },
+    "primary_gate": {
+      "evaluated": false,
+      "reason": "Old-data technical smoke; no independent efficacy inference"
+    },
+    "primary_point_difference": {
+      "CE": 0.03999392212371644,
+      "mean_utility": 0.03125,
+      "strict_success": 0.03125
+    },
+    "selected_NLL_panel": {
+      "CE": 0.5627646257270961,
+      "mean_utility": 0.78125,
+      "strict_success": 0.78125
+    },
+    "source_cluster_count": 16
+  },
+  "cpu_ns_main": 7399958882,
+  "input_construction_wall_ns": 761529792,
+  "mode": "old_smoke",
+  "new_confirmation_sources_opened": false,
+  "peak_rss_bytes": 486801408,
+  "protocol_sha256": "b0e950139a25b268fd248c42da54ad16085778a1dd08261b84d53b6368c4fc6a",
+  "rows_sha256": "39d5461e11eb8bb4c05ef4734bbc879647bd20bdc42a33aca07c3ad481e809b4",
+  "runtime_accounting": "Input preparation and encoding are physically shared across branches; per-deployment estimates charge each in full. Codec timings are overlapping components, not extra additive work. No cold-ASR inference was paid when exact historical PCM reuse succeeded. BLAS/Torch and video encoding are single-threaded; the frozen output readback decoder uses its existing defaults.",
+  "schema": "hepta.advance.joint-actual-confirmation.v1",
+  "shared_encoder_wall_ns": 345444515,
+  "status": "completed",
+  "wall_ns_main": 130376607136
+}

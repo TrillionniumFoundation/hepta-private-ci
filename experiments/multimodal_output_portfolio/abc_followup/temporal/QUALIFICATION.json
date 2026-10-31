@@ -1,0 +1,58 @@
+{
+  "controls_per_kind": 16,
+  "cpu_ns": 104681677056,
+  "gates": {
+    "external_exact_success": 0.75,
+    "external_fact_accuracy": 0.9,
+    "online_exact_success": 0.65,
+    "online_fact_accuracy": 0.85,
+    "silent_or_truncated_semantic_completion": 0,
+    "wrong_fact_exact_acceptance": 0
+  },
+  "measurements": {
+    "external_exact_success": 1.0,
+    "external_fact_accuracy": 1.0,
+    "online_exact_success": 1.0,
+    "online_fact_accuracy": 1.0,
+    "silent_or_truncated_semantic_completion": 0,
+    "wrong_fact_exact_acceptance": 0
+  },
+  "normal_outputs": 16,
+  "passed": true,
+  "process_receipt": {
+    "child_peak_rss_kib": 663440,
+    "child_pid": 8,
+    "command": [
+      "/workspace/scratch/2b3c256bef7d/speech-env/bin/python",
+      "-m",
+      "experiments.multimodal_output_portfolio.abc_followup.temporal.qualification",
+      "run",
+      "--freeze",
+      "experiments/multimodal_output_portfolio/abc_followup/temporal/freeze-v3",
+      "--assets",
+      "/workspace/scratch/2b3c256bef7d/abc3-temporal-assets/models-001",
+      "--external-assets",
+      "/workspace/scratch/2b3c256bef7d/abc3-temporal-assets/external-asr-001",
+      "--output",
+      "/workspace/scratch/2b3c256bef7d/abc4-temporal-runs/qualification-001"
+    ],
+    "exit_code": 0,
+    "exit_utc": "2026-10-25T08:26:55.225990+00:00",
+    "full_child_cpu_ns": 106689864000,
+    "full_child_wall_ns": 106937745565,
+    "launch_utc": "2026-10-25T08:25:08.288243+00:00",
+    "outer_cpu_ns": 726060,
+    "phase": "qualification",
+    "plan_sha256": "91d9e612d5729c859346f6c3d029e01da1ca7e56d37acee389b340c25c4ce916",
+    "resource_measurement": "os.wait4 exact new child PID; no cumulative prior-child counters",
+    "schema": "hepta.abc4.temporal-process-receipt.v1",
+    "scope": "launch/imports/input validation/model loads/all phase work/report writes/child exit; excludes outer wrapper startup and receipt serialization; no sum of concurrent resident memory"
+  },
+  "protocol_publication_commit": "5b266e6e8a085bd65df83d8263c737f921d14bab",
+  "protocol_sha256": "43a9fb360ecf7b44842717c9344d30e5c70e3c3c591bd9b40b9127f7ee03db2c",
+  "raw_result_sha256": "3d3b36aaa60b1575d5d48558ecda6d3e48f4c4f11e3c6c6f266aeeb5b480ac2d",
+  "schema": "hepta.abc4.temporal-observer-qualification-result.v1",
+  "scope": "8underlying qualification facts,2templates,1voice; point gates, not population confidence certification.",
+  "sources": 8,
+  "wall_ns": 104924842226
+}

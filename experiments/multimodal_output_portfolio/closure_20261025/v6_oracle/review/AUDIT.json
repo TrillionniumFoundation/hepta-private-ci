@@ -1,0 +1,51 @@
+{
+  "additional_sampling_performed": false,
+  "analysis_sha256": "0864e4291e6de080fb5677ab0164af5f01748578e6aa66849b46b0dc2a4677e7",
+  "common_initial_allocation_candidates": 15,
+  "contrasts": [
+    {
+      "contrast": "risk_aware_recursive minus strong_fixed_ce",
+      "estimate": 0.017802519830820707,
+      "interval": [
+        -0.03164337176609718,
+        0.06345026897327731
+      ]
+    },
+    {
+      "contrast": "oracle_full_raw minus risk_aware_recursive",
+      "estimate": 0.05082101192462418,
+      "interval": [
+        0.021407828815483917,
+        0.0898820089221123
+      ]
+    },
+    {
+      "contrast": "oracle_full_raw minus oracle_common_allocation_raw",
+      "estimate": 0.027687480242143625,
+      "interval": [
+        0.007505318022371837,
+        0.05629968486080462
+      ]
+    }
+  ],
+  "endpoint_rows_checked": 12800,
+  "existing_source_or_evidence_modified": false,
+  "full_candidates": 85,
+  "literal_source_repeat_bootstrap_checks": 40,
+  "nested_pointwise_upper_bound_verified": true,
+  "policy_endpoint_parity_rows_checked": 1280,
+  "protocol_sha256": "348a20f4aac75979d3a49e7592e8ac6babdefed3b85cae13009dbd04867110ad",
+  "review_source_sha256": "663a1dd58d47e27114a237880f2be60f48d28cd1721ef36f11956e07ceff0eb1",
+  "reviewed_unix_ns": 1792945433037221474,
+  "schema": "hepta.closure.independent-v6-review.v1",
+  "scope": [
+    "Same-full-initial allocation15 is a genuine subset of full85; historical allocation has a different initial state.",
+    "Fixed choices use old development reward scores, not fresh audit outcomes.",
+    "Descriptive unadjusted95 intervals, only one seed and64 source pairs; both draws remain clustered.",
+    "The private-truth oracle omits enumeration/search/observer cost and is not online conditional optimality.",
+    "whole_request clocks include media readback and private observer scoring, not just policy inference."
+  ],
+  "selection_choices_recomputed": 6,
+  "source_bootstrap_replicates_recomputed": 2000,
+  "status": "passed_read_only_review"
+}

@@ -1,0 +1,1299 @@
+{
+  "H1_counterfactual_nodes": 1,
+  "failures": 0,
+  "new_source_roles_opened": false,
+  "records": [
+    {
+      "attempted_continuations": 1,
+      "case": 0,
+      "cpu_ns": 35288539,
+      "decisions": [
+        {
+          "action": "refine_text",
+          "admission_cpu_ns": 5617962,
+          "admitted": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "calibrated_confidence": [
+            0.993244,
+            0.993175,
+            0.950178,
+            0.91843,
+            0.915541
+          ],
+          "decision_index": 0,
+          "feature_cpu_ns": 1430638,
+          "head_cpu_ns": 275219,
+          "mask_scope": "Frozen content correctness gate; no native resource qualification is inherited",
+          "predicted_action_minus_stop": [
+            0.0,
+            -0.00413956493139267,
+            0.005840487778186798,
+            -0.0273016095161438,
+            -0.019609421491622925
+          ],
+          "predicted_moments": [
+            0.11966017633676529,
+            0.11552061140537262,
+            0.1255006641149521,
+            0.09235856682062149,
+            0.10005075484514236
+          ],
+          "public_sha256": "7766a131a1e7e13414e828a008e70937eb2e0385eb832131136016917372e30e",
+          "remaining": 2,
+          "selected_index": 3
+        },
+        {
+          "action": "stop",
+          "admission_cpu_ns": 1956369,
+          "admitted": [
+            true,
+            false,
+            true,
+            true,
+            true
+          ],
+          "calibrated_confidence": [
+            0.979224,
+            0.981116,
+            0.962996,
+            0.937242,
+            0.894627
+          ],
+          "decision_index": 1,
+          "feature_cpu_ns": 405934,
+          "head_cpu_ns": 116533,
+          "mask_scope": "Frozen content correctness gate; no native resource qualification is inherited",
+          "predicted_action_minus_stop": [
+            0.0,
+            0.00377606600522995,
+            0.006450138986110687,
+            0.02858027070760727,
+            0.02620980143547058
+          ],
+          "predicted_moments": [
+            0.08237872272729874,
+            0.08615478873252869,
+            0.08882886171340942,
+            0.110958993434906,
+            0.10858852416276932
+          ],
+          "public_sha256": "ab1ddaeb8b60b7efe6654f02bf8127d43865465de5d8c0af874335973d7ebab2",
+          "remaining": 1,
+          "selected_index": 0
+        }
+      ],
+      "draw": 0,
+      "path": [
+        "refine_text"
+      ],
+      "policy": "masked_teacher",
+      "scores": {
+        "crossmodal_disagreement": 0.0,
+        "image_fact": 0.0,
+        "joint_fact_correct": 1.0,
+        "joint_loss": 0.004475411958992481,
+        "pixel_mse": 0.04475412145256996,
+        "relation": 0.0,
+        "required_output_complete": 1.0,
+        "text_fact": 0.0,
+        "utility": 0.9910491704940796
+      },
+      "seed": 17,
+      "status": "completed",
+      "terminal": {
+        "offset": 0,
+        "sha256": "a17dba97105bfb10cf124db8daeb5e78f8d37355396fb1a53c88ce7c2b8727f1"
+      },
+      "view": "clean",
+      "wall_ns": 56704193,
+      "work": {
+        "bernoulli_sample_calls": 2,
+        "categorical_sample_calls": 14,
+        "committed_image_examples": 1,
+        "committed_text_examples": 2,
+        "couple_calls": 1,
+        "discarded_image_examples": 1,
+        "draft_pixel_encoder_calls": 1,
+        "draft_pixel_encoder_panel_examples": 2,
+        "emission_calls": 2,
+        "encoder_calls": 1,
+        "encoder_examples": 1,
+        "exact_pixel_cache_examples": 1,
+        "exact_pixel_cache_hits": 1,
+        "input_pixel_encoder_panel_examples": 2,
+        "pixel_decoder_calls": 2,
+        "pixel_decoder_panel_examples": 4,
+        "public_draft_sensor_calls": 1,
+        "public_draft_sensor_panel_examples": 2,
+        "public_feature_calls": 2,
+        "public_feature_examples": 2,
+        "public_input_sensor_calls": 1,
+        "public_input_sensor_panel_examples": 2,
+        "refine_semantic_calls": 1,
+        "refine_text_calls": 1,
+        "sampled_bernoulli_variables": 3136,
+        "sampled_categorical_variables": 14,
+        "state_transition_calls": 3,
+        "state_transition_examples": 3,
+        "text_decoder_example_steps": 14,
+        "text_decoder_step_calls": 14,
+        "token_onehot_examples": 2,
+        "token_projection_example_steps": 14
+      }
+    },
+    {
+      "attempted_continuations": 0,
+      "case": 0,
+      "cpu_ns": 7419673,
+      "decisions": [
+        {
+          "action": "stop",
+          "admission_cpu_ns": 1910410,
+          "admitted": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "calibrated_confidence": [
+            0.993244,
+            0.993175,
+            0.950178,
+            0.91843,
+            0.915541
+          ],
+          "decision_index": 0,
+          "feature_cpu_ns": 1134948,
+          "head_cpu_ns": 25979,
+          "mask_scope": "Frozen content correctness gate; no native resource qualification is inherited",
+          "predicted_action_minus_stop": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "predicted_moments": [
+            0.1353352832366127,
+            0.1353352832366127,
+            0.1353352832366127,
+            0.1353352832366127,
+            0.1353352832366127
+          ],
+          "public_sha256": "7766a131a1e7e13414e828a008e70937eb2e0385eb832131136016917372e30e",
+          "remaining": 2,
+          "selected_index": 0
+        }
+      ],
+      "draw": 0,
+      "path": [],
+      "policy": "constrained_paired",
+      "scores": {
+        "crossmodal_disagreement": 0.0,
+        "image_fact": 0.0,
+        "joint_fact_correct": 1.0,
+        "joint_loss": 0.004475411958992481,
+        "pixel_mse": 0.04475412145256996,
+        "relation": 0.0,
+        "required_output_complete": 1.0,
+        "text_fact": 0.0,
+        "utility": 0.9910491704940796
+      },
+      "seed": 17,
+      "status": "completed",
+      "terminal": {
+        "offset": 204,
+        "sha256": "a17dba97105bfb10cf124db8daeb5e78f8d37355396fb1a53c88ce7c2b8727f1"
+      },
+      "view": "clean",
+      "wall_ns": 7966170,
+      "work": {
+        "bernoulli_sample_calls": 1,
+        "categorical_sample_calls": 7,
+        "committed_image_examples": 1,
+        "committed_text_examples": 1,
+        "couple_calls": 1,
+        "draft_pixel_encoder_calls": 1,
+        "draft_pixel_encoder_panel_examples": 2,
+        "emission_calls": 1,
+        "encoder_calls": 1,
+        "encoder_examples": 1,
+        "input_pixel_encoder_panel_examples": 2,
+        "pixel_decoder_calls": 1,
+        "pixel_decoder_panel_examples": 2,
+        "public_draft_sensor_calls": 1,
+        "public_draft_sensor_panel_examples": 2,
+        "public_feature_calls": 1,
+        "public_feature_examples": 1,
+        "public_input_sensor_calls": 1,
+        "public_input_sensor_panel_examples": 2,
+        "refine_semantic_calls": 1,
+        "sampled_bernoulli_variables": 1568,
+        "sampled_categorical_variables": 7,
+        "state_transition_calls": 2,
+        "state_transition_examples": 2,
+        "text_decoder_example_steps": 7,
+        "text_decoder_step_calls": 7,
+        "token_onehot_examples": 1,
+        "token_projection_example_steps": 7
+      }
+    },
+    {
+      "attempted_continuations": 2,
+      "case": 1,
+      "cpu_ns": 13602816,
+      "decisions": [
+        {
+          "action": "couple",
+          "admission_cpu_ns": 1877682,
+          "admitted": [
+            true,
+            true,
+            false,
+            true,
+            true
+          ],
+          "calibrated_confidence": [
+            0.951457,
+            0.953125,
+            0.670855,
+            0.91843,
+            0.758065
+          ],
+          "decision_index": 0,
+          "feature_cpu_ns": 1042250,
+          "head_cpu_ns": 119998,
+          "mask_scope": "Frozen content correctness gate; no native resource qualification is inherited",
+          "predicted_action_minus_stop": [
+            0.0,
+            0.043118126690387726,
+            0.08405443280935287,
+            0.07839220017194748,
+            -0.0003575235605239868
+          ],
+          "predicted_moments": [
+            0.08543660491704941,
+            0.12855473160743713,
+            0.16949103772640228,
+            0.1638288050889969,
+            0.08507908135652542
+          ],
+          "public_sha256": "66b3467cc75f9618481859ba72e01e01379f8cefd7e06d0abe12f6822bdfb30e",
+          "remaining": 2,
+          "selected_index": 4
+        },
+        {
+          "action": "refine_image",
+          "admission_cpu_ns": 1952734,
+          "admitted": [
+            true,
+            false,
+            true,
+            true,
+            false
+          ],
+          "calibrated_confidence": [
+            0.953893,
+            0.952525,
+            0.941869,
+            0.937242,
+            0.747223
+          ],
+          "decision_index": 1,
+          "feature_cpu_ns": 1124793,
+          "head_cpu_ns": 111716,
+          "mask_scope": "Frozen content correctness gate; no native resource qualification is inherited",
+          "predicted_action_minus_stop": [
+            0.0,
+            0.012552119791507721,
+            -0.02150188386440277,
+            0.020206421613693237,
+            0.003986135125160217
+          ],
+          "predicted_moments": [
+            0.11091935634613037,
+            0.12347147613763809,
+            0.0894174724817276,
+            0.1311257779598236,
+            0.11490549147129059
+          ],
+          "public_sha256": "a4c0d28e9dbdd3a74f29c0d858ec67b5698e7880097830c9e65a88998edf4687",
+          "remaining": 1,
+          "selected_index": 2
+        }
+      ],
+      "draw": 0,
+      "path": [
+        "couple",
+        "refine_image"
+      ],
+      "policy": "masked_teacher",
+      "scores": {
+        "crossmodal_disagreement": 0.0,
+        "image_fact": 0.0,
+        "joint_fact_correct": 1.0,
+        "joint_loss": 0.005363167263567448,
+        "pixel_mse": 0.05363167077302933,
+        "relation": 0.0,
+        "required_output_complete": 1.0,
+        "text_fact": 0.0,
+        "utility": 0.9892736673355103
+      },
+      "seed": 17,
+      "status": "completed",
+      "terminal": {
+        "offset": 408,
+        "sha256": "09d51b58d9d4f68cdb854b90f5080477cc20e14298820b33eeac2367fb27afd4"
+      },
+      "view": "clean",
+      "wall_ns": 14399105,
+      "work": {
+        "bernoulli_sample_calls": 3,
+        "categorical_sample_calls": 21,
+        "committed_image_examples": 3,
+        "committed_text_examples": 2,
+        "couple_calls": 2,
+        "discarded_text_examples": 1,
+        "draft_pixel_encoder_calls": 2,
+        "draft_pixel_encoder_panel_examples": 4,
+        "emission_calls": 3,
+        "encoder_calls": 1,
+        "encoder_examples": 1,
+        "input_pixel_encoder_panel_examples": 2,
+        "pixel_decoder_calls": 3,
+        "pixel_decoder_panel_examples": 6,
+        "public_draft_sensor_calls": 2,
+        "public_draft_sensor_panel_examples": 4,
+        "public_feature_calls": 2,
+        "public_feature_examples": 2,
+        "public_input_sensor_calls": 1,
+        "public_input_sensor_panel_examples": 2,
+        "refine_image_calls": 1,
+        "refine_semantic_calls": 1,
+        "sampled_bernoulli_variables": 4704,
+        "sampled_categorical_variables": 21,
+        "state_transition_calls": 4,
+        "state_transition_examples": 4,
+        "text_decoder_example_steps": 21,
+        "text_decoder_step_calls": 21,
+        "token_onehot_examples": 2,
+        "token_projection_example_steps": 21
+      }
+    },
+    {
+      "attempted_continuations": 0,
+      "case": 1,
+      "cpu_ns": 6612554,
+      "decisions": [
+        {
+          "action": "stop",
+          "admission_cpu_ns": 1853526,
+          "admitted": [
+            true,
+            true,
+            false,
+            true,
+            true
+          ],
+          "calibrated_confidence": [
+            0.951457,
+            0.953125,
+            0.670855,
+            0.91843,
+            0.758065
+          ],
+          "decision_index": 0,
+          "feature_cpu_ns": 1066576,
+          "head_cpu_ns": 23274,
+          "mask_scope": "Frozen content correctness gate; no native resource qualification is inherited",
+          "predicted_action_minus_stop": [
+            0.0,
+            0.6591012445145689,
+            0.8117239743106511,
+            0.7695346944905334,
+            0.7043214264822485
+          ],
+          "predicted_moments": [
+            0.1353352832366127,
+            0.7944365277511816,
+            0.9470592575472638,
+            0.9048699777271461,
+            0.8396567097188612
+          ],
+          "public_sha256": "66b3467cc75f9618481859ba72e01e01379f8cefd7e06d0abe12f6822bdfb30e",
+          "remaining": 2,
+          "selected_index": 0
+        }
+      ],
+      "draw": 0,
+      "path": [],
+      "policy": "constrained_paired",
+      "scores": {
+        "crossmodal_disagreement": 0.0,
+        "image_fact": 0.0,
+        "joint_fact_correct": 1.0,
+        "joint_loss": 0.0057830847799777985,
+        "pixel_mse": 0.057830847799777985,
+        "relation": 0.0,
+        "required_output_complete": 1.0,
+        "text_fact": 0.0,
+        "utility": 0.988433837890625
+      },
+      "seed": 17,
+      "status": "completed",
+      "terminal": {
+        "offset": 612,
+        "sha256": "a6a8da4a080de70577dbb3fa8556740082540383b3e4a5ecb879c73f3167756e"
+      },
+      "view": "clean",
+      "wall_ns": 7240593,
+      "work": {
+        "bernoulli_sample_calls": 1,
+        "categorical_sample_calls": 7,
+        "committed_image_examples": 1,
+        "committed_text_examples": 1,
+        "couple_calls": 1,
+        "draft_pixel_encoder_calls": 1,
+        "draft_pixel_encoder_panel_examples": 2,
+        "emission_calls": 1,
+        "encoder_calls": 1,
+        "encoder_examples": 1,
+        "input_pixel_encoder_panel_examples": 2,
+        "pixel_decoder_calls": 1,
+        "pixel_decoder_panel_examples": 2,
+        "public_draft_sensor_calls": 1,
+        "public_draft_sensor_panel_examples": 2,
+        "public_feature_calls": 1,
+        "public_feature_examples": 1,
+        "public_input_sensor_calls": 1,
+        "public_input_sensor_panel_examples": 2,
+        "refine_semantic_calls": 1,
+        "sampled_bernoulli_variables": 1568,
+        "sampled_categorical_variables": 7,
+        "state_transition_calls": 2,
+        "state_transition_examples": 2,
+        "text_decoder_example_steps": 7,
+        "text_decoder_step_calls": 7,
+        "token_onehot_examples": 1,
+        "token_projection_example_steps": 7
+      }
+    },
+    {
+      "attempted_continuations": 0,
+      "case": 0,
+      "cpu_ns": 7055019,
+      "decisions": [
+        {
+          "action": "stop",
+          "admission_cpu_ns": 1903240,
+          "admitted": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "calibrated_confidence": [
+            0.951457,
+            0.953125,
+            0.950156,
+            0.758153,
+            0.758065
+          ],
+          "decision_index": 0,
+          "feature_cpu_ns": 1106996,
+          "head_cpu_ns": 113669,
+          "mask_scope": "Frozen content correctness gate; no native resource qualification is inherited",
+          "predicted_action_minus_stop": [
+            0.0,
+            0.005884043872356415,
+            0.010429464280605316,
+            0.002614542841911316,
+            0.0035330727696418762
+          ],
+          "predicted_moments": [
+            0.0889800637960434,
+            0.09486410766839981,
+            0.09940952807664871,
+            0.09159460663795471,
+            0.09251313656568527
+          ],
+          "public_sha256": "d13278c392036d1259b9031d2bd661e82592de6a6d7e12ca875a19feba6a327a",
+          "remaining": 2,
+          "selected_index": 0
+        }
+      ],
+      "draw": 0,
+      "path": [],
+      "policy": "masked_teacher",
+      "scores": {
+        "crossmodal_disagreement": 0.0,
+        "image_fact": 0.0,
+        "joint_fact_correct": 1.0,
+        "joint_loss": 0.005122170317918062,
+        "pixel_mse": 0.05122170224785805,
+        "relation": 0.0,
+        "required_output_complete": 1.0,
+        "text_fact": 0.0,
+        "utility": 0.9897556304931641
+      },
+      "seed": 17,
+      "status": "completed",
+      "terminal": {
+        "offset": 816,
+        "sha256": "358722a76cfce3759e944cea3647075745582b451f6becbe13613c1a556059c5"
+      },
+      "view": "noise",
+      "wall_ns": 7638193,
+      "work": {
+        "bernoulli_sample_calls": 1,
+        "categorical_sample_calls": 7,
+        "committed_image_examples": 1,
+        "committed_text_examples": 1,
+        "couple_calls": 1,
+        "draft_pixel_encoder_calls": 1,
+        "draft_pixel_encoder_panel_examples": 2,
+        "emission_calls": 1,
+        "encoder_calls": 1,
+        "encoder_examples": 1,
+        "input_pixel_encoder_panel_examples": 2,
+        "pixel_decoder_calls": 1,
+        "pixel_decoder_panel_examples": 2,
+        "public_draft_sensor_calls": 1,
+        "public_draft_sensor_panel_examples": 2,
+        "public_feature_calls": 1,
+        "public_feature_examples": 1,
+        "public_input_sensor_calls": 1,
+        "public_input_sensor_panel_examples": 2,
+        "refine_semantic_calls": 1,
+        "sampled_bernoulli_variables": 1568,
+        "sampled_categorical_variables": 7,
+        "state_transition_calls": 2,
+        "state_transition_examples": 2,
+        "text_decoder_example_steps": 7,
+        "text_decoder_step_calls": 7,
+        "token_onehot_examples": 1,
+        "token_projection_example_steps": 7
+      }
+    },
+    {
+      "attempted_continuations": 0,
+      "case": 0,
+      "cpu_ns": 7665598,
+      "decisions": [
+        {
+          "action": "stop",
+          "admission_cpu_ns": 2312588,
+          "admitted": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "calibrated_confidence": [
+            0.951457,
+            0.953125,
+            0.950156,
+            0.758153,
+            0.758065
+          ],
+          "decision_index": 0,
+          "feature_cpu_ns": 1124052,
+          "head_cpu_ns": 73860,
+          "mask_scope": "Frozen content correctness gate; no native resource qualification is inherited",
+          "predicted_action_minus_stop": [
+            0.0,
+            0.20197087898203403,
+            0.06638343098969379,
+            0.26581226821259296,
+            0.3928548303395081
+          ],
+          "predicted_moments": [
+            0.19538512877167502,
+            0.39735600775370905,
+            0.2617685597613688,
+            0.461197396984268,
+            0.5882399591111831
+          ],
+          "public_sha256": "d13278c392036d1259b9031d2bd661e82592de6a6d7e12ca875a19feba6a327a",
+          "remaining": 2,
+          "selected_index": 0
+        }
+      ],
+      "draw": 0,
+      "path": [],
+      "policy": "constrained_paired",
+      "scores": {
+        "crossmodal_disagreement": 0.0,
+        "image_fact": 0.0,
+        "joint_fact_correct": 1.0,
+        "joint_loss": 0.005122170317918062,
+        "pixel_mse": 0.05122170224785805,
+        "relation": 0.0,
+        "required_output_complete": 1.0,
+        "text_fact": 0.0,
+        "utility": 0.9897556304931641
+      },
+      "seed": 17,
+      "status": "completed",
+      "terminal": {
+        "offset": 1020,
+        "sha256": "358722a76cfce3759e944cea3647075745582b451f6becbe13613c1a556059c5"
+      },
+      "view": "noise",
+      "wall_ns": 11314597,
+      "work": {
+        "bernoulli_sample_calls": 1,
+        "categorical_sample_calls": 7,
+        "committed_image_examples": 1,
+        "committed_text_examples": 1,
+        "couple_calls": 1,
+        "draft_pixel_encoder_calls": 1,
+        "draft_pixel_encoder_panel_examples": 2,
+        "emission_calls": 1,
+        "encoder_calls": 1,
+        "encoder_examples": 1,
+        "input_pixel_encoder_panel_examples": 2,
+        "pixel_decoder_calls": 1,
+        "pixel_decoder_panel_examples": 2,
+        "public_draft_sensor_calls": 1,
+        "public_draft_sensor_panel_examples": 2,
+        "public_feature_calls": 1,
+        "public_feature_examples": 1,
+        "public_input_sensor_calls": 1,
+        "public_input_sensor_panel_examples": 2,
+        "refine_semantic_calls": 1,
+        "sampled_bernoulli_variables": 1568,
+        "sampled_categorical_variables": 7,
+        "state_transition_calls": 2,
+        "state_transition_examples": 2,
+        "text_decoder_example_steps": 7,
+        "text_decoder_step_calls": 7,
+        "token_onehot_examples": 1,
+        "token_projection_example_steps": 7
+      }
+    },
+    {
+      "attempted_continuations": 2,
+      "case": 1,
+      "cpu_ns": 14671594,
+      "decisions": [
+        {
+          "action": "couple",
+          "admission_cpu_ns": 1869650,
+          "admitted": [
+            false,
+            false,
+            false,
+            true,
+            true
+          ],
+          "calibrated_confidence": [
+            0.658228,
+            0.651163,
+            0.670855,
+            0.758153,
+            0.758065
+          ],
+          "decision_index": 0,
+          "feature_cpu_ns": 1038955,
+          "head_cpu_ns": 154309,
+          "mask_scope": "Frozen content correctness gate; no native resource qualification is inherited",
+          "predicted_action_minus_stop": [
+            0.0,
+            0.03861680626869202,
+            0.08845239132642746,
+            0.08974575251340866,
+            0.01180412620306015
+          ],
+          "predicted_moments": [
+            0.08111370354890823,
+            0.11973050981760025,
+            0.1695660948753357,
+            0.1708594560623169,
+            0.09291782975196838
+          ],
+          "public_sha256": "8f932c10ec6df39f36c7fe94d93efb2f2e76ce7bc381453abe17cb4ddd715309",
+          "remaining": 2,
+          "selected_index": 4
+        },
+        {
+          "action": "refine_image",
+          "admission_cpu_ns": 2003909,
+          "admitted": [
+            true,
+            false,
+            true,
+            true,
+            false
+          ],
+          "calibrated_confidence": [
+            0.979224,
+            0.981116,
+            0.941869,
+            0.937242,
+            0.747223
+          ],
+          "decision_index": 1,
+          "feature_cpu_ns": 1097752,
+          "head_cpu_ns": 111876,
+          "mask_scope": "Frozen content correctness gate; no native resource qualification is inherited",
+          "predicted_action_minus_stop": [
+            0.0,
+            0.007617667317390442,
+            -0.025235407054424286,
+            0.008600234985351562,
+            -0.000694863498210907
+          ],
+          "predicted_moments": [
+            0.10533655434846878,
+            0.11295422166585922,
+            0.0801011472940445,
+            0.11393678933382034,
+            0.10464169085025787
+          ],
+          "public_sha256": "77607a8ac3bbe8a6602c84655a059c92665d9f4d0076346552ab906baa0e6c27",
+          "remaining": 1,
+          "selected_index": 2
+        }
+      ],
+      "draw": 0,
+      "path": [
+        "couple",
+        "refine_image"
+      ],
+      "policy": "masked_teacher",
+      "scores": {
+        "crossmodal_disagreement": 0.0,
+        "image_fact": 0.0,
+        "joint_fact_correct": 1.0,
+        "joint_loss": 0.005227362271398306,
+        "pixel_mse": 0.052273623645305634,
+        "relation": 0.0,
+        "required_output_complete": 1.0,
+        "text_fact": 0.0,
+        "utility": 0.9895452857017517
+      },
+      "seed": 17,
+      "status": "completed",
+      "terminal": {
+        "offset": 1224,
+        "sha256": "bbd83cd971201df67f3f14a1d40ebc5097ac3badb557a5875dfd0d95c8261da2"
+      },
+      "view": "noise",
+      "wall_ns": 15902705,
+      "work": {
+        "bernoulli_sample_calls": 3,
+        "categorical_sample_calls": 21,
+        "committed_image_examples": 3,
+        "committed_text_examples": 2,
+        "couple_calls": 2,
+        "discarded_text_examples": 1,
+        "draft_pixel_encoder_calls": 2,
+        "draft_pixel_encoder_panel_examples": 4,
+        "emission_calls": 3,
+        "encoder_calls": 1,
+        "encoder_examples": 1,
+        "input_pixel_encoder_panel_examples": 2,
+        "pixel_decoder_calls": 3,
+        "pixel_decoder_panel_examples": 6,
+        "public_draft_sensor_calls": 2,
+        "public_draft_sensor_panel_examples": 4,
+        "public_feature_calls": 2,
+        "public_feature_examples": 2,
+        "public_input_sensor_calls": 1,
+        "public_input_sensor_panel_examples": 2,
+        "refine_image_calls": 1,
+        "refine_semantic_calls": 1,
+        "sampled_bernoulli_variables": 4704,
+        "sampled_categorical_variables": 21,
+        "state_transition_calls": 4,
+        "state_transition_examples": 4,
+        "text_decoder_example_steps": 21,
+        "text_decoder_step_calls": 21,
+        "token_onehot_examples": 2,
+        "token_projection_example_steps": 21
+      }
+    },
+    {
+      "attempted_continuations": 1,
+      "case": 1,
+      "cpu_ns": 14320765,
+      "decisions": [
+        {
+          "action": "couple",
+          "admission_cpu_ns": 2056738,
+          "admitted": [
+            false,
+            false,
+            false,
+            true,
+            true
+          ],
+          "calibrated_confidence": [
+            0.658228,
+            0.651163,
+            0.670855,
+            0.758153,
+            0.758065
+          ],
+          "decision_index": 0,
+          "feature_cpu_ns": 1562873,
+          "head_cpu_ns": 23095,
+          "mask_scope": "Frozen content correctness gate; no native resource qualification is inherited",
+          "predicted_action_minus_stop": [
+            0.0,
+            1.1745340997975675,
+            1.209894331091895,
+            1.508420939628135,
+            1.022180679031662
+          ],
+          "predicted_moments": [
+            0.2369356181473381,
+            1.4114697179449056,
+            1.4468299492392331,
+            1.745356557775473,
+            1.2591162971790002
+          ],
+          "public_sha256": "8f932c10ec6df39f36c7fe94d93efb2f2e76ce7bc381453abe17cb4ddd715309",
+          "remaining": 2,
+          "selected_index": 4
+        },
+        {
+          "action": "stop",
+          "admission_cpu_ns": 2114213,
+          "admitted": [
+            true,
+            false,
+            true,
+            true,
+            false
+          ],
+          "calibrated_confidence": [
+            0.979224,
+            0.981116,
+            0.941869,
+            0.937242,
+            0.747223
+          ],
+          "decision_index": 1,
+          "feature_cpu_ns": 1132484,
+          "head_cpu_ns": 29204,
+          "mask_scope": "Frozen content correctness gate; no native resource qualification is inherited",
+          "predicted_action_minus_stop": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "predicted_moments": [
+            0.1353352832366127,
+            0.1353352832366127,
+            0.1353352832366127,
+            0.1353352832366127,
+            0.1353352832366127
+          ],
+          "public_sha256": "77607a8ac3bbe8a6602c84655a059c92665d9f4d0076346552ab906baa0e6c27",
+          "remaining": 1,
+          "selected_index": 0
+        }
+      ],
+      "draw": 0,
+      "path": [
+        "couple"
+      ],
+      "policy": "constrained_paired",
+      "scores": {
+        "crossmodal_disagreement": 0.0,
+        "image_fact": 0.0,
+        "joint_fact_correct": 1.0,
+        "joint_loss": 0.00573306530714035,
+        "pixel_mse": 0.0573306530714035,
+        "relation": 0.0,
+        "required_output_complete": 1.0,
+        "text_fact": 0.0,
+        "utility": 0.9885338544845581
+      },
+      "seed": 17,
+      "status": "completed",
+      "terminal": {
+        "offset": 1428,
+        "sha256": "9c37143dbb12a67047241aa0c4a0b122283be0ed5d938f3013951b28fdf90a54"
+      },
+      "view": "noise",
+      "wall_ns": 15316426,
+      "work": {
+        "bernoulli_sample_calls": 2,
+        "categorical_sample_calls": 14,
+        "committed_image_examples": 2,
+        "committed_text_examples": 2,
+        "couple_calls": 2,
+        "draft_pixel_encoder_calls": 2,
+        "draft_pixel_encoder_panel_examples": 4,
+        "emission_calls": 2,
+        "encoder_calls": 1,
+        "encoder_examples": 1,
+        "input_pixel_encoder_panel_examples": 2,
+        "pixel_decoder_calls": 2,
+        "pixel_decoder_panel_examples": 4,
+        "public_draft_sensor_calls": 2,
+        "public_draft_sensor_panel_examples": 4,
+        "public_feature_calls": 2,
+        "public_feature_examples": 2,
+        "public_input_sensor_calls": 1,
+        "public_input_sensor_panel_examples": 2,
+        "refine_semantic_calls": 1,
+        "sampled_bernoulli_variables": 3136,
+        "sampled_categorical_variables": 14,
+        "state_transition_calls": 3,
+        "state_transition_examples": 3,
+        "text_decoder_example_steps": 14,
+        "text_decoder_step_calls": 14,
+        "token_onehot_examples": 2,
+        "token_projection_example_steps": 14
+      }
+    },
+    {
+      "attempted_continuations": 0,
+      "case": 0,
+      "cpu_ns": 9807734,
+      "decisions": [
+        {
+          "action": "reject",
+          "admission_cpu_ns": 2407820,
+          "admitted": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "calibrated_confidence": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "decision_index": 0,
+          "feature_cpu_ns": 1770542,
+          "head_cpu_ns": 146969,
+          "mask_scope": "Frozen content correctness gate; no native resource qualification is inherited",
+          "predicted_action_minus_stop": [
+            0.0,
+            -0.06886148452758789,
+            0.05875110626220703,
+            -0.05923795700073242,
+            0.2221367359161377
+          ],
+          "predicted_moments": [
+            2.858553409576416,
+            2.789691925048828,
+            2.917304515838623,
+            2.7993154525756836,
+            3.0806901454925537
+          ],
+          "public_sha256": "3845e3c68b31a2bfa29e8b1226b0711860c87846411a238fa6ab5f6d02f852c4",
+          "remaining": 2,
+          "selected_index": -1
+        }
+      ],
+      "draw": 0,
+      "path": [],
+      "policy": "masked_teacher",
+      "seed": 17,
+      "status": "rejected",
+      "view": "both_missing",
+      "wall_ns": 10274255,
+      "work": {
+        "bernoulli_sample_calls": 1,
+        "categorical_sample_calls": 7,
+        "committed_image_examples": 1,
+        "committed_text_examples": 1,
+        "couple_calls": 1,
+        "draft_pixel_encoder_calls": 1,
+        "draft_pixel_encoder_panel_examples": 2,
+        "emission_calls": 1,
+        "encoder_calls": 1,
+        "encoder_examples": 1,
+        "input_pixel_encoder_panel_examples": 2,
+        "pixel_decoder_calls": 1,
+        "pixel_decoder_panel_examples": 2,
+        "public_draft_sensor_calls": 1,
+        "public_draft_sensor_panel_examples": 2,
+        "public_feature_calls": 1,
+        "public_feature_examples": 1,
+        "public_input_sensor_calls": 1,
+        "public_input_sensor_panel_examples": 2,
+        "refine_semantic_calls": 1,
+        "sampled_bernoulli_variables": 1568,
+        "sampled_categorical_variables": 7,
+        "state_transition_calls": 2,
+        "state_transition_examples": 2,
+        "text_decoder_example_steps": 7,
+        "text_decoder_step_calls": 7,
+        "token_onehot_examples": 1,
+        "token_projection_example_steps": 7
+      }
+    },
+    {
+      "attempted_continuations": 0,
+      "case": 0,
+      "cpu_ns": 9153921,
+      "decisions": [
+        {
+          "action": "reject",
+          "admission_cpu_ns": 2439818,
+          "admitted": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "calibrated_confidence": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "decision_index": 0,
+          "feature_cpu_ns": 1840226,
+          "head_cpu_ns": 29974,
+          "mask_scope": "Frozen content correctness gate; no native resource qualification is inherited",
+          "predicted_action_minus_stop": [
+            0.0,
+            4.4012338825789445,
+            4.4012338825789445,
+            4.4012338825789445,
+            4.4012338825789445
+          ],
+          "predicted_moments": [
+            3.0471717467341892,
+            7.448405629313134,
+            7.448405629313134,
+            7.448405629313134,
+            7.448405629313134
+          ],
+          "public_sha256": "3845e3c68b31a2bfa29e8b1226b0711860c87846411a238fa6ab5f6d02f852c4",
+          "remaining": 2,
+          "selected_index": -1
+        }
+      ],
+      "draw": 0,
+      "path": [],
+      "policy": "constrained_paired",
+      "seed": 17,
+      "status": "rejected",
+      "view": "both_missing",
+      "wall_ns": 9432705,
+      "work": {
+        "bernoulli_sample_calls": 1,
+        "categorical_sample_calls": 7,
+        "committed_image_examples": 1,
+        "committed_text_examples": 1,
+        "couple_calls": 1,
+        "draft_pixel_encoder_calls": 1,
+        "draft_pixel_encoder_panel_examples": 2,
+        "emission_calls": 1,
+        "encoder_calls": 1,
+        "encoder_examples": 1,
+        "input_pixel_encoder_panel_examples": 2,
+        "pixel_decoder_calls": 1,
+        "pixel_decoder_panel_examples": 2,
+        "public_draft_sensor_calls": 1,
+        "public_draft_sensor_panel_examples": 2,
+        "public_feature_calls": 1,
+        "public_feature_examples": 1,
+        "public_input_sensor_calls": 1,
+        "public_input_sensor_panel_examples": 2,
+        "refine_semantic_calls": 1,
+        "sampled_bernoulli_variables": 1568,
+        "sampled_categorical_variables": 7,
+        "state_transition_calls": 2,
+        "state_transition_examples": 2,
+        "text_decoder_example_steps": 7,
+        "text_decoder_step_calls": 7,
+        "token_onehot_examples": 1,
+        "token_projection_example_steps": 7
+      }
+    },
+    {
+      "attempted_continuations": 0,
+      "case": 1,
+      "cpu_ns": 8638595,
+      "decisions": [
+        {
+          "action": "reject",
+          "admission_cpu_ns": 2206661,
+          "admitted": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "calibrated_confidence": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "decision_index": 0,
+          "feature_cpu_ns": 1494042,
+          "head_cpu_ns": 185786,
+          "mask_scope": "Frozen content correctness gate; no native resource qualification is inherited",
+          "predicted_action_minus_stop": [
+            0.0,
+            0.6205112934112549,
+            0.4942786693572998,
+            0.8216667175292969,
+            1.0797786712646484
+          ],
+          "predicted_moments": [
+            2.179241418838501,
+            2.799752712249756,
+            2.673520088195801,
+            3.000908136367798,
+            3.2590200901031494
+          ],
+          "public_sha256": "d4481a08061c0b88cbd2eaca402ab4febd38d38b99bdc2d919d38575f56074b8",
+          "remaining": 2,
+          "selected_index": -1
+        }
+      ],
+      "draw": 0,
+      "path": [],
+      "policy": "masked_teacher",
+      "seed": 17,
+      "status": "rejected",
+      "view": "both_missing",
+      "wall_ns": 8896399,
+      "work": {
+        "bernoulli_sample_calls": 1,
+        "categorical_sample_calls": 7,
+        "committed_image_examples": 1,
+        "committed_text_examples": 1,
+        "couple_calls": 1,
+        "draft_pixel_encoder_calls": 1,
+        "draft_pixel_encoder_panel_examples": 2,
+        "emission_calls": 1,
+        "encoder_calls": 1,
+        "encoder_examples": 1,
+        "input_pixel_encoder_panel_examples": 2,
+        "pixel_decoder_calls": 1,
+        "pixel_decoder_panel_examples": 2,
+        "public_draft_sensor_calls": 1,
+        "public_draft_sensor_panel_examples": 2,
+        "public_feature_calls": 1,
+        "public_feature_examples": 1,
+        "public_input_sensor_calls": 1,
+        "public_input_sensor_panel_examples": 2,
+        "refine_semantic_calls": 1,
+        "sampled_bernoulli_variables": 1568,
+        "sampled_categorical_variables": 7,
+        "state_transition_calls": 2,
+        "state_transition_examples": 2,
+        "text_decoder_example_steps": 7,
+        "text_decoder_step_calls": 7,
+        "token_onehot_examples": 1,
+        "token_projection_example_steps": 7
+      }
+    },
+    {
+      "attempted_continuations": 0,
+      "case": 1,
+      "cpu_ns": 8875277,
+      "decisions": [
+        {
+          "action": "reject",
+          "admission_cpu_ns": 2427019,
+          "admitted": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "calibrated_confidence": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "decision_index": 0,
+          "feature_cpu_ns": 1668230,
+          "head_cpu_ns": 28122,
+          "mask_scope": "Frozen content correctness gate; no native resource qualification is inherited",
+          "predicted_action_minus_stop": [
+            0.0,
+            4.469506374391046,
+            4.469506374391046,
+            4.469506374391046,
+            4.469506374391046
+          ],
+          "predicted_moments": [
+            2.978899254922088,
+            7.448405629313134,
+            7.448405629313134,
+            7.448405629313134,
+            7.448405629313134
+          ],
+          "public_sha256": "d4481a08061c0b88cbd2eaca402ab4febd38d38b99bdc2d919d38575f56074b8",
+          "remaining": 2,
+          "selected_index": -1
+        }
+      ],
+      "draw": 0,
+      "path": [],
+      "policy": "constrained_paired",
+      "seed": 17,
+      "status": "rejected",
+      "view": "both_missing",
+      "wall_ns": 9149125,
+      "work": {
+        "bernoulli_sample_calls": 1,
+        "categorical_sample_calls": 7,
+        "committed_image_examples": 1,
+        "committed_text_examples": 1,
+        "couple_calls": 1,
+        "draft_pixel_encoder_calls": 1,
+        "draft_pixel_encoder_panel_examples": 2,
+        "emission_calls": 1,
+        "encoder_calls": 1,
+        "encoder_examples": 1,
+        "input_pixel_encoder_panel_examples": 2,
+        "pixel_decoder_calls": 1,
+        "pixel_decoder_panel_examples": 2,
+        "public_draft_sensor_calls": 1,
+        "public_draft_sensor_panel_examples": 2,
+        "public_feature_calls": 1,
+        "public_feature_examples": 1,
+        "public_input_sensor_calls": 1,
+        "public_input_sensor_panel_examples": 2,
+        "refine_semantic_calls": 1,
+        "sampled_bernoulli_variables": 1568,
+        "sampled_categorical_variables": 7,
+        "state_transition_calls": 2,
+        "state_transition_examples": 2,
+        "text_decoder_example_steps": 7,
+        "text_decoder_step_calls": 7,
+        "token_onehot_examples": 1,
+        "token_projection_example_steps": 7
+      }
+    }
+  ],
+  "requests": 12,
+  "status": "passed"
+}

@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.closure.frozen-neural-waveform-reference.v1",
+  "backend": "Piper en_US-ljspeech-medium",
+  "voice_revision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+  "voice_model_sha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+  "trained_in_this_experiment": false,
+  "distinct_from": "v7_media.piper_decoder's libritts-high model, which is not the available local asset",
+  "conditioning": "Only current shared-state predicted probabilities; argmax selects a digit word for each public event; run neural ONNX synthesis on every call",
+  "synthesis": {"length_scale": 0.8, "noise_scale": 0.0, "noise_w_scale": 0.0, "volume": 0.8, "sample_rate": 8000, "trim_relative_threshold": 0.01, "silence_margin_samples": 160, "max_word_samples": 7680, "word_samples": 8000, "onnx_threads": 1},
+  "output_observer": "Consensus of independent target-free unrestricted-vocabulary Vosk word events and Whisper tiny.en complete transcript; no prompts, candidate labels, grammar or expected text supplied",
+  "event_audit": "Vosk must observe exactly one digit word in each one-second event with start/end tolerance 0.08 seconds; Whisper must independently agree on both digits",
+  "whisper_parser": "Digit words and single digits; a two-digit numeric token may be separated under the fixed two-event output grammar; other lexical tokens fail",
+  "audit_cache": "Offline measurement only, keyed by complete actual PCM bytes; every cache hit is disclosed; never cache generated waveforms",
+  "qualification": "Keep FSDD neural auditor/input qualification separate from external ASR waveform-domain qualification; the latter is actual conditional synthesis scored by independent ASR",
+  "thresholds": {"real_input_audio_observer_min": 0.85, "audio_input_min": 0.85, "conditional_output_audio_min": 0.8, "video_min": 0.9, "per_mode_joint_min": 0.75, "distinct_video_frames_min": 6},
+  "comparison": "Retain all VAE negatives and hard/soft states. Piper uses argmax in both conditions, so its audio contrast is identically conditioned and is not evidence for soft/hard superiority.",
+  "test_opened": false
+}

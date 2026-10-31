@@ -1,0 +1,77 @@
+{
+  "CI_queried_or_managed": false,
+  "all_registered_model_experiments_completed": true,
+  "all_requested_success_gates_closed": false,
+  "archives": {
+    "bytes": 1159644739,
+    "count": 8,
+    "index": "EVIDENCE.json",
+    "index_sha256": "5d481e39490e5ceec9560d850a9e3282504f94c227a4479f52f663e466619189",
+    "members_including_manifests": 319660,
+    "per_member_hashes_verified_after_each_seal": true,
+    "raw_upload_performed": false,
+    "whole_archive_final_hashes_verified": true
+  },
+  "format": {
+    "exit_code": 0,
+    "implementation_files_sha_unchanged": 131,
+    "receipt": "evidence/FINAL_FORMAT.json",
+    "receipt_sha256": "d48c4f2abe746dfd940e2a8ae3cae2ad4f976f168db4a8edf1b86f9b75a89b00",
+    "scope": "Original just fmt default changed-file scope. Not a full repository format or test-suite claim. No model, ASR, experiment or CI rerun."
+  },
+  "independent_root_document_review": {
+    "documents": {
+      "EVIDENCE.json": "5d481e39490e5ceec9560d850a9e3282504f94c227a4479f52f663e466619189",
+      "EVIDENCE.md": "6e6bbacbfc2e8fe98add446b84e69fd6953ce783a795f46131f0dc82e5dbbf7d",
+      "METHOD.md": "96c278feecd5d53b27dea1ce4b206f945869e020b544a69aa626775134ca68dd",
+      "README.md": "036abefe23ccd1bdfba56acbe5002496fd12eddbfbbedf4dd8e108a2a4a8bdff",
+      "RESTORATION.md": "dea96ab3eb8953a5daf6e90f45d5a08b754dcab26d490fd93fb090ae38799d1c",
+      "STATUS.json": "8a5b90f7b589167d7dad5975cb81c36e0ce7a483c00f833cae5c3dfedd5d75fd"
+    },
+    "local_references_checked": 59,
+    "missing_references": [],
+    "open_findings": [],
+    "path": "evidence/ROOT_DOC_FINAL_REVIEW.json",
+    "sha256": "5550efc59f43f393ac8660b7e66cd02729e0c4538a57a6feb5bb57277d1f0280",
+    "status": "passed"
+  },
+  "integration_before_final_document_commit": {
+    "CI_consulted": false,
+    "changed_paths_since_previous_phase": 358,
+    "changes_outside_next": [],
+    "checked_by": "Git blob identity of every tracked next-stage workspace file against index; root final documentation changes remain explicitly pending",
+    "implementation_commit": "8e0182d48c0bd80daf58790985279dd391072d41",
+    "model_or_experiment_reruns": false,
+    "pending_tracked_root_documents": [
+      "experiments/multimodal_output_portfolio/next_20261025/METHOD.md",
+      "experiments/multimodal_output_portfolio/next_20261025/RESTORATION.md"
+    ],
+    "previous_phase_commit": "3e86e0fc17684562e6b4e6c6a85c077bbfd02da2",
+    "recorded_unix_ns": 1792987570270959840,
+    "schema": "hepta.next.final-integration.v1",
+    "tracked_next_files": 358
+  },
+  "limitations": [
+    "Default just fmt did not request a full repository format check.",
+    "A source writer is not an independent reset owner stream in the native experiments.",
+    "Correctness admission qualification does not qualify NDU moments or action differences.",
+    "Media and joint four-modality execution are separate from native text/image execution.",
+    "Evidence completeness does not imply passing scientific gates, global optimality, a portable environment image or production authority."
+  ],
+  "optional_model_or_statistical_reruns_after_format": false,
+  "production_authority": "deny_all",
+  "production_promotion": false,
+  "recorded_unix_ns": 1792987629355581546,
+  "schema": "hepta.next.final-validation.v1",
+  "scientific_audit_receipts": [
+    "control/review/AUDIT.json",
+    "action_value/review/AUDIT.json",
+    "native/AUDIT.json",
+    "native_h2/review/RESOURCE_STATUS_REVIEW.json",
+    "native_h2/review/INDIVIDUAL_TICK_REVIEW.json",
+    "media/repair/bridge_v2/review/COMPLETED_REVIEW.json",
+    "joint/review/AUDIT.json"
+  ],
+  "scope": "Local delivery/integrity verification. This is not a statement that all scientific gates passed or production is qualified.",
+  "status": "passed_with_explicit_scientific_failures"
+}

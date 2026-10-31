@@ -1,0 +1,56 @@
+{
+  "all_passed": true,
+  "binary_sha256": "bf08b491479b1eb68de03f88b62ea0031704f7f024cfb63afea78f25e04af442",
+  "checks": [
+    {
+      "actual_verification_path": "/workspace/scratch/87e43aa872f5/ndu-runs/next-native/qualification-001/verification.json",
+      "actual_verification_sha256": "9565d3f6080413ab2cfb550dbc5625c072915acd5945dd0bb20d5fedf03d531c",
+      "binary_sha256": "bf08b491479b1eb68de03f88b62ea0031704f7f024cfb63afea78f25e04af442",
+      "command": [
+        "/tmp/hepta-ndu-next-native-h2/build-001/hepta-native-ndu-online",
+        "/tmp/hepta-ndu-next-native-h2/unqualified-startup-001/actual-H1-qualification.json",
+        "b6e10019531e0ac6f89f5f20c4230c711e62dcd322c3bf043a9f2f539338cb04",
+        "/tmp/hepta-ndu-next-native-h2/unqualified-startup-001/actual-H1-qualification-must-not-exist",
+        "new"
+      ],
+      "descriptor_sha256": "b6e10019531e0ac6f89f5f20c4230c711e62dcd322c3bf043a9f2f539338cb04",
+      "exit_code": 1,
+      "expected_qualification_rejection": true,
+      "forged_qualification": false,
+      "name": "actual-H1-qualification",
+      "owner_state_created": false,
+      "peak_rss_bytes": 12095488,
+      "stderr": "Error: \"Frozen complete study qualification rejected\"\n",
+      "system_seconds": 0.0,
+      "user_seconds": 0.002077,
+      "wall_ns": 2967185
+    },
+    {
+      "actual_verification_path": "/tmp/hepta-ndu-next-native-h2/development-002/development.json",
+      "actual_verification_sha256": "ae5ee216c35304807c857fe8dbb4633cb2116bf0231fe6a6720a154143b6b980",
+      "binary_sha256": "bf08b491479b1eb68de03f88b62ea0031704f7f024cfb63afea78f25e04af442",
+      "command": [
+        "/tmp/hepta-ndu-next-native-h2/build-001/hepta-native-ndu-online",
+        "/tmp/hepta-ndu-next-native-h2/unqualified-startup-001/actual-failed-H2-development.json",
+        "7353a804418550e939ecb6305c916b7b68c8e5e10ca18d0f7b655797b0e47564",
+        "/tmp/hepta-ndu-next-native-h2/unqualified-startup-001/actual-failed-H2-development-must-not-exist",
+        "new"
+      ],
+      "descriptor_sha256": "7353a804418550e939ecb6305c916b7b68c8e5e10ca18d0f7b655797b0e47564",
+      "exit_code": 1,
+      "expected_qualification_rejection": true,
+      "forged_qualification": false,
+      "name": "actual-failed-H2-development",
+      "owner_state_created": false,
+      "peak_rss_bytes": 13275136,
+      "stderr": "Error: \"Frozen complete study qualification rejected\"\n",
+      "system_seconds": 0.0,
+      "user_seconds": 0.001369,
+      "wall_ns": 1527247
+    }
+  ],
+  "new_source_outcomes_opened": false,
+  "original_H1_descriptor_sha256": "a8bdd7872055cb0579e7e2680a9caf186fee7415fc7e1694eeab8d93f948116d",
+  "production_authority": false,
+  "schema": "hepta.next.native-h2-unqualified-rejection.v1"
+}

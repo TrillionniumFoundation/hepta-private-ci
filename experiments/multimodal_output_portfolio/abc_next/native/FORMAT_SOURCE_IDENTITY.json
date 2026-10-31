@@ -1,0 +1,62 @@
+{
+  "all_nine_executed_sources_match_original": true,
+  "cause": "A concurrent global just fmt ran before the planned original-source commit. Only exact hash-matching retained executed source was restored. No reserved data were reread, no model or calibration changed.",
+  "files": [
+    {
+      "executed_sha256": "6c7ce9b3ca8eeed5b4ef69fb2a02f6dab6b89bb509085a6f0b5486c81906f839",
+      "path": "experiments/multimodal_output_portfolio/abc_next/native/collect.py",
+      "restored_from_exact_execution_source": false,
+      "sha256_observed_after_global_fmt": "6c7ce9b3ca8eeed5b4ef69fb2a02f6dab6b89bb509085a6f0b5486c81906f839"
+    },
+    {
+      "executed_sha256": "fdf2e8ab36f5fe7d38fd10edcb2a48cdb31f05b2572ac2d341df5ec7782d9a95",
+      "path": "experiments/multimodal_output_portfolio/abc_next/native/features.py",
+      "restored_from_exact_execution_source": false,
+      "sha256_observed_after_global_fmt": "fdf2e8ab36f5fe7d38fd10edcb2a48cdb31f05b2572ac2d341df5ec7782d9a95"
+    },
+    {
+      "executed_sha256": "4e9e6d9a0303629daa05fe1abb158c33cff9f55dca0fee5dc74f31ecda37ef70",
+      "path": "experiments/multimodal_output_portfolio/abc_next/native/qualify.py",
+      "restored_from_exact_execution_source": false,
+      "sha256_observed_after_global_fmt": "4e9e6d9a0303629daa05fe1abb158c33cff9f55dca0fee5dc74f31ecda37ef70"
+    },
+    {
+      "executed_sha256": "c423df3519d05d76dd485a60f7539a7406906cd4c05e734966f5d111eef7a1fa",
+      "path": "experiments/multimodal_output_portfolio/abc_next/native/packet.py",
+      "restored_from_exact_execution_source": false,
+      "sha256_observed_after_global_fmt": "c423df3519d05d76dd485a60f7539a7406906cd4c05e734966f5d111eef7a1fa"
+    },
+    {
+      "executed_sha256": "3e067de8a4653fdeb8b85068feebeef2c2bb740d5fe09f8d9f4851c43ccf02f2",
+      "path": "experiments/multimodal_output_portfolio/abc_next/native/head.rs",
+      "restored_from_exact_execution_source": true,
+      "sha256_observed_after_global_fmt": "8b9a169072c3192fc4a91cd7b427c4ac3b080cd28d244bca85654b48930ddbff"
+    },
+    {
+      "executed_sha256": "27a8309398ef63818423ef7f06e8445a68954a6edb9160aa9d7bece9a8ab00b0",
+      "path": "experiments/multimodal_output_portfolio/abc_next/native/measure.rs",
+      "restored_from_exact_execution_source": false,
+      "sha256_observed_after_global_fmt": "27a8309398ef63818423ef7f06e8445a68954a6edb9160aa9d7bece9a8ab00b0"
+    },
+    {
+      "executed_sha256": "18804e33d6c3f506dc8f7112079e937b7e60192a667ef8558845897e96fe1ffd",
+      "path": "experiments/multimodal_output_portfolio/abc_next/native/runtime_profile.rs",
+      "restored_from_exact_execution_source": true,
+      "sha256_observed_after_global_fmt": "9eddfae9d8c849ea12d84582db6371b4223366bd329f53c4c55d62652484503c"
+    },
+    {
+      "executed_sha256": "cb900abc91a3bfe7635893551e5c67f4fea440627cace6b69db17c43c4254bef",
+      "path": "experiments/multimodal_output_portfolio/abc_next/native/main.rs",
+      "restored_from_exact_execution_source": true,
+      "sha256_observed_after_global_fmt": "905579a0bf272756499e574ec23ac07aef2ccc8bcdf3b7156516a22c8957a45b"
+    },
+    {
+      "executed_sha256": "008ddf914db7afaf72f322936ed10b18cd4dc24c253ac5bbec1f512e0e69e9d5",
+      "path": "experiments/multimodal_output_portfolio/abc_next/native/proposal.rs",
+      "restored_from_exact_execution_source": true,
+      "sha256_observed_after_global_fmt": "44f8a7c5d755c0440c31157b944403960afdb155bbdd230ed6b35c68c2f50a36"
+    }
+  ],
+  "recorded_unix_ns": 1792909866279318463,
+  "schema": "hepta.abc3.format-source-identity-recovery.v1"
+}

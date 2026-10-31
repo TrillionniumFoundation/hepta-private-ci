@@ -1,0 +1,33 @@
+{
+  "archive_sha256": "ddbdf10b4397c8538183df8fa7c16f08c5fba226a304ff7cb55574ddb97e951e",
+  "base_parameters_sha256": "3bdb3955667243563b8d3ffeb767b58c6d74b858933a349fa1befe18db7cfaff",
+  "base_snapshot_sha256": "fcccf9b1a113c3fb4189c139add357b34a39837560eddd6d4b1f3ce3acbd673b",
+  "file_sha256": {
+    "audit-observer.pt": "cd560d4ec2f45cef6a0f4db9809b902ea68833c8693798f7597135a83a6e3589",
+    "forecast.json": "5f6690d0843fc6882c1be8272af608fd4e37c3bcddb6e157af8e383338dccf89",
+    "observer.json": "3c5062afeff0f9cbaff333c48f7899ae486e5eca67f60103bad68e1b12897f7d",
+    "protocol.json": "b45d60a3dcd4de13493c20be5b8649692163ebe0674b58d8957c3919097e7de5",
+    "reward-observer.pt": "a9cfe78a08b9192ba9d8fe9c144de29ef5d3b1e9cd6ed236d01d170d32034210",
+    "seed-17-terminal_entropic_ndu-forecast.pt": "6c058399c0f66a21af873a80a554fd78b1017db97bd74344705fb5bd3cab1cae",
+    "seed-17-terminal_entropic_ndu.pt": "8fa76a13cdeee48e41b84e29211659a065d9573e2fdfecc4281f882248b508b6",
+    "training.json": "ae3016eee4e08574a1524c7d05c0c44b6f89222a3df28a48973a34352be1fffa"
+  },
+  "forecast_sha256": "a0fb54d1a48817531010c8365450ad250fbb18bb68bf3454a24304eced28fc09",
+  "gate_parameters_sha256": "b5b49221fa930df8f3999f0a432d92efe084645ebfb1eb0485eb27bfde100167",
+  "historical_fixed_sequence": [
+    "refine_semantic",
+    "refine_image",
+    "refine_text"
+  ],
+  "historical_rollout_source_exact": true,
+  "observer_parameters_sha256": {
+    "audit": "b02514987ea2986321e00652e0823111d30ebb79104ff85eb88ef0eae9e35474",
+    "reward": "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0"
+  },
+  "rollout_source_sha256": "ee93e4e5d29f645ff7da09c348dad6c804be301b4996e4fda5284421f4aa1abc",
+  "snapshot_sha256": "e3a4a72e61925b95a5eee3c7db8a25fbef6450051dc84f736fcd33d6240ae022",
+  "training_reexecuted": false,
+  "training_seeds": [
+    17
+  ]
+}

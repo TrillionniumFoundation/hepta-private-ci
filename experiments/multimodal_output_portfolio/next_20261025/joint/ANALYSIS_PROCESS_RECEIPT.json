@@ -1,0 +1,25 @@
+{
+  "cgroup_memory_events": "low 0\nhigh 0\nmax 3874272\noom 12\noom_kill 3\noom_group_kill 0\n",
+  "child_system_seconds": 0.180419,
+  "child_user_seconds": 3.338848,
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-B",
+    "-m",
+    "experiments.multimodal_output_portfolio.next_20261025.joint.analyze",
+    "--run",
+    "/tmp/hepta-ndu-next-joint/confirmation-001",
+    "--protocol",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/joint/PROTOCOL.json",
+    "--training",
+    "/tmp/hepta-ndu-next-joint/training-001",
+    "--output",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/joint/RESULT.json"
+  ],
+  "entrypoint_sha256": "38c1ae69eba27035dfa6d98b42a497e52323e25c440e69e43a2214f024bb2b7d",
+  "exit_code": 0,
+  "log_sha256": "102364d1c10c9e405ae504bf4a35ec40cf6feed4f17334448538aa54f8c01b70",
+  "peak_rss_bytes": 37298176,
+  "scope": "One whole analysis subprocess; no model or ASR rerun",
+  "wall_ns": 4231607265
+}

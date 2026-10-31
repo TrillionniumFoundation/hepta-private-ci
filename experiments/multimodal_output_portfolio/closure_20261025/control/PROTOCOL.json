@@ -1,0 +1,151 @@
+{
+  "authority": "research_only_no_parameter_install",
+  "evaluation": {
+    "actual_media": "204 bytes per terminal, lossless 1568 binary pixels plus 8 uint8 token IDs; calibration drafts in gzip binary stream; logs gzip",
+    "bootstrap_replicates": 2000,
+    "bootstrap_seed": 20261025481,
+    "future_namespace": "closure-20261025-control-future-v1",
+    "future_stream": "seed, source case, view, draw, committed action path; excludes policy",
+    "initial_draft_shared_across_future_draws": true,
+    "initial_namespace": "closure-20261025-control-initial-v1",
+    "new_future_draws": 2,
+    "no_further_selection_or_retraining": true,
+    "observation_namespace": "closure-20261025-control-observation-v1",
+    "oracle_scope": "Empirical table maximum and sampled pairwise ranking errors are hindsight diagnostics, never online-achievable optimality certificates",
+    "pair_count": 32,
+    "pair_start": 448,
+    "paired_actor_cost": "Both standalone alternatives execute both small heads; report this actual diagnostic implementation, no actor-only cost claim",
+    "policies": [
+      "cached_teacher",
+      "paired_critic",
+      "distilled_actor",
+      "selected_gate"
+    ],
+    "prices_utility_per_actual_ms": [
+      0.0,
+      0.001,
+      0.002,
+      0.005
+    ],
+    "request_cost": "Actual generation, all public features and policy/fallback calls, public action commitment gzip/flush/fsync, durable packed terminal media append/fsync/exact readback",
+    "requests": 10240,
+    "retain_failures_outliers_and_all_candidates": true,
+    "selected_action_calibration": "For each cheap-evaluated H1 decision, compare selected paired-moment prediction with exp(-2*(actual terminal utility-.002*nonstop))-exp(-2*current stop draft utility), scored privately after closed media; no conditional uniform-error claim",
+    "separate_cost": "Training, model load, source preparation, compressed calibration archive outside request clock, independent closed-media scoring, analysis; all included in child process total",
+    "source_role": "forecast_calibration",
+    "statistical_scope": "Descriptive source-and-seed paired bootstrap conditional on already-used historical sources; not prospective new-source superiority",
+    "views": [
+      "clean",
+      "noise",
+      "occlusion",
+      "missing_trusted",
+      "conflict_untrusted",
+      "missing_untrusted",
+      "missing_unknown",
+      "both_missing"
+    ]
+  },
+  "features": {
+    "current_actual_pixel_mean_pool_7x7": 32,
+    "current_actual_token_fixed_gaussian_projection": 64,
+    "dimension": 481,
+    "latent": 384,
+    "no_additional_CNN": true,
+    "private_targets_or_owner_RNG_inputs": false,
+    "projection_seed": 202610250481,
+    "remaining_horizon": 1
+  },
+  "maximum_local_output_bytes": 104857600,
+  "prospective_evaluation": {
+    "actual_media": "204 bytes per terminal, lossless 1568 binary pixels plus 8 uint8 token IDs; calibration drafts in gzip binary stream; logs gzip",
+    "all_candidates": "paired_critic and distilled_actor retained as diagnostic alternatives; cannot replace the selected_gate after evaluation",
+    "bootstrap_replicates": 2000,
+    "bootstrap_seed": 20261025481,
+    "future_namespace": "closure-20261025-control-fresh-future-v1",
+    "future_stream": "seed, source case, view, draw, committed action path; excludes policy",
+    "initial_draft_shared_across_future_draws": true,
+    "initial_namespace": "closure-20261025-control-fresh-initial-v1",
+    "intervals": "Nominal 97.5% two-sided percentile component intervals; price curves nominal 95% max-absolute-centered bands separately per wall/CPU contrast; no finite-sample coverage guarantee",
+    "new_future_draws": 2,
+    "no_further_selection_or_retraining": true,
+    "observation_namespace": "closure-20261025-control-fresh-observation-v1",
+    "oracle_scope": "Empirical table maximum and sampled pairwise ranking errors are hindsight diagnostics, never online-achievable optimality certificates",
+    "pair_count": 256,
+    "pair_start": 0,
+    "paired_actor_cost": "Both standalone alternatives execute both small heads; report this actual diagnostic implementation, no actor-only cost claim",
+    "policies": [
+      "cached_teacher",
+      "paired_critic",
+      "distilled_actor",
+      "selected_gate"
+    ],
+    "prices_utility_per_actual_ms": [
+      0.0,
+      0.001,
+      0.002,
+      0.005
+    ],
+    "primary_family": "selected_gate minus cached_teacher: raw CE >= -.005 AND exact success >= -.005 AND mean request wall cost < 0; zero margin superiority separately reported, never substitute a failed family",
+    "request_cost": "Actual generation, all public features and policy/fallback calls, public action commitment gzip/flush/fsync, durable packed terminal media append/fsync/exact readback",
+    "requests": 81920,
+    "retain_failures_outliers_and_all_candidates": true,
+    "selected_action_calibration": "For each cheap-evaluated H1 decision, compare selected paired-moment prediction with exp(-2*(actual terminal utility-.002*nonstop))-exp(-2*current stop draft utility), scored privately after closed media; no conditional uniform-error claim",
+    "separate_cost": "Training, model load, source preparation, compressed calibration archive outside request clock, independent closed-media scoring, analysis; all included in child process total",
+    "source_role": "closure_control",
+    "statistical_scope": "Prospective registered sources; crossed source-pair and training-seed paired bootstrap, nominal inference with five seeds and no unknown-writer independence certification",
+    "views": [
+      "clean",
+      "noise",
+      "occlusion",
+      "missing_trusted",
+      "conflict_untrusted",
+      "missing_untrusted",
+      "missing_unknown",
+      "both_missing"
+    ]
+  },
+  "schema": "hepta.closure.paired-control-registration.v1",
+  "scope": "Historical development sources, newly sampled independent generation futures; zero new independent source claims",
+  "seeds": [
+    17,
+    29,
+    43,
+    59,
+    71
+  ],
+  "selection": {
+    "admission": "Development raw CE and exact success cannot be below the original teacher point estimates",
+    "calibration_guarantee": false,
+    "choice": "Largest CE of utility minus .002 per action minus .002 times measured microbenchmark quoted control milliseconds; deterministic fallback wins ties",
+    "fallback_candidate": "Original cached strong feedback with no cheap precheck",
+    "gate": "Cheap actor and paired critic must agree and actor confidence must pass frozen threshold; otherwise execute original cached teacher",
+    "quote": "128 current historical fit-node kernel timings; teacher generator-draft CNN plus public-draft CNN plus head versus cheap features plus both heads; median, not a full-request or energy estimate",
+    "source": "Existing forecast_calibration[448,576), all recorded views/scenarios; explicitly reused development",
+    "thresholds": [
+      0.0,
+      0.5,
+      0.7,
+      0.8,
+      0.9,
+      0.95,
+      0.99
+    ]
+  },
+  "status": "registered_before_new_training_and_future_rollouts",
+  "training": {
+    "action_proxy_cost": 0.002,
+    "actor": "Cross-entropy distillation of frozen strong feedback action, no scoring outcome as actor input",
+    "actor_hidden": 32,
+    "batch": 256,
+    "critic": "MSE on paired positive exponential-moment action-minus-stop differences",
+    "critic_hidden": 64,
+    "fold_steps": 400,
+    "gamma": 2.0,
+    "h2": "Other-source-fold H1 picks from current child features, then its actual offline terminal outcome labels H2; no hindsight-best label",
+    "horizon": 2,
+    "learning_rate": 0.002,
+    "source": "Existing forecast_fit[480,736), all 8 views and 2 recorded generation scenarios",
+    "source_folds": 2,
+    "steps": 600
+  }
+}

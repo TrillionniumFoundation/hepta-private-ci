@@ -1,0 +1,26 @@
+{
+  "affected_receipts": {
+    "DEVELOPMENT_AUDIT_JOIN.json": "f1664b4af4bb4301aa240309a7d193abef679190a172a803abe1b07b2e11834d",
+    "INDEPENDENT_DEVELOPMENT_ENDPOINT_AUDIT.json": "28f727de261179a7f2b7df47395347dc4b3b00e949538634569b86f6e25ceeae",
+    "INDEPENDENT_RUNTIME_MEDIA-frozen.json": "d7a2a784665db9e8271d8a793c7aeccb7e035c96d4b48284b759208e5d3f39aa",
+    "INDEPENDENT_RUNTIME_RESULTS-frozen.json": "d876b1767f887682d6b06b55698f6361783822b4adfa044932b862729cb775f7",
+    "NATIVE_SESSION_AUDIT-frozen.json": "4678c4d3d91fbfdffc8294d4ac1465f14317875061467a22c12a04843bc104f0"
+  },
+  "gaps": [
+    "generator_forwards and observer_forwards zero-count aliases omitted by the older adapter",
+    "additional_generator_or_observer_calls zero-work join field omitted by the older adapter",
+    "selected-media native_tick_calls=0 field omitted by the older adapter",
+    "native-session measured kernel and bridge durations stored only in per-seed records, not top-level fields"
+  ],
+  "join_wall_time": "unmeasured; must remain null",
+  "original_contract_preserved": true,
+  "prior_contract_sha256": "6931f47f977f22bbcdc732795b4248e258406b27bc189cb12f82cc3969e26d44",
+  "prior_helper_sha256": "83ecc6e0052f4e39f97a20ad5c1259e315941c901a32786afc0a0609b5f9d1d4",
+  "prior_tests_sha256": "25f74dd5eabc86cebe5a37cd91eabf8bd1d041d5727e824edae19fb33ae15aaa",
+  "repair_scope": "Review-only compatible field aliases and sums of explicitly measured per-seed timers; no new outcome, selection, threshold, cost estimate or scientific execution.",
+  "schema": "hepta.field-bridge.v3.execution-ledger-schema-preflight.1",
+  "scientific_execution_failed": false,
+  "scientific_sources_or_receipts_modified": false,
+  "status": "review_adapter_update_required_before_aggregation",
+  "terminal_aggregation_attempted": false
+}

@@ -1,0 +1,37 @@
+{
+  "baseline_independent_qualification_passed": true,
+  "dynamic_independent_qualification_failed": true,
+  "entrypoint": "experiments.multimodal_output_portfolio.advance_20261026.native.evaluate_json_safe",
+  "exact_dependency_count": 5561,
+  "metadata_only_supersedes": "8ed550e21267fceeeeb4785f45f5fdbd07c2615275a89fedf1f8eb6f128c4135",
+  "model_or_analysis_changed": false,
+  "new_confirmation_sources_opened": false,
+  "old_frozen_closure_retained": true,
+  "policy_modes": {
+    "dynamic": {
+      "failed_independent_result_preserved": true,
+      "independent_gates": {
+        "ID_request_coverage": true,
+        "all_missing_false_acceptance": true,
+        "pooled_ece": true,
+        "selected_action_ece": false
+      },
+      "mode": "qualification_collection"
+    },
+    "fixed_late": {
+      "failed_independent_result_preserved": false,
+      "independent_gates": {
+        "ID_request_coverage": true,
+        "all_missing_false_acceptance": true,
+        "pooled_ece": true,
+        "selected_action_ece": true
+      },
+      "mode": "qualified"
+    }
+  },
+  "schema": "hepta.advance.native-confirmation-freeze.v2",
+  "spec_path": "/tmp/hepta-ndu-advance-native/formal-002/CONFIRMATION_SPEC.json",
+  "spec_sha256": "0b4d0bc62697b23f915b347d690847e0ef0555f9ed9dd9180a3ea2e2abb28737",
+  "templates_path": "/tmp/hepta-ndu-advance-native/promotion-001/TEMPLATES.json",
+  "templates_sha256": "a52a316617dfb74eb95e3108543fa5126cc0d3dda18c52f12509fc95e9cd20ce"
+}

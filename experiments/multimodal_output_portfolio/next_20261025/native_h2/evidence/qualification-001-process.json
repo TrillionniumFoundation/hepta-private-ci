@@ -1,0 +1,54 @@
+{
+  "cgroup_after": {
+    "current": 8380342272,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3825350,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "cgroup_before": {
+    "current": 8433049600,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3800237,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "child_system_seconds": 11.843252,
+  "child_user_seconds": 227.512163,
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-B",
+    "-m",
+    "experiments.multimodal_output_portfolio.next_20261025.native_h2.collect_qualification_v2",
+    "--study",
+    "native_h2_qualification",
+    "--cache",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/qmnist",
+    "--allocation",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/NATIVE_H2_ALLOCATION.json",
+    "--protocol",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/QUALIFICATION_PROTOCOL.json",
+    "--predictor",
+    "/tmp/hepta-ndu-next-native-h2/development-002/predictor.json",
+    "--development",
+    "/tmp/hepta-ndu-next-native-h2/expanded-old-001/development.json",
+    "--output",
+    "/tmp/hepta-ndu-next-native-h2/qualification-001"
+  ],
+  "context": "Fixed prospective1000writer50000output qualification after100writer calibration; one concurrent ASR qualification; not native latency comparison",
+  "exit_code": 0,
+  "log_sha256": "265eb29f0b3778c4b1de81f52ba9e9ecd6908760ed25cc0a5a6482fa108c33c5",
+  "peak_rss_bytes": 305278976,
+  "registration_sha256": "8bdb5cce8cf800889b9b2ef3aaefefea836ccce8872bbd415e6a70c310c01492",
+  "schema": "hepta.next.native-h2-stage-cost.v1",
+  "wall_ns": 250959422053,
+  "wrapper_sha256": "08040b095fbb311c5cf5ca1334ee8e56b893d39a4b79c766f5e53ab6167f8604"
+}

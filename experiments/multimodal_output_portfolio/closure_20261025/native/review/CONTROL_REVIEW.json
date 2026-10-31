@@ -1,0 +1,39 @@
+{
+  "H1_calibration_pairing": {
+    "H1": 3616,
+    "H1_nonstop_final_action": 2901,
+    "H1_stop_exact_media_utility_and_zero_prediction": 715
+  },
+  "accepted_cheap_decisions": 0,
+  "all_policy_CE_and_cost_CE_points_recomputed": true,
+  "all_raw_CE_intervals_reproduced": true,
+  "all_terminal_and_calibration_media_hashes_checked": true,
+  "analysis_sha256": "b4a3abd90214479e6724a7a830236c1a43f26f70613a68613e413129a2238243",
+  "completion_sha256": "0acf51591d50848d72754e4e9a7c1dfac6ed7bf1afdcf6f0ba697dc235d82223",
+  "crossed_bootstrap_replicates": 2000,
+  "directory": "/workspace/scratch/87e43aa872f5/ndu-runs/control/history-001",
+  "disabled_gate_exact_fallback_pairs": 2560,
+  "frozen_thresholds": {
+    "17": null,
+    "29": null,
+    "43": null,
+    "59": null,
+    "71": null
+  },
+  "interpretation": "All five gates disabled: same fallback algorithm; timing difference cannot establish actor, gate, or adaptive-information benefit",
+  "limitations": [
+    "Nominal crossed bootstrap with five seeds, not finite-sample coverage",
+    "Price bands simultaneous only within each declared contrast and clock",
+    "Historical review does not add independent sources or evaluate still-running fresh data"
+  ],
+  "literal_resampling_comparisons": 10,
+  "review_source_sha256": "2af0ec9ab5a02b7fb0940b35cb0c535b6250846b4281dbb53ca626bdb4c4fd31",
+  "review_wall_ns": 1065302717,
+  "rows": 10240,
+  "same_initial_state_groups": 1280,
+  "same_path_same_output_groups": 6311,
+  "schema": "hepta.closure.control-independent-review.v1",
+  "source_pairs": 32,
+  "status": "passed",
+  "total_selected_gate_decisions": 4288
+}

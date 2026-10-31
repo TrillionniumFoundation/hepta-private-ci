@@ -1,0 +1,122 @@
+{
+  "corpus": {
+    "conflicting_pixel_identities_excluded": 0,
+    "cross_split_duplicate_pixel_identities": 0,
+    "dataset": "MNIST",
+    "manifest_sha256": "224911f36aa829245ad5a0fbe8ee0c971147150ee848183404781279592f1f39",
+    "neural_modalities": [
+      "text",
+      "image"
+    ],
+    "schema": "hepta.ndu-v6.mnist-source-manifest.v1",
+    "source_files": [
+      {
+        "bytes": 9912422,
+        "md5": "f68b3c2dcbeaaa9fbdd348bbdeb94873",
+        "name": "train-images-idx3-ubyte.gz",
+        "sha256": "440fcabf73cc546fa21475e81ea370265605f56be210a4024d2ca8f203523609",
+        "url": "https://ossci-datasets.s3.amazonaws.com/mnist/train-images-idx3-ubyte.gz"
+      },
+      {
+        "bytes": 28881,
+        "md5": "d53e105ee54ea40749a09fcbcd1e9432",
+        "name": "train-labels-idx1-ubyte.gz",
+        "sha256": "3552534a0a558bbed6aed32b30c495cca23d567ec52cac8be1a0730e8010255c",
+        "url": "https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz"
+      },
+      {
+        "bytes": 1648877,
+        "md5": "9fb629c4189551a2d022fa330f9573f3",
+        "name": "t10k-images-idx3-ubyte.gz",
+        "sha256": "8d422c7b0a1c1c79245a5bcf07fe86e33eeafee792b84584aec276f5a2dbc4e6",
+        "url": "https://ossci-datasets.s3.amazonaws.com/mnist/t10k-images-idx3-ubyte.gz"
+      },
+      {
+        "bytes": 4542,
+        "md5": "ec29112dd5afa0611ce80d1b7f02629c",
+        "name": "t10k-labels-idx1-ubyte.gz",
+        "sha256": "f7ae60f92e00ec6debd23a6088c31dbd2371eca3ffa0defaefb259924204aec6",
+        "url": "https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz"
+      }
+    ],
+    "split_seed": 271828,
+    "splits": {
+      "evaluator": {
+        "count": 10000,
+        "identity_sha256": "dc609816e12d2d44b55b85c3bc39a7f9c5473807a27f560e88b72109cb9c36d8",
+        "official_partition": "train",
+        "pixel_set_sha256": "ee1bc91c41ad1f96d2a73472f482246ac825f250921eb1df86f9515e7a7ee2f0"
+      },
+      "retention": {
+        "count": 1000,
+        "identity_sha256": "697d79024c9d35e4cc6ed20f9be6c44ec2aa08ea861480028f0843b6e6671fb3",
+        "official_partition": "train",
+        "pixel_set_sha256": "8bb6b3b0c1b1b7a222e49a973ac3b97eff2113c6ba40a237f93766c9a6e502bd"
+      },
+      "test": {
+        "count": 2000,
+        "identity_sha256": "20168c4dcba782f77d5f3568c450cd776a6ef7043017d524ff4210538574f4c0",
+        "official_partition": "test",
+        "pixel_set_sha256": "fdc360ac65486bf1ce858b11a8d9520526ed2daa7813702b146a40b50cc39de2"
+      },
+      "train": {
+        "count": 10000,
+        "identity_sha256": "c2e6d3b551ba9051820a9260eca7066f7e19dd34c896960c68e917ce52fcc64e",
+        "official_partition": "train",
+        "pixel_set_sha256": "5fc72af0275d77cf7ad6581834db54de0bea42267a4a70fb5be9a133d4288ff9"
+      },
+      "validation": {
+        "count": 2000,
+        "identity_sha256": "11acb2ba3061b0180915ac81a06ecc02dd4ceecb60d1ffc62d785c3ef318252d",
+        "official_partition": "train",
+        "pixel_set_sha256": "4598c776169fc70f07aabc24284592ac597faef66868c9b99c3181053ee78c93"
+      }
+    },
+    "task": "constructed handwritten pair reconstruction and relation caption",
+    "unsupported_neural_modalities": [
+      "audio",
+      "video"
+    ]
+  },
+  "native_binary_sha256": "a86032964bbab3a28150ffe58474d0d6c7fc7988caf3f0be4ecd46e37985cbd7",
+  "numpy": "2.3.5",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "source_models": {
+    "17": {
+      "config": {
+        "architecture": "public-command-film-layernorm-v1",
+        "command_gain": 0.5,
+        "hidden": 96,
+        "layer_norm_eps": 1e-05,
+        "noise_scale": 0.15
+      },
+      "file_sha256": "8fa76a13cdeee48e41b84e29211659a065d9573e2fdfecc4281f882248b508b6",
+      "parameter_sha256": "3bdb3955667243563b8d3ffeb767b58c6d74b858933a349fa1befe18db7cfaff"
+    },
+    "29": {
+      "config": {
+        "architecture": "public-command-film-layernorm-v1",
+        "command_gain": 0.5,
+        "hidden": 96,
+        "layer_norm_eps": 1e-05,
+        "noise_scale": 0.15
+      },
+      "file_sha256": "e92dc06cec18ee279b8367a2fd194ba91978197150e5edcdede1c0d9fde2b11c",
+      "parameter_sha256": "ed991894c2fae887f4a644ca97613f2686cfb6d7e0c830b4ca950f5e119ef6a0"
+    },
+    "43": {
+      "config": {
+        "architecture": "public-command-film-layernorm-v1",
+        "command_gain": 0.5,
+        "hidden": 96,
+        "layer_norm_eps": 1e-05,
+        "noise_scale": 0.15
+      },
+      "file_sha256": "1a38524e474d35ff9eb1ad584b1714ea2ef7f7f8d0c502a6b3b2172252ddabf9",
+      "parameter_sha256": "dbf04f714b5209b1157dd70a991d94a9bc4a6620b51ed8ad45ccced5037c65bc"
+    }
+  },
+  "torch": "2.8.0+cpu",
+  "torch_threads": 2
+}

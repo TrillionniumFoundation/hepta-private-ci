@@ -1,0 +1,37 @@
+{
+  "allocation_sha256": "66aa5e30c26dc72736d8d4af2fac2de53cb9d5aa6fc7b514d56d0b06f5e60b7e",
+  "model_outcomes_opened": false,
+  "old_full_censuses": [
+    {
+      "path": "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc2-assets/mnist/train-images-idx3-ubyte.gz",
+      "selected_pixel_overlap": 0,
+      "sha256": "440fcabf73cc546fa21475e81ea370265605f56be210a4024d2ca8f203523609",
+      "sources_checked": 60000
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc2-assets/mnist/t10k-images-idx3-ubyte.gz",
+      "selected_pixel_overlap": 0,
+      "sha256": "8d422c7b0a1c1c79245a5bcf07fe86e33eeafee792b84584aec276f5a2dbc4e6",
+      "sources_checked": 10000
+    },
+    {
+      "path": "/workspace/scratch/87e43aa872f5/ndu-next-assets/qmnist/qmnist-test-images-idx3-ubyte.gz",
+      "selected_pixel_overlap": 0,
+      "sha256": "43fc22bf7498b8fc98de98369d72f752d0deabc280a43a7bcc364ab19e57b375",
+      "sources_checked": 60000
+    }
+  ],
+  "prior_role_writer_overlap": {
+    "ACTION_VALUE_ALLOCATION.json": 0,
+    "XNIST_QUALIFICATION_ALLOCATION.json": 0,
+    "qmnist_control": 0,
+    "qmnist_joint": 0,
+    "qmnist_media": 0,
+    "qmnist_native": 0,
+    "qmnist_native_calibration": 0
+  },
+  "schema": "hepta.next.native-h2-source-audit.v1",
+  "scope": "Independent metadata and exact raw pixel audit; no observer or generator loaded",
+  "selected_sources": 2456,
+  "selected_writers": 1164
+}

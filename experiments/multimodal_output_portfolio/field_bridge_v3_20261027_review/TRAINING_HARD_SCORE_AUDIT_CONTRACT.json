@@ -1,0 +1,43 @@
+{
+  "actual_grouping_exercised_by_batch_sensitive_observer": true,
+  "all_target_and_public_tensors_exact": true,
+  "auditor_source_sha256": "499019346e827a9acac2c9af3586a4c4bb28fe7ccb19de76c26954d9ee0d7b32",
+  "cache_recomputes_target_dependent_scores": true,
+  "corruption_or_boundary_rejections": 16,
+  "generator_forward_calls": 0,
+  "grouped_observer_and_utility_values_exact": true,
+  "incomplete_remainder_batches_verified": true,
+  "panels": [
+    {
+      "batch_sizes": [
+        3,
+        2,
+        3,
+        2,
+        3,
+        2,
+        3,
+        2
+      ],
+      "exact": true,
+      "role": "development_task",
+      "rows": 20
+    },
+    {
+      "batch_sizes": [
+        3,
+        1
+      ],
+      "exact": true,
+      "role": "development_clean",
+      "rows": 4
+    }
+  ],
+  "passed": true,
+  "real_outcomes_or_registered_source_roles_opened": false,
+  "schema": "hepta.field-bridge.v3.training-hard-score-audit-contract.1",
+  "source_panel_batches_rebuilt": 10,
+  "synthetic_only": true,
+  "test_source_sha256": "2e5ea2c05685fb553462d97cfad152322e366ed7c711f3bb723bd6b2c4a372f9",
+  "wall_ns": 96161642
+}

@@ -1,0 +1,157 @@
+{
+  "schema": "hepta.media.public-source-role-byte-overlap-audit.v1",
+  "recorded_unix_ns": 1792987078488134720,
+  "status": "passed",
+  "metadata_only_recomputation": true,
+  "candidate_or_source_choices_changed": false,
+  "allocations_sha256": {
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/AUDIO_SOURCE_ALLOCATION.json": "35862507212b97bc02bc1506070a31863f830e3c9e7747e5f3187ab2e6702fe5",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/EVENT_QUALIFICATION_SOURCES.json": "2c9aa271394402a21dea81a34f6df4fd3afb9e86bd213f9b2dbd1de1ddabba75",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/ENSEMBLE_QUALIFICATION_SOURCES_V3.json": "df08fa48f9627ab8d828d267599b9bcebb59470d020e4f70a7caff9dfaddb67c"
+  },
+  "roles": {
+    "fit": {
+      "registered_rows": 3000,
+      "unique_wav_sha256": 2992,
+      "speaker_ids": 1301
+    },
+    "joint": {
+      "registered_rows": 240,
+      "unique_wav_sha256": 240,
+      "speaker_ids": 24
+    },
+    "media": {
+      "registered_rows": 320,
+      "unique_wav_sha256": 320,
+      "speaker_ids": 32
+    },
+    "qualification": {
+      "registered_rows": 300,
+      "unique_wav_sha256": 300,
+      "speaker_ids": 133
+    },
+    "event_v2": {
+      "registered_rows": 300,
+      "unique_wav_sha256": 300,
+      "speaker_ids": 98
+    },
+    "event_v3": {
+      "registered_rows": 300,
+      "unique_wav_sha256": 298,
+      "speaker_ids": 147
+    }
+  },
+  "pairwise_overlaps": [
+    {
+      "first": "fit",
+      "second": "joint",
+      "wav_sha256_overlap": 0,
+      "speaker_id_overlap": 0,
+      "original_path_overlap": 0
+    },
+    {
+      "first": "fit",
+      "second": "media",
+      "wav_sha256_overlap": 0,
+      "speaker_id_overlap": 0,
+      "original_path_overlap": 0
+    },
+    {
+      "first": "fit",
+      "second": "qualification",
+      "wav_sha256_overlap": 0,
+      "speaker_id_overlap": 0,
+      "original_path_overlap": 0
+    },
+    {
+      "first": "fit",
+      "second": "event_v2",
+      "wav_sha256_overlap": 0,
+      "speaker_id_overlap": 0,
+      "original_path_overlap": 0
+    },
+    {
+      "first": "fit",
+      "second": "event_v3",
+      "wav_sha256_overlap": 0,
+      "speaker_id_overlap": 0,
+      "original_path_overlap": 0
+    },
+    {
+      "first": "joint",
+      "second": "media",
+      "wav_sha256_overlap": 0,
+      "speaker_id_overlap": 0,
+      "original_path_overlap": 0
+    },
+    {
+      "first": "joint",
+      "second": "qualification",
+      "wav_sha256_overlap": 0,
+      "speaker_id_overlap": 0,
+      "original_path_overlap": 0
+    },
+    {
+      "first": "joint",
+      "second": "event_v2",
+      "wav_sha256_overlap": 0,
+      "speaker_id_overlap": 0,
+      "original_path_overlap": 0
+    },
+    {
+      "first": "joint",
+      "second": "event_v3",
+      "wav_sha256_overlap": 0,
+      "speaker_id_overlap": 0,
+      "original_path_overlap": 0
+    },
+    {
+      "first": "media",
+      "second": "qualification",
+      "wav_sha256_overlap": 0,
+      "speaker_id_overlap": 0,
+      "original_path_overlap": 0
+    },
+    {
+      "first": "media",
+      "second": "event_v2",
+      "wav_sha256_overlap": 0,
+      "speaker_id_overlap": 0,
+      "original_path_overlap": 0
+    },
+    {
+      "first": "media",
+      "second": "event_v3",
+      "wav_sha256_overlap": 0,
+      "speaker_id_overlap": 0,
+      "original_path_overlap": 0
+    },
+    {
+      "first": "qualification",
+      "second": "event_v2",
+      "wav_sha256_overlap": 0,
+      "speaker_id_overlap": 0,
+      "original_path_overlap": 0
+    },
+    {
+      "first": "qualification",
+      "second": "event_v3",
+      "wav_sha256_overlap": 0,
+      "speaker_id_overlap": 0,
+      "original_path_overlap": 0
+    },
+    {
+      "first": "event_v2",
+      "second": "event_v3",
+      "wav_sha256_overlap": 0,
+      "speaker_id_overlap": 0,
+      "original_path_overlap": 0
+    }
+  ],
+  "boundaries": [
+    "Within-role duplicates are retained in their original registered denominator; no result-dependent deduplication.",
+    "Speaker identities are those supplied by this dataset, not a cross-dataset identity certificate.",
+    "Pretrained ASR training data are unknown, so no pretraining-disjointness claim is made."
+  ],
+  "archive_scope": "Supplemental metadata audit after media archive closure. All underlying frozen allocations and actual recordings are already in the complete sealed study archive; this adds no experiment or sample."
+}

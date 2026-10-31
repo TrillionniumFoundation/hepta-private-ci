@@ -1,0 +1,53 @@
+{
+  "arms": [
+    "sft_continuation",
+    "output_mean",
+    "output_ndu"
+  ],
+  "end_step": 400,
+  "input_sha256": {
+    "/workspace/scratch/2b3c256bef7d/abc2-runs/base-recovery-001/reward-observer.pt": "8cfca1b0cd0a69bcfcc6a9d34d0a672c07c28f3342823ef8a3f6763e9430a003",
+    "/workspace/scratch/2b3c256bef7d/abc2-runs/source-recovery-001/source-manifest.json": "60c24d44e12eb3defb3b1b8146d91879b84918b057e0524117137d7e4f793058",
+    "/workspace/scratch/2b3c256bef7d/abc2-runs/training-001/registration.json": "9140edb6fcab0a3cb4b3b14b05dbd8677af4804cda83e68d5f809a5a6a2c9180",
+    "/workspace/scratch/2b3c256bef7d/abc2-runs/training-001/result.json": "0e82d0a746b771baca86d11b18b0299ab0a2d56f08802afe6e72f9a5acde0cd5",
+    "/workspace/scratch/2b3c256bef7d/abc2-runs/training-001/seed-17/output_mean/summary.json": "690a53c5d825d18ffdaed9c8f790e6ce0993066154ceb0992b2dd8c679fdb0fc",
+    "/workspace/scratch/2b3c256bef7d/abc2-runs/training-001/seed-17/output_ndu/summary.json": "878cf94683bb0c2ee4f77eaa83739644fd216e2ef54408c8ad712a85c0ab2e77",
+    "/workspace/scratch/2b3c256bef7d/abc2-runs/training-001/seed-17/sft_continuation/summary.json": "464f9037414a9779c0a83017b1daa8b55ebe7457a8436904c963fe6b05382a43",
+    "/workspace/scratch/2b3c256bef7d/abc2-runs/training-001/whole-process-cost.json": "46a0d6e942632c35b617f0b1b2b5a52199b34b8e2c894797a6b66b436679ca4c",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/protocol.json": "48e7e9fbf940e425825be880de2cc5bec233fd1db5ae198dc88f0a8bbf153e1d"
+  },
+  "new_evaluation_outcomes_opened": false,
+  "new_outcomes_used_for_tuning": false,
+  "original_gradient_probes_preserved": true,
+  "parallel_control_work_may_overlap": true,
+  "registered_unix_ns": 1792890021366788039,
+  "schema": "hepta.abc.three-arm-resume-verification-registration.v1",
+  "seed": 17,
+  "source_roles_read": [
+    "train"
+  ],
+  "source_sha256": {
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/emission.py": "748cdafc6bca00fa07e88a7e294d331d5217c04d3e8208e094bdb906ec5fe1f3",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/media.py": "9ebc2dfe6561e78f306cad8e522e58705a3985bd6991af60dc9c38062a3b8ec9",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/output_training.py": "a6f213cdf092581d700ef35196d6aab22a0774b3b4a35c37e820839f19dd1edb",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/resume_verify.py": "1c29ae5090d57bec28a1107631b0511c5d744ba9793913f65023f0b03f503a6e",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/resume_verify_tests.py": "8959a4ae34f1d3c2211750da513941e5147f6c36ce07877225aff0f3758c6f2d",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/runtime.py": "11e2e0859d706e3186ee5e4688330ad2f4da54d397fe6b33bd335d8ee69f5919",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/training_run.py": "3aa56c026cec01279ccb35b754b4fa4fdee77dd810f0024e2ed41d1811395093",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/warm_start.py": "e6503c80f77a6d26306fcf899b2ce390a75331c6e97b06c87bc7a72c60281bc3",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/v6/data.py": "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/v6/neural.py": "6447edf81da45695ab87a033c544ff7c554a15431e614474be7ad3b7c329e742",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/v6/observer.py": "5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/v7/data.py": "41892eb63420a6288121b39f577597067c3e168d3c7467c868230c64ed092cb9",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/v7/evaluation.py": "9f229b3b1092cfc8f89b8376375a8bb5d7efe9c7bb91979026ee5f32182c79da",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/v7/model.py": "156aa5c73c7e9192ebefecafdc568cbbae3e906e7d1bbb2bf50f7535bd2d8fca",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/v7/snapshot.py": "01655335b9807a09005bde0ae11d9fbe1a0665bd0113d9f28e38310f1f4bb474",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/v7/sources.py": "b6b27b86ba71a4bafd9c2abe4af033e7cfe73079296bdd2ed1addad045881e9f",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/v7/training.py": "99ef191f69422fdf83d1429d83c0b5e6b8b141bb59d0f12275a5e619aced3091",
+    "/workspace/scratch/2b3c256bef7d/resume_verification_runner.py": "ff943a8c162d60c1f926da123466c3f49100c28312f20dc67c3c182d60084df6"
+  },
+  "start_step": 300,
+  "stop_after_three_successful_suffixes": true,
+  "target": "Every actual output row and final parameters, Adam state and RNG must match exactly.",
+  "torch_threads": 2
+}

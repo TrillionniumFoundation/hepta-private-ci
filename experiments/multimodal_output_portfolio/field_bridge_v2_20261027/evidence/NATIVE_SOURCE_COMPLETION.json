@@ -1,0 +1,20 @@
+{
+  "checks": [
+    "NATIVE_FFI_BUILD.json",
+    "NATIVE_CLEAN_REBUILD.json",
+    "NATIVE_FFI_CONTRACT.json",
+    "NATIVE_TRANSPORT_BENCHMARK.json"
+  ],
+  "files": {
+    "NATIVE_TRANSPORT.md": "6f56b9cf197cb8522b1a5ae625ad690229e80cfe87b145e2bab40c3c051ae949",
+    "build_native_fast.py": "4e1083cb3a1c4225e4fee7ec53ba9b1a9ff49822003adc8b8367ed96b9d26263",
+    "native_benchmark.py": "8b8a61a16476329aa9f4368ea788883ec646406afd5133df842009bed4b12bac",
+    "native_fast.py": "d4c6472e95c860360f932f93044c76acdd6eee6d944146fe18af189cb980db93",
+    "native_fast_tests.py": "187f47268ccb797d55add6a96efa9ee8292e56ac34fe7480f444fc3ccc0f454b",
+    "native_ffi.rs": "9317a4bc0a01fff39e1cb0ffc27fe412c1b1aaaa862d05bf95c1d124090cb9b8"
+  },
+  "product_workspace_test_claimed": false,
+  "python_compile_check": true,
+  "rustfmt_edition_2024_check": true,
+  "schema": "hepta.field-bridge-v2.native-source-completion.v1"
+}

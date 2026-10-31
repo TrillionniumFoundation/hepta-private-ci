@@ -1,0 +1,368 @@
+{
+  "access_sequence": [
+    "commit source/protocol/roles before reference or fit labels",
+    "freeze selected reference before Qref labels",
+    "freeze predictors/comparators before independent complete audit",
+    "freeze final checkpoints/runtime heads before primary/retention outcomes"
+  ],
+  "confirmation": {
+    "arms": {
+      "A": "frozen+fixed",
+      "B": "ordinary+same_fixed",
+      "C": "field+same_fixed",
+      "D": "frozen+native",
+      "E": "field+native",
+      "F": "field+history",
+      "G": "ordinary+native",
+      "H": "frozen+history",
+      "I": "field+reset_native",
+      "J": "frozen+current",
+      "K": "frozen+reset_native"
+    },
+    "bootstrap_samples": 4000,
+    "bootstrap_seed": 271035,
+    "conditions": [
+      "heavy_noise",
+      "missing",
+      "occlusion",
+      "clean"
+    ],
+    "fallback_consumes_final_sources": "Even frozen-only confirmation consumes these entire primary/retention roles for every future study, including learning",
+    "family_alpha": 0.05,
+    "fixed_policy_scope": "seed-specific best original-model open-loop plan fromruntime_select reused byfixedarmsA/B/C; ordinary andfield-specific fixedbest retainedasdiagnostics",
+    "frozen_only_fallback": "A,D,H,J,K only if frozenruntimeauditpasses butlearning/combinedqualificationfails; count unrun primarycontrasts as not established; reserve six-comparison correction",
+    "gain_family_comparisons": 6,
+    "gain_rule": "correctedCI lower>0 andeachfixedseedmean>0 underbothobservers, pluscandidate cleanNI; no equality/noninferiority claims fromnonsignificance",
+    "observers": [
+      "reward",
+      "audit"
+    ],
+    "population_scope": "conditional on3fixedhistorical models; sourcepairs are constructed MNIST task units, not newwriters/LLMs or production users",
+    "primary_contrasts": [
+      "B-A",
+      "C-B",
+      "D-A",
+      "E-C",
+      "E-G",
+      "E-F"
+    ],
+    "primary_pairs": 1024,
+    "quantile": "numpy.quantile method=linear, equal-tail two-sided interval alpha/family_comparisons",
+    "resampling": "one shared paired sourcepaircluster sample across all arms,seeds,conditions; seeds fixed; separate registered primary andretention draw streams",
+    "retention_bootstrap_seed": 271036,
+    "retention_candidates": [
+      "B",
+      "C",
+      "D",
+      "E",
+      "F",
+      "G",
+      "H",
+      "I",
+      "J",
+      "K"
+    ],
+    "retention_conditions": [
+      "clean"
+    ],
+    "retention_family_comparisons": 10,
+    "retention_margin": 0.01,
+    "retention_pairs": 2048,
+    "retention_reference": "A"
+  },
+  "failure_policy": {
+    "never_mark_scientific_success_for_engineering_completion": true,
+    "next_study_requires_new_protocol_and_unused_sources": true,
+    "no_audit_retry": true,
+    "no_primary_resampling_until_success": true,
+    "no_threshold_or_feature_selection_after_audit": true,
+    "preserve_all_candidates_and_failed_gates": true
+  },
+  "observer_independence": "Both fixed observers enter development gates; audit observer is a distinct measurement model, not development-blind. Conjunction tests control claims; individual corrected intervals do not assert simultaneous coverage of both observers together.",
+  "paper_revision": "f8df0a6075f58f3ab9431a889b773cdf8d6e771d",
+  "parent_v2_commit": "d66da90a2a45cbc8081ea0f01800b62bbfb4ba3e",
+  "prior_study_boundary": "V1/V2 sources, frozen thresholds and outcomes remain immutable; V3 is a new prospectively registered intervention and task",
+  "production_owner_integration": false,
+  "runtime": {
+    "action_order": [
+      "stop",
+      "refine_image",
+      "refine_text",
+      "refine_semantic",
+      "couple"
+    ],
+    "audit_pairs": 512,
+    "authority": "DENY_ALL",
+    "batch_size": 32,
+    "candidate_selection": "largest exact selected policy mean reward onruntime_select; listed transform/ridge tie order",
+    "charge_per_transition": 0.002,
+    "conditions": [
+      "heavy_noise",
+      "missing",
+      "occlusion",
+      "clean"
+    ],
+    "decision_tree_nodes": 21,
+    "event_width": 16,
+    "feedback": "after actual selected output at depths1and2 is persisted/read back, verifier emits prescheduled side caption-correct \u00b11 and1\u22122pixelMSE; no class/source pixels/future feedback exposed",
+    "feedback_side": "SHA256(case_id:depth) first byte modulo2; case_id excludes arm/profile/action",
+    "fit_pairs": 128,
+    "fixed_policy": "best ofall85 open-loop terminal plans selected onruntime_select, lowest BFS index tie",
+    "frozen_scope_independent": "frozen profile runtime qualification may proceed even if training qualification fails; do not relabel this as combined-layer success",
+    "head_stages": 3,
+    "head_targets": "backward stage fitting under each candidate own later frozen heads; no oracle-tail targets",
+    "head_width": 88,
+    "history_width": 48,
+    "initial_common_action": "couple",
+    "initial_common_transition_charged": true,
+    "latency_acceptance": "No wallclock threshold; fixed deterministic work ceilings, actual CPU/wall timings reported descriptively with host metadata",
+    "maximum_decisions": 3,
+    "maximum_nonstop_revisions": 3,
+    "native_flag_scope": "requires_calibration remains the original kernel receipt flag true; local readout fitting does not clear it. This bounded research requires DENY_ALL and no owner integration, and makes no production calibration claim.",
+    "native_owner_integration": false,
+    "native_tick_calls_max_per_episode": 6,
+    "native_top_k": 4,
+    "native_width": 20,
+    "new_scope": true,
+    "nonstop_tree_transitions": 84,
+    "output_tree_nodes": 85,
+    "profiles": [
+      "frozen",
+      "ordinary",
+      "field"
+    ],
+    "public_feature_contract": "8 signed original output features +presence,side,caption_correct,1\u22122side_pixelMSE +previous_nonstop_action_onehot4",
+    "representations": [
+      "current",
+      "history",
+      "native",
+      "reset_native"
+    ],
+    "requires_calibration": true,
+    "rff_seed": 271033,
+    "ridges": [
+      0.0001,
+      0.01,
+      1.0
+    ],
+    "selection_pairs": 64,
+    "task": "three-decision constructed PNG/UTF-8 revision with delayed simulated verifier feedback",
+    "training_deployment_transfer": "TrainingQref/guard/audit use the historical single-action fixedpolicy; sequential85-plan deployment is a different prespecified task. No identical training/deployment objective claim.",
+    "transforms": [
+      "raw",
+      "k1",
+      "k2",
+      "k4"
+    ]
+  },
+  "runtime_audit_gate": {
+    "bootstrap_samples": 4000,
+    "bootstrap_seed": 271034,
+    "claim_family": "Four corrected comparisons support the independently registered frozen profile scope or the conjunction over all3 profiles; no cherry-picked per-profile confirmatory claims",
+    "clean_ci_lower_strict_min": -0.01,
+    "family_alpha": 0.05,
+    "family_comparisons": 4,
+    "gain_ci_lower_strict_min": 0.0,
+    "gain_contrasts": [
+      "native-fixed",
+      "native-history"
+    ],
+    "gain_each_seed_mean_strict_min": 0.0,
+    "observers": [
+      "reward",
+      "audit"
+    ],
+    "passing_profile_rule": "frozen scope qualifies independently; combined confirmation requires learning audit plus runtime audits for all3profiles",
+    "quantile": "numpy.quantile method=linear; equal-tail two-sided interval alpha/family_comparisons",
+    "resampling": "paired source-pair clusters; fixed3modelseeds and4conditions",
+    "retention_candidates": [
+      "native",
+      "history"
+    ],
+    "retention_reference": "fixed",
+    "source_pairs": 512,
+    "stop_on_failure": true
+  },
+  "schema": "hepta.field-bridge.v3.prospective-protocol.1",
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "source_allocation_sha256": "068381327c437aa2edfc4c3db204bf836aa87e0d681bd15a4dbde7a119810f48",
+  "source_manifest_sha256": "9bfcb279d5efdc7bd6c14af41c64c04a78fc97f7827f7464280d8997d8fead41",
+  "status": "REGISTERED_BEFORE_MODEL_OUTCOMES",
+  "training": {
+    "adapt_batch_size": 64,
+    "adapter_modules": [
+      "pixel_decoder.0",
+      "text_initial",
+      "text_projection",
+      "fuse.0",
+      "initial_image",
+      "initial_text",
+      "coupling_cell.0",
+      "digit_head"
+    ],
+    "adapter_rank": 8,
+    "audit_schedule_ids": [
+      8000,
+      8001,
+      8002,
+      8003
+    ],
+    "batch_seed_offset": 1600000,
+    "candidate_mode": "field",
+    "clean_loss_weight": 0.5,
+    "conditions": [
+      "heavy_noise",
+      "missing",
+      "occlusion",
+      "clean"
+    ],
+    "development_schedule_ids": [
+      6000,
+      6001,
+      6002,
+      6003
+    ],
+    "exploration_paths": [
+      [
+        0,
+        1,
+        2,
+        3,
+        0,
+        1
+      ],
+      [
+        1,
+        2,
+        3,
+        0,
+        1,
+        2
+      ],
+      [
+        2,
+        3,
+        0,
+        1,
+        2,
+        3
+      ],
+      [
+        3,
+        0,
+        1,
+        2,
+        3,
+        0
+      ]
+    ],
+    "feature_dimension": {
+      "field": 12,
+      "generic": 12,
+      "h7": 7,
+      "richer": 30
+    },
+    "feature_modes": [
+      "field",
+      "generic",
+      "richer",
+      "h7"
+    ],
+    "final_schedule_id": 10000,
+    "fit_ridge_selection": "whole-trajectory leave-one-out prediction MSE, fit-only normalization, listed-alpha tie break",
+    "fit_schedule_ids": [
+      5000,
+      5001,
+      5002,
+      5003
+    ],
+    "fixed_actions": {
+      "17": 0,
+      "29": 3,
+      "43": 0
+    },
+    "fixed_actions_source": "V2 frozen PILOT_SUMMARY.json original-model winners; no V3 outcome selection",
+    "forward_seed_offset": 1107,
+    "generic_projection_seed": 271031,
+    "gradient_clip": 1.0,
+    "guard_failure": "restore full parameter and SGD state; advance schedule clock; charge all work",
+    "guard_min_delta": 0.0,
+    "hard_forward_seed_offset": 191027,
+    "init_seed_offset": 271027,
+    "learning_rate": 0.2,
+    "macro_steps": 48,
+    "momentum": 0.9,
+    "multipliers": [
+      0.0,
+      0.25,
+      1.0,
+      2.0
+    ],
+    "ordinary_clean_min_delta": -0.01,
+    "panel_batch_size": 128,
+    "panel_seed_offset": 1812027,
+    "probe_forward_seed_offset": 171027,
+    "reference_clean_min_delta": 0.0,
+    "reference_schedule_id": 4000,
+    "refinement_charge": 0.002,
+    "rehearsal_batch_size": 32,
+    "rehearsal_seed_offset": 2600000,
+    "ridges": [
+      0.0001,
+      0.01,
+      1.0
+    ],
+    "steps": 288,
+    "teacher_anchor": 0.1,
+    "value_target": "Q_ref terminal hard utility after candidate48-step block followed by frozen reference policy to288; not optimal Q or deployed-policy value",
+    "zero_action": "compute and charge gradients; do not step or modify parameters/momentum"
+  },
+  "training_audit_gate": {
+    "acceptance": "all gains and clean NI comparisons pass under both observers; one independent audit only",
+    "bootstrap_samples": 4000,
+    "bootstrap_seed": 271032,
+    "clean_ci_lower_strict_min": -0.01,
+    "family_alpha": 0.05,
+    "family_comparisons": 6,
+    "fixed_complete_rollouts_per_seed": 4,
+    "gain_ci_lower_strict_min": 0.0,
+    "gain_contrasts": [
+      "ordinary-frozen",
+      "field-ordinary",
+      "field-selected_adaptive"
+    ],
+    "gain_each_seed_mean_strict_min": 0.0,
+    "observers": [
+      "reward",
+      "audit"
+    ],
+    "quantile": "numpy.quantile method=linear; equal-tail two-sided interval alpha/family_comparisons",
+    "resampling": "4000 hierarchical draws: resample4 paired complete rollout IDs independently within each fixedseed with SAME draws for every method; use SAME sourcepair cluster sample across all methods,seeds,conditions; equal seed andcondition weights",
+    "retention_candidates": [
+      "ordinary",
+      "field",
+      "selected_adaptive"
+    ],
+    "retention_margin": 0.01,
+    "retention_reference": "frozen"
+  },
+  "training_development_gate": {
+    "adaptive_selection": "one method among generic,richer,h7 by pooled reward utility after each-seed clean eligibility under both observers; listed method tie break",
+    "each_seed_clean_delta_min": -0.01,
+    "field_over_ordinary_pooled_gain_strict_min": 0.0,
+    "field_over_selected_adaptive_pooled_gain_min": 0.0,
+    "no_eligible_candidate": "Qualification failure; no implicit alternative comparator or fallback",
+    "no_family_selection": "H12 is fixed candidate irrespective of other feature-family outcomes",
+    "observers": [
+      "reward",
+      "audit"
+    ],
+    "ordinary_each_seed_gain_min": 0.0,
+    "ordinary_pooled_gain_min": 0.005,
+    "ordinary_selection": "per-seed highest mean reward utility among4 complete constants eligible under both clean observers; lowest action index tie break"
+  }
+}

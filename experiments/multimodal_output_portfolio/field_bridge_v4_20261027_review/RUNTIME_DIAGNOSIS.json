@@ -1,0 +1,3167 @@
+{
+  "actual_new_work": {
+    "audit_rows": 30720,
+    "bank_trees": 2304,
+    "generator_calls": 0,
+    "matrix_covariance_eigensolves": 144,
+    "native_tick_calls": 0,
+    "network_calls": 0,
+    "observer_calls": 0,
+    "ridge_solves": 45
+  },
+  "audit": {
+    "arms": {
+      "current": {
+        "action_counts_by_decision": [
+          [
+            1702,
+            1080,
+            833,
+            1219,
+            1310
+          ],
+          [
+            1438,
+            491,
+            783,
+            1017,
+            713
+          ],
+          [
+            578,
+            390,
+            607,
+            821,
+            608
+          ]
+        ],
+        "mean_metrics": [
+          [
+            0.7871583496205542,
+            0.11775716145833333,
+            0.107421875,
+            0.09912109375,
+            0.112060546875,
+            0.04298266595969835
+          ],
+          [
+            0.7700196777455542,
+            0.13826497395833334,
+            0.107421875,
+            0.09912109375,
+            0.1259765625,
+            0.04298266595969835
+          ]
+        ],
+        "mean_revisions": 1.6067708333333333,
+        "per_seed_net": [
+          [
+            0.78033873228814,
+            0.77176939635064
+          ],
+          [
+            0.7966491530998584,
+            0.7737731765373571
+          ],
+          [
+            0.7844871634736906,
+            0.7645164603486908
+          ]
+        ]
+      },
+      "fixed": {
+        "action_counts_by_decision": [
+          [
+            0,
+            0,
+            4096,
+            2048,
+            0
+          ],
+          [
+            2048,
+            0,
+            2048,
+            2048,
+            0
+          ],
+          [
+            4096,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "mean_metrics": [
+          [
+            0.7803781400703338,
+            0.12125651041666667,
+            0.10986328125,
+            0.10270182291666667,
+            0.12052408854166667,
+            0.042878179856567535
+          ],
+          [
+            0.7671050280911674,
+            0.138427734375,
+            0.10986328125,
+            0.10270182291666667,
+            0.12679036458333334,
+            0.042878179856567535
+          ]
+        ],
+        "mean_revisions": 1.6666666666666667,
+        "per_seed_net": [
+          [
+            0.7743216792891415,
+            0.7647513667891414
+          ],
+          [
+            0.7937851443432444,
+            0.7752792849682445
+          ],
+          [
+            0.7730275965786835,
+            0.7612844325161832
+          ]
+        ]
+      },
+      "history": {
+        "action_counts_by_decision": [
+          [
+            2043,
+            727,
+            965,
+            1238,
+            1171
+          ],
+          [
+            1087,
+            469,
+            752,
+            1198,
+            595
+          ],
+          [
+            527,
+            252,
+            639,
+            888,
+            708
+          ]
+        ],
+        "mean_metrics": [
+          [
+            0.7863179160213413,
+            0.11808268229166667,
+            0.10831705729166667,
+            0.10091145833333333,
+            0.11018880208333333,
+            0.0429856152057558
+          ],
+          [
+            0.767746952479675,
+            0.13972981770833334,
+            0.10831705729166667,
+            0.10091145833333333,
+            0.12727864583333334,
+            0.0429856152057558
+          ]
+        ],
+        "mean_revisions": 1.5628255208333333,
+        "per_seed_net": [
+          [
+            0.7782723124583363,
+            0.7674080546458366
+          ],
+          [
+            0.7975981580895307,
+            0.7714995252770308
+          ],
+          [
+            0.7830832775161906,
+            0.7643332775161907
+          ]
+        ]
+      },
+      "native": {
+        "action_counts_by_decision": [
+          [
+            2127,
+            714,
+            997,
+            1221,
+            1085
+          ],
+          [
+            673,
+            493,
+            940,
+            1321,
+            590
+          ],
+          [
+            576,
+            409,
+            616,
+            1094,
+            649
+          ]
+        ],
+        "mean_metrics": [
+          [
+            0.7872727732605577,
+            0.11726888020833333,
+            0.10774739583333333,
+            0.09977213541666667,
+            0.11083984375,
+            0.042968815988842834
+          ],
+          [
+            0.7679449737813911,
+            0.13997395833333334,
+            0.10774739583333333,
+            0.09977213541666667,
+            0.12801106770833334,
+            0.042968815988842834
+          ]
+        ],
+        "mean_revisions": 1.6486002604166667,
+        "per_seed_net": [
+          [
+            0.7818514509195473,
+            0.7665926618570472
+          ],
+          [
+            0.7944875682844139,
+            0.7731740917219141
+          ],
+          [
+            0.7854793005777427,
+            0.7640681677652432
+          ]
+        ]
+      },
+      "reset_native": {
+        "action_counts_by_decision": [
+          [
+            1949,
+            719,
+            1091,
+            1232,
+            1153
+          ],
+          [
+            874,
+            345,
+            1075,
+            1087,
+            814
+          ],
+          [
+            530,
+            368,
+            617,
+            1101,
+            705
+          ]
+        ],
+        "mean_metrics": [
+          [
+            0.7868862206103596,
+            0.118896484375,
+            0.10677083333333333,
+            0.09977213541666667,
+            0.10970052083333333,
+            0.04298426153150103
+          ],
+          [
+            0.7692185773811947,
+            0.1396484375,
+            0.10677083333333333,
+            0.09977213541666667,
+            0.12540690104166666,
+            0.04298426153150103
+          ]
+        ],
+        "mean_revisions": 1.6775716145833333,
+        "per_seed_net": [
+          [
+            0.7819395369181477,
+            0.7675840681681476
+          ],
+          [
+            0.794537625228364,
+            0.774298367415864
+          ],
+          [
+            0.7841814996845985,
+            0.7657732965595995
+          ]
+        ]
+      }
+    },
+    "comparisons": {
+      "history-fixed": {
+        "fixed_n_normal_approximation_per_observer": {
+          "0.8": {
+            "0.001": [
+              10609,
+              10114
+            ],
+            "0.002": [
+              2653,
+              2529
+            ]
+          },
+          "0.9": {
+            "0.001": [
+              13589,
+              12955
+            ],
+            "0.002": [
+              3398,
+              3239
+            ]
+          }
+        },
+        "net_means": [
+          0.005939775950995647,
+          0.0006419243884956544
+        ],
+        "observer_delta_correlation": 0.4665217113519014,
+        "observer_gap_components": {
+          "crossmodal_disagreement": 0.0021647135416666624,
+          "image_fact": 0.0031331380208333313
+        },
+        "paired_episodes": 6144,
+        "per_condition_net": {
+          "clean": [
+            0.004820686165762376,
+            -0.004033480500904311
+          ],
+          "heavy_noise": [
+            0.010429410875740992,
+            0.0028773275424076217
+          ],
+          "missing": [
+            0.003930776970223298,
+            0.002335724886889987
+          ],
+          "occlusion": [
+            0.004578229792256025,
+            0.00138812562558936
+          ]
+        },
+        "per_seed_net": [
+          [
+            0.003950633169195435,
+            0.002656687856695447
+          ],
+          [
+            0.003813013746286739,
+            -0.0037797596912132595
+          ],
+          [
+            0.010055680937504743,
+            0.003048845000004787
+          ]
+        ],
+        "planning_scope": "Hindsight scale estimate only, fixed models/conditions; not a power guarantee, not sequential sampling, does not enforce per-seed sign or all noninferiority conditions",
+        "revision_cost_component": 0.00020768229166666675,
+        "reward_minus_audit_delta": 0.005297851562499993,
+        "same_action_paths": 126,
+        "source_pair_standard_deviation": [
+          0.03084422293062498,
+          0.03011598657989359
+        ],
+        "utility_components": {
+          "crossmodal_disagreement": [
+            0.0020670572916666624,
+            -9.765625000000003e-05
+          ],
+          "image_fact": [
+            0.002221679687499998,
+            -0.0009114583333333332
+          ],
+          "pixel_mse": [
+            -2.148706983765198e-05,
+            -2.148706983765198e-05
+          ],
+          "relation": [
+            0.0005371093749999999,
+            0.0005371093749999999
+          ],
+          "text_fact": [
+            0.0009277343749999997,
+            0.0009277343749999997
+          ]
+        }
+      },
+      "native-fixed": {
+        "fixed_n_normal_approximation_per_observer": {
+          "0.8": {
+            "0.001": [
+              12381,
+              11440
+            ],
+            "0.002": [
+              3096,
+              2860
+            ]
+          },
+          "0.9": {
+            "0.001": [
+              15859,
+              14653
+            ],
+            "0.002": [
+              3965,
+              3664
+            ]
+          }
+        },
+        "net_means": [
+          0.006894633190211577,
+          0.0008399456902115948
+        ],
+        "observer_delta_correlation": 0.45571165908312194,
+        "observer_gap_components": {
+          "crossmodal_disagreement": 0.0021809895833333295,
+          "image_fact": 0.0038736979166666655
+        },
+        "paired_episodes": 6144,
+        "per_condition_net": {
+          "clean": [
+            0.007569031378157288,
+            0.0019375209614906034
+          ],
+          "heavy_noise": [
+            0.008754976780993027,
+            -0.0024429398856736996
+          ],
+          "missing": [
+            0.007020520253136071,
+            0.0021051556698027177
+          ],
+          "occlusion": [
+            0.0042340043485601135,
+            0.0017600460152267844
+          ]
+        },
+        "per_seed_net": [
+          [
+            0.007529771630408366,
+            0.0018412950679085032
+          ],
+          [
+            0.0007024239411694004,
+            -0.0021051932463305983
+          ],
+          [
+            0.012451703999056832,
+            0.002783735249056876
+          ]
+        ],
+        "planning_scope": "Hindsight scale estimate only, fixed models/conditions; not a power guarantee, not sequential sampling, does not enforce per-seed sign or all noninferiority conditions",
+        "revision_cost_component": 3.6132812500000066e-05,
+        "reward_minus_audit_delta": 0.006054687499999982,
+        "same_action_paths": 69,
+        "source_pair_standard_deviation": [
+          0.03332101192490515,
+          0.03202963961619616
+        ],
+        "utility_components": {
+          "crossmodal_disagreement": [
+            0.0019368489583333293,
+            -0.00024414062500000005
+          ],
+          "image_fact": [
+            0.0027913411458333325,
+            -0.001082356770833333
+          ],
+          "pixel_mse": [
+            -1.812722645505955e-05,
+            -1.812722645505955e-05
+          ],
+          "relation": [
+            0.0008789062499999998,
+            0.0008789062499999998
+          ],
+          "text_fact": [
+            0.0012695312499999996,
+            0.0012695312499999996
+          ]
+        }
+      },
+      "native-history": {
+        "fixed_n_normal_approximation_per_observer": {
+          "0.8": {
+            "0.001": [
+              8836,
+              8988
+            ],
+            "0.002": [
+              2209,
+              2247
+            ]
+          },
+          "0.9": {
+            "0.001": [
+              11317,
+              11512
+            ],
+            "0.002": [
+              2830,
+              2878
+            ]
+          }
+        },
+        "net_means": [
+          0.0009548572392159268,
+          0.0001980213017159256
+        ],
+        "observer_delta_correlation": 0.5416264556851493,
+        "observer_gap_components": {
+          "crossmodal_disagreement": 1.6276041666666717e-05,
+          "image_fact": 0.0007405598958333333
+        },
+        "paired_episodes": 6144,
+        "per_condition_net": {
+          "clean": [
+            0.0027483452123948766,
+            0.005971001462394884
+          ],
+          "heavy_noise": [
+            -0.0016744340947479998,
+            -0.005320267428081318
+          ],
+          "missing": [
+            0.003089743282912727,
+            -0.00023056921708727176
+          ],
+          "occlusion": [
+            -0.0003442254436959048,
+            0.0003719203896374275
+          ]
+        },
+        "per_seed_net": [
+          [
+            0.0035791384612130087,
+            -0.0008153927887869911
+          ],
+          [
+            -0.0031105898051173447,
+            0.001674566444882655
+          ],
+          [
+            0.002396023061552114,
+            -0.0002651097509478933
+          ]
+        ],
+        "planning_scope": "Hindsight scale estimate only, fixed models/conditions; not a power guarantee, not sequential sampling, does not enforce per-seed sign or all noninferiority conditions",
+        "revision_cost_component": -0.00017154947916666667,
+        "reward_minus_audit_delta": 0.0007568359375000012,
+        "same_action_paths": 1356,
+        "source_pair_standard_deviation": [
+          0.028147873763679377,
+          0.028389539477775682
+        ],
+        "utility_components": {
+          "crossmodal_disagreement": [
+            -0.00013020833333333333,
+            -0.00014648437500000005
+          ],
+          "image_fact": [
+            0.0005696614583333334,
+            -0.0001708984374999999
+          ],
+          "pixel_mse": [
+            3.359843382592453e-06,
+            3.359843382592453e-06
+          ],
+          "relation": [
+            0.00034179687500000003,
+            0.00034179687500000003
+          ],
+          "text_fact": [
+            0.00034179687500000014,
+            0.00034179687500000014
+          ]
+        }
+      },
+      "native-reset_native": {
+        "fixed_n_normal_approximation_per_observer": {
+          "0.8": {
+            "0.001": [
+              8190,
+              8579
+            ],
+            "0.002": [
+              2048,
+              2145
+            ]
+          },
+          "0.9": {
+            "0.001": [
+              10490,
+              10989
+            ],
+            "0.002": [
+              2623,
+              2748
+            ]
+          }
+        },
+        "net_means": [
+          0.00038655265019830456,
+          -0.0012736035998016954
+        ],
+        "observer_delta_correlation": 0.4703835103247668,
+        "observer_gap_components": {
+          "crossmodal_disagreement": 0.00029296875000000015,
+          "image_fact": 0.0013671874999999997
+        },
+        "paired_episodes": 6144,
+        "per_condition_net": {
+          "clean": [
+            -0.001239702792411359,
+            0.0008761826242553048
+          ],
+          "heavy_noise": [
+            0.0003530650308772789,
+            -0.0057016224691227154
+          ],
+          "missing": [
+            0.005370043578994232,
+            0.0009429602456608939
+          ],
+          "occlusion": [
+            -0.002937195216666928,
+            -0.001211934800000261
+          ]
+        },
+        "per_seed_net": [
+          [
+            -8.80859985991269e-05,
+            -0.0009914063110991347
+          ],
+          [
+            -5.0056943950041704e-05,
+            -0.0011242756939500418
+          ],
+          [
+            0.0012978008931440828,
+            -0.0017051287943559167
+          ]
+        ],
+        "planning_scope": "Hindsight scale estimate only, fixed models/conditions; not a power guarantee, not sequential sampling, does not enforce per-seed sign or all noninferiority conditions",
+        "revision_cost_component": 5.794270833333333e-05,
+        "reward_minus_audit_delta": 0.00166015625,
+        "same_action_paths": 1739,
+        "source_pair_standard_deviation": [
+          0.027100151683887786,
+          0.027736683045373484
+        ],
+        "utility_components": {
+          "crossmodal_disagreement": [
+            -0.0002278645833333334,
+            -0.0005208333333333335
+          ],
+          "image_fact": [
+            0.0011393229166666663,
+            -0.0002278645833333333
+          ],
+          "pixel_mse": [
+            3.0891085316397978e-06,
+            3.0891085316397978e-06
+          ],
+          "relation": [
+            1.807003620809174e-20,
+            1.807003620809174e-20
+          ],
+          "text_fact": [
+            -0.0005859374999999998,
+            -0.0005859374999999998
+          ]
+        }
+      }
+    },
+    "conditions": [
+      "heavy_noise",
+      "missing",
+      "occlusion",
+      "clean"
+    ],
+    "metric_order": [
+      "net_utility",
+      "image_fact",
+      "text_fact",
+      "relation",
+      "crossmodal_disagreement",
+      "pixel_mse"
+    ],
+    "observer_order": [
+      "reward",
+      "audit"
+    ],
+    "original_frozen_runtime_gate_receipt_sha256": "d876b1767f887682d6b06b55698f6361783822b4adfa044932b862729cb775f7",
+    "original_gate_passed": false,
+    "shared_text_relation_pixel_max_observer_difference": 0.0
+  },
+  "authority": "DENY_ALL",
+  "banks": [
+    {
+      "banks": {
+        "runtime_fit": {
+          "clairvoyant_mean": 0.8199467955914734,
+          "clairvoyant_over_fixed": 0.0538498108642234,
+          "fixed_mean": 0.7660969847272499,
+          "mean_within_case_range": 0.124093092865136,
+          "root_stop_mean": 0.76287042222725,
+          "selected": {
+            "current": {
+              "clairvoyant_regret": 0.01787368897016859,
+              "mean": 0.8020731066213048,
+              "over_fixed_negative_cases": 210,
+              "over_fixed_positive_cases": 300,
+              "over_selected_fixed": 0.03597612189405481,
+              "per_condition_over_fixed": {
+                "clean": 0.017337746125645932,
+                "heavy_noise": 0.07879185923887416,
+                "missing": 0.036497812362154936,
+                "occlusion": 0.011277069849544203
+              }
+            },
+            "history": {
+              "clairvoyant_regret": 0.02061325254867552,
+              "mean": 0.7993335430427979,
+              "over_fixed_negative_cases": 237,
+              "over_fixed_positive_cases": 274,
+              "over_selected_fixed": 0.03323655831554788,
+              "per_condition_over_fixed": {
+                "clean": 0.015065312494407406,
+                "heavy_noise": 0.0623396733260015,
+                "missing": 0.038809107955079525,
+                "occlusion": 0.016732139486703095
+              }
+            },
+            "native": {
+              "clairvoyant_regret": 0.020717795456701424,
+              "mean": 0.7992290001347719,
+              "over_fixed_negative_cases": 197,
+              "over_fixed_positive_cases": 312,
+              "over_selected_fixed": 0.03313201540752198,
+              "per_condition_over_fixed": {
+                "clean": 0.0167280936432071,
+                "heavy_noise": 0.06720219899353107,
+                "missing": 0.028188805473735565,
+                "occlusion": 0.020408963519614194
+              }
+            },
+            "reset_native": {
+              "clairvoyant_regret": 0.02265107623385848,
+              "mean": 0.7972957193576149,
+              "over_fixed_negative_cases": 242,
+              "over_fixed_positive_cases": 266,
+              "over_selected_fixed": 0.031198734630364926,
+              "per_condition_over_fixed": {
+                "clean": 0.02109681322064716,
+                "heavy_noise": 0.06582141176960431,
+                "missing": 0.020789953848579897,
+                "occlusion": 0.01708675968262833
+              }
+            }
+          },
+          "trees": 512,
+          "unique_source_pairs": 128
+        },
+        "runtime_select": {
+          "clairvoyant_mean": 0.8301777913323605,
+          "clairvoyant_over_fixed": 0.058210459238383916,
+          "fixed_mean": 0.7719673320939764,
+          "mean_within_case_range": 0.14993680220353417,
+          "root_stop_mean": 0.7685454570939765,
+          "selected": {
+            "current": {
+              "clairvoyant_regret": 0.06142390595574398,
+              "mean": 0.7687538853766165,
+              "over_fixed_negative_cases": 102,
+              "over_fixed_positive_cases": 153,
+              "over_selected_fixed": -0.003213446717360058,
+              "per_condition_over_fixed": {
+                "clean": 0.009164637364447111,
+                "heavy_noise": -0.01585134781547822,
+                "missing": 0.0022342110220342926,
+                "occlusion": -0.008401287440443411
+              }
+            },
+            "history": {
+              "clairvoyant_regret": 0.05245505873876391,
+              "mean": 0.7777227325935965,
+              "over_fixed_negative_cases": 113,
+              "over_fixed_positive_cases": 143,
+              "over_selected_fixed": 0.005755400499620009,
+              "per_condition_over_fixed": {
+                "clean": -0.0012870987516362244,
+                "heavy_noise": 0.0032888143488671584,
+                "missing": 0.000979612500406811,
+                "occlusion": 0.020040273900842294
+              }
+            },
+            "native": {
+              "clairvoyant_regret": 0.05505430725595215,
+              "mean": 0.7751234840764083,
+              "over_fixed_negative_cases": 101,
+              "over_fixed_positive_cases": 154,
+              "over_selected_fixed": 0.003156151982431765,
+              "per_condition_over_fixed": {
+                "clean": -0.00050044719129801,
+                "heavy_noise": 0.008966069986112416,
+                "missing": -0.0010214167565572915,
+                "occlusion": 0.005180401891469949
+              }
+            },
+            "reset_native": {
+              "clairvoyant_regret": 0.05850613442249596,
+              "mean": 0.7716716569098645,
+              "over_fixed_negative_cases": 119,
+              "over_fixed_positive_cases": 136,
+              "over_selected_fixed": -0.00029567518411203857,
+              "per_condition_over_fixed": {
+                "clean": -0.009023034394020215,
+                "heavy_noise": 0.0063648593653924754,
+                "missing": -0.0017111915003042537,
+                "occlusion": 0.003186665792483839
+              }
+            }
+          },
+          "trees": 256,
+          "unique_source_pairs": 64
+        }
+      },
+      "fixed_node": 10,
+      "matched_native_reset_extra": [
+        {
+          "different_rows": 0,
+          "rms_difference": 0.0,
+          "rows": 512,
+          "stage": 0
+        },
+        {
+          "different_rows": 2048,
+          "rms_difference": 0.2540103274960415,
+          "rows": 2048,
+          "stage": 1
+        },
+        {
+          "different_rows": 8192,
+          "rms_difference": 0.39055383457701537,
+          "rows": 8192,
+          "stage": 2
+        }
+      ],
+      "offline_pilots": {
+        "history_honest_stages": {
+          "alpha": 1.0,
+          "baseline_reconstruction_max_coefficient_error": 0.0,
+          "feature_width": 88,
+          "head_coefficients": 1335,
+          "name": "source-disjoint stage-label pilot",
+          "results": {
+            "runtime_fit": {
+              "clairvoyant_regret": 0.03651204412878724,
+              "mean": 0.7834347514626862,
+              "over_fixed_negative_cases": 234,
+              "over_fixed_positive_cases": 273,
+              "over_original_selected_policy": -0.01589879158011172,
+              "over_selected_fixed": 0.01733776673543616,
+              "per_condition_over_fixed": {
+                "clean": 0.013580256408778947,
+                "heavy_noise": 0.03677786123903934,
+                "missing": 0.011200842716847542,
+                "occlusion": 0.007792106577078812
+              },
+              "terminal_nodes_sha256": "ea14412baeccb686428732c006592903358538681b13929184724cddd12ea0e9"
+            },
+            "runtime_select": {
+              "clairvoyant_regret": 0.07042646161728772,
+              "mean": 0.7597513297150726,
+              "over_fixed_negative_cases": 131,
+              "over_fixed_positive_cases": 121,
+              "over_original_selected_policy": -0.017971402878523807,
+              "over_selected_fixed": -0.012216002378903797,
+              "per_condition_over_fixed": {
+                "clean": -0.022383611490949994,
+                "heavy_noise": -0.007699037118582058,
+                "missing": -0.0003079786363523342,
+                "occlusion": -0.018473382269730804
+              },
+              "terminal_nodes_sha256": "9e3e140c99a815fa6d2026d5a7895a58f1bf6951d410bccaa05f852ea91046d2"
+            }
+          }
+        },
+        "native_honest_stages": {
+          "alpha": 1.0,
+          "baseline_reconstruction_max_coefficient_error": 0.0,
+          "feature_width": 88,
+          "head_coefficients": 1335,
+          "name": "source-disjoint stage-label pilot",
+          "results": {
+            "runtime_fit": {
+              "clairvoyant_regret": 0.04180370701136417,
+              "mean": 0.7781430885801092,
+              "over_fixed_negative_cases": 217,
+              "over_fixed_positive_cases": 292,
+              "over_original_selected_policy": -0.021085911554662745,
+              "over_selected_fixed": 0.012046103852859234,
+              "per_condition_over_fixed": {
+                "clean": 0.009441371709457599,
+                "heavy_noise": 0.02800758259987924,
+                "missing": 0.00858555026166141,
+                "occlusion": 0.0021499108404386836
+              },
+              "terminal_nodes_sha256": "295fd90bb4d4e6dd35a21b6c248540864130e62b9add0eb80d094d1cab520a77"
+            },
+            "runtime_select": {
+              "clairvoyant_regret": 0.06404499468341236,
+              "mean": 0.7661327966489481,
+              "over_fixed_negative_cases": 121,
+              "over_fixed_positive_cases": 135,
+              "over_original_selected_policy": -0.008990687427460217,
+              "over_selected_fixed": -0.00583453544502845,
+              "per_condition_over_fixed": {
+                "clean": -0.007112248935969548,
+                "heavy_noise": 0.001078294102335342,
+                "missing": -0.006374776213429856,
+                "occlusion": -0.010929410733049736
+              },
+              "terminal_nodes_sha256": "759ddd91ea5d72c03dc7c8ec3f11ef7729ffbf2c326bf38de84de9f15b6fb4e6"
+            }
+          }
+        },
+        "raw_history_linear": {
+          "alpha": 1.0,
+          "feature_width": 48,
+          "head_coefficients": 735,
+          "results": {
+            "runtime_fit": {
+              "clairvoyant_regret": 0.029081744356488342,
+              "mean": 0.7908650512349851,
+              "over_fixed_negative_cases": 219,
+              "over_fixed_positive_cases": 285,
+              "over_selected_fixed": 0.024768066507735057,
+              "per_condition_over_fixed": {
+                "clean": 0.01924783194065094,
+                "heavy_noise": 0.04069697258260567,
+                "missing": 0.023349702136358248,
+                "occlusion": 0.015777759371325376
+              }
+            },
+            "runtime_select": {
+              "clairvoyant_regret": 0.07052558178006438,
+              "mean": 0.759652209552296,
+              "over_fixed_negative_cases": 115,
+              "over_fixed_positive_cases": 135,
+              "over_selected_fixed": -0.012315122541680466,
+              "per_condition_over_fixed": {
+                "clean": -0.022868260610848668,
+                "heavy_noise": -0.026446545725222682,
+                "missing": -0.006153522666310881,
+                "occlusion": 0.006207838835660366
+              }
+            }
+          }
+        }
+      },
+      "partition": {
+        "pairs_per_stage": {
+          "0": 42,
+          "1": 43,
+          "2": 43
+        },
+        "row_assignment_sha256": "166727d736dba42f3b68597c2f6c868f39b6e413b0bf6523967302a1e06fa2b7",
+        "salt": "v4-runtime-source-honesty-exploratory-20261027",
+        "whole_source_pair_groups": true
+      },
+      "seed": 17,
+      "selected_comparisons": {
+        "runtime_fit": {
+          "cases": 512,
+          "native_minus_history": -0.00010454290802590382,
+          "same_complete_action_paths": 105,
+          "same_terminal_nodes": 105
+        },
+        "runtime_select": {
+          "cases": 256,
+          "native_minus_history": -0.0025992485171882447,
+          "same_complete_action_paths": 61,
+          "same_terminal_nodes": 61
+        }
+      },
+      "selected_features": {
+        "current": {
+          "alpha": 0.0001,
+          "stages": [
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 190,
+              "selection_extra": {
+                "columns": 72,
+                "covariance_rank_relative_1e_minus10": 72,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 6.208152881413718,
+                "rms": 0.11785113019775792,
+                "varying_columns_std_gt_1e_minus6": 72
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 80,
+                "nonzero_fraction": 0.90625,
+                "participation_ratio": 6.235141430469672,
+                "rms": 0.27964617798356534,
+                "varying_columns_std_gt_1e_minus6": 80
+              },
+              "selection_rows": 256,
+              "stage": 0,
+              "training_extra": {
+                "columns": 72,
+                "covariance_rank_relative_1e_minus10": 72,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 6.556121696406374,
+                "rms": 0.11785113019775792,
+                "varying_columns_std_gt_1e_minus6": 72
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 80,
+                "nonzero_fraction": 0.90625,
+                "participation_ratio": 6.549721998442278,
+                "rms": 0.28016722284855317,
+                "varying_columns_std_gt_1e_minus6": 80
+              },
+              "training_rows": 512
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 810,
+              "selection_extra": {
+                "columns": 72,
+                "covariance_rank_relative_1e_minus10": 72,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 12.145559830079836,
+                "rms": 0.11785113019775792,
+                "varying_columns_std_gt_1e_minus6": 72
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 86,
+                "nonzero_fraction": 0.9630681818181818,
+                "participation_ratio": 12.42202024649823,
+                "rms": 0.3653725438708867,
+                "varying_columns_std_gt_1e_minus6": 87
+              },
+              "selection_rows": 1024,
+              "stage": 1,
+              "training_extra": {
+                "columns": 72,
+                "covariance_rank_relative_1e_minus10": 72,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 13.35425582949779,
+                "rms": 0.11785113019775792,
+                "varying_columns_std_gt_1e_minus6": 72
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 86,
+                "nonzero_fraction": 0.9630681818181818,
+                "participation_ratio": 13.474184406382307,
+                "rms": 0.36589064799261883,
+                "varying_columns_std_gt_1e_minus6": 87
+              },
+              "training_rows": 2048
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 3294,
+              "selection_extra": {
+                "columns": 72,
+                "covariance_rank_relative_1e_minus10": 72,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 12.245650918268435,
+                "rms": 0.11785113019775792,
+                "varying_columns_std_gt_1e_minus6": 72
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 86,
+                "nonzero_fraction": 0.9630681818181818,
+                "participation_ratio": 12.53258142973576,
+                "rms": 0.36564650286332195,
+                "varying_columns_std_gt_1e_minus6": 87
+              },
+              "selection_rows": 4096,
+              "stage": 2,
+              "training_extra": {
+                "columns": 72,
+                "covariance_rank_relative_1e_minus10": 72,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 13.72033559036541,
+                "rms": 0.11785113019775792,
+                "varying_columns_std_gt_1e_minus6": 72
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 86,
+                "nonzero_fraction": 0.9630681818181818,
+                "participation_ratio": 13.806612356534703,
+                "rms": 0.36622457430553096,
+                "varying_columns_std_gt_1e_minus6": 87
+              },
+              "training_rows": 8192
+            }
+          ],
+          "transform": "k4"
+        },
+        "history": {
+          "alpha": 1.0,
+          "stages": [
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 185,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 40,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 5.532122874382638,
+                "rms": 0.15811388300841897,
+                "varying_columns_std_gt_1e_minus6": 40
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 48,
+                "nonzero_fraction": 0.5426136363636364,
+                "participation_ratio": 5.750081706125909,
+                "rms": 0.27964617798356534,
+                "varying_columns_std_gt_1e_minus6": 48
+              },
+              "selection_rows": 256,
+              "stage": 0,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 40,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 5.980494002927289,
+                "rms": 0.15811388300841897,
+                "varying_columns_std_gt_1e_minus6": 40
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 48,
+                "nonzero_fraction": 0.5426136363636364,
+                "participation_ratio": 6.156633222002466,
+                "rms": 0.28016722284855317,
+                "varying_columns_std_gt_1e_minus6": 48
+              },
+              "training_rows": 512
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 739,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 40,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 10.913895334964344,
+                "rms": 0.15811388300841897,
+                "varying_columns_std_gt_1e_minus6": 40
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 61,
+                "nonzero_fraction": 0.6875,
+                "participation_ratio": 11.13931712092007,
+                "rms": 0.4475884765181768,
+                "varying_columns_std_gt_1e_minus6": 63
+              },
+              "selection_rows": 1024,
+              "stage": 1,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 40,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 10.817349660722117,
+                "rms": 0.15811388300841897,
+                "varying_columns_std_gt_1e_minus6": 40
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 61,
+                "nonzero_fraction": 0.6875,
+                "participation_ratio": 11.281860365044176,
+                "rms": 0.4483369298680324,
+                "varying_columns_std_gt_1e_minus6": 63
+              },
+              "training_rows": 2048
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 3153,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 40,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 15.45966139726865,
+                "rms": 0.15811388300841897,
+                "varying_columns_std_gt_1e_minus6": 40
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 74,
+                "nonzero_fraction": 0.8323863636363636,
+                "participation_ratio": 14.497194151663235,
+                "rms": 0.5680397635768146,
+                "varying_columns_std_gt_1e_minus6": 78
+              },
+              "selection_rows": 4096,
+              "stage": 2,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 40,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 15.552318966620891,
+                "rms": 0.15811388300841897,
+                "varying_columns_std_gt_1e_minus6": 40
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 74,
+                "nonzero_fraction": 0.8323863636363636,
+                "participation_ratio": 14.936184969456944,
+                "rms": 0.5690015862413075,
+                "varying_columns_std_gt_1e_minus6": 78
+              },
+              "training_rows": 8192
+            }
+          ],
+          "transform": "k2"
+        },
+        "native": {
+          "alpha": 1.0,
+          "stages": [
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 180,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 14,
+                "nonzero_fraction": 0.200390625,
+                "participation_ratio": 6.10694207162872,
+                "rms": 0.28082220094218097,
+                "varying_columns_std_gt_1e_minus6": 21
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 20,
+                "nonzero_fraction": 0.17915482954545456,
+                "participation_ratio": 6.96401368012726,
+                "rms": 0.32044392165457936,
+                "varying_columns_std_gt_1e_minus6": 29
+              },
+              "selection_rows": 256,
+              "stage": 0,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 13,
+                "nonzero_fraction": 0.200244140625,
+                "participation_ratio": 5.9522608093470835,
+                "rms": 0.2811528333258753,
+                "varying_columns_std_gt_1e_minus6": 20
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 19,
+                "nonzero_fraction": 0.17908824573863635,
+                "participation_ratio": 6.868987603208883,
+                "rms": 0.3210302985957466,
+                "varying_columns_std_gt_1e_minus6": 28
+              },
+              "training_rows": 512
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 682,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 24,
+                "nonzero_fraction": 0.247021484375,
+                "participation_ratio": 9.303109456234537,
+                "rms": 0.671730214633126,
+                "varying_columns_std_gt_1e_minus6": 24
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 45,
+                "nonzero_fraction": 0.3452370383522727,
+                "participation_ratio": 11.363550610035052,
+                "rms": 0.6277519265156938,
+                "varying_columns_std_gt_1e_minus6": 47
+              },
+              "selection_rows": 1024,
+              "stage": 1,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 24,
+                "nonzero_fraction": 0.24722900390625,
+                "participation_ratio": 9.450922501135674,
+                "rms": 0.6717259388427546,
+                "varying_columns_std_gt_1e_minus6": 24
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 45,
+                "nonzero_fraction": 0.3453313654119318,
+                "participation_ratio": 11.49015952806181,
+                "rms": 0.6282837166070555,
+                "varying_columns_std_gt_1e_minus6": 47
+              },
+              "training_rows": 2048
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 2794,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 27,
+                "nonzero_fraction": 0.261138916015625,
+                "participation_ratio": 11.412216726840938,
+                "rms": 0.8705829107761729,
+                "varying_columns_std_gt_1e_minus6": 28
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 61,
+                "nonzero_fraction": 0.49654041637073865,
+                "participation_ratio": 14.370446881226599,
+                "rms": 0.8098223107978691,
+                "varying_columns_std_gt_1e_minus6": 66
+              },
+              "selection_rows": 4096,
+              "stage": 2,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 27,
+                "nonzero_fraction": 0.261090087890625,
+                "participation_ratio": 12.013894055280392,
+                "rms": 0.8719377664141111,
+                "varying_columns_std_gt_1e_minus6": 28
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 61,
+                "nonzero_fraction": 0.4965182217684659,
+                "participation_ratio": 14.974100016694031,
+                "rms": 0.811159002409656,
+                "varying_columns_std_gt_1e_minus6": 66
+              },
+              "training_rows": 8192
+            }
+          ],
+          "transform": "raw"
+        },
+        "reset_native": {
+          "alpha": 0.0001,
+          "stages": [
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 182,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 27,
+                "nonzero_fraction": 0.25791015625,
+                "participation_ratio": 10.607049027785006,
+                "rms": 0.40554536484142445,
+                "varying_columns_std_gt_1e_minus6": 27
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 35,
+                "nonzero_fraction": 0.20530007102272727,
+                "participation_ratio": 9.63072445188942,
+                "rms": 0.37629256608398776,
+                "varying_columns_std_gt_1e_minus6": 35
+              },
+              "selection_rows": 256,
+              "stage": 0,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 28,
+                "nonzero_fraction": 0.258349609375,
+                "participation_ratio": 11.449142935833075,
+                "rms": 0.40984971514308655,
+                "varying_columns_std_gt_1e_minus6": 28
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 36,
+                "nonzero_fraction": 0.20549982244318182,
+                "participation_ratio": 10.340609803395465,
+                "rms": 0.37879166081822546,
+                "varying_columns_std_gt_1e_minus6": 36
+              },
+              "training_rows": 512
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 654,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 32,
+                "nonzero_fraction": 0.246044921875,
+                "participation_ratio": 12.282025502030073,
+                "rms": 0.31879971138425484,
+                "varying_columns_std_gt_1e_minus6": 33
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 53,
+                "nonzero_fraction": 0.3447931463068182,
+                "participation_ratio": 13.056261972213592,
+                "rms": 0.48494199909266644,
+                "varying_columns_std_gt_1e_minus6": 56
+              },
+              "selection_rows": 1024,
+              "stage": 1,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 33,
+                "nonzero_fraction": 0.24522705078125,
+                "participation_ratio": 12.494184426627962,
+                "rms": 0.3162783996645614,
+                "varying_columns_std_gt_1e_minus6": 33
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 54,
+                "nonzero_fraction": 0.34442138671875,
+                "participation_ratio": 13.48300500004439,
+                "rms": 0.48488294369881435,
+                "varying_columns_std_gt_1e_minus6": 56
+              },
+              "training_rows": 2048
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 2949,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 32,
+                "nonzero_fraction": 0.245782470703125,
+                "participation_ratio": 12.312680974858894,
+                "rms": 0.3145799360052642,
+                "varying_columns_std_gt_1e_minus6": 33
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 66,
+                "nonzero_fraction": 0.4895602139559659,
+                "participation_ratio": 14.48497718772243,
+                "rms": 0.5968983150598235,
+                "varying_columns_std_gt_1e_minus6": 71
+              },
+              "selection_rows": 4096,
+              "stage": 2,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 33,
+                "nonzero_fraction": 0.2451629638671875,
+                "participation_ratio": 12.60672617845741,
+                "rms": 0.31780416162817715,
+                "varying_columns_std_gt_1e_minus6": 33
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 67,
+                "nonzero_fraction": 0.4892786199396307,
+                "participation_ratio": 14.960114153001644,
+                "rms": 0.5985883607847949,
+                "varying_columns_std_gt_1e_minus6": 71
+              },
+              "training_rows": 8192
+            }
+          ],
+          "transform": "k2"
+        }
+      }
+    },
+    {
+      "banks": {
+        "runtime_fit": {
+          "clairvoyant_mean": 0.8478983116604941,
+          "clairvoyant_over_fixed": 0.03427473161228409,
+          "fixed_mean": 0.8136235800482099,
+          "mean_within_case_range": 0.11078475093460292,
+          "root_stop_mean": 0.8054269133085181,
+          "selected": {
+            "current": {
+              "clairvoyant_regret": 0.017230737792240693,
+              "mean": 0.8306675738682534,
+              "over_fixed_negative_cases": 217,
+              "over_fixed_positive_cases": 292,
+              "over_selected_fixed": 0.0170439938200434,
+              "per_condition_over_fixed": {
+                "clean": 0.015129601798020307,
+                "heavy_noise": 0.03359168308600784,
+                "missing": 0.0025694757294259076,
+                "occlusion": 0.016885214666719543
+              }
+            },
+            "history": {
+              "clairvoyant_regret": 0.016725752649319477,
+              "mean": 0.8311725590111746,
+              "over_fixed_negative_cases": 185,
+              "over_fixed_positive_cases": 321,
+              "over_selected_fixed": 0.017548978962964614,
+              "per_condition_over_fixed": {
+                "clean": 0.022263150760089053,
+                "heavy_noise": 0.030905374948983082,
+                "missing": 0.0029334907971788216,
+                "occlusion": 0.014093899345607494
+              }
+            },
+            "native": {
+              "clairvoyant_regret": 0.016861945241078504,
+              "mean": 0.8310363664194156,
+              "over_fixed_negative_cases": 239,
+              "over_fixed_positive_cases": 270,
+              "over_selected_fixed": 0.017412786371205583,
+              "per_condition_over_fixed": {
+                "clean": 0.02151234282576479,
+                "heavy_noise": 0.028090519790654064,
+                "missing": 0.0026414501987746964,
+                "occlusion": 0.017406832669628784
+              }
+            },
+            "reset_native": {
+              "clairvoyant_regret": 0.019520818338205577,
+              "mean": 0.8283774933222885,
+              "over_fixed_negative_cases": 220,
+              "over_fixed_positive_cases": 290,
+              "over_selected_fixed": 0.014753913274078514,
+              "per_condition_over_fixed": {
+                "clean": 0.014961287271522454,
+                "heavy_noise": 0.023579533947398885,
+                "missing": 0.0032365272905444786,
+                "occlusion": 0.01723830458684824
+              }
+            }
+          },
+          "trees": 512,
+          "unique_source_pairs": 128
+        },
+        "runtime_select": {
+          "clairvoyant_mean": 0.8331471412549727,
+          "clairvoyant_over_fixed": 0.024097780285985214,
+          "fixed_mean": 0.8090493609689875,
+          "mean_within_case_range": 0.09852923505130456,
+          "root_stop_mean": 0.787966654048476,
+          "selected": {
+            "current": {
+              "clairvoyant_regret": 0.02561944759549806,
+              "mean": 0.8075276936594746,
+              "over_fixed_negative_cases": 125,
+              "over_fixed_positive_cases": 130,
+              "over_selected_fixed": -0.0015216673095128502,
+              "per_condition_over_fixed": {
+                "clean": 0.015114674716256568,
+                "heavy_noise": 0.0081020803246647,
+                "missing": -0.01473334603663534,
+                "occlusion": -0.01457007824233733
+              }
+            },
+            "history": {
+              "clairvoyant_regret": 0.023041920502379076,
+              "mean": 0.8101052207525936,
+              "over_fixed_negative_cases": 103,
+              "over_fixed_positive_cases": 151,
+              "over_selected_fixed": 0.0010558597836061367,
+              "per_condition_over_fixed": {
+                "clean": 0.0015869076764211086,
+                "heavy_noise": 0.012074799033580342,
+                "missing": -0.005158177623758099,
+                "occlusion": -0.004280089951818805
+              }
+            },
+            "native": {
+              "clairvoyant_regret": 0.025751735602796547,
+              "mean": 0.8073954056521762,
+              "over_fixed_negative_cases": 136,
+              "over_fixed_positive_cases": 118,
+              "over_selected_fixed": -0.001653955316811334,
+              "per_condition_over_fixed": {
+                "clean": -0.0021664805973414247,
+                "heavy_noise": 0.0037171603189781275,
+                "missing": 0.0008928045760840161,
+                "occlusion": -0.009059305564966055
+              }
+            },
+            "reset_native": {
+              "clairvoyant_regret": 0.023705012749065647,
+              "mean": 0.809442128505907,
+              "over_fixed_negative_cases": 125,
+              "over_fixed_positive_cases": 131,
+              "over_selected_fixed": 0.00039276753691956483,
+              "per_condition_over_fixed": {
+                "clean": -0.005347627586917947,
+                "heavy_noise": 0.0032047544969245768,
+                "missing": 0.0016913110986351964,
+                "occlusion": 0.0020226321390364333
+              }
+            }
+          },
+          "trees": 256,
+          "unique_source_pairs": 64
+        }
+      },
+      "fixed_node": 15,
+      "matched_native_reset_extra": [
+        {
+          "different_rows": 0,
+          "rms_difference": 0.0,
+          "rows": 512,
+          "stage": 0
+        },
+        {
+          "different_rows": 2048,
+          "rms_difference": 0.20138644133757813,
+          "rows": 2048,
+          "stage": 1
+        },
+        {
+          "different_rows": 8192,
+          "rms_difference": 0.24833794069440665,
+          "rows": 8192,
+          "stage": 2
+        }
+      ],
+      "offline_pilots": {
+        "history_honest_stages": {
+          "alpha": 1.0,
+          "baseline_reconstruction_max_coefficient_error": 0.0,
+          "feature_width": 88,
+          "head_coefficients": 1335,
+          "name": "source-disjoint stage-label pilot",
+          "results": {
+            "runtime_fit": {
+              "clairvoyant_regret": 0.03104596837752615,
+              "mean": 0.816852343282968,
+              "over_fixed_negative_cases": 211,
+              "over_fixed_positive_cases": 293,
+              "over_original_selected_policy": -0.014320215728206675,
+              "over_selected_fixed": 0.003228763234757936,
+              "per_condition_over_fixed": {
+                "clean": 0.005922032347763895,
+                "heavy_noise": 0.006219387294258924,
+                "missing": 0.0032139542563236305,
+                "occlusion": -0.0024403209593147042
+              },
+              "terminal_nodes_sha256": "4f91d9588c98a3a254fbe1153378ce5ac7f19dc89a2c7152eb6cd8dbacf11408"
+            },
+            "runtime_select": {
+              "clairvoyant_regret": 0.026403515200945554,
+              "mean": 0.8067436260540272,
+              "over_fixed_negative_cases": 102,
+              "over_fixed_positive_cases": 152,
+              "over_original_selected_policy": -0.003361594698566476,
+              "over_selected_fixed": -0.0023057349149603382,
+              "per_condition_over_fixed": {
+                "clean": 0.0022808058727532693,
+                "heavy_noise": 0.00018055128445848036,
+                "missing": -0.013946816160110757,
+                "occlusion": 0.0022625193430576545
+              },
+              "terminal_nodes_sha256": "55a3dc9708c97fd2b93a66cd30116485b60b66514dc209d3a94cc5cad88613e0"
+            }
+          }
+        },
+        "native_honest_stages": {
+          "alpha": 1.0,
+          "baseline_reconstruction_max_coefficient_error": 0.0,
+          "feature_width": 88,
+          "head_coefficients": 1335,
+          "name": "source-disjoint stage-label pilot",
+          "results": {
+            "runtime_fit": {
+              "clairvoyant_regret": 0.02881455629998527,
+              "mean": 0.8190837553605088,
+              "over_fixed_negative_cases": 239,
+              "over_fixed_positive_cases": 260,
+              "over_original_selected_policy": -0.011952611058906767,
+              "over_selected_fixed": 0.005460175312298816,
+              "per_condition_over_fixed": {
+                "clean": 0.007207868894212883,
+                "heavy_noise": 0.010786683238460684,
+                "missing": 0.0015914784733904522,
+                "occlusion": 0.002254670643131248
+              },
+              "terminal_nodes_sha256": "3213ea32b32588cb4741515c73137dfd9e92f0ca3c1a6ce3a62d834711b15d8d"
+            },
+            "runtime_select": {
+              "clairvoyant_regret": 0.03144805023499066,
+              "mean": 0.801699091019982,
+              "over_fixed_negative_cases": 134,
+              "over_fixed_positive_cases": 118,
+              "over_original_selected_policy": -0.005696314632194111,
+              "over_selected_fixed": -0.007350269949005448,
+              "per_condition_over_fixed": {
+                "clean": -0.002608538723550732,
+                "heavy_noise": 0.0015630277157761135,
+                "missing": -0.014024225901113822,
+                "occlusion": -0.014331342887133353
+              },
+              "terminal_nodes_sha256": "350779bad3dd7e9424f130423ec74d62175c268dfff3d6bdd35eca11cdbc1f1f"
+            }
+          }
+        },
+        "raw_history_linear": {
+          "alpha": 1.0,
+          "feature_width": 48,
+          "head_coefficients": 735,
+          "results": {
+            "runtime_fit": {
+              "clairvoyant_regret": 0.025107951706595487,
+              "mean": 0.8227903599538986,
+              "over_fixed_negative_cases": 172,
+              "over_fixed_positive_cases": 340,
+              "over_selected_fixed": 0.009166779905688604,
+              "per_condition_over_fixed": {
+                "clean": 0.012228904283198066,
+                "heavy_noise": 0.017544850426260385,
+                "missing": 0.00018563662515953556,
+                "occlusion": 0.006707728288136426
+              }
+            },
+            "runtime_select": {
+              "clairvoyant_regret": 0.02758232756494545,
+              "mean": 0.8055648136900273,
+              "over_fixed_negative_cases": 96,
+              "over_fixed_positive_cases": 158,
+              "over_selected_fixed": -0.003484547278960237,
+              "per_condition_over_fixed": {
+                "clean": -0.008665237468667318,
+                "heavy_noise": 0.006143569843843568,
+                "missing": 0.00028978121024556165,
+                "occlusion": -0.011706302701262758
+              }
+            }
+          }
+        }
+      },
+      "partition": {
+        "pairs_per_stage": {
+          "0": 42,
+          "1": 43,
+          "2": 43
+        },
+        "row_assignment_sha256": "166727d736dba42f3b68597c2f6c868f39b6e413b0bf6523967302a1e06fa2b7",
+        "salt": "v4-runtime-source-honesty-exploratory-20261027",
+        "whole_source_pair_groups": true
+      },
+      "seed": 29,
+      "selected_comparisons": {
+        "runtime_fit": {
+          "cases": 512,
+          "native_minus_history": -0.00013619259175902832,
+          "same_complete_action_paths": 95,
+          "same_terminal_nodes": 95
+        },
+        "runtime_select": {
+          "cases": 256,
+          "native_minus_history": -0.0027098151004174707,
+          "same_complete_action_paths": 52,
+          "same_terminal_nodes": 52
+        }
+      },
+      "selected_features": {
+        "current": {
+          "alpha": 1.0,
+          "stages": [
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 188,
+              "selection_extra": {
+                "columns": 72,
+                "covariance_rank_relative_1e_minus10": 72,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 6.30547342988267,
+                "rms": 0.11785113019775792,
+                "varying_columns_std_gt_1e_minus6": 72
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 80,
+                "nonzero_fraction": 0.90625,
+                "participation_ratio": 6.346185863199754,
+                "rms": 0.28024485982193037,
+                "varying_columns_std_gt_1e_minus6": 80
+              },
+              "selection_rows": 256,
+              "stage": 0,
+              "training_extra": {
+                "columns": 72,
+                "covariance_rank_relative_1e_minus10": 72,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 6.441229811685115,
+                "rms": 0.11785113019775792,
+                "varying_columns_std_gt_1e_minus6": 72
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 80,
+                "nonzero_fraction": 0.90625,
+                "participation_ratio": 6.444006692809312,
+                "rms": 0.28077955805944566,
+                "varying_columns_std_gt_1e_minus6": 80
+              },
+              "training_rows": 512
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 789,
+              "selection_extra": {
+                "columns": 72,
+                "covariance_rank_relative_1e_minus10": 72,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 11.920341033924615,
+                "rms": 0.11785113019775792,
+                "varying_columns_std_gt_1e_minus6": 72
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 86,
+                "nonzero_fraction": 0.9630681818181818,
+                "participation_ratio": 12.25925043761204,
+                "rms": 0.3658298528041598,
+                "varying_columns_std_gt_1e_minus6": 87
+              },
+              "selection_rows": 1024,
+              "stage": 1,
+              "training_extra": {
+                "columns": 72,
+                "covariance_rank_relative_1e_minus10": 72,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 13.553388471633124,
+                "rms": 0.11785113019775792,
+                "varying_columns_std_gt_1e_minus6": 72
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 86,
+                "nonzero_fraction": 0.9630681818181818,
+                "participation_ratio": 13.74854971411549,
+                "rms": 0.3663066306551196,
+                "varying_columns_std_gt_1e_minus6": 87
+              },
+              "training_rows": 2048
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 3213,
+              "selection_extra": {
+                "columns": 72,
+                "covariance_rank_relative_1e_minus10": 72,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 11.944783058814075,
+                "rms": 0.11785113019775792,
+                "varying_columns_std_gt_1e_minus6": 72
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 86,
+                "nonzero_fraction": 0.9630681818181818,
+                "participation_ratio": 12.266769458591957,
+                "rms": 0.36619244133663675,
+                "varying_columns_std_gt_1e_minus6": 87
+              },
+              "selection_rows": 4096,
+              "stage": 2,
+              "training_extra": {
+                "columns": 72,
+                "covariance_rank_relative_1e_minus10": 72,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 13.466186264702317,
+                "rms": 0.11785113019775792,
+                "varying_columns_std_gt_1e_minus6": 72
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 86,
+                "nonzero_fraction": 0.9630681818181818,
+                "participation_ratio": 13.684984218459565,
+                "rms": 0.36682651729659477,
+                "varying_columns_std_gt_1e_minus6": 87
+              },
+              "training_rows": 8192
+            }
+          ],
+          "transform": "k4"
+        },
+        "history": {
+          "alpha": 1.0,
+          "stages": [
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 133,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 40,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 5.734210910151732,
+                "rms": 0.15811388300841897,
+                "varying_columns_std_gt_1e_minus6": 40
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 48,
+                "nonzero_fraction": 0.5426136363636364,
+                "participation_ratio": 5.9158150631319515,
+                "rms": 0.28024485982193037,
+                "varying_columns_std_gt_1e_minus6": 48
+              },
+              "selection_rows": 256,
+              "stage": 0,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 40,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 5.725610492175471,
+                "rms": 0.15811388300841897,
+                "varying_columns_std_gt_1e_minus6": 40
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 48,
+                "nonzero_fraction": 0.5426136363636364,
+                "participation_ratio": 5.885867906742513,
+                "rms": 0.28077955805944566,
+                "varying_columns_std_gt_1e_minus6": 48
+              },
+              "training_rows": 512
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 809,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 40,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 9.354621486641928,
+                "rms": 0.15811388300841897,
+                "varying_columns_std_gt_1e_minus6": 40
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 61,
+                "nonzero_fraction": 0.6875,
+                "participation_ratio": 9.980821026279303,
+                "rms": 0.44833584096711504,
+                "varying_columns_std_gt_1e_minus6": 63
+              },
+              "selection_rows": 1024,
+              "stage": 1,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 40,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 9.741646661509822,
+                "rms": 0.15811388300841897,
+                "varying_columns_std_gt_1e_minus6": 40
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 61,
+                "nonzero_fraction": 0.6875,
+                "participation_ratio": 10.486734787270038,
+                "rms": 0.4490590958017969,
+                "varying_columns_std_gt_1e_minus6": 63
+              },
+              "training_rows": 2048
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 3076,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 40,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 12.432883856378353,
+                "rms": 0.15811388300841897,
+                "varying_columns_std_gt_1e_minus6": 40
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 74,
+                "nonzero_fraction": 0.8323863636363636,
+                "participation_ratio": 12.898049522352705,
+                "rms": 0.5689800471230428,
+                "varying_columns_std_gt_1e_minus6": 78
+              },
+              "selection_rows": 4096,
+              "stage": 2,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 40,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 13.10771962561493,
+                "rms": 0.15811388300841897,
+                "varying_columns_std_gt_1e_minus6": 40
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 74,
+                "nonzero_fraction": 0.8323863636363636,
+                "participation_ratio": 13.469613749432426,
+                "rms": 0.5699580063045347,
+                "varying_columns_std_gt_1e_minus6": 78
+              },
+              "training_rows": 8192
+            }
+          ],
+          "transform": "k4"
+        },
+        "native": {
+          "alpha": 1.0,
+          "stages": [
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 197,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 27,
+                "nonzero_fraction": 0.25791015625,
+                "participation_ratio": 10.849645973051597,
+                "rms": 0.4143296501963219,
+                "varying_columns_std_gt_1e_minus6": 27
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 35,
+                "nonzero_fraction": 0.20530007102272727,
+                "participation_ratio": 9.93175664315307,
+                "rms": 0.38105765385566,
+                "varying_columns_std_gt_1e_minus6": 35
+              },
+              "selection_rows": 256,
+              "stage": 0,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 27,
+                "nonzero_fraction": 0.25830078125,
+                "participation_ratio": 10.868001394975304,
+                "rms": 0.41439165533310696,
+                "varying_columns_std_gt_1e_minus6": 27
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 35,
+                "nonzero_fraction": 0.2054776278409091,
+                "participation_ratio": 9.990541555440863,
+                "rms": 0.3814816786394379,
+                "varying_columns_std_gt_1e_minus6": 35
+              },
+              "training_rows": 512
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 810,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 30,
+                "nonzero_fraction": 0.297265625,
+                "participation_ratio": 10.969360619569326,
+                "rms": 0.4222697369852007,
+                "varying_columns_std_gt_1e_minus6": 31
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 51,
+                "nonzero_fraction": 0.3680752840909091,
+                "participation_ratio": 11.812159614060167,
+                "rms": 0.5202808632337962,
+                "varying_columns_std_gt_1e_minus6": 54
+              },
+              "selection_rows": 1024,
+              "stage": 1,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 31,
+                "nonzero_fraction": 0.29765625,
+                "participation_ratio": 11.660065315355899,
+                "rms": 0.4160433576706697,
+                "varying_columns_std_gt_1e_minus6": 31
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 52,
+                "nonzero_fraction": 0.3682528409090909,
+                "participation_ratio": 12.536004337570475,
+                "rms": 0.518621876975634,
+                "varying_columns_std_gt_1e_minus6": 54
+              },
+              "training_rows": 2048
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 2111,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 33,
+                "nonzero_fraction": 0.323883056640625,
+                "participation_ratio": 12.774466829208055,
+                "rms": 0.48347991774580934,
+                "varying_columns_std_gt_1e_minus6": 33
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 67,
+                "nonzero_fraction": 0.5250604802911932,
+                "participation_ratio": 14.112325572144606,
+                "rms": 0.6470130944707668,
+                "varying_columns_std_gt_1e_minus6": 71
+              },
+              "selection_rows": 4096,
+              "stage": 2,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 33,
+                "nonzero_fraction": 0.3251434326171875,
+                "participation_ratio": 13.548737172695827,
+                "rms": 0.47559982356184016,
+                "varying_columns_std_gt_1e_minus6": 33
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 67,
+                "nonzero_fraction": 0.5256333784623579,
+                "participation_ratio": 15.07504488532876,
+                "rms": 0.6452166217859286,
+                "varying_columns_std_gt_1e_minus6": 71
+              },
+              "training_rows": 8192
+            }
+          ],
+          "transform": "k2"
+        },
+        "reset_native": {
+          "alpha": 0.0001,
+          "stages": [
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 158,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 13,
+                "nonzero_fraction": 0.20009765625,
+                "participation_ratio": 6.060055316225447,
+                "rms": 0.28111370238476857,
+                "varying_columns_std_gt_1e_minus6": 21
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 19,
+                "nonzero_fraction": 0.17902166193181818,
+                "participation_ratio": 7.102553561169755,
+                "rms": 0.32108248223288055,
+                "varying_columns_std_gt_1e_minus6": 29
+              },
+              "selection_rows": 256,
+              "stage": 0,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 14,
+                "nonzero_fraction": 0.2001953125,
+                "participation_ratio": 6.3354071561152745,
+                "rms": 0.2811077468667572,
+                "varying_columns_std_gt_1e_minus6": 21
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 20,
+                "nonzero_fraction": 0.17906605113636365,
+                "participation_ratio": 7.278931583428739,
+                "rms": 0.3215469129079779,
+                "varying_columns_std_gt_1e_minus6": 29
+              },
+              "training_rows": 512
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 778,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 23,
+                "nonzero_fraction": 0.26474609375,
+                "participation_ratio": 8.737120824537136,
+                "rms": 0.5633332459746693,
+                "varying_columns_std_gt_1e_minus6": 24
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 44,
+                "nonzero_fraction": 0.3532936789772727,
+                "participation_ratio": 11.300867687788928,
+                "rms": 0.5778311344513267,
+                "varying_columns_std_gt_1e_minus6": 47
+              },
+              "selection_rows": 1024,
+              "stage": 1,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 24,
+                "nonzero_fraction": 0.26519775390625,
+                "participation_ratio": 9.645741817602284,
+                "rms": 0.5629858628913295,
+                "varying_columns_std_gt_1e_minus6": 25
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 45,
+                "nonzero_fraction": 0.35349897904829547,
+                "participation_ratio": 12.30688436456876,
+                "rms": 0.5782387204279024,
+                "varying_columns_std_gt_1e_minus6": 48
+              },
+              "training_rows": 2048
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 2783,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 23,
+                "nonzero_fraction": 0.2641845703125,
+                "participation_ratio": 8.574899593187574,
+                "rms": 0.5658511362025248,
+                "varying_columns_std_gt_1e_minus6": 24
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 57,
+                "nonzero_fraction": 0.4979248046875,
+                "participation_ratio": 12.831685143264536,
+                "rms": 0.676693752135671,
+                "varying_columns_std_gt_1e_minus6": 62
+              },
+              "selection_rows": 4096,
+              "stage": 2,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 24,
+                "nonzero_fraction": 0.2644744873046875,
+                "participation_ratio": 9.64896094479864,
+                "rms": 0.5639586249866562,
+                "varying_columns_std_gt_1e_minus6": 25
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 58,
+                "nonzero_fraction": 0.4980565851384943,
+                "participation_ratio": 14.018492830879278,
+                "rms": 0.6767986186277838,
+                "varying_columns_std_gt_1e_minus6": 63
+              },
+              "training_rows": 8192
+            }
+          ],
+          "transform": "raw"
+        }
+      }
+    },
+    {
+      "banks": {
+        "runtime_fit": {
+          "clairvoyant_mean": 0.8208901003830251,
+          "clairvoyant_over_fixed": 0.038826162534358444,
+          "fixed_mean": 0.7820639378486667,
+          "mean_within_case_range": 0.10984809409815352,
+          "root_stop_mean": 0.7797670628486667,
+          "selected": {
+            "current": {
+              "clairvoyant_regret": 0.01216969735256862,
+              "mean": 0.8087204030304566,
+              "over_fixed_negative_cases": 218,
+              "over_fixed_positive_cases": 263,
+              "over_selected_fixed": 0.026656465181789823,
+              "per_condition_over_fixed": {
+                "clean": 0.017511237701983193,
+                "heavy_noise": 0.0429110994064249,
+                "missing": 0.004656013703788629,
+                "occlusion": 0.04154750991496257
+              }
+            },
+            "history": {
+              "clairvoyant_regret": 0.013659753162879498,
+              "mean": 0.8072303472201456,
+              "over_fixed_negative_cases": 233,
+              "over_fixed_positive_cases": 264,
+              "over_selected_fixed": 0.025166409371478952,
+              "per_condition_over_fixed": {
+                "clean": 0.0037385735040297774,
+                "heavy_noise": 0.040018850357388155,
+                "missing": 0.004841083306237125,
+                "occlusion": 0.05206713031826074
+              }
+            },
+            "native": {
+              "clairvoyant_regret": 0.01736602952318208,
+              "mean": 0.803524070859843,
+              "over_fixed_negative_cases": 275,
+              "over_fixed_positive_cases": 228,
+              "over_selected_fixed": 0.021460133011176365,
+              "per_condition_over_fixed": {
+                "clean": 0.007845357347803658,
+                "heavy_noise": 0.025676215414656325,
+                "missing": 0.004550697125261646,
+                "occlusion": 0.047768262156983834
+              }
+            },
+            "reset_native": {
+              "clairvoyant_regret": 0.01491991770568711,
+              "mean": 0.805970182677338,
+              "over_fixed_negative_cases": 276,
+              "over_fixed_positive_cases": 223,
+              "over_selected_fixed": 0.023906244828671333,
+              "per_condition_over_fixed": {
+                "clean": 0.011986713133344894,
+                "heavy_noise": 0.03634783046320081,
+                "missing": 0.0043802083265036375,
+                "occlusion": 0.04291022739163599
+              }
+            }
+          },
+          "trees": 512,
+          "unique_source_pairs": 128
+        },
+        "runtime_select": {
+          "clairvoyant_mean": 0.7856846425957629,
+          "clairvoyant_over_fixed": 0.04005631146481028,
+          "fixed_mean": 0.7456283311309526,
+          "mean_within_case_range": 0.11866289955278625,
+          "root_stop_mean": 0.7433314561309526,
+          "selected": {
+            "current": {
+              "clairvoyant_regret": 0.036018885210913135,
+              "mean": 0.7496657573848498,
+              "over_fixed_negative_cases": 123,
+              "over_fixed_positive_cases": 125,
+              "over_selected_fixed": 0.004037426253897141,
+              "per_condition_over_fixed": {
+                "clean": 0.010141432005912068,
+                "heavy_noise": 0.022388643044047064,
+                "missing": 9.098975849338592e-05,
+                "occlusion": -0.016471359792863956
+              }
+            },
+            "history": {
+              "clairvoyant_regret": 0.03127645588701125,
+              "mean": 0.7544081867087515,
+              "over_fixed_negative_cases": 123,
+              "over_fixed_positive_cases": 121,
+              "over_selected_fixed": 0.008779855577799025,
+              "per_condition_over_fixed": {
+                "clean": 0.03947536634327844,
+                "heavy_noise": 0.019978554976405577,
+                "missing": -0.006321526896441353,
+                "occlusion": -0.01801297211204656
+              }
+            },
+            "native": {
+              "clairvoyant_regret": 0.03577606352535076,
+              "mean": 0.7499085790704121,
+              "over_fixed_negative_cases": 137,
+              "over_fixed_positive_cases": 114,
+              "over_selected_fixed": 0.004280247939459513,
+              "per_condition_over_fixed": {
+                "clean": 0.01667091088648886,
+                "heavy_noise": 0.0026172454589977866,
+                "missing": 1.3300043763590785e-05,
+                "occlusion": -0.0021804646314121847
+              }
+            },
+            "reset_native": {
+              "clairvoyant_regret": 0.03323433320346521,
+              "mean": 0.7524503093922976,
+              "over_fixed_negative_cases": 140,
+              "over_fixed_positive_cases": 112,
+              "over_selected_fixed": 0.006821978261345065,
+              "per_condition_over_fixed": {
+                "clean": 0.016348419390153142,
+                "heavy_noise": 0.009615591849898922,
+                "missing": 5.407579708842369e-06,
+                "occlusion": 0.001318494225619353
+              }
+            }
+          },
+          "trees": 256,
+          "unique_source_pairs": 64
+        }
+      },
+      "fixed_node": 2,
+      "matched_native_reset_extra": [
+        {
+          "different_rows": 0,
+          "rms_difference": 0.0,
+          "rows": 512,
+          "stage": 0
+        },
+        {
+          "different_rows": 2048,
+          "rms_difference": 0.40115666459212673,
+          "rows": 2048,
+          "stage": 1
+        },
+        {
+          "different_rows": 8192,
+          "rms_difference": 0.4374592123868884,
+          "rows": 8192,
+          "stage": 2
+        }
+      ],
+      "offline_pilots": {
+        "history_honest_stages": {
+          "alpha": 1.0,
+          "baseline_reconstruction_max_coefficient_error": 0.0,
+          "feature_width": 88,
+          "head_coefficients": 1335,
+          "name": "source-disjoint stage-label pilot",
+          "results": {
+            "runtime_fit": {
+              "clairvoyant_regret": 0.02468068329004746,
+              "mean": 0.7962094170929777,
+              "over_fixed_negative_cases": 295,
+              "over_fixed_positive_cases": 209,
+              "over_original_selected_policy": -0.011020930127167958,
+              "over_selected_fixed": 0.01414547924431099,
+              "per_condition_over_fixed": {
+                "clean": 0.0028968832279206254,
+                "heavy_noise": 0.02127341856702697,
+                "missing": -0.0012938786657759943,
+                "occlusion": 0.033705493848072365
+              },
+              "terminal_nodes_sha256": "ad26c79010ba9d66634a5e2abe706a587460a1c83f4663441e6b1e051e2f63a0"
+            },
+            "runtime_select": {
+              "clairvoyant_regret": 0.03643618578254245,
+              "mean": 0.7492484568132205,
+              "over_fixed_negative_cases": 158,
+              "over_fixed_positive_cases": 92,
+              "over_original_selected_policy": -0.005159729895531198,
+              "over_selected_fixed": 0.0036201256822678265,
+              "per_condition_over_fixed": {
+                "clean": 0.014491222104988991,
+                "heavy_noise": 0.006647601104807121,
+                "missing": -0.00125121004343964,
+                "occlusion": -0.005407110437285164
+              },
+              "terminal_nodes_sha256": "2df7ff738d83a46f9846880a55afdfccbcb279c7832bf2a06c479d426912d3ca"
+            }
+          }
+        },
+        "native_honest_stages": {
+          "alpha": 1.0,
+          "baseline_reconstruction_max_coefficient_error": 0.0,
+          "feature_width": 88,
+          "head_coefficients": 1335,
+          "name": "source-disjoint stage-label pilot",
+          "results": {
+            "runtime_fit": {
+              "clairvoyant_regret": 0.027772290303240882,
+              "mean": 0.7931178100797842,
+              "over_fixed_negative_cases": 212,
+              "over_fixed_positive_cases": 252,
+              "over_original_selected_policy": -0.010406260780058801,
+              "over_selected_fixed": 0.011053872231117565,
+              "per_condition_over_fixed": {
+                "clean": -0.004759385931829455,
+                "heavy_noise": 0.015441461972077379,
+                "missing": 0.005116562296054324,
+                "occlusion": 0.028416850588168015
+              },
+              "terminal_nodes_sha256": "efa339dae18ce45095bdb18d24efd14b0ade45dacb18e6707747226f56c1cfea"
+            },
+            "runtime_select": {
+              "clairvoyant_regret": 0.048267081630707254,
+              "mean": 0.7374175609650556,
+              "over_fixed_negative_cases": 116,
+              "over_fixed_positive_cases": 121,
+              "over_original_selected_policy": -0.012491018105356487,
+              "over_selected_fixed": -0.008210770165896972,
+              "per_condition_over_fixed": {
+                "clean": -0.00952690548426471,
+                "heavy_noise": 0.005852981537813325,
+                "missing": -0.015449431599117817,
+                "occlusion": -0.013719725118018694
+              },
+              "terminal_nodes_sha256": "5730e76d113541423f2974847475b5d486a33f1412ae9f76afd12023fbb8a866"
+            }
+          }
+        },
+        "raw_history_linear": {
+          "alpha": 1.0,
+          "feature_width": 48,
+          "head_coefficients": 735,
+          "results": {
+            "runtime_fit": {
+              "clairvoyant_regret": 0.02201644712439156,
+              "mean": 0.7988736532586336,
+              "over_fixed_negative_cases": 267,
+              "over_fixed_positive_cases": 190,
+              "over_selected_fixed": 0.016809715409966883,
+              "per_condition_over_fixed": {
+                "clean": -0.001793268112814982,
+                "heavy_noise": 0.028672992277075537,
+                "missing": 0.0003102630249923059,
+                "occlusion": 0.04004887445061467
+              }
+            },
+            "runtime_select": {
+              "clairvoyant_regret": 0.033635383318120146,
+              "mean": 0.7520492592776427,
+              "over_fixed_negative_cases": 130,
+              "over_fixed_positive_cases": 95,
+              "over_selected_fixed": 0.006420928146690135,
+              "per_condition_over_fixed": {
+                "clean": 0.019446494243340565,
+                "heavy_noise": 0.01102951710042545,
+                "missing": -0.000759197613690048,
+                "occlusion": -0.004033101143315433
+              }
+            }
+          }
+        }
+      },
+      "partition": {
+        "pairs_per_stage": {
+          "0": 42,
+          "1": 43,
+          "2": 43
+        },
+        "row_assignment_sha256": "166727d736dba42f3b68597c2f6c868f39b6e413b0bf6523967302a1e06fa2b7",
+        "salt": "v4-runtime-source-honesty-exploratory-20261027",
+        "whole_source_pair_groups": true
+      },
+      "seed": 43,
+      "selected_comparisons": {
+        "runtime_fit": {
+          "cases": 512,
+          "native_minus_history": -0.0037062763603025834,
+          "same_complete_action_paths": 129,
+          "same_terminal_nodes": 129
+        },
+        "runtime_select": {
+          "cases": 256,
+          "native_minus_history": -0.0044996076383395115,
+          "same_complete_action_paths": 69,
+          "same_terminal_nodes": 69
+        }
+      },
+      "selected_features": {
+        "current": {
+          "alpha": 0.0001,
+          "stages": [
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 205,
+              "selection_extra": {
+                "columns": 72,
+                "covariance_rank_relative_1e_minus10": 72,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 5.09849628969245,
+                "rms": 0.11785113019775792,
+                "varying_columns_std_gt_1e_minus6": 72
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 80,
+                "nonzero_fraction": 0.90625,
+                "participation_ratio": 5.29100204398944,
+                "rms": 0.27804554174894225,
+                "varying_columns_std_gt_1e_minus6": 80
+              },
+              "selection_rows": 256,
+              "stage": 0,
+              "training_extra": {
+                "columns": 72,
+                "covariance_rank_relative_1e_minus10": 72,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 4.862488810141532,
+                "rms": 0.11785113019775792,
+                "varying_columns_std_gt_1e_minus6": 72
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 80,
+                "nonzero_fraction": 0.90625,
+                "participation_ratio": 5.04952996785987,
+                "rms": 0.2791885450538759,
+                "varying_columns_std_gt_1e_minus6": 80
+              },
+              "training_rows": 512
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 810,
+              "selection_extra": {
+                "columns": 72,
+                "covariance_rank_relative_1e_minus10": 72,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 7.871842070506544,
+                "rms": 0.11785113019775792,
+                "varying_columns_std_gt_1e_minus6": 72
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 86,
+                "nonzero_fraction": 0.9630681818181818,
+                "participation_ratio": 8.77818122374986,
+                "rms": 0.36406366143733043,
+                "varying_columns_std_gt_1e_minus6": 87
+              },
+              "selection_rows": 1024,
+              "stage": 1,
+              "training_extra": {
+                "columns": 72,
+                "covariance_rank_relative_1e_minus10": 72,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 7.851185121139448,
+                "rms": 0.11785113019775792,
+                "varying_columns_std_gt_1e_minus6": 72
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 86,
+                "nonzero_fraction": 0.9630681818181818,
+                "participation_ratio": 8.825067478146037,
+                "rms": 0.3650391335404276,
+                "varying_columns_std_gt_1e_minus6": 87
+              },
+              "training_rows": 2048
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 3044,
+              "selection_extra": {
+                "columns": 72,
+                "covariance_rank_relative_1e_minus10": 72,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 7.927874901292814,
+                "rms": 0.11785113019775792,
+                "varying_columns_std_gt_1e_minus6": 72
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 86,
+                "nonzero_fraction": 0.9630681818181818,
+                "participation_ratio": 8.799146789149301,
+                "rms": 0.3644882480938283,
+                "varying_columns_std_gt_1e_minus6": 87
+              },
+              "selection_rows": 4096,
+              "stage": 2,
+              "training_extra": {
+                "columns": 72,
+                "covariance_rank_relative_1e_minus10": 72,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 7.888440704803909,
+                "rms": 0.11785113019775792,
+                "varying_columns_std_gt_1e_minus6": 72
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 86,
+                "nonzero_fraction": 0.9630681818181818,
+                "participation_ratio": 8.891192468129205,
+                "rms": 0.3653004308001526,
+                "varying_columns_std_gt_1e_minus6": 87
+              },
+              "training_rows": 8192
+            }
+          ],
+          "transform": "raw"
+        },
+        "history": {
+          "alpha": 1.0,
+          "stages": [
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 199,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 40,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 4.77203467460809,
+                "rms": 0.15811388300841897,
+                "varying_columns_std_gt_1e_minus6": 40
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 48,
+                "nonzero_fraction": 0.5426136363636364,
+                "participation_ratio": 5.12957088361715,
+                "rms": 0.27804554174894225,
+                "varying_columns_std_gt_1e_minus6": 48
+              },
+              "selection_rows": 256,
+              "stage": 0,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 40,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 4.546745778094335,
+                "rms": 0.15811388300841897,
+                "varying_columns_std_gt_1e_minus6": 40
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 48,
+                "nonzero_fraction": 0.5426136363636364,
+                "participation_ratio": 4.918938731353395,
+                "rms": 0.2791885450538759,
+                "varying_columns_std_gt_1e_minus6": 48
+              },
+              "training_rows": 512
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 789,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 40,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 7.627891944345124,
+                "rms": 0.15811388300841897,
+                "varying_columns_std_gt_1e_minus6": 40
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 61,
+                "nonzero_fraction": 0.6875,
+                "participation_ratio": 8.973831512173152,
+                "rms": 0.4455199619567923,
+                "varying_columns_std_gt_1e_minus6": 63
+              },
+              "selection_rows": 1024,
+              "stage": 1,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 40,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 7.680771391941017,
+                "rms": 0.15811388300841897,
+                "varying_columns_std_gt_1e_minus6": 40
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 61,
+                "nonzero_fraction": 0.6875,
+                "participation_ratio": 9.136817613831756,
+                "rms": 0.4470303975588348,
+                "varying_columns_std_gt_1e_minus6": 63
+              },
+              "training_rows": 2048
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 3163,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 40,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 10.758376243467564,
+                "rms": 0.15811388300841897,
+                "varying_columns_std_gt_1e_minus6": 40
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 74,
+                "nonzero_fraction": 0.8323863636363636,
+                "participation_ratio": 12.301072295158534,
+                "rms": 0.5656642848340819,
+                "varying_columns_std_gt_1e_minus6": 78
+              },
+              "selection_rows": 4096,
+              "stage": 2,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 40,
+                "nonzero_fraction": 1.0,
+                "participation_ratio": 10.869225537474769,
+                "rms": 0.15811388300841897,
+                "varying_columns_std_gt_1e_minus6": 40
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 74,
+                "nonzero_fraction": 0.8323863636363636,
+                "participation_ratio": 12.765379163328333,
+                "rms": 0.5673772507959326,
+                "varying_columns_std_gt_1e_minus6": 78
+              },
+              "training_rows": 8192
+            }
+          ],
+          "transform": "raw"
+        },
+        "native": {
+          "alpha": 1.0,
+          "stages": [
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 188,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 23,
+                "nonzero_fraction": 0.26474609375,
+                "participation_ratio": 9.224369748655947,
+                "rms": 0.4683840067696925,
+                "varying_columns_std_gt_1e_minus6": 23
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 31,
+                "nonzero_fraction": 0.2084073153409091,
+                "participation_ratio": 9.173947665388457,
+                "rms": 0.40702026363887445,
+                "varying_columns_std_gt_1e_minus6": 31
+              },
+              "selection_rows": 256,
+              "stage": 0,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 23,
+                "nonzero_fraction": 0.26513671875,
+                "participation_ratio": 9.089271965566962,
+                "rms": 0.46518944425819286,
+                "varying_columns_std_gt_1e_minus6": 23
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 31,
+                "nonzero_fraction": 0.2085848721590909,
+                "participation_ratio": 9.021191340187638,
+                "rms": 0.40613642757402824,
+                "varying_columns_std_gt_1e_minus6": 31
+              },
+              "training_rows": 512
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 656,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 31,
+                "nonzero_fraction": 0.306298828125,
+                "participation_ratio": 12.061605836759895,
+                "rms": 0.5711550304627853,
+                "varying_columns_std_gt_1e_minus6": 31
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 52,
+                "nonzero_fraction": 0.37218128551136365,
+                "participation_ratio": 12.298484153508905,
+                "rms": 0.5791419001526407,
+                "varying_columns_std_gt_1e_minus6": 54
+              },
+              "selection_rows": 1024,
+              "stage": 1,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 31,
+                "nonzero_fraction": 0.30616455078125,
+                "participation_ratio": 12.10340422253335,
+                "rms": 0.5712742365951917,
+                "varying_columns_std_gt_1e_minus6": 31
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 52,
+                "nonzero_fraction": 0.37212025035511365,
+                "participation_ratio": 12.46065988563558,
+                "rms": 0.580357977830361,
+                "varying_columns_std_gt_1e_minus6": 54
+              },
+              "training_rows": 2048
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 2455,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 32,
+                "nonzero_fraction": 0.319659423828125,
+                "participation_ratio": 13.220068649880547,
+                "rms": 0.6541082402444606,
+                "varying_columns_std_gt_1e_minus6": 32
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 66,
+                "nonzero_fraction": 0.5231406471946023,
+                "participation_ratio": 14.259071851145778,
+                "rms": 0.7092906100325561,
+                "varying_columns_std_gt_1e_minus6": 70
+              },
+              "selection_rows": 4096,
+              "stage": 2,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 32,
+                "nonzero_fraction": 0.3188018798828125,
+                "participation_ratio": 13.378592108693468,
+                "rms": 0.659352845504743,
+                "varying_columns_std_gt_1e_minus6": 32
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 66,
+                "nonzero_fraction": 0.5227508544921875,
+                "participation_ratio": 14.644362576718859,
+                "rms": 0.7128570726503738,
+                "varying_columns_std_gt_1e_minus6": 70
+              },
+              "training_rows": 8192
+            }
+          ],
+          "transform": "k1"
+        },
+        "reset_native": {
+          "alpha": 0.0001,
+          "stages": [
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 207,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 23,
+                "nonzero_fraction": 0.26474609375,
+                "participation_ratio": 9.224369748655947,
+                "rms": 0.4683840067696925,
+                "varying_columns_std_gt_1e_minus6": 23
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 31,
+                "nonzero_fraction": 0.2084073153409091,
+                "participation_ratio": 9.173947665388457,
+                "rms": 0.40702026363887445,
+                "varying_columns_std_gt_1e_minus6": 31
+              },
+              "selection_rows": 256,
+              "stage": 0,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 23,
+                "nonzero_fraction": 0.26513671875,
+                "participation_ratio": 9.089271965566962,
+                "rms": 0.46518944425819286,
+                "varying_columns_std_gt_1e_minus6": 23
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 31,
+                "nonzero_fraction": 0.2085848721590909,
+                "participation_ratio": 9.021191340187638,
+                "rms": 0.40613642757402824,
+                "varying_columns_std_gt_1e_minus6": 31
+              },
+              "training_rows": 512
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 724,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 31,
+                "nonzero_fraction": 0.260498046875,
+                "participation_ratio": 11.531576384609819,
+                "rms": 0.4518377010500141,
+                "varying_columns_std_gt_1e_minus6": 31
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 52,
+                "nonzero_fraction": 0.35136274857954547,
+                "participation_ratio": 12.898155268610854,
+                "rms": 0.5290776658893893,
+                "varying_columns_std_gt_1e_minus6": 54
+              },
+              "selection_rows": 1024,
+              "stage": 1,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 31,
+                "nonzero_fraction": 0.2578369140625,
+                "participation_ratio": 11.608882274974373,
+                "rms": 0.4541945753906191,
+                "varying_columns_std_gt_1e_minus6": 31
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 52,
+                "nonzero_fraction": 0.3501531427556818,
+                "participation_ratio": 13.152380519395633,
+                "rms": 0.5312644865472147,
+                "varying_columns_std_gt_1e_minus6": 54
+              },
+              "training_rows": 2048
+            },
+            {
+              "ablation_scope": "At fixed existing heads only; sensitivity diagnostic, not a refitted baseline",
+              "mean_fitted_extra_ablation_changes_on_selection": 2796,
+              "selection_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 31,
+                "nonzero_fraction": 0.261260986328125,
+                "participation_ratio": 11.582967878451129,
+                "rms": 0.449122706760531,
+                "varying_columns_std_gt_1e_minus6": 31
+              },
+              "selection_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 65,
+                "nonzero_fraction": 0.49659590287642047,
+                "participation_ratio": 14.409565002630575,
+                "rms": 0.6326921514194085,
+                "varying_columns_std_gt_1e_minus6": 69
+              },
+              "selection_rows": 4096,
+              "stage": 2,
+              "training_extra": {
+                "columns": 40,
+                "covariance_rank_relative_1e_minus10": 31,
+                "nonzero_fraction": 0.2579315185546875,
+                "participation_ratio": 11.656896260907448,
+                "rms": 0.454452516130709,
+                "varying_columns_std_gt_1e_minus6": 31
+              },
+              "training_full": {
+                "columns": 88,
+                "covariance_rank_relative_1e_minus10": 65,
+                "nonzero_fraction": 0.49508250843394885,
+                "participation_ratio": 14.881920106761843,
+                "rms": 0.6359475277822505,
+                "varying_columns_std_gt_1e_minus6": 69
+              },
+              "training_rows": 8192
+            }
+          ],
+          "transform": "k1"
+        }
+      }
+    }
+  ],
+  "cost_scope": "This scripted diagnostic only; earlier schema and summary reads were separate and not timed.",
+  "cpu_ns": 5727913510,
+  "input_files": {
+    "/tmp/hepta-field-v3-run/INDEPENDENT_RUNTIME_RESULTS-frozen.json": {
+      "bytes": 13160,
+      "sha256": "d876b1767f887682d6b06b55698f6361783822b4adfa044932b862729cb775f7"
+    },
+    "/tmp/hepta-field-v3-run/runtime/audit/17-frozen/selected/rows.jsonl.gz": {
+      "bytes": 19246226,
+      "sha256": "04e04684e9f094875f81c75093e6fed452c29548ba18afda49cf31efc7aa329f"
+    },
+    "/tmp/hepta-field-v3-run/runtime/audit/29-frozen/selected/rows.jsonl.gz": {
+      "bytes": 19391852,
+      "sha256": "956141af3dce0212ef4e1d6416079fca9428ab9daee68a5aec7df7e99c9b899a"
+    },
+    "/tmp/hepta-field-v3-run/runtime/audit/43-frozen/selected/rows.jsonl.gz": {
+      "bytes": 17075174,
+      "sha256": "be105dfada48f5a8f46bee2e32e9d6b9cbea05e4581f7432ab38ea55f632dc61"
+    },
+    "/tmp/hepta-field-v3-run/runtime/bank/17-frozen/runtime_fit/bank.npz": {
+      "bytes": 469176,
+      "sha256": "bf2cc60160008b7f0a858d6a81798e3321992b9032831b041c8a395b6a9e8671"
+    },
+    "/tmp/hepta-field-v3-run/runtime/bank/17-frozen/runtime_select/bank.npz": {
+      "bytes": 235648,
+      "sha256": "a7c59a257b1b32d0e1de1f522901c4e3f38168bfa8f9f70de7966275d2a2593d"
+    },
+    "/tmp/hepta-field-v3-run/runtime/bank/29-frozen/runtime_fit/bank.npz": {
+      "bytes": 467742,
+      "sha256": "ef8c46844652013293e5938e17b5dc611c787b9338d6146a5f1243971805d65f"
+    },
+    "/tmp/hepta-field-v3-run/runtime/bank/29-frozen/runtime_select/bank.npz": {
+      "bytes": 235580,
+      "sha256": "70be781d104565eba4671a3835bd7add3983e659e3d10538201b326c7282672c"
+    },
+    "/tmp/hepta-field-v3-run/runtime/bank/43-frozen/runtime_fit/bank.npz": {
+      "bytes": 469528,
+      "sha256": "6f852184d3a68d1071e1fea992b0ab73947808d2348c58bd8b0830e0c4f40e28"
+    },
+    "/tmp/hepta-field-v3-run/runtime/bank/43-frozen/runtime_select/bank.npz": {
+      "bytes": 236656,
+      "sha256": "5e0740a28b0d9afb6d6f5c5ad5a7f6adbd5b46adaf2c7be33caf6d0f4ec82a0e"
+    },
+    "/tmp/hepta-field-v3-run/runtime/fit/17-frozen/READOUTS.json": {
+      "bytes": 5056403,
+      "sha256": "65f1bf3b2dd3e09dee5efdfbdbbfc965ccc79a74f983be6d7d5f5c78689ebf46"
+    },
+    "/tmp/hepta-field-v3-run/runtime/fit/17-frozen/features.npz": {
+      "bytes": 67187470,
+      "sha256": "009918d4aa8f6459c9527bd208a2f0c8836501192d2418d802e303685526f50b"
+    },
+    "/tmp/hepta-field-v3-run/runtime/fit/29-frozen/READOUTS.json": {
+      "bytes": 5062006,
+      "sha256": "04e27e29e7b09e8d811cdafe794d9ac10f145604cc25755ada8cd2d07b92f1cc"
+    },
+    "/tmp/hepta-field-v3-run/runtime/fit/29-frozen/features.npz": {
+      "bytes": 67188803,
+      "sha256": "cbdb2cd486a391b6b2d4bf200cc577b16fd249bed5633340057dd5a312d0e432"
+    },
+    "/tmp/hepta-field-v3-run/runtime/fit/43-frozen/READOUTS.json": {
+      "bytes": 5058489,
+      "sha256": "ae2b76da23e7547f68cf408fabb3d3b259bd19d29737dab9cb66d55ed02a7e2a"
+    },
+    "/tmp/hepta-field-v3-run/runtime/fit/43-frozen/features.npz": {
+      "bytes": 67255990,
+      "sha256": "a95d1bf8ac32dd9084acf18e7b83c47c17a3bff5f3e26d49c78b4d7829c5eff4"
+    }
+  },
+  "native_owner_integration": false,
+  "offline_pilot_contract": {
+    "fixed_candidate_count": 9,
+    "honest_policies": 6,
+    "honest_stage_groups": "stage2 group0, stage1 group1, stage0 group2; paired sources kept intact",
+    "honest_transforms_and_alphas": "Previously selected V3 choices retained without search",
+    "no_new_model_outputs": true,
+    "no_pilot_selection_on_runtime_audit": true,
+    "own_tail_targets": "Every target follows the same candidate frozen later heads",
+    "raw_history_alpha": 1.0,
+    "raw_history_policies": 3,
+    "scope_limits": [
+      "Stage splits reduce per-head source count; no claim of budget-matched improvement.",
+      "Native/history transforms were already selected using V3 selection data; all pilot results are post hoc.",
+      "Oracle means reveal all 85 terminal outcomes per fit/select tree, unavailable to deployed controllers.",
+      "Unchosen runtime_audit branches are absent and are never imputed or evaluated."
+    ]
+  },
+  "pilot_parameters": {
+    "bytes": 109503,
+    "candidates": 9,
+    "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/RUNTIME_PILOT_CONTROLLERS.json.gz",
+    "sha256": "20556b183c80cd6f8af0e9bf06ab12ed83411563fe4cb6e4cec5fcc81b3cfebe",
+    "uncompressed_bytes": 293691,
+    "uncompressed_sha256": "9c89dd1ba0567f10f5632489b6e7d0e31d7d89f532841d55a86b4c5edafb0223"
+  },
+  "protected_roles_accessed": [],
+  "requires_calibration": true,
+  "schema": "hepta.field-bridge.v4.runtime-exploration.1",
+  "scientific_gate_changed": false,
+  "source_sha256": "c69a0368d55c0a28dcdc0e1b175d786b0dd067a7d6530ba101813c91bdfbc462",
+  "status": "exploratory_complete",
+  "study_scope": "Released V3 runtime data only. No new scientific qualification or confirmatory evidence.",
+  "wall_ns": 5741947810
+}

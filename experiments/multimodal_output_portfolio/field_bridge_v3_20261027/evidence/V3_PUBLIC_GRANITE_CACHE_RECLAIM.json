@@ -1,0 +1,25 @@
+{
+  "active_references_observed": [],
+  "free_bytes_after": 3339599872,
+  "free_bytes_before": 645595136,
+  "model": {
+    "bytes": 2694120096,
+    "filename": "granite-3.3-2b-instruct-Q8_0.gguf",
+    "id": "granite_33_2b",
+    "path": "/tmp/hepta-model-download-20261027/granite-3.3-2b-instruct-Q8_0.gguf",
+    "repository": "ibm-granite/granite-3.3-2b-instruct-GGUF",
+    "revision": "7cdf86ccd1f1bb3491c9b7017b033f2e51367397",
+    "sha256": "39068a5bcb15f10487a49426d617b1b0f38a624d7dbdefe5ff6f26de82d97039"
+  },
+  "private_scientific_files_deleted": 0,
+  "process_visibility_gaps": {
+    "maps_errno_13": 33
+  },
+  "reason": "Shared disk has less than 1GiB free while complete V3 development and raw-output verification are active. Reclaim only the hash-verified reproducible public model cache, retain lock/download receipts and all private scientific artifacts.",
+  "reclaimed_bytes": 2694120096,
+  "recovery_url": "https://huggingface.co/ibm-granite/granite-3.3-2b-instruct-GGUF/resolve/7cdf86ccd1f1bb3491c9b7017b033f2e51367397/granite-3.3-2b-instruct-Q8_0.gguf",
+  "schema": "hepta.public-cache-reclaim.1",
+  "timestamp_utc": "2026-10-27T10:57:58Z",
+  "verified_sha256": "39068a5bcb15f10487a49426d617b1b0f38a624d7dbdefe5ff6f26de82d97039",
+  "visibility_limitation": "Protected process mappings were unavailable; accessible descriptors and command lines showed no target reference."
+}

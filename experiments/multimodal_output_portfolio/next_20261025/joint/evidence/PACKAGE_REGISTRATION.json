@@ -1,0 +1,38 @@
+{
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "experiments.multimodal_output_portfolio.next_20261025.package_closed_study",
+    "--definition",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/joint/PACKAGE_DEFINITION.json",
+    "--archive",
+    "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-next-joint-20261026.tar.gz",
+    "--receipt",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/joint/EVIDENCE_ARCHIVE.json",
+    "--workspace",
+    "/workspace/scratch/87e43aa872f5",
+    "--repository",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu"
+  ],
+  "cost_scope": "Packaging and readback cost is separate from all training, evaluation and quality-analysis costs",
+  "cwd": "/workspace/scratch/87e43aa872f5/hepta-ndu",
+  "definition_sha256": "b94b99cc64ff9d0474f7a744c4cdbef8a5578a5df734a5653fb1c73c4d698af0",
+  "disk": {
+    "effective_uid": 0,
+    "f_bavail_bytes": 0,
+    "f_bfree_bytes": 1094778880
+  },
+  "host_context": {
+    "/sys/fs/cgroup/memory.current": "8574767104",
+    "/sys/fs/cgroup/memory.events": "low 0\nhigh 0\nmax 3930610\noom 12\noom_kill 3\noom_group_kill 0",
+    "/sys/fs/cgroup/memory.max": "8589934592"
+  },
+  "prior_native_then_media_packaging_completed": true,
+  "protocol_sha256": "6a305d92578da4d6e41ebc104101b7af58ebc02306ea6c54d9e73ae724222f08",
+  "registered_unix_ns": 1792987254771412787,
+  "report_sha256": "3464365667d1c697e136dd268bf6a4f766e5a0f46afb5668f61e11f13e9a89c1",
+  "retention": "All original files and linked archives remain; no upload or source deletion",
+  "schema": "hepta.next.joint.evidence-package-registration.v1",
+  "source_tree_stable_before_launch": true
+}

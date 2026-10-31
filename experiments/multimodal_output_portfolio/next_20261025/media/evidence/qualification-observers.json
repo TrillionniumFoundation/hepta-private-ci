@@ -1,0 +1,99 @@
+{
+  "component_v2_recipe": {
+    "event_boundaries": "Declared PCM presentation clock; never inferred from ground truth or ASR word times",
+    "max_new_tokens": 16,
+    "padding_each_side_samples": 1600,
+    "parse": "Exactly one digit per independently observed physical event; no lexical repairs",
+    "primary": "base.en",
+    "sample_rate": 8000,
+    "schema": "hepta.next.event-asr.recipe.v1",
+    "secondary": "small.en",
+    "target_or_prompt_supplied": false,
+    "word_timestamps": false
+  },
+  "ensemble_rule": "Accept equal nonempty digits or the sole nonempty digit; reject disagreement or two abstentions",
+  "models": {
+    "base.en": {
+      "compute_type": "int8",
+      "cpu_ns": 336160750,
+      "cpu_threads": 1,
+      "decoding": {
+        "beam_size": 5,
+        "best_of": 1,
+        "compression_ratio_threshold": 2.4,
+        "condition_on_previous_text": false,
+        "hotwords": null,
+        "initial_prompt": null,
+        "language": "en",
+        "log_prob_threshold": -1.0,
+        "max_new_tokens": 128,
+        "no_speech_threshold": 0.6,
+        "prefix": null,
+        "task": "transcribe",
+        "temperature": 0.0,
+        "vad_filter": false,
+        "word_timestamps": true
+      },
+      "manifest_sha256": "fa923fe74ac398504606f5a975e3a21f3300e1c926e9fd2327a0c9cde6f110bc",
+      "packages": {
+        "av": "19.0.2",
+        "ctranslate2": "4.8.4",
+        "faster-whisper": "1.2.1",
+        "tokenizers": "0.23.3"
+      },
+      "wall_ns": 336831567
+    },
+    "small.en": {
+      "compute_type": "int8",
+      "cpu_ns": 1198803288,
+      "cpu_threads": 1,
+      "decoding": {
+        "beam_size": 5,
+        "best_of": 1,
+        "compression_ratio_threshold": 2.4,
+        "condition_on_previous_text": false,
+        "hotwords": null,
+        "initial_prompt": null,
+        "language": "en",
+        "log_prob_threshold": -1.0,
+        "max_new_tokens": 128,
+        "no_speech_threshold": 0.6,
+        "prefix": null,
+        "task": "transcribe",
+        "temperature": 0.0,
+        "vad_filter": false,
+        "word_timestamps": true
+      },
+      "manifest_sha256": "d14921e9b1fb8500871df1dc7b73c186c45ed638ca7ad3ae9ea48c4a6e1fd454",
+      "packages": {
+        "av": "19.0.2",
+        "ctranslate2": "4.8.4",
+        "faster-whisper": "1.2.1",
+        "tokenizers": "0.23.3"
+      },
+      "wall_ns": 1241933786
+    }
+  },
+  "observer_family_independence_claimed": false,
+  "primary": "consensus_or_single_v3",
+  "recipe": {
+    "event_boundaries": "Declared PCM presentation clock; never inferred from ground truth or ASR word times",
+    "max_new_tokens": 16,
+    "padding_each_side_samples": 1600,
+    "parse": "Exactly one digit per independently observed physical event; no lexical repairs",
+    "primary": "consensus_or_single_v3",
+    "sample_rate": 8000,
+    "schema": "hepta.next.event-asr.recipe.v1",
+    "secondary": "base.en",
+    "target_or_prompt_supplied": false,
+    "word_timestamps": false
+  },
+  "secondary_observers": [
+    "base.en",
+    "small.en"
+  ],
+  "selection": "60 old qualification events are development only; base 50/60 versus small 46/60",
+  "v1_primary_small_failed": true,
+  "v2_qualification_failed": true,
+  "v2_recipe_unchanged": true
+}

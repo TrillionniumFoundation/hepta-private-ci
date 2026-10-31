@@ -1,0 +1,326 @@
+{
+  "archive_created": false,
+  "attempt": 1,
+  "collector_source_sha256": "f128af1dfbf88e85a7d0916b6fe446b3eb30c21d09e86b56e2e8bafb6facf2a6",
+  "config_sha256": "75cd75aba4c2e59478c073deef98f8d2b2d3feaa635da999487741a24c8e2fc3",
+  "failure_log_sha256": "2fea7e87dae6e5a1775c6908f90bf19932dbe0c85ff8a4cd0628dbba188d378a",
+  "matching_assets": [
+    {
+      "actual": {
+        "bytes": 1648877,
+        "sha256": "8d422c7b0a1c1c79245a5bcf07fe86e33eeafee792b84584aec276f5a2dbc4e6"
+      },
+      "expected": {
+        "bytes": 1648877,
+        "sha256": "8d422c7b0a1c1c79245a5bcf07fe86e33eeafee792b84584aec276f5a2dbc4e6"
+      },
+      "path": "ndu-data/t10k-images-idx3-ubyte.gz"
+    },
+    {
+      "actual": {
+        "bytes": 4542,
+        "sha256": "f7ae60f92e00ec6debd23a6088c31dbd2371eca3ffa0defaefb259924204aec6"
+      },
+      "expected": {
+        "bytes": 4542,
+        "sha256": "f7ae60f92e00ec6debd23a6088c31dbd2371eca3ffa0defaefb259924204aec6"
+      },
+      "path": "ndu-data/t10k-labels-idx1-ubyte.gz"
+    },
+    {
+      "actual": {
+        "bytes": 9912422,
+        "sha256": "440fcabf73cc546fa21475e81ea370265605f56be210a4024d2ca8f203523609"
+      },
+      "expected": {
+        "bytes": 9912422,
+        "sha256": "440fcabf73cc546fa21475e81ea370265605f56be210a4024d2ca8f203523609"
+      },
+      "path": "ndu-data/train-images-idx3-ubyte.gz"
+    },
+    {
+      "actual": {
+        "bytes": 28881,
+        "sha256": "3552534a0a558bbed6aed32b30c495cca23d567ec52cac8be1a0730e8010255c"
+      },
+      "expected": {
+        "bytes": 28881,
+        "sha256": "3552534a0a558bbed6aed32b30c495cca23d567ec52cac8be1a0730e8010255c"
+      },
+      "path": "ndu-data/train-labels-idx1-ubyte.gz"
+    },
+    {
+      "actual": {
+        "bytes": 427247,
+        "sha256": "cd560d4ec2f45cef6a0f4db9809b902ea68833c8693798f7597135a83a6e3589"
+      },
+      "expected": {
+        "bytes": 427247,
+        "sha256": "cd560d4ec2f45cef6a0f4db9809b902ea68833c8693798f7597135a83a6e3589"
+      },
+      "path": "ndu-runs/full-002/audit-observer.pt"
+    },
+    {
+      "actual": {
+        "bytes": 427261,
+        "sha256": "a9cfe78a08b9192ba9d8fe9c144de29ef5d3b1e9cd6ed236d01d170d32034210"
+      },
+      "expected": {
+        "bytes": 427261,
+        "sha256": "a9cfe78a08b9192ba9d8fe9c144de29ef5d3b1e9cd6ed236d01d170d32034210"
+      },
+      "path": "ndu-runs/full-002/reward-observer.pt"
+    },
+    {
+      "actual": {
+        "bytes": 4063045,
+        "sha256": "8fa76a13cdeee48e41b84e29211659a065d9573e2fdfecc4281f882248b508b6"
+      },
+      "expected": {
+        "bytes": 4063045,
+        "sha256": "8fa76a13cdeee48e41b84e29211659a065d9573e2fdfecc4281f882248b508b6"
+      },
+      "path": "ndu-runs/full-002/seed-17-terminal_entropic_ndu.pt"
+    },
+    {
+      "actual": {
+        "bytes": 4063045,
+        "sha256": "e92dc06cec18ee279b8367a2fd194ba91978197150e5edcdede1c0d9fde2b11c"
+      },
+      "expected": {
+        "bytes": 4063045,
+        "sha256": "e92dc06cec18ee279b8367a2fd194ba91978197150e5edcdede1c0d9fde2b11c"
+      },
+      "path": "ndu-runs/full-002/seed-29-terminal_entropic_ndu.pt"
+    },
+    {
+      "actual": {
+        "bytes": 4063045,
+        "sha256": "1a38524e474d35ff9eb1ad584b1714ea2ef7f7f8d0c502a6b3b2172252ddabf9"
+      },
+      "expected": {
+        "bytes": 4063045,
+        "sha256": "1a38524e474d35ff9eb1ad584b1714ea2ef7f7f8d0c502a6b3b2172252ddabf9"
+      },
+      "path": "ndu-runs/full-002/seed-43-terminal_entropic_ndu.pt"
+    }
+  ],
+  "mismatching_assets": [
+    {
+      "actual": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected": {
+        "bytes": 5282250,
+        "sha256": "5f6690d0843fc6882c1be8272af608fd4e37c3bcddb6e157af8e383338dccf89"
+      },
+      "path": "ndu-runs/full-002/forecast.json"
+    },
+    {
+      "actual": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected": {
+        "bytes": 4520287,
+        "sha256": "f5cc266c1e75ddc5cf20fd92923b1e531c3e2c52a2fa9b68ae2afb943b64872e"
+      },
+      "path": "ndu-runs/full-002/native-receipts.json"
+    },
+    {
+      "actual": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected": {
+        "bytes": 3527764,
+        "sha256": "20b9c271f09c0d506ef3ad5c754ffc094d4e0da8071d0fe233b7fad0de00b593"
+      },
+      "path": "ndu-runs/full-002/native-receipts.jsonl"
+    },
+    {
+      "actual": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected": {
+        "bytes": 993,
+        "sha256": "3c5062afeff0f9cbaff333c48f7899ae486e5eca67f60103bad68e1b12897f7d"
+      },
+      "path": "ndu-runs/full-002/observer.json"
+    },
+    {
+      "actual": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected": {
+        "bytes": 63253,
+        "sha256": "b45d60a3dcd4de13493c20be5b8649692163ebe0674b58d8957c3919097e7de5"
+      },
+      "path": "ndu-runs/full-002/protocol.json"
+    },
+    {
+      "actual": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected": {
+        "bytes": 16247,
+        "sha256": "70a9a0d90105ee65f4869803adbdb01fa0679a8f4ca8bd72dfb0cfe2eeadfcec"
+      },
+      "path": "ndu-runs/full-002/requested-config.json"
+    },
+    {
+      "actual": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected": {
+        "bytes": 32390650,
+        "sha256": "e0dc00e8d24cd389c5cb438c3cab3f4a6e83dbb849d03fca5c88553e08181e33"
+      },
+      "path": "ndu-runs/full-002/rows.jsonl"
+    },
+    {
+      "actual": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected": {
+        "bytes": 43701,
+        "sha256": "ba52a4086c07740bba05ac1e7e41282e2a67a709db08c2187ea871753e00a47b"
+      },
+      "path": "ndu-runs/full-002/seed-17-supervised-forecast.pt"
+    },
+    {
+      "actual": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected": {
+        "bytes": 4062237,
+        "sha256": "cab68decdd59ef23e5b1d8b3e09d077cf840706063f1140740b078fe39936e74"
+      },
+      "path": "ndu-runs/full-002/seed-17-supervised.pt"
+    },
+    {
+      "actual": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected": {
+        "bytes": 44005,
+        "sha256": "6c058399c0f66a21af873a80a554fd78b1017db97bd74344705fb5bd3cab1cae"
+      },
+      "path": "ndu-runs/full-002/seed-17-terminal_entropic_ndu-forecast.pt"
+    },
+    {
+      "actual": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected": {
+        "bytes": 43701,
+        "sha256": "745ffb13522b355a49f5571e68a4712a58bb04c3577bcd284fe758770a6ebe7f"
+      },
+      "path": "ndu-runs/full-002/seed-29-supervised-forecast.pt"
+    },
+    {
+      "actual": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected": {
+        "bytes": 4062237,
+        "sha256": "5fd67b4a54351fcca98bf282cc1ffd6553f104be7fab70b6bbd31f8a828d8df1"
+      },
+      "path": "ndu-runs/full-002/seed-29-supervised.pt"
+    },
+    {
+      "actual": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected": {
+        "bytes": 43941,
+        "sha256": "0bfdcb997a5701f6dc330c4e5812d4e25b0544998ec3cdb19c13c25ab64381ba"
+      },
+      "path": "ndu-runs/full-002/seed-29-terminal_entropic_ndu-forecast.pt"
+    },
+    {
+      "actual": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected": {
+        "bytes": 43701,
+        "sha256": "8a06b8df2af045578775f02faec3c46489edb90d4b0e454d122caa842e71e0ef"
+      },
+      "path": "ndu-runs/full-002/seed-43-supervised-forecast.pt"
+    },
+    {
+      "actual": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected": {
+        "bytes": 4062237,
+        "sha256": "2682ba46efa7621d671a5c64e645409a5e8a777df6446fe36f57135235289247"
+      },
+      "path": "ndu-runs/full-002/seed-43-supervised.pt"
+    },
+    {
+      "actual": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected": {
+        "bytes": 43941,
+        "sha256": "e504af24927bc7874f3134a2093c9f847c46ce3380feefd362496c54bbdbc1a5"
+      },
+      "path": "ndu-runs/full-002/seed-43-terminal_entropic_ndu-forecast.pt"
+    },
+    {
+      "actual": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected": {
+        "bytes": 131,
+        "sha256": "2ec0c0650d5b368028e170559166457fb2ecfe89273717287621fbf39a80738d"
+      },
+      "path": "ndu-runs/full-002/status.json"
+    },
+    {
+      "actual": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected": {
+        "bytes": 670373,
+        "sha256": "01cecd970da28561050685d85c2fb5c78422d519f2b39d284d2e03b454e75f73"
+      },
+      "path": "ndu-runs/full-002/summary.json"
+    },
+    {
+      "actual": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected": {
+        "bytes": 3225142,
+        "sha256": "ae3016eee4e08574a1524c7d05c0c44b6f89222a3df28a48973a34352be1fffa"
+      },
+      "path": "ndu-runs/full-002/training.json"
+    }
+  ],
+  "partial_archive_created": false,
+  "recorded_unix_ns": 1793117955221974845,
+  "restoration_file_sha256": "a88426d12f23e67f4215ca47cf44ae2e1dfec3dec1847b531f584ecf39bb7e25",
+  "schema": "hepta.field-bridge.v4.archive-collection-attempt.1",
+  "scientific_retry": false,
+  "stage": "collector",
+  "status": "FAILED_CLOSED_ORIGINAL_ASSET_BYTES_MISSING"
+}

@@ -15,8 +15,10 @@ use codex_hepta_types::StableId;
 use crate::CrossFoldPlanReceiptV1;
 use crate::FinalHoldoutJournalError;
 use crate::FinalHoldoutJournalReceiptV1;
-use crate::FinalHoldoutJournalSnapshotV1;
-use crate::FinalHoldoutJournalV1;
+use crate::holdout_envelope::HoldoutJournalSnapshotV2;
+use crate::holdout_envelope::HoldoutJournalV2;
+use crate::holdout_envelope::PairedHoldoutJournalReceiptV1;
+use crate::paired_plan::FrozenPairedPlanV1;
 
 const MAX_RECORDS: usize = 1_000_000;
 
@@ -40,7 +42,7 @@ impl HoldoutWriterFenceV1 {
 pub struct FinalHoldoutCasRecordV1 {
     pub binding: Digest32,
     pub fence: HoldoutWriterFenceV1,
-    pub journal: FinalHoldoutJournalSnapshotV1,
+    pub journal: HoldoutJournalSnapshotV2,
     pub state_digest: Digest32,
 }
 
@@ -48,7 +50,7 @@ impl FinalHoldoutCasRecordV1 {
     pub(crate) fn new(
         binding: Digest32,
         fence: HoldoutWriterFenceV1,
-        journal: FinalHoldoutJournalSnapshotV1,
+        journal: HoldoutJournalSnapshotV2,
     ) -> Result<Self, FencedHoldoutError> {
         if binding.is_zero() {
             return Err(FencedHoldoutError::Binding);
@@ -171,7 +173,7 @@ pub struct FencedFinalHoldoutOwnerV1<S> {
     store: S,
     binding: Digest32,
     fence: HoldoutWriterFenceV1,
-    journal: FinalHoldoutJournalV1,
+    journal: HoldoutJournalV2,
     state_digest: Digest32,
     poisoned: bool,
 }
@@ -190,7 +192,7 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
         if store.load(binding)?.is_some() {
             return Err(FencedHoldoutError::Conflict);
         }
-        let journal = FinalHoldoutJournalV1::with_record_limit(MAX_RECORDS)
+        let journal = HoldoutJournalV2::with_record_limit(MAX_RECORDS)
             .map_err(FencedHoldoutError::Journal)?;
         let record = FinalHoldoutCasRecordV1::new(binding, fence.clone(), journal.snapshot())?;
         apply_cas(&mut store, binding, None, &record)?;
@@ -217,11 +219,9 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
         fence.validate()?;
         let current = store.load(binding)?.ok_or(FencedHoldoutError::Missing)?;
         current.validate(binding)?;
-        let journal = FinalHoldoutJournalV1::from_snapshot_with_record_limit(
-            current.journal.clone(),
-            MAX_RECORDS,
-        )
-        .map_err(|_| FencedHoldoutError::Corrupt)?;
+        let journal =
+            HoldoutJournalV2::from_snapshot_with_record_limit(current.journal.clone(), MAX_RECORDS)
+                .map_err(|_| FencedHoldoutError::Corrupt)?;
 
         let record = if fence == current.fence {
             current
@@ -256,6 +256,43 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
         let mut candidate = self.journal.clone();
         let receipt = candidate
             .consume(candidate.head_digest(), plan)
+            .map_err(FencedHoldoutError::Journal)?;
+        let next =
+            FinalHoldoutCasRecordV1::new(self.binding, self.fence.clone(), candidate.snapshot())?;
+
+        match self
+            .store
+            .compare_and_swap(self.binding, Some(self.state_digest), &next)
+        {
+            Ok(()) => {
+                self.journal = candidate;
+                self.state_digest = next.state_digest;
+                Ok(receipt)
+            }
+            Err(FinalHoldoutCasStoreError::Conflict) => {
+                self.poisoned = true;
+                Err(FencedHoldoutError::Conflict)
+            }
+            Err(FinalHoldoutCasStoreError::Rejected) => Err(FencedHoldoutError::Rejected),
+            Err(FinalHoldoutCasStoreError::Indeterminate) => {
+                self.poisoned = true;
+                Err(FencedHoldoutError::Indeterminate)
+            }
+        }
+    }
+
+    /// A distinct engineering-only profile uses the SAME authoritative CAS journal.
+    /// No provider may release paired outcome values before this succeeds.
+    pub fn consume_paired(
+        &mut self,
+        plan: &FrozenPairedPlanV1,
+    ) -> Result<PairedHoldoutJournalReceiptV1, FencedHoldoutError> {
+        if self.poisoned {
+            return Err(FencedHoldoutError::Poisoned);
+        }
+        let mut candidate = self.journal.clone();
+        let receipt = candidate
+            .consume_paired(candidate.head_digest(), plan)
             .map_err(FencedHoldoutError::Journal)?;
         let next =
             FinalHoldoutCasRecordV1::new(self.binding, self.fence.clone(), candidate.snapshot())?;
@@ -333,7 +370,7 @@ fn apply_cas<S: FinalHoldoutCasStoreV1>(
 fn digest_state(
     binding: Digest32,
     fence: &HoldoutWriterFenceV1,
-    journal: &FinalHoldoutJournalSnapshotV1,
+    journal: &HoldoutJournalSnapshotV2,
 ) -> Result<Digest32, FencedHoldoutError> {
     if journal.records.len() > MAX_RECORDS {
         return Err(FencedHoldoutError::Corrupt);

@@ -1,0 +1,2944 @@
+{
+  "actual_generator_work": {
+    "bernoulli_sample_calls": 56,
+    "categorical_sample_calls": 392,
+    "committed_image_examples": 1544,
+    "committed_text_examples": 1544,
+    "couple_calls": 24,
+    "discarded_image_examples": 768,
+    "discarded_text_examples": 768,
+    "emission_calls": 56,
+    "encoder_calls": 8,
+    "encoder_examples": 8,
+    "input_pixel_encoder_panel_examples": 16,
+    "pixel_decoder_calls": 56,
+    "pixel_decoder_panel_examples": 4624,
+    "refine_image_calls": 16,
+    "refine_semantic_calls": 24,
+    "refine_text_calls": 16,
+    "sampled_bernoulli_variables": 3625216,
+    "sampled_categorical_variables": 16184,
+    "state_transition_calls": 80,
+    "state_transition_examples": 3088,
+    "text_decoder_example_steps": 16184,
+    "text_decoder_step_calls": 392,
+    "token_projection_example_steps": 16184
+  },
+  "completed_at_utc": "2026-10-25T06:06:23.879753+00:00",
+  "evaluation_receipt": {
+    "actual_terminal_media_rows": 2560,
+    "archive_file_sha256": "0492e08066b107d6c0d21101d0d300788a1897338c4e72a5f54283cb3b7b6491",
+    "complete_required_media_rows": 2560,
+    "ledger_file_sha256": "08bd738498bc57453acad25833850b79eadb0509d09fee984829a041ec872a09",
+    "target_scoring_rows_per_observer": 81920,
+    "utility_arrays_file_sha256": "e1d28f3f03b2dfb9ee4473925740c055fa18f8ecc418f7beca985305932adb17"
+  },
+  "fit_receipt": {
+    "actual_terminal_media_rows": 1280,
+    "archive_file_sha256": "4b6d9b142888d810cdafd12d5f75eeb4ea8cbeb43e740fb5727bb775fa67c08b",
+    "complete_required_media_rows": 1280,
+    "ledger_file_sha256": "b186a706df678fcf7dbdd21230baf96aeb268758a7d2ea1755a7298113d2f2a0",
+    "target_scoring_rows_per_observer": 40960,
+    "utility_arrays_file_sha256": "921014b00cd90da2bd0e43ee8ef1bea30134848a987ab1d77bfd748dd1d7debe"
+  },
+  "fit_selection_seal_sha256": "d966b68a501e38c4c94075cd8eabd4cb5bb149a1a14f161eb383da546bbc1ec8",
+  "histories": [
+    {
+      "complete_public_history_sha256": "60e1a7cb03134be7dc9960668241e5a7f2c2968c8290bad04170b2de148d02c7",
+      "history_index": 0,
+      "initial_draft_index": 0,
+      "legacy_predicted_moments": [
+        2.7584879398345947,
+        2.9090943336486816,
+        2.7491462230682373,
+        3.0868473052978516,
+        2.809676170349121
+      ],
+      "public_frame_sha256": "2d942b6394c7cc2e005d63defcad39f41b47c7ff765bb2352def03b5d2046e13",
+      "public_observation_sha256": "fcf5228d9ba68da6324594e7bdbce72effdfab125405b69cd2214fccc58c0bd2",
+      "selected_actions": {
+        "fit_only_public_lookup": 0,
+        "fixed_h1_couple": 4,
+        "fixed_h1_stop": 0,
+        "legacy_feedback_q1": 2
+      },
+      "swap": 0
+    },
+    {
+      "complete_public_history_sha256": "9126ae1049583310e24ca8e85fe0e38d3da896e899c9d2875b6d44f3247e673d",
+      "history_index": 1,
+      "initial_draft_index": 1,
+      "legacy_predicted_moments": [
+        2.1386830806732178,
+        2.318173408508301,
+        2.1820788383483887,
+        3.0255210399627686,
+        2.767899751663208
+      ],
+      "public_frame_sha256": "98bffb89287f83f9cdad09ca8f677aed34f5235c2fe4e8e4f203c46937e4de3e",
+      "public_observation_sha256": "fcf5228d9ba68da6324594e7bdbce72effdfab125405b69cd2214fccc58c0bd2",
+      "selected_actions": {
+        "fit_only_public_lookup": 0,
+        "fixed_h1_couple": 4,
+        "fixed_h1_stop": 0,
+        "legacy_feedback_q1": 0
+      },
+      "swap": 0
+    },
+    {
+      "complete_public_history_sha256": "b80ffc2c9f0b46462d2a70af35a2225fdab440351e11a8c33fb4699db3a283a5",
+      "history_index": 2,
+      "initial_draft_index": 2,
+      "legacy_predicted_moments": [
+        2.523235559463501,
+        2.4002230167388916,
+        2.544783592224121,
+        2.9928269386291504,
+        2.9067890644073486
+      ],
+      "public_frame_sha256": "2d0ea7d2dc7969d037dbb514bec20fd1922b4120bb78e7b36b880a3641a774c4",
+      "public_observation_sha256": "fcf5228d9ba68da6324594e7bdbce72effdfab125405b69cd2214fccc58c0bd2",
+      "selected_actions": {
+        "fit_only_public_lookup": 3,
+        "fixed_h1_couple": 4,
+        "fixed_h1_stop": 0,
+        "legacy_feedback_q1": 1
+      },
+      "swap": 0
+    },
+    {
+      "complete_public_history_sha256": "8c9550e0b4c0eff3821b6c5cee6a151e7a6bda555be9c227645907ba5a843273",
+      "history_index": 3,
+      "initial_draft_index": 3,
+      "legacy_predicted_moments": [
+        2.1115665435791016,
+        2.023440361022949,
+        2.1337244510650635,
+        2.7950146198272705,
+        2.6900980472564697
+      ],
+      "public_frame_sha256": "8e07a85ed20a5e0dd18f3a6dc91f8f610470259976376790e5b75ad80bbe21ab",
+      "public_observation_sha256": "fcf5228d9ba68da6324594e7bdbce72effdfab125405b69cd2214fccc58c0bd2",
+      "selected_actions": {
+        "fit_only_public_lookup": 0,
+        "fixed_h1_couple": 4,
+        "fixed_h1_stop": 0,
+        "legacy_feedback_q1": 1
+      },
+      "swap": 0
+    },
+    {
+      "complete_public_history_sha256": "8c3754d9410c0dc59903f85a990fafeb99091a227634bac18e609788f165d84c",
+      "history_index": 4,
+      "initial_draft_index": 0,
+      "legacy_predicted_moments": [
+        6.21225643157959,
+        6.074477195739746,
+        5.824459075927734,
+        5.282762050628662,
+        4.959982395172119
+      ],
+      "public_frame_sha256": "9d22f6ac56e59e377a3a131861232dc5ac9a1fd68abe3d0a3f8b2eb4fbc2ab21",
+      "public_observation_sha256": "a4cb129a1d888fe305ac016c53416457c33ec49856de26b485454948b51ad774",
+      "selected_actions": {
+        "fit_only_public_lookup": 4,
+        "fixed_h1_couple": 4,
+        "fixed_h1_stop": 0,
+        "legacy_feedback_q1": 4
+      },
+      "swap": 1
+    },
+    {
+      "complete_public_history_sha256": "87aa95697c588cba23f2a58726b495f08731fe49904bffffedef75fdc3749a34",
+      "history_index": 5,
+      "initial_draft_index": 1,
+      "legacy_predicted_moments": [
+        2.5750372409820557,
+        2.5466976165771484,
+        2.4774036407470703,
+        3.332691192626953,
+        3.101128101348877
+      ],
+      "public_frame_sha256": "dc7561ec4184f9b6c47c84d59e0f5ba8e40d45ce86a839edce3fcfa2a64d29db",
+      "public_observation_sha256": "a4cb129a1d888fe305ac016c53416457c33ec49856de26b485454948b51ad774",
+      "selected_actions": {
+        "fit_only_public_lookup": 0,
+        "fixed_h1_couple": 4,
+        "fixed_h1_stop": 0,
+        "legacy_feedback_q1": 2
+      },
+      "swap": 1
+    },
+    {
+      "complete_public_history_sha256": "57d92f2918f40f3232345faec0c7a30fc212dd9a35d9ba5f2bfcc58b23c4c56b",
+      "history_index": 6,
+      "initial_draft_index": 2,
+      "legacy_predicted_moments": [
+        4.757031440734863,
+        4.723548889160156,
+        4.6926798820495605,
+        3.8887956142425537,
+        3.621286153793335
+      ],
+      "public_frame_sha256": "a2be579585f076f0016944d884aff9f8afea4edc087280cdb901927a9295fcec",
+      "public_observation_sha256": "a4cb129a1d888fe305ac016c53416457c33ec49856de26b485454948b51ad774",
+      "selected_actions": {
+        "fit_only_public_lookup": 3,
+        "fixed_h1_couple": 4,
+        "fixed_h1_stop": 0,
+        "legacy_feedback_q1": 4
+      },
+      "swap": 1
+    },
+    {
+      "complete_public_history_sha256": "1287801c79c53ed674bef28867ec8fb25305a1b1036be344582a385850dec835",
+      "history_index": 7,
+      "initial_draft_index": 3,
+      "legacy_predicted_moments": [
+        3.086186170578003,
+        3.4263501167297363,
+        3.0257537364959717,
+        3.1581335067749023,
+        2.612097978591919
+      ],
+      "public_frame_sha256": "93b9bdf29b85da609bac91594033bd33dcf9d7799716afba084045cfa1ebb72b",
+      "public_observation_sha256": "a4cb129a1d888fe305ac016c53416457c33ec49856de26b485454948b51ad774",
+      "selected_actions": {
+        "fit_only_public_lookup": 4,
+        "fixed_h1_couple": 4,
+        "fixed_h1_stop": 0,
+        "legacy_feedback_q1": 4
+      },
+      "swap": 1
+    }
+  ],
+  "legacy_public_policy_work": {
+    "critic_calls": 8,
+    "critic_examples": 8,
+    "draft_pixel_encoder_calls": 8,
+    "draft_pixel_encoder_panel_examples": 16,
+    "public_feature_calls": 8,
+    "public_feature_examples": 8,
+    "token_onehot_examples": 8
+  },
+  "limitations": [
+    "PRNG samples treated as iid under registered generator law",
+    "imperfect local observers",
+    "eight fixed histories, not independent task samples",
+    "finite support is not an empirical posterior for other views",
+    "bounded Monte Carlo intervals can be wide",
+    "the fit-selected lookup is a diagnostic finite-history reference, not a new general neural policy",
+    "step cost is a utility proxy; measured compute/time are reported separately, without converting wall time to utility"
+  ],
+  "observer_results": {
+    "primary": [
+      {
+        "H2_or_global_optimality_claim": false,
+        "action_simultaneous_CE_intervals": [
+          [
+            -0.4847560185213517,
+            -0.4847560185213517
+          ],
+          [
+            -0.4867560185213515,
+            -0.4867560185213515
+          ],
+          [
+            -0.7499376802376898,
+            0.09718119767231423
+          ],
+          [
+            -0.8088642607852012,
+            -0.16243629434096848
+          ],
+          [
+            -0.8192297491362162,
+            -0.19920783875922443
+          ]
+        ],
+        "actions": [
+          "stop",
+          "refine_semantic",
+          "refine_image",
+          "refine_text",
+          "couple"
+        ],
+        "alpha": 0.05,
+        "causal_best_action_CE_interval": [
+          -0.4847560185213517,
+          0.09718119767231423
+        ],
+        "critic_predictions": {
+          "legacy_q1": {
+            "CE_action_error_MSE_estimate": 0.0020756176203471184,
+            "conditional_mean_target_MSE_estimate": 0.07348088143729051,
+            "global_or_all_neural_histories_certificate": false,
+            "maximum_absolute_mean_target_error_estimate": 0.5086723876923887,
+            "maximum_absolute_mean_target_error_simultaneous_upper_bound": 2.3375579081900453,
+            "predicted_objective": [
+              2.7584879398345947,
+              2.9090943336486816,
+              2.7491462230682373,
+              3.0868473052978516,
+              2.809676170349121
+            ]
+          }
+        },
+        "empirical_best_action_CE_is_population_optimum": false,
+        "empirical_information_lattice": {
+          "CE": {
+            "full_future_table_known": -0.48096982234366903,
+            "private_target_known": -0.4151553833422175,
+            "public_only": -0.4847560185213517,
+            "target_and_future_known": -0.34876067433782054
+          },
+          "information_gain_is_not_uniquely_additive": true,
+          "interaction": 0.06260851282671426,
+          "objective": {
+            "full_future_table_known": 2.616767152681023,
+            "private_target_known": 2.2940315380766174,
+            "public_only": 2.636657554181144,
+            "target_and_future_known": 2.0087674975061214
+          },
+          "scope": "Same empirical finite table; sample minima can be optimistic for the population"
+        },
+        "evaluation_action_CE": [
+          -0.4847560185213517,
+          -0.4867560185213515,
+          -0.48770322351853124,
+          -0.5835620523621383,
+          -0.599733618448121
+        ],
+        "evaluation_action_mean_objectives": [
+          2.636657554181144,
+          2.647225305810795,
+          2.6522449890552826,
+          3.2127398365430175,
+          3.3183485580415097
+        ],
+        "evaluation_future_replicas": 64,
+        "evaluation_utility_array_sha256": "40a35b34638a7a2a96307841a6d1bf08a3079eadde0c6741b3ae93623674c245",
+        "fit_action_mean_objectives": [
+          2.636657554181155,
+          2.6472253058108226,
+          2.652432581436298,
+          3.1529968551789436,
+          3.2560196319566557
+        ],
+        "fit_future_replicas": 32,
+        "future_replica_iid_is_caller_model_assumption": true,
+        "gamma": 2.0,
+        "moment_bounds": [
+          0.1353352832366127,
+          7.418671514670643
+        ],
+        "moment_interval_method": "two-sided bounded Hoeffding with union over actions and registered history/observer family",
+        "moment_radius": [
+          0.0,
+          0.0,
+          1.8288855204976568,
+          1.8288855204976568,
+          1.8288855204976568
+        ],
+        "policies": {
+          "fit_only_public_lookup": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.4847560185213517,
+            "finite_history_regret_interval": [
+              0.0,
+              0.5819372161936659
+            ],
+            "simultaneous_CE_interval": [
+              -0.4847560185213517,
+              -0.4847560185213517
+            ]
+          },
+          "fixed_h1_couple": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.599733618448121,
+            "finite_history_regret_interval": [
+              0.0,
+              0.9164109468085304
+            ],
+            "simultaneous_CE_interval": [
+              -0.8192297491362162,
+              -0.19920783875922443
+            ]
+          },
+          "fixed_h1_stop": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.4847560185213517,
+            "finite_history_regret_interval": [
+              0.0,
+              0.5819372161936659
+            ],
+            "simultaneous_CE_interval": [
+              -0.4847560185213517,
+              -0.4847560185213517
+            ]
+          },
+          "legacy_feedback_q1": {
+            "action": "refine_image",
+            "action_index": 2,
+            "evaluation_CE": -0.48770322351853124,
+            "finite_history_regret_interval": [
+              0.0,
+              0.8471188779100041
+            ],
+            "simultaneous_CE_interval": [
+              -0.7499376802376898,
+              0.09718119767231423
+            ]
+          }
+        },
+        "public_history_sha256": "60e1a7cb03134be7dc9960668241e5a7f2c2968c8290bad04170b2de148d02c7",
+        "schema": "hepta.abc-next.common-history-diagnostic.v1",
+        "simultaneous_history_observer_family": 16,
+        "target_count": 32,
+        "target_prior_is_fixed_finite_diagnostic_law": true,
+        "targets_are_not_independent_confidence_samples": true
+      },
+      {
+        "H2_or_global_optimality_claim": false,
+        "action_simultaneous_CE_intervals": [
+          [
+            -0.4598314366358374,
+            -0.4598314366358374
+          ],
+          [
+            -0.46183143663583803,
+            -0.46183143663583803
+          ],
+          [
+            -0.7364927203503211,
+            0.17515626708057278
+          ],
+          [
+            -0.8040859090761333,
+            -0.14480354423133246
+          ],
+          [
+            -0.8024936564928148,
+            -0.1388254924370736
+          ]
+        ],
+        "actions": [
+          "stop",
+          "refine_semantic",
+          "refine_image",
+          "refine_text",
+          "couple"
+        ],
+        "alpha": 0.05,
+        "causal_best_action_CE_interval": [
+          -0.4598314366358374,
+          0.17515626708057278
+        ],
+        "critic_predictions": {
+          "legacy_q1": {
+            "CE_action_error_MSE_estimate": 0.003661970453409604,
+            "conditional_mean_target_MSE_estimate": 0.09296246445933296,
+            "global_or_all_neural_histories_certificate": false,
+            "maximum_absolute_mean_target_error_estimate": 0.38101117680312324,
+            "maximum_absolute_mean_target_error_simultaneous_upper_bound": 2.2098966973007803,
+            "predicted_objective": [
+              2.1386830806732178,
+              2.318173408508301,
+              2.1820788383483887,
+              3.0255210399627686,
+              2.767899751663208
+            ]
+          }
+        },
+        "empirical_best_action_CE_is_population_optimum": false,
+        "empirical_information_lattice": {
+          "CE": {
+            "full_future_table_known": -0.45892501953309184,
+            "private_target_known": -0.4202528072909631,
+            "public_only": -0.4598314366358374,
+            "target_and_future_known": -0.3591155383714246
+          },
+          "information_gain_is_not_uniquely_additive": true,
+          "interaction": 0.06023085181679283,
+          "objective": {
+            "full_future_table_known": 2.50390130885907,
+            "private_target_known": 2.3175384618366506,
+            "public_only": 2.5084445836566833,
+            "target_and_future_known": 2.0508022883155825
+          },
+          "scope": "Same empirical finite table; sample minima can be optimistic for the population"
+        },
+        "evaluation_action_CE": [
+          -0.4598314366358374,
+          -0.46183143663583803,
+          -0.4647719409137456,
+          -0.5760430375594766,
+          -0.573528328030956
+        ],
+        "evaluation_action_mean_objectives": [
+          2.5084445836566833,
+          2.518498456331503,
+          2.533353405527917,
+          3.1647880138892504,
+          3.1489109284663312
+        ],
+        "evaluation_future_replicas": 64,
+        "evaluation_utility_array_sha256": "5952ccee3bdff558710e81879d11ee7f7a4621befc21a529f37321fa3d340b3c",
+        "fit_action_mean_objectives": [
+          2.5084445836566736,
+          2.5184984563315345,
+          2.515930884793156,
+          3.0860212771711546,
+          3.1011789495014837
+        ],
+        "fit_future_replicas": 32,
+        "future_replica_iid_is_caller_model_assumption": true,
+        "gamma": 2.0,
+        "moment_bounds": [
+          0.1353352832366127,
+          7.418671514670643
+        ],
+        "moment_interval_method": "two-sided bounded Hoeffding with union over actions and registered history/observer family",
+        "moment_radius": [
+          0.0,
+          0.0,
+          1.8288855204976568,
+          1.8288855204976568,
+          1.8288855204976568
+        ],
+        "policies": {
+          "fit_only_public_lookup": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.4598314366358374,
+            "finite_history_regret_interval": [
+              0.0,
+              0.6349877037164102
+            ],
+            "simultaneous_CE_interval": [
+              -0.4598314366358374,
+              -0.4598314366358374
+            ]
+          },
+          "fixed_h1_couple": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.573528328030956,
+            "finite_history_regret_interval": [
+              0.0,
+              0.9776499235733875
+            ],
+            "simultaneous_CE_interval": [
+              -0.8024936564928148,
+              -0.1388254924370736
+            ]
+          },
+          "fixed_h1_stop": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.4598314366358374,
+            "finite_history_regret_interval": [
+              0.0,
+              0.6349877037164102
+            ],
+            "simultaneous_CE_interval": [
+              -0.4598314366358374,
+              -0.4598314366358374
+            ]
+          },
+          "legacy_feedback_q1": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.4598314366358374,
+            "finite_history_regret_interval": [
+              0.0,
+              0.6349877037164102
+            ],
+            "simultaneous_CE_interval": [
+              -0.4598314366358374,
+              -0.4598314366358374
+            ]
+          }
+        },
+        "public_history_sha256": "9126ae1049583310e24ca8e85fe0e38d3da896e899c9d2875b6d44f3247e673d",
+        "schema": "hepta.abc-next.common-history-diagnostic.v1",
+        "simultaneous_history_observer_family": 16,
+        "target_count": 32,
+        "target_prior_is_fixed_finite_diagnostic_law": true,
+        "targets_are_not_independent_confidence_samples": true
+      },
+      {
+        "H2_or_global_optimality_claim": false,
+        "action_simultaneous_CE_intervals": [
+          [
+            -0.6723053303740566,
+            -0.6723053303740566
+          ],
+          [
+            -0.6743053303740555,
+            -0.6743053303740555
+          ],
+          [
+            -0.8665879869022273,
+            -0.3467800263402403
+          ],
+          [
+            -0.8018615446761855,
+            -0.13643762130744025
+          ],
+          [
+            -0.7963973552621405,
+            -0.11543743933985678
+          ]
+        ],
+        "actions": [
+          "stop",
+          "refine_semantic",
+          "refine_image",
+          "refine_text",
+          "couple"
+        ],
+        "alpha": 0.05,
+        "causal_best_action_CE_interval": [
+          -0.6723053303740566,
+          -0.11543743933985678
+        ],
+        "critic_predictions": {
+          "legacy_q1": {
+            "CE_action_error_MSE_estimate": 0.028626543128924202,
+            "conditional_mean_target_MSE_estimate": 1.1079114576714506,
+            "global_or_all_neural_histories_certificate": false,
+            "maximum_absolute_mean_target_error_estimate": 1.4518469624574735,
+            "maximum_absolute_mean_target_error_simultaneous_upper_bound": 3.113813363499113,
+            "predicted_objective": [
+              2.523235559463501,
+              2.4002230167388916,
+              2.544783592224121,
+              2.9928269386291504,
+              2.9067890644073486
+            ]
+          }
+        },
+        "empirical_best_action_CE_is_population_optimum": false,
+        "empirical_information_lattice": {
+          "CE": {
+            "full_future_table_known": -0.5250138026223373,
+            "private_target_known": -0.5149242419543674,
+            "public_only": -0.563856874168491,
+            "target_and_future_known": -0.41254926456966856
+          },
+          "information_gain_is_not_uniquely_additive": true,
+          "interaction": 0.06353190583854518,
+          "objective": {
+            "full_future_table_known": 2.8577300053103185,
+            "private_target_known": 2.800641460303016,
+            "public_only": 3.0885871345568274,
+            "target_and_future_known": 2.2821056081537847
+          },
+          "scope": "Same empirical finite table; sample minima can be optimistic for the population"
+        },
+        "evaluation_action_CE": [
+          -0.6723053303740566,
+          -0.6743053303740555,
+          -0.6713947285354839,
+          -0.5725287188756747,
+          -0.563856874168491
+        ],
+        "evaluation_action_mean_objectives": [
+          3.8366924747917306,
+          3.852069979196365,
+          3.8297114352255774,
+          3.1426218567881565,
+          3.0885871345568274
+        ],
+        "evaluation_future_replicas": 64,
+        "evaluation_utility_array_sha256": "4cc4b68ee3985a64a7639a549cb2ef6ddd70ca9d3c361e5965baa7d2b031e154",
+        "fit_action_mean_objectives": [
+          3.8366924747917,
+          3.852069979196352,
+          3.840424566754998,
+          3.157008203495277,
+          3.221371383360054
+        ],
+        "fit_future_replicas": 32,
+        "future_replica_iid_is_caller_model_assumption": true,
+        "gamma": 2.0,
+        "moment_bounds": [
+          0.1353352832366127,
+          7.418671514670643
+        ],
+        "moment_interval_method": "two-sided bounded Hoeffding with union over actions and registered history/observer family",
+        "moment_radius": [
+          0.0,
+          0.0,
+          1.8288855204976568,
+          1.8288855204976568,
+          1.8288855204976568
+        ],
+        "policies": {
+          "fit_only_public_lookup": {
+            "action": "refine_text",
+            "action_index": 3,
+            "evaluation_CE": -0.5725287188756747,
+            "finite_history_regret_interval": [
+              0.0,
+              0.6864241053363287
+            ],
+            "simultaneous_CE_interval": [
+              -0.8018615446761855,
+              -0.13643762130744025
+            ]
+          },
+          "fixed_h1_couple": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.563856874168491,
+            "finite_history_regret_interval": [
+              0.0,
+              0.6809599159222837
+            ],
+            "simultaneous_CE_interval": [
+              -0.7963973552621405,
+              -0.11543743933985678
+            ]
+          },
+          "fixed_h1_stop": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.6723053303740566,
+            "finite_history_regret_interval": [
+              0.0,
+              0.5568678910341998
+            ],
+            "simultaneous_CE_interval": [
+              -0.6723053303740566,
+              -0.6723053303740566
+            ]
+          },
+          "legacy_feedback_q1": {
+            "action": "refine_semantic",
+            "action_index": 1,
+            "evaluation_CE": -0.6743053303740555,
+            "finite_history_regret_interval": [
+              0.0019999999999988916,
+              0.5588678910341986
+            ],
+            "simultaneous_CE_interval": [
+              -0.6743053303740555,
+              -0.6743053303740555
+            ]
+          }
+        },
+        "public_history_sha256": "b80ffc2c9f0b46462d2a70af35a2225fdab440351e11a8c33fb4699db3a283a5",
+        "schema": "hepta.abc-next.common-history-diagnostic.v1",
+        "simultaneous_history_observer_family": 16,
+        "target_count": 32,
+        "target_prior_is_fixed_finite_diagnostic_law": true,
+        "targets_are_not_independent_confidence_samples": true
+      },
+      {
+        "H2_or_global_optimality_claim": false,
+        "action_simultaneous_CE_intervals": [
+          [
+            -0.5535579015871317,
+            -0.5535579015871317
+          ],
+          [
+            -0.5555579015871319,
+            -0.5555579015871319
+          ],
+          [
+            -0.7934349868118438,
+            -0.10377246952453933
+          ],
+          [
+            -0.8115310443660485,
+            -0.1720841303956189
+          ],
+          [
+            -0.8025432149250238,
+            -0.13901235089947747
+          ]
+        ],
+        "actions": [
+          "stop",
+          "refine_semantic",
+          "refine_image",
+          "refine_text",
+          "couple"
+        ],
+        "alpha": 0.05,
+        "causal_best_action_CE_interval": [
+          -0.5535579015871317,
+          -0.10377246952453933
+        ],
+        "critic_predictions": {
+          "legacy_q1": {
+            "CE_action_error_MSE_estimate": 0.0235499653357383,
+            "conditional_mean_target_MSE_estimate": 0.6260297797072181,
+            "global_or_all_neural_histories_certificate": false,
+            "maximum_absolute_mean_target_error_estimate": 1.0143056697573134,
+            "maximum_absolute_mean_target_error_simultaneous_upper_bound": 2.7546996099041614,
+            "predicted_objective": [
+              2.1115665435791016,
+              2.023440361022949,
+              2.1337244510650635,
+              2.7950146198272705,
+              2.6900980472564697
+            ]
+          }
+        },
+        "empirical_best_action_CE_is_population_optimum": false,
+        "empirical_information_lattice": {
+          "CE": {
+            "full_future_table_known": -0.5226238775667745,
+            "private_target_known": -0.4973743771216819,
+            "public_only": -0.5535579015871317,
+            "target_and_future_known": -0.4031848419388545
+          },
+          "information_gain_is_not_uniquely_additive": true,
+          "interaction": 0.06325551116247019,
+          "objective": {
+            "full_future_table_known": 2.844103077507543,
+            "private_target_known": 2.704044876125778,
+            "public_only": 3.025619316255139,
+            "target_and_future_known": 2.2397621649712254
+          },
+          "scope": "Same empirical finite table; sample minima can be optimistic for the population"
+        },
+        "evaluation_action_CE": [
+          -0.5535579015871317,
+          -0.5555579015871319,
+          -0.5591320504123983,
+          -0.5877406012142258,
+          -0.5736066677151588
+        ],
+        "evaluation_action_mean_objectives": [
+          3.025619316255139,
+          3.0377460307802626,
+          3.0595385404715683,
+          3.239701521051704,
+          3.149404336494188
+        ],
+        "evaluation_future_replicas": 64,
+        "evaluation_utility_array_sha256": "409082b7be4b9261f9f7384b118bda0c7d23d2160a5209e8cc043d2974ba4260",
+        "fit_action_mean_objectives": [
+          3.025619316255149,
+          3.0377460307802555,
+          3.0568116328385337,
+          3.21907668496882,
+          3.0915822472695225
+        ],
+        "fit_future_replicas": 32,
+        "future_replica_iid_is_caller_model_assumption": true,
+        "gamma": 2.0,
+        "moment_bounds": [
+          0.1353352832366127,
+          7.418671514670643
+        ],
+        "moment_interval_method": "two-sided bounded Hoeffding with union over actions and registered history/observer family",
+        "moment_radius": [
+          0.0,
+          0.0,
+          1.8288855204976568,
+          1.8288855204976568,
+          1.8288855204976568
+        ],
+        "policies": {
+          "fit_only_public_lookup": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.5535579015871317,
+            "finite_history_regret_interval": [
+              0.0,
+              0.44978543206259236
+            ],
+            "simultaneous_CE_interval": [
+              -0.5535579015871317,
+              -0.5535579015871317
+            ]
+          },
+          "fixed_h1_couple": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5736066677151588,
+            "finite_history_regret_interval": [
+              0.0,
+              0.6987707454004844
+            ],
+            "simultaneous_CE_interval": [
+              -0.8025432149250238,
+              -0.13901235089947747
+            ]
+          },
+          "fixed_h1_stop": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.5535579015871317,
+            "finite_history_regret_interval": [
+              0.0,
+              0.44978543206259236
+            ],
+            "simultaneous_CE_interval": [
+              -0.5535579015871317,
+              -0.5535579015871317
+            ]
+          },
+          "legacy_feedback_q1": {
+            "action": "refine_semantic",
+            "action_index": 1,
+            "evaluation_CE": -0.5555579015871319,
+            "finite_history_regret_interval": [
+              0.002000000000000224,
+              0.4517854320625926
+            ],
+            "simultaneous_CE_interval": [
+              -0.5555579015871319,
+              -0.5555579015871319
+            ]
+          }
+        },
+        "public_history_sha256": "8c9550e0b4c0eff3821b6c5cee6a151e7a6bda555be9c227645907ba5a843273",
+        "schema": "hepta.abc-next.common-history-diagnostic.v1",
+        "simultaneous_history_observer_family": 16,
+        "target_count": 32,
+        "target_prior_is_fixed_finite_diagnostic_law": true,
+        "targets_are_not_independent_confidence_samples": true
+      },
+      {
+        "H2_or_global_optimality_claim": false,
+        "action_simultaneous_CE_intervals": [
+          [
+            -0.7692953375114189,
+            -0.7692953375114189
+          ],
+          [
+            -0.7712953375114179,
+            -0.7712953375114179
+          ],
+          [
+            -0.9359714271809974,
+            -0.5224551402529237
+          ],
+          [
+            -0.8049960507260192,
+            -0.14819725635951642
+          ],
+          [
+            -0.7877154806989387,
+            -0.08065657922401454
+          ]
+        ],
+        "actions": [
+          "stop",
+          "refine_semantic",
+          "refine_image",
+          "refine_text",
+          "couple"
+        ],
+        "alpha": 0.05,
+        "causal_best_action_CE_interval": [
+          -0.7692953375114189,
+          -0.08065657922401454
+        ],
+        "critic_predictions": {
+          "legacy_q1": {
+            "CE_action_error_MSE_estimate": 0.03554807352568523,
+            "conditional_mean_target_MSE_estimate": 2.7942033003085225,
+            "global_or_all_neural_histories_certificate": false,
+            "maximum_absolute_mean_target_error_estimate": 2.1088758580811025,
+            "maximum_absolute_mean_target_error_simultaneous_upper_bound": 3.9377613785787595,
+            "predicted_objective": [
+              6.21225643157959,
+              6.074477195739746,
+              5.824459075927734,
+              5.282762050628662,
+              4.959982395172119
+            ]
+          }
+        },
+        "empirical_best_action_CE_is_population_optimum": false,
+        "empirical_information_lattice": {
+          "CE": {
+            "full_future_table_known": -0.5258562536698377,
+            "private_target_known": -0.5420239762577509,
+            "public_only": -0.5499621154209053,
+            "target_and_future_known": -0.4569958752285786
+          },
+          "information_gain_is_not_uniquely_additive": true,
+          "interaction": 0.060922239278104584,
+          "objective": {
+            "full_future_table_known": 2.862549059260195,
+            "private_target_known": 2.9566236322888644,
+            "public_only": 3.0039384094389265,
+            "target_and_future_known": 2.4942591480420075
+          },
+          "scope": "Same empirical finite table; sample minima can be optimistic for the population"
+        },
+        "evaluation_action_CE": [
+          -0.7692953375114189,
+          -0.7712953375114179,
+          -0.7707967207109814,
+          -0.5774783826505904,
+          -0.5499621154209053
+        ],
+        "evaluation_action_mean_objectives": [
+          4.6580209776329236,
+          4.67669037544655,
+          4.672028947315961,
+          3.1738861925475597,
+          3.0039384094389265
+        ],
+        "evaluation_future_replicas": 64,
+        "evaluation_utility_array_sha256": "e46ac5e922e3b2e9d50cb3424b5035392f7035a35edebc60ba4d53bcfc9a1af5",
+        "fit_action_mean_objectives": [
+          4.658020977632903,
+          4.676690375446562,
+          4.672125167543262,
+          3.1686262008945048,
+          3.133230539776506
+        ],
+        "fit_future_replicas": 32,
+        "future_replica_iid_is_caller_model_assumption": true,
+        "gamma": 2.0,
+        "moment_bounds": [
+          0.1353352832366127,
+          7.418671514670643
+        ],
+        "moment_interval_method": "two-sided bounded Hoeffding with union over actions and registered history/observer family",
+        "moment_radius": [
+          0.0,
+          0.0,
+          1.8288855204976568,
+          1.8288855204976568,
+          1.8288855204976568
+        ],
+        "policies": {
+          "fit_only_public_lookup": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5499621154209053,
+            "finite_history_regret_interval": [
+              0.0,
+              0.7070589014749242
+            ],
+            "simultaneous_CE_interval": [
+              -0.7877154806989387,
+              -0.08065657922401454
+            ]
+          },
+          "fixed_h1_couple": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5499621154209053,
+            "finite_history_regret_interval": [
+              0.0,
+              0.7070589014749242
+            ],
+            "simultaneous_CE_interval": [
+              -0.7877154806989387,
+              -0.08065657922401454
+            ]
+          },
+          "fixed_h1_stop": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.7692953375114189,
+            "finite_history_regret_interval": [
+              0.0,
+              0.6886387582874043
+            ],
+            "simultaneous_CE_interval": [
+              -0.7692953375114189,
+              -0.7692953375114189
+            ]
+          },
+          "legacy_feedback_q1": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5499621154209053,
+            "finite_history_regret_interval": [
+              0.0,
+              0.7070589014749242
+            ],
+            "simultaneous_CE_interval": [
+              -0.7877154806989387,
+              -0.08065657922401454
+            ]
+          }
+        },
+        "public_history_sha256": "8c3754d9410c0dc59903f85a990fafeb99091a227634bac18e609788f165d84c",
+        "schema": "hepta.abc-next.common-history-diagnostic.v1",
+        "simultaneous_history_observer_family": 16,
+        "target_count": 32,
+        "target_prior_is_fixed_finite_diagnostic_law": true,
+        "targets_are_not_independent_confidence_samples": true
+      },
+      {
+        "H2_or_global_optimality_claim": false,
+        "action_simultaneous_CE_intervals": [
+          [
+            -0.5326045303568113,
+            -0.5326045303568113
+          ],
+          [
+            -0.5346045303568114,
+            -0.5346045303568114
+          ],
+          [
+            -0.7800233798603338,
+            -0.04823326934419689
+          ],
+          [
+            -0.8033728144016737,
+            -0.1421327383565208
+          ],
+          [
+            -0.7941379530652357,
+            -0.10655899055706072
+          ]
+        ],
+        "actions": [
+          "stop",
+          "refine_semantic",
+          "refine_image",
+          "refine_text",
+          "couple"
+        ],
+        "alpha": 0.05,
+        "causal_best_action_CE_interval": [
+          -0.5326045303568113,
+          -0.04823326934419689
+        ],
+        "critic_predictions": {
+          "legacy_q1": {
+            "CE_action_error_MSE_estimate": 0.003175929403462577,
+            "conditional_mean_target_MSE_estimate": 0.0955196107678154,
+            "global_or_all_neural_histories_certificate": false,
+            "maximum_absolute_mean_target_error_estimate": 0.45275461024785013,
+            "maximum_absolute_mean_target_error_simultaneous_upper_bound": 2.281640130745507,
+            "predicted_objective": [
+              2.5750372409820557,
+              2.5466976165771484,
+              2.4774036407470703,
+              3.332691192626953,
+              3.101128101348877
+            ]
+          }
+        },
+        "empirical_best_action_CE_is_population_optimum": false,
+        "empirical_information_lattice": {
+          "CE": {
+            "full_future_table_known": -0.5109852845738592,
+            "private_target_known": -0.5191006228431242,
+            "public_only": -0.5326045303568113,
+            "target_and_future_known": -0.38844771494731833
+          },
+          "information_gain_is_not_uniquely_additive": true,
+          "interaction": 0.1090336621128537,
+          "objective": {
+            "full_future_table_known": 2.7786649239008643,
+            "private_target_known": 2.8241325222893834,
+            "public_only": 2.901445498924752,
+            "target_and_future_known": 2.174710233948794
+          },
+          "scope": "Same empirical finite table; sample minima can be optimistic for the population"
+        },
+        "evaluation_action_CE": [
+          -0.5326045303568113,
+          -0.5346045303568114,
+          -0.5375282160744641,
+          -0.5749173915699298,
+          -0.5602547539122182
+        ],
+        "evaluation_action_mean_objectives": [
+          2.901445498924752,
+          2.9130745234641684,
+          2.9301582509949204,
+          3.1576711660751187,
+          3.0664161683732614
+        ],
+        "evaluation_future_replicas": 64,
+        "evaluation_utility_array_sha256": "7e6faafe51edd29062b3f11e45774a4f7a5b21ebbdb7c397062f642ae1516f4b",
+        "fit_action_mean_objectives": [
+          2.9014454989247542,
+          2.91307452346415,
+          2.9912056963414635,
+          3.1379217734924607,
+          3.1839698439398445
+        ],
+        "fit_future_replicas": 32,
+        "future_replica_iid_is_caller_model_assumption": true,
+        "gamma": 2.0,
+        "moment_bounds": [
+          0.1353352832366127,
+          7.418671514670643
+        ],
+        "moment_interval_method": "two-sided bounded Hoeffding with union over actions and registered history/observer family",
+        "moment_radius": [
+          0.0,
+          0.0,
+          1.8288855204976568,
+          1.8288855204976568,
+          1.8288855204976568
+        ],
+        "policies": {
+          "fit_only_public_lookup": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.5326045303568113,
+            "finite_history_regret_interval": [
+              0.0,
+              0.4843712610126144
+            ],
+            "simultaneous_CE_interval": [
+              -0.5326045303568113,
+              -0.5326045303568113
+            ]
+          },
+          "fixed_h1_couple": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5602547539122182,
+            "finite_history_regret_interval": [
+              0.0,
+              0.7459046837210388
+            ],
+            "simultaneous_CE_interval": [
+              -0.7941379530652357,
+              -0.10655899055706072
+            ]
+          },
+          "fixed_h1_stop": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.5326045303568113,
+            "finite_history_regret_interval": [
+              0.0,
+              0.4843712610126144
+            ],
+            "simultaneous_CE_interval": [
+              -0.5326045303568113,
+              -0.5326045303568113
+            ]
+          },
+          "legacy_feedback_q1": {
+            "action": "refine_image",
+            "action_index": 2,
+            "evaluation_CE": -0.5375282160744641,
+            "finite_history_regret_interval": [
+              0.0,
+              0.7317901105161368
+            ],
+            "simultaneous_CE_interval": [
+              -0.7800233798603338,
+              -0.04823326934419689
+            ]
+          }
+        },
+        "public_history_sha256": "87aa95697c588cba23f2a58726b495f08731fe49904bffffedef75fdc3749a34",
+        "schema": "hepta.abc-next.common-history-diagnostic.v1",
+        "simultaneous_history_observer_family": 16,
+        "target_count": 32,
+        "target_prior_is_fixed_finite_diagnostic_law": true,
+        "targets_are_not_independent_confidence_samples": true
+      },
+      {
+        "H2_or_global_optimality_claim": false,
+        "action_simultaneous_CE_intervals": [
+          [
+            -0.5809529345960295,
+            -0.5809529345960295
+          ],
+          [
+            -0.5829529345960297,
+            -0.5829529345960297
+          ],
+          [
+            -0.8074323015848066,
+            -0.15719954963294672
+          ],
+          [
+            -0.8016102639943979,
+            -0.13548604624780758
+          ],
+          [
+            -0.8027294135984345,
+            -0.13971394883098953
+          ]
+        ],
+        "actions": [
+          "stop",
+          "refine_semantic",
+          "refine_image",
+          "refine_text",
+          "couple"
+        ],
+        "alpha": 0.05,
+        "causal_best_action_CE_interval": [
+          -0.5809529345960295,
+          -0.13548604624780758
+        ],
+        "critic_predictions": {
+          "legacy_q1": {
+            "CE_action_error_MSE_estimate": 0.025985732648466563,
+            "conditional_mean_target_MSE_estimate": 1.549136143023243,
+            "global_or_all_neural_histories_certificate": false,
+            "maximum_absolute_mean_target_error_estimate": 1.5610127719237923,
+            "maximum_absolute_mean_target_error_simultaneous_upper_bound": 3.3232437135802035,
+            "predicted_objective": [
+              4.757031440734863,
+              4.723548889160156,
+              4.6926798820495605,
+              3.8887956142425537,
+              3.621286153793335
+            ]
+          }
+        },
+        "empirical_best_action_CE_is_population_optimum": false,
+        "empirical_information_lattice": {
+          "CE": {
+            "full_future_table_known": -0.5265896059201766,
+            "private_target_known": -0.48785809872782854,
+            "public_only": -0.572131144311971,
+            "target_and_future_known": -0.39727725060134295
+          },
+          "information_gain_is_not_uniquely_additive": true,
+          "interaction": 0.04503930973469117,
+          "objective": {
+            "full_future_table_known": 2.866750653344085,
+            "private_target_known": 2.6530666502992455,
+            "public_only": 3.140123996978093,
+            "target_and_future_known": 2.2134546857197885
+          },
+          "scope": "Same empirical finite table; sample minima can be optimistic for the population"
+        },
+        "evaluation_action_CE": [
+          -0.5809529345960295,
+          -0.5829529345960297,
+          -0.5813131000121108,
+          -0.572131144311971,
+          -0.5739009617042858
+        ],
+        "evaluation_action_mean_objectives": [
+          3.196018668811071,
+          3.2088283457606512,
+          3.198321688967014,
+          3.140123996978093,
+          3.1512585836655753
+        ],
+        "evaluation_future_replicas": 64,
+        "evaluation_utility_array_sha256": "d623e93a9fc52c7d9cab6dd6dc7c32683bf482a8e0afb15592969e25f4b37561",
+        "fit_action_mean_objectives": [
+          3.1960186688110936,
+          3.2088283457606623,
+          3.191510009942225,
+          3.1320392924959677,
+          3.226074836449233
+        ],
+        "fit_future_replicas": 32,
+        "future_replica_iid_is_caller_model_assumption": true,
+        "gamma": 2.0,
+        "moment_bounds": [
+          0.1353352832366127,
+          7.418671514670643
+        ],
+        "moment_interval_method": "two-sided bounded Hoeffding with union over actions and registered history/observer family",
+        "moment_radius": [
+          0.0,
+          0.0,
+          1.8288855204976568,
+          1.8288855204976568,
+          1.8288855204976568
+        ],
+        "policies": {
+          "fit_only_public_lookup": {
+            "action": "refine_text",
+            "action_index": 3,
+            "evaluation_CE": -0.572131144311971,
+            "finite_history_regret_interval": [
+              0.0,
+              0.6661242177465904
+            ],
+            "simultaneous_CE_interval": [
+              -0.8016102639943979,
+              -0.13548604624780758
+            ]
+          },
+          "fixed_h1_couple": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5739009617042858,
+            "finite_history_regret_interval": [
+              0.0,
+              0.667243367350627
+            ],
+            "simultaneous_CE_interval": [
+              -0.8027294135984345,
+              -0.13971394883098953
+            ]
+          },
+          "fixed_h1_stop": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.5809529345960295,
+            "finite_history_regret_interval": [
+              0.0,
+              0.4454668883482219
+            ],
+            "simultaneous_CE_interval": [
+              -0.5809529345960295,
+              -0.5809529345960295
+            ]
+          },
+          "legacy_feedback_q1": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5739009617042858,
+            "finite_history_regret_interval": [
+              0.0,
+              0.667243367350627
+            ],
+            "simultaneous_CE_interval": [
+              -0.8027294135984345,
+              -0.13971394883098953
+            ]
+          }
+        },
+        "public_history_sha256": "57d92f2918f40f3232345faec0c7a30fc212dd9a35d9ba5f2bfcc58b23c4c56b",
+        "schema": "hepta.abc-next.common-history-diagnostic.v1",
+        "simultaneous_history_observer_family": 16,
+        "target_count": 32,
+        "target_prior_is_fixed_finite_diagnostic_law": true,
+        "targets_are_not_independent_confidence_samples": true
+      },
+      {
+        "H2_or_global_optimality_claim": false,
+        "action_simultaneous_CE_intervals": [
+          [
+            -0.6409836534272805,
+            -0.6409836534272805
+          ],
+          [
+            -0.6429836534272804,
+            -0.6429836534272804
+          ],
+          [
+            -0.8484283313996556,
+            -0.29361461667327315
+          ],
+          [
+            -0.8035650898450125,
+            -0.14285391212450935
+          ],
+          [
+            -0.7955849617535812,
+            -0.11225860599191631
+          ]
+        ],
+        "actions": [
+          "stop",
+          "refine_semantic",
+          "refine_image",
+          "refine_text",
+          "couple"
+        ],
+        "alpha": 0.05,
+        "causal_best_action_CE_interval": [
+          -0.6409836534272805,
+          -0.11225860599191631
+        ],
+        "critic_predictions": {
+          "legacy_q1": {
+            "CE_action_error_MSE_estimate": 0.00435780020646412,
+            "conditional_mean_target_MSE_estimate": 0.17733917531607057,
+            "global_or_all_neural_histories_certificate": false,
+            "maximum_absolute_mean_target_error_estimate": 0.6021286868066436,
+            "maximum_absolute_mean_target_error_simultaneous_upper_bound": 2.4310142073043,
+            "predicted_objective": [
+              3.086186170578003,
+              3.4263501167297363,
+              3.0257537364959717,
+              3.1581335067749023,
+              2.612097978591919
+            ]
+          }
+        },
+        "empirical_best_action_CE_is_population_optimum": false,
+        "empirical_information_lattice": {
+          "CE": {
+            "full_future_table_known": -0.5287098046550893,
+            "private_target_known": -0.48502230246308825,
+            "public_only": -0.5625628045061962,
+            "target_and_future_known": -0.38854011503363073
+          },
+          "information_gain_is_not_uniquely_additive": true,
+          "interaction": 0.06262918757835056,
+          "objective": {
+            "full_future_table_known": 2.8789326255094854,
+            "private_target_known": 2.638062127296285,
+            "public_only": 3.080603776214647,
+            "target_and_future_known": 2.1751121579121016
+          },
+          "scope": "Same empirical finite table; sample minima can be optimistic for the population"
+        },
+        "evaluation_action_CE": [
+          -0.6409836534272805,
+          -0.6429836534272804,
+          -0.6443245617986272,
+          -0.5752209968543749,
+          -0.5625628045061962
+        ],
+        "evaluation_action_mean_objectives": [
+          3.6037223841518373,
+          3.618166141945693,
+          3.6278824233026152,
+          3.1595891196221415,
+          3.080603776214647
+        ],
+        "evaluation_future_replicas": 64,
+        "evaluation_utility_array_sha256": "92c3d452b25784fbcd5296b4c04a7d971666c7a45a36f9b6dc28ef3de674269a",
+        "fit_action_mean_objectives": [
+          3.6037223841518173,
+          3.6181661419456854,
+          3.5980686692411354,
+          3.053678856869978,
+          2.9316492736126905
+        ],
+        "fit_future_replicas": 32,
+        "future_replica_iid_is_caller_model_assumption": true,
+        "gamma": 2.0,
+        "moment_bounds": [
+          0.1353352832366127,
+          7.418671514670643
+        ],
+        "moment_interval_method": "two-sided bounded Hoeffding with union over actions and registered history/observer family",
+        "moment_radius": [
+          0.0,
+          0.0,
+          1.8288855204976568,
+          1.8288855204976568,
+          1.8288855204976568
+        ],
+        "policies": {
+          "fit_only_public_lookup": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5625628045061962,
+            "finite_history_regret_interval": [
+              0.0,
+              0.6833263557616649
+            ],
+            "simultaneous_CE_interval": [
+              -0.7955849617535812,
+              -0.11225860599191631
+            ]
+          },
+          "fixed_h1_couple": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5625628045061962,
+            "finite_history_regret_interval": [
+              0.0,
+              0.6833263557616649
+            ],
+            "simultaneous_CE_interval": [
+              -0.7955849617535812,
+              -0.11225860599191631
+            ]
+          },
+          "fixed_h1_stop": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.6409836534272805,
+            "finite_history_regret_interval": [
+              0.0,
+              0.5287250474353642
+            ],
+            "simultaneous_CE_interval": [
+              -0.6409836534272805,
+              -0.6409836534272805
+            ]
+          },
+          "legacy_feedback_q1": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5625628045061962,
+            "finite_history_regret_interval": [
+              0.0,
+              0.6833263557616649
+            ],
+            "simultaneous_CE_interval": [
+              -0.7955849617535812,
+              -0.11225860599191631
+            ]
+          }
+        },
+        "public_history_sha256": "1287801c79c53ed674bef28867ec8fb25305a1b1036be344582a385850dec835",
+        "schema": "hepta.abc-next.common-history-diagnostic.v1",
+        "simultaneous_history_observer_family": 16,
+        "target_count": 32,
+        "target_prior_is_fixed_finite_diagnostic_law": true,
+        "targets_are_not_independent_confidence_samples": true
+      }
+    ],
+    "secondary": [
+      {
+        "H2_or_global_optimality_claim": false,
+        "action_simultaneous_CE_intervals": [
+          [
+            -0.4847560185213517,
+            -0.4847560185213517
+          ],
+          [
+            -0.4867560185213515,
+            -0.4867560185213515
+          ],
+          [
+            -0.7565168907626753,
+            0.06237717289925069
+          ],
+          [
+            -0.8088642607852012,
+            -0.16243629434096848
+          ],
+          [
+            -0.8180248854814174,
+            -0.19503173453729575
+          ]
+        ],
+        "actions": [
+          "stop",
+          "refine_semantic",
+          "refine_image",
+          "refine_text",
+          "couple"
+        ],
+        "alpha": 0.05,
+        "causal_best_action_CE_interval": [
+          -0.4847560185213517,
+          0.06237717289925069
+        ],
+        "critic_predictions": {},
+        "empirical_best_action_CE_is_population_optimum": false,
+        "empirical_information_lattice": {
+          "CE": {
+            "full_future_table_known": -0.4788050349546358,
+            "private_target_known": -0.4088604405616075,
+            "public_only": -0.4847560185213517,
+            "target_and_future_known": -0.3356740433743989
+          },
+          "information_gain_is_not_uniquely_additive": true,
+          "interaction": 0.06723541362049273,
+          "objective": {
+            "full_future_table_known": 2.6054621541944085,
+            "private_target_known": 2.265330990938284,
+            "public_only": 2.636657554181144,
+            "target_and_future_known": 1.9568735786248779
+          },
+          "scope": "Same empirical finite table; sample minima can be optimistic for the population"
+        },
+        "evaluation_action_CE": [
+          -0.4847560185213517,
+          -0.4867560185213515,
+          -0.49876929292441974,
+          -0.5835620523621383,
+          -0.5978634591244247
+        ],
+        "evaluation_action_mean_objectives": [
+          2.636657554181144,
+          2.647225305810795,
+          2.7115992387839354,
+          3.2127398365430175,
+          3.3059600599594177
+        ],
+        "evaluation_future_replicas": 64,
+        "evaluation_utility_array_sha256": "e40b3332a0204729fc1dd9e808c98823f2abbe81d8f1c4acbea5708339e8c25f",
+        "fit_action_mean_objectives": [
+          2.636657554181155,
+          2.6472253058108226,
+          2.7328417754613525,
+          3.1529968551789436,
+          3.2907599597698103
+        ],
+        "fit_future_replicas": 32,
+        "future_replica_iid_is_caller_model_assumption": true,
+        "gamma": 2.0,
+        "moment_bounds": [
+          0.1353352832366127,
+          7.418671514670643
+        ],
+        "moment_interval_method": "two-sided bounded Hoeffding with union over actions and registered history/observer family",
+        "moment_radius": [
+          0.0,
+          0.0,
+          1.8288855204976568,
+          1.8288855204976568,
+          1.8288855204976568
+        ],
+        "policies": {
+          "fit_only_public_lookup": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.4847560185213517,
+            "finite_history_regret_interval": [
+              0.0,
+              0.5471331914206023
+            ],
+            "simultaneous_CE_interval": [
+              -0.4847560185213517,
+              -0.4847560185213517
+            ]
+          },
+          "fixed_h1_couple": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5978634591244247,
+            "finite_history_regret_interval": [
+              0.0,
+              0.8804020583806681
+            ],
+            "simultaneous_CE_interval": [
+              -0.8180248854814174,
+              -0.19503173453729575
+            ]
+          },
+          "fixed_h1_stop": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.4847560185213517,
+            "finite_history_regret_interval": [
+              0.0,
+              0.5471331914206023
+            ],
+            "simultaneous_CE_interval": [
+              -0.4847560185213517,
+              -0.4847560185213517
+            ]
+          },
+          "legacy_feedback_q1": {
+            "action": "refine_image",
+            "action_index": 2,
+            "evaluation_CE": -0.49876929292441974,
+            "finite_history_regret_interval": [
+              0.0,
+              0.818894063661926
+            ],
+            "simultaneous_CE_interval": [
+              -0.7565168907626753,
+              0.06237717289925069
+            ]
+          }
+        },
+        "public_history_sha256": "60e1a7cb03134be7dc9960668241e5a7f2c2968c8290bad04170b2de148d02c7",
+        "schema": "hepta.abc-next.common-history-diagnostic.v1",
+        "simultaneous_history_observer_family": 16,
+        "target_count": 32,
+        "target_prior_is_fixed_finite_diagnostic_law": true,
+        "targets_are_not_independent_confidence_samples": true
+      },
+      {
+        "H2_or_global_optimality_claim": false,
+        "action_simultaneous_CE_intervals": [
+          [
+            -0.4598314366358374,
+            -0.4598314366358374
+          ],
+          [
+            -0.46183143663583803,
+            -0.46183143663583803
+          ],
+          [
+            -0.7502307265003821,
+            0.09558836693136911
+          ],
+          [
+            -0.8040859090761333,
+            -0.14480354423133246
+          ],
+          [
+            -0.8053526982942523,
+            -0.1495225333660595
+          ]
+        ],
+        "actions": [
+          "stop",
+          "refine_semantic",
+          "refine_image",
+          "refine_text",
+          "couple"
+        ],
+        "alpha": 0.05,
+        "causal_best_action_CE_interval": [
+          -0.4598314366358374,
+          0.09558836693136911
+        ],
+        "critic_predictions": {},
+        "empirical_best_action_CE_is_population_optimum": false,
+        "empirical_information_lattice": {
+          "CE": {
+            "full_future_table_known": -0.4561435347250391,
+            "private_target_known": -0.4202170995068473,
+            "public_only": -0.4598314366358374,
+            "target_and_future_known": -0.34847011050623683
+          },
+          "information_gain_is_not_uniquely_additive": true,
+          "interaction": 0.06805908708981218,
+          "objective": {
+            "full_future_table_known": 2.490010853867576,
+            "private_target_known": 2.317372959420295,
+            "public_only": 2.5084445836566833,
+            "target_and_future_known": 2.007600486268548
+          },
+          "scope": "Same empirical finite table; sample minima can be optimistic for the population"
+        },
+        "evaluation_action_CE": [
+          -0.4598314366358374,
+          -0.46183143663583803,
+          -0.4881982431410583,
+          -0.5760430375594766,
+          -0.5780404254484763
+        ],
+        "evaluation_action_mean_objectives": [
+          2.5084445836566833,
+          2.518498456331503,
+          2.65487211594672,
+          3.1647880138892504,
+          3.1774559182619675
+        ],
+        "evaluation_future_replicas": 64,
+        "evaluation_utility_array_sha256": "91511430426d7353f1bd87bade231cec6f8e1e538bfa77b35af04de8382c45d0",
+        "fit_action_mean_objectives": [
+          2.5084445836566736,
+          2.5184984563315345,
+          2.506189490915783,
+          3.0860212771711546,
+          3.116285587309307
+        ],
+        "fit_future_replicas": 32,
+        "future_replica_iid_is_caller_model_assumption": true,
+        "gamma": 2.0,
+        "moment_bounds": [
+          0.1353352832366127,
+          7.418671514670643
+        ],
+        "moment_interval_method": "two-sided bounded Hoeffding with union over actions and registered history/observer family",
+        "moment_radius": [
+          0.0,
+          0.0,
+          1.8288855204976568,
+          1.8288855204976568,
+          1.8288855204976568
+        ],
+        "policies": {
+          "fit_only_public_lookup": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.4598314366358374,
+            "finite_history_regret_interval": [
+              0.0,
+              0.5554198035672065
+            ],
+            "simultaneous_CE_interval": [
+              -0.4598314366358374,
+              -0.4598314366358374
+            ]
+          },
+          "fixed_h1_couple": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5780404254484763,
+            "finite_history_regret_interval": [
+              0.0,
+              0.9009410652256213
+            ],
+            "simultaneous_CE_interval": [
+              -0.8053526982942523,
+              -0.1495225333660595
+            ]
+          },
+          "fixed_h1_stop": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.4598314366358374,
+            "finite_history_regret_interval": [
+              0.0,
+              0.5554198035672065
+            ],
+            "simultaneous_CE_interval": [
+              -0.4598314366358374,
+              -0.4598314366358374
+            ]
+          },
+          "legacy_feedback_q1": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.4598314366358374,
+            "finite_history_regret_interval": [
+              0.0,
+              0.5554198035672065
+            ],
+            "simultaneous_CE_interval": [
+              -0.4598314366358374,
+              -0.4598314366358374
+            ]
+          }
+        },
+        "public_history_sha256": "9126ae1049583310e24ca8e85fe0e38d3da896e899c9d2875b6d44f3247e673d",
+        "schema": "hepta.abc-next.common-history-diagnostic.v1",
+        "simultaneous_history_observer_family": 16,
+        "target_count": 32,
+        "target_prior_is_fixed_finite_diagnostic_law": true,
+        "targets_are_not_independent_confidence_samples": true
+      },
+      {
+        "H2_or_global_optimality_claim": false,
+        "action_simultaneous_CE_intervals": [
+          [
+            -0.6723053303740566,
+            -0.6723053303740566
+          ],
+          [
+            -0.6743053303740555,
+            -0.6743053303740555
+          ],
+          [
+            -0.8601660904385032,
+            -0.3284004952985155
+          ],
+          [
+            -0.8018615446761855,
+            -0.13643762130744025
+          ],
+          [
+            -0.8003714058329001,
+            -0.1307750128669395
+          ]
+        ],
+        "actions": [
+          "stop",
+          "refine_semantic",
+          "refine_image",
+          "refine_text",
+          "couple"
+        ],
+        "alpha": 0.05,
+        "causal_best_action_CE_interval": [
+          -0.6723053303740566,
+          -0.1307750128669395
+        ],
+        "critic_predictions": {},
+        "empirical_best_action_CE_is_population_optimum": false,
+        "empirical_information_lattice": {
+          "CE": {
+            "full_future_table_known": -0.5260460401714613,
+            "private_target_known": -0.5065939389049338,
+            "public_only": -0.5701693276150653,
+            "target_and_future_known": -0.40326922905093987
+          },
+          "information_gain_is_not_uniquely_additive": true,
+          "interaction": 0.05920142241038984,
+          "objective": {
+            "full_future_table_known": 2.8636358118414833,
+            "private_target_known": 2.754367621578435,
+            "public_only": 3.127827440967087,
+            "target_and_future_known": 2.24014021099426
+          },
+          "scope": "Same empirical finite table; sample minima can be optimistic for the population"
+        },
+        "evaluation_action_CE": [
+          -0.6723053303740566,
+          -0.6743053303740555,
+          -0.6618766984994829,
+          -0.5725287188756747,
+          -0.5701693276150653
+        ],
+        "evaluation_action_mean_objectives": [
+          3.8366924747917306,
+          3.852069979196365,
+          3.7574983254854284,
+          3.1426218567881565,
+          3.127827440967087
+        ],
+        "evaluation_future_replicas": 64,
+        "evaluation_utility_array_sha256": "4832d3937877d0fe681c255b4b48e70beac71718449fba91be07ab003f192b51",
+        "fit_action_mean_objectives": [
+          3.8366924747917,
+          3.852069979196352,
+          3.824239023468569,
+          3.157008203495277,
+          3.3172980511977106
+        ],
+        "fit_future_replicas": 32,
+        "future_replica_iid_is_caller_model_assumption": true,
+        "gamma": 2.0,
+        "moment_bounds": [
+          0.1353352832366127,
+          7.418671514670643
+        ],
+        "moment_interval_method": "two-sided bounded Hoeffding with union over actions and registered history/observer family",
+        "moment_radius": [
+          0.0,
+          0.0,
+          1.8288855204976568,
+          1.8288855204976568,
+          1.8288855204976568
+        ],
+        "policies": {
+          "fit_only_public_lookup": {
+            "action": "refine_text",
+            "action_index": 3,
+            "evaluation_CE": -0.5725287188756747,
+            "finite_history_regret_interval": [
+              0.0,
+              0.671086531809246
+            ],
+            "simultaneous_CE_interval": [
+              -0.8018615446761855,
+              -0.13643762130744025
+            ]
+          },
+          "fixed_h1_couple": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5701693276150653,
+            "finite_history_regret_interval": [
+              0.0,
+              0.6695963929659606
+            ],
+            "simultaneous_CE_interval": [
+              -0.8003714058329001,
+              -0.1307750128669395
+            ]
+          },
+          "fixed_h1_stop": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.6723053303740566,
+            "finite_history_regret_interval": [
+              0.0,
+              0.5415303175071171
+            ],
+            "simultaneous_CE_interval": [
+              -0.6723053303740566,
+              -0.6723053303740566
+            ]
+          },
+          "legacy_feedback_q1": {
+            "action": "refine_semantic",
+            "action_index": 1,
+            "evaluation_CE": -0.6743053303740555,
+            "finite_history_regret_interval": [
+              0.0019999999999988916,
+              0.543530317507116
+            ],
+            "simultaneous_CE_interval": [
+              -0.6743053303740555,
+              -0.6743053303740555
+            ]
+          }
+        },
+        "public_history_sha256": "b80ffc2c9f0b46462d2a70af35a2225fdab440351e11a8c33fb4699db3a283a5",
+        "schema": "hepta.abc-next.common-history-diagnostic.v1",
+        "simultaneous_history_observer_family": 16,
+        "target_count": 32,
+        "target_prior_is_fixed_finite_diagnostic_law": true,
+        "targets_are_not_independent_confidence_samples": true
+      },
+      {
+        "H2_or_global_optimality_claim": false,
+        "action_simultaneous_CE_intervals": [
+          [
+            -0.5535579015871317,
+            -0.5535579015871317
+          ],
+          [
+            -0.5555579015871319,
+            -0.5555579015871319
+          ],
+          [
+            -0.8027362418318204,
+            -0.13973966392223652
+          ],
+          [
+            -0.8115310443660485,
+            -0.1720841303956189
+          ],
+          [
+            -0.8070746842687087,
+            -0.1558854787312962
+          ]
+        ],
+        "actions": [
+          "stop",
+          "refine_semantic",
+          "refine_image",
+          "refine_text",
+          "couple"
+        ],
+        "alpha": 0.05,
+        "causal_best_action_CE_interval": [
+          -0.5535579015871317,
+          -0.13973966392223652
+        ],
+        "critic_predictions": {},
+        "empirical_best_action_CE_is_population_optimum": false,
+        "empirical_information_lattice": {
+          "CE": {
+            "full_future_table_known": -0.5261705821998014,
+            "private_target_known": -0.4916420783982667,
+            "public_only": -0.5535579015871317,
+            "target_and_future_known": -0.39591298034401945
+          },
+          "information_gain_is_not_uniquely_additive": true,
+          "interaction": 0.06834177866691693,
+          "objective": {
+            "full_future_table_known": 2.864349186707816,
+            "private_target_known": 2.6732211187423607,
+            "public_only": 3.025619316255139,
+            "target_and_future_known": 2.2074234169549225
+          },
+          "scope": "Same empirical finite table; sample minima can be optimistic for the population"
+        },
+        "evaluation_action_CE": [
+          -0.5535579015871317,
+          -0.5555579015871319,
+          -0.5739117527741319,
+          -0.5877406012142258,
+          -0.5807508725824695
+        ],
+        "evaluation_action_mean_objectives": [
+          3.025619316255139,
+          3.0377460307802626,
+          3.1513265953024496,
+          3.239701521051704,
+          3.1947273418215865
+        ],
+        "evaluation_future_replicas": 64,
+        "evaluation_utility_array_sha256": "0d7cbcb6392e591d536ac530f9e9fd6451eee1e375dc15ce16c19f210019ad09",
+        "fit_action_mean_objectives": [
+          3.025619316255149,
+          3.0377460307802555,
+          3.158251702905545,
+          3.21907668496882,
+          3.1049831486382136
+        ],
+        "fit_future_replicas": 32,
+        "future_replica_iid_is_caller_model_assumption": true,
+        "gamma": 2.0,
+        "moment_bounds": [
+          0.1353352832366127,
+          7.418671514670643
+        ],
+        "moment_interval_method": "two-sided bounded Hoeffding with union over actions and registered history/observer family",
+        "moment_radius": [
+          0.0,
+          0.0,
+          1.8288855204976568,
+          1.8288855204976568,
+          1.8288855204976568
+        ],
+        "policies": {
+          "fit_only_public_lookup": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.5535579015871317,
+            "finite_history_regret_interval": [
+              0.0,
+              0.41381823766489517
+            ],
+            "simultaneous_CE_interval": [
+              -0.5535579015871317,
+              -0.5535579015871317
+            ]
+          },
+          "fixed_h1_couple": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5807508725824695,
+            "finite_history_regret_interval": [
+              0.0,
+              0.6673350203464721
+            ],
+            "simultaneous_CE_interval": [
+              -0.8070746842687087,
+              -0.1558854787312962
+            ]
+          },
+          "fixed_h1_stop": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.5535579015871317,
+            "finite_history_regret_interval": [
+              0.0,
+              0.41381823766489517
+            ],
+            "simultaneous_CE_interval": [
+              -0.5535579015871317,
+              -0.5535579015871317
+            ]
+          },
+          "legacy_feedback_q1": {
+            "action": "refine_semantic",
+            "action_index": 1,
+            "evaluation_CE": -0.5555579015871319,
+            "finite_history_regret_interval": [
+              0.002000000000000224,
+              0.4158182376648954
+            ],
+            "simultaneous_CE_interval": [
+              -0.5555579015871319,
+              -0.5555579015871319
+            ]
+          }
+        },
+        "public_history_sha256": "8c9550e0b4c0eff3821b6c5cee6a151e7a6bda555be9c227645907ba5a843273",
+        "schema": "hepta.abc-next.common-history-diagnostic.v1",
+        "simultaneous_history_observer_family": 16,
+        "target_count": 32,
+        "target_prior_is_fixed_finite_diagnostic_law": true,
+        "targets_are_not_independent_confidence_samples": true
+      },
+      {
+        "H2_or_global_optimality_claim": false,
+        "action_simultaneous_CE_intervals": [
+          [
+            -0.7692953375114189,
+            -0.7692953375114189
+          ],
+          [
+            -0.7712953375114179,
+            -0.7712953375114179
+          ],
+          [
+            -0.9397746346036524,
+            -0.5311090959619683
+          ],
+          [
+            -0.8049960507260192,
+            -0.14819725635951642
+          ],
+          [
+            -0.7896443224621683,
+            -0.08854243498431456
+          ]
+        ],
+        "actions": [
+          "stop",
+          "refine_semantic",
+          "refine_image",
+          "refine_text",
+          "couple"
+        ],
+        "alpha": 0.05,
+        "causal_best_action_CE_interval": [
+          -0.7692953375114189,
+          -0.08854243498431456
+        ],
+        "critic_predictions": {},
+        "empirical_best_action_CE_is_population_optimum": false,
+        "empirical_information_lattice": {
+          "CE": {
+            "full_future_table_known": -0.5279585726356298,
+            "private_target_known": -0.5394470836336688,
+            "public_only": -0.5530616586279948,
+            "target_and_future_known": -0.4455529257023367
+          },
+          "information_gain_is_not_uniquely_additive": true,
+          "interaction": 0.06879107193896705,
+          "objective": {
+            "full_future_table_known": 2.874610380591051,
+            "private_target_known": 2.941425027841563,
+            "public_only": 3.0226179213571553,
+            "target_and_future_known": 2.4378240323532756
+          },
+          "scope": "Same empirical finite table; sample minima can be optimistic for the population"
+        },
+        "evaluation_action_CE": [
+          -0.7692953375114189,
+          -0.7712953375114179,
+          -0.776080866626063,
+          -0.5774783826505904,
+          -0.5530616586279948
+        ],
+        "evaluation_action_mean_objectives": [
+          4.6580209776329236,
+          4.67669037544655,
+          4.7216661408513,
+          3.1738861925475597,
+          3.0226179213571553
+        ],
+        "evaluation_future_replicas": 64,
+        "evaluation_utility_array_sha256": "3552b2f1e9c16f0b79f487c004595b9720b2819ae442074ce3c23b65efb64174",
+        "fit_action_mean_objectives": [
+          4.658020977632903,
+          4.676690375446562,
+          4.635648030863071,
+          3.1686262008945048,
+          3.159460120899351
+        ],
+        "fit_future_replicas": 32,
+        "future_replica_iid_is_caller_model_assumption": true,
+        "gamma": 2.0,
+        "moment_bounds": [
+          0.1353352832366127,
+          7.418671514670643
+        ],
+        "moment_interval_method": "two-sided bounded Hoeffding with union over actions and registered history/observer family",
+        "moment_radius": [
+          0.0,
+          0.0,
+          1.8288855204976568,
+          1.8288855204976568,
+          1.8288855204976568
+        ],
+        "policies": {
+          "fit_only_public_lookup": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5530616586279948,
+            "finite_history_regret_interval": [
+              0.0,
+              0.7011018874778537
+            ],
+            "simultaneous_CE_interval": [
+              -0.7896443224621683,
+              -0.08854243498431456
+            ]
+          },
+          "fixed_h1_couple": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5530616586279948,
+            "finite_history_regret_interval": [
+              0.0,
+              0.7011018874778537
+            ],
+            "simultaneous_CE_interval": [
+              -0.7896443224621683,
+              -0.08854243498431456
+            ]
+          },
+          "fixed_h1_stop": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.7692953375114189,
+            "finite_history_regret_interval": [
+              0.0,
+              0.6807529025271043
+            ],
+            "simultaneous_CE_interval": [
+              -0.7692953375114189,
+              -0.7692953375114189
+            ]
+          },
+          "legacy_feedback_q1": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5530616586279948,
+            "finite_history_regret_interval": [
+              0.0,
+              0.7011018874778537
+            ],
+            "simultaneous_CE_interval": [
+              -0.7896443224621683,
+              -0.08854243498431456
+            ]
+          }
+        },
+        "public_history_sha256": "8c3754d9410c0dc59903f85a990fafeb99091a227634bac18e609788f165d84c",
+        "schema": "hepta.abc-next.common-history-diagnostic.v1",
+        "simultaneous_history_observer_family": 16,
+        "target_count": 32,
+        "target_prior_is_fixed_finite_diagnostic_law": true,
+        "targets_are_not_independent_confidence_samples": true
+      },
+      {
+        "H2_or_global_optimality_claim": false,
+        "action_simultaneous_CE_intervals": [
+          [
+            -0.5326045303568113,
+            -0.5326045303568113
+          ],
+          [
+            -0.5346045303568114,
+            -0.5346045303568114
+          ],
+          [
+            -0.7918586655050373,
+            -0.09748142308051669
+          ],
+          [
+            -0.8033728144016737,
+            -0.1421327383565208
+          ],
+          [
+            -0.7982044960003224,
+            -0.12245522277925998
+          ]
+        ],
+        "actions": [
+          "stop",
+          "refine_semantic",
+          "refine_image",
+          "refine_text",
+          "couple"
+        ],
+        "alpha": 0.05,
+        "causal_best_action_CE_interval": [
+          -0.5326045303568113,
+          -0.09748142308051669
+        ],
+        "critic_predictions": {},
+        "empirical_best_action_CE_is_population_optimum": false,
+        "empirical_information_lattice": {
+          "CE": {
+            "full_future_table_known": -0.5094590020688899,
+            "private_target_known": -0.5176956280182304,
+            "public_only": -0.5326045303568113,
+            "target_and_future_known": -0.3765420125016178
+          },
+          "information_gain_is_not_uniquely_additive": true,
+          "interaction": 0.11800808722869127,
+          "objective": {
+            "full_future_table_known": 2.7701958014296624,
+            "private_target_known": 2.816207878430176,
+            "public_only": 2.901445498924752,
+            "target_and_future_known": 2.1235389755694336
+          },
+          "scope": "Same empirical finite table; sample minima can be optimistic for the population"
+        },
+        "evaluation_action_CE": [
+          -0.5326045303568113,
+          -0.5346045303568114,
+          -0.5566110804784964,
+          -0.5749173915699298,
+          -0.5667310300024402
+        ],
+        "evaluation_action_mean_objectives": [
+          2.901445498924752,
+          2.9130745234641684,
+          3.044151354357503,
+          3.1576711660751187,
+          3.1063924221625236
+        ],
+        "evaluation_future_replicas": 64,
+        "evaluation_utility_array_sha256": "a359359cf67cae58d5c8b756e2ce73e28c9a97cfd9eed70a336239352d4c2956",
+        "fit_action_mean_objectives": [
+          2.9014454989247542,
+          2.91307452346415,
+          3.1405581367835023,
+          3.1379217734924607,
+          3.2154335304235753
+        ],
+        "fit_future_replicas": 32,
+        "future_replica_iid_is_caller_model_assumption": true,
+        "gamma": 2.0,
+        "moment_bounds": [
+          0.1353352832366127,
+          7.418671514670643
+        ],
+        "moment_interval_method": "two-sided bounded Hoeffding with union over actions and registered history/observer family",
+        "moment_radius": [
+          0.0,
+          0.0,
+          1.8288855204976568,
+          1.8288855204976568,
+          1.8288855204976568
+        ],
+        "policies": {
+          "fit_only_public_lookup": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.5326045303568113,
+            "finite_history_regret_interval": [
+              0.0,
+              0.43512310727629466
+            ],
+            "simultaneous_CE_interval": [
+              -0.5326045303568113,
+              -0.5326045303568113
+            ]
+          },
+          "fixed_h1_couple": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5667310300024402,
+            "finite_history_regret_interval": [
+              0.0,
+              0.7007230729198057
+            ],
+            "simultaneous_CE_interval": [
+              -0.7982044960003224,
+              -0.12245522277925998
+            ]
+          },
+          "fixed_h1_stop": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.5326045303568113,
+            "finite_history_regret_interval": [
+              0.0,
+              0.43512310727629466
+            ],
+            "simultaneous_CE_interval": [
+              -0.5326045303568113,
+              -0.5326045303568113
+            ]
+          },
+          "legacy_feedback_q1": {
+            "action": "refine_image",
+            "action_index": 2,
+            "evaluation_CE": -0.5566110804784964,
+            "finite_history_regret_interval": [
+              0.0,
+              0.6943772424245206
+            ],
+            "simultaneous_CE_interval": [
+              -0.7918586655050373,
+              -0.09748142308051669
+            ]
+          }
+        },
+        "public_history_sha256": "87aa95697c588cba23f2a58726b495f08731fe49904bffffedef75fdc3749a34",
+        "schema": "hepta.abc-next.common-history-diagnostic.v1",
+        "simultaneous_history_observer_family": 16,
+        "target_count": 32,
+        "target_prior_is_fixed_finite_diagnostic_law": true,
+        "targets_are_not_independent_confidence_samples": true
+      },
+      {
+        "H2_or_global_optimality_claim": false,
+        "action_simultaneous_CE_intervals": [
+          [
+            -0.5809529345960295,
+            -0.5809529345960295
+          ],
+          [
+            -0.5829529345960297,
+            -0.5829529345960297
+          ],
+          [
+            -0.8014058099442992,
+            -0.1347108142189516
+          ],
+          [
+            -0.8016102639943979,
+            -0.13548604624780758
+          ],
+          [
+            -0.8103966774193132,
+            -0.16799668952197816
+          ]
+        ],
+        "actions": [
+          "stop",
+          "refine_semantic",
+          "refine_image",
+          "refine_text",
+          "couple"
+        ],
+        "alpha": 0.05,
+        "causal_best_action_CE_interval": [
+          -0.5809529345960295,
+          -0.1347108142189516
+        ],
+        "critic_predictions": {},
+        "empirical_best_action_CE_is_population_optimum": false,
+        "empirical_information_lattice": {
+          "CE": {
+            "full_future_table_known": -0.525415484066136,
+            "private_target_known": -0.4755059171433945,
+            "public_only": -0.5718075726523787,
+            "target_and_future_known": -0.38571116527712285
+          },
+          "information_gain_is_not_uniquely_additive": true,
+          "interaction": 0.04340266328002895,
+          "objective": {
+            "full_future_table_known": 2.8600267219642967,
+            "private_target_known": 2.588327293087294,
+            "public_only": 3.138092544103512,
+            "target_and_future_known": 2.1628403409835304
+          },
+          "scope": "Same empirical finite table; sample minima can be optimistic for the population"
+        },
+        "evaluation_action_CE": [
+          -0.5809529345960295,
+          -0.5829529345960297,
+          -0.5718075726523787,
+          -0.572131144311971,
+          -0.5859647198752749
+        ],
+        "evaluation_action_mean_objectives": [
+          3.196018668811071,
+          3.2088283457606512,
+          3.138092544103512,
+          3.140123996978093,
+          3.228215280377085
+        ],
+        "evaluation_future_replicas": 64,
+        "evaluation_utility_array_sha256": "8285cc5602ce01d0ffdff4267c2974ce7b286778d1ef2ea09851d48141ae82f0",
+        "fit_action_mean_objectives": [
+          3.1960186688110936,
+          3.2088283457606623,
+          3.1080291794763277,
+          3.1320392924959677,
+          3.3063765229130624
+        ],
+        "fit_future_replicas": 32,
+        "future_replica_iid_is_caller_model_assumption": true,
+        "gamma": 2.0,
+        "moment_bounds": [
+          0.1353352832366127,
+          7.418671514670643
+        ],
+        "moment_interval_method": "two-sided bounded Hoeffding with union over actions and registered history/observer family",
+        "moment_radius": [
+          0.0,
+          0.0,
+          1.8288855204976568,
+          1.8288855204976568,
+          1.8288855204976568
+        ],
+        "policies": {
+          "fit_only_public_lookup": {
+            "action": "refine_text",
+            "action_index": 3,
+            "evaluation_CE": -0.572131144311971,
+            "finite_history_regret_interval": [
+              0.0,
+              0.6668994497754464
+            ],
+            "simultaneous_CE_interval": [
+              -0.8016102639943979,
+              -0.13548604624780758
+            ]
+          },
+          "fixed_h1_couple": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5859647198752749,
+            "finite_history_regret_interval": [
+              0.0,
+              0.6756858632003616
+            ],
+            "simultaneous_CE_interval": [
+              -0.8103966774193132,
+              -0.16799668952197816
+            ]
+          },
+          "fixed_h1_stop": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.5809529345960295,
+            "finite_history_regret_interval": [
+              0.0,
+              0.4462421203770779
+            ],
+            "simultaneous_CE_interval": [
+              -0.5809529345960295,
+              -0.5809529345960295
+            ]
+          },
+          "legacy_feedback_q1": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5859647198752749,
+            "finite_history_regret_interval": [
+              0.0,
+              0.6756858632003616
+            ],
+            "simultaneous_CE_interval": [
+              -0.8103966774193132,
+              -0.16799668952197816
+            ]
+          }
+        },
+        "public_history_sha256": "57d92f2918f40f3232345faec0c7a30fc212dd9a35d9ba5f2bfcc58b23c4c56b",
+        "schema": "hepta.abc-next.common-history-diagnostic.v1",
+        "simultaneous_history_observer_family": 16,
+        "target_count": 32,
+        "target_prior_is_fixed_finite_diagnostic_law": true,
+        "targets_are_not_independent_confidence_samples": true
+      },
+      {
+        "H2_or_global_optimality_claim": false,
+        "action_simultaneous_CE_intervals": [
+          [
+            -0.6409836534272805,
+            -0.6409836534272805
+          ],
+          [
+            -0.6429836534272804,
+            -0.6429836534272804
+          ],
+          [
+            -0.8457731841058058,
+            -0.28551707758751116
+          ],
+          [
+            -0.8035650898450125,
+            -0.14285391212450935
+          ],
+          [
+            -0.8029594417202763,
+            -0.14057969924497804
+          ]
+        ],
+        "actions": [
+          "stop",
+          "refine_semantic",
+          "refine_image",
+          "refine_text",
+          "couple"
+        ],
+        "alpha": 0.05,
+        "causal_best_action_CE_interval": [
+          -0.6409836534272805,
+          -0.14057969924497804
+        ],
+        "critic_predictions": {},
+        "empirical_best_action_CE_is_population_optimum": false,
+        "empirical_information_lattice": {
+          "CE": {
+            "full_future_table_known": -0.53599030803806,
+            "private_target_known": -0.485783000603261,
+            "public_only": -0.5742644419710591,
+            "target_and_future_known": -0.38845901989429854
+          },
+          "information_gain_is_not_uniquely_additive": true,
+          "interaction": 0.059049846775963366,
+          "objective": {
+            "full_future_table_known": 2.9211594695434724,
+            "private_target_known": 2.6420787198438056,
+            "public_only": 3.1535502571640706,
+            "target_and_future_known": 2.174759404472446
+          },
+          "scope": "Same empirical finite table; sample minima can be optimistic for the population"
+        },
+        "evaluation_action_CE": [
+          -0.6409836534272805,
+          -0.6429836534272804,
+          -0.6403255389018477,
+          -0.5752209968543749,
+          -0.5742644419710591
+        ],
+        "evaluation_action_mean_objectives": [
+          3.6037223841518373,
+          3.618166141945693,
+          3.5989821803398954,
+          3.1595891196221415,
+          3.1535502571640706
+        ],
+        "evaluation_future_replicas": 64,
+        "evaluation_utility_array_sha256": "537fcc294024c1a9f1b0b5eb1b816a09a55c5ec7fbcf901d15a7b4a90bdf7ac1",
+        "fit_action_mean_objectives": [
+          3.6037223841518173,
+          3.6181661419456854,
+          3.6138322502097964,
+          3.053678856869978,
+          2.990755475713526
+        ],
+        "fit_future_replicas": 32,
+        "future_replica_iid_is_caller_model_assumption": true,
+        "gamma": 2.0,
+        "moment_bounds": [
+          0.1353352832366127,
+          7.418671514670643
+        ],
+        "moment_interval_method": "two-sided bounded Hoeffding with union over actions and registered history/observer family",
+        "moment_radius": [
+          0.0,
+          0.0,
+          1.8288855204976568,
+          1.8288855204976568,
+          1.8288855204976568
+        ],
+        "policies": {
+          "fit_only_public_lookup": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5742644419710591,
+            "finite_history_regret_interval": [
+              0.0,
+              0.6623797424752983
+            ],
+            "simultaneous_CE_interval": [
+              -0.8029594417202763,
+              -0.14057969924497804
+            ]
+          },
+          "fixed_h1_couple": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5742644419710591,
+            "finite_history_regret_interval": [
+              0.0,
+              0.6623797424752983
+            ],
+            "simultaneous_CE_interval": [
+              -0.8029594417202763,
+              -0.14057969924497804
+            ]
+          },
+          "fixed_h1_stop": {
+            "action": "stop",
+            "action_index": 0,
+            "evaluation_CE": -0.6409836534272805,
+            "finite_history_regret_interval": [
+              0.0,
+              0.5004039541823024
+            ],
+            "simultaneous_CE_interval": [
+              -0.6409836534272805,
+              -0.6409836534272805
+            ]
+          },
+          "legacy_feedback_q1": {
+            "action": "couple",
+            "action_index": 4,
+            "evaluation_CE": -0.5742644419710591,
+            "finite_history_regret_interval": [
+              0.0,
+              0.6623797424752983
+            ],
+            "simultaneous_CE_interval": [
+              -0.8029594417202763,
+              -0.14057969924497804
+            ]
+          }
+        },
+        "public_history_sha256": "1287801c79c53ed674bef28867ec8fb25305a1b1036be344582a385850dec835",
+        "schema": "hepta.abc-next.common-history-diagnostic.v1",
+        "simultaneous_history_observer_family": 16,
+        "target_count": 32,
+        "target_prior_is_fixed_finite_diagnostic_law": true,
+        "targets_are_not_independent_confidence_samples": true
+      }
+    ]
+  },
+  "protocol_sha256": "e61349ad3297bbd3992b9923712a7ce50dc93382ca9ccde6c2eaafe4d29b1cee",
+  "raw_data_archive_required_for_completion": false,
+  "schema": "hepta.abc-next.common-history-result.v1",
+  "settings": {
+    "action_costs": [
+      0,
+      0.002,
+      0.002,
+      0.002,
+      0.002
+    ],
+    "actions": [
+      "stop",
+      "refine_semantic",
+      "refine_image",
+      "refine_text",
+      "couple"
+    ],
+    "alpha": 0.05,
+    "baselines": {
+      "fixed_h1_couple": 4,
+      "fixed_h1_stop": 0
+    },
+    "cpu_threads": 2,
+    "deterministic_action_indices": [
+      0,
+      1
+    ],
+    "drafts_per_swap": 4,
+    "evaluation_replicas": 64,
+    "fit_replicas": 32,
+    "gamma": 2.0,
+    "history_observer_confidence_family": 16,
+    "net_utility_bounds": [
+      -1.002,
+      1.0
+    ],
+    "pair_count": 32,
+    "pair_start": 448,
+    "private_prior": "uniform finite support, exactly integrated",
+    "public_view": "both_missing",
+    "remaining_horizon": 1,
+    "role": "forecast_fit",
+    "scope": "fixed finite target law, eight fixed public histories, H1; no H2/global/population claim",
+    "selection": "primary fit replicas only; lowest action index breaks ties",
+    "swaps": [
+      0,
+      1
+    ]
+  },
+  "started_at_utc": "2026-10-25T06:05:35.752920+00:00",
+  "timing_phases": {
+    "evaluation_archive_append": {
+      "calls": 40,
+      "cpu_ns": 848260362,
+      "wall_ns": 464810869
+    },
+    "evaluation_generation_and_transition": {
+      "calls": 40,
+      "cpu_ns": 359428265,
+      "wall_ns": 217799338
+    },
+    "evaluation_independent_closed_archive_readback": {
+      "calls": 1,
+      "cpu_ns": 270342649,
+      "wall_ns": 270509137
+    },
+    "evaluation_offline_primary_scoring": {
+      "calls": 8,
+      "cpu_ns": 30451714102,
+      "wall_ns": 15230396351
+    },
+    "evaluation_offline_secondary_scoring": {
+      "calls": 8,
+      "cpu_ns": 30635808664,
+      "wall_ns": 15386666795
+    },
+    "fit_archive_append": {
+      "calls": 40,
+      "cpu_ns": 630001171,
+      "wall_ns": 337592390
+    },
+    "fit_generation_and_transition": {
+      "calls": 40,
+      "cpu_ns": 281146713,
+      "wall_ns": 158693689
+    },
+    "fit_independent_closed_archive_readback": {
+      "calls": 1,
+      "cpu_ns": 117588644,
+      "wall_ns": 117810016
+    },
+    "fit_offline_primary_scoring": {
+      "calls": 8,
+      "cpu_ns": 15325923036,
+      "wall_ns": 7675104989
+    },
+    "fit_offline_secondary_scoring": {
+      "calls": 8,
+      "cpu_ns": 14238855350,
+      "wall_ns": 7126311167
+    },
+    "initial_public_draft_generation": {
+      "calls": 8,
+      "cpu_ns": 54311929,
+      "wall_ns": 26326333
+    },
+    "legacy_public_policy": {
+      "calls": 8,
+      "cpu_ns": 9083387,
+      "wall_ns": 5080724
+    },
+    "registration_and_loading": {
+      "calls": 1,
+      "cpu_ns": 985478202,
+      "wall_ns": 957917059
+    }
+  },
+  "timing_scope": "Measured full diagnostic execution with vectorized future branches and all offline scores; not isolated production latency or an amortization claim",
+  "total_cpu_ns": 94385290138,
+  "total_wall_ns": 48126874021
+}

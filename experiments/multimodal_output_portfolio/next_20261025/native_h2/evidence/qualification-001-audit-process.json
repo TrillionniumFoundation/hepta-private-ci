@@ -1,0 +1,47 @@
+{
+  "cgroup_after": {
+    "current": 8413990912,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3833593,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "cgroup_before": {
+    "current": 8540360704,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3831687,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "child_system_seconds": 3.651304,
+  "child_user_seconds": 7.817443,
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-B",
+    "/tmp/hepta-ndu-next-native-h2/audit_prospective.py",
+    "--directory",
+    "/tmp/hepta-ndu-next-native-h2/qualification-001",
+    "--allocation",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/NATIVE_H2_ALLOCATION.json",
+    "--protocol",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/QUALIFICATION_PROTOCOL.json",
+    "--output",
+    "/tmp/hepta-ndu-next-native-h2/qualification-001/STRUCTURAL_AUDIT.json"
+  ],
+  "context": "Read-only independent50000-output qualification array/media/census audit; ASR collector reported exited; no model inference",
+  "exit_code": 0,
+  "log_sha256": "c8216b7c367fb7b1121dc3a570737eae5635febc381a0a4e65abce55deb88cf3",
+  "peak_rss_bytes": 167055360,
+  "registration_sha256": "6c32f00b3abf1274a13f54f9eec9f7a4ead94298a22fdc1ebd7b7505c8627a10",
+  "schema": "hepta.next.native-h2-stage-cost.v1",
+  "wall_ns": 21027171216,
+  "wrapper_sha256": "08040b095fbb311c5cf5ca1334ee8e56b893d39a4b79c766f5e53ab6167f8604"
+}

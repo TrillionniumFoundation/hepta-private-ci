@@ -1,0 +1,70 @@
+{
+  "counterexamples": {
+    "actual_moment": 0.30119421191220214,
+    "executed_supplied_environment_refusal": {
+      "execution_scope": "Supplied finite environment only; no native owner, model or media invoked.",
+      "net_utility": -1.02,
+      "remaining": [
+        1
+      ],
+      "strict_success": 0.0,
+      "total_cost": 0.02,
+      "trace": [
+        {
+          "action": "acquire",
+          "branch": 1,
+          "candidate_order": [
+            "acquire"
+          ],
+          "incremental_cost": 0.01,
+          "owner": "956e6e33fe8b21fbf3e7e43d41c304862c78627deb92e26a72fd2b3b57bc60f2",
+          "public_event": "blocked",
+          "state": "root"
+        },
+        {
+          "action": null,
+          "candidate_order": [
+            "emit"
+          ],
+          "owner": "7b92de7d08814ff2863dbd0239cdcb3cd107364ebf588b5d95693527f066f106",
+          "state": "blocked"
+        }
+      ],
+      "utility": -1.0
+    },
+    "feasible_future_refusal_root": "emit_now",
+    "joint_random_cost_root": "safe",
+    "mean_cost_root": "risky",
+    "native_numeric_ties_preserve_candidate_order": true,
+    "optimistic_moment": 0.13806923731089282,
+    "optimistic_root": "acquire",
+    "rejections": {
+      "candidate_order": true,
+      "continuation_change": true,
+      "owner_drift": true,
+      "unmodelled_future_owner": true
+    }
+  },
+  "elapsed_ns": 148364501,
+  "future_native_owner_law_fitted": false,
+  "independent_policy_enumeration": {
+    "maximum_absolute_moment_error": 2.6645352591003757e-15,
+    "models": 64,
+    "whole_policies": 248
+  },
+  "independent_qualification_passed": false,
+  "passed": true,
+  "schema": "hepta.repair.execution-verification.v1",
+  "source_sha256": {
+    "calibration.py": "a80767ed59016e30277e043b699301173d020e7d4bf3e639afcbad2fc034ee69",
+    "execution.py": "74d70a84aa3914239af52ef1d80563e41e75307001fbe1084f24e89188edb636",
+    "verify.py": "593a830a4a8161b1a800cc66c749787970fa92d32e9a1fd5cb3a51d7d6e999c9"
+  },
+  "terminal_calibration_targets": {
+    "acquire_then_refusal_target": 0,
+    "actual_new_native_episodes": 0,
+    "raw_initial_forecast": 0.95,
+    "same_source_and_changed_policy_evaluations_rejected": true,
+    "scope": "Synthetic receipt fixture exercises real loader; no empirical qualification claimed."
+  }
+}

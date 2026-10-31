@@ -1,0 +1,175 @@
+{
+  "schema": "hepta.field-bridge.v4.independent-result-interpretation.1",
+  "study_id": "hepta.field-bridge.v4.panel-origin-qualification.20261027.1",
+  "status": "INTERPRETATION_CONSISTENT_WITH_FAILED_QUALIFICATION",
+  "review_passed": true,
+  "scientific_qualification_passed": false,
+  "all_original_substantive_blockers_closed": false,
+  "scope": "Read-only interpretation and recorded-rule/identity/cost consistency review. No new outcome analysis, model execution, policy selection or inferential look.",
+  "operations": {
+    "new_model_calls": 0,
+    "new_observer_calls": 0,
+    "new_native_calls": 0,
+    "new_bootstrap_draws": 0,
+    "new_hypothesis_tests": 0,
+    "endpoint_numeric_arrays_loaded": false,
+    "binary_files_hashed_only": true,
+    "frozen_code_modified": false,
+    "torch_imported": false
+  },
+  "input_files": {"/tmp/hepta-field-v4-run/QUALIFICATION.json":{"sha256":"0634e0f89ad5c07dfa36c74c475b593b8b9aa8c29990bb86b078995ab63b3b58","bytes":148102},"/tmp/hepta-field-v4-run/QUALIFICATION_START.json":{"sha256":"be2a341f67163a4e8274d4cbb449183e5166586f5d9b9794eb99e6c67a98c3a2","bytes":394},"/tmp/hepta-field-v4-run/TRAINING_SEAL.json":{"sha256":"179497a0ee10beaf6c7b1204ea9f11a83922edb9a8c78b3a9a7ed945983c8315","bytes":44976},"/tmp/hepta-field-v4-run/INDEPENDENT_V4_TRAINING_AUDIT.json":{"sha256":"adba398e7cfd1ed57e8d22d3949cc0be385910964fb1910a8d453237dea304f9","bytes":802935},"/tmp/hepta-field-v4-run/INDEPENDENT_V4_ENDPOINT_HARD_SCORE_AUDIT.json":{"sha256":"e66926da8eb8632272635a2688c3685b08423d8062ca3ee6d7439318bb265407","bytes":378362},"/tmp/hepta-field-v4-run/mechanism/MECHANISM.json":{"sha256":"33e2ca2975fe8dc2f60a0cf2dd5de04aacac3973bf91fdd0abb410ed84030d3a","bytes":674998},"/tmp/hepta-field-v4-run/mechanism/MECHANISM.md":{"sha256":"a411c5cf6833c8a32514be28e072f4fc633d98fcd9b8df70d500687c6c1a7800","bytes":3869},"/tmp/hepta-field-v4-run/STUDY_DISPOSITION.json":{"sha256":"4caabe2966d62c8bad4b22ec69cf49b0dedfa10ca3c8d650a75c7603581bd8c6","bytes":2422},"/tmp/hepta-field-v4-run/V4_EXECUTION_LEDGER.json":{"sha256":"52473cd909542e9ed46fd2f591cbf7ca108459ab7347e206e7b0c271ce9e176a","bytes":145157},"experiments/multimodal_output_portfolio/field_bridge_v4_20261027/PROTOCOL.json":{"sha256":"561c8110c51fe5705f3966cc806221927497897f9498745466ec4966ea2f2797","bytes":15605},"experiments/multimodal_output_portfolio/field_bridge_v4_20261027/SOURCE_ALLOCATION.json":{"sha256":"0b5cc7213f7c635195b85c580cb92a72b08d9d200b9c3211dfef89a2887b79fb","bytes":4677},"experiments/multimodal_output_portfolio/field_bridge_v4_20261027/README.md":{"sha256":"17b50a6a6182db789ce31ba1d5ab5078e38ddeabe955c7528e45a407570f0fad","bytes":6822},"experiments/multimodal_output_portfolio/field_bridge_v4_20261027/RESULTS.md":{"sha256":"9a5bdca13eb530ff130c3165a2079ee280187339b6aa7a2831d06daed9357cb4","bytes":1916},"experiments/multimodal_output_portfolio/field_bridge_v4_20261027/PAPER_HEPTA_COMMENTS.md":{"sha256":"dd4bcdf4170b1452de539d07a2d64b674b636cabe2d709f070d618b71697012e","bytes":10855},"experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/BLOCKERS.json":{"sha256":"80f2169c0bd099b167684cf0dad197b05c34f5d3015832c73e1578a0e82d9f65","bytes":28932},"experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/TERMINAL_REPORT_BINDINGS.json":{"sha256":"64235f7cc8a3a0d71ac2e161cf43e25e91e132e1783ee94dc6c58d587cce3b53","bytes":2101},"experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/INDEPENDENT_V4_SOURCE_REVIEW.json":{"sha256":"ba01c02b0f57333a1fc17140668a06f56f42f171382a39a529ae35b8ce4f761c","bytes":2791},"experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/NEW_STUDY_CONTRACT.json":{"sha256":"c6d8cc4b67189de4e82a05ca5f387f33b03197eb18dfc8054d906cf8030351aa","bytes":17245},"experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/TRAINING_FINAL_COMMENTS.md":{"sha256":"4c93e8d69ad17718fa16f87ded6083418dfdacc2d40a87f65965b5edfd1ce603","bytes":6941},"experiments/multimodal_output_portfolio/field_bridge_v4_20261027/evidence/TRAINING_FREEZE.json":{"sha256":"ede7c2c343fe7f1fe4852f2f564821475ce6e8ac9012ede282e403fc9fb1b24b","bytes":11198},"experiments/multimodal_output_portfolio/field_bridge_v4_20261027/evidence/ENDPOINT_FREEZE.json":{"sha256":"9650e60689b6ed8cccee904850659b510e2f0ad41fbb02bc99787e9d58722ed5","bytes":55743},"experiments/multimodal_output_portfolio/field_bridge_v4_20261027/evidence/QUALIFICATION_FREEZE.json":{"sha256":"697a7e4acba5cec722f945260e3c0ee0a905fc557ca37a7e4335c7d5f3e97664","bytes":99112}},
+  "qualification": {
+    "status": "QUALIFICATION_FAILED",
+    "checks_passed": 4,
+    "checks_registered": 6,
+    "failed_comparisons": [
+      "origin_field-ordinary",
+      "origin_field-origin_richer"
+    ],
+    "formal_outcome_looks_recorded": 1,
+    "bootstrap_samples": 4000,
+    "bootstrap_seed": 271042,
+    "bootstrap_draw_sha256": "98c0a399f64f5d485c271c384077f23f8f3f3a00b98cc06be8b92a2b65e5c3cf",
+    "family_alpha": 0.05,
+    "per_observer_two_sided_coverage": 0.9916666666666667,
+    "model_ids_fixed": [
+      17,
+      29,
+      43
+    ],
+    "schedule_ids_fixed": [
+      14000,
+      14001,
+      14002,
+      14003
+    ],
+    "task_source_clusters": 512,
+    "clean_source_clusters": 1024,
+    "task_conditions_fixed": [
+      "heavy_noise",
+      "missing",
+      "occlusion",
+      "clean"
+    ],
+    "comparison_flags_rederived_from_recorded_values": 12,
+    "intervals_or_endpoint_estimates_recomputed": false
+  },
+  "comparisons": [{"name":"ordinary-frozen","kind":"gain","panel":"task","left":"selected_ordinary","right":"frozen","passed":true,"observers":{"audit":{"mean":0.022656302358571637,"interval":[0.015530279002085949,0.030904954284149536],"per_model_mean":{"17":0.02570928171669493,"29":0.006003417604006244,"43":0.036256207755013745},"lower_pass":true,"strict_model_positive_required":true,"model_sign_pass":true,"nonpositive_models":[],"passed":true},"reward":{"mean":0.021425426707529973,"interval":[0.014677201657432684,0.029478808278286993],"per_model_mean":{"17":0.02190068796669493,"29":0.004715575807131245,"43":0.037660016348763745},"lower_pass":true,"strict_model_positive_required":true,"model_sign_pass":true,"nonpositive_models":[],"passed":true}}},{"name":"origin_field-ordinary","kind":"gain","panel":"task","left":"origin_field","right":"selected_ordinary","passed":false,"observers":{"audit":{"mean":0.0012855685576369069,"interval":[-0.0017752893265903446,0.004137580998348087],"per_model_mean":{"17":0.00030550649219094315,"29":0.0,"43":0.0035511991807197765},"lower_pass":false,"strict_model_positive_required":true,"model_sign_pass":false,"nonpositive_models":["29"],"passed":false},"reward":{"mean":0.00016048717742857296,"interval":[-0.0034104287875357875,0.004171901065799469],"per_model_mean":{"17":-0.0021969349140590574,"29":0.0,"43":0.0026783964463447775},"lower_pass":false,"strict_model_positive_required":true,"model_sign_pass":false,"nonpositive_models":["17","29"],"passed":false}}},{"name":"origin_field-origin_richer","kind":"gain","panel":"task","left":"origin_field","right":"origin_richer","passed":false,"observers":{"audit":{"mean":-0.00040930755772781904,"interval":[-0.003481510480113077,0.0030944653468470574],"per_model_mean":{"17":-0.0005932102763381411,"29":0.0,"43":-0.0006347123968453168},"lower_pass":false,"strict_model_positive_required":true,"model_sign_pass":false,"nonpositive_models":["17","29","43"],"passed":false},"reward":{"mean":9.52497339388475e-05,"interval":[-0.0026931430947045483,0.0031111382141593485],"per_model_mean":{"17":-0.0010509739482131414,"29":0.0,"43":0.001336723150029684},"lower_pass":false,"strict_model_positive_required":true,"model_sign_pass":false,"nonpositive_models":["17","29"],"passed":false}}},{"name":"ordinary-clean-NI","kind":"noninferiority","panel":"clean","left":"selected_ordinary","right":"frozen","passed":true,"observers":{"audit":{"mean":0.004267880070180277,"interval":[-0.0010462207475194418,0.009583406516982413],"per_model_mean":{"17":0.003194183514096947,"29":0.00014424155579035843,"43":0.009465215140653526},"lower_pass":true,"strict_model_positive_required":false,"model_sign_pass":true,"nonpositive_models":[],"passed":true},"reward":{"mean":0.005317684757680278,"interval":[-2.2240515215042156e-05,0.01064251693140496],"per_model_mean":{"17":0.006856292889096947,"29":-0.001320602194209641,"43":0.010417363578153526},"lower_pass":true,"strict_model_positive_required":false,"model_sign_pass":true,"nonpositive_models":[],"passed":true}}},{"name":"origin_field-clean-NI","kind":"noninferiority","panel":"clean","left":"origin_field","right":"frozen","passed":true,"observers":{"audit":{"mean":0.0032537943208656842,"interval":[-0.0019781083651654787,0.008526419446700025],"per_model_mean":{"17":0.0019402416176035318,"29":0.00014424155579035843,"43":0.007676899789203161},"lower_pass":true,"strict_model_positive_required":false,"model_sign_pass":true,"nonpositive_models":[],"passed":true},"reward":{"mean":0.00399028520628235,"interval":[-0.0013603539701256297,0.009200782793957198],"per_model_mean":{"17":0.005272761148853531,"29":-0.001320602194209641,"43":0.00801869666420316},"lower_pass":true,"strict_model_positive_required":false,"model_sign_pass":true,"nonpositive_models":[],"passed":true}}},{"name":"origin_richer-clean-NI","kind":"noninferiority","panel":"clean","left":"origin_richer","right":"frozen","passed":true,"observers":{"audit":{"mean":0.002360315468892319,"interval":[-0.00245242067592964,0.007519171614321188],"per_model_mean":{"17":0.0017407872844614745,"29":0.00014424155579035843,"43":0.005195917566425124},"lower_pass":true,"strict_model_positive_required":false,"model_sign_pass":true,"nonpositive_models":[],"passed":true},"reward":{"mean":0.004325647500142319,"interval":[-0.0008103459519744166,0.00950114503652269],"per_model_mean":{"17":0.007685611503211474,"29":-0.001320602194209641,"43":0.006611933191425123},"lower_pass":true,"strict_model_positive_required":false,"model_sign_pass":true,"nonpositive_models":[],"passed":true}}}],
+  "family_interpretation": {
+    "registered_family": "Three task gains and three clean noninferiority comparisons; not six experiment arms or six final gain contrasts.",
+    "observers": "Bonferroni alpha/6 within each observer; both observer gates must pass. No claim that all 12 observer intervals jointly have 95% coverage.",
+    "inference_scope": "Approximate source/rollout bootstrap conditional on three fixed models and four fixed conditions. Four update schedules are within-model variation, not independent model replication.",
+    "strict_sign_rule": "Only gain tests require every fixed-model mean >0. NI passes from corrected lower endpoint >-0.01 under both observers; model_signs_pass=true in NI is not evidence that all seed effects are positive.",
+    "future_final_family": "No V4 final contrasts ran. The distinct prospective final six-gain/ten-retention family was not replaced by this six-comparison screen.",
+    "diagnostic_methods_not_promoted": [
+      "raw_field",
+      "origin_generic",
+      "origin_h7",
+      "unselected ordinary constants"
+    ],
+    "failed_gate_does_not_establish": [
+      "equivalence",
+      "exact zero effect",
+      "confirmatory inferiority",
+      "falsity of the general parameter-field theory"
+    ]
+  },
+  "source_and_history": {"new_source_images":6352,"new_source_origin":"official train, unused relative to complete recorded V2/V3 allocations","role_images":{"qualification_clean":2048,"qualification_gradient":2000,"qualification_guard":512,"qualification_probe":256,"qualification_rehearsal":512,"qualification_task":1024},"prior_registered_images_excluded":57048,"prior_and_cross_role_pixel_overlap":0,"remaining_unassigned":{"test":3952,"train":2648},"v3_roles_not_materialized_by_this_study":{"audit_clean":2048,"audit_gradient":2000,"audit_guard":512,"audit_probe":256,"audit_rehearsal":512,"audit_task":1024,"primary":2048,"retention":4096},"v3_preserved_unmaterialized_images":12496,"new_task_and_clean_roles_are_now_exposed":true,"historical_proposal_pins_verified":{"field_bridge_v3_20261027/PAPER_HEPTA_COMMENTS.md":"37059c42bc8937b418cde65c5692e13b046c952613cdb3d2b1fff613d41c33fd","field_bridge_v3_20261027/PROTOCOL.json":"a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7","field_bridge_v3_20261027/SOURCE_ALLOCATION.json":"068381327c437aa2edfc4c3db204bf836aa87e0d681bd15a4dbde7a119810f48","field_bridge_v3_20261027/evidence/CONFIRMATION_QUALIFICATION.json":"ac47ff0661def0092a7674d6e99a146e2b76421c0741b8e42502ab72feea4075","field_bridge_v3_20261027/evidence/STUDY_DISPOSITION.json":"56a973140854352afab83c769916197d9352f82e8aad73e76281c805b6f834a7","field_bridge_v3_20261027_review/BLOCKERS.json":"59c7c7aa111eb156291c76e76c1fdce389f7d517eed75b9df5b6aada72ee5a88"},"original_B01_B10_closure_criteria_exact":true,"scope_limit":"Declared access and retained byte identities are verified; no OS-level proof excluding unlogged I/O, unknown pretraining exposure or shared writers. Raw corpus bytes were previously hashed.","training_sealed_unix_ns":1793116586482679549,"phase_access_metadata":[{"seed":17,"train_started_unix_ns":1793116017349410063,"endpoint_started_unix_ns":1793116778453926269,"authorized_roles_and_observers_match":true},{"seed":29,"train_started_unix_ns":1793116017321559535,"endpoint_started_unix_ns":1793116778379759641,"authorized_roles_and_observers_match":true},{"seed":43,"train_started_unix_ns":1793116017364789655,"endpoint_started_unix_ns":1793116778508466300,"authorized_roles_and_observers_match":true}]},
+  "integrity_and_cost": {
+    "execution_ledger_bindings_verified": 710,
+    "bound_run_bytes_verified": 377531919,
+    "run_inventory_missing_or_extra": 0,
+    "copied_evidence_files_verified": 33,
+    "frozen_sources_verified": 58,
+    "old_inputs_verified": 25,
+    "scientific_source_closure_verified": 38,
+    "training_paths": 108,
+    "endpoint_paths": 108,
+    "original_baselines": 3,
+    "media_files": 222,
+    "verified_output_rows": 340992,
+    "verified_observer_values": 681984,
+    "maximum_hard_score_error": 0.0,
+    "training_audit_passed": true,
+    "hard_score_audit_passed": true,
+    "training_gradient_microsteps": 31104,
+    "training_gradient_examples": 2985984,
+    "directional_measurements": 648,
+    "new_head_fits": 0,
+    "new_native_ticks": 0,
+    "training_and_endpoint_cost_sums_match_seed_receipts": true,
+    "phase_cpu_ns_work_sum": 3509512073466,
+    "independent_media_verification_actual_digit_examples": 724992,
+    "independent_media_verification_logical_digit_examples": 1363968,
+    "verification_is_additional_cost_not_new_data": true,
+    "archive_restore_verified_by_this_review": false,
+    "archive_scope": "Postpackage archive/restore proof is pending external receipt at this interpretation snapshot; this review cannot certify its own containing archive."
+  },
+  "mechanism_descriptive_only": {
+    "method_totals": {
+      "raw_field": {
+        "action_counts": [
+          0,
+          40,
+          19,
+          13
+        ],
+        "accepted_blocks": 46,
+        "accepted_nonzero_microsteps": 2208
+      },
+      "origin_field": {
+        "action_counts": [
+          19,
+          4,
+          21,
+          28
+        ],
+        "accepted_blocks": 60,
+        "accepted_nonzero_microsteps": 1968
+      }
+    },
+    "origin_raw_action_disagreements": 47,
+    "decision_pairs": 72,
+    "final_parameter_paths_differ": 8,
+    "paired_paths": 12,
+    "seed29_origin_selected_ordinary_final_parameters_and_optimizer_identical_paths": 4,
+    "accepted_origin_zero_blocks": 19,
+    "accepted_origin_nonzero_blocks": 41,
+    "accepted_raw_nonzero_blocks": 46,
+    "accepted_selected_ordinary_nonzero_blocks": 47,
+    "interpretation": "Translation changed actions and reduced some fit-scaled offsets; subsequent trajectories differ and no causal mediation or new gain test follows. Guard acceptance includes zero updates.",
+    "active_context_payload_bytes": 112,
+    "active_payload_not_total_memory": true
+  },
+  "six_experiment_families": [{"family":"fixed model + strong fixed deployment","v4_evidence":"Frozen original baselines under previously selected literal deployment actions; bounded reference, not universal optimal fixed policy."},{"family":"ordinary local training + same deployment","v4_evidence":"Formal task gain and qualification clean NI pass; original final B03 criterion remains open."},{"family":"parameter-field training + same deployment","v4_evidence":"Origin-field increment over selected ordinary and origin-richer fails; no confirmatory final C-B/E-G."},{"family":"fixed training + Hepta runtime control","v4_evidence":"No new runtime holdout or native tick; V3 failed dual-observer gate preserved."},{"family":"parameter-field training + Hepta runtime control","v4_evidence":"Not executed after failed eligibility; neither a zero-effect estimate nor evidence of repeatable joint gain or superadditivity."},{"family":"same-information history/light control","v4_evidence":"Origin-richer is formal learning comparator; generic/H7/raw-field remain diagnostics. H7 learning features are not Hepta runtime. No new native-history superiority comparison."}],
+  "original_blockers": {
+    "B03": "not_established for original final ordinary-gain plus independent-retention criterion; V4 adds positive bounded qualification evidence",
+    "B04": "not_established; both field qualification increments fail and final C-B/E-G unexecuted",
+    "B05": "not_established; no new runtime gain evidence",
+    "B06": "not_established; no new same-information runtime superiority evidence",
+    "B07": "partially_closed with original scope unchanged; qualification clean NI cannot replace independent final retention",
+    "B09": "new V4 identity/access evidence verified; prior V2 shared-panel limitation preserved",
+    "B10": "execution/audit evidence verified; postpackage archive restoration and persistent-saving authorization are separately handled"
+  },
+  "reviewed_documents": [
+    "README.md",
+    "RESULTS.md",
+    "PAPER_HEPTA_COMMENTS.md",
+    "BLOCKERS.json",
+    "TERMINAL_REPORT_BINDINGS.json",
+    "STUDY_DISPOSITION.json",
+    "V4_EXECUTION_LEDGER.json",
+    "TRAINING_FINAL_COMMENTS.md"
+  ],
+  "editorial_findings_resolved": [
+    "Removed an unintended runtime prerequisite from the B03 update; original ordinary gain/retention criterion preserved.",
+    "README uses not yet established rather than asserting unestablished broad claims are false.",
+    "Comments describe a tested coordinate correction rather than elimination of all mismatch."
+  ],
+  "new_scientific_gate": false,
+  "new_final_or_runtime_authorization": false,
+  "authority": "DENY_ALL",
+  "requires_calibration": true,
+  "native_owner_integration": false,
+  "markdown_sha256": "620c581bbc1c23cda0b03f4c4d375dd3d6bc064606a3df4176d5883c969f45a9"
+}

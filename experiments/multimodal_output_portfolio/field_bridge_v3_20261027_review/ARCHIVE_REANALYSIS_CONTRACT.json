@@ -1,0 +1,33 @@
+{
+  "check_count": 16,
+  "checks": [
+    "full_archive_literal_restore_and_exact_two_failed_gates",
+    "paired_development_eligibility_and_tie_order",
+    "wrong_integrity_external_hash",
+    "raw_endpoint_mutation",
+    "raw_row_mutation",
+    "controller_mutation",
+    "arithmetic_source_mutation",
+    "manifest_mutation",
+    "invalid_integrity_passed",
+    "invalid_integrity_all_inner_gzip_crc_verified",
+    "invalid_integrity_exception_allowlist",
+    "invalid_integrity_members",
+    "invalid_integrity_restored_members",
+    "mixed_live_arithmetic_import",
+    "gate_boolean_difference",
+    "one_ulp_numeric_difference"
+  ],
+  "passed": true,
+  "schema": "hepta.field-bridge.v3.archive-reanalysis-contract.1",
+  "scientific_model_observer_native_network_calls": 0,
+  "source_files": {
+    "archive_integrity.py": "4a6e84a996145ed1a389f9b736b876216d26595d6db9f2bb6071cc252581e8c8",
+    "archive_reanalysis.py": "24b7b4e9b1e3aa979d806504dc6b889f21047e33ada9382ee868eaed0c3e54c8",
+    "archive_reanalysis_tests.py": "141bb548d0f84d29f5565f611e8f618a3ac927020355ce5c9938e324a5647316"
+  },
+  "synthetic_development_gate": false,
+  "synthetic_only": true,
+  "synthetic_runtime_gate": false,
+  "verification_wall_ns": 136535433
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.abc4.reference-repair-validation.v1",
+  "unix_ns": 1792917738121391395,
+  "census_tests": {
+    "methods": 4,
+    "exit_code": 0,
+    "reported_unittest_seconds": 0.035,
+    "scope": "test runner time only; no complete test process timing claimed"
+  },
+  "actual_pilot": {
+    "steps": 2,
+    "seeds": [
+      17
+    ],
+    "arms": [
+      "matched_floor",
+      "matched_floor_warmdual"
+    ],
+    "candidate_rows": 512,
+    "reference_rows": 512,
+    "reference": "actual frozen same-seed trained mean",
+    "physical_media_reopened_before_scoring": true,
+    "result_sha256": "2c5bff09dcc736cf038773b5dac52ef4d74dddd93bd378e3a1aa512a36fd7eb7",
+    "process_sha256": "b43ee05007473185d782fd8b516f048fb85cafd86716d2869c055dae3b1c6ed4",
+    "new_source_outcomes_opened": false
+  },
+  "independent_review": [
+    "train/reference/dual separation reviewed by control_cost_v2",
+    "assigned_source loader audited without changing original load_roles guard"
+  ],
+  "new_gradient_math": "uses previously exact-enumeration-tested predictable dual objective",
+  "ci_used": false
+}

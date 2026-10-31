@@ -1,0 +1,23 @@
+{
+  "schema": "hepta.repair.natural.document.protocol.v1",
+  "task": "Extract company, date, address and total from the actual scanned receipt image; emit UTF-8 structured answers and an image with predicted field boxes",
+  "dataset": "jsdnrs/ICDAR2019-SROIE",
+  "revision": "bffe40c26759f3376ec2b3ae9031dbba54cd587c",
+  "source_allocation": "First 6 distinct normalized annotated merchant strings in train rows 0:100 for fit, then first 12 previously unseen strings in test rows 0:100; reject exact image-hash duplicates",
+  "fields": ["company", "date", "address", "total"],
+  "ocr_arms": {"base": {"scale": 1, "psm": 3}, "enhanced": {"scale": 2, "psm": 6}},
+  "test_arms": ["fixed_base", "fixed_enhanced", "dynamic"],
+  "gate_candidates": [0, 50, 65, 80, 90, 101],
+  "gate_feature": "Mean recognized-word Tesseract confidence from actual base OCR; no reference text or reference boxes",
+  "gate_rule": "Run enhanced OCR when base confidence is below fitted threshold and use the enhanced result; otherwise stop with base result",
+  "fit_objective": "Mean four-field exact-match fraction minus 0.01 times actual fit wall seconds; maximize, lower threshold tie break",
+  "parser": "Frozen layout/text rules using recognized text and OCR boxes only; no reference transcription or entity boxes during inference",
+  "normalization": "Uppercase and retain only ASCII letters/digits for company/date/address; decimal numeric normalization for total when parseable",
+  "test_order": "Rotate arm execution order by document index",
+  "metrics": ["exact_match_by_field", "macro_field_exact_match", "all_four_fields_exact_document_rate", "actual_OCR_calls", "whole_wall_seconds", "subprocess_CPU_seconds"],
+  "reference_visibility": "Reference entity dictionary enters scorer only after output JSON and predicted-box PNG are written and independently read back",
+  "input_output": "Real scanned receipts and their corresponding original annotations; no unrelated audio/video pairing",
+  "training": "Only a one-dimensional continuation threshold is fitted; Tesseract model and parser remain frozen",
+  "limits": "OCR and rule-based document information extraction, not a multimodal LLM or complex general image-text reasoning; twelve test documents and normalized merchant groups only",
+  "stopping_rule": "One fixed fit/test collection; retain missing fields, wrong fields, failures and extra-compute regressions without test-set retuning"
+}

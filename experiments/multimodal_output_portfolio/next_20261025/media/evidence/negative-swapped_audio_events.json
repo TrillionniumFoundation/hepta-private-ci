@@ -1,0 +1,280 @@
+{
+  "observation": {
+    "audit_wall_ns": 200751295,
+    "caption_digits": [
+      1,
+      6
+    ],
+    "caption_relation": "less",
+    "clock": {
+      "audio_samples": 32000,
+      "duration_ns": 4000000000,
+      "events": [
+        {
+          "audio_sample": 0,
+          "slot": 0,
+          "time_ns": 0,
+          "video_frame": 0
+        },
+        {
+          "audio_sample": 16000,
+          "slot": 1,
+          "time_ns": 2000000000,
+          "video_frame": 10
+        }
+      ],
+      "sample_rate": 8000,
+      "video_fps": 5,
+      "video_frames": 20
+    },
+    "content_checks": {
+      "audio_rms": [
+        0.06535207020784468,
+        0.10876921790839131
+      ],
+      "distinct_frames_per_event": [
+        10,
+        10
+      ],
+      "moving_video": true,
+      "nonempty_audio": true
+    },
+    "image_digits": [
+      1,
+      6
+    ],
+    "speech": {
+      "cache_hit": true,
+      "clock_boundaries_samples": [
+        0,
+        16000,
+        32000
+      ],
+      "ensemble_rule": "Accept equal nonempty digits or the sole nonempty digit; reject disagreement or two abstentions",
+      "events": [
+        {
+          "actual_event_pcm_sha256": "b738dd08ea3acb0824b888b131a0c523d2ac0b063bb9bbf534587ca201ba31c3",
+          "actual_event_samples": 16000,
+          "cache_hit": true,
+          "cache_manifest_sha256": "1883c9bc8476ae4f016a2cebdea78140c29d522f1767c1e833de37c7ffa862d1",
+          "historical_asr_wall_ns": 4256400328,
+          "observations": {
+            "base.en": {
+              "cpu_ns": 1888316933,
+              "prediction": 6,
+              "segments": [
+                {
+                  "avg_logprob": -0.39345990866422653,
+                  "end": 2.0,
+                  "no_speech_probability": 0.03685658797621727,
+                  "start": 0.0,
+                  "text": " The digit is 6."
+                }
+              ],
+              "transcript": "The digit is 6.",
+              "wall_ns": 1168201504
+            },
+            "small.en": {
+              "cpu_ns": 3747242988,
+              "prediction": 6,
+              "segments": [
+                {
+                  "avg_logprob": -0.47806793451309204,
+                  "end": 2.0,
+                  "no_speech_probability": 0.0036129506770521402,
+                  "start": 0.0,
+                  "text": " The digit is 6."
+                }
+              ],
+              "transcript": "The digit is 6.",
+              "wall_ns": 3088198824
+            }
+          },
+          "predictions": {
+            "base.en": 6,
+            "consensus_or_single_v3": 6,
+            "small.en": 6
+          },
+          "primary_observer": "consensus_or_single_v3",
+          "request_wall_ns": 79017,
+          "target_supplied": false
+        },
+        {
+          "actual_event_pcm_sha256": "59d8a867cd874808cf47a41a09c9d189d1fdecc250a65fce7c16c661c211eff5",
+          "actual_event_samples": 16000,
+          "cache_hit": true,
+          "cache_manifest_sha256": "1883c9bc8476ae4f016a2cebdea78140c29d522f1767c1e833de37c7ffa862d1",
+          "historical_asr_wall_ns": 4230204700,
+          "observations": {
+            "base.en": {
+              "cpu_ns": 1695343943,
+              "prediction": 1,
+              "segments": [
+                {
+                  "avg_logprob": -0.42618027329444885,
+                  "end": 2.0,
+                  "no_speech_probability": 0.022810831665992737,
+                  "start": 0.0,
+                  "text": " The digit is 1."
+                }
+              ],
+              "transcript": "The digit is 1.",
+              "wall_ns": 1004195299
+            },
+            "small.en": {
+              "cpu_ns": 3914933974,
+              "prediction": 1,
+              "segments": [
+                {
+                  "avg_logprob": -0.4605100080370903,
+                  "end": 2.0,
+                  "no_speech_probability": 0.0009881716687232256,
+                  "start": 0.0,
+                  "text": " The digit is one."
+                }
+              ],
+              "transcript": "The digit is one.",
+              "wall_ns": 3226009401
+            }
+          },
+          "predictions": {
+            "base.en": 1,
+            "consensus_or_single_v3": 1,
+            "small.en": 1
+          },
+          "primary_observer": "consensus_or_single_v3",
+          "request_wall_ns": 43554,
+          "target_supplied": false
+        }
+      ],
+      "observer_family_independence_claimed": false,
+      "predictions": {
+        "base.en": [
+          6,
+          1
+        ],
+        "consensus_or_single_v3": [
+          6,
+          1
+        ],
+        "small.en": [
+          6,
+          1
+        ]
+      },
+      "primary_observer": "consensus_or_single_v3",
+      "request_wall_ns": 122571,
+      "secondary_observers": [
+        "base.en",
+        "small.en"
+      ],
+      "target_supplied": false
+    },
+    "target_supplied": false,
+    "video_digits": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6
+    ]
+  },
+  "output": {
+    "all_required_complete": true,
+    "authority": "deny_all",
+    "bindings": {
+      "request_sha256": "0bd1b66cf196b6a3eebaf64f036e22deee29a45043e12202a8066b878ea62ef9",
+      "state_sha256": "70ab1f320f447366940be5a081205faccd75828a514746b3441162c5128837b8"
+    },
+    "clock": {
+      "audio_samples": 32000,
+      "duration_ns": 4000000000,
+      "events": [
+        {
+          "audio_sample": 0,
+          "slot": 0,
+          "time_ns": 0,
+          "video_frame": 0
+        },
+        {
+          "audio_sample": 16000,
+          "slot": 1,
+          "time_ns": 2000000000,
+          "video_frame": 10
+        }
+      ],
+      "sample_rate": 8000,
+      "video_fps": 5,
+      "video_frames": 20
+    },
+    "codec_wall_ns": 76592800,
+    "files": {
+      "audio": {
+        "bytes": 64044,
+        "path": "/tmp/hepta-ndu-next-media-cache/repair-confirmation-001/negative-controls/swapped_audio_events/audio.wav",
+        "sha256": "3515a4db619048fac9869c61516d9002e8ff4d4664ac23e4598955fc3902b1b0"
+      },
+      "image": {
+        "bytes": 745,
+        "path": "/tmp/hepta-ndu-next-media-cache/repair-confirmation-001/negative-controls/swapped_audio_events/image.png",
+        "sha256": "cd00b7b7d9805ec45e3e52353938128b7e19f80c15ef9ff6dc670c6bfe8b7ab6"
+      },
+      "text": {
+        "bytes": 28,
+        "path": "/tmp/hepta-ndu-next-media-cache/repair-confirmation-001/negative-controls/swapped_audio_events/caption.txt",
+        "sha256": "4d2525704c36097218d88643248ee3edb29b23cc883c15a81006415bd88c76de"
+      },
+      "video": {
+        "bytes": 48160,
+        "path": "/tmp/hepta-ndu-next-media-cache/repair-confirmation-001/negative-controls/swapped_audio_events/video.mp4",
+        "sha256": "c9e43b72e803a3aa7d1e22f8e7d4dcb1ee132d81816e0beedcab9af2390647cd"
+      }
+    },
+    "lossless_roundtrip": true,
+    "required_modalities": [
+      "text",
+      "image",
+      "audio",
+      "video"
+    ],
+    "schema": "hepta.closure.four-second-carrier-media.v1",
+    "verification_wall_ns": 169560396
+  },
+  "rejected": true,
+  "score": {
+    "expected_after_observation": [
+      1,
+      6
+    ],
+    "joint_success": false,
+    "primary_observer": "consensus_or_single_v3",
+    "secondary_audio_by_model": {
+      "base.en": false,
+      "small.en": false
+    },
+    "secondary_audio_success": false,
+    "secondary_observer": "base.en",
+    "success": {
+      "audio": false,
+      "image": true,
+      "text": true,
+      "video": true
+    }
+  },
+  "valid_clock_retained": true
+}

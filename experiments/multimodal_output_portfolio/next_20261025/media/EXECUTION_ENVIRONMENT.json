@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.next.media-execution-environment.v1",
+  "recorded_unix_ns": 1792984635794968923,
+  "python_executable": "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "packages": {
+    "torch": "2.14.1+cpu",
+    "numpy": "2.3.5",
+    "Pillow": "12.3.0",
+    "scipy": "1.16.3",
+    "faster-whisper": "1.2.1",
+    "ctranslate2": "4.8.4",
+    "onnxruntime": "1.31.0",
+    "piper-tts": "1.8.0",
+    "vosk": "0.3.45",
+    "soundfile": "0.14.0",
+    "psutil": "7.2.2"
+  },
+  "ffmpeg_version_line": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+  "ffprobe_version_line": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers",
+  "training_threads": 1,
+  "ASR_configuration": {
+    "device": "cpu",
+    "compute_type": "int8",
+    "cpu_threads": 1,
+    "num_workers": 1
+  },
+  "boundary": "Version receipt only; not a complete frozen operating-system or interpreter image. No models are loaded by this receipt."
+}

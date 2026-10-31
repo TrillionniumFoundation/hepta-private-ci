@@ -1,0 +1,1401 @@
+{
+  "archive_environment": {
+    "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/evidence/ARCHIVE_RUNTIME_ENVIRONMENT.json",
+    "sha256": "9f033bc6d08c3edb97fb39ef68f88a2ff1a5bafe8bdf46a3931fb56f7efa6fd4"
+  },
+  "authority": "DENY_ALL",
+  "commands": [
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "pip",
+        "--isolated",
+        "--disable-pip-version-check",
+        "install",
+        "--no-index",
+        "--no-deps",
+        "--no-cache-dir",
+        "--no-compile",
+        "--target",
+        "/tmp/hepta-field-v4-python",
+        "/tmp/hepta-field-v4-public-wheels/torch-2.8.0+cpu-cp312-cp312-manylinux_2_28_x86_64.whl"
+      ],
+      "child_system_seconds": 0.8,
+      "child_user_seconds": 3.73,
+      "label": "install_exact_cpu_torch_from_verified_RAM_wheel",
+      "returncode": 0,
+      "space_after": {
+        "available_nonroot_bytes": 0,
+        "free_all_bytes": 504459264
+      },
+      "space_before": {
+        "available_nonroot_bytes": 0,
+        "free_all_bytes": 1216217088
+      },
+      "space_monitor": {
+        "min_free_all_bytes": 504422400,
+        "samples": 92,
+        "terminated_for_reserve": false
+      },
+      "started_utc": "2026-10-27T15:07:50.212069+00:00",
+      "wall_ns": 4631009676
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "pip",
+        "--isolated",
+        "--disable-pip-version-check",
+        "install",
+        "--no-index",
+        "--no-deps",
+        "--no-cache-dir",
+        "--no-compile",
+        "--target",
+        "/tmp/hepta-field-v4-pinned-dependencies-stage",
+        "/tmp/hepta-field-v4-public-wheels/filelock-3.32.3-py3-none-any.whl",
+        "/tmp/hepta-field-v4-public-wheels/fsspec-2026.7.0-py3-none-any.whl",
+        "/tmp/hepta-field-v4-public-wheels/jinja2-3.1.6-py3-none-any.whl",
+        "/tmp/hepta-field-v4-public-wheels/markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+        "/tmp/hepta-field-v4-public-wheels/mpmath-1.3.0-py3-none-any.whl",
+        "/tmp/hepta-field-v4-public-wheels/networkx-3.6.1-py3-none-any.whl",
+        "/tmp/hepta-field-v4-public-wheels/setuptools-78.1.0-py3-none-any.whl",
+        "/tmp/hepta-field-v4-public-wheels/sympy-1.14.0-py3-none-any.whl",
+        "/tmp/hepta-field-v4-public-wheels/typing_extensions-4.16.0-py3-none-any.whl"
+      ],
+      "child_system_seconds": 0.32999999999999985,
+      "child_user_seconds": 0.7600000000000002,
+      "label": "install_nine_exact_dependencies_from_verified_RAM_wheels",
+      "returncode": 0,
+      "space_after": {
+        "available_nonroot_bytes": 0,
+        "free_all_bytes": 600682496
+      },
+      "space_before": {
+        "available_nonroot_bytes": 0,
+        "free_all_bytes": 650465280
+      },
+      "space_monitor": {
+        "min_free_all_bytes": 600682496,
+        "samples": 21,
+        "terminated_for_reserve": false
+      },
+      "started_utc": "2026-10-27T15:07:57.778823+00:00",
+      "wall_ns": 1104522555
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-c",
+        "\nimport hashlib,json,sys\nfrom pathlib import Path\nfrom importlib import metadata\nimport numpy as np\nimport PIL\nimport torch\nfrom pip._vendor.packaging.requirements import Requirement\nexpected=json.loads(sys.argv[1])\ntorch.set_num_threads(2)\ntorch.set_num_interop_threads(1)\ntorch.manual_seed(0)\nx=np.asarray([[1.,2.],[-1.,3.],[2.,-1.]],dtype=np.float64)\ny=np.asarray([.5,-1.,2.5],dtype=np.float64)\nw=torch.tensor([1.5,-.5],dtype=torch.float64,requires_grad=True)\ntx,ty=torch.from_numpy(x),torch.from_numpy(y)\nloss=((tx@w-ty)**2).mean();loss.backward()\nexpected_grad=2*x.T@(x@w.detach().numpy()-y)/len(y)\ngradient_error=float(np.max(np.abs(w.grad.numpy()-expected_grad)))\nassert gradient_error<1e-12\nbefore=float(loss.detach());opt=torch.optim.SGD([w],lr=.01);opt.step()\nafter=float((((tx@w)-ty)**2).mean().detach());assert after<before\nv=torch.tensor([2.,-3.],dtype=torch.float64,requires_grad=True)\nadam=torch.optim.Adam([v],lr=.01)\nadam_before=float((v*v).sum().detach())\n(v*v).sum().backward();adam.step()\nadam_after=float((v*v).sum().detach());assert adam_after<adam_before\nidentities=[];requirements=[]\nfor name,version in expected.items():\n d=metadata.distribution(name);assert d.version==version,(name,d.version,version)\n files={}\n for basename in ('METADATA','RECORD'):\n  path=Path(d._path)/basename\n  if path.exists():files[basename]={'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'bytes':path.stat().st_size}\n identities.append({'name':name,'version':d.version,'metadata_path':str(d._path),'metadata_files':files})\n for raw in d.requires or []:\n  req=Requirement(raw)\n  if req.marker is not None and not req.marker.evaluate({'extra':''}):continue\n  actual=metadata.version(req.name);assert actual in req.specifier,(name,str(req),actual)\n  requirements.append({'package':name,'requirement':str(req),'satisfied_version':actual})\nassert str(torch.__file__).startswith('/tmp/hepta-field-v4-python/')\nprint('HEPTA_SMOKE_JSON='+json.dumps({'status':'passed','torch':torch.__version__,'numpy':np.__version__,'pillow':PIL.__version__,'torch_path':torch.__file__,'python':sys.version,'device':'cpu','threads':torch.get_num_threads(),'interop_threads':torch.get_num_interop_threads(),'autograd_max_error':gradient_error,'sgd_loss_before':before,'sgd_loss_after':after,'adam_loss_before':adam_before,'adam_loss_after':adam_after,'installed_identities':identities,'required_dependency_checks':requirements,'study_role_or_checkpoint_loads':0},sort_keys=True))\n",
+        "{\"Jinja2\": \"3.1.6\", \"MarkupSafe\": \"3.0.3\", \"filelock\": \"3.32.3\", \"fsspec\": \"2026.7.0\", \"mpmath\": \"1.3.0\", \"networkx\": \"3.6.1\", \"numpy\": \"2.3.5\", \"pillow\": \"12.3.0\", \"setuptools\": \"78.1.0\", \"sympy\": \"1.14.0\", \"torch\": \"2.8.0+cpu\", \"typing_extensions\": \"4.16.0\"}"
+      ],
+      "child_system_seconds": 0.26,
+      "child_user_seconds": 5.98,
+      "label": "synthetic_cpu_autograd_sgd_adam_and_pinned_dependency_smoke",
+      "returncode": 0,
+      "space_after": {
+        "available_nonroot_bytes": 0,
+        "free_all_bytes": 617033728
+      },
+      "space_before": {
+        "available_nonroot_bytes": 0,
+        "free_all_bytes": 617197568
+      },
+      "space_monitor": {
+        "min_free_all_bytes": 616988672,
+        "samples": 126,
+        "terminated_for_reserve": false
+      },
+      "started_utc": "2026-10-27T15:07:59.162856+00:00",
+      "wall_ns": 6365997745
+    }
+  ],
+  "cost_scope": "This restoration script, including public dependency download, install, pruning, smoke, and inventory. Earlier read-only space/index/range/PyPI metadata preflight was separate and not timed here.",
+  "current_space": {
+    "available_nonroot_bytes": 0,
+    "free_all_bytes": 616824832
+  },
+  "dependency_stage_merge": {
+    "method": "same-filesystem rename; preserve and merge bin; no duplicate file overwrite",
+    "moved_entries": [
+      "_distutils_hack",
+      "bin/isympy",
+      "distutils-precedence.pth",
+      "filelock",
+      "filelock-3.32.3.dist-info",
+      "fsspec",
+      "fsspec-2026.7.0.dist-info",
+      "isympy.py",
+      "jinja2",
+      "jinja2-3.1.6.dist-info",
+      "markupsafe",
+      "markupsafe-3.0.3.dist-info",
+      "mpmath",
+      "mpmath-1.3.0.dist-info",
+      "networkx",
+      "networkx-3.6.1.dist-info",
+      "pkg_resources",
+      "setuptools",
+      "setuptools-78.1.0.dist-info",
+      "share",
+      "sympy",
+      "sympy-1.14.0.dist-info",
+      "typing_extensions-4.16.0.dist-info",
+      "typing_extensions.py"
+    ],
+    "stage": "/tmp/hepta-field-v4-pinned-dependencies-stage"
+  },
+  "ended_utc": "2026-10-27T15:08:06.468058+00:00",
+  "failures": [],
+  "final_additional_safety_bytes": 16777216,
+  "final_research_output_reserve_bytes": 600000000,
+  "final_space": {
+    "available_nonroot_bytes": 0,
+    "free_all_bytes": 616824832
+  },
+  "generator_calls": 0,
+  "initial_space": {
+    "available_nonroot_bytes": 0,
+    "free_all_bytes": 1216245760
+  },
+  "installation_plan": {
+    "disk_wheel_bytes": 0,
+    "estimated_final_free_bytes_including_safety": 603480064,
+    "estimated_min_free_bytes_including_safety": 490696704,
+    "no_venv_or_model_artifact_copy": true,
+    "other_dependencies_4k_bytes": 48373760,
+    "other_tests_permitted_prune_4k_bytes": 16142336,
+    "permitted_prune_4k_bytes": 145014784,
+    "shared_existing_exact_dependencies": [
+      "numpy==2.3.5",
+      "pillow==12.3.0"
+    ],
+    "torch_full_4k_bytes": 708751360
+  },
+  "native_owner_integration": false,
+  "native_tick_calls": 0,
+  "network_requests": [
+    {
+      "bytes": 4925,
+      "final_url": "https://pypi.org/pypi/Jinja2/3.1.6/json",
+      "status": 200,
+      "url": "https://pypi.org/pypi/Jinja2/3.1.6/json",
+      "wall_ns": 19994647
+    },
+    {
+      "bytes": 11291,
+      "final_url": "https://pypi.org/pypi/fsspec/2026.7.0/json",
+      "status": 200,
+      "url": "https://pypi.org/pypi/fsspec/2026.7.0/json",
+      "wall_ns": 22085564
+    },
+    {
+      "bytes": 78359,
+      "final_url": "https://pypi.org/pypi/filelock/3.32.3/json",
+      "status": 200,
+      "url": "https://pypi.org/pypi/filelock/3.32.3/json",
+      "wall_ns": 27969711
+    },
+    {
+      "bytes": 80718,
+      "final_url": "https://pypi.org/pypi/MarkupSafe/3.0.3/json",
+      "status": 200,
+      "url": "https://pypi.org/pypi/MarkupSafe/3.0.3/json",
+      "wall_ns": 29972289
+    },
+    {
+      "bytes": 8458,
+      "final_url": "https://pypi.org/pypi/networkx/3.6.1/json",
+      "status": 200,
+      "url": "https://pypi.org/pypi/networkx/3.6.1/json",
+      "wall_ns": 33752075
+    },
+    {
+      "bytes": 10700,
+      "final_url": "https://pypi.org/pypi/mpmath/1.3.0/json",
+      "status": 200,
+      "url": "https://pypi.org/pypi/mpmath/1.3.0/json",
+      "wall_ns": 41688696
+    },
+    {
+      "bytes": 15089,
+      "final_url": "https://pypi.org/pypi/sympy/1.14.0/json",
+      "status": 200,
+      "url": "https://pypi.org/pypi/sympy/1.14.0/json",
+      "wall_ns": 30581036
+    },
+    {
+      "bytes": 18135,
+      "final_url": "https://pypi.org/pypi/setuptools/78.1.0/json",
+      "status": 200,
+      "url": "https://pypi.org/pypi/setuptools/78.1.0/json",
+      "wall_ns": 46207476
+    },
+    {
+      "bytes": 5631,
+      "final_url": "https://pypi.org/pypi/typing_extensions/4.16.0/json",
+      "status": 200,
+      "url": "https://pypi.org/pypi/typing_extensions/4.16.0/json",
+      "wall_ns": 21456515
+    },
+    {
+      "bytes": 414325,
+      "final_url": "https://download.pytorch.org/whl/cpu/torch/",
+      "status": 200,
+      "url": "https://download.pytorch.org/whl/cpu/torch/",
+      "wall_ns": 238790261
+    },
+    {
+      "bytes": 183914597,
+      "final_url": "https://download-r2.pytorch.org/whl/cpu/torch-2.8.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl",
+      "status": 200,
+      "url": "https://download-r2.pytorch.org/whl/cpu/torch-2.8.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl",
+      "wall_ns": 3552960116
+    },
+    {
+      "bytes": 98901,
+      "final_url": "https://files.pythonhosted.org/packages/a7/8e/50f46a9c0ce8d2861a394c1347caae037ea0431d2f67d7feb151cbc4649a/filelock-3.32.3-py3-none-any.whl",
+      "status": 200,
+      "url": "https://files.pythonhosted.org/packages/a7/8e/50f46a9c0ce8d2861a394c1347caae037ea0431d2f67d7feb151cbc4649a/filelock-3.32.3-py3-none-any.whl",
+      "wall_ns": 22881079
+    },
+    {
+      "bytes": 206583,
+      "final_url": "https://files.pythonhosted.org/packages/fd/3c/6a2bf344106328fd04963664a60b9bb6496fc25df8e962fcdc1367285fb9/fsspec-2026.7.0-py3-none-any.whl",
+      "status": 200,
+      "url": "https://files.pythonhosted.org/packages/fd/3c/6a2bf344106328fd04963664a60b9bb6496fc25df8e962fcdc1367285fb9/fsspec-2026.7.0-py3-none-any.whl",
+      "wall_ns": 32247797
+    },
+    {
+      "bytes": 134899,
+      "final_url": "https://files.pythonhosted.org/packages/62/a1/3d680cbfd5f4b8f15abc1d571870c5fc3e594bb582bc3b64ea099db13e56/jinja2-3.1.6-py3-none-any.whl",
+      "status": 200,
+      "url": "https://files.pythonhosted.org/packages/62/a1/3d680cbfd5f4b8f15abc1d571870c5fc3e594bb582bc3b64ea099db13e56/jinja2-3.1.6-py3-none-any.whl",
+      "wall_ns": 37094812
+    },
+    {
+      "bytes": 22947,
+      "final_url": "https://files.pythonhosted.org/packages/3c/2e/8d0c2ab90a8c1d9a24f0399058ab8519a3279d1bd4289511d74e909f060e/markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "status": 200,
+      "url": "https://files.pythonhosted.org/packages/3c/2e/8d0c2ab90a8c1d9a24f0399058ab8519a3279d1bd4289511d74e909f060e/markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "wall_ns": 20743178
+    },
+    {
+      "bytes": 536198,
+      "final_url": "https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl",
+      "status": 200,
+      "url": "https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl",
+      "wall_ns": 35965035
+    },
+    {
+      "bytes": 2068504,
+      "final_url": "https://files.pythonhosted.org/packages/9e/c9/b2622292ea83fbb4ec318f5b9ab867d0a28ab43c5717bb85b0a5f6b3b0a4/networkx-3.6.1-py3-none-any.whl",
+      "status": 200,
+      "url": "https://files.pythonhosted.org/packages/9e/c9/b2622292ea83fbb4ec318f5b9ab867d0a28ab43c5717bb85b0a5f6b3b0a4/networkx-3.6.1-py3-none-any.whl",
+      "wall_ns": 85682535
+    },
+    {
+      "bytes": 1256108,
+      "final_url": "https://files.pythonhosted.org/packages/54/21/f43f0a1fa8b06b32812e0975981f4677d28e0f3271601dc88ac5a5b83220/setuptools-78.1.0-py3-none-any.whl",
+      "status": 200,
+      "url": "https://files.pythonhosted.org/packages/54/21/f43f0a1fa8b06b32812e0975981f4677d28e0f3271601dc88ac5a5b83220/setuptools-78.1.0-py3-none-any.whl",
+      "wall_ns": 55334556
+    },
+    {
+      "bytes": 6299353,
+      "final_url": "https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl",
+      "status": 200,
+      "url": "https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl",
+      "wall_ns": 171762955
+    },
+    {
+      "bytes": 45571,
+      "final_url": "https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0393375b75ea13866d9c66727e54c2fc80/typing_extensions-4.16.0-py3-none-any.whl",
+      "status": 200,
+      "url": "https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0393375b75ea13866d9c66727e54c2fc80/typing_extensions-4.16.0-py3-none-any.whl",
+      "wall_ns": 18015637
+    }
+  ],
+  "new_study_roles_accessed": [],
+  "observer_calls": 0,
+  "permitted_dependency_test_pruning": {
+    "per_file_manifest": {
+      "bytes": 56732,
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/ENVIRONMENT_PRUNED_DEPENDENCY_TESTS.json.gz",
+      "sha256": "1d78995dd9da6a248a9fcfd9cf5e24edd778d5c8f6457c62ffb154a760f18fd1",
+      "uncompressed_bytes": 189040,
+      "uncompressed_sha256": "dddc35b97fb9e06b108b1b6c8e6d3be3c5265a0b0f7af4a2224d3f88212bb9c5"
+    },
+    "roots": [
+      {
+        "bytes": 79806,
+        "files": 8,
+        "path": "/tmp/hepta-field-v4-python/fsspec/tests"
+      },
+      {
+        "bytes": 435217,
+        "files": 36,
+        "path": "/tmp/hepta-field-v4-python/mpmath/tests"
+      },
+      {
+        "bytes": 87215,
+        "files": 15,
+        "path": "/tmp/hepta-field-v4-python/networkx/algorithms/approximation/tests"
+      },
+      {
+        "bytes": 26441,
+        "files": 7,
+        "path": "/tmp/hepta-field-v4-python/networkx/algorithms/assortativity/tests"
+      },
+      {
+        "bytes": 85911,
+        "files": 14,
+        "path": "/tmp/hepta-field-v4-python/networkx/algorithms/bipartite/tests"
+      },
+      {
+        "bytes": 149011,
+        "files": 21,
+        "path": "/tmp/hepta-field-v4-python/networkx/algorithms/centrality/tests"
+      },
+      {
+        "bytes": 23697,
+        "files": 2,
+        "path": "/tmp/hepta-field-v4-python/networkx/algorithms/coloring/tests"
+      },
+      {
+        "bytes": 60388,
+        "files": 14,
+        "path": "/tmp/hepta-field-v4-python/networkx/algorithms/community/tests"
+      },
+      {
+        "bytes": 23990,
+        "files": 7,
+        "path": "/tmp/hepta-field-v4-python/networkx/algorithms/components/tests"
+      },
+      {
+        "bytes": 87226,
+        "files": 9,
+        "path": "/tmp/hepta-field-v4-python/networkx/algorithms/connectivity/tests"
+      },
+      {
+        "bytes": 253966,
+        "files": 10,
+        "path": "/tmp/hepta-field-v4-python/networkx/algorithms/flow/tests"
+      },
+      {
+        "bytes": 212451,
+        "files": 14,
+        "path": "/tmp/hepta-field-v4-python/networkx/algorithms/isomorphism/tests"
+      },
+      {
+        "bytes": 9828,
+        "files": 3,
+        "path": "/tmp/hepta-field-v4-python/networkx/algorithms/link_analysis/tests"
+      },
+      {
+        "bytes": 17674,
+        "files": 1,
+        "path": "/tmp/hepta-field-v4-python/networkx/algorithms/minors/tests"
+      },
+      {
+        "bytes": 37040,
+        "files": 5,
+        "path": "/tmp/hepta-field-v4-python/networkx/algorithms/operators/tests"
+      },
+      {
+        "bytes": 80025,
+        "files": 7,
+        "path": "/tmp/hepta-field-v4-python/networkx/algorithms/shortest_paths/tests"
+      },
+      {
+        "bytes": 503467,
+        "files": 58,
+        "path": "/tmp/hepta-field-v4-python/networkx/algorithms/tests"
+      },
+      {
+        "bytes": 27404,
+        "files": 6,
+        "path": "/tmp/hepta-field-v4-python/networkx/algorithms/traversal/tests"
+      },
+      {
+        "bytes": 65804,
+        "files": 8,
+        "path": "/tmp/hepta-field-v4-python/networkx/algorithms/tree/tests"
+      },
+      {
+        "bytes": 230250,
+        "files": 16,
+        "path": "/tmp/hepta-field-v4-python/networkx/classes/tests"
+      },
+      {
+        "bytes": 398520,
+        "files": 13,
+        "path": "/tmp/hepta-field-v4-python/networkx/drawing/tests"
+      },
+      {
+        "bytes": 172601,
+        "files": 29,
+        "path": "/tmp/hepta-field-v4-python/networkx/generators/tests"
+      },
+      {
+        "bytes": 46269,
+        "files": 8,
+        "path": "/tmp/hepta-field-v4-python/networkx/linalg/tests"
+      },
+      {
+        "bytes": 9216,
+        "files": 5,
+        "path": "/tmp/hepta-field-v4-python/networkx/readwrite/json_graph/tests"
+      },
+      {
+        "bytes": 207878,
+        "files": 12,
+        "path": "/tmp/hepta-field-v4-python/networkx/readwrite/tests"
+      },
+      {
+        "bytes": 82607,
+        "files": 11,
+        "path": "/tmp/hepta-field-v4-python/networkx/tests"
+      },
+      {
+        "bytes": 60446,
+        "files": 11,
+        "path": "/tmp/hepta-field-v4-python/networkx/utils/tests"
+      },
+      {
+        "bytes": 23292,
+        "files": 5,
+        "path": "/tmp/hepta-field-v4-python/setuptools/_distutils/compilers/C/tests"
+      },
+      {
+        "bytes": 191025,
+        "files": 38,
+        "path": "/tmp/hepta-field-v4-python/setuptools/_distutils/tests"
+      },
+      {
+        "bytes": 553167,
+        "files": 64,
+        "path": "/tmp/hepta-field-v4-python/setuptools/tests"
+      },
+      {
+        "bytes": 16809,
+        "files": 2,
+        "path": "/tmp/hepta-field-v4-python/sympy/algebras/tests"
+      },
+      {
+        "bytes": 153229,
+        "files": 10,
+        "path": "/tmp/hepta-field-v4-python/sympy/assumptions/tests"
+      },
+      {
+        "bytes": 45377,
+        "files": 6,
+        "path": "/tmp/hepta-field-v4-python/sympy/calculus/tests"
+      },
+      {
+        "bytes": 33615,
+        "files": 3,
+        "path": "/tmp/hepta-field-v4-python/sympy/categories/tests"
+      },
+      {
+        "bytes": 70717,
+        "files": 16,
+        "path": "/tmp/hepta-field-v4-python/sympy/codegen/tests"
+      },
+      {
+        "bytes": 176588,
+        "files": 23,
+        "path": "/tmp/hepta-field-v4-python/sympy/combinatorics/tests"
+      },
+      {
+        "bytes": 116137,
+        "files": 6,
+        "path": "/tmp/hepta-field-v4-python/sympy/concrete/tests"
+      },
+      {
+        "bytes": 842116,
+        "files": 41,
+        "path": "/tmp/hepta-field-v4-python/sympy/core/tests"
+      },
+      {
+        "bytes": 19758,
+        "files": 2,
+        "path": "/tmp/hepta-field-v4-python/sympy/crypto/tests"
+      },
+      {
+        "bytes": 23045,
+        "files": 5,
+        "path": "/tmp/hepta-field-v4-python/sympy/diffgeom/tests"
+      },
+      {
+        "bytes": 26421,
+        "files": 4,
+        "path": "/tmp/hepta-field-v4-python/sympy/discrete/tests"
+      },
+      {
+        "bytes": 50289,
+        "files": 9,
+        "path": "/tmp/hepta-field-v4-python/sympy/external/tests"
+      },
+      {
+        "bytes": 73910,
+        "files": 3,
+        "path": "/tmp/hepta-field-v4-python/sympy/functions/combinatorial/tests"
+      },
+      {
+        "bytes": 316790,
+        "files": 9,
+        "path": "/tmp/hepta-field-v4-python/sympy/functions/elementary/tests"
+      },
+      {
+        "bytes": 189562,
+        "files": 15,
+        "path": "/tmp/hepta-field-v4-python/sympy/functions/special/tests"
+      },
+      {
+        "bytes": 144580,
+        "files": 11,
+        "path": "/tmp/hepta-field-v4-python/sympy/geometry/tests"
+      },
+      {
+        "bytes": 36675,
+        "files": 3,
+        "path": "/tmp/hepta-field-v4-python/sympy/holonomic/tests"
+      },
+      {
+        "bytes": 372300,
+        "files": 18,
+        "path": "/tmp/hepta-field-v4-python/sympy/integrals/tests"
+      },
+      {
+        "bytes": 12282,
+        "files": 3,
+        "path": "/tmp/hepta-field-v4-python/sympy/interactive/tests"
+      },
+      {
+        "bytes": 9233,
+        "files": 13,
+        "path": "/tmp/hepta-field-v4-python/sympy/liealgebras/tests"
+      },
+      {
+        "bytes": 86584,
+        "files": 5,
+        "path": "/tmp/hepta-field-v4-python/sympy/logic/tests"
+      },
+      {
+        "bytes": 130232,
+        "files": 26,
+        "path": "/tmp/hepta-field-v4-python/sympy/matrices/expressions/tests"
+      },
+      {
+        "bytes": 505845,
+        "files": 18,
+        "path": "/tmp/hepta-field-v4-python/sympy/matrices/tests"
+      },
+      {
+        "bytes": 12062,
+        "files": 4,
+        "path": "/tmp/hepta-field-v4-python/sympy/multipledispatch/tests"
+      },
+      {
+        "bytes": 92424,
+        "files": 16,
+        "path": "/tmp/hepta-field-v4-python/sympy/ntheory/tests"
+      },
+      {
+        "bytes": 266327,
+        "files": 14,
+        "path": "/tmp/hepta-field-v4-python/sympy/parsing/tests"
+      },
+      {
+        "bytes": 123423,
+        "files": 5,
+        "path": "/tmp/hepta-field-v4-python/sympy/physics/biomechanics/tests"
+      },
+      {
+        "bytes": 51757,
+        "files": 5,
+        "path": "/tmp/hepta-field-v4-python/sympy/physics/continuum_mechanics/tests"
+      },
+      {
+        "bytes": 120942,
+        "files": 3,
+        "path": "/tmp/hepta-field-v4-python/sympy/physics/control/tests"
+      },
+      {
+        "bytes": 14722,
+        "files": 2,
+        "path": "/tmp/hepta-field-v4-python/sympy/physics/hep/tests"
+      },
+      {
+        "bytes": 325931,
+        "files": 25,
+        "path": "/tmp/hepta-field-v4-python/sympy/physics/mechanics/tests"
+      },
+      {
+        "bytes": 20971,
+        "files": 6,
+        "path": "/tmp/hepta-field-v4-python/sympy/physics/optics/tests"
+      },
+      {
+        "bytes": 540926,
+        "files": 38,
+        "path": "/tmp/hepta-field-v4-python/sympy/physics/quantum/tests"
+      },
+      {
+        "bytes": 72463,
+        "files": 9,
+        "path": "/tmp/hepta-field-v4-python/sympy/physics/tests"
+      },
+      {
+        "bytes": 46617,
+        "files": 8,
+        "path": "/tmp/hepta-field-v4-python/sympy/physics/units/tests"
+      },
+      {
+        "bytes": 97111,
+        "files": 9,
+        "path": "/tmp/hepta-field-v4-python/sympy/physics/vector/tests"
+      },
+      {
+        "bytes": 23112,
+        "files": 4,
+        "path": "/tmp/hepta-field-v4-python/sympy/plotting/intervalmath/tests"
+      },
+      {
+        "bytes": 2720,
+        "files": 2,
+        "path": "/tmp/hepta-field-v4-python/sympy/plotting/pygletplot/tests"
+      },
+      {
+        "bytes": 172758,
+        "files": 11,
+        "path": "/tmp/hepta-field-v4-python/sympy/plotting/tests"
+      },
+      {
+        "bytes": 28019,
+        "files": 5,
+        "path": "/tmp/hepta-field-v4-python/sympy/polys/agca/tests"
+      },
+      {
+        "bytes": 55382,
+        "files": 4,
+        "path": "/tmp/hepta-field-v4-python/sympy/polys/domains/tests"
+      },
+      {
+        "bytes": 186646,
+        "files": 15,
+        "path": "/tmp/hepta-field-v4-python/sympy/polys/matrices/tests"
+      },
+      {
+        "bytes": 87861,
+        "files": 9,
+        "path": "/tmp/hepta-field-v4-python/sympy/polys/numberfields/tests"
+      },
+      {
+        "bytes": 670670,
+        "files": 40,
+        "path": "/tmp/hepta-field-v4-python/sympy/polys/tests"
+      },
+      {
+        "bytes": 187716,
+        "files": 2,
+        "path": "/tmp/hepta-field-v4-python/sympy/printing/pretty/tests"
+      },
+      {
+        "bytes": 678058,
+        "files": 36,
+        "path": "/tmp/hepta-field-v4-python/sympy/printing/tests"
+      },
+      {
+        "bytes": 1179,
+        "files": 2,
+        "path": "/tmp/hepta-field-v4-python/sympy/sandbox/tests"
+      },
+      {
+        "bytes": 178021,
+        "files": 16,
+        "path": "/tmp/hepta-field-v4-python/sympy/series/tests"
+      },
+      {
+        "bytes": 155652,
+        "files": 8,
+        "path": "/tmp/hepta-field-v4-python/sympy/sets/tests"
+      },
+      {
+        "bytes": 213421,
+        "files": 16,
+        "path": "/tmp/hepta-field-v4-python/sympy/simplify/tests"
+      },
+      {
+        "bytes": 43335,
+        "files": 2,
+        "path": "/tmp/hepta-field-v4-python/sympy/solvers/diophantine/tests"
+      },
+      {
+        "bytes": 324930,
+        "files": 7,
+        "path": "/tmp/hepta-field-v4-python/sympy/solvers/ode/tests"
+      },
+      {
+        "bytes": 338632,
+        "files": 11,
+        "path": "/tmp/hepta-field-v4-python/sympy/solvers/tests"
+      },
+      {
+        "bytes": 12129,
+        "files": 4,
+        "path": "/tmp/hepta-field-v4-python/sympy/stats/sampling/tests"
+      },
+      {
+        "bytes": 200582,
+        "files": 14,
+        "path": "/tmp/hepta-field-v4-python/sympy/stats/tests"
+      },
+      {
+        "bytes": 4510,
+        "files": 4,
+        "path": "/tmp/hepta-field-v4-python/sympy/strategies/branch/tests"
+      },
+      {
+        "bytes": 9458,
+        "files": 6,
+        "path": "/tmp/hepta-field-v4-python/sympy/strategies/tests"
+      },
+      {
+        "bytes": 82537,
+        "files": 9,
+        "path": "/tmp/hepta-field-v4-python/sympy/tensor/array/expressions/tests"
+      },
+      {
+        "bytes": 63747,
+        "files": 8,
+        "path": "/tmp/hepta-field-v4-python/sympy/tensor/array/tests"
+      },
+      {
+        "bytes": 125574,
+        "files": 8,
+        "path": "/tmp/hepta-field-v4-python/sympy/tensor/tests"
+      },
+      {
+        "bytes": 43225,
+        "files": 7,
+        "path": "/tmp/hepta-field-v4-python/sympy/testing/tests"
+      },
+      {
+        "bytes": 10953,
+        "files": 4,
+        "path": "/tmp/hepta-field-v4-python/sympy/unify/tests"
+      },
+      {
+        "bytes": 3189,
+        "files": 2,
+        "path": "/tmp/hepta-field-v4-python/sympy/utilities/_compilation/tests"
+      },
+      {
+        "bytes": 369004,
+        "files": 20,
+        "path": "/tmp/hepta-field-v4-python/sympy/utilities/tests"
+      },
+      {
+        "bytes": 79371,
+        "files": 11,
+        "path": "/tmp/hepta-field-v4-python/sympy/vector/tests"
+      }
+    ],
+    "scope": "Only directories literally named tests under fsspec/mpmath/networkx/setuptools/sympy; sympy/testing and all runtime modules retained"
+  },
+  "permitted_public_pruning": {
+    "bin_subtree_deleted": false,
+    "per_file_manifest": {
+      "bytes": 465547,
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/ENVIRONMENT_PRUNED_PUBLIC_FILES.json.gz",
+      "sha256": "b9a307cd98be1bd0229bd3f1105b9faa0a72216c853e4ee71d1b7246928ccbe3",
+      "uncompressed_bytes": 1637211,
+      "uncompressed_sha256": "47e95ff89e66919a1bd4dc50b8d5c24106955492957a237964c96fa0e7331ddb"
+    },
+    "roots": [
+      {
+        "allocated_file_bytes": 82604032,
+        "file_bytes": 82403984,
+        "files": 108,
+        "path": "/tmp/hepta-field-v4-python/torch/test"
+      },
+      {
+        "allocated_file_bytes": 62410752,
+        "file_bytes": 36950431,
+        "files": 9269,
+        "path": "/tmp/hepta-field-v4-python/torch/include"
+      }
+    ],
+    "space_after": {
+      "available_nonroot_bytes": 0,
+      "free_all_bytes": 650932224
+    },
+    "space_before": {
+      "available_nonroot_bytes": 0,
+      "free_all_bytes": 504459264
+    },
+    "torch_shm_manager": {
+      "path": "/tmp/hepta-field-v4-python/torch/bin/torch_shm_manager",
+      "preserved": true,
+      "sha256": "0367778007efe341d4948c56e3d53b2b662966a0463c5f48c3fd0796ccdf254f"
+    }
+  },
+  "pinned_environment": {
+    "atomic_archive_publication_requires": "Linux glibc renameat2(RENAME_NOREPLACE)",
+    "interop_threads": 1,
+    "machine": "x86_64",
+    "native_library_sha256": "253fb6a5d2115283148f99c83007363aa09ef3c66dcaf51e172563b0891d2a00",
+    "numpy": "2.3.5",
+    "openblas_threads": 1,
+    "pillow": "12.3.0",
+    "platform": "linux",
+    "python": "3.12.14",
+    "runtime_canonical_torch_threads": 1,
+    "runtime_package_versions": [
+      {
+        "name": "filelock",
+        "version": "3.32.3"
+      },
+      {
+        "name": "fsspec",
+        "version": "2026.7.0"
+      },
+      {
+        "name": "Jinja2",
+        "version": "3.1.6"
+      },
+      {
+        "name": "MarkupSafe",
+        "version": "3.0.3"
+      },
+      {
+        "name": "mpmath",
+        "version": "1.3.0"
+      },
+      {
+        "name": "networkx",
+        "version": "3.6.1"
+      },
+      {
+        "name": "setuptools",
+        "version": "78.1.0"
+      },
+      {
+        "name": "sympy",
+        "version": "1.14.0"
+      },
+      {
+        "name": "torch",
+        "version": "2.8.0+cpu"
+      },
+      {
+        "name": "typing_extensions",
+        "version": "4.16.0"
+      }
+    ],
+    "schema": "hepta.field-bridge.v3.archive-runtime-environment.1",
+    "scope": "Dependency identity only; no fresh scientific execution, no qualification or production authority change",
+    "statistical_restore_model_native_network_calls": 0,
+    "statistical_restore_requires": [
+      "Python 3.12",
+      "NumPy 2.3.5"
+    ],
+    "torch": "2.8.0+cpu",
+    "training_torch_threads": 2
+  },
+  "preflight_external_to_timing": {
+    "install_attempts": 0,
+    "mem_available_observed_kib": 4217248,
+    "result": "Ordinary disk wheel+expanded torch would leave about 245MB; rejected before installation.",
+    "torch_expanded_4k_estimate_bytes": 708751360,
+    "torch_official_wheel_bytes": 183914597,
+    "torch_test_include_4k_estimate_bytes": 145014784
+  },
+  "public_sources": [
+    {
+      "dependency_tests_4k_estimate_bytes": 0,
+      "disk_wheel_bytes": 0,
+      "expected_bytes": 183914597,
+      "filename": "torch-2.8.0+cpu-cp312-cp312-manylinux_2_28_x86_64.whl",
+      "final_download_url": "https://download-r2.pytorch.org/whl/cpu/torch-2.8.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl",
+      "index": "https://download.pytorch.org/whl/cpu/torch/",
+      "inventory": {
+        "entries": 12201,
+        "expanded_4k_estimate_bytes": 708751360,
+        "expanded_bytes": 677971949
+      },
+      "memory_wheel_verified": true,
+      "name": "torch",
+      "permitted_prune": {
+        "torch/include/": {
+          "entries": 9522,
+          "expanded_4k_estimate_bytes": 62410752,
+          "expanded_bytes": 36950431
+        },
+        "torch/test/": {
+          "entries": 109,
+          "expanded_4k_estimate_bytes": 82604032,
+          "expanded_bytes": 82403984
+        }
+      },
+      "sha256": "cb9a8ba8137ab24e36bf1742cb79a1294bd374db570f09fc15a5e1318160db4e",
+      "url": "https://download-r2.pytorch.org/whl/cpu/torch-2.8.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl",
+      "version": "2.8.0+cpu",
+      "wheel_storage": "anonymous RAM memfd; temporary public filename symlink only"
+    },
+    {
+      "dependency_tests_4k_estimate_bytes": 0,
+      "disk_wheel_bytes": 0,
+      "expected_bytes": 98901,
+      "filename": "filelock-3.32.3-py3-none-any.whl",
+      "final_download_url": "https://files.pythonhosted.org/packages/a7/8e/50f46a9c0ce8d2861a394c1347caae037ea0431d2f67d7feb151cbc4649a/filelock-3.32.3-py3-none-any.whl",
+      "index": "https://pypi.org/pypi/filelock/3.32.3/json",
+      "inventory": {
+        "entries": 26,
+        "expanded_4k_estimate_bytes": 413696,
+        "expanded_bytes": 351999
+      },
+      "memory_wheel_verified": true,
+      "name": "filelock",
+      "sha256": "7f0ca4bcc0e181c60dbbd8aa9ab5b120ebb99e4e064e83636340056f833a1f09",
+      "url": "https://files.pythonhosted.org/packages/a7/8e/50f46a9c0ce8d2861a394c1347caae037ea0431d2f67d7feb151cbc4649a/filelock-3.32.3-py3-none-any.whl",
+      "version": "3.32.3",
+      "wheel_storage": "anonymous RAM memfd; temporary public filename symlink only"
+    },
+    {
+      "dependency_tests_4k_estimate_bytes": 102400,
+      "disk_wheel_bytes": 0,
+      "expected_bytes": 206583,
+      "filename": "fsspec-2026.7.0-py3-none-any.whl",
+      "final_download_url": "https://files.pythonhosted.org/packages/fd/3c/6a2bf344106328fd04963664a60b9bb6496fc25df8e962fcdc1367285fb9/fsspec-2026.7.0-py3-none-any.whl",
+      "index": "https://pypi.org/pypi/fsspec/2026.7.0/json",
+      "inventory": {
+        "entries": 61,
+        "expanded_4k_estimate_bytes": 892928,
+        "expanded_bytes": 752431
+      },
+      "memory_wheel_verified": true,
+      "name": "fsspec",
+      "sha256": "b57ddbafedfaef7018c1ecab32aa200a9d7ca26b77965f64e48b70061249d279",
+      "url": "https://files.pythonhosted.org/packages/fd/3c/6a2bf344106328fd04963664a60b9bb6496fc25df8e962fcdc1367285fb9/fsspec-2026.7.0-py3-none-any.whl",
+      "version": "2026.7.0",
+      "wheel_storage": "anonymous RAM memfd; temporary public filename symlink only"
+    },
+    {
+      "dependency_tests_4k_estimate_bytes": 0,
+      "disk_wheel_bytes": 0,
+      "expected_bytes": 134899,
+      "filename": "jinja2-3.1.6-py3-none-any.whl",
+      "final_download_url": "https://files.pythonhosted.org/packages/62/a1/3d680cbfd5f4b8f15abc1d571870c5fc3e594bb582bc3b64ea099db13e56/jinja2-3.1.6-py3-none-any.whl",
+      "index": "https://pypi.org/pypi/Jinja2/3.1.6/json",
+      "inventory": {
+        "entries": 31,
+        "expanded_4k_estimate_bytes": 565248,
+        "expanded_bytes": 496892
+      },
+      "memory_wheel_verified": true,
+      "name": "Jinja2",
+      "sha256": "85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67",
+      "url": "https://files.pythonhosted.org/packages/62/a1/3d680cbfd5f4b8f15abc1d571870c5fc3e594bb582bc3b64ea099db13e56/jinja2-3.1.6-py3-none-any.whl",
+      "version": "3.1.6",
+      "wheel_storage": "anonymous RAM memfd; temporary public filename symlink only"
+    },
+    {
+      "dependency_tests_4k_estimate_bytes": 0,
+      "disk_wheel_bytes": 0,
+      "expected_bytes": 22947,
+      "filename": "markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "final_download_url": "https://files.pythonhosted.org/packages/3c/2e/8d0c2ab90a8c1d9a24f0399058ab8519a3279d1bd4289511d74e909f060e/markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "index": "https://pypi.org/pypi/MarkupSafe/3.0.3/json",
+      "inventory": {
+        "entries": 14,
+        "expanded_4k_estimate_bytes": 98304,
+        "expanded_bytes": 67188
+      },
+      "memory_wheel_verified": true,
+      "name": "MarkupSafe",
+      "sha256": "d6dd0be5b5b189d31db7cda48b91d7e0a9795f31430b7f271219ab30f1d3ac9d",
+      "url": "https://files.pythonhosted.org/packages/3c/2e/8d0c2ab90a8c1d9a24f0399058ab8519a3279d1bd4289511d74e909f060e/markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "version": "3.0.3",
+      "wheel_storage": "anonymous RAM memfd; temporary public filename symlink only"
+    },
+    {
+      "dependency_tests_4k_estimate_bytes": 507904,
+      "disk_wheel_bytes": 0,
+      "expected_bytes": 536198,
+      "filename": "mpmath-1.3.0-py3-none-any.whl",
+      "final_download_url": "https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl",
+      "index": "https://pypi.org/pypi/mpmath/1.3.0/json",
+      "inventory": {
+        "entries": 92,
+        "expanded_4k_estimate_bytes": 2142208,
+        "expanded_bytes": 1950197
+      },
+      "memory_wheel_verified": true,
+      "name": "mpmath",
+      "sha256": "a0b2b9fe80bbcd81a6647ff13108738cfb482d481d826cc0e02f5b35e5c88d2c",
+      "url": "https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl",
+      "version": "1.3.0",
+      "wheel_storage": "anonymous RAM memfd; temporary public filename symlink only"
+    },
+    {
+      "dependency_tests_4k_estimate_bytes": 3579904,
+      "disk_wheel_bytes": 0,
+      "expected_bytes": 2068504,
+      "filename": "networkx-3.6.1-py3-none-any.whl",
+      "final_download_url": "https://files.pythonhosted.org/packages/9e/c9/b2622292ea83fbb4ec318f5b9ab867d0a28ab43c5717bb85b0a5f6b3b0a4/networkx-3.6.1-py3-none-any.whl",
+      "index": "https://pypi.org/pypi/networkx/3.6.1/json",
+      "inventory": {
+        "entries": 601,
+        "expanded_4k_estimate_bytes": 8294400,
+        "expanded_bytes": 7038619
+      },
+      "memory_wheel_verified": true,
+      "name": "networkx",
+      "sha256": "d47fbf302e7d9cbbb9e2555a0d267983d2aa476bac30e90dfbe5669bd57f3762",
+      "url": "https://files.pythonhosted.org/packages/9e/c9/b2622292ea83fbb4ec318f5b9ab867d0a28ab43c5717bb85b0a5f6b3b0a4/networkx-3.6.1-py3-none-any.whl",
+      "version": "3.6.1",
+      "wheel_storage": "anonymous RAM memfd; temporary public filename symlink only"
+    },
+    {
+      "dependency_tests_4k_estimate_bytes": 1007616,
+      "disk_wheel_bytes": 0,
+      "expected_bytes": 1256108,
+      "filename": "setuptools-78.1.0-py3-none-any.whl",
+      "final_download_url": "https://files.pythonhosted.org/packages/54/21/f43f0a1fa8b06b32812e0975981f4677d28e0f3271601dc88ac5a5b83220/setuptools-78.1.0-py3-none-any.whl",
+      "index": "https://pypi.org/pypi/setuptools/78.1.0/json",
+      "inventory": {
+        "entries": 514,
+        "expanded_4k_estimate_bytes": 5591040,
+        "expanded_bytes": 4345694
+      },
+      "memory_wheel_verified": true,
+      "name": "setuptools",
+      "sha256": "3e386e96793c8702ae83d17b853fb93d3e09ef82ec62722e61da5cd22376dcd8",
+      "url": "https://files.pythonhosted.org/packages/54/21/f43f0a1fa8b06b32812e0975981f4677d28e0f3271601dc88ac5a5b83220/setuptools-78.1.0-py3-none-any.whl",
+      "version": "78.1.0",
+      "wheel_storage": "anonymous RAM memfd; temporary public filename symlink only"
+    },
+    {
+      "dependency_tests_4k_estimate_bytes": 10944512,
+      "disk_wheel_bytes": 0,
+      "expected_bytes": 6299353,
+      "filename": "sympy-1.14.0-py3-none-any.whl",
+      "final_download_url": "https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl",
+      "index": "https://pypi.org/pypi/sympy/1.14.0/json",
+      "inventory": {
+        "entries": 1570,
+        "expanded_4k_estimate_bytes": 30179328,
+        "expanded_bytes": 26841861
+      },
+      "memory_wheel_verified": true,
+      "name": "sympy",
+      "sha256": "e091cc3e99d2141a0ba2847328f5479b05d94a6635cb96148ccb3f34671bd8f5",
+      "url": "https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl",
+      "version": "1.14.0",
+      "wheel_storage": "anonymous RAM memfd; temporary public filename symlink only"
+    },
+    {
+      "dependency_tests_4k_estimate_bytes": 0,
+      "disk_wheel_bytes": 0,
+      "expected_bytes": 45571,
+      "filename": "typing_extensions-4.16.0-py3-none-any.whl",
+      "final_download_url": "https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0393375b75ea13866d9c66727e54c2fc80/typing_extensions-4.16.0-py3-none-any.whl",
+      "index": "https://pypi.org/pypi/typing_extensions/4.16.0/json",
+      "inventory": {
+        "entries": 5,
+        "expanded_4k_estimate_bytes": 196608,
+        "expanded_bytes": 182767
+      },
+      "memory_wheel_verified": true,
+      "name": "typing_extensions",
+      "sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8",
+      "url": "https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0393375b75ea13866d9c66727e54c2fc80/typing_extensions-4.16.0-py3-none-any.whl",
+      "version": "4.16.0",
+      "wheel_storage": "anonymous RAM memfd; temporary public filename symlink only"
+    }
+  ],
+  "remaining_installation": {
+    "allocated_file_bytes": 596054016,
+    "bytecode_compilation_requested": false,
+    "file_bytes": 586811024,
+    "files": 4034,
+    "per_file_manifest": {
+      "bytes": 205572,
+      "path": "/workspace/scratch/9b2cd2b58376/bridge_repo/experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/ENVIRONMENT_REMAINING_FILES.json.gz",
+      "sha256": "4f2fe6fb0b3aa61e97d28b8dbf860f6e8bd542bfd4ff1355c27a5b1bb7118e98",
+      "uncompressed_bytes": 650234,
+      "uncompressed_sha256": "eb1cfa0d8feeefbcf0dc8f65bb6b22408a9d24b3bd5de4a22eb6de9751f3ff32"
+    }
+  },
+  "requires_calibration": true,
+  "reserve_bytes": 350000000,
+  "schema": "hepta.field-bridge.v4.environment-restoration.1",
+  "scientific_gate_changed": false,
+  "script_cpu_ns": 3712364072,
+  "smoke": {
+    "adam_loss_after": 12.900200000199167,
+    "adam_loss_before": 13.0,
+    "autograd_max_error": 0.0,
+    "device": "cpu",
+    "installed_identities": [
+      {
+        "metadata_files": {
+          "METADATA": {
+            "bytes": 2871,
+            "sha256": "68c5548fb67c4132a13898d9b31ec50c6bea2abdd915d921f214355c3a6499c8"
+          },
+          "RECORD": {
+            "bytes": 2640,
+            "sha256": "a4113a97eb43e55aa78976b68077bd0bb8e79583198cec9c32d8ddb2ed0e584b"
+          }
+        },
+        "metadata_path": "/tmp/hepta-field-v4-python/jinja2-3.1.6.dist-info",
+        "name": "Jinja2",
+        "version": "3.1.6"
+      },
+      {
+        "metadata_files": {
+          "METADATA": {
+            "bytes": 2690,
+            "sha256": "12b4cc61a7fa288cf7667ee3f213786d9619db57fb33ff6f934afbcb5c12ec81"
+          },
+          "RECORD": {
+            "bytes": 1205,
+            "sha256": "39b9fa46e7530b6f02ab0a8840e20c3d5d2724e08ee2227ebfb68ed5a95c3429"
+          }
+        },
+        "metadata_path": "/tmp/hepta-field-v4-python/markupsafe-3.0.3.dist-info",
+        "name": "MarkupSafe",
+        "version": "3.0.3"
+      },
+      {
+        "metadata_files": {
+          "METADATA": {
+            "bytes": 2028,
+            "sha256": "2d80f43bd905689145c00b3133bc95895d654ced70a96a1802e9237e0d66599f"
+          },
+          "RECORD": {
+            "bytes": 2331,
+            "sha256": "81313c3ab46092d03ed86a2f86f1267910adc87552a6bf3ad2942529a3960039"
+          }
+        },
+        "metadata_path": "/tmp/hepta-field-v4-python/filelock-3.32.3.dist-info",
+        "name": "filelock",
+        "version": "3.32.3"
+      },
+      {
+        "metadata_files": {
+          "METADATA": {
+            "bytes": 10561,
+            "sha256": "88b1657585de14e3bb82aa5278aa9595b30aa4ca74ead073d8950615c808099d"
+          },
+          "RECORD": {
+            "bytes": 5391,
+            "sha256": "8b611204096842b4e6e2d2ce6ce0c1730956d739cab8865d645c3854061c294f"
+          }
+        },
+        "metadata_path": "/tmp/hepta-field-v4-python/fsspec-2026.7.0.dist-info",
+        "name": "fsspec",
+        "version": "2026.7.0"
+      },
+      {
+        "metadata_files": {
+          "METADATA": {
+            "bytes": 8630,
+            "sha256": "44b66ea444b9c0d19ae94815d356bf047ae6b680c19268b5c265687cd6a81406"
+          },
+          "RECORD": {
+            "bytes": 8038,
+            "sha256": "af6e52d40392e7d7eae856912ded4bf537d404a5aaacafc92479f0e52078ea06"
+          }
+        },
+        "metadata_path": "/tmp/hepta-field-v4-python/mpmath-1.3.0.dist-info",
+        "name": "mpmath",
+        "version": "1.3.0"
+      },
+      {
+        "metadata_files": {
+          "METADATA": {
+            "bytes": 6783,
+            "sha256": "aca5d94a97d1f70f301d033addb635f6e66be8973a00aba4127637eed2ef316a"
+          },
+          "RECORD": {
+            "bytes": 61011,
+            "sha256": "7114ee500d1dc02411b3d7befc497a22026434373deec3bee71fff84ac49ec6d"
+          }
+        },
+        "metadata_path": "/tmp/hepta-field-v4-python/networkx-3.6.1.dist-info",
+        "name": "networkx",
+        "version": "3.6.1"
+      },
+      {
+        "metadata_files": {
+          "METADATA": {
+            "bytes": 62117,
+            "sha256": "6002f29765e5bc1a3be4a1b92ed56b64968a0fecba73e7f81cd536d0c40f4fa3"
+          },
+          "RECORD": {
+            "bytes": 108815,
+            "sha256": "6b617ed2ee8397bdd738aa4e7d9985308d9481f21e372c0cfb657679a3288a9c"
+          }
+        },
+        "metadata_path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/numpy-2.3.5.dist-info",
+        "name": "numpy",
+        "version": "2.3.5"
+      },
+      {
+        "metadata_files": {
+          "METADATA": {
+            "bytes": 9093,
+            "sha256": "8fc07146cab33ef7582361dab6eac596d340b03ec648f18217da7894f73838c8"
+          },
+          "RECORD": {
+            "bytes": 16324,
+            "sha256": "3c8c81345169b66224a19d036e57e2ce59ff232e914c7e366f313d40e9312310"
+          }
+        },
+        "metadata_path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/pillow-12.3.0.dist-info",
+        "name": "pillow",
+        "version": "12.3.0"
+      },
+      {
+        "metadata_files": {
+          "METADATA": {
+            "bytes": 6599,
+            "sha256": "4444a6b549a8ebb02e1739f4375af7756c841f96f0c31077a183273c7462bd10"
+          },
+          "RECORD": {
+            "bytes": 51776,
+            "sha256": "95120e2482f676d730b91e449837393049ac4e04f702e1c45cb7a2ef587346f7"
+          }
+        },
+        "metadata_path": "/tmp/hepta-field-v4-python/setuptools-78.1.0.dist-info",
+        "name": "setuptools",
+        "version": "78.1.0"
+      },
+      {
+        "metadata_files": {
+          "METADATA": {
+            "bytes": 12816,
+            "sha256": "b756c2fbfd5be05ac5bdb0ebca61f55618f30f633ed92d88a5687429313a7595"
+          },
+          "RECORD": {
+            "bytes": 147274,
+            "sha256": "ef4c61dba473a4fed1b694503523a02ee385526aabaf216f797a976c20c49994"
+          }
+        },
+        "metadata_path": "/tmp/hepta-field-v4-python/sympy-1.14.0.dist-info",
+        "name": "sympy",
+        "version": "1.14.0"
+      },
+      {
+        "metadata_files": {
+          "METADATA": {
+            "bytes": 29178,
+            "sha256": "ac59d7d8f73f4f515c949c9583ead0cce1f230a649f6c63fea0e949f93f02ae6"
+          },
+          "RECORD": {
+            "bytes": 1232775,
+            "sha256": "2bae734665357ac8f0695c9b84f10a6c52b99cfdddabf8d429c93a73688a4169"
+          }
+        },
+        "metadata_path": "/tmp/hepta-field-v4-python/torch-2.8.0+cpu.dist-info",
+        "name": "torch",
+        "version": "2.8.0+cpu"
+      },
+      {
+        "metadata_files": {
+          "METADATA": {
+            "bytes": 3310,
+            "sha256": "b05084ca1d50879865178d9fff9fabeab61bdfb1f361bfbde95421ffc8f9be46"
+          },
+          "RECORD": {
+            "bytes": 737,
+            "sha256": "d881a662f2e512665e765f27b22c4d5ed0d2d093151b949379e789160891cb01"
+          }
+        },
+        "metadata_path": "/tmp/hepta-field-v4-python/typing_extensions-4.16.0.dist-info",
+        "name": "typing_extensions",
+        "version": "4.16.0"
+      }
+    ],
+    "interop_threads": 1,
+    "numpy": "2.3.5",
+    "pillow": "12.3.0",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "required_dependency_checks": [
+      {
+        "package": "Jinja2",
+        "requirement": "MarkupSafe>=2.0",
+        "satisfied_version": "3.0.3"
+      },
+      {
+        "package": "sympy",
+        "requirement": "mpmath<1.4,>=1.1.0",
+        "satisfied_version": "1.3.0"
+      },
+      {
+        "package": "torch",
+        "requirement": "filelock",
+        "satisfied_version": "3.32.3"
+      },
+      {
+        "package": "torch",
+        "requirement": "typing-extensions>=4.10.0",
+        "satisfied_version": "4.16.0"
+      },
+      {
+        "package": "torch",
+        "requirement": "setuptools; python_version >= \"3.12\"",
+        "satisfied_version": "78.1.0"
+      },
+      {
+        "package": "torch",
+        "requirement": "sympy>=1.13.3",
+        "satisfied_version": "1.14.0"
+      },
+      {
+        "package": "torch",
+        "requirement": "networkx",
+        "satisfied_version": "3.6.1"
+      },
+      {
+        "package": "torch",
+        "requirement": "jinja2",
+        "satisfied_version": "3.1.6"
+      },
+      {
+        "package": "torch",
+        "requirement": "fsspec",
+        "satisfied_version": "2026.7.0"
+      }
+    ],
+    "sgd_loss_after": 1.3918518518518512,
+    "sgd_loss_before": 1.6666666666666667,
+    "status": "passed",
+    "study_role_or_checkpoint_loads": 0,
+    "threads": 2,
+    "torch": "2.8.0+cpu",
+    "torch_path": "/tmp/hepta-field-v4-python/torch/__init__.py"
+  },
+  "source_sha256": "bdb7d5275d21c3e602de6bc638ad10628763f4721e159c5e7f7ff7bcbe038646",
+  "started_utc": "2026-10-27T15:07:45.557119+00:00",
+  "status": "restored_smoke_passed",
+  "target": "/tmp/hepta-field-v4-python",
+  "use_environment": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "/tmp/hepta-field-v4-python",
+    "interop_threads": 1,
+    "python": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "training_torch_threads": 2
+  },
+  "user_data_upload_bytes": 0,
+  "wall_ns": 20910971398
+}

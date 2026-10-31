@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.next.native-h2-independent-individual-tick-review.v1",
+  "individual_ticks_over_8000us": [
+    {
+      "policy": "ndu",
+      "episode_id": "h2.case.38.0.ndu",
+      "request_id": "h2.case.38.0.ndu.step1",
+      "selected_action": "refine_image",
+      "action": "stop",
+      "native_sequence": 546,
+      "native_execution_micros": 60038,
+      "confidence_ppm": 953893,
+      "ood_ppm": 46107,
+      "admitted": false,
+      "native_abstain": true
+    }
+  ],
+  "count": 1,
+  "journal_identity_evidence": "RESOURCE_STATUS_REVIEW.json",
+  "resource_status_review_sha256": "51eb32fcf0100c49628f9615af0feed94f23cd8f71edbc50b603cfe8b7dae82f",
+  "all_3540_candidates_scanned": true,
+  "original_summary_results_changed": false,
+  "conclusion": "Four nonempty process summaries meet the original p95/p99 and maximum-byte ceilings; this does not mean every individual latency passes. The one 60038-us stop candidate was actually rejected by the unchanged per-tick resource gate.",
+  "quality_or_thresholds_changed": false,
+  "model_or_native_execution_rerun": false
+}

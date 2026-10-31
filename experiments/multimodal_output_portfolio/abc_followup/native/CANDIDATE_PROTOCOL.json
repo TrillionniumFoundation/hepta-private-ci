@@ -1,0 +1,38 @@
+{
+  "bootstrap": "4000 source-pair resamples shared between bothcandidate contrasts; per-comparison97.5% percentile intervals for nominalfamily95 Bonferroni",
+  "candidate_ids": [
+    "candidate:update:5c44073ceb5cfae42017eb9b3729a869ca045c237daf236c1779a40af9684b2c",
+    "candidate:update:b400ac9925c1ad08177f9becf7b653a0e1348631d560c72b455e649c027aa590"
+  ],
+  "comparison_family": 2,
+  "cryptographic_product_qualification": false,
+  "feature_proof": "refine_text preserves shared h/context and actual image; reconstruct original508 from retained prefix+reopened actual media+actual emitted token onehot",
+  "file_pins": {
+    "calibration": "93b5cd49fd317fa2281af45db194f676478a0fdeff2e158c5d95c0adc4d28d98",
+    "candidates": "8f13665c771253527f72d24340f74d3dd80397f9adf50929414acdbb6628dda0",
+    "weights": "a79979a3801c83cd4a789c6a87ff56f2efba63428da7c597f537fe5c6567b6f7"
+  },
+  "future_verification_census": "all1432 newly reserved source pairs, action refine_text only, one row per pair",
+  "generator_digest": "5968450a4cf399c88c18eba2934da62f342c4c22eeeb32a762f3a8e6ea6d09bb",
+  "historical_exactness_preflight_sha256": "48d3c7d7e1e2da74a225c6ca8d17a90166f900be257ba65b272be091e9aee4bb",
+  "native_window": "actual historical balanced1600 final admitted context; original typed candidate generator",
+  "new_independent_N_beyond_primary": 0,
+  "no_refit_reselection_or_application": true,
+  "paths": {
+    "calibration": "/workspace/scratch/2b3c256bef7d/abc3-native-runs/predictor-model-001/calibration.json",
+    "candidates": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/balanced-candidates-003/candidates.json",
+    "weights": "/workspace/scratch/2b3c256bef7d/abc3-native-runs/predictor-model-001/weights.json"
+  },
+  "primary_endpoint": "baseline raw correctness Brier minus candidate raw correctness Brier; positive better",
+  "primary_protocol_sha256": "b94df6feac7cace3beb8f1f9f95b7a299f60dbb9b86c4fe414df5925c8c5416b",
+  "registered_unix_ns": 1792917813272864417,
+  "schema": "hepta.abc4.old-head-independent-candidate-protocol.v1",
+  "scope": "old508-to32 current-output correctness head, not futurestate prediction or generator training efficacy",
+  "secondary": "ID/OOD point differences, max raw probability change and frozen-calibration confidence changes, descriptive only",
+  "source_pins": {
+    "../../abc_next/native/features.py": "fdf2e8ab36f5fe7d38fd10edcb2a48cdb31f05b2572ac2d341df5ec7782d9a95",
+    "../../abc_next/native/qualify.py": "4e9e6d9a0303629daa05fe1abb158c33cff9f55dca0fee5dc74f31ecda37ef70",
+    "candidate_features.py": "83e06e39d0f586bc3ab7a9abf4d386778307078d99a933af7237c3c6c9ccba7d",
+    "candidate_verify.py": "6d7480df11340280d2e902ae9191f295de77865f044dd381a5d0975c34eaefbb"
+  }
+}

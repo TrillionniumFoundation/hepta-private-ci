@@ -1,0 +1,80 @@
+{
+  "amendment": {
+    "before_fresh_verification": true,
+    "reason": "Bind tested live-hook source; preserve failed all-extreme-activity assertion and complete finite stress census. Dynamics parameters and all original acceptance gates unchanged.",
+    "supersedes_sha256": "f5bc2708bf1fe58b0510a84a2a5f8f792d3180baec373c7794b773e57f8e1536"
+  },
+  "derivation": {
+    "future_bound_source": "actual pixel encoder tanh plus tanh token embedding, each coordinate explicitly bounded",
+    "future_drive_bound_q24": 16777216,
+    "limits": "feasible range and activity-budget argument, not an infinite-horizon stability theorem",
+    "maximum_score": "4B+Q; old7Q/future5Q below kernel H8Q",
+    "old_bound_source": "noise-free tanh/convex routed context + exactly two .25*tanh shared updates; continuation image/text only",
+    "old_drive_bound_q24": 25165824,
+    "recurrent_bound": "2B",
+    "target_activity_q24": "floor(Q*top_k/width)",
+    "temporal_decay": 0.5,
+    "threshold_range": "[-(2B+Q),2B+Q]"
+  },
+  "failed_all_activity_assertion_sha256": "ac4382e8f91503d665f653943f1ccbe293c2e43bcd1cf9b8adfd4b4ebd108d70",
+  "historical_actual_run": {
+    "new_independent_N": 0,
+    "no_reset": true,
+    "packet_sha256": "62b52e624fa466b425e11330aa4e6ed8045c9b190e32077fdd86e0371cfa9d2d",
+    "recover_at": [
+      800,
+      1600
+    ],
+    "rollover_capacity": 128,
+    "rows": 1600,
+    "source_order": "exact same old fixed1600 interleaved packet"
+  },
+  "implementation_pins": {
+    "continuous.rs": "8fe2d052123bc0dfd7a1ab0262baf4292a655f8639895e927a2d163b14764b37",
+    "dynamics_probe.rs": "2c7972a2809cbc0d7aa4ed53face2256f5405e2ce0343784bd62d7229082781e",
+    "dynamics_profile.rs": "bbb85aea108723e4e526d5c71e6f81a1166a80cd932c2225843be3462c570d67",
+    "dynamics_profile_tests.rs": "6fc6b5bcd0275370189d3a03636222adb0dfc6897ae1a9b8c651802610e105fe",
+    "dynamics_stress.rs": "b62fb7f410fac1a2b253affe5b6b8123bdb4e5def75327243f2437797f65e093"
+  },
+  "new_native_profile_not_original_profile_fix": true,
+  "original_actual_state_replay_sha256": "f332a82092b6acc7b784f965ea84014c71ac99d157ca504c4fb228ac25aff1ee",
+  "original_actual_state_replay_source_sha256": "edab2893ce8c207bccf5c67f5566fed8c79c6bdef133447f6c74e4db6f191600",
+  "original_profile_failure_result_sha256": "b1a340439a6e0afe77f627543755895d225df59c726270f767ca75cfe15ab2de",
+  "qualification_scope": "finite exact historical1600 plus131072 original-kernel stress steps; no universal stability or every-tick acceptance claim; all in-domain silent stress transients remain rejected",
+  "registered_unix_ns": 1792918055518353697,
+  "schema": "hepta.abc4.bounded-balanced-dynamics.v1",
+  "source_proof_pins": {
+    "experiments/multimodal_output_portfolio/abc_followup/native/forecast.py": "34f24b827bfc2a9b0f13e0b715b4b639713b79ed351bf8dc0c3e918c86b8809d",
+    "experiments/multimodal_output_portfolio/abc_next/native/PROTOCOL.json": "1ccf9287e4246569678a1ff65b8d28dbb7d9307a0869cfc7b7a81421ad8626b3",
+    "experiments/multimodal_output_portfolio/abc_next/native/collect.py": "6c7ce9b3ca8eeed5b4ef69fb2a02f6dab6b89bb509085a6f0b5486c81906f839",
+    "experiments/multimodal_output_portfolio/abc_recovery/runtime.py": "11e2e0859d706e3186ee5e4688330ad2f4da54d397fe6b33bd335d8ee69f5919",
+    "experiments/multimodal_output_portfolio/v7/model.py": "156aa5c73c7e9192ebefecafdc568cbbae3e906e7d1bbb2bf50f7535bd2d8fca"
+  },
+  "stress": {
+    "both_domains_and_widths": [
+      32,
+      33
+    ],
+    "first_confidence_reference_coordinate": 1,
+    "new_independent_N": 0,
+    "patterns": [
+      "constant positive bound",
+      "constant negative bound",
+      "alternating positive/negative bound",
+      "four rotating positive-bound coordinates otherwise negative-bound"
+    ],
+    "steps_per_pattern": 16384,
+    "tests": "original public sparse_tick, unchanged projection/activity gates, all steps"
+  },
+  "stress_result_sha256": "998c9ff8f7a96aa7e3161596815ddb73de0a46aff9ee68173bdbfb15b83d3fe0",
+  "unchanged": {
+    "all_resource_envelopes": true,
+    "confidence_ppm": 750000,
+    "eta": 0.125,
+    "kernel_source": true,
+    "maximum_ece_ppm": 30000,
+    "maximum_far_ppm": 4999,
+    "maximum_ood_ppm": 500000,
+    "maximum_projection_count": 8
+  }
+}

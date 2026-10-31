@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.next.event-asr-selection.v2",
+  "registered_unix_ns": 1792977909446100532,
+  "primary": "base.en",
+  "secondary": "small.en",
+  "primary_accuracy_min": 0.85,
+  "development_used": {
+    "recordings": 60,
+    "base_correct": 50,
+    "small_correct": 46,
+    "independent_qualification_claimed": false
+  },
+  "prior_recipe_disposition": "v1 primary small fails60 development; whole-utterance attempts retain interrupted partial results and OOM receipts",
+  "selection_rule": "Choose higher old-development accuracy between two preregistered frozen ASRs; identical event transform and parser; no third candidate after new qualification",
+  "new_qualification_allocation_sha256": "2c9aa271394402a21dea81a34f6df4fd3afb9e86bd213f9b2dbd1de1ddabba75",
+  "new_qualification_outcomes_opened": false,
+  "frozen_candidate_sha256": {
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/event_observer.py": "87a1a48870508cdd3cd37c651737271bab581e67db72c87fa5a52dc4a468c39e",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/selected_event.py": "80e01cc48ca87bb20279c27b8970e3d4534c268dfc037c731d2429f90786909f",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/qualify_selected.py": "fe85ffb89a775a419c7e4c743b8ff7953744d06ea43e9ff187bde64a5ae5e38e",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/audio_sources.py": "82b4aba5b547fa6c0c56c9e75a2f0b8d5020052169aed028457e7007ba4bfb10",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/observers.py": "b1cd74fc48f69e4e16823d7a77924196d471ff10ae336088884d92c1706c1554",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/runtime.py": "032aea2fcd90f05974c7655c0bb0a73009665d9a43ed4e20ced3f6024163d76a",
+    "/workspace/scratch/87e43aa872f5/ndu-next-runs/media/event-observer-development-001/summary.json": "3c7a7e51a060aded8816894939ba1e935bb3f0e1c5e6ea4047d2fea6faad6132",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/media/new-assets/whisper-base.en/manifest.json": "fa923fe74ac398504606f5a975e3a21f3300e1c926e9fd2327a0c9cde6f110bc",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/media/new-assets/whisper-small.en/manifest.json": "d14921e9b1fb8500871df1dc7b73c186c45ed638ca7ad3ae9ea48c4a6e1fd454"
+  }
+}

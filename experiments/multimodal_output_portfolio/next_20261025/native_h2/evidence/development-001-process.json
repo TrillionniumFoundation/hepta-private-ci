@@ -1,0 +1,23 @@
+{
+  "child_pid": 8,
+  "child_system_seconds": 0.610892,
+  "child_user_seconds": 5.92067,
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-B",
+    "-m",
+    "experiments.multimodal_output_portfolio.next_20261025.native_h2.qualification",
+    "fit",
+    "--output",
+    "/tmp/hepta-ndu-next-native-h2/development-001"
+  ],
+  "cost_scope": "Python child including waited native subprocesses; Linux wait4 ru_maxrss is peak, not sum",
+  "exit_code": 0,
+  "log_sha256": "7e32b56386478273d1e4e1696d92a9d3774009453bb489e3050fe0e5c1ed3fee",
+  "peak_rss_bytes": 485011456,
+  "registration_sha256": "ea8415ab38a943ba026b97058b95ead70784db1bb39388f4fbdeefc8d291776c",
+  "schema": "hepta.next.native-h2-process-cost.v1",
+  "waited_pid": 8,
+  "wall_ns": 6448202632,
+  "wrapper_cpu_ns": 914939
+}

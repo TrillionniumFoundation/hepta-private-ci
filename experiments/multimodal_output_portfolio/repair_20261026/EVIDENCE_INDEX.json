@@ -1,0 +1,39 @@
+{
+  "all_blockers_closed": false,
+  "external_full_archives": [
+    {
+      "access_url": "https://chatgpt.com/library?file_id=libfile_5dc45990bc4481918ceab4ad597883f2&account_id=personal",
+      "archive": "ndu_joint_generation_repair_20261026.tar.gz",
+      "bytes": 29504636,
+      "sha256": "dc9e21ba19c90100fe7dbf20f8f16ab5e2049af119fbbcef6f42f05d90d2c415",
+      "source_receipt": "joint/RAW_ARCHIVE.json"
+    },
+    {
+      "access_url": "https://chatgpt.com/library?file_id=libfile_b1b700b35d948191bd8ebd1b077b829e&account_id=personal",
+      "archive": "ndu_joint_prior_evidence_20261026.tar.gz",
+      "bytes": 11337327,
+      "sha256": "661f679c3c0c0200da890c995833804659261bdae57f9ccf284cdf5a7fb1b590",
+      "source_receipt": "evidence/RAW_EVIDENCE_ARCHIVES.json"
+    },
+    {
+      "access_url": "https://chatgpt.com/library?file_id=libfile_572c1154c04c81919fbcb97ac79b1d3e&account_id=personal",
+      "archive": "ndu_neuron_feedback_evidence_20261026.tar.gz",
+      "bytes": 9852793,
+      "sha256": "a876fa8b7f5e59553d4555ab98dc95c97cc3dc63896f3087f9f67e6c80d3e330",
+      "source_receipt": "control/neuron_feedback_probe/evidence/ARCHIVE_RECEIPT.json"
+    },
+    {
+      "access_url": "https://chatgpt.com/library?file_id=libfile_27f6d5f57bf881919733148be3ffe760&account_id=personal",
+      "archive": "ndu_document_extension_20261026.tar.gz",
+      "bytes": 118906751,
+      "sha256": "2a9a318261d8fde2a6b2e80d160756180ba5095d41e70aca0ae73cf6998f3b94",
+      "source_receipt": "natural/document/evidence/ARCHIVE_RECEIPT.json"
+    }
+  ],
+  "schema": "hepta.ndu.repair.delivered-evidence.v1",
+  "small_archives_in_repository": [
+    "evidence/raw_real_audio_001.tar.gz",
+    "risk_feedback/evidence/RAW_EVIDENCE.tar.gz",
+    "natural/evidence/RAW_EVIDENCE.tar.gz"
+  ]
+}

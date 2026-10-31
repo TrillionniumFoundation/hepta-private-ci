@@ -1,0 +1,15 @@
+{
+  "correction": "Use os.wait4 on the exact newly launched child PID and set Popen.returncode from its wait status",
+  "exit_code": 1,
+  "observed_condition": "At least one cumulative RUSAGE_CHILDREN user/system/maxrss value was nonzero before Popen; the exact values were not logged",
+  "observed_failure": "Full-process wrapper must start with no earlier child executions",
+  "origin_of_prior_resource_counts": "not established by direct evidence",
+  "original_plan_sha256": "569e4a9b07d86850a43fdd27ce2d8a8b55073646cfcfb5ecdd80d1614880826b",
+  "original_published_remote_commit": "cce41f8c4b856bf01576cff942b407a79ec66dd0",
+  "original_wrapper_sha256": "2ca5e91a595365b5135ab657370106b88c987b10c5abc49f7b96e47625452ba5",
+  "policy_or_primary_results_changed": false,
+  "recorded_utc": "2026-10-25T07:15:17.459470+00:00",
+  "schema": "hepta.abc3.temporal-wrapper-prelaunch-failure.v1",
+  "timing_child_launched": false,
+  "timing_output_directory_exists_at_recording": false
+}

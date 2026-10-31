@@ -1,0 +1,1161 @@
+{
+  "ASR_cache_accounting": {
+    "actual_generation_and_codec_readback_repeated": true,
+    "component_transcriptions_in_original_event_census": 22,
+    "original_cold_process_receipt": "/tmp/hepta-ndu-next-media-cache/development-001-process/receipt.json",
+    "repaired_development_actual_new_ASR_calls": 0,
+    "repaired_development_cached_event_requests": 148,
+    "unique_completed_measured_events": 11
+  },
+  "asr_asset_archive": {
+    "all_member_bytes_rehashed_after_archive_close": true,
+    "allowed_source_roots": [
+      "/workspace/scratch/87e43aa872f5"
+    ],
+    "archive": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-next-media-asr-assets-20261026.tar.gz",
+    "archive_bytes": 581564397,
+    "archive_sha256": "a53bb47966af62acc57486aec7585d9a5129ff4b519423879b5061b0092c26e4",
+    "completed_unix_ns": 1792984246891475832,
+    "definition_sha256": "070b1201fb7635199e2236c94eeedde34541fc91c948d846a872661a7a196484",
+    "expanded_inputs": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-next-media-asr-assets-20261026.tar.gz.inputs.json",
+    "external_frozen_inputs": {},
+    "external_scope": "Execution/selection/source/cost evidence is in the separately complete media-study archive; these are immutable public pretrained runtime weights.",
+    "historical_exact_source_snapshots_verified": [],
+    "linked_complete_archives": [],
+    "manifest_sha256": "fc8e3d180c3ab92fc709309158b3ea41bbe6205164340ef87341f31cb10e3f30",
+    "member_count": 15,
+    "member_manifest": "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-next-media-asr-assets-20261026.tar.gz.manifest.json",
+    "original_files_retained": true,
+    "protocols_verified": {},
+    "schema": "hepta.next.closed-evidence.v1",
+    "status": "passed",
+    "study": "media-public-asr-assets",
+    "uncompressed_input_bytes": 633889074,
+    "upload_performed": false,
+    "verified_members_including_manifest": 16
+  },
+  "compact_evidence_origins": "evidence/ORIGINS.json",
+  "completed": {
+    "V2_independent_qualification": {
+      "summary": {
+        "accuracy": {
+          "base.en": 0.8133333333333334,
+          "small.en": 0.8133333333333334
+        },
+        "cpu_ns": 1620571574883,
+        "new_confirmation_opened": false,
+        "phase": "independent_qualification",
+        "primary": "base.en",
+        "primary_eligible": false,
+        "secondary": "small.en",
+        "secondary_eligible": false,
+        "source_recordings": 300,
+        "source_role_independent_from_selected_development": true,
+        "source_speakers": 98,
+        "statistical_unit": "Speaker, not individual recording; .85 is a point gate, not a confidence lower bound",
+        "status": "completed",
+        "wall_ns": 1260263766883
+      },
+      "summary_path": "/tmp/hepta-ndu-next-media-cache/event-qualification-002/summary.json",
+      "summary_sha256": "d3f278a4348cea7edb41a11d61d43d21f8ac15a7902aca8280be5d819487711e"
+    },
+    "early_commit_actual_development": {
+      "summary": {
+        "ASR_cost_mode": "Verified exact-event cache; original cold ASR cost is retained in observer-load.json",
+        "all_media_sample_gates_pass": true,
+        "asr_actual_event_calls": 0,
+        "asr_event_cache_hits": 148,
+        "codec_child_cpu_seconds": 35.338767,
+        "conditional_head_census": {
+          "audio_accuracy": 1.0,
+          "audio_digit_correct": 20,
+          "audio_digit_count": 20,
+          "audio_gate_min": 0.8,
+          "conditional_cases": 10,
+          "independent_sources_added": 0,
+          "pass": true,
+          "video_accuracy": 1.0,
+          "video_frame_correct": 200,
+          "video_frame_count": 200,
+          "video_gate_min": 0.9
+        },
+        "cost_scope": "Includes source checks/model load/input construction/actual output generation/codec readback/verified ASR cache lookups/physical negatives; cold ASR cost is separate in observer-load.json; excludes imports before main and final summary write",
+        "gates": {
+          "audio_ingress_min_085": true,
+          "complete_codec_clock": true,
+          "conditional_audio_min_080": true,
+          "conditional_video_min_090": true,
+          "nonvacuous_physical_controls": true,
+          "per_mode_strict_joint_min_075": true
+        },
+        "independent_audio_speakers": 22,
+        "independent_image_writers": null,
+        "ingress_gate_accuracy": 0.93,
+        "ingress_gate_phase": "development",
+        "negative_controls": {
+          "all_rejected": true,
+          "baseline_index": 0,
+          "baseline_mode": "image",
+          "mutations": {
+            "missing_modality": true,
+            "repeated_video_frames": true,
+            "silence": true,
+            "swapped_audio_events": true,
+            "swapped_video_events": true
+          },
+          "nonvacuous": true
+        },
+        "outputs": 60,
+        "pairs": 12,
+        "phase": "development",
+        "preserves_input_handwriting_style": false,
+        "primary_observer": "consensus_or_single_v3",
+        "python_cpu_ns": 5481613320,
+        "scope": "Finite digit semantics, constructed moving-image video, deterministic teacher-distilled speech; no human naturalness or general foundation-model certificate",
+        "status": "completed",
+        "strict_joint_by_input": {
+          "audio": 0.75,
+          "audio_video": 0.9166666666666666,
+          "image": 0.9166666666666666,
+          "text": 1.0,
+          "video": 0.9166666666666666
+        },
+        "version": "repair-v2",
+        "wall_ns": 42002218001
+      },
+      "summary_path": "/tmp/hepta-ndu-next-media-cache/repair-bridge-development-001/summary.json",
+      "summary_sha256": "6a1dc62e50be92b6318b15cfc750f0bd68d2a7053451f7826d3714bf87466ced"
+    },
+    "event_observer_development": {
+      "summary": {
+        "accuracy": {
+          "base.en": 0.8333333333333334,
+          "small.en": 0.7666666666666667
+        },
+        "confirmation_opened": false,
+        "cpu_ns": 368015759736,
+        "phase": "development",
+        "primary_eligible": false,
+        "secondary_eligible": false,
+        "source_recordings": 60,
+        "source_speakers": 50,
+        "statistical_unit": "Speech Commands speaker; recordings within one speaker are dependent",
+        "status": "completed",
+        "wall_ns": 288407398111
+      },
+      "summary_path": "/workspace/scratch/87e43aa872f5/ndu-next-runs/media/event-observer-development-001/summary.json",
+      "summary_sha256": "3c7a7e51a060aded8816894939ba1e935bb3f0e1c5e6ea4047d2fea6faad6132"
+    },
+    "late_commit_actual_development_failed": {
+      "summary": {
+        "ASR_cost_mode": "Verified exact-event cache; original cold ASR cost is retained in observer-load.json",
+        "all_media_sample_gates_pass": false,
+        "asr_actual_event_calls": 0,
+        "asr_event_cache_hits": 148,
+        "codec_child_cpu_seconds": 34.353119,
+        "conditional_head_census": {
+          "audio_accuracy": 1.0,
+          "audio_digit_correct": 20,
+          "audio_digit_count": 20,
+          "audio_gate_min": 0.8,
+          "conditional_cases": 10,
+          "independent_sources_added": 0,
+          "pass": true,
+          "video_accuracy": 1.0,
+          "video_frame_correct": 200,
+          "video_frame_count": 200,
+          "video_gate_min": 0.9
+        },
+        "cost_scope": "Includes source checks/model load/input construction/actual output generation/codec readback/verified ASR cache lookups/physical negatives; cold ASR cost is separate in observer-load.json; excludes imports before main and final summary write",
+        "gates": {
+          "audio_ingress_min_085": true,
+          "complete_codec_clock": true,
+          "conditional_audio_min_080": true,
+          "conditional_video_min_090": true,
+          "nonvacuous_physical_controls": true,
+          "per_mode_strict_joint_min_075": false
+        },
+        "independent_audio_speakers": 22,
+        "independent_image_writers": null,
+        "ingress_gate_accuracy": 0.93,
+        "ingress_gate_phase": "development",
+        "negative_controls": {
+          "all_rejected": true,
+          "baseline_index": 0,
+          "baseline_mode": "image",
+          "mutations": {
+            "missing_modality": true,
+            "repeated_video_frames": true,
+            "silence": true,
+            "swapped_audio_events": true,
+            "swapped_video_events": true
+          },
+          "nonvacuous": true
+        },
+        "outputs": 60,
+        "pairs": 12,
+        "phase": "development",
+        "preserves_input_handwriting_style": false,
+        "primary_observer": "consensus_or_single_v3",
+        "python_cpu_ns": 4964727095,
+        "scope": "Finite digit semantics, constructed moving-image video, deterministic teacher-distilled speech; no human naturalness or general foundation-model certificate",
+        "status": "completed",
+        "strict_joint_by_input": {
+          "audio": 0.6666666666666666,
+          "audio_video": 0.9166666666666666,
+          "image": 0.9166666666666666,
+          "text": 1.0,
+          "video": 0.9166666666666666
+        },
+        "version": "repair-v1",
+        "wall_ns": 39950099145
+      },
+      "summary_path": "/tmp/hepta-ndu-next-media-cache/repair-development-001/summary.json",
+      "summary_sha256": "82e51635a852577cf22d7cf5fac7d8320712a18fa5d374c84e534021a6a99366"
+    },
+    "original_actual_development": {
+      "summary": {
+        "all_media_sample_gates_pass": false,
+        "asr_actual_event_calls": 11,
+        "asr_event_cache_hits": 137,
+        "codec_child_cpu_seconds": 36.288094,
+        "conditional_head_census": {
+          "audio_accuracy": 0.9,
+          "audio_digit_correct": 18,
+          "audio_digit_count": 20,
+          "audio_gate_min": 0.8,
+          "conditional_cases": 10,
+          "independent_sources_added": 0,
+          "pass": true,
+          "video_accuracy": 1.0,
+          "video_frame_correct": 200,
+          "video_frame_count": 200,
+          "video_gate_min": 0.9
+        },
+        "cost_scope": "Includes source checks/model load/input construction/output generation/codec readback/ASR/physical negatives, excludes imports before main and final summary write",
+        "gates": {
+          "complete_codec_clock": true,
+          "conditional_audio_min_080": true,
+          "conditional_video_min_090": true,
+          "independent_audio_ingress_min_085": true,
+          "nonvacuous_physical_controls": true,
+          "per_mode_strict_joint_min_075": false
+        },
+        "independent_audio_speakers": 22,
+        "independent_image_writers": null,
+        "negative_controls": {
+          "all_rejected": true,
+          "baseline_index": 0,
+          "baseline_mode": "text",
+          "mutations": {
+            "missing_modality": true,
+            "repeated_video_frames": true,
+            "silence": true,
+            "swapped_audio_events": true,
+            "swapped_video_events": true
+          },
+          "nonvacuous": true
+        },
+        "outputs": 60,
+        "pairs": 12,
+        "phase": "development",
+        "python_cpu_ns": 70137645251,
+        "scope": "Finite digit semantics, constructed moving-image video, deterministic teacher-distilled speech; no human naturalness or general foundation-model certificate",
+        "status": "completed",
+        "strict_joint_by_input": {
+          "audio": 0.5833333333333334,
+          "audio_video": 0.75,
+          "image": 0.5833333333333334,
+          "text": 0.9166666666666666,
+          "video": 0.8333333333333334
+        },
+        "wall_ns": 92940921946
+      },
+      "summary_path": "/tmp/hepta-ndu-next-media-cache/development-001/summary.json",
+      "summary_sha256": "89ea9f2cb06533c0f0a5094aa0e071efc46cf2a7f7a517f645a1fa272bca0180"
+    },
+    "original_ingress_training": {
+      "summary": {
+        "checkpoint": "/workspace/scratch/87e43aa872f5/ndu-next-runs/media/audio-ingress-001/audio-input.pt",
+        "checkpoint_sha256": "174dddad0db36ac09cc768a1a488401aa073499d407bfa97b1e5da7a3ae888e4",
+        "confirmation_opened": false,
+        "cpu_ns": 91590780077,
+        "gradient_abs_sum_max": 2262.526970088482,
+        "initial_parameters_sha256": "3d6a999ea1c39da3b65ea3faa3644c0dc3b01398e74aedf26f37248d0969b62e",
+        "parameters_sha256": "657eb28fd4514462f120366d01ee3a0446a2fecf5e12bd98ecba9ee8247572f7",
+        "qualification_accuracy": 0.9233333333333333,
+        "qualification_gate_min": 0.85,
+        "qualification_pass": true,
+        "status": "completed",
+        "wall_ns": 94260824244
+      },
+      "summary_path": "/workspace/scratch/87e43aa872f5/ndu-next-runs/media/audio-ingress-001/summary.json",
+      "summary_sha256": "9e6c05d9d88a60229ee1f19dc16debbb1ba4f49699af191c3c166167f5a8baa8"
+    },
+    "repair_training": {
+      "summary": {
+        "checkpoint": "/tmp/hepta-ndu-next-media-cache/repair-training-001/audio-input.pt",
+        "checkpoint_sha256": "5c10b1ca0830879464f5d29219236fe88cb9422f7f630cb8dc7cc7b5844b3bbb",
+        "cpu_ns": 177619894988,
+        "development_accuracy": 0.93,
+        "development_audio_pair_accuracy": 0.75,
+        "development_gate_pass": true,
+        "independent_qualification_claimed": false,
+        "new_qualification_or_confirmation_opened": false,
+        "old_qualification_is_now_development": true,
+        "parameters_sha256": "ece0765546f729667ba86fe22a0638982ac58592a6b77e6a9e90d81936454866",
+        "selected_candidate": "seed-23179",
+        "status": "completed",
+        "wall_ns": 178211351932
+      },
+      "summary_path": "/tmp/hepta-ndu-next-media-cache/repair-training-001/summary.json",
+      "summary_sha256": "b6382c487ea104dfbbba0d10136978d45af9fb78df030d8ea6787b611164fc50"
+    },
+    "waveform_training": {
+      "summary": {
+        "ASR_loaded_during_training": false,
+        "checkpoint": "/workspace/scratch/87e43aa872f5/ndu-next-runs/media/waveform-student-001/waveform-student.pt",
+        "checkpoint_sha256": "5dc512d4b8d1c9a91a4660cd7383fd2db136df72bc84054d98c4d99f6afc9756",
+        "confirmation_opened": false,
+        "cpu_ns": 34748495630,
+        "gradient_abs_sum_max": 2.4802480041980743,
+        "initial_parameters_sha256": "2143a66de2d4d27d89dec84090347e09ad91671c573abb3fae87e9913eb41a71",
+        "parameter_count": 1040704,
+        "parameters_sha256": "b8ba753358e1b5c208d91a93280c3e4f1a9500b0e177fceb340b659e4229e5ab",
+        "status": "completed",
+        "teacher_retrieval_at_inference": false,
+        "teacher_snr_db_by_digit": [
+          100.63434600830078,
+          100.73039245605469,
+          99.39537048339844,
+          99.27040100097656,
+          101.63346099853516,
+          99.95857238769531,
+          96.30546569824219,
+          99.30428314208984,
+          99.39547729492188,
+          100.66624450683594
+        ],
+        "wall_ns": 35978491358
+      },
+      "summary_path": "/workspace/scratch/87e43aa872f5/ndu-next-runs/media/waveform-student-001/summary.json",
+      "summary_sha256": "8a4dc7efbc050f06bc9f24b9b073b9437ede7626b2410f53f6e45b1f724cfc0c"
+    }
+  },
+  "dependency_continuity": {
+    "evidence_counts": {
+      "original_qualification_pin": 21,
+      "pre_execution_archive_member": 2,
+      "pre_execution_git_blob": 12,
+      "pre_execution_protocol_pin": 11
+    },
+    "guard_checks_path": "/tmp/hepta-ndu-next-media-cache/dependency-continuity-check-001/summary.json",
+    "manifest_path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/dependency_continuity/ADDENDUM.json",
+    "manifest_sha256": "4b24864a87e9d09e22d3b4b0990164a672ddef8ea0214d14cfb5a91dd9c63e46",
+    "original_qualification_protocol_unchanged": true,
+    "retrospective_continuity_not_original_preregistration": true,
+    "source_files": 46
+  },
+  "final_confirmation": {
+    "analysis": {
+      "actual_artifact_sha256_checks": 3072,
+      "all_hashes_matched": true,
+      "all_original_numeric_sample_gates_pass": true,
+      "bootstrap": {
+        "intervals": "Descriptive per-route percentile95, not simultaneous lower-bound gates",
+        "resamples": 5000,
+        "seed": 23917,
+        "unit": "matched image-writer/audio-speaker cluster"
+      },
+      "human_naturalness_or_foundation_model_claim": false,
+      "independent_writer_speaker_clusters": 32,
+      "outputs": 640,
+      "per_mode": {
+        "audio": {
+          "component_correct": {
+            "audio": 114,
+            "image": 114,
+            "text": 114,
+            "video": 114
+          },
+          "mean_audit_included_ms": 410.90851678125,
+          "mean_execution_ms": 243.47843696875,
+          "secondary_audio_correct": 99,
+          "strict_joint_correct": 114,
+          "tasks": 128,
+          "writer_bootstrap_95_interval": [
+            0.8203125,
+            0.953125
+          ]
+        },
+        "audio_video": {
+          "component_correct": {
+            "audio": 125,
+            "image": 125,
+            "text": 125,
+            "video": 125
+          },
+          "mean_audit_included_ms": 412.193126046875,
+          "mean_execution_ms": 242.9380186640625,
+          "secondary_audio_correct": 107,
+          "strict_joint_correct": 125,
+          "tasks": 128,
+          "writer_bootstrap_95_interval": [
+            0.953125,
+            1.0
+          ]
+        },
+        "image": {
+          "component_correct": {
+            "audio": 127,
+            "image": 127,
+            "text": 127,
+            "video": 127
+          },
+          "mean_audit_included_ms": 409.124487734375,
+          "mean_execution_ms": 238.3327777578125,
+          "secondary_audio_correct": 110,
+          "strict_joint_correct": 127,
+          "tasks": 128,
+          "writer_bootstrap_95_interval": [
+            0.9765625,
+            1.0
+          ]
+        },
+        "text": {
+          "component_correct": {
+            "audio": 128,
+            "image": 128,
+            "text": 128,
+            "video": 128
+          },
+          "mean_audit_included_ms": 408.3291435234375,
+          "mean_execution_ms": 241.28087134375,
+          "secondary_audio_correct": 110,
+          "strict_joint_correct": 128,
+          "tasks": 128,
+          "writer_bootstrap_95_interval": [
+            1.0,
+            1.0
+          ]
+        },
+        "video": {
+          "component_correct": {
+            "audio": 117,
+            "image": 117,
+            "text": 117,
+            "video": 117
+          },
+          "mean_audit_included_ms": 409.523575859375,
+          "mean_execution_ms": 240.9417015703125,
+          "secondary_audio_correct": 101,
+          "strict_joint_correct": 117,
+          "tasks": 128,
+          "writer_bootstrap_95_interval": [
+            0.8515625,
+            0.9609375
+          ]
+        }
+      },
+      "schema": "hepta.next.media-repair-analysis.v1",
+      "source_tasks": 128,
+      "tasks_successful_in_all_five_routes": 105
+    },
+    "analysis_path": "/tmp/hepta-ndu-next-media-cache/repair-confirmation-001/ANALYSIS.json",
+    "analysis_sha256": "51b1c28636a0f65ed6bd8eaa0120b8d0ab6a5bd96360d1ab2a7c7fecab45142e",
+    "artifact_census": {
+      "disjoint_task_artifacts": 3072,
+      "generated_output_bundles": 640,
+      "generated_output_codec_artifacts": 2560,
+      "independent_analysis_sha256": "51b1c28636a0f65ed6bd8eaa0120b8d0ab6a5bd96360d1ab2a7c7fecab45142e",
+      "input_codec_artifacts": 512,
+      "interpretation": "3072 unique task artifacts = 512 input materializations + 2560 actual generated output files; input bundles are reused across the five routes. It is not 768 generated bundles. Conditional-head and negative-control artifacts are separate.",
+      "recorded_unix_ns": 1792985464267633614,
+      "schema": "hepta.media.task-artifact-census.v1",
+      "source_tasks": 128,
+      "status": "passed"
+    },
+    "guard_receipt": {
+      "candidate_module_imported": true,
+      "ended_unix_ns": 1792985357100681397,
+      "manifest": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/dependency_continuity/ADDENDUM.json",
+      "manifest_sha256": "4b24864a87e9d09e22d3b4b0990164a672ddef8ea0214d14cfb5a91dd9c63e46",
+      "operation": "evaluate",
+      "post_execution_dependencies_verified": true,
+      "pre_import_dependencies_verified": true,
+      "protocol_sha256": "163297a3e210f800a2e7bd6e21aff58708d058f264eab17b5fe56ece3d06eb32",
+      "schema": "hepta.next.media-dependency-guard.v1",
+      "started_unix_ns": 1792985028825550924,
+      "status": "passed"
+    },
+    "summary": {
+      "ASR_cost_mode": "Verified exact-event cache; original cold ASR cost is retained in observer-load.json",
+      "all_media_sample_gates_pass": true,
+      "asr_actual_event_calls": 0,
+      "asr_event_cache_hits": 1308,
+      "codec_child_cpu_seconds": 301.747639,
+      "conditional_head_census": {
+        "audio_accuracy": 1.0,
+        "audio_digit_correct": 20,
+        "audio_digit_count": 20,
+        "audio_gate_min": 0.8,
+        "conditional_cases": 10,
+        "independent_sources_added": 0,
+        "pass": true,
+        "video_accuracy": 1.0,
+        "video_frame_correct": 200,
+        "video_frame_count": 200,
+        "video_gate_min": 0.9
+      },
+      "cost_scope": "Includes source checks/model load/input construction/actual output generation/codec readback/verified ASR cache lookups/physical negatives; cold ASR cost is separate in observer-load.json; excludes imports before main and final summary write",
+      "gates": {
+        "audio_ingress_min_085": true,
+        "complete_codec_clock": true,
+        "conditional_audio_min_080": true,
+        "conditional_video_min_090": true,
+        "nonvacuous_physical_controls": true,
+        "per_mode_strict_joint_min_075": true
+      },
+      "independent_audio_speakers": 32,
+      "independent_image_writers": 32,
+      "ingress_gate_accuracy": 0.91,
+      "ingress_gate_phase": "independent_qualification",
+      "negative_controls": {
+        "all_rejected": true,
+        "baseline_index": 0,
+        "baseline_mode": "image",
+        "mutations": {
+          "missing_modality": true,
+          "repeated_video_frames": true,
+          "silence": true,
+          "swapped_audio_events": true,
+          "swapped_video_events": true
+        },
+        "nonvacuous": true
+      },
+      "outputs": 640,
+      "pairs": 128,
+      "phase": "confirmation",
+      "preserves_input_handwriting_style": false,
+      "primary_observer": "consensus_or_single_v3",
+      "python_cpu_ns": 17235690719,
+      "scope": "Finite digit semantics, constructed moving-image video, deterministic teacher-distilled speech; no human naturalness or general foundation-model certificate",
+      "status": "completed",
+      "strict_joint_by_input": {
+        "audio": 0.890625,
+        "audio_video": 0.9765625,
+        "image": 0.9921875,
+        "text": 1.0,
+        "video": 0.9140625
+      },
+      "version": "repair-v2",
+      "wall_ns": 324235423130
+    },
+    "summary_path": "/tmp/hepta-ndu-next-media-cache/repair-confirmation-001/summary.json",
+    "summary_sha256": "2d4b484db9ef663d449bee081ef37dc5962625b5aba75f4e892cd04bee794df4",
+    "whole_child_process": {
+      "ended_unix_ns": 1792985358003618454,
+      "max_rss_kib": 880044,
+      "returncode": 0,
+      "scope": "Whole child and codec subprocess CPU; includes child imports and final writes",
+      "system_cpu_seconds": 122.028301,
+      "user_cpu_seconds": 202.717045,
+      "wall_ns": 329215027587
+    }
+  },
+  "fixed_first_confirmation_sample": {
+    "actual_artifacts_location": "/tmp/hepta-ndu-next-media-examples/fixed-first-confirmation",
+    "actual_clock": {
+      "audio_samples": 32000,
+      "duration_ns": 4000000000,
+      "events": [
+        {
+          "audio_sample": 0,
+          "slot": 0,
+          "time_ns": 0,
+          "video_frame": 0
+        },
+        {
+          "audio_sample": 16000,
+          "slot": 1,
+          "time_ns": 2000000000,
+          "video_frame": 10
+        }
+      ],
+      "sample_rate": 8000,
+      "video_fps": 5,
+      "video_frames": 20
+    },
+    "actual_score": {
+      "expected_after_observation": [
+        1,
+        6
+      ],
+      "joint_success": true,
+      "primary_observer": "consensus_or_single_v3",
+      "secondary_audio_by_model": {
+        "base.en": true,
+        "small.en": true
+      },
+      "secondary_audio_success": true,
+      "secondary_observer": "base.en",
+      "success": {
+        "audio": true,
+        "image": true,
+        "text": true,
+        "video": true
+      }
+    },
+    "additional_independent_sample_claimed": false,
+    "copied_completed_actual_bytes_without_editing_or_regeneration": true,
+    "expected_after_observation": [
+      1,
+      6
+    ],
+    "files": {
+      "audio": {
+        "bytes": 64044,
+        "original_path": "/tmp/hepta-ndu-next-media-cache/repair-confirmation-001/case-000-image/audio.wav",
+        "path": "/tmp/hepta-ndu-next-media-examples/fixed-first-confirmation/audio.wav",
+        "sha256": "ee3569dbef96b4c479eb1d8a5149331fa01bfc64a747202df2a0a2feec89760b"
+      },
+      "image": {
+        "bytes": 745,
+        "original_path": "/tmp/hepta-ndu-next-media-cache/repair-confirmation-001/case-000-image/image.png",
+        "path": "/tmp/hepta-ndu-next-media-examples/fixed-first-confirmation/image.png",
+        "sha256": "cd00b7b7d9805ec45e3e52353938128b7e19f80c15ef9ff6dc670c6bfe8b7ab6"
+      },
+      "text": {
+        "bytes": 28,
+        "original_path": "/tmp/hepta-ndu-next-media-cache/repair-confirmation-001/case-000-image/caption.txt",
+        "path": "/tmp/hepta-ndu-next-media-examples/fixed-first-confirmation/caption.txt",
+        "sha256": "4d2525704c36097218d88643248ee3edb29b23cc883c15a81006415bd88c76de"
+      },
+      "video": {
+        "bytes": 48409,
+        "original_path": "/tmp/hepta-ndu-next-media-cache/repair-confirmation-001/case-000-image/video.mp4",
+        "path": "/tmp/hepta-ndu-next-media-examples/fixed-first-confirmation/video.mp4",
+        "sha256": "0bf3f9495ec7f0831e63faeafd6cea4fd119eed0d7825eb8892b089afc87f62c"
+      }
+    },
+    "metadata_updated_unix_ns": 1792985798858485586,
+    "recorded_unix_ns": 1792985520982129278,
+    "repository_contains_binary_artifacts": false,
+    "route": "image",
+    "schema": "hepta.media.fixed-first-confirmation-example.v1",
+    "scope": "Ten digit classes, canonical teacher-distilled speech, and constructed moving digit video; no arbitrary natural audiovisual generation.",
+    "selection": "Fixed first confirmation source index 0, image route; no selection by observed performance.",
+    "source_index": 0,
+    "speech_speakers": [
+      "5170b77f",
+      "5170b77f"
+    ],
+    "writer": 597
+  },
+  "fixed_first_development_sample": {
+    "actual_files": {
+      "audio": {
+        "bytes": 64044,
+        "path": "/tmp/hepta-ndu-next-media-cache/repair-bridge-development-001/case-000-image/audio.wav",
+        "sha256": "368cb9809ab05ecfa8b77aa9bdebb40a87c1494db973189a7336d9db430dc2d2"
+      },
+      "image": {
+        "bytes": 898,
+        "path": "/tmp/hepta-ndu-next-media-cache/repair-bridge-development-001/case-000-image/image.png",
+        "sha256": "882f0a30de4e6d928bd92ef7a0494d0ee4ab9c89487ebf69359b00a204104a14"
+      },
+      "text": {
+        "bytes": 31,
+        "path": "/tmp/hepta-ndu-next-media-cache/repair-bridge-development-001/case-000-image/caption.txt",
+        "sha256": "d07a8cecc5a2d2a87e4bb6d4054325f5b0a7c5d8a8cfa89f8772bdd3524f7f31"
+      },
+      "video": {
+        "bytes": 52749,
+        "path": "/tmp/hepta-ndu-next-media-cache/repair-bridge-development-001/case-000-image/video.mp4",
+        "sha256": "15cf8ce6a13f1411c8564e3d273f9166e47461b51919a598d743ddb2e7cc5da1"
+      }
+    },
+    "case_index": 0,
+    "expected": [
+      9,
+      2
+    ],
+    "independent_confirmation_sample": false,
+    "input_route": "image"
+  },
+  "full_research_archive_receipt_relative_path": "EVIDENCE_RECEIPT.json",
+  "independent_ASR_qualified": true,
+  "new_shared_qualification": {
+    "audit": {
+      "abstentions": {
+        "base.en": 51,
+        "consensus_or_single_v3": 41,
+        "input_classifier": 0,
+        "small.en": 57
+      },
+      "accuracy": {
+        "base.en": 0.83,
+        "consensus_or_single_v3": 0.8633333333333333,
+        "input_classifier": 0.91,
+        "small.en": 0.81
+      },
+      "actual_output_row_files": 300,
+      "asr_actual_wav_events": 298,
+      "both_primary_and_input_eligible": true,
+      "confusion": {
+        "base.en": {
+          "0": {
+            "0": 27,
+            "abstain": 3
+          },
+          "1": {
+            "1": 27,
+            "abstain": 3
+          },
+          "2": {
+            "2": 26,
+            "abstain": 4
+          },
+          "3": {
+            "3": 28,
+            "abstain": 2
+          },
+          "4": {
+            "4": 23,
+            "abstain": 7
+          },
+          "5": {
+            "5": 23,
+            "abstain": 7
+          },
+          "6": {
+            "6": 22,
+            "abstain": 8
+          },
+          "7": {
+            "7": 24,
+            "abstain": 6
+          },
+          "8": {
+            "8": 22,
+            "abstain": 8
+          },
+          "9": {
+            "9": 27,
+            "abstain": 3
+          }
+        },
+        "consensus_or_single_v3": {
+          "0": {
+            "0": 28,
+            "abstain": 2
+          },
+          "1": {
+            "1": 29,
+            "abstain": 1
+          },
+          "2": {
+            "2": 26,
+            "abstain": 4
+          },
+          "3": {
+            "3": 29,
+            "abstain": 1
+          },
+          "4": {
+            "4": 25,
+            "abstain": 5
+          },
+          "5": {
+            "5": 23,
+            "abstain": 7
+          },
+          "6": {
+            "6": 24,
+            "abstain": 6
+          },
+          "7": {
+            "7": 24,
+            "abstain": 6
+          },
+          "8": {
+            "8": 24,
+            "abstain": 6
+          },
+          "9": {
+            "9": 27,
+            "abstain": 3
+          }
+        },
+        "input_classifier": {
+          "0": {
+            "0": 28,
+            "4": 1,
+            "7": 1
+          },
+          "1": {
+            "1": 28,
+            "5": 1,
+            "7": 1
+          },
+          "2": {
+            "0": 1,
+            "2": 27,
+            "6": 1,
+            "9": 1
+          },
+          "3": {
+            "3": 29,
+            "4": 1
+          },
+          "4": {
+            "1": 2,
+            "2": 2,
+            "4": 26
+          },
+          "5": {
+            "5": 29,
+            "7": 1
+          },
+          "6": {
+            "0": 1,
+            "2": 2,
+            "5": 1,
+            "6": 25,
+            "8": 1
+          },
+          "7": {
+            "1": 1,
+            "6": 1,
+            "7": 26,
+            "9": 2
+          },
+          "8": {
+            "2": 1,
+            "3": 1,
+            "6": 1,
+            "8": 27
+          },
+          "9": {
+            "0": 1,
+            "5": 1,
+            "9": 28
+          }
+        },
+        "small.en": {
+          "0": {
+            "0": 28,
+            "abstain": 2
+          },
+          "1": {
+            "1": 29,
+            "abstain": 1
+          },
+          "2": {
+            "2": 18,
+            "abstain": 12
+          },
+          "3": {
+            "3": 28,
+            "abstain": 2
+          },
+          "4": {
+            "4": 25,
+            "abstain": 5
+          },
+          "5": {
+            "5": 22,
+            "abstain": 8
+          },
+          "6": {
+            "6": 24,
+            "abstain": 6
+          },
+          "7": {
+            "7": 23,
+            "abstain": 7
+          },
+          "8": {
+            "8": 19,
+            "abstain": 11
+          },
+          "9": {
+            "9": 27,
+            "abstain": 3
+          }
+        }
+      },
+      "correct": {
+        "base.en": 249,
+        "consensus_or_single_v3": 259,
+        "input_classifier": 273,
+        "small.en": 243
+      },
+      "duplicate_bytes": [
+        [
+          {
+            "index": 152,
+            "path": "five/9a7c1f83_nohash_1.wav",
+            "speaker": "9a7c1f83"
+          },
+          {
+            "index": 172,
+            "path": "five/9a7c1f83_nohash_2.wav",
+            "speaker": "9a7c1f83"
+          }
+        ],
+        [
+          {
+            "index": 234,
+            "path": "seven/9a7c1f83_nohash_4.wav",
+            "speaker": "9a7c1f83"
+          },
+          {
+            "index": 236,
+            "path": "seven/9a7c1f83_nohash_0.wav",
+            "speaker": "9a7c1f83"
+          }
+        ]
+      ],
+      "eligible": {
+        "base.en": false,
+        "consensus_or_single_v3": true,
+        "input_classifier": true,
+        "small.en": false
+      },
+      "frozen_inputs": {
+        "/tmp/hepta-ndu-next-media-cache/repair-qualification-001-process/receipt.json": "3c01906726d4ce36ed561ed428c4b859b8ee83fc11fe10d759236c57195e74f3",
+        "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/ENSEMBLE_QUALIFICATION_SOURCES_V3.json": "df08fa48f9627ab8d828d267599b9bcebb59470d020e4f70a7caff9dfaddb67c",
+        "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/audit/qualification.py": "1050e84a058453f0e50d9a1018b6bffa626cc16c84c479210cac3a20de661fc9"
+      },
+      "incorrect_nonempty_predictions": {
+        "base.en": 0,
+        "consensus_or_single_v3": 0,
+        "input_classifier": 27,
+        "small.en": 0
+      },
+      "independent_replications_claimed": false,
+      "no_model_selection_or_threshold_changes": true,
+      "primary_and_input_joint_correctness": {
+        "(False, False)": 15,
+        "(False, True)": 26,
+        "(True, False)": 12,
+        "(True, True)": 247
+      },
+      "recorded_unix_ns": 1792984409688141894,
+      "registered_recordings": 300,
+      "reserved_media_confirmation_opened_by_audit": false,
+      "same_cohort_correlated_endpoints": true,
+      "schema": "hepta.next.media-shared-qualification-audit.v1",
+      "speaker_cluster_bootstrap": {
+        "confidence": 0.95,
+        "draws": 5000,
+        "intervals": {
+          "base.en": [
+            0.7633117661155044,
+            0.89
+          ],
+          "consensus_or_single_v3": [
+            0.8013698630136986,
+            0.9186461639815535
+          ],
+          "input_classifier": [
+            0.8720920444757654,
+            0.946843853820598
+          ],
+          "small.en": [
+            0.7452799756542908,
+            0.871383785025264
+          ]
+        },
+        "scope": "Descriptive marginal intervals; no multiplicity-adjusted certificate or replacement gate",
+        "seed": 23919
+      },
+      "speaker_clusters": 147,
+      "status": "passed",
+      "unchanged_point_gate": 0.85,
+      "unique_original_wav_sha256": 298,
+      "whole_child_process_cost": {
+        "ended_unix_ns": 1792984373437921663,
+        "max_rss_kib": 1114404,
+        "returncode": 0,
+        "scope": "Whole child and codec subprocess CPU; includes child imports and final writes",
+        "system_cpu_seconds": 177.37055199999998,
+        "user_cpu_seconds": 1401.214589,
+        "wall_ns": 1164287210120
+      }
+    },
+    "child_process_start_unix_ns": 1792983209150729180,
+    "component_models_individually_qualified": false,
+    "fixed_gates": {
+      "ASR_ensemble": 0.85,
+      "input_classifier": 0.85
+    },
+    "independent_from_development": true,
+    "outcomes_used_for_changes": false,
+    "planned_output_root": "/tmp/hepta-ndu-next-media-cache/repair-qualification-001",
+    "population_lower_bound_above_point_gate_claimed": false,
+    "recordings": 300,
+    "registered_recordings": 300,
+    "results": {
+      "ASR_accuracy": {
+        "base.en": 0.83,
+        "consensus_or_single_v3": 0.8633333333333333,
+        "small.en": 0.81
+      },
+      "ASR_eligible": true,
+      "ASR_primary": "consensus_or_single_v3",
+      "both_eligible": true,
+      "cpu_ns": 1573963707665,
+      "ingress_accuracy": 0.91,
+      "ingress_eligible": true,
+      "new_media_confirmation_opened": false,
+      "original_gates_unchanged": true,
+      "phase": "independent_qualification",
+      "source_recordings": 300,
+      "source_speakers": 147,
+      "status": "completed",
+      "wall_ns": 1160394223757
+    },
+    "speaker_clusters": 147,
+    "status": "completed",
+    "summary_path": "/tmp/hepta-ndu-next-media-cache/repair-qualification-001/summary.json",
+    "summary_sha256": "115ae19bd83695c53f5d040b3be28f98ea2b0100f6004d7c4852700e0f9426b4",
+    "two_endpoints_share_the_same_cohort": true,
+    "two_independent_replications_claimed": false,
+    "unique_wav_sha256": 298
+  },
+  "point_gates_not_population_guarantees": true,
+  "protocols": {
+    "AUDIO_SOURCE_ALLOCATION.json": {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/AUDIO_SOURCE_ALLOCATION.json",
+      "sha256": "35862507212b97bc02bc1506070a31863f830e3c9e7747e5f3187ab2e6702fe5"
+    },
+    "ENSEMBLE_QUALIFICATION_SOURCES_V3.json": {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/ENSEMBLE_QUALIFICATION_SOURCES_V3.json",
+      "sha256": "df08fa48f9627ab8d828d267599b9bcebb59470d020e4f70a7caff9dfaddb67c"
+    },
+    "ENSEMBLE_SELECTION_V3.json": {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/ENSEMBLE_SELECTION_V3.json",
+      "sha256": "f810b6bfaf5b2e3c33cec3161646ef891076e0281eae4958599ce0910c22658c"
+    },
+    "ENSEMBLE_SELECTION_V31.json": {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/ENSEMBLE_SELECTION_V31.json",
+      "sha256": "bf70bd1d69ce42c0f2161eb589b7dcf061d6c7a51f68b16c88a322bfbacdbaaf"
+    },
+    "EVENT_QUALIFICATION_SOURCES.json": {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/EVENT_QUALIFICATION_SOURCES.json",
+      "sha256": "2c9aa271394402a21dea81a34f6df4fd3afb9e86bd213f9b2dbd1de1ddabba75"
+    },
+    "EVENT_SELECTION_V2.json": {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/EVENT_SELECTION_V2.json",
+      "sha256": "37c0f7599c2bd7cf3d6648281801aadc541fd102f546b8f4ea658119a9b13db3"
+    },
+    "dependency_continuity/ADDENDUM.json": {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/dependency_continuity/ADDENDUM.json",
+      "sha256": "4b24864a87e9d09e22d3b4b0990164a672ddef8ea0214d14cfb5a91dd9c63e46"
+    },
+    "dependency_continuity/BASE_CONFIRMATION_PROTOCOL.json": {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/dependency_continuity/BASE_CONFIRMATION_PROTOCOL.json",
+      "sha256": "aa49e5cf512dc32e9eebe331dd1a2c19de3d311e4ab90768357a20a44b74156d"
+    },
+    "dependency_continuity/FINAL_CONFIRMATION_PROTOCOL.json": {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/dependency_continuity/FINAL_CONFIRMATION_PROTOCOL.json",
+      "sha256": "163297a3e210f800a2e7bd6e21aff58708d058f264eab17b5fe56ece3d06eb32"
+    },
+    "repair/TRAINING_PROTOCOL.json": {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/TRAINING_PROTOCOL.json",
+      "sha256": "5a7316c8585fc16077116701b79a4f308904b10f2b6f0b68a362108a691df87f"
+    },
+    "repair/bridge_v2/DEVELOPMENT_PROTOCOL.json": {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/DEVELOPMENT_PROTOCOL.json",
+      "sha256": "c05f1cd47d8da5f11833294014a003f53522f1fd675c6ee5ca32d6cccc033a26"
+    },
+    "repair/bridge_v2/QUALIFICATION_PROTOCOL.json": {
+      "path": "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/media/repair/bridge_v2/QUALIFICATION_PROTOCOL.json",
+      "sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114"
+    }
+  },
+  "recorded_unix_ns": 1792985798859148830,
+  "repair_candidate_selection": [
+    {
+      "development_gate_pass": false,
+      "members": [
+        0
+      ],
+      "name": "original",
+      "old12_audio_pair_correct": 8,
+      "old300_correct": 277
+    },
+    {
+      "development_gate_pass": true,
+      "members": [
+        1
+      ],
+      "name": "seed-23179",
+      "old12_audio_pair_correct": 9,
+      "old300_correct": 279
+    },
+    {
+      "development_gate_pass": false,
+      "members": [
+        2
+      ],
+      "name": "seed-23197",
+      "old12_audio_pair_correct": 8,
+      "old300_correct": 276
+    },
+    {
+      "development_gate_pass": false,
+      "members": [
+        0,
+        1,
+        2
+      ],
+      "name": "mean-three",
+      "old12_audio_pair_correct": 8,
+      "old300_correct": 277
+    }
+  ],
+  "reserved_joint_audio_opened_by_media": false,
+  "reserved_media128_opened": true,
+  "retained_interruption_history": {
+    "candidate-qualification-001": {
+      "completed_saved_rows": 23,
+      "finished_summary_present": false,
+      "interpretation": "Whole planned trial did not complete; partial rows are development only, no qualification pass inferred",
+      "observation_unix_ns": 1792977631782680859,
+      "observed_exit_code": 137,
+      "status": "interrupted"
+    },
+    "conditional-probe-001": {
+      "completed_saved_rows": 3,
+      "finished_summary_present": false,
+      "interpretation": "Whole planned trial did not complete; partial rows are development only, no qualification pass inferred",
+      "observation_unix_ns": 1792977631783379816,
+      "observed_exit_code": 137,
+      "status": "interrupted"
+    },
+    "observer-qualification-001": {
+      "completed_saved_rows": 100,
+      "finished_summary_present": false,
+      "interpretation": "Whole planned trial did not complete; partial rows are development only, no qualification pass inferred",
+      "observation_unix_ns": 1792977631782387534,
+      "observed_exit_code": 137,
+      "status": "interrupted"
+    }
+  },
+  "schema": "hepta.next.media-results.v1",
+  "scope": {
+    "digit_classes": 10,
+    "general_foundation_model_claim": false,
+    "hard_ingress_commitment_sacrifices_later_soft_core_correction": true,
+    "human_naturalness_certificate": false,
+    "input_handwriting_style_preserved": false,
+    "neural_waveform_conditions": 10,
+    "raw_encoder_probabilities_retained_separately": true,
+    "speech": "Teacher-distilled canonical phrases; no teacher retrieval at inference",
+    "video": "Constructed moving digit images"
+  },
+  "status": "completed: fixed dual qualification and all original media confirmation sample gates passed"
+}

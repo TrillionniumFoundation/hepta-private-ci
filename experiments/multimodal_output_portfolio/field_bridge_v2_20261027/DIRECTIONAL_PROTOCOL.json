@@ -1,0 +1,128 @@
+{
+  "H12_order": [
+    "current_hard_value",
+    "adapt_image_bce",
+    "adapt_text_ce",
+    "clean_joint_loss",
+    "effective_operator_displacement",
+    "momentum_rms",
+    "normalized_learning_time",
+    "next_clipped_gradient_rms",
+    "gradient_momentum_cosine",
+    "response_image_bce_derivative_along_v",
+    "response_text_ce_derivative_along_v",
+    "clean_joint_loss_derivative_along_v"
+  ],
+  "activation_condition": "Prepare and fit inherited training-only enrichment independently. Execute fresh audit16..23 ONLY after completed frozen H7 result has field_prediction_skill false OR field_decision_skill false, and D1 sources/controllers are committed. H7 audit numeric outcomes cannot be used to select these features, fit, tune, or change thresholds.",
+  "audit_trajectory_ids": [
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+  ],
+  "batch_size": 64,
+  "cost": "Record additional next-gradient/adapted and teacherforwards; fourresponseprobe forwards with2reversepasses; onecleanprobe forward/reverse. Include existing H25/value probes, original parent-bank construction, exact chosen-path replay, allfreshactualbranches, complete predictorCV, and future online feature cost. No zero-cost directional derivatives or compute-efficiency claim. Constant/ordinary/current/richer/generic comparisons must retain shared search cost and equal tuning opportunity; additional observation work explicitly reported.",
+  "created_utc": "2026-10-27T08:48:54.448773+00:00",
+  "direction": {
+    "cosine": "global <g,m>/(||g||||m||);0 if either norm0; roundoff clamp[-1,1]",
+    "directional_derivatives": "First-order <grad_theta L,v> in float64 accumulation; v detached, no Hessian term; no optimizer multiplier or LR included",
+    "gradient": "Exact existing local objective including frozen teacher anchor on first current-next minibatch; same gradient clipping norm1 as actual update, measured with multiplier0",
+    "gradient_rms": "sqrt(sum clipped_g^2 / total local parameter count); absent gradients are zero",
+    "momentum": "Complete original SGD buffers; beta.9, absent initial buffers treated as0",
+    "probe_losses": "Mean teacher-forced response imageBCE and response textCE from exactly same fixed panels/noise71027+i as original observe_field; clean jointloss fromclean[0],noise81027; all current theta",
+    "purity": "Parameters, complete optimizer state, incoming gradient objects/values, global CPU Torch RNG unchanged; no future update executed inside observation",
+    "v": "Detached positive SGD buffer proposal beta*m+g; actual parameter update is -base_lr*learning_multiplier*v. Parameter with absent gradient uses v=0 because SGD skips it."
+  },
+  "exclusions": "No original or new test/retention outputs, no audit observer, no H7audit8..15 labels used for fitting, no edits to frozen26H7 files, no runtimeproductionactivation",
+  "fit_enrichment": "Replay original fitting trajectories from identical zero-effect adapters and complete SGD state. At every boundary require exact original25 coordinates, current hard value, model/optimizer/output/schedule identity and chosen trajectory action. Inherit all four action labels and branches from hash-bound verified parent fitting record; execute chosen8microstep continuation and require original next parameter/optimizer hashes.",
+  "fit_trajectory_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "fixed_deployment_policy": "Same selected pilot action for each seed, unchanged",
+  "fresh_audit": "All four branches actually executed from identical complete state, predictions persisted before outcomes, trajectory follows same independent pseudorandom exploration rule as parent, with fresh IDs16..23. No fit data or predictor changes after pre-audit freeze.",
+  "gates": {
+    "actuator": {
+      "minimum_per_seed_candidate_value_range": 0.005,
+      "minimum_per_seed_selected_semantic_or_image_decision_change_fraction": 0.05
+    },
+    "field": {
+      "audit_trajectories_per_seed": 8,
+      "fit_trajectories_per_seed": 8,
+      "maximum_each_seed_mse_ratio": 1.0,
+      "maximum_field_to_fixed_regret_ratio": 0.8,
+      "maximum_pooled_mse_ratio_to_best_baseline": 0.9,
+      "minimum_each_seed_fraction_spread_at_least_0_001": 0.25,
+      "minimum_each_seed_mean_action_spread": 0.001,
+      "minimum_selected_advantage": 0.001,
+      "trajectory_bootstrap_95_lower": 0.0
+    },
+    "ordinary": {
+      "minimum_each_seed_development_clean_change": -0.01,
+      "minimum_each_seed_gain": 0.0,
+      "minimum_pooled_development_gain": 0.005
+    },
+    "policy": "No numeric threshold or claim upgrade; same independent gate checker applied to fresh directional audit trajectories, conditionally on these historical models"
+  },
+  "generic": "Fixedseed271030 QR12-column orthogonal projection of same30 raw standardized features, canonical positive QRdiagonal; no selected randomprojection search",
+  "interpretation": "Constructed direction witness motivates5features but doesnot establish H12 sufficiency, reachability, generalization, deployed utility or compute advantage. Freshtrajectoryaudit remains a conditional development test on same training response panel.",
+  "learning_multipliers": [
+    0.0,
+    0.25,
+    1.0,
+    2.0
+  ],
+  "macro_steps": 8,
+  "momentum_witness_protocol_sha256": "2c627882855d760e2f69e8e8b388f3372ac8439889628e7fbe854f668062286e",
+  "momentum_witness_result_sha256": "a12377472000cb8a959ec94527eb0babed816eae31e0cfa35e0eaf193f69d9e5",
+  "parent_audit_trajectory_ids_forbidden_for_fitting": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "parent_bank_protocol_sha256": "1ad0bc5f7ef07564ac1383a72ed82e778f6123f780665f228b21092104080e02",
+  "parent_pilot_protocol_sha256": "1ed65b7b3e3fffd637666049922b9f07c0ce2fbb3248d3357a27707a82ced241",
+  "path_schedule": "seed*100003 + 600000 + schedule_id*1009 + microstep; schedule_id=0 for fit0..3 else trajectory; teacher/noise seed107+microstep",
+  "predictor": {
+    "budgets": "160candidatefold fits +1final fit perseed/mode =1449fits total; allmodes samegrid and labeled bank",
+    "candidates": "Same20listed candidates asH7: linear/fullquadratic ridge lambda.01,.1,1,10; RBFwidth.5,1,2 timeslambda.001,.01,.1,1",
+    "cross_validation": "8leave-one-complete-fitting-trajectory-out folds, fold-only rawnormalization; squared errors over3nonzeroactiondeltas, equaltrajectoryweight; firstlistedtie; finalfit8fittingtrajectories only",
+    "kernel": "exp(-squared Euclidean distance/(2*width^2*representation_width)), centered unpenalizedintercept",
+    "modes": [
+      "field",
+      "generic",
+      "richer"
+    ],
+    "normalization": "Trainfold populationmean/std floor1e-8; rawstandardized andprojected coordinates eachclip\u00b110",
+    "prediction": "current+predicted delta, delta[-2,2], nonzeroabsolute[-1.004,.998], action0 exactcurrent",
+    "quadratic": "linear terms then all xi*xj i<=j; ridge unscaled positive lambda, unpenalizedintercept",
+    "schema": "hepta.field-bridge-v2.directional-delta-value-controller.v1"
+  },
+  "preservation": "Keep parentfitting input hashes/inheritedrow identities, allcurrentfeatures anddirectionalreceipts, exact source snapshots, fitmodel hashes, predictions-before-outcomes, perexample audit values, full trajectoryterminal checkpoints; retain every failed gate",
+  "purpose": "Conditional development repair motivated only by constructed momentum witness and original fitting data; preserve H7 study",
+  "raw30_order": "original rich25[:7] + five directional features + original rich25[7:]; field uses first12, richer uses all30",
+  "schema": "hepta.field-bridge-v2.conditional-directional-repair.1",
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "selected_recipe": "upstream_r8_288_lr02",
+  "steps": 288,
+  "trajectory_rng": "numpy.default_rng(271028 + seed*1009 + trajectory*7919)"
+}

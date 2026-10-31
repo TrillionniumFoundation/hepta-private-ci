@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.next.media-shared-qualification-descriptive-analysis.v1",
+  "registered_unix_ns": 1792983974440853242,
+  "analysis_sha256": "1050e84a058453f0e50d9a1018b6bffa626cc16c84c479210cac3a20de661fc9",
+  "qualification_protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114",
+  "qualifier_already_running": true,
+  "qualification_outcomes_inspected_for_analysis_plan": false,
+  "original_point_gate_unchanged": 0.85,
+  "registered_denominator": 300,
+  "unique_original_wav_bytes_from_metadata": 298,
+  "shared_speaker_clusters": 147,
+  "endpoints": [
+    "base.en",
+    "small.en",
+    "consensus_or_single_v3",
+    "input_classifier"
+  ],
+  "bootstrap": {
+    "draws": 5000,
+    "seed": 23919,
+    "resampling_unit": "speaker",
+    "intervals": "marginal descriptive 95%; not new qualification gates"
+  },
+  "new_cohort_not_for_candidate_changes": true
+}

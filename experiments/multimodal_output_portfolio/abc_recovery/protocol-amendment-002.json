@@ -1,0 +1,41 @@
+{
+  "all_blockers_closed": false,
+  "amendment001_sha256": "298e2fd0fe7387dab984b2176a908eb9cf8ed00a6fbe2dc477579f4142e96239",
+  "base_protocol_sha256": "48e7e9fbf940e425825be880de2cc5bec233fd1db5ae198dc88f0a8bbf153e1d",
+  "cost_conversion": "No automatic conversion between 0.002 action utility penalty and measured milliseconds, energy or dollars. Report quality/cost tradeoffs explicitly.",
+  "primary_endpoint_and_CI_changed": false,
+  "quality_cost_scope": "Report matched quality and complete inference cost within the same eight-source cohort; this is not cost evidence for every one of the 128 main sources. Preserve all main quality outcomes independently.",
+  "reason": "Three-view latency does not cover the full eight-view quality distribution. Retain that primary benchmark and add a separately declared full-view cost cohort.",
+  "registered_before": "any task generation evaluation or resident timing; supervised and actual-output training already running",
+  "same_source_repeated_reports_are_new_independent_samples": false,
+  "schema": "hepta.ndu-abc-recovery.prospective-amendment.v1",
+  "timing_extension": {
+    "additional_independent_sources": 0,
+    "conditions_per_seed": 18,
+    "jobs": 23040,
+    "primary_three_view_census_retained": true,
+    "rounds": 2,
+    "scenarios": 2,
+    "separate_output_directory": true,
+    "source_pair_start": 608,
+    "source_pairs": 8,
+    "training_seeds": [
+      17,
+      29,
+      43,
+      59,
+      71
+    ],
+    "view_profile": "supplementary_all",
+    "views": [
+      "clean",
+      "noise",
+      "occlusion",
+      "missing_trusted",
+      "conflict_untrusted",
+      "missing_untrusted",
+      "missing_unknown",
+      "both_missing"
+    ]
+  }
+}

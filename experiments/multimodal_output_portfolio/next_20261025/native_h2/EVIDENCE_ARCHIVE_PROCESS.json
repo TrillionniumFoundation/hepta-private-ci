@@ -1,0 +1,49 @@
+{
+  "cgroup_after": {
+    "current": 7787642880,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3921392,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "cgroup_before": {
+    "current": 8552407040,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 3882225,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "child_system_seconds": 33.815513,
+  "child_user_seconds": 77.87259,
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-m",
+    "experiments.multimodal_output_portfolio.next_20261025.package_closed_study",
+    "--definition",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/PACKAGE_DEFINITION.json",
+    "--archive",
+    "/workspace/scratch/87e43aa872f5/ndu-evidence/hepta-ndu-next-native-h2-20261026.tar.gz",
+    "--receipt",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/native_h2/EVIDENCE_ARCHIVE.json",
+    "--workspace",
+    "/workspace/scratch/87e43aa872f5",
+    "--repository",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu"
+  ],
+  "context": "Closed H2 evidence packaging only; all model/ASR processes have exited; media packaging waits; all original outputs and failures retained; report and protocol source trees frozen for archive; no upload.",
+  "exit_code": 0,
+  "log_sha256": "6bb0b06f4bcfc5fb17478ef2169f59076415b2f7ba1f5266a9f98987f7df50ff",
+  "peak_rss_bytes": 1081122816,
+  "registration_sha256": "06f24c13aca44e06c913c9cff94932f683e1cde0dc4d8add1e8f758fc5378f10",
+  "schema": "hepta.next.native-h2-stage-cost.v1",
+  "wall_ns": 200790779185,
+  "wrapper_sha256": "08040b095fbb311c5cf5ca1334ee8e56b893d39a4b79c766f5e53ab6167f8604"
+}

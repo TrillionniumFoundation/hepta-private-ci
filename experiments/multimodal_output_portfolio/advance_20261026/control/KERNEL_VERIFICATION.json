@@ -1,0 +1,44 @@
+{
+  "code_sha256": {
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/control/bellman.py": "b8a07317a8318f2ce56840237d2920a5a294d66c0fd726a7e9360033444298a3",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/control/dynamic.py": "9be561fd3ea64ad524a59273b36cc1a95be7c0c429d9b046422c8ad2cda828c7"
+  },
+  "consequential_edges": {
+    "acquisition_success_is_terminal_policy_success": 0.95,
+    "actual_mask_can_reject_acquisition": true,
+    "budget_one_disables_acquisition": true,
+    "empty_future_set_is_rejection_not_stop": true,
+    "rejected_invalid_inputs": [
+      "invalid_likelihood",
+      "nonfinite_gamma",
+      "invalid_stop_strict",
+      "invalid_remaining_budget",
+      "nondecreasing_horizon"
+    ],
+    "stop_requires_actual_retained_utility": true
+  },
+  "finite_policy_enumeration": {
+    "correlated_cost_exact_moment": 15.049717665316814,
+    "invalid_mean_cost_moment": 7.576131758953424,
+    "max_absolute_moment_error": 1.7763568394002505e-15,
+    "models": 64,
+    "whole_policies_enumerated": 1350
+  },
+  "global_constraint_scope_counterexample": {
+    "alternative_continuation_moment": 0.16662658302554365,
+    "alternative_feasible_acquisition_probability": 0.99,
+    "interpretation": "Counterexample outside the measured mutually exclusive binary endpoint space: a different continuation can satisfy a policy-dependent root chance gate. Generic global constrained optimality is not claimed.",
+    "stagewise_acquisition_probability": 0.8,
+    "stagewise_selected_moment": 3.7772746115837443
+  },
+  "independent_target_outcome_expansion": {
+    "expanded_target_observation_leaves": 10000,
+    "moment_error": 2.3314683517128287e-15,
+    "strict_success_error": 1.1102230246251565e-16
+  },
+  "native_parity": "Not executed by this Python-only numerical verification",
+  "registered_ns": 1792989350971556289,
+  "schema": "hepta.advance.control-kernel-verification.v1",
+  "status": "passed_with_explicit_global_scope_limit",
+  "verification_source_sha256": "bb2541877741bc142df88f8ef22bd3be39f770eb00dfcf2e5f7d6ecf0dffaaf0"
+}

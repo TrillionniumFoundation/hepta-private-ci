@@ -1,0 +1,40 @@
+{
+  "formal_joint_caller_sha256": "693e03c7b9436644d62e3a5fa3fdcc450e89f91832048584aeb0725318954520",
+  "helper_sha256": {
+    "cases.py": "39fece37565e754ef357085e77f1314739f87eb81aa3cffc8aa5bd5d0bbca04c",
+    "input_codec.py": "ebee9bd16b983b8374066fceb87785d7673915afc74a1260454a0b4104b5c6dd"
+  },
+  "metadata_permutation_checks": {
+    "confirmation": {
+      "both_swap_permutations_checked": 340,
+      "pairs": 170,
+      "writer_speaker_alignment": true
+    },
+    "qualification_id": {
+      "both_swap_permutations_checked": 80,
+      "pairs": 40,
+      "writer_speaker_alignment": true
+    }
+  },
+  "models_or_source_role_loaders_called": false,
+  "new_audio_decoded_or_scored": false,
+  "new_image_model_outcomes_opened": false,
+  "recorded_ns": 1792990250641565618,
+  "remaining_scope_requirements": [
+    "This review executes metadata/AST checks, not Torch, FFmpeg or a model. Actual helper runtime receipts are still required from executed probes/final requests.",
+    "PreparedTask receipt/late paths contain source metadata and filenames that may reveal class. Only PublicTask tensors may enter a model; metadata must remain driver/custody data. This is an auditable function boundary, not a malicious-process sandbox.",
+    "Formal protocols must bind these exact helpers, their transitive dependencies and actual FFmpeg/FFprobe executables. A helper pin alone is insufficient unless the actual caller executes it.",
+    "Digit-motion input is constructed source video; no claim of natural-video or arbitrary text competence follows. The factorized audio likelihood remains a separately declared model assumption."
+  ],
+  "review_source_sha256": "373b1cab9bb8c2f3f5e7f4f5866a9b9a173703612104ebc84845d7a10d75ea74",
+  "reviewed_dataflow": [
+    "Original source order is 2*i,2*i+1. Public make_batch token9/10 determines keep/swap; a single reversal reorders source pixels, literal digit requests and WAVs together.",
+    "construct_case checks source IDs and target equality only in trusted construction. prepare_task never reads target. Literal text supplies its explicitly requested digits; image host receives only Observation.",
+    "Image/video preparation does not call load_audio. Initial audio opens actual WAVs and exposes no late copy. Text also exposes no late audio. Image/video late metadata is limited to path/SHA and stays in the trusted driver.",
+    "Video uses source pixels in public command order, constructed20-frame motion, real lossless libx264rgb MP4, actual independent FFmpeg decode and byte equality. It verifies every PTS,5fps and4s duration before model input.",
+    "The formal joint branch now invokes construct_case plus prepare_task. The direct unencoded motion tensor path is confined to its already frozen old_smoke branch."
+  ],
+  "schema": "hepta.advance.shared-input-independent-review.v1",
+  "source_allocation_sha256": "42d0c47056dda930cb851c9ae59f330747de8bb863f18b79c47eea830f69b262",
+  "status": "static_and_metadata_passed"
+}

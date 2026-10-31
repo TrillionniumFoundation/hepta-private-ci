@@ -1,0 +1,110 @@
+{
+  "all_scientific_hypotheses_established": false,
+  "authority": "DENY_ALL",
+  "completed_runtime_jobs": 9,
+  "completed_training_jobs": 12,
+  "confirmation_qualification_sha256": "ac47ff0661def0092a7674d6e99a146e2b76421c0741b8e42502ab72feea4075",
+  "downstream_jobs_skipped_unqualified": 42,
+  "frozen_runtime_qualification_sha256": "f45b2a45852fec2f456224abc9ccacb788231b3e610d28879e7dbd56e4173889",
+  "native_owner_integration": false,
+  "persistence": "Source and review evidence in Git; full local archive preparation/verification is separate. V2 Library upload still awaits explicit file+destination approval.",
+  "primary_contrasts_executed": 0,
+  "primary_contrasts_not_established": [
+    "B-A",
+    "C-B",
+    "D-A",
+    "E-C",
+    "E-G",
+    "E-F"
+  ],
+  "primary_retention_images_without_model_evaluation": 6144,
+  "production_authority_granted": false,
+  "protocol_sha256": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7",
+  "raw_source_allocation_scope": "Allocation previously hashed original pixels and used labels only for conflict-duplicate exclusion. Unopened here refers to task materialization/model outcomes, not never-read raw corpus bytes.",
+  "recorded_utc": "2026-10-27T11:10:49Z",
+  "registered_experiment_execution_closed": true,
+  "requires_calibration": true,
+  "retries": 0,
+  "schema": "hepta.field-bridge.v3.terminal-study-disposition.1",
+  "source_freezes_verified": {
+    "BANK_FREEZE.json": {
+      "required_sources": 32,
+      "sha256": "1d238c2451216fa5051192cfa36566e89769451d02f38166296d3671476c6ee8",
+      "unchanged": true
+    },
+    "DEVELOPMENT_FREEZE.json": {
+      "required_sources": 32,
+      "sha256": "f6742f2ee89648b688fd89f0cccbbda30bf14fada3ba150f9a06fa177ee43d62",
+      "unchanged": true
+    },
+    "FIT_FREEZE.json": {
+      "required_sources": 32,
+      "sha256": "1a87d3b246e6582f271f89411a0309b07661a45a98a65d95b68f3e71a832af1c",
+      "unchanged": true
+    },
+    "REFERENCE_FREEZE.json": {
+      "required_sources": 32,
+      "sha256": "27010d424b35edadad406dc4a9546394d645f4c0215474540e453784f223fe88",
+      "unchanged": true
+    },
+    "RUNTIME_AUDIT_FREEZE.json": {
+      "required_sources": 41,
+      "sha256": "4eb4b0ee0824951e27dae401317c1a9b7833ad2571371f336ae9a7fbe3473a2a",
+      "unchanged": true
+    },
+    "RUNTIME_BANK_FREEZE.json": {
+      "required_sources": 41,
+      "sha256": "6bd7ae7397e3fa13e7abceb81b290cd5388757ff564a047ee1f674ac58182ce1",
+      "unchanged": true
+    },
+    "RUNTIME_FIT_FREEZE.json": {
+      "required_sources": 41,
+      "sha256": "d0519dd8b9572dd106ea3e564b1e64899c1cf83cd28dce3d4f5b9c098c8284aa",
+      "unchanged": true
+    }
+  },
+  "source_manifest_sha256": "9bfcb279d5efdc7bd6c14af41c64c04a78fc97f7827f7464280d8997d8fead41",
+  "source_roles_used_for_model_tasks_or_actual_verification": [
+    "development_clean",
+    "development_gradient",
+    "development_guard",
+    "development_probe",
+    "development_rehearsal",
+    "development_task",
+    "fit_gradient",
+    "fit_guard",
+    "fit_probe",
+    "fit_rehearsal",
+    "reference_clean",
+    "reference_task",
+    "runtime_audit",
+    "runtime_fit",
+    "runtime_select"
+  ],
+  "source_roles_without_model_task_materialization": [
+    "audit_clean",
+    "audit_gradient",
+    "audit_guard",
+    "audit_probe",
+    "audit_rehearsal",
+    "audit_task",
+    "primary",
+    "retention"
+  ],
+  "stop_rule": "Apply the originally registered failure gates; do not retune or open downstream confirmation roles.",
+  "study_execution_failures_observed": 0,
+  "total_complete_jobs": 21,
+  "total_registered_jobs": 63,
+  "training_qualification_sha256": "caaedb53c661f29c0e169f448900b283c7bfa1e034cf0c2544d90bab09a8b3da",
+  "unopened_role_images": {
+    "audit_clean": 2048,
+    "audit_gradient": 2000,
+    "audit_guard": 512,
+    "audit_probe": 256,
+    "audit_rehearsal": 512,
+    "audit_task": 1024,
+    "primary": 2048,
+    "retention": 4096
+  },
+  "v2_conclusions_unchanged": true
+}

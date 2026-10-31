@@ -1,0 +1,53 @@
+{
+  "logs": {
+    "training_auditor_contract.split.log": {
+      "bytes": 239,
+      "sha256": "01ef0a923e7d6e93638601dbd1673f981ded2c2a6f270b887d035b7ba3e8bb2d"
+    },
+    "training_auditor_old_input.split.log": {
+      "bytes": 232,
+      "sha256": "03fe2d69436755dab9a6a9977a17ace2102a98152a5e48f8be9dc7b9ddefb0d3"
+    }
+  },
+  "mechanical_split": {
+    "bytes": 7898,
+    "sha256": "2d25cbb25ad476160b4a9f4086714f56aea75e774de3eedbffdfefbe640c1051"
+  },
+  "new_study_training_or_endpoint_reads": 0,
+  "old_checkpoint_reads": 3,
+  "original_source_snapshot": {
+    "bytes": 18428,
+    "sha256": "9e4d0ea0b51729e10b713098f9b44fa5b8d31f84b8e66c98e82837d74805da65"
+  },
+  "passed": true,
+  "prelaunch_failure": {
+    "bytes": 788,
+    "sha256": "2dea719d43c01f17cb5e28d36b0388cee44a530aa5760488b6f8a725466f3667"
+  },
+  "schema": "hepta.field-bridge.v4.auditor-split-validation.1",
+  "scientific_model_observer_training_native_network_calls": 0,
+  "scope": "Required revalidation after organizational extraction only; no optional new tests or research calls.",
+  "source_files": {
+    "training_audit_checkpoints.py": "5c13cf63c4eb46472a17425b7ac77f80b367e73368cfe6ed346ae9e7d269e249",
+    "training_audit_common.py": "8ed6b4e67e4b951cfeab982a9e0d4a856e2791cbbfa2a98f26742ab22e6ff00c",
+    "training_audit_contracts.py": "10067ab246cbb753995d8e27aa55d25b386edf104d1224975fd942d396698e1d",
+    "training_audit_run.py": "ad3e5885cf05074be7e69a20d355f625d2ad64a5bbc1217da34f1337d84b9513",
+    "training_audit_trace.py": "59b40389f9c51f523ce15fb8146e711ff4c3137b6200ffbcfc4d579b6cfeb44c",
+    "training_qualification_audit.py": "33521d9cc036a4a7d12a9c3a0c1dbc618020169d41a7f63913afbfe85aa55d1e"
+  },
+  "source_set_sha256": "1af254e2fa8d97be185ce453a44663adc1fdd3acc4ca6933bcb8005879914419",
+  "synthetic_checkpoint_reads": 4,
+  "synthetic_contracts": 30,
+  "validation_cpu_ns_sum": 3939428998,
+  "validation_wall_ns_sum": 3994475894,
+  "validations": {
+    "TRAINING_AUDITOR_OLD_INPUT_CHECK.split.json": {
+      "bytes": 10382,
+      "sha256": "b88f3c0c5263d3afbfd6fa703000fc7a88d656c928b90dc1dde8523a1242f0d5"
+    },
+    "TRAINING_QUALIFICATION_AUDITOR_CONTRACT.split.json": {
+      "bytes": 6575,
+      "sha256": "378cd6d95e8ac54d94e1037d68217e3b8dd9b59d0dddb5e6e606a28d9a3fc09f"
+    }
+  }
+}

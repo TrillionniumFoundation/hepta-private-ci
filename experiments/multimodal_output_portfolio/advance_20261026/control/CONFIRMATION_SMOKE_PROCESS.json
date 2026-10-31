@@ -1,0 +1,41 @@
+{
+  "cgroup_after": {
+    "current": 8419385344,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 4279379,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "cgroup_before": {
+    "current": 8589819904,
+    "events": {
+      "high": 0,
+      "low": 0,
+      "max": 4276891,
+      "oom": 12,
+      "oom_group_kill": 0,
+      "oom_kill": 3
+    }
+  },
+  "child_system_seconds": 0.25418999999999997,
+  "child_user_seconds": 2.014425,
+  "command": [
+    "/workspace/scratch/87e43aa872f5/ndu-next-env/bin/python",
+    "-m",
+    "experiments.multimodal_output_portfolio.advance_20261026.control.smoke_confirm",
+    "--output",
+    "/tmp/hepta-ndu-advance-control/confirmation-smoke-001"
+  ],
+  "context": "Twelve actual old-source requests and post-choice branches; no advance role access; single-thread short API smoke",
+  "exit_code": 0,
+  "log_sha256": "f5a48d5f695991d664d4968f0c56319db6ebb4583549d1b36f3fcf785c5db83c",
+  "peak_rss_bytes": 279875584,
+  "registration_sha256": "d113d02aab385b5435fe243fcb860debcd201562742391f325a73653cecd8c86",
+  "schema": "hepta.next.native-h2-stage-cost.v1",
+  "wall_ns": 2498463221,
+  "wrapper_sha256": "08040b095fbb311c5cf5ca1334ee8e56b893d39a4b79c766f5e53ab6167f8604"
+}

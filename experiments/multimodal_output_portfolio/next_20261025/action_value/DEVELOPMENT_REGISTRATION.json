@@ -1,0 +1,46 @@
+{
+  "config": {
+    "batch": 256,
+    "fold_steps": 600,
+    "folds": 2,
+    "lr": 0.002,
+    "steps": 1200,
+    "weight_decay": 0.0001,
+    "widths": [
+      32,
+      128
+    ]
+  },
+  "fit_scope": "Only original forecast_fit[480,736), selection forecast_calibration[448,576)",
+  "fresh_outputs_opened": false,
+  "input_sha256": {
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc3-runs/controllers-001/seed-17/output_ndu/controller.pt": "af83aa182ed037f8a0792093f69c19c8ddd51f0622f5851ef037277113a561ce",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc3-runs/controllers-001/seed-29/output_ndu/controller.pt": "b83c7ba135c869b10f275ff0007b467e129256a5c0772acbf38458eb1ac31bd7",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc3-runs/controllers-001/seed-43/output_ndu/controller.pt": "42650d9ed2f073623f2b3027be40daf32e510684a4ff7d19371a415d62e5cf5d",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc4-control-runs/development-001/seed-17/fit/data.pt": "5a01bde7946110030e0fabf30c1008830b053f337eb4b25a32aa62a5eaa30f8c",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc4-control-runs/development-001/seed-17/selection/data.pt": "5ce003835c39699471f317e42dd9a1407f9f871ff80d3544801db470d5dd9e01",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc4-control-runs/development-001/seed-29/fit/data.pt": "4e19ac32bea6720a471f82060e37ff08c0f440724727ac7607d05a7727320e6d",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc4-control-runs/development-001/seed-29/selection/data.pt": "a6416ae6541766c149e137f731d3fbd42e4034316c0ddc92e0966ff9628c51ee",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc4-control-runs/development-001/seed-43/fit/data.pt": "723a7d35d642ad9e87c2cea6dd9b2b9b1572b337126c8ad9e890a0c0538c0118",
+    "/workspace/scratch/87e43aa872f5/ndu-next-assets/shared/abc4-control-runs/development-001/seed-43/selection/data.pt": "9f749990e90c895a3507daa06b05f614b321efc1b1835d21e6c1299e98e4b79e"
+  },
+  "schema": "hepta.next.rich-value-development.v1",
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "selection": "Choose maximum action-cost CE among candidates with no raw CE or exact-success point loss versus frozen teacher; if none qualifies, keep maximum action-cost CE as an explicitly unadmitted research candidate. No further search.",
+  "source_sha256": {
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/action_value/__init__.py": "56b5564b4f855bdfca4461b7d06b0726741e19f9e5e4c44c2e6e2416a14e8407",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/action_value/analyze.py": "5647a15def80f980f8ddcb5c547febe542983d187e06438a92eba480c420ad29",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/action_value/audit_fit.py": "3f43f600ce0b0427ecc3a8e72eb3dae2dec77301da8fa0ad895e5763553f3d38",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/action_value/develop.py": "3dcbe3f3af9ce10f3c19df80be179b0410a060f4010faf1e637f6bed69099230",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/action_value/evaluate.py": "353d6a306a35ac09dd871c8c9b22f73756d3fee6b16d7526596cfef852d0d2f6",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/action_value/model.py": "9c578bdb9721da06b50de50bc8a06262a77d3cd17ea49593cfc01c27d71cce03",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/action_value/process.py": "a965808af9ae3c3a6a7b5680b903374bffcabd265d31b8fd12cc221fb690e280",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/action_value/register.py": "74da8d3d3802eb0cc726462c3e4e6c7acb99b5f3c786e274499daa2167b2b351",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/next_20261025/action_value/smoke.py": "ecfa7f103d704d5c509e6a5432c262c1519279378c3f849dcfcc279bb7b9b702"
+  },
+  "started_unix_ns": 1792980123602208871
+}

@@ -1,0 +1,31 @@
+{
+  "actual_identity_strict_success": true,
+  "actual_identity_utility": true,
+  "actual_observation_rows_independently_scored": 100,
+  "actual_utility_levels": [
+    0.0,
+    1.0
+  ],
+  "all_three_parameter_matched_profiles_identical": {
+    "17": true,
+    "29": true,
+    "43": true
+  },
+  "hypothetical_target_scores_checked": 10000,
+  "mean_risk_normalized_matrix_max_abs_difference": 1.6653345369377348e-16,
+  "no_models_codecs_or_new_ASR_rerun": true,
+  "nonbinary_contract": {
+    "CE": [
+      0.28310958475848635,
+      0.4
+    ],
+    "mean": [
+      0.5,
+      0.4
+    ],
+    "measured_experiment": false
+  },
+  "schema": "hepta.advance.actual-endpoint-independent-audit.v1",
+  "scope": "Independent scalar scoring/math and row identity checks. Does not rerun image/video recognition or claim calibration of the learned target posterior.",
+  "status": "passed"
+}

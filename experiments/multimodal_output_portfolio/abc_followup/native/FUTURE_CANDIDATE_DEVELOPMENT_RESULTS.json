@@ -1,0 +1,121 @@
+{
+  "actual_correctness_rate": 0.42725,
+  "baseline": {
+    "frozen_calibration": {
+      "bce": 0.20215460540886446,
+      "bce_probability_clip": 1e-15,
+      "brier": 0.060815965414327884,
+      "ece10": 0.015894812243111137,
+      "mean_probability": 0.4121020705499063
+    },
+    "raw": {
+      "bce": 0.20577745844287298,
+      "bce_probability_clip": 1e-15,
+      "brier": 0.05967308680307137,
+      "ece10": 0.028213912817888716,
+      "mean_probability": 0.45153846339545617
+    }
+  },
+  "calibrator_freeze_sha256": "42e90963a5d5f7ccccb78606572011ac238abffabd40ebc78a698b0364a0b454",
+  "candidate_selected_or_applied": false,
+  "candidates_file_sha256": "409221dd6f892e3ccf0f317c4c4d86dc9cf9bcf68651c016349515094fa2dd24",
+  "cpu_ns": 334282883,
+  "development_data_sha256": "aa8fb7a5e32f435ad3f1a72f86ecb1dee3830a2e65d1a97848ca33a303cbc4bd",
+  "development_observed_before_candidate_construction": true,
+  "eligible_for_independent_acceptance": false,
+  "future_rows": 4000,
+  "generator_digest": "94c9582ba41a86a4fb1578484ca2f2a6cb0731dcc447816d0a7f487cc756600d",
+  "interpretation": "Functional historical diagnostic of generated future-correctness parameters; negative Brier/BCE differences are better. No independent efficacy, candidate acceptance, or generation-utility causal claim.",
+  "maximum_absolute_delta_q32": 429497,
+  "new_source_outcomes_opened": false,
+  "paired_action_rows_are_independent_n": false,
+  "predictor_freeze_sha256": "23475f242980f006329e4d6a200e8f0e553b3ddefd40a1221095a5264de96f2a",
+  "production_signed_qualification": false,
+  "protocol_sha256": "b94df6feac7cace3beb8f1f9f95b7a299f60dbb9b86c4fe414df5925c8c5416b",
+  "refit_or_recalibration": false,
+  "rows": [
+    {
+      "candidate": "candidate:no-change:9058ec1051babac8df4de39e582bdb045eba111d422c7e9725f01c10b2919b01",
+      "candidate_parameter_bytes_sha256": "d1bdfbdf31ec8d6a9d35b369cc4aee850a4181e8c8bcd9076d41c963d0d06e52",
+      "frozen_calibration": {
+        "bce": 0.20215460540886446,
+        "bce_probability_clip": 1e-15,
+        "brier": 0.060815965414327884,
+        "ece10": 0.015894812243111137,
+        "mean_probability": 0.4121020705499063
+      },
+      "frozen_calibration_group_changes": 0,
+      "future_state_forecast_unchanged": true,
+      "kind": "NoChange",
+      "number_of_parameter_updates": 0,
+      "raw": {
+        "bce": 0.20577745844287298,
+        "bce_probability_clip": 1e-15,
+        "brier": 0.05967308680307137,
+        "ece10": 0.028213912817888716,
+        "mean_probability": 0.45153846339545617
+      },
+      "raw_bce_difference_from_baseline": 0.0,
+      "raw_brier_difference_from_baseline": 0.0,
+      "raw_probability_change_max": 0.0
+    },
+    {
+      "candidate": "candidate:update:a37048291fca37e406e593f8f5309660db09accf4ab954b411db672c203dc3d4",
+      "candidate_parameter_bytes_sha256": "b7c4152b6fc99d3061d1516fec59e4d03fdb2ce62eb8f56a7746d5f159304778",
+      "frozen_calibration": {
+        "bce": 0.20215460540886446,
+        "bce_probability_clip": 1e-15,
+        "brier": 0.060815965414327884,
+        "ece10": 0.015894812243111137,
+        "mean_probability": 0.4121020705499063
+      },
+      "frozen_calibration_group_changes": 0,
+      "future_state_forecast_unchanged": true,
+      "kind": "Update",
+      "number_of_parameter_updates": 26,
+      "raw": {
+        "bce": 0.2057766677104825,
+        "bce_probability_clip": 1e-15,
+        "brier": 0.05967303173739388,
+        "ece10": 0.028213975287315077,
+        "mean_probability": 0.45153752720936496
+      },
+      "raw_bce_difference_from_baseline": -7.907323904821073e-07,
+      "raw_brier_difference_from_baseline": -5.5065677483090436e-08,
+      "raw_probability_change_max": 4.77329962667028e-05
+    },
+    {
+      "candidate": "candidate:update:fdd02ddb1908450167c2169d7f51744c9b3de663d76fd6f672e005c01ce55640",
+      "candidate_parameter_bytes_sha256": "de55fe43523a120b17ce7183c9ae24cde8e30b0ee3422023cdd8892639296896",
+      "frozen_calibration": {
+        "bce": 0.20215460540886446,
+        "bce_probability_clip": 1e-15,
+        "brier": 0.060815965414327884,
+        "ece10": 0.015894812243111137,
+        "mean_probability": 0.4121020705499063
+      },
+      "frozen_calibration_group_changes": 0,
+      "future_state_forecast_unchanged": true,
+      "kind": "Update",
+      "number_of_parameter_updates": 23,
+      "raw": {
+        "bce": 0.20577706304112833,
+        "bce_probability_clip": 1e-15,
+        "brier": 0.059673059262496615,
+        "ece10": 0.028213944063985967,
+        "mean_probability": 0.4515379953244386
+      },
+      "raw_bce_difference_from_baseline": -3.954017446516911e-07,
+      "raw_brier_difference_from_baseline": -2.7540574751294677e-08,
+      "raw_probability_change_max": 2.3866229405977712e-05
+    }
+  ],
+  "schema": "hepta.abc4.future-candidate-development-evaluation.v1",
+  "source_group": "selection",
+  "source_pairs": 2000,
+  "source_role": "development",
+  "timing_scope": "Whole evaluator entry through checks/predictions/summary; excludes final JSON write; not per-tick latency",
+  "wall_ns": 334289338,
+  "weights_sha256": "95d6fade17c609457cb6b978d6580a37fb3bdd02aafa125d964c60c48dd4cc0c",
+  "writable_surface": "w2[32][0:33] only"
+}

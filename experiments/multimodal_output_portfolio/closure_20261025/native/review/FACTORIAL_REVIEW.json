@@ -1,0 +1,86 @@
+{
+  "all_seven_factorial_terms_recovered": true,
+  "effect_scale": "2*Walsh coefficient; pairwise DID/2 and three-way DDD/4; averaged over three fitted seeds",
+  "frozen_files_checked": 165,
+  "interpretation_limits": [
+    "Base risk is teacher-forced conditional latent-noise surrogate risk",
+    "Dynamic factor bundles draft feedback and shared entropic-critic replanning, not pure information value",
+    "Softmax mixture trained; deterministic argmax deployed, no equality/global-optimum claim",
+    "Offline complete trees support functionally nonanticipative policy evaluation, not online latency evidence",
+    "Source-pair bootstrap conditions on three fitted seeds; primary seven nominal Bonferroni intervals only",
+    "Historical seed17 used two training threads; new seed29/43 used one, paired within each seed"
+  ],
+  "literal_source_cluster_resampling_comparisons": 10,
+  "matched_training": {
+    "17": {
+      "initial_parameter_sha256": "720b4bcc1fe1ca4e2453e9963598378ea502d307f5415de575971f01e6a60703",
+      "record_sha256": "0f935b44c3f6d18c3fa99cfeecbaf5794633d149b0a1bf64b3192c70a360f4c6",
+      "schedule_sha256": "a027db1a15c1b0c831887cac8b1f42aef45785e1b8c86d01a94b44fdc31b5a8b",
+      "training_config": {
+        "batch_size": 64,
+        "horizon": 4,
+        "learning_rate": 0.001,
+        "noise_scale": 0.15,
+        "risk_aversion": 2.0,
+        "scenarios": 2,
+        "seed": 17,
+        "steps": 2000,
+        "threads": 2
+      }
+    },
+    "29": {
+      "initial_parameter_sha256": "9e89f7756ef2f4217f36862913cc8eba59db0168182cec4e56dd8764b7bbbe9e",
+      "record_sha256": "66d4cc565b6d4dfee6e6547cc4fd4e450da73cfcb5788450d8c8bae000aea025",
+      "schedule_sha256": "0c045589150caf85c920239ac44604df4f6ca9053f0fe8ffa1698674af3044f6",
+      "training_config": {
+        "batch_size": 64,
+        "horizon": 4,
+        "learning_rate": 0.001,
+        "noise_scale": 0.15,
+        "risk_aversion": 2.0,
+        "scenarios": 2,
+        "seed": 29,
+        "steps": 2000,
+        "threads": 1
+      }
+    },
+    "43": {
+      "initial_parameter_sha256": "2ba0a18a75778294eee64d7c7739966257bfa255e09796e602b95c7979dc0447",
+      "record_sha256": "2cb398dfb831f49189c188e444cf98da492a98992cb68f739e2906c662e494dd",
+      "schedule_sha256": "a0517ba57059d1145f526dd0c71e5d02ef437176833b395ac71ad751726d4554",
+      "training_config": {
+        "batch_size": 64,
+        "horizon": 4,
+        "learning_rate": 0.001,
+        "noise_scale": 0.15,
+        "risk_aversion": 2.0,
+        "scenarios": 2,
+        "seed": 43,
+        "steps": 2000,
+        "threads": 1
+      }
+    }
+  },
+  "objective_and_gradient": {
+    "entropic": {
+      "actual_reward_labels_detached": true,
+      "analytical_gradient_matches": true,
+      "value": -0.3037663648751539
+    },
+    "mean": {
+      "actual_reward_labels_detached": true,
+      "analytical_gradient_matches": true,
+      "value": -0.448744055621984
+    }
+  },
+  "protocol_sha256": "b2db7f5f1621d8bf900ff2692844f87b37809e21d778ec5e818545adb2e4377d",
+  "review_source_sha256": "26421966960cfca91f5c7293722d809629c9aa5c1223f6de75ba6780cdb5a60b",
+  "schema": "hepta.closure.factorial-independent-review.v1",
+  "source_review_only_new_data_opened": false,
+  "status": "no_blocking_issue_found",
+  "synthetic_nonanticipation": {
+    "first_action_unchanged": true,
+    "selected_current_draft_changes_second_action": true,
+    "unselected_child_poisoning_no_effect": true
+  }
+}

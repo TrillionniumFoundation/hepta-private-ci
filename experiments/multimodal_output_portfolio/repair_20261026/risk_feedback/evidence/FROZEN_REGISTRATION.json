@@ -1,0 +1,142 @@
+{
+  "evaluation_has_not_started": true,
+  "protocol": {
+    "action_semantics": [
+      "precise category zero",
+      "precise category one",
+      "precise category two",
+      "explicit uncertainty with partial task credit"
+    ],
+    "arms": [
+      "mean_numeric",
+      "risk_numeric",
+      "risk_zero",
+      "risk_shuffled",
+      "risk_history",
+      "risk_always_repair",
+      "risk_static_stop"
+    ],
+    "baseline_commit": "ab417dfc97aad4fd51e2ae77515936d6ef6464b7",
+    "bootstrap_replicates": 3000,
+    "bootstrap_seed": 460131,
+    "channel_cost_by_fault": [
+      0.0,
+      0.03,
+      0.2
+    ],
+    "cost_units": "Declared task-utility charges, including stochastic channel charge inside the outcome expectation. CPU and wall nanoseconds reported separately, no energy claim.",
+    "cue_probabilities": [
+      0.25,
+      0.25,
+      0.25,
+      0.25
+    ],
+    "evaluation_rows": 256,
+    "evaluation_seed": 460129,
+    "fault_probabilities": [
+      0.7,
+      0.24,
+      0.06
+    ],
+    "feedback_seed": 460128,
+    "feedback_training_rows": 96,
+    "gamma": 1.5,
+    "initial_action_cost": [
+      0.02,
+      0.02,
+      0.02,
+      0.06
+    ],
+    "interval_scope": "Two prespecified paired synthetic-episode comparisons, each 97.5 percent percentile-bootstrap interval; not natural-source or training-seed population coverage",
+    "irreversible_first_delivery_damage": [
+      0.0,
+      0.05,
+      0.15
+    ],
+    "learning_rate": 1.0,
+    "media": "Deterministic semantic codecs: text, PNG, PCM tone WAV, uncompressed AVI. Audio is not speech; video is a finite moving marker, not learned natural video.",
+    "numeric_feedback_by_fault": [
+      1.0,
+      -0.5,
+      -1.0
+    ],
+    "paired_interval": 0.975,
+    "posterior_seed": 460127,
+    "posterior_training_rows": 4096,
+    "primary_comparisons": [
+      "risk_numeric versus mean_numeric on empirical CE",
+      "risk_numeric versus risk_zero on mean net return"
+    ],
+    "repair_channel": "One registered reliable retransmission; generated and read back anew; no hidden-target acquisition",
+    "repair_cost": 0.12,
+    "reward_visibility": "Only public delivery consistency feedback before continuation. Hidden target enters private score after final action and receipt have been persisted.",
+    "schema": "hepta.repair.risk-feedback.protocol.v1",
+    "scope": "New synthetic finite mechanism study, not a replay or confirmation of V6, not natural multimodal learning, not production owner integration",
+    "semantic_utility_action_by_target": [
+      [
+        1.0,
+        -0.25,
+        -8.0
+      ],
+      [
+        -0.25,
+        1.0,
+        -4.0
+      ],
+      [
+        -0.5,
+        -0.5,
+        1.0
+      ],
+      [
+        0.35,
+        0.35,
+        0.35
+      ]
+    ],
+    "shuffle_control": "Permutes the scalar feedback across evaluation episodes; exact scalar marginal retained",
+    "shuffle_seed": 460130,
+    "stopping_rule": "One registered run, all rows/faults and negative comparisons retained; no parameter search using evaluation targets",
+    "strong_control": "risk_history receives identical complete public delivery readback and chooses repair from its registered consequences; no unique numeric advantage is presumed",
+    "target_law_by_cue": [
+      [
+        0.94,
+        0.05,
+        0.01
+      ],
+      [
+        0.05,
+        0.9,
+        0.05
+      ],
+      [
+        0.05,
+        0.15,
+        0.8
+      ],
+      [
+        0.5,
+        0.45,
+        0.05
+      ]
+    ],
+    "terminal_mismatch_penalty": [
+      0.0,
+      2.0,
+      5.0
+    ],
+    "training_claim": "Actual numpy gradient updates of a 4x3 categorical posterior and a two-parameter numeric-feedback policy. Media encoders/decoders are deterministic and untrained.",
+    "training_steps": 600
+  },
+  "registered_ns": 1793040569492884617,
+  "run_count": 1,
+  "source_pins": {
+    "PROTOCOL.json": "8ee00929f8d5ff142230999c651291c6b0a1118a7c064bf0e1944a42e5a28b93",
+    "__init__.py": "67495faab26a884c522b4fc2ea0637c860ab30e44f224a17d425f4fd88184226",
+    "media.py": "7fda2bad071f5abd84b418612f5e27a58c9d27c4ab33f19af06497e8217f3fc3",
+    "model.py": "ec76081b2b767383f6efbc40d1189c021b32001fa898fe79fb18c8709e342015",
+    "run.py": "8e995707df31a65d9c61f18b2db4367360e5681d05973a85c76b1baa13bc5442",
+    "test_mechanism.py": "ff8a4e86d7dca5930d7a9cfb4df27790c3da7c2ddba0d9c04c630912e80d10e8",
+    "upstream_bellman.py": "b8a07317a8318f2ce56840237d2920a5a294d66c0fd726a7e9360033444298a3"
+  }
+}

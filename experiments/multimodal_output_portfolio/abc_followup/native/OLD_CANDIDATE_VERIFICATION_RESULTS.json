@@ -1,0 +1,51 @@
+{
+  "applied_update": false,
+  "authenticated_evaluator": false,
+  "baseline_raw_brier": 0.05716541419776402,
+  "bootstrap_draws": 4000,
+  "candidates": [
+    {
+      "calibrated_confidence_rows_changed": 0,
+      "candidate": "candidate:update:5c44073ceb5cfae42017eb9b3729a869ca045c237daf236c1779a40af9684b2c",
+      "id_brier_improvement": -3.081178719408668e-08,
+      "maximum_raw_probability_change": 1.1725627364400637e-05,
+      "mean_brier_improvement": -1.3589140164743097e-08,
+      "ood_brier_improvement": 1.675098843833626e-11,
+      "paired_source_bonferroni_family95_interval": [
+        -9.134608008648359e-08,
+        5.976125207548206e-08
+      ],
+      "positive_adjusted_lower_endpoint": false,
+      "raw_brier": 0.057165427786904165
+    },
+    {
+      "calibrated_confidence_rows_changed": 0,
+      "candidate": "candidate:update:b400ac9925c1ad08177f9becf7b653a0e1348631d560c72b455e649c027aa590",
+      "id_brier_improvement": -6.163410294758666e-08,
+      "maximum_raw_probability_change": 2.3451421198084077e-05,
+      "mean_brier_improvement": -2.7182926153276977e-08,
+      "ood_brier_improvement": 3.350351422764685e-11,
+      "paired_source_bonferroni_family95_interval": [
+        -1.8269756145774283e-07,
+        1.1951804351523788e-07
+      ],
+      "positive_adjusted_lower_endpoint": false,
+      "raw_brier": 0.057165441380690164
+    }
+  ],
+  "comparisons": 2,
+  "data_sha256": "e71599c687be4a1129aee1afe0fdb6023bc50f026b676ffbabee573731704c96",
+  "eligible_for_independent_acceptance": false,
+  "generator_digest": "5968450a4cf399c88c18eba2934da62f342c4c22eeeb32a762f3a8e6ea6d09bb",
+  "id_pairs": 632,
+  "independent_source_pairs": 1432,
+  "individual_interval_confidence": 0.975,
+  "new_independent_sources_beyond_primary": 0,
+  "nominal_family_confidence": 0.95,
+  "ood_pairs": 800,
+  "registration_sha256": "8cf862d17546de1b11f098933d4dbdc01e4dadd493e6948fd8a5923152673dfa",
+  "schema": "hepta.abc4.native-old-head-independent-candidates.v1",
+  "scope": "old508-to32 current-output correctness head only; not future-state prediction, generator improvement or authenticated native acceptance",
+  "source_pair_draws_shared_between_candidates": true,
+  "statistically_unseen_sources_for_fixed_candidates": true
+}

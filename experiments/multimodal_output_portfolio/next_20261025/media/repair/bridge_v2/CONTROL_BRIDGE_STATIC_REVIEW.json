@@ -1,0 +1,480 @@
+{
+  "schema": "hepta.next.media-bridge-control-static-review.v1",
+  "scope": "Independent read-only source, recorded file identity and old measured-event cache review; no new qualification outcome values or models loaded",
+  "original_qualification_protocol_sha256": "cd7be102f8c624caa7bac560866ae00e0f852627927121ba93c328392fad7114",
+  "reviewed_sources": [
+    {
+      "name": "ingress.py",
+      "path": "ingress.py",
+      "sha256": "fe191d8e71980ef5112eea4f64a08bfa95452d920193293f31267d3baf704c0a"
+    },
+    {
+      "name": "evaluate.py",
+      "path": "evaluate.py",
+      "sha256": "4d447f3504d3d1fbce4caa7af4e49092de1b74adbcaff557221a0650c8094571"
+    },
+    {
+      "name": "freeze.py",
+      "path": "freeze.py",
+      "sha256": "72b208a362b312335a68b766ce9f80dd47647492054d882c079d55950e793c8c"
+    },
+    {
+      "name": "freeze_qualification.py",
+      "path": "freeze_qualification.py",
+      "sha256": "c9fb098dd1ec50d5aa507a282384187b415155889871d3b087e66c1332a46b7e"
+    },
+    {
+      "name": "qualify.py",
+      "path": "qualify.py",
+      "sha256": "19679d5ba912e33efeb1d2bde33a5c64e1fd33848adf9f3265f34fd21197b0a7"
+    },
+    {
+      "name": "__init__.py",
+      "path": "__init__.py",
+      "sha256": "e2c58c7c818c1a80f375bef1babc22dd5bc65dab2fe68f962957675e940f8089"
+    }
+  ],
+  "continuity": {
+    "all_current_identities_match": true,
+    "closure_count": 46,
+    "evidence_counts": {
+      "original_qualification_pin": 21,
+      "pre_execution_archive_member": 2,
+      "pre_execution_git_blob": 12,
+      "pre_execution_protocol_pin": 11
+    },
+    "independently_checked_archive_members": {
+      "repo_source/experiments/multimodal_output_portfolio/v7_media/motion.py": {
+        "bytes": 2565,
+        "sha256": "20b55c583c6f5d407db691831bc016012e8f4229d8d414eeca90f7f113a2ad62"
+      },
+      "repo_source/experiments/multimodal_output_portfolio/v7_media/piper_decoder.py": {
+        "bytes": 8279,
+        "sha256": "cc8abbfdbe000718d8642efa07ca65bcea88c617c38ef70b230b54b809d32e42"
+      }
+    },
+    "independently_checked_archive_sha256": "53cb30f96e03ced895dd98576b00f147d13c3748b6acdc6418580320a4525e15",
+    "model_or_candidate_module_imported": false,
+    "original_qualification_pins": 411,
+    "outcome_records_read": false,
+    "reviewed_manifest_sha256": "4b24864a87e9d09e22d3b4b0990164a672ddef8ea0214d14cfb5a91dd9c63e46"
+  },
+  "cache": {
+    "manifest_sha256": "1883c9bc8476ae4f016a2cebdea78140c29d522f1767c1e833de37c7ffa862d1",
+    "source_pin_count": 14,
+    "bad_pins": [],
+    "cached_events": 11,
+    "unique_pcm_events": 11,
+    "source_observation_count": 22,
+    "all_waves_and_pcm_match": true,
+    "all_cached_observations_equal_a_pinned_original": true,
+    "event_checks": [
+      {
+        "event_pcm_sha256": "0c0c2f193b65ed7810c5cc54a2eda5e21e7a626081887215e67c0783620f189c",
+        "wave_sha_match": true,
+        "pcm_sha_match": true,
+        "format": [
+          8000,
+          1,
+          2,
+          16000
+        ],
+        "target_supplied": false,
+        "carrier": true,
+        "exact_original_observation_match_count": 2,
+        "source_receipts": [
+          "/tmp/hepta-ndu-next-media-cache/development-001/conditional-heads/row-08.json",
+          "/tmp/hepta-ndu-next-media-cache/development-001/conditional-heads/row-09.json"
+        ]
+      },
+      {
+        "event_pcm_sha256": "0c92bddb4e96f3ea9ec9f0f64a668255a6c15527ac09f6f119cafde60c7c4a39",
+        "wave_sha_match": true,
+        "pcm_sha_match": true,
+        "format": [
+          8000,
+          1,
+          2,
+          16000
+        ],
+        "target_supplied": false,
+        "carrier": true,
+        "exact_original_observation_match_count": 2,
+        "source_receipts": [
+          "/tmp/hepta-ndu-next-media-cache/development-001/negative-controls/silence.json",
+          "/tmp/hepta-ndu-next-media-cache/development-001/negative-controls/silence.json"
+        ]
+      },
+      {
+        "event_pcm_sha256": "1b71e015b2a322608093f62ea8e9a8d6d24c61ec5cbd1b4bc180f42c45b69e97",
+        "wave_sha_match": true,
+        "pcm_sha_match": true,
+        "format": [
+          8000,
+          1,
+          2,
+          16000
+        ],
+        "target_supplied": false,
+        "carrier": true,
+        "exact_original_observation_match_count": 2,
+        "source_receipts": [
+          "/tmp/hepta-ndu-next-media-cache/development-001/conditional-heads/row-03.json",
+          "/tmp/hepta-ndu-next-media-cache/development-001/conditional-heads/row-04.json"
+        ]
+      },
+      {
+        "event_pcm_sha256": "1e3e2cdd1958ddf31fb178ea20dfdd5592fddb0d3b54e59116d3139f8ae7edfd",
+        "wave_sha_match": true,
+        "pcm_sha_match": true,
+        "format": [
+          8000,
+          1,
+          2,
+          16000
+        ],
+        "target_supplied": false,
+        "carrier": true,
+        "exact_original_observation_match_count": 2,
+        "source_receipts": [
+          "/tmp/hepta-ndu-next-media-cache/development-001/conditional-heads/row-04.json",
+          "/tmp/hepta-ndu-next-media-cache/development-001/conditional-heads/row-05.json"
+        ]
+      },
+      {
+        "event_pcm_sha256": "389df33c6385dafac246492fc6865394ec1483dce38f3c417a45afc7f47c8f94",
+        "wave_sha_match": true,
+        "pcm_sha_match": true,
+        "format": [
+          8000,
+          1,
+          2,
+          16000
+        ],
+        "target_supplied": false,
+        "carrier": true,
+        "exact_original_observation_match_count": 2,
+        "source_receipts": [
+          "/tmp/hepta-ndu-next-media-cache/development-001/conditional-heads/row-02.json",
+          "/tmp/hepta-ndu-next-media-cache/development-001/conditional-heads/row-03.json"
+        ]
+      },
+      {
+        "event_pcm_sha256": "557ae484ec9cc549b7e5999d3040e3170c3f89100de5fa36d757a744c6055448",
+        "wave_sha_match": true,
+        "pcm_sha_match": true,
+        "format": [
+          8000,
+          1,
+          2,
+          16000
+        ],
+        "target_supplied": false,
+        "carrier": true,
+        "exact_original_observation_match_count": 2,
+        "source_receipts": [
+          "/tmp/hepta-ndu-next-media-cache/development-001/conditional-heads/row-06.json",
+          "/tmp/hepta-ndu-next-media-cache/development-001/conditional-heads/row-07.json"
+        ]
+      },
+      {
+        "event_pcm_sha256": "59d8a867cd874808cf47a41a09c9d189d1fdecc250a65fce7c16c661c211eff5",
+        "wave_sha_match": true,
+        "pcm_sha_match": true,
+        "format": [
+          8000,
+          1,
+          2,
+          16000
+        ],
+        "target_supplied": false,
+        "carrier": true,
+        "exact_original_observation_match_count": 2,
+        "source_receipts": [
+          "/tmp/hepta-ndu-next-media-cache/development-001/conditional-heads/row-00.json",
+          "/tmp/hepta-ndu-next-media-cache/development-001/conditional-heads/row-01.json"
+        ]
+      },
+      {
+        "event_pcm_sha256": "75cde725cb46d2f931a9a958a1237e1ef6cb7f93f4a9517c9724c3b70472901c",
+        "wave_sha_match": true,
+        "pcm_sha_match": true,
+        "format": [
+          8000,
+          1,
+          2,
+          16000
+        ],
+        "target_supplied": false,
+        "carrier": true,
+        "exact_original_observation_match_count": 2,
+        "source_receipts": [
+          "/tmp/hepta-ndu-next-media-cache/development-001/conditional-heads/row-01.json",
+          "/tmp/hepta-ndu-next-media-cache/development-001/conditional-heads/row-02.json"
+        ]
+      },
+      {
+        "event_pcm_sha256": "afcfad34bbd2f9b02441e47896297343afb9073337d4b68f6cd4794dfbd38b66",
+        "wave_sha_match": true,
+        "pcm_sha_match": true,
+        "format": [
+          8000,
+          1,
+          2,
+          16000
+        ],
+        "target_supplied": false,
+        "carrier": true,
+        "exact_original_observation_match_count": 2,
+        "source_receipts": [
+          "/tmp/hepta-ndu-next-media-cache/development-001/conditional-heads/row-07.json",
+          "/tmp/hepta-ndu-next-media-cache/development-001/conditional-heads/row-08.json"
+        ]
+      },
+      {
+        "event_pcm_sha256": "b738dd08ea3acb0824b888b131a0c523d2ac0b063bb9bbf534587ca201ba31c3",
+        "wave_sha_match": true,
+        "pcm_sha_match": true,
+        "format": [
+          8000,
+          1,
+          2,
+          16000
+        ],
+        "target_supplied": false,
+        "carrier": true,
+        "exact_original_observation_match_count": 2,
+        "source_receipts": [
+          "/tmp/hepta-ndu-next-media-cache/development-001/conditional-heads/row-05.json",
+          "/tmp/hepta-ndu-next-media-cache/development-001/conditional-heads/row-06.json"
+        ]
+      },
+      {
+        "event_pcm_sha256": "e487d9e08bd3d6c82f5c63a11233c9bac3b475806f456e472856cca6e187e49d",
+        "wave_sha_match": true,
+        "pcm_sha_match": true,
+        "format": [
+          8000,
+          1,
+          2,
+          16000
+        ],
+        "target_supplied": false,
+        "carrier": true,
+        "exact_original_observation_match_count": 2,
+        "source_receipts": [
+          "/tmp/hepta-ndu-next-media-cache/development-001/conditional-heads/row-00.json",
+          "/tmp/hepta-ndu-next-media-cache/development-001/conditional-heads/row-09.json"
+        ]
+      }
+    ]
+  },
+  "checkpoint_and_preserved_old_development": {
+    "checkpoint": "/tmp/hepta-ndu-next-media-cache/repair-training-001/audio-input.pt",
+    "checkpoint_file_sha256": "5c10b1ca0830879464f5d29219236fe88cb9422f7f630cb8dc7cc7b5844b3bbb",
+    "matches_training_receipt": true,
+    "selected_candidate": "seed-23179",
+    "static_pickle_metadata_only": {
+      "member_count": [
+        [
+          "BINUNICODE",
+          "member_count"
+        ],
+        [
+          "BINPUT",
+          192
+        ],
+        [
+          "BININT1",
+          1
+        ],
+        [
+          "BINUNICODE",
+          "selected_members"
+        ],
+        [
+          "BINPUT",
+          193
+        ],
+        [
+          "EMPTY_LIST",
+          null
+        ],
+        [
+          "BINPUT",
+          194
+        ],
+        [
+          "BININT1",
+          1
+        ],
+        [
+          "APPEND",
+          null
+        ]
+      ],
+      "selected_members": [
+        [
+          "BINUNICODE",
+          "selected_members"
+        ],
+        [
+          "BINPUT",
+          193
+        ],
+        [
+          "EMPTY_LIST",
+          null
+        ],
+        [
+          "BINPUT",
+          194
+        ],
+        [
+          "BININT1",
+          1
+        ],
+        [
+          "APPEND",
+          null
+        ],
+        [
+          "BINUNICODE",
+          "architecture"
+        ],
+        [
+          "BINPUT",
+          195
+        ],
+        [
+          "BINUNICODE",
+          "EnsembleIngress"
+        ]
+      ],
+      "architecture": [
+        [
+          "BINUNICODE",
+          "architecture"
+        ],
+        [
+          "BINPUT",
+          195
+        ],
+        [
+          "BINUNICODE",
+          "EnsembleIngress"
+        ],
+        [
+          "BINPUT",
+          196
+        ],
+        [
+          "BINUNICODE",
+          "weights_sha256"
+        ],
+        [
+          "BINPUT",
+          197
+        ],
+        [
+          "BINUNICODE",
+          "ece0765546f729667ba86fe22a0638982ac58592a6b77e6a9e90d81936454866"
+        ],
+        [
+          "BINPUT",
+          198
+        ],
+        [
+          "SETITEMS",
+          null
+        ]
+      ],
+      "weights_sha256": [
+        [
+          "BINUNICODE",
+          "weights_sha256"
+        ],
+        [
+          "BINPUT",
+          197
+        ],
+        [
+          "BINUNICODE",
+          "ece0765546f729667ba86fe22a0638982ac58592a6b77e6a9e90d81936454866"
+        ],
+        [
+          "BINPUT",
+          198
+        ],
+        [
+          "SETITEMS",
+          null
+        ],
+        [
+          "STOP",
+          null
+        ]
+      ]
+    },
+    "pickle_executed_or_weights_loaded": false,
+    "previous_failed_development": {
+      "path": "/tmp/hepta-ndu-next-media-cache/repair-development-001/summary.json",
+      "sha256": "82e51635a852577cf22d7cf5fac7d8320712a18fa5d374c84e534021a6a99366",
+      "all_sample_gates_pass": false,
+      "audio_route": 0.6666666666666666
+    },
+    "bridge_old_development": {
+      "path": "/tmp/hepta-ndu-next-media-cache/repair-bridge-development-001/summary.json",
+      "sha256": "6a1dc62e50be92b6318b15cfc750f0bd68d2a7053451f7826d3714bf87466ced",
+      "all_sample_gates_pass": true,
+      "audio_route": 0.75,
+      "new_source_qualification_claimed": false
+    }
+  },
+  "source_metadata": {
+    "allocation_sha256": "df08fa48f9627ab8d828d267599b9bcebb59470d020e4f70a7caff9dfaddb67c",
+    "recording_rows": 300,
+    "unique_file_byte_sha256": 298,
+    "speakers": 147,
+    "duplicate_byte_groups": {
+      "80bfa60032a555359182f1c01c0f99c9eb5c0cff4d0108faa536b89dd7952b11": [
+        {
+          "path": "five/9a7c1f83_nohash_1.wav",
+          "speaker": "9a7c1f83",
+          "label": 5
+        },
+        {
+          "path": "five/9a7c1f83_nohash_2.wav",
+          "speaker": "9a7c1f83",
+          "label": 5
+        }
+      ],
+      "0855d89df4b528a42939c1c3b647e1c4120b178d1d3ff84f2cd94df36c148c69": [
+        {
+          "path": "seven/9a7c1f83_nohash_4.wav",
+          "speaker": "9a7c1f83",
+          "label": 7
+        },
+        {
+          "path": "seven/9a7c1f83_nohash_0.wav",
+          "speaker": "9a7c1f83",
+          "label": 7
+        }
+      ]
+    },
+    "excluded_speaker_overlap": 0,
+    "reserved_media_joint_speakers_excluded": 56,
+    "new_output_read": false
+  },
+  "guard_static_findings": {
+    "before_candidate_module_import": "Verifies addendum, evidence and guard pins, 46 local source identities and original 411 qualification pins",
+    "freeze": "Requires exact bound actual qualification summary path and successful completed child; invokes original double-gated freezer; extends identity pins only",
+    "evaluate": "Verifies complete extended protocol pins before original candidate import; appends mandatory confirmation phase and exact protocol; original executor verifies actual candidate/observer qualification before new source loading",
+    "after_execution": "Revalidates addendum, evidence/guard source closure and original qualification pins; original evaluator also checks actual candidate pins and in-memory weights",
+    "base_final_semantic_copy": "Freeze producer copies original fields; separate exact base-to-final field comparison is required in the launch receipt before formal access, as agreed with media owner",
+    "grant": "Static implementation and identity review only; no statistical eligibility or quality result is inferred"
+  },
+  "numerical_or_scientific_changes_by_reviewer": false,
+  "model_or_candidate_module_imported": false,
+  "new_qualification_outcome_records_read": false
+}

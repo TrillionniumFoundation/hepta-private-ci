@@ -1,0 +1,26 @@
+{
+  "count": 12,
+  "historical_data_sha256": "aa8fb7a5e32f435ad3f1a72f86ecb1dee3830a2e65d1a97848ca33a303cbc4bd",
+  "max_raw_probability_changes": [
+    2.0496773372125077e-05,
+    1.0248438882864974e-05
+  ],
+  "new_future_outcomes_opened": false,
+  "passed": [
+    "complete_synthetic_census",
+    "duplicate_source_action",
+    "action_input_identity",
+    "view_relabel",
+    "absence_relabel",
+    "nonbinary_label",
+    "out_of_domain_token",
+    "invalid_frozen_bin",
+    "nonfinite_prediction",
+    "missing_action_feature",
+    "paired_bootstrap_preserves_opposite_branch_dependence",
+    "actual_fixed_candidates_change_only_correctness_forward_on_historical_inputs"
+  ],
+  "protocol_sha256": "36a8af4745be2523f22f49000f9d6813a8c09d075e1611573a81c59b7d38de3c",
+  "repair_sources_materialized": false,
+  "schema": "hepta.abc4.native-candidate-focused-checks.v1"
+}

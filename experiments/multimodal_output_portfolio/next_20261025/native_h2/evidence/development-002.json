@@ -1,0 +1,182 @@
+{
+  "insufficient_old_units_for_FAR_bound_not_relaxed": true,
+  "new_source_candidate_admitted": false,
+  "new_sources_opened": false,
+  "old_calibration": {
+    "Brier": 0.07419005201001537,
+    "ECE_ID": 4.997709078985099e-07,
+    "ECE_all": 4.364780848885199e-07,
+    "ID_acceptance": 0.8074375,
+    "OOD_FAR": 0.0,
+    "OOD_false_units": 0,
+    "OOD_upper95": 0.04572970233076245,
+    "by_horizon_action": {
+      "H1:couple": {
+        "ECE_ID": 5.210655152538841e-07,
+        "ID_acceptance": 1.0,
+        "rows": 2560
+      },
+      "H1:refine_image": {
+        "ECE_ID": 8.204213111659767e-07,
+        "ID_acceptance": 0.66015625,
+        "rows": 2560
+      },
+      "H1:refine_semantic": {
+        "ECE_ID": 4.307990759788716e-07,
+        "ID_acceptance": 0.71171875,
+        "rows": 2560
+      },
+      "H1:refine_text": {
+        "ECE_ID": 1.7996206267030523e-07,
+        "ID_acceptance": 1.0,
+        "rows": 2560
+      },
+      "H1:stop": {
+        "ECE_ID": 3.6785003560682247e-07,
+        "ID_acceptance": 0.710546875,
+        "rows": 2560
+      },
+      "H2:couple": {
+        "ECE_ID": 3.543979643777506e-07,
+        "ID_acceptance": 1.0,
+        "rows": 640
+      },
+      "H2:refine_image": {
+        "ECE_ID": 5.017593741808712e-07,
+        "ID_acceptance": 0.621875,
+        "rows": 640
+      },
+      "H2:refine_semantic": {
+        "ECE_ID": 6.392390967870087e-07,
+        "ID_acceptance": 0.61875,
+        "rows": 640
+      },
+      "H2:refine_text": {
+        "ECE_ID": 7.176005840808102e-07,
+        "ID_acceptance": 1.0,
+        "rows": 640
+      },
+      "H2:stop": {
+        "ECE_ID": 5.62789535379915e-07,
+        "ID_acceptance": 0.615625,
+        "rows": 640
+      }
+    },
+    "independent_units": 64,
+    "ood_units": 64,
+    "rows": 19200,
+    "unit_is_writer": false
+  },
+  "old_feasibility_gates": {
+    "old_split_nonvacuity": true,
+    "old_split_point_ECE": false,
+    "old_split_zero_OOD_false_source_pairs": true
+  },
+  "old_verification": {
+    "Brier": 0.09858614204762828,
+    "ECE_ID": 0.04548198976757925,
+    "ECE_all": 0.03795376147414686,
+    "ID_acceptance": 0.7938125,
+    "OOD_FAR": 0.0,
+    "OOD_false_units": 0,
+    "OOD_upper95": 0.04572970233076245,
+    "by_horizon_action": {
+      "H1:couple": {
+        "ECE_ID": 0.060914140177199094,
+        "ID_acceptance": 1.0,
+        "rows": 2560
+      },
+      "H1:refine_image": {
+        "ECE_ID": 0.05565857177172873,
+        "ID_acceptance": 0.658203125,
+        "rows": 2560
+      },
+      "H1:refine_semantic": {
+        "ECE_ID": 0.032371664481830674,
+        "ID_acceptance": 0.675,
+        "rows": 2560
+      },
+      "H1:refine_text": {
+        "ECE_ID": 0.05328402611758706,
+        "ID_acceptance": 1.0,
+        "rows": 2560
+      },
+      "H1:stop": {
+        "ECE_ID": 0.033328621927224245,
+        "ID_acceptance": 0.676171875,
+        "rows": 2560
+      },
+      "H2:couple": {
+        "ECE_ID": 0.034342353103780664,
+        "ID_acceptance": 1.0,
+        "rows": 640
+      },
+      "H2:refine_image": {
+        "ECE_ID": 0.036551085575580594,
+        "ID_acceptance": 0.63125,
+        "rows": 640
+      },
+      "H2:refine_semantic": {
+        "ECE_ID": 0.030166706529396854,
+        "ID_acceptance": 0.5890625,
+        "rows": 640
+      },
+      "H2:refine_text": {
+        "ECE_ID": 0.06264228401308064,
+        "ID_acceptance": 1.0,
+        "rows": 640
+      },
+      "H2:stop": {
+        "ECE_ID": 0.03145770418081285,
+        "ID_acceptance": 0.5875,
+        "rows": 640
+      }
+    },
+    "independent_units": 64,
+    "ood_units": 64,
+    "rows": 19200,
+    "unit_is_writer": false
+  },
+  "planned_1000writer_zero_error_upper95": 0.0029912495450953314,
+  "predictor_sha256": "2ea073f7de0cf0a134c94cb0a683e3924733dd7206cf619264e370bbce2f37f8",
+  "production_authority": false,
+  "registration_sha256": "7c5e2848ea0ba48511f70daf551dff6981d53f8b065f1011d798fa29ba7392c9",
+  "schema": "hepta.next.native-h2-old-development.v2",
+  "selected_diagnostic_is_not_independent_qualification": true,
+  "selected_policy_calibration": {
+    "correctness": {
+      "ECE": 0.10222760821917806,
+      "by_horizon": {
+        "1": {
+          "ECE": 0.11857453626373635,
+          "steps": 455
+        },
+        "2": {
+          "ECE": 0.09060596406250009,
+          "steps": 640
+        }
+      },
+      "scope": "actual old counterfactual tree visited by this admission-masked policy",
+      "selected_steps": 1095
+    },
+    "ndu": {
+      "ECE": 0.08203063473589961,
+      "by_horizon": {
+        "1": {
+          "ECE": 0.09374059538784052,
+          "steps": 477
+        },
+        "2": {
+          "ECE": 0.07330305468750009,
+          "steps": 640
+        }
+      },
+      "scope": "actual old counterfactual tree visited by this admission-masked policy",
+      "selected_steps": 1117
+    }
+  },
+  "selected_policy_old_split": "64 held odd source pairs, excluding pilot calibration pairs",
+  "source_identity_unchanged": true,
+  "status": "completed",
+  "wall_ns": 8965931323
+}

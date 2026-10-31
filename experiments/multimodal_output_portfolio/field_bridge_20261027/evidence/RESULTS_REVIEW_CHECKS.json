@@ -1,0 +1,378 @@
+{
+  "scope": "Independent arithmetic on the completed rows; does not refit, call models, or re-score media. Media/native verification is the separate audit.",
+  "rows": 20064,
+  "unique_source_pairs": 224,
+  "unique_source_ids": 448,
+  "complete_grid": true,
+  "all_primary_acceptances_false": true,
+  "maximum_numeric_discrepancy": {
+    "mean": 0.0,
+    "per_seed": 0.0,
+    "interval": 1.9081958235744878e-16,
+    "pooled_ce": 2.220446049250313e-16
+  },
+  "rows_sha256": "74a3631775f1d10e36d202954a59e944cb40b6a6eabee790fb645f687e6e4267",
+  "result_sha256": "844d6ec87ef1905e59602db7895d43ea95e2df6cd54a948d9776b054252d8b13",
+  "checks": [
+    {
+      "split": "test",
+      "candidate": "B_ordinary_fixed",
+      "control": "A_frozen_fixed",
+      "observer": "reward",
+      "mean": 0.0017587760226888327,
+      "ci": [
+        -0.0011277811027563705,
+        0.004623324667480419
+      ],
+      "gain": false
+    },
+    {
+      "split": "test",
+      "candidate": "B_ordinary_fixed",
+      "control": "A_frozen_fixed",
+      "observer": "audit",
+      "mean": 0.0013681510226888334,
+      "ci": [
+        -0.0017137524608369864,
+        0.0042115999572115564
+      ],
+      "gain": false
+    },
+    {
+      "split": "test",
+      "candidate": "C_field_fixed",
+      "control": "B_ordinary_fixed",
+      "observer": "reward",
+      "mean": -0.0007167348269528388,
+      "ci": [
+        -0.0033208322410458397,
+        0.0030592871327705024
+      ],
+      "gain": false
+    },
+    {
+      "split": "test",
+      "candidate": "C_field_fixed",
+      "control": "B_ordinary_fixed",
+      "observer": "audit",
+      "mean": -0.000261005660286172,
+      "ci": [
+        -0.0029522142574417844,
+        0.0039056499410238155
+      ],
+      "gain": false
+    },
+    {
+      "split": "test",
+      "candidate": "D_frozen_native",
+      "control": "A_frozen_fixed",
+      "observer": "reward",
+      "mean": 0.0027598840378001716,
+      "ci": [
+        -0.002458826617255909,
+        0.008004645751466099
+      ],
+      "gain": false
+    },
+    {
+      "split": "test",
+      "candidate": "D_frozen_native",
+      "control": "A_frozen_fixed",
+      "observer": "audit",
+      "mean": 0.00028592570446683797,
+      "ci": [
+        -0.005308120990939704,
+        0.005307689817677965
+      ],
+      "gain": false
+    },
+    {
+      "split": "test",
+      "candidate": "E_field_native",
+      "control": "C_field_fixed",
+      "observer": "reward",
+      "mean": 0.0009327645857508002,
+      "ci": [
+        -0.004306571943548624,
+        0.006539738419304198
+      ],
+      "gain": false
+    },
+    {
+      "split": "test",
+      "candidate": "E_field_native",
+      "control": "C_field_fixed",
+      "observer": "audit",
+      "mean": -0.0017690583309158663,
+      "ci": [
+        -0.00783219684984924,
+        0.003628621513681545
+      ],
+      "gain": false
+    },
+    {
+      "split": "test",
+      "candidate": "E_field_native",
+      "control": "G_ordinary_native",
+      "observer": "reward",
+      "mean": -0.0018450155899821154,
+      "ci": [
+        -0.006344198253731759,
+        0.0024161747732116055
+      ],
+      "gain": false
+    },
+    {
+      "split": "test",
+      "candidate": "E_field_native",
+      "control": "G_ordinary_native",
+      "observer": "audit",
+      "mean": -0.002463505173315448,
+      "ci": [
+        -0.006715550197524134,
+        0.0014076537847531067
+      ],
+      "gain": false
+    },
+    {
+      "split": "test",
+      "candidate": "E_field_native",
+      "control": "F_field_history",
+      "observer": "reward",
+      "mean": -0.0033277261672871334,
+      "ci": [
+        -0.008318863256125648,
+        0.0014306623306610494
+      ],
+      "gain": false
+    },
+    {
+      "split": "test",
+      "candidate": "E_field_native",
+      "control": "F_field_history",
+      "observer": "audit",
+      "mean": -0.0004956949172871339,
+      "ci": [
+        -0.006169335805107523,
+        0.005394677320983833
+      ],
+      "gain": false
+    },
+    {
+      "split": "retention",
+      "candidate": "B_ordinary_fixed",
+      "control": "A_frozen_fixed",
+      "observer": "reward",
+      "mean": -1.6708315039820928e-07,
+      "ci": [
+        -5.892817797698399e-07,
+        2.037298960456712e-07
+      ],
+      "gain": false
+    },
+    {
+      "split": "retention",
+      "candidate": "B_ordinary_fixed",
+      "control": "A_frozen_fixed",
+      "observer": "audit",
+      "mean": -1.670831503989803e-07,
+      "ci": [
+        -5.892817797708197e-07,
+        2.037298960445147e-07
+      ],
+      "gain": false
+    },
+    {
+      "split": "retention",
+      "candidate": "C_field_fixed",
+      "control": "A_frozen_fixed",
+      "observer": "reward",
+      "mean": -1.1238605818737603e-07,
+      "ci": [
+        -3.3074110332224483e-07,
+        9.971676196082781e-08
+      ],
+      "gain": false
+    },
+    {
+      "split": "retention",
+      "candidate": "C_field_fixed",
+      "control": "A_frozen_fixed",
+      "observer": "audit",
+      "mean": -1.1238605818814702e-07,
+      "ci": [
+        -3.3074110332459953e-07,
+        9.97167619634845e-08
+      ],
+      "gain": false
+    },
+    {
+      "split": "retention",
+      "candidate": "D_frozen_native",
+      "control": "A_frozen_fixed",
+      "observer": "reward",
+      "mean": 0.006879990928082003,
+      "ci": [
+        -0.006052356007036804,
+        0.02152202440297483
+      ],
+      "gain": false
+    },
+    {
+      "split": "retention",
+      "candidate": "D_frozen_native",
+      "control": "A_frozen_fixed",
+      "observer": "audit",
+      "mean": 0.0004563798169708908,
+      "ci": [
+        -0.010229451475743445,
+        0.011394975446407805
+      ],
+      "gain": false
+    },
+    {
+      "split": "retention",
+      "candidate": "E_field_native",
+      "control": "A_frozen_fixed",
+      "observer": "reward",
+      "mean": 0.008449051918565398,
+      "ci": [
+        -0.0048382218178827366,
+        0.025297325251838792
+      ],
+      "gain": false
+    },
+    {
+      "split": "retention",
+      "candidate": "E_field_native",
+      "control": "A_frozen_fixed",
+      "observer": "audit",
+      "mean": 0.00046294080745428747,
+      "ci": [
+        -0.010231783941440727,
+        0.011394788166427902
+      ],
+      "gain": false
+    },
+    {
+      "split": "retention",
+      "candidate": "F_field_history",
+      "control": "A_frozen_fixed",
+      "observer": "reward",
+      "mean": 0.011918475440134187,
+      "ci": [
+        -0.00021907827611581822,
+        0.027163421381284792
+      ],
+      "gain": false
+    },
+    {
+      "split": "retention",
+      "candidate": "F_field_history",
+      "control": "A_frozen_fixed",
+      "observer": "audit",
+      "mean": -0.001275969004310255,
+      "ci": [
+        -0.012758324576904397,
+        0.010663641416719114
+      ],
+      "gain": false
+    },
+    {
+      "split": "retention",
+      "candidate": "G_ordinary_native",
+      "control": "A_frozen_fixed",
+      "observer": "reward",
+      "mean": 0.008495401801748407,
+      "ci": [
+        -0.00473103191540491,
+        0.025342798920667438
+      ],
+      "gain": false
+    },
+    {
+      "split": "retention",
+      "candidate": "G_ordinary_native",
+      "control": "A_frozen_fixed",
+      "observer": "audit",
+      "mean": 0.002071790690637295,
+      "ci": [
+        -0.00945898796755269,
+        0.014303810585343656
+      ],
+      "gain": false
+    },
+    {
+      "split": "retention",
+      "candidate": "H_frozen_history",
+      "control": "A_frozen_fixed",
+      "observer": "reward",
+      "mean": 0.011953014636774444,
+      "ci": [
+        -0.00016345265053462475,
+        0.027212363466411354
+      ],
+      "gain": false
+    },
+    {
+      "split": "retention",
+      "candidate": "H_frozen_history",
+      "control": "A_frozen_fixed",
+      "observer": "audit",
+      "mean": -0.0003733742521144451,
+      "ci": [
+        -0.012129119337333745,
+        0.011473969142790466
+      ],
+      "gain": false
+    },
+    {
+      "split": "retention",
+      "candidate": "J_generic_fixed",
+      "control": "A_frozen_fixed",
+      "observer": "reward",
+      "mean": -1.2256075731420205e-07,
+      "ci": [
+        -4.503662003745962e-07,
+        2.1000386267615195e-07
+      ],
+      "gain": false
+    },
+    {
+      "split": "retention",
+      "candidate": "J_generic_fixed",
+      "control": "A_frozen_fixed",
+      "observer": "audit",
+      "mean": -1.2256075731535852e-07,
+      "ci": [
+        -4.5036620037584584e-07,
+        2.1000386267603638e-07
+      ],
+      "gain": false
+    },
+    {
+      "split": "retention",
+      "candidate": "K_richer_fixed",
+      "control": "A_frozen_fixed",
+      "observer": "reward",
+      "mean": -1.1650069306556259e-07,
+      "ci": [
+        -3.091703789967867e-07,
+        7.7512490352123e-08
+      ],
+      "gain": false
+    },
+    {
+      "split": "retention",
+      "candidate": "K_richer_fixed",
+      "control": "A_frozen_fixed",
+      "observer": "audit",
+      "mean": -1.1650069306402062e-07,
+      "ci": [
+        -3.091703789960992e-07,
+        7.751249035288436e-08
+      ],
+      "gain": false
+    }
+  ]
+}

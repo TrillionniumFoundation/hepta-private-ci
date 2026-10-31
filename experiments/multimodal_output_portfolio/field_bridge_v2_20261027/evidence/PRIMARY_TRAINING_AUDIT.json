@@ -1,0 +1,285 @@
+{
+  "by_seed": {
+    "17": {
+      "field": {
+        "actual_gradient_calls": 288,
+        "blocks": 36,
+        "choices": [
+          28,
+          5,
+          2,
+          1
+        ],
+        "maximum_independent_prediction_error": 1.1102230246251565e-16,
+        "optimizer_steps": 64
+      },
+      "generic": {
+        "actual_gradient_calls": 288,
+        "blocks": 36,
+        "choices": [
+          25,
+          10,
+          0,
+          1
+        ],
+        "maximum_independent_prediction_error": 1.1102230246251565e-16,
+        "optimizer_steps": 88
+      },
+      "ordinary": {
+        "candidate_rows_verified": 5120,
+        "clean_changes": [
+          0.0,
+          0.004653769861761137,
+          5.7623132305728575e-06,
+          -0.0049257234684773055
+        ],
+        "eligible": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "selected_action": 1,
+        "selected_multiplier": 0.25,
+        "values": [
+          0.7948552189933689,
+          0.8229695016746046,
+          0.820783775373864,
+          0.8145135851566447
+        ]
+      },
+      "richer": {
+        "actual_gradient_calls": 288,
+        "blocks": 36,
+        "choices": [
+          25,
+          10,
+          0,
+          1
+        ],
+        "maximum_independent_prediction_error": 1.1102230246251565e-16,
+        "optimizer_steps": 88
+      }
+    },
+    "29": {
+      "field": {
+        "actual_gradient_calls": 288,
+        "blocks": 36,
+        "choices": [
+          15,
+          11,
+          4,
+          6
+        ],
+        "maximum_independent_prediction_error": 3.3306690738754696e-16,
+        "optimizer_steps": 168
+      },
+      "generic": {
+        "actual_gradient_calls": 288,
+        "blocks": 36,
+        "choices": [
+          15,
+          15,
+          3,
+          3
+        ],
+        "maximum_independent_prediction_error": 1.1102230246251565e-16,
+        "optimizer_steps": 168
+      },
+      "ordinary": {
+        "candidate_rows_verified": 5120,
+        "clean_changes": [
+          0.0,
+          0.004305265085713383,
+          -0.004887878421868774,
+          -0.000975207509327447
+        ],
+        "eligible": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "selected_action": 1,
+        "selected_multiplier": 0.25,
+        "values": [
+          0.8254343407706037,
+          0.8532966827632626,
+          0.8499449570926082,
+          0.8498125994848088
+        ]
+      },
+      "richer": {
+        "actual_gradient_calls": 288,
+        "blocks": 36,
+        "choices": [
+          33,
+          0,
+          0,
+          3
+        ],
+        "maximum_independent_prediction_error": 0.0,
+        "optimizer_steps": 24
+      }
+    },
+    "43": {
+      "field": {
+        "actual_gradient_calls": 288,
+        "blocks": 36,
+        "choices": [
+          29,
+          5,
+          1,
+          1
+        ],
+        "maximum_independent_prediction_error": 0.0,
+        "optimizer_steps": 56
+      },
+      "generic": {
+        "actual_gradient_calls": 288,
+        "blocks": 36,
+        "choices": [
+          20,
+          14,
+          0,
+          2
+        ],
+        "maximum_independent_prediction_error": 1.1102230246251565e-16,
+        "optimizer_steps": 128
+      },
+      "ordinary": {
+        "candidate_rows_verified": 5120,
+        "clean_changes": [
+          0.0,
+          0.0015578425889543057,
+          -0.0023193446751974545,
+          -0.008421265256765675
+        ],
+        "eligible": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "selected_action": 2,
+        "selected_multiplier": 1.0,
+        "values": [
+          0.783468529105492,
+          0.8269580775366631,
+          0.8276532716654837,
+          0.8199359270095083
+        ]
+      },
+      "richer": {
+        "actual_gradient_calls": 288,
+        "blocks": 36,
+        "choices": [
+          29,
+          5,
+          1,
+          1
+        ],
+        "maximum_independent_prediction_error": 0.0,
+        "optimizer_steps": 56
+      }
+    }
+  },
+  "complete_checkpoints_verified": 12,
+  "independently_reconstructed_prediction_rows": 324,
+  "input_files_sha256": {
+    "TRAINING_COMPLETE.json": "b26de3c8f014763e2cd9ceb825fc55227937349b2b2792bcacec0a2d70e8ce4a",
+    "training/17/COMPLETE.json": "7754eb603c5c5a962a39d6bfa283159622656f4e59a03a40a5f07300fdfabe80",
+    "training/17/FIT_SELECTION.json": "d111cd9b38d7686d687e1787fedc4334ebbeeadbf7fcf80691127fba0f0e245c",
+    "training/17/SOURCE_FREEZE.json": "891d509cae9c9125fbac982001b0b65eea00c18456e5fea27f43b8726107bd13",
+    "training/17/field-decisions-before-updates.jsonl": "701f4b85bb2cca8962923a6fe945158c69217eace6319815e91f8b7c95cfad4a",
+    "training/17/field.json": "8c1ef9bbc7e8d9a190ed596d1dae0aaf4b7cec1585056ae35072dd15ced87327",
+    "training/17/field.pt": "5e5757b4fca3e95cb6730de5fe5162f5dca15e9c4c8e14ae10c53a3a1d2f01f0",
+    "training/17/generic-decisions-before-updates.jsonl": "b6393adeea10a734e98283d81b9af7f32484e270712c8763773e8220199c2634",
+    "training/17/generic.json": "09ff8bd1054b7aa811f6cbf062936b0ece3070b0d49d53aea937bcc2d2926258",
+    "training/17/generic.pt": "bb5bf8b1ae6ac1a5eef210def763726953acaed1894a7900e740c3743db7c1e2",
+    "training/17/ordinary-selection-values.npz": "250d6086bd68c703437f03d0c0123fae7ec7ebb5f78534e5d09487bd77478f31",
+    "training/17/ordinary.json": "fd35f215b57590f097528e34a66b090b53e5a3e03881a758646934253592686d",
+    "training/17/ordinary.pt": "afc389bb99902dc1915002b23e5da306c28550654e9cb6f3ab6f126e36a18d52",
+    "training/17/richer-decisions-before-updates.jsonl": "3077e4364f57a46fa91fa7e37a0f3684e9872bb2a21e1749733306e843d7aefa",
+    "training/17/richer.json": "b4e14ae6574203a7f72a3623ff41a208739bc74329d3a01764741f5109e063e2",
+    "training/17/richer.pt": "bad825a37f38a3de8fc230e00afd83ca152b60661cd090b87ebe4e6f4fe7d2e9",
+    "training/29/COMPLETE.json": "cdc3e3cd4b3f592c0446c8da8031f76cfecde349ef3e6bfe8aa39d67e5b086b2",
+    "training/29/FIT_SELECTION.json": "4e7ab1b1de05282f0e142b415bfda99bfe9dc6603ce2a76cd9b94a7729343c21",
+    "training/29/SOURCE_FREEZE.json": "891d509cae9c9125fbac982001b0b65eea00c18456e5fea27f43b8726107bd13",
+    "training/29/field-decisions-before-updates.jsonl": "dea0675498fa312b2684d18daf993094cc2ed5e3f29f8988d110f30e184a03e7",
+    "training/29/field.json": "7aa750b0bf82f9ee0cf65325a67d9bf70230bd3a648dff38feec0d5a7a485ae2",
+    "training/29/field.pt": "5a15f0d095941fe227b1a19d3efe0fc5c4673282f812f0fe8027eb51e95fc46c",
+    "training/29/generic-decisions-before-updates.jsonl": "479fe63c226ba92ccca38b0359cedb6ac38642fd8e26c902b4e1e4be951b287d",
+    "training/29/generic.json": "8a6f07929cb881245af28d468a9d252925c8079e4e0d8cc20b783f740c187c2e",
+    "training/29/generic.pt": "ee25ff9b1ec106fe164e8ab29a72f37cdbb915eb52a2f3dc4a1f83b4e3e12c41",
+    "training/29/ordinary-selection-values.npz": "f3ddaa10778e0e069d25ddf3b7a0465cd2f1104a6557b331cea8067208208cea",
+    "training/29/ordinary.json": "160a7e3a05a3bf31e16c06e1c96c7f024fffd008a10535502fdd04a1f658bdfa",
+    "training/29/ordinary.pt": "cf89ec320885767023536f6398cbd2ddbd274746aafd7f3e5157d076e677b832",
+    "training/29/richer-decisions-before-updates.jsonl": "5cfcc305a4072de04e1567a4f01c4a9f3fe743aaaafaa14b9d9877ca653f73b2",
+    "training/29/richer.json": "46d72e286213177364647551f7cca20df1a6a8278d9a78bbeef53b1de87d2487",
+    "training/29/richer.pt": "17ae636c593b3b46461beb3b62ac4db0bcbfab882369011874e6a0b2ed8eef6c",
+    "training/43/COMPLETE.json": "96c7b56214058629a53490a039ac96b8e61c8a1728ca5db35661ee58f17de0c0",
+    "training/43/FIT_SELECTION.json": "3dc9d6b87c28a5c0ade8fe7fb22a301cdef8b562f9b7e9daf6e57a4c27c8c994",
+    "training/43/SOURCE_FREEZE.json": "891d509cae9c9125fbac982001b0b65eea00c18456e5fea27f43b8726107bd13",
+    "training/43/field-decisions-before-updates.jsonl": "171c4d0e96d61fabed04b9fdde745c3cf61d33af9e4045df08fc2359a07c130d",
+    "training/43/field.json": "9d5c147f5cfa620ac09e62bc3e326be6912c4f6f62589b93e8db6a4a14be9e39",
+    "training/43/field.pt": "b3e6476bc2bafc4c56100e3478ab02a1875fac5bd2aa478881e3a850c78ff847",
+    "training/43/generic-decisions-before-updates.jsonl": "5c9571560566768e8e12a3eeb4b19e5cd4a2418777a5695e4b71d96f36758751",
+    "training/43/generic.json": "0a8cf009a92622811e98e5914b58c1a81d1f3fda6b0404ff0413b84bd1ab7929",
+    "training/43/generic.pt": "0af4ce429907d87a989fd4056580672a0517bbebbb422b9015615fb07290a38a",
+    "training/43/ordinary-selection-values.npz": "e00f0c15615d08cc94e0edb5112164130bacfd98845f86e75a1c845aeda01e42",
+    "training/43/ordinary.json": "f70aefa6c559b06f57400f4f225a8422c9f79a46ff089893d09165900d94d167",
+    "training/43/ordinary.pt": "9abc69185053ed6a6351d23578b23fb0c7ac20f117f54043fb0300dba6c180eb",
+    "training/43/richer-decisions-before-updates.jsonl": "1abc6ddd8df2d6f536fed7c29389e9c34af8ba35ebc63ace7565159c768a895f",
+    "training/43/richer.json": "f8157d8139b2d2ab3dd2899bbafce00613fa4badc807c4aa7701f48f0ae6d892",
+    "training/43/richer.pt": "cd6cd5697219003f20c9dbbe9768cb0d3d54c5171e285a0ebf2f40b0d882c535"
+  },
+  "model_inference_calls": 0,
+  "new_final_gradient_calls": 2592,
+  "new_ordinary_selection_hard_forward_calls": 60,
+  "ordinary_hard_value_rows_checked": 15360,
+  "parent_constant_endpoints_verified": 12,
+  "schema": "hepta.field-bridge.v2.primary-training-audit.1",
+  "scope": "Independent serialized evidence arithmetic/provenance. Actual first-two-block replay is a separately bound receipt; this audit does not infer primary benefit or prove all physical executions from hashes alone.",
+  "script_sha256": "d212caf266a8229071e1b61c235b1a138f1edd4891ba413549d0fc883cf1d0dc",
+  "shared_fit_and_audit_costs_preserved_once_per_seed": true,
+  "source_files": {
+    "field_bridge_20261027/__init__.py": "bd7dd4dfde2e00c99b998bfd6a1cd822820fbd970fe5bd4d2245a8661aa9053b",
+    "field_bridge_20261027/adaptation.py": "95c2acfe820febb905c11b5057f7817af4d244db1e52adab7744d2c1d931b2d8",
+    "field_bridge_20261027/adapters.py": "2818464ba927b8e0ed5c92315a5bf26832672391c1fbbba709d6ed72cdc76b7b",
+    "field_bridge_20261027/analyze.py": "7137dfa130f06e4b137b9d72a5ef85d8519c41d3bf43c74b336e5b6eb38b29e6",
+    "field_bridge_20261027/audit.py": "3bc683cfc22fbbf062d4970ef9b3534fbd766e06f93b37b43a4a965c9ae8c318",
+    "field_bridge_20261027/controls.py": "6536f597319009a71bc735ba88da7aa46aa8d0933d0bcdd688f264e3a6673fb6",
+    "field_bridge_20261027/controls_tests.py": "43cb44f43035fcc143de5bb2ff1697ab45f33837ef1c35d0cfb09d5c18b87872",
+    "field_bridge_20261027/native_bridge.py": "06644f441810d2b5d9db50b450b8fe9c7f12309cb04255f13d1916298c6391d2",
+    "field_bridge_20261027/protocol.py": "36e131e2f4c6dd4221631813dfe360d185cf532218597218e2791700e8e93911",
+    "field_bridge_20261027/restore_native.py": "399d6ef187e1dbfb029b2187607d326fd232281c5379c564b5228081494ddf95",
+    "field_bridge_20261027/run.py": "198aed455cbb01191928c0b5c5642e86fb23194e49d69df1e50bb970eebea2ff",
+    "field_bridge_20261027/scientific_contract_tests.py": "a3de34f66d005dc93cd375fe384663d9e7f61942061042bfd4202c2f8ba4c05e",
+    "field_bridge_20261027/task.py": "4999eb8220847239db194c8a87bc5353802abc74e685eb9079f872ea8ef7d953",
+    "field_bridge_v2_20261027/BANK_PROTOCOL.json": "1ad0bc5f7ef07564ac1383a72ed82e778f6123f780665f228b21092104080e02",
+    "field_bridge_v2_20261027/PILOT_PROTOCOL.json": "1ed65b7b3e3fffd637666049922b9f07c0ce2fbb3248d3357a27707a82ced241",
+    "field_bridge_v2_20261027/PRIMARY_PROTOCOL.json": "41abc477e3827ca4222c6831e60e6d2eed59b93b9a2b9b629f29b5886eb624c3",
+    "field_bridge_v2_20261027/__init__.py": "01649269a195944483fb2076b7e1bd4eec98dbf1883ab88f4168dd71ada1a05c",
+    "field_bridge_v2_20261027/field_bank.py": "33700d9a2b43bc96af1aa8a788cadf56a35346466d2486ff04032bcacad043c5",
+    "field_bridge_v2_20261027/field_fit.py": "c3e7191c070d5f4c4b53ebb84d5269aeb83aed9bc02bb26ff65cd2c157ab63d3",
+    "field_bridge_v2_20261027/field_predictor.py": "27436472fc4ea6cb4c52fe25e11872a4ab7a6aed09f82eac0bdae7ba3add529b",
+    "field_bridge_v2_20261027/learning.py": "894fea3f87ddabaf1c5a98ff6db78da069aa2e610e7eaf31b3065e27dd985e93",
+    "field_bridge_v2_20261027/native_fast.py": "d4c6472e95c860360f932f93044c76acdd6eee6d944146fe18af189cb980db93",
+    "field_bridge_v2_20261027/native_ffi.rs": "9317a4bc0a01fff39e1cb0ffc27fe412c1b1aaaa862d05bf95c1d124090cb9b8",
+    "field_bridge_v2_20261027/primary_analyze.py": "f6eae6764d9132f7c7217854a5047eb9a25dcbaa410670cb84fdfbc087b45ad4",
+    "field_bridge_v2_20261027/primary_common.py": "68b53366b3726322e9def4a69c2c1978323edde2228401bb5a6dca177383575e",
+    "field_bridge_v2_20261027/primary_evaluate.py": "0e229eaaaa26c5634084e0341ebcc09b21d3a32f69eead35340c34cbcdc1a886",
+    "field_bridge_v2_20261027/primary_media.py": "a8475e1c79d1648200f97b3a0480ccd3da257cb084175816d5a13885073aa5f6",
+    "field_bridge_v2_20261027/primary_runtime.py": "4b7cd8010b5fae915c0b76ccaee40daef7118a8ba1ecfde035465421b19dd0ca",
+    "field_bridge_v2_20261027/primary_training.py": "654684b1a4f5f70ce9690b81fe45467aaad1d759841c445015f7baaa268c1daf",
+    "field_bridge_v2_20261027_review/gate_audit.py": "5334a47ab934d6d4a10048ef990c472c023d6956c0ff8b7b57808246bfeffa05",
+    "v6/conditioned.py": "ccb5f9a78e58d6f1d1511a95f50de3602e1f39e7254fce5566e97a994d5b4cba",
+    "v6/data.py": "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29",
+    "v6/neural.py": "6447edf81da45695ab87a033c544ff7c554a15431e614474be7ad3b7c329e742",
+    "v6/observer.py": "5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e",
+    "v6/plan_training.py": "b43ff714960139d4b58d02dec86b69d27ac51d5abfd75509936ee2c5c355997b"
+  },
+  "status": "pass",
+  "test_retention_scored": false
+}

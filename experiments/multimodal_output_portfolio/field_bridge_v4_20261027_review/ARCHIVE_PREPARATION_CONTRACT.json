@@ -1,0 +1,55 @@
+{
+  "archive_built": false,
+  "archive_verified": false,
+  "builder_interpreter": "/usr/bin/python3",
+  "collector_executed": false,
+  "frozen_scientific_source_modified": false,
+  "library_upload_attempts": 0,
+  "literal_restore_executed": false,
+  "model_observer_native_network_calls": 0,
+  "modules": [
+    {
+      "bytes": 20728,
+      "lines": 331,
+      "path": "archive_plan_v4.py",
+      "sha256": "f128af1dfbf88e85a7d0916b6fe446b3eb30c21d09e86b56e2e8bafb6facf2a6",
+      "syntax_compiled": true
+    },
+    {
+      "bytes": 16576,
+      "lines": 284,
+      "path": "archive_build_v4.py",
+      "sha256": "3ecc95eb88810ae8ff0ea625ace50d7715f0715b3d269ae9dd03ec4722f7667e",
+      "syntax_compiled": true
+    },
+    {
+      "bytes": 20506,
+      "lines": 373,
+      "path": "archive_integrity_v4.py",
+      "sha256": "10110753ee87c3c3920ff56f79cedf7a5b6e791d2be3d56ecff647b40f08324c",
+      "syntax_compiled": true
+    },
+    {
+      "bytes": 26382,
+      "lines": 383,
+      "path": "archive_reanalysis_bindings_v4.py",
+      "sha256": "32defae982c0c9b91c96c61d567ac0dd4f1728abc92b381994831860371b22cc",
+      "syntax_compiled": true
+    },
+    {
+      "bytes": 9503,
+      "lines": 141,
+      "path": "archive_reanalysis_v4.py",
+      "sha256": "05cd0489912e2727e0660e754c2179d485c76fea1b92da245031870413c0d280",
+      "syntax_compiled": true
+    }
+  ],
+  "prepared_unix_ns": 1793117468397174107,
+  "reanalysis_interpreter": "default python with NumPy 2.3.5",
+  "schema": "hepta.field-bridge.v4.archive-preparation.1",
+  "statistical_replay_executed": false,
+  "status": "PREPARED_NOT_PACKAGED",
+  "storage_policy": "Exact tar length, matching-libz deflateBound, literal restore bytes, manifest and receipt allowances, plus 32MiB reserve; refuse before output creation if insufficient",
+  "terminal_archive_authorization_received": false,
+  "validation": "Syntax compilation of all five new modules; builder and integrity retain statically compared V3 streaming primitives; no new scientific calls"
+}

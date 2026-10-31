@@ -1,0 +1,98 @@
+{
+  "schema": "hepta-causal-av-static220-posthoc-diagnostic-v1",
+  "status": "prepared_only_execution_requires_root_release_after_AB_timing",
+  "posthoc": true,
+  "preregistered_in_original_C_experiment": false,
+  "knowledge_at_design": "The original192-case C evaluation and its positive registered80/240-family contrast were already observed. A subsequent paper audit identified the220ms upper bound on non-dropped packet delays.",
+  "purpose": "Diagnose the specific weak fixed-baseline limitation using exactly one new constant timeout derived from the already frozen network support. Preserve all original C results and their scope.",
+  "scope": "Derived simulated commit times on existing evaluation event tables with reuse of already verified240ms media. No new generation, encoding, decoding, actual service latency measurement, speaker, source, scenario, policy fitting or grid search.",
+  "original_pins": {
+    "protocol_sha256": "dde5a86df736f9d4c53afec545210b2611c23772cbdfa4d32286b462ff908640",
+    "evaluation_sha256": "4ec522436c1c957e5c5980a0aaed71e2be49700a736a6d63e24295d1e13fdb42",
+    "evaluation_summary_sha256": "c63fe78d8f3288ea377b4c348dd1ba616bc44f413fce834bd414eed7a3fc6a51",
+    "evaluation_outer_process_sha256": "ff39db0f566a1d25ac7f3ea444134a83355a951265c670d26e53062b3a9df626",
+    "evaluation_aggregate_sha256": "ef2b46fb1cd1246c9d44348972c76775cda6aa9a29250051024cd1f11bde1df8"
+  },
+  "frozen_selection": {
+    "reproduction_timeout_ms": 240,
+    "only_new_timeout_ms": 220,
+    "selection_reason": "Scenarios0/2 have non-dropped delays at most60ms; scenarios1/3 at most220ms. The late/burst160ms term in scenario3 occurs once via logical OR.220ms is a20ms decision-grid point.",
+    "selection_uses_no_new_outcome_or_fit": true,
+    "grid_search_allowed": false,
+    "refitting_allowed": false,
+    "other_new_timeouts_allowed": false
+  },
+  "census": {
+    "independent_speakers": [34, 9, 24, 31, 18, 4, 12, 29, 10, 8, 16, 32, 11, 33, 28, 14],
+    "scenarios": [0, 1, 2, 3],
+    "existing_source_scenario_cells": 64,
+    "independent_group_count": 16,
+    "original_policy_episode_count_unchanged": 192,
+    "new_independent_observations": 0,
+    "source_video_slots_per_cell": 75,
+    "source_audio_samples_per_channel_per_cell": 131328,
+    "no_subsetting_or_posthoc_trimming": true
+  },
+  "independent_formula": {
+    "sample_rate": 44100,
+    "frame_ticks": 1764,
+    "decision_quantum_ticks": 882,
+    "video_release": "r_i=(i+1)*1764",
+    "audio_release": "min((i+1)*1764,131328)",
+    "deadline": "d_i=r_i+T*44100/1000, where T is240 for reproduction or220 for the sole diagnostic",
+    "both_packets_finite": "c_i=min(d_i,Q*ceil(max(c_(i-1),r_i,a_video_i,a_audio_i)/Q)) with c_-1=0 and Q=882",
+    "any_packet_permanently_dropped": "c_i=d_i",
+    "delivery_flag": "packet arrival is finite and arrival<=c_i",
+    "partial_final_audio": "The final audio release precedes the matching video release; exact source release and sample count are retained. Packet arrival rounding uses the20ms global decision grid.",
+    "no_original_simulator_import": true
+  },
+  "mandatory_validity_checks": [
+    "Pin and read only the original small metadata/protocol/result/aggregate files; do not hash or decode MKV files in this diagnostic",
+    "Retain exactly the registered16 speakers and all4 scenarios; no new sources or cases",
+    "Validate exactly150 packets per cell, source timestamps/releases, drop flags, and non-dropped delay bounds",
+    "Require the exact complete set of finite packet headers in existing events to equal the deduplicated arrived_headers union from the original hash-pinned240ms public_trace.240ms commit reproduction alone does not uniquely identify arrivals hidden by earlier waits; all finite headers must be covered before deriving220ms.",
+    "First independently reproduce240ms: every slot commit tick, every delivery flag, source coverage, mean simulated latency, and original joint loss within1e-12 numerical tolerance",
+    "Bind original240ms simulation, committed ledger, readback, output identity and row to the already published original evaluation aggregate pins",
+    "Compute only220ms; require every delivery flag to equal240ms and every commit time to be no later",
+    "Preserve source media selection, source and placeholder contents, and media PTS; only derive a different virtual commit timeline",
+    "Use the same observed feedback rows without retraining, reselection or changed thresholds",
+    "Keep the original192-case census, original bootstrap results and positive gate unchanged",
+    "On any failed invariant retain the attempt, partial diagnostic rows, error and actual diagnostic computation cost; do not silently trim or repair inputs"
+  ],
+  "loss": {
+    "formula": "0.55*(1-q_video*q_audio)+0.25*((1-valid_coverage)+valid_coverage*min(valid_clock_error/.040,1))+.20*mean_simulated_delivery_seconds/.240",
+    "new220_loss": "original_verified240_loss + .20*(mean_delivery220-mean_delivery240)/.240",
+    "require_agreement_with_independent_formula": true,
+    "valid_clock_error": "Original matched source PTS imply structural0 on valid pairs; lack of valid pairs retains full missing-alignment penalty and does not become perfect synchronization.",
+    "eta": 4.0,
+    "NDU": "-log(mean(exp(4*loss)))/4"
+  },
+  "descriptive_statistics": {
+    "primary_descriptive_comparison": "existing_learned_causal_timeout_minus_fixed220",
+    "metrics": ["NDU", "joint_delivery_completion"],
+    "bootstrap_unit": "speaker with all4 scenarios and all compared policies retained together",
+    "bootstrap_replicates": 4000,
+    "bootstrap_seed": 9037007,
+    "interval": "descriptive percentile95% interval",
+    "new_confirmatory_significance_or_benefit_gate": false,
+    "original_engineering_transport_benefit_gate_modified": false,
+    "interpretation": "This posthoc diagnostic can expose sensitivity to the restricted original baseline family. It cannot establish a newly preregistered scientific result, global optimum, dynamic-feedback necessity, independent lip synchronization or native joint audio/video generation.220ms itself is not declared the utility-optimal fixed timeout."
+  },
+  "media_reuse": {
+    "original_policy": "fixed_timeout_240ms",
+    "new_media_files": 0,
+    "new_codec_or_service_time_measurements": 0,
+    "rationale": "Identical per-slot delivered source/placeholder choices imply identical decoded media content and source PTS. Virtual delivery times are separate from MKV media PTS, so the original verified media represent the same payload under the derived220ms schedule.",
+    "verification_scope": "Trust only the hash-pinned original artifact audit for media byte integrity; recheck small ledger/readback/row metadata bindings now. Do not claim a second actual append-only media emission occurred."
+  },
+  "cost_and_execution": {
+    "fresh_output_required": true,
+    "overwrite_allowed": false,
+    "execution_requires_root_release_after_AB_timing": true,
+    "full_diagnostic_process_wall_and_CPU_recorded_separately": true,
+    "original_service_latency_unchanged": true,
+    "protocol_and_code_snapshots_saved_before_input_outcomes": true,
+    "maximum_metadata_file_bytes": 2000000,
+    "prohibited_media_suffixes": [".mkv", ".mpg", ".mp4", ".wav", ".pcm", ".yuv"]
+  }
+}

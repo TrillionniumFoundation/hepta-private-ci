@@ -1,0 +1,29 @@
+{
+  "accuracy": {
+    "base.en": 0.83,
+    "consensus_or_single_v3": 0.8633333333333333,
+    "small.en": 0.81
+  },
+  "cpu_ns": 1570599008471,
+  "new_media_confirmation_opened": false,
+  "phase": "independent_qualification",
+  "primary": "consensus_or_single_v3",
+  "primary_eligible": true,
+  "primary_gate_min": 0.85,
+  "secondary_eligible": {
+    "base.en": false,
+    "small.en": false
+  },
+  "secondary_observers": [
+    "base.en",
+    "small.en"
+  ],
+  "source_recordings": 300,
+  "source_role_independent_from_all_observer_development": true,
+  "source_speakers": 147,
+  "statistical_unit": "Speaker; .85 is the unchanged point gate, not a confidence lower bound",
+  "status": "completed",
+  "v2_qualification_failed_and_retained": true,
+  "version": "v3",
+  "wall_ns": 1156685837216
+}

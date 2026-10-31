@@ -1,0 +1,40 @@
+{
+  "allocation_sha256": "66aa5e30c26dc72736d8d4af2fac2de53cb9d5aa6fc7b514d56d0b06f5e60b7e",
+  "allocator_bytes_match": true,
+  "new_pixels_or_model_outcomes_opened": false,
+  "pairwise_pixel_overlap": {
+    "calibration:execution": 0,
+    "calibration:qualification": 0,
+    "execution:qualification": 0
+  },
+  "pairwise_writer_overlap": {
+    "calibration:execution": 0,
+    "calibration:qualification": 0,
+    "execution:qualification": 0
+  },
+  "roles": {
+    "calibration": {
+      "pair_count": 100,
+      "pixel_count": 200,
+      "previous_registered_pixel_overlap": 0,
+      "previous_registered_writer_overlap": 0,
+      "writer_count": 100
+    },
+    "execution": {
+      "pair_count": 128,
+      "pixel_count": 256,
+      "previous_registered_pixel_overlap": 0,
+      "previous_registered_writer_overlap": 0,
+      "writer_count": 64
+    },
+    "qualification": {
+      "pair_count": 1000,
+      "pixel_count": 2000,
+      "previous_registered_pixel_overlap": 0,
+      "previous_registered_writer_overlap": 0,
+      "writer_count": 1000
+    }
+  },
+  "schema": "hepta.next.native-h2-source-static-audit.v1",
+  "scope": "Metadata-only independently checked; root separately checked official source archive bytes and complete prior census"
+}

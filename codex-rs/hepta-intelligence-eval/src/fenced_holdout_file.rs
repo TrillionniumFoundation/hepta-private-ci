@@ -22,10 +22,13 @@ use crate::FinalHoldoutCasAnchorV1;
 use crate::FinalHoldoutCasRecordV1;
 use crate::FinalHoldoutCasStoreError;
 use crate::FinalHoldoutCasStoreV1;
-use crate::FinalHoldoutJournalV1;
 use crate::HoldoutWriterFenceV1;
 use crate::closure::decode_holdout_plan;
 use crate::closure::encode_holdout_plan;
+use crate::holdout_envelope::HoldoutJournalV2;
+use crate::holdout_envelope::HoldoutPlanEnvelopeV2;
+use crate::paired_plan::decode_paired_plan;
+use crate::paired_plan::encode_paired_plan;
 
 const MAGIC: &[u8; 8] = b"HEPTFC01";
 const HEADER: usize = 72;
@@ -34,6 +37,7 @@ const MAX_FRAME: usize = 4096;
 const MAX_RECORDS: usize = 1_000_000;
 const EVENT_FENCE: u8 = 0;
 const EVENT_PLAN: u8 = 1;
+const EVENT_PAIRED_PLAN: u8 = 2;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LockedFileCasErrorV1 {
@@ -283,9 +287,17 @@ fn transition_payload(
                 .records
                 .last()
                 .ok_or(LockedFileCasErrorV1::Corrupt)?;
-            let encoded =
-                encode_holdout_plan(&record.plan).map_err(|_| LockedFileCasErrorV1::Corrupt)?;
-            let mut payload = vec![EVENT_PLAN];
+            let (tag, encoded) = match &record.plan {
+                HoldoutPlanEnvelopeV2::CrossFold(plan) => (
+                    EVENT_PLAN,
+                    encode_holdout_plan(plan).map_err(|_| LockedFileCasErrorV1::Corrupt)?,
+                ),
+                HoldoutPlanEnvelopeV2::Paired(plan) => (
+                    EVENT_PAIRED_PLAN,
+                    encode_paired_plan(plan).map_err(|_| LockedFileCasErrorV1::Corrupt)?,
+                ),
+            };
+            let mut payload = vec![tag];
             payload.extend_from_slice(&encoded);
             Ok(payload)
         }
@@ -306,31 +318,41 @@ fn replay_event(
                     if fence.generation <= current.fence.generation {
                         return Err(LockedFileCasErrorV1::Rollback);
                     }
-                    FinalHoldoutJournalV1::from_snapshot_with_record_limit(
+                    HoldoutJournalV2::from_snapshot_with_record_limit(
                         current.journal.clone(),
                         MAX_RECORDS,
                     )
                     .map_err(|_| LockedFileCasErrorV1::Corrupt)?
                 }
-                None => FinalHoldoutJournalV1::with_record_limit(MAX_RECORDS)
+                None => HoldoutJournalV2::with_record_limit(MAX_RECORDS)
                     .map_err(|_| LockedFileCasErrorV1::Corrupt)?,
             };
             FinalHoldoutCasRecordV1::new(binding, fence, journal.snapshot())
                 .map_err(|_| LockedFileCasErrorV1::Corrupt)
         }
-        EVENT_PLAN => {
+        EVENT_PLAN | EVENT_PAIRED_PLAN => {
             let current = current.ok_or(LockedFileCasErrorV1::Corrupt)?;
-            let plan =
-                decode_holdout_plan(&payload[1..]).map_err(|_| LockedFileCasErrorV1::Corrupt)?;
-            let mut journal = FinalHoldoutJournalV1::from_snapshot_with_record_limit(
+            let mut journal = HoldoutJournalV2::from_snapshot_with_record_limit(
                 current.journal.clone(),
                 MAX_RECORDS,
             )
             .map_err(|_| LockedFileCasErrorV1::Corrupt)?;
-            let receipt = journal
-                .consume(journal.head_digest(), &plan)
-                .map_err(|_| LockedFileCasErrorV1::Corrupt)?;
-            if receipt.disposition != crate::HoldoutUseDispositionV1::Recorded {
+            let disposition = if tag == EVENT_PLAN {
+                let plan = decode_holdout_plan(&payload[1..])
+                    .map_err(|_| LockedFileCasErrorV1::Corrupt)?;
+                journal
+                    .consume(journal.head_digest(), &plan)
+                    .map_err(|_| LockedFileCasErrorV1::Corrupt)?
+                    .disposition
+            } else {
+                let plan =
+                    decode_paired_plan(&payload[1..]).map_err(|_| LockedFileCasErrorV1::Corrupt)?;
+                journal
+                    .consume_paired(journal.head_digest(), &plan)
+                    .map_err(|_| LockedFileCasErrorV1::Corrupt)?
+                    .disposition
+            };
+            if disposition != crate::HoldoutUseDispositionV1::Recorded {
                 return Err(LockedFileCasErrorV1::Corrupt);
             }
             FinalHoldoutCasRecordV1::new(binding, current.fence, journal.snapshot())

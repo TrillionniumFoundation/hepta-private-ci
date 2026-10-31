@@ -1,0 +1,50 @@
+{
+  "all_test_inputs_synthetic": true,
+  "bank_contract_scope": "Synthetic deterministic state machine exercises the actual training_bank control flow; learning contracts separately use a randomly initialized real neural architecture and generated pixel/label tensors. No study dataset or outputs are used.",
+  "contracts": [
+    "independent exact weighted mean loss and teacher anchor",
+    "zero action holds carried optimizer and parameters while computing96-example gradients",
+    "complete optimizer clone preserves future two-step updates",
+    "actual48-step guard failure rolls back complete state while advancing clock and retaining cost",
+    "five directional features preserve incoming gradients,state,RNG and match central finite differences",
+    "PNG and UTF8 roundtrip preserves exact hard observer scores",
+    "serialized full optimizer preserves the next update",
+    "whole-trajectory CV excludes all held-out features and labels from fitting/normalization",
+    "equal CV errors select first alpha and equal action predictions select first action",
+    "full terminal-reference targets retain the selected first-block state, validate chronology, and charge 17,280 microsteps per seed"
+  ],
+  "mnist_assets_loaded_by_tests": false,
+  "new_role_labels_or_model_outcomes_opened": false,
+  "passed": true,
+  "prior_study_files_modified": false,
+  "protocol_sha256_at_receipt": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7",
+  "schema": "hepta.field-bridge.v3.training-implementation-contract.1",
+  "scientific_study_training_executed": false,
+  "source_lines": {
+    "assets.py": 48,
+    "learning.py": 296,
+    "training_bank.py": 173,
+    "training_common.py": 136,
+    "training_features.py": 146,
+    "training_policy.py": 131,
+    "training_run.py": 158,
+    "training_stages.py": 142
+  },
+  "source_sha256": {
+    "assets.py": "ee8851e2b7f18200a58ee2ffe4e555d242886732a50bb6e169f49a46dc0b8e21",
+    "learning.py": "97c3baabe208fd8d5e8ac9beb5ae4a244b3c8d6aac565e727fd64eed8c1371b7",
+    "training_bank.py": "9e6bb320ccaf087120a5cded8e2110478b87a4073febbb8bb999f2853073d7f1",
+    "training_common.py": "e686e59dd34a0d8f2a31b192c1f47c59fd86cbc22fe42d60d821c4474db56591",
+    "training_features.py": "8e3dfee7a0a77e74c16b459f8e15a0cad1cfa999a4187e975178bb2d2f0cd2a9",
+    "training_policy.py": "824095a842ec6d4ab11ea560a5e763ce3d6cc524a92d4801b547d0f67b2451e4",
+    "training_run.py": "a44e2069b2333bf5ac0e082c12f75360e96847b1d2b58bf311fc8dacc3c2c18d",
+    "training_stages.py": "ed3fcc45531fe2fdb7ea6033ee7067a8e5221e52a69ec3abf1a23e1f65d2f2ef"
+  },
+  "test_runtime_seconds": 5.067,
+  "test_source_sha256": {
+    "learning_contract_tests.py": "b30f13b351290e67991fcba88176c9e207e65c73c2a58748a8a2554ed73db5c1",
+    "training_policy_contract_tests.py": "0da13362f038934b3c2c7b4b2e9387a9acb5dfe1b9994d835ba6ffc70e1a63a9"
+  },
+  "tests_run": 10,
+  "training_configuration_sha256": "10204e7f2ef6cae3600728a97252a8491e0d6f4ba720ff0e43e14681cf448d55"
+}

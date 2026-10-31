@@ -1,0 +1,651 @@
+{
+  "absence_source_pairs": 500,
+  "authenticated_evaluator": false,
+  "bootstrap_draws": 4000,
+  "candidate_file_sha256": "409221dd6f892e3ccf0f317c4c4d86dc9cf9bcf68651c016349515094fa2dd24",
+  "candidate_ids": [
+    "candidate:no-change:9058ec1051babac8df4de39e582bdb045eba111d422c7e9725f01c10b2919b01",
+    "candidate:update:a37048291fca37e406e593f8f5309660db09accf4ab954b411db672c203dc3d4",
+    "candidate:update:fdd02ddb1908450167c2169d7f51744c9b3de663d76fd6f672e005c01ce55640"
+  ],
+  "candidate_selection_or_update_applied": false,
+  "candidate_source_timeline_sha256": "dc4b1f41feab9cf5be462968b45596e99d7035428b4ca6fea21f19c936482a4f",
+  "candidate_specific_construction_holdout": true,
+  "candidates": [
+    {
+      "baseline_raw_brier": 0.06985258066015955,
+      "calibrated_classification_changes_at_half": 0,
+      "calibrated_probability_rows_changed": 0,
+      "calibrated_probability_threshold_changes_at_075": 0,
+      "candidate": "candidate:update:a37048291fca37e406e593f8f5309660db09accf4ab954b411db672c203dc3d4",
+      "candidate_raw_brier": 0.06985234236498808,
+      "frozen_calibration_group_changes": 0,
+      "future_state_forecast_unchanged": true,
+      "maximum_raw_probability_change": 4.2741977437921186e-05,
+      "mean_brier_improvement": 2.3829517146976094e-07,
+      "paired_source_individual975_family95_interval": [
+        -1.404108721245693e-07,
+        6.238100877430329e-07
+      ],
+      "positive_adjusted_lower_endpoint": false,
+      "raw_classification_changes_at_half": 0
+    },
+    {
+      "baseline_raw_brier": 0.06985258066015955,
+      "calibrated_classification_changes_at_half": 0,
+      "calibrated_probability_rows_changed": 0,
+      "calibrated_probability_threshold_changes_at_075": 0,
+      "candidate": "candidate:update:fdd02ddb1908450167c2169d7f51744c9b3de663d76fd6f672e005c01ce55640",
+      "candidate_raw_brier": 0.06985246150740282,
+      "frozen_calibration_group_changes": 0,
+      "future_state_forecast_unchanged": true,
+      "maximum_raw_probability_change": 2.137091143294967e-05,
+      "mean_brier_improvement": 1.1915275672783094e-07,
+      "paired_source_individual975_family95_interval": [
+        -7.019601528481205e-08,
+        3.119094979093751e-07
+      ],
+      "positive_adjusted_lower_endpoint": false,
+      "raw_classification_changes_at_half": 0
+    }
+  ],
+  "comparisons": 2,
+  "data_sha256": "7fe98027bd00944273bb599f9106dc57045f9fbc88b650c946be61c2b1b569b5",
+  "descriptive_strata": {
+    "all": {
+      "actual_joint_correctness": 0.4155,
+      "all_heads_frozen_calibration": [
+        {
+          "bce": 0.22536751729222232,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.06933189168704594,
+          "ece10": 0.009244928003173182,
+          "mean_probability": 0.4090404163283058
+        },
+        {
+          "bce": 0.22536751729222232,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.06933189168704594,
+          "ece10": 0.009244928003173182,
+          "mean_probability": 0.4090404163283058
+        },
+        {
+          "bce": 0.22536751729222232,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.06933189168704594,
+          "ece10": 0.009244928003173182,
+          "mean_probability": 0.4090404163283058
+        }
+      ],
+      "all_heads_raw": [
+        {
+          "bce": 0.23894672298912223,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.06985258066015955,
+          "ece10": 0.03773844192728221,
+          "mean_probability": 0.44677459480991955
+        },
+        {
+          "bce": 0.23894531183357742,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.06985234236498808,
+          "ece10": 0.03773837824534146,
+          "mean_probability": 0.4467738041046779
+        },
+        {
+          "bce": 0.23894601737912888,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.06985246150740282,
+          "ece10": 0.03773841010422636,
+          "mean_probability": 0.4467741994787785
+        }
+      ],
+      "candidate_raw_brier_improvements": [
+        2.3829517146976076e-07,
+        1.1915275672783104e-07
+      ],
+      "future_rows": 2000,
+      "persistence_mse": 0.18801513522346716,
+      "shared_forecast_mse": 0.11064888283828993,
+      "source_pairs": 1000
+    },
+    "complete_absence": {
+      "actual_joint_correctness": 0.001,
+      "all_heads_frozen_calibration": [
+        {
+          "bce": 0.007933521745223632,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.0009990609511134876,
+          "ece10": 0.0002468827930174564,
+          "mean_probability": 0.0012468827930174563
+        },
+        {
+          "bce": 0.007933521745223632,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.0009990609511134876,
+          "ece10": 0.0002468827930174564,
+          "mean_probability": 0.0012468827930174563
+        },
+        {
+          "bce": 0.007933521745223632,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.0009990609511134876,
+          "ece10": 0.0002468827930174564,
+          "mean_probability": 0.0012468827930174563
+        }
+      ],
+      "all_heads_raw": [
+        {
+          "bce": 0.008198651667018176,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.001003914950912381,
+          "ece10": 0.0018585239967123944,
+          "mean_probability": 0.0028585239967123944
+        },
+        {
+          "bce": 0.008198682201552206,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.0010039152908657097,
+          "ece10": 0.0018585476298869361,
+          "mean_probability": 0.002858547629886936
+        },
+        {
+          "bce": 0.00819866693376715,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.0010039151208802596,
+          "ece10": 0.0018585358128693254,
+          "mean_probability": 0.0028585358128693254
+        }
+      ],
+      "candidate_raw_brier_improvements": [
+        -3.3995332895225824e-10,
+        -1.6996787856544623e-10
+      ],
+      "future_rows": 1000,
+      "persistence_mse": 0.344405589696566,
+      "shared_forecast_mse": 0.19414107153634041,
+      "source_pairs": 500
+    },
+    "couple": {
+      "actual_joint_correctness": 0.417,
+      "all_heads_frozen_calibration": [
+        {
+          "bce": 0.22220106910118453,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.06866980020506702,
+          "ece10": 0.01783969547779444,
+          "mean_probability": 0.4062412106293095
+        },
+        {
+          "bce": 0.22220106910118453,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.06866980020506702,
+          "ece10": 0.01783969547779444,
+          "mean_probability": 0.4062412106293095
+        },
+        {
+          "bce": 0.22220106910118453,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.06866980020506702,
+          "ece10": 0.01783969547779444,
+          "mean_probability": 0.4062412106293095
+        }
+      ],
+      "all_heads_raw": [
+        {
+          "bce": 0.23785156714964031,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.06916737587561946,
+          "ece10": 0.04002575820960155,
+          "mean_probability": 0.449754924967286
+        },
+        {
+          "bce": 0.2378501743429374,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.06916715766244547,
+          "ece10": 0.040025697409820135,
+          "mean_probability": 0.44975423872048736
+        },
+        {
+          "bce": 0.23785087071634495,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.06916726676364351,
+          "ece10": 0.04002572782729664,
+          "mean_probability": 0.44975458186483513
+        }
+      ],
+      "candidate_raw_brier_improvements": [
+        2.182131740022749e-07,
+        1.0911197594289546e-07
+      ],
+      "future_rows": 1000,
+      "persistence_mse": 0.2274337765748976,
+      "shared_forecast_mse": 0.13562150599182454,
+      "source_pairs": 1000
+    },
+    "id": {
+      "actual_joint_correctness": 0.83,
+      "all_heads_frozen_calibration": [
+        {
+          "bce": 0.442801512839221,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.1376647224229784,
+          "ece10": 0.01824297321332891,
+          "mean_probability": 0.8168339498635941
+        },
+        {
+          "bce": 0.442801512839221,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.1376647224229784,
+          "ece10": 0.01824297321332891,
+          "mean_probability": 0.8168339498635941
+        },
+        {
+          "bce": 0.442801512839221,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.1376647224229784,
+          "ece10": 0.01824297321332891,
+          "mean_probability": 0.8168339498635941
+        }
+      ],
+      "all_heads_raw": [
+        {
+          "bce": 0.4696947943112263,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.1387012463694067,
+          "ece10": 0.07361835985785203,
+          "mean_probability": 0.8906906656231267
+        },
+        {
+          "bce": 0.4696919414656026,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.13870076943911044,
+          "ece10": 0.073618208860796,
+          "mean_probability": 0.8906890605794688
+        },
+        {
+          "bce": 0.4696933678244906,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.13870100789392537,
+          "ece10": 0.07361828439558339,
+          "mean_probability": 0.8906898631446876
+        }
+      ],
+      "candidate_raw_brier_improvements": [
+        4.769302962684741e-07,
+        2.384754813342273e-07
+      ],
+      "future_rows": 1000,
+      "persistence_mse": 0.031624680750368325,
+      "shared_forecast_mse": 0.027156694140239437,
+      "source_pairs": 500
+    },
+    "refine_text": {
+      "actual_joint_correctness": 0.414,
+      "all_heads_frozen_calibration": [
+        {
+          "bce": 0.22853396548326016,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.06999398316902489,
+          "ece10": 0.007237301049621078,
+          "mean_probability": 0.411839622027302
+        },
+        {
+          "bce": 0.22853396548326016,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.06999398316902489,
+          "ece10": 0.007237301049621078,
+          "mean_probability": 0.411839622027302
+        },
+        {
+          "bce": 0.22853396548326016,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.06999398316902489,
+          "ece10": 0.007237301049621078,
+          "mean_probability": 0.411839622027302
+        }
+      ],
+      "all_heads_raw": [
+        {
+          "bce": 0.24004187882860414,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.07053778544469963,
+          "ece10": 0.03756614372143624,
+          "mean_probability": 0.44379426465255295
+        },
+        {
+          "bce": 0.24004044932421745,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.07053752706753069,
+          "ece10": 0.03756599591421455,
+          "mean_probability": 0.44379336948886833
+        },
+        {
+          "bce": 0.24004116404191292,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.07053765625116211,
+          "ece10": 0.03756606983603545,
+          "mean_probability": 0.4437938170927219
+        }
+      ],
+      "candidate_raw_brier_improvements": [
+        2.583771689372468e-07,
+        1.2919353751276664e-07
+      ],
+      "future_rows": 1000,
+      "persistence_mse": 0.14859649387203672,
+      "shared_forecast_mse": 0.08567625968475533,
+      "source_pairs": 1000
+    },
+    "view_clean": {
+      "actual_joint_correctness": 0.845,
+      "all_heads_frozen_calibration": [
+        {
+          "bce": 0.441554482683661,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.13463144828536056,
+          "ece10": 0.052902352093759646,
+          "mean_probability": 0.8291018470432547
+        },
+        {
+          "bce": 0.441554482683661,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.13463144828536056,
+          "ece10": 0.052902352093759646,
+          "mean_probability": 0.8291018470432547
+        },
+        {
+          "bce": 0.441554482683661,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.13463144828536056,
+          "ece10": 0.052902352093759646,
+          "mean_probability": 0.8291018470432547
+        }
+      ],
+      "all_heads_raw": [
+        {
+          "bce": 0.5000568062374909,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.1442963860494015,
+          "ece10": 0.11268539229954237,
+          "mean_probability": 0.9068927541097088
+        },
+        {
+          "bce": 0.5000551373537881,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.1442963577204599,
+          "ece10": 0.11268590291692959,
+          "mean_probability": 0.9068921948670094
+        },
+        {
+          "bce": 0.5000559717443681,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.14429637187464067,
+          "ece10": 0.11268564763643037,
+          "mean_probability": 0.9068924745255978
+        }
+      ],
+      "candidate_raw_brier_improvements": [
+        2.8328941621492094e-08,
+        1.4174760843279055e-08
+      ],
+      "future_rows": 200,
+      "persistence_mse": 0.02691387222610123,
+      "shared_forecast_mse": 0.02379885409642106,
+      "source_pairs": 100
+    },
+    "view_conflict_untrusted": {
+      "actual_joint_correctness": 0.86,
+      "all_heads_frozen_calibration": [
+        {
+          "bce": 0.42363896328959916,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.12734890387564463,
+          "ece10": 0.04881441815297079,
+          "mean_probability": 0.8266427009812536
+        },
+        {
+          "bce": 0.42363896328959916,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.12734890387564463,
+          "ece10": 0.04881441815297079,
+          "mean_probability": 0.8266427009812536
+        },
+        {
+          "bce": 0.42363896328959916,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.12734890387564463,
+          "ece10": 0.04881441815297079,
+          "mean_probability": 0.8266427009812536
+        }
+      ],
+      "all_heads_raw": [
+        {
+          "bce": 0.44592263299534196,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.12740543919164093,
+          "ece10": 0.082211029139666,
+          "mean_probability": 0.9021491320802224
+        },
+        {
+          "bce": 0.44592288441478295,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.1274055846600028,
+          "ece10": 0.08221143376205459,
+          "mean_probability": 0.9021482289854811
+        },
+        {
+          "bce": 0.4459227586544391,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.12740551192138228,
+          "ece10": 0.08221123148070619,
+          "mean_probability": 0.9021486805752218
+        }
+      ],
+      "candidate_raw_brier_improvements": [
+        -1.4546836184132625e-07,
+        -7.272974135765194e-08
+      ],
+      "future_rows": 200,
+      "persistence_mse": 0.03216135364526321,
+      "shared_forecast_mse": 0.027110380673812832,
+      "source_pairs": 100
+    },
+    "view_missing_trusted": {
+      "actual_joint_correctness": 0.85,
+      "all_heads_frozen_calibration": [
+        {
+          "bce": 0.42200919826570854,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.12780865675838654,
+          "ece10": 0.044603988094015674,
+          "mean_probability": 0.8174472939572663
+        },
+        {
+          "bce": 0.42200919826570854,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.12780865675838654,
+          "ece10": 0.044603988094015674,
+          "mean_probability": 0.8174472939572663
+        },
+        {
+          "bce": 0.42200919826570854,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.12780865675838654,
+          "ece10": 0.044603988094015674,
+          "mean_probability": 0.8174472939572663
+        }
+      ],
+      "all_heads_raw": [
+        {
+          "bce": 0.44060930148434807,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.12789986543148368,
+          "ece10": 0.06788383551002974,
+          "mean_probability": 0.8995485432804514
+        },
+        {
+          "bce": 0.44060755648498945,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.12789976219763138,
+          "ece10": 0.06788377816010216,
+          "mean_probability": 0.8995461602472169
+        },
+        {
+          "bce": 0.4406084289200304,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.127899813797795,
+          "ece10": 0.06788380686970047,
+          "mean_probability": 0.8995473518078893
+        }
+      ],
+      "candidate_raw_brier_improvements": [
+        1.032338522926864e-07,
+        5.163368868855407e-08
+      ],
+      "future_rows": 200,
+      "persistence_mse": 0.03321184416874551,
+      "shared_forecast_mse": 0.028076978429278407,
+      "source_pairs": 100
+    },
+    "view_noise": {
+      "actual_joint_correctness": 0.835,
+      "all_heads_frozen_calibration": [
+        {
+          "bce": 0.4120067543832037,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.12896629400737347,
+          "ece10": 0.04893319943203617,
+          "mean_probability": 0.8081154116790747
+        },
+        {
+          "bce": 0.4120067543832037,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.12896629400737347,
+          "ece10": 0.04893319943203617,
+          "mean_probability": 0.8081154116790747
+        },
+        {
+          "bce": 0.4120067543832037,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.12896629400737347,
+          "ece10": 0.04893319943203617,
+          "mean_probability": 0.8081154116790747
+        }
+      ],
+      "all_heads_raw": [
+        {
+          "bce": 0.3866597532820808,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.11518067512741449,
+          "ece10": 0.07641249581778546,
+          "mean_probability": 0.8736796294336117
+        },
+        {
+          "bce": 0.38665737524642174,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.11518030187465009,
+          "ece10": 0.07641275229010214,
+          "mean_probability": 0.8736787266262093
+        },
+        {
+          "bce": 0.3866585641987955,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.11518048848689227,
+          "ece10": 0.07641262406801261,
+          "mean_probability": 0.873679178070791
+        }
+      ],
+      "candidate_raw_brier_improvements": [
+        3.732527644378056e-07,
+        1.8664052223254238e-07
+      ],
+      "future_rows": 200,
+      "persistence_mse": 0.035891049692450265,
+      "shared_forecast_mse": 0.030630104219740658,
+      "source_pairs": 100
+    },
+    "view_occlusion": {
+      "actual_joint_correctness": 0.76,
+      "all_heads_frozen_calibration": [
+        {
+          "bce": 0.5147981655739325,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.16956830918812682,
+          "ece10": 0.04286249565712101,
+          "mean_probability": 0.802862495657121
+        },
+        {
+          "bce": 0.5147981655739325,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.16956830918812682,
+          "ece10": 0.04286249565712101,
+          "mean_probability": 0.802862495657121
+        },
+        {
+          "bce": 0.5147981655739325,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.16956830918812682,
+          "ece10": 0.04286249565712101,
+          "mean_probability": 0.802862495657121
+        }
+      ],
+      "all_heads_raw": [
+        {
+          "bce": 0.5752254775568696,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.17872386604709292,
+          "ece10": 0.12281184823634045,
+          "mean_probability": 0.8711832692116391
+        },
+        {
+          "bce": 0.5752167538280307,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.17872184074280806,
+          "ece10": 0.12280949575555435,
+          "mean_probability": 0.8711799921714273
+        },
+        {
+          "bce": 0.5752211156048203,
+          "bce_probability_clip": 1e-15,
+          "brier": 0.17872285338891664,
+          "ece10": 0.12281067204104296,
+          "mean_probability": 0.8711816307439384
+        }
+      ],
+      "candidate_raw_brier_improvements": [
+        2.0253042848317133e-06,
+        1.0126581762644127e-06
+      ],
+      "future_rows": 200,
+      "persistence_mse": 0.029945284019281423,
+      "shared_forecast_mse": 0.026167153281944248,
+      "source_pairs": 100
+    }
+  },
+  "eligible_for_production_acceptance": false,
+  "evidence_audit": {
+    "all_actual_media_reopened": true,
+    "all_commitments_exact": true,
+    "both_actions_all_three_forecasts_precede_future": true,
+    "commit_files": 72,
+    "future_rows": 2000,
+    "individual_sources": 2000,
+    "source_pairs": 1000
+  },
+  "future_rows": 2000,
+  "id_source_pairs": 500,
+  "individual_confidence": 0.975,
+  "model_predictions": 6000,
+  "new_project_independent_source_pairs": 0,
+  "nominal_family_confidence": 0.95,
+  "protocol_sha256": "36a8af4745be2523f22f49000f9d6813a8c09d075e1611573a81c59b7d38de3c",
+  "refit_or_recalibration": false,
+  "schema": "hepta.abc4.native-candidate-reuse-result.v1",
+  "scope": "fixed future-correctness head predictions on newly executed branches from already project-observed sources outside candidate construction; no generated-output improvement or new project N",
+  "source_overlap_with_training_repair": "all1000 source pairs; retain this cross-experiment dependence, do not pool as independent replication",
+  "source_pair_draws_shared_between_candidates": true,
+  "source_pairs": 1000,
+  "source_role": "repair_test",
+  "weights_sha256": "95d6fade17c609457cb6b978d6580a37fb3bdd02aafa125d964c60c48dd4cc0c"
+}

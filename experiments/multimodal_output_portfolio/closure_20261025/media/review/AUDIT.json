@@ -1,0 +1,294 @@
+{
+  "actual_development_mutation_readback": "NEGATIVE_READBACK.json",
+  "actual_joint_input_speech_events": 128,
+  "allocated_source_ids_sha256": "6c9b255bd254b6c45f9907ae9a03c5abeefc9d73e3211e29956d68f2262b051b",
+  "audit_actions": {
+    "existing_files_and_closed_metadata_only": true,
+    "frozen_source_or_protocol_modified": false,
+    "new_source_generation_or_training": false,
+    "read_only_existing_development_codec_decoding_performed": true
+  },
+  "clock": {
+    "audio_samples": 16000,
+    "duration_ns": 2000000000,
+    "events": [
+      {
+        "audio_sample": 0,
+        "slot": 0,
+        "time_ns": 0,
+        "video_frame": 0
+      },
+      {
+        "audio_sample": 8000,
+        "slot": 1,
+        "time_ns": 1000000000,
+        "video_frame": 10
+      }
+    ],
+    "sample_rate": 8000,
+    "video_fps": 10,
+    "video_frames": 20
+  },
+  "clock_mechanism": "Actual ffprobe frame/sample PTS and decoder byte checks, not merely manifest metadata",
+  "cost_scope": {
+    "codec_children_cpu_seconds": 392.863963,
+    "hard_soft_row_sums_double_count_shared_inference": true,
+    "per_row_excludes_input_file_construction_readback_and_model_loads": true,
+    "process_tree_cpu_seconds": 422.904076377,
+    "python_cpu_seconds": 30.040113377,
+    "row_audit_included_includes_scoring_and_content_readback": true,
+    "row_execution_includes_output_codec_readback_excludes_audit": true,
+    "row_python_cpu_excludes_shared_inference_and_codec_children": true,
+    "wall_seconds": 430.149982472,
+    "whole_run_includes_input_and_output_codec_scoring_qualification_negatives": true
+  },
+  "exact_expected_pair_mode_condition_census": true,
+  "final_negative_controls_nonvacuous_and_rejected": true,
+  "final_negative_summary_sha256": "1ee02c914767a25c5d6eb6b03ed4626c76f2e6c6336dbebd2f634f77ac439966",
+  "frozen_pins_verified": 55,
+  "frozen_point_gates_pass": true,
+  "generation_boundary": {
+    "audio_input": "actual FSDD PCM after file readback",
+    "audio_output": "trained conditional spectral VAE zero-style decode and 24-iteration Griffin-Lim",
+    "fixed_actions": [
+      "refine_semantic",
+      "couple"
+    ],
+    "inference_not_general_ndu_solver": true,
+    "label_dependent_benchmark_input_construction_declared": true,
+    "private_target_not_passed_to_generate_state_or_output_decoders": true,
+    "public_inputs_only": true,
+    "video_input": "constructed MNIST motion in actual codec-decoded MP4 frames; not natural recordings",
+    "video_output": "learned recurrent displacement of same generated image panels"
+  },
+  "hard_soft_same_state_pairs_verified": 320,
+  "image_gate_margin": {
+    "additional_successes_above_minimum": 1,
+    "denominator": 64,
+    "observed": 0.765625,
+    "successes": 49,
+    "threshold": 0.75
+  },
+  "input_files_sha_verified": 256,
+  "joint_input_recording_speakers": {
+    "george": 50,
+    "jackson": 47,
+    "lucas": 26,
+    "nicolas": 5
+  },
+  "mode_rates_recomputed": {
+    "hard": {
+      "audio": {
+        "denominator": 64,
+        "fraction": 0.96875,
+        "successes": 62
+      },
+      "audio_video": {
+        "denominator": 64,
+        "fraction": 0.921875,
+        "successes": 59
+      },
+      "image": {
+        "denominator": 64,
+        "fraction": 0.765625,
+        "successes": 49
+      },
+      "text": {
+        "denominator": 64,
+        "fraction": 1.0,
+        "successes": 64
+      },
+      "video": {
+        "denominator": 64,
+        "fraction": 0.859375,
+        "successes": 55
+      }
+    },
+    "soft": {
+      "audio": {
+        "denominator": 64,
+        "fraction": 0.96875,
+        "successes": 62
+      },
+      "audio_video": {
+        "denominator": 64,
+        "fraction": 0.921875,
+        "successes": 59
+      },
+      "image": {
+        "denominator": 64,
+        "fraction": 0.765625,
+        "successes": 49
+      },
+      "text": {
+        "denominator": 64,
+        "fraction": 1.0,
+        "successes": 64
+      },
+      "video": {
+        "denominator": 64,
+        "fraction": 0.859375,
+        "successes": 55
+      }
+    }
+  },
+  "not_established": [
+    "natural audio/video generalization",
+    "unseen speakers",
+    "640 independent samples",
+    "end-to-end four-modal NDU training",
+    "dynamic NDU superiority",
+    "global optimal output portfolio",
+    "human perceptual quality",
+    "production qualification"
+  ],
+  "output_bundles": 640,
+  "output_files_sha_verified": 2560,
+  "protocol_sha256": "66db720064d45fc2e38cc9f8123767f51bfb82029767a093062971e05aff3a34",
+  "qualifications": {
+    "independent_gradient_and_recording_roles_not_human_perceptual_certification": true,
+    "piper_reference_full_asr_qualification_failed_and_not_primary": true,
+    "same_six_speakers_across_roles": true,
+    "secondary_whisper_dev_pair_accuracy": {
+      "real_input": 0.75,
+      "repaired_output": 0.5833333333333334
+    },
+    "secondary_whisper_final": {
+      "all_text_input_hard_condition_rows": true,
+      "audio_files_paired_and_sha_verified": 128,
+      "cost_is_additional_to_primary_final": true,
+      "cpu_seconds": 70.261806928,
+      "digit_denominator": 128,
+      "digit_successes": {
+        "input": 110,
+        "output": 47
+      },
+      "interpretation": "Substantial disagreement with primary MelSpeech on generated audio despite better performance on real input; bounded local-observer gates do not establish natural speech intelligibility or general audio quality.",
+      "not_a_preregistered_primary_gate": true,
+      "observer_receipt_sha256": "4fdba80578fed5079ae80612f2b60e93122cdfbbb77eed175547a8751bbcc837",
+      "pair_denominator": 64,
+      "pair_successes": {
+        "input": 55,
+        "output": 22
+      },
+      "registration_sha256": "02a103ee5cded2972c7d2b1eb8d264df46a6a0fb594132f4834a694d29b60889",
+      "row_count": 64,
+      "same_existing_source_pairs_no_new_independent_samples": true,
+      "strict_declared_transcript_parser_recomputed": true,
+      "summary_sha256": "18e0b95020d9c4fa5fcaca12321ac554fbde8f41654d27a5aead8eb68914c896",
+      "target_or_prompt_supplied": false,
+      "wall_seconds": 70.353566766
+    }
+  },
+  "registration_after_freeze_ns": 12383951723,
+  "registration_sha256": "d9dc73244856a4d4b280ec03f8d16872ee31f23537fdf7c82054553c4433ba1c",
+  "reviewed_unix_ns": 1792946094941770408,
+  "reward_audit_validation_test_sha_overlap": 0,
+  "runtime_selected_assets": 12,
+  "runtime_source_snapshot_files": 30,
+  "schema": "hepta.closure.independent-final-media-review.v1",
+  "source_pairs": 64,
+  "speech_roles": {
+    "acoustic_generator": {
+      "count": 300,
+      "recording_indices": [
+        20,
+        49
+      ],
+      "sha256": "c400ae36831aaf1d6d03e55ef1db84d0a0562d0ee3fa6418f1dc0a2294e990d4",
+      "speakers": [
+        "jackson"
+      ],
+      "unique_recordings": 300
+    },
+    "audio_input": {
+      "count": 1800,
+      "recording_indices": [
+        20,
+        49
+      ],
+      "sha256": "671cd52044d1e9ab3dfb720d9db4d941cb772dccf4c41904fa50abc7a0b543ca",
+      "speakers": [
+        "george",
+        "jackson",
+        "lucas",
+        "nicolas",
+        "theo",
+        "yweweler"
+      ],
+      "unique_recordings": 1800
+    },
+    "audit": {
+      "count": 300,
+      "recording_indices": [
+        15,
+        19
+      ],
+      "sha256": "3903dcf3f49b74cde69f379986c4bc1478248174ab5485a0032bd0c7f274dc24",
+      "speakers": [
+        "george",
+        "jackson",
+        "lucas",
+        "nicolas",
+        "theo",
+        "yweweler"
+      ],
+      "unique_recordings": 300
+    },
+    "reward": {
+      "count": 300,
+      "recording_indices": [
+        10,
+        14
+      ],
+      "sha256": "9fba26f486efa5eb6d19bcad40fc366d4876a0012320b5637079aaaa40e818e8",
+      "speakers": [
+        "george",
+        "jackson",
+        "lucas",
+        "nicolas",
+        "theo",
+        "yweweler"
+      ],
+      "unique_recordings": 300
+    },
+    "test": {
+      "count": 300,
+      "recording_indices": [
+        0,
+        4
+      ],
+      "sha256": "78084a419b86c8e2aeb514aa3365ddf469a7ed13e137eb6ff43e073589ac8903",
+      "speakers": [
+        "george",
+        "jackson",
+        "lucas",
+        "nicolas",
+        "theo",
+        "yweweler"
+      ],
+      "unique_recordings": 300
+    },
+    "validation": {
+      "count": 300,
+      "recording_indices": [
+        5,
+        9
+      ],
+      "sha256": "76e37ed9d99781d6acfecc97efdf698c6aaa0e52e2f4eb695888f43c70e6450a",
+      "speakers": [
+        "george",
+        "jackson",
+        "lucas",
+        "nicolas",
+        "theo",
+        "yweweler"
+      ],
+      "unique_recordings": 300
+    }
+  },
+  "status": "completed_no_blocking_implementation_issue",
+  "summary_sha256": "45c84618834397ed4353c6b0618d0e0e052d27c8bc3037ee576b2d3969c838ae",
+  "unique_image_sources": 128,
+  "unique_joint_input_recordings": 128
+}

@@ -1,0 +1,70 @@
+{
+  "all_six_local_files_prepared_and_verified": true,
+  "approval_status": "REQUIRES_EXPLICIT_USER_AUTHORED_NAMED_FILE_AND_DESTINATION_AUTHORIZATION",
+  "automatic_approval_review_prior_write_rejections": 3,
+  "destination": "ChatGPT Library",
+  "items": [
+    {
+      "bytes": 550161476,
+      "kind": "complete_raw_archive",
+      "local_path": "/tmp/hepta-v2-final-20261027/hepta_field_bridge_v2_20261027_evidence.tar.gz",
+      "name": "hepta_field_bridge_v2_20261027_evidence.tar.gz",
+      "proposed_destination_folder": "Hepta-Parameter-Field-Bridge/20261027/V2",
+      "sha256": "7351ff2b694bb37bcd50e7d5be08e601f525516c9ba214a8d912d34f007a4607",
+      "study_version": "V2"
+    },
+    {
+      "bytes": 56583,
+      "kind": "archive_and_restore_verification",
+      "local_path": "/workspace/scratch/9b2cd2b58376/bridge_v2_archive/ARCHIVE_AND_RESTORE_VERIFICATION.json",
+      "name": "ARCHIVE_AND_RESTORE_VERIFICATION.json",
+      "proposed_destination_folder": "Hepta-Parameter-Field-Bridge/20261027/V2",
+      "sha256": "02db4d2386e1b2b092a1e2e784ab39f83a4131addcd77c11eaa82c4b78c41e82",
+      "study_version": "V2"
+    },
+    {
+      "bytes": 1254389884,
+      "kind": "complete_raw_archive",
+      "local_path": "/tmp/hepta-v3-final-20261027/hepta_field_bridge_v3_20261027_evidence.tar.gz",
+      "name": "hepta_field_bridge_v3_20261027_evidence.tar.gz",
+      "proposed_destination_folder": "Hepta-Parameter-Field-Bridge/20261027/V3",
+      "sha256": "37ef2e8de1a795ada43a92afc7403018e82ac23368e8ee6f7319569099abf4cf",
+      "study_version": "V3"
+    },
+    {
+      "bytes": 695743,
+      "kind": "archive_and_restore_verification",
+      "local_path": "/workspace/scratch/9b2cd2b58376/bridge_v3_archive/ARCHIVE_AND_RESTORE_VERIFICATION.json",
+      "name": "ARCHIVE_AND_RESTORE_VERIFICATION.json",
+      "proposed_destination_folder": "Hepta-Parameter-Field-Bridge/20261027/V3",
+      "sha256": "198916ddf9f2ad281fcda54a79b79f9b0210cc56129a8dc77e054ee34a0c6351",
+      "study_version": "V3"
+    },
+    {
+      "bytes": 415960474,
+      "kind": "complete_raw_archive",
+      "local_path": "/tmp/hepta-v4-final-20261027/hepta_field_bridge_v4_20261027_evidence.tar.gz",
+      "name": "hepta_field_bridge_v4_20261027_evidence.tar.gz",
+      "proposed_destination_folder": "Hepta-Parameter-Field-Bridge/20261027/V4",
+      "sha256": "716b1291ee2fe1271f50589222fec9793b87a5bcae156c7af8e498c6c80f9df7",
+      "study_version": "V4"
+    },
+    {
+      "bytes": 12600,
+      "kind": "archive_and_restore_verification",
+      "local_path": "/workspace/scratch/9b2cd2b58376/bridge_v4_archive/ARCHIVE_AND_RESTORE_VERIFICATION.json",
+      "name": "ARCHIVE_AND_RESTORE_VERIFICATION.json",
+      "proposed_destination_folder": "Hepta-Parameter-Field-Bridge/20261027/V4",
+      "sha256": "6bfedf6728710b3afedacf5f040b622b496e372b7e99dd3b1227675bfa3ce9d8",
+      "study_version": "V4"
+    }
+  ],
+  "library_file_ids_for_these_six_files": [],
+  "new_uploads": 0,
+  "postpackage": true,
+  "read_only_original_asset_restore_is_separate": true,
+  "reason": "Automatic review rejected the prior V2/V3 save because generic continuation did not satisfy named-file and destination authorization. No retry or alternate raw-data egress is attempted. V4 upload has not been attempted.",
+  "schema": "hepta.field-bridge.v4.concrete-persistence-request.1",
+  "scope": "Save immutable copies; no overwrite of existing user files, no external sharing, no PR merge or production authority change.",
+  "sum_bytes": 2221276760
+}

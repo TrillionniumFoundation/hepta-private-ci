@@ -1,0 +1,79 @@
+{
+  "CI_queried_or_managed": false,
+  "analysis_policy": {
+    "all_studies_shared_panel": true,
+    "familywise_alpha": 0.05,
+    "interval": "Two-sided 98.3333333333% paired source-cluster bootstrap for the three predeclared efficacy families; study-specific additional simultaneous contrasts must be specified before opening.",
+    "per_family_alpha": 0.016666666666666666,
+    "qualification_not_population_certification": true,
+    "secondary_endpoints": "Report all calibration, regret, selected errors, physical integrity, actual compute and economic sensitivity; no substitution of an attractive secondary endpoint for a failed primary.",
+    "three_primary_efficacy_families": [
+      "constrained_control",
+      "deployment_aligned_training",
+      "native_external_evidence_control"
+    ]
+  },
+  "baseline_commit": "8ec9386fe4c7f277bbeb858d493b88a7847a7865",
+  "previous_phase": "next_20261025",
+  "previous_phase_files_immutable": true,
+  "production_authority": "deny_all",
+  "qualification_definition_before_opening": {
+    "confidence_floor": 0.75,
+    "max_ECE": 0.03,
+    "max_all_missing_FAR_upper": 0.004999,
+    "min_ID_request_nonempty_fraction": 0.25,
+    "scope_change_reason": "With 100 mutually exclusive strictly-correct semantic endpoints, sum_a P(correct_a)<=1, so at confidence .75 at most one endpoint can be admitted. Candidate acceptance fraction .25 is inapplicable; new schema measures nonempty requests, reports candidate fraction, and preserves all old results unchanged.",
+    "selected_action_ECE_gate_required": true,
+    "zero_of_600_upper_formula": "1 - 0.05**(1/600), interpreted only under explicitly stated iid-request assumptions for the exact missing-input population"
+  },
+  "raw_custody": "New outputs will be locally sealed with full input and failure custody; earlier rejected raw-evidence upload is not retried.",
+  "raw_external_upload_performed": false,
+  "recorded_unix_ns": 1792989085808378278,
+  "schema": "hepta.advance.phase-registration.v1",
+  "source_allocation_sha256": "42d0c47056dda930cb851c9ae59f330747de8bb863f18b79c47eea830f69b262",
+  "source_opening_policy": "Registration may inspect metadata and byte identity. Candidate, qualification and confirmation protocols must freeze all real executable dependencies before their corresponding model outcomes are opened. Already analyzed sources may be used as explicitly named development; they are not fresh confirmation.",
+  "source_roles": {
+    "confirmation": {
+      "group_unit": "matched writer/speaker",
+      "no_result_driven_extension": true,
+      "pairs": 170,
+      "shared_by_all_studies": true,
+      "unique_matched_speakers": 85,
+      "writers": 85
+    },
+    "qualification_id": {
+      "pairs": 40,
+      "separate_from_final": true,
+      "unique_matched_speakers": 10,
+      "writers": 10
+    },
+    "qualification_ood": {
+      "all_inputs_missing": true,
+      "scope": "The exact all-missing input population; record duplicate numeric-input/state/RNG groups, not a certificate of natural OOD robustness.",
+      "speakers": 600,
+      "waveforms_used_as_source_identity_only": true
+    }
+  },
+  "work_packages": [
+    {
+      "canonical_semantic_endpoints": 100,
+      "future_cost": "Explicit charges and measured runtime accounted separately; randomness stays inside exponential expectation",
+      "goal": "Future-admission/rejection-aware old-generator backup and proper action differences; separate explicit finite Bayes/Bellman interface for acquired external evidence",
+      "id": "control",
+      "old_generator_actions": 5
+    },
+    {
+      "binary_endpoint_rule": "If actual utility is binary and action costs equal, mean and entropic endpoint targets are affine-equivalent; do not claim identifiable independent risk-training superiority.",
+      "goal": "Deployment-consistent endpoint loss and semantic learning with unchanged and canonical-untrained controls",
+      "id": "joint",
+      "renderer_frozen": true
+    },
+    {
+      "goal": "Actual four-modal generation, observation, external evidence arrival and recovery inside original owner with exact new model identity",
+      "id": "native",
+      "new_schema": "Explicit semantic endpoint/action qualification; no inheritance of old text/image correctness-head qualification",
+      "numerical_projection": "Measure actual numeric state and its subsequent uses; do not infer causal policy benefit merely from digest or changed state.",
+      "reset_unit": "New owner per independent source stream, with within-stream recurrence and recovery preserved"
+    }
+  ]
+}

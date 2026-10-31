@@ -1,0 +1,48 @@
+{
+  "audit_source_sha256": "5edb0ea53c39a6ddb47a3f30676d8f6ac7149b57b42d987aa7de7b3beb6a6776",
+  "ceilings": {
+    "native_checkpoint_bytes": 1048576,
+    "native_execution_micros": 8000,
+    "native_transient_bytes": 524288,
+    "native_write_amplification_ppm": 4000000,
+    "owner_peak_bytes": 524288
+  },
+  "interpretation": {
+    "actual_runtime_rejection_retained": true,
+    "all_costs_and_original_confidence_intervals_retained": true,
+    "all_individual_tick_latency_ceilings_passed": false,
+    "four_measured_process_quantile_summaries_can_pass_with_a_single_tail_outlier": true,
+    "universal_causal_cost_effect_inferred_from_fixed_stream": false
+  },
+  "model_or_native_rerun": false,
+  "original_results_changed": false,
+  "policies": {
+    "correctness": {
+      "candidate_ticks": 1740,
+      "individual_tick_violations": [],
+      "journal_sha256": "db5a97d8f36adc54ea69b142d18d0572de9625071a856da85b389f3a9bb88a5d"
+    },
+    "ndu": {
+      "candidate_ticks": 1800,
+      "individual_tick_violations": [
+        {
+          "actual_selected_action": "refine_image",
+          "admitted": false,
+          "candidate_action": "stop",
+          "confidence_ppm": 953893,
+          "failed_ceilings": {
+            "native_execution_micros": {
+              "ceiling": 8000,
+              "observed": 60038
+            }
+          },
+          "native_abstain": true,
+          "native_sequence": 546,
+          "request_id": "h2.case.38.0.ndu.step1"
+        }
+      ],
+      "journal_sha256": "e27cc634d48e1627f16fc55bbeef25a5aa0e8ffab3ea061961281765b6cac47b"
+    }
+  },
+  "schema": "hepta.next.native-h2-individual-tick-resource-census.v1"
+}

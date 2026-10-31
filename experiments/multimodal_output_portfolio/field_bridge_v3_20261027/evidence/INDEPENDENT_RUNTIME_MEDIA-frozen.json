@@ -1,0 +1,313 @@
+{
+  "additional_verification_only": true,
+  "exact_media_event_feedback_score_discrepancies": 0,
+  "freeze_sha256": "4eb4b0ee0824951e27dae401317c1a9b7833ad2571371f336ae9a7fbe3473a2a",
+  "generator_forward_calls": 0,
+  "logical_observer_image_pairs": {
+    "audit": 30720,
+    "reward": 101118
+  },
+  "native_replay_joined": true,
+  "native_replay_receipt_sha256": "4678c4d3d91fbfdffc8294d4ac1465f14317875061467a22c12a04843bc104f0",
+  "native_replay_required_for_acceptance": true,
+  "native_tick_calls": 0,
+  "new_independent_observations": 0,
+  "observer_parameter_sha256": {
+    "audit": "b02514987ea2986321e00652e0823111d30ebb79104ff85eb88ef0eae9e35474",
+    "reward": "d681be1ad275258a735aca3dbababbbf49829dbbec424dcb756b9ed616d68cf0"
+  },
+  "original_assets": {
+    "loaded_observers": [
+      "reward",
+      "audit"
+    ],
+    "models": {},
+    "original_archive_sha256": "ddbdf10b4397c8538183df8fa7c16f08c5fba226a304ff7cb55574ddb97e951e",
+    "pinned_files": {
+      "ndu-data/t10k-images-idx3-ubyte.gz": "8d422c7b0a1c1c79245a5bcf07fe86e33eeafee792b84584aec276f5a2dbc4e6",
+      "ndu-data/t10k-labels-idx1-ubyte.gz": "f7ae60f92e00ec6debd23a6088c31dbd2371eca3ffa0defaefb259924204aec6",
+      "ndu-data/train-images-idx3-ubyte.gz": "440fcabf73cc546fa21475e81ea370265605f56be210a4024d2ca8f203523609",
+      "ndu-data/train-labels-idx1-ubyte.gz": "3552534a0a558bbed6aed32b30c495cca23d567ec52cac8be1a0730e8010255c",
+      "ndu-runs/full-002/audit-observer.pt": "cd560d4ec2f45cef6a0f4db9809b902ea68833c8693798f7597135a83a6e3589",
+      "ndu-runs/full-002/reward-observer.pt": "a9cfe78a08b9192ba9d8fe9c144de29ef5d3b1e9cd6ed236d01d170d32034210",
+      "ndu-runs/full-002/seed-17-terminal_entropic_ndu.pt": "8fa76a13cdeee48e41b84e29211659a065d9573e2fdfecc4281f882248b508b6",
+      "ndu-runs/full-002/seed-29-terminal_entropic_ndu.pt": "e92dc06cec18ee279b8367a2fd194ba91978197150e5edcdede1c0d9fde2b11c",
+      "ndu-runs/full-002/seed-43-terminal_entropic_ndu.pt": "1a38524e474d35ff9eb1ad584b1714ea2ef7f7f8d0c502a6b3b2172252ddabf9"
+    }
+  },
+  "passed": true,
+  "profile": "frozen",
+  "protocol_sha256": "a267e91deb23aff25bdb27cf23f8274b5bfa8217c51ee962f3360297f6daa7c7",
+  "public_logits_scope": "Exact retained H3M bytes and public softmax are checked; neural decoder logits are not regenerated",
+  "reviewer_source_files": {
+    "feedback_evidence.py": "e0e2b472d4427dfc163c4a42903b55380e297412bc06ef4f358fa4d551d61686",
+    "runtime_audit_support.py": "54cffe180ee2fef003a3489803124e180e0faf08ca4d877efece4b85cdda8867",
+    "runtime_bank_media_audit.py": "01377f5c7596299f1eaef06791936fec5a0d89d6a090d3c39178e5f79a73190b",
+    "runtime_media_audit.py": "21b4ebecd36af6fc3cb6ef5d896715a7769a468c358ef7bcd24234928973b3ff",
+    "runtime_media_context.py": "969d535244cbfdd0423208395874154aad2316bb26f1c304286f245ebc503215",
+    "runtime_media_trace.py": "321424b8f92f5deb9021f1024a52728b0920344656cc5a87fabcd048dc1b50c3"
+  },
+  "schema": "hepta.field-bridge.v3.independent-selected-media.1",
+  "scope": "All selected actual bytes, public events, partial feedback, causal action chronology, fixed/current/history heads, both terminal scores and exact work counts; native arithmetic requires the matching separate replay",
+  "seeds": [
+    {
+      "decision_coverage_sha256": "4f788432069d2e61c2e95db38d9826f33a948a21bff9809b2a37533e9d741dbb",
+      "dual_observer_scores_rebuilt": 20480,
+      "episodes": 10240,
+      "feedback_packets_rebuilt": 14232,
+      "inputs": {
+        "events_sha256": "6d2724704a33a1375aa2ee359b6f355477f440549ff845b74cb1825bcbd526d4",
+        "fit_complete_sha256": "c4943da3747c29b469e63d2d94274f7188714be9f062c7b88a3ef6a08626c95a",
+        "media_sha256": "054e3ebf018b14c169084fb8822298cd2990be3e924bb3bcc540dff71ea80ba2",
+        "parent_complete_sha256": "e09894c39b4131a0db545287fb86c93a91ee8a8a2e79adcd44c5fde1cf052a60",
+        "readouts_sha256": "65f1bf3b2dd3e09dee5efdfbdbbfc965ccc79a74f983be6d7d5f5c78689ebf46",
+        "rows_sha256": "04e04684e9f094875f81c75093e6fed452c29548ba18afda49cf31efc7aa329f",
+        "selected_complete_sha256": "4ec68ff4bce7114ebc3015ce1b66de32209635369e9da410bdf0a87d1d3fe744"
+      },
+      "journal_records": 4282,
+      "logical_media_deliveries": 28194,
+      "native_arithmetic_scope": "Native/reset histories are bound to actual media; original-kernel and head replay are independently audited in a matching native-session receipt",
+      "native_ns": 181380245,
+      "native_tick_calls": 17980,
+      "nonnative_head_actions_replayed": 9338,
+      "per_arm": {
+        "current": {
+          "decisions": 4637,
+          "episodes": 2048,
+          "round_0_decisions": 2048,
+          "round_1_decisions": 1556,
+          "round_2_decisions": 1033,
+          "terminal_depth_0": 492,
+          "terminal_depth_1": 523,
+          "terminal_depth_2": 178,
+          "terminal_depth_3": 855
+        },
+        "fixed": {
+          "decisions": 6144,
+          "episodes": 2048,
+          "round_0_decisions": 2048,
+          "round_1_decisions": 2048,
+          "round_2_decisions": 2048,
+          "terminal_depth_2": 2048
+        },
+        "history": {
+          "decisions": 4701,
+          "episodes": 2048,
+          "round_0_decisions": 2048,
+          "round_1_decisions": 1520,
+          "round_2_decisions": 1133,
+          "terminal_depth_0": 528,
+          "terminal_depth_1": 387,
+          "terminal_depth_2": 157,
+          "terminal_depth_3": 976
+        },
+        "native": {
+          "decisions": 4253,
+          "episodes": 2048,
+          "round_0_decisions": 2048,
+          "round_1_decisions": 1195,
+          "round_2_decisions": 1010,
+          "terminal_depth_0": 853,
+          "terminal_depth_1": 185,
+          "terminal_depth_2": 112,
+          "terminal_depth_3": 898
+        },
+        "reset_native": {
+          "decisions": 4737,
+          "episodes": 2048,
+          "round_0_decisions": 2048,
+          "round_1_decisions": 1530,
+          "round_2_decisions": 1159,
+          "terminal_depth_0": 518,
+          "terminal_depth_1": 371,
+          "terminal_depth_2": 166,
+          "terminal_depth_3": 993
+        }
+      },
+      "physical_media_bytes": 17587903,
+      "physical_media_records": 16122,
+      "public_events_rebuilt": 24472,
+      "seed": 17,
+      "select_python_cpu_ns": 3491736007,
+      "select_wall_ns": 4200261776,
+      "selection_batches": 960,
+      "selection_rows": 24472,
+      "source_panel_sha256": "9728dfe2bae97f85634af1c012b49d28974701f8d9ca380a1d4457ee7fab53ad"
+    },
+    {
+      "decision_coverage_sha256": "253052d124c882c914f2ea0863345bae1338d73fd45b5327c029f6a0baecb5e4",
+      "dual_observer_scores_rebuilt": 20480,
+      "episodes": 10240,
+      "feedback_packets_rebuilt": 14184,
+      "inputs": {
+        "events_sha256": "b97bf7ab6a654bd3361ab4fd51a8f1a52e49a117c6dbf535ff7d7938619da1ae",
+        "fit_complete_sha256": "4b6afc20b45d3dd1a2d16bc4745e05cb94a21d36efb372421e285608c0d4497e",
+        "media_sha256": "81f78ca54d7d8c0efc5657c03daeb3770892d177414cdf20a688a86442bada08",
+        "parent_complete_sha256": "a8cd6f5aae56316efdc548e743a06e76a6279d25ecf8fc11a30de5c8e9cb9422",
+        "readouts_sha256": "04e27e29e7b09e8d811cdafe794d9ac10f145604cc25755ada8cd2d07b92f1cc",
+        "rows_sha256": "956141af3dce0212ef4e1d6416079fca9428ab9daee68a5aec7df7e99c9b899a",
+        "selected_complete_sha256": "77d979cd85c81b07a462ca944f9954689d69a0081fd79e3742b64c8e64eac4f5"
+      },
+      "journal_records": 4286,
+      "logical_media_deliveries": 27992,
+      "native_arithmetic_scope": "Native/reset histories are bound to actual media; original-kernel and head replay are independently audited in a matching native-session receipt",
+      "native_ns": 199273607,
+      "native_tick_calls": 18636,
+      "nonnative_head_actions_replayed": 8962,
+      "per_arm": {
+        "current": {
+          "decisions": 4704,
+          "episodes": 2048,
+          "round_0_decisions": 2048,
+          "round_1_decisions": 1560,
+          "round_2_decisions": 1096,
+          "terminal_depth_0": 488,
+          "terminal_depth_1": 464,
+          "terminal_depth_2": 233,
+          "terminal_depth_3": 863
+        },
+        "fixed": {
+          "decisions": 6144,
+          "episodes": 2048,
+          "round_0_decisions": 2048,
+          "round_1_decisions": 2048,
+          "round_2_decisions": 2048,
+          "terminal_depth_2": 2048
+        },
+        "history": {
+          "decisions": 4258,
+          "episodes": 2048,
+          "round_0_decisions": 2048,
+          "round_1_decisions": 1259,
+          "round_2_decisions": 951,
+          "terminal_depth_0": 789,
+          "terminal_depth_1": 308,
+          "terminal_depth_2": 178,
+          "terminal_depth_3": 773
+        },
+        "native": {
+          "decisions": 4833,
+          "episodes": 2048,
+          "round_0_decisions": 2048,
+          "round_1_decisions": 1503,
+          "round_2_decisions": 1282,
+          "terminal_depth_0": 545,
+          "terminal_depth_1": 221,
+          "terminal_depth_2": 277,
+          "terminal_depth_3": 1005
+        },
+        "reset_native": {
+          "decisions": 4485,
+          "episodes": 2048,
+          "round_0_decisions": 2048,
+          "round_1_decisions": 1296,
+          "round_2_decisions": 1141,
+          "terminal_depth_0": 752,
+          "terminal_depth_1": 155,
+          "terminal_depth_2": 214,
+          "terminal_depth_3": 927
+        }
+      },
+      "physical_media_bytes": 16849250,
+      "physical_media_records": 15392,
+      "public_events_rebuilt": 24424,
+      "seed": 29,
+      "select_python_cpu_ns": 3608748649,
+      "select_wall_ns": 4513279662,
+      "selection_batches": 960,
+      "selection_rows": 24424,
+      "source_panel_sha256": "7e977f7796aeb880769c0150f2c432ebf4947026ae4a277bebbab3e457b992d1"
+    },
+    {
+      "decision_coverage_sha256": "2473ae72c31ccc3ad30471f0505db3b187c57b6f815350add566ddc978a44c23",
+      "dual_observer_scores_rebuilt": 20480,
+      "episodes": 10240,
+      "feedback_packets_rebuilt": 11262,
+      "inputs": {
+        "events_sha256": "985fb6af702c3d6dbdd54eb507ca35edd86b0d127e25cba0e19575178e209759",
+        "fit_complete_sha256": "78ba7cdee13a4932c961057f2ae70a3f610916d0d274cec11dad6356b88dec74",
+        "media_sha256": "c66390bbc2ee9588f0d3703ddc43ee7eebde5b083027fb70812573f417f9aade",
+        "parent_complete_sha256": "274406cf159aaaab9fd36b5d258f88eb59fe29cfbf0b1b83ed3d66521551e86b",
+        "readouts_sha256": "ae2b76da23e7547f68cf408fabb3d3b259bd19d29737dab9cb66d55ed02a7e2a",
+        "rows_sha256": "be105dfada48f5a8f46bee2e32e9d6b9cbea05e4581f7432ab38ea55f632dc61",
+        "selected_complete_sha256": "216cc7998f224d13b015e76a2781ec0926b16133a9bb12d15a4d455eb726d317"
+      },
+      "journal_records": 4122,
+      "logical_media_deliveries": 24684,
+      "native_arithmetic_scope": "Native/reset histories are bound to actual media; original-kernel and head replay are independently audited in a matching native-session receipt",
+      "native_ns": 197131481,
+      "native_tick_calls": 17714,
+      "nonnative_head_actions_replayed": 8549,
+      "per_arm": {
+        "current": {
+          "decisions": 4249,
+          "episodes": 2048,
+          "round_0_decisions": 2048,
+          "round_1_decisions": 1326,
+          "round_2_decisions": 875,
+          "terminal_depth_0": 722,
+          "terminal_depth_1": 451,
+          "terminal_depth_2": 167,
+          "terminal_depth_3": 708
+        },
+        "fixed": {
+          "decisions": 4096,
+          "episodes": 2048,
+          "round_0_decisions": 2048,
+          "round_1_decisions": 2048,
+          "terminal_depth_1": 2048
+        },
+        "history": {
+          "decisions": 4300,
+          "episodes": 2048,
+          "round_0_decisions": 2048,
+          "round_1_decisions": 1322,
+          "round_2_decisions": 930,
+          "terminal_depth_0": 726,
+          "terminal_depth_1": 392,
+          "terminal_depth_2": 192,
+          "terminal_depth_3": 738
+        },
+        "native": {
+          "decisions": 4419,
+          "episodes": 2048,
+          "round_0_decisions": 2048,
+          "round_1_decisions": 1319,
+          "round_2_decisions": 1052,
+          "terminal_depth_0": 729,
+          "terminal_depth_1": 267,
+          "terminal_depth_2": 187,
+          "terminal_depth_3": 865
+        },
+        "reset_native": {
+          "decisions": 4438,
+          "episodes": 2048,
+          "round_0_decisions": 2048,
+          "round_1_decisions": 1369,
+          "round_2_decisions": 1021,
+          "terminal_depth_0": 679,
+          "terminal_depth_1": 348,
+          "terminal_depth_2": 150,
+          "terminal_depth_3": 871
+        }
+      },
+      "physical_media_bytes": 14217864,
+      "physical_media_records": 12871,
+      "public_events_rebuilt": 21502,
+      "seed": 43,
+      "select_python_cpu_ns": 3577884914,
+      "select_wall_ns": 4483401460,
+      "selection_batches": 896,
+      "selection_rows": 21502,
+      "source_panel_sha256": "6797e31e663057bbc36ca93461bf2f0da45a7039c2ab018a05ab466213e08e6a"
+    }
+  ],
+  "source_manifest_sha256": "9bfcb279d5efdc7bd6c14af41c64c04a78fc97f7827f7464280d8997d8fead41",
+  "status": "pass",
+  "verification_cpu_ns": 128391760788,
+  "verification_observer_digit_forwards": {
+    "audit": 42110,
+    "reward": 64682
+  },
+  "verification_wall_ns": 128455996526
+}

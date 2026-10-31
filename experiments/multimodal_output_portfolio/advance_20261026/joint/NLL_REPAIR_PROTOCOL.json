@@ -1,0 +1,38 @@
+{
+  "batch": 128,
+  "binary_risk_equivalence_known_before_repair": true,
+  "candidate_rule": "One final checkpoint per bound and fixed seed. Select bound by panel CE then strict success then smaller bound; candidate and fixed native seed17 each must be point-noninferior to canonical reference in both metrics. Otherwise keep canonical untrained.",
+  "config_sha256": "208bd553029ed1dd777678b90ed376ee994bc8671fede082fe9161400e448529",
+  "endpoint_sha256": "41611868878587fcf69c04d8acb676131ab00e81312571151a82565dc52f6875",
+  "learning_rate": 0.001,
+  "new_confirmation_sources_opened": false,
+  "objective": "Proper categorical log score for a factorized target law; greedy action minimizes actual codec conditional cost under that fitted law",
+  "old_development_pairs": 128,
+  "posterior_anchor_weight": 0.001,
+  "previous_Brier_failure_retained": true,
+  "previous_result_sha256": "cb5434b59bb1f9d46c58da8d099328d45d81e38b4769aef9b51cd1518c70efb8",
+  "registered_unix_ns": 1792989056039379195,
+  "residual_bounds": [
+    2.0,
+    8.0
+  ],
+  "risk_independent_advantage_claimed": false,
+  "schema": "hepta.advance.joint-log-score-repair.v1",
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "source_pins": {
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/joint/__init__.py": "23c42e9679fce44f2395c18016278ff57fe2af11fcd36f47cb18c578d52656f3",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/joint/data.py": "901f5e7b9832b4414c9d58338a4ff041c08b59e58fb6297f0a00677895fb2acc",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/joint/endpoints.py": "871eb5f749704174c6aad62d6a634eef40b78365fc7d3f2fa941b56285ec548f",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/joint/model.py": "92fd7a7d67ac47a3fa705def7b6441a1d2311c0170982a60d512d1dab5ee9d74",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/joint/nll_model.py": "e0bfd5a98477a6717a8c1172574dbaf3e7bed44dadb1e2fab9d25148d222b464",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/joint/train.py": "47105d8d0de9ce04a42770069de3fdfebca9eaee79e9dbc886bc5c055f36e51f",
+    "/workspace/scratch/87e43aa872f5/hepta-ndu/experiments/multimodal_output_portfolio/advance_20261026/joint/train_nll.py": "ef59ba4f4d1b9aaff76e5d8baf785f6fdd06d3fcf969c9dda0fcbdaaf685d19b"
+  },
+  "source_roles": "old train+fit only for training; old development+qualification for selection",
+  "steps": 1280,
+  "train_pairs": 4096
+}

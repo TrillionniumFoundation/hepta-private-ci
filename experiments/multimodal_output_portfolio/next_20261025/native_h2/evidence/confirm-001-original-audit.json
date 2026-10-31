@@ -1,0 +1,115 @@
+{
+  "estimates": {
+    "inference_unit": "64 independent writers with both source pairs retained together",
+    "ndu_minus_same_admission_correctness": {
+      "CE_gamma2_after_nominal_action_cost": {
+        "point": 0.011367321274246334,
+        "writer_bootstrap_95CI": [
+          -0.08729016079906396,
+          0.1069500969164136
+        ]
+      },
+      "joint_correct": {
+        "point": -0.015625,
+        "writer_bootstrap_95CI": [
+          -0.0703125,
+          0.03125
+        ]
+      },
+      "public_request_ms": {
+        "point": 5.613516867187492,
+        "writer_bootstrap_95CI": [
+          2.6111687392578053,
+          9.315001396484366
+        ]
+      },
+      "raw_utility": {
+        "point": -0.004409995389869414,
+        "writer_bootstrap_95CI": [
+          -0.09520269826753062,
+          0.0827743288537022
+        ]
+      }
+    },
+    "policies": {
+      "correctness": {
+        "CE_gamma2_after_nominal_action_cost": -0.2796400348343654,
+        "joint_correct": 0.71875,
+        "public_request_ms": 34.940445000000004,
+        "raw_utility": 0.5171061832807027,
+        "selected_ECE_ID": 0.09238580208333341,
+        "selected_ECE_by_horizon": {
+          "1": 0.07822267187500004,
+          "2": 0.09946736718750007
+        },
+        "selected_steps": 192
+      },
+      "ndu": {
+        "CE_gamma2_after_nominal_action_cost": -0.26827271356011906,
+        "joint_correct": 0.703125,
+        "public_request_ms": 40.553961867187496,
+        "raw_utility": 0.5126961878908333,
+        "selected_ECE_ID": 0.057745912195122026,
+        "selected_ECE_by_horizon": {
+          "1": 0.05740116883116878,
+          "2": 0.057953296875000046
+        },
+        "selected_steps": 205
+      }
+    },
+    "public_cost_difference_upper95_negative": false,
+    "quality_CE_lower95_positive": false,
+    "selected_population_ECE_bound_claimed": false
+  },
+  "execution": {
+    "correctness": {
+      "H1_decisions": 92,
+      "actual_actions": {
+        "couple": 17,
+        "refine_image": 24,
+        "refine_semantic": 24,
+        "refine_text": 47,
+        "reject": 156,
+        "stop": 80
+      },
+      "admission_changes_to_unmasked_teacher": 210,
+      "all_process_resource_summaries_pass": false,
+      "decisions": 348,
+      "maximum_owner_peak_bytes": 32996,
+      "native_forwards": 1740,
+      "observed_outputs": 192,
+      "projection": {
+        "entries": 386,
+        "journal_sha256": "a5e0c1063f6a6a272b973b462422bd7a6ebac7f52523e7b88c5b99d992273ecd",
+        "utility_outcomes": 192
+      },
+      "teacher_action_parity": null
+    },
+    "ndu": {
+      "H1_decisions": 104,
+      "actual_actions": {
+        "couple": 70,
+        "refine_image": 38,
+        "refine_semantic": 8,
+        "refine_text": 47,
+        "reject": 155,
+        "stop": 42
+      },
+      "admission_changes_to_unmasked_teacher": 206,
+      "all_process_resource_summaries_pass": false,
+      "decisions": 360,
+      "maximum_owner_peak_bytes": 32988,
+      "native_forwards": 1800,
+      "observed_outputs": 205,
+      "projection": {
+        "entries": 412,
+        "journal_sha256": "bc770de5edcf0f3622229a299da8a3779a4c688cd3a24d98c159ae78a474339a",
+        "utility_outcomes": 205
+      },
+      "teacher_action_parity": true
+    }
+  },
+  "protocol_sha256": "88e2785e85c55496c41e039b36d01380138686d34de7d61cdad8b4cf2c79dc44",
+  "schema": "hepta.next.native-h2-audit.v1",
+  "source_or_observer_reinference_performed": false
+}

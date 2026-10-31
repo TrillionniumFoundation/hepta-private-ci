@@ -1,0 +1,163 @@
+{
+  "adaptation": "New research round motivated by the prior failed final; never relabel or overwrite that evaluation. No prior final rows enter gradient fitting.",
+  "arms": [
+    "matched_floor",
+    "matched_floor_warmdual"
+  ],
+  "auxiliary_weight": 0.05,
+  "baselines": {
+    "17": {
+      "mean": {
+        "path": "/workspace/scratch/2b3c256bef7d/abc4-training-runs/training-001/seed-17/mean/model.pt",
+        "sha256": "597054575e4a2187d5b659af77a1bbb0c01436c1c62b85592187b5395520690f"
+      },
+      "old_constraint": {
+        "path": "/workspace/scratch/2b3c256bef7d/abc4-training-runs/training-001/seed-17/risk_success/model.pt",
+        "sha256": "f8172de4353007fcba0d67e9679fe15f64182e1f4138b9b99debac53e69ed972"
+      },
+      "warm": {
+        "path": "/workspace/scratch/2b3c256bef7d/abc2-runs/training-001/seed-17/output_mean/model.pt",
+        "sha256": "bb889c008ac9c034af75c60c989326180b33c5d864c178f23419020d080f5a1d"
+      }
+    },
+    "29": {
+      "mean": {
+        "path": "/workspace/scratch/2b3c256bef7d/abc4-training-runs/training-001/seed-29/mean/model.pt",
+        "sha256": "b010eddc5a134b7854bbc2e879dac2e248d3b785bf51ac0a242427b6d32490a9"
+      },
+      "old_constraint": {
+        "path": "/workspace/scratch/2b3c256bef7d/abc4-training-runs/training-001/seed-29/risk_success/model.pt",
+        "sha256": "79a402cff8fc0c0408a00cedfd670916bec0b62b33f8243970212bc6bb382cd5"
+      },
+      "warm": {
+        "path": "/workspace/scratch/2b3c256bef7d/abc2-runs/training-001/seed-29/output_mean/model.pt",
+        "sha256": "2d3682288ec8006d5a2d94ac1258770ae2ee2a2c46e083d8fbdcb77f61973b10"
+      }
+    },
+    "43": {
+      "mean": {
+        "path": "/workspace/scratch/2b3c256bef7d/abc4-training-runs/training-001/seed-43/mean/model.pt",
+        "sha256": "7121dc6c9e6bce329d695d128abc2f85b40d52cbe5ea35df35e0912701cf1a23"
+      },
+      "old_constraint": {
+        "path": "/workspace/scratch/2b3c256bef7d/abc4-training-runs/training-001/seed-43/risk_success/model.pt",
+        "sha256": "7c4195510e67691d9c0b8abdd186d8682627a93ed0fee617009d3b45c6f28866"
+      },
+      "warm": {
+        "path": "/workspace/scratch/2b3c256bef7d/abc2-runs/training-001/seed-43/output_mean/model.pt",
+        "sha256": "58161e2c7d1aa09b6c0f8983ef57edf5000f5c994a493fbc7d3be1243adcb25d"
+      }
+    },
+    "59": {
+      "mean": {
+        "path": "/workspace/scratch/2b3c256bef7d/abc4-training-runs/training-001/seed-59/mean/model.pt",
+        "sha256": "388e09e025ad1022a30620c7ef0389173df9b76bbdcae2118ff7ba84519a8e8a"
+      },
+      "old_constraint": {
+        "path": "/workspace/scratch/2b3c256bef7d/abc4-training-runs/training-001/seed-59/risk_success/model.pt",
+        "sha256": "a977138113c5455d506b517ca4266276e151b58f6e0b14949821857372454af7"
+      },
+      "warm": {
+        "path": "/workspace/scratch/2b3c256bef7d/abc2-runs/training-001/seed-59/output_mean/model.pt",
+        "sha256": "0bc555b7b04225a7b81dba2367904f6226e067ea16f23e1325e5964a5ac67159"
+      }
+    },
+    "71": {
+      "mean": {
+        "path": "/workspace/scratch/2b3c256bef7d/abc4-training-runs/training-001/seed-71/mean/model.pt",
+        "sha256": "ad81ad6f3fb2768d58d1ebca6a21a45d66247601cb6801a182249ba7c45acade"
+      },
+      "old_constraint": {
+        "path": "/workspace/scratch/2b3c256bef7d/abc4-training-runs/training-001/seed-71/risk_success/model.pt",
+        "sha256": "dc2a4b667af762bc9d6a01abb8e0481b46e3cea2d987541a3b2648d63f3e6022"
+      },
+      "warm": {
+        "path": "/workspace/scratch/2b3c256bef7d/abc2-runs/training-001/seed-71/output_mean/model.pt",
+        "sha256": "ce500d99f1aa2914323eed234dc142c2db2971139ac71febee300005cfac478f"
+      }
+    }
+  },
+  "conditions": 16,
+  "constraint": "candidate failure probability <= fixed same-seed new mean failure probability; zero margin",
+  "dual_cap": 5.0,
+  "dual_initial": {
+    "matched_floor": 0.0,
+    "matched_floor_warmdual": 1.0
+  },
+  "dual_rate": 0.1,
+  "formal_new_holdout_opened": false,
+  "gamma": 2.0,
+  "global_cross_round_error_control_claimed": false,
+  "gradient": "risk F_gamma plus .05 supervised plus predictable lambda_old*actual_failure; update dual only for next batch",
+  "identification": "matched_floor vs old_constraint changes reference only; warmdual vs matched_floor changes initial dual only",
+  "learning_rate": 0.0001,
+  "manifest_sha256": "60c24d44e12eb3defb3b1b8146d91879b84918b057e0524117137d7e4f793058",
+  "matched_rng": "same batch/candidate/reference draw schedules as the prior 400-step three-arm study",
+  "model_selection": "last fixed update; no outcome checkpoint selection",
+  "other_comparisons": "descriptive95 only; cannot substitute another candidate for the prespecified primary",
+  "output": "/workspace/scratch/2b3c256bef7d/abc4-repair-runs/training-001",
+  "plan": [
+    "refine_image",
+    "refine_text"
+  ],
+  "primary_candidate": "matched_floor_warmdual",
+  "primary_gate": "joint CE lower97.5>0 AND exact-success difference lower97.5>=0; zero margin",
+  "primary_reference": "mean",
+  "prior_evaluation_protocol_sha256": "31078dfb389fadc781d61d9542cf5227b161e536abce7f987b6ed898687e1291",
+  "prior_failed_final_retained": true,
+  "prior_results_sha256": "556469d4113c122dc2b4f87dbc692caaeaac8bd738fc9ceae3eac6deebb1017d",
+  "prior_training_results_sha256": "fe418074e258482b899fbd19d3705695e83cd40c1de58dffa8c1eca8d941b777",
+  "prospective_source_identity": {
+    "individual_sources": 2000,
+    "ordered_source_ids_sha256": "815890b1f35b3180583b672ad7cc352289f15ac088e1cd151b03c1b62eb2a6d2",
+    "pair_end_exclusive": 1000,
+    "pair_start": 0,
+    "pairing": "No-replacement adjacent IDs [2k,2k+1] in the original manifest order",
+    "sorted_pixel_hashes_sha256": "278631cc2224c21ca35ad81be067a847b24171eb77a2f9dd54ad0e76bba123a0",
+    "source_pairs": 1000,
+    "source_role": "unallocated_test",
+    "unique_pixel_sha256": 2000
+  },
+  "reference_selection": "the already frozen same-seed mean continuation, trained only on train sources; no new-source selection",
+  "role_assignment_sha256": "42c5bb90adefb4d536001d433a6fe8c8345a3547857ba7edb72555043ae3dc52",
+  "scenarios": 8,
+  "schema": "hepta.abc4.success-reference-repair-training.v1",
+  "seeds": [
+    17,
+    29,
+    43,
+    59,
+    71
+  ],
+  "source_allocation_sha256": "2449523451a9908f806ab16eb0e8abc638506263baa3bf259c7554e522401e3b",
+  "source_role": "train",
+  "source_sha256": {
+    "experiments/multimodal_output_portfolio/abc_followup/process.py": "eb348e00b48496559b6cc2953e4af7b8c82041425bf049991f55b8db0e91ba2d",
+    "experiments/multimodal_output_portfolio/abc_followup/training/evaluate.py": "839187a84f6b0bbe300a3334e5ebecac5d8ee17e9695977aa07e0c9ae06e6d90",
+    "experiments/multimodal_output_portfolio/abc_followup/training/objective.py": "4e2800bf03bc3841699cf92e52c6dc5108b3f84d802726741374cc7d40d38360",
+    "experiments/multimodal_output_portfolio/abc_followup/training/train.py": "21f4ef860de1a5569dfeb5e8bce0ddc2b873635dc76ff9fc528800eeaf3baa1a",
+    "experiments/multimodal_output_portfolio/abc_followup/training_repair/allocation_audit.py": "33e1520de9e0c5366c44c7d0cc5ea6adf47cf885d33427c43d78c7b6727f1cd1",
+    "experiments/multimodal_output_portfolio/abc_followup/training_repair/analysis.py": "c62fb5f28dcc3888fe79873a6e877fb9d2bb067f4e627910614f9240057b69b3",
+    "experiments/multimodal_output_portfolio/abc_followup/training_repair/assigned_source.py": "ef969f1d7e74cdc491abfc9e231408c433f7e92088d3a2a8eb6f91cf30873489",
+    "experiments/multimodal_output_portfolio/abc_followup/training_repair/evaluate.py": "db4cd0233474dbbfc74df1def962a74a473a0d78a16a81e3861571c8ea9a07c5",
+    "experiments/multimodal_output_portfolio/abc_followup/training_repair/protocol.py": "aa14eaa531e43416e80e67d137fa4f946486c751bb0e806d0a9464097af0be0c",
+    "experiments/multimodal_output_portfolio/abc_followup/training_repair/train.py": "4eed5c87cd03397a3b4c312ff87700d80bb6512e8c2fda6acc5577527ef1ea69",
+    "experiments/multimodal_output_portfolio/abc_next/compact_tree.py": "6ff38c2a68a5103c4e5278087bbd1b9106a82e01857f26ea53d17056d25c1630",
+    "experiments/multimodal_output_portfolio/abc_next/settings.py": "1f96cd70794c0bd74e167c84a535963ad4e82037eafa7a8bcd8fab08a04b746e",
+    "experiments/multimodal_output_portfolio/abc_recovery/base_recovery.py": "bfe7f2f635db74075decb0e20dcb1d73d203d1d0445d902e8c4254fca46d80fb",
+    "experiments/multimodal_output_portfolio/abc_recovery/emission.py": "748cdafc6bca00fa07e88a7e294d331d5217c04d3e8208e094bdb906ec5fe1f3",
+    "experiments/multimodal_output_portfolio/abc_recovery/runtime.py": "11e2e0859d706e3186ee5e4688330ad2f4da54d397fe6b33bd335d8ee69f5919",
+    "experiments/multimodal_output_portfolio/abc_recovery/statistics.py": "cadbec92b46ece422f415f82550235647248753adb1f8198ad112d4438277f09",
+    "experiments/multimodal_output_portfolio/v6/data.py": "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29",
+    "experiments/multimodal_output_portfolio/v6/neural.py": "6447edf81da45695ab87a033c544ff7c554a15431e614474be7ad3b7c329e742",
+    "experiments/multimodal_output_portfolio/v6/observer.py": "5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e",
+    "experiments/multimodal_output_portfolio/v7/data.py": "41892eb63420a6288121b39f577597067c3e168d3c7467c868230c64ed092cb9",
+    "experiments/multimodal_output_portfolio/v7/evaluation.py": "9f229b3b1092cfc8f89b8376375a8bb5d7efe9c7bb91979026ee5f32182c79da",
+    "experiments/multimodal_output_portfolio/v7/model.py": "156aa5c73c7e9192ebefecafdc568cbbae3e906e7d1bbb2bf50f7535bd2d8fca",
+    "experiments/multimodal_output_portfolio/v7/snapshot.py": "01655335b9807a09005bde0ae11d9fbe1a0665bd0113d9f28e38310f1f4bb474",
+    "experiments/multimodal_output_portfolio/v7/sources.py": "b6b27b86ba71a4bafd9c2abe4af033e7cfe73079296bdd2ed1addad045881e9f"
+  },
+  "steps": 400,
+  "threads": 2,
+  "unix_ns": 1792917681051560507
+}

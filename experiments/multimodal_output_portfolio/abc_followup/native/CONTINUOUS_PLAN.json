@@ -1,0 +1,21 @@
+{
+  "frozen_unix_ns": 1792915570486983651,
+  "input_order": "for i=0..799, original row800+i (absence), then original row(i+1)%800 (ID);finalactualpair0",
+  "journal_segment_capacity": 128,
+  "new_independent_samples": 0,
+  "original_packet_sha256": "11e883c9a9bf5549979745e4fccad89e681493e7886e32f89369f7c20fc4606f",
+  "packet_sha256": "dc5bdd4831a1feeccbd0c098232e3841288ca2b2bb8a453532d13c0d39dd5c7e",
+  "profile_expiry_sequence": 1600,
+  "proposal_scope": "final actual acknowledged anchor;unsigned historical qualification ledger diagnostic,notproducttrust",
+  "read_only_previous_qualification": true,
+  "recover_at_sequences": [
+    800,
+    1600
+  ],
+  "resource_thresholds_unchanged": true,
+  "rows": 1600,
+  "same_subject_contexts": 1,
+  "schema": "hepta.abc4.continuous-lifecycle-plan.v1",
+  "scope": "new bounded same-context lifecycle test using old observed-output correctness model and previous verification inputs;not futurepredictor qualification or newquality evidence",
+  "witness_capacity": 4096
+}
