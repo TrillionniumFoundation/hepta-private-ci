@@ -187,6 +187,10 @@ common:ci-macos --build_metadata=TAG_os=macos
 # 800 actions. Keep the complete target roster while leaving room for JVM workers.
 common:ci-macos --jobs=32
 common:ci-macos --loading_phase_threads=8
+# Each Rust test binary also runs concurrent tests and spawns child processes.
+# Bound local test pressure separately from remote compilation; keep all test
+# targets and their original deadlines.
+common:ci-macos --local_test_jobs=4
 common:ci-macos --strategy=TestRunner=darwin-sandbox,local
 common:ci-macos --strategy_regexp=^Testing.//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests$=sandboxed,local
 

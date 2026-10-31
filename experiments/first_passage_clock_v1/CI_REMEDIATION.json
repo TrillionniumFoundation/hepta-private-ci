@@ -32,11 +32,16 @@
     }
   ],
   "local_validation": {
-    "buildbuddy_wrapper_tests": {"passed": 16},
+    "buildbuddy_wrapper_tests": {
+      "passed": 16
+    },
     "wrapper_order_and_target_transport": "Verified RBE defaults precede ci-macos and target/assertion arguments remain intact",
     "operator_acceptance": {
       "strict_clippy": "PASS",
-      "isolated_just_test": {"passed": 24, "skipped": 0},
+      "isolated_just_test": {
+        "passed": 24,
+        "skipped": 0
+      },
       "changed_tests_retained": 11,
       "original_assertions_retained": 34,
       "qualification": "Real repository source with an isolated offline manifest; cached serde_json 1.0.151 differs from repository lock 1.0.154, so actual Bazel CI remains necessary"
@@ -51,7 +56,171 @@
     "just_fmt": "PASS",
     "diff_check": "PASS"
   },
-  "preserved": ["scientific freeze and trained bundle", "confirmation and OOD results", "native owner source identity", "strict Clippy policy", "complete Bazel targets", "release debug-assertions gate"],
+  "preserved": [
+    "scientific freeze and trained bundle",
+    "confirmation and OOD results",
+    "native owner source identity",
+    "strict Clippy policy",
+    "complete Bazel targets",
+    "release debug-assertions gate"
+  ],
   "bazel_reference": "https://bazel.build/versions/9.0.0/reference/command-line-reference",
-  "final_ci_authority": "GitHub check runs for the PR's current source head; this record does not relabel the initial failures as passing"
+  "final_ci_authority": "GitHub check runs for the PR's current source head; this record does not relabel the initial failures as passing",
+  "followup_round": {
+    "source_head": "2e55f76cd632e097e255cebbce9569423f7d8e1c",
+    "blocking_run": 41083036123,
+    "architecture_run": 41083036165,
+    "proven_on_source_head": [
+      "Architecture source-head, base-merge and required fan-in succeeded",
+      "Release builds succeeded on Linux, Windows and macOS ARM",
+      "Bazel Clippy succeeded on Linux and macOS; Windows exposed additional fixture lint errors"
+    ],
+    "failed_jobs": [
+      124159460564,
+      124159460746,
+      124159460690,
+      124159460537,
+      124159460669,
+      124159460662
+    ],
+    "cancelled_after_job_timeout_jobs": [
+      124159460785,
+      124159460735,
+      124159460444
+    ],
+    "timeout_minutes_retained": 60,
+    "repairs_pending_new_head_ci": [
+      {
+        "area": "Windows trust fixtures",
+        "change": "Propagate setup, filesystem, serialization and expected-error failures through Result; retain all 11 tests and 29 assertions."
+      },
+      {
+        "area": "V8 first isolate startup",
+        "change": "Initialize the PA-backed sandbox allocator inside the existing process OnceLock, then exercise eight simultaneous first isolates in a fresh integration-test process; retain the V8 sandbox."
+      },
+      {
+        "area": "WebSocket prewarm and provider identity",
+        "change": "Use a typed connection-lifetime metadata projection and release an obsolete socket before the next handshake. Preserve the full recovery fingerprint and per-frame policy authorization. Cover both reuse and security-context reconnection with real WebSocket fixtures."
+      },
+      {
+        "area": "Attestation reverse RPC",
+        "change": "Service attestation requests from thread/start onward, preserving the original 100 ms response deadline."
+      },
+      {
+        "area": "Core terminalization and queue admission",
+        "change": "Await the exact terminal publication completion before guardian trunk reuse and sequential integration-test actions. Preserve NotIdle and DispatchInProgress semantics, and retain deterministic blocked-owner/FIFO/settlement tests."
+      },
+      {
+        "area": "Core metadata and scoped tracing",
+        "change": "Preserve context-window UUID on normal and compaction request paths; make the scoped tracing test exercise the callsite cache without changing production tracing."
+      },
+      {
+        "area": "Two-agent recovery fixture",
+        "change": "Replace fixed response delays with explicitly released asynchronous SSE gates; keep peer InProgress, one-dispatch, process identity, and poisoned-capture assertions."
+      },
+      {
+        "area": "Windows sandbox helper packaging",
+        "change": "Resolve real setup and runner binaries through the shared Cargo/Bazel resolver and stage the shipped sibling layout for CLI and exec-server tests. Add only existing workspace dependency edges."
+      },
+      {
+        "area": "Windows ACL idempotence",
+        "change": "Recognize Windows-normalized explicit deny ACE scope unions while retaining the exact installed permission mask, ancestor inheritance checks, and both unchanged DELETE security regressions."
+      },
+      {
+        "area": "App-server fixtures and existing Bedrock RPC",
+        "change": "Dispatch already-declared experimental Bedrock methods through existing account-policy guards; use portable SQLite paths, current-profile cold resume expectations, and explicit escalation with the supported approval policy."
+      },
+      {
+        "area": "Unix socket fixtures",
+        "change": "Use short private temporary roots and retain the 0600 socket assertion."
+      },
+      {
+        "area": "Remote authorized-read tests",
+        "change": "Check the existing exact redacted remote error contract while retaining successful exact-bound reads and refusal of oversized data, symlink escape and parent traversal."
+      },
+      {
+        "area": "Hepta platform capabilities",
+        "change": "Distinguish missing/live/stale sockets. On unsupported Windows final-use authority and Matrix peer authentication paths, require exact refusal before side effects; retain supported common readiness, ranking and retrieval checks."
+      },
+      {
+        "area": "Hepta durable state",
+        "change": "Use proper writable Windows directory/file handles for real flushes; retain mandatory owner locks, trusted recovery anchors, corruption refusal, reparse checks and unchanged non-Unix Indeterminate recovery."
+      },
+      {
+        "area": "Hepta generation and recovery-cut fixtures",
+        "change": "Read exact-generation revision_facts_v1 witnesses and selected heads; capture the recovery cut after the real authority-bound lease exists, preserving complete receipt/anchor comparisons."
+      },
+      {
+        "area": "macOS/Bazel fixture identity",
+        "change": "Canonicalize authority fixture parents and materialize trusted runfiles as real files before invoking unchanged strict product admission checks."
+      },
+      {
+        "area": "TUI theme and retained renders",
+        "change": "Coordinate parallel test theme mutations without changing color expectations; invalidate the complete retained render on a theme revision change and add a stale-style regression."
+      },
+      {
+        "area": "Cursor project-path resolution",
+        "change": "Search all bounded native filesystem path interpretations, including multiple encoded separators; delegate case and alias semantics to metadata calls, and reject ambiguity, unreadable candidates or exhausted budgets. Retain all original ambiguity assertions; enforce 128 unique search states and 4096 candidate metadata probes including misses. The latter replaces the prior directory-entry scan budget and may cost more on network filesystems."
+      },
+      {
+        "area": "macOS runner pressure",
+        "change": "Bound local_test_jobs to 4 independently of 32 remote/coordinator jobs. Retain every target, test assertion and timeout. This addresses observed concurrent local load; timing-only failures still require new-run verification."
+      }
+    ],
+    "unresolved_before_new_head_ci": [
+      {
+        "area": "Windows deletion confinement",
+        "status": "OPEN_SECURITY_BLOCKER",
+        "tests": [
+          "token_tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+          "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
+        ],
+        "evidence": "Real Windows calls can delete outside writable roots and remove protected metadata despite denied create/write. Both original tests remain unchanged. WRITE_RESTRICTED does not establish the required DELETE/parent DELETE_CHILD boundary. No blanket backend disable or test exclusion is used.",
+        "independent_review": "A second independent source audit found no bounded token-only fix preserving unrestricted host reads and arbitrary native commands. Full restricted tokens also need read/registry/IPC capabilities and mutation-specific deny masks; generic-write deny masks share SYNCHRONIZE with generic-read. Elevated runner uses the same token family and direct native spawn, not a per-file operation broker."
+      },
+      {
+        "area": "Core fork-parent-history hang",
+        "status": "OPEN_DIAGNOSTIC_BLOCKER",
+        "test": "agent::control::tests::spawn_agent_can_fork_parent_thread_history_with_sanitized_items",
+        "evidence": "The original unit shard left this test unfinished. Added phase diagnostics are not a claimed fix; the next run must identify or clear the remaining hang."
+      },
+      {
+        "area": "Full CI and performance-sensitive paths",
+        "status": "AWAITING_NEW_HEAD",
+        "evidence": "Independent reproductions and static review do not substitute for Windows/macOS/Linux compilation, runtime tests, lockfile drift and strict Clippy on the candidate head."
+      }
+    ],
+    "local_validation": {
+      "cargo_scope_commands": "Attempted repository just test for changed core, queue, app-server, exec-server, transport, TUI, Hepta and migration crates; workspace metadata fails on the missing aws-auth/Cargo.toml in the sparse checkout. No local workspace compilation/test pass is claimed.",
+      "bazel_lock_update": "Attempted just bazel-lock-update. Task-local profiler and cache settings allowed initialization, but downloads of V8 and the Bazel Central Registry were blocked by Operation not permitted. No lockfile-drift success or dependency change is inferred from that network failure.",
+      "cursor_resolver_reproducer": {
+        "same_cases": 31,
+        "old_failures": 17,
+        "new_passes": 31,
+        "qualification": "Standalone Rust harness automatically extracts actual old/new resolver functions; includes native filesystem case behavior, deep paths, ambiguity and budget exhaustion. Linux exercised the case-sensitive branch. Windows/macOS case-insensitive and Windows 8.3 behavior still require native CI; complete migration crate not built locally."
+      },
+      "protocol_tmpdir_reproducer": "Cached-library harness confirms full access differs with TMPDIR while the workspace-only intersection and requested-access bound stay invariant; not a build of the edited protocol crate.",
+      "tracing_callsite_reproducer": "Cached-library harness demonstrates the one-dispatcher Interest::Never fast path and the scoped two-dispatcher fix; not a build of core.",
+      "generation_sql_reproducer": "Actual edited SQL extracted into an independent five-generation relational fixture checks witnesses, future heads, multi-memory aggregation and tombstones; not the original Rust product test.",
+      "unix_socket_reproducer": {
+        "long_path_bytes": 146,
+        "long_result": "AF_UNIX path too long",
+        "short_path_bytes": 66,
+        "short_result": "Bound real local socket; permissions 0600",
+        "qualification": "Linux fixture mechanism validated; not the Rust transport test or macOS test."
+      },
+      "independent_source_reviews": "Cross-reviewed WebSocket recovery/security bindings, Hepta authority/lock/refusal paths, app-server policy/fixtures and real helper packaging.",
+      "integrated_format_and_diff_check": "PASS: repository just fmt with official DotSlash v0.5.8 and repository-pinned Buildifier v8.5.1; git diff --check clean.",
+      "gated_sse_and_join_reproducer": "Compiled the actual edited streaming SSE helper and extracted capture/join code against cached libraries; real TCP gates, concurrent recovery, cancelled old body, exact release, poison HTTP 500 with zero counts, and abort/join DropProbe all passed. Harness timeout was 10 ms only for its cancellation probe; repository EVENT_TIMEOUT remains 30 s.",
+      "scoped_just_fix": "Attempted eight changed crates through just fix; Cargo exited 101 at missing workspace aws-auth/Cargo.toml before compiling or fixing code."
+    }
+  },
+  "publication": {
+    "status": "BLOCKED_APPROVAL",
+    "action": "GitHub create_tree for the first two Windows trust fixture files",
+    "tool_response": "user rejected MCP tool call",
+    "remote_head_unchanged": "2e55f76cd632e097e255cebbce9569423f7d8e1c",
+    "new_head_ci_started": false,
+    "next_required_action": "Resolve the GitHub write approval block before publishing the complete reviewed repair series; do not retry through another write mechanism to bypass the rejection."
+  }
 }
