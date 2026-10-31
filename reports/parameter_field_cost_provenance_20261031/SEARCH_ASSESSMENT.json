@@ -1,0 +1,454 @@
+{
+  "additional_cost_evidence": {
+    "all_rows_summed": false,
+    "cost_only_metadata_rows": 35,
+    "execution06_all_scientific_work_reconstructed": false,
+    "reason_not_summed": "Scopes include nested local build measurements, detached launcher observations and repeated archive members; no complete episode-wide nonoverlap proof.",
+    "selected_execution06_receipts": [
+      {
+        "archive": "hepta_execution06_prelaunch_followup_metadata_20261031.tar.gz",
+        "bytes": 1195,
+        "cost_only_projection": {
+          "child_cpu_seconds": 6.881215,
+          "complete": true,
+          "known_nonoverlapping_cpu_seconds": 6.889572589,
+          "measuring_parent_cpu_seconds": 0.008357589000000006,
+          "peak_rss_bytes": 58253312,
+          "schema": "hepta.execution06.prelaunch-cost-complete.1",
+          "wall_seconds": 7.123736380999617
+        },
+        "member": "source_workspace/execution06_prelaunch_checkpoint/COST_SCOPE_COMPLETE.json",
+        "sha256": "f91e7f9cdab4fccc5450ae7a45bd5ebbad3d4bcbbd47838463364821b8944683",
+        "top_level_keys": [
+          "actual_wait4",
+          "at_utc",
+          "child_cpu_seconds",
+          "complete",
+          "current_build_sidecars_not_claimed_inside_earlier_archive",
+          "interpretation",
+          "known_nonoverlapping_cpu_seconds",
+          "measuring_parent_cpu_seconds",
+          "original_archive_helper_own_cpu_nested_inside_this_child",
+          "peak_rss_bytes",
+          "remote_upload_or_readback_performed_here",
+          "schema",
+          "scientific_completion_claim",
+          "small_unmetered_root_inspection_orchestration_and_this_receipt_write_not_estimated",
+          "static_supervisor_nesting_field_not_applicable_to_this_root_call",
+          "wall_seconds"
+        ]
+      },
+      {
+        "archive": "hepta_execution06_prelaunch_followup_metadata_20261031.tar.gz",
+        "bytes": 1810,
+        "cost_only_projection": {
+          "child": {
+            "exit_code": 0,
+            "peak_rss_bytes": 15466496,
+            "system_cpu_seconds": 0.008165,
+            "total_cpu_seconds": 0.044363,
+            "user_cpu_seconds": 0.036198,
+            "wait_status": 0,
+            "wall_seconds": 0.10224106500390917
+          },
+          "complete": true,
+          "measuring_parent_cpu_seconds": 0.0025398820000000003,
+          "schema": "hepta.execution04.root-engineering-wait4.1",
+          "wall_seconds": 0.10662271899491316
+        },
+        "member": "source_workspace/execution06_recovery_20261030/prelaunch_after_approval_20261031/daemon_bootstrap/WAIT4.json",
+        "sha256": "0693eff98276bb7281227b9d9a4c4373b77ae28ea4079fd0b315fb8e4963e750",
+        "top_level_keys": [
+          "at_utc",
+          "child",
+          "command_success",
+          "complete",
+          "intent",
+          "measuring_parent_cpu_seconds",
+          "schema",
+          "scope",
+          "service_outcome_requires_reading_actual_tool_result",
+          "stderr",
+          "stdout",
+          "unknown_write_outcome_must_be_reconciled_before_retry",
+          "wall_seconds"
+        ]
+      },
+      {
+        "archive": "hepta_execution06_prelaunch_followup_metadata_20261031.tar.gz",
+        "bytes": 1800,
+        "cost_only_projection": {
+          "child": {
+            "exit_code": 0,
+            "peak_rss_bytes": 17956864,
+            "system_cpu_seconds": 0.151396,
+            "total_cpu_seconds": 0.348566,
+            "user_cpu_seconds": 0.19716999999999998,
+            "wait_status": 0,
+            "wall_seconds": 0.6050331599981291
+          },
+          "complete": true,
+          "measuring_parent_cpu_seconds": 0.0031026289999999956,
+          "schema": "hepta.execution04.root-engineering-wait4.1",
+          "wall_seconds": 0.6090706000031787
+        },
+        "member": "source_workspace/execution06_recovery_20261030/prelaunch_after_approval_20261031/supervisor/WAIT4.json",
+        "sha256": "f6a8662690ee2ce7b484fb03c19bafa98bccc7e70920ca5ffabcb9fa81d0828e",
+        "top_level_keys": [
+          "at_utc",
+          "child",
+          "command_success",
+          "complete",
+          "intent",
+          "measuring_parent_cpu_seconds",
+          "schema",
+          "scope",
+          "service_outcome_requires_reading_actual_tool_result",
+          "stderr",
+          "stdout",
+          "unknown_write_outcome_must_be_reconciled_before_retry",
+          "wall_seconds"
+        ]
+      },
+      {
+        "archive": "hepta_execution06_prelaunch_followup_metadata_20261031.tar.gz",
+        "bytes": 1802,
+        "cost_only_projection": {
+          "child": {
+            "exit_code": 0,
+            "peak_rss_bytes": 15466496,
+            "system_cpu_seconds": 0.011717,
+            "total_cpu_seconds": 0.047152,
+            "user_cpu_seconds": 0.035435,
+            "wait_status": 0,
+            "wall_seconds": 0.10227458699955605
+          },
+          "complete": true,
+          "measuring_parent_cpu_seconds": 0.002496496000000001,
+          "schema": "hepta.execution04.root-engineering-wait4.1",
+          "wall_seconds": 0.10560931800137041
+        },
+        "member": "source_workspace/execution06_recovery_20261030/prelaunch_after_approval_20261031/wait4_launcher/WAIT4.json",
+        "sha256": "b9fb4232607583d88db53a477bbb0c66ed17683183089bab0ad9a072d5172c35",
+        "top_level_keys": [
+          "at_utc",
+          "child",
+          "command_success",
+          "complete",
+          "intent",
+          "measuring_parent_cpu_seconds",
+          "schema",
+          "scope",
+          "service_outcome_requires_reading_actual_tool_result",
+          "stderr",
+          "stdout",
+          "unknown_write_outcome_must_be_reconciled_before_retry",
+          "wall_seconds"
+        ]
+      }
+    ],
+    "two_registered_preflight_cost_deficiencies_resolved": false,
+    "unique_closed_wait4_receipts": 25,
+    "unique_metadata_receipts": 32
+  },
+  "local_reproducibility_reports": [
+    {
+      "bytes": 4786,
+      "name": "local_small_archive_header_search.json",
+      "sha256": "f65edb3ac1df7ece9d914e9c78660bd28e26eb99615fc58150cf5ac48fe39ecd"
+    },
+    {
+      "bytes": 2511,
+      "name": "local_large_archive_header_search.json",
+      "sha256": "c758532629426b3bcae06a3c6fff7dc7bb865b7ab7f18d6be9a5b457bbcb2c7a"
+    },
+    {
+      "bytes": 14059,
+      "name": "resolved_small_archive_header_search.json",
+      "sha256": "b2973c03c5b91c403872cff1b38db52484a1ca57f16764a2e8b0ebc6deed35fd"
+    },
+    {
+      "bytes": 40132,
+      "name": "resolved_historical_cost_projection.json",
+      "sha256": "a0b18a62db40eebead8f318ae5b9a729e25bfeefd1ba0cd8d5d7c3450da64da9"
+    }
+  ],
+  "original_scientific_source_commit": "bc4e757f5c90f6365f383c1127be710d2ded874a",
+  "registered_missing_receipts": [
+    {
+      "bytes": 124698,
+      "found": false,
+      "original_role": "preflight_01_RESULT",
+      "sha256": "996243b3a03cc3aca9fc9b57593029c6702e30c8762b6085e22d47d90e43fa59"
+    },
+    {
+      "bytes": 125227,
+      "found": false,
+      "original_role": "preflight_exports_RESULT",
+      "sha256": "5dee785a445179b6bc20bc733c617438690c915668104d1a74cab4314175fb3c"
+    }
+  ],
+  "retained_conclusions": {
+    "execution06_total_scientific_microsteps": "unknown",
+    "missing_receipts_treated_as_zero": false,
+    "new_scientific_samples": 0,
+    "old_integrity_failure_unchanged": true,
+    "original_C2_scientific_sources_changed": false,
+    "original_frozen_history_changed": false,
+    "scientific_outcomes_decoded": false,
+    "whole_history_wall_and_cpu": "unknown"
+  },
+  "schema": "hepta.historical-cost.additional-read-only-assessment.1",
+  "scope": "Bounded search for two exact registered engineering-preflight receipts plus cost-only projection of historical operational receipts. Not a replacement registered scientific cost ledger.",
+  "search_coverage": {
+    "archives": [
+      {
+        "bytes": 76078,
+        "matching_receipt_candidates": [],
+        "members_scanned": 88,
+        "name": "hepta_execution04_A17_root_closure_20261030T0542.tar.gz",
+        "sha256": "079fd27c83212cbc6b21bcb9969bb1fd522fb54fdca2aa4c33dcd66f31761173"
+      },
+      {
+        "bytes": 57652,
+        "matching_receipt_candidates": [],
+        "members_scanned": 45,
+        "name": "hepta_execution04_actual_launch_20261030T0400.tar.gz",
+        "sha256": "6ca3f01c5f4cb9238b7737a5cd8a039f8e7d52733a7abc29861349f24b6f25bb"
+      },
+      {
+        "bytes": 1905,
+        "matching_receipt_candidates": [],
+        "members_scanned": 5,
+        "name": "hepta_execution04_auxiliary_monitor_closed_20261030T0436.tar.gz",
+        "sha256": "a9da5a112eb0749571011abac1b7899da1641b349cf1a9bb0d340420b85d2d1f"
+      },
+      {
+        "bytes": 20315,
+        "matching_receipt_candidates": [],
+        "members_scanned": 19,
+        "name": "hepta_execution04_import_closure_evidence_20261030T0217.tar.gz",
+        "sha256": "ecee5ef09c0baefad4749f46b987c24d46959c2f268ccf0de033d95bd71a61ef"
+      },
+      {
+        "bytes": 415937,
+        "matching_receipt_candidates": [],
+        "members_scanned": 93,
+        "name": "hepta_execution04_prelaunch_evidence_20261030T0214.tar.gz",
+        "sha256": "e519a9b9dfbe33bff9de86e53dbac86f498183fa3c60a6660cd78c5f99e9782a"
+      },
+      {
+        "bytes": 172768632,
+        "matching_receipt_candidates": [],
+        "members_scanned": 720,
+        "name": "hepta_execution04_terminal_failure_full_raw_20261030T0547.tar.gz",
+        "sha256": "9e8a1e2eaacff1d6e0aefc8672f98a6a70c99a3186f0aae13573f095cee4fddb"
+      },
+      {
+        "bytes": 39975,
+        "matching_receipt_candidates": [],
+        "members_scanned": 24,
+        "name": "hepta_execution05_actual_recovery_metadata_20261030T1223.tar.gz",
+        "sha256": "6392102b7b32f1940d43374def7edb095815103506b0947a6dde1212762acbf7"
+      },
+      {
+        "bytes": 1909493,
+        "matching_receipt_candidates": [],
+        "members_scanned": 227,
+        "name": "hepta_execution05_post_A17_private_metadata_20261030T131950Z.tar.gz",
+        "sha256": "1126d63b511988544a3de3448fde9b95078c242e7118922b581ff8aa42da44b6"
+      },
+      {
+        "bytes": 1916665,
+        "matching_receipt_candidates": [],
+        "members_scanned": 22,
+        "name": "hepta_execution05_post_A17_recovery_container_20261030T1326.tar.gz",
+        "sha256": "977a1969283d460e48cc2c4081f4bfb450962027954d5bf87585c5726bf448d3"
+      },
+      {
+        "bytes": 59933,
+        "matching_receipt_candidates": [],
+        "members_scanned": 43,
+        "name": "hepta_execution05_preregistration_20261030T124756Z.tar.gz",
+        "sha256": "226b6c8fe207bb06e0e0c68a1f7460cac956289f9a62c198682bd345e41f3064"
+      },
+      {
+        "bytes": 33285,
+        "matching_receipt_candidates": [],
+        "members_scanned": 150,
+        "name": "hepta_execution06_prelaunch_followup_metadata_20261031.tar.gz",
+        "sha256": "a04568cf77d217eec850b380989c492a2691241be4a3ac1d12dd53d2709d4055"
+      },
+      {
+        "bytes": 38126,
+        "matching_receipt_candidates": [],
+        "members_scanned": 55,
+        "name": "hepta_execution06_resource_window_recovery_20261031.tar.gz",
+        "sha256": "fb2599ffa0454c618dc9d3e14e240516f142636299b239ebbe7586b3e20bf1d6"
+      },
+      {
+        "bytes": 1330213,
+        "matching_receipt_candidates": [],
+        "members_scanned": 80,
+        "name": "hepta_field_episode02_partial_evidence_20261029.tar.gz",
+        "sha256": "085dde38f4f61c28b106243493844e737a9ef3a033f53f63eb07dc767305772c"
+      },
+      {
+        "bytes": 475571,
+        "matching_receipt_candidates": [],
+        "members_scanned": 6,
+        "name": "hepta_owned_cache_capacity_evidence_20261030T0419.tar.gz",
+        "sha256": "aa9d28cb27babb611e6eb754c9cb0d9ef633755bf03f6a6ae72779fc8fb52baa"
+      },
+      {
+        "bytes": 34972,
+        "matching_receipt_candidates": [],
+        "members_scanned": 10,
+        "name": "hepta_parameter_field_review_and_handoff_20261030T0226.tar.gz",
+        "sha256": "95ed2e0b38517f1fef525fb18fca28dd4930f5f2d1e8acf6c63378e9ba61f7af"
+      },
+      {
+        "bytes": 637669,
+        "matching_receipt_candidates": [],
+        "members_scanned": 74,
+        "name": "hepta_publication_capacity_evidence_20261030T0338.tar.gz",
+        "sha256": "adddabacff7cd49d5cc5c77017df9cc4b1a65e1bcf45e55a6af78b73fe77ec7d"
+      },
+      {
+        "bytes": 34991,
+        "matching_receipt_candidates": [],
+        "members_scanned": 9,
+        "name": "hepta_root_execution_preparation_20261030T0351.tar.gz",
+        "sha256": "b50d6033c6d9019144c7e4c618a01b76fe6ad90df1bf317ef0fb1baf3e0e4315"
+      },
+      {
+        "bytes": 62166608,
+        "matching_receipt_candidates": [],
+        "members_scanned": 15325,
+        "name": "ndu_v6_full002_evidence.tar.gz",
+        "sha256": "ddbdf10b4397c8538183df8fa7c16f08c5fba226a304ff7cb55574ddb97e951e"
+      },
+      {
+        "bytes": 2175212,
+        "matching_receipt_candidates": [],
+        "members_scanned": 1469,
+        "name": "part-0000.tar.gz",
+        "sha256": "87d90a8a8f2c085bd0ae36f646327195b4c3205d45fea5b8c5b8ae2092fbf88b"
+      },
+      {
+        "bytes": 453972,
+        "matching_receipt_candidates": [],
+        "members_scanned": 178,
+        "name": "part-0000.tar.gz",
+        "sha256": "a6e80584c13592abc07ba501982119b5621eb828f701cbeea0faa8d08fd21af2"
+      },
+      {
+        "bytes": 124215848,
+        "matching_receipt_candidates": [],
+        "members_scanned": 293,
+        "name": "part-0000.tar.gz",
+        "sha256": "2683499547b77d507ddc789fa5f672db92a4c4af6b93c3050a9deaccb328e839"
+      },
+      {
+        "bytes": 124418310,
+        "matching_receipt_candidates": [],
+        "members_scanned": 283,
+        "name": "part-0000.tar.gz",
+        "sha256": "3ffb7f293cf707fd78c224d1922ead1cf90d3d920b85ada6d474d5fb1954b004"
+      },
+      {
+        "bytes": 93207682,
+        "matching_receipt_candidates": [],
+        "members_scanned": 546,
+        "name": "part-0000.tar.gz",
+        "sha256": "9dcf3db433da92bbbf3d5ab33197d967d3f91251641a03ecc65830c119f4a579"
+      },
+      {
+        "bytes": 4820693,
+        "matching_receipt_candidates": [],
+        "members_scanned": 27,
+        "name": "part-0001.tar.gz",
+        "sha256": "8bc2614f8b20013cfdbd66045fd4f2b3f675974db62fb01654d0813cab3638ed"
+      },
+      {
+        "bytes": 4551689,
+        "matching_receipt_candidates": [],
+        "members_scanned": 26,
+        "name": "part-0001.tar.gz",
+        "sha256": "e541ba43a53e98769bd37a7602f6d472c51064f733f58b7bd7901238688ccc73"
+      },
+      {
+        "bytes": 585893,
+        "matching_receipt_candidates": [],
+        "members_scanned": 2,
+        "name": "part-0001.tar.gz",
+        "sha256": "1e1df6a56730a2b1dea7cc2b06d26795a10eddfba0cb46a5aa8e92d265c87cc8"
+      },
+      {
+        "bytes": 120891438,
+        "matching_receipt_candidates": [],
+        "members_scanned": 253,
+        "name": "part-0001.tar.gz",
+        "sha256": "8b0d2a294554e83bc354d8dd1c1216d4bac7e0cff444b8edaf58f412fea66c6b"
+      },
+      {
+        "bytes": 585811,
+        "matching_receipt_candidates": [],
+        "members_scanned": 1,
+        "name": "part-0002.tar.gz",
+        "sha256": "b4a9388bef72f106f2d503713d1352ebb86bcec70c02c0216ac64b45f660f76e"
+      },
+      {
+        "bytes": 133743430,
+        "matching_receipt_candidates": [],
+        "members_scanned": 31,
+        "name": "part-0002.tar.gz",
+        "sha256": "6697208400018a9e2159a5c059e1a6ea5f4c12d87578b2e529b10b832f4eee6a"
+      },
+      {
+        "bytes": 585812,
+        "matching_receipt_candidates": [],
+        "members_scanned": 1,
+        "name": "part-0003.tar.gz",
+        "sha256": "169dbb9a309d56bf048d2f11ae32f0a28f212ecd0fd7e0e20934f5f1e234d84f"
+      },
+      {
+        "bytes": 99873473,
+        "matching_receipt_candidates": [],
+        "members_scanned": 215,
+        "name": "part-0003.tar.gz",
+        "sha256": "3f3fe6327e31b1c124e8c93df39cfd560a62095a3359873eb2650d9dc3f232cd"
+      },
+      {
+        "bytes": 6282408,
+        "matching_receipt_candidates": [],
+        "members_scanned": 1959,
+        "name": "part-0004.tar.gz",
+        "sha256": "e6ba49891257fd6a38e946dcf6d8d4166d0d9475f26b83c6bf3b3788a1fc9375"
+      }
+    ],
+    "exhaustive_claim": false,
+    "git_objects_with_exact_registered_receipt_sizes": 0,
+    "local_registered_paths_exist": false,
+    "local_workspace_files_with_exact_registered_receipt_sizes": 0,
+    "old_checkout_git_object_inventories": [
+      {
+        "checkout_label": "fullstudy_git",
+        "objects": 1601
+      },
+      {
+        "checkout_label": "fullstudy_recovery05_git",
+        "objects": 1953
+      },
+      {
+        "checkout_label": "fullstudy_recovery06_git",
+        "objects": 1953
+      }
+    ],
+    "public_default_branch_exact_hash_search_results": 0,
+    "tar_candidate_identity_checks": "Member headers scanned; only regular files with either exact registered receipt size were eligible for byte hashing. No scientific numerical payload decoded.",
+    "tar_members_scanned": 22279,
+    "unique_tar_archives": 32
+  },
+  "status": "ORIGINAL_ENGINEERING_PREFLIGHT_RECEIPTS_NOT_LOCATED"
+}
