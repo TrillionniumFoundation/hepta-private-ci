@@ -66,6 +66,19 @@ class RenewalState:
         return cls(0.,active,active,1.-active,0.,0.)
 
 
+def _killed_masses_are_subsets(active, no_fire_active, no_fire_refractory):
+    """Necessary joint-event invariant, allowing only tiny f64 roundoff.
+
+    No-previous-FIRE active/refractory particles are subsets of the
+    corresponding *unconditional* active/refractory populations. Unit mass
+    and nonnegative entries alone do not establish this causal relationship.
+    The ULP allowance is a diagnostic gate, not a certified forward bound.
+    """
+    tolerance = 16 * math.ulp(1.0)
+    return (no_fire_active <= active + tolerance
+            and no_fire_refractory <= (1.0 - active) + tolerance)
+
+
 def advance(state: RenewalState, lam: float, gamma: float, dt: float) -> RenewalState:
     """Exact constant-rate segment, with both physical and killed states.
 
@@ -87,8 +100,17 @@ def advance(state: RenewalState, lam: float, gamma: float, dt: float) -> Renewal
             or abs(math.fsum((state.no_fire_active,state.no_fire_refractory,state.ever_fired))-1)>1e-11
             or state.expected_count+1e-11<state.ever_fired):
         raise ValueError('Inconsistent or nonfinite persisted renewal state')
+    if not _killed_masses_are_subsets(state.active, state.no_fire_active,
+                                     state.no_fire_refractory):
+        raise ValueError('Killed state is not a subset of unconditional physical state')
     if dt == 0:
         return state
+    try:
+        next_time = math.fsum((state.time, dt))
+    except OverflowError as exc:
+        raise ArithmeticError('Renewal physical time cannot be represented') from exc
+    if not math.isfinite(next_time) or next_time <= state.time:
+        raise ArithmeticError('Renewal positive physical time step was erased in f64')
     s=lam+gamma
     if not math.isfinite(s):
         raise ArithmeticError('Renewal rates sum unresolved in f64')
@@ -104,12 +126,13 @@ def advance(state: RenewalState, lam: float, gamma: float, dt: float) -> Renewal
     event_increment=math.fsum((state.no_fire_active*(-math.expm1(-lam*dt)),
                                 state.no_fire_refractory*_first_fire_from_refractory(lam,gamma,dt)))
     fired=math.fsum((state.ever_fired,event_increment))
-    output=RenewalState(math.fsum((state.time,dt)),active,no_fire_active,
+    output=RenewalState(next_time,active,no_fire_active,
                         no_fire_refractory,fired,count,version=1)
     if (not all(math.isfinite(x) for x in vars(output).values()) or
             not 0<=active<=1 or not 0<=fired<=1 or
             min(no_fire_active,no_fire_refractory,count)<0 or
             abs(math.fsum((no_fire_active,no_fire_refractory,fired))-1)>1e-10 or
-            count+1e-10<fired):
+            count+1e-10<fired or
+            not _killed_masses_are_subsets(active,no_fire_active,no_fire_refractory)):
         raise ArithmeticError('Renewal state/probability conservation unresolved')
     return output
