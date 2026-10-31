@@ -1,4 +1,6 @@
 use super::*;
+#[cfg(test)]
+use crate::lifecycle_test_diagnostics::record;
 use codex_protocol::error::CodexErrorDetails;
 use codex_thread_store::PersistContext;
 
@@ -6,16 +8,26 @@ impl AgentControl {
     /// Submit a shutdown request for a live agent without marking it explicitly closed in
     /// persisted spawn-edge state.
     pub(crate) async fn shutdown_live_agent(&self, agent_id: ThreadId) -> CodexResult<String> {
+        #[cfg(test)]
+        record(agent_id, format_args!("shutdown lookup begin"));
         let state = self.upgrade()?;
         let result = if let Ok(thread) = state.get_thread(agent_id).await {
+            #[cfg(test)]
+            record(agent_id, format_args!("shutdown materialize begin"));
             thread
                 .session
                 .ensure_rollout_materialized(PersistContext::Standard)
                 .await;
+            #[cfg(test)]
+            record(agent_id, format_args!("shutdown flush begin"));
             thread.session.flush_rollout().await?;
+            #[cfg(test)]
+            record(agent_id, format_args!("shutdown status check begin"));
             let result = if matches!(thread.agent_status().await, AgentStatus::Shutdown) {
                 Ok(String::new())
             } else {
+                #[cfg(test)]
+                record(agent_id, format_args!("shutdown submission begin"));
                 state
                     .send_op(
                         agent_id,
@@ -25,7 +37,17 @@ impl AgentControl {
                     )
                     .await
             };
+            #[cfg(test)]
+            record(
+                agent_id,
+                format_args!(
+                    "shutdown termination wait begin submission_ok={}",
+                    result.is_ok()
+                ),
+            );
             thread.wait_until_terminated().await;
+            #[cfg(test)]
+            record(agent_id, format_args!("shutdown termination wait returned"));
             result
         } else {
             state
@@ -37,9 +59,13 @@ impl AgentControl {
                 )
                 .await
         };
+        #[cfg(test)]
+        record(agent_id, format_args!("shutdown registry removal begin"));
         let _ = state.remove_thread(&agent_id).await;
         self.forget_v2_residency(agent_id);
         self.state.release_spawned_thread(agent_id);
+        #[cfg(test)]
+        record(agent_id, format_args!("shutdown live agent returned"));
         result
     }
 

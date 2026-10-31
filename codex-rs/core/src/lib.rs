@@ -74,6 +74,8 @@ mod hook_mcp_executor;
 mod hook_runtime;
 mod image_preparation;
 mod installation_id;
+#[cfg(test)]
+mod lifecycle_test_diagnostics;
 pub(crate) mod mcp;
 mod mcp_skill_dependencies;
 mod mcp_tool_approval_templates;

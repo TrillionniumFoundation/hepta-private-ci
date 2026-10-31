@@ -18,6 +18,8 @@ use crate::config::Config;
 use crate::context::ContextualUserFragment;
 use crate::context::GuardianApprovedAction;
 use crate::context::NodeReplReviewEvidence;
+#[cfg(test)]
+use crate::lifecycle_test_diagnostics::record;
 use crate::review_prompts::resolve_review_request;
 use crate::session::spawn_review_thread;
 use crate::tasks::CompactTask;
@@ -494,38 +496,99 @@ pub(super) async fn shutdown_session_runtime_excluding_with_suspension(
     excluded_suspension: Option<&std::sync::Arc<()>>,
 ) {
     sess.begin_shutdown();
+    #[cfg(test)]
+    record(
+        sess.thread_id,
+        format_args!("shutdown runtime startup-prewarm begin"),
+    );
     if let Some(startup_prewarm) = sess.take_session_startup_prewarm().await {
         startup_prewarm.abort().await;
     }
+    #[cfg(test)]
+    record(
+        sess.thread_id,
+        format_args!("shutdown runtime realtime begin"),
+    );
     let _ = sess.conversation.shutdown().await;
+    #[cfg(test)]
+    record(
+        sess.thread_id,
+        format_args!("shutdown runtime abort tasks begin"),
+    );
     sess.abort_all_tasks(TurnAbortReason::Interrupted).await;
+    #[cfg(test)]
+    record(
+        sess.thread_id,
+        format_args!("shutdown runtime drain starts begin"),
+    );
     sess.drain_start_transition_for_shutdown().await;
+    #[cfg(test)]
+    record(
+        sess.thread_id,
+        format_args!("shutdown runtime drain suspensions begin"),
+    );
     super::turn_suspension::drain_suspension_handoffs_for_shutdown_excluding(
         sess,
         excluded_suspension,
     )
     .await;
+    #[cfg(test)]
+    record(
+        sess.thread_id,
+        format_args!("shutdown runtime drain terminalizers begin"),
+    );
     sess.drain_task_terminalizations_for_shutdown_except(excluded_terminalization)
         .await;
+    #[cfg(test)]
+    record(sess.thread_id, format_args!("shutdown runtime hooks begin"));
     sess.hooks().shutdown().await;
     sess.async_hook_results.close();
     while sess.async_hook_results.try_recv().is_ok() {}
+    #[cfg(test)]
+    record(
+        sess.thread_id,
+        format_args!("shutdown runtime exec processes begin"),
+    );
     sess.services
         .unified_exec_manager
         .terminate_all_processes()
         .await;
+    #[cfg(test)]
+    record(
+        sess.thread_id,
+        format_args!("shutdown runtime code mode begin"),
+    );
     if let Err(err) = sess.services.code_mode_service.shutdown().await {
         warn!("failed to shutdown code mode session: {err}");
     }
+    #[cfg(test)]
+    record(
+        sess.thread_id,
+        format_args!("shutdown runtime MCP prewarm begin"),
+    );
     sess.stop_mcp_prewarm_worker().await;
+    #[cfg(test)]
+    record(sess.thread_id, format_args!("shutdown runtime MCP begin"));
     {
         let _refresh = sess.mcp_refresh.acquire().await;
         sess.mcp_refresh.close();
         sess.services.mcp_runtime.shutdown().await;
     }
+    #[cfg(test)]
+    record(
+        sess.thread_id,
+        format_args!("shutdown runtime guardian begin"),
+    );
     sess.guardian_review_session.shutdown().await;
 
+    #[cfg(test)]
+    record(
+        sess.thread_id,
+        format_args!("shutdown runtime session-end hooks begin"),
+    );
     crate::hook_runtime::run_session_end_hooks(sess).await;
+    #[cfg(test)]
+    record(sess.thread_id, format_args!("shutdown runtime returned"));
 }
 
 pub(super) async fn emit_thread_stop_lifecycle(sess: &Session) {
@@ -553,10 +616,17 @@ pub async fn shutdown(sess: &Arc<Session>, sub_id: String) -> bool {
         &[],
     );
 
+    #[cfg(test)]
+    record(
+        sess.thread_id,
+        format_args!("shutdown thread-stop lifecycle begin"),
+    );
     emit_thread_stop_lifecycle(sess.as_ref()).await;
 
     // Gracefully flush and shutdown thread persistence on session end so tests
     // that inspect durable state do not race with the background writer.
+    #[cfg(test)]
+    record(sess.thread_id, format_args!("shutdown persistence begin"));
     if let Some(live_thread) = sess.live_thread()
         && let Err(e) = live_thread.shutdown().await
     {
@@ -571,6 +641,11 @@ pub async fn shutdown(sess: &Arc<Session>, sub_id: String) -> bool {
         sess.send_event_raw(event).await;
     }
 
+    #[cfg(test)]
+    record(
+        sess.thread_id,
+        format_args!("shutdown persistence returned"),
+    );
     let event = Event {
         id: sub_id,
         msg: EventMsg::ShutdownComplete,
@@ -579,6 +654,11 @@ pub async fn shutdown(sess: &Arc<Session>, sub_id: String) -> bool {
         .rollout_thread_trace
         .record_protocol_event(&event.msg);
     sess.deliver_event_raw(event).await;
+    #[cfg(test)]
+    record(
+        sess.thread_id,
+        format_args!("shutdown completion delivered"),
+    );
     sess.services
         .rollout_thread_trace
         .record_ended(codex_rollout_trace::RolloutStatus::Completed);
