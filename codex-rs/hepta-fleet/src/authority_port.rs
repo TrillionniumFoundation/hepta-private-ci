@@ -196,19 +196,18 @@ mod tests {
 
     fn ledger() -> Result<LeaseLedger, LeaseLedgerError> {
         let mut ledger = LeaseLedger::new();
-        ledger
-            .admit_host(HostObservation {
-                host_id: "host-one".into(),
-                failure_domain_id: "rack-one".into(),
-                generation: 1,
-                observed_at_ms: 1_000,
-                valid_until_ms: 10_000,
-                capacity: Resources {
-                    cpu_millis: 1_000,
-                    memory_bytes: 1 << 20,
-                    accelerator_millis: 1_000,
-                },
-            })?;
+        ledger.admit_host(HostObservation {
+            host_id: "host-one".into(),
+            failure_domain_id: "rack-one".into(),
+            generation: 1,
+            observed_at_ms: 1_000,
+            valid_until_ms: 10_000,
+            capacity: Resources {
+                cpu_millis: 1_000,
+                memory_bytes: 1 << 20,
+                accelerator_millis: 1_000,
+            },
+        })?;
         Ok(ledger)
     }
 
