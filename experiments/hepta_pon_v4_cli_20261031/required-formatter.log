@@ -1,0 +1,7 @@
+==> Python scripts formatter failed
+$ uv run --frozen --project scripts ruff format ./scripts/hepta_smollm_execution_source_v1.py ./scripts/hepta_smollm_public_initial_v2.py ./scripts/test_hepta_smollm_execution_source_v4.py
+error: Could not acquire lock
+  cause: Could not create temporary file
+  cause: Read-only file system (os error 30) at path "/root/.cache/uv/.tmp3MhxRC"
+Formatting failed: Python scripts
+error: recipe `fmt` failed on line 51 with exit code 1

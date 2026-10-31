@@ -4,7 +4,9 @@ import builtins
 import copy
 import importlib
 import json
+from pathlib import Path
 import subprocess
+import sys
 import unittest
 from unittest.mock import patch
 
@@ -214,6 +216,68 @@ class ExecutionSourceV4Tests(unittest.TestCase):
                     execution.PROFILE_V4,
                 )
         self.assertFalse(output.exists())
+
+    def test_real_public_cli_checks_each_registered_source_before_download(self):
+        # Spawn the production entry point with real argv and the published
+        # manifests. The tiny checkout is deliberately not a reviewed Chain;
+        # the parent's fixture pins must not leak into the isolated process.
+        script = Path(material.__file__).resolve()
+        materials = self.fixture.chain.parent / "argv-materials"
+        output = self.fixture.chain.parent / "argv-output"
+        for profile in execution.registered_sources():
+            with self.subTest(profile=profile):
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        "-I",
+                        "-B",
+                        str(script),
+                        "--chain",
+                        str(self.fixture.chain),
+                        "--execution-source-profile",
+                        profile,
+                        "--materials",
+                        str(materials),
+                        "--output",
+                        str(output),
+                        "--fetch-materials",
+                    ],
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                )
+                self.assertEqual(result.returncode, 1, result.stderr)
+                self.assertIn("exact integrated Chain commit", result.stderr)
+                self.assertNotIn("invalid choice", result.stderr)
+                self.assertEqual(result.stdout, "")
+                self.assertFalse(materials.exists())
+                self.assertFalse(output.exists())
+
+    def test_public_cli_forwards_profile_and_preserves_historical_default(self):
+        materials = self.fixture.chain.parent / "argv-materials"
+        output = self.fixture.chain.parent / "argv-output"
+        for profile in (None, *execution.registered_sources()):
+            with self.subTest(profile=profile):
+                argv = [
+                    str(Path(material.__file__).resolve()),
+                    "--chain",
+                    str(self.fixture.chain),
+                    "--materials",
+                    str(materials),
+                    "--output",
+                    str(output),
+                    "--fetch-materials",
+                ]
+                if profile is not None:
+                    argv.extend(["--execution-source-profile", profile])
+                with (
+                    patch.object(sys, "argv", argv),
+                    patch.object(material, "derive") as derive,
+                ):
+                    material.main()
+                    derive.assert_called_once_with(
+                        self.fixture.chain, materials, output, True, profile
+                    )
 
 
 if __name__ == "__main__":

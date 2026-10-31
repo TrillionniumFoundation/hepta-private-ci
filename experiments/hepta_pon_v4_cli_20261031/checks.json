@@ -1,0 +1,76 @@
+{
+  "schema": "hepta-v4-ordinary-cli-repair-v1",
+  "remote_base": "c809b4cec93bd7daa64c2bfe0a2d7af5c886f2b9",
+  "chain_source": "c16507147b65285ea94dead22d3b93c5db7295af",
+  "local_checkout": "sparse selected source; local snapshot commit is not remote source identity",
+  "inputs_sha256": {
+    ".github/workflows/hepta-neural-study-v1.yml": "cf5343d00b64008240181283d364654fa09d6a9197ea5cd5dbd96361e3fc1edd",
+    ".github/workflows/hepta-pon-native-pair.yml": "4498db0b78d1da281937007715c12cdf76eb537f28c05f37e70dd7d505546d6b",
+    ".github/workflows/hepta-public-initial-v2.yml": "98770b96ec5b0a7441f08bc01cd98abfe8a2db48d5327c52dd6c40b732f5482e",
+    "scripts/hepta_smollm_execution_source_v1.py": "e31262640b95f39c5e39e9598537cffd5dd5d0f556bc4b506a201812680e567f",
+    "scripts/hepta_smollm_public_initial_v2.py": "8d37c24a08b5ff74fb2ce4b87d1f0dbac1edbe99960e9812c1ce299fd5d75899",
+    "scripts/test_hepta_smollm_execution_source_v4.py": "b2bd1684a7f367a85c655ae017de468364923a2bc73aba8e83b5c28e09726853"
+  },
+  "commands": [
+    {
+      "name": "execution-source-tests",
+      "argv": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_smollm_execution_source_v*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 4.22090979499626,
+      "log_sha256": "61c0aef7f4bf1c74dc0587d4f34a6ec49fb7985399d0d1a5493cb74b482f9e51"
+    },
+    {
+      "name": "download-controls",
+      "argv": [
+        "python",
+        "-B",
+        "scripts/test_hepta_smollm_public_initial_v2.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "elapsed_seconds": 0.09251187200425193,
+      "log_sha256": "5ec170bc75b8a7749fe60957ccbf51f56831e33e7d05c151ca8343951b7798c1"
+    },
+    {
+      "name": "required-formatter",
+      "argv": [
+        "/tmp/pq-r3-tools/bin/just",
+        "fmt"
+      ],
+      "cwd": "codex-rs",
+      "exit_code": 1,
+      "elapsed_seconds": 0.1023048920033034,
+      "log_sha256": "1813b2b2e2baeb5b331beab05ecf0ede4eee0c520f1be2d046aa50d7569e3f2c"
+    },
+    {
+      "name": "required-formatter-retry",
+      "argv": [
+        "/tmp/pq-r3-tools/bin/just",
+        "fmt"
+      ],
+      "cwd": "codex-rs",
+      "env_overrides": {
+        "UV_CACHE_DIR": "/tmp/pq-r3-uv-cache",
+        "UV_PROJECT_ENVIRONMENT": "/tmp/hepta-v4-format-venv"
+      },
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "full_native_pair_executed": false,
+  "three_model_rounds_executed": false,
+  "production_activation": false,
+  "formatting_preserved_tested_source_bytes": true
+}
