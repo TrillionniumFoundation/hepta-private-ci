@@ -1,0 +1,27 @@
+{
+  "command": [
+    "/usr/local/bin/python",
+    "-m",
+    "experiments.hcsn_blocker_closure_v1.av.study",
+    "run",
+    "--output",
+    "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_blocker_closure_v1/av/results/hosted001",
+    "--stage",
+    "development",
+    "--workers",
+    "4"
+  ],
+  "complete_child_cpu_seconds": 113.61515200000001,
+  "cwd": "/__w/hepta-private-ci/hepta-private-ci",
+  "ended_utc": "2026-10-31T02:12:11.638206+00:00",
+  "exit_code": 0,
+  "log": "experiments/hcsn_blocker_closure_v1/av/results/hosted_driver001/train/development.log",
+  "name": "development",
+  "peak_rss_bytes": 544997376,
+  "process_created": true,
+  "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+  "started_utc": "2026-10-31T02:11:38.498040+00:00",
+  "system_cpu_seconds": 4.055411,
+  "user_cpu_seconds": 109.559741,
+  "wall_seconds": 33.140161667
+}

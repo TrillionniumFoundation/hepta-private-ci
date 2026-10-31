@@ -1,0 +1,161 @@
+{
+  "child_cpu_seconds": 113.343641,
+  "complete": true,
+  "coordinator_cpu_seconds": 0.257638957,
+  "coordinator_queue_cpu_seconds": 0.014099007999999996,
+  "failed": 0,
+  "jobs": [
+    {
+      "child_cpu_seconds": 4.574622,
+      "exit_code": 0,
+      "id": "transformer__lr0.001",
+      "job": {
+        "arm": "transformer",
+        "id": "transformer__lr0.001",
+        "learning_rate": 0.001,
+        "seed": 882001,
+        "stage": "development",
+        "updates": 96
+      },
+      "maxrss_bytes": 371994624,
+      "wall_seconds": 4.948599739000002
+    },
+    {
+      "child_cpu_seconds": 6.258112,
+      "exit_code": 0,
+      "id": "lif_snn__lr0.003",
+      "job": {
+        "arm": "lif_snn",
+        "id": "lif_snn__lr0.003",
+        "learning_rate": 0.003,
+        "seed": 882001,
+        "stage": "development",
+        "updates": 96
+      },
+      "maxrss_bytes": 363454464,
+      "wall_seconds": 6.60243214800002
+    },
+    {
+      "child_cpu_seconds": 4.828711,
+      "exit_code": 0,
+      "id": "transformer__lr0.003",
+      "job": {
+        "arm": "transformer",
+        "id": "transformer__lr0.003",
+        "learning_rate": 0.003,
+        "seed": 882001,
+        "stage": "development",
+        "updates": 96
+      },
+      "maxrss_bytes": 369500160,
+      "wall_seconds": 4.850171652
+    },
+    {
+      "child_cpu_seconds": 7.801785000000001,
+      "exit_code": 0,
+      "id": "mamba1__lr0.001",
+      "job": {
+        "arm": "mamba1",
+        "id": "mamba1__lr0.001",
+        "learning_rate": 0.001,
+        "seed": 882001,
+        "stage": "development",
+        "updates": 96
+      },
+      "maxrss_bytes": 429412352,
+      "wall_seconds": 7.841514902
+    },
+    {
+      "child_cpu_seconds": 6.659191,
+      "exit_code": 0,
+      "id": "lif_snn__lr0.001",
+      "job": {
+        "arm": "lif_snn",
+        "id": "lif_snn__lr0.001",
+        "learning_rate": 0.001,
+        "seed": 882001,
+        "stage": "development",
+        "updates": 96
+      },
+      "maxrss_bytes": 362819584,
+      "wall_seconds": 6.683853962000001
+    },
+    {
+      "child_cpu_seconds": 7.803287,
+      "exit_code": 0,
+      "id": "mamba1__lr0.003",
+      "job": {
+        "arm": "mamba1",
+        "id": "mamba1__lr0.003",
+        "learning_rate": 0.003,
+        "seed": 882001,
+        "stage": "development",
+        "updates": 96
+      },
+      "maxrss_bytes": 431931392,
+      "wall_seconds": 7.832925366000012
+    },
+    {
+      "child_cpu_seconds": 6.393704,
+      "exit_code": 0,
+      "id": "two_gates__lr0.001",
+      "job": {
+        "arm": "two_gates",
+        "id": "two_gates__lr0.001",
+        "learning_rate": 0.001,
+        "seed": 882001,
+        "stage": "development",
+        "updates": 96
+      },
+      "maxrss_bytes": 365002752,
+      "wall_seconds": 6.419551648999999
+    },
+    {
+      "child_cpu_seconds": 4.427453000000001,
+      "exit_code": 0,
+      "id": "two_gates__lr0.003",
+      "job": {
+        "arm": "two_gates",
+        "id": "two_gates__lr0.003",
+        "learning_rate": 0.003,
+        "seed": 882001,
+        "stage": "development",
+        "updates": 96
+      },
+      "maxrss_bytes": 365416448,
+      "wall_seconds": 4.441411642999981
+    },
+    {
+      "child_cpu_seconds": 32.153256,
+      "exit_code": 0,
+      "id": "value_jg__lr0.001",
+      "job": {
+        "arm": "value_jg",
+        "id": "value_jg__lr0.001",
+        "learning_rate": 0.001,
+        "seed": 882001,
+        "stage": "development",
+        "updates": 96
+      },
+      "maxrss_bytes": 532815872,
+      "wall_seconds": 32.593150998
+    },
+    {
+      "child_cpu_seconds": 32.44352,
+      "exit_code": 0,
+      "id": "value_jg__lr0.003",
+      "job": {
+        "arm": "value_jg",
+        "id": "value_jg__lr0.003",
+        "learning_rate": 0.003,
+        "seed": 882001,
+        "stage": "development",
+        "updates": 96
+      },
+      "maxrss_bytes": 544997376,
+      "wall_seconds": 32.879934589999976
+    }
+  ],
+  "stage": "development",
+  "wall_seconds": 32.88223231399999
+}

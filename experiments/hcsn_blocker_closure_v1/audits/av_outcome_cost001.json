@@ -1,0 +1,83 @@
+{
+  "additional_nonoverlap_packaging_cpu_seconds": 44.259366227,
+  "additional_packaging_wall_seconds": 44.263555057000076,
+  "augmented_measured_cpu_lower_bound": 4430.109678022,
+  "baseline_qualification": "Two development learning rates and validation-only checkpoints at30/60 training CPU seconds are the registered reference schedule; this is not exhaustive or SOTA baseline tuning.",
+  "complete_training_and_publication_runner_wall": {
+    "complete_platform_cpu_seconds": null,
+    "complete_platform_energy_joules": null,
+    "creation_to_final_job_completion_seconds": 3428.0,
+    "execution_span_seconds": 2911.0,
+    "jobs": [
+      {
+        "completed_at": "2026-10-31T02:31:01Z",
+        "conclusion": "success",
+        "id": 124409244426,
+        "name": "experiments",
+        "occupied_runner_seconds": 1235.0,
+        "started_at": "2026-10-31T02:10:26Z"
+      },
+      {
+        "completed_at": "2026-10-31T02:58:57Z",
+        "conclusion": "success",
+        "id": 124416337139,
+        "name": "publish",
+        "occupied_runner_seconds": 97.0,
+        "started_at": "2026-10-31T02:57:20Z"
+      }
+    ],
+    "scope": "Server-reported complete training/publication job wall times include setup, dependency installation, checkout, artifact I/O and cleanup. Queue time is included only in creation-to-final completion. Data acquisition was a different run.",
+    "total_occupied_runner_seconds": 1332.0
+  },
+  "contained_supplement_cpu_seconds": 0.0018775879999999995,
+  "direct_energy_joules": null,
+  "driver_coordinator_plus_direct_children_cpu_seconds": 4189.633237966,
+  "execution_seal": "6469cc94a72aed214c5c9d2ff2fba14cdb146626",
+  "failed_ffmpeg_bootstrap": {
+    "cpu_interpretation": "Unknown, never zero; not added to the measured CPU lower bound",
+    "cpu_seconds": null,
+    "execution_seal": "913a18c752326f2f101327a53e08fb2454755b2a",
+    "job_id": 124402173988,
+    "job_wall_seconds": 12,
+    "media_acquired": 0,
+    "run_id": 41155791247,
+    "training_jobs": 0
+  },
+  "fresh_acquisition_disjoint_body_cpu_seconds": 196.21707382900001,
+  "full_run_id": 41158089224,
+  "input_files": {
+    "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_blocker_closure_v1/audits/av_outcome_001.json": {
+      "bytes": 68107,
+      "sha256": "e1f8ed5bb788fc2b85510751581e303215c33139ddaae7d55adeecf6f85fc991"
+    },
+    "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_blocker_closure_v1/audits/av_outcome_completed_run.json": {
+      "bytes": 16565,
+      "sha256": "079a70c400d16b49a37a261d57197eb761e291cdb3c642fa096ba87812e49bce"
+    },
+    "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_blocker_closure_v1/av/results/bootstrap001/RECEIPT.json": {
+      "bytes": 637,
+      "sha256": "6f3623b9770c5c6b11830cb8f4301ea37d247e525c614cb7611968b0b0ded2d5"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/av_publication_41158089224/experiments/hcsn_blocker_closure_v1/av/artifacts/closure001/PUBLICATION.json": {
+      "bytes": 60794,
+      "sha256": "9b9a5bf0fab1b2af6f978130af33c7775aadf4cd687277d8af0a8d10b4cfa4bd"
+    }
+  },
+  "nested_costs_added_again": false,
+  "nested_training_cpu_seconds": 3324.184114731,
+  "nested_worker_cpu_seconds": 4172.835467,
+  "original_audit_measured_cpu_lower_bound": 4385.8503117949995,
+  "packaging_scope": "PUBLICATION packaging process_time is outside prepare/train/finalize driver subprocesses; add only this measured packaging CPU once. Imports, verification/upload/push costs not metered here remain outside the CPU lower bound.",
+  "passed": true,
+  "remaining_unmetered_cpu": [
+    "Checkout and dependency installation",
+    "Launcher imports before stage clocks",
+    "Initial data transport packaging",
+    "Artifact upload/download, publication verification and git push",
+    "Failed FFmpeg bootstrap CPU",
+    "Other host/provider overhead not included in retained receipts"
+  ],
+  "schema": "hcsn-av-cost-scope-supplement.v1",
+  "source_sha256": "dadc8570066ebb6caee99958719992edbf889df24b05cccdc322e47befa96d9b",
+  "statistical_scope": "Cost-only supplement. All original metrics, 10-bin ECE, bootstrap, baseline choices and scientific gates are unchanged."
+}

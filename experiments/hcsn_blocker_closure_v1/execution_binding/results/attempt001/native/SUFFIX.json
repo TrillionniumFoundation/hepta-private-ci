@@ -1,0 +1,420 @@
+{
+  "calls": 3,
+  "events": [
+    {
+      "context": {
+        "engineering_budget": 1.0,
+        "read": 4
+      },
+      "logits": [
+        [
+          -0.029743678867816925,
+          0.31771358847618103,
+          0.6924494504928589,
+          0.540422260761261,
+          -0.24056705832481384,
+          0.0343228243291378,
+          0.1149752214550972,
+          0.3161129355430603
+        ]
+      ],
+      "native": {
+        "activation_q24": [
+          10970597,
+          0,
+          0,
+          0,
+          0
+        ],
+        "actual_model_calls": 1,
+        "actual_ndu_calls": 1,
+        "arm": "trained-value-engineering",
+        "calibration_scope": "encoder-domain-not-task-success",
+        "case": "trained-content-stream-v1",
+        "checkpoint_after": "7c5f13075c864389cf60bb3be9ccea5db66d62994efd2b3908de9a197c5561bd",
+        "checkpoint_before": "68603764c5f4ab80c57aba8d9a5e7371ed49bf20cb6f4079031f2e18b73f7f37",
+        "checkpoint_bytes": 448,
+        "confidence_ppm": 1000000,
+        "duplicate_event_ignored": false,
+        "effective_action": "keep",
+        "eligibility_q24": [
+          7173657,
+          0,
+          0,
+          0,
+          0
+        ],
+        "event_digest": "9c238ebd7d0822286d83be30a7d888b902cb54952d28317854e48beb798600fd",
+        "event_kind": "continuous_readout",
+        "execution_micros": 428,
+        "input_feature_digest": "bac3dbb333ab5e71572ed6ad2311706c7f052d8f19de65ea87c7cce99ac4625a",
+        "journal_bytes_written": 384,
+        "model_latency_micros": 0,
+        "model_resident_bytes": 41063,
+        "native_abstain": false,
+        "native_transition_executed": true,
+        "ood_ppm": 0,
+        "owner_authority": "DENY_ALL",
+        "profile_masks": [
+          true,
+          true,
+          true
+        ],
+        "profile_sha256": "f813227504af311cd06804180b89109055494b7362f77b409c8597b2f3bb73b5",
+        "queue_age_micros": 0,
+        "readout": {
+          "action": "keep",
+          "native_ndu_digest": "d3081857ced2fa84d200d1577c936bcfadc6a36d1c49ca0dda21f69ccb4b2b03",
+          "native_ndu_frontier": [
+            "keep"
+          ],
+          "scores_q24": [
+            10970597,
+            -134217728,
+            0
+          ],
+          "tie": false
+        },
+        "receipt_digest": "2fd2fd2498834a81e1f0275e3e5625141d7b5d6043f79ce56a9e44d23dae6494",
+        "seed": 881101,
+        "step": 4,
+        "terminal": false,
+        "transient_allocation_bytes": 98,
+        "write_amplification_ppm": 857143
+      },
+      "read": 4,
+      "signals": {
+        "activity": 0.00340286735445261,
+        "continuation": 0.7038985371589661,
+        "margin": 0.8702109456062317,
+        "risk": 0.026989052072167397
+      },
+      "state_sha256": "7ad2752a9160b89359551319cf8914d609f813d080c93176432f6a923302ac29"
+    },
+    {
+      "context": {
+        "engineering_budget": 1.0,
+        "read": 5
+      },
+      "logits": [
+        [
+          0.6960113644599915,
+          0.3157386779785156,
+          0.816200852394104,
+          0.799210250377655,
+          0.009568512439727783,
+          0.1474006623029709,
+          0.24448168277740479,
+          0.6198931932449341
+        ]
+      ],
+      "native": {
+        "activation_q24": [
+          10911739,
+          0,
+          0,
+          0,
+          0
+        ],
+        "actual_model_calls": 1,
+        "actual_ndu_calls": 1,
+        "arm": "trained-value-engineering",
+        "calibration_scope": "encoder-domain-not-task-success",
+        "case": "trained-content-stream-v1",
+        "checkpoint_after": "cae166af29035008de36010d04703dfdaf977a696183d5480c4039add6877704",
+        "checkpoint_before": "7c5f13075c864389cf60bb3be9ccea5db66d62994efd2b3908de9a197c5561bd",
+        "checkpoint_bytes": 448,
+        "confidence_ppm": 1000000,
+        "duplicate_event_ignored": false,
+        "effective_action": "keep",
+        "eligibility_q24": [
+          7096889,
+          0,
+          0,
+          0,
+          0
+        ],
+        "event_digest": "1fd6918c1600ce5e3fe43adac5cf702b6f1078d29a15e4815539e8ce659945a7",
+        "event_kind": "continuous_readout",
+        "execution_micros": 336,
+        "input_feature_digest": "b657795e633100dec3652b50cc9f62c842432f5627e7b1baf3781ecbb50da01c",
+        "journal_bytes_written": 384,
+        "model_latency_micros": 0,
+        "model_resident_bytes": 46859,
+        "native_abstain": false,
+        "native_transition_executed": true,
+        "ood_ppm": 0,
+        "owner_authority": "DENY_ALL",
+        "profile_masks": [
+          true,
+          true,
+          true
+        ],
+        "profile_sha256": "f813227504af311cd06804180b89109055494b7362f77b409c8597b2f3bb73b5",
+        "queue_age_micros": 0,
+        "readout": {
+          "action": "keep",
+          "native_ndu_digest": "0cf126f40bcbe436e9a2cee8cb0fd1a78b0cc70aeea9481391dced308ef2446e",
+          "native_ndu_frontier": [
+            "keep"
+          ],
+          "scores_q24": [
+            10911739,
+            -134217728,
+            0
+          ],
+          "tie": false
+        },
+        "receipt_digest": "928acf05d6d6b431df503518d0f25260228e8b6e01c138e095fcf3fbb00860d9",
+        "seed": 881101,
+        "step": 5,
+        "terminal": false,
+        "transient_allocation_bytes": 98,
+        "write_amplification_ppm": 857143
+      },
+      "read": 5,
+      "signals": {
+        "activity": 0.006772483699023724,
+        "continuation": 0.7003903269767762,
+        "margin": 0.8571470975875854,
+        "risk": 0.03049503080546856
+      },
+      "state_sha256": "465bea42a071ae59a1bd8ab8f59f3c278ddb4dd65d09a028d76e0f95e9738da1"
+    },
+    {
+      "context": {
+        "engineering_budget": -1.0,
+        "read": 6
+      },
+      "logits": [
+        [
+          0.5223922729492188,
+          0.2497635781764984,
+          0.13065668940544128,
+          1.0695396661758423,
+          0.6103833913803101,
+          -0.04910607635974884,
+          0.273751437664032,
+          0.4320428967475891
+        ]
+      ],
+      "native": {
+        "activation_q24": [
+          0,
+          9246734,
+          0,
+          0,
+          0
+        ],
+        "actual_model_calls": 1,
+        "actual_ndu_calls": 1,
+        "arm": "trained-value-engineering",
+        "calibration_scope": "encoder-domain-not-task-success",
+        "case": "trained-content-stream-v1",
+        "checkpoint_after": "9d69ce8a4c8075d231acd5ca6fd6de3f411541837250af9ef6479dc8b0bfe020",
+        "checkpoint_before": "cae166af29035008de36010d04703dfdaf977a696183d5480c4039add6877704",
+        "checkpoint_bytes": 448,
+        "confidence_ppm": 1000000,
+        "duplicate_event_ignored": false,
+        "effective_action": "stop",
+        "eligibility_q24": [
+          0,
+          5096322,
+          0,
+          0,
+          0
+        ],
+        "event_digest": "91815d4a44ce5a1c8f78b4614f659fd4a22c8890d2503fea26f80745139f3fcd",
+        "event_kind": "continuous_readout",
+        "execution_micros": 357,
+        "input_feature_digest": "142c975d9feb9a97475bfc8b8fc04cdac2db5a5b496dac5983566aa7abdb3a60",
+        "journal_bytes_written": 384,
+        "model_latency_micros": 0,
+        "model_resident_bytes": 54126,
+        "native_abstain": false,
+        "native_transition_executed": true,
+        "ood_ppm": 0,
+        "owner_authority": "DENY_ALL",
+        "profile_masks": [
+          true,
+          true,
+          true
+        ],
+        "profile_sha256": "f813227504af311cd06804180b89109055494b7362f77b409c8597b2f3bb73b5",
+        "queue_age_micros": 0,
+        "readout": {
+          "action": "stop",
+          "native_ndu_digest": "ed3da4100b625e3c5ec603c7516e45c0a78af4bdada611efb779baedf4a393e7",
+          "native_ndu_frontier": [
+            "abstain"
+          ],
+          "scores_q24": [
+            -9246734,
+            -134217728,
+            0
+          ],
+          "tie": false
+        },
+        "receipt_digest": "e6c60ed54b01c25a4a4aa02dda714f9ed7224559a75fa392c1146808a1859781",
+        "seed": 881101,
+        "step": 6,
+        "terminal": true,
+        "transient_allocation_bytes": 98,
+        "write_amplification_ppm": 857143
+      },
+      "read": 6,
+      "signals": {
+        "activity": 0.006767145358026028,
+        "continuation": -0.5011483013629913,
+        "margin": 0.8657006025314331,
+        "risk": 0.03405281528830528
+      },
+      "state_sha256": "858339d70915a5d5009226adc05c27aec8dfb693494cf32ca4d3bff89d0a004e"
+    }
+  ],
+  "native_cost": {
+    "child_cpu_seconds": 0.004393,
+    "child_max_rss_kib": 206060,
+    "counters": {
+      "actual_kernel_calls": 3,
+      "actual_ndu_calls": 3,
+      "batch_ticks": 0,
+      "event_validation_kernel_steps": 3,
+      "event_validation_ndu_calls": 3,
+      "native_errors": 1,
+      "native_physical_rpc_micros": 3453,
+      "original_journal_replay_steps": 3,
+      "owner_ticks": 3,
+      "python_roundtrip_ns": 6624563,
+      "request_bytes": 2433,
+      "response_bytes": 8581,
+      "rpc_calls": 13,
+      "total_native_kernel_calls": 9,
+      "total_native_ndu_calls": 6
+    },
+    "cpu_scope": "this exact native child PID from wait4",
+    "exit_code": 0,
+    "hardware_energy_measured": false,
+    "identity": {
+      "binary_sha256": "1dc702aea6a448ad84407aeb71dc8f23066205fab79fe7c6859fc02c55e6f7a5",
+      "owner_authority": "DENY_ALL",
+      "schema": "hepta.continuous-boundary.native-identity.v1",
+      "source_commit": "5898cd8b0f724c3152b6cc52856721f72e5e08be",
+      "source_manifest_digest": "6addea031fa9ba2ca403137d8d10da6088c255474c681b106d9a2706c645dd09"
+    },
+    "schema": "hepta.continuous-boundary.native-process-cost.v1",
+    "wall_ns": 21669194
+  },
+  "post_STOP_neural_calls": 0,
+  "post_STOP_neural_read_rejected": true,
+  "retry": {
+    "duplicate": {
+      "activation_q24": [
+        0,
+        9246734,
+        0,
+        0,
+        0
+      ],
+      "actual_model_calls": 0,
+      "actual_ndu_calls": 0,
+      "arm": "trained-value-engineering",
+      "calibration_scope": "encoder-domain-not-task-success",
+      "case": "trained-content-stream-v1",
+      "checkpoint_after": "9d69ce8a4c8075d231acd5ca6fd6de3f411541837250af9ef6479dc8b0bfe020",
+      "checkpoint_before": "cae166af29035008de36010d04703dfdaf977a696183d5480c4039add6877704",
+      "checkpoint_bytes": 448,
+      "confidence_ppm": 1000000,
+      "duplicate_event_ignored": true,
+      "effective_action": "stop",
+      "eligibility_q24": [
+        0,
+        5096322,
+        0,
+        0,
+        0
+      ],
+      "event_digest": "91815d4a44ce5a1c8f78b4614f659fd4a22c8890d2503fea26f80745139f3fcd",
+      "event_kind": "continuous_readout",
+      "execution_micros": 357,
+      "input_feature_digest": "142c975d9feb9a97475bfc8b8fc04cdac2db5a5b496dac5983566aa7abdb3a60",
+      "journal_bytes_written": 384,
+      "model_latency_micros": 0,
+      "model_resident_bytes": 54126,
+      "native_abstain": false,
+      "native_transition_executed": false,
+      "ood_ppm": 0,
+      "owner_authority": "DENY_ALL",
+      "profile_masks": [
+        true,
+        true,
+        true
+      ],
+      "profile_sha256": "f813227504af311cd06804180b89109055494b7362f77b409c8597b2f3bb73b5",
+      "queue_age_micros": 0,
+      "readout": {
+        "action": "stop",
+        "native_ndu_digest": "ed3da4100b625e3c5ec603c7516e45c0a78af4bdada611efb779baedf4a393e7",
+        "native_ndu_frontier": [
+          "abstain"
+        ],
+        "scores_q24": [
+          -9246734,
+          -134217728,
+          0
+        ],
+        "tie": false
+      },
+      "receipt_digest": "e6c60ed54b01c25a4a4aa02dda714f9ed7224559a75fa392c1146808a1859781",
+      "seed": 881101,
+      "step": 6,
+      "terminal": true,
+      "transient_allocation_bytes": 98,
+      "write_amplification_ppm": 857143
+    },
+    "passed": true,
+    "status": {
+      "arm": "trained-value-engineering",
+      "case": "trained-content-stream-v1",
+      "checkpoint": "9d69ce8a4c8075d231acd5ca6fd6de3f411541837250af9ef6479dc8b0bfe020",
+      "durable_event_count": 6,
+      "host_poisoned": false,
+      "owner_authority": "DENY_ALL",
+      "seed": 881101,
+      "step": 6,
+      "terminal": true
+    }
+  },
+  "risk_field": "refractory probability, not first-event risk",
+  "terminal": true,
+  "terminal_guard": {
+    "after": {
+      "arm": "trained-value-engineering",
+      "case": "trained-content-stream-v1",
+      "checkpoint": "9d69ce8a4c8075d231acd5ca6fd6de3f411541837250af9ef6479dc8b0bfe020",
+      "durable_event_count": 6,
+      "host_poisoned": false,
+      "owner_authority": "DENY_ALL",
+      "seed": 881101,
+      "step": 6,
+      "terminal": true
+    },
+    "before": {
+      "arm": "trained-value-engineering",
+      "case": "trained-content-stream-v1",
+      "checkpoint": "9d69ce8a4c8075d231acd5ca6fd6de3f411541837250af9ef6479dc8b0bfe020",
+      "durable_event_count": 6,
+      "host_poisoned": false,
+      "owner_authority": "DENY_ALL",
+      "seed": 881101,
+      "step": 6,
+      "terminal": true
+    },
+    "passed": true,
+    "rejection": {
+      "error": "Terminal episode; no native tick executed",
+      "ok": false,
+      "physical_rpc_micros": 2
+    }
+  }
+}

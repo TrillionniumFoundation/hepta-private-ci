@@ -1,0 +1,18 @@
+{
+  "schema": "hcsn-redundant-artifact-cleanup.v1",
+  "observed_utc": "2026-10-31T03:24:29.012221+00:00",
+  "scope": "Only this task duplicate AV outer ZIP; independently verified local publication and all 266 remote Git blob SHA and byte sizes are retained.",
+  "path": "/workspace/scratch/af4384a0a49b/recovered_studies/av_41158089224.zip",
+  "bytes": 77121685,
+  "sha256": "5f72116f972251b06bf25c77231b57cbf92709282362a953a19df9e8b5fb991d",
+  "mtime_utc": "2026-10-31T02:33:29.976406+00:00",
+  "ctime_utc": "2026-10-31T02:44:37.246381+00:00",
+  "previous_receipt_conflict": "AV_ARTIFACT_RECOVERY.json states an earlier removal; this file was present at this observation. This receipt records actual observed removal without inferring whether recreation occurred.",
+  "absent_after_unlink": true,
+  "subsequent_observation_utc": "2026-10-31T03:30:46.854924+00:00",
+  "subsequent_files_present": {
+    "recovered_studies/av_41158089224.zip": true
+  },
+  "persistent_disk_reclamation_confirmed": false,
+  "interpretation": "In-process unlink and absence were observed, but these paths were present again in a later tool invocation. Original bytes remain recoverable locally and permanently. No persistent disk-space saving is claimed; the cause is not inferred."
+}

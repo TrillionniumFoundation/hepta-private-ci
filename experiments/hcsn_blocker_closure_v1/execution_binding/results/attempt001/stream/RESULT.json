@@ -1,0 +1,28 @@
+{
+  "batch": 1,
+  "batch_stream_argmax_disagreements": 0,
+  "batch_stream_max_abs_logit_error": 2.384185791015625e-07,
+  "cut": 37,
+  "length": 128,
+  "maximum_probability_mass_defect": 4.202593117952347e-08,
+  "midpoint_refractory_mass": 0.27350860834121704,
+  "resume_execution": {
+    "child_and_reaped_descendant_cpu_seconds": 1.5193159999999999,
+    "command": [
+      "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+      "-m",
+      "experiments.hcsn_blocker_closure_v1.execution_binding.driver",
+      "resume",
+      "--output",
+      "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_blocker_closure_v1/execution_binding/results/attempt001"
+    ],
+    "exit_code": 0,
+    "nested_scope": "Contained in enclosing worker wait4; do not add scopes",
+    "peak_rss_kib": 223224,
+    "wall_seconds": 1.5273560009954963
+  },
+  "state_bytes_max": 484,
+  "state_bytes_min": 484,
+  "suffix_logits_bitwise_equal": true,
+  "suffix_state_bitwise_equal": true
+}

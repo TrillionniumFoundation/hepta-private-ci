@@ -1,0 +1,31 @@
+{
+  "child_and_reaped_descendant_cpu_seconds": 12.164039,
+  "command": [
+    "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+    "-m",
+    "experiments.hcsn_blocker_closure_v1.execution_binding.driver",
+    "run",
+    "--study",
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_selected_41156755829/content/results/hosted001",
+    "--output",
+    "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_blocker_closure_v1/execution_binding/results/attempt001",
+    "--binary",
+    "/workspace/scratch/d831a963ef2f/native-env-r6/recovered-host/native_readout_objective_host",
+    "--expected-study-commit",
+    "c9063043d088b6b469e740b9b6f341f3faea3928",
+    "--expected-study-protocol-sha256",
+    "911067f668c94a68ca41af710e1977005806dad202fbf18f32bda580b077a27b",
+    "--expected-checkpoint-sha256",
+    "d7b1b428bf1a19cd28efb2a678b1a7e60248d301f674dba3f99d0cd1e8f8b686"
+  ],
+  "energy_joules": null,
+  "exit_code": 0,
+  "launcher_cpu_to_receipt": 0.037541071,
+  "nested_warning": "All inner child, native and inference clocks are contained; do not add them to this total",
+  "neural_kernel_is_python": true,
+  "new_training_performed": false,
+  "process_peak_rss_kib": 256076,
+  "schema": "hcsn-trained-binding-whole-cost.v1",
+  "scope": "Exact worker wait4: includes imports, checkpoint verification, all neural/native/resume/scale children, IPC and evidence writing; excludes launcher and dependency installation",
+  "wall_seconds": 12.41823985701194
+}

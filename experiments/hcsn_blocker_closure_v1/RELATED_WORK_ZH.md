@@ -37,6 +37,16 @@ EventProp 的精确性尤其需要说明：事件时间导数依赖非退化阈�
 
 真正有意义的结论应同时回答：在相同输入信息、参数容量和调优预算下，边界与双价值通道是否各自贡献可重复收益；计入传播、训练、验证、数据搬运和持久化后，质量—延迟—内存—实测能量是否改善。全模态 encoder 或大模型还需要对应规模与任务证据。现阶段可称为有明确机制和可证伪假设的研究架构，不能称为已证明的通用替代品或 SOTA。
 
+## 5. 更直接的神经概率流与停止文献
+
+补充检索发现，神经动力学中的自由边界和连续概率表示也已有直接先例。Carrillo、González、Gualdani、Schonbek 的神经群体 Fokker–Planck 模型把阈值处的概率通量解释为发放率，并以 delta 源表示复位；经过变量变换得到 Stefan 型自由边界问题。[8] 这里的移动边界来自方程变换，与本研究通过收益最大化得到的 QVI 干预边界有不同定义。因此，“神经元＋概率流＋自由边界”本身不能作为首次创新声明，也不能据此声称两种模型相同。
+
+Qi 等的 moment neural network 使用发放统计量的一阶、二阶矩构造可进行梯度学习的连续表示，并在其噪声驱动与平稳统计近似下映射回 SNN；论文还报告了 Loihi 实现。[9] 这使它成为“通过连续统计量绕开发放离散性”的直接比较对象。当前 HCSN 保留活动／不应期状态分布，但未建立跨神经元联合噪声相关性的完整模型；更细的单通道状态网格不自动意味着比二阶矩方法携带更多有用信息。现有实验没有包含 MNN，不能宣称在它之上取得优势。
+
+Zhu 等研究 SNN 的正确性、置信度与推理停止，提出同时塑造决策与置信度的训练目标及停止策略。[10] 它与当前 native 消息探针的目标不同，却直接说明“根据连续置信信号停止”已有研究。HCSN 若进一步把停止与任务损失关联，应与这些方法比较同等质量下的停止时间和实测代价，而不能将工程上可触发 STOP 等同于最优任务停止。
+
+这些补充改变的是相关工作覆盖范围，不改变任何实验或验收门槛。本次检索仍不是穷尽的优先权或专利检索，检索中没有找到某个名称也不能证明全球首次。
+
 ## 原始论文与作者实现
 
 1. **LTC** — [AAAI 2021 原文 PDF](https://cdn.aaai.org/ojs/16936/16936-13-20430-1-2-20210518.pdf)；[作者代码](https://github.com/raminmh/liquid_time_constant_networks)。
@@ -46,5 +56,8 @@ EventProp 的精确性尤其需要说明：事件时间导数依赖非退化阈�
 5. **Mamba-2 / SSD** — [ICML 2024 原文入口](https://proceedings.mlr.press/v235/dao24a.html)。
 6. **Zoology / MQAR** — [ICLR 2024 原文入口](https://proceedings.iclr.cc/paper_files/paper/2024/hash/448fc91f669c15d10364ee01d512cc10-Abstract-Conference.html)；[作者实现](https://github.com/HazyResearch/zoology)。
 7. **FlashAttention-2** — [Tri Dao 原文](https://arxiv.org/abs/2307.08691)。本文不转引其速度倍数作为 HCSN 的比较结果。
+8. **神经群体自由边界** — [Carrillo 等作者 PDF](https://web.ma.utexas.edu/users/gualdani/Pdf/CGGS.pdf)；[期刊原文，Communications in Partial Differential Equations 38(3), 2013, 385–409](https://doi.org/10.1080/03605302.2012.747536)。
+9. **MNN / SNC** — [Learning and inference with correlated neural variability，PNAS Nexus 2025 原文](https://pmc.ncbi.nlm.nih.gov/articles/PMC12512019/)；[作者预印本，题为 Toward stochastic neural computing](https://arxiv.org/abs/2305.13982)；[作者代码](https://github.com/BrainsoupFactory/moment-neural-network)。
+10. **SNN 自由响应与停止** — [Zhu 等作者预印本](https://arxiv.org/abs/2404.10599)；[期刊原文，Neural Computation 37(3), 2025, 481–521](https://doi.org/10.1162/neco_a_01733)。
 
 以上为文献与范围说明，未新增实验、改动代码或修改已冻结验收合同。

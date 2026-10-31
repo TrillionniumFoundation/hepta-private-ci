@@ -1,0 +1,23 @@
+{
+  "command": [
+    "git",
+    "archive",
+    "--format=tar",
+    "--output=/__w/_temp/hcsn-fresh-av-input.tar",
+    "dca9febc8143c682077fe27d40dbeaa1137bcaa4",
+    "experiments/hcsn_blocker_closure_v1/av/transport_41156412198"
+  ],
+  "complete_child_cpu_seconds": 8.369859,
+  "cwd": "/__w/hepta-private-ci/hepta-private-ci",
+  "ended_utc": "2026-10-31T02:11:36.169484+00:00",
+  "exit_code": 0,
+  "log": "experiments/hcsn_blocker_closure_v1/av/results/hosted_driver001/prepare/materialize_data_objects.log",
+  "name": "materialize_data_objects",
+  "peak_rss_bytes": 42127360,
+  "process_created": true,
+  "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+  "started_utc": "2026-10-31T02:11:11.554963+00:00",
+  "system_cpu_seconds": 2.895205,
+  "user_cpu_seconds": 5.474654,
+  "wall_seconds": 24.614515274
+}

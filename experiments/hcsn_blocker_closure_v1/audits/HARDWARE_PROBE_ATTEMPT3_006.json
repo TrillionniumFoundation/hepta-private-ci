@@ -1,0 +1,28 @@
+{
+  "api_started_at": "2026-10-31T02:22:19Z",
+  "capability_conclusion": "Configured GPU-labelled runner candidate remains unassigned. Current GPU availability and Joules measurement capability are unknown; this does not establish that zero runners or zero GPUs exist.",
+  "conclusion": null,
+  "created_at": "2026-10-31T02:22:19Z",
+  "duplicate_dispatch_or_retry": false,
+  "energy_joules": null,
+  "executed_steps": 0,
+  "gpu_name": null,
+  "job_id": 124414290944,
+  "observed_by_utc": "2026-10-31T03:04:52+00:00",
+  "queue_duration_scope": "Elapsed between API creation time and this observation; API started_at is populated while status remains queued and no runner is assigned, so it is not treated as actual execution start.",
+  "queue_observation_seconds_since_creation": 2553,
+  "raw": {
+    "bytes": 971,
+    "endpoint": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39526325715/jobs?per_page=100",
+    "file": "experiments/hcsn_blocker_closure_v1/audits/HARDWARE_PROBE_ATTEMPT3_006_RAW.json",
+    "sha256": "72f6ce52972066b7cfd3f208826c0534f54cb0eec8991266991ed2968b4e0163"
+  },
+  "recorded_utc": "2026-10-31T03:06:38.425440+00:00",
+  "remote_mutations_performed_by_observer": false,
+  "run_attempt": 3,
+  "run_id": 39526325715,
+  "runner_id": 0,
+  "runner_name": "",
+  "schema": "hcsn-desktop-readonly-probe-observation.v1",
+  "status": "queued"
+}

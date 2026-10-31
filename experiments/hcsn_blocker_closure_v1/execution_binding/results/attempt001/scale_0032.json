@@ -1,0 +1,29 @@
+{
+  "argmax_disagreements": 0,
+  "batch": 1,
+  "batch_cpu_seconds": [
+    0.018608684000000042,
+    0.01841554600000017,
+    0.025430429000000032
+  ],
+  "batch_median_wall_seconds": 0.01862558099674061,
+  "batch_repetitions": 3,
+  "batch_stream_max_abs_logit_error": 1.1920928955078125e-07,
+  "batch_wall_seconds": [
+    0.01862558099674061,
+    0.0184301170083927,
+    0.0254450440115761
+  ],
+  "batch_warmup": 1,
+  "finite_logits": true,
+  "length": 32,
+  "process_peak_rss_kib": 223772,
+  "state_bytes_max": 484,
+  "state_bytes_min": 484,
+  "state_scope": "Elapsed/content/probability/boundary only; full-batch temporaries, inputs, outputs, weights and BPTT excluded",
+  "stream_cpu_seconds": 0.11088477400000007,
+  "stream_read_p50_seconds": 0.002987377498357091,
+  "stream_read_p95_seconds": 0.0047897978009132204,
+  "stream_wall_seconds": 0.11088790799840353,
+  "weight_tensor_bytes": 81632
+}
