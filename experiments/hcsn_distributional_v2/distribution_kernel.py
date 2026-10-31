@@ -59,6 +59,11 @@ def make_flow(mu, sigma, boundary, reset, tau, grid=Grid()):
     n, stages = grid.cells, grid.refractory_stages
     if n < 2 or stages < 0 or not math.isfinite(grid.lower):
         raise ValueError("Require >=2 cells, >=0 phases and finite lower bound")
+    # Preserve the original explicit bad-parameter error before the new
+    # representability gate, instead of classifying NaN input as a bad grid.
+    if grid.validate and not all(bool(torch.isfinite(x).all()) for x in
+                                 (mu, sigma, boundary, reset, tau)):
+        raise ValueError("Finite physical parameters required")
     if not 0 < grid.tolerance < 0.01 or grid.max_poisson_mean <= 0:
         raise ValueError("Invalid uniformization tolerance or chunk size")
     fixed = (grid.fixed_rate, grid.fixed_terms, grid.max_duration)
@@ -88,8 +93,6 @@ def make_flow(mu, sigma, boundary, reset, tau, grid=Grid()):
                 or not bool((edges[..., 1:] > edges[..., :-1]).all())
                 or not bool((centers[..., 1:] > centers[..., :-1]).all())):
             raise ValueError("Cell grid is unresolved in the requested dtype")
-        if not all(bool(torch.isfinite(x).all()) for x in (mu, sigma, boundary, reset, tau)):
-            raise ValueError("Finite physical parameters required")
         if bool(((sigma < 0) | (boundary <= grid.lower) | (tau < 0)).any()):
             raise ValueError("Require sigma>=0, tau>=0, boundary>lower")
         if stages and bool((tau <= 0).any()):
