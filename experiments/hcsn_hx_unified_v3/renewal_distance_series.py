@@ -127,6 +127,27 @@ def expected_discounted_event_count(
         if not math.isfinite(budget):
             raise UnresolvedRenewal('unresolved physical horizon/event budget')
         n_max = math.floor(budget)
+    # Chernoff family: for any a>=0,
+    # G_rho(d,t) <= exp(a*t) E[exp(-(rho+a)*T_hit)]
+    # = exp(a*t-kappa(rho+a)*d). Minimizing finitely many such
+    # *valid upper bounds* tightens the late finite-horizon event tail.
+    # This remains an exact-model bound, NOT an outward-rounded f64 certificate.
+    envelopes = [(0.0, kappa, denominator)]
+    if horizon > 0:
+        for factor in (.25, 1., 4., 16., 64., 256., 1024., 4096.):
+            tilt = factor / horizon
+            tilted_rate = p.discount + tilt
+            if not math.isfinite(tilted_rate):
+                continue
+            try:
+                kt = _kappa(p.drift, p.diffusion, tilted_rate)
+            except (UnresolvedRenewal, OverflowError, ZeroDivisionError):
+                continue
+            loss = tilted_rate * p.refractory + kt * gap
+            if math.isfinite(loss) and loss > 0:
+                denom = -math.expm1(-loss)
+                if denom > 0:
+                    envelopes.append((tilt, kt, denom))
     values = [1.0] if instant else []
     terms = 0
     tail = math.inf
@@ -147,9 +168,14 @@ def expected_discounted_event_count(
         terms += 1
         # First omitted event n+1, with an upper bound from infinite horizon.
         omitted_index = n + 1
-        log_tail = (-p.discount * omitted_index * p.refractory
-                    -kappa * (initial_distance + (omitted_index-start_index) * gap))
-        tail = math.exp(log_tail) / denominator
+        omitted_distance = initial_distance + (omitted_index-start_index) * gap
+        log_bounds = [
+            (tilt * (horizon - omitted_index * p.refractory)
+             - p.discount * omitted_index * p.refractory
+             - kt * omitted_distance - math.log(denom))
+            for tilt, kt, denom in envelopes]
+        best_log = min(log_bounds)
+        tail = math.exp(best_log) if best_log < 709 else math.inf
         if n_max is not None and omitted_index > n_max:
             full, tail = True, 0.0
             break
