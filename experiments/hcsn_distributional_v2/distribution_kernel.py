@@ -77,6 +77,17 @@ def make_flow(mu, sigma, boundary, reset, tau, grid=Grid()):
     edges = grid.lower + spacing[..., None] * torch.arange(n+1, dtype=mu.dtype, device=mu.device)
     centers = (edges[..., :-1] + edges[..., 1:]) / 2
     if grid.validate:
+        # A finite boundary can still place several edges/centers inside one
+        # ULP of the chosen dtype (notably float32). Identical coordinates
+        # silently destroy cell geometry and distribute reset mass across
+        # physically indistinguishable bins. Reject before forming rates.
+        if (not bool(torch.isfinite(spacing).all())
+                or not bool((spacing > 0).all())
+                or not bool(torch.isfinite(edges).all())
+                or not bool(torch.isfinite(centers).all())
+                or not bool((edges[..., 1:] > edges[..., :-1]).all())
+                or not bool((centers[..., 1:] > centers[..., :-1]).all())):
+            raise ValueError("Cell grid is unresolved in the requested dtype")
         if not all(bool(torch.isfinite(x).all()) for x in (mu, sigma, boundary, reset, tau)):
             raise ValueError("Finite physical parameters required")
         if bool(((sigma < 0) | (boundary <= grid.lower) | (tau < 0)).any()):
@@ -93,9 +104,16 @@ def make_flow(mu, sigma, boundary, reset, tau, grid=Grid()):
     active_out = active_out - F.pad(down[..., None], (0, n-1))
     active_out = active_out + F.pad((exit_rate-up)[..., None], (n-1, 0))
     phase_rate = stages / tau if stages else torch.zeros_like(tau)
+    reset_weights = _weights(reset, centers, spacing)
+    # Finite inputs and distinct grid cells do not imply finite float32
+    # diffusion, advection, refractory rates or normalized reset weights.
+    if grid.validate and not all(bool(torch.isfinite(x).all()) for x in
+                                 (diffusion, up, down, exit_rate, active_out,
+                                  phase_rate, reset_weights)):
+        raise ValueError("Nonfinite finite-volume rate or reset distribution")
     return dict(mu=mu, sigma=sigma, boundary=boundary, reset=reset, tau=tau,
                 grid=grid, spacing=spacing, edges=edges, centers=centers,
-                reset_weights=_weights(reset, centers, spacing), up=up, down=down,
+                reset_weights=reset_weights, up=up, down=down,
                 exit_rate=exit_rate, active_out=active_out, phase_rate=phase_rate)
 
 
