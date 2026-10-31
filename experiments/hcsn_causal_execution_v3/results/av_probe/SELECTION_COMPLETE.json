@@ -1,0 +1,46 @@
+{
+  "async_av": {
+    "alpha": 0.1,
+    "checkpoint_sha256": "2f390a2dda86eef5eb808bad1092e86dbe9cc3fd904bf378890d87deccb7768b",
+    "family": "moments",
+    "features": 96,
+    "id": "moments_a0.1_t0.25",
+    "independent_training_actors": 4,
+    "independent_validation_actors": 2,
+    "qualified_validation_screen": false,
+    "selected_before_current_test_open": true,
+    "temperature": 0.25,
+    "train": {
+      "accuracy": 1.0,
+      "ce": 0.30184839805795166,
+      "examples": 24
+    },
+    "validation": {
+      "accuracy": 0.3333333333333333,
+      "ce": 1.2879401439137534,
+      "examples": 12
+    }
+  },
+  "av_binding": {
+    "alpha": 0.1,
+    "checkpoint_sha256": "8caeeeb6ebc663c348bd02da7ed77dde26363b42978c42f711e90d0584894fc4",
+    "family": "combined",
+    "features": 3680,
+    "id": "combined_a0.1_t0.5",
+    "independent_training_actors": 4,
+    "independent_validation_actors": 2,
+    "qualified_validation_screen": true,
+    "selected_before_current_test_open": true,
+    "temperature": 0.5,
+    "train": {
+      "accuracy": 1.0,
+      "ce": 0.27463757503791014,
+      "examples": 48
+    },
+    "validation": {
+      "accuracy": 0.75,
+      "ce": 0.6104715868299195,
+      "examples": 24
+    }
+  }
+}
