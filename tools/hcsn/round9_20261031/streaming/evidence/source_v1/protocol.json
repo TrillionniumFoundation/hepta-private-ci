@@ -1,0 +1,37 @@
+{
+  "version": "r9-streaming-implementation-v1",
+  "base_commit": "333fb9b036b80cf5d892aed222a1aac7aad80e53",
+  "task": "Unchanged R8 independent-future known-model risk task; same information and costs for all filters.",
+  "purpose": "Validate reusable sufficient-state implementation and measure full execution cost, without asserting a spiking advantage.",
+  "training": "None. Preserve all R8 fits and their complete reported training cost; optimize ordinary exact control identically.",
+  "quality": {
+    "regimes": ["iid", "long_history", "low_noise", "moving_boundary"],
+    "data_seeds": {"iid": 191001, "long_history": 191002, "low_noise": 191003, "moving_boundary": 191004},
+    "samples_per_regime": 2048,
+    "fit_seeds": [17, 29, 43],
+    "scope": "Implementation validation on existing R8 confirmation seeds, not a new blind scientific test.",
+    "max_probability_difference": 0.000003,
+    "expected_action_disagreements": 0,
+    "recovery": "Compare uninterrupted and JSON-recovered streams with identical update partitions; require exact serialized state and risk equality.",
+    "chunking": "Compare block vs one-observation ingestion within 1e-12; floating-point order is not claimed bit-identical."
+  },
+  "benchmark": {
+    "threads": 1,
+    "arms": ["calibrated_analytic_17", "ordinary_exact"],
+    "implementations": ["r8_torch_history", "r9_numpy_sufficient_state"],
+    "batch_sizes": [1, 64, 2048],
+    "cached_query_calls": 32,
+    "warmup_calls": 2,
+    "measured_rounds": 7,
+    "workloads": ["ingest_once_query_once", "ingest_once_query_32_times", "update_and_query_each_observation"],
+    "included": ["public-input conversion", "state ingestion", "prediction", "action selection", "JSON output serialization", "setup reported separately", "checkpoint encode/decode reported separately"],
+    "order": "Alternate implementation order by round; use both CPU and wall clocks, record every sample.",
+    "scope": "Shared CPU host; no exclusive-host latency or hardware energy claim.",
+    "energy_joules": null
+  },
+  "acceptance": {
+    "implementation": "All parity, actions, recovery and malformed-state checks pass.",
+    "speed": "Report per workload; do not hide any regression in one-shot or scalar operation.",
+    "mechanism": "A matching ordinary exact filter is a failed independent-necessity gate, even when generic streaming is faster."
+  }
+}

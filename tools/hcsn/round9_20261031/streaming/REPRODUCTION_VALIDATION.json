@@ -1,0 +1,224 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "tools/hcsn/round9_20261031/streaming/reproduce.py",
+    "--output-repo",
+    "/workspace/scratch/f530455d952b/streaming-reproduce-check-r9-torch",
+    "--python",
+    "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+    "--checks-only"
+  ],
+  "copied_files": {
+    "tools/hcsn/round8_20261031/state_task/CONFIRMATION_AMENDMENT.json": {
+      "bytes": 1555,
+      "sha256": "c47fd57f832d54c352f837938c4961c4b23ae7ae53734e1e5748627ced854e2d"
+    },
+    "tools/hcsn/round8_20261031/state_task/FREEZE.json": {
+      "bytes": 2431,
+      "sha256": "fc49a9c5e1cba1aa76ec8c1ac19f29b4b8fdbce83add513a3f43f4c857c05f8c"
+    },
+    "tools/hcsn/round8_20261031/state_task/data.py": {
+      "bytes": 4292,
+      "sha256": "ec230d7f48e3ad30c10b26ab98b2e99db7d5324196f08275504fc045cc656e61"
+    },
+    "tools/hcsn/round8_20261031/state_task/evidence/models/analytic_filter_17.json": {
+      "bytes": 1448,
+      "sha256": "410dd8faa7d540133e17daa46eba99d12f23616c56ae9b8699e7b7728e643802"
+    },
+    "tools/hcsn/round8_20261031/state_task/evidence/models/analytic_filter_29.json": {
+      "bytes": 1442,
+      "sha256": "9f8c34bb8715ca4a53b22440b571e627cfbd4e373da18d43263c6b6efca42de9"
+    },
+    "tools/hcsn/round8_20261031/state_task/evidence/models/analytic_filter_43.json": {
+      "bytes": 1442,
+      "sha256": "e1dc11c8975ed316e8657dcad8a4f212c528154561f2d96560bf553b4891e275"
+    },
+    "tools/hcsn/round8_20261031/state_task/evidence/models/gru_17.json": {
+      "bytes": 125211,
+      "sha256": "bf40e77a5b367fe387626741420d7b8aba32a40e5bf56aa6602fbf441115e43e"
+    },
+    "tools/hcsn/round8_20261031/state_task/evidence/models/gru_29.json": {
+      "bytes": 125106,
+      "sha256": "de266f7010f714bb84f9ff5d48006a8b519c3a9ce51c50865a75f98d2a02e5fb"
+    },
+    "tools/hcsn/round8_20261031/state_task/evidence/models/gru_43.json": {
+      "bytes": 125293,
+      "sha256": "947689519b9c86d3bc0190e0243a612024a27c4318b0b1d8f0e724d5d0285393"
+    },
+    "tools/hcsn/round8_20261031/state_task/evidence/models/memoryless_17.json": {
+      "bytes": 60490,
+      "sha256": "6ea2be0e50f03b760d49e54620fbbda2b2c01c86c1a63008ef50375a47b9cc06"
+    },
+    "tools/hcsn/round8_20261031/state_task/evidence/models/memoryless_29.json": {
+      "bytes": 60554,
+      "sha256": "d73de605397559a71606734db2ebf2bec5d511ff6e3e0bf5fa281f4ffbb2c9f2"
+    },
+    "tools/hcsn/round8_20261031/state_task/evidence/models/memoryless_43.json": {
+      "bytes": 60577,
+      "sha256": "a9a8e269215542ed92cf958f043d3a9f69cb54c5f4f934c71bc9064b6e24f4f9"
+    },
+    "tools/hcsn/round8_20261031/state_task/evidence/models/sufficient_mlp_17.json": {
+      "bytes": 58600,
+      "sha256": "e598187ea1948868d917e821d66af08c5e6aa9a676de47a77872cd335d4b069e"
+    },
+    "tools/hcsn/round8_20261031/state_task/evidence/models/sufficient_mlp_29.json": {
+      "bytes": 58546,
+      "sha256": "6fd3c86ada59162642edb20915dee4a26b2348b50345d092ce3592d21ce682b8"
+    },
+    "tools/hcsn/round8_20261031/state_task/evidence/models/sufficient_mlp_43.json": {
+      "bytes": 58536,
+      "sha256": "1180eb610429a4449e75746e32961e07b615eb0053f89de81d083f22bd46febb"
+    },
+    "tools/hcsn/round8_20261031/state_task/evidence/training.json": {
+      "bytes": 3290,
+      "sha256": "e8be7bdbf5cf9d5af0734578d7d86299e21d0137feb5c48341d965e2a5ad9c1c"
+    },
+    "tools/hcsn/round8_20261031/state_task/models.py": {
+      "bytes": 3613,
+      "sha256": "6bc44c7a7ce2d6d087623ab9e5b36eab6bb48a3b78829c961260770071d391dc"
+    },
+    "tools/hcsn/round8_20261031/state_task/protocol.json": {
+      "bytes": 3867,
+      "sha256": "d629b239450379d03a3302f83f8cd8707d2c5cd46ed0c67c773504de4284b66b"
+    },
+    "tools/hcsn/round8_20261031/state_task/replay.py": {
+      "bytes": 13773,
+      "sha256": "05f7a9573617e51a52aceb102b992cb76d4d5edafb2b557131ed4cf56929d8d6"
+    },
+    "tools/hcsn/round9_20261031/streaming/AMENDMENT.json": {
+      "bytes": 1043,
+      "sha256": "d1e9de6a859255323461a209db17309ce324cbdd173423983caaecc618f31d12"
+    },
+    "tools/hcsn/round9_20261031/streaming/audit.py": {
+      "bytes": 14383,
+      "sha256": "b758bc28d7ca79d2552d1fe772273dd5353340620c3f109f6b983ad949ea1e68"
+    },
+    "tools/hcsn/round9_20261031/streaming/filter.py": {
+      "bytes": 7998,
+      "sha256": "e07f9bb0a496bb8141c02ecf25552108864a3c10941bb5e8561c81ad8fe624a4"
+    },
+    "tools/hcsn/round9_20261031/streaming/numpy_comparison.py": {
+      "bytes": 7356,
+      "sha256": "343d77027f84a2030e827959e7a48258238ca252b6e17a61efc68a023733c9e5"
+    },
+    "tools/hcsn/round9_20261031/streaming/protocol.json": {
+      "bytes": 2386,
+      "sha256": "8a45a497e0d363febc9c545ffb8af7400fd19b8a2fc55797b5717e8e53d1d245"
+    },
+    "tools/hcsn/round9_20261031/streaming/startup.py": {
+      "bytes": 4621,
+      "sha256": "227a48f39932f24126a879d6dea69f52204721c6883f3a4bc32e08e18391681e"
+    }
+  },
+  "current_wrapper_validation": {
+    "all_frozen_inputs_verified": true,
+    "existing_output_rejected": true,
+    "existing_output_result_unchanged": true,
+    "missing_r8_prerequisites_rejected_with_restore_commands": true,
+    "scientific_audit_rerun": false,
+    "syntax_valid": true
+  },
+  "energy_joules": null,
+  "existing_output_rejection": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/scratch/f530455d952b/hepta-hcsn-r9/tools/hcsn/round9_20261031/streaming/reproduce.py",
+      "--output-repo",
+      "/workspace/scratch/f530455d952b/streaming-reproduce-check-r9-torch",
+      "--checks-only"
+    ],
+    "returncode": 1,
+    "stderr": "Traceback (most recent call last):\n  File \"/workspace/scratch/f530455d952b/hepta-hcsn-r9/tools/hcsn/round9_20261031/streaming/reproduce.py\", line 186, in <module>\n    raise SystemExit(0 if main(args) else 1)\n                          ^^^^^^^^^^\n  File \"/workspace/scratch/f530455d952b/hepta-hcsn-r9/tools/hcsn/round9_20261031/streaming/reproduce.py\", line 102, in main\n    raise FileExistsError(f\"output repo must be new: {output}\")\nFileExistsError: output repo must be new: /workspace/scratch/f530455d952b/streaming-reproduce-check-r9-torch\n"
+  },
+  "final_reproducer_sha256": "8c38a191b22760057314ea3e534f9ce55e324b5dc6af59b38f3b88f810cc7965",
+  "fresh_clone_archive_restore_executed_in_this_validation": false,
+  "fresh_clone_required_steps": [
+    "python3 tools/hcsn/round8_20261031/bundles.py verify state_task",
+    "python3 tools/hcsn/round8_20261031/bundles.py restore state_task"
+  ],
+  "initial_environment_failure": {
+    "directory": "/workspace/scratch/f530455d952b/streaming-reproduce-check-r9",
+    "reason": "The primary runtime lacked torch; the child exited on import before any scientific audit ran. An explicit --python venv resolved this.",
+    "result": {
+      "commands": [
+        {
+          "command": [
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+            "-m",
+            "tools.hcsn.round9_20261031.streaming.audit"
+          ],
+          "returncode": 1,
+          "stage": "audit",
+          "stderr_sha256": "edfef05eb6048d03cad6a49e653287fb8a86141c647e97abe51378f2f4c1a4a4",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wall_seconds": 0.11673174900352024
+        }
+      ],
+      "copied_inputs_unchanged": true,
+      "energy_joules": null,
+      "generated_results": {},
+      "new_scientific_confirmation_samples": 0,
+      "original_sources_and_evidence_unchanged": true,
+      "passed": false,
+      "schema": "hepta.r9.streaming.reproduction-result.v1"
+    },
+    "result_sha256": "4cd944eb42ec2b1cccbd902bbcc8b79b3d9161fbfaf5e7b74585f8b195ea4055",
+    "source_and_evidence_unchanged": true
+  },
+  "new_scientific_confirmation_samples": 0,
+  "post_run_wrapper_change": "Added README prerequisite text and preflight missing-R8-input diagnostics only. Scientific source bytes and copied inputs are unchanged; no scientific rerun was made for this diagnostic-only addition.",
+  "prerequisites": {
+    "frozen_r8_checkpoints": 12,
+    "numpy_baseline_commit": "00b94d54a9b85f285298d1a964777bdecfa85385",
+    "registered_numpy_sha256": "2ba2fdfc6dd552ea8f136edfd4fda14a6a0410f1b63ad6ec2af039332f5ac21e",
+    "registered_quality_sha256": "2e437388be4a71d11c13cf7eaf9eff4e41e42438a2669563cff672173689d929",
+    "registered_startup_sha256": "cf8a38efe3bd6524ad9d0c6285a7aae406151c1be8ae4c2e50269e53ae12dda4"
+  },
+  "schema": "hepta.r9.streaming.reproduction-validation.v1",
+  "scientific_acceptance": {
+    "chunking": true,
+    "energy_advantage_measured": false,
+    "exact_recovery": true,
+    "independent_spiking_necessity": false,
+    "malformed_inputs": true,
+    "numerical_parity": true,
+    "same_actions": true
+  },
+  "scope": "One successful unchanged audit in a new repo tree; startup/current-NumPy cost campaigns were not repeated.",
+  "source_and_evidence_unchanged_during_final_diagnostic_checks": true,
+  "successful_audit_wrapper_sha256": "2e3d72796aa70db1f43f21f96d7436bec7d641f4edff3ef4532c621a006e69ae",
+  "successful_inputs_sha256": "7e8cc3f2551917740dacd2fc6ddb644be31c2d4a0c8988ca43d15a07c820e7dc",
+  "successful_result_sha256": "186ebf3318d3766a4e4052f33fb1452366b4f63bdc5591c936728ca85a0f3fc9",
+  "successful_run": {
+    "commands": [
+      {
+        "command": [
+          "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+          "-m",
+          "tools.hcsn.round9_20261031.streaming.audit"
+        ],
+        "returncode": 0,
+        "stage": "audit",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "fc108c292348a3ee2d2625f3ffd3651169d27efe94bde5f74740cc68c7ab336a",
+        "wall_seconds": 8.026673379994463
+      }
+    ],
+    "copied_inputs_unchanged": true,
+    "energy_joules": null,
+    "generated_results": {
+      "tools/hcsn/round9_20261031/streaming/evidence/v2/REGISTERED.json": {
+        "bytes": 756,
+        "sha256": "2e437388be4a71d11c13cf7eaf9eff4e41e42438a2669563cff672173689d929"
+      },
+      "tools/hcsn/round9_20261031/streaming/evidence/v2/results.json": {
+        "bytes": 109803,
+        "sha256": "e94c3e0073332d0b7e908a8a4e53ae7d17bc68dcc5cec54852742667f4531e11"
+      }
+    },
+    "new_scientific_confirmation_samples": 0,
+    "original_sources_and_evidence_unchanged": true,
+    "passed": true,
+    "schema": "hepta.r9.streaming.reproduction-result.v1"
+  }
+}

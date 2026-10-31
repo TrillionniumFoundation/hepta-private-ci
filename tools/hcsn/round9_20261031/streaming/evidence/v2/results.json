@@ -1,0 +1,3237 @@
+{
+  "registration_sha256": "2e437388be4a71d11c13cf7eaf9eff4e41e42438a2669563cff672173689d929",
+  "quality": [
+    {
+      "arm": "calibrated_analytic_17",
+      "regime": "iid",
+      "examples": 2048,
+      "max_probability_difference_from_torch": 4.568515111214033e-07,
+      "max_difference_block_vs_stream": 2.220446049250313e-16,
+      "action_disagreements_from_torch": 0,
+      "teacher_mse": 1.1308303956502888e-16,
+      "action_regret": 0.0,
+      "exact_resume": true,
+      "state_bytes_per_episode": 40.0,
+      "history_bytes_per_episode": 768.0
+    },
+    {
+      "arm": "calibrated_analytic_29",
+      "regime": "iid",
+      "examples": 2048,
+      "max_probability_difference_from_torch": 5.171209296328527e-07,
+      "max_difference_block_vs_stream": 3.3306690738754696e-16,
+      "action_disagreements_from_torch": 0,
+      "teacher_mse": 4.704017604695984e-17,
+      "action_regret": 0.0,
+      "exact_resume": true,
+      "state_bytes_per_episode": 40.0,
+      "history_bytes_per_episode": 768.0
+    },
+    {
+      "arm": "calibrated_analytic_43",
+      "regime": "iid",
+      "examples": 2048,
+      "max_probability_difference_from_torch": 4.4806928867213713e-07,
+      "max_difference_block_vs_stream": 2.220446049250313e-16,
+      "action_disagreements_from_torch": 0,
+      "teacher_mse": 4.7623915888723857e-17,
+      "action_regret": 0.0,
+      "exact_resume": true,
+      "state_bytes_per_episode": 40.0,
+      "history_bytes_per_episode": 768.0
+    },
+    {
+      "arm": "ordinary_exact",
+      "regime": "iid",
+      "examples": 2048,
+      "max_probability_difference_from_torch": 5.084811030564573e-07,
+      "max_difference_block_vs_stream": 2.220446049250313e-16,
+      "action_disagreements_from_torch": 0,
+      "teacher_mse": 0.0,
+      "action_regret": 0.0,
+      "exact_resume": true,
+      "state_bytes_per_episode": 40.0,
+      "history_bytes_per_episode": 768.0
+    },
+    {
+      "arm": "calibrated_analytic_17",
+      "regime": "long_history",
+      "examples": 2048,
+      "max_probability_difference_from_torch": 5.179393183230019e-07,
+      "max_difference_block_vs_stream": 3.3306690738754696e-16,
+      "action_disagreements_from_torch": 0,
+      "teacher_mse": 3.3393316618962133e-17,
+      "action_regret": 0.0,
+      "exact_resume": true,
+      "state_bytes_per_episode": 40.0,
+      "history_bytes_per_episode": 768.0
+    },
+    {
+      "arm": "calibrated_analytic_29",
+      "regime": "long_history",
+      "examples": 2048,
+      "max_probability_difference_from_torch": 5.246564285243949e-07,
+      "max_difference_block_vs_stream": 3.3306690738754696e-16,
+      "action_disagreements_from_torch": 0,
+      "teacher_mse": 3.667069422310797e-17,
+      "action_regret": 0.0,
+      "exact_resume": true,
+      "state_bytes_per_episode": 40.0,
+      "history_bytes_per_episode": 768.0
+    },
+    {
+      "arm": "calibrated_analytic_43",
+      "regime": "long_history",
+      "examples": 2048,
+      "max_probability_difference_from_torch": 5.083743761513659e-07,
+      "max_difference_block_vs_stream": 4.440892098500626e-16,
+      "action_disagreements_from_torch": 0,
+      "teacher_mse": 3.16899511470734e-17,
+      "action_regret": 0.0,
+      "exact_resume": true,
+      "state_bytes_per_episode": 40.0,
+      "history_bytes_per_episode": 768.0
+    },
+    {
+      "arm": "ordinary_exact",
+      "regime": "long_history",
+      "examples": 2048,
+      "max_probability_difference_from_torch": 5.681515075073307e-07,
+      "max_difference_block_vs_stream": 3.3306690738754696e-16,
+      "action_disagreements_from_torch": 0,
+      "teacher_mse": 0.0,
+      "action_regret": 0.0,
+      "exact_resume": true,
+      "state_bytes_per_episode": 40.0,
+      "history_bytes_per_episode": 768.0
+    },
+    {
+      "arm": "calibrated_analytic_17",
+      "regime": "low_noise",
+      "examples": 2048,
+      "max_probability_difference_from_torch": 1.3606963573664643e-06,
+      "max_difference_block_vs_stream": 2.220446049250313e-16,
+      "action_disagreements_from_torch": 0,
+      "teacher_mse": 1.4149565457084534e-16,
+      "action_regret": 0.0,
+      "exact_resume": true,
+      "state_bytes_per_episode": 40.0,
+      "history_bytes_per_episode": 768.0
+    },
+    {
+      "arm": "calibrated_analytic_29",
+      "regime": "low_noise",
+      "examples": 2048,
+      "max_probability_difference_from_torch": 1.3512688450123544e-06,
+      "max_difference_block_vs_stream": 2.220446049250313e-16,
+      "action_disagreements_from_torch": 0,
+      "teacher_mse": 7.027666318050555e-17,
+      "action_regret": 0.0,
+      "exact_resume": true,
+      "state_bytes_per_episode": 40.0,
+      "history_bytes_per_episode": 768.0
+    },
+    {
+      "arm": "calibrated_analytic_43",
+      "regime": "low_noise",
+      "examples": 2048,
+      "max_probability_difference_from_torch": 1.3543165205964769e-06,
+      "max_difference_block_vs_stream": 2.220446049250313e-16,
+      "action_disagreements_from_torch": 0,
+      "teacher_mse": 4.9881640291465933e-17,
+      "action_regret": 0.0,
+      "exact_resume": true,
+      "state_bytes_per_episode": 40.0,
+      "history_bytes_per_episode": 768.0
+    },
+    {
+      "arm": "ordinary_exact",
+      "regime": "low_noise",
+      "examples": 2048,
+      "max_probability_difference_from_torch": 1.35864775643868e-06,
+      "max_difference_block_vs_stream": 2.7755575615628914e-16,
+      "action_disagreements_from_torch": 0,
+      "teacher_mse": 0.0,
+      "action_regret": 0.0,
+      "exact_resume": true,
+      "state_bytes_per_episode": 40.0,
+      "history_bytes_per_episode": 768.0
+    },
+    {
+      "arm": "calibrated_analytic_17",
+      "regime": "moving_boundary",
+      "examples": 2048,
+      "max_probability_difference_from_torch": 2.6404889202913395e-07,
+      "max_difference_block_vs_stream": 2.220446049250313e-16,
+      "action_disagreements_from_torch": 0,
+      "teacher_mse": 2.6844222154955463e-17,
+      "action_regret": 0.0,
+      "exact_resume": true,
+      "state_bytes_per_episode": 40.0,
+      "history_bytes_per_episode": 768.0
+    },
+    {
+      "arm": "calibrated_analytic_29",
+      "regime": "moving_boundary",
+      "examples": 2048,
+      "max_probability_difference_from_torch": 2.624646205373615e-07,
+      "max_difference_block_vs_stream": 1.1102230246251565e-16,
+      "action_disagreements_from_torch": 0,
+      "teacher_mse": 1.0763460788297545e-17,
+      "action_regret": 0.0,
+      "exact_resume": true,
+      "state_bytes_per_episode": 40.0,
+      "history_bytes_per_episode": 768.0
+    },
+    {
+      "arm": "calibrated_analytic_43",
+      "regime": "moving_boundary",
+      "examples": 2048,
+      "max_probability_difference_from_torch": 3.0536694223259886e-07,
+      "max_difference_block_vs_stream": 2.220446049250313e-16,
+      "action_disagreements_from_torch": 0,
+      "teacher_mse": 8.870896817368656e-18,
+      "action_regret": 0.0,
+      "exact_resume": true,
+      "state_bytes_per_episode": 40.0,
+      "history_bytes_per_episode": 768.0
+    },
+    {
+      "arm": "ordinary_exact",
+      "regime": "moving_boundary",
+      "examples": 2048,
+      "max_probability_difference_from_torch": 3.100685715962115e-07,
+      "max_difference_block_vs_stream": 2.220446049250313e-16,
+      "action_disagreements_from_torch": 0,
+      "teacher_mse": 0.0,
+      "action_regret": 0.0,
+      "exact_resume": true,
+      "state_bytes_per_episode": 40.0,
+      "history_bytes_per_episode": 768.0
+    }
+  ],
+  "checks": {
+    "negative_dt": true,
+    "zero_sensor": true,
+    "nonfinite_input": true,
+    "wrong_model": true,
+    "negative_precision": true,
+    "fractional_count": true,
+    "bad_state_shape": true,
+    "nonfinite_state": true,
+    "count_overflow": true,
+    "atomic_accumulator_overflow": true,
+    "reject_nonfinite_logits": true,
+    "unsigned_lengths": true,
+    "irregular_block_resume": true,
+    "empty_history_valid": true
+  },
+  "costs": {
+    "raw": [
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 0,
+        "cpu_seconds": 0.00027869300000005204,
+        "wall_seconds": 0.0002787489938782528,
+        "serialized_output_bytes": 51
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 0,
+        "cpu_seconds": 0.00019825400000006432,
+        "wall_seconds": 0.00019874000281561166,
+        "serialized_output_bytes": 50
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 1,
+        "cpu_seconds": 0.00012523600000013957,
+        "wall_seconds": 0.00012541899923235178,
+        "serialized_output_bytes": 50
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 1,
+        "cpu_seconds": 0.0002500720000000456,
+        "wall_seconds": 0.00025082701176870614,
+        "serialized_output_bytes": 51
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 2,
+        "cpu_seconds": 0.00020709799999996115,
+        "wall_seconds": 0.00020784301159437746,
+        "serialized_output_bytes": 51
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 2,
+        "cpu_seconds": 0.00019053300000004825,
+        "wall_seconds": 0.00019096799951512367,
+        "serialized_output_bytes": 50
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 3,
+        "cpu_seconds": 0.0001306140000001399,
+        "wall_seconds": 0.0001308470091316849,
+        "serialized_output_bytes": 50
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 3,
+        "cpu_seconds": 0.0002444729999999673,
+        "wall_seconds": 0.00024530000519007444,
+        "serialized_output_bytes": 51
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 4,
+        "cpu_seconds": 0.00020181000000007998,
+        "wall_seconds": 0.00020252499962225556,
+        "serialized_output_bytes": 51
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 4,
+        "cpu_seconds": 0.00015621199999982238,
+        "wall_seconds": 0.00015646600513719022,
+        "serialized_output_bytes": 50
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 5,
+        "cpu_seconds": 0.0001159719999999087,
+        "wall_seconds": 0.00011599500430747867,
+        "serialized_output_bytes": 50
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 5,
+        "cpu_seconds": 0.00027558900000013153,
+        "wall_seconds": 0.00027639599284157157,
+        "serialized_output_bytes": 51
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 6,
+        "cpu_seconds": 0.00019996700000013412,
+        "wall_seconds": 0.00020061200484633446,
+        "serialized_output_bytes": 51
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 6,
+        "cpu_seconds": 0.00015750400000014153,
+        "wall_seconds": 0.0001577869988977909,
+        "serialized_output_bytes": 50
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 0,
+        "cpu_seconds": 0.006555995000000037,
+        "wall_seconds": 0.006555821993970312,
+        "serialized_output_bytes": 1632
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 0,
+        "cpu_seconds": 0.0016784420000000022,
+        "wall_seconds": 0.00167906800925266,
+        "serialized_output_bytes": 1600
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 1,
+        "cpu_seconds": 0.0014767329999998413,
+        "wall_seconds": 0.0014770840061828494,
+        "serialized_output_bytes": 1600
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 1,
+        "cpu_seconds": 0.006141869999999994,
+        "wall_seconds": 0.006142940997960977,
+        "serialized_output_bytes": 1632
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 2,
+        "cpu_seconds": 0.00590966599999998,
+        "wall_seconds": 0.005910840001888573,
+        "serialized_output_bytes": 1632
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 2,
+        "cpu_seconds": 0.001749878000000038,
+        "wall_seconds": 0.0017507659940747544,
+        "serialized_output_bytes": 1600
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 3,
+        "cpu_seconds": 0.0017507299999999226,
+        "wall_seconds": 0.0017521679983474314,
+        "serialized_output_bytes": 1600
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 3,
+        "cpu_seconds": 0.0063770599999999344,
+        "wall_seconds": 0.006377924000844359,
+        "serialized_output_bytes": 1632
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 4,
+        "cpu_seconds": 0.005863978000000047,
+        "wall_seconds": 0.005865241997526027,
+        "serialized_output_bytes": 1632
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 4,
+        "cpu_seconds": 0.0017618169999999989,
+        "wall_seconds": 0.0017625239997869357,
+        "serialized_output_bytes": 1600
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 5,
+        "cpu_seconds": 0.0015039930000000368,
+        "wall_seconds": 0.0015045350010041147,
+        "serialized_output_bytes": 1600
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 5,
+        "cpu_seconds": 0.006513181999999951,
+        "wall_seconds": 0.0065142789972014725,
+        "serialized_output_bytes": 1632
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 6,
+        "cpu_seconds": 0.006371131999999946,
+        "wall_seconds": 0.006658967002294958,
+        "serialized_output_bytes": 1632
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 6,
+        "cpu_seconds": 0.001871278999999948,
+        "wall_seconds": 0.0018718089995672926,
+        "serialized_output_bytes": 1600
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 0,
+        "cpu_seconds": 0.006786317000000208,
+        "wall_seconds": 0.006787129997974262,
+        "serialized_output_bytes": 1625
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 0,
+        "cpu_seconds": 0.003146021999999915,
+        "wall_seconds": 0.0031469280074816197,
+        "serialized_output_bytes": 1602
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 1,
+        "cpu_seconds": 0.0028954699999999,
+        "wall_seconds": 0.002896050995332189,
+        "serialized_output_bytes": 1602
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 1,
+        "cpu_seconds": 0.006859597000000051,
+        "wall_seconds": 0.006860591005533934,
+        "serialized_output_bytes": 1625
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 2,
+        "cpu_seconds": 0.007436272999999938,
+        "wall_seconds": 0.007437680003931746,
+        "serialized_output_bytes": 1625
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 2,
+        "cpu_seconds": 0.003889005000000001,
+        "wall_seconds": 0.0038908089918550104,
+        "serialized_output_bytes": 1602
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 3,
+        "cpu_seconds": 0.003016028000000004,
+        "wall_seconds": 0.003017333001480438,
+        "serialized_output_bytes": 1602
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 3,
+        "cpu_seconds": 0.00681742399999985,
+        "wall_seconds": 0.006818467008997686,
+        "serialized_output_bytes": 1625
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 4,
+        "cpu_seconds": 0.006244824000000149,
+        "wall_seconds": 0.006245926007977687,
+        "serialized_output_bytes": 1625
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 4,
+        "cpu_seconds": 0.003169406999999902,
+        "wall_seconds": 0.0031701039988547564,
+        "serialized_output_bytes": 1602
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 5,
+        "cpu_seconds": 0.003313831000000045,
+        "wall_seconds": 0.003315002002636902,
+        "serialized_output_bytes": 1602
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 5,
+        "cpu_seconds": 0.00745390899999987,
+        "wall_seconds": 0.007454854989191517,
+        "serialized_output_bytes": 1625
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 6,
+        "cpu_seconds": 0.00655313099999999,
+        "wall_seconds": 0.006554899999173358,
+        "serialized_output_bytes": 1625
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 6,
+        "cpu_seconds": 0.004191944999999864,
+        "wall_seconds": 0.004192563996184617,
+        "serialized_output_bytes": 1602
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 0,
+        "cpu_seconds": 0.00033999500000003735,
+        "wall_seconds": 0.00034004199551418424,
+        "serialized_output_bytes": 1741
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 0,
+        "cpu_seconds": 0.00027289500000016176,
+        "wall_seconds": 0.00027319201035425067,
+        "serialized_output_bytes": 1739
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 1,
+        "cpu_seconds": 0.000384170000000017,
+        "wall_seconds": 0.00038481999945361167,
+        "serialized_output_bytes": 1739
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 1,
+        "cpu_seconds": 0.0003489890000001328,
+        "wall_seconds": 0.00034986699756700546,
+        "serialized_output_bytes": 1741
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 2,
+        "cpu_seconds": 0.0002798350000001726,
+        "wall_seconds": 0.00028046200168319046,
+        "serialized_output_bytes": 1741
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 2,
+        "cpu_seconds": 0.0003516729999999413,
+        "wall_seconds": 0.00035220100835431367,
+        "serialized_output_bytes": 1739
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 3,
+        "cpu_seconds": 0.00024841900000005523,
+        "wall_seconds": 0.0002487250021658838,
+        "serialized_output_bytes": 1739
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 3,
+        "cpu_seconds": 0.0003268260000000023,
+        "wall_seconds": 0.00032752299739513546,
+        "serialized_output_bytes": 1741
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 4,
+        "cpu_seconds": 0.00031504800000003996,
+        "wall_seconds": 0.00031580599898006767,
+        "serialized_output_bytes": 1741
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 4,
+        "cpu_seconds": 0.0002725449999998464,
+        "wall_seconds": 0.0002727510000113398,
+        "serialized_output_bytes": 1739
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 5,
+        "cpu_seconds": 0.00022308100000012487,
+        "wall_seconds": 0.00022332700609695166,
+        "serialized_output_bytes": 1739
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 5,
+        "cpu_seconds": 0.0003121629999998099,
+        "wall_seconds": 0.0003129109973087907,
+        "serialized_output_bytes": 1741
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 6,
+        "cpu_seconds": 0.0003142959999999917,
+        "wall_seconds": 0.0003151050041196868,
+        "serialized_output_bytes": 1741
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 6,
+        "cpu_seconds": 0.0002663750000000409,
+        "wall_seconds": 0.0002666420041350648,
+        "serialized_output_bytes": 1739
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 0,
+        "cpu_seconds": 0.008811214999999928,
+        "wall_seconds": 0.008811398001853377,
+        "serialized_output_bytes": 55712
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 0,
+        "cpu_seconds": 0.0038158669999999173,
+        "wall_seconds": 0.003816828000708483,
+        "serialized_output_bytes": 55648
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 1,
+        "cpu_seconds": 0.0032946430000000415,
+        "wall_seconds": 0.0032954019989119843,
+        "serialized_output_bytes": 55648
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 1,
+        "cpu_seconds": 0.009041998000000051,
+        "wall_seconds": 0.009043387995916419,
+        "serialized_output_bytes": 55712
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 2,
+        "cpu_seconds": 0.00831490800000001,
+        "wall_seconds": 0.008316913997987285,
+        "serialized_output_bytes": 55712
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 2,
+        "cpu_seconds": 0.003538684000000014,
+        "wall_seconds": 0.003540260993759148,
+        "serialized_output_bytes": 55648
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 3,
+        "cpu_seconds": 0.00363445699999998,
+        "wall_seconds": 0.003635825007222593,
+        "serialized_output_bytes": 55648
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 3,
+        "cpu_seconds": 0.010310290999999916,
+        "wall_seconds": 0.01031195699761156,
+        "serialized_output_bytes": 55712
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 4,
+        "cpu_seconds": 0.008567122000000094,
+        "wall_seconds": 0.00856835198646877,
+        "serialized_output_bytes": 55712
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 4,
+        "cpu_seconds": 0.0035143380000000057,
+        "wall_seconds": 0.0035152040072716773,
+        "serialized_output_bytes": 55648
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 5,
+        "cpu_seconds": 0.0033023940000000973,
+        "wall_seconds": 0.003302823010017164,
+        "serialized_output_bytes": 55648
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 5,
+        "cpu_seconds": 0.00919358300000006,
+        "wall_seconds": 0.009203248002449982,
+        "serialized_output_bytes": 55712
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 6,
+        "cpu_seconds": 0.008738016000000126,
+        "wall_seconds": 0.00873992100241594,
+        "serialized_output_bytes": 55712
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 6,
+        "cpu_seconds": 0.0038081850000000195,
+        "wall_seconds": 0.0038094159972388297,
+        "serialized_output_bytes": 55648
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 0,
+        "cpu_seconds": 0.009269895999999944,
+        "wall_seconds": 0.009269699003198184,
+        "serialized_output_bytes": 55670
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 0,
+        "cpu_seconds": 0.00569602800000002,
+        "wall_seconds": 0.005697399014024995,
+        "serialized_output_bytes": 55629
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 1,
+        "cpu_seconds": 0.005610231000000132,
+        "wall_seconds": 0.0056120899971574545,
+        "serialized_output_bytes": 55629
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 1,
+        "cpu_seconds": 0.009527569000000069,
+        "wall_seconds": 0.00952884899743367,
+        "serialized_output_bytes": 55670
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 2,
+        "cpu_seconds": 0.00932936399999984,
+        "wall_seconds": 0.009330810004030354,
+        "serialized_output_bytes": 55670
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 2,
+        "cpu_seconds": 0.005556761999999882,
+        "wall_seconds": 0.005557729004067369,
+        "serialized_output_bytes": 55629
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 3,
+        "cpu_seconds": 0.005047284999999846,
+        "wall_seconds": 0.005048312013968825,
+        "serialized_output_bytes": 55629
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 3,
+        "cpu_seconds": 0.009231608999999974,
+        "wall_seconds": 0.00923290399077814,
+        "serialized_output_bytes": 55670
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 4,
+        "cpu_seconds": 0.008702283000000088,
+        "wall_seconds": 0.008703955987584777,
+        "serialized_output_bytes": 55670
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 4,
+        "cpu_seconds": 0.0055822799999998285,
+        "wall_seconds": 0.005583447011304088,
+        "serialized_output_bytes": 55629
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 5,
+        "cpu_seconds": 0.0058538130000000965,
+        "wall_seconds": 0.005855447001522407,
+        "serialized_output_bytes": 55629
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 5,
+        "cpu_seconds": 0.009571574000000194,
+        "wall_seconds": 0.009572825001669116,
+        "serialized_output_bytes": 55670
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 6,
+        "cpu_seconds": 0.009703308999999827,
+        "wall_seconds": 0.009705014002975076,
+        "serialized_output_bytes": 55670
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 6,
+        "cpu_seconds": 0.008907216999999967,
+        "wall_seconds": 0.008908645002520643,
+        "serialized_output_bytes": 55629
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 0,
+        "cpu_seconds": 0.0032237479999999152,
+        "wall_seconds": 0.0032234440004685894,
+        "serialized_output_bytes": 55100
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 0,
+        "cpu_seconds": 0.004112026000000046,
+        "wall_seconds": 0.004112802998861298,
+        "serialized_output_bytes": 55121
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 1,
+        "cpu_seconds": 0.003319880000000275,
+        "wall_seconds": 0.0033213910064660013,
+        "serialized_output_bytes": 55121
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 1,
+        "cpu_seconds": 0.003042489000000259,
+        "wall_seconds": 0.003044464989216067,
+        "serialized_output_bytes": 55100
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 2,
+        "cpu_seconds": 0.0026416829999997837,
+        "wall_seconds": 0.0026426989934407175,
+        "serialized_output_bytes": 55100
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 2,
+        "cpu_seconds": 0.0034845140000001606,
+        "wall_seconds": 0.003485427994746715,
+        "serialized_output_bytes": 55121
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 3,
+        "cpu_seconds": 0.003093685000000068,
+        "wall_seconds": 0.0030942589946789667,
+        "serialized_output_bytes": 55121
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 3,
+        "cpu_seconds": 0.002631218000000324,
+        "wall_seconds": 0.0026326749939471483,
+        "serialized_output_bytes": 55100
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 4,
+        "cpu_seconds": 0.002454305000000101,
+        "wall_seconds": 0.002455177003866993,
+        "serialized_output_bytes": 55100
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 4,
+        "cpu_seconds": 0.003344616999999772,
+        "wall_seconds": 0.003345286997500807,
+        "serialized_output_bytes": 55121
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 5,
+        "cpu_seconds": 0.0032430660000000167,
+        "wall_seconds": 0.0032441439980175346,
+        "serialized_output_bytes": 55121
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 5,
+        "cpu_seconds": 0.0028494310000000134,
+        "wall_seconds": 0.0028511029959190637,
+        "serialized_output_bytes": 55100
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 6,
+        "cpu_seconds": 0.0026680619999996935,
+        "wall_seconds": 0.0026693600084399804,
+        "serialized_output_bytes": 55100
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 6,
+        "cpu_seconds": 0.0038056909999997224,
+        "wall_seconds": 0.0038066720007918775,
+        "serialized_output_bytes": 55121
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 0,
+        "cpu_seconds": 0.10599105600000014,
+        "wall_seconds": 0.10599408698908519,
+        "serialized_output_bytes": 1763200
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 0,
+        "cpu_seconds": 0.059127493999999725,
+        "wall_seconds": 0.05912973800150212,
+        "serialized_output_bytes": 1763872
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 1,
+        "cpu_seconds": 0.05791547500000016,
+        "wall_seconds": 0.057917652986361645,
+        "serialized_output_bytes": 1763872
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 1,
+        "cpu_seconds": 0.11086858499999996,
+        "wall_seconds": 0.11087303901149426,
+        "serialized_output_bytes": 1763200
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 2,
+        "cpu_seconds": 0.0796963599999998,
+        "wall_seconds": 0.08001108199823648,
+        "serialized_output_bytes": 1763200
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 2,
+        "cpu_seconds": 0.05801843600000023,
+        "wall_seconds": 0.058028599989484064,
+        "serialized_output_bytes": 1763872
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 3,
+        "cpu_seconds": 0.058484028999999715,
+        "wall_seconds": 0.058487091009737924,
+        "serialized_output_bytes": 1763872
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 3,
+        "cpu_seconds": 0.09169421600000005,
+        "wall_seconds": 0.09177592700871173,
+        "serialized_output_bytes": 1763200
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 4,
+        "cpu_seconds": 0.08157634100000033,
+        "wall_seconds": 0.08157933299662545,
+        "serialized_output_bytes": 1763200
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 4,
+        "cpu_seconds": 0.06150407400000013,
+        "wall_seconds": 0.06150665698805824,
+        "serialized_output_bytes": 1763872
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 5,
+        "cpu_seconds": 0.081402733,
+        "wall_seconds": 0.08140667299448978,
+        "serialized_output_bytes": 1763872
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 5,
+        "cpu_seconds": 0.09306765500000003,
+        "wall_seconds": 0.09307099699799437,
+        "serialized_output_bytes": 1763200
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 6,
+        "cpu_seconds": 0.09789103899999985,
+        "wall_seconds": 0.09789452998666093,
+        "serialized_output_bytes": 1763200
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 6,
+        "cpu_seconds": 0.05784592199999983,
+        "wall_seconds": 0.05784845301241148,
+        "serialized_output_bytes": 1763872
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 0,
+        "cpu_seconds": 0.06955463800000006,
+        "wall_seconds": 0.06955775398819242,
+        "serialized_output_bytes": 1761554
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 0,
+        "cpu_seconds": 0.06111764999999991,
+        "wall_seconds": 0.06112638099875767,
+        "serialized_output_bytes": 1762720
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 1,
+        "cpu_seconds": 0.06302857700000031,
+        "wall_seconds": 0.06303140800446272,
+        "serialized_output_bytes": 1762720
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 1,
+        "cpu_seconds": 0.07992460799999979,
+        "wall_seconds": 0.07992843899410218,
+        "serialized_output_bytes": 1761554
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 2,
+        "cpu_seconds": 0.08511450499999995,
+        "wall_seconds": 0.08511792100034654,
+        "serialized_output_bytes": 1761554
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 2,
+        "cpu_seconds": 0.0803028190000008,
+        "wall_seconds": 0.08030546599184163,
+        "serialized_output_bytes": 1762720
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 3,
+        "cpu_seconds": 0.05875524099999918,
+        "wall_seconds": 0.058758396000484936,
+        "serialized_output_bytes": 1762720
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 3,
+        "cpu_seconds": 0.06647397399999999,
+        "wall_seconds": 0.0664771369920345,
+        "serialized_output_bytes": 1761554
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 4,
+        "cpu_seconds": 0.06531794700000049,
+        "wall_seconds": 0.06532122600765433,
+        "serialized_output_bytes": 1761554
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 4,
+        "cpu_seconds": 0.059373778999999516,
+        "wall_seconds": 0.05938790399522986,
+        "serialized_output_bytes": 1762720
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 5,
+        "cpu_seconds": 0.058992764000000086,
+        "wall_seconds": 0.0589953320013592,
+        "serialized_output_bytes": 1762720
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 5,
+        "cpu_seconds": 0.06723379199999968,
+        "wall_seconds": 0.06723688000056427,
+        "serialized_output_bytes": 1761554
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 6,
+        "cpu_seconds": 0.06509082999999993,
+        "wall_seconds": 0.06509397400077432,
+        "serialized_output_bytes": 1761554
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 6,
+        "cpu_seconds": 0.05914748400000036,
+        "wall_seconds": 0.059149883993086405,
+        "serialized_output_bytes": 1762720
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 0,
+        "cpu_seconds": 0.0002395750000001584,
+        "wall_seconds": 0.00023949999012984335,
+        "serialized_output_bytes": 51
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 0,
+        "cpu_seconds": 0.00019687300000015284,
+        "wall_seconds": 0.0001973670005099848,
+        "serialized_output_bytes": 51
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 1,
+        "cpu_seconds": 0.00012616699999945524,
+        "wall_seconds": 0.00012631001300178468,
+        "serialized_output_bytes": 51
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 1,
+        "cpu_seconds": 0.00027821299999963855,
+        "wall_seconds": 0.00027905999741051346,
+        "serialized_output_bytes": 51
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 2,
+        "cpu_seconds": 0.00027064200000026517,
+        "wall_seconds": 0.00027141900500282645,
+        "serialized_output_bytes": 51
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 2,
+        "cpu_seconds": 0.00016782899999956413,
+        "wall_seconds": 0.0001680429995758459,
+        "serialized_output_bytes": 51
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 3,
+        "cpu_seconds": 0.00015032300000061838,
+        "wall_seconds": 0.00015062600141391158,
+        "serialized_output_bytes": 51
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 3,
+        "cpu_seconds": 0.00023507900000030446,
+        "wall_seconds": 0.0002360460057388991,
+        "serialized_output_bytes": 51
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 4,
+        "cpu_seconds": 0.00042227700000019297,
+        "wall_seconds": 0.0004228960024192929,
+        "serialized_output_bytes": 51
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 4,
+        "cpu_seconds": 0.00018128900000036197,
+        "wall_seconds": 0.000181634008185938,
+        "serialized_output_bytes": 51
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 5,
+        "cpu_seconds": 0.0001235140000002133,
+        "wall_seconds": 0.000123585996334441,
+        "serialized_output_bytes": 51
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 5,
+        "cpu_seconds": 0.00022920099999979016,
+        "wall_seconds": 0.0002300169871887192,
+        "serialized_output_bytes": 51
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 6,
+        "cpu_seconds": 0.00025153400000021975,
+        "wall_seconds": 0.0002524299925426021,
+        "serialized_output_bytes": 51
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 6,
+        "cpu_seconds": 0.00016316299999985517,
+        "wall_seconds": 0.00016335598775185645,
+        "serialized_output_bytes": 51
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 0,
+        "cpu_seconds": 0.005765602000000314,
+        "wall_seconds": 0.005765872003394179,
+        "serialized_output_bytes": 1632
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 0,
+        "cpu_seconds": 0.001703589999999977,
+        "wall_seconds": 0.0017043859988916665,
+        "serialized_output_bytes": 1632
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 1,
+        "cpu_seconds": 0.0015597559999998012,
+        "wall_seconds": 0.0015612300048815086,
+        "serialized_output_bytes": 1632
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 1,
+        "cpu_seconds": 0.0056792540000003555,
+        "wall_seconds": 0.005680352012859657,
+        "serialized_output_bytes": 1632
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 2,
+        "cpu_seconds": 0.005470124000000354,
+        "wall_seconds": 0.005471456999657676,
+        "serialized_output_bytes": 1632
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 2,
+        "cpu_seconds": 0.0016735649999999325,
+        "wall_seconds": 0.0016744310123613104,
+        "serialized_output_bytes": 1632
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 3,
+        "cpu_seconds": 0.0015361710000005857,
+        "wall_seconds": 0.0015365230065071955,
+        "serialized_output_bytes": 1632
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 3,
+        "cpu_seconds": 0.00575606800000017,
+        "wall_seconds": 0.0057569380005588755,
+        "serialized_output_bytes": 1632
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 4,
+        "cpu_seconds": 0.005473337999999828,
+        "wall_seconds": 0.005474371995660476,
+        "serialized_output_bytes": 1632
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 4,
+        "cpu_seconds": 0.001693334999999685,
+        "wall_seconds": 0.0016941510111792013,
+        "serialized_output_bytes": 1632
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 5,
+        "cpu_seconds": 0.0014952509999996977,
+        "wall_seconds": 0.001495721997343935,
+        "serialized_output_bytes": 1632
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 5,
+        "cpu_seconds": 0.005753093000000042,
+        "wall_seconds": 0.005754272991907783,
+        "serialized_output_bytes": 1632
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 6,
+        "cpu_seconds": 0.0054241850000007474,
+        "wall_seconds": 0.005425228999229148,
+        "serialized_output_bytes": 1632
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 6,
+        "cpu_seconds": 0.0017113719999999333,
+        "wall_seconds": 0.0017116469971369952,
+        "serialized_output_bytes": 1632
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 0,
+        "cpu_seconds": 0.006033880999999575,
+        "wall_seconds": 0.0060338149924064055,
+        "serialized_output_bytes": 1623
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 0,
+        "cpu_seconds": 0.003220132000000042,
+        "wall_seconds": 0.0032222309964708984,
+        "serialized_output_bytes": 1625
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 1,
+        "cpu_seconds": 0.002892124999999801,
+        "wall_seconds": 0.0028931449924129993,
+        "serialized_output_bytes": 1625
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 1,
+        "cpu_seconds": 0.006536448000000306,
+        "wall_seconds": 0.007084787008352578,
+        "serialized_output_bytes": 1623
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 2,
+        "cpu_seconds": 0.005869977000000581,
+        "wall_seconds": 0.005871269997442141,
+        "serialized_output_bytes": 1623
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 2,
+        "cpu_seconds": 0.0033932789999999713,
+        "wall_seconds": 0.0033941500005312264,
+        "serialized_output_bytes": 1625
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 3,
+        "cpu_seconds": 0.0028974130000003484,
+        "wall_seconds": 0.0028982530056964606,
+        "serialized_output_bytes": 1625
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 3,
+        "cpu_seconds": 0.006052076999999656,
+        "wall_seconds": 0.006053574004909024,
+        "serialized_output_bytes": 1623
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 4,
+        "cpu_seconds": 0.006470098000000313,
+        "wall_seconds": 0.0064718339999672025,
+        "serialized_output_bytes": 1623
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 4,
+        "cpu_seconds": 0.003209316000000406,
+        "wall_seconds": 0.003209692004020326,
+        "serialized_output_bytes": 1625
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 5,
+        "cpu_seconds": 0.002937431999999518,
+        "wall_seconds": 0.0029381639906205237,
+        "serialized_output_bytes": 1625
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 5,
+        "cpu_seconds": 0.00602689999999928,
+        "wall_seconds": 0.006028096002410166,
+        "serialized_output_bytes": 1623
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 6,
+        "cpu_seconds": 0.005728626999999875,
+        "wall_seconds": 0.005729765995056368,
+        "serialized_output_bytes": 1623
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 6,
+        "cpu_seconds": 0.0031646399999996078,
+        "wall_seconds": 0.0031656469946028665,
+        "serialized_output_bytes": 1625
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 0,
+        "cpu_seconds": 0.0003239110000006207,
+        "wall_seconds": 0.0003241579979658127,
+        "serialized_output_bytes": 1737
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 0,
+        "cpu_seconds": 0.00027508900000050573,
+        "wall_seconds": 0.0002753349981503561,
+        "serialized_output_bytes": 1735
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 1,
+        "cpu_seconds": 0.00022270100000021387,
+        "wall_seconds": 0.0002228049997938797,
+        "serialized_output_bytes": 1735
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 1,
+        "cpu_seconds": 0.00034687499999996874,
+        "wall_seconds": 0.000347683992004022,
+        "serialized_output_bytes": 1737
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 2,
+        "cpu_seconds": 0.0002685690000001628,
+        "wall_seconds": 0.00026913500914815813,
+        "serialized_output_bytes": 1737
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 2,
+        "cpu_seconds": 0.0002747379999998856,
+        "wall_seconds": 0.0002751340070972219,
+        "serialized_output_bytes": 1735
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 3,
+        "cpu_seconds": 0.00026293999999982276,
+        "wall_seconds": 0.0002635870041558519,
+        "serialized_output_bytes": 1735
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 3,
+        "cpu_seconds": 0.00030307999999923396,
+        "wall_seconds": 0.0003037870046682656,
+        "serialized_output_bytes": 1737
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 4,
+        "cpu_seconds": 0.0002579029999996152,
+        "wall_seconds": 0.00025862999609671533,
+        "serialized_output_bytes": 1737
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 4,
+        "cpu_seconds": 0.0002669260000001117,
+        "wall_seconds": 0.0002671519905561581,
+        "serialized_output_bytes": 1735
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 5,
+        "cpu_seconds": 0.0002580030000007838,
+        "wall_seconds": 0.000258550004218705,
+        "serialized_output_bytes": 1735
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 5,
+        "cpu_seconds": 0.0003368300000001767,
+        "wall_seconds": 0.0003377289976924658,
+        "serialized_output_bytes": 1737
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 6,
+        "cpu_seconds": 0.00025949499999988745,
+        "wall_seconds": 0.0002601509913802147,
+        "serialized_output_bytes": 1737
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 6,
+        "cpu_seconds": 0.00030200899999943687,
+        "wall_seconds": 0.00030261599749792367,
+        "serialized_output_bytes": 1735
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 0,
+        "cpu_seconds": 0.008757394999999946,
+        "wall_seconds": 0.008757204996072687,
+        "serialized_output_bytes": 55584
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 0,
+        "cpu_seconds": 0.0034839540000000113,
+        "wall_seconds": 0.0034847670031012967,
+        "serialized_output_bytes": 55520
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 1,
+        "cpu_seconds": 0.003236215999999459,
+        "wall_seconds": 0.0032371840061387047,
+        "serialized_output_bytes": 55520
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 1,
+        "cpu_seconds": 0.008734109999999795,
+        "wall_seconds": 0.008734831004403532,
+        "serialized_output_bytes": 55584
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 2,
+        "cpu_seconds": 0.010665608000000049,
+        "wall_seconds": 0.010667451002518646,
+        "serialized_output_bytes": 55584
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 2,
+        "cpu_seconds": 0.003643481000000115,
+        "wall_seconds": 0.0036444769939407706,
+        "serialized_output_bytes": 55520
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 3,
+        "cpu_seconds": 0.0033858680000005137,
+        "wall_seconds": 0.003386729003977962,
+        "serialized_output_bytes": 55520
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 3,
+        "cpu_seconds": 0.008666729999999845,
+        "wall_seconds": 0.008668219990795478,
+        "serialized_output_bytes": 55584
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 4,
+        "cpu_seconds": 0.007944127000000023,
+        "wall_seconds": 0.007945562989334576,
+        "serialized_output_bytes": 55584
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 4,
+        "cpu_seconds": 0.0035627810000002924,
+        "wall_seconds": 0.0035642459988594055,
+        "serialized_output_bytes": 55520
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 5,
+        "cpu_seconds": 0.0035401680000006763,
+        "wall_seconds": 0.0035408910043770447,
+        "serialized_output_bytes": 55520
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 5,
+        "cpu_seconds": 0.008150112999999237,
+        "wall_seconds": 0.008151232003001496,
+        "serialized_output_bytes": 55584
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 6,
+        "cpu_seconds": 0.008587633000000316,
+        "wall_seconds": 0.008588520999182947,
+        "serialized_output_bytes": 55584
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 6,
+        "cpu_seconds": 0.0034604790000001273,
+        "wall_seconds": 0.0034613910102052614,
+        "serialized_output_bytes": 55520
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 0,
+        "cpu_seconds": 0.00847678800000029,
+        "wall_seconds": 0.00847722300386522,
+        "serialized_output_bytes": 55552
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 0,
+        "cpu_seconds": 0.005050230000000155,
+        "wall_seconds": 0.005051644999184646,
+        "serialized_output_bytes": 55556
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 1,
+        "cpu_seconds": 0.004838625999999735,
+        "wall_seconds": 0.004840296998736449,
+        "serialized_output_bytes": 55556
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 1,
+        "cpu_seconds": 0.008254667999999299,
+        "wall_seconds": 0.008255929991719313,
+        "serialized_output_bytes": 55552
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 2,
+        "cpu_seconds": 0.00791385200000061,
+        "wall_seconds": 0.007915908005088568,
+        "serialized_output_bytes": 55552
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 2,
+        "cpu_seconds": 0.005169847000000338,
+        "wall_seconds": 0.005170663993339986,
+        "serialized_output_bytes": 55556
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 3,
+        "cpu_seconds": 0.005024171000000521,
+        "wall_seconds": 0.005025014994316734,
+        "serialized_output_bytes": 55556
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 3,
+        "cpu_seconds": 0.008520632999999833,
+        "wall_seconds": 0.008521779993316159,
+        "serialized_output_bytes": 55552
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 4,
+        "cpu_seconds": 0.008042513000000362,
+        "wall_seconds": 0.008043529989663512,
+        "serialized_output_bytes": 55552
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 4,
+        "cpu_seconds": 0.0050863530000002655,
+        "wall_seconds": 0.005087550001917407,
+        "serialized_output_bytes": 55556
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 5,
+        "cpu_seconds": 0.004817043000000076,
+        "wall_seconds": 0.004818083994905464,
+        "serialized_output_bytes": 55556
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 5,
+        "cpu_seconds": 0.008240046000000056,
+        "wall_seconds": 0.00824114799615927,
+        "serialized_output_bytes": 55552
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 6,
+        "cpu_seconds": 0.01081033299999934,
+        "wall_seconds": 0.010812239008373581,
+        "serialized_output_bytes": 55552
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 6,
+        "cpu_seconds": 0.005450654999999749,
+        "wall_seconds": 0.005451848002849147,
+        "serialized_output_bytes": 55556
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 0,
+        "cpu_seconds": 0.0025782889999996783,
+        "wall_seconds": 0.0025780919968383387,
+        "serialized_output_bytes": 55100
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 0,
+        "cpu_seconds": 0.0031605329999999654,
+        "wall_seconds": 0.0031612389866495505,
+        "serialized_output_bytes": 55124
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 1,
+        "cpu_seconds": 0.0030391029999998764,
+        "wall_seconds": 0.0030398759990930557,
+        "serialized_output_bytes": 55124
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 1,
+        "cpu_seconds": 0.0026913769999996617,
+        "wall_seconds": 0.0026932850014418364,
+        "serialized_output_bytes": 55100
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 2,
+        "cpu_seconds": 0.0023991019999991536,
+        "wall_seconds": 0.002399653007159941,
+        "serialized_output_bytes": 55100
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 2,
+        "cpu_seconds": 0.003156908000000236,
+        "wall_seconds": 0.003158145002089441,
+        "serialized_output_bytes": 55124
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 3,
+        "cpu_seconds": 0.0030966489999997293,
+        "wall_seconds": 0.003097373992204666,
+        "serialized_output_bytes": 55124
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 3,
+        "cpu_seconds": 0.0024228280000002655,
+        "wall_seconds": 0.0024241399951279163,
+        "serialized_output_bytes": 55100
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 4,
+        "cpu_seconds": 0.002644736999999786,
+        "wall_seconds": 0.0026452630118001252,
+        "serialized_output_bytes": 55100
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 4,
+        "cpu_seconds": 0.0038431970000001314,
+        "wall_seconds": 0.0038448589912150055,
+        "serialized_output_bytes": 55124
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 5,
+        "cpu_seconds": 0.003276075000000489,
+        "wall_seconds": 0.003277024006820284,
+        "serialized_output_bytes": 55124
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 5,
+        "cpu_seconds": 0.0027385570000006965,
+        "wall_seconds": 0.0027401150000514463,
+        "serialized_output_bytes": 55100
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "round": 6,
+        "cpu_seconds": 0.0022549689999999956,
+        "wall_seconds": 0.0022554160095751286,
+        "serialized_output_bytes": 55100
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 6,
+        "cpu_seconds": 0.003090659999999801,
+        "wall_seconds": 0.00309195599402301,
+        "serialized_output_bytes": 55124
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 0,
+        "cpu_seconds": 0.07319939100000017,
+        "wall_seconds": 0.07320127199636772,
+        "serialized_output_bytes": 1763200
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 0,
+        "cpu_seconds": 0.05927232900000057,
+        "wall_seconds": 0.05928295900230296,
+        "serialized_output_bytes": 1763968
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 1,
+        "cpu_seconds": 0.05864535800000059,
+        "wall_seconds": 0.05864804300654214,
+        "serialized_output_bytes": 1763968
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 1,
+        "cpu_seconds": 0.08030303399999994,
+        "wall_seconds": 0.0803067880042363,
+        "serialized_output_bytes": 1763200
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 2,
+        "cpu_seconds": 0.11250173500000038,
+        "wall_seconds": 0.11250623399973847,
+        "serialized_output_bytes": 1763200
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 2,
+        "cpu_seconds": 0.06479793500000053,
+        "wall_seconds": 0.06480750699120108,
+        "serialized_output_bytes": 1763968
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 3,
+        "cpu_seconds": 0.05960266000000036,
+        "wall_seconds": 0.0596055149944732,
+        "serialized_output_bytes": 1763968
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 3,
+        "cpu_seconds": 0.0744869330000002,
+        "wall_seconds": 0.07449011500284541,
+        "serialized_output_bytes": 1763200
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 4,
+        "cpu_seconds": 0.07924578999999987,
+        "wall_seconds": 0.07924858998740092,
+        "serialized_output_bytes": 1763200
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 4,
+        "cpu_seconds": 0.059000526000000164,
+        "wall_seconds": 0.05900311800360214,
+        "serialized_output_bytes": 1763968
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 5,
+        "cpu_seconds": 0.05990009200000035,
+        "wall_seconds": 0.059910374009632505,
+        "serialized_output_bytes": 1763968
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 5,
+        "cpu_seconds": 0.08078141000000016,
+        "wall_seconds": 0.08162382600130513,
+        "serialized_output_bytes": 1763200
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "round": 6,
+        "cpu_seconds": 0.0768726759999998,
+        "wall_seconds": 0.07687644800171256,
+        "serialized_output_bytes": 1763200
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 6,
+        "cpu_seconds": 0.05896039100000028,
+        "wall_seconds": 0.058962591996532865,
+        "serialized_output_bytes": 1763968
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 0,
+        "cpu_seconds": 0.06562800699999993,
+        "wall_seconds": 0.06562953400134575,
+        "serialized_output_bytes": 1761615
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 0,
+        "cpu_seconds": 0.06092292099999952,
+        "wall_seconds": 0.06092578299285378,
+        "serialized_output_bytes": 1763259
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 1,
+        "cpu_seconds": 0.06282224999999997,
+        "wall_seconds": 0.06283611900289543,
+        "serialized_output_bytes": 1763259
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 1,
+        "cpu_seconds": 0.06865327000000043,
+        "wall_seconds": 0.06865596199349966,
+        "serialized_output_bytes": 1761615
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 2,
+        "cpu_seconds": 0.06775539599999991,
+        "wall_seconds": 0.06775853100407403,
+        "serialized_output_bytes": 1761615
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 2,
+        "cpu_seconds": 0.060041452000000106,
+        "wall_seconds": 0.0600441450078506,
+        "serialized_output_bytes": 1763259
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 3,
+        "cpu_seconds": 0.09332306499999987,
+        "wall_seconds": 0.09332784899743274,
+        "serialized_output_bytes": 1763259
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 3,
+        "cpu_seconds": 0.07547665199999987,
+        "wall_seconds": 0.0754801459988812,
+        "serialized_output_bytes": 1761615
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 4,
+        "cpu_seconds": 0.06777856199999999,
+        "wall_seconds": 0.0677818260010099,
+        "serialized_output_bytes": 1761615
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 4,
+        "cpu_seconds": 0.062466092000000195,
+        "wall_seconds": 0.06246839500090573,
+        "serialized_output_bytes": 1763259
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 5,
+        "cpu_seconds": 0.061556762000000376,
+        "wall_seconds": 0.06155953599954955,
+        "serialized_output_bytes": 1763259
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 5,
+        "cpu_seconds": 0.0722847729999998,
+        "wall_seconds": 0.07228822998877149,
+        "serialized_output_bytes": 1761615
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "round": 6,
+        "cpu_seconds": 0.06981451500000002,
+        "wall_seconds": 0.0698171100084437,
+        "serialized_output_bytes": 1761615
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "round": 6,
+        "cpu_seconds": 0.06476261299999919,
+        "wall_seconds": 0.06476494300295599,
+        "serialized_output_bytes": 1763259
+      }
+    ],
+    "summary": [
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "median_cpu_seconds": 0.0002444729999999673,
+        "median_wall_seconds": 0.00024530000519007444,
+        "min_cpu_seconds": 0.00019996700000013412,
+        "max_cpu_seconds": 0.00027869300000005204
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "median_cpu_seconds": 0.00015621199999982238,
+        "median_wall_seconds": 0.00015646600513719022,
+        "min_cpu_seconds": 0.0001159719999999087,
+        "max_cpu_seconds": 0.00019825400000006432
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "median_cpu_seconds": 0.006371131999999946,
+        "median_wall_seconds": 0.006377924000844359,
+        "min_cpu_seconds": 0.005863978000000047,
+        "max_cpu_seconds": 0.006555995000000037
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "median_cpu_seconds": 0.001749878000000038,
+        "median_wall_seconds": 0.0017507659940747544,
+        "min_cpu_seconds": 0.0014767329999998413,
+        "max_cpu_seconds": 0.001871278999999948
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "median_cpu_seconds": 0.00681742399999985,
+        "median_wall_seconds": 0.006818467008997686,
+        "min_cpu_seconds": 0.006244824000000149,
+        "max_cpu_seconds": 0.00745390899999987
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "median_cpu_seconds": 0.003169406999999902,
+        "median_wall_seconds": 0.0031701039988547564,
+        "min_cpu_seconds": 0.0028954699999999,
+        "max_cpu_seconds": 0.004191944999999864
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "median_cpu_seconds": 0.00031504800000003996,
+        "median_wall_seconds": 0.00031580599898006767,
+        "min_cpu_seconds": 0.0002798350000001726,
+        "max_cpu_seconds": 0.0003489890000001328
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "median_cpu_seconds": 0.0002725449999998464,
+        "median_wall_seconds": 0.0002727510000113398,
+        "min_cpu_seconds": 0.00022308100000012487,
+        "max_cpu_seconds": 0.000384170000000017
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "median_cpu_seconds": 0.008811214999999928,
+        "median_wall_seconds": 0.008811398001853377,
+        "min_cpu_seconds": 0.00831490800000001,
+        "max_cpu_seconds": 0.010310290999999916
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "median_cpu_seconds": 0.003538684000000014,
+        "median_wall_seconds": 0.003540260993759148,
+        "min_cpu_seconds": 0.0032946430000000415,
+        "max_cpu_seconds": 0.0038158669999999173
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "median_cpu_seconds": 0.00932936399999984,
+        "median_wall_seconds": 0.009330810004030354,
+        "min_cpu_seconds": 0.008702283000000088,
+        "max_cpu_seconds": 0.009703308999999827
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "median_cpu_seconds": 0.005610231000000132,
+        "median_wall_seconds": 0.0056120899971574545,
+        "min_cpu_seconds": 0.005047284999999846,
+        "max_cpu_seconds": 0.008907216999999967
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "median_cpu_seconds": 0.0026680619999996935,
+        "median_wall_seconds": 0.0026693600084399804,
+        "min_cpu_seconds": 0.002454305000000101,
+        "max_cpu_seconds": 0.0032237479999999152
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "median_cpu_seconds": 0.003344616999999772,
+        "median_wall_seconds": 0.003345286997500807,
+        "min_cpu_seconds": 0.003093685000000068,
+        "max_cpu_seconds": 0.004112026000000046
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "median_cpu_seconds": 0.09306765500000003,
+        "median_wall_seconds": 0.09307099699799437,
+        "min_cpu_seconds": 0.0796963599999998,
+        "max_cpu_seconds": 0.11086858499999996
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "median_cpu_seconds": 0.058484028999999715,
+        "median_wall_seconds": 0.058487091009737924,
+        "min_cpu_seconds": 0.05784592199999983,
+        "max_cpu_seconds": 0.081402733
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "median_cpu_seconds": 0.06723379199999968,
+        "median_wall_seconds": 0.06723688000056427,
+        "min_cpu_seconds": 0.06509082999999993,
+        "max_cpu_seconds": 0.08511450499999995
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "median_cpu_seconds": 0.059373778999999516,
+        "median_wall_seconds": 0.05938790399522986,
+        "min_cpu_seconds": 0.05875524099999918,
+        "max_cpu_seconds": 0.0803028190000008
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "median_cpu_seconds": 0.00025153400000021975,
+        "median_wall_seconds": 0.0002524299925426021,
+        "min_cpu_seconds": 0.00022920099999979016,
+        "max_cpu_seconds": 0.00042227700000019297
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "median_cpu_seconds": 0.00016316299999985517,
+        "median_wall_seconds": 0.00016335598775185645,
+        "min_cpu_seconds": 0.0001235140000002133,
+        "max_cpu_seconds": 0.00019687300000015284
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "median_cpu_seconds": 0.0056792540000003555,
+        "median_wall_seconds": 0.005680352012859657,
+        "min_cpu_seconds": 0.0054241850000007474,
+        "max_cpu_seconds": 0.005765602000000314
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "median_cpu_seconds": 0.0016735649999999325,
+        "median_wall_seconds": 0.0016744310123613104,
+        "min_cpu_seconds": 0.0014952509999996977,
+        "max_cpu_seconds": 0.0017113719999999333
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "median_cpu_seconds": 0.006033880999999575,
+        "median_wall_seconds": 0.0060338149924064055,
+        "min_cpu_seconds": 0.005728626999999875,
+        "max_cpu_seconds": 0.006536448000000306
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "median_cpu_seconds": 0.0031646399999996078,
+        "median_wall_seconds": 0.0031656469946028665,
+        "min_cpu_seconds": 0.002892124999999801,
+        "max_cpu_seconds": 0.0033932789999999713
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "median_cpu_seconds": 0.00030307999999923396,
+        "median_wall_seconds": 0.0003037870046682656,
+        "min_cpu_seconds": 0.0002579029999996152,
+        "max_cpu_seconds": 0.00034687499999996874
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "median_cpu_seconds": 0.0002669260000001117,
+        "median_wall_seconds": 0.0002671519905561581,
+        "min_cpu_seconds": 0.00022270100000021387,
+        "max_cpu_seconds": 0.00030200899999943687
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "median_cpu_seconds": 0.008666729999999845,
+        "median_wall_seconds": 0.008668219990795478,
+        "min_cpu_seconds": 0.007944127000000023,
+        "max_cpu_seconds": 0.010665608000000049
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "median_cpu_seconds": 0.0034839540000000113,
+        "median_wall_seconds": 0.0034847670031012967,
+        "min_cpu_seconds": 0.003236215999999459,
+        "max_cpu_seconds": 0.003643481000000115
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "median_cpu_seconds": 0.008254667999999299,
+        "median_wall_seconds": 0.008255929991719313,
+        "min_cpu_seconds": 0.00791385200000061,
+        "max_cpu_seconds": 0.01081033299999934
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "median_cpu_seconds": 0.005050230000000155,
+        "median_wall_seconds": 0.005051644999184646,
+        "min_cpu_seconds": 0.004817043000000076,
+        "max_cpu_seconds": 0.005450654999999749
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r8_torch_history",
+        "median_cpu_seconds": 0.0025782889999996783,
+        "median_wall_seconds": 0.0025780919968383387,
+        "min_cpu_seconds": 0.0022549689999999956,
+        "max_cpu_seconds": 0.0027385570000006965
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_once",
+        "implementation": "r9_numpy_sufficient_state",
+        "median_cpu_seconds": 0.003156908000000236,
+        "median_wall_seconds": 0.003158145002089441,
+        "min_cpu_seconds": 0.0030391029999998764,
+        "max_cpu_seconds": 0.0038431970000001314
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r8_torch_history",
+        "median_cpu_seconds": 0.07924578999999987,
+        "median_wall_seconds": 0.07924858998740092,
+        "min_cpu_seconds": 0.07319939100000017,
+        "max_cpu_seconds": 0.11250173500000038
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "ingest_once_query_32_times",
+        "implementation": "r9_numpy_sufficient_state",
+        "median_cpu_seconds": 0.05927232900000057,
+        "median_wall_seconds": 0.05928295900230296,
+        "min_cpu_seconds": 0.05864535800000059,
+        "max_cpu_seconds": 0.06479793500000053
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r8_torch_history",
+        "median_cpu_seconds": 0.06865327000000043,
+        "median_wall_seconds": 0.06865596199349966,
+        "min_cpu_seconds": 0.06562800699999993,
+        "max_cpu_seconds": 0.07547665199999987
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "workload": "update_and_query_each_observation",
+        "implementation": "r9_numpy_sufficient_state",
+        "median_cpu_seconds": 0.062466092000000195,
+        "median_wall_seconds": 0.06246839500090573,
+        "min_cpu_seconds": 0.060041452000000106,
+        "max_cpu_seconds": 0.09332306499999987
+      }
+    ],
+    "setup": [
+      {
+        "arm": "calibrated_analytic_17",
+        "cpu_seconds": 0.0005389599999998662,
+        "wall_seconds": 0.0005387010023696348,
+        "includes": "JSON weights read and model construction; imports excluded"
+      },
+      {
+        "arm": "ordinary_exact",
+        "cpu_seconds": 0.00013275799999945548,
+        "wall_seconds": 0.00013296000543050468,
+        "includes": "JSON weights read and model construction; imports excluded"
+      }
+    ],
+    "checkpoint_roundtrip": [
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 1,
+        "cpu_seconds": 9.779599999992783e-05,
+        "wall_seconds": 9.756701183505356e-05,
+        "serialized_bytes": 385,
+        "exact": true
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 64,
+        "cpu_seconds": 0.0002966509999999811,
+        "wall_seconds": 0.00029710699163842946,
+        "serialized_bytes": 3401,
+        "exact": true
+      },
+      {
+        "arm": "calibrated_analytic_17",
+        "batch_size": 2048,
+        "cpu_seconds": 0.003916605999999767,
+        "wall_seconds": 0.003916578003554605,
+        "serialized_bytes": 98634,
+        "exact": true
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 1,
+        "cpu_seconds": 0.00013674300000054984,
+        "wall_seconds": 0.000136755988933146,
+        "serialized_bytes": 293,
+        "exact": true
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 64,
+        "cpu_seconds": 0.00022331200000014206,
+        "wall_seconds": 0.0002236969885416329,
+        "serialized_bytes": 3309,
+        "exact": true
+      },
+      {
+        "arm": "ordinary_exact",
+        "batch_size": 2048,
+        "cpu_seconds": 0.0035297119999997406,
+        "wall_seconds": 0.003529053006786853,
+        "serialized_bytes": 98542,
+        "exact": true
+      }
+    ]
+  },
+  "cost_accounting": {
+    "r9_training_cpu_seconds": 0.0,
+    "r8_all_model_search_cpu_seconds": 31.871366576999996,
+    "r8_analytic_all_three_fits_cpu_seconds": 3.80807476,
+    "r8_ordinary_exact_training_cpu_seconds": 0.0,
+    "energy_joules": null,
+    "energy_observation": {
+      "powercap_present": false,
+      "nvidia_device_present": false
+    },
+    "scope": "Run costs include real execution and JSON serialization. Prior R8 data-generation/setup costs remain in original R8 evidence; not recomputed as zero."
+  },
+  "data_generation": [
+    {
+      "regime": "iid",
+      "cpu_seconds": 0.007924447999999806,
+      "wall_seconds": 0.007925594007247128,
+      "input_sha256": "6c8d6b157a4f3b360eb90f141280f2155743e9e277ca7ac48c10371936bc924d"
+    },
+    {
+      "regime": "long_history",
+      "cpu_seconds": 0.004513001000000072,
+      "wall_seconds": 0.004513385996688157,
+      "input_sha256": "a325655104beb8f433fd8b4fb5e56364076243c0023c29a8f79da4d88d8da799"
+    },
+    {
+      "regime": "low_noise",
+      "cpu_seconds": 0.003617090999999961,
+      "wall_seconds": 0.003617456997744739,
+      "input_sha256": "78a4a087373819ae239a13f36f2a014392f3c41a4841ad6f758ecd4b11a788c3"
+    },
+    {
+      "regime": "moving_boundary",
+      "cpu_seconds": 0.003531233999999994,
+      "wall_seconds": 0.0035308859951328486,
+      "input_sha256": "c0e0bd3477ff2a5900804ca3d2714e4c4bc6034bd29458b55c1bb41e7faee653"
+    }
+  ],
+  "acceptance": {
+    "numerical_parity": true,
+    "same_actions": true,
+    "exact_recovery": true,
+    "chunking": true,
+    "malformed_inputs": true,
+    "independent_spiking_necessity": false,
+    "energy_advantage_measured": false
+  },
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "torch": "2.8.0+cpu",
+    "cpu_count": 9,
+    "threads": 1,
+    "shared_host": true
+  },
+  "audit_cpu_seconds": 6.514666963,
+  "audit_wall_seconds": 6.5314297059958335
+}

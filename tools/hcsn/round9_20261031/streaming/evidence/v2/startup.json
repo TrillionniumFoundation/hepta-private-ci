@@ -1,0 +1,219 @@
+{
+  "registration": {
+    "source_sha256": "227a48f39932f24126a879d6dea69f52204721c6883f3a4bc32e08e18391681e",
+    "filter_sha256": "e07f9bb0a496bb8141c02ecf25552108864a3c10941bb5e8561c81ad8fe624a4",
+    "written_before_measurement": true,
+    "rounds": 3,
+    "scope": "Fresh process, warm filesystem caches; includes imports, model load, inference, JSON, process launch and exit. Shared host.",
+    "relationship": "Additive cost accounting after the original frozen implementation audit; no retuning or changed quality gate."
+  },
+  "raw": [
+    {
+      "arm": "calibrated_analytic_17",
+      "implementation": "r8_torch_history",
+      "round": 0,
+      "wall_seconds": 1.2537557600007858,
+      "child_cpu_seconds": 1.248959,
+      "output": {
+        "risk": [
+          0.016510246321558952
+        ],
+        "protect": [
+          false
+        ]
+      }
+    },
+    {
+      "arm": "calibrated_analytic_17",
+      "implementation": "r9_numpy_sufficient_state",
+      "round": 0,
+      "wall_seconds": 0.18899474199861288,
+      "child_cpu_seconds": 0.1884869999999999,
+      "output": {
+        "risk": [
+          0.016510222953415973
+        ],
+        "protect": [
+          false
+        ]
+      }
+    },
+    {
+      "arm": "calibrated_analytic_17",
+      "implementation": "r9_numpy_sufficient_state",
+      "round": 1,
+      "wall_seconds": 0.22018997800478246,
+      "child_cpu_seconds": 0.21971900000000022,
+      "output": {
+        "risk": [
+          0.016510222953415973
+        ],
+        "protect": [
+          false
+        ]
+      }
+    },
+    {
+      "arm": "calibrated_analytic_17",
+      "implementation": "r8_torch_history",
+      "round": 1,
+      "wall_seconds": 1.1762650329910684,
+      "child_cpu_seconds": 1.1705609999999997,
+      "output": {
+        "risk": [
+          0.016510246321558952
+        ],
+        "protect": [
+          false
+        ]
+      }
+    },
+    {
+      "arm": "calibrated_analytic_17",
+      "implementation": "r8_torch_history",
+      "round": 2,
+      "wall_seconds": 1.1613715309940744,
+      "child_cpu_seconds": 1.1554880000000003,
+      "output": {
+        "risk": [
+          0.016510246321558952
+        ],
+        "protect": [
+          false
+        ]
+      }
+    },
+    {
+      "arm": "calibrated_analytic_17",
+      "implementation": "r9_numpy_sufficient_state",
+      "round": 2,
+      "wall_seconds": 0.21892050599853974,
+      "child_cpu_seconds": 0.21853399999999967,
+      "output": {
+        "risk": [
+          0.016510222953415973
+        ],
+        "protect": [
+          false
+        ]
+      }
+    },
+    {
+      "arm": "ordinary_exact",
+      "implementation": "r8_torch_history",
+      "round": 0,
+      "wall_seconds": 1.1926144379976904,
+      "child_cpu_seconds": 1.1884510000000006,
+      "output": {
+        "risk": [
+          0.016510246321558952
+        ],
+        "protect": [
+          false
+        ]
+      }
+    },
+    {
+      "arm": "ordinary_exact",
+      "implementation": "r9_numpy_sufficient_state",
+      "round": 0,
+      "wall_seconds": 0.19536008599970955,
+      "child_cpu_seconds": 0.194616,
+      "output": {
+        "risk": [
+          0.016510224217156932
+        ],
+        "protect": [
+          false
+        ]
+      }
+    },
+    {
+      "arm": "ordinary_exact",
+      "implementation": "r9_numpy_sufficient_state",
+      "round": 1,
+      "wall_seconds": 0.19860795499698725,
+      "child_cpu_seconds": 0.1982459999999996,
+      "output": {
+        "risk": [
+          0.016510224217156932
+        ],
+        "protect": [
+          false
+        ]
+      }
+    },
+    {
+      "arm": "ordinary_exact",
+      "implementation": "r8_torch_history",
+      "round": 1,
+      "wall_seconds": 1.1432155259972205,
+      "child_cpu_seconds": 1.1348129999999998,
+      "output": {
+        "risk": [
+          0.016510246321558952
+        ],
+        "protect": [
+          false
+        ]
+      }
+    },
+    {
+      "arm": "ordinary_exact",
+      "implementation": "r8_torch_history",
+      "round": 2,
+      "wall_seconds": 1.2004818330024136,
+      "child_cpu_seconds": 1.1972130000000005,
+      "output": {
+        "risk": [
+          0.016510246321558952
+        ],
+        "protect": [
+          false
+        ]
+      }
+    },
+    {
+      "arm": "ordinary_exact",
+      "implementation": "r9_numpy_sufficient_state",
+      "round": 2,
+      "wall_seconds": 0.19640449799771886,
+      "child_cpu_seconds": 0.19317000000000062,
+      "output": {
+        "risk": [
+          0.016510224217156932
+        ],
+        "protect": [
+          false
+        ]
+      }
+    }
+  ],
+  "summary": [
+    {
+      "arm": "calibrated_analytic_17",
+      "implementation": "r8_torch_history",
+      "median_cpu_seconds": 1.1705609999999997,
+      "median_wall_seconds": 1.1762650329910684
+    },
+    {
+      "arm": "calibrated_analytic_17",
+      "implementation": "r9_numpy_sufficient_state",
+      "median_cpu_seconds": 0.21853399999999967,
+      "median_wall_seconds": 0.21892050599853974
+    },
+    {
+      "arm": "ordinary_exact",
+      "implementation": "r8_torch_history",
+      "median_cpu_seconds": 1.1884510000000006,
+      "median_wall_seconds": 1.1926144379976904
+    },
+    {
+      "arm": "ordinary_exact",
+      "implementation": "r9_numpy_sufficient_state",
+      "median_cpu_seconds": 0.194616,
+      "median_wall_seconds": 0.19640449799771886
+    }
+  ],
+  "energy_joules": null
+}
