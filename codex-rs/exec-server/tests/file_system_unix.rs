@@ -1147,8 +1147,22 @@ async fn file_system_bounded_authorized_read_enforces_limit_without_prefix(
         .await
         .expect_err("a file larger than the bound must fail closed");
     if supported {
-        assert_eq!(error.kind(), std::io::ErrorKind::InvalidData);
-        assert_eq!(error.to_string(), "authorized file read exceeds bound");
+        // The remote API deliberately redacts server error details; the
+        // oversized read must still fail without returning any data prefix.
+        let expected = match implementation {
+            FileSystemImplementation::Local => (
+                std::io::ErrorKind::InvalidData,
+                "authorized file read exceeds bound",
+            ),
+            FileSystemImplementation::Remote => (
+                std::io::ErrorKind::Other,
+                "remote authorized file read failed",
+            ),
+        };
+        assert_eq!(
+            (error.kind(), error.to_string()),
+            (expected.0, expected.1.to_string())
+        );
     } else {
         assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
     }
@@ -1187,7 +1201,16 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
         .await
         .expect_err("a symlink escaping the readable root must fail closed");
     if supported {
-        assert_sandbox_denied(&error);
+        match implementation {
+            FileSystemImplementation::Local => assert_sandbox_denied(&error),
+            FileSystemImplementation::Remote => assert_eq!(
+                (error.kind(), error.to_string()),
+                (
+                    std::io::ErrorKind::InvalidInput,
+                    "remote authorized file read was rejected".to_string(),
+                ),
+            ),
+        }
     } else {
         assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
     }
@@ -1207,7 +1230,16 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
         .await
         .expect_err("a parent traversal escaping the readable root must fail closed");
     if supported {
-        assert_normalized_path_rejected(&error);
+        match implementation {
+            FileSystemImplementation::Local => assert_normalized_path_rejected(&error),
+            FileSystemImplementation::Remote => assert_eq!(
+                (error.kind(), error.to_string()),
+                (
+                    std::io::ErrorKind::InvalidInput,
+                    "remote authorized file read was rejected".to_string(),
+                ),
+            ),
+        }
     } else {
         assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
     }
