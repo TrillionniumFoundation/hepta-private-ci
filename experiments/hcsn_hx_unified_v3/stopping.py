@@ -153,21 +153,91 @@ def regenerative_boundary_independent(p: Stop) -> float:
     return brentq(residual,left,right,xtol=1e-13,rtol=1e-13)
 
 
-def qvi(p: Stop, x: float, *, boundary: float | None = None) -> dict[str,float|bool]:
-    """Classical max{L V-rho V, x-K + D V(reset)-V}=0 reference.
+def _continuation_obstacle(p: Stop, x: float, b: float,
+                           *, optimal_boundary: bool) -> float:
+    """Cancellation-safe intervention minus continuation, strictly below b.
 
-    The active right/left second derivatives are only used within their open
-    regions; do not interpret the branch junction as a classical C2 point.
+    For y=b-x>0, k=kappa, A=(b-K)/(1-exp(-rho*tau-k*(b-r))),
+    continuation A*exp(-k*y), and reset contribution A-(b-K):
+
+        (M U-U)(x) = y*(k*A-1) - A*(expm1(-k*y)+k*y).
+
+    The second term is nonpositive; evaluating x-K+D*U(r)-U(x)
+    subtracts nearly equal huge values. Around k*y=0, factor the small
+    positive remainder as (k*y)^2/2 * sum(2*z^n/(n+2)!), z=-k*y.
+    Reorder using y*(-z)*(k*A)/2 to prevent intermediate z*z underflow.
+    At the *endogenous* smooth-fit boundary k*A=1 analytically; refuse a
+    resolved violation, then use that exact identity rather than a noisy
+    float correction to the small quadratic obstacle. Arbitrary supplied
+    thresholds must retain the correction and may be suboptimal.
+    """
+    k=p.kappa
+    y=b-x
+    z=-k*y
+    exponent=-p.discount*p.refractory-k*(b-p.reset)
+    denom=-math.expm1(exponent)
+    amplitude=(b-p.cost)/denom if denom>0 else math.nan
+    slope=k*amplitude
+    if (not all(map(math.isfinite,(y,z,denom,amplitude,slope)))
+            or y<=0 or z>=0 or amplitude<=0 or slope<=0):
+        raise ArithmeticError('QVI continuation obstacle unresolved in f64')
+    if z>=-.01:
+        # expm1(z)-z = z*z/2 * (1+z/3+z*z/12+...). No
+        # cancellation or premature z**2 underflow for small |z|.
+        series=1.
+        term=1.
+        for degree in range(3,18):
+            term*=z/degree
+            series+=term
+        penalty=(.5*y*(-z))*(slope*series)
+    else:
+        penalty=amplitude*(math.expm1(z)-z)
+    if not math.isfinite(penalty) or penalty<=0:
+        raise ArithmeticError('QVI strict continuation obstacle unresolved')
+    # Numerical sign admission: one-ULP perturbations of k*A can create a
+    # correction of order ulp(1)*y, even if the computed product equals 1.
+    # The multiplier is a conservative *diagnostic*, not a certified enclosure
+    # of the root algorithm or a global optimal-stopping proof.
+    rounding_diagnostic=64*math.ulp(1.)*max(1.,abs(slope))*y
+    if not math.isfinite(rounding_diagnostic):
+        raise ArithmeticError('QVI obstacle rounding diagnostic overflow')
+    if optimal_boundary:
+        if abs(slope-1)>1e-8:
+            raise ArithmeticError('QVI smooth-fit identity unresolved')
+        if penalty<=rounding_diagnostic:
+            raise ArithmeticError('QVI strict obstacle sign unresolved in f64')
+        return -penalty
+    obstacle=math.fsum(((slope-1)*y,-penalty))
+    if not math.isfinite(obstacle):
+        raise ArithmeticError('QVI obstacle outside finite f64 domain')
+    if abs(obstacle)<=rounding_diagnostic:
+        raise ArithmeticError('QVI supplied-boundary obstacle sign unresolved')
+    return obstacle
+
+
+def qvi(p: Stop, x: float, *, boundary: float | None = None) -> dict[str,float|bool]:
+    """Scalar max{L U-rho U, M U-U}=0 with stable branch identities.
+
+    In continuation U=A*exp(k*(x-b)), and k solves exactly the
+    characteristic ODE, so (L-rho)U=0 analytically. Forming sigma**2
+    then multiplying by k**2 can overflow even when this identity is
+    valid and U is finite. On the immediate-FIRE side M U=U by the
+    threshold-policy value definition; use zero rather than cancellation.
+    Neither identity certifies the coupled financial HX obstacle or f32.
     """
     b=regenerative_boundary(p) if boundary is None else boundary
     if not (math.isfinite(x) and math.isfinite(b) and b>p.cost and b>p.reset):
         raise ValueError('Invalid QVI input')
     val=regenerative_value(p,x,boundary=b)
-    reset_val=regenerative_value(p,p.reset,boundary=b)
-    obstacle=x-p.cost+p.delay_discount*reset_val-val
+    if not math.isfinite(val):
+        raise ArithmeticError('QVI value outside finite f64 domain')
     if x<b:
-        generator=(p.drift*p.kappa + .5*p.diffusion**2*p.kappa**2 - p.discount)*val
+        obstacle=_continuation_obstacle(p,x,b,optimal_boundary=boundary is None)
+        generator=0.0  # exact continuation ODE, not a fragile f64 subtraction
     else:
+        obstacle=0.0  # immediate-FIRE value equals its own intervention
         generator=p.drift-p.discount*val
+    if not math.isfinite(generator):
+        raise ArithmeticError('QVI generator outside finite f64 domain')
     return dict(value=val,obstacle=obstacle,generator=generator,
                 complementarity=max(obstacle,generator),fire=x>=b)
