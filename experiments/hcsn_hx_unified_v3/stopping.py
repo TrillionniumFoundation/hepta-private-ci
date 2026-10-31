@@ -6,6 +6,7 @@ Infinite horizon, constant parameters; not coupled with task-model dynamics.
 """
 
 from dataclasses import dataclass
+from decimal import Decimal, localcontext
 import math
 
 from scipy.optimize import brentq
@@ -159,16 +160,63 @@ def regenerative_value(p: Stop, x: float, *, boundary: float | None = None) -> f
 
 
 def regenerative_boundary_independent(p: Stop) -> float:
-    """Numerically independent root of the smooth-fit boundary condition."""
-    k=p.kappa
-    def residual(b):
-        return k*(b-p.cost)+p.delay_discount*math.exp(-k*(b-p.reset))-1
-    left=p.cost
-    right=p.cost+1/k
-    if residual(left)>=0 or residual(right)<=0:
-        raise ArithmeticError('Root bracket invalid')
-    return brentq(residual,left,right,xtol=1e-13,rtol=1e-13)
+    """Independent scalar smooth-fit oracle, never a global QVI certificate.
 
+    The legacy f64 Brent residual t+exp(-h-t)-1 loses the O(h) boundary
+    separation at the Lambert-W branch point and can silently return cost.
+    For small h, solve the *exponential* smooth-fit equation independently
+    in adaptive-precision Decimal, without using the primary W or log-series
+    inversion. Preserve the ordinary Brent path for resolved regular cases.
+    This is an offline diagnostic; it does not certify the finance HX system.
+    """
+    k=p.kappa
+    gap=p.cost-p.reset
+    delay=p.discount*p.refractory
+    lost=k*gap
+    if (not all(math.isfinite(v) for v in (k,gap,delay,lost))
+            or k<=0 or gap<=0 or lost<=0
+            or (p.refractory>0 and delay<=0)):
+        raise ArithmeticError('Independent renewal exponent unresolved in f64')
+    h=math.fsum((lost,delay))
+    if not math.isfinite(h) or h<=0:
+        raise ArithmeticError('Independent renewal exponent unresolved in f64')
+    if h <= 1e-4:
+        with localcontext() as ctx:
+            # At small h the exponential smooth-fit residual is O(h), while
+            # the root is O(sqrt(h)). Use enough decimal places to resolve
+            # the former, including legal subnormal binary64 loss scales.
+            ctx.prec=max(90,int(-math.log10(h))+85)
+            d=Decimal.from_float
+            hd=d(k)*(d(p.cost)-d(p.reset))+d(p.discount)*d(p.refractory)
+            if not hd>0:
+                raise ArithmeticError('Non-positive independent renewal loss')
+            t=(2*hd).sqrt()
+            for _ in range(20):
+                e=(-(hd+t)).exp()
+                slope=1-e
+                if slope<=0:
+                    raise ArithmeticError('Unresolved independent smooth-fit slope')
+                move=(t+e-1)/slope
+                t-=move
+                if abs(move)<Decimal(10)**(-ctx.prec+20):
+                    break
+            if not 0<t<1:
+                raise ArithmeticError('Independent root outside proper renewal domain')
+            if abs(t+(-(hd+t)).exp()-1)>Decimal(10)**(-ctx.prec+15):
+                raise ArithmeticError('Independent smooth-fit residual unresolved')
+            boundary=float(d(p.cost)+t/d(k))
+    else:
+        def residual(b):
+            return k*(b-p.cost)+p.delay_discount*math.exp(-k*(b-p.reset))-1
+        left=p.cost
+        right=p.cost+1/k
+        if (not math.isfinite(right) or not right>left
+                or residual(left)>=0 or residual(right)<=0):
+            raise ArithmeticError('Independent root bracket invalid')
+        boundary=brentq(residual,left,right,xtol=1e-13,rtol=1e-13)
+    if not math.isfinite(boundary) or not boundary>p.cost:
+        raise ArithmeticError('Independent boundary unresolved in f64')
+    return boundary
 
 def _obstacle_from_value(p: Stop, x: float, b: float, val: float) -> float:
     """Stable exact *fixed-threshold* obstacle identity, not an optimality proof.
