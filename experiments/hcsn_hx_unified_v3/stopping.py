@@ -30,9 +30,42 @@ class Stop:
 
     @property
     def kappa(self):
-        # Rationalized formula avoids cancellation for positive large drift.
-        scale=math.hypot(self.drift,math.sqrt(2*self.discount)*self.diffusion)
-        return 2*self.discount/(scale+self.drift) if self.drift>=0 else (scale-self.drift)/(self.diffusion**2)
+        """Positive diffusion characteristic root, with resolved f64 arithmetic.
+
+        kappa solves drift*kappa + .5*diffusion**2*kappa**2 = discount.
+        Form dimensionless drift/diffusion first: squaring a large finite
+        diffusion, forming 2*discount, or adding two near-maximum drifts can
+        overflow even when the true positive kappa is representable.
+        All branches are algebraically equivalent in exact arithmetic.
+        """
+        noise = math.sqrt(2.) * math.sqrt(self.discount)
+        scaled_drift = self.drift / self.diffusion
+        if not math.isfinite(scaled_drift):
+            # A positive drift dominates diffusion by >max_f64; the
+            # volatility correction is below f64 relative resolution.
+            if self.drift <= 0:
+                raise ArithmeticError('Negative-drift kappa scale unresolved in f64')
+            root = self.discount / self.drift
+        else:
+            scale = math.hypot(scaled_drift, noise)
+            if self.drift < 0:
+                # Avoid both sigma**2 overflow and (scale-mu) overflow.
+                root = scale / self.diffusion - scaled_drift / self.diffusion
+            elif self.drift == 0:
+                root = noise / self.diffusion
+            elif scaled_drift > noise:
+                # Rationalize the small root in the drift-dominated regime.
+                z = noise / scaled_drift
+                root = (self.discount * (2 / (math.hypot(1., z) + 1))) / self.drift
+            else:
+                # Diffusion-dominated positive drift, with no subtraction.
+                root = noise * (noise / (scale + scaled_drift)) / self.diffusion
+        # Refuse nonrepresentable and severely quantized subnormal roots.
+        # This is a necessary f64 resolution guard, not interval certification.
+        if (not math.isfinite(root) or root <= 0
+                or math.ulp(root) > 1e-9 * root):
+            raise ArithmeticError('Stopping characteristic root unresolved in f64')
+        return root
 
     @property
     def delay_discount(self):
