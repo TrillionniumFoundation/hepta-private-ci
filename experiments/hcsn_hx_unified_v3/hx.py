@@ -91,6 +91,12 @@ def _log_asset_ratio(asset: float, asset_boundary: float) -> float:
     """
     ratio = asset / asset_boundary
     if math.isfinite(ratio):
+        # At an absorbing threshold, quotient rounding can erase a
+        # representable positive one-ULP separation. The subtraction is
+        # exact for adjacent positive f64 operands (Sterbenz's lemma).
+        # Do not change the ordinary-domain quotient/log contract.
+        if asset > asset_boundary and ratio < 1.0 + 1e-8:
+            return math.log1p((asset - asset_boundary) / asset_boundary)
         return math.log(ratio)
     v = math.log(asset) - math.log(asset_boundary)
     if not math.isfinite(v):
