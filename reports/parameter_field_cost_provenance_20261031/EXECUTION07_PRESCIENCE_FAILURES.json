@@ -1,0 +1,553 @@
+{
+  "as_of_utc": "2026-10-31T15:12:10Z",
+  "attempt_count": 8,
+  "attempts": [
+    {
+      "actual_runtime": {
+        "cpu_models": [
+          "AMD EPYC 7763 64-Core Processor"
+        ],
+        "different_fields": [
+          "torch_build",
+          "cpu_capability"
+        ],
+        "exact_match": false,
+        "original_resource_admission_passed": true,
+        "sha256": "0da3360a640cdc39a7c49a3b9869bcf6c8caeccc05825641e968fe79992851cc"
+      },
+      "failed_steps": [
+        "Require actual original runtime and finite cgroup before input preparation"
+      ],
+      "immutable_operational_artifact": {
+        "bytes": 3102,
+        "id": 13046690360,
+        "independently_downloaded_and_verified": true,
+        "sha256": "1ef3b3058b3458b27487aba3596247d32ca2e2a1662892fded13ae43cc0c2590"
+      },
+      "known_cost_scopes": [],
+      "missing_cost_scopes": [
+        "container and runtime setup CPU",
+        "unmeasured parent self CPU",
+        "final workflow artifact delivery and provider CPU overhead"
+      ],
+      "provider_job": {
+        "completed_at": "2026-10-31T14:42:45Z",
+        "conclusion": "failure",
+        "elapsed_seconds": 79.0,
+        "job_id": 124566660940,
+        "scope": "Provider-reported complete job interval, including container setup and final delivery; excludes queue wait, external preparation, and concurrent workflow jobs. Not CPU time.",
+        "started_at": "2026-10-31T14:41:26Z",
+        "status": "completed"
+      },
+      "run_attempt": 1,
+      "run_id": 41211290535,
+      "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41211290535/attempts/1",
+      "scheduled_gradient_microsteps": 0,
+      "scientific_workers_started": 0,
+      "skipped_steps": [
+        "Install the external pinned SDK without modifying source",
+        "Retrieve and byte-verify all nine original public inputs",
+        "Check the registered operational boundaries",
+        "Run fresh original science with measured initialization and semantic admission",
+        "Post Select Node24 for the integrity-pinned transport SDK"
+      ],
+      "source_commit": "aef7bc84ff75cfbd5ba5e42d130bbb79a44e2422",
+      "stages_not_started": [
+        "SDK installation",
+        "input preparation",
+        "boundary tests",
+        "initialization",
+        "scientific execution"
+      ],
+      "stop_before_science": "exact_runtime_rejected",
+      "whole_attempt_cost_complete": false,
+      "whole_attempt_cpu_seconds": null,
+      "whole_attempt_wall_seconds": null
+    },
+    {
+      "actual_runtime": {
+        "cpu_models": [
+          "AMD EPYC 7763 64-Core Processor"
+        ],
+        "different_fields": [
+          "torch_build",
+          "cpu_capability"
+        ],
+        "exact_match": false,
+        "original_resource_admission_passed": true,
+        "sha256": "0da3360a640cdc39a7c49a3b9869bcf6c8caeccc05825641e968fe79992851cc"
+      },
+      "failed_steps": [
+        "Require actual original runtime and finite cgroup before input preparation"
+      ],
+      "immutable_operational_artifact": {
+        "bytes": 3085,
+        "id": 13046860226,
+        "independently_downloaded_and_verified": true,
+        "sha256": "7dd4002702591a5e142d4cfe504f77d98d5c186e1e4f5374227d5060dcf2c28d"
+      },
+      "known_cost_scopes": [],
+      "missing_cost_scopes": [
+        "container and runtime setup CPU",
+        "unmeasured parent self CPU",
+        "final workflow artifact delivery and provider CPU overhead"
+      ],
+      "provider_job": {
+        "completed_at": "2026-10-31T14:44:47Z",
+        "conclusion": "failure",
+        "elapsed_seconds": 77.0,
+        "job_id": 124567129002,
+        "scope": "Provider-reported complete job interval, including container setup and final delivery; excludes queue wait, external preparation, and concurrent workflow jobs. Not CPU time.",
+        "started_at": "2026-10-31T14:43:30Z",
+        "status": "completed"
+      },
+      "run_attempt": 2,
+      "run_id": 41211290535,
+      "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41211290535/attempts/2",
+      "scheduled_gradient_microsteps": 0,
+      "scientific_workers_started": 0,
+      "skipped_steps": [
+        "Install the external pinned SDK without modifying source",
+        "Retrieve and byte-verify all nine original public inputs",
+        "Check the registered operational boundaries",
+        "Run fresh original science with measured initialization and semantic admission",
+        "Post Select Node24 for the integrity-pinned transport SDK"
+      ],
+      "source_commit": "aef7bc84ff75cfbd5ba5e42d130bbb79a44e2422",
+      "stages_not_started": [
+        "SDK installation",
+        "input preparation",
+        "boundary tests",
+        "initialization",
+        "scientific execution"
+      ],
+      "stop_before_science": "exact_runtime_rejected",
+      "whole_attempt_cost_complete": false,
+      "whole_attempt_cpu_seconds": null,
+      "whole_attempt_wall_seconds": null
+    },
+    {
+      "actual_runtime": {
+        "cpu_models": [
+          "AMD EPYC 7763 64-Core Processor"
+        ],
+        "different_fields": [
+          "torch_build",
+          "cpu_capability"
+        ],
+        "exact_match": false,
+        "original_resource_admission_passed": true,
+        "sha256": "0da3360a640cdc39a7c49a3b9869bcf6c8caeccc05825641e968fe79992851cc"
+      },
+      "failed_steps": [
+        "Require actual original runtime and finite cgroup before input preparation"
+      ],
+      "immutable_operational_artifact": {
+        "bytes": 3063,
+        "id": 13045974719,
+        "independently_downloaded_and_verified": true,
+        "sha256": "328a267a788a96c858cd2c928aed87e04d8e7cfa4e685376ce1f90393834987f"
+      },
+      "known_cost_scopes": [],
+      "missing_cost_scopes": [
+        "container and runtime setup CPU",
+        "unmeasured parent self CPU",
+        "final workflow artifact delivery and provider CPU overhead"
+      ],
+      "provider_job": {
+        "completed_at": "2026-10-31T14:47:15Z",
+        "conclusion": "failure",
+        "elapsed_seconds": 73.0,
+        "job_id": 124567703776,
+        "scope": "Provider-reported complete job interval, including container setup and final delivery; excludes queue wait, external preparation, and concurrent workflow jobs. Not CPU time.",
+        "started_at": "2026-10-31T14:46:02Z",
+        "status": "completed"
+      },
+      "run_attempt": 3,
+      "run_id": 41211290535,
+      "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41211290535/attempts/3",
+      "scheduled_gradient_microsteps": 0,
+      "scientific_workers_started": 0,
+      "skipped_steps": [
+        "Install the external pinned SDK without modifying source",
+        "Retrieve and byte-verify all nine original public inputs",
+        "Check the registered operational boundaries",
+        "Run fresh original science with measured initialization and semantic admission",
+        "Post Select Node24 for the integrity-pinned transport SDK"
+      ],
+      "source_commit": "aef7bc84ff75cfbd5ba5e42d130bbb79a44e2422",
+      "stages_not_started": [
+        "SDK installation",
+        "input preparation",
+        "boundary tests",
+        "initialization",
+        "scientific execution"
+      ],
+      "stop_before_science": "exact_runtime_rejected",
+      "whole_attempt_cost_complete": false,
+      "whole_attempt_cpu_seconds": null,
+      "whole_attempt_wall_seconds": null
+    },
+    {
+      "actual_runtime": {
+        "cpu_models": [
+          "AMD EPYC 9V74 80-Core Processor"
+        ],
+        "different_fields": [],
+        "exact_match": true,
+        "original_resource_admission_passed": true,
+        "sha256": "9d6ac19baf5234ed0d7d4ce98e63d550a1fea951126ea4dba0a591e04f65d52c"
+      },
+      "failed_steps": [
+        "Check the registered operational boundaries"
+      ],
+      "immutable_operational_artifact": {
+        "bytes": 5306,
+        "id": 13046069817,
+        "independently_downloaded_and_verified": true,
+        "sha256": "81c5a23bbb8d41b4848552b1652afdf23ed75d9819b2d49f14265fd256b28ef3"
+      },
+      "known_cost_scopes": [
+        {
+          "bytes": 2405,
+          "original_member": "preparation/INPUTS_PREPARED.json",
+          "scientific_values_decoded": false,
+          "scope": "separate input-preparation process; not included in pipeline child wait4",
+          "self_cpu_seconds": 0.09109067200000001,
+          "sha256": "01deb0d471bd6656347d27b67d15dc804153e64e9f2cf46e35d32ac53c81d918",
+          "wall_seconds": 1.2864416179999978
+        }
+      ],
+      "missing_cost_scopes": [
+        "container and runtime setup CPU",
+        "unmeasured parent self CPU",
+        "final workflow artifact delivery and provider CPU overhead",
+        "SDK installation CPU",
+        "boundary tests CPU"
+      ],
+      "provider_job": {
+        "completed_at": "2026-10-31T14:51:13Z",
+        "conclusion": "failure",
+        "elapsed_seconds": 87.0,
+        "job_id": 124568556186,
+        "scope": "Provider-reported complete job interval, including container setup and final delivery; excludes queue wait, external preparation, and concurrent workflow jobs. Not CPU time.",
+        "started_at": "2026-10-31T14:49:46Z",
+        "status": "completed"
+      },
+      "run_attempt": 4,
+      "run_id": 41211290535,
+      "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41211290535/attempts/4",
+      "scheduled_gradient_microsteps": 0,
+      "scientific_workers_started": 0,
+      "skipped_steps": [
+        "Run fresh original science with measured initialization and semantic admission",
+        "Post Select Node24 for the integrity-pinned transport SDK"
+      ],
+      "source_commit": "aef7bc84ff75cfbd5ba5e42d130bbb79a44e2422",
+      "stages_not_started": [
+        "scientific execution"
+      ],
+      "stop_before_science": "test_package_import_failure",
+      "whole_attempt_cost_complete": false,
+      "whole_attempt_cpu_seconds": null,
+      "whole_attempt_wall_seconds": null
+    },
+    {
+      "actual_runtime": {
+        "cpu_models": [
+          "AMD EPYC 9V45 96-Core Processor"
+        ],
+        "different_fields": [],
+        "exact_match": true,
+        "original_resource_admission_passed": true,
+        "sha256": "9d6ac19baf5234ed0d7d4ce98e63d550a1fea951126ea4dba0a591e04f65d52c"
+      },
+      "failed_steps": [
+        "Run fresh original science with measured initialization and semantic admission"
+      ],
+      "immutable_operational_artifact": {
+        "bytes": 27535,
+        "id": 13046289940,
+        "independently_downloaded_and_verified": true,
+        "sha256": "11ad558319dac2572746a32058a119e0157e5a19cf26b4ebe879ef7b9ef07572"
+      },
+      "known_cost_scopes": [
+        {
+          "bytes": 2404,
+          "original_member": "preparation/INPUTS_PREPARED.json",
+          "scientific_values_decoded": false,
+          "scope": "separate input-preparation process; not included in pipeline child wait4",
+          "self_cpu_seconds": 0.09774622699999999,
+          "sha256": "50914e137a79e4ff1fcad455c95fca6dc775d6171b670d31cf9689638cb767e7",
+          "wall_seconds": 2.352729992999997
+        },
+        {
+          "actual_exit_code": 2,
+          "bytes": 515,
+          "cpu_seconds": 1.623035,
+          "original_member": "execution07/pipeline_measurement/children/001.WAIT4.json",
+          "peak_rss_bytes": 196685824,
+          "scope": "outer lifecycle child and its waited descendants; initialization and semantic wait4 are nested attribution and are not added",
+          "sha256": "d5190763997c601adbcc36c1dd87fd0eeeddbf8a78f171a4a2a327d60aab280e",
+          "wall_seconds": 1.1355982509999905
+        }
+      ],
+      "missing_cost_scopes": [
+        "container and runtime setup CPU",
+        "unmeasured parent self CPU",
+        "final workflow artifact delivery and provider CPU overhead",
+        "SDK installation CPU",
+        "boundary tests CPU"
+      ],
+      "provider_job": {
+        "completed_at": "2026-10-31T14:57:58Z",
+        "conclusion": "failure",
+        "elapsed_seconds": 83.0,
+        "job_id": 124570093237,
+        "scope": "Provider-reported complete job interval, including container setup and final delivery; excludes queue wait, external preparation, and concurrent workflow jobs. Not CPU time.",
+        "started_at": "2026-10-31T14:56:35Z",
+        "status": "completed"
+      },
+      "run_attempt": 1,
+      "run_id": 41212451841,
+      "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41212451841/attempts/1",
+      "scheduled_gradient_microsteps": 0,
+      "scientific_workers_started": 0,
+      "skipped_steps": [
+        "Post Select Node24 for the integrity-pinned transport SDK"
+      ],
+      "source_commit": "2341e11d7f0a756720b2efd2f6370b3e5c7b1940",
+      "stages_not_started": [
+        "scientific execution"
+      ],
+      "stop_before_science": "initial_runtime_import_rejected",
+      "whole_attempt_cost_complete": false,
+      "whole_attempt_cpu_seconds": null,
+      "whole_attempt_wall_seconds": null
+    },
+    {
+      "actual_runtime": {
+        "cpu_models": [
+          "AMD EPYC 9V45 96-Core Processor"
+        ],
+        "different_fields": [],
+        "exact_match": true,
+        "original_resource_admission_passed": true,
+        "sha256": "9d6ac19baf5234ed0d7d4ce98e63d550a1fea951126ea4dba0a591e04f65d52c"
+      },
+      "failed_steps": [
+        "Run fresh original science with measured initialization and semantic admission"
+      ],
+      "immutable_operational_artifact": {
+        "bytes": 103569,
+        "id": 13046537787,
+        "independently_downloaded_and_verified": true,
+        "sha256": "dc8db4b1b7eda8763824915084ff29e5e8ae8946dab093cdb051d7fb00388a83"
+      },
+      "known_cost_scopes": [
+        {
+          "bytes": 2396,
+          "original_member": "preparation/INPUTS_PREPARED.json",
+          "scientific_values_decoded": false,
+          "scope": "separate input-preparation process; not included in pipeline child wait4",
+          "self_cpu_seconds": 0.104033553,
+          "sha256": "1e4a18bfe5502e1d509ae49b60bb51448648c2282d09a899c1880df3b6622632",
+          "wall_seconds": 6.010126162999995
+        },
+        {
+          "actual_exit_code": 2,
+          "bytes": 513,
+          "cpu_seconds": 3.523853,
+          "original_member": "execution07/pipeline_measurement/children/001.WAIT4.json",
+          "peak_rss_bytes": 250298368,
+          "scope": "outer lifecycle child and its waited descendants; initialization and semantic wait4 are nested attribution and are not added",
+          "sha256": "0f61ac3895d79f85358ab7d46ed0940feef7fd80babe2e57ec3d15aded7f13e1",
+          "wall_seconds": 23.57183790699999
+        }
+      ],
+      "missing_cost_scopes": [
+        "container and runtime setup CPU",
+        "unmeasured parent self CPU",
+        "final workflow artifact delivery and provider CPU overhead",
+        "SDK installation CPU",
+        "boundary tests CPU"
+      ],
+      "original_semantic_admission": {
+        "bytes": 4985,
+        "raw_and_cas_untouched": true,
+        "science_started": false,
+        "sha256": "a810d17fec85e071bf8d2761aebbc1ee5c909652c3afb458b5b9031cf4bbf433",
+        "validated_jobs": [
+          "A-17",
+          "A-29",
+          "A-43",
+          "C"
+        ]
+      },
+      "provider_job": {
+        "completed_at": "2026-10-31T15:04:24Z",
+        "conclusion": "failure",
+        "elapsed_seconds": 109.0,
+        "job_id": 124571474914,
+        "scope": "Provider-reported complete job interval, including container setup and final delivery; excludes queue wait, external preparation, and concurrent workflow jobs. Not CPU time.",
+        "started_at": "2026-10-31T15:02:35Z",
+        "status": "completed"
+      },
+      "run_attempt": 1,
+      "run_id": 41212921172,
+      "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41212921172/attempts/1",
+      "scheduled_gradient_microsteps": 0,
+      "scientific_workers_started": 0,
+      "skipped_steps": [
+        "Post Select Node24 for the integrity-pinned transport SDK"
+      ],
+      "source_commit": "4c1c24cb6638464178944c2665961c5087a64b69",
+      "stages_not_started": [
+        "scientific execution"
+      ],
+      "stop_before_science": "required_source_filename_mismatch",
+      "whole_attempt_cost_complete": false,
+      "whole_attempt_cpu_seconds": null,
+      "whole_attempt_wall_seconds": null
+    },
+    {
+      "actual_runtime": {
+        "cpu_models": [
+          "AMD EPYC 9V74 80-Core Processor"
+        ],
+        "different_fields": [
+          "torch_build",
+          "cpu_capability"
+        ],
+        "exact_match": false,
+        "original_resource_admission_passed": true,
+        "sha256": "0da3360a640cdc39a7c49a3b9869bcf6c8caeccc05825641e968fe79992851cc"
+      },
+      "failed_steps": [
+        "Require actual original runtime and finite cgroup before input preparation"
+      ],
+      "immutable_operational_artifact": {
+        "bytes": 3064,
+        "id": 13046752546,
+        "independently_downloaded_and_verified": true,
+        "sha256": "70f76c205b9a9ea6dd203b359c891b87f733b56952385007242cf42afa2991dd"
+      },
+      "known_cost_scopes": [],
+      "missing_cost_scopes": [
+        "container and runtime setup CPU",
+        "unmeasured parent self CPU",
+        "final workflow artifact delivery and provider CPU overhead"
+      ],
+      "provider_job": {
+        "completed_at": "2026-10-31T15:07:51Z",
+        "conclusion": "failure",
+        "elapsed_seconds": 81.0,
+        "job_id": 124572417864,
+        "scope": "Provider-reported complete job interval, including container setup and final delivery; excludes queue wait, external preparation, and concurrent workflow jobs. Not CPU time.",
+        "started_at": "2026-10-31T15:06:30Z",
+        "status": "completed"
+      },
+      "run_attempt": 1,
+      "run_id": 41213245916,
+      "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41213245916/attempts/1",
+      "scheduled_gradient_microsteps": 0,
+      "scientific_workers_started": 0,
+      "skipped_steps": [
+        "Install the external pinned SDK without modifying source",
+        "Retrieve and byte-verify all nine original public inputs",
+        "Check source closure and direct-script boundaries before initialization",
+        "Run fresh original science with measured initialization and semantic admission",
+        "Post Select Node24 for the integrity-pinned transport SDK"
+      ],
+      "source_commit": "5ddbd40ca0ddb0e3935384dce9de124b5c150019",
+      "stages_not_started": [
+        "SDK installation",
+        "input preparation",
+        "boundary tests",
+        "initialization",
+        "scientific execution"
+      ],
+      "stop_before_science": "exact_runtime_rejected",
+      "whole_attempt_cost_complete": false,
+      "whole_attempt_cpu_seconds": null,
+      "whole_attempt_wall_seconds": null
+    },
+    {
+      "actual_runtime": {
+        "cpu_models": [
+          "AMD EPYC 7763 64-Core Processor"
+        ],
+        "different_fields": [
+          "torch_build",
+          "cpu_capability"
+        ],
+        "exact_match": false,
+        "original_resource_admission_passed": true,
+        "sha256": "0da3360a640cdc39a7c49a3b9869bcf6c8caeccc05825641e968fe79992851cc"
+      },
+      "failed_steps": [
+        "Require actual original runtime and finite cgroup before input preparation"
+      ],
+      "immutable_operational_artifact": {
+        "bytes": 3087,
+        "id": 13047511691,
+        "independently_downloaded_and_verified": true,
+        "sha256": "e2cbd107259a80f2e00ae25db9fefd85bfe1706f2db9595429e2b3013e7a137f"
+      },
+      "known_cost_scopes": [],
+      "missing_cost_scopes": [
+        "container and runtime setup CPU",
+        "unmeasured parent self CPU",
+        "final workflow artifact delivery and provider CPU overhead"
+      ],
+      "provider_job": {
+        "completed_at": "2026-10-31T15:10:16Z",
+        "conclusion": "failure",
+        "elapsed_seconds": 79.0,
+        "job_id": 124572994591,
+        "scope": "Provider-reported complete job interval, including container setup and final delivery; excludes queue wait, external preparation, and concurrent workflow jobs. Not CPU time.",
+        "started_at": "2026-10-31T15:08:57Z",
+        "status": "completed"
+      },
+      "run_attempt": 2,
+      "run_id": 41213245916,
+      "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41213245916/attempts/2",
+      "scheduled_gradient_microsteps": 0,
+      "scientific_workers_started": 0,
+      "skipped_steps": [
+        "Install the external pinned SDK without modifying source",
+        "Retrieve and byte-verify all nine original public inputs",
+        "Check source closure and direct-script boundaries before initialization",
+        "Run fresh original science with measured initialization and semantic admission",
+        "Post Select Node24 for the integrity-pinned transport SDK"
+      ],
+      "source_commit": "5ddbd40ca0ddb0e3935384dce9de124b5c150019",
+      "stages_not_started": [
+        "SDK installation",
+        "input preparation",
+        "boundary tests",
+        "initialization",
+        "scientific execution"
+      ],
+      "stop_before_science": "exact_runtime_rejected",
+      "whole_attempt_cost_complete": false,
+      "whole_attempt_cpu_seconds": null,
+      "whole_attempt_wall_seconds": null
+    }
+  ],
+  "nested_costs_added": false,
+  "provider_job_elapsed_sum_is_cpu_or_whole_research_cost": false,
+  "provider_job_elapsed_sum_seconds": 668.0,
+  "provider_metadata": {
+    "bytes": 26683,
+    "file": "PRESCIENCE_PROVIDER_JOBS.json",
+    "sha256": "7f6beefa5772e30adc9d724f2284b4fb18fbd2b5b01c7f285a1f6214b3a7ecc8",
+    "source": "GitHub REST /actions/runs/{run_id}/attempts/{run_attempt}/jobs, retrieved after completion"
+  },
+  "schema": "hepta.execution07.pre-science-failure-ledger.1",
+  "scientific_steps_observed_across_these_attempts": 0,
+  "scope": "Eight completed, independently archived pre-science failures; excludes current run 41213245916 attempt 3 and all later work. These failures are retained, not selected away.",
+  "source": "GitHub immutable artifact bytes and actual original gate / process receipts; no scientific payload decoded.",
+  "unknown_costs_are_zero": false,
+  "whole_attempt_costs_complete": false
+}
