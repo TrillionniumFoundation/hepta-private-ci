@@ -1,0 +1,62 @@
+{
+  "schema": "hcsn-memory-independent-audit.v3",
+  "all_passed": true,
+  "datasets_independently_labeled": 12,
+  "prediction_tables": 132,
+  "scored_queries": 67584,
+  "score_triplets_verified": 132,
+  "adapter_disabled_shared_predictions_exact_matches": 48,
+  "label_derivation": "Independent list/dictionary input replay; does not import candidate memory/generator/scorer",
+  "paired_content_and_time_preserved": true,
+  "protocol_sha256": "a7cf030668b00e06aff16f0cf32da82c0599415affa740239e3b8f22964b86fb",
+  "float32_clock_accumulation_roundoff": [
+    {
+      "dataset": "mqar_L128_H12.8.npz",
+      "max_abs_seconds": 1.4114379883523043e-05
+    },
+    {
+      "dataset": "mqar_L128_H3.2.npz",
+      "max_abs_seconds": 3.5285949708807607e-06
+    },
+    {
+      "dataset": "mqar_L32_H12.8.npz",
+      "max_abs_seconds": 3.1656574694949313e-06
+    },
+    {
+      "dataset": "mqar_L32_H3.2.npz",
+      "max_abs_seconds": 7.914143673737328e-07
+    },
+    {
+      "dataset": "mqar_L512_H12.8.npz",
+      "max_abs_seconds": 4.866095528832659e-05
+    },
+    {
+      "dataset": "mqar_L512_H3.2.npz",
+      "max_abs_seconds": 1.2165238822081648e-05
+    },
+    {
+      "dataset": "selective_copy_L128_H12.8.npz",
+      "max_abs_seconds": 1.0299682617898043e-05
+    },
+    {
+      "dataset": "selective_copy_L128_H3.2.npz",
+      "max_abs_seconds": 2.5749206544745107e-06
+    },
+    {
+      "dataset": "selective_copy_L32_H12.8.npz",
+      "max_abs_seconds": 3.6865363988169975e-06
+    },
+    {
+      "dataset": "selective_copy_L32_H3.2.npz",
+      "max_abs_seconds": 9.216340997042494e-07
+    },
+    {
+      "dataset": "selective_copy_L512_H12.8.npz",
+      "max_abs_seconds": 4.119873046803946e-05
+    },
+    {
+      "dataset": "selective_copy_L512_H3.2.npz",
+      "max_abs_seconds": 1.0299682617009864e-05
+    }
+  ]
+}
