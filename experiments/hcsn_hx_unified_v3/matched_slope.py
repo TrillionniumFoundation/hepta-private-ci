@@ -73,6 +73,7 @@ def _profile(f: Callable[[float], float], anchor: float, step: float):
     )
     return finer[0], finer[1], disagreement
 
+
 def match_local_slope(
     channel: Callable[[float], float],
     ordinary: Callable[[float], float],
