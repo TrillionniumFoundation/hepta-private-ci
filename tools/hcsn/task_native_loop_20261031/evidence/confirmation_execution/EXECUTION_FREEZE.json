@@ -1,0 +1,86 @@
+{
+  "binary_sha256": "f53e90a388a6f97dfe5283535ed2b5877cf197a726a9842debc5f9ed097b5330",
+  "build_report_sha256": "be8839f60f7d6076dabbe0442daad3dace295b1776f2f6a3db5980984233bb21",
+  "confirmation_plan": "5 fits x 2 splits x 24 sessions x five fresh-process native controls; independent Python fitted-DP on the same sessions. No retuning or failed-run replacement.",
+  "content_model_sha256": "66bb4fabc2fdca0b08d7e834f6a1dfdd73aedb4cfbd1b4c594b709f742092972",
+  "created_at": "2026-10-31T07:49:12.212680+00:00",
+  "direct_fixed": {
+    "71031": {
+      "change": {
+        "controller": [
+          "fixed",
+          "direct_fixed"
+        ]
+      },
+      "original_sha256": "f04421269487021149091d3c72f8d6b8dddc2992fa4f7949985e45e8985db677",
+      "path": "derived_policies/seed71031_direct_fixed.json",
+      "sha256": "22d7a5da20425c8d7e20f1dcf47b934c2a7c30e96a33aadfdbbe801e665d17a2"
+    },
+    "71037": {
+      "change": {
+        "controller": [
+          "fixed",
+          "direct_fixed"
+        ]
+      },
+      "original_sha256": "b3b4692b60fbcb724534faad14b9bd4a4e7b5ce22ec50899da69a420f0378106",
+      "path": "derived_policies/seed71037_direct_fixed.json",
+      "sha256": "d99ba145f658db1c20b8190e0305b5b8957f66205f4215515c5ea8cca872374c"
+    },
+    "71043": {
+      "change": {
+        "controller": [
+          "fixed",
+          "direct_fixed"
+        ]
+      },
+      "original_sha256": "dcda3195a1565801a41d830d6b078374b5a5651578f76a552173ceceb8649611",
+      "path": "derived_policies/seed71043_direct_fixed.json",
+      "sha256": "2629b0d06db47b2d83488ae6d43754673d4831dd910144861f0e039e56f2a82d"
+    },
+    "71049": {
+      "change": {
+        "controller": [
+          "fixed",
+          "direct_fixed"
+        ]
+      },
+      "original_sha256": "3e2f788fd7f2fd42b18d4d7806945e2d98a4aa60f59458e4225b5626b769bcef",
+      "path": "derived_policies/seed71049_direct_fixed.json",
+      "sha256": "335357c0f2e90e6926160d34073d67e86ab8f51540dbf66512f880549b377e3e"
+    },
+    "71057": {
+      "change": {
+        "controller": [
+          "fixed",
+          "direct_fixed"
+        ]
+      },
+      "original_sha256": "d25a431e2233fc8714a8a4bdc98b7eb528fa60a3ddc31a0c0c2d9311ec3f33ac",
+      "path": "derived_policies/seed71057_direct_fixed.json",
+      "sha256": "13a37ca088d34673de2d7bb8a90006a77331b603b8d66ea8b6ad5984756cde0e"
+    }
+  },
+  "heldout_generated": false,
+  "native_source_digest": "a94ee0a631736f37212b6b2077290a8c71f1d44dcaf524b2438872badfc0f6f6",
+  "runner_source": {
+    "experiment.py": "9b4fc9fc01071e593cfe631f53ccce66983431cb9ce8d2508ee44578e3ea57e6",
+    "statistics.py": "69620cc82cf122b318fa066d22311464bf77b7d8480418ebdca1d1694a9d5e5c"
+  },
+  "schema": "hcsn.task.native.execution.freeze.v1",
+  "training_freeze_sha256": "4e53ae35d03dd2acd0bff5b81b062473497c0f6f090da6d06dd7f30fe2d70478",
+  "training_source": {
+    "task_native_loop_20261031/PROTOCOL.json": "0a034adc905eafd0c77376521787bc9cbf3b120d120be8d0b73cdd8a0e55879c",
+    "task_native_loop_20261031/model.py": "2a9bfe4f841301392fc5dc7191759194242df4434b4ba9c6c245bddc8f747199",
+    "task_native_loop_20261031/reference.py": "9d03b4e3df615ab7dc0de6e8e405f3da74be7e08f9a51ac45daa0e5f7203ae5c",
+    "task_native_loop_20261031/train.py": "b8a748fbe068e92aa42050c95c440b150623587b88709669aef349f32da61a11",
+    "task_value_factorial_20261030/UPSTREAM_FILES.json": "be6aa0751da3e9a63b4c70d0c8bc4c42d8f2595548009013eb4b92b5e44fc98e",
+    "task_value_factorial_20261030/cells.py": "074c35e3cfa28c7d33a7d0650e6f8d159e0407edf5df17c545249dbca16b6711",
+    "task_value_factorial_20261030/controller.py": "14740fbf785ae3e82f12064c8ce09d77d13ebed907a3606dac532177b686faf3",
+    "task_value_factorial_20261030/dataset.py": "6e3ca80cb04fff28ed78595bbb35739b1c80ec08e46b0cdd7ac905b776283d94",
+    "task_value_factorial_20261030/execution.py": "cf7c90a3e31713193f17f56e8749dbebf8f03b4f4a00a35e4d2359d68ce3829c",
+    "task_value_factorial_20261030/propagation.py": "4f3d85bd2826cf16ba1143bfb2868d583cb114236e89fa6b8650ba19b1664c15",
+    "task_value_factorial_20261030/storage.py": "de11a4cdaa96bc9adae30599de70f671fc85481bb7aa9eb51fefda2953f6da83",
+    "task_value_factorial_20261030/task.py": "24534f0460c4e02faa21e47fc31d2c8afbe97c9725e3e2f335b7976444404cfc"
+  }
+}
