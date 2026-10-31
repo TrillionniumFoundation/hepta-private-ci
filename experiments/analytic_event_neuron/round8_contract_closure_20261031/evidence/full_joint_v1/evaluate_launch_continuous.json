@@ -1,0 +1,24 @@
+{
+  "candidate_freeze_commit": "f53e4891b0a66f831c32b6b989367c73f715a62a",
+  "candidate_freeze_sha256": "b7d55711a1c5bcfb025bafbe8379b7a90515eb6bedf6528ab541de018abb91c1",
+  "candidate_manifest_unchanged": true,
+  "child_peak_rss_kib": 239140,
+  "child_system_cpu_seconds": 0.175889,
+  "child_user_cpu_seconds": 6.159968,
+  "command": [
+    "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+    "-B",
+    "-m",
+    "experiments.analytic_event_neuron.round8_contract_closure_20261031.posthoc.full_joint",
+    "evaluate",
+    "--mode",
+    "continuous"
+  ],
+  "finished_utc": "2026-10-31T08:51:09.118997+00:00",
+  "full_wall_seconds": 6.358634666001308,
+  "measurement": "RUSAGE_CHILDREN of sole child process; RSS is process high-water including imports, no namespace-PID /proc lookup",
+  "mode": "continuous",
+  "registration_sha256": "606530930a5033a84e1af7c7cd0cf22b3d6d92f7ac35a6a51d66812dd2fddb7e",
+  "returncode": 0,
+  "started_utc": "2026-10-31T08:51:02.760358+00:00"
+}

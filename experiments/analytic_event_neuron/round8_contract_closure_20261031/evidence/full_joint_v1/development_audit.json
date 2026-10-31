@@ -1,0 +1,1267 @@
+{
+  "cases": [
+    {
+      "development_updates": [
+        {
+          "gradient_by_tensor": {
+            "content.0.bias": {
+              "finite": true,
+              "nonzero_coordinates": 12,
+              "norm": 0.02247442669228553
+            },
+            "content.0.weight": {
+              "finite": true,
+              "nonzero_coordinates": 216,
+              "norm": 0.0432168347568617
+            },
+            "content.2.bias": {
+              "finite": true,
+              "nonzero_coordinates": 4,
+              "norm": 0.029459996003878292
+            },
+            "content.2.weight": {
+              "finite": true,
+              "nonzero_coordinates": 48,
+              "norm": 0.03913898398523518
+            },
+            "readout.0.bias": {
+              "finite": true,
+              "nonzero_coordinates": 4,
+              "norm": 0.13111250247560916
+            },
+            "readout.0.weight": {
+              "finite": true,
+              "nonzero_coordinates": 101,
+              "norm": 0.3021516660825172
+            },
+            "readout.2.bias": {
+              "finite": true,
+              "nonzero_coordinates": 4,
+              "norm": 0.7606554482499779
+            },
+            "readout.2.weight": {
+              "finite": true,
+              "nonzero_coordinates": 16,
+              "norm": 0.18659269999143188
+            }
+          },
+          "pre_clip_total_norm": 0.8524507084622657,
+          "pre_update_metrics": [
+            0.3078619945093633,
+            2.124053923108093,
+            0.0
+          ],
+          "process_cpu_seconds": 0.0041536580000001155,
+          "process_peak_rss_kib": 282776,
+          "update": 1,
+          "wall_seconds": 0.004154146008659154
+        },
+        {
+          "gradient_by_tensor": {
+            "content.0.bias": {
+              "finite": true,
+              "nonzero_coordinates": 12,
+              "norm": 0.019994362008734383
+            },
+            "content.0.weight": {
+              "finite": true,
+              "nonzero_coordinates": 216,
+              "norm": 0.03955083956235479
+            },
+            "content.2.bias": {
+              "finite": true,
+              "nonzero_coordinates": 8,
+              "norm": 0.028411807025620104
+            },
+            "content.2.weight": {
+              "finite": true,
+              "nonzero_coordinates": 96,
+              "norm": 0.03719375196934903
+            },
+            "readout.0.bias": {
+              "finite": true,
+              "nonzero_coordinates": 4,
+              "norm": 0.1305558636886201
+            },
+            "readout.0.weight": {
+              "finite": true,
+              "nonzero_coordinates": 104,
+              "norm": 0.2984034114248842
+            },
+            "readout.2.bias": {
+              "finite": true,
+              "nonzero_coordinates": 4,
+              "norm": 0.7361882290028395
+            },
+            "readout.2.weight": {
+              "finite": true,
+              "nonzero_coordinates": 16,
+              "norm": 0.14662058947638298
+            }
+          },
+          "pre_clip_total_norm": 0.8208013064441794,
+          "pre_update_metrics": [
+            0.32256701911754787,
+            2.260900278815548,
+            0.0
+          ],
+          "process_cpu_seconds": 0.0033716569999999724,
+          "process_peak_rss_kib": 282908,
+          "update": 2,
+          "wall_seconds": 0.0033705759997246787
+        }
+      ],
+      "explicit_world_paths": {
+        "complete_leaf_paths": 48,
+        "external_worlds": 16,
+        "metrics": [
+          0.392596705772696,
+          1.5861756778376777,
+          0.0
+        ],
+        "probability_mass": 0.9999999999999999
+      },
+      "fee_derivatives": [
+        {
+          "absolute_error": 8.681944052568724e-13,
+          "finite_difference": -1.5861756778368095,
+          "negative_explicit_count": -1.5861756778376777,
+          "price": "compute_price"
+        },
+        {
+          "absolute_error": 0.0,
+          "finite_difference": 0.0,
+          "negative_explicit_count": -0.0,
+          "price": "event_price"
+        }
+      ],
+      "final_development_metrics": [
+        0.3363843717470607,
+        2.3940829442392153,
+        0.0
+      ],
+      "fixture_modifications": "Only this in-memory development model: non-saturated drive/readout, sigma=.6, b=.65, reset centers=+/- .25*b, q_ref=.65.",
+      "gradient_probes": [
+        {
+          "absolute_error": 5.105699717178336e-12,
+          "automatic": -0.0020974325530844712,
+          "central_difference": -0.002097432558190171,
+          "coordinate": [
+            0,
+            0
+          ],
+          "finite": true,
+          "parameter": "content.0.weight",
+          "passed": true
+        },
+        {
+          "absolute_error": 5.563514926532065e-12,
+          "automatic": -0.041949070919712526,
+          "central_difference": -0.04194907091414901,
+          "coordinate": [
+            0,
+            18
+          ],
+          "finite": true,
+          "parameter": "readout.0.weight",
+          "passed": true
+        },
+        {
+          "absolute_error": 1.5347584314540086e-12,
+          "automatic": -0.03190636571490922,
+          "central_difference": -0.03190636571337446,
+          "coordinate": [
+            4,
+            0
+          ],
+          "finite": true,
+          "parameter": "readout.2.weight",
+          "passed": true
+        }
+      ],
+      "graph_h2_metrics": [
+        0.39259670577269595,
+        1.5861756778376779,
+        0.0
+      ],
+      "guards": {
+        "complete_return_gradients": true,
+        "development_gradients_finite": true,
+        "effective_core_gradient_nonzero": true,
+        "fees": true,
+        "frozen_parameters_unchanged": true,
+        "full_path_metrics": true,
+        "inactive_parameters_frozen": true,
+        "world_mass": true
+      },
+      "h2_public_states": 10,
+      "h4_public_states": 46,
+      "inactive_parameters": [
+        "core.raw_leak",
+        "core.raw_diffusion",
+        "core.raw_boundary",
+        "core.raw_reset_plus",
+        "core.raw_reset_minus",
+        "core.raw_recovery",
+        "drive.weight",
+        "drive.bias"
+      ],
+      "inherited_metadata": {
+        "fit_seed": 11,
+        "mode": "direct",
+        "source_checkpoint": "experiments/analytic_event_neuron/round7/evidence/fits_primary/direct_none_11.json",
+        "source_checkpoint_sha256": "1fb5cc3048d34346f2f5d8f491b5fcf94cc734cefdcb244ddd8da04d4ce96be0"
+      },
+      "maximum_h2_metric_error": 2.220446049250313e-16,
+      "maximum_parameter_change_by_tensor": {
+        "content.0.bias": 0.005998126731479814,
+        "content.0.weight": 0.006004000700003009,
+        "content.2.bias": 0.0060036153084673805,
+        "content.2.weight": 0.006003867229398701,
+        "core.raw_boundary": 0.0,
+        "core.raw_diffusion": 0.0,
+        "core.raw_leak": 0.0,
+        "core.raw_recovery": 0.0,
+        "core.raw_reset_minus": 0.0,
+        "core.raw_reset_plus": 0.0,
+        "drive.bias": 0.0,
+        "drive.weight": 0.0,
+        "readout.0.bias": 0.006003565601726924,
+        "readout.0.weight": 0.006004069414435656,
+        "readout.2.bias": 0.006004004555707525,
+        "readout.2.weight": 0.006002535815628774
+      },
+      "mode": "direct",
+      "n_grid": 15,
+      "passed": true,
+      "requested_trainable_scalars_including_zero_gradient_coordinates": 808
+    },
+    {
+      "development_updates": [
+        {
+          "gradient_by_tensor": {
+            "content.0.bias": {
+              "finite": true,
+              "nonzero_coordinates": 12,
+              "norm": 0.0183816216858001
+            },
+            "content.0.weight": {
+              "finite": true,
+              "nonzero_coordinates": 216,
+              "norm": 0.03445648943474651
+            },
+            "content.2.bias": {
+              "finite": true,
+              "nonzero_coordinates": 4,
+              "norm": 0.026145303736942713
+            },
+            "content.2.weight": {
+              "finite": true,
+              "nonzero_coordinates": 48,
+              "norm": 0.04171964147437532
+            },
+            "core.raw_boundary": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.008122551267226809
+            },
+            "core.raw_diffusion": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.0009473009934285283
+            },
+            "drive.bias": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.061675962829256005
+            },
+            "drive.weight": {
+              "finite": true,
+              "nonzero_coordinates": 8,
+              "norm": 0.08903444414676052
+            },
+            "readout.0.bias": {
+              "finite": true,
+              "nonzero_coordinates": 4,
+              "norm": 0.15122855271748153
+            },
+            "readout.0.weight": {
+              "finite": true,
+              "nonzero_coordinates": 109,
+              "norm": 0.36439678461117614
+            },
+            "readout.2.bias": {
+              "finite": true,
+              "nonzero_coordinates": 4,
+              "norm": 0.7752770947818057
+            },
+            "readout.2.weight": {
+              "finite": true,
+              "nonzero_coordinates": 16,
+              "norm": 0.1912647364587727
+            }
+          },
+          "pre_clip_total_norm": 0.8994659714652145,
+          "pre_update_metrics": [
+            0.3259422968332024,
+            2.1907509598443755,
+            0.0
+          ],
+          "process_cpu_seconds": 0.008825386000000046,
+          "process_peak_rss_kib": 285612,
+          "update": 1,
+          "wall_seconds": 0.008825861994409934
+        },
+        {
+          "gradient_by_tensor": {
+            "content.0.bias": {
+              "finite": true,
+              "nonzero_coordinates": 12,
+              "norm": 0.016300990100489413
+            },
+            "content.0.weight": {
+              "finite": true,
+              "nonzero_coordinates": 216,
+              "norm": 0.031079230004594907
+            },
+            "content.2.bias": {
+              "finite": true,
+              "nonzero_coordinates": 8,
+              "norm": 0.026255823981905967
+            },
+            "content.2.weight": {
+              "finite": true,
+              "nonzero_coordinates": 96,
+              "norm": 0.041524839269494865
+            },
+            "core.raw_boundary": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.008131345689541178
+            },
+            "core.raw_diffusion": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.0014289942352401345
+            },
+            "drive.bias": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.06552862628926744
+            },
+            "drive.weight": {
+              "finite": true,
+              "nonzero_coordinates": 8,
+              "norm": 0.09178262727873421
+            },
+            "readout.0.bias": {
+              "finite": true,
+              "nonzero_coordinates": 4,
+              "norm": 0.15073390189325572
+            },
+            "readout.0.weight": {
+              "finite": true,
+              "nonzero_coordinates": 112,
+              "norm": 0.3589423603091462
+            },
+            "readout.2.bias": {
+              "finite": true,
+              "nonzero_coordinates": 4,
+              "norm": 0.7479721035873249
+            },
+            "readout.2.weight": {
+              "finite": true,
+              "nonzero_coordinates": 16,
+              "norm": 0.18308673208064857
+            }
+          },
+          "pre_clip_total_norm": 0.8723387416245706,
+          "pre_update_metrics": [
+            0.3428149696454351,
+            2.325193506301447,
+            0.0
+          ],
+          "process_cpu_seconds": 0.008583156000000036,
+          "process_peak_rss_kib": 285868,
+          "update": 2,
+          "wall_seconds": 0.008581322996178642
+        }
+      ],
+      "explicit_world_paths": {
+        "complete_leaf_paths": 7440,
+        "external_worlds": 16,
+        "metrics": [
+          0.4133080270861775,
+          1.621665140089361,
+          0.0
+        ],
+        "probability_mass": 1.0000000000000033
+      },
+      "fee_derivatives": [
+        {
+          "absolute_error": 2.5979218776228663e-13,
+          "finite_difference": -1.6216651400891011,
+          "negative_explicit_count": -1.621665140089361,
+          "price": "compute_price"
+        },
+        {
+          "absolute_error": 0.0,
+          "finite_difference": 0.0,
+          "negative_explicit_count": -0.0,
+          "price": "event_price"
+        }
+      ],
+      "final_development_metrics": [
+        0.35947987014105764,
+        2.4556274473390456,
+        0.0
+      ],
+      "fixture_modifications": "Only this in-memory development model: non-saturated drive/readout, sigma=.6, b=.65, reset centers=+/- .25*b, q_ref=.65.",
+      "gradient_probes": [
+        {
+          "absolute_error": 2.2480270683161718e-13,
+          "automatic": -0.0009473009934285283,
+          "central_difference": -0.0009473009932037256,
+          "coordinate": [],
+          "finite": true,
+          "parameter": "core.raw_diffusion",
+          "passed": true
+        },
+        {
+          "absolute_error": 2.3049132047425758e-12,
+          "automatic": 0.008122551267226809,
+          "central_difference": 0.008122551264921896,
+          "coordinate": [],
+          "finite": true,
+          "parameter": "core.raw_boundary",
+          "passed": true
+        },
+        {
+          "absolute_error": 2.142688153641825e-12,
+          "automatic": -0.00135736011105396,
+          "central_difference": -0.0013573601131966482,
+          "coordinate": [
+            0,
+            0
+          ],
+          "finite": true,
+          "parameter": "content.0.weight",
+          "passed": true
+        },
+        {
+          "absolute_error": 4.653985530289617e-13,
+          "automatic": -0.05248168188967027,
+          "central_difference": -0.05248168188920487,
+          "coordinate": [
+            0,
+            18
+          ],
+          "finite": true,
+          "parameter": "readout.0.weight",
+          "passed": true
+        },
+        {
+          "absolute_error": 3.974848228338601e-12,
+          "automatic": 0.025808762977952673,
+          "central_difference": 0.025808762973977824,
+          "coordinate": [
+            4,
+            0
+          ],
+          "finite": true,
+          "parameter": "readout.2.weight",
+          "passed": true
+        },
+        {
+          "absolute_error": 3.453667907216129e-12,
+          "automatic": 0.061675962829256005,
+          "central_difference": 0.06167596282580234,
+          "coordinate": [
+            0
+          ],
+          "finite": true,
+          "parameter": "drive.bias",
+          "passed": true
+        }
+      ],
+      "graph_h2_metrics": [
+        0.4133080270861773,
+        1.6216651400893551,
+        0.0
+      ],
+      "guards": {
+        "complete_return_gradients": true,
+        "development_gradients_finite": true,
+        "effective_core_gradient_nonzero": true,
+        "fees": true,
+        "frozen_parameters_unchanged": true,
+        "full_path_metrics": true,
+        "inactive_parameters_frozen": true,
+        "world_mass": true
+      },
+      "h2_public_states": 10,
+      "h4_public_states": 46,
+      "inactive_parameters": [
+        "core.raw_leak",
+        "core.raw_reset_plus",
+        "core.raw_reset_minus",
+        "core.raw_recovery"
+      ],
+      "inherited_metadata": {
+        "fit_seed": 11,
+        "mode": "continuous",
+        "source_checkpoint": "experiments/analytic_event_neuron/round7/evidence/fits_primary/continuous_none_11.json",
+        "source_checkpoint_sha256": "63e18127e5ff1a673173fc00123851aa78d45ed024648ccbcf167a101de78532"
+      },
+      "maximum_h2_metric_error": 5.773159728050814e-15,
+      "maximum_parameter_change_by_tensor": {
+        "content.0.bias": 0.006002945394040025,
+        "content.0.weight": 0.006004034787816234,
+        "content.2.bias": 0.006003240463831772,
+        "content.2.weight": 0.006004008393137583,
+        "core.raw_boundary": 0.006000076795286136,
+        "core.raw_diffusion": 0.005971224012256471,
+        "core.raw_leak": 0.0,
+        "core.raw_recovery": 0.0,
+        "core.raw_reset_minus": 0.0,
+        "core.raw_reset_plus": 0.0,
+        "drive.bias": 0.006003358547225279,
+        "drive.weight": 0.0060036531120238835,
+        "readout.0.bias": 0.006003814170646181,
+        "readout.0.weight": 0.006004067803125981,
+        "readout.2.bias": 0.0060037040876526025,
+        "readout.2.weight": 0.006000932980452832
+      },
+      "mode": "continuous",
+      "n_grid": 15,
+      "passed": true,
+      "requested_trainable_scalars_including_zero_gradient_coordinates": 819
+    },
+    {
+      "development_updates": [
+        {
+          "gradient_by_tensor": {
+            "content.0.bias": {
+              "finite": true,
+              "nonzero_coordinates": 12,
+              "norm": 0.018869703096035292
+            },
+            "content.0.weight": {
+              "finite": true,
+              "nonzero_coordinates": 216,
+              "norm": 0.035397816911694545
+            },
+            "content.2.bias": {
+              "finite": true,
+              "nonzero_coordinates": 4,
+              "norm": 0.02959991681015315
+            },
+            "content.2.weight": {
+              "finite": true,
+              "nonzero_coordinates": 48,
+              "norm": 0.038304564831149635
+            },
+            "core.raw_boundary": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.018458726446259885
+            },
+            "core.raw_diffusion": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.007153981794983349
+            },
+            "core.raw_recovery": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.0003682737286963527
+            },
+            "core.raw_reset_minus": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.002360503200970381
+            },
+            "core.raw_reset_plus": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.0034599966994389164
+            },
+            "drive.bias": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.04207420000453412
+            },
+            "drive.weight": {
+              "finite": true,
+              "nonzero_coordinates": 8,
+              "norm": 0.06606947697534661
+            },
+            "readout.0.bias": {
+              "finite": true,
+              "nonzero_coordinates": 4,
+              "norm": 0.12138217667032228
+            },
+            "readout.0.weight": {
+              "finite": true,
+              "nonzero_coordinates": 117,
+              "norm": 0.2938985439141443
+            },
+            "readout.2.bias": {
+              "finite": true,
+              "nonzero_coordinates": 4,
+              "norm": 0.7235530608338749
+            },
+            "readout.2.weight": {
+              "finite": true,
+              "nonzero_coordinates": 16,
+              "norm": 0.2684609481188848
+            }
+          },
+          "pre_clip_total_norm": 0.8409564570437501,
+          "pre_update_metrics": [
+            0.3016912082463591,
+            2.0245870100124965,
+            0.6514690722135221
+          ],
+          "process_cpu_seconds": 0.00826082699999997,
+          "process_peak_rss_kib": 286380,
+          "update": 1,
+          "wall_seconds": 0.008262653005658649
+        },
+        {
+          "gradient_by_tensor": {
+            "content.0.bias": {
+              "finite": true,
+              "nonzero_coordinates": 12,
+              "norm": 0.01694273996387355
+            },
+            "content.0.weight": {
+              "finite": true,
+              "nonzero_coordinates": 216,
+              "norm": 0.032202436382917796
+            },
+            "content.2.bias": {
+              "finite": true,
+              "nonzero_coordinates": 8,
+              "norm": 0.02780337672421242
+            },
+            "content.2.weight": {
+              "finite": true,
+              "nonzero_coordinates": 96,
+              "norm": 0.0355224524735313
+            },
+            "core.raw_boundary": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.018000188282453634
+            },
+            "core.raw_diffusion": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.007593537288024075
+            },
+            "core.raw_recovery": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.0004851582684296852
+            },
+            "core.raw_reset_minus": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.002641706479890913
+            },
+            "core.raw_reset_plus": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.003836548230947843
+            },
+            "drive.bias": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.037170494330996534
+            },
+            "drive.weight": {
+              "finite": true,
+              "nonzero_coordinates": 8,
+              "norm": 0.05721736620266026
+            },
+            "readout.0.bias": {
+              "finite": true,
+              "nonzero_coordinates": 4,
+              "norm": 0.119571818056759
+            },
+            "readout.0.weight": {
+              "finite": true,
+              "nonzero_coordinates": 120,
+              "norm": 0.28698004610531264
+            },
+            "readout.2.bias": {
+              "finite": true,
+              "nonzero_coordinates": 4,
+              "norm": 0.7083686900705881
+            },
+            "readout.2.weight": {
+              "finite": true,
+              "nonzero_coordinates": 16,
+              "norm": 0.2299675674504651
+            }
+          },
+          "pre_clip_total_norm": 0.8122464218115222,
+          "pre_update_metrics": [
+            0.3175416285435951,
+            2.1610390526909136,
+            0.6716519461737493
+          ],
+          "process_cpu_seconds": 0.00861527399999984,
+          "process_peak_rss_kib": 286636,
+          "update": 2,
+          "wall_seconds": 0.008612820005510002
+        }
+      ],
+      "explicit_world_paths": {
+        "complete_leaf_paths": 9456,
+        "external_worlds": 16,
+        "metrics": [
+          0.38440893353321026,
+          1.5585975505023857,
+          0.525430485783974
+        ],
+        "probability_mass": 0.9999999999999969
+      },
+      "fee_derivatives": [
+        {
+          "absolute_error": 2.639444218743847e-12,
+          "finite_difference": -1.5585975505050251,
+          "negative_explicit_count": -1.5585975505023857,
+          "price": "compute_price"
+        },
+        {
+          "absolute_error": 3.1521452115157444e-12,
+          "finite_difference": -0.5254304857871261,
+          "negative_explicit_count": -0.525430485783974,
+          "price": "event_price"
+        }
+      ],
+      "final_development_metrics": [
+        0.3324848598114792,
+        2.295997313454381,
+        0.6901821773261821
+      ],
+      "fixture_modifications": "Only this in-memory development model: non-saturated drive/readout, sigma=.6, b=.65, reset centers=+/- .25*b, q_ref=.65.",
+      "gradient_probes": [
+        {
+          "absolute_error": 8.65457011611781e-13,
+          "automatic": -0.007153981794983349,
+          "central_difference": -0.007153981795848806,
+          "coordinate": [],
+          "finite": true,
+          "parameter": "core.raw_diffusion",
+          "passed": true
+        },
+        {
+          "absolute_error": 1.6897455656916804e-12,
+          "automatic": 0.018458726446259885,
+          "central_difference": 0.01845872644457014,
+          "coordinate": [],
+          "finite": true,
+          "parameter": "core.raw_boundary",
+          "passed": true
+        },
+        {
+          "absolute_error": 1.9531602897526756e-12,
+          "automatic": 0.0034599966994389164,
+          "central_difference": 0.003459996697485756,
+          "coordinate": [],
+          "finite": true,
+          "parameter": "core.raw_reset_plus",
+          "passed": true
+        },
+        {
+          "absolute_error": 3.0426616087764202e-12,
+          "automatic": 0.002360503200970381,
+          "central_difference": 0.0023605032040130425,
+          "coordinate": [],
+          "finite": true,
+          "parameter": "core.raw_reset_minus",
+          "passed": true
+        },
+        {
+          "absolute_error": 3.292308049449022e-12,
+          "automatic": -0.0003682737286963527,
+          "central_difference": -0.00036827372540404463,
+          "coordinate": [],
+          "finite": true,
+          "parameter": "core.raw_recovery",
+          "passed": true
+        },
+        {
+          "absolute_error": 4.389573773910804e-12,
+          "automatic": -0.0022067666455807527,
+          "central_difference": -0.0022067666499703265,
+          "coordinate": [
+            0,
+            0
+          ],
+          "finite": true,
+          "parameter": "content.0.weight",
+          "passed": true
+        },
+        {
+          "absolute_error": 2.3736568266485847e-13,
+          "automatic": -0.04502522439030065,
+          "central_difference": -0.045025224390538014,
+          "coordinate": [
+            0,
+            18
+          ],
+          "finite": true,
+          "parameter": "readout.0.weight",
+          "passed": true
+        },
+        {
+          "absolute_error": 2.7662594437316557e-13,
+          "automatic": -0.009403899630945164,
+          "central_difference": -0.00940389963122179,
+          "coordinate": [
+            4,
+            0
+          ],
+          "finite": true,
+          "parameter": "readout.2.weight",
+          "passed": true
+        },
+        {
+          "absolute_error": 5.513721423877627e-12,
+          "automatic": -0.04207420000453412,
+          "central_difference": -0.0420741999990204,
+          "coordinate": [
+            0
+          ],
+          "finite": true,
+          "parameter": "drive.bias",
+          "passed": true
+        }
+      ],
+      "graph_h2_metrics": [
+        0.38440893353321004,
+        1.5585975505023828,
+        0.5254304857839743
+      ],
+      "guards": {
+        "complete_return_gradients": true,
+        "development_gradients_finite": true,
+        "effective_core_gradient_nonzero": true,
+        "fees": true,
+        "frozen_parameters_unchanged": true,
+        "full_path_metrics": true,
+        "inactive_parameters_frozen": true,
+        "world_mass": true
+      },
+      "h2_public_states": 10,
+      "h4_public_states": 46,
+      "inactive_parameters": [
+        "core.raw_leak"
+      ],
+      "inherited_metadata": {
+        "fit_seed": 11,
+        "mode": "clocked",
+        "source_checkpoint": "experiments/analytic_event_neuron/round7/evidence/fits_primary/clocked_none_11.json",
+        "source_checkpoint_sha256": "c02f8c7761d1c0d0fd93d5cf3dcfef00562d591b247eab02ad85cdb245244432"
+      },
+      "maximum_h2_metric_error": 2.886579864025407e-15,
+      "maximum_parameter_change_by_tensor": {
+        "content.0.bias": 0.0059970053592384165,
+        "content.0.weight": 0.006003983562884396,
+        "content.2.bias": 0.006002080682718014,
+        "content.2.weight": 0.006004023975522979,
+        "core.raw_boundary": 0.00599779269007672,
+        "core.raw_diffusion": 0.006003319365641913,
+        "core.raw_leak": 0.0,
+        "core.raw_recovery": 0.005993326114524411,
+        "core.raw_reset_minus": 0.006004024155108312,
+        "core.raw_reset_plus": 0.006004056441611727,
+        "drive.bias": 0.00598461125290442,
+        "drive.weight": 0.005985989137409909,
+        "readout.0.bias": 0.006002809345544667,
+        "readout.0.weight": 0.006004065680872109,
+        "readout.2.bias": 0.006004060175571292,
+        "readout.2.weight": 0.0059984846558508165
+      },
+      "mode": "clocked",
+      "n_grid": 15,
+      "passed": true,
+      "requested_trainable_scalars_including_zero_gradient_coordinates": 822
+    },
+    {
+      "development_updates": [
+        {
+          "gradient_by_tensor": {
+            "content.0.bias": {
+              "finite": true,
+              "nonzero_coordinates": 12,
+              "norm": 0.01945068926878427
+            },
+            "content.0.weight": {
+              "finite": true,
+              "nonzero_coordinates": 216,
+              "norm": 0.03599911039073438
+            },
+            "content.2.bias": {
+              "finite": true,
+              "nonzero_coordinates": 4,
+              "norm": 0.023712102128892375
+            },
+            "content.2.weight": {
+              "finite": true,
+              "nonzero_coordinates": 48,
+              "norm": 0.030507679448011943
+            },
+            "core.raw_boundary": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.020518098236238035
+            },
+            "core.raw_diffusion": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.009116605539885586
+            },
+            "core.raw_recovery": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 2.45776502108513e-05
+            },
+            "core.raw_reset_minus": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.00544994951482187
+            },
+            "core.raw_reset_plus": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.0030518160866975894
+            },
+            "drive.bias": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.052809850869078155
+            },
+            "drive.weight": {
+              "finite": true,
+              "nonzero_coordinates": 8,
+              "norm": 0.0836184007416337
+            },
+            "readout.0.bias": {
+              "finite": true,
+              "nonzero_coordinates": 4,
+              "norm": 0.09898934851742323
+            },
+            "readout.0.weight": {
+              "finite": true,
+              "nonzero_coordinates": 117,
+              "norm": 0.24057529747276812
+            },
+            "readout.2.bias": {
+              "finite": true,
+              "nonzero_coordinates": 4,
+              "norm": 0.7349543736897517
+            },
+            "readout.2.weight": {
+              "finite": true,
+              "nonzero_coordinates": 16,
+              "norm": 0.36083259807606166
+            }
+          },
+          "pre_clip_total_norm": 0.8669052693040145,
+          "pre_update_metrics": [
+            0.2783564391388423,
+            1.858655020904325,
+            0.9004031370725386
+          ],
+          "process_cpu_seconds": 0.08213396799999995,
+          "process_peak_rss_kib": 357940,
+          "update": 1,
+          "wall_seconds": 0.08214239799417555
+        },
+        {
+          "gradient_by_tensor": {
+            "content.0.bias": {
+              "finite": true,
+              "nonzero_coordinates": 12,
+              "norm": 0.017474458411546465
+            },
+            "content.0.weight": {
+              "finite": true,
+              "nonzero_coordinates": 216,
+              "norm": 0.032932403065190935
+            },
+            "content.2.bias": {
+              "finite": true,
+              "nonzero_coordinates": 8,
+              "norm": 0.022386103665523793
+            },
+            "content.2.weight": {
+              "finite": true,
+              "nonzero_coordinates": 96,
+              "norm": 0.028165334108531483
+            },
+            "core.raw_boundary": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.020672896262829376
+            },
+            "core.raw_diffusion": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.00947663031843737
+            },
+            "core.raw_recovery": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.00010685540559089653
+            },
+            "core.raw_reset_minus": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.005984440203355505
+            },
+            "core.raw_reset_plus": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.00351596517696742
+            },
+            "drive.bias": {
+              "finite": true,
+              "nonzero_coordinates": 1,
+              "norm": 0.053398609668478314
+            },
+            "drive.weight": {
+              "finite": true,
+              "nonzero_coordinates": 8,
+              "norm": 0.0826106286751904
+            },
+            "readout.0.bias": {
+              "finite": true,
+              "nonzero_coordinates": 4,
+              "norm": 0.09656276711629881
+            },
+            "readout.0.weight": {
+              "finite": true,
+              "nonzero_coordinates": 120,
+              "norm": 0.23398881934342242
+            },
+            "readout.2.bias": {
+              "finite": true,
+              "nonzero_coordinates": 4,
+              "norm": 0.7337734798033403
+            },
+            "readout.2.weight": {
+              "finite": true,
+              "nonzero_coordinates": 16,
+              "norm": 0.32748261638967935
+            }
+          },
+          "pre_clip_total_norm": 0.8500994838386186,
+          "pre_update_metrics": [
+            0.2936287805587871,
+            1.9832899725555457,
+            0.9316878844723723
+          ],
+          "process_cpu_seconds": 0.07501962499999992,
+          "process_peak_rss_kib": 374828,
+          "update": 2,
+          "wall_seconds": 0.07501585599675309
+        }
+      ],
+      "explicit_world_paths": {
+        "complete_leaf_paths": 9456,
+        "external_worlds": 16,
+        "metrics": [
+          0.34937679440115815,
+          1.4838500962321366,
+          0.7688327991236222
+        ],
+        "probability_mass": 1.0000000000000002
+      },
+      "fee_derivatives": [
+        {
+          "absolute_error": 4.942712905631197e-13,
+          "finite_difference": -1.4838500962316423,
+          "negative_explicit_count": -1.4838500962321366,
+          "price": "compute_price"
+        },
+        {
+          "absolute_error": 1.3014034294656085e-12,
+          "finite_difference": -0.7688327991223208,
+          "negative_explicit_count": -0.7688327991236222,
+          "price": "event_price"
+        }
+      ],
+      "final_development_metrics": [
+        0.30806174472890285,
+        2.1064106948325216,
+        0.9621255215485375
+      ],
+      "fixture_modifications": "Only this in-memory development model: non-saturated drive/readout, sigma=.6, b=.65, reset centers=+/- .25*b, q_ref=.65.",
+      "gradient_probes": [
+        {
+          "absolute_error": 5.592743282378798e-12,
+          "automatic": -0.009116605539885586,
+          "central_difference": -0.009116605545478329,
+          "coordinate": [],
+          "finite": true,
+          "parameter": "core.raw_diffusion",
+          "passed": true
+        },
+        {
+          "absolute_error": 1.903553703552774e-12,
+          "automatic": 0.020518098236238035,
+          "central_difference": 0.02051809823433448,
+          "coordinate": [],
+          "finite": true,
+          "parameter": "core.raw_boundary",
+          "passed": true
+        },
+        {
+          "absolute_error": 2.03069765863928e-12,
+          "automatic": 0.0030518160866975894,
+          "central_difference": 0.003051816088728287,
+          "coordinate": [],
+          "finite": true,
+          "parameter": "core.raw_reset_plus",
+          "passed": true
+        },
+        {
+          "absolute_error": 3.6947762557804076e-12,
+          "automatic": 0.00544994951482187,
+          "central_difference": 0.005449949511127094,
+          "coordinate": [],
+          "finite": true,
+          "parameter": "core.raw_reset_minus",
+          "passed": true
+        },
+        {
+          "absolute_error": 1.9609274903994393e-12,
+          "automatic": -2.45776502108513e-05,
+          "central_difference": -2.4577648249923808e-05,
+          "coordinate": [],
+          "finite": true,
+          "parameter": "core.raw_recovery",
+          "passed": true
+        },
+        {
+          "absolute_error": 1.1761056538384107e-12,
+          "automatic": -0.0015345536052320896,
+          "central_difference": -0.0015345536064081953,
+          "coordinate": [
+            0,
+            0
+          ],
+          "finite": true,
+          "parameter": "content.0.weight",
+          "passed": true
+        },
+        {
+          "absolute_error": 6.338124469706941e-13,
+          "automatic": -0.034294415265289216,
+          "central_difference": -0.03429441526592303,
+          "coordinate": [
+            0,
+            18
+          ],
+          "finite": true,
+          "parameter": "readout.0.weight",
+          "passed": true
+        },
+        {
+          "absolute_error": 2.565853779445959e-12,
+          "automatic": -0.01603579992105599,
+          "central_difference": -0.016035799918490135,
+          "coordinate": [
+            4,
+            0
+          ],
+          "finite": true,
+          "parameter": "readout.2.weight",
+          "passed": true
+        },
+        {
+          "absolute_error": 7.321226958012517e-12,
+          "automatic": -0.052809850869078155,
+          "central_difference": -0.05280985086175693,
+          "coordinate": [
+            0
+          ],
+          "finite": true,
+          "parameter": "drive.bias",
+          "passed": true
+        }
+      ],
+      "graph_h2_metrics": [
+        0.3493767944011587,
+        1.4838500962321357,
+        0.7688327991236212
+      ],
+      "guards": {
+        "complete_return_gradients": true,
+        "development_gradients_finite": true,
+        "effective_core_gradient_nonzero": true,
+        "fees": true,
+        "frozen_parameters_unchanged": true,
+        "full_path_metrics": true,
+        "inactive_parameters_frozen": true,
+        "world_mass": true
+      },
+      "h2_public_states": 10,
+      "h4_public_states": 46,
+      "inactive_parameters": [
+        "core.raw_leak"
+      ],
+      "inherited_metadata": {
+        "fit_seed": 11,
+        "mode": "first_passage",
+        "source_checkpoint": "experiments/analytic_event_neuron/round7/evidence/fits_primary/first_passage_none_11.json",
+        "source_checkpoint_sha256": "847d73cc7479f484cbf9d1b4cbd8d648afa43ffba7501f45ff6f1548a955f8c6"
+      },
+      "maximum_h2_metric_error": 9.992007221626409e-16,
+      "maximum_parameter_change_by_tensor": {
+        "content.0.bias": 0.005996458535379889,
+        "content.0.weight": 0.006004018522752369,
+        "content.2.bias": 0.006004042567208823,
+        "content.2.weight": 0.0060040574820382775,
+        "core.raw_boundary": 0.006000563628790534,
+        "core.raw_diffusion": 0.00600245894158391,
+        "core.raw_leak": 0.0,
+        "core.raw_recovery": 0.005624476905910947,
+        "core.raw_reset_minus": 0.006004019598094434,
+        "core.raw_reset_plus": 0.006003542590384159,
+        "drive.bias": 0.006000819716667605,
+        "drive.weight": 0.006003526544820591,
+        "readout.0.bias": 0.006003054867176229,
+        "readout.0.weight": 0.006004022374469995,
+        "readout.2.bias": 0.00600403304660665,
+        "readout.2.weight": 0.006002450052155606
+      },
+      "mode": "first_passage",
+      "n_grid": 15,
+      "passed": true,
+      "requested_trainable_scalars_including_zero_gradient_coordinates": 822
+    }
+  ],
+  "created_utc": "2026-10-31T08:36:35.477207+00:00",
+  "passed": true,
+  "runtime": {
+    "numpy": "2.3.5",
+    "peak_rss_units": "KiB on the recorded Linux runtime; process-wide peak, not a per-step allocation delta",
+    "threads": 1,
+    "torch": "2.8.0+cpu"
+  },
+  "schema": "hepta.full-joint.development-audit.v1",
+  "scope": "Synthetic H2/H4 public training-side fixtures only, N15 unchanged. No heldout/confirmation read, no candidate checkpoint, no selection on these audit updates.",
+  "source_sha256": {
+    "full_joint.py": "f22098aa384bc78d0e1ae4e926c7cfaa4c838c924e22f496e6d98225c123584b",
+    "full_joint_audit.py": "10b617ad165446c55c153387ed46879b46b07030ee44ce0596f321ef09f2e37b"
+  },
+  "source_unchanged": true,
+  "wall_seconds": 2.902810899002361
+}

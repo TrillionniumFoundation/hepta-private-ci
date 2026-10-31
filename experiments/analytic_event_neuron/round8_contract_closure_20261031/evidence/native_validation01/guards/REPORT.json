@@ -1,0 +1,17 @@
+{
+  "checks": {
+    "calibrated_missing_encoder": true,
+    "exclusive_native_owner": true,
+    "future_kernel": true,
+    "pending_pair": true,
+    "stale_request_rejects_without_state_or_rng_change": true,
+    "tampered_pair": true,
+    "unknown_schema": true,
+    "unknown_tensor": true,
+    "wrong_head": true,
+    "wrong_model": true,
+    "wrong_seed": true
+  },
+  "passed": true,
+  "scope": "Identity/frontier/tamper/partial-publication guards; the pending-file fixture is not a SIGKILL or arbitrary-crash atomicity claim"
+}

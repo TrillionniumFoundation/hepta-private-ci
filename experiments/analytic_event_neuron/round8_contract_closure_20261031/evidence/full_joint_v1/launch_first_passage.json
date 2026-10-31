@@ -1,0 +1,69 @@
+{
+  "child_peak_rss_kib": 1867540,
+  "child_system_cpu_seconds": 1.5692599999999999,
+  "child_user_cpu_seconds": 131.131306,
+  "command": [
+    "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+    "-B",
+    "-m",
+    "experiments.analytic_event_neuron.round8_contract_closure_20261031.posthoc.full_joint",
+    "train",
+    "--mode",
+    "first_passage",
+    "--registered-commit",
+    "385a9621410e4d6dea4214510db804ae6bcba2b3"
+  ],
+  "first_update_observations": [
+    {
+      "case": "first_passage_11",
+      "process_memory_observed_after_step0_notification": {
+        "VmHWM": "8320 kB",
+        "VmRSS": "484 kB"
+      },
+      "scope": "Process high-water through receipt of first completed update; includes imports and startup, not a per-step allocation delta.",
+      "step0_wall_seconds": 1.747864663004293
+    },
+    {
+      "case": "first_passage_12",
+      "process_memory_observed_after_step0_notification": {
+        "VmHWM": "8320 kB",
+        "VmRSS": "484 kB"
+      },
+      "scope": "Process high-water through receipt of first completed update; includes imports and startup, not a per-step allocation delta.",
+      "step0_wall_seconds": 0.8138224219874246
+    },
+    {
+      "case": "first_passage_13",
+      "process_memory_observed_after_step0_notification": {
+        "VmHWM": "8320 kB",
+        "VmRSS": "484 kB"
+      },
+      "scope": "Process high-water through receipt of first completed update; includes imports and startup, not a per-step allocation delta.",
+      "step0_wall_seconds": 0.8341030980081996
+    },
+    {
+      "case": "first_passage_14",
+      "process_memory_observed_after_step0_notification": {
+        "VmHWM": "8320 kB",
+        "VmRSS": "484 kB"
+      },
+      "scope": "Process high-water through receipt of first completed update; includes imports and startup, not a per-step allocation delta.",
+      "step0_wall_seconds": 0.7580687620065873
+    },
+    {
+      "case": "first_passage_15",
+      "process_memory_observed_after_step0_notification": {
+        "VmHWM": "8320 kB",
+        "VmRSS": "484 kB"
+      },
+      "scope": "Process high-water through receipt of first completed update; includes imports and startup, not a per-step allocation delta.",
+      "step0_wall_seconds": 0.7907459989946801
+    }
+  ],
+  "full_wall_seconds": 132.82152609000332,
+  "launch_monitor_cpu_seconds": 0.005159133,
+  "mode": "first_passage",
+  "registered_commit": "385a9621410e4d6dea4214510db804ae6bcba2b3",
+  "registration_sha256": "606530930a5033a84e1af7c7cd0cf22b3d6d92f7ac35a6a51d66812dd2fddb7e",
+  "returncode": 0
+}

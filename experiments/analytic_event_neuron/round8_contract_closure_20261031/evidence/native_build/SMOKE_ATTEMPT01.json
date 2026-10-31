@@ -1,0 +1,8 @@
+{
+  "schema": "hepta.r7-native-development-failure.v1",
+  "build_report": "BUILD_ATTEMPT01.json",
+  "status": "failed_before_native_bootstrap",
+  "error": "SparseConfig::digest InvalidConfig: width=4, top_k=1 violates original sparse top_k <= width/5",
+  "correction": "Five sparse channels: four action one-hot entries plus one explicitly zero padding entry. No original runtime invariant changed.",
+  "task_effects_executed": 0
+}

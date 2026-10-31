@@ -1,0 +1,24 @@
+{
+  "checks": [
+    "incoming transition before greedy action",
+    "normalized categorical inverse CDF and shared RNG key",
+    "realized latent state carried to next decision",
+    "current event fee counted exactly once",
+    "Q_after excludes sunk current event fee",
+    "legal public successors",
+    "complete future reset/recovery"
+  ],
+  "freeze_sha256": "f4edffc4451697fd543bdf0e10dc7242297c13f38f8c96d21bc8d7c68355988e",
+  "heldout_trajectories": 7680,
+  "incoming_latent_transitions_checked": 25877,
+  "limits": "This verifies the finite R7 kernel and hard policy. It does not establish continuous diffusion accuracy or evaluate the distinct mean policy.",
+  "maximum_Q_discrepancy": 8.049116928532385e-16,
+  "maximum_expected_event_discrepancy": 2.1094237467877974e-15,
+  "maximum_independent_recursion_return_error": 0.0,
+  "minimum_uniform_to_cumulative_boundary_distance": 1.5205125475925346e-05,
+  "models": 60,
+  "passed": true,
+  "schema": "round8-posthoc-policy-dp-parity-v1",
+  "source_sha256": "50fbe2a8dc8d89161c5db790c02ef3be74dd46f952c97b945db6eeecc19077fa",
+  "wall_seconds": 6.478737819998059
+}

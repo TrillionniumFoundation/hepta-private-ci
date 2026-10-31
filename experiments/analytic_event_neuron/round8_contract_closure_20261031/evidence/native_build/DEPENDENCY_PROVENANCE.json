@@ -1,0 +1,83 @@
+{
+  "schema": "hepta.native-cached-dependency-provenance.v1",
+  "upstream_commit": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "source_files_verified": 60,
+  "cargo_lock_sha256": "8adfee4d20113aba27274a5caca355adab1aa5a52aba9e81d274de4d6a9338f2",
+  "packages": [
+    {
+      "name": "codex-hepta-infer-core",
+      "version": "0.0.0"
+    },
+    {
+      "name": "codex-hepta-neuron",
+      "version": "0.0.0"
+    },
+    {
+      "name": "codex-hepta-types",
+      "version": "0.0.0"
+    },
+    {
+      "name": "libc",
+      "version": "0.2.186",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "68ab91017fe16c622486840e4c83c9a37afeff978bd239b5293d61ece587de66"
+    },
+    {
+      "name": "serde",
+      "version": "1.0.229",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "4148590afebada386688f18773da617792bf2ef03ffc1e4cbd2b1d45b023e0ba"
+    },
+    {
+      "name": "serde_core",
+      "version": "1.0.229",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "67dca2c9c51e58a4791a4b1ed58308b39c64224d349a935ab5039aa360942a48"
+    },
+    {
+      "name": "serde_derive",
+      "version": "1.0.229",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "e7a5d71263a5a7d47b41f6b3f06ba276f10cc18b0931f1799f710578e2309348"
+    },
+    {
+      "name": "serde_json",
+      "version": "1.0.151",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "c841b55ecdae098c80dcae9cf767f6f8a0c2cdb3416bbef72181df4d0fe73f14"
+    },
+    {
+      "name": "sha2",
+      "version": "0.10.9",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "a7507d819769d01a365ab707794a4084392c824f54a7a6a7862f8c3d0892b283"
+    }
+  ],
+  "serde_json_features": "[\"default\", \"float_roundtrip\", \"std\"]",
+  "compiler": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.95.0\nLLVM version: 22.1.2\n",
+  "selected_dependencies": {
+    "codex_hepta_neuron": {
+      "path": "/workspace/scratch/5aabc7b0a3ce/native-loop-build/target/debug/deps/libcodex_hepta_neuron-1a9cc7a3358b53e1.rlib",
+      "sha256": "eaf1c36a71ff0dde485d83133abee492b4ba704ef182cfdba4b3784b67b614a4"
+    },
+    "codex_hepta_types": {
+      "path": "/workspace/scratch/5aabc7b0a3ce/native-loop-build/target/debug/deps/libcodex_hepta_types-1956920dc8485aaf.rlib",
+      "sha256": "24ffb00f536aaa309c5bf761b04860429519c55ded5a4847f3ecf51e81924ae0"
+    },
+    "libc": {
+      "path": "/workspace/scratch/5aabc7b0a3ce/native-loop-build/target/debug/deps/liblibc-5ea5e6137be97e04.rlib",
+      "sha256": "f09fe5dc674fae522ebb061189261871e0c3d6121558fd01d91db3d8f8bdd8ae"
+    },
+    "serde": {
+      "path": "/workspace/scratch/5aabc7b0a3ce/native-loop-build/target/debug/deps/libserde-af0ed0b856a24db5.rlib",
+      "sha256": "89cde1dcbd6632be8978aa64c92a4c231e5fe2ef57f93cbb4b838ba33241dc6b"
+    },
+    "serde_json": {
+      "path": "/workspace/scratch/5aabc7b0a3ce/native-loop-build/target/debug/deps/libserde_json-0830422da83940ec.rlib",
+      "sha256": "45c4b6bc14658eccb012a61be0a5c54bf57e59bb58f4928b6ce1101ed7c18ff6"
+    }
+  },
+  "fresh_original_crate_source_rebuild_this_run": false,
+  "archive_source_verification_this_run": false,
+  "scope": "Reused pre-existing original Hepta and registry crate artifacts only. No task_native_loop application source was imported, executed or claimed as this implementation. All newly introduced policy/owner/application Rust sources were compiled in this run."
+}
