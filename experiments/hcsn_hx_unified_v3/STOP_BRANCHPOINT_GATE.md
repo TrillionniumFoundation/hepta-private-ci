@@ -32,17 +32,29 @@ Executed locally using source bytes that match GitHub blobs:
 
 ```
 python -m unittest -v experiments.hcsn_hx_unified_v3.test_stop_branchpoint
-# 7 tests PASS, 0 skipped; Python/SciPy scalar CPU reference.
+# 8 tests PASS, 0 skipped; Python/SciPy scalar CPU reference.
 ```
 
 Independent `decimal.Decimal` root at precision 320 checks actual binary64
 input values and a separate exponential smooth-fit residual. Frozen failing
 cases, 96 seeded log-loss cases, the analytic/numeric solver transition,
-monotonicity, four original QVI/reference parameter regimes and arithmetic
-refusals pass. An additional 240-case exploratory Decimal panel found max
+monotonicity, four original QVI/reference parameter regimes, gradient
+finite differences and arithmetic refusals pass. An additional 240-case exploratory Decimal panel found max
 relative boundary error **2.1546e-15** in its sampled region; the panel is
 exploration, not pre-registered proof. Original upstream `stopping.py` source
 was first materialized locally byte-for-byte and checked against its Git blob.
+
+## Boundary Jacobian is intrinsically singular
+
+From the same exact equation, fixing kappa gives
+`d boundary/d reset=-(1-t)/t` and
+`d boundary/d refractory=(rho/kappa)*(1-t)/t`. As `h->0+`,
+`t~sqrt(2h)` and the gradient magnitude diverges like `h^(-1/2)`.
+A deterministic set of five small-loss finite-difference comparisons and one
+refractory derivative comparison agree within relative `2e-8`. The result is
+**negative evidence against any all-domain bounded-gradient claim**, not
+full training/autodiff gradient certification. A downstream training interface
+must impose a declared margin or handle these singular sensitivities explicitly.
 
 ## Still open
 
