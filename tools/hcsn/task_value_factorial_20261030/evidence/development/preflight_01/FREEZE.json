@@ -1,0 +1,51 @@
+{
+  "development_archives": {
+    "data/development_seed1234.tar.gz": "54f8774b5428f9bf55a24401117dd536bcc711159c4d36fa89e4fd0ee140b23b"
+  },
+  "frozen_at": "2026-10-31T01:36:00.771310+00:00",
+  "heldout_generated": false,
+  "models": {
+    "models/seed1234.json.gz": "472f6e22f2d889061f3334cbdbf0ec93d2b61d64a955ecf39901fcf508fd1406"
+  },
+  "preparation_cpu_seconds": 1.334765323,
+  "preparation_wall_seconds": 1.3421258770031272,
+  "protocol_sha256": "5b5bd2147a6bf024a2a5455f0f37c4fa4afffad63e8fcb3b8bce29cdc154aa11",
+  "runtime": {
+    "energy_joules": null,
+    "gpu_used": false,
+    "machine": "x86_64",
+    "max_rss_kib": 66760,
+    "native_rust_integration": false,
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "scipy": "1.17.0"
+  },
+  "schema": "hcsn.factorial.freeze.v1",
+  "source": {
+    "files": {
+      "PROTOCOL.json": "93d965a40f55e1b6c592fac7dfe53aebf190aea1994e0dc959f9198b501b990c",
+      "UPSTREAM_FILES.json": "be6aa0751da3e9a63b4c70d0c8bc4c42d8f2595548009013eb4b92b5e44fc98e",
+      "analysis.py": "ef786cfd479b04bf0635ce765fab62025025e492ee938d7c6d2617f227c30e7c",
+      "audit.py": "47238ca7c6e793be472e7f64aeef7cd8187dcd0a7d328ffecffd4a6203012547",
+      "cells.py": "074c35e3cfa28c7d33a7d0650e6f8d159e0407edf5df17c545249dbca16b6711",
+      "controller.py": "14740fbf785ae3e82f12064c8ce09d77d13ebed907a3606dac532177b686faf3",
+      "controller_tests.py": "5664f524bd787d17ede56e4ae755962db7fa6e4d2e0db9d856391b831188616b",
+      "dataset.py": "6e3ca80cb04fff28ed78595bbb35739b1c80ec08e46b0cdd7ac905b776283d94",
+      "dataset_tests.py": "5fa778ea92816e42930e1cee505bad72c2175656bc6d4acc0ec1c9937012ed81",
+      "execution.py": "cf7c90a3e31713193f17f56e8749dbebf8f03b4f4a00a35e4d2359d68ce3829c",
+      "propagation.py": "4f3d85bd2826cf16ba1143bfb2868d583cb114236e89fa6b8650ba19b1664c15",
+      "propagation_audit.py": "3d9394a8b691719ac46d718864dc8c3d768fe8a12c82e9db4834fb33249c2eb3",
+      "run.py": "bed9692f63260bc716a4d0c5ad572c8285a80ba4ce9dce0aa0868a4c6056d678",
+      "storage.py": "de11a4cdaa96bc9adae30599de70f671fc85481bb7aa9eb51fefda2953f6da83",
+      "task.py": "24534f0460c4e02faa21e47fc31d2c8afbe97c9725e3e2f335b7976444404cfc",
+      "task_tests.py": "ef393b6831120868f0db8cb12bba3c8cbf1c9928105952a2f373a7cd303cf0e3",
+      "test_propagation.py": "65f3b16b2326567df2769374e67d601d0106199a525766d72c731cde1d61059c"
+    },
+    "sha256": "165b2fad05e9ae359432c7c7869b69642d5be3d2dd94f63622dd8ace3d13d91b"
+  },
+  "statement": "Publish this manifest and all source/models before confirm",
+  "training": {
+    "training/seed1234.json.gz": "da3a9b5b28eff88021700b603508e7184c585cc6503709cdf65c75d3307f1f15"
+  }
+}
