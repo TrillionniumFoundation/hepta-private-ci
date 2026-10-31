@@ -57,3 +57,21 @@ python -m unittest -v \
 **P5 BLOCKED：** 严格匹配数据、token、FLOPs、质量与总成本的净胜出未证明。
 
 `production_activation=false`，`all_scientific_blockers_closed=false`；只提交叠加草稿研究 PR，不合并生产。
+
+
+## 修正后 24 例参数面板（追加，不覆盖并发 v1 面板）
+
+新增 `hx_obstacle_panel_tail_v2.py` 与三项测试；该模块独立生成与旧面板同样的两个强制样本 + 22 个固定种子样本，使用**修正后**到期本金尾部，并横向核对 101/201 节点网格与额外 `log_upper=4.2` 截断域。全量公开逐样本判定 `OBSERVED_EXTRA_STOP`、`NO_EXTRA_STOP_ON_GRID` 或 `UNRESOLVED`，不会把求解器拒绝当作通过。
+
+本地 Python 重复运行：**24/24 个样本都形成记录，2 例存在额外离散 STOP（索引 1 和 18），22 例在有限网格未发现，0 例 unresolved**；SHA-256 规范化 JSON 摘要 `b3beda73ca1bda246ba5a01f30bfd53b52ef801f3e3f897012001a0b0c6da72e`（仅绑定本地重建 HX 子集与既定环境，不冒充完整仓库结果）。对应金融停止候选并没有因此获得连续最优性认证。通过测试由 **18/18 提升到 21/21**，0 skipped。
+
+索引 18（固定随机种子产生）的新增反例参数：rate=0.1189122314、payout=0.0211073138、volatility=0.2297372302、maturity=1.6450955106、principal=62.66916005、coupon=3.021671907、tax_shield=0.2073451602、recovery=0.6681181184、shock_intensity=2.6437102804、sale_fraction=0.09954085846。代数候选边界 `102.9124721592`；三个离散额外停止区上界分别 `110.5954381767 / 108.6225297338 / 109.6045449412`。不同网格判定属于有限域结果，不是所有参数都存在同类病态的证明。
+
+完整运行添加：
+
+```sh
+python -m unittest -v experiments.hcsn_hx_unified_v3.test_hx_obstacle_panel_tail_v2
+python -c 'from experiments.hcsn_hx_unified_v3.hx_obstacle_panel_tail_v2 import audit_panel; import json; print(json.dumps(audit_panel(),indent=2,sort_keys=True))'
+```
+
+本地测试/远程读回的新增 Git blobs：`hx_obstacle_panel_tail_v2.py`=`e6c6cb4c211b02a12edafc565eed20e5e5b15e48`；`test_hx_obstacle_panel_tail_v2.py`=`c3054f9b195abecd685d9ca4b18068a25a4c106a`。所有门禁仍 **OPEN / NO_GO**。
