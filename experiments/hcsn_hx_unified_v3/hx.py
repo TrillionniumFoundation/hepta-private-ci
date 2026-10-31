@@ -269,14 +269,17 @@ def equity_closed(p: HX, asset: float, asset_boundary: float | None = None) -> f
         raise ValueError('Invalid HX equity input')
     if asset<=b:
         return 0.0
-    v=math.log(asset/b)
+    v=_log_asset_ratio(asset,b)
     z,s2=p.z,p.volatility**2
     off=p.per_bond_principal-p.per_bond_coupon/p.q
     cash=(1-p.tax_shield)*p.coupon+(-math.expm1(-p.q*p.maturity))*off
-    return (asset - p.payout*b/(z*s2)*math.exp(-p.gamma*v)/(p.gamma+1)
+    result=(asset - p.payout*b/(z*s2)*math.exp(-p.gamma*v)/(p.gamma+1)
             -cash/(z*s2)*(1/p.eta+(-math.expm1(-p.gamma*v))/p.gamma)
             +(math.exp(-p.q*p.maturity)*off*_A(p,v,p.a)
               -(p.recovery*b/p.maturity-p.per_bond_coupon/p.q)*_A(p,v,p.zhat))/(z*s2))
+    if not math.isfinite(result):
+        raise ArithmeticError('HX closed equity unresolved in f64')
+    return result
 
 
 def equity_resolvent(p: HX, asset: float, asset_boundary: float | None = None,
