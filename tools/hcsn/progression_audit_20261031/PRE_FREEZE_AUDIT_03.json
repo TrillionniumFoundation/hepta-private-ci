@@ -1,0 +1,381 @@
+{
+  "schema": "hcsn.progression.independent-audit.v1",
+  "passed": true,
+  "mathematical": [
+    {
+      "contract": "nominal_1",
+      "states": 50,
+      "qvi_error": 4.440892098500626e-16,
+      "randomized_value_error": 2.220446049250313e-16,
+      "maximum_logit_gradient_error": 6.2658689001238166e-12,
+      "first_fire_checks": 15,
+      "maximum_first_fire_error": 7.216449660063518e-16,
+      "first_fire_derivative_checks": 6,
+      "maximum_first_fire_derivative_error": 8.081230129519668e-12,
+      "passed": true
+    },
+    {
+      "contract": "nominal_2",
+      "states": 98,
+      "qvi_error": 4.440892098500626e-16,
+      "randomized_value_error": 2.220446049250313e-16,
+      "maximum_logit_gradient_error": 1.5265143749748633e-13,
+      "first_fire_checks": 15,
+      "maximum_first_fire_error": 4.163336342344337e-17,
+      "first_fire_derivative_checks": 6,
+      "maximum_first_fire_derivative_error": 1.2346755562386846e-12,
+      "passed": true
+    },
+    {
+      "contract": "nominal_3",
+      "states": 50,
+      "qvi_error": 2.220446049250313e-16,
+      "randomized_value_error": 2.220446049250313e-16,
+      "maximum_logit_gradient_error": 3.535646168201234e-12,
+      "first_fire_checks": 15,
+      "maximum_first_fire_error": 6.106226635438361e-16,
+      "first_fire_derivative_checks": 6,
+      "maximum_first_fire_derivative_error": 6.2025939939758246e-12,
+      "passed": true
+    },
+    {
+      "contract": "nominal_4",
+      "states": 98,
+      "qvi_error": 4.440892098500626e-16,
+      "randomized_value_error": 1.6653345369377348e-16,
+      "maximum_logit_gradient_error": 7.128091519814639e-13,
+      "first_fire_checks": 15,
+      "maximum_first_fire_error": 5.551115123125783e-17,
+      "first_fire_derivative_checks": 6,
+      "maximum_first_fire_derivative_error": 3.501837708697053e-12,
+      "passed": true
+    },
+    {
+      "contract": "stress_1_stop_control",
+      "states": 50,
+      "qvi_error": 2.220446049250313e-16,
+      "randomized_value_error": 1.1102230246251565e-16,
+      "maximum_logit_gradient_error": 4.864901884116257e-13,
+      "first_fire_checks": 15,
+      "maximum_first_fire_error": 1.0408340855860843e-17,
+      "first_fire_derivative_checks": 6,
+      "maximum_first_fire_derivative_error": 4.475395748437805e-13,
+      "passed": true
+    },
+    {
+      "contract": "stress_2",
+      "states": 98,
+      "qvi_error": 2.220446049250313e-16,
+      "randomized_value_error": 2.220446049250313e-16,
+      "maximum_logit_gradient_error": 1.4822089952973294e-13,
+      "first_fire_checks": 15,
+      "maximum_first_fire_error": 5.551115123125783e-17,
+      "first_fire_derivative_checks": 6,
+      "maximum_first_fire_derivative_error": 9.1684992931107e-13,
+      "passed": true
+    },
+    {
+      "contract": "stress_3",
+      "states": 98,
+      "qvi_error": 2.220446049250313e-16,
+      "randomized_value_error": 2.220446049250313e-16,
+      "maximum_logit_gradient_error": 2.3458257905617508e-12,
+      "first_fire_checks": 15,
+      "maximum_first_fire_error": 5.551115123125783e-17,
+      "first_fire_derivative_checks": 6,
+      "maximum_first_fire_derivative_error": 3.673797377423682e-12,
+      "passed": true
+    },
+    {
+      "contract": "stress_4",
+      "states": 98,
+      "qvi_error": 3.3306690738754696e-16,
+      "randomized_value_error": 2.220446049250313e-16,
+      "maximum_logit_gradient_error": 2.158740200486342e-12,
+      "first_fire_checks": 15,
+      "maximum_first_fire_error": 1.1102230246251565e-16,
+      "first_fire_derivative_checks": 6,
+      "maximum_first_fire_derivative_error": 2.773930390942425e-12,
+      "passed": true
+    }
+  ],
+  "one_read": [
+    {
+      "environment": 0,
+      "states": 16,
+      "max_value_error": 5.551115123125783e-17,
+      "max_lower_bound_violation": 1.1102230246251565e-16,
+      "passed": true
+    },
+    {
+      "environment": 1,
+      "states": 16,
+      "max_value_error": 2.220446049250313e-16,
+      "max_lower_bound_violation": 2.220446049250313e-16,
+      "passed": true
+    },
+    {
+      "environment": 2,
+      "states": 16,
+      "max_value_error": 2.220446049250313e-16,
+      "max_lower_bound_violation": 2.220446049250313e-16,
+      "passed": true
+    },
+    {
+      "environment": 3,
+      "states": 16,
+      "max_value_error": 5.551115123125783e-17,
+      "max_lower_bound_violation": 1.1102230246251565e-16,
+      "passed": true
+    },
+    {
+      "environment": 4,
+      "states": 16,
+      "max_value_error": 2.220446049250313e-16,
+      "max_lower_bound_violation": 2.220446049250313e-16,
+      "passed": true
+    },
+    {
+      "environment": 5,
+      "states": 16,
+      "max_value_error": 1.1102230246251565e-16,
+      "max_lower_bound_violation": 1.1102230246251565e-16,
+      "passed": true
+    },
+    {
+      "environment": 6,
+      "states": 16,
+      "max_value_error": 2.220446049250313e-16,
+      "max_lower_bound_violation": 1.1102230246251565e-16,
+      "passed": true
+    },
+    {
+      "environment": 7,
+      "states": 16,
+      "max_value_error": 1.1102230246251565e-16,
+      "max_lower_bound_violation": 0.0,
+      "passed": true
+    },
+    {
+      "environment": 8,
+      "states": 16,
+      "max_value_error": 0.0,
+      "max_lower_bound_violation": 1.1102230246251565e-16,
+      "passed": true
+    },
+    {
+      "environment": 9,
+      "states": 16,
+      "max_value_error": 2.0816681711721685e-17,
+      "max_lower_bound_violation": 0.0,
+      "passed": true
+    },
+    {
+      "environment": 10,
+      "states": 16,
+      "max_value_error": 1.1102230246251565e-16,
+      "max_lower_bound_violation": 1.1102230246251565e-16,
+      "passed": true
+    },
+    {
+      "environment": 11,
+      "states": 16,
+      "max_value_error": 1.1102230246251565e-16,
+      "max_lower_bound_violation": 1.1102230246251565e-16,
+      "passed": true
+    },
+    {
+      "environment": 12,
+      "states": 16,
+      "max_value_error": 1.1102230246251565e-16,
+      "max_lower_bound_violation": 1.1102230246251565e-16,
+      "passed": true
+    },
+    {
+      "environment": 13,
+      "states": 16,
+      "max_value_error": 2.220446049250313e-16,
+      "max_lower_bound_violation": 2.220446049250313e-16,
+      "passed": true
+    },
+    {
+      "environment": 14,
+      "states": 16,
+      "max_value_error": 2.220446049250313e-16,
+      "max_lower_bound_violation": 2.220446049250313e-16,
+      "passed": true
+    },
+    {
+      "environment": 15,
+      "states": 16,
+      "max_value_error": 2.220446049250313e-16,
+      "max_lower_bound_violation": 1.1102230246251565e-16,
+      "passed": true
+    },
+    {
+      "environment": 16,
+      "states": 16,
+      "max_value_error": 2.7755575615628914e-17,
+      "max_lower_bound_violation": 5.551115123125783e-17,
+      "passed": true
+    },
+    {
+      "environment": 17,
+      "states": 16,
+      "max_value_error": 5.551115123125783e-17,
+      "max_lower_bound_violation": 1.1102230246251565e-16,
+      "passed": true
+    },
+    {
+      "environment": 18,
+      "states": 16,
+      "max_value_error": 1.1102230246251565e-16,
+      "max_lower_bound_violation": 2.220446049250313e-16,
+      "passed": true
+    },
+    {
+      "environment": 19,
+      "states": 16,
+      "max_value_error": 2.220446049250313e-16,
+      "max_lower_bound_violation": 2.220446049250313e-16,
+      "passed": true
+    },
+    {
+      "environment": 20,
+      "states": 16,
+      "max_value_error": 2.220446049250313e-16,
+      "max_lower_bound_violation": 5.551115123125783e-17,
+      "passed": true
+    },
+    {
+      "environment": 21,
+      "states": 16,
+      "max_value_error": 1.1102230246251565e-16,
+      "max_lower_bound_violation": 5.551115123125783e-17,
+      "passed": true
+    },
+    {
+      "environment": 22,
+      "states": 16,
+      "max_value_error": 1.1102230246251565e-16,
+      "max_lower_bound_violation": 1.1102230246251565e-16,
+      "passed": true
+    },
+    {
+      "environment": 23,
+      "states": 16,
+      "max_value_error": 1.1102230246251565e-16,
+      "max_lower_bound_violation": 1.1102230246251565e-16,
+      "passed": true
+    },
+    {
+      "environment": 24,
+      "states": 16,
+      "max_value_error": 2.220446049250313e-16,
+      "max_lower_bound_violation": 5.551115123125783e-17,
+      "passed": true
+    },
+    {
+      "environment": 25,
+      "states": 16,
+      "max_value_error": 1.1102230246251565e-16,
+      "max_lower_bound_violation": 2.220446049250313e-16,
+      "passed": true
+    },
+    {
+      "environment": 26,
+      "states": 16,
+      "max_value_error": 2.7755575615628914e-17,
+      "max_lower_bound_violation": 1.1102230246251565e-16,
+      "passed": true
+    },
+    {
+      "environment": 27,
+      "states": 16,
+      "max_value_error": 1.1102230246251565e-16,
+      "max_lower_bound_violation": 0.0,
+      "passed": true
+    },
+    {
+      "environment": 28,
+      "states": 16,
+      "max_value_error": 1.3877787807814457e-17,
+      "max_lower_bound_violation": 2.7755575615628914e-17,
+      "passed": true
+    },
+    {
+      "environment": 29,
+      "states": 16,
+      "max_value_error": 1.1102230246251565e-16,
+      "max_lower_bound_violation": 1.1102230246251565e-16,
+      "passed": true
+    },
+    {
+      "environment": 30,
+      "states": 16,
+      "max_value_error": 2.220446049250313e-16,
+      "max_lower_bound_violation": 1.1102230246251565e-16,
+      "passed": true
+    },
+    {
+      "environment": 31,
+      "states": 16,
+      "max_value_error": 1.1102230246251565e-16,
+      "max_lower_bound_violation": 2.7755575615628914e-17,
+      "passed": true
+    }
+  ],
+  "native": {
+    "rollouts": 66,
+    "pairs": 33,
+    "all_semantic_pairs_equal": true,
+    "reads": 134,
+    "decoder_calls": 134,
+    "summed_child_cpu": 0.693685,
+    "reported_child_cpu": 0.693685,
+    "maximum_parent_plus_child_record_difference": 1.2719999999966092e-06,
+    "mean_normal_cpu": {
+      "native": 0.044844832968750005,
+      "python": 0.020946094500000005
+    },
+    "cpu_arithmetic_scope": "Enclosing parent CPU fields are sampled successively, so allow 10 microseconds of measurement-call overhead",
+    "passed": true
+  },
+  "source_sha256": {
+    "tools/hcsn/progression_audit_20261031/independent_checks.py": "7abc5ecbfe1a70ca6b6505c1c0c280ed851e0dd3702cae4584adc92f6fca39ca",
+    "tools/hcsn/task_policy_v2_20261031/confirmation.py": "529679dccc9b57606eee833ff2bd1307a7223a8f53a7f8db11b0ad4eeb68d985",
+    "tools/hcsn/task_policy_v2_20261031/planner.py": "8b6286f332d79ebcfa5e240004cd08954c0995aae94f9149e3835b5a42a9bbb3",
+    "tools/hcsn/task_policy_v2_20261031/campaign_tests.py": "873dd06bec2e174179312afb63d86c9d9e3292e366d6f1d0079bdecaeda2101d",
+    "tools/hcsn/task_policy_v2_20261031/execution.py": "3bef54515b085d216259749e4bab7b739cdac8180b99a673d1c51078afb41a72",
+    "tools/hcsn/task_policy_v2_20261031/campaign.py": "65f3bc9e20ef2eb117b209c7607530a349cf7bf69a5e5636252b3aee89b83cc6",
+    "tools/hcsn/task_policy_v2_20261031/probe.py": "ff5d4601c9407b9832397302243dc39aa353d02f22375d85615133df3a5b9abd",
+    "tools/hcsn/task_policy_v2_20261031/policy_tests.py": "a5aa0b5dcc1aed3769db56f632def0ab8a52d117e231c229a253a55c6cc51e91",
+    "tools/hcsn/task_policy_v2_20261031/training.py": "1c7e5b77f2cf765e5609dfe160fa3386a8ec2a4c153b67879fd5e7a5d10b36b0",
+    "tools/hcsn/task_policy_v2_20261031/numeric_probe.py": "5d6de35f0f1ad9ea518efd6f3f79793a35f09deb23a8827ca97a88649681b185",
+    "tools/hcsn/value_boundary_v2_20261031/owner.py": "8685e379d32872afbd82b81939415347ecf3b38eedb6a9f9648979d27d3426bb",
+    "tools/hcsn/value_boundary_v2_20261031/deployment.py": "21a7518986e950fab4d621aee756a7f6a5b584cf45ee70ed7adaed49f62bc3cf",
+    "tools/hcsn/value_boundary_v2_20261031/campaign.py": "5f332c3dcd6260eac0ea4e4a8eee0333fe71f76e1724232f8edeb95f97f0d819",
+    "tools/hcsn/value_boundary_v2_20261031/learn.py": "45ae00b6cb7bf88176b33cb650bb5b7ad6525738bc0de07331798b08957ec749",
+    "tools/hcsn/value_boundary_v2_20261031/qualification.py": "705fe638efea65a77dc20c68adbbdd58de74575701e455e2442c9f59c960de95",
+    "tools/hcsn/value_boundary_v2_20261031/model.py": "6f26f3beb72683d60c7f6c5ad89e6df4426446abc1201add85eab8b03868e909",
+    "tools/hcsn/recurrent_owner_v2_20261031/owner_tests.py": "dac5935fdd5446be54994664804127ad2b6a1273449e54d504aea2cf97ae3855",
+    "tools/hcsn/recurrent_owner_v2_20261031/owner.py": "4b9675381f18bffc3f2568febd2834b07ea4ee9136c93c26b87d9fb6c41fd4b3",
+    "tools/hcsn/recurrent_owner_v2_20261031/qualification.py": "8b03de7fd6956d66a5441e371f73348836ba2935a75ed70f457ce97254712636",
+    "tools/hcsn/native_task_bridge_20261031/verify_profile.py": "57fd1a1d45828f84e1731919dc5d598ab70e042be8cc0413b0b6e9fd1903e946",
+    "tools/hcsn/native_task_bridge_20261031/verify.py": "f9294183a69661ac3fba3ccc4992a8866a1eaa0f3a1b8d369b8b5e010c8d9eda",
+    "tools/hcsn/native_task_bridge_20261031/client.py": "280d34775628b51bb6514f9cc13423c78dacea2f2756aa073e2270edbc03bff4",
+    "tools/hcsn/native_task_bridge_20261031/task_parity.py": "70ca7aabf9ca5328b3b19adb960b4ceb5c3aa639496bd43001be8869b0467f99",
+    "tools/hcsn/native_task_bridge_20261031/package_evidence.py": "d424890f6c5e121f90728f5a9f4c969a5165d7587dbef356f48306b82928c35d",
+    "tools/hcsn/native_task_bridge_20261031/build.py": "c729285e5f6d24ab6f6e0894cf870d3feffd70caa584eaf5dd6ae1ab59b7cdf1",
+    "tools/hcsn/native_task_bridge_20261031/reference.py": "1f486524aea91894368a6767ad110f7555790fa7ef8b432ead9d2e0ea0e1634c",
+    "tools/hcsn/native_task_bridge_20261031/owner.rs": "af2833ff4beb1fb23e1c7c1b2950608ce924365533c268d866feabcd1ec22ce1",
+    "tools/hcsn/native_task_bridge_20261031/tests.rs": "831cf3f8aefd18980c8b2df8e44aa9e40947982e124f63f8d80920da735d8135",
+    "tools/hcsn/native_task_bridge_20261031/config.rs": "9862927b4b776757fa5ee2c03d20240aae85e811542a5cc3002ac5ee0e64715b",
+    "tools/hcsn/native_task_bridge_20261031/contract.rs": "853cd051ca1fabea173811e135d60bf047d2bcd7b4dfceb64b650f2273a6dc58",
+    "tools/hcsn/native_task_bridge_20261031/main.rs": "7b8de5873a2afc9c5929c8f79187b041e14bb5c2930406a800445db00e68270e",
+    "tools/hcsn/native_task_bridge_20261031/model.rs": "6ae14ad694579d32e4fb40a4199f18ba564db92a4c031c3907986a907287c24f"
+  },
+  "cpu_seconds": 0.5254690329999999,
+  "wall_seconds": 0.5290806440025335,
+  "scope": "Independent finite recurrence, event-count/Poisson first-event law, full logit FD, one-read plan enumeration and native raw receipts. No confirmation efficacy assessed here."
+}
