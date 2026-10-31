@@ -1,0 +1,304 @@
+name: Memory cell V12 independent lifecycle and native regressions
+
+on:
+  push:
+    branches:
+      - research/memory-cell-v12-20261030
+    # Research/evidence-only publication does not rerun this native suite.
+    # Carry results forward only after comparing all native/build inputs with
+    # the exact tested source commit recorded in the uploaded receipt.
+    paths:
+      - 'codex-rs/**'
+      - '.github/workflows/memory-cell-v12-native.yml'
+      - '.github/actions/setup-ci/**'
+      - 'scripts/**'
+      - 'tools/**'
+      - 'patches/**'
+      - 'third_party/**'
+      - 'bazel/**'
+      - '.cargo/**'
+      - 'justfile'
+      - 'AGENTS.md'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - 'rust-toolchain'
+      - 'rust-toolchain.toml'
+      - 'rustfmt.toml'
+      - '.rustfmt.toml'
+      - 'BUILD.bazel'
+      - 'MODULE.bazel'
+      - 'MODULE.bazel.lock'
+      - '*.bzl'
+      - '.bazel*'
+      - 'flake.nix'
+      - 'flake.lock'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.npmrc'
+      - '.prettier*'
+      - '.gitattributes'
+      - '.gitignore'
+      - 'CALLERS.toml'
+      - 'workspace_root_test_launcher.*.tpl'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-v12-native-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_TARGET_DIR: ${{ github.workspace }}/memory-v7-target
+      HEPTA_MEMORY_V12_NATIVE_OUTPUT: /tmp/h11-native-${{ github.run_id }}-${{ github.run_attempt }}
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Checkout the exact source and formatter baseline
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        timeout-minutes: 10
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+        timeout-minutes: 5
+      - name: Install the pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        timeout-minutes: 5
+        with:
+          toolchain: '1.95.0'
+          components: clippy,rustfmt
+      - name: Install the pinned nextest runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        timeout-minutes: 5
+        with:
+          tool: cargo-nextest@0.9.131
+      - name: Restore scoped Rust dependencies and prior native build outputs
+        id: rust-cache
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        timeout-minutes: 10
+        continue-on-error: true
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ${{ env.CARGO_TARGET_DIR }}
+          key: memory-v12-native-rust-1.95-${{ hashFiles('codex-rs/Cargo.lock') }}-${{ github.sha }}
+          restore-keys: |
+            memory-v12-native-rust-1.95-${{ hashFiles('codex-rs/Cargo.lock') }}-
+            memory-v11-native-rust-1.95-${{ hashFiles('codex-rs/Cargo.lock') }}-
+            memory-v10-rust-1.95-verify-${{ hashFiles('codex-rs/Cargo.lock') }}-
+            memory-v10-rust-1.95-finalize-${{ hashFiles('codex-rs/Cargo.lock') }}-
+      - name: Test exact sources, then final fix and format without further tests
+        timeout-minutes: 205
+        shell: bash
+        run: |
+          python3 -I -B - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import platform
+          import re
+          import shutil
+          import subprocess
+          import time
+          import tomllib
+          import xml.etree.ElementTree as ET
+
+          root = Path(os.environ["GITHUB_WORKSPACE"])
+          workspace = root / "codex-rs"
+          output = Path(os.environ["HEPTA_MEMORY_V12_NATIVE_OUTPUT"])
+          output.mkdir(parents=True, exist_ok=False)
+          started = time.monotonic()
+          baseline = "527218f9b823540830907f861a309310b71d38c9"
+          commands = []
+          receipt = {
+              "schema": "hepta.memory.v12.native-ci-receipt.v1", "passed": False,
+              "tests_command_started": False, "tests_executed": False,
+              "final_fix_executed": False, "formatter_executed": False,
+              "tests_executed_after_fix_or_format": False,
+              "production_activation_allowed": False, "trained_quality_claimed": False,
+              "baseline_commit": baseline, "commands": commands,
+              "github": {key: os.environ.get(key) for key in (
+                  "GITHUB_SHA", "GITHUB_REF", "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "GITHUB_REPOSITORY")},
+              "resource_settings": {key: os.environ.get(key) for key in (
+                  "CARGO_PROFILE_DEV_DEBUG", "CARGO_PROFILE_TEST_DEBUG", "CARGO_INCREMENTAL", "CARGO_BUILD_JOBS")},
+              "platform": platform.platform(), "disk_before": shutil.disk_usage(output)._asdict(),
+          }
+
+          def save():
+              temporary = output / "receipt.pending.json"
+              temporary.write_text(json.dumps(receipt, indent=2) + "\n")
+              temporary.replace(output / "receipt.json")
+
+          def git(*args):
+              return subprocess.check_output(["git", *args], cwd=root)
+
+          def execute(name, command):
+              item = {"name": name, "command": command, "started": True, "exit_code": None}
+              commands.append(item)
+              save()
+              began = time.monotonic()
+              with (output / (name + ".log")).open("w") as log:
+                  child = subprocess.Popen(command, cwd=workspace, stdout=subprocess.PIPE,
+                                           stderr=subprocess.STDOUT, text=True, errors="replace")
+                  for line in child.stdout:
+                      log.write(line)
+                      print(line, end="", flush=True)
+                  item.update(exit_code=child.wait(), wall_seconds=time.monotonic() - began)
+              save()
+              if item["exit_code"]:
+                  raise RuntimeError(name + " exited " + str(item["exit_code"]))
+
+          def retain_tree(name):
+              changes = git("status", "--porcelain", "--untracked-files=no").decode()
+              (output / (name + ".status.txt")).write_text(changes)
+              (output / (name + ".patch")).write_bytes(git("diff", "--binary", "--full-index", "--no-ext-diff", "--no-textconv"))
+              receipt[name + "_changed_tree"] = bool(changes)
+              save()
+              return changes
+
+          report = None
+          save()
+          try:
+              receipt["source_commit"] = git("rev-parse", "HEAD").decode().strip()
+              receipt["source_tree"] = git("rev-parse", "HEAD^{tree}").decode().strip()
+              if receipt["source_commit"] != os.environ["GITHUB_SHA"] or retain_tree("initial"):
+                  raise RuntimeError("Exact clean GitHub source checkout required")
+              tree = git("ls-tree", "-r", "--full-tree", "HEAD")
+              (output / "source-tree.txt").write_bytes(tree)
+              receipt["source_inventory_sha256"] = hashlib.sha256(tree).hexdigest()
+              for name, command in (("rustc-version", ["rustc", "--version"]),
+                                    ("cargo-version", ["cargo", "--version"]),
+                                    ("nextest-version", ["cargo", "nextest", "--version"]),
+                                    ("just-version", ["just", "--version"])):
+                  execute(name, command)
+              config = tomllib.loads((workspace / ".config/nextest.toml").read_text())
+              profiles = config["profile"]
+              local = profiles["local"]
+              if local.get("inherits", "default") != "default":
+                  raise RuntimeError("Unexpected nextest local profile inheritance")
+              store = Path(config.get("store", {}).get("dir", "target/nextest"))
+              junit = Path(local.get("junit", {}).get("path", profiles["default"]["junit"]["path"]))
+              if any(path.is_absolute() or ".." in path.parts for path in (store, junit)):
+                  raise RuntimeError("Unexpected nextest JUnit output path")
+              report = workspace / store / "local" / junit
+              report.unlink(missing_ok=True)
+              receipt["junit_source"] = str(report)
+              # Existing context regression launches this actual executable.
+              # Build it from the same checkout; do not skip that regression.
+              target = Path(os.environ["CARGO_TARGET_DIR"])
+              if not target.is_absolute():
+                  raise RuntimeError("Absolute Cargo target directory required")
+              execute("same-source-app-server", ["cargo", "build", "--locked",
+                      "-p", "codex-app-server", "--bin", "codex-app-server"])
+              executable = target / "debug/codex-app-server"
+              with executable.open("rb") as stream:
+                  binary_sha256 = hashlib.file_digest(stream, "sha256").hexdigest()
+              receipt["app_server"] = {"path": str(executable), "sha256": binary_sha256,
+                                       "bytes": executable.stat().st_size,
+                                       "source_commit": receipt["source_commit"]}
+              os.environ["HEPTA_TEST_CODEX_EXECUTABLE"] = str(executable)
+              receipt["tests_command_started"] = True
+              execute("scoped-native-tests", ["just", "test", "--locked", "--lib", "--retries", "0",
+                      "-p", "codex-hepta-memory", "-p", "codex-hepta-agentd"])
+              cases = ET.parse(report).getroot().findall(".//testcase")
+              ran = [case for case in cases if case.find("skipped") is None]
+              expected = {
+                  "memory_v12_trained_payload_rejects_version_and_parameter_substitution",
+                  "memory_v12_trained_cells_publish_read_restart_correct_and_forget",
+                  "memory_v11_candidate_binds_the_complete_owner_partition_and_acquisition_cut",
+                  "memory_v11_owner_projection_is_local_complete_and_recoverable",
+                  "memory_v11_new_effective_version_and_tombstone_cannot_hide_behind_old_source_ids",
+                  "memory_v11_independent_cells_reuse_weights_with_fresh_queries_and_replace_one_version",
+                  "memory_v11_query_fences_reject_source_and_selected_version_races",
+                  "memory_v11_return_fence_rechecks_timed_dependencies_outside_query_support",
+                  "memory_v11_recovery_requires_live_signed_selection_and_withdrawal_frontier",
+                  "memory_v11_plan_rejects_duplicate_and_ambiguous_ownership",
+              }
+              observed = {case.get("name", "").rsplit("::", 1)[-1] for case in ran}
+              receipt.update(tests_executed=bool(ran), executed_cases=len(ran),
+                             v12_cases=sorted(expected & observed))
+              if not expected <= observed or any(case.find("failure") is not None or case.find("error") is not None for case in ran):
+                  raise RuntimeError("Required V12 lifecycle cases missing or failed")
+              if retain_tree("after_tests"):
+                  raise RuntimeError("Tests changed tracked sources")
+              receipt["final_fix_executed"] = True
+              try:
+                  execute("final-scoped-fix", ["just", "fix", "--locked", "-p", "codex-hepta-memory", "-p", "codex-hepta-agentd"])
+              finally:
+                  retain_tree("after_fix")
+              receipt["formatter_executed"] = True
+              try:
+                  execute("final-format", ["just", "fmt", "--base", baseline])
+              finally:
+                  changes = retain_tree("after_format")
+              if changes:
+                  raise RuntimeError("Final fix or format changed the tested source tree; review the saved patch")
+              subprocess.run(["git", "diff", "--check"], cwd=root, check=True)
+              receipt["passed"] = True
+          except Exception as error:
+              receipt.update(error_type=type(error).__name__, error=str(error))
+              print("V12 native verification failed:", error, flush=True)
+          finally:
+              if report is not None and report.is_file():
+                  shutil.copy2(report, output / "native-junit.xml")
+                  # A failing test command still executed tests. Preserve the
+                  # observed JUnit counts instead of leaving the initial false.
+                  try:
+                      cases = ET.parse(report).getroot().findall(".//testcase")
+                      ran = [case for case in cases if case.find("skipped") is None]
+                      receipt.update(tests_executed=bool(ran), executed_cases=len(ran),
+                                     junit_skipped_cases=len(cases) - len(ran),
+                                     failed_cases=[case.get("name", "") for case in ran
+                                         if case.find("failure") is not None or case.find("error") is not None],
+                                     v12_cases=sorted(case.get("name", "").rsplit("::", 1)[-1] for case in ran
+                                         if case.get("name", "").rsplit("::", 1)[-1].startswith("memory_v12_")))
+                  except Exception as error:
+                      receipt.update(passed=False, junit_parse_error=str(error))
+              test_log = output / "scoped-native-tests.log"
+              if test_log.is_file():
+                  plain = re.sub(r"\x1b\[[0-9;]*m", "", test_log.read_text())
+                  summaries = [line.strip() for line in plain.splitlines()
+                               if re.match(r"\s*Summary\s+\[", line)]
+                  if summaries:
+                      receipt["nextest_summary"] = summaries[-1]
+                      skipped = re.search(r"(\d+) skipped", summaries[-1])
+                      if skipped:
+                          receipt["nextest_reported_skipped_cases"] = int(skipped.group(1))
+              retain_tree("final")
+              receipt.update(wall_seconds=time.monotonic() - started,
+                             disk_after=shutil.disk_usage(output)._asdict())
+              save()
+          raise SystemExit(0 if receipt["passed"] else 1)
+          PY
+      - name: Upload immutable logs, source receipt, JUnit and finalization patches
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        timeout-minutes: 10
+        with:
+          name: memory-v12-native-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.HEPTA_MEMORY_V12_NATIVE_OUTPUT }}/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Save scoped build cache after immutable evidence upload
+        if: always() && steps.rust-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        timeout-minutes: 10
+        continue-on-error: true
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ${{ env.CARGO_TARGET_DIR }}
+          key: memory-v12-native-rust-1.95-${{ hashFiles('codex-rs/Cargo.lock') }}-${{ github.sha }}
