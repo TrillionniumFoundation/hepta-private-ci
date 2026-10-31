@@ -207,14 +207,39 @@ def _decode_video(path: Path) -> None:
         valid = False
     if not valid:
         _deny("MEDIA", "video has no valid decodable video stream metadata")
+    # A successful first frame is not evidence that the remaining video is
+    # decodable. Decode the full selected video stream with -xerror, and
+    # check framecrc records against the container-declared frame count when
+    # present. N/A/missing nb_frames cannot certify a complete length; this
+    # remains a source-integrity preflight, not a temporal-grounding oracle.
+    raw_count = streams[0].get("nb_frames")
+    expected = None
+    if raw_count not in (None, "N/A"):
+        if (type(raw_count) is not str or not raw_count.isdecimal()
+                or len(raw_count) > 7 or not 1 <= int(raw_count) <= 500_000):
+            _deny("MEDIA", "invalid declared video frame count")
+        expected = int(raw_count)
     decoded = _run_probe([decoder, "-nostdin", "-v", "error", "-xerror", "-i", str(path),
-                          "-map", "0:v:0", "-frames:v", "1", "-f", "framecrc", "-"],
-                         "first-frame video decode")
-    # Exit code 0 and framecrc metadata alone do not demonstrate any actual
-    # decoded frame. Each real frame has a numbered CSV record.
-    if not any(line.split(",", 1)[0].strip().isdigit()
-               for line in decoded.stdout.splitlines() if not line.startswith("#")):
+                          "-map", "0:v:0", "-f", "framecrc", "-"],
+                         "full-stream video decode")
+    frames = 0
+    for row in decoded.stdout.splitlines():
+        if not row.strip() or row.startswith("#"):
+            continue
+        fields = [part.strip() for part in row.split(",")]
+        # FFmpeg framecrc: stream_index, dts, pts, duration, bytes, crc.
+        if (len(fields) != 6 or fields[0] != "0"
+                or not all(re.fullmatch(r"-?\d+", value) for value in fields[1:4])
+                or not fields[4].isdecimal() or int(fields[4]) <= 0
+                or not re.fullmatch(r"0x[0-9a-fA-F]{8}", fields[5])):
+            _deny("MEDIA", "invalid full-video framecrc record")
+        frames += 1
+        if frames > 500_000:
+            _deny("MEDIA", "full-video decode exceeds preflight frame ceiling")
+    if frames == 0:
         _deny("MEDIA", "video stream produced no decoded frames")
+    if expected is not None and frames != expected:
+        _deny("MEDIA", f"decoded {frames} frames, declared {expected} frames")
 
 
 def validate_manifest(manifest: dict[str, Any], asset_root: Path) -> dict[str, Any]:
