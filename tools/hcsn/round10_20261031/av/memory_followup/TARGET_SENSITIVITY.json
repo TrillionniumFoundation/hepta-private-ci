@@ -1,0 +1,67 @@
+{
+  "analysis_status": "Posthoc descriptive examination of already saved predictions; no training, reselection or gate changes",
+  "conditions": [
+    "delay96",
+    "delay96_target_zero"
+  ],
+  "interpretation": "Measure response to removing target information; no positive semantic retention claim and no impossibility theorem",
+  "reason": "Equal top-1 accuracy can hide prediction or logit changes, so it cannot prove exactly zero retained information",
+  "rows": [
+    {
+      "changed_class_predictions_out_of_576": 0,
+      "maximum_absolute_logit_difference": 0.029329815674171505,
+      "mean_absolute_logit_difference": 8.438069479522655e-05,
+      "model": "ordinary",
+      "predictions_sha256": {
+        "results/ordinary_103101/predictions.npz": "29a6663cde40e662c6e1caf0dd37e68fa4f0262b7ddd6bd2b9b1b5f1b1789509",
+        "results/ordinary_103102/predictions.npz": "e0ec4b9d634bd1dd85d50be4ac9f886b2ed8b486b625dfedecdfbb622694ade5",
+        "results/ordinary_103103/predictions.npz": "03b52d33e9cd9a21da2efc544a905436efb00180df83a373ec11434b7ebd8991"
+      }
+    },
+    {
+      "changed_class_predictions_out_of_576": 1,
+      "maximum_absolute_logit_difference": 0.10269404776784959,
+      "mean_absolute_logit_difference": 0.000423947888085045,
+      "model": "matched_c1",
+      "predictions_sha256": {
+        "results/matched_c1_103101/predictions.npz": "66909fb8b536b1dec6eb69692d477f40d3b80d567d4baeebda1852944636da09",
+        "results/matched_c1_103102/predictions.npz": "e9b2d03da1e913c4f3a2a32c63d4957c8e82885c0b383f2b48761f67e62e8842",
+        "results/matched_c1_103103/predictions.npz": "8ace51dee1fecd5b8fc3dd9786ac26e0dd823985356d40a32769f3ad801fb642"
+      }
+    },
+    {
+      "changed_class_predictions_out_of_576": 1,
+      "maximum_absolute_logit_difference": 0.06361107863209566,
+      "mean_absolute_logit_difference": 0.0001867600815929239,
+      "model": "analytic",
+      "predictions_sha256": {
+        "results/analytic_103101/predictions.npz": "7852ad6867a85654f9bf343cb247157ec92cc15cd5177ce6abc305fba9032014",
+        "results/analytic_103102/predictions.npz": "ae9df45f0bec138b0d500ca6398d4443a0cc423320304164a2abba669281e437",
+        "results/analytic_103103/predictions.npz": "7d5d1fbd58dfbc6277e742db1618710353ada0dcb422b9bde46d86c5ebd4a269"
+      }
+    },
+    {
+      "changed_class_predictions_out_of_576": 0,
+      "maximum_absolute_logit_difference": 0.0,
+      "mean_absolute_logit_difference": 0.0,
+      "model": "cfc_matched",
+      "predictions_sha256": {
+        "results/cfc_matched_103101/predictions.npz": "7d5736d9c2bd81ea4859b52f528dd09bd91ec52cef3c8caa94ab71816bd6e6ca",
+        "results/cfc_matched_103102/predictions.npz": "3a3db7c4fcd8b4f7d6b9c750cdf62a34788efa10953b9a920e25456b43854603",
+        "results/cfc_matched_103103/predictions.npz": "84d18ffd1e5b27a9d1f8b04e2fb6bdd63c3fc39bddaa2cc21ad50651b739a8d8"
+      }
+    },
+    {
+      "changed_class_predictions_out_of_576": 0,
+      "maximum_absolute_logit_difference": 0.0,
+      "mean_absolute_logit_difference": 0.0,
+      "model": "cfc_same_width",
+      "predictions_sha256": {
+        "results/cfc_same_width_103101/predictions.npz": "bc6357477644829c69766a72d10ae28fbd62a3d827239e924315acc41594f6db",
+        "results/cfc_same_width_103102/predictions.npz": "6a6cbbd3115d40fac2c9a6b8b7d6e95ba2b5307a3ab33bd0c29d1b5b4fde53d5",
+        "results/cfc_same_width_103103/predictions.npz": "59cb01ff0e31a0cc4a3d37d167cf428c4c731a526dd0758d8777d167ac999141"
+      }
+    }
+  ],
+  "source_sha256": "dc0bf4a83e7e3b9d1df42c125fbe86a5755b383f3721ba6f40d28a8700a0ef1f"
+}

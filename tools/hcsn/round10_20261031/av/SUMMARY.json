@@ -1,0 +1,629 @@
+{
+  "all_blocks_updated": true,
+  "causal_online_streaming": false,
+  "energy_joules": null,
+  "flop_correction": "Raw RESULT estimates used 3x forward; audited count omits nonexistent input-feature gradient matmul. Both raw estimates and corrected counts are preserved.",
+  "foundation_model_superiority_established": false,
+  "full_he_xiong_network": false,
+  "gpu_evidence": false,
+  "historical_holdout_reused": true,
+  "independent_test_actors": 8,
+  "initialization_seeds": 3,
+  "means": [
+    {
+      "budget": "fixed",
+      "complete_cpu_seconds": 1.7364613333333334,
+      "complete_wall_seconds": 1.739617345665465,
+      "mean_audited_recurrent_affine_flops": 7633797120.0,
+      "mean_updates": 384.0,
+      "metrics": {
+        "block_missing": {
+          "accuracy": 0.2638888888888889,
+          "brier": 0.8120946648653061,
+          "ce": 1.728832978761455
+        },
+        "delay32": {
+          "accuracy": 0.1423611111111111,
+          "brier": 0.8587434831395412,
+          "ce": 1.8697654226980467
+        },
+        "delay96": {
+          "accuracy": 0.14409722222222224,
+          "brier": 0.8588289769080572,
+          "ce": 1.8702419683450537
+        },
+        "full": {
+          "accuracy": 0.2708333333333333,
+          "brier": 0.8032745330266798,
+          "ce": 1.7056465984464533
+        },
+        "missing_audio": {
+          "accuracy": 0.16319444444444445,
+          "brier": 0.8442784592174043,
+          "ce": 1.8265527595025457
+        },
+        "missing_video": {
+          "accuracy": 0.30902777777777785,
+          "brier": 0.7944616885705944,
+          "ce": 1.6796500763052402
+        },
+        "video_shift4": {
+          "accuracy": 0.25347222222222227,
+          "brier": 0.8106798487485315,
+          "ce": 1.7252596292680649
+        },
+        "within_actor_mispair": {
+          "accuracy": 0.2638888888888889,
+          "brier": 0.8092964381996265,
+          "ce": 1.7219304729430194
+        }
+      },
+      "model": "ordinary",
+      "parameters": 6654,
+      "width": 12
+    },
+    {
+      "budget": "fixed",
+      "complete_cpu_seconds": 1.9124286666666668,
+      "complete_wall_seconds": 1.9138210203285173,
+      "mean_audited_recurrent_affine_flops": 7633797120.0,
+      "mean_updates": 384.0,
+      "metrics": {
+        "block_missing": {
+          "accuracy": 0.26909722222222215,
+          "brier": 0.8095112455090727,
+          "ce": 1.7206094950095123
+        },
+        "delay32": {
+          "accuracy": 0.14409722222222224,
+          "brier": 0.8648280249658397,
+          "ce": 1.8885756560860119
+        },
+        "delay96": {
+          "accuracy": 0.14409722222222224,
+          "brier": 0.8653896004826994,
+          "ce": 1.891023911694494
+        },
+        "full": {
+          "accuracy": 0.2760416666666667,
+          "brier": 0.8044136385148134,
+          "ce": 1.7096386598879505
+        },
+        "missing_audio": {
+          "accuracy": 0.19791666666666666,
+          "brier": 0.8518406018254635,
+          "ce": 1.8520810778466599
+        },
+        "missing_video": {
+          "accuracy": 0.3090277777777778,
+          "brier": 0.788101469367713,
+          "ce": 1.6586673029009835
+        },
+        "video_shift4": {
+          "accuracy": 0.27777777777777773,
+          "brier": 0.8093845013831583,
+          "ce": 1.7190076144167727
+        },
+        "within_actor_mispair": {
+          "accuracy": 0.265625,
+          "brier": 0.8070608474032431,
+          "ce": 1.7149880266879027
+        }
+      },
+      "model": "matched_c1",
+      "parameters": 6654,
+      "width": 12
+    },
+    {
+      "budget": "fixed",
+      "complete_cpu_seconds": 2.446987,
+      "complete_wall_seconds": 2.450478585669771,
+      "mean_audited_recurrent_affine_flops": 7633797120.0,
+      "mean_updates": 384.0,
+      "metrics": {
+        "block_missing": {
+          "accuracy": 0.2760416666666667,
+          "brier": 0.80599811798455,
+          "ce": 1.7128322094227615
+        },
+        "delay32": {
+          "accuracy": 0.15277777777777776,
+          "brier": 0.8678608459283339,
+          "ce": 1.8957563549314609
+        },
+        "delay96": {
+          "accuracy": 0.1527777777777778,
+          "brier": 0.8683926392505557,
+          "ce": 1.8975697479779272
+        },
+        "full": {
+          "accuracy": 0.2899305555555555,
+          "brier": 0.8004323225848459,
+          "ce": 1.6970995074025501
+        },
+        "missing_audio": {
+          "accuracy": 0.19444444444444445,
+          "brier": 0.8461239339397243,
+          "ce": 1.838757851680346
+        },
+        "missing_video": {
+          "accuracy": 0.2986111111111111,
+          "brier": 0.7845884614262301,
+          "ce": 1.6480120207711764
+        },
+        "video_shift4": {
+          "accuracy": 0.26909722222222227,
+          "brier": 0.8086194394928462,
+          "ce": 1.7155805473649004
+        },
+        "within_actor_mispair": {
+          "accuracy": 0.2916666666666667,
+          "brier": 0.8018107200538269,
+          "ce": 1.7013383294334254
+        }
+      },
+      "model": "analytic",
+      "parameters": 6654,
+      "width": 12
+    },
+    {
+      "budget": "fixed",
+      "complete_cpu_seconds": 1.722882,
+      "complete_wall_seconds": 1.726382578999619,
+      "mean_audited_recurrent_affine_flops": 7387545600.0,
+      "mean_updates": 384.0,
+      "metrics": {
+        "block_missing": {
+          "accuracy": 0.17013888888888892,
+          "brier": 0.8331387668739291,
+          "ce": 1.7914087840545996
+        },
+        "delay32": {
+          "accuracy": 0.17881944444444442,
+          "brier": 0.8363984760490847,
+          "ce": 1.8016646926621929
+        },
+        "delay96": {
+          "accuracy": 0.17881944444444442,
+          "brier": 0.8363984760490847,
+          "ce": 1.8016646926621929
+        },
+        "full": {
+          "accuracy": 0.20138888888888887,
+          "brier": 0.8341267342443935,
+          "ce": 1.794197096685278
+        },
+        "missing_audio": {
+          "accuracy": 0.16666666666666666,
+          "brier": 0.8338809878013804,
+          "ce": 1.7934882089496886
+        },
+        "missing_video": {
+          "accuracy": 0.17013888888888892,
+          "brier": 0.8331387657727182,
+          "ce": 1.7914087808944619
+        },
+        "video_shift4": {
+          "accuracy": 0.18923611111111113,
+          "brier": 0.8341890557455341,
+          "ce": 1.794451428167512
+        },
+        "within_actor_mispair": {
+          "accuracy": 0.17361111111111113,
+          "brier": 0.8364314532045544,
+          "ce": 1.8010806690021415
+        }
+      },
+      "model": "cfc_matched",
+      "parameters": 6474,
+      "width": 6
+    },
+    {
+      "budget": "fixed",
+      "complete_cpu_seconds": 2.2901003333333336,
+      "complete_wall_seconds": 2.2919717853365,
+      "mean_audited_recurrent_affine_flops": 15267594240.0,
+      "mean_updates": 384.0,
+      "metrics": {
+        "block_missing": {
+          "accuracy": 0.17013888888888892,
+          "brier": 0.8355292001977644,
+          "ce": 1.7986838024468017
+        },
+        "delay32": {
+          "accuracy": 0.1527777777777778,
+          "brier": 0.8389699437365978,
+          "ce": 1.8081078516758051
+        },
+        "delay96": {
+          "accuracy": 0.1527777777777778,
+          "brier": 0.8389699437365978,
+          "ce": 1.8081078516758051
+        },
+        "full": {
+          "accuracy": 0.19444444444444445,
+          "brier": 0.8333149361485809,
+          "ce": 1.7916131870457486
+        },
+        "missing_audio": {
+          "accuracy": 0.1840277777777778,
+          "brier": 0.834012190305922,
+          "ce": 1.7930633275428225
+        },
+        "missing_video": {
+          "accuracy": 0.17013888888888892,
+          "brier": 0.835529200533201,
+          "ce": 1.798683803807209
+        },
+        "video_shift4": {
+          "accuracy": 0.1840277777777778,
+          "brier": 0.8338618224540074,
+          "ce": 1.7933254425277194
+        },
+        "within_actor_mispair": {
+          "accuracy": 0.16319444444444445,
+          "brier": 0.8364994645650646,
+          "ce": 1.8006346178864758
+        }
+      },
+      "model": "cfc_same_width",
+      "parameters": 13230,
+      "width": 12
+    },
+    {
+      "budget": "cpu",
+      "complete_cpu_seconds": 12.539361666666666,
+      "complete_wall_seconds": 12.556128995662826,
+      "mean_audited_recurrent_affine_flops": 75282324480.0,
+      "mean_updates": 3790.0,
+      "metrics": {
+        "block_missing": {
+          "accuracy": 0.24131944444444442,
+          "brier": 1.0269781693443722,
+          "ce": 2.4447207424092166
+        },
+        "delay32": {
+          "accuracy": 0.17881944444444445,
+          "brier": 1.0916527250117758,
+          "ce": 2.4571135241585282
+        },
+        "delay96": {
+          "accuracy": 0.17881944444444445,
+          "brier": 1.1130722951714735,
+          "ce": 2.545988422012272
+        },
+        "full": {
+          "accuracy": 0.27777777777777773,
+          "brier": 0.9766915213964141,
+          "ce": 2.167753928149921
+        },
+        "missing_audio": {
+          "accuracy": 0.21354166666666666,
+          "brier": 1.080719223516512,
+          "ce": 2.685163195277801
+        },
+        "missing_video": {
+          "accuracy": 0.3489583333333333,
+          "brier": 0.8517888409878561,
+          "ce": 1.855123403482758
+        },
+        "video_shift4": {
+          "accuracy": 0.26909722222222227,
+          "brier": 0.9903582692610445,
+          "ce": 2.2450684112042443
+        },
+        "within_actor_mispair": {
+          "accuracy": 0.2552083333333333,
+          "brier": 1.016532880411514,
+          "ce": 2.299417011276472
+        }
+      },
+      "model": "ordinary",
+      "parameters": 6654,
+      "width": 12
+    },
+    {
+      "budget": "cpu",
+      "complete_cpu_seconds": 12.607745,
+      "complete_wall_seconds": 12.622308333331603,
+      "mean_audited_recurrent_affine_flops": 57678308352.0,
+      "mean_updates": 2900.6666666666665,
+      "metrics": {
+        "block_missing": {
+          "accuracy": 0.2552083333333333,
+          "brier": 0.9378265235624269,
+          "ce": 2.1927255780718826
+        },
+        "delay32": {
+          "accuracy": 0.16666666666666666,
+          "brier": 1.0258345965167563,
+          "ce": 2.3692217215945206
+        },
+        "delay96": {
+          "accuracy": 0.14930555555555555,
+          "brier": 1.0502455805499664,
+          "ce": 2.49112953951234
+        },
+        "full": {
+          "accuracy": 0.2951388888888889,
+          "brier": 0.8618620002142823,
+          "ce": 1.8729469470265891
+        },
+        "missing_audio": {
+          "accuracy": 0.22743055555555558,
+          "brier": 0.9493541512099104,
+          "ce": 2.21899294552795
+        },
+        "missing_video": {
+          "accuracy": 0.35590277777777785,
+          "brier": 0.7882147127414023,
+          "ce": 1.6794347792737547
+        },
+        "video_shift4": {
+          "accuracy": 0.26909722222222227,
+          "brier": 0.899624699031759,
+          "ce": 1.9724465342120967
+        },
+        "within_actor_mispair": {
+          "accuracy": 0.2638888888888889,
+          "brier": 0.9029305491319173,
+          "ce": 1.9749535614038203
+        }
+      },
+      "model": "matched_c1",
+      "parameters": 6654,
+      "width": 12
+    },
+    {
+      "budget": "cpu",
+      "complete_cpu_seconds": 12.631406333333333,
+      "complete_wall_seconds": 12.640590573995723,
+      "mean_audited_recurrent_affine_flops": 56300825088.0,
+      "mean_updates": 2830.3333333333335,
+      "metrics": {
+        "block_missing": {
+          "accuracy": 0.24131944444444442,
+          "brier": 0.9114985907013488,
+          "ce": 2.064003186851247
+        },
+        "delay32": {
+          "accuracy": 0.16319444444444445,
+          "brier": 1.0536466106786506,
+          "ce": 2.4073383300131526
+        },
+        "delay96": {
+          "accuracy": 0.15104166666666666,
+          "brier": 1.0650448779880686,
+          "ce": 2.455529600435409
+        },
+        "full": {
+          "accuracy": 0.25347222222222227,
+          "brier": 0.9170850363674342,
+          "ce": 2.0026698799030034
+        },
+        "missing_audio": {
+          "accuracy": 0.21006944444444445,
+          "brier": 0.9514621652029615,
+          "ce": 2.2002794277014868
+        },
+        "missing_video": {
+          "accuracy": 0.31597222222222227,
+          "brier": 0.8227036518561524,
+          "ce": 1.7270829468517004
+        },
+        "video_shift4": {
+          "accuracy": 0.2552083333333333,
+          "brier": 0.9133912687058728,
+          "ce": 2.0109431130495907
+        },
+        "within_actor_mispair": {
+          "accuracy": 0.2517361111111111,
+          "brier": 0.9423311313370463,
+          "ce": 2.0748515018805
+        }
+      },
+      "model": "analytic",
+      "parameters": 6654,
+      "width": 12
+    },
+    {
+      "budget": "cpu",
+      "complete_cpu_seconds": 12.575480666666666,
+      "complete_wall_seconds": 12.633426203993926,
+      "mean_audited_recurrent_affine_flops": 67893396480.0,
+      "mean_updates": 3533.0,
+      "metrics": {
+        "block_missing": {
+          "accuracy": 0.15451388888888887,
+          "brier": 0.8502057578511285,
+          "ce": 1.8436817566744501
+        },
+        "delay32": {
+          "accuracy": 0.15277777777777776,
+          "brier": 0.8766298892690103,
+          "ce": 1.9135703353975293
+        },
+        "delay96": {
+          "accuracy": 0.15277777777777776,
+          "brier": 0.8766298892690103,
+          "ce": 1.9135703353975293
+        },
+        "full": {
+          "accuracy": 0.18229166666666666,
+          "brier": 0.8547322827092905,
+          "ce": 1.8510260576159894
+        },
+        "missing_audio": {
+          "accuracy": 0.17708333333333334,
+          "brier": 0.8541309562770832,
+          "ce": 1.8451477917115042
+        },
+        "missing_video": {
+          "accuracy": 0.15451388888888887,
+          "brier": 0.8502055031836445,
+          "ce": 1.8436803690127184
+        },
+        "video_shift4": {
+          "accuracy": 0.1684027777777778,
+          "brier": 0.8648576602146097,
+          "ce": 1.8784253252374141
+        },
+        "within_actor_mispair": {
+          "accuracy": 0.17013888888888892,
+          "brier": 0.8664740734836099,
+          "ce": 1.886166423265295
+        }
+      },
+      "model": "cfc_matched",
+      "parameters": 6474,
+      "width": 6
+    },
+    {
+      "budget": "cpu",
+      "complete_cpu_seconds": 12.700525333333333,
+      "complete_wall_seconds": 12.712617826332766,
+      "mean_audited_recurrent_affine_flops": 105751802880.0,
+      "mean_updates": 2657.0,
+      "metrics": {
+        "block_missing": {
+          "accuracy": 0.17013888888888892,
+          "brier": 0.8472915176573804,
+          "ce": 1.8288786110033886
+        },
+        "delay32": {
+          "accuracy": 0.140625,
+          "brier": 0.8772349191967423,
+          "ce": 1.9047257751853122
+        },
+        "delay96": {
+          "accuracy": 0.140625,
+          "brier": 0.8772349191967423,
+          "ce": 1.9047257751853122
+        },
+        "full": {
+          "accuracy": 0.21006944444444442,
+          "brier": 0.8510967243728822,
+          "ce": 1.8339534964818303
+        },
+        "missing_audio": {
+          "accuracy": 0.17361111111111113,
+          "brier": 0.8581386685740067,
+          "ce": 1.8486291250054891
+        },
+        "missing_video": {
+          "accuracy": 0.17013888888888892,
+          "brier": 0.8472914415425118,
+          "ce": 1.828878514257516
+        },
+        "video_shift4": {
+          "accuracy": 0.203125,
+          "brier": 0.8572077375085821,
+          "ce": 1.8519330366205737
+        },
+        "within_actor_mispair": {
+          "accuracy": 0.1753472222222222,
+          "brier": 0.8666240862778755,
+          "ce": 1.8796647607044925
+        }
+      },
+      "model": "cfc_same_width",
+      "parameters": 13230,
+      "width": 12
+    }
+  ],
+  "parameter_gap_fraction": 0.027051397655545536,
+  "primary_equal_cpu_contrasts": [
+    {
+      "adjusted_lower": -0.11631944444444443,
+      "ci95": [
+        -0.09375,
+        0.032986111111111105
+      ],
+      "control": "ordinary",
+      "endpoint": "full",
+      "gain": -0.024305555555555552,
+      "passes_registered_contrast": false
+    },
+    {
+      "adjusted_lower": -0.1067925347222222,
+      "ci95": [
+        -0.09027777777777775,
+        0.006944444444444438
+      ],
+      "control": "matched_c1",
+      "endpoint": "full",
+      "gain": -0.041666666666666664,
+      "passes_registered_contrast": false
+    },
+    {
+      "adjusted_lower": -0.019097222222222227,
+      "ci95": [
+        -0.001736111111111113,
+        0.14414062499999938
+      ],
+      "control": "cfc_matched",
+      "endpoint": "full",
+      "gain": 0.07118055555555555,
+      "passes_registered_contrast": false
+    },
+    {
+      "adjusted_lower": -0.03125,
+      "ci95": [
+        -0.013932291666666662,
+        0.09895833333333333
+      ],
+      "control": "cfc_same_width",
+      "endpoint": "full",
+      "gain": 0.04340277777777777,
+      "passes_registered_contrast": false
+    },
+    {
+      "adjusted_lower": -0.06770833333333333,
+      "ci95": [
+        -0.057291666666666664,
+        0.0234375
+      ],
+      "control": "ordinary",
+      "endpoint": "missing_mean",
+      "gain": -0.018229166666666668,
+      "passes_registered_contrast": false
+    },
+    {
+      "adjusted_lower": -0.08225368923611111,
+      "ci95": [
+        -0.06770833333333333,
+        0.0078124999999999965
+      ],
+      "control": "matched_c1",
+      "endpoint": "missing_mean",
+      "gain": -0.028645833333333332,
+      "passes_registered_contrast": false
+    },
+    {
+      "adjusted_lower": 0.025173611111111105,
+      "ci95": [
+        0.03819444444444444,
+        0.15625
+      ],
+      "control": "cfc_matched",
+      "endpoint": "missing_mean",
+      "gain": 0.09722222222222221,
+      "passes_registered_contrast": true
+    },
+    {
+      "adjusted_lower": 0.03125,
+      "ci95": [
+        0.04600694444444445,
+        0.13541666666666666
+      ],
+      "control": "cfc_same_width",
+      "endpoint": "missing_mean",
+      "gain": 0.09114583333333333,
+      "passes_registered_contrast": true
+    }
+  ],
+  "primary_passes": 2,
+  "raw_metric_checks": 240,
+  "total_complete_child_cpu_seconds": 219.490135,
+  "valid_jobs": 30
+}

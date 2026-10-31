@@ -1,0 +1,19 @@
+{
+  "reviewer": "parallel paper_audit agent",
+  "scope": "Read-only review of run.py and summarize.py; no independent training rerun",
+  "findings": {
+    "donor_selection": "Random within-actor derangement uses actor and index only; y is used only for array length, never its values. Asserts non-self and same actor.",
+    "target_zero": "Clears target steps 0:32, features 0:259 including both media, masks and logdt; replaces dt by 0.1; retains constant target-phase and query flags.",
+    "selection_order": "Selection and checkpoint hash are persisted before load_split(test).",
+    "original_checkpoint_replay": "Copies old weights and calls forward only; no optimizer, parameter updates or new selection.",
+    "same_evaluation_contract": "New and old models use the same donor plan and delay conditions.",
+    "interpretation": "Training distribution, augmentation, donor construction and selection change together; report correctly treats new-old difference as a package effect."
+  },
+  "followup_check": {
+    "requested": "Verify that different clip indices mean different recording IDs",
+    "completed_evidence": "RECORDING_ID_CHECK.json",
+    "all_train_validation_test_clip_ids_unique": true
+  },
+  "requires_retraining_for_detected_math_or_label_bug": false,
+  "scientific_superiority_established": false
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "hcsn-round10-memory-followup.v1",
+  "status": "New exploratory supplement; original30jobs and eight primary contrasts remain frozen",
+  "reason": "Original training mixed gaps0,8,32 but selected on gap0; gap96 was extrapolation. Align training/validation with gaps32/96 to separate objective mismatch from retained-content failure.",
+  "models": {"ordinary": 12, "matched_c1": 12, "analytic": 12, "cfc_matched": 6, "cfc_same_width": 12},
+  "seeds": [103101, 103102, 103103],
+  "training_cpu_seconds": 12.0,
+  "batch_size": 16,
+  "learning_rate": 0.003,
+  "gradient_clip": 2.0,
+  "training_gaps": [32, 96],
+  "training_donor": "Uniform random different recording from same actor; no label used in donor selection. Audio/video jointly from that recording; its32feature steps repeat for gap96.",
+  "evaluation_donor": "One fixed-seed random within-actor derangement, using actor and recording indices only. Not a deterministic filename rotation. Same mapping across models and seeds; retained with evidence.",
+  "validation": "At first complete update crossing6 and12 training CPU seconds, minimize mean CE over gaps32/96. Earlier checkpoint on ties. Seal selection before opening historical test arrays.",
+  "test_conditions": ["full", "delay32", "delay96", "delay96_target_zero"],
+  "target_zero": "Zero original target media and availability, replace original elapsed times by0.1 seconds; preserve target-phase bit and donor/query. Tests reliance on target information rather than donor correlations.",
+  "statistics": "Three paired seeds and eight test actors; crossed5000bootstrap. Report analytic-control differences in delay96, delay96-full retention differences, and delay96-minus-target_zero. Four analytic-control comparisons use descriptive adjusted lower quantile0.05/4, gain>=0.02. Exploration does not revise original8gates.",
+  "same_information": "All models share target-phase/query bits, physical elapsed time, donor/mask/sampling streams and train/validation/test actors. No modality drop augmentation in this supplement.",
+  "data": "Reuse22MB frozen CREMA-D cache at dca9febc8143c682077fe27d40dbeaa1137bcaa4; no new acquisition, no raw-media training.",
+  "cost": "Training body includes batch/donor construction, forward, loss, complete BPTT, checks, clipping and Adam. Full process startup/loads/validation/test/serialization measured separately via wait4.",
+  "limitations": ["Historical heldout cohort reused after earlier aggregate outcomes known", "Artificial tagged first-clip recall; not natural long-video labels", "Offline full-clip-resampled features, not causal media decoding", "Analytic arm is per-step Brownian gate, not fullHX or renewal", "Official CfC equation reproduced in NumPy; source and initialization distinctions inherited from parent evidence", "No GPU, energy or foundation-scale conclusion"]
+}

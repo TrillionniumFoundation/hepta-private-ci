@@ -1,0 +1,23 @@
+{
+  "schema": "hcsn-round10-real-av.v1",
+  "scope": "Offline CREMA-D low-level features, fully trained small NumPy recurrent encoders; not causal media streaming or full HX network",
+  "data_commit": "dca9febc8143c682077fe27d40dbeaa1137bcaa4",
+  "upstream_commit": "1658cd342dff90010aa843eaeebd53610a08b1dc",
+  "cfc_commit": "695ec22d7d1831f2ced67346ef7d2f08c525bd47",
+  "cfc_mode": "default; backbone_layers=0; no sparsity; independent NumPy BPTT",
+  "models": {"ordinary": 12, "matched_c1": 12, "analytic": 12, "cfc_matched": 6, "cfc_same_width": 12},
+  "seeds": [103101, 103102, 103103],
+  "input_dimension": 261,
+  "input_fields": "128audio+128video+2availability+log(physical_dt/0.1)+target_phase+query",
+  "time_contract": "physical_dt=0.1*stored_dt; all models see identical time and masks",
+  "analytic_gate": "erfc((softplus(-z)+0.001)/(3*sqrt(2*physical_dt))); zero-drift first passage under frozen gap each step",
+  "matched_c1": "logistic with analytic value and z-derivative matched exactly at z=0 separately for each physical dt",
+  "training": {"optimizer": "Adam", "learning_rate": 0.003, "gradient_norm_clip": 2.0, "batch_size": 16, "fixed_updates": 384, "equal_cpu_seconds": 12.0, "validation": "half budget and final; minimum full-condition validation CE; earlier on ties", "no_lr_search": true},
+  "training_augmentation": "Each batch uses gap0,8,32 uniformly; during gap show a random training clip as irrelevant distractor. Per sample, drop audio with p0.1 or video with p0.1, disjoint. Retain target phase and query bits. All arms share seed-indexed batch/distractor/mask prefix.",
+  "evaluation_conditions": ["full", "missing_audio", "missing_video", "block_missing", "video_shift4", "within_actor_mispair", "delay32", "delay96"],
+  "long_memory_scope": "Artificial recall of first real clip after other real-clip distractors; not naturally labeled long video. delay96 is outside training gap range.",
+  "selection": "Only training and validation arrays before selected checkpoint hash is sealed. Existing historical test cohort is reused, not fresh independent confirmation; earlier aggregate test results are already known.",
+  "statistics": "Report actor-balanced accuracy, CE and Brier. Paired crossed resampling of 3 seeds and 8 test actors, 5000 replicates; descriptive intervals. Equal-CPU primary contrasts analytic vs four controls for full and mean missing_audio/missing_video, 8 contrasts; one-sided lower quantile0.05/8 and gain>=0.02 required per contrast.",
+  "cost": "Full process CPU/wall/RSS and nested training CPU; shared restore separately. No GPU or energy measurements. Parameter matched CfC within3%; same-width CfC separately reported. Arithmetic FLOPs count affine matmuls only, not special functions or memory traffic.",
+  "exclusions": "No claim of foundation model scale, full HX financial kernel, optimized hardware competitiveness, learned raw-media frontend, or all-blocker closure"
+}

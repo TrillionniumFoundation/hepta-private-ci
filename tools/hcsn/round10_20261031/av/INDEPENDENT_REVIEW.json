@@ -1,0 +1,20 @@
+{
+  "reviewer": "parallel paper_audit agent",
+  "scope": "Read-only source review of models.py, study.py and preserved official CfC source; no independent rerun",
+  "findings": {
+    "bptt_direct_recurrence_term": "correct dh*(1-mix)",
+    "cfc_time_derivatives": "correct dm*elapsed for time_a and dm for time_b",
+    "analytic_gate_derivative": "erfc derivative sign and coefficient correct",
+    "cfc_equations": "match official default with backbone_layers=0; official Torch execution not available",
+    "split_and_selection": "disjoint actors; selected checkpoint written before test arrays load; input arrays contain no label feature"
+  },
+  "limitations_retained": [
+    "Delay distractor donors cross actors; delay observations are dependent and only descriptive means are reported",
+    "Within-actor mispairing is different-recording, not a separately enforced different-emotion intervention",
+    "Target-phase bit labels original segment versus distractor; task is artificial tagged recall",
+    "Analytic gate reparameterizes a frozen gap each step, not a probability-conserving continuous first-passage path law or full HX",
+    "Equal CPU matches training body only; complete process costs are separate launch receipts"
+  ],
+  "requires_retraining_for_detected_math_or_label_bug": false,
+  "overall_scientific_superiority_established": false
+}

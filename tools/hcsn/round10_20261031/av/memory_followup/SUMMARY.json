@@ -1,0 +1,250 @@
+{
+  "all_blockers_closed": false,
+  "analytic_delay96_contrasts": [
+    {
+      "adjusted_lower": -0.057291666666666664,
+      "ci95": [
+        -0.05034722222222223,
+        0.03993055555555556
+      ],
+      "control": "ordinary",
+      "exploratory_contrast_pass": false,
+      "mean": -0.00868055555555556
+    },
+    {
+      "adjusted_lower": -0.06597222222222222,
+      "ci95": [
+        -0.05902777777777778,
+        0.008680555555555554
+      ],
+      "control": "matched_c1",
+      "exploratory_contrast_pass": false,
+      "mean": -0.022569444444444444
+    },
+    {
+      "adjusted_lower": -0.03298611111111111,
+      "ci95": [
+        -0.029513888888888895,
+        0.026041666666666668
+      ],
+      "control": "cfc_matched",
+      "exploratory_contrast_pass": false,
+      "mean": -0.006944444444444445
+    },
+    {
+      "adjusted_lower": -0.045138888888888895,
+      "ci95": [
+        -0.03823784722222222,
+        0.02777777777777778
+      ],
+      "control": "cfc_same_width",
+      "exploratory_contrast_pass": false,
+      "mean": -0.005208333333333332
+    }
+  ],
+  "foundation_model_superiority_established": false,
+  "historical_holdout_reused": true,
+  "new_training_jobs": 15,
+  "original_checkpoint_replays": 15,
+  "original_eight_gates_unchanged": true,
+  "raw_new_metric_checks": 60,
+  "replay_cost": {
+    "cpu": 2.673447485,
+    "scope": "Audit plus replay of unchanged original checkpoints; not added to any training budget",
+    "wall": 2.6739508220052812
+  },
+  "same_actor_donors": true,
+  "tables": [
+    {
+      "accuracy": {
+        "delay32": 0.1684027777777778,
+        "delay96": 0.16666666666666666,
+        "delay96_target_zero": 0.16666666666666666,
+        "full": 0.15625
+      },
+      "delay96_minus_full": {
+        "adjusted_lower": null,
+        "ci95": [
+          -0.039930555555555566,
+          0.04865451388888827
+        ],
+        "mean": 0.01041666666666667
+      },
+      "delay96_vs_original_same_contract": {
+        "adjusted_lower": null,
+        "ci95": [
+          -0.10941840277777776,
+          0.020833333333333343
+        ],
+        "mean": -0.031249999999999997
+      },
+      "mean_complete_cpu": 12.650663333333334,
+      "mean_updates": 1846.6666666666667,
+      "model": "ordinary",
+      "original_delay96_same_contract": 0.19791666666666666,
+      "parameters": 6654,
+      "target_information_effect": {
+        "adjusted_lower": null,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "mean": 0.0
+      },
+      "width": 12
+    },
+    {
+      "accuracy": {
+        "delay32": 0.18229166666666666,
+        "delay96": 0.18055555555555555,
+        "delay96_target_zero": 0.17881944444444442,
+        "full": 0.17534722222222224
+      },
+      "delay96_minus_full": {
+        "adjusted_lower": null,
+        "ci95": [
+          -0.036458333333333336,
+          0.05902777777777778
+        ],
+        "mean": 0.005208333333333333
+      },
+      "delay96_vs_original_same_contract": {
+        "adjusted_lower": null,
+        "ci95": [
+          -0.03993055555555556,
+          0.052083333333333336
+        ],
+        "mean": 0.006944444444444444
+      },
+      "mean_complete_cpu": 12.744529666666667,
+      "mean_updates": 1373.3333333333333,
+      "model": "matched_c1",
+      "original_delay96_same_contract": 0.17361111111111108,
+      "parameters": 6654,
+      "target_information_effect": {
+        "adjusted_lower": null,
+        "ci95": [
+          0.0,
+          0.008680555555555554
+        ],
+        "mean": 0.0017361111111111108
+      },
+      "width": 12
+    },
+    {
+      "accuracy": {
+        "delay32": 0.15625,
+        "delay96": 0.15798611111111113,
+        "delay96_target_zero": 0.15798611111111113,
+        "full": 0.14583333333333334
+      },
+      "delay96_minus_full": {
+        "adjusted_lower": null,
+        "ci95": [
+          -0.020833333333333332,
+          0.04340277777777777
+        ],
+        "mean": 0.012152777777777776
+      },
+      "delay96_vs_original_same_contract": {
+        "adjusted_lower": null,
+        "ci95": [
+          -0.03819444444444445,
+          0.03476562499999938
+        ],
+        "mean": -2.3129646346357427e-18
+      },
+      "mean_complete_cpu": 12.754323,
+      "mean_updates": 1429.0,
+      "model": "analytic",
+      "original_delay96_same_contract": 0.1579861111111111,
+      "parameters": 6654,
+      "target_information_effect": {
+        "adjusted_lower": null,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "mean": 0.0
+      },
+      "width": 12
+    },
+    {
+      "accuracy": {
+        "delay32": 0.16493055555555555,
+        "delay96": 0.16493055555555555,
+        "delay96_target_zero": 0.16493055555555555,
+        "full": 0.17881944444444442
+      },
+      "delay96_minus_full": {
+        "adjusted_lower": null,
+        "ci95": [
+          -0.046875,
+          0.024305555555555556
+        ],
+        "mean": -0.013888888888888886
+      },
+      "delay96_vs_original_same_contract": {
+        "adjusted_lower": null,
+        "ci95": [
+          -0.041666666666666664,
+          0.02083333333333334
+        ],
+        "mean": -0.008680555555555554
+      },
+      "mean_complete_cpu": 12.690747666666667,
+      "mean_updates": 1699.0,
+      "model": "cfc_matched",
+      "original_delay96_same_contract": 0.17361111111111108,
+      "parameters": 6474,
+      "target_information_effect": {
+        "adjusted_lower": null,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "mean": 0.0
+      },
+      "width": 6
+    },
+    {
+      "accuracy": {
+        "delay32": 0.16319444444444442,
+        "delay96": 0.16319444444444442,
+        "delay96_target_zero": 0.16319444444444442,
+        "full": 0.16666666666666666
+      },
+      "delay96_minus_full": {
+        "adjusted_lower": null,
+        "ci95": [
+          -0.041666666666666664,
+          0.03472222222222222
+        ],
+        "mean": -0.0034722222222222225
+      },
+      "delay96_vs_original_same_contract": {
+        "adjusted_lower": null,
+        "ci95": [
+          -0.036458333333333336,
+          0.022569444444444448
+        ],
+        "mean": -0.005208333333333333
+      },
+      "mean_complete_cpu": 12.724072333333332,
+      "mean_updates": 1435.6666666666667,
+      "model": "cfc_same_width",
+      "original_delay96_same_contract": 0.16840277777777776,
+      "parameters": 13230,
+      "target_information_effect": {
+        "adjusted_lower": null,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "mean": 0.0
+      },
+      "width": 12
+    }
+  ],
+  "total_new_training_process_cpu": 190.693008
+}
