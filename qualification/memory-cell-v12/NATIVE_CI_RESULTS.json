@@ -1,0 +1,111 @@
+{
+  "as_of_utc": "2026-10-31T02:49:42.263793+00:00",
+  "native_gate_passed": false,
+  "native_gate_pending": true,
+  "native_runs": [
+    {
+      "executed_cases": 519,
+      "failed_cases": [
+        "memory_serving_plan_v11::learned_tests::memory_v12_trained_cells_publish_read_restart_correct_and_forget"
+      ],
+      "failure_classification": "V11-to-V12 logical objective domain mismatch; tests executed, no finalization",
+      "final_fix_executed": false,
+      "fix_source_commit": "465aa2077076254a4fa75de7e85521e2bd8d117a",
+      "formatter_executed": false,
+      "nextest_summary": "Summary [  50.080s] 519 tests run: 518 passed, 1 failed, 24 skipped",
+      "passed": false,
+      "raw_archive_manifest": "evidence-packs/native-ci-run-41155593988/manifest.json",
+      "receipt": "evidence/native-ci/run-41155593988/expanded/receipt.json",
+      "run_id": 41155593988,
+      "source_commit": "df5aacb5be4b862c42d132e6f0fdadea30ea20ec",
+      "tests_executed_after_fix_or_format": false,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41155593988"
+    },
+    {
+      "executed_cases": 520,
+      "failed_cases": [
+        "memory_serving_plan_v11::learned_tests::memory_v12_trained_cells_publish_read_restart_correct_and_forget"
+      ],
+      "failure_classification": "V11-to-V12 logical objective domain mismatch; tests executed, no finalization",
+      "final_fix_executed": false,
+      "fix_source_commit": "465aa2077076254a4fa75de7e85521e2bd8d117a",
+      "formatter_executed": false,
+      "nextest_summary": "Summary [  50.389s] 520 tests run: 519 passed, 1 failed, 24 skipped",
+      "passed": false,
+      "raw_archive_manifest": "evidence-packs/native-ci-run-41156495206/manifest.json",
+      "receipt": "evidence/native-ci/run-41156495206/expanded/receipt.json",
+      "run_id": 41156495206,
+      "source_commit": "84ff90a879ba19e527654985e5e927afa5bbfb60",
+      "tests_executed_after_fix_or_format": false,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41156495206"
+    },
+    {
+      "executed_cases": 520,
+      "failed_cases": [],
+      "failure_classification": "Only rustfmt changed the tested source; after_fix.patch is empty",
+      "final_fix_executed": true,
+      "formatter_executed": true,
+      "nextest_summary": "Summary [  35.557s] 520 tests run: 520 passed, 24 skipped",
+      "passed": false,
+      "patch_review": "evidence/native-ci/run-41157391884/FORMAT_REVIEW.json",
+      "raw_archive_manifest": "evidence-packs/native-ci-run-41157391884/manifest.json",
+      "receipt": "evidence/native-ci/run-41157391884/expanded/receipt.json",
+      "reviewed_formatter_applied_in_commits": [
+        "9ff286167129724262c9f2b60ca82e2775e65de2",
+        "40330d860ac4202b04927f0d69e74348c6d7f8c4"
+      ],
+      "run_id": 41157391884,
+      "source_commit": "465aa2077076254a4fa75de7e85521e2bd8d117a",
+      "tests_executed_after_fix_or_format": false,
+      "tests_passed": 520,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41157391884"
+    },
+    {
+      "passed": null,
+      "run_id": 41160901114,
+      "source_commit": "40330d860ac4202b04927f0d69e74348c6d7f8c4",
+      "status": "queued",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41160901114"
+    }
+  ],
+  "production_activation_allowed": false,
+  "python_ci_runs": [
+    {
+      "executed_tests": 28,
+      "failure_classification": "CI environment omitted SciPy and scikit-learn dependency set",
+      "log": "evidence/python-ci/run-41158537363/expanded/tests.log",
+      "module_import_errors": 2,
+      "passed": false,
+      "receipt": "evidence/python-ci/run-41158537363/expanded/receipt.json",
+      "run_id": 41158537363,
+      "source_commit": "8f59147d32bec99d503d2790fff4336d7b311731",
+      "successful_test_cases": 26
+    },
+    {
+      "passed": null,
+      "run_id": 41160216394,
+      "source_commit": "38ffc1a548cd5e39376469e5328124e37bd5933b",
+      "status": "queued"
+    }
+  ],
+  "python_dependency_versions": {
+    "joblib": "1.5.3",
+    "numpy": "2.3.5",
+    "scikit-learn": "1.8.0",
+    "scipy": "1.17.0",
+    "threadpoolctl": "3.6.0"
+  },
+  "python_local": {
+    "executed_tests": 38,
+    "passed": 38,
+    "receipt": "evidence/local-validation/receipt.json"
+  },
+  "schema": "hepta.memory.v12.validation-index.v1",
+  "scope": "Scoped native contracts and all Python behavior contracts; not research superiority or full-repository validation",
+  "source_policy": {
+    "changed_finalization_requires_review_commit_and_new_validation": true,
+    "do_not_claim_old_commit_pass_for_changed_sources": true,
+    "frozen_scientific_runs_are_not_retroactively_updated_by_behavior_fixes": true,
+    "tests_execute_before_final_fix_and_format": true
+  }
+}

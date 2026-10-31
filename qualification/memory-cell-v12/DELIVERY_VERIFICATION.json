@@ -1,0 +1,76 @@
+{
+  "all_remote_blobs_equal_local_bytes": true,
+  "all_within_limit": true,
+  "failures": [],
+  "native_and_workflow_blob_count": 12,
+  "native_and_workflow_files_verified_against_same_remote_commit": [
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "sha": "db4312b0fb2a7cf83b62b851f7470fad8bf6fdd9",
+      "size": 16883
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/memory_independent_cell_v11.rs",
+      "sha": "b62a9cf8989b0c9819e9f2bc5284599067d08f88",
+      "size": 15723
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/memory_independent_model_v12.rs",
+      "sha": "c9da707ecf55e1cb4c6b605abad699f2d794c5ec",
+      "size": 4082
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/memory_mlp_v12.rs",
+      "sha": "19bddb0e199455d30e9f15d5162716c2e7d57e5e",
+      "size": 14250
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/memory_mlp_v12_python_fixture.rs",
+      "sha": "2fcc1ace0e636767bcd4c552e3229ca680ad01e1",
+      "size": 6844
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/memory_mlp_v12_tests.rs",
+      "sha": "518895ed6612d85de40f9ad93e5c018b0a5f3b8b",
+      "size": 13419
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/memory_mlp_v12_training_test_support.rs",
+      "sha": "3576c34c9603d8b3f8168c1f0a1c152556245951",
+      "size": 9597
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/memory_serving_plan_v11.rs",
+      "sha": "4c49ac296432fc8405159ba7ef0143cce2675cd9",
+      "size": 13583
+    },
+    {
+      "path": ".github/workflows/memory-cell-v12-federation.yml",
+      "sha": "1afffc0fcbfaa79b79d87014202deba16c2019e0",
+      "size": 8782
+    },
+    {
+      "path": ".github/workflows/memory-cell-v12-live.yml",
+      "sha": "e0a944bf7ea4102322aa244f944640b94b2e03f6",
+      "size": 7505
+    },
+    {
+      "path": ".github/workflows/memory-cell-v12-native.yml",
+      "sha": "95dd354c5ea0471a39328b6a2f6503960163c33a",
+      "size": 15441
+    },
+    {
+      "path": ".github/workflows/memory-cell-v12-python.yml",
+      "sha": "01fec918d2ba84ea8389a32fdf007b352578eba1",
+      "size": 3814
+    }
+  ],
+  "repository_blob_limit_bytes": 512000,
+  "schema": "hepta.memory.v12.delivery-verification.v1",
+  "scope": "Qualification code, frozen inputs, readable results and all evidence archives at the named immutable commit. Subsequent summary/status documents are outside this snapshot.",
+  "verified_at_utc": "2026-10-31T02:50:30.922777+00:00",
+  "verified_blob_bytes": 81960754,
+  "verified_blob_count": 372,
+  "verified_commit": "7a5752ad60a9de7d2783cc5849e29b1b972fe520",
+  "verified_subtree": "7d4ff56839366ac9d6d28ff144298c63c44b5ad1"
+}

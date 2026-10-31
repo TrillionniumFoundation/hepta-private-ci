@@ -1,0 +1,111 @@
+{
+  "as_of_utc": "2026-10-31T02:49:42.264306+00:00",
+  "native_gate": "See NATIVE_CI_RESULTS.json for exact submitted and tested commits; Python success is not a native pass.",
+  "pinned_document_commit": "527218f9b823540830907f861a309310b71d38c9",
+  "production_activation_allowed": false,
+  "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4430",
+  "python_behavior": {
+    "local_receipt": "evidence/local-validation/receipt.json",
+    "passed": 38,
+    "tests": 38
+  },
+  "raw_evidence_policy": {
+    "archive_compression_is_not_a_learned_memory_result": true,
+    "archive_member_hashes_verified": true,
+    "archive_parts_max_bytes": 400000,
+    "failed_candidates_preserved": true,
+    "frozen_executed_sources_preserved": true
+  },
+  "research_branch": "research/memory-cell-v12-20261030",
+  "schema": "hepta.memory.v12.qualification.v1",
+  "stages": [
+    {
+      "actual_sigkills": 4,
+      "addressing": "explicit parser to canonical model input",
+      "bounded_document_lifecycle_passed": true,
+      "canonical_addresses": 10,
+      "distinct_unknown_address_queries": 1,
+      "implemented": true,
+      "open_language_generalization_established": false,
+      "passed_checks": 31,
+      "queries": 60,
+      "question_forms_per_address": 3,
+      "report": "DOCUMENT_CELL_RESULTS.md",
+      "source_states": 2,
+      "stage": 1,
+      "unknown_checks": 20
+    },
+    {
+      "compression_advantage_established": false,
+      "implemented": true,
+      "largest_documents": 40,
+      "model_arms": 18,
+      "report": "CONTENT_RESULTS.md",
+      "same_service_registry_zlib_bytes": 670,
+      "seeds": 3,
+      "sharded_serving_state_bytes": 144923,
+      "single_serving_state_bytes": 140588,
+      "stage": 2
+    },
+    {
+      "capability_advantage_established": false,
+      "distinct_future_tasks": 206,
+      "first_three_type_ablation_identical_outputs": 618,
+      "full_correct": 582,
+      "future_evaluations": 618,
+      "implemented": true,
+      "report": "TYPED_RESULTS.md",
+      "specialist_readers": "deterministic caches/parsers; learned address selector",
+      "stage": 3,
+      "strong_bm25_correct": 582
+    },
+    {
+      "actually_sparse_model_calls": true,
+      "implemented": true,
+      "normalized_future_known_queries_seen_in_history": 403,
+      "normalized_future_language_forms": 31,
+      "quality_advantage_over_strong_history_established": false,
+      "report": "NETWORK_RESULTS.md",
+      "stage": 4,
+      "total_system_cost_independent_of_all_cell_count_established": false
+    },
+    {
+      "accepted_completed_candidates": 0,
+      "completed_bce_candidates": 12,
+      "completed_categorical_candidates": 12,
+      "implemented": true,
+      "interrupted_exploration_full_cost_available": false,
+      "positive_future_cumulative_net_benefit_established": false,
+      "report": "NETWORK_RESULTS.md",
+      "reported_interrupted_and_retry_cost_is_lower_bound": true,
+      "stage": 5
+    },
+    {
+      "artifact_relay": true,
+      "concurrent_live_cross_vm_passed": true,
+      "distributed_consensus": false,
+      "implemented": true,
+      "live_exact_source": "ca002c6189ba107077f8ea8e0ea50e2227a3b806",
+      "live_jobs_passed": 3,
+      "live_run": 41157871480,
+      "live_vms": 3,
+      "native_owner_integration": false,
+      "optimizer_migration_tested": false,
+      "physical_host_failure_tested": false,
+      "report": "FEDERATION_RESULTS.md",
+      "serial_seven_vm": {
+        "actual_controller_sigkills_observed": 2,
+        "complete_run_passed": false,
+        "completed_jobs": 4,
+        "final_pending": true,
+        "partial_audit": "evidence/federation-serial/run-41157593645/INDEPENDENT_AUDIT_PARTIAL_4.json",
+        "readback_jobs_pending": 2,
+        "run_id": 41157593645,
+        "source_commit": "024acd29eb46361619f01dcc2782a2ad076bc5e0"
+      },
+      "stage": 6,
+      "trusted_single_authority": true
+    }
+  ],
+  "universal_memory_claim_established": false
+}
