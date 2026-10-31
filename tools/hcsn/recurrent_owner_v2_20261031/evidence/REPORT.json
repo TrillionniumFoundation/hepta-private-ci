@@ -1,0 +1,122 @@
+{
+  "schema": "hcsn.incremental-owner.implementation-replay.v2",
+  "accepted": true,
+  "frozen_research_commit": "8fef2abec58dc0b40287de1e656f9042371979b5",
+  "source_sha256": {
+    "owner.py": "4b9675381f18bffc3f2568febd2834b07ea4ee9136c93c26b87d9fb6c41fd4b3",
+    "owner_tests.py": "dac5935fdd5446be54994664804127ad2b6a1273449e54d504aea2cf97ae3855",
+    "qualification.py": "8b03de7fd6956d66a5441e371f73348836ba2935a75ed70f457ce97254712636"
+  },
+  "inputs_sha256": {
+    "results/seed61031_ood.json.gz": "6bd5dd12d17c9dc6a234369ffbdb60927fda21b7ed93054cedda8d1d063863c3",
+    "models/seed61031.json.gz": "c2800ca334b6c318ac41299be0a471a1dca0a1d586ef10da408d5560b558ce40",
+    "results/seed61031_test.json.gz": "632c29870e67d82ab1329486333a74d7122ad6d165d8d3c40de6403ce3a2705f",
+    "results/seed61037_ood.json.gz": "34611da279b18a48e538714535616f83f7345ebbd6ba56b00f138d75ed554fe1",
+    "models/seed61037.json.gz": "6a036b6108bbaa3b054fd3a52da165f511d503312f28cf4d6cd686f852a0ae07",
+    "results/seed61037_test.json.gz": "70edc5d57884736c9af58c1fb596fe1efd293e63920533a54153d6f9b8be53a4",
+    "results/seed61043_ood.json.gz": "0ee063263d6a38fe6767aa3e228fe6963e7e354cebed8456d6508ba8946c41b4",
+    "models/seed61043.json.gz": "5654b11be69cc3971e930239a1ec3e19d2e5ef2c8d3748d813c4647ce1764ef7",
+    "results/seed61043_test.json.gz": "64e9a01d009dd99f44894ff6a0b0ddd3f0847d30785967b880222b8ecdd13ada",
+    "results/seed61049_ood.json.gz": "ea1c65c9a5aad071856a50689163e76bf07dc59b34f8ddd5180d9856e6aa3cf9",
+    "models/seed61049.json.gz": "ddfc8a3523afaa4a50517e0b73b7c5b79a2883a7468530d35d80c47ff8ade875",
+    "results/seed61049_test.json.gz": "bcdd017ce98832d20b122b034b188783141fc92ba1ee7f7124f9bf19e85e0fcf",
+    "results/seed61057_ood.json.gz": "d9dcfb816e9f150b7a6b4033205d3bda2e4fd21fb59f991761f2bcdede72b926",
+    "models/seed61057.json.gz": "801933c009e938f0b1462002b7569dee7b8249dad79d1216c7dc10ee07e61bd6",
+    "results/seed61057_test.json.gz": "659da8c7e727c629490c7953f914d25da20d6c7b0085fcdb89cc9629db6bb992"
+  },
+  "episodes": 3200,
+  "decisions": 18238,
+  "summaries": [
+    {
+      "policy": "ordinary_myopic",
+      "episodes": 640,
+      "decisions": 3629,
+      "legacy_cpu_seconds": 0.21548976200002307,
+      "incremental_cpu_seconds": 0.15138278399999644,
+      "maximum_feature_error": 0.0,
+      "maximum_q_error": 8.881784197001252e-16,
+      "action_mismatches": 0,
+      "sampled_paths_equal": true
+    },
+    {
+      "policy": "ordinary_value",
+      "episodes": 640,
+      "decisions": 3485,
+      "legacy_cpu_seconds": 0.20932623299999514,
+      "incremental_cpu_seconds": 0.14442048299999638,
+      "maximum_feature_error": 0.0,
+      "maximum_q_error": 8.881784197001252e-16,
+      "action_mismatches": 0,
+      "sampled_paths_equal": true
+    },
+    {
+      "policy": "analytic_myopic",
+      "episodes": 640,
+      "decisions": 3813,
+      "legacy_cpu_seconds": 2.4166254870000037,
+      "incremental_cpu_seconds": 1.189699533000008,
+      "maximum_feature_error": 3.3306690738754696e-16,
+      "maximum_q_error": 7.771561172376096e-16,
+      "action_mismatches": 0,
+      "sampled_paths_equal": true
+    },
+    {
+      "policy": "analytic_value",
+      "episodes": 640,
+      "decisions": 3691,
+      "legacy_cpu_seconds": 2.3126059440000057,
+      "incremental_cpu_seconds": 1.244195012,
+      "maximum_feature_error": 3.3306690738754696e-16,
+      "maximum_q_error": 8.049116928532385e-16,
+      "action_mismatches": 0,
+      "sampled_paths_equal": true
+    },
+    {
+      "policy": "analytic_value_sampled",
+      "episodes": 640,
+      "decisions": 3620,
+      "legacy_cpu_seconds": 1.5307351089999925,
+      "incremental_cpu_seconds": 1.6319015009999975,
+      "maximum_feature_error": 2.220446049250313e-16,
+      "maximum_q_error": 8.881784197001252e-16,
+      "action_mismatches": 0,
+      "sampled_paths_equal": true
+    }
+  ],
+  "mismatch_examples": [],
+  "long_stream": {
+    "intervals": 2048,
+    "maximum_mass_error": 1.9984014443252818e-15,
+    "minimum_mass": 0.0,
+    "expected_latent_events": 148.36192214545315,
+    "final_cache_entries": 45,
+    "maximum_cache_entries": 128,
+    "final_checkpoint": {
+      "record": {
+        "schema": "hcsn.incremental-cell-owner.v2",
+        "family": "analytic",
+        "mode": "distribution",
+        "parameters_sha256": "cdd1c44aa305e383b5d8067959ae18e99013110b648367830d97a9b521de3727",
+        "sequence": 2048,
+        "elapsed": 531.2122738272296,
+        "latent_event_count": 148.36192214545315,
+        "state": [
+          0.19161451910293947,
+          0.39175513444613547,
+          0.3120867296070194,
+          0.051897279135121155,
+          0.05264633770878451
+        ],
+        "sampled_index": null,
+        "rng_state": null
+      },
+      "sha256": "615cc15b813e2029d6c7e6ff7b5793dbe67f15d1d8691f8cc48b7883417da222"
+    },
+    "passed": true
+  },
+  "replay_cpu_seconds": 13.337561223,
+  "replay_wall_seconds": 13.356837659011944,
+  "scope": "Implementation regression on already published heldout evidence, not new efficacy, refitting or selection.",
+  "timing_scope": "Randomized paired order; fresh owner per stream; cell construction, query and advance only, no content IO or controller. New distribution path additionally advances the last interval. CPU is host-process CPU, not measured energy.",
+  "main_activation": false
+}
