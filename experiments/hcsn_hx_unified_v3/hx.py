@@ -278,7 +278,8 @@ def equity_resolvent(p: HX, asset: float, asset_boundary: float | None = None,
     upper=max(50.0,x+25)
     left=quad(integrand,0,x,epsabs=epsabs,epsrel=2e-10,limit=250)[0]
     right=quad(integrand,x,upper,epsabs=epsabs,epsrel=2e-10,limit=250)[0]
-    # Analytic tail: bond -> c/q and f -> payout*b*e^y + c/q - const.
+    # A finite-maturity surviving bond retains its discounted principal:
+    # bond -> c/q + exp(-q*m)*(p-c/q), not the perpetuity limit c/q.
     # For y>upper, y>=x, density=C*exp(-eta*y), and correction from
     # bond default tail is exponentially small in the audited range.
     # For delta=0, use the delta-down-to-zero (transversality) limit;
@@ -288,7 +289,10 @@ def equity_resolvent(p: HX, asset: float, asset_boundary: float | None = None,
     # Stable identity: eta-1=2*delta/(sigma^2*(gamma+1)).
     eta_minus_one=2*p.payout/(p.volatility**2*(p.gamma+1))
     tail=C*(.5*p.volatility**2*(p.gamma+1)*b*math.exp(-eta_minus_one*upper))
-    tail+=C*(p.per_bond_coupon/p.q-const)*math.exp(-eta*upper)/eta
+    safe_bond=(p.per_bond_coupon/p.q
+               +math.exp(-p.q*p.maturity)
+               *(p.per_bond_principal-p.per_bond_coupon/p.q))
+    tail+=C*(safe_bond-const)*math.exp(-eta*upper)/eta
     return left+right+tail
 
 
