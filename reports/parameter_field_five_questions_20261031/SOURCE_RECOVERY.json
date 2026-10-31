@@ -1,0 +1,170 @@
+{
+  "schema": "hepta.parameter-field.public-source-recovery.1",
+  "audit_utc": "2026-10-31T01:20:24.202015+00:00",
+  "summary_created_utc": "2026-10-31T01:24:47.870321+00:00",
+  "scope": "Local read-only restoration integrity and historical cost provenance; no scientific outcomes interpreted.",
+  "registered_sources": {
+    "execution06_registration_commit": "bc4e757f5c90f6365f383c1127be710d2ded874a",
+    "execution06_operational_code_commit": "058cd3d22aecbf67f9c5054f2131eeb0ccd55793",
+    "execution04_original_producer_commit": "bf59ac45860884d770dfd437d8a447068c5ef9a9",
+    "original_protocol_sha256": "2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55",
+    "execution06_pipeline_sha256": "d16bac3194b36d286f180976ddbc7dff16e544763e195d408a135b30af4fb86e",
+    "execution06_cwd_policy_sha256": "8372d19d086cfeba5d7710fb095aa45c907c498da0d730864ef069d2a0a4f297",
+    "original_asset_archive_sha256": "ddbdf10b4397c8538183df8fa7c16f08c5fba226a304ff7cb55574ddb97e951e"
+  },
+  "hash_validation": {
+    "source06": {
+      "files": 167,
+      "matching": 167,
+      "mismatch_count": 0
+    },
+    "source04": {
+      "files": 132,
+      "matching": 132,
+      "mismatch_count": 0
+    },
+    "original_assets": {
+      "files": 9,
+      "matching": 9,
+      "mismatch_count": 0
+    },
+    "a17_anchors04": {
+      "files": 17,
+      "matching": 17,
+      "mismatch_count": 0
+    },
+    "a17_materialized_import": {
+      "files": 284,
+      "matching": 284,
+      "mismatch_count": 0
+    },
+    "pipeline_descriptors": {
+      "files": 29,
+      "matching": 29,
+      "mismatch_count": 0
+    },
+    "failure05_descriptors": {
+      "files": 10,
+      "matching": 10,
+      "mismatch_count": 0
+    }
+  },
+  "original_assets": {
+    "pinned_file_count": 9,
+    "pinned_total_bytes": 24638365,
+    "read_method": "Chunked SHA256 over exact existing files; no archive extraction, tensor loading or dataset decoding.",
+    "full_original_archive_extraction_required": false,
+    "files": [
+      {
+        "relative_path": "ndu-data/t10k-images-idx3-ubyte.gz",
+        "bytes": 1648877,
+        "sha256": "8d422c7b0a1c1c79245a5bcf07fe86e33eeafee792b84584aec276f5a2dbc4e6"
+      },
+      {
+        "relative_path": "ndu-data/t10k-labels-idx1-ubyte.gz",
+        "bytes": 4542,
+        "sha256": "f7ae60f92e00ec6debd23a6088c31dbd2371eca3ffa0defaefb259924204aec6"
+      },
+      {
+        "relative_path": "ndu-data/train-images-idx3-ubyte.gz",
+        "bytes": 9912422,
+        "sha256": "440fcabf73cc546fa21475e81ea370265605f56be210a4024d2ca8f203523609"
+      },
+      {
+        "relative_path": "ndu-data/train-labels-idx1-ubyte.gz",
+        "bytes": 28881,
+        "sha256": "3552534a0a558bbed6aed32b30c495cca23d567ec52cac8be1a0730e8010255c"
+      },
+      {
+        "relative_path": "ndu-runs/full-002/audit-observer.pt",
+        "bytes": 427247,
+        "sha256": "cd560d4ec2f45cef6a0f4db9809b902ea68833c8693798f7597135a83a6e3589"
+      },
+      {
+        "relative_path": "ndu-runs/full-002/reward-observer.pt",
+        "bytes": 427261,
+        "sha256": "a9cfe78a08b9192ba9d8fe9c144de29ef5d3b1e9cd6ed236d01d170d32034210"
+      },
+      {
+        "relative_path": "ndu-runs/full-002/seed-17-terminal_entropic_ndu.pt",
+        "bytes": 4063045,
+        "sha256": "8fa76a13cdeee48e41b84e29211659a065d9573e2fdfecc4281f882248b508b6"
+      },
+      {
+        "relative_path": "ndu-runs/full-002/seed-29-terminal_entropic_ndu.pt",
+        "bytes": 4063045,
+        "sha256": "e92dc06cec18ee279b8367a2fd194ba91978197150e5edcdede1c0d9fde2b11c"
+      },
+      {
+        "relative_path": "ndu-runs/full-002/seed-43-terminal_entropic_ndu.pt",
+        "bytes": 4063045,
+        "sha256": "1a38524e474d35ff9eb1ad584b1714ea2ef7f7f8d0c502a6b3b2172252ddabf9"
+      }
+    ]
+  },
+  "a17_import": {
+    "scientific_cost_owner": "execution04_durable_20261030:A-17",
+    "import_receipt_bytes": 116925,
+    "import_receipt_sha256": "5215c9410345a1a5a3366cc33bcecc2e3bdd13947cbae8ee9cf9c2bbdc3ae074",
+    "materialized_file_count": 284,
+    "materialized_total_bytes": 140876524,
+    "original_and_imported_file_hashes_match": true,
+    "source_scientific_complete_sha256": "ae0550f42d155750dce2186766ed986b58070edc983487e8736abefd528e4366",
+    "source_operation_complete_sha256": "9130273f0bed6fc7f53569e57b937532ac37dae472919b41b583bc0477c09981",
+    "source_archive_manifest_sha256": "6d66a5864b773adad19d2d767cfe2bb536a22f4a3296e03540aa7b2f317b5bfc",
+    "source_ack_sha256": "d7e9bcb25e6c665269980622fa7cff4e454134ef63699add94a5261c60d0e480",
+    "source_ack_verified_sha256": "e89c99e65a0723b46cacf18183f860b12e8c7d23ff8ccfd0c52126bbed354e57",
+    "scientific_work_added_by_audit": 0,
+    "scientific_cost_must_be_counted_once": true,
+    "read_method": "Source and imported byte streams hashed independently; no checkpoint values or endpoint outcomes decoded."
+  },
+  "historical_cost_provenance": {
+    "execution05_source_validation": {
+      "validator": "operational/parameter_field_recovery06/execution05_costs.py:validate_source_pins",
+      "result": "PASS",
+      "metadata_bindings": 45,
+      "metadata_bytes": 1690853,
+      "entire_failed_RAW_archive_needed": false,
+      "new_remote_authentication_claimed": false
+    },
+    "all_historical_cost_validation": {
+      "validator": "operational/parameter_field_recovery06/historical_costs.py:history_plan",
+      "result": "PASS",
+      "unique_metadata_bindings": 193,
+      "metadata_bytes": 3396253
+    },
+    "original_missing_preflight_receipts_remain_missing": true,
+    "execution05_missing_outer_wait4_not_converted_to_zero": true,
+    "partial_failed_A29_not_resumed": true
+  },
+  "execution06_observed_launch_state": {
+    "daemon_bootstrap_directory_present": false,
+    "supervisor_status_present": false,
+    "supervisor_start_policy_present": false,
+    "outer_wait4_complete_present": false,
+    "observation_scope": "Current local markers only; not a successful resource admission or scientific completion."
+  },
+  "actions_performed": {
+    "old_source_or_evidence_modified": false,
+    "large_asset_downloaded": false,
+    "archive_extracted": false,
+    "training_started": false,
+    "endpoint_opened_or_decoded": false,
+    "remote_upload_attempted": false,
+    "new_scientific_gradient_microsteps": 0
+  },
+  "limitations": [
+    "This validates existing source and evidence bytes against their registered hashes; it is not an independent reproduction of the scientific study.",
+    "The runtime receipt bytes were verified, but this audit does not claim a new complete runtime qualification.",
+    "Historical independent readback is validated as pinned past evidence; no current remote byte reauthentication occurred.",
+    "Prelaunch upload destination authorization and original capacity gates remain separate unresolved requirements.",
+    "Only a newly registered operational integration can establish that any future run used additional finite arithmetic guards."
+  ],
+  "public_summary_omits": [
+    "Library file and folder identifiers",
+    "transfer URLs and response bodies",
+    "private absolute workspace paths",
+    "scientific endpoint values"
+  ],
+  "scientific_success_or_effect_claim": false
+}

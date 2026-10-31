@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.execution06.restored-runtime-probe.1",
+  "at_utc": "2026-10-31T01:24:58.814332+00:00",
+  "status": "EXACT_RUNTIME_AND_SMALL_CPU_PROBES_VERIFIED",
+  "runtime_sha256": "9d6ac19baf5234ed0d7d4ce98e63d550a1fea951126ea4dba0a591e04f65d52c",
+  "versions": {
+    "Pillow": "12.3.0",
+    "filelock": "4.2.4",
+    "fsspec": "2026.9.0",
+    "jinja2": "3.1.6",
+    "mpmath": "1.3.0",
+    "networkx": "3.7",
+    "numpy": "2.3.5",
+    "sympy": "1.14.0",
+    "torch": "2.8.0+cpu",
+    "typing_extensions": "4.16.0"
+  },
+  "original_runtime_receipt_sha256": "53eec2c5e41de7469d2f9a7afc0990b9d0fbc02cc454e52af73a1e8e20bc1b5b",
+  "numpy_small_probe": [
+    0,
+    1,
+    2
+  ],
+  "tensor_probe": [
+    [
+      5.0,
+      14.0
+    ],
+    [
+      14.0,
+      50.0
+    ]
+  ],
+  "model_tensors_loaded": false,
+  "scientific_data_opened": false,
+  "endpoint_scoring_performed": false,
+  "backward_calls": 0,
+  "science_started": false,
+  "wall_seconds": 2.528719353998895,
+  "own_cpu_seconds": 2.609817878,
+  "peak_rss_bytes": 187109376
+}

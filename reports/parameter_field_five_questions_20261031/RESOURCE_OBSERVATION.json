@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.five-questions.readonly-capacity-observation.1",
+  "measured_at_utc": "2026-10-31T01:22:37Z",
+  "frozen_ram_gate_bytes": 1879048192,
+  "frozen_disk_gate_bytes": 2415919104,
+  "samples": [
+    {
+      "unix": 1793409737.976655,
+      "memory_current": 8319078400,
+      "memory_limit": 8589934592,
+      "clean_inactive_file": 308789248,
+      "effective_available": 579645440,
+      "oom": 0,
+      "oom_kill": 0,
+      "disk_available": 517812224,
+      "available_inodes": 1656210,
+      "ram_gate_pass": false,
+      "disk_gate_pass": false
+    },
+    {
+      "unix": 1793409747.9772449,
+      "memory_current": 8552718336,
+      "memory_limit": 8589934592,
+      "clean_inactive_file": 208711680,
+      "effective_available": 245927936,
+      "oom": 0,
+      "oom_kill": 0,
+      "disk_available": 385445888,
+      "available_inodes": 1652963,
+      "ram_gate_pass": false,
+      "disk_gate_pass": false
+    },
+    {
+      "unix": 1793409757.983301,
+      "memory_current": 8462413824,
+      "memory_limit": 8589934592,
+      "clean_inactive_file": 461586432,
+      "effective_available": 589107200,
+      "oom": 0,
+      "oom_kill": 0,
+      "disk_available": 559792128,
+      "available_inodes": 1654272,
+      "ram_gate_pass": false,
+      "disk_gate_pass": false
+    }
+  ],
+  "three_observed_samples_meet_resource_floors": false,
+  "actual_supervisor_admission_performed": false,
+  "new_scientific_workers_started": 0,
+  "science_started": false,
+  "source_sha256": "9fe5a97112693d6eb2f718c50d09c3b53a85c4f949d1b571b0494b48902f547b",
+  "source_relative_path": "operational/parameter_field_recovery06/supervisor.py",
+  "later_single_observation": {
+    "at_utc": "2026-10-31T01:31:29Z",
+    "sample": {
+      "unix": 1793410289.9839118,
+      "memory_current": 8589934592,
+      "memory_limit": 8589934592,
+      "clean_inactive_file": 273223680,
+      "effective_available": 273223680,
+      "oom": 0,
+      "oom_kill": 0,
+      "disk_available": 747196416,
+      "available_inodes": 1653896,
+      "ram_gate_pass": false,
+      "disk_gate_pass": false
+    },
+    "not_supervisor_admission": true
+  }
+}

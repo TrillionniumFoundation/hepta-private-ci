@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.parameter-field.five-question-execution-status.1",
+  "at_utc": "2026-10-31T01:29:04.061677+00:00",
+  "base_research_commit": "c27e1b2c291dc213b4a34bb41360235013c909e0",
+  "unchanged_registration_commit": "bc4e757f5c90f6365f383c1127be710d2ded874a",
+  "new_scientific_workers_started": 0,
+  "new_scientific_gradient_microsteps": 0,
+  "scientific_question_status": {
+    "1": "NOT_EVALUATED_ON_COMPLETE_NEW_STUDY",
+    "2": "NOT_EVALUATED_ON_COMPLETE_NEW_STUDY",
+    "3": "NOT_EVALUATED_ON_COMPLETE_NEW_STUDY",
+    "4": "NOT_EVALUATED_ON_COMPLETE_NEW_STUDY",
+    "5": "NOT_EVALUATED_ON_COMPLETE_NEW_STUDY"
+  },
+  "existing_completed_scientific_job": "execution04_durable_20261030:A-17",
+  "import_is_not_new_training": true,
+  "planned_logical_jobs": 14,
+  "planned_durable_barriers": 17,
+  "planned_gradient_microsteps": {
+    "A": 117504,
+    "B": 69120,
+    "C_including_replay": 57536,
+    "W": 2880,
+    "R": 96768,
+    "total": 343808
+  },
+  "completed_A17_gradient_microsteps_counted_once": 39168,
+  "known_prior_history_excluding_completed_A17_gradient_lower_bound": 214160,
+  "prospective_all_attempts_gradient_lower_bound": 557968,
+  "unknown_historical_cpu_remains_unknown": true,
+  "actual_resource_admission_performed": false,
+  "resource_observation_file": "RESOURCE_OBSERVATION.json",
+  "historical_library_upload_auto_review_rejection_unresolved": true,
+  "upload_retried_this_turn": false,
+  "upload_destination_changed": false,
+  "original_source_files_changed": false,
+  "numerical_guard_integrated_into_scientific_worker": false,
+  "new_operational_integration_required_before_guard_use": true,
+  "source_recovery_file": "SOURCE_RECOVERY.json",
+  "runtime_verification_file": "RUNTIME_VERIFICATION.json",
+  "config_verification_file": "CONFIG_VERIFICATION.json",
+  "scope_limits": [
+    "B uses independent held-out endpoint pairs and new schedules within the same task and three fixed models.",
+    "C tests the registered matched temporal cells, not the entire production Hepta runtime.",
+    "Engineering tests and source integrity are not scientific efficacy results."
+  ]
+}
