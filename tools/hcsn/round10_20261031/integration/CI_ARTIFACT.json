@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.r10.clean-ci-artifact.v1",
+  "run_id": 41185622819,
+  "job_id": 124491848423,
+  "artifact_id": 13036847930,
+  "source_commit": "41a38cd4f05924c57d0ff841ea392de10704d9b3",
+  "path": "native/evidence/CLEAN_BUILD.zip",
+  "bytes": 4412841,
+  "sha256": "4fbd0a8f34061594a26b3707c88fd332fcf7aab3066fa44e4b14fb74c064c681",
+  "git_blob_sha1": "eb7f4f1aa7f865d998c8fe5fefbfaf958a19c9ea",
+  "zip_members": 2889,
+  "selected_members": {
+    "Cargo.lock": {
+      "bytes": 6150,
+      "sha256": "d22547648c30c32a63802660dcd8a8e471477b578b865eb3fceb0b8383aa43fc"
+    },
+    "RUSTC.txt": {
+      "bytes": 196,
+      "sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad"
+    },
+    "BUILD_INPUTS.json": {
+      "bytes": 15409,
+      "sha256": "eec035279521c47397d3f40972917453d37625254d643c2cb34b34742b3bf72c"
+    },
+    "target/release/hcsn-owner-baseline": {
+      "bytes": 1134592,
+      "sha256": "3fbb1ac9773ad959ab45f01c2415d7069ede7af8f459273b447a41dfd8ae8021"
+    },
+    "target/release/hcsn-owner-preread": {
+      "bytes": 1339008,
+      "sha256": "bc4205c38a91495a797055f63cea6e116786d8bd15633a3aa72b2473780d6deb"
+    }
+  },
+  "evidence_matches_immutable_raw_transport": true,
+  "runtime_tests": "11 baseline and 5 preread tests passed; 576 task runs; 8 restart pairs; 24 cloned requests",
+  "artifact_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41185622819/artifacts/13036847930"
+}

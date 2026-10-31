@@ -1,0 +1,45 @@
+{
+  "bundles_sha256": "dfbc09f3e7eba384e9442216cf99e70a0eeab7d9f06a9a3d09e97acbb1344f0e",
+  "cfc_source": {
+    "local_blob_sha1": "a21f8be7e623abbbff58e2f487d42eb1ea0a6e0e",
+    "local_bytes": 5727,
+    "local_sha256": "ae2883e58b1e315e82048e178ca87d64a0e5ebd8f476fea9e3849df9f89c94c9",
+    "local_source_changed": false,
+    "normalization": "Remove exactly one terminal byte 0x0A from the local copy; no other normalization is needed",
+    "official_source_has_terminal_lf": false,
+    "recommended_wording": "Preserved official source content with one added terminal LF; removing that one byte reproduces the registered official Git blob exactly. The local file is not byte-identical to that blob. Equations and Apache notice are unchanged.",
+    "upstream_blob_sha1": "564885f723882dc4b9f8d3046ada152474eb9294",
+    "upstream_bytes": 5726,
+    "upstream_commit": "695ec22d7d1831f2ced67346ef7d2f08c525bd47",
+    "upstream_sha256_inferred_from_matching_git_blob": "79dcc1cbb3b6898dc2310e9086a2e031e31cbaeb129d69adcbf45eaa16d6b74d"
+  },
+  "clean_destination_runs": [
+    {
+      "all_manifest_outputs_verified": true,
+      "double_nested_directory_present": false,
+      "iteration": 1,
+      "verified_archives": 4,
+      "verified_files": 455
+    },
+    {
+      "all_manifest_outputs_verified": true,
+      "double_nested_directory_present": false,
+      "iteration": 2,
+      "verified_archives": 4,
+      "verified_files": 455
+    }
+  ],
+  "cleanup": {
+    "additional_files_or_symlinks": false,
+    "all_files_identical_to_canonical_evidence": true,
+    "all_files_identical_to_registered_archive": true,
+    "canonical_files_reverified_after_removal": 193,
+    "removed_relative_directory": "av/memory_followup/memory_followup",
+    "verified_files_before_removal": 193
+  },
+  "finding": "The current script and manifest do not create the duplicate nesting. In a fresh destination, two consecutive restores produce the correct single prefix. Restore does not delete pre-existing unlisted extra files, so an old duplicate persists if already present. The historical creation command is not established by this audit.",
+  "frozen_experiment_files_or_manifests_changed": false,
+  "restorer_changed": false,
+  "restorer_sha256": "7f13ed0683c10fc5c1f307bfe555f7f0ca185e569b4cafad902ff71901a404e8",
+  "task": "Final packaging path and source-provenance audit; no new training"
+}

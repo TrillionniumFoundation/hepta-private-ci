@@ -44,3 +44,12 @@ tools/hcsn/round9_20261031/native/evidence/qualification-dev01/RAW_RECORDS.tar.g
 tools/hcsn/round9_20261031/native/evidence/qualification-final/RAW_RECORDS.tar.gz
 tools/hcsn/round9_20261031/native/fixtures/fullhx.json
 tools/hcsn/round9_20261031/value/evidence/confirmation02/PAIRED.jsonl.gz
+
+# Immutable R10 scientific raw evidence; exact sizes, SHA-256 and every member
+# are bound by tools/hcsn/round10_20261031/BUNDLES.json. Threshold unchanged.
+tools/hcsn/round10_20261031/av/evidence/RAW_RESULTS.tar.gz
+tools/hcsn/round10_20261031/av/evidence/RAW_MEMORY_FOLLOWUP.tar.gz
+tools/hcsn/round10_20261031/dynamics/results/RAW_SAMPLES.tar.gz
+
+# Byte-exact qualified CI artifact; identity bound by R10 integration/CI_ARTIFACT.json.
+tools/hcsn/round10_20261031/native/evidence/CLEAN_BUILD.zip

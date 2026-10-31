@@ -1,0 +1,3001 @@
+{
+  "schema": "hepta.r10.conditional-audit.v1",
+  "counterfactuals": [
+    {
+      "state": "t=0;b=2;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.698,
+      "teacher_q": 0.698,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=0;b=2;r=0;i=0;h=",
+      "action": "WAIT",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.6836796544876581,
+      "teacher_q": 0.6836796544876582,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=0;b=2;r=0;i=0;h=",
+      "action": "READ",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.6932933114002789,
+      "teacher_q": 0.693293311400279,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=3;b=0;r=2;i=2;h=11",
+      "action": "STOP",
+      "conditional_worlds": 2,
+      "enumerated_utility": 0.9340531901326937,
+      "teacher_q": 0.9340531901326937,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=3;b=0;r=2;i=2;h=11",
+      "action": "WAIT",
+      "conditional_worlds": 2,
+      "enumerated_utility": 0.919732844620352,
+      "teacher_q": 0.919732844620352,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=4;b=0;r=2;i=2;h=01",
+      "action": "STOP",
+      "conditional_worlds": 2,
+      "enumerated_utility": 0.8422817578814764,
+      "teacher_q": 0.8422817578814764,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=4;b=0;r=2;i=2;h=01",
+      "action": "WAIT",
+      "conditional_worlds": 2,
+      "enumerated_utility": 0.8279614123691348,
+      "teacher_q": 0.8279614123691347,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=1;r=1;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.5847889052169475,
+      "teacher_q": 0.5847889052169475,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=4;b=1;r=1;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.6994319901643361,
+      "teacher_q": 0.6994319901643362,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=1;r=1;i=1;h=0",
+      "action": "READ",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.7137523356766777,
+      "teacher_q": 0.713752335676678,
+      "abs_error": 2.220446049250313e-16
+    },
+    {
+      "state": "t=5;b=0;r=3;i=2;h=10",
+      "action": "STOP",
+      "conditional_worlds": 2,
+      "enumerated_utility": 0.49903941837335536,
+      "teacher_q": 0.4990394183733554,
+      "abs_error": 5.551115123125783e-17
+    },
+    {
+      "state": "t=5;b=0;r=3;i=2;h=10",
+      "action": "WAIT",
+      "conditional_worlds": 2,
+      "enumerated_utility": 0.4847190728610137,
+      "teacher_q": 0.48471907286101373,
+      "abs_error": 5.551115123125783e-17
+    },
+    {
+      "state": "t=5;b=1;r=1;i=1;h=x",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.698,
+      "teacher_q": 0.698,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=5;b=1;r=1;i=1;h=x",
+      "action": "WAIT",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.7084888777469804,
+      "teacher_q": 0.7084888777469803,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=5;b=1;r=1;i=1;h=x",
+      "action": "READ",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.7228092232593221,
+      "teacher_q": 0.7228092232593221,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=6;b=0;r=3;i=2;h=0x",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.5847889052169476,
+      "teacher_q": 0.5847889052169475,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=6;b=0;r=3;i=2;h=0x",
+      "action": "WAIT",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.5704685597046059,
+      "teacher_q": 0.5704685597046057,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=6;b=0;r=6;i=2;h=01",
+      "action": "STOP",
+      "conditional_worlds": 2,
+      "enumerated_utility": 0.8422817578814764,
+      "teacher_q": 0.8422817578814764,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=6;b=0;r=6;i=2;h=01",
+      "action": "WAIT",
+      "conditional_worlds": 2,
+      "enumerated_utility": 0.8279614123691348,
+      "teacher_q": 0.8279614123691347,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=6;b=1;r=6;i=1;h=x",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.698,
+      "teacher_q": 0.698,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=6;b=1;r=6;i=1;h=x",
+      "action": "WAIT",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.6836796544876582,
+      "teacher_q": 0.6836796544876582,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=6;b=1;r=6;i=1;h=x",
+      "action": "READ",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.7228092232593221,
+      "teacher_q": 0.7228092232593221,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=7;b=0;r=4;i=2;h=x0",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.6186795655358731,
+      "teacher_q": 0.6186795655358732,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=7;b=0;r=7;i=2;h=11",
+      "action": "STOP",
+      "conditional_worlds": 2,
+      "enumerated_utility": 0.9340531901326937,
+      "teacher_q": 0.9340531901326937,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=7;b=2;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.698,
+      "teacher_q": 0.698,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=0;b=1;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.6980000000000001,
+      "teacher_q": 0.698,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=0;b=1;r=0;i=0;h=",
+      "action": "WAIT",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.7834283241714801,
+      "teacher_q": 0.7834283241714801,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=0;b=1;r=0;i=0;h=",
+      "action": "READ",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.7925857839014622,
+      "teacher_q": 0.7925857839014622,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=2;b=0;r=2;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.7488380827407344,
+      "teacher_q": 0.7488380827407344,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=2;b=0;r=2;i=1;h=1",
+      "action": "WAIT",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.7396806230107522,
+      "teacher_q": 0.7396806230107523,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=3;b=0;r=3;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.9405504780200002,
+      "teacher_q": 0.9405504780200001,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=3;b=0;r=3;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.9313930182900182,
+      "teacher_q": 0.9313930182900181,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=0;r=2;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.7488380827407344,
+      "teacher_q": 0.7488380827407344,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=4;b=0;r=2;i=1;h=1",
+      "action": "WAIT",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.7396806230107522,
+      "teacher_q": 0.7396806230107523,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=0;r=5;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.9405504780200002,
+      "teacher_q": 0.9405504780200001,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=0;r=5;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.9313930182900182,
+      "teacher_q": 0.9313930182900181,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=5;b=0;r=3;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.7488380827407344,
+      "teacher_q": 0.7488380827407344,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=5;b=0;r=3;i=1;h=1",
+      "action": "WAIT",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.7396806230107522,
+      "teacher_q": 0.7396806230107523,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=5;b=0;r=6;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.7488380827407344,
+      "teacher_q": 0.7488380827407344,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=5;b=0;r=6;i=1;h=1",
+      "action": "WAIT",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.7396806230107522,
+      "teacher_q": 0.7396806230107523,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=6;b=0;r=4;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.9405504780200002,
+      "teacher_q": 0.9405504780200001,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=6;b=0;r=4;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.9313930182900182,
+      "teacher_q": 0.9313930182900181,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=6;b=0;r=6;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.7488380827407344,
+      "teacher_q": 0.7488380827407344,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=6;b=0;r=6;i=1;h=1",
+      "action": "WAIT",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.7396806230107522,
+      "teacher_q": 0.7396806230107523,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=7;b=0;r=3;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.9405504780200002,
+      "teacher_q": 0.9405504780200001,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=7;b=0;r=6;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.9405504780200002,
+      "teacher_q": 0.9405504780200001,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=7;b=1;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.6980000000000001,
+      "teacher_q": 0.698,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=0;b=1;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.698,
+      "teacher_q": 0.698,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=0;b=1;r=0;i=0;h=",
+      "action": "WAIT",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.6916382513534829,
+      "teacher_q": 0.6916382513534829,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=0;b=1;r=0;i=0;h=",
+      "action": "READ",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.6553374858294208,
+      "teacher_q": 0.6553374858294208,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=2;b=0;r=4;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.8061049399533607,
+      "teacher_q": 0.8061049399533609,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=2;b=0;r=4;i=1;h=1",
+      "action": "WAIT",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.7997431913068438,
+      "teacher_q": 0.7997431913068438,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=3;b=0;r=5;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.8061049399533607,
+      "teacher_q": 0.8061049399533609,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=3;b=0;r=5;i=1;h=1",
+      "action": "WAIT",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.7997431913068438,
+      "teacher_q": 0.7997431913068438,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=4;b=0;r=5;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.8061049399533607,
+      "teacher_q": 0.8061049399533609,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=0;r=5;i=1;h=1",
+      "action": "WAIT",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.7997431913068438,
+      "teacher_q": 0.7997431913068438,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=5;b=0;r=5;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.5618623986833399,
+      "teacher_q": 0.5618623986833399,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=5;b=0;r=5;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.5555006500368228,
+      "teacher_q": 0.5555006500368228,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=6;b=0;r=3;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.5618623986833399,
+      "teacher_q": 0.5618623986833399,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=6;b=0;r=3;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.5555006500368228,
+      "teacher_q": 0.5555006500368228,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=6;b=0;r=6;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.8061049399533607,
+      "teacher_q": 0.8061049399533609,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=6;b=0;r=6;i=1;h=1",
+      "action": "WAIT",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.7997431913068438,
+      "teacher_q": 0.7997431913068438,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=7;b=0;r=3;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.8061049399533607,
+      "teacher_q": 0.8061049399533609,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=7;b=0;r=3;i=1;h=1",
+      "action": "WAIT",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.7997431913068438,
+      "teacher_q": 0.7997431913068438,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=7;b=0;r=7;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.8061049399533607,
+      "teacher_q": 0.8061049399533609,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=7;b=0;r=7;i=1;h=1",
+      "action": "WAIT",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.7997431913068438,
+      "teacher_q": 0.7997431913068438,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=8;b=0;r=10;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.8061049399533607,
+      "teacher_q": 0.8061049399533609,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=8;b=0;r=6;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.5618623986833399,
+      "teacher_q": 0.5618623986833399,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=8;b=1;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.698,
+      "teacher_q": 0.698,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=0;b=3;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 512,
+      "enumerated_utility": 0.6979999999999987,
+      "teacher_q": 0.698,
+      "abs_error": 1.2212453270876722e-15
+    },
+    {
+      "state": "t=0;b=3;r=0;i=0;h=",
+      "action": "WAIT",
+      "conditional_worlds": 512,
+      "enumerated_utility": 0.7473852836959192,
+      "teacher_q": 0.7473852836959206,
+      "abs_error": 1.4432899320127035e-15
+    },
+    {
+      "state": "t=0;b=3;r=0;i=0;h=",
+      "action": "READ",
+      "conditional_worlds": 512,
+      "enumerated_utility": 0.7608398222781785,
+      "teacher_q": 0.7608398222781798,
+      "abs_error": 1.3322676295501878e-15
+    },
+    {
+      "state": "t=2;b=3;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 512,
+      "enumerated_utility": 0.6979999999999987,
+      "teacher_q": 0.698,
+      "abs_error": 1.2212453270876722e-15
+    },
+    {
+      "state": "t=2;b=3;r=0;i=0;h=",
+      "action": "WAIT",
+      "conditional_worlds": 512,
+      "enumerated_utility": 0.6855446311048039,
+      "teacher_q": 0.685544631104805,
+      "abs_error": 1.1102230246251565e-15
+    },
+    {
+      "state": "t=2;b=3;r=0;i=0;h=",
+      "action": "READ",
+      "conditional_worlds": 512,
+      "enumerated_utility": 0.7598406525911141,
+      "teacher_q": 0.7598406525911156,
+      "abs_error": 1.4432899320127035e-15
+    },
+    {
+      "state": "t=3;b=2;r=2;i=1;h=x",
+      "action": "STOP",
+      "conditional_worlds": 256,
+      "enumerated_utility": 0.6980000000000004,
+      "teacher_q": 0.698,
+      "abs_error": 4.440892098500626e-16
+    },
+    {
+      "state": "t=3;b=2;r=2;i=1;h=x",
+      "action": "WAIT",
+      "conditional_worlds": 256,
+      "enumerated_utility": 0.7843605341796309,
+      "teacher_q": 0.7843605341796307,
+      "abs_error": 2.220446049250313e-16
+    },
+    {
+      "state": "t=3;b=2;r=2;i=1;h=x",
+      "action": "READ",
+      "conditional_worlds": 256,
+      "enumerated_utility": 0.796815903074826,
+      "teacher_q": 0.7968159030748256,
+      "abs_error": 3.3306690738754696e-16
+    },
+    {
+      "state": "t=4;b=1;r=4;i=2;h=11",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.9307305508346814,
+      "teacher_q": 0.9307305508346815,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=1;r=4;i=2;h=11",
+      "action": "WAIT",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.9182751819394864,
+      "teacher_q": 0.9182751819394865,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=1;r=4;i=2;h=11",
+      "action": "READ",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.8471661653015817,
+      "teacher_q": 0.8471661653015818,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=1;r=5;i=2;h=x1",
+      "action": "STOP",
+      "conditional_worlds": 64,
+      "enumerated_utility": 0.788926016083638,
+      "teacher_q": 0.7889260160836379,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=1;r=5;i=2;h=x1",
+      "action": "WAIT",
+      "conditional_worlds": 64,
+      "enumerated_utility": 0.776470647188443,
+      "teacher_q": 0.7764706471884429,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=2;r=5;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 128,
+      "enumerated_utility": 0.6090186455235113,
+      "teacher_q": 0.6090186455235111,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=2;r=5;i=1;h=1",
+      "action": "WAIT",
+      "conditional_worlds": 128,
+      "enumerated_utility": 0.5965632766283163,
+      "teacher_q": 0.5965632766283162,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=5;b=0;r=6;i=3;h=100",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.9430258995570253,
+      "teacher_q": 0.9430258995570253,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=5;b=0;r=6;i=3;h=x10",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.5508973472155451,
+      "teacher_q": 0.5508973472155451,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=5;b=1;r=4;i=2;h=x0",
+      "action": "STOP",
+      "conditional_worlds": 64,
+      "enumerated_utility": 0.9516957951303135,
+      "teacher_q": 0.9516957951303132,
+      "abs_error": 3.3306690738754696e-16
+    },
+    {
+      "state": "t=5;b=1;r=6;i=2;h=00",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.9849264691587479,
+      "teacher_q": 0.9849264691587482,
+      "abs_error": 2.220446049250313e-16
+    },
+    {
+      "state": "t=5;b=2;r=3;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 128,
+      "enumerated_utility": 0.8933123770314896,
+      "teacher_q": 0.8933123770314897,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=5;b=3;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 512,
+      "enumerated_utility": 0.6979999999999987,
+      "teacher_q": 0.698,
+      "abs_error": 1.2212453270876722e-15
+    },
+    {
+      "state": "t=0;b=3;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.698,
+      "teacher_q": 0.698,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=0;b=3;r=0;i=0;h=",
+      "action": "WAIT",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.8038765252339487,
+      "teacher_q": 0.8038765252339484,
+      "abs_error": 3.3306690738754696e-16
+    },
+    {
+      "state": "t=0;b=3;r=0;i=0;h=",
+      "action": "READ",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.8125131740539254,
+      "teacher_q": 0.8125131740539252,
+      "abs_error": 2.220446049250313e-16
+    },
+    {
+      "state": "t=3;b=1;r=4;i=2;h=01",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.5439367126597079,
+      "teacher_q": 0.5439367126597079,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=3;b=1;r=4;i=2;h=01",
+      "action": "WAIT",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.8549078609556869,
+      "teacher_q": 0.8549078609556869,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=4;b=1;r=4;i=2;h=00",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.792599831286704,
+      "teacher_q": 0.7925998312867039,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=1;r=4;i=2;h=00",
+      "action": "WAIT",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.854907860955687,
+      "teacher_q": 0.8549078609556868,
+      "abs_error": 2.220446049250313e-16
+    },
+    {
+      "state": "t=4;b=1;r=4;i=2;h=00",
+      "action": "READ",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.8635445097756638,
+      "teacher_q": 0.8635445097756637,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=2;r=3;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.6400576186612135,
+      "teacher_q": 0.6400576186612135,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=4;b=2;r=3;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.6314209698412366,
+      "teacher_q": 0.6314209698412366,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=4;b=2;r=3;i=1;h=0",
+      "action": "READ",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.6300848602269918,
+      "teacher_q": 0.6300848602269918,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=5;b=0;r=6;i=3;h=011",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.9277089538290708,
+      "teacher_q": 0.9277089538290709,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=5;b=0;r=6;i=3;h=011",
+      "action": "WAIT",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.9190723050090941,
+      "teacher_q": 0.9190723050090941,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=5;b=1;r=5;i=2;h=01",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.5439367126597079,
+      "teacher_q": 0.5439367126597079,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=5;b=1;r=5;i=2;h=01",
+      "action": "WAIT",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.535300063839731,
+      "teacher_q": 0.535300063839731,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=5;b=1;r=5;i=2;h=01",
+      "action": "READ",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.8635445097756638,
+      "teacher_q": 0.8635445097756638,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=5;b=2;r=4;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.6400576186612135,
+      "teacher_q": 0.6400576186612135,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=5;b=2;r=4;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.6314209698412366,
+      "teacher_q": 0.6314209698412366,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=5;b=2;r=4;i=1;h=0",
+      "action": "READ",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.6300848602269918,
+      "teacher_q": 0.6300848602269918,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=6;b=0;r=6;i=3;h=011",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.9277089538290708,
+      "teacher_q": 0.9277089538290709,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=6;b=0;r=7;i=3;h=101",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.9783202658943531,
+      "teacher_q": 0.9783202658943532,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=6;b=1;r=5;i=2;h=11",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.9526733566028844,
+      "teacher_q": 0.9526733566028844,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=6;b=2;r=2;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.9051145514809259,
+      "teacher_q": 0.9051145514809259,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=6;b=3;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.698,
+      "teacher_q": 0.698,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=0;b=1;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.698,
+      "teacher_q": 0.698,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=0;b=1;r=0;i=0;h=",
+      "action": "WAIT",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.7988044723807282,
+      "teacher_q": 0.798804472380728,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=0;b=1;r=0;i=0;h=",
+      "action": "READ",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.8047373571480717,
+      "teacher_q": 0.8047373571480716,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=2;b=0;r=3;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.9469796085636047,
+      "teacher_q": 0.9469796085636049,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=2;b=0;r=3;i=1;h=1",
+      "action": "WAIT",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.9410467237962612,
+      "teacher_q": 0.9410467237962613,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=3;b=0;r=3;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.7715675281658084,
+      "teacher_q": 0.7715675281658083,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=3;b=0;r=3;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.7656346433984649,
+      "teacher_q": 0.7656346433984648,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=3;b=0;r=5;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.7715675281658084,
+      "teacher_q": 0.7715675281658083,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=3;b=0;r=5;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.7656346433984649,
+      "teacher_q": 0.7656346433984648,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=0;r=4;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.7715675281658084,
+      "teacher_q": 0.7715675281658083,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=0;r=4;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.7656346433984649,
+      "teacher_q": 0.7656346433984648,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=0;r=6;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.7715675281658084,
+      "teacher_q": 0.7715675281658083,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=0;r=6;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.7656346433984649,
+      "teacher_q": 0.7656346433984648,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=5;b=0;r=3;i=1;h=x",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.6979999999999998,
+      "teacher_q": 0.698,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=5;b=0;r=3;i=1;h=x",
+      "action": "WAIT",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.6920671152326563,
+      "teacher_q": 0.6920671152326564,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=5;b=0;r=5;i=1;h=x",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.6979999999999998,
+      "teacher_q": 0.698,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=5;b=0;r=5;i=1;h=x",
+      "action": "WAIT",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.6920671152326563,
+      "teacher_q": 0.6920671152326564,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=5;b=1;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.698,
+      "teacher_q": 0.698,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=5;b=1;r=0;i=0;h=",
+      "action": "WAIT",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.6920671152326564,
+      "teacher_q": 0.6920671152326564,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=5;b=1;r=0;i=0;h=",
+      "action": "READ",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.8047373571480717,
+      "teacher_q": 0.8047373571480716,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=6;b=0;r=4;i=1;h=x",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.6979999999999998,
+      "teacher_q": 0.698,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=6;b=0;r=6;i=1;h=x",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.6979999999999998,
+      "teacher_q": 0.698,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=6;b=1;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.698,
+      "teacher_q": 0.698,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=0;b=1;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.49800000000000005,
+      "teacher_q": 0.498,
+      "abs_error": 5.551115123125783e-17
+    },
+    {
+      "state": "t=0;b=1;r=0;i=0;h=",
+      "action": "WAIT",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.8516448977704995,
+      "teacher_q": 0.8516448977704995,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=0;b=1;r=0;i=0;h=",
+      "action": "READ",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.8548622382998091,
+      "teacher_q": 0.8548622382998091,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=1;b=0;r=2;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.9104948004177155,
+      "teacher_q": 0.9104948004177154,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=1;b=0;r=2;i=1;h=1",
+      "action": "WAIT",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.9072774598884057,
+      "teacher_q": 0.9072774598884057,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=2;b=0;r=2;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.9104948004177154,
+      "teacher_q": 0.9104948004177154,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=2;b=0;r=2;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.9072774598884056,
+      "teacher_q": 0.9072774598884057,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=2;b=0;r=3;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.9104948004177154,
+      "teacher_q": 0.9104948004177154,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=2;b=0;r=3;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.9072774598884056,
+      "teacher_q": 0.9072774598884057,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=2;b=1;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.49800000000000005,
+      "teacher_q": 0.498,
+      "abs_error": 5.551115123125783e-17
+    },
+    {
+      "state": "t=2;b=1;r=0;i=0;h=",
+      "action": "WAIT",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.8516448977704995,
+      "teacher_q": 0.8516448977704995,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=2;b=1;r=0;i=0;h=",
+      "action": "READ",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.8548622382998091,
+      "teacher_q": 0.8548622382998091,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=3;b=0;r=2;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.9104948004177155,
+      "teacher_q": 0.9104948004177154,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=3;b=0;r=2;i=1;h=1",
+      "action": "WAIT",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.9072774598884057,
+      "teacher_q": 0.9072774598884057,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=3;b=0;r=4;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.9104948004177154,
+      "teacher_q": 0.9104948004177154,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=3;b=0;r=4;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.9072774598884056,
+      "teacher_q": 0.9072774598884057,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=3;b=1;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.49800000000000005,
+      "teacher_q": 0.498,
+      "abs_error": 5.551115123125783e-17
+    },
+    {
+      "state": "t=3;b=1;r=0;i=0;h=",
+      "action": "WAIT",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.4947826594706904,
+      "teacher_q": 0.49478265947069033,
+      "abs_error": 5.551115123125783e-17
+    },
+    {
+      "state": "t=3;b=1;r=0;i=0;h=",
+      "action": "READ",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.8548622382998091,
+      "teacher_q": 0.8548622382998091,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=4;b=0;r=2;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.9104948004177155,
+      "teacher_q": 0.9104948004177154,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=0;r=3;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.9104948004177155,
+      "teacher_q": 0.9104948004177154,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=0;r=4;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.9104948004177155,
+      "teacher_q": 0.9104948004177154,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=1;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.49800000000000005,
+      "teacher_q": 0.498,
+      "abs_error": 5.551115123125783e-17
+    },
+    {
+      "state": "t=0;b=2;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.6980000000000002,
+      "teacher_q": 0.698,
+      "abs_error": 2.220446049250313e-16
+    },
+    {
+      "state": "t=0;b=2;r=0;i=0;h=",
+      "action": "WAIT",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.8322599323673756,
+      "teacher_q": 0.8322599323673755,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=0;b=2;r=0;i=0;h=",
+      "action": "READ",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.8458429570981615,
+      "teacher_q": 0.8458429570981615,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=1;b=1;r=1;i=1;h=x",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.698,
+      "teacher_q": 0.698,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=1;b=1;r=1;i=1;h=x",
+      "action": "WAIT",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.7152303573723078,
+      "teacher_q": 0.7152303573723079,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=2;b=1;r=1;i=1;h=x",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.698,
+      "teacher_q": 0.698,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=2;b=1;r=1;i=1;h=x",
+      "action": "WAIT",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.7299945146883794,
+      "teacher_q": 0.7299945146883796,
+      "abs_error": 2.220446049250313e-16
+    },
+    {
+      "state": "t=2;b=2;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.6980000000000002,
+      "teacher_q": 0.698,
+      "abs_error": 2.220446049250313e-16
+    },
+    {
+      "state": "t=2;b=2;r=0;i=0;h=",
+      "action": "WAIT",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.8297003711923052,
+      "teacher_q": 0.8297003711923051,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=2;b=2;r=0;i=0;h=",
+      "action": "READ",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.848205222268733,
+      "teacher_q": 0.848205222268733,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=3;b=1;r=2;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.8172046802641052,
+      "teacher_q": 0.817204680264105,
+      "abs_error": 2.220446049250313e-16
+    },
+    {
+      "state": "t=3;b=1;r=2;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.8024405229480335,
+      "teacher_q": 0.8024405229480333,
+      "abs_error": 2.220446049250313e-16
+    },
+    {
+      "state": "t=3;b=1;r=2;i=1;h=0",
+      "action": "READ",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.7671672960435265,
+      "teacher_q": 0.7671672960435263,
+      "abs_error": 2.220446049250313e-16
+    },
+    {
+      "state": "t=3;b=1;r=3;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.9590431290824251,
+      "teacher_q": 0.9590431290824251,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=3;b=1;r=3;i=1;h=1",
+      "action": "WAIT",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.9442789717663532,
+      "teacher_q": 0.9442789717663533,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=3;b=1;r=3;i=1;h=1",
+      "action": "READ",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.9090057448618464,
+      "teacher_q": 0.9090057448618464,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=4;b=0;r=4;i=2;h=01",
+      "action": "STOP",
+      "conditional_worlds": 2,
+      "enumerated_utility": 0.5209258021831296,
+      "teacher_q": 0.5209258021831296,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=4;b=0;r=4;i=2;h=1x",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.9590431290824251,
+      "teacher_q": 0.9590431290824251,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=4;b=1;r=1;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.8172046802641052,
+      "teacher_q": 0.817204680264105,
+      "abs_error": 2.220446049250313e-16
+    },
+    {
+      "state": "t=4;b=1;r=2;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.9590431290824251,
+      "teacher_q": 0.9590431290824251,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=4;b=1;r=3;i=1;h=x",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.698,
+      "teacher_q": 0.698,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=4;b=2;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.6980000000000002,
+      "teacher_q": 0.698,
+      "abs_error": 2.220446049250313e-16
+    },
+    {
+      "state": "t=0;b=3;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.698,
+      "teacher_q": 0.698,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=0;b=3;r=0;i=0;h=",
+      "action": "WAIT",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.7968829017761975,
+      "teacher_q": 0.7968829017761975,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=0;b=3;r=0;i=0;h=",
+      "action": "READ",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.8076600726647661,
+      "teacher_q": 0.8076600726647662,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=3;b=2;r=2;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.8426444860400263,
+      "teacher_q": 0.8426444860400262,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=3;b=2;r=2;i=1;h=1",
+      "action": "WAIT",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.8419879529725669,
+      "teacher_q": 0.8419879529725669,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=3;b=2;r=2;i=1;h=1",
+      "action": "READ",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.8527651238611357,
+      "teacher_q": 0.8527651238611357,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=4;b=2;r=1;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.8426444860400263,
+      "teacher_q": 0.8426444860400262,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=2;r=1;i=1;h=1",
+      "action": "WAIT",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.8419879529725669,
+      "teacher_q": 0.8419879529725669,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=4;b=2;r=1;i=1;h=1",
+      "action": "READ",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.8527651238611357,
+      "teacher_q": 0.8527651238611357,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=5;b=1;r=2;i=2;h=01",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.7970730370537941,
+      "teacher_q": 0.7970730370537942,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=5;b=1;r=2;i=2;h=01",
+      "action": "WAIT",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.7862958661652253,
+      "teacher_q": 0.7862958661652254,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=5;b=1;r=2;i=2;h=01",
+      "action": "READ",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.7818534230610931,
+      "teacher_q": 0.7818534230610932,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=6;b=0;r=3;i=3;h=110",
+      "action": "STOP",
+      "conditional_worlds": 2,
+      "enumerated_utility": 0.9086664255473063,
+      "teacher_q": 0.9086664255473064,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=6;b=0;r=3;i=3;h=110",
+      "action": "WAIT",
+      "conditional_worlds": 2,
+      "enumerated_utility": 0.8978892546587375,
+      "teacher_q": 0.8978892546587376,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=6;b=1;r=3;i=2;h=11",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.95373619060787,
+      "teacher_q": 0.95373619060787,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=6;b=1;r=3;i=2;h=11",
+      "action": "WAIT",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.9429590197193011,
+      "teacher_q": 0.9429590197193012,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=6;b=1;r=3;i=2;h=11",
+      "action": "READ",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.938516576615169,
+      "teacher_q": 0.9385165766151689,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=7;b=0;r=3;i=3;h=111",
+      "action": "STOP",
+      "conditional_worlds": 2,
+      "enumerated_utility": 0.9766020462652021,
+      "teacher_q": 0.9766020462652021,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=7;b=0;r=3;i=3;h=111",
+      "action": "WAIT",
+      "conditional_worlds": 2,
+      "enumerated_utility": 0.9658248753766333,
+      "teacher_q": 0.9658248753766333,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=7;b=1;r=2;i=2;h=00",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.7966243802025622,
+      "teacher_q": 0.7966243802025622,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=7;b=1;r=2;i=2;h=00",
+      "action": "WAIT",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.7858472093139934,
+      "teacher_q": 0.7858472093139934,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=7;b=1;r=2;i=2;h=00",
+      "action": "READ",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.7814047662098612,
+      "teacher_q": 0.7814047662098612,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=7;b=2;r=5;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.4983490093244579,
+      "teacher_q": 0.4983490093244579,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=7;b=2;r=5;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.4875718384358892,
+      "teacher_q": 0.4875718384358892,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=7;b=2;r=5;i=1;h=0",
+      "action": "READ",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.7816291882262104,
+      "teacher_q": 0.7816291882262103,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=8;b=0;r=6;i=3;h=010",
+      "action": "STOP",
+      "conditional_worlds": 2,
+      "enumerated_utility": 0.6504884714412865,
+      "teacher_q": 0.6504884714412865,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=8;b=1;r=4;i=2;h=11",
+      "action": "STOP",
+      "conditional_worlds": 4,
+      "enumerated_utility": 0.95373619060787,
+      "teacher_q": 0.95373619060787,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=8;b=3;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.698,
+      "teacher_q": 0.698,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=0;b=3;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 512,
+      "enumerated_utility": 0.6980000000000007,
+      "teacher_q": 0.698,
+      "abs_error": 7.771561172376096e-16
+    },
+    {
+      "state": "t=0;b=3;r=0;i=0;h=",
+      "action": "WAIT",
+      "conditional_worlds": 512,
+      "enumerated_utility": 0.8114185742981748,
+      "teacher_q": 0.811418574298174,
+      "abs_error": 7.771561172376096e-16
+    },
+    {
+      "state": "t=0;b=3;r=0;i=0;h=",
+      "action": "READ",
+      "conditional_worlds": 512,
+      "enumerated_utility": 0.8167320765151652,
+      "teacher_q": 0.8167320765151644,
+      "abs_error": 7.771561172376096e-16
+    },
+    {
+      "state": "t=2;b=3;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 512,
+      "enumerated_utility": 0.6980000000000007,
+      "teacher_q": 0.698,
+      "abs_error": 7.771561172376096e-16
+    },
+    {
+      "state": "t=2;b=3;r=0;i=0;h=",
+      "action": "WAIT",
+      "conditional_worlds": 512,
+      "enumerated_utility": 0.8204439020259349,
+      "teacher_q": 0.8204439020259341,
+      "abs_error": 7.771561172376096e-16
+    },
+    {
+      "state": "t=2;b=3;r=0;i=0;h=",
+      "action": "READ",
+      "conditional_worlds": 512,
+      "enumerated_utility": 0.8257574042429254,
+      "teacher_q": 0.8257574042429247,
+      "abs_error": 7.771561172376096e-16
+    },
+    {
+      "state": "t=4;b=2;r=1;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 128,
+      "enumerated_utility": 0.932466465863588,
+      "teacher_q": 0.9324664658635871,
+      "abs_error": 8.881784197001252e-16
+    },
+    {
+      "state": "t=4;b=2;r=1;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 128,
+      "enumerated_utility": 0.9226402997827174,
+      "teacher_q": 0.9226402997827166,
+      "abs_error": 8.881784197001252e-16
+    },
+    {
+      "state": "t=4;b=2;r=1;i=1;h=0",
+      "action": "READ",
+      "conditional_worlds": 128,
+      "enumerated_utility": 0.8945136185309774,
+      "teacher_q": 0.8945136185309767,
+      "abs_error": 7.771561172376096e-16
+    },
+    {
+      "state": "t=4;b=2;r=4;i=1;h=x",
+      "action": "STOP",
+      "conditional_worlds": 256,
+      "enumerated_utility": 0.6979999999999993,
+      "teacher_q": 0.698,
+      "abs_error": 6.661338147750939e-16
+    },
+    {
+      "state": "t=4;b=2;r=4;i=1;h=x",
+      "action": "WAIT",
+      "conditional_worlds": 256,
+      "enumerated_utility": 0.7503413189876872,
+      "teacher_q": 0.750341318987688,
+      "abs_error": 7.771561172376096e-16
+    },
+    {
+      "state": "t=4;b=2;r=4;i=1;h=x",
+      "action": "READ",
+      "conditional_worlds": 256,
+      "enumerated_utility": 0.8053761170354348,
+      "teacher_q": 0.8053761170354357,
+      "abs_error": 8.881784197001252e-16
+    },
+    {
+      "state": "t=5;b=2;r=1;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 128,
+      "enumerated_utility": 0.932466465863588,
+      "teacher_q": 0.9324664658635871,
+      "abs_error": 8.881784197001252e-16
+    },
+    {
+      "state": "t=5;b=2;r=1;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 128,
+      "enumerated_utility": 0.9226402997827174,
+      "teacher_q": 0.9226402997827166,
+      "abs_error": 8.881784197001252e-16
+    },
+    {
+      "state": "t=5;b=2;r=1;i=1;h=0",
+      "action": "READ",
+      "conditional_worlds": 128,
+      "enumerated_utility": 0.8869304063411618,
+      "teacher_q": 0.886930406341161,
+      "abs_error": 7.771561172376096e-16
+    },
+    {
+      "state": "t=5;b=2;r=4;i=1;h=x",
+      "action": "STOP",
+      "conditional_worlds": 256,
+      "enumerated_utility": 0.6979999999999993,
+      "teacher_q": 0.698,
+      "abs_error": 6.661338147750939e-16
+    },
+    {
+      "state": "t=5;b=2;r=4;i=1;h=x",
+      "action": "WAIT",
+      "conditional_worlds": 256,
+      "enumerated_utility": 0.6881738339191288,
+      "teacher_q": 0.6881738339191295,
+      "abs_error": 6.661338147750939e-16
+    },
+    {
+      "state": "t=5;b=2;r=4;i=1;h=x",
+      "action": "READ",
+      "conditional_worlds": 256,
+      "enumerated_utility": 0.7601674850685577,
+      "teacher_q": 0.7601674850685585,
+      "abs_error": 7.771561172376096e-16
+    },
+    {
+      "state": "t=6;b=0;r=6;i=3;h=0x1",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.7111055723354094,
+      "teacher_q": 0.7111055723354095,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=6;b=0;r=6;i=3;h=x00",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.9827416160427533,
+      "teacher_q": 0.9827416160427533,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=6;b=1;r=5;i=2;h=0x",
+      "action": "STOP",
+      "conditional_worlds": 64,
+      "enumerated_utility": 0.9324664658635863,
+      "teacher_q": 0.9324664658635871,
+      "abs_error": 7.771561172376096e-16
+    },
+    {
+      "state": "t=6;b=1;r=6;i=2;h=11",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.9246186146565096,
+      "teacher_q": 0.9246186146565095,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=6;b=2;r=3;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 128,
+      "enumerated_utility": 0.932466465863588,
+      "teacher_q": 0.9324664658635871,
+      "abs_error": 8.881784197001252e-16
+    },
+    {
+      "state": "t=6;b=3;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 512,
+      "enumerated_utility": 0.6980000000000007,
+      "teacher_q": 0.698,
+      "abs_error": 7.771561172376096e-16
+    },
+    {
+      "state": "t=0;b=3;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 128,
+      "enumerated_utility": 0.6980000000000002,
+      "teacher_q": 0.698,
+      "abs_error": 2.220446049250313e-16
+    },
+    {
+      "state": "t=0;b=3;r=0;i=0;h=",
+      "action": "WAIT",
+      "conditional_worlds": 128,
+      "enumerated_utility": 0.6896308517860322,
+      "teacher_q": 0.6896308517860319,
+      "abs_error": 3.3306690738754696e-16
+    },
+    {
+      "state": "t=0;b=3;r=0;i=0;h=",
+      "action": "READ",
+      "conditional_worlds": 128,
+      "enumerated_utility": 0.6147336284884005,
+      "teacher_q": 0.6147336284884002,
+      "abs_error": 3.3306690738754696e-16
+    },
+    {
+      "state": "t=2;b=2;r=2;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.831026915273098,
+      "teacher_q": 0.8310269152730981,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=2;b=2;r=2;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.82265776705913,
+      "teacher_q": 0.8226577670591301,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=2;b=2;r=2;i=1;h=0",
+      "action": "READ",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.7477605437614984,
+      "teacher_q": 0.7477605437614985,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=2;b=3;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 128,
+      "enumerated_utility": 0.6980000000000002,
+      "teacher_q": 0.698,
+      "abs_error": 2.220446049250313e-16
+    },
+    {
+      "state": "t=2;b=3;r=0;i=0;h=",
+      "action": "WAIT",
+      "conditional_worlds": 128,
+      "enumerated_utility": 0.6896308517860322,
+      "teacher_q": 0.6896308517860319,
+      "abs_error": 3.3306690738754696e-16
+    },
+    {
+      "state": "t=2;b=3;r=0;i=0;h=",
+      "action": "READ",
+      "conditional_worlds": 128,
+      "enumerated_utility": 0.6147336284884005,
+      "teacher_q": 0.6147336284884002,
+      "abs_error": 3.3306690738754696e-16
+    },
+    {
+      "state": "t=3;b=1;r=4;i=2;h=11",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.5817744636023141,
+      "teacher_q": 0.581774463602314,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=3;b=1;r=4;i=2;h=11",
+      "action": "WAIT",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.573405315388346,
+      "teacher_q": 0.5734053153883459,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=3;b=2;r=2;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.5198267191303827,
+      "teacher_q": 0.5198267191303827,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=3;b=2;r=2;i=1;h=1",
+      "action": "WAIT",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.5114575709164146,
+      "teacher_q": 0.5114575709164146,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=3;b=2;r=2;i=1;h=1",
+      "action": "READ",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.5062868119216615,
+      "teacher_q": 0.5062868119216615,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=3;b=2;r=4;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.831026915273098,
+      "teacher_q": 0.8310269152730981,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=3;b=2;r=4;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.82265776705913,
+      "teacher_q": 0.8226577670591301,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=1;r=4;i=2;h=0x",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.8310269152730981,
+      "teacher_q": 0.8310269152730981,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=4;b=1;r=4;i=2;h=x1",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.6018775379898835,
+      "teacher_q": 0.6018775379898835,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=4;b=1;r=5;i=2;h=11",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.5817744636023141,
+      "teacher_q": 0.581774463602314,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=2;r=2;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.831026915273098,
+      "teacher_q": 0.8310269152730981,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=2;r=4;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.831026915273098,
+      "teacher_q": 0.8310269152730981,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=3;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 128,
+      "enumerated_utility": 0.6980000000000002,
+      "teacher_q": 0.698,
+      "abs_error": 2.220446049250313e-16
+    },
+    {
+      "state": "t=0;b=1;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.698,
+      "teacher_q": 0.698,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=0;b=1;r=0;i=0;h=",
+      "action": "WAIT",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.7057193251341828,
+      "teacher_q": 0.7057193251341829,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=0;b=1;r=0;i=0;h=",
+      "action": "READ",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.7101483665827322,
+      "teacher_q": 0.7101483665827322,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=2;b=0;r=2;i=1;h=x",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.6980000000000002,
+      "teacher_q": 0.698,
+      "abs_error": 2.220446049250313e-16
+    },
+    {
+      "state": "t=2;b=0;r=2;i=1;h=x",
+      "action": "WAIT",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.6935709585514508,
+      "teacher_q": 0.6935709585514507,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=3;b=1;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.698,
+      "teacher_q": 0.698,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=3;b=1;r=0;i=0;h=",
+      "action": "WAIT",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.7057193251341828,
+      "teacher_q": 0.7057193251341829,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=3;b=1;r=0;i=0;h=",
+      "action": "READ",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.7101483665827322,
+      "teacher_q": 0.7101483665827322,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=4;b=0;r=4;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.8998658812007496,
+      "teacher_q": 0.8998658812007497,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=4;b=0;r=4;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.8954368397522005,
+      "teacher_q": 0.8954368397522005,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=5;b=0;r=3;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.6259739942789337,
+      "teacher_q": 0.6259739942789337,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=5;b=0;r=3;i=1;h=1",
+      "action": "WAIT",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.6215449528303846,
+      "teacher_q": 0.6215449528303845,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=6;b=0;r=1;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.6259739942789337,
+      "teacher_q": 0.6259739942789337,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=6;b=0;r=1;i=1;h=1",
+      "action": "WAIT",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.6215449528303846,
+      "teacher_q": 0.6215449528303845,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=6;b=0;r=5;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.8998658812007496,
+      "teacher_q": 0.8998658812007497,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=6;b=0;r=5;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.8954368397522005,
+      "teacher_q": 0.8954368397522005,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=7;b=0;r=2;i=1;h=0",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.8998658812007496,
+      "teacher_q": 0.8998658812007497,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=7;b=0;r=2;i=1;h=0",
+      "action": "WAIT",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.8954368397522005,
+      "teacher_q": 0.8954368397522005,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=7;b=0;r=5;i=1;h=x",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.6980000000000002,
+      "teacher_q": 0.698,
+      "abs_error": 2.220446049250313e-16
+    },
+    {
+      "state": "t=7;b=0;r=5;i=1;h=x",
+      "action": "WAIT",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.6935709585514508,
+      "teacher_q": 0.6935709585514507,
+      "abs_error": 1.1102230246251565e-16
+    },
+    {
+      "state": "t=8;b=0;r=1;i=1;h=x",
+      "action": "STOP",
+      "conditional_worlds": 16,
+      "enumerated_utility": 0.6980000000000002,
+      "teacher_q": 0.698,
+      "abs_error": 2.220446049250313e-16
+    },
+    {
+      "state": "t=8;b=0;r=5;i=1;h=1",
+      "action": "STOP",
+      "conditional_worlds": 8,
+      "enumerated_utility": 0.6259739942789337,
+      "teacher_q": 0.6259739942789337,
+      "abs_error": 0.0
+    },
+    {
+      "state": "t=8;b=1;r=0;i=0;h=",
+      "action": "STOP",
+      "conditional_worlds": 32,
+      "enumerated_utility": 0.698,
+      "teacher_q": 0.698,
+      "abs_error": 0.0
+    }
+  ],
+  "max_abs_error": 1.4432899320127035e-15,
+  "private_access_guard_cases": 36,
+  "guard_receipts": [
+    {
+      "requested": "STOP",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.002,
+      "before": "t=0;b=2;r=0;i=0;h=",
+      "after": "t=0;b=2;r=0;i=0;h=",
+      "answer": 1
+    },
+    {
+      "requested": "WAIT",
+      "actual": "WAIT",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.014320345512341686,
+      "before": "t=0;b=2;r=0;i=0;h=",
+      "after": "t=1;b=2;r=0;i=0;h=",
+      "answer": null
+    },
+    {
+      "requested": "READ",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.032,
+      "before": "t=0;b=0;r=0;i=0;h=",
+      "after": "t=0;b=0;r=0;i=0;h=",
+      "answer": 1
+    },
+    {
+      "requested": "STOP",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.002,
+      "before": "t=0;b=1;r=0;i=0;h=",
+      "after": "t=0;b=1;r=0;i=0;h=",
+      "answer": 0
+    },
+    {
+      "requested": "WAIT",
+      "actual": "WAIT",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.009157459729982099,
+      "before": "t=0;b=1;r=0;i=0;h=",
+      "after": "t=1;b=1;r=0;i=0;h=",
+      "answer": null
+    },
+    {
+      "requested": "READ",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.032,
+      "before": "t=0;b=0;r=0;i=0;h=",
+      "after": "t=0;b=0;r=0;i=0;h=",
+      "answer": 0
+    },
+    {
+      "requested": "STOP",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.002,
+      "before": "t=0;b=1;r=0;i=0;h=",
+      "after": "t=0;b=1;r=0;i=0;h=",
+      "answer": 1
+    },
+    {
+      "requested": "WAIT",
+      "actual": "WAIT",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.006361748646517045,
+      "before": "t=0;b=1;r=0;i=0;h=",
+      "after": "t=1;b=1;r=0;i=0;h=",
+      "answer": null
+    },
+    {
+      "requested": "READ",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.032,
+      "before": "t=0;b=0;r=0;i=0;h=",
+      "after": "t=0;b=0;r=0;i=0;h=",
+      "answer": 1
+    },
+    {
+      "requested": "STOP",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.002,
+      "before": "t=0;b=3;r=0;i=0;h=",
+      "after": "t=0;b=3;r=0;i=0;h=",
+      "answer": 0
+    },
+    {
+      "requested": "WAIT",
+      "actual": "WAIT",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.012455368895194979,
+      "before": "t=0;b=3;r=0;i=0;h=",
+      "after": "t=1;b=3;r=0;i=0;h=",
+      "answer": null
+    },
+    {
+      "requested": "READ",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.032,
+      "before": "t=0;b=0;r=0;i=0;h=",
+      "after": "t=0;b=0;r=0;i=0;h=",
+      "answer": 0
+    },
+    {
+      "requested": "STOP",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.002,
+      "before": "t=0;b=3;r=0;i=0;h=",
+      "after": "t=0;b=3;r=0;i=0;h=",
+      "answer": 1
+    },
+    {
+      "requested": "WAIT",
+      "actual": "WAIT",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.008636648819976797,
+      "before": "t=0;b=3;r=0;i=0;h=",
+      "after": "t=1;b=3;r=0;i=0;h=",
+      "answer": null
+    },
+    {
+      "requested": "READ",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.032,
+      "before": "t=0;b=0;r=0;i=0;h=",
+      "after": "t=0;b=0;r=0;i=0;h=",
+      "answer": 1
+    },
+    {
+      "requested": "STOP",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.002,
+      "before": "t=0;b=1;r=0;i=0;h=",
+      "after": "t=0;b=1;r=0;i=0;h=",
+      "answer": 1
+    },
+    {
+      "requested": "WAIT",
+      "actual": "WAIT",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.0059328847673435605,
+      "before": "t=0;b=1;r=0;i=0;h=",
+      "after": "t=1;b=1;r=0;i=0;h=",
+      "answer": null
+    },
+    {
+      "requested": "READ",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.032,
+      "before": "t=0;b=0;r=0;i=0;h=",
+      "after": "t=0;b=0;r=0;i=0;h=",
+      "answer": 1
+    },
+    {
+      "requested": "STOP",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.002,
+      "before": "t=0;b=1;r=0;i=0;h=",
+      "after": "t=0;b=1;r=0;i=0;h=",
+      "answer": 1
+    },
+    {
+      "requested": "WAIT",
+      "actual": "WAIT",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.0032173405293096594,
+      "before": "t=0;b=1;r=0;i=0;h=",
+      "after": "t=1;b=1;r=0;i=0;h=",
+      "answer": null
+    },
+    {
+      "requested": "READ",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.032,
+      "before": "t=0;b=0;r=0;i=0;h=",
+      "after": "t=0;b=0;r=0;i=0;h=",
+      "answer": 1
+    },
+    {
+      "requested": "STOP",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.002,
+      "before": "t=0;b=2;r=0;i=0;h=",
+      "after": "t=0;b=2;r=0;i=0;h=",
+      "answer": 1
+    },
+    {
+      "requested": "WAIT",
+      "actual": "WAIT",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.014764157316071686,
+      "before": "t=0;b=2;r=0;i=0;h=",
+      "after": "t=1;b=2;r=0;i=0;h=",
+      "answer": null
+    },
+    {
+      "requested": "READ",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.032,
+      "before": "t=0;b=0;r=0;i=0;h=",
+      "after": "t=0;b=0;r=0;i=0;h=",
+      "answer": 1
+    },
+    {
+      "requested": "STOP",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.002,
+      "before": "t=0;b=3;r=0;i=0;h=",
+      "after": "t=0;b=3;r=0;i=0;h=",
+      "answer": 1
+    },
+    {
+      "requested": "WAIT",
+      "actual": "WAIT",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.010777170888568742,
+      "before": "t=0;b=3;r=0;i=0;h=",
+      "after": "t=1;b=3;r=0;i=0;h=",
+      "answer": null
+    },
+    {
+      "requested": "READ",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.032,
+      "before": "t=0;b=0;r=0;i=0;h=",
+      "after": "t=0;b=0;r=0;i=0;h=",
+      "answer": 1
+    },
+    {
+      "requested": "STOP",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.002,
+      "before": "t=0;b=3;r=0;i=0;h=",
+      "after": "t=0;b=3;r=0;i=0;h=",
+      "answer": 0
+    },
+    {
+      "requested": "WAIT",
+      "actual": "WAIT",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.009826166080870549,
+      "before": "t=0;b=3;r=0;i=0;h=",
+      "after": "t=1;b=3;r=0;i=0;h=",
+      "answer": null
+    },
+    {
+      "requested": "READ",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.032,
+      "before": "t=0;b=0;r=0;i=0;h=",
+      "after": "t=0;b=0;r=0;i=0;h=",
+      "answer": 0
+    },
+    {
+      "requested": "STOP",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.002,
+      "before": "t=0;b=3;r=0;i=0;h=",
+      "after": "t=0;b=3;r=0;i=0;h=",
+      "answer": 0
+    },
+    {
+      "requested": "WAIT",
+      "actual": "WAIT",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.008369148213968013,
+      "before": "t=0;b=3;r=0;i=0;h=",
+      "after": "t=1;b=3;r=0;i=0;h=",
+      "answer": null
+    },
+    {
+      "requested": "READ",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.032,
+      "before": "t=0;b=0;r=0;i=0;h=",
+      "after": "t=0;b=0;r=0;i=0;h=",
+      "answer": 0
+    },
+    {
+      "requested": "STOP",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.002,
+      "before": "t=0;b=1;r=0;i=0;h=",
+      "after": "t=0;b=1;r=0;i=0;h=",
+      "answer": 0
+    },
+    {
+      "requested": "WAIT",
+      "actual": "WAIT",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.0044290414485493226,
+      "before": "t=0;b=1;r=0;i=0;h=",
+      "after": "t=1;b=1;r=0;i=0;h=",
+      "answer": null
+    },
+    {
+      "requested": "READ",
+      "actual": "STOP",
+      "read_attempted": false,
+      "observation": null,
+      "cost": 0.032,
+      "before": "t=0;b=0;r=0;i=0;h=",
+      "after": "t=0;b=0;r=0;i=0;h=",
+      "answer": 0
+    }
+  ],
+  "cost_sweep_config": {
+    "deadline": 7,
+    "budget": 2,
+    "prior": 0.5,
+    "read_cost": 0.058240895848623755,
+    "latency_cost": 0.014320345512341686,
+    "stop_cost": 0.002,
+    "failure_cost": 0.025,
+    "invalid_cost": 0.03,
+    "refractory_ticks": 0,
+    "packets": [
+      {
+        "arrival": 0,
+        "reliability": 0.6216579424951315,
+        "failure_probability": 0.08
+      },
+      {
+        "arrival": 1,
+        "reliability": 0.7924457816390715,
+        "failure_probability": 0.08
+      }
+    ]
+  },
+  "cost_sweep": [
+    {
+      "read_cost": 0.0,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.7720041436755876
+    },
+    {
+      "read_cost": 0.005,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.7620041436755873
+    },
+    {
+      "read_cost": 0.01,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.7520041436755874
+    },
+    {
+      "read_cost": 0.015,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.7420041436755875
+    },
+    {
+      "read_cost": 0.02,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.7320041436755875
+    },
+    {
+      "read_cost": 0.025,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.7220041436755875
+    },
+    {
+      "read_cost": 0.03,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.7120041436755874
+    },
+    {
+      "read_cost": 0.035,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.7020041436755874
+    },
+    {
+      "read_cost": 0.04,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.6920041436755874
+    },
+    {
+      "read_cost": 0.045,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.6820041436755875
+    },
+    {
+      "read_cost": 0.05,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.6720041436755875
+    },
+    {
+      "read_cost": 0.055,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.6620041436755872
+    },
+    {
+      "read_cost": 0.06,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.6520041436755873
+    },
+    {
+      "read_cost": 0.065,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.6420041436755877
+    },
+    {
+      "read_cost": 0.07,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.6320041436755874
+    },
+    {
+      "read_cost": 0.075,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.6220041436755875
+    },
+    {
+      "read_cost": 0.08,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.6120041436755874
+    },
+    {
+      "read_cost": 0.085,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.6020041436755875
+    },
+    {
+      "read_cost": 0.09,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.5920041436755876
+    },
+    {
+      "read_cost": 0.095,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.5820041436755876
+    },
+    {
+      "read_cost": 0.1,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.5720041436755875
+    },
+    {
+      "read_cost": 0.105,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.5620041436755875
+    },
+    {
+      "read_cost": 0.11,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.5520041436755875
+    },
+    {
+      "read_cost": 0.115,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.5420041436755876
+    },
+    {
+      "read_cost": 0.12,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.5320041436755875
+    },
+    {
+      "read_cost": 0.125,
+      "read_advantage": 0.014320345512341737,
+      "optimal_action": "READ",
+      "initial_value": 0.5220041436755875
+    },
+    {
+      "read_cost": 0.13,
+      "read_advantage": 0.014004143675587333,
+      "optimal_action": "READ",
+      "initial_value": 0.5120041436755873
+    },
+    {
+      "read_cost": 0.135,
+      "read_advantage": 0.004004143675587435,
+      "optimal_action": "READ",
+      "initial_value": 0.5020041436755874
+    },
+    {
+      "read_cost": 0.14,
+      "read_advantage": -0.005995856324412574,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.145,
+      "read_advantage": -0.015995856324412583,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.15,
+      "read_advantage": -0.025995856324412536,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.155,
+      "read_advantage": -0.0359958563244126,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.16,
+      "read_advantage": -0.041510683375843405,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.165,
+      "read_advantage": -0.04691068337584342,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.17,
+      "read_advantage": -0.052310683375843436,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.17500000000000002,
+      "read_advantage": -0.0577106833758434,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.18,
+      "read_advantage": -0.06311068337584336,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.185,
+      "read_advantage": -0.06851068337584337,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.19,
+      "read_advantage": -0.07391068337584339,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.195,
+      "read_advantage": -0.07931068337584335,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.2,
+      "read_advantage": -0.08471068337584342,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.20500000000000002,
+      "read_advantage": -0.09011068337584344,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.21,
+      "read_advantage": -0.09551068337584334,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.215,
+      "read_advantage": -0.10091068337584336,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.22,
+      "read_advantage": -0.10631068337584332,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.225,
+      "read_advantage": -0.11171068337584333,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.23,
+      "read_advantage": -0.11711068337584335,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.23500000000000001,
+      "read_advantage": -0.12251068337584337,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.24,
+      "read_advantage": -0.12791068337584338,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.245,
+      "read_advantage": -0.13331068337584334,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.25,
+      "read_advantage": -0.13871068337584336,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.255,
+      "read_advantage": -0.14411068337584337,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.26,
+      "read_advantage": -0.1495106833758434,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.265,
+      "read_advantage": -0.1549106833758434,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.27,
+      "read_advantage": -0.16007469290447907,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.275,
+      "read_advantage": -0.16507469290447907,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.28,
+      "read_advantage": -0.17007469290447907,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.28500000000000003,
+      "read_advantage": -0.17507469290447908,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.29,
+      "read_advantage": -0.18007469290447903,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.295,
+      "read_advantage": -0.18507469290447903,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    },
+    {
+      "read_cost": 0.3,
+      "read_advantage": -0.19007469290447904,
+      "optimal_action": "STOP",
+      "initial_value": 0.498
+    }
+  ],
+  "scope": "finite conditional evidence task; independent latent-world summation; not native execution"
+}

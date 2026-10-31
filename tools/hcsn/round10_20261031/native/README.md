@@ -149,7 +149,7 @@ the process-level multi-policy/physics-family comparison against the Python
 teacher. Fresh compiler results and qualification reports determine pass/fail;
 the existence of these sources alone is not evidence that either passed.
 
-The four-packet binary task, declared observation model, frozen synthetic
+The at-most-four-packet binary task, declared observation model, frozen synthetic
 FullHX packets, and Linux storage backend are explicit research limits. Native
 execution does not establish task utility improvement, a general multimodal
 encoder advantage, production readiness, or superiority to Transformers.

@@ -1,0 +1,236 @@
+{
+  "schema": "hepta.r10.five-track-acceptance.v1",
+  "date": "2026-10-31",
+  "experimental_work_executed": true,
+  "all_five_scientific_claims_passed": false,
+  "complete_coupled_hx_network_established": false,
+  "analytic_unique_advantage_established": false,
+  "transformer_or_snn_superiority_established": false,
+  "production_activation": false,
+  "source": {
+    "r9_baseline": "e7eaa5e0be835269636216c8fe8b1ae2f1a22361",
+    "native_scientific_run": "41a38cd4f05924c57d0ff841ea392de10704d9b3",
+    "native_ci_run": 41185622819,
+    "branch": "research/hcsn-causal-five-track-20261031"
+  },
+  "tracks": [
+    {
+      "number": 1,
+      "status": "supported_for_prescribed_cases_with_residual_error",
+      "original_source_defects_reproduced_and_patched": 2,
+      "main_brownian_paths": 120000,
+      "separate_sampler_calibration_paths": 12000,
+      "registered_refinement_levels": 4,
+      "registered_max_mass_error": 4.574118861455645e-14,
+      "registered_max_killed_subset_excess": 1.1102230246251565e-16,
+      "first_hit_cdf_residuals": [
+        0.01324463155208147,
+        0.006672679096936751,
+        0.022740417231028376
+      ],
+      "task_derived_continuous_boundary": false,
+      "upstream_pytorch_execution": false,
+      "evidence": [
+        "dynamics/results/regression.json",
+        "dynamics/results/moving_v1/summary.json",
+        "dynamics/README.md"
+      ]
+    },
+    {
+      "number": 2,
+      "status": "preread_control_and_information_effect_verified_in_finite_task",
+      "native_runs": 576,
+      "paired_worlds": 48,
+      "action_state_cost_decoder_parity": true,
+      "restart_pairs": 8,
+      "analytic_vs_initial_stop_quality": {
+        "improved": 7,
+        "harmed": 2,
+        "same": 39
+      },
+      "analytic_vs_ordinary_quality_equal_worlds": 48,
+      "analytic_minus_ordinary_mean_task_utility": 0.0032362379046775303,
+      "gain_source": "declared task costs only",
+      "latent_ctmc_firing_triggers_read": false,
+      "evidence": [
+        "native/evidence/qualification/REPORT.json",
+        "native/evidence/INDEPENDENT_AUDIT.json"
+      ]
+    },
+    {
+      "number": 3,
+      "status": "finite_task_bellman_validated_continuous_task_free_boundary_open",
+      "conditional_action_values": 280,
+      "max_abs_independent_value_error": 1.4432899320127035e-15,
+      "private_access_guards": 36,
+      "native_cloned_frontiers": 8,
+      "distinct_config_public_task_states": 5,
+      "cloned_requested_actions": 24,
+      "legal_cloned_actions": 18,
+      "illegal_reads_guarded_to_stop": 6,
+      "cloned_groups_with_different_final_quality": 0,
+      "value_id_results": {
+        "optimal": 0.7456450019078399,
+        "fixed": 0.7322197081058621,
+        "initial_stop": 0.6355,
+        "family_utility": {
+          "ordinary": 0.7232050015302124,
+          "matched_c1": 0.7197709584566204,
+          "analytic": 0.7209836454929466
+        },
+        "family_regret": {
+          "ordinary": 0.022440000377627542,
+          "matched_c1": 0.025874043451219506,
+          "analytic": 0.024661356414893438
+        },
+        "analytic_minus_ordinary": {
+          "mean": -0.002221356037265894,
+          "ci95": [
+            -0.009856548538993521,
+            0.004648213736060506
+          ],
+          "positive_gate": false
+        },
+        "analytic_minus_matched_c1": {
+          "mean": 0.0012126870363260672,
+          "ci95": [
+            -0.006503877975852108,
+            0.008062175903358162
+          ],
+          "positive_gate": false
+        },
+        "analytic_minus_fixed": {
+          "mean": -0.011236062612915536,
+          "ci95": [
+            -0.022702565865893642,
+            -7.407166422509466e-06
+          ],
+          "positive_gate": false
+        },
+        "optimal_minus_initial_stop": {
+          "mean": 0.11014500190784,
+          "ci95": [
+            0.08389313729513843,
+            0.13809662528992267
+          ],
+          "positive_gate": true
+        }
+      },
+      "value_ood_results": {
+        "optimal": 0.6625059186958683,
+        "fixed": 0.5445439777120923,
+        "initial_stop": 0.6438333333333333,
+        "family_utility": {
+          "ordinary": 0.6364974622835882,
+          "matched_c1": 0.6246240593584609,
+          "analytic": 0.6321372050828875
+        },
+        "family_regret": {
+          "ordinary": 0.026008456412280195,
+          "matched_c1": 0.037881859337407425,
+          "analytic": 0.030368713612980817
+        },
+        "analytic_minus_ordinary": {
+          "mean": -0.004360257200700619,
+          "ci95": [
+            -0.016060799913803738,
+            0.008428306549794977
+          ],
+          "positive_gate": false
+        },
+        "analytic_minus_matched_c1": {
+          "mean": 0.007513145724426607,
+          "ci95": [
+            -0.002392560417905581,
+            0.016551991463252532
+          ],
+          "positive_gate": false
+        },
+        "analytic_minus_fixed": {
+          "mean": 0.08759322737079522,
+          "ci95": [
+            0.056821133971905156,
+            0.11717438900028573
+          ],
+          "positive_gate": true
+        },
+        "optimal_minus_initial_stop": {
+          "mean": 0.018672585362535063,
+          "ci95": [
+            0.007523065191074473,
+            0.03264216087441114
+          ],
+          "positive_gate": true
+        }
+      },
+      "continuous_smooth_pasting_certificate": false,
+      "evidence": [
+        "value/REPORT.md",
+        "value/evidence/conditional_audit.json",
+        "native/evidence/INDEPENDENT_AUDIT.json"
+      ]
+    },
+    {
+      "number": 4,
+      "status": "analytic_superiority_not_established",
+      "value_gate_families": 3,
+      "value_distinct_fits": 9,
+      "value_fit_parameters": 770,
+      "av_primary_contrasts": 8,
+      "av_primary_contrasts_passed": 2,
+      "passed_av_contrasts_scope": "missing-modality mean versus both CfC equation controls only",
+      "analytic_beats_ordinary_primary_gate": false,
+      "analytic_beats_matched_c1_primary_gate": false,
+      "official_cfc_torch_runtime_executed": false,
+      "evidence": [
+        "value/evidence/main/RESULTS.json",
+        "av/SUMMARY.json",
+        "av/CFC_PROVENANCE.json",
+        "PACKAGING_PATH_AUDIT.json"
+      ]
+    },
+    {
+      "number": 5,
+      "status": "real_offline_av_executed_broad_transfer_not_established",
+      "paired_recordings": 720,
+      "actors": 30,
+      "heldout_actors": 8,
+      "historical_holdout_reused": true,
+      "av_main_new_training_jobs": 30,
+      "memory_new_training_jobs": 15,
+      "memory_original_checkpoint_replays": 15,
+      "memory_exploratory_analytic_contrasts_passed": 0,
+      "online_causal_media_decode": false,
+      "trainable_frontends": false,
+      "useful_long_delay_retention_established": false,
+      "foundation_model_training": false,
+      "evidence": [
+        "av/REPORT.md",
+        "av/memory_followup/REPORT.md",
+        "av/memory_followup/TARGET_SENSITIVITY.json"
+      ]
+    }
+  ],
+  "measurements": {
+    "native_task_ticks_are_declared_not_wall_time": true,
+    "native_task_costs_are_utility_units_not_joules": true,
+    "av_complete_main_training_jobs_cpu_seconds": 219.490135,
+    "av_complete_memory_training_jobs_cpu_seconds": 190.693008,
+    "gpu_measured": false,
+    "energy_joules": null
+  },
+  "shared_process_gap": {
+    "dynamics": "prescribed moving-boundary Brownian first-passage/reset/refractory reference",
+    "native": "finite CTMC propagated after public-task Q-table READ/WAIT decision",
+    "av": "new per-step erfc gate without persistent killed survivor/reset distribution",
+    "same_transition_kernel_shared_by_teacher_training_native": false
+  },
+  "next_acceptance": "One recoverable content/probability/value state and transition kernel across teacher, differentiable training and native execution; analytic state causally changes legal pre-read actions and improves net value against same-information controls.",
+  "statistical_limits": [
+    "576 native executions are 48 paired environments, not 576 independent samples.",
+    "Value confirmation reuses identical seeds/configurations/checkpoints.",
+    "Value nominal auxiliary intervals are not multiplicity-adjusted primary confirmations.",
+    "AV historical holdout is reused; the memory follow-up is exploratory.",
+    "No negative result is claimed as an impossibility theorem."
+  ]
+}
