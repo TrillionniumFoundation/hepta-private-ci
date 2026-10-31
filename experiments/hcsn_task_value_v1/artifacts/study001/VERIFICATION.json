@@ -1,0 +1,55 @@
+{
+  "archive_implementation": "experiments/hcsn_free_boundary_v1/archive.py",
+  "archive_implementation_sha256": "7aefcc785977bb391116750d04e9abd8bfa1db28381ee06227bac501c61eceab",
+  "archive_manifest_path": "/workspace/scratch/b8d29bac8668/hepta-hcsn/experiments/hcsn_task_value_v1/artifacts/study001/study001.json",
+  "archive_manifest_sha256": "3c97927b4026e4da68bfc9c7485e3bb21ea064af2687bc4c0c5e34d2496e8782",
+  "archive_sha256": "bae75b038da8f361cf343d916d4465dd5007527b058d69f7911554a8a645bab1",
+  "complete": true,
+  "compressed_bytes": 23168296,
+  "destination_absent_before_restore": true,
+  "elapsed_wall_seconds": 25.222014464001404,
+  "ended_at_utc": "2026-10-31T03:12:54.538871+00:00",
+  "final_av_report_sha256": "4ef1dfdf2d9661fd18c86a8dccc500d73a14a6d2239b4edc170233ef3217cfe1",
+  "fresh_restore_root": "/workspace/scratch/b8d29bac8668/evidence_restore/study001",
+  "full_input_inventory_matches_manifest": true,
+  "git_index_or_commit_modified": false,
+  "included_subdirectories": [
+    "study001",
+    "frontend_cost001",
+    "independent_review001"
+  ],
+  "inputs_modified": false,
+  "members": 2444,
+  "part_bytes": 327680,
+  "part_size_sha256_git_blob_sha1_all_match": true,
+  "parts": 71,
+  "per_scope": {
+    "frontend_cost001": {
+      "bytes": 3493988,
+      "files": 60
+    },
+    "independent_review001": {
+      "bytes": 722981,
+      "files": 2
+    },
+    "study001": {
+      "bytes": 53016604,
+      "files": 2382
+    }
+  },
+  "preserved_initial_av_report_sha256": "a020b0462bea581f4079b2868cda49e95126d76b1e1313050fe6196c3103254c",
+  "remote_calls_performed": false,
+  "restore_result": {
+    "archive_sha256": "bae75b038da8f361cf343d916d4465dd5007527b058d69f7911554a8a645bab1",
+    "restored_or_already_identical": 2444
+  },
+  "restored_files": 2444,
+  "retained_old_and_failure_evidence": true,
+  "schema": "hcsn-study-evidence-archive-verification.v1",
+  "source_root": "/workspace/scratch/b8d29bac8668/hepta-hcsn/experiments/hcsn_task_value_v1/results",
+  "source_staging_restored_size_and_sha256_all_match": true,
+  "staging_method": "Hard links; no source content edited",
+  "staging_root": "/workspace/scratch/b8d29bac8668/evidence_stage/study001",
+  "started_at_utc": "2026-10-31T03:12:29.316886+00:00",
+  "uncompressed_file_bytes": 57233573
+}
