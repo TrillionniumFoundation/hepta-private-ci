@@ -1,0 +1,72 @@
+{
+  "after_fix_patch_bytes": 0,
+  "ci_source_commit": "465aa2077076254a4fa75de7e85521e2bd8d117a",
+  "files": [
+    {
+      "after_git_sha": "db4312b0fb2a7cf83b62b851f7470fad8bf6fdd9",
+      "before_git_sha": "47ff694eb8f448881eec97df222a71e0d05b1200",
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "sha256": "266186757151f59d0a299d84c192f57ba6e739e2ce16d301c69b165bac722f5c"
+    },
+    {
+      "after_git_sha": "b62a9cf8989b0c9819e9f2bc5284599067d08f88",
+      "before_git_sha": "df8afa976b9dae25f0a58cb22c78332c58c160c1",
+      "path": "codex-rs/hepta-agentd/src/memory_independent_cell_v11.rs",
+      "sha256": "3fa20d4799f94c173c5a002a66bf4f65b5d84ae1181ea859712c615f48c9934f"
+    },
+    {
+      "after_git_sha": "c9da707ecf55e1cb4c6b605abad699f2d794c5ec",
+      "before_git_sha": "283dfcb7127430ebf1cc52849cac19071a857d67",
+      "path": "codex-rs/hepta-agentd/src/memory_independent_model_v12.rs",
+      "sha256": "1eb0b0c2bd64029d961ea75a973c8ba700a805893e30ea301d325788fcc3ee59"
+    },
+    {
+      "after_git_sha": "19bddb0e199455d30e9f15d5162716c2e7d57e5e",
+      "before_git_sha": "aa5534a5daf89707abb7f4c40b7c2c0c0d428850",
+      "path": "codex-rs/hepta-agentd/src/memory_mlp_v12.rs",
+      "sha256": "773ca9a371b689451809bd31afe71bbb012d1705c35b037b3f87580b6fbd4eec"
+    },
+    {
+      "after_git_sha": "2fcc1ace0e636767bcd4c552e3229ca680ad01e1",
+      "before_git_sha": "b8e112c435e8cfe125dcb53e5bcb11a9e6d9ee68",
+      "path": "codex-rs/hepta-agentd/src/memory_mlp_v12_python_fixture.rs",
+      "sha256": "38a49587c6705f4edaa6be390d1f3e16c3b7b4456e3ca8d0684272f136a7fe76"
+    },
+    {
+      "after_git_sha": "518895ed6612d85de40f9ad93e5c018b0a5f3b8b",
+      "before_git_sha": "ed708d1d54a1c0bcd6d491c7a7795c2f3207a2bf",
+      "path": "codex-rs/hepta-agentd/src/memory_mlp_v12_tests.rs",
+      "sha256": "bac13a180f6aabe0064213bc1947550238d940ae2516a807fcf6b300ade3e4ab"
+    },
+    {
+      "after_git_sha": "3576c34c9603d8b3f8168c1f0a1c152556245951",
+      "before_git_sha": "17a793002a7becfa3473619c55eeb5f7b37c0a24",
+      "path": "codex-rs/hepta-agentd/src/memory_mlp_v12_training_test_support.rs",
+      "sha256": "1fc53d5e5d2d03927a855f07b4b39b49248de98775389d260a2dff8caf36f139"
+    },
+    {
+      "after_git_sha": "4c49ac296432fc8405159ba7ef0143cce2675cd9",
+      "before_git_sha": "d8c067b262eed9eb1a5f311cdffdd9f782c514b9",
+      "path": "codex-rs/hepta-agentd/src/memory_serving_plan_v11.rs",
+      "sha256": "33ed49d30d21c86c95338afb21d80f724e0e441a3432ff9b50214008efa00903"
+    }
+  ],
+  "fixture_expected_logits_unchanged": true,
+  "fixture_payload_bytes_unchanged": true,
+  "independent_review": {
+    "all_eight_old_and_new_git_blob_ids_reconstructed_and_verified": true,
+    "cfg_and_path_attributes_remain_attached": true,
+    "fixture_payload_and_24_expected_logits_unchanged": true,
+    "inference_and_training_arithmetic_order_unchanged": true,
+    "method": "Independent static review of all hunks and in-memory inverse reconstruction; no code edits or behavior tests.",
+    "module_reordering_has_no_macro_scope_dependency": true,
+    "reviewer": "neuron_architecture"
+  },
+  "local_files_match_exact_ci_post_format_blob_ids": true,
+  "manual_review": "Formatting, optional commas, closure body braces, and item sorting; cfg and path attributes remain attached; training and inference arithmetic order preserved.",
+  "patch_sha256": "4a069eccd0eac66839bdaf2e0df0eb09fa8f4952e033dec0b4503d8388186e96",
+  "requires_new_native_validation_commit": true,
+  "reviewed_at_utc": "2026-10-31T02:37:59.378974+00:00",
+  "schema": "hepta.memory.v12.format-review.v1",
+  "tests_run_after_applying_patch_in_this_local_review": false
+}
