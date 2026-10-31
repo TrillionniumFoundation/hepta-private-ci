@@ -1,0 +1,220 @@
+{
+  "schema": "hcsn-independent-content-source-review.v1",
+  "status": "ready_for_source_seal_no_unresolved_launch_blocker",
+  "formal_outcomes_accessed": false,
+  "independent_checks": [
+    {
+      "name": "first_event_kills_only_firing_edge",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "models.first_event_vectors removes active-last to phase-zero offdiagonal while retaining exit in diagonal"
+    },
+    {
+      "name": "existing_refractory_is_preserved",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Killed generator retains Erlang progression and phase-last to interpolated reset"
+    },
+    {
+      "name": "F_H_are_flux_integrals",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "F integrates killed flux; H subtracts rho on active and refractory rows; no regenerative probability renormalization"
+    },
+    {
+      "name": "outgoing_forecast_contract",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Forecast starts after observed interval propagation; horizon=.1*observed dt and current coefficients frozen; no future observations"
+    },
+    {
+      "name": "full_3_by_2_boundary_channel_design",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "value/fixed/learned boundaries crossed with JG/ordinary physical features all present"
+    },
+    {
+      "name": "matched_feature_count",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Every physical channel contributes three active deterministic coordinates; no dead padding"
+    },
+    {
+      "name": "same_information_physical_controls",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "All physical arms receive complete active/refractory distribution plus mu,sigma,rho,K,r,tau,b"
+    },
+    {
+      "name": "ordinary_threshold_contract",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Fixed threshold1.3; learned .7+2.6sigmoid(a), initialized1.3 and constant across observations"
+    },
+    {
+      "name": "freeze_semantics_declared",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "requires_grad is disabled for exactly named groups; raw_K freeze is not literal b freeze; fixed arm is separate"
+    },
+    {
+      "name": "freeze_byte_validation",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Initial frozen tensors saved; final update zeros and selected frozen bytes checked against initial"
+    },
+    {
+      "name": "fresh_split_streams",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "SeedSequence combines independent split/task indices; heldout length64 and ID32; generation does not inspect predictions"
+    },
+    {
+      "name": "selection_before_heldout",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "load_split refuses test/ood unless durable selection.json exists; access chronology retained"
+    },
+    {
+      "name": "development_selection_independently_rederived",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Analyzer now recomputes per-arm learning-rate argmin and selected physical arm from all development results and provenance hashes"
+    },
+    {
+      "name": "full_design_matrix_independently_reconstructed",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Analyzer rederives76development304fixed64equalCPU jobs from frozen design/selection"
+    },
+    {
+      "name": "source_and_preflight_bindings",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "register requires passing source_map-exact preflight; verify rechecks all source/design/data hashes"
+    },
+    {
+      "name": "training_and_worker_costs_separate",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Train CPU excludes validation; worker selfclock cutoff documented; RUN wait4 captures import,serialization andexit"
+    },
+    {
+      "name": "complete_worker_ratios_use_wait4",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "External ratios and summary wholeworkerCPU use perjob child_cpu_seconds from RUN ledger"
+    },
+    {
+      "name": "failures_are_not_filtered",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "All attemptedjob exits/costs retained; missing/failedjobs make analysis incomplete; ledgers prevent silent reruns"
+    },
+    {
+      "name": "risk_finiteness_guard",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "physical_audit explicitly rejects nonfinite F orH beforeprobability bounds"
+    },
+    {
+      "name": "causal_external_models",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Transformer uses causal SDPA; Mamba causal convolution and serialscan; recurrent baselines only priorstate/currentinput"
+    },
+    {
+      "name": "active_transformer_matching",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Transformer FFN actively changes to138 atwidth36, no padding; original frozen modules unchanged"
+    },
+    {
+      "name": "mechanism_families_predeclared",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Directional comparisons grouped freeze5,boundary2,channel5,interaction2; perseed taskaverages avoid countingtasksasindependentseeds"
+    },
+    {
+      "name": "inference_scope_declared",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Five repetitions in-memory selectedmodel B16T32 afterwarmup; startup/load/service latency not claimed"
+    },
+    {
+      "name": "all_full_batch_model_gradients_actually_checked",
+      "passed": true,
+      "kind": "independent_source_and_receipt_review",
+      "evidence": "preflight records gradients_finite/nonzero inside each ofsixfullbatchmodels beforeoptimizerstep; current51-checkreceiptpasses"
+    }
+  ],
+  "first_event_numeric": {
+    "result": "first_event002/RESULTS.json",
+    "sha256": "8f5c6996534cad6005ca590718080fce27147cde2685cc0b1f346826d61788b0",
+    "passed": true,
+    "checks": 43,
+    "max_forward_or_quadrature_error": 3.100619160565938e-16,
+    "max_scaled_gradient_error": 7.708382747124152e-11,
+    "parameter_channel_directions": 28,
+    "tested_models_sha256": "f08878c2760bcec859e5e11c7b906b71647029073f782987c3431a4ca0ea71fe",
+    "tested_model_matches_review": true
+  },
+  "preflight_observation": {
+    "passed": true,
+    "checks": 51,
+    "all_bound_sources_match": true,
+    "resident_min": 17770,
+    "resident_max": 17954,
+    "relative_spread": 0.010248412610003341,
+    "sha256": "09c4fef70313212ff4ba8ec181d0633a0ea0b80b68d14dd26eacf9a9d6eb1506",
+    "full_batch_models_checked": 6
+  },
+  "findings": [
+    {
+      "id": "selection_recompute",
+      "status": "fixed_and_reviewed"
+    },
+    {
+      "id": "whole_worker_wait4_cost",
+      "status": "fixed_and_reviewed"
+    },
+    {
+      "id": "explicit_F_H_finiteness",
+      "status": "fixed_and_reviewed"
+    },
+    {
+      "id": "full_batch_gradient_guard_checks_only_last_model",
+      "status": "fixed_and_reviewed",
+      "detail": "Finite/nonzero gradients captured separatelyinsideeachmodel loop; allsix passcurrentfullbatchpreflight."
+    }
+  ],
+  "development_audit_failure_retained": {
+    "path": "first_event001/RESULTS.json",
+    "source": "first_event001/AUDIT_SOURCE.py",
+    "cause": "Independent reviewer chose horizon4 for a count>1 illustration; both slow flows had count below1. All F/H/gradient checks passed. Horizon40 demonstrates repeat count>1; no content-model or formalgate change."
+  },
+  "source_sha256": {
+    "experiments/hcsn_blocker_closure_v1/content/models.py": "f08878c2760bcec859e5e11c7b906b71647029073f782987c3431a4ca0ea71fe",
+    "experiments/hcsn_blocker_closure_v1/content/data.py": "89cec4f5d5926d4971880b4103e8b964f702986d7ad0f884fa95b52c32e876ee",
+    "experiments/hcsn_blocker_closure_v1/content/study.py": "1e7039a7d2cbf3e4be1f009c0aeab92b31c5098b606ee55f89d6f74105d7b3d0",
+    "experiments/hcsn_blocker_closure_v1/content/analysis.py": "aed2dd5bee0561fbea6030b9902f3eef65b513d6ea5aa4ad19409f65c3b46564",
+    "experiments/hcsn_blocker_closure_v1/content/DESIGN.json": "c38b579da45bc200825419f48b0321586dcdbe26eeec8f45323f56d668ca148f",
+    "experiments/hcsn_blocker_closure_v1/content/preflight.py": "edbba48e2d8b2f464fb714611a6c87aa16f8d495aa0b6db7ed1c269bddd59911"
+  },
+  "interpretation_limits": [
+    "freeze_boundary freezes cost parameter raw_K, not the whole input-dependent boundary",
+    "Freezingcontent also freezesfrontend/readout and intentionally reduces trainablecapacity",
+    "Paired sign-flip p values require exchangeability/symmetry under the null; t intervals with8seeds are conditional small-sample evidence, not distribution-free population certification",
+    "Physical feature controls isolate deterministic representation with equal availableinformation; they do not prove financial Call/Put semantics",
+    "Two development learning rates and96formalupdates do not establish fullytuned foundationmodel or fusedGPU baseline superiority",
+    "Mamba1 is a fixed-update control but not in the12equalCPU external contrasts",
+    "No formal accuracy outcomes were inspected by this review"
+  ],
+  "passed": true,
+  "unresolved_scientific_claims": [
+    "No measuredcontentbenefit yet; formaloutcomesunseen",
+    "Raw_K freezeisnottheentirefreeboundaryfreeze",
+    "Oldaffineboundaryisnotcopy/MQARtaskoptimal",
+    "No realmultimodal, GPU, Joules, foundationmodel conclusions"
+  ]
+}
