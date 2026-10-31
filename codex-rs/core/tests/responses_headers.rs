@@ -478,6 +478,10 @@ async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() 
         .and_then(serde_json::Value::as_str)
         .expect("turn_id should be present")
         .to_string();
+    let initial_context_window_id = initial_parsed["context_window_id"]
+        .as_str()
+        .expect("context_window_id should be present");
+    uuid::Uuid::parse_str(initial_context_window_id).expect("context_window_id should be a UUID");
     assert!(
         !initial_turn_id.is_empty(),
         "turn_id should not be empty in x-codex-turn-metadata"
@@ -602,6 +606,15 @@ async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() 
             .expect("second request should include turn metadata"),
     )
     .expect("second metadata should be valid json");
+    assert_eq!(
+        first_parsed["context_window_id"].as_str(),
+        Some(initial_context_window_id),
+        "a new turn without compaction should keep its context window identity"
+    );
+    assert_eq!(
+        first_parsed["context_window_id"], second_parsed["context_window_id"],
+        "requests in the same context window should share its UUID"
+    );
 
     let first_turn_id = first_parsed
         .get("turn_id")
