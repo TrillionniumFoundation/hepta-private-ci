@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import copy
+import contextlib
+import io
 import hashlib
 import json
 import shutil
@@ -95,6 +97,24 @@ class FourModalAdmissionTests(unittest.TestCase):
         self.assertFalse(receipt["real_four_modal_quality_established"])
         self.assertFalse(receipt["production_activation_allowed"])
         self.assertEqual(receipt, validate_manifest(self.manifest_copy(), self.root))
+
+    def test_cli_accept_and_deny_exit_codes(self):
+        from experiments.hcsn_fourmodal_admission_v1.manifest_gate import main
+        path = Path(self.temp.name) / "cli.json"
+        m = self.manifest_copy()
+        path.write_text(json.dumps(m), encoding="utf-8")
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            self.assertEqual(main([str(path), str(self.root)]), 0)
+        self.assertEqual(json.loads(output.getvalue())["status"],
+                         "STRUCTURAL_SOURCE_PREFLIGHT_ONLY")
+        m["samples"][0]["modalities"].pop("video")
+        path.write_text(json.dumps(m), encoding="utf-8")
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            self.assertEqual(main([str(path), str(self.root)]), 2)
+        denial = json.loads(output.getvalue())
+        self.assertEqual((denial["status"], denial["code"]), ("DENY", "SCHEMA"))
 
     def test_reject_missing_modality(self):
         m = self.manifest_copy()
