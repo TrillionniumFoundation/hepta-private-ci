@@ -351,11 +351,23 @@ fn writer_reproduces_the_tracked_artifact_set_byte_for_byte() -> Result<()> {
 fn read_tracked_artifacts() -> Result<BTreeMap<String, Vec<u8>>> {
     let manifest =
         codex_utils_cargo_bin::find_resource!("fixtures/robrix-control-v2/manifest.json")?;
-    read_artifacts(
-        manifest
-            .parent()
-            .context("tracked projection manifest has no parent")?,
-    )
+    let root = manifest
+        .parent()
+        .context("tracked projection manifest has no parent")?;
+    // Build-system runfiles can be symlinks. Resolve only these trusted fixture inputs
+    // into a real artifact set; retain the strict non-file check for generated output.
+    let materialized = tempfile::tempdir()?;
+    for entry in fs::read_dir(root)? {
+        let entry = entry?;
+        let source = entry.path().canonicalize()?;
+        anyhow::ensure!(
+            source.is_file(),
+            "tracked artifact is not a regular file: {}",
+            entry.path().display()
+        );
+        fs::copy(source, materialized.path().join(entry.file_name()))?;
+    }
+    read_artifacts(materialized.path())
 }
 
 fn read_artifacts(root: &std::path::Path) -> Result<BTreeMap<String, Vec<u8>>> {
