@@ -51,14 +51,42 @@ def one_shot_value(p: Stop, x: float) -> float:
 
 
 def regenerative_boundary(p: Stop) -> float:
-    """Stationary global scalar threshold from 1+W0(-a/e), a in [0,1)."""
-    a=p.delay_discount*math.exp(-p.kappa*(p.cost-p.reset))
-    if not 0<=a<1:
-        raise ValueError('Regenerative threshold violates proper-cycle domain')
-    t=1+float(lambertw(-a/math.e,k=0).real)
-    b=p.cost+t/p.kappa
-    if not b>p.cost:
-        raise ArithmeticError('Non-positive firing reward at boundary')
+    """Scalar renewal threshold; stable at Lambert-W's coalescing branch point.
+
+    Write h=rho*tau+kappa*(cost-reset)>0. The threshold t=kappa*(b-cost)
+    obeys h=-log(1-t)-t, with t in (0,1), equivalently
+    t=1+W0(-exp(-h)/e). The direct W form loses h when exp(-h) rounds
+    to 1, although the renewal discount remains strictly contractive.
+    """
+    k=p.kappa
+    gap=p.cost-p.reset
+    delay=p.discount*p.refractory
+    lost=k*gap
+    if (not all(math.isfinite(v) for v in (k,gap,delay,lost))
+            or k<=0 or gap<=0 or lost<=0
+            or (p.refractory>0 and delay<=0)):
+        raise ArithmeticError('Renewal exponent outside resolved f64 domain')
+    h=math.fsum((lost,delay))
+    if not math.isfinite(h) or h<=0:
+        raise ArithmeticError('Renewal exponent outside resolved f64 domain')
+    if h <= 1e-4:
+        # Coalescing W0/W-1 at -1/e. Use a positive series for the
+        # cancellation-free inverse h=t²/2+t³/3+... .
+        t=math.sqrt(2*h)
+        for _ in range(8):
+            power=t*t
+            series=power/2
+            for n in range(3,14):
+                power*=t
+                series+=power/n
+            t-=(series-h)*(1-t)/t
+            if not (0<t<1):
+                raise ArithmeticError('Renewal branch-point inverse unresolved')
+    else:
+        t=1+float(lambertw(-math.exp(-h)/math.e,k=0).real)
+    b=p.cost+t/k
+    if not math.isfinite(b) or not b>p.cost:
+        raise ArithmeticError('Non-positive or unresolved firing reward at boundary')
     return b
 
 
