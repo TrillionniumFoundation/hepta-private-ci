@@ -151,6 +151,12 @@ def advance(state: RenewalState, lam: float, gamma: float, dt: float) -> Renewal
     event_increment=math.fsum((state.no_fire_active*(-math.expm1(-lam*dt)),
                                 state.no_fire_refractory*_first_fire_from_refractory(lam,gamma,dt)))
     fired=math.fsum((state.ever_fired,event_increment))
+    # With positive killed mass and dt>0, true first-hit probability grows.
+    # Refuse a positive event increment erased in the stored binary64 CDF.
+    # This is a numerical admission policy, not a full CTMC error bound.
+    if (state.no_fire_active>0 or state.no_fire_refractory>0) and (
+            event_increment<=0 or fired<=state.ever_fired):
+        raise ArithmeticError('Positive first-fire CDF increment erased at f64 scale')
     output=RenewalState(next_time,active,no_fire_active,
                         no_fire_refractory,fired,count,version=1)
     if (not all(math.isfinite(x) for x in vars(output).values()) or
