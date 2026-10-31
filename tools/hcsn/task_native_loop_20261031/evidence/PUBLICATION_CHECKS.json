@@ -1,0 +1,46 @@
+{
+  "baseline_file_sha256_verified": 72,
+  "binary_sha256": "f53e90a388a6f97dfe5283535ed2b5877cf197a726a9842debc5f9ed097b5330",
+  "codespell": {
+    "returncode": 0,
+    "scope": "All delivery text files present before this record; exact compressed binary evidence paths only are skipped.",
+    "stderr": "",
+    "stdout": "",
+    "text_files": 110,
+    "version": "2.4.3"
+  },
+  "confirmation_archive_and_results_verified": 40,
+  "file_size_policy": {
+    "all_files_within_limit": true,
+    "allowlist_expanded": false,
+    "limit_bytes": 512000,
+    "max_bytes": 476565
+  },
+  "format": {
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "cwd": "/workspace/scratch/5aabc7b0a3ce/hepta-hcsn/codex-rs",
+    "frozen_native_bytes_unchanged": true,
+    "returncode": 0,
+    "sha256": {
+      "tools/hcsn/task_native_loop_20261031/native/main.rs": "6dcc06764326955531eec5d9c2f004f5a52bb85a08c0f094a8927d50d4d4d603",
+      "tools/hcsn/task_native_loop_20261031/native/native_tests.rs": "d2639dbd1c5fe269a1c25cd4d6f18086e6326163a328686e5c70ac8a026d5a4d",
+      "tools/hcsn/task_native_loop_20261031/native/owner.rs": "5a0ba6c70ffd69790a77d95cfdff64b42e63f81914351a00c469d0c9b377f8a1",
+      "tools/hcsn/task_native_loop_20261031/native/policy.rs": "d5ff342b87db7d1aedb1f3d87f67a3ef900785fd65ea31f468ff28b1ff883874",
+      "tools/hcsn/task_native_loop_20261031/native/port.rs": "a5fe0d0961b70c258205e1fc43db0981ea34d93b10e4412fc889faa449e5a0ac",
+      "tools/hcsn/task_native_loop_20261031/native/store.rs": "9cbbfd03a3c9c3ac0edbeaea9e469d4f277305d4e0e39038165190396e4ede48",
+      "tools/hcsn/task_native_loop_20261031/native/task.rs": "1a97dae909cbe35a75dd48f6c8382e0fdb7726742e54aff271065a579957ece6"
+    },
+    "stderr": "",
+    "stdout": ""
+  },
+  "frozen_training_and_native_identity_verified": true,
+  "independent_readonly_reviews": 3,
+  "native_source_digest": "a94ee0a631736f37212b6b2077290a8c71f1d44dcaf524b2438872badfc0f6f6",
+  "review_scope": "Statistical tables, training feedback, task/recovery contract, source identity and report limitations; documentation clarifications applied without changing frozen implementation.",
+  "runner_sources_verified": true,
+  "schema": "hcsn.task.native.publication-checks.v1",
+  "tests_rerun": false
+}

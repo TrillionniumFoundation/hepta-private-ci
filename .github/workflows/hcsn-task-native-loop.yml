@@ -1,0 +1,68 @@
+# Proposed reproduction lane. A committed workflow is not a passing remote run.
+name: HCSN native task loop audit
+
+"on":
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/hcsn-task-native-loop.yml
+      - tools/hcsn/task_native_loop_20261031/**
+      - tools/hcsn/native_task_bridge_20261031/SOURCE_IDENTITY.json
+      - tools/hcsn/native_task_bridge_20261031/native-Cargo.lock
+      - tools/hcsn/round9_20261031/native/**
+      - codex-rs/hepta-neuron/**
+      - codex-rs/hepta-infer-core/**
+      - codex-rs/hepta-types/**
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcsn-task-native-loop-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_TERM_COLOR: never
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+
+      - name: Install pinned public toolchains and Python dependencies
+        working-directory: ${{ runner.temp }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal
+          cargo +1.95.0 install --locked just --version 1.59.0 --root "$RUNNER_TEMP/hcsn-tools"
+          cargo +1.95.0 install --locked cargo-nextest --version 0.9.150 --root "$RUNNER_TEMP/hcsn-tools"
+          python3 -m venv "$RUNNER_TEMP/hcsn-python"
+          "$RUNNER_TEMP/hcsn-python/bin/python" -m pip install --disable-pip-version-check numpy==2.3.5 scipy==1.17.0
+
+      - name: Fetch fresh crates, build, run native tests and 50-call audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/hcsn-python/bin/python" -m tools.hcsn.task_native_loop_20261031.ci \
+            --work "$RUNNER_TEMP/hcsn-task-native-loop-ci" \
+            --tools "$RUNNER_TEMP/hcsn-tools/bin"
+
+      - name: Preserve small report in job summary and logs
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          report="$RUNNER_TEMP/hcsn-task-native-loop-ci/CI_REPORT.json"
+          if [[ -f "$report" ]]; then
+            printf '## Native task loop reproduction\n\n```json\n' >> "$GITHUB_STEP_SUMMARY"
+            cat "$report" >> "$GITHUB_STEP_SUMMARY"
+            printf '\n```\n' >> "$GITHUB_STEP_SUMMARY"
+            cat "$report"
+          else
+            printf 'Native task loop audit did not produce a report. See setup logs.\n' >> "$GITHUB_STEP_SUMMARY"
+          fi

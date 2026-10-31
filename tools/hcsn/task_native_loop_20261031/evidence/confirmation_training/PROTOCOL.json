@@ -1,0 +1,137 @@
+{
+  "additional_references": [
+    "fitted_dp"
+  ],
+  "admission": "D-B simultaneous lower bound>0 on both IID/OOD, completed-job accuracy noninferior, native semantic and causal audit qualified, and CPU-adjusted difference positive at0.01 utility/CPU-second with training amortized over1000 sessions. Failure or missing evidence remains a blocker.",
+  "amortization_sessions": [
+    100,
+    1000,
+    10000
+  ],
+  "arms": [
+    "ordinary_fixed",
+    "ordinary_value",
+    "analytic_fixed",
+    "analytic_value"
+  ],
+  "batch_seed_base": 950000,
+  "batch_size": 32,
+  "calibration_packets": 32,
+  "cell_init_seed_base": 930000,
+  "cell_l2": 0.001,
+  "cell_learning_rate": 0.025,
+  "cell_training": "Four fixed-budget next-observation gradient steps, then six masked task-Q gradient steps through the entire causal recurrence, alternating with 600 critic updates. Both families use 11 parameters, equal central-difference evaluation counts, the same minibatch indices and initialization. Actual CPU costs are retained.",
+  "checkpoint_selection": "Minimum full-task fitted-law Bellman action regret on validation only; first checkpoint wins ties. Select all cell and critic parameters jointly. No test or OOD inspection before the model freeze.",
+  "checkpoint_updates": [
+    100,
+    200,
+    400,
+    600
+  ],
+  "column_control": "Both controller columns use the same family model. Fixed versus value changes only action selection. No myopic-Q column is relabeled fixed.",
+  "cpu_prices_utility_per_second": [
+    0.0,
+    0.001,
+    0.01,
+    0.1
+  ],
+  "critic_init_seed_base": 940000,
+  "critic_l2": 0.0001,
+  "critic_updates": 600,
+  "critic_width": 24,
+  "data_seed_base": 28703100,
+  "date": "2026-10-31",
+  "deadlines": [
+    6,
+    8,
+    10
+  ],
+  "energy_measurement": null,
+  "finite_difference_epsilon": 0.001,
+  "fixed_boundary": 0.8,
+  "fixed_rule": "FIRE if legal and confidence>=0.8 or READ is illegal; otherwise READ if legal; otherwise STOP. Cell state is still propagated and measured. This column cannot identify a cell-signal effect on actions, since the boundary uses exact posterior only.",
+  "gradient_clip": 2.0,
+  "joint_cell_batch_size": 48,
+  "joint_cell_every": 100,
+  "latency_price": 0.015,
+  "learning_rate": 0.003,
+  "multiplier": 1.5,
+  "normalization": "Public 62 coordinates use TRAIN means/std, std<1e-8 replaced by1. Cell5 use mean0.5/std0.5. No clipping including OOD.",
+  "ood": {
+    "deadlines": [
+      6,
+      8,
+      10
+    ],
+    "packet_length": 48,
+    "packet_prices": [
+      0.025,
+      0.06,
+      0.12
+    ],
+    "packet_reliabilities": [
+      0.55,
+      0.7,
+      0.85
+    ],
+    "read_budgets": [
+      2,
+      3,
+      4
+    ],
+    "step_durations": [
+      0.2,
+      0.8,
+      2.0
+    ]
+  },
+  "ood_sessions": 24,
+  "packet_length": 24,
+  "packet_prices": [
+    0.015,
+    0.04,
+    0.09
+  ],
+  "packet_reliabilities": [
+    0.6,
+    0.75,
+    0.9
+  ],
+  "policy_seed_base": 960000,
+  "pretrain_cell_updates": 4,
+  "pretrain_learning_rate": 0.05,
+  "primary_contrasts": [
+    "D-B",
+    "C-A",
+    "B-A",
+    "D-C",
+    "interaction"
+  ],
+  "quality_noninferiority_margin": 0.02,
+  "read_budgets": [
+    2,
+    3,
+    4
+  ],
+  "schema": "hcsn.task.native.loop.protocol.v1",
+  "scientific_scope": "Native owner policy selection and real FullHX reads on a synthetic two-job task; finite regenerative CTMC versus ordinary gated cells; no claim of a new deployed production network or global optimum",
+  "seeds": [
+    71031,
+    71037,
+    71043,
+    71049,
+    71057
+  ],
+  "source_freeze": "Freeze protocol and selected model hashes before generating heldout data; preserve every failed/partial attempt and report preparation, native startup, training and execution costs separately. Root verifies publication and source identity.",
+  "step_durations": [
+    0.4,
+    1.0,
+    1.6
+  ],
+  "target": "Absolute masked Q from the exact finite Bellman recursion for TRAIN-calibrated observation law, including later job after FIRE/reset/refractory; not realized clairvoyant packet outcomes.",
+  "task_objective": "Correct-minus-incorrect terminal reward minus priced READ queries minus declared elapsed-task latency; measured hardware CPU enters a separate all-cost sensitivity, including training amortization.",
+  "test_sessions": 24,
+  "train_sessions": 32,
+  "uncertainty": "Five paired independent training fits; two-sided Student t confidence intervals, Bonferroni five contrasts separately for IID/OOD. Sessions are not independent training replications.",
+  "validation_sessions": 16
+}

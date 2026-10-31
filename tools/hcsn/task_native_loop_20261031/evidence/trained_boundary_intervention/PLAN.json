@@ -1,0 +1,168 @@
+{
+  "binary_sha256": "f53e90a388a6f97dfe5283535ed2b5877cf197a726a9842debc5f9ed097b5330",
+  "boundary_formula": "0.8 + 0.4*sigmoid(theta[3]); finite five-state regenerative CTMC",
+  "build_report_sha256": "be8839f60f7d6076dabbe0442daad3dace295b1776f2f6a3db5980984233bb21",
+  "content_model_sha256": "66bb4fabc2fdca0b08d7e834f6a1dfdd73aedb4cfbd1b4c594b709f742092972",
+  "created_at": "2026-10-31T07:55:27.680846+00:00",
+  "failure_rule": "Keep all failed runs, no replacement or parameter search; failed pairs excluded with explicit count",
+  "first_disagreement": "Compare only identical public task prefixes; stop comparison at first autonomous action mismatch",
+  "labels": "Do not extract evaluator_labels; parse them from frozen source archive only after all three native trajectories terminate",
+  "models": {
+    "models/seed71031_baseline.json": {
+      "only_boundary_changed": true,
+      "original_sha256": "a87e47a7dfe9ace0152729efeb5e34c252545704d65525a2eb67f83325037fcb",
+      "parameter_index": 3,
+      "physical_boundary": 1.003233235186657,
+      "raw_boundary": 0.03233516894378626,
+      "sha256": "a87e47a7dfe9ace0152729efeb5e34c252545704d65525a2eb67f83325037fcb"
+    },
+    "models/seed71031_boundary_minus3.json": {
+      "only_boundary_changed": true,
+      "original_sha256": "a87e47a7dfe9ace0152729efeb5e34c252545704d65525a2eb67f83325037fcb",
+      "parameter_index": 3,
+      "physical_boundary": 0.8189703492710267,
+      "raw_boundary": -3.0,
+      "sha256": "3f2846f4388986ba534b1123cae8d144f4fa00faf27f4630ac4cfab536687769"
+    },
+    "models/seed71031_boundary_plus3.json": {
+      "only_boundary_changed": true,
+      "original_sha256": "a87e47a7dfe9ace0152729efeb5e34c252545704d65525a2eb67f83325037fcb",
+      "parameter_index": 3,
+      "physical_boundary": 1.1810296507289735,
+      "raw_boundary": 3.0,
+      "sha256": "5eefdab87728fa48f24505a2efccb62c38b3329716837d6a95a07c7b62503596"
+    },
+    "models/seed71037_baseline.json": {
+      "only_boundary_changed": true,
+      "original_sha256": "092000efbb35fe3efdeb6c47cc404702ce48246506e4581b7e95bb3f0f10d459",
+      "parameter_index": 3,
+      "physical_boundary": 1.0052555878209202,
+      "raw_boundary": 0.05256798036206121,
+      "sha256": "092000efbb35fe3efdeb6c47cc404702ce48246506e4581b7e95bb3f0f10d459"
+    },
+    "models/seed71037_boundary_minus3.json": {
+      "only_boundary_changed": true,
+      "original_sha256": "092000efbb35fe3efdeb6c47cc404702ce48246506e4581b7e95bb3f0f10d459",
+      "parameter_index": 3,
+      "physical_boundary": 0.8189703492710267,
+      "raw_boundary": -3.0,
+      "sha256": "bd3ca7b632b501d76dd55458cedfd772a0cf6632144e9aceae4f0762eb98d786"
+    },
+    "models/seed71037_boundary_plus3.json": {
+      "only_boundary_changed": true,
+      "original_sha256": "092000efbb35fe3efdeb6c47cc404702ce48246506e4581b7e95bb3f0f10d459",
+      "parameter_index": 3,
+      "physical_boundary": 1.1810296507289735,
+      "raw_boundary": 3.0,
+      "sha256": "1257ff07b1f85b994b3078e25557e264570f41049955bb15f63e95f436f4a06c"
+    },
+    "models/seed71043_baseline.json": {
+      "only_boundary_changed": true,
+      "original_sha256": "bc70029b16cc2bf7c3122471e563036abc749aa734e15ff50e2ef5017233dfa8",
+      "parameter_index": 3,
+      "physical_boundary": 0.9924411876793036,
+      "raw_boundary": -0.07562414388360521,
+      "sha256": "bc70029b16cc2bf7c3122471e563036abc749aa734e15ff50e2ef5017233dfa8"
+    },
+    "models/seed71043_boundary_minus3.json": {
+      "only_boundary_changed": true,
+      "original_sha256": "bc70029b16cc2bf7c3122471e563036abc749aa734e15ff50e2ef5017233dfa8",
+      "parameter_index": 3,
+      "physical_boundary": 0.8189703492710267,
+      "raw_boundary": -3.0,
+      "sha256": "7d25e36e7d1cd8d39f152300640643540b65e866f6ae70fc7e5614b6b7dea51a"
+    },
+    "models/seed71043_boundary_plus3.json": {
+      "only_boundary_changed": true,
+      "original_sha256": "bc70029b16cc2bf7c3122471e563036abc749aa734e15ff50e2ef5017233dfa8",
+      "parameter_index": 3,
+      "physical_boundary": 1.1810296507289735,
+      "raw_boundary": 3.0,
+      "sha256": "eb198b9ad9ed8e451628a187030a5739c179904466c8a8cadebedb4c623725fb"
+    },
+    "models/seed71049_baseline.json": {
+      "only_boundary_changed": true,
+      "original_sha256": "3d0d6fdf257066a81f3e4feb72f1081ba0c42f6bf1cf5aaba3e07effa950be31",
+      "parameter_index": 3,
+      "physical_boundary": 1.0084823207236053,
+      "raw_boundary": 0.08487412061056587,
+      "sha256": "3d0d6fdf257066a81f3e4feb72f1081ba0c42f6bf1cf5aaba3e07effa950be31"
+    },
+    "models/seed71049_boundary_minus3.json": {
+      "only_boundary_changed": true,
+      "original_sha256": "3d0d6fdf257066a81f3e4feb72f1081ba0c42f6bf1cf5aaba3e07effa950be31",
+      "parameter_index": 3,
+      "physical_boundary": 0.8189703492710267,
+      "raw_boundary": -3.0,
+      "sha256": "cf9e2993cc909d288ddc8c244971146d1181bf289f8037f076579a9830b46eec"
+    },
+    "models/seed71049_boundary_plus3.json": {
+      "only_boundary_changed": true,
+      "original_sha256": "3d0d6fdf257066a81f3e4feb72f1081ba0c42f6bf1cf5aaba3e07effa950be31",
+      "parameter_index": 3,
+      "physical_boundary": 1.1810296507289735,
+      "raw_boundary": 3.0,
+      "sha256": "eef5b97d0c6ea74d77511a2c5fa8f3412951e2b90093b3e18e39b19bb32ae4fe"
+    },
+    "models/seed71057_baseline.json": {
+      "only_boundary_changed": true,
+      "original_sha256": "b39a575f918dd4ef4b1941bc1d9229fbe49cdf069411087c3e4ef697677f0439",
+      "parameter_index": 3,
+      "physical_boundary": 0.9974707433330978,
+      "raw_boundary": -0.025293915132351137,
+      "sha256": "b39a575f918dd4ef4b1941bc1d9229fbe49cdf069411087c3e4ef697677f0439"
+    },
+    "models/seed71057_boundary_minus3.json": {
+      "only_boundary_changed": true,
+      "original_sha256": "b39a575f918dd4ef4b1941bc1d9229fbe49cdf069411087c3e4ef697677f0439",
+      "parameter_index": 3,
+      "physical_boundary": 0.8189703492710267,
+      "raw_boundary": -3.0,
+      "sha256": "bdb6e81d064f21ff69cb8a5e17cedd3c493a08df458c4fca2749efab8708427c"
+    },
+    "models/seed71057_boundary_plus3.json": {
+      "only_boundary_changed": true,
+      "original_sha256": "b39a575f918dd4ef4b1941bc1d9229fbe49cdf069411087c3e4ef697677f0439",
+      "parameter_index": 3,
+      "physical_boundary": 1.1810296507289735,
+      "raw_boundary": 3.0,
+      "sha256": "136f9441bd59fde96cc86e3924a18d072f7740b62b56ad6ec6cf108a1ee1a3b2"
+    }
+  },
+  "native_source_digest": "a94ee0a631736f37212b6b2077290a8c71f1d44dcaf524b2438872badfc0f6f6",
+  "no_primary_updates": true,
+  "original_development_archives": {
+    "data/development_seed71031.tar.gz": "44cbc17e06fd0f84da78f43dcd97a6c88b69dadfc83d0584abd91461a749e1f2",
+    "data/development_seed71037.tar.gz": "d58a2cb119cfd8e00067e1a901c1ba513ce529adbc2bddd6113eec5c14798bdb",
+    "data/development_seed71043.tar.gz": "e2fbe5d7a0077f60dc6ed37eacb5b422194f61c07bbec8fd779e4539eea962c9",
+    "data/development_seed71049.tar.gz": "86418e69b4e7dc08a721e08f0f5390f3f09327ecfcb2d56a15b46964d75ff72d",
+    "data/development_seed71057.tar.gz": "c7ffa03303df97204e461bbae30fa78d5253b32ddd8da7a866a59a3acc38a33b"
+  },
+  "planned_native_runs": 240,
+  "production_activation": false,
+  "read_timing": "Public task tick and elapsed_micros; content_nanos measures call duration, not a wall-clock invocation timestamp",
+  "run_order": "Rotate three variants by (seed_index + session_index) modulo 3",
+  "schema": "hcsn.trained-boundary-intervention.plan.v1",
+  "scope": "DEV secondary mechanism diagnostic; not heldout confirmation or efficacy selection",
+  "seeds": [
+    71031,
+    71037,
+    71043,
+    71049,
+    71057
+  ],
+  "sessions_per_seed": 16,
+  "source_sha256": {
+    "task_native_loop_20261031/experiment.py": "9b4fc9fc01071e593cfe631f53ccce66983431cb9ce8d2508ee44578e3ea57e6",
+    "task_native_loop_20261031/intervention.py": "f00ae5edfb6855e20642ff82227fc3cf3bdb14ba358bde11869b5b8c60aa75fe",
+    "task_native_loop_20261031/train.py": "b8a748fbe068e92aa42050c95c440b150623587b88709669aef349f32da61a11",
+    "task_value_factorial_20261030/task.py": "24534f0460c4e02faa21e47fc31d2c8afbe97c9725e3e2f335b7976444404cfc"
+  },
+  "tolerance": 1e-10,
+  "training_freeze_sha256": "4e53ae35d03dd2acd0bff5b81b062473497c0f6f090da6d06dd7f30fe2d70478",
+  "variants": {
+    "baseline": null,
+    "boundary_minus3": -3.0,
+    "boundary_plus3": 3.0
+  }
+}

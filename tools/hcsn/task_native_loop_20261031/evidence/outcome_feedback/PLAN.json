@@ -1,0 +1,21 @@
+{
+  "gradient_clip": 2.0,
+  "heldout_access": false,
+  "learning_rate": 0.001,
+  "optimizer_steps": 1,
+  "primary_models_modified": false,
+  "schema": "hcsn.task.outcome.feedback.v1",
+  "scope": "Offline delayed-outcome recovery mechanism; not an efficacy claim or production online learning",
+  "seeds": [
+    71031,
+    71037,
+    71043,
+    71049,
+    71057
+  ],
+  "selection": "No model selection and no additional updates after inspecting validation; preserve both improvements and regressions",
+  "source_sha256": "e262e8a96f58a56deea676847f73d37472db0615154bbf35c61342ef122c3b03",
+  "target": "Actual immediate TRAIN outcome utility + max legal Q of observed successor under the original frozen critic; terminal bootstrap zero",
+  "trainable": "Critic weights only; all 11 cell parameters remain frozen",
+  "training_freeze_sha256": "4e53ae35d03dd2acd0bff5b81b062473497c0f6f090da6d06dd7f30fe2d70478"
+}

@@ -1,0 +1,143 @@
+{
+  "date": "2026-10-31",
+  "evidence_sha256": {
+    "PROTOCOL.json": "0a034adc905eafd0c77376521787bc9cbf3b120d120be8d0b73cdd8a0e55879c",
+    "SOURCE_COMBINATION.json": "f708a9ba0fa00fdce68fd0d5e74958eb021b2e0ea71dfe71a89fde6d0df6c2c7",
+    "evidence/BUILD_ATTEMPT03.json": "be8839f60f7d6076dabbe0442daad3dace295b1776f2f6a3db5980984233bb21",
+    "evidence/CACHED_DEPENDENCY_PROVENANCE.json": "d1ec444a65f812d8363765302515b3cd83d0d3dfc1442758b734d31c457319a2",
+    "evidence/CONTINUOUS_REFERENCE.json": "467e73f5917344c7d942329aceac2fdfeaef4dfb7dfdc26cbab88237d1a58aee",
+    "evidence/NUMERICS.json": "2c572db8972c8b2dea1d21724d4e14b5f85bc5a247b4466aa42ec80f52209e78",
+    "evidence/REFERENCE_TESTS.json": "88830c68dbbaecf1214457290f51071b6a0cea94752a83b189c736e126fb010f",
+    "evidence/TRAINING_SIGNAL_AUDIT.json": "387ddd5efd4ec1bd1e6e2793a4f4ffa2d615cd039d789ce8761b59f04e68795c",
+    "evidence/causal_audit_attempt02/REPORT.json": "f0e616b4d9ba1f930bd6949b84a638ecc43155b5768673c1ccd54ee744c0d146",
+    "evidence/confirmation_execution/COMPLETE.json": "07fda93388b7841f73e32b1872deb87d883f1af8e85eecb9445d923c7e1553bf",
+    "evidence/confirmation_execution/EXECUTION_FREEZE.json": "c1bac8b489a66cb80ec4bfc30d3e341905d9302c9bcf8b497a9dc300751aad74",
+    "evidence/confirmation_execution/STATISTICS.json.gz": "9b23300d4ca898f0d40771766be1f16c42b7e28add91e32b842e472aeff52752",
+    "evidence/confirmation_training/FREEZE.json": "4e53ae35d03dd2acd0bff5b81b062473497c0f6f090da6d06dd7f30fe2d70478",
+    "evidence/outcome_feedback/REPORT.json": "debf85c2d4d162e0b03f6cd152b9f55a9db2a9fa854cb6c3c38dd9dd58c2bfd7",
+    "evidence/trained_boundary_intervention/SUMMARY.json": "a7c550ab5e3aa9ec842422483eceb3faaec6a606659f08c080bfea8d8351f66f"
+  },
+  "gate_interpretation": "Implementation, numerical validity and scientific efficacy are distinct. Passing a mechanism gate never overrides a failed scientific admission gate.",
+  "gates": [
+    {
+      "evidence": [
+        "evidence/causal_audit_attempt02/REPORT.json",
+        "evidence/confirmation_execution/COMPLETE.json"
+      ],
+      "name": "shared_task_successors_and_actual_costs",
+      "passed": true,
+      "scope": "Synchronous two-job evidence task; public schedule, exact posterior, budget, deadline, content and acknowledged task state."
+    },
+    {
+      "evidence": [
+        "evidence/causal_audit_attempt02/REPORT.json"
+      ],
+      "name": "native_action_selection_before_real_content_read",
+      "passed": true,
+      "scope": "Native policy selects STOP/SKIP/READ/FIRE before packet open. Only READ executes frozen FullHX."
+    },
+    {
+      "evidence": [
+        "evidence/TRAINING_SIGNAL_AUDIT.json"
+      ],
+      "name": "task_gradient_reaches_cell_dynamics",
+      "passed": true,
+      "scope": "All 60 finite-difference task updates have nonzero physical and readout gradient after removing L2 contribution."
+    },
+    {
+      "evidence": [
+        "evidence/trained_boundary_intervention/SUMMARY.json"
+      ],
+      "name": "trained_boundary_changes_real_reads",
+      "passed": true,
+      "scope": "Secondary DEV intervention; 19/80 distinct sessions change actions, 11/80 actual read timing and 8/80 read count; no efficacy gain claimed."
+    },
+    {
+      "evidence": [
+        "evidence/outcome_feedback/REPORT.json"
+      ],
+      "name": "actual_outcomes_enter_training_update",
+      "passed": true,
+      "scope": "Ten independent one-step critic TD updates change weights and reduce TRAIN residual; validation utility/regret unchanged. Main frozen fits are not replaced."
+    },
+    {
+      "evidence": [
+        "evidence/causal_audit_attempt02/REPORT.json"
+      ],
+      "name": "acknowledged_boundary_process_recovery",
+      "passed": true,
+      "scope": "Fresh-process recovery matches task, cell and content state at acknowledged action boundaries. Arbitrary mid-action recovery is not admitted."
+    },
+    {
+      "evidence": [
+        "evidence/confirmation_execution/COMPLETE.json"
+      ],
+      "name": "all_predeclared_confirmation_runs_complete",
+      "passed": true,
+      "scope": "Five independent fits; 1200 native executions plus 240 separate fitted-law DP reference executions."
+    },
+    {
+      "evidence": [
+        "evidence/confirmation_execution/STATISTICS.json.gz"
+      ],
+      "name": "analytic_utility_advantage_over_ordinary_value",
+      "passed": false
+    },
+    {
+      "evidence": [
+        "evidence/confirmation_execution/STATISTICS.json.gz"
+      ],
+      "name": "completed_job_accuracy_noninferiority",
+      "passed": false
+    },
+    {
+      "evidence": [
+        "evidence/confirmation_execution/STATISTICS.json.gz"
+      ],
+      "name": "complete_cost_adjusted_advantage",
+      "passed": false
+    },
+    {
+      "evidence": [
+        "evidence/NUMERICS.json"
+      ],
+      "name": "native_continuous_diffusion_equivalence",
+      "passed": false,
+      "scope": "Three active nodes plus two Erlang phases remain a finite CTMC. Trained-parameter first-hit absolute error is 0.127420 to 0.161888; continuous reference is independent and not deployed in the owner."
+    }
+  ],
+  "implementation_closed_loop_qualified": true,
+  "native_binary_sha256": "f53e90a388a6f97dfe5283535ed2b5877cf197a726a9842debc5f9ed097b5330",
+  "native_source_digest": "a94ee0a631736f37212b6b2077290a8c71f1d44dcaf524b2438872badfc0f6f6",
+  "not_claimed": [
+    "Arbitrary asynchronous pending-observation queues",
+    "Automatic atomic retry across arbitrary mid-action process crash",
+    "Joint training of frozen FullHX content weights",
+    "Hardware energy savings",
+    "Convergence of the 600-step optimizer",
+    "General architectural impossibility or inferiority beyond this task, budget and fitted controller",
+    "Fresh public dependency archive CI success before an actual remote run"
+  ],
+  "parent_commit": "e7eaa5e0be835269636216c8fe8b1ae2f1a22361",
+  "production_activation": false,
+  "remote_ci": {
+    "fresh_archive_build_proved_locally": false,
+    "status": "See REMOTE_VERIFICATION.json and the actual GitHub check run; submission of a workflow is not successful execution."
+  },
+  "schema": "hcsn.task.native.acceptance.v1",
+  "scientific_efficacy_qualified": false,
+  "split_admission": {
+    "ood": {
+      "accuracy_noninferiority_gate": false,
+      "all_planned_runs_complete": true,
+      "complete_cost_gate": false,
+      "numerical_utility_gate": false
+    },
+    "test": {
+      "accuracy_noninferiority_gate": false,
+      "all_planned_runs_complete": true,
+      "complete_cost_gate": false,
+      "numerical_utility_gate": false
+    }
+  }
+}
