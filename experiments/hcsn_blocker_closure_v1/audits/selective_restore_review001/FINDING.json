@@ -1,0 +1,15 @@
+{
+  "affected_input_example": "/safe/sibling/../publication",
+  "commit_semantics": "Staged validation precedes final writes, but the multi-file commit is sequential. A commit-time I/O error may leave a verified subset; this is not an atomic transaction.",
+  "evidence_kind": "Independent read-only source review; not a formal-data execution failure",
+  "finding": "Path.absolute preserves parent traversal components; lexical is_relative_to can miss a destination that resolves into the immutable publication.",
+  "formal_archive_accessed": false,
+  "original_preflight_script_sha256": "255e6bce3d0e29d062fc2504b10af6d5bd9407ce69432c4ed4d1eb9781a59a65",
+  "planned_repair": "Reject parent-traversal components in every caller path before symlink and containment checks.",
+  "prior_preflight": "../selective_restore_preflight001/RESULT.json",
+  "prior_preflight_sha256": "da939e33568cdbee81bc9b28ed650e0bde6c86d63b5e0631f8291c34fb57df80",
+  "reviewer": "runtime_ci_closure",
+  "schema": "hcsn-selective-restore-source-review-finding.v1",
+  "snapshot_timing": "Original source and preflight script snapshots saved after preflight001; exact bytes verified against the original preflight source hashes.",
+  "source_sha256": "6ae01542723562a3ebd0e36bec73ad50f156e44c4971921ff07ccfd9c8deb198"
+}

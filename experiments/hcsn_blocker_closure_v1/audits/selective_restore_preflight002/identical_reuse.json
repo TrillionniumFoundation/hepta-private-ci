@@ -1,0 +1,56 @@
+{
+  "all_members_selected": false,
+  "all_members_verified": true,
+  "canonical_manifest_sha256": "f0419d32e2f5e80d8b3181850614e2b7ee3aa8751d7af60a817d801caec4bb4d",
+  "commit_semantics": "Sequential non-overwriting links after complete verification; a commit-time I/O error can leave an already-verified subset, not an atomic multi-file transaction",
+  "compressed_bytes_verified": 78536,
+  "cost_scope": "Internal recovery clocks after imports; includes archive verification and selected writes, before final receipt serialization",
+  "cpu_seconds": 0.0066644949999999925,
+  "declared_member_bytes": 77108,
+  "declared_member_files": 6,
+  "destination": "/tmp/hcsn-selective-synthetic-415t_5hg/restored_partial_union",
+  "existing_identical_bytes": 47075,
+  "existing_identical_files": 4,
+  "expected_index_sha256": "b9a742b75908b665e5dff417e51f524ab50e51210edbef12248cbbfc1e7fd2ba",
+  "full_restoration_claim": false,
+  "index": "/tmp/hcsn-selective-synthetic-415t_5hg/publication/INDEX.json",
+  "member_bytes_verified": 77108,
+  "member_files_verified": 6,
+  "part_files_verified": 20,
+  "passed": true,
+  "publication_root": "/tmp/hcsn-selective-synthetic-415t_5hg/publication",
+  "restored_bytes": 0,
+  "restored_files": 0,
+  "schema": "hcsn-selective-archive-restore.v1",
+  "scope": "Complete archive/member verification with explicit selective restoration; not a full extraction",
+  "selected_bytes_verified": 47075,
+  "selected_declared_bytes": 47075,
+  "selected_files": 4,
+  "selection_shards": [
+    {
+      "bytes": 848,
+      "members": 4,
+      "path": "identical_reuse_selection_0000.json",
+      "sha256": "eb2f7ac7a52210b2e7f614dc9e78d5b4862fec55e747dbf69e0fec6084d006bd"
+    }
+  ],
+  "selectors": {
+    "paths": [
+      "nested/one.bin",
+      "a.txt",
+      "long/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz.bin",
+      "empty.bin"
+    ],
+    "patterns": [],
+    "semantics": "Union; fnmatchcase matches entire relative POSIX paths and * can match slash"
+  },
+  "source_sha256": {
+    "frozen_archive.py": "7aefcc785977bb391116750d04e9abd8bfa1db28381ee06227bac501c61eceab",
+    "selective_restore.py": "403c009571122a3e2538d916404f24cd13012fd0c061e69785d2e814b8557f6d"
+  },
+  "staged_payload_bytes": 0,
+  "tar_zero_padding_bytes": 9728,
+  "verified_archive_sha256": "ac543c789a91c863b2a323abbb9dd77b14faf6b544f790988685aea5987afe2e",
+  "wall_seconds": 0.009041463999892585,
+  "xz_complete": true
+}

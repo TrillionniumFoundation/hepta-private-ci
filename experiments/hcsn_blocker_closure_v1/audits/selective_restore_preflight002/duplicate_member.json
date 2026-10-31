@@ -1,0 +1,55 @@
+{
+  "all_members_selected": false,
+  "all_members_verified": false,
+  "canonical_manifest_sha256": "37b1bef74e7becbfdb39f4f36e0e542b3f6ab6e7312a28651e3ec217fff7f7b5",
+  "commit_semantics": "Sequential non-overwriting links after complete verification; a commit-time I/O error can leave an already-verified subset, not an atomic multi-file transaction",
+  "compressed_bytes_verified": 184,
+  "cost_scope": "Internal recovery clocks after imports; includes archive verification and selected writes, before final receipt serialization",
+  "cpu_seconds": 0.0011577480000000001,
+  "declared_member_bytes": 2,
+  "declared_member_files": 2,
+  "destination": "/tmp/hcsn-selective-synthetic-415t_5hg/restored_duplicate_member",
+  "error": {
+    "message": "Unexpected or duplicate archive member",
+    "type": "ValueError"
+  },
+  "existing_identical_bytes": 0,
+  "existing_identical_files": 0,
+  "expected_index_sha256": "7c224a0e905c5fe91fc8690d8cf8c1a540833341ee78904a256311b9adc00958",
+  "full_restoration_claim": false,
+  "index": "/tmp/hcsn-selective-synthetic-415t_5hg/duplicate_member/INDEX.json",
+  "member_bytes_verified": 2,
+  "member_files_verified": 2,
+  "part_files_verified": 1,
+  "passed": false,
+  "publication_root": "/tmp/hcsn-selective-synthetic-415t_5hg/duplicate_member",
+  "restored_bytes": 0,
+  "restored_files": 0,
+  "schema": "hcsn-selective-archive-restore.v1",
+  "scope": "Complete archive/member verification with explicit selective restoration; not a full extraction",
+  "selected_bytes_verified": 1,
+  "selected_declared_bytes": 1,
+  "selected_files": 1,
+  "selection_shards": [
+    {
+      "bytes": 166,
+      "members": 1,
+      "path": "duplicate_member_selection_0000.json",
+      "sha256": "1f84a17b8fb539dcc63bd8add0588aed364dca0fdf4d6e1d29f676e5c6ae1ce3"
+    }
+  ],
+  "selectors": {
+    "paths": [
+      "a.txt"
+    ],
+    "patterns": [],
+    "semantics": "Union; fnmatchcase matches entire relative POSIX paths and * can match slash"
+  },
+  "source_sha256": {
+    "frozen_archive.py": "7aefcc785977bb391116750d04e9abd8bfa1db28381ee06227bac501c61eceab",
+    "selective_restore.py": "403c009571122a3e2538d916404f24cd13012fd0c061e69785d2e814b8557f6d"
+  },
+  "staged_payload_bytes": 1,
+  "verified_archive_sha256": "97f67f55ee5ce306005faed3d1bb3385d7094950684a33c1dd58f7da7f488cb0",
+  "wall_seconds": 0.0017191189981531352
+}

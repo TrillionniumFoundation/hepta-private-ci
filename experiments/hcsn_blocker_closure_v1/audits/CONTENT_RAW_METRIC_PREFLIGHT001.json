@@ -1,0 +1,116 @@
+{
+  "checks": [
+    {
+      "name": "uniform eight-class closed form",
+      "passed": true
+    },
+    {
+      "name": "perfect prediction closed form",
+      "passed": true
+    },
+    {
+      "name": "confident error closed form",
+      "passed": true
+    },
+    {
+      "name": "large common logit offset remains stable",
+      "passed": true
+    },
+    {
+      "name": "nonuniform analytic CE Brier and calibration",
+      "passed": true
+    },
+    {
+      "name": "left-edge inclusion and final confidence one",
+      "passed": true
+    },
+    {
+      "name": "bounded NPZ roundtrip exact tensor identity",
+      "passed": true
+    },
+    {
+      "name": "invalid label dtype rejected before array load",
+      "passed": true
+    },
+    {
+      "name": "incomplete run blocks formal access",
+      "passed": true
+    }
+  ],
+  "created_utc": "2026-10-31T02:51:40.756352+00:00",
+  "formal_raw_arrays_loaded": false,
+  "original_metric_modules_imported": false,
+  "passed": true,
+  "plan": {
+    "allocation": "One prediction NPZ at a time; only y from registered dataset NPZs; NPY headers checked before allocation",
+    "ece": {
+      "bins": 10,
+      "edges": [
+        0.0,
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5,
+        0.6,
+        0.7,
+        0.8,
+        0.9,
+        1.0
+      ],
+      "intervals": "Left closed, right open; final bin includes1.0"
+    },
+    "execution_seal": "c9063043d088b6b469e740b9b6f341f3faea3928",
+    "expected_workers": {
+      "development": 76,
+      "equal_cpu": 64,
+      "fixed": 304
+    },
+    "floating_absolute_tolerance": 2e-12,
+    "ground_truth_patterns": [
+      "content/results/hosted001/data/selective_copy_dev_val.npz",
+      "content/results/hosted001/data/selective_copy_val.npz",
+      "content/results/hosted001/data/selective_copy_test.npz",
+      "content/results/hosted001/data/selective_copy_ood.npz",
+      "content/results/hosted001/data/mqar_dev_val.npz",
+      "content/results/hosted001/data/mqar_val.npz",
+      "content/results/hosted001/data/mqar_test.npz",
+      "content/results/hosted001/data/mqar_ood.npz"
+    ],
+    "integer_counts": "Exact equality",
+    "maximum_raw_prediction_array_bytes": 66519040,
+    "metric_source": {
+      "path": "experiments/hcsn_blocker_closure_v1/content/study.py",
+      "sha256": "1e7039a7d2cbf3e4be1f009c0aeab92b31c5098b606ee55f89d6f74105d7b3d0"
+    },
+    "prediction_dtypes": {
+      "labels": "int64",
+      "logits": "float32"
+    },
+    "prediction_npz_maximum": 1624,
+    "prediction_patterns": [
+      "content/results/hosted001/development/*/validation_*.npz",
+      "content/results/hosted001/fixed/*/validation_*.npz",
+      "content/results/hosted001/equal_cpu/*/validation_*.npz",
+      "content/results/hosted001/fixed/*/test.npz",
+      "content/results/hosted001/fixed/*/ood.npz",
+      "content/results/hosted001/equal_cpu/*/test.npz",
+      "content/results/hosted001/equal_cpu/*/ood.npz"
+    ],
+    "prediction_shapes": {
+      "labels": [
+        1024
+      ],
+      "logits": [
+        1024,
+        8
+      ]
+    },
+    "raw_array_bytes_per_prediction": 40960,
+    "run_id": 41156755829,
+    "scope": "Recompute raw prediction metrics and exact registered label order; no model forward, training, new significance test or changed scientific gate",
+    "study_protocol_sha256": "911067f668c94a68ca41af710e1977005806dad202fbf18f32bda580b077a27b"
+  },
+  "schema": "hcsn-independent-raw-metric-preflight.v1",
+  "source_sha256": "a5627b7b50f874d9632b17569116b2c50b4ea79427867f13354b6ab40046a57f"
+}

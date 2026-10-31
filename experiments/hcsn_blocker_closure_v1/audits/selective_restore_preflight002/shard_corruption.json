@@ -1,0 +1,41 @@
+{
+  "all_members_verified": false,
+  "commit_semantics": "Sequential non-overwriting links after complete verification; a commit-time I/O error can leave an already-verified subset, not an atomic multi-file transaction",
+  "compressed_bytes_verified": 0,
+  "cost_scope": "Internal recovery clocks after imports; includes archive verification and selected writes, before final receipt serialization",
+  "cpu_seconds": 0.00018008700000000932,
+  "destination": "/tmp/hcsn-selective-synthetic-415t_5hg/restored_shard_corruption",
+  "error": {
+    "message": "Member shard length/hash mismatch",
+    "type": "ValueError"
+  },
+  "existing_identical_bytes": 0,
+  "existing_identical_files": 0,
+  "expected_index_sha256": "b9a742b75908b665e5dff417e51f524ab50e51210edbef12248cbbfc1e7fd2ba",
+  "full_restoration_claim": false,
+  "index": "/tmp/hcsn-selective-synthetic-415t_5hg/shard_corruption/INDEX.json",
+  "member_bytes_verified": 0,
+  "member_files_verified": 0,
+  "part_files_verified": 0,
+  "passed": false,
+  "publication_root": "/tmp/hcsn-selective-synthetic-415t_5hg/shard_corruption",
+  "restored_bytes": 0,
+  "restored_files": 0,
+  "schema": "hcsn-selective-archive-restore.v1",
+  "scope": "Complete archive/member verification with explicit selective restoration; not a full extraction",
+  "selected_bytes_verified": 0,
+  "selection_shards": [],
+  "selectors": {
+    "paths": [
+      "a.txt"
+    ],
+    "patterns": [],
+    "semantics": "Union; fnmatchcase matches entire relative POSIX paths and * can match slash"
+  },
+  "source_sha256": {
+    "frozen_archive.py": "7aefcc785977bb391116750d04e9abd8bfa1db28381ee06227bac501c61eceab",
+    "selective_restore.py": "403c009571122a3e2538d916404f24cd13012fd0c061e69785d2e814b8557f6d"
+  },
+  "staged_payload_bytes": 0,
+  "wall_seconds": 0.00018197399913333356
+}

@@ -1,0 +1,54 @@
+{
+  "all_members_selected": false,
+  "all_members_verified": false,
+  "canonical_manifest_sha256": "9158d7b6c85a01d620e5bef22fde39d1e3876452671ab6ed325f0fb8751079ba",
+  "compressed_bytes_verified": 148,
+  "cost_scope": "Internal recovery clocks after imports; includes archive verification and selected writes, before final receipt serialization",
+  "cpu_seconds": 0.000922361999999996,
+  "declared_member_bytes": 2,
+  "declared_member_files": 2,
+  "destination": "/tmp/hcsn-selective-synthetic-p8jlva1i/restored_missing_tar_end_markers",
+  "error": {
+    "message": "Truncated tar end markers or padding",
+    "type": "ValueError"
+  },
+  "existing_identical_bytes": 0,
+  "existing_identical_files": 0,
+  "expected_index_sha256": "0502ec146263e5fc0d31146e84f34e6fedfdcbd83681a3d7e2db069d59c5851a",
+  "full_restoration_claim": false,
+  "index": "/tmp/hcsn-selective-synthetic-p8jlva1i/missing_tar_end_markers/INDEX.json",
+  "member_bytes_verified": 2,
+  "member_files_verified": 2,
+  "part_files_verified": 1,
+  "passed": false,
+  "publication_root": "/tmp/hcsn-selective-synthetic-p8jlva1i/missing_tar_end_markers",
+  "restored_bytes": 0,
+  "restored_files": 0,
+  "schema": "hcsn-selective-archive-restore.v1",
+  "scope": "Complete archive/member verification with explicit selective restoration; not a full extraction",
+  "selected_bytes_verified": 1,
+  "selected_declared_bytes": 1,
+  "selected_files": 1,
+  "selection_shards": [
+    {
+      "bytes": 166,
+      "members": 1,
+      "path": "missing_tar_end_markers_selection_0000.json",
+      "sha256": "1f84a17b8fb539dcc63bd8add0588aed364dca0fdf4d6e1d29f676e5c6ae1ce3"
+    }
+  ],
+  "selectors": {
+    "paths": [
+      "a.txt"
+    ],
+    "patterns": [],
+    "semantics": "Union; fnmatchcase matches entire relative POSIX paths and * can match slash"
+  },
+  "source_sha256": {
+    "frozen_archive.py": "7aefcc785977bb391116750d04e9abd8bfa1db28381ee06227bac501c61eceab",
+    "selective_restore.py": "6ae01542723562a3ebd0e36bec73ad50f156e44c4971921ff07ccfd9c8deb198"
+  },
+  "staged_payload_bytes": 1,
+  "verified_archive_sha256": "2481a25d30429e87b02f01f95caabad734e99782bce41407e2408c569e8e1c5f",
+  "wall_seconds": 0.0014537089882651344
+}
