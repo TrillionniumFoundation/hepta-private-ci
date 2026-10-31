@@ -1,0 +1,139 @@
+name: HCSN fresh actor data acquisition
+
+on:
+  push:
+    branches:
+      - research/hcsn-conservative-acceleration-20261030
+    paths:
+      - .github/workflows/hcsn-blocker-av.yml
+      - experiments/hcsn_blocker_closure_v1/av/bootstrap.py
+      - experiments/hcsn_blocker_closure_v1/av/COHORT_PLAN.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcsn-blocker-av-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  OMP_NUM_THREADS: "1"
+  OPENBLAS_NUM_THREADS: "1"
+  MKL_NUM_THREADS: "1"
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  acquire:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    outputs:
+      packaged: ${{ steps.package.outputs.ready }}
+    steps:
+      - name: Check out exact source and cohort
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /experiments/hcsn_blocker_closure_v1/av/
+            /experiments/hcsn_real_av_v1/data.py
+            /experiments/hcsn_real_av_v1/data/COHORT_PLAN.json
+            /.github/workflows/hcsn-blocker-av.yml
+      - name: Install bounded numerical decoding dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/hcsn-av-venv"
+          "$RUNNER_TEMP/hcsn-av-venv/bin/python" -m pip install --no-cache-dir numpy==2.3.5 scipy==1.17.0
+          command -v ffmpeg
+          command -v ffprobe
+      - name: Acquire and decode all 720 preselected clips
+        id: data
+        continue-on-error: true
+        run: |
+          "$RUNNER_TEMP/hcsn-av-venv/bin/python" -m experiments.hcsn_blocker_closure_v1.av.bootstrap acquire --cache "$RUNNER_TEMP/hcsn-av-cache" --output "$RUNNER_TEMP/hcsn-av-data"
+      - name: Retain complete data evidence including any failure
+        id: package
+        if: ${{ always() && steps.data.outcome != 'skipped' }}
+        run: |
+          "$RUNNER_TEMP/hcsn-av-venv/bin/python" -m experiments.hcsn_blocker_closure_v1.av.bootstrap package --output "$RUNNER_TEMP/hcsn-av-data" --transport "$RUNNER_TEMP/hcsn-av-transport"
+          echo 'ready=true' >> "$GITHUB_OUTPUT"
+      - name: Preserve bounded transport for publication
+        if: ${{ always() && steps.package.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: hcsn-fresh-av-${{ github.run_id }}
+          path: ${{ runner.temp }}/hcsn-av-transport
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+      - name: Require successful decoding independently of preservation
+        if: ${{ always() }}
+        run: test '${{ steps.data.outcome }}' = success
+
+  publish:
+    needs: acquire
+    if: ${{ always() && needs.acquire.outputs.packaged == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - name: Check out execution seal
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /experiments/hcsn_blocker_closure_v1/av/
+      - name: Download this attempt's evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: hcsn-fresh-av-${{ github.run_id }}
+          path: ${{ runner.temp }}/hcsn-av-transport
+      - name: Verify transport and publish to a new evidence branch
+        env:
+          HCSN_TRANSPORT_ROOT: ${{ runner.temp }}/hcsn-av-transport
+        run: |
+          python3 - <<'PY'
+          import base64, hashlib, json, os
+          from pathlib import Path
+          root = Path(os.environ['HCSN_TRANSPORT_ROOT'])
+          manifest = json.loads((root / 'TRANSPORT.json').read_text())
+          assert manifest['execution_seal'] == os.environ['GITHUB_SHA']
+          expected = {'TRANSPORT.json'}
+          for row in manifest['files']:
+              assert Path(row['path']).name == row['path']
+              values = []
+              for part in row['parts']:
+                  name = part['path']
+                  assert Path(name).name == name and name not in expected
+                  expected.add(name)
+                  raw = (root / name).read_bytes()
+                  assert len(raw) == part['bytes'] <= 262145
+                  assert hashlib.sha256(raw).hexdigest() == part['sha256']
+                  value = base64.b64decode(raw.strip(), validate=True)
+                  assert len(value) == part['raw_bytes']
+                  values.append(value)
+              full = b''.join(values)
+              assert len(full) == row['bytes']
+              assert hashlib.sha256(full).hexdigest() == row['sha256']
+          assert {p.name for p in root.iterdir()} == expected
+          print('All transport and logical bytes verified; source seal bound.')
+          PY
+          hcsn_target="experiments/hcsn_blocker_closure_v1/av/transport_${GITHUB_RUN_ID}"
+          mkdir -p "$hcsn_target"
+          cp -a "$RUNNER_TEMP/hcsn-av-transport/." "$hcsn_target/"
+          git add -- "$hcsn_target"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'research(hcsn): preserve fresh actor data and complete acquisition evidence'
+          git push origin "HEAD:refs/heads/research/hcsn-blocker-av-evidence-${GITHUB_RUN_ID}"
