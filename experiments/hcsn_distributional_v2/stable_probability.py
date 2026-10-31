@@ -43,8 +43,13 @@ def advance_probability(probability, transition, *, operator_kind,
     """Apply one regenerative transition and repair only bounded mass roundoff.
 
     Args:
-        probability: Row probabilities, shape (..., states).
+        probability: Row probabilities, shape (..., states). If batched,
+            batch axes define the output batch exactly; use a 1-D probability
+            for one shared initial state and multiple operator batches.
         transition: Row-stochastic transition, shape (..., states, states).
+            Shared or aligned batch axes are allowed, but independent extra
+            axes must be represented explicitly by the caller, not created by
+            implicit cross-product broadcasting.
         operator_kind: Must explicitly equal ``regenerative_probability``.
         event_vector: Optional per-start-state expected event count. Counts can
             exceed one. They are computed from the pre-transition probability.
@@ -73,6 +78,18 @@ def advance_probability(probability, transition, *, operator_kind,
         raise ValueError("Expected row probability and matrix transition")
     if transition.shape[-2:] != (probability.shape[-1], probability.shape[-1]):
         raise ValueError("Transition dimensions do not match probability states")
+    # matmul broadcasts *both* operands. If a batched state [B, S] is
+    # multiplied by [B, 1, S, S], the result silently becomes [B, B, S].
+    # A later event/reward check against the resulting shape cannot detect
+    # that the state itself was cross-broadcast. Require aligned batches;
+    # only an explicitly unbatched [S] start may expand across operator axes.
+    try:
+        result_batch = torch.broadcast_shapes(probability.shape[:-1],
+                                              transition.shape[:-2])
+    except RuntimeError as exc:
+        raise ValueError("Probability and transition have incompatible batch axes") from exc
+    if probability.ndim > 1 and result_batch != probability.shape[:-1]:
+        raise ValueError("Transition introduces unintended batch axes")
     _require(torch.isfinite(probability), "Nonfinite input probability")
     _require(probability >= 0, "Negative input probability; clipping is forbidden")
     _require(torch.isfinite(transition), "Nonfinite transition")
