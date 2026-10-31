@@ -132,8 +132,13 @@ impl V2Residency {
             else {
                 continue;
             };
+            let control = &candidate_thread.session.services.agent_control;
             if !is_unloadable(candidate_thread.as_ref()).await {
-                self.touch(candidate_thread_id);
+                let _ = manager
+                    .with_current_runtime(candidate_thread_id, &candidate_thread, || {
+                        self.touch(candidate_thread_id)
+                    })
+                    .await;
                 continue;
             }
             candidate_thread.ensure_rollout_materialized().await;
@@ -141,18 +146,25 @@ impl V2Residency {
                 warn!(
                     "failed to shut down v2 resident thread before unloading {candidate_thread_id}: {err}"
                 );
-                self.touch(candidate_thread_id);
+                let _ = manager
+                    .with_current_runtime(candidate_thread_id, &candidate_thread, || {
+                        self.touch(candidate_thread_id)
+                    })
+                    .await;
                 continue;
             }
             let environments = candidate_thread.environment_selections().await;
-            candidate_thread
-                .session
-                .services
-                .agent_control
-                .state
-                .save_evicted_environments(candidate_thread_id, environments);
-            let _ = manager.remove_thread(&candidate_thread_id).await;
-            return true;
+            if manager
+                .retire_runtime_if_current(candidate_thread_id, &candidate_thread, || {
+                    control
+                        .state
+                        .save_evicted_environments(candidate_thread_id, environments);
+                })
+                .await
+                .is_some()
+            {
+                return true;
+            }
         }
         false
     }
@@ -182,7 +194,7 @@ impl V2Residency {
         None
     }
 
-    fn touch(&self, thread_id: ThreadId) {
+    pub(super) fn touch(&self, thread_id: ThreadId) {
         let mut state = self
             .state
             .lock()

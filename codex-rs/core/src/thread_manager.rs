@@ -1,3 +1,5 @@
+mod runtime_identity;
+
 use crate::CodexAppsToolsCache;
 use crate::agent::AgentControl;
 use crate::attestation::AttestationProvider;
@@ -1485,16 +1487,9 @@ impl ThreadManager {
         thread_id: &ThreadId,
         expected: &Arc<CodexThread>,
     ) -> Option<Arc<CodexThread>> {
-        let mut registry = self.state.thread_registry.write().await;
-        if registry
-            .threads
-            .get(thread_id)
-            .is_some_and(|thread| Arc::ptr_eq(thread, expected))
-        {
-            registry.threads.remove(thread_id)
-        } else {
-            None
-        }
+        self.state
+            .retire_runtime_if_current(*thread_id, expected, || {})
+            .await
     }
 
     /// Tries to shut down all tracked threads concurrently within the provided timeout.
@@ -1519,22 +1514,23 @@ impl ThreadManager {
                     Ok(Err(_)) => ShutdownOutcome::SubmitFailed,
                     Err(_) => ShutdownOutcome::TimedOut,
                 };
-                (thread_id, outcome)
+                (thread_id, thread, outcome)
             })
             .collect::<FuturesUnordered<_>>();
         let mut report = ThreadShutdownReport::default();
 
-        while let Some((thread_id, outcome)) = shutdowns.next().await {
+        while let Some((thread_id, thread, outcome)) = shutdowns.next().await {
             match outcome {
-                ShutdownOutcome::Complete => report.completed.push(thread_id),
+                ShutdownOutcome::Complete => {
+                    let _ = self
+                        .state
+                        .retire_runtime_if_current(thread_id, &thread, || {})
+                        .await;
+                    report.completed.push(thread_id);
+                }
                 ShutdownOutcome::SubmitFailed => report.submit_failed.push(thread_id),
                 ShutdownOutcome::TimedOut => report.timed_out.push(thread_id),
             }
-        }
-
-        let mut registry = self.state.thread_registry.write().await;
-        for thread_id in &report.completed {
-            registry.threads.remove(thread_id);
         }
 
         report
@@ -1932,15 +1928,7 @@ impl ThreadManagerState {
         root_turn_id: Option<String>,
     ) -> CodexResult<String> {
         let thread = self.get_thread(thread_id).await?;
-        if let Some(ops_log) = &self.ops_log
-            && let Ok(mut log) = ops_log.lock()
-            && let Some(captured_op) = capture_test_op(&op)
-        {
-            log.push((thread_id, captured_op));
-        }
-        thread
-            .io
-            .submit_with_trace(op, /*trace*/ None, parent_turn_id, root_turn_id)
+        self.send_op_to_runtime(thread.as_ref(), op, parent_turn_id, root_turn_id)
             .await
     }
 
@@ -2387,7 +2375,10 @@ impl ThreadManagerState {
     /// Keep startup ownership independent of the requesting future. Dropping a caller while
     /// Session::spawn is materializing history must not release its hard-delete admission before
     /// the owner has either registered the runtime or completed rejected-startup cleanup.
-    async fn spawn_thread(self: &Arc<Self>, request: ThreadSpawnRequest) -> CodexResult<NewThread> {
+    async fn spawn_thread(
+        self: &Arc<Self>,
+        mut request: ThreadSpawnRequest,
+    ) -> CodexResult<NewThread> {
         let (result_tx, result_rx) = tokio::sync::oneshot::channel();
         let state = Arc::clone(self);
         // Tokio tasks do not inherit the caller's tracing span. Preserve it explicitly so the
