@@ -1,0 +1,155 @@
+{
+  "schema": "hepta.parameter-field.completed-resource-observation.1",
+  "written_utc": "2026-10-31T02:51:14.794757+00:00",
+  "status": "OBSERVATION_FINISHED_SCIENTIFIC_EXECUTION_NOT_STARTED",
+  "window": {
+    "sample_count": 360,
+    "first_sample_utc": "2026-10-31T01:49:59.427117+00:00",
+    "last_sample_utc": "2026-10-31T02:49:52.372180+00:00",
+    "observed_sample_span_seconds": 3592.9450646709956,
+    "observer_lifetime_seconds": 3602.9455267489975,
+    "sample_spacing_target_seconds": 10,
+    "resource_log": {
+      "record": "SAMPLES.jsonl",
+      "bytes": 106430,
+      "sha256": "7a571f2efcd33a4fdac014886007bc04c1229a4306807ff88a51b104de108904"
+    },
+    "terminal_record": {
+      "record": "OBSERVATION_WINDOW_ENDED.json",
+      "bytes": 107,
+      "sha256": "b1a9ab95f18194aa911ab59aa651414ccaaaafd7ab818fd551915462fc48c08c"
+    },
+    "tool_completion": {
+      "record": "WATCH_TOOL_COMPLETION.json",
+      "bytes": 482,
+      "sha256": "556a169668f3fc78e66250bd14ae7d42f9cc2c92e04894972d03b413fadfe862"
+    },
+    "observer_exit_code": 0,
+    "observer_cpu_seconds": "not_measured_by_a_retained_wait4_receipt"
+  },
+  "frozen_resource_floors": {
+    "effective_ram_bytes": 1879048192,
+    "available_disk_bytes": 2415919104,
+    "consecutive_samples_required": 3
+  },
+  "observed_admission": {
+    "ram_passing_samples": 6,
+    "disk_passing_samples": 105,
+    "joint_passing_samples": 0,
+    "maximum_recorded_consecutive": 0,
+    "ready_record_exists": false,
+    "actual_supervisor_admission_performed": false
+  },
+  "resource_ranges": {
+    "effective_ram_min_bytes": 1499136,
+    "effective_ram_max_bytes": 2427314176,
+    "disk_min_bytes": 0,
+    "disk_max_bytes": 7040671744,
+    "disk_zero_samples": 10,
+    "last_sample": {
+      "unix": 1793414992.37218,
+      "memory_current": 8205660160,
+      "memory_limit": 8589934592,
+      "clean_inactive_file": 485752832,
+      "effective_available": 870027264,
+      "oom": 38,
+      "oom_kill": 8,
+      "disk_available": 800145408,
+      "available_inodes": 1417446,
+      "consecutive": 0,
+      "elapsed_seconds": 3592.9453572609928
+    }
+  },
+  "shared_oom_counters": {
+    "first": {
+      "oom": 9,
+      "oom_kill": 2
+    },
+    "last": {
+      "oom": 38,
+      "oom_kill": 8
+    },
+    "counters_reset": false,
+    "attribution": "Shared environment cumulative counters during prelaunch observation; no causal attribution to this project."
+  },
+  "scientific_execution": {
+    "episode": "execution06_detached_20261030",
+    "marker_presence": {
+      "STATUS.json": false,
+      "supervisor_run/START_POLICY.json": false,
+      "daemon_bootstrap": false,
+      "wait4_launcher": false,
+      "COMPLETE.json": false,
+      "FAILED.json": false
+    },
+    "new_workers_started": 0,
+    "new_gradient_microsteps": 0,
+    "new_durable_stage_acks_written": 0,
+    "new_durable_stage_acks_accepted": 0,
+    "planned_durable_stages": 17,
+    "original_12_hour_window_started": false,
+    "complete": false,
+    "scientific_result_disposition": "NOT_EVALUATED",
+    "planned_new_gradient_microsteps": 304640,
+    "prior_completed_A17_gradient_microsteps": 39168,
+    "prior_completed_A17_is_not_new_science": true,
+    "no_unsealed_outcomes_or_trained_heads_read": true
+  },
+  "preserved_bindings": {
+    "code_C1": "058cd3d22aecbf67f9c5054f2131eeb0ccd55793",
+    "registration_C2": "bc4e757f5c90f6365f383c1127be710d2ded874a",
+    "protocol_sha256": "2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55",
+    "pipeline_sha256": "d16bac3194b36d286f180976ddbc7dff16e544763e195d408a135b30af4fb86e",
+    "comments_commit": "5e55b35099e069b1d51acc8ae7a4e8b4ac9c6fe8"
+  },
+  "verified_remote_batches": [
+    {
+      "scope": "original_prelaunch",
+      "objects": 8,
+      "total_bytes": 13481379,
+      "closure_sha256": "ee7a7d360cdc52f3019b50f5e6a4ed22de9288db0e43647224fdf13b7ffcf187"
+    },
+    {
+      "scope": "followup_private_metadata",
+      "objects": 3,
+      "total_bytes": 140884,
+      "closure_sha256": "3c189ee9e2892c11d91c921cfe44030fa452a83d6f1c009770097ca2c851eab2"
+    }
+  ],
+  "late_cache_receipts": [
+    {
+      "record": "cache_cleanup_released_profiles_20261031.json",
+      "bytes": 13452,
+      "sha256": "157c0e3273bc4512d9e716ec0eebf50c1c3bc14b68e886fe4ca1e459dea03cd6"
+    },
+    {
+      "record": "cache_cleanup_full_disk_profiles_20261031.json",
+      "bytes": 10546,
+      "sha256": "cb865379f6c60f2cc7d36765c806c405ee56af74d1d17137ebb88e6a9787ed0b"
+    }
+  ],
+  "alternative_execution": {
+    "validated_replacement_executor_found": false,
+    "existing_pocket4_probe_rerun_outcome": "unconfirmed_after_interrupted_tool_call",
+    "actual_root_service_read": {
+      "run_id": 37180529025,
+      "attempt": 5,
+      "status": "completed",
+      "conclusion": "cancelled",
+      "new_attempt_observed": false,
+      "observed_utc": "2026-10-31 02:31:39 UTC"
+    },
+    "rerun_retried": false,
+    "docker_or_podman_cli_or_configured_socket_found": false,
+    "unconfirmed_probe_is_not_a_completed_compute_experiment": true
+  },
+  "next_step": {
+    "entrypoint": "operational/parameter_field_recovery06/daemon_bootstrap.py --execute",
+    "condition": "Recover sufficient resources, verify unchanged registered artifacts and absence of any prior launch, then allow the original supervisor to perform its own admission.",
+    "repeat_A17_science": false,
+    "reuse_partial_A29_attempt": false,
+    "alter_baseline_endpoints_thresholds_or_budget": false
+  },
+  "public_record_contains_private_transfer_identifiers": false,
+  "resource_failure_is_not_a_scientific_negative_result": true
+}
