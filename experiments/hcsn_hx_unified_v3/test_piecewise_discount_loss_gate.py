@@ -1,10 +1,12 @@
 """Discount-loss admission must detect f64/mpf significance loss (research)."""
 import unittest
+from unittest.mock import patch
 
 import mpmath as mp
 
 from experiments.hcsn_hx_unified_v3.moving_boundary_enclosure import linear_boundary_first_hit
 from experiments.hcsn_hx_unified_v3.piecewise_boundary_oracle import two_segment_first_hit
+from experiments.hcsn_hx_unified_v3 import piecewise_boundary_oracle as piecewise
 
 
 class DiscountLossAdmissionTests(unittest.TestCase):
@@ -27,6 +29,21 @@ class DiscountLossAdmissionTests(unittest.TestCase):
                 with self.assertRaisesRegex(ArithmeticError, "discount.*loss"):
                     two_segment_first_hit(1, 0, 0, .6, -.2, .7, .6, 1.3,
                                           q, dps=50)
+
+    def test_piecewise_final_guard_rejects_false_equal_discount(self):
+        # Inject a paired quadrature result with an impossible zero D while
+        # preserving 0<=G<=F<=1 and both original pathwise slope brackets.
+        x, b, mu, sigma, c1, c2, s, T, q = 1, 0, 0, .6, -.2, .7, .6, 1.3, .2
+        with mp.workdps(75):
+            first = linear_boundary_first_hit(x, b, mu, sigma, c1, s, q, dps=75)
+            fake_p = mp.mpf('.25')
+            continuation_F = fake_p - first.probability
+            continuation_G = ((fake_p - first.discounted) /
+                              mp.exp(-mp.mpf(q) * mp.mpf(s)))
+            with patch.object(piecewise.mp, 'quad',
+                              side_effect=[continuation_F, continuation_G]):
+                with self.assertRaisesRegex(ArithmeticError, 'piecewise discount-loss'):
+                    two_segment_first_hit(x, b, mu, sigma, c1, c2, s, T, q, dps=60)
 
     def test_independent_mathematical_positive_lower_bound(self):
         # This physical bound is independent of the discounted quadrature:
