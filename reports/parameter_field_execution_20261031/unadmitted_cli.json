@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.parameter-field.execution-unadmitted-smoke.1",
+  "command": [
+    "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+    "-B",
+    "-m",
+    "supplements.parameter_field_execution_20261031.run_review"
+  ],
+  "expected_exit_code": 2,
+  "actual_exit_code": 2,
+  "stdout": {
+    "schema": "hepta.parameter-field.unified-postseal-review.1",
+    "status": "NOT_EVALUATED",
+    "scientific_payloads_decoded": false,
+    "reason": "Actual original review completion and externally held SHA256 are required."
+  },
+  "stderr": ""
+}

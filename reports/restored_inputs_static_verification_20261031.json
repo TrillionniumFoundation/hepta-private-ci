@@ -1,0 +1,84 @@
+{
+  "at_utc": "2026-10-31T12:02:48.809782+00:00",
+  "dynamic_runtime_digest_retested": false,
+  "model_data_decoded": false,
+  "original_assets": [
+    {
+      "bytes": 1648877,
+      "matches": true,
+      "path": "ndu-data/t10k-images-idx3-ubyte.gz",
+      "sha256": "8d422c7b0a1c1c79245a5bcf07fe86e33eeafee792b84584aec276f5a2dbc4e6"
+    },
+    {
+      "bytes": 4542,
+      "matches": true,
+      "path": "ndu-data/t10k-labels-idx1-ubyte.gz",
+      "sha256": "f7ae60f92e00ec6debd23a6088c31dbd2371eca3ffa0defaefb259924204aec6"
+    },
+    {
+      "bytes": 9912422,
+      "matches": true,
+      "path": "ndu-data/train-images-idx3-ubyte.gz",
+      "sha256": "440fcabf73cc546fa21475e81ea370265605f56be210a4024d2ca8f203523609"
+    },
+    {
+      "bytes": 28881,
+      "matches": true,
+      "path": "ndu-data/train-labels-idx1-ubyte.gz",
+      "sha256": "3552534a0a558bbed6aed32b30c495cca23d567ec52cac8be1a0730e8010255c"
+    },
+    {
+      "bytes": 427247,
+      "matches": true,
+      "path": "ndu-runs/full-002/audit-observer.pt",
+      "sha256": "cd560d4ec2f45cef6a0f4db9809b902ea68833c8693798f7597135a83a6e3589"
+    },
+    {
+      "bytes": 427261,
+      "matches": true,
+      "path": "ndu-runs/full-002/reward-observer.pt",
+      "sha256": "a9cfe78a08b9192ba9d8fe9c144de29ef5d3b1e9cd6ed236d01d170d32034210"
+    },
+    {
+      "bytes": 4063045,
+      "matches": true,
+      "path": "ndu-runs/full-002/seed-17-terminal_entropic_ndu.pt",
+      "sha256": "8fa76a13cdeee48e41b84e29211659a065d9573e2fdfecc4281f882248b508b6"
+    },
+    {
+      "bytes": 4063045,
+      "matches": true,
+      "path": "ndu-runs/full-002/seed-29-terminal_entropic_ndu.pt",
+      "sha256": "e92dc06cec18ee279b8367a2fd194ba91978197150e5edcdede1c0d9fde2b11c"
+    },
+    {
+      "bytes": 4063045,
+      "matches": true,
+      "path": "ndu-runs/full-002/seed-43-terminal_entropic_ndu.pt",
+      "sha256": "1a38524e474d35ff9eb1ad584b1714ea2ef7f7f8d0c502a6b3b2172252ddabf9"
+    }
+  ],
+  "original_assets_all_match": true,
+  "original_runtime_digest": "9d6ac19baf5234ed0d7d4ce98e63d550a1fea951126ea4dba0a591e04f65d52c",
+  "package_metadata_matches_frozen": true,
+  "python_build_matches_frozen": true,
+  "runtime_metadata": {
+    "executable": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "versions": {
+      "Pillow": "12.3.0",
+      "filelock": "4.2.4",
+      "fsspec": "2026.9.0",
+      "jinja2": "3.1.6",
+      "mpmath": "1.3.0",
+      "networkx": "3.7",
+      "numpy": "2.3.5",
+      "sympy": "1.14.0",
+      "torch": "2.8.0+cpu",
+      "typing_extensions": "4.16.0"
+    }
+  },
+  "schema": "hepta.parameter-field.restored-inputs-readonly-verification.1",
+  "scientific_workers_started": 0,
+  "torch_imported": false
+}

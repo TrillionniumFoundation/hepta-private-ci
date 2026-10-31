@@ -1,0 +1,521 @@
+{
+  "actions": {
+    "new_registration_created": false,
+    "scientific_data_opened": false,
+    "scientific_workers_started": 0,
+    "source_or_protocol_modified": false,
+    "torch_imported": false,
+    "unsealed_outcomes_read": false
+  },
+  "at_utc": "2026-10-31T12:13:56.389328+00:00",
+  "decision": {
+    "currently_verified_ready_destination": false,
+    "exact_runtime_new_machine_continuation_possible_in_principle": true,
+    "if_runtime_differs": "The current A17 immutable state binding and producer map cannot be continued by changing only paths/config. A separately preregistered new-runtime experiment with explicit comparability/replay treatment and potentially full rerun of A17 is a different scientific provenance decision, not an automatic exact continuation.",
+    "new_ops_can_preserve_frozen_science_if_preconditions_met": "Yes in principle: a distinct committed operational episode may restore/relocate evidence, rebind actual paths and processes, and provide equivalent durable custody while preserving original scientific code, protocol, runtime/state identity, data/seed/action allocation, gates and inference rules. No such fullstudy-ready destination has yet been demonstrated.",
+    "new_ops_registration_alone_sufficient_without_runtime_match": false,
+    "standard_ci_runner_available": true,
+    "standard_runner_automatically_qualifies_for_fullstudy": false,
+    "synthetic_diagnostics_ci_is_valid_engineering_only": true
+  },
+  "distribution_provenance": {
+    "current_metadata": [
+      {
+        "direct_url_record_present": false,
+        "installer": "pip",
+        "metadata_directory": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/lib/python3.12/site-packages/markupsafe-3.0.3.dist-info",
+        "name": "MarkupSafe",
+        "version": "3.0.3",
+        "wheel_tags": [
+          "Wheel-Version: 1.0",
+          "Generator: setuptools (80.9.0)",
+          "Root-Is-Purelib: false",
+          "Tag: cp312-cp312-manylinux_2_17_x86_64",
+          "Tag: cp312-cp312-manylinux2014_x86_64",
+          "Tag: cp312-cp312-manylinux_2_28_x86_64",
+          ""
+        ]
+      },
+      {
+        "direct_url_record_present": false,
+        "installer": "pip",
+        "metadata_directory": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/pillow-12.3.0.dist-info",
+        "name": "Pillow",
+        "version": "12.3.0",
+        "wheel_tags": [
+          "Wheel-Version: 1.0",
+          "Generator: setuptools (82.0.1)",
+          "Root-Is-Purelib: false",
+          "Tag: cp312-cp312-manylinux_2_27_x86_64",
+          "Tag: cp312-cp312-manylinux_2_28_x86_64",
+          ""
+        ]
+      },
+      {
+        "direct_url_record_present": false,
+        "installer": "pip",
+        "metadata_directory": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/lib/python3.12/site-packages/filelock-4.2.4.dist-info",
+        "name": "filelock",
+        "version": "4.2.4",
+        "wheel_tags": [
+          "Wheel-Version: 1.0",
+          "Generator: hatchling 1.32.4",
+          "Root-Is-Purelib: true",
+          "Tag: py3-none-any"
+        ]
+      },
+      {
+        "direct_url_record_present": false,
+        "installer": "pip",
+        "metadata_directory": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/lib/python3.12/site-packages/fsspec-2026.9.0.dist-info",
+        "name": "fsspec",
+        "version": "2026.9.0",
+        "wheel_tags": [
+          "Wheel-Version: 1.0",
+          "Generator: hatchling 1.32.3",
+          "Root-Is-Purelib: true",
+          "Tag: py3-none-any"
+        ]
+      },
+      {
+        "direct_url_record_present": false,
+        "installer": "pip",
+        "metadata_directory": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/lib/python3.12/site-packages/jinja2-3.1.6.dist-info",
+        "name": "jinja2",
+        "version": "3.1.6",
+        "wheel_tags": [
+          "Wheel-Version: 1.0",
+          "Generator: flit 3.11.0",
+          "Root-Is-Purelib: true",
+          "Tag: py3-none-any"
+        ]
+      },
+      {
+        "direct_url_record_present": false,
+        "installer": "pip",
+        "metadata_directory": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/lib/python3.12/site-packages/mpmath-1.3.0.dist-info",
+        "name": "mpmath",
+        "version": "1.3.0",
+        "wheel_tags": [
+          "Wheel-Version: 1.0",
+          "Generator: bdist_wheel (0.38.4)",
+          "Root-Is-Purelib: true",
+          "Tag: py3-none-any",
+          ""
+        ]
+      },
+      {
+        "direct_url_record_present": false,
+        "installer": "pip",
+        "metadata_directory": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/lib/python3.12/site-packages/networkx-3.7.dist-info",
+        "name": "networkx",
+        "version": "3.7",
+        "wheel_tags": [
+          "Wheel-Version: 1.0",
+          "Generator: setuptools (84.0.0)",
+          "Root-Is-Purelib: true",
+          "Tag: py3-none-any",
+          ""
+        ]
+      },
+      {
+        "direct_url_record_present": false,
+        "installer": "pip",
+        "metadata_directory": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/numpy-2.3.5.dist-info",
+        "name": "numpy",
+        "version": "2.3.5",
+        "wheel_tags": [
+          "Wheel-Version: 1.0",
+          "Generator: meson",
+          "Root-Is-Purelib: false",
+          "Tag: cp312-cp312-manylinux_2_27_x86_64",
+          "Tag: cp312-cp312-manylinux_2_28_x86_64",
+          ""
+        ]
+      },
+      {
+        "direct_url_record_present": false,
+        "installer": "pip",
+        "metadata_directory": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/lib/python3.12/site-packages/setuptools-78.1.0.dist-info",
+        "name": "setuptools",
+        "version": "78.1.0",
+        "wheel_tags": [
+          "Wheel-Version: 1.0",
+          "Generator: setuptools (78.1.0)",
+          "Root-Is-Purelib: true",
+          "Tag: py3-none-any",
+          ""
+        ]
+      },
+      {
+        "direct_url_record_present": false,
+        "installer": "pip",
+        "metadata_directory": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/lib/python3.12/site-packages/sympy-1.14.0.dist-info",
+        "name": "sympy",
+        "version": "1.14.0",
+        "wheel_tags": [
+          "Wheel-Version: 1.0",
+          "Generator: setuptools (79.0.1)",
+          "Root-Is-Purelib: true",
+          "Tag: py3-none-any",
+          ""
+        ]
+      },
+      {
+        "direct_url_record_present": false,
+        "installer": "pip",
+        "metadata_directory": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/lib/python3.12/site-packages/torch-2.8.0+cpu.dist-info",
+        "name": "torch",
+        "version": "2.8.0+cpu",
+        "wheel_tags": [
+          "Wheel-Version: 1.0",
+          "Generator: setuptools (79.0.1)",
+          "Root-Is-Purelib: false",
+          "Tag: cp312-cp312-manylinux_2_28_x86_64",
+          ""
+        ]
+      },
+      {
+        "direct_url_record_present": false,
+        "installer": "pip",
+        "metadata_directory": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/typing_extensions-4.16.0.dist-info",
+        "name": "typing_extensions",
+        "version": "4.16.0",
+        "wheel_tags": [
+          "Wheel-Version: 1.0",
+          "Generator: flit 3.12.0",
+          "Root-Is-Purelib: true",
+          "Tag: py3-none-any"
+        ]
+      }
+    ],
+    "current_remote_availability_tested": false,
+    "historical_install_vs_current_setuptools_note": "Original install log reused system setuptools 84.1.0; current venv metadata resolves setuptools 78.1.0. Neither setuptools nor MarkupSafe is in the original runtime-probe version map or state-runtime digest, so registered runtime identity is narrower than a byte-complete environment identity.",
+    "numpy_pillow_origin": "Reused primary runtime distributions through --system-site-packages. Their exact versions and installed WHEEL tags are recorded; no original download URL/archive hash was found in examined installation records.",
+    "official_torch_index_recorded": "https://download.pytorch.org/whl/cpu",
+    "original_probe_package_versions": {
+      "Pillow": "12.3.0",
+      "filelock": "4.2.4",
+      "fsspec": "2026.9.0",
+      "jinja2": "3.1.6",
+      "mpmath": "1.3.0",
+      "networkx": "3.7",
+      "numpy": "2.3.5",
+      "sympy": "1.14.0",
+      "torch": "2.8.0+cpu",
+      "typing_extensions": "4.16.0"
+    },
+    "pip_install_report": {
+      "bytes": 84502,
+      "path": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/PIP_INSTALL_REPORT.json",
+      "sha256": "9d6b3ac0d4f2dcc19a3456689bce315f08a98ac40a153830a581bd747fed6fc8"
+    },
+    "recorded_public_download_urls": [
+      "https://download-r2.pytorch.org/whl/cpu/torch-2.8.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl",
+      "https://download-r2.pytorch.org/whl/cpu/torch-2.8.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl.metadata",
+      "https://download.pytorch.org/whl/cpu",
+      "https://download.pytorch.org/whl/jinja2-3.1.6-py3-none-any.whl",
+      "https://download.pytorch.org/whl/jinja2-3.1.6-py3-none-any.whl.metadata",
+      "https://download.pytorch.org/whl/markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "https://download.pytorch.org/whl/markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata",
+      "https://download.pytorch.org/whl/setuptools-78.1.0-py3-none-any.whl",
+      "https://download.pytorch.org/whl/setuptools-78.1.0-py3-none-any.whl.metadata"
+    ],
+    "recorded_wheels": [
+      {
+        "bytes": 162475,
+        "distribution_name": "filelock",
+        "path": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/wheels/filelock-4.2.4-py3-none-any.whl",
+        "recorded_local_wheel_currently_exists": false,
+        "sha256": "301241438c57936ef93f4243a94f2559022268bfcf9b375a9a72eb0f8db8358e",
+        "version": "4.2.4"
+      },
+      {
+        "bytes": 221738,
+        "distribution_name": "fsspec",
+        "path": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/wheels/fsspec-2026.9.0-py3-none-any.whl",
+        "recorded_local_wheel_currently_exists": false,
+        "sha256": "8dd6e646e99ea382bd85f97a45e6b526a442d79423a7dc673f1e2756d05fcb5f",
+        "version": "2026.9.0"
+      },
+      {
+        "bytes": 134899,
+        "distribution_name": "Jinja2",
+        "path": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/wheels/jinja2-3.1.6-py3-none-any.whl",
+        "recorded_local_wheel_currently_exists": false,
+        "sha256": "85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67",
+        "version": "3.1.6"
+      },
+      {
+        "bytes": 22947,
+        "distribution_name": "MarkupSafe",
+        "path": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/wheels/markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+        "recorded_local_wheel_currently_exists": false,
+        "sha256": "d6dd0be5b5b189d31db7cda48b91d7e0a9795f31430b7f271219ab30f1d3ac9d",
+        "version": "3.0.3"
+      },
+      {
+        "bytes": 536198,
+        "distribution_name": "mpmath",
+        "path": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/wheels/mpmath-1.3.0-py3-none-any.whl",
+        "recorded_local_wheel_currently_exists": false,
+        "sha256": "a0b2b9fe80bbcd81a6647ff13108738cfb482d481d826cc0e02f5b35e5c88d2c",
+        "version": "1.3.0"
+      },
+      {
+        "bytes": 2142205,
+        "distribution_name": "networkx",
+        "path": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/wheels/networkx-3.7-py3-none-any.whl",
+        "recorded_local_wheel_currently_exists": false,
+        "sha256": "e3fd2c13a7814cee3746340d8d7f8598a67f16a58bf47fb7f8793fab6efca1b0",
+        "version": "3.7"
+      },
+      {
+        "bytes": 1256108,
+        "distribution_name": "setuptools",
+        "path": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/wheels/setuptools-78.1.0-py3-none-any.whl",
+        "recorded_local_wheel_currently_exists": false,
+        "sha256": "3e386e96793c8702ae83d17b853fb93d3e09ef82ec62722e61da5cd22376dcd8",
+        "version": "78.1.0"
+      },
+      {
+        "bytes": 6299353,
+        "distribution_name": "sympy",
+        "path": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/wheels/sympy-1.14.0-py3-none-any.whl",
+        "recorded_local_wheel_currently_exists": false,
+        "sha256": "e091cc3e99d2141a0ba2847328f5479b05d94a6635cb96148ccb3f34671bd8f5",
+        "version": "1.14.0"
+      },
+      {
+        "bytes": 183914597,
+        "distribution_name": "torch",
+        "path": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/wheels/torch-2.8.0+cpu-cp312-cp312-manylinux_2_28_x86_64.whl",
+        "recorded_local_wheel_currently_exists": false,
+        "sha256": "cb9a8ba8137ab24e36bf1742cb79a1294bd374db570f09fc15a5e1318160db4e",
+        "version": "2.8.0+cpu"
+      },
+      {
+        "bytes": 45571,
+        "distribution_name": "typing_extensions",
+        "path": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/wheels/typing_extensions-4.16.0-py3-none-any.whl",
+        "recorded_local_wheel_currently_exists": false,
+        "sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8",
+        "version": "4.16.0"
+      }
+    ],
+    "torch_official_wheel_url_recorded": "https://download-r2.pytorch.org/whl/cpu/torch-2.8.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl",
+    "wheel_manifest": {
+      "bytes": 16016,
+      "path": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/WHEEL_MANIFEST.json",
+      "sha256": "5893318fd8ddd536d248a900ba5775d89aed174bb691446a64fd10b5da9ae231"
+    }
+  },
+  "external_ci_observation": {
+    "reported_status": "in_progress",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "scope": "P0 engineering synthetic diagnostics CI; no fullstudy executor qualification implied.",
+    "standard_github_actions_runner_available": true,
+    "verification_source": "Parent agent reported direct workflow verification during this task; this child did not dispatch or independently reread the workflow run.",
+    "workflow_commit": "518fa5e4445b7085f23ccbe6c8b3f56a13ca4f1a",
+    "workflow_run_id": 41200153294
+  },
+  "interpreter": {
+    "actual_executable": {
+      "bytes": 30894944,
+      "path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+      "sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7"
+    },
+    "build_config": {
+      "BUILD_GNU_TYPE": "x86_64-unknown-linux-gnu",
+      "CC": "clang -pthread",
+      "CONFIG_ARGS": "'--build=x86_64-unknown-linux-gnu' '--host=x86_64-unknown-linux-gnu' '--prefix=/install' '--with-openssl=/tools/deps' '--with-system-expat' '--with-system-libmpdec' '--without-ensurepip' '--with-readline=editline' 'MODULE_BUILDTYPE=static' '--enable-loadable-sqlite-extensions' '--enable-static-libpython-for-interpreter' '--enable-shared' '--enable-optimizations' '--enable-bolt' '--with-lto' '--with-build-python=/tools/host/bin/python3.12' '--with-dbmliborder=bdb' 'build_alias=x86_64-unknown-linux-gnu' 'host_alias=x86_64-unknown-linux-gnu' 'PKG_CONFIG=pkg-config --static' 'PKG_CONFIG_PATH=/tools/deps/share/pkgconfig:/tools/deps/lib/pkgconfig' 'CC=clang' 'CFLAGS=  -O3 -fstack-protector -fstack-clash-protection -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer  -fPIC  ' 'LDFLAGS=-Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now -Wl,--build-id=sha1  -Wl,--exclude-libs,ALL' 'CPPFLAGS=  -O3 -fstack-protector -fstack-clash-protection -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2  -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer  -fPIC  ' 'PROFILE_TASK=-m test --pgo -j 4' 'BOLT_COMMON_FLAGS=-update-debug-sections -skip-funcs=RC4_options/1,sha256_update/.*,sha512_update/.*,PyBlake2_blake2b_compress/.*,PyBlake2_blake2s_compress/.*,update_block.*' 'BOLT_APPLY_FLAGS=-update-debug-sections -skip-funcs=RC4_options/1,sha256_update/.*,sha512_update/.*,PyBlake2_blake2b_compress/.*,PyBlake2_blake2s_compress/.*,update_block.* -reorder-blocks=ext-tsp -reorder-functions=cdsort -split-functions -split-strategy=cdsplit -icf=safe -inline-all -split-eh -reorder-functions-use-hot-size -peepholes=none -jump-tables=aggressive -inline-ap -indirect-call-promotion=all -dyno-stats -frame-opt=hot' 'PANEL_CFLAGS=' 'PANEL_LIBS=-lpanelw -lncursesw'",
+      "HOST_GNU_TYPE": "x86_64-unknown-linux-gnu",
+      "LDLIBRARY": "libpython3.12.so",
+      "LIBDIR": "/install/lib",
+      "MULTIARCH": "x86_64-linux-gnu",
+      "Py_ENABLE_SHARED": 1,
+      "SOABI": "cpython-312-x86_64-linux-gnu"
+    },
+    "bundle_metadata": {
+      "artifactToolVersion": "2.8.106",
+      "bundleFormatVersion": 2,
+      "bundleVersion": "26.1025.11240",
+      "bundledPlugins": [
+        "plugins/openai-primary-runtime"
+      ],
+      "bundledSkills": [],
+      "libreOfficeVersion": "25.2-headless-codex.1",
+      "nativeDependencies": [
+        "libheif",
+        "jxrlib",
+        "libreoffice-headless",
+        "poppler",
+        "git"
+      ],
+      "nodeVersion": "24.22.1-cua.1",
+      "pnpmVersion": "11.25.0",
+      "pythonVersion": "3.12.14",
+      "skillsToRemove": [
+        "codex-primary-runtime/spreadsheets",
+        "codex-primary-runtime/slides",
+        "doc",
+        "docs",
+        "spreadsheet",
+        "slides"
+      ],
+      "targetArch": "x64",
+      "targetPlatform": "linux"
+    },
+    "exact_python_download_archive_hash_found_in_examined_records": false,
+    "exact_python_download_url_found_in_examined_records": false,
+    "glibc_observed": [
+      "glibc",
+      "2.39"
+    ],
+    "new_binary_hash_is_observation_not_original_registered_gate": true,
+    "python_build_standalone_origin_proven": false,
+    "search_scope": [
+      "runtime bundle runtime.json",
+      "original BASE_METADATA.json and RUNTIME_RECOVERY_RECEIPT.json",
+      "original runtime download/install logs",
+      "Python installed Makefile/sysconfig and top-level distribution metadata"
+    ],
+    "symlink_chain": [
+      {
+        "is_symlink": true,
+        "link_target": "python3",
+        "path": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "resolved": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12"
+      },
+      {
+        "is_symlink": true,
+        "link_target": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "path": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python3",
+        "resolved": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12"
+      },
+      {
+        "is_symlink": true,
+        "link_target": "python3",
+        "path": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python3.12",
+        "resolved": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12"
+      }
+    ],
+    "sys_base_prefix": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python",
+    "sys_prefix": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv",
+    "sys_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "venv_cfg": "home = /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin\ninclude-system-site-packages = true\nversion = 3.12.14\nexecutable = /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12\ncommand = /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m venv --system-site-packages /workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv\n"
+  },
+  "migration_conditions": [
+    {
+      "condition": "Original science closure and protocol unchanged",
+      "requirements": "Pin actual committed operational source separately; verify every original scientific SOURCE_FREEZE hash and PROTOCOL hash. Do not edit original receipt bytes or gate constants.",
+      "status": "Preservable in a new operational registration"
+    },
+    {
+      "condition": "Import existing A17 and continue A29/A43/W/R/B under exact state-runtime identity",
+      "requirements": "Real exact full sys.version, Torch build/CPU AVX512, NumPy version, threads=2, interop=1, deterministic=true and all remaining descriptor fields; run the actual frozen runtime probe and required import/preflight procedures on destination. Do not rewrite expected digest, spoof sys.version/ATEN_CPU_CAPABILITY, or copy a historical receipt as a new measurement.",
+      "status": "Blocked until destination demonstrates the recorded digest"
+    },
+    {
+      "condition": "Obtain exact interpreter and dependency environment",
+      "requirements": "Torch wheel URL/hash and ten wheel pins are recorded. Python is a primary-runtime-bundle dependency with no precise public archive URL/hash found; export a reviewed complete interpreter/stdlib/shared-library and relevant package closure or obtain the exact managed bundle. Copying only the venv leaves absolute symlinks and shared system packages unresolved.",
+      "status": "Partially actionable, not yet established as a complete official download recipe"
+    },
+    {
+      "condition": "Operational paths and ancestry/cost evidence on destination",
+      "requirements": "Existing config/pins use canonical absolute paths; old scientific producers, all 282 A17 artifacts, original archives, ACK/readback-retirement receipts and prior failed cost records must retain their exact bytes and provenance. Record new destination runtime/registration receipts without altering historical originals.",
+      "status": "Requires complete authenticated restoration plus path-preserving layout or explicitly reviewed new operational relocation mapping"
+    },
+    {
+      "condition": "Resource and process ownership model",
+      "requirements": "Linux /proc PID namespace agreement, finite readable cgroup memory.max/current/stat/events, writable dedicated output roots and sufficient inodes, original RAM/disk gates and 3x10s admission, direct-child wait4/detach and OOM/deadline/backpressure behavior. A generic runner may have memory.max=max or different namespace behavior.",
+      "status": "Destination capability must be measured, not inferred from runner label"
+    },
+    {
+      "condition": "Durable per-stage barriers and external root ACK custody",
+      "requirements": "Actual ordered upload, independent same-version byte readback, fresh accepted ACK for every current-episode barrier plus terminal closure. Current Library adapters pin helper paths/hashes and same-host process identity; GitHub artifact success alone is not that contract. Use the original supported transfer mechanism or a separately preregistered operational transport with equivalent preserved semantics.",
+      "status": "No destination integration currently demonstrated"
+    },
+    {
+      "condition": "Runner long enough and correctly attributed costs",
+      "requirements": "Preserve original absolute 12-hour supervisor deadline and job/ACK order; ensure runner lifetime and external root interaction can support it. Register fresh process identities and actual wait4/cost receipts; never inherit old host PIDs or treat diagnostic CI CPU as study execution.",
+      "status": "Not yet demonstrated"
+    }
+  ],
+  "runtime_contract": {
+    "codec_source": {
+      "bytes": 6335,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/codec.py",
+      "sha256": "75b2be74e5a9bf7ff474e74f5e25f3f6dc3758c09d07ff78a1417537ddc772fb"
+    },
+    "current_torch_descriptor_recomputed": false,
+    "descriptor": {
+      "autocast_cpu": false,
+      "cpu_capability": "AVX512",
+      "default_dtype": "torch.float32",
+      "deterministic": true,
+      "environment": {
+        "ATEN_CPU_CAPABILITY": null,
+        "MKL_NUM_THREADS": null,
+        "OMP_NUM_THREADS": null
+      },
+      "grad_enabled": true,
+      "inference_mode": false,
+      "interop_threads": 1,
+      "matmul_precision": "highest",
+      "mkldnn": true,
+      "numpy": "2.3.5",
+      "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+      "threads": 2,
+      "torch": "2.8.0+cpu",
+      "torch_build": "PyTorch built with:\n  - GCC 13.3\n  - C++ Version: 201703\n  - Intel(R) oneAPI Math Kernel Library Version 2024.2-Product Build 20240605 for Intel(R) 64 architecture applications\n  - Intel(R) MKL-DNN v3.7.1 (Git Hash 8d263e693366ef8db40acc569cc7d8edf644556d)\n  - OpenMP 201511 (a.k.a. OpenMP 4.5)\n  - LAPACK is enabled (usually provided by MKL)\n  - NNPACK is enabled\n  - CPU capability usage: AVX512\n  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, COMMIT_SHA=a1cb3cc05d46d198467bebbb6e8fba50a325d4e7, CXX_COMPILER=/opt/rh/gcc-toolset-13/root/usr/bin/c++, CXX_FLAGS= -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOCUPTI -DLIBKINETO_NOROCTRACER -DLIBKINETO_NOXPUPTI=ON -DUSE_FBGEMM -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -DC10_NODEPRECATED -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=range-loop-construct -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-unused-parameter -Wno-strict-overflow -Wno-strict-aliasing -Wno-stringop-overflow -Wsuggest-override -Wno-psabi -Wno-error=old-style-cast -faligned-new -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-dangling-reference -Wno-error=dangling-reference -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, TORCH_VERSION=2.8.0, USE_CUDA=0, USE_CUDNN=OFF, USE_CUSPARSELT=OFF, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_GLOO=ON, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=OFF, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, USE_XCCL=OFF, USE_XPU=OFF, \n"
+    },
+    "descriptor_source": {
+      "bytes": 22211,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/adapter.py",
+      "sha256": "59b32cbd4ac52dee2e3b0dec7f1c0b197d2c84dbd6fdf404156ad788d3d38e21"
+    },
+    "digest_definition": "SHA256(codec.dumps(strict.runtime_descriptor())): HEPTA_BRANCH_PREPARATION_1 newline magic, 8-byte big-endian header length, typed canonical JSON tree and no array payload for this scalar descriptor. It is not SHA256 of ordinary JSON text.",
+    "environment_values": {
+      "ATEN_CPU_CAPABILITY": null,
+      "MKL_NUM_THREADS": null,
+      "OMP_NUM_THREADS": null
+    },
+    "full_python_build_string_is_bound": true,
+    "full_torch_build_string_is_bound": true,
+    "not_fields_in_this_digest": [
+      "hostname",
+      "kernel version",
+      "PID/start ticks",
+      "cgroup identity",
+      "filesystem paths",
+      "Python executable file SHA256",
+      "wheel archive SHA256",
+      "Pillow version"
+    ],
+    "recorded_probe_schema": "hepta.execution05.restored-runtime-probe.1",
+    "recorded_probe_source_root": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git",
+    "recorded_runtime_receipt": {
+      "bytes": 3416,
+      "path": "/workspace/scratch/178ced6a501f/execution06_preregistration_inputs/RUNTIME_RESTORED.json",
+      "sha256": "d24c3ded6e032ad387d77e7a0d179cd917f2e628f652ec27ea60bcc9ef356134"
+    },
+    "recorded_runtime_sha256": "9d6ac19baf5234ed0d7d4ce98e63d550a1fea951126ea4dba0a591e04f65d52c",
+    "required_cpu_capability": "AVX512",
+    "separate_package_probe_enforces_versions": {
+      "Pillow": "12.3.0",
+      "filelock": "4.2.4",
+      "fsspec": "2026.9.0",
+      "jinja2": "3.1.6",
+      "mpmath": "1.3.0",
+      "networkx": "3.7",
+      "numpy": "2.3.5",
+      "sympy": "1.14.0",
+      "torch": "2.8.0+cpu",
+      "typing_extensions": "4.16.0"
+    }
+  },
+  "schema": "hepta.parameter-field.runtime-migration-readonly-assessment.1",
+  "scope": "Existing frozen source, local installation records, installed distribution metadata, Python/sysconfig only. No Torch import, science data or outcomes, runtime reconstruction, remote download, workflow dispatch or new operational registration performed.",
+  "source_commit": "bc4e757f5c90f6365f383c1127be710d2ded874a"
+}

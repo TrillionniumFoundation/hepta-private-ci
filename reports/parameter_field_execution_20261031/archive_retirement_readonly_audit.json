@@ -1,0 +1,469 @@
+{
+  "at_utc": "2026-10-31T12:10:17.475981+00:00",
+  "deletions_performed": 0,
+  "eligibility_conclusion": "No additional A17 raw/archive payload is currently shown eligible for deletion through the unchanged original retirement procedure. The two execution05 compressed readback copies are a possible physical duplicate population, but the original procedure rejects this failed episode and its old plan cannot be reused. Current payload equality and rematerialization provenance were not reauthenticated.",
+  "execution04": {
+    "historical_ack_accepted": true,
+    "historical_retirement": {
+      "actual_anchors": {
+        "cleanup_journal": {
+          "bytes": 1388,
+          "path": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/current_readiness_0253/root_archive_io/01_A-17/READBACK_DUPLICATE_CLEANUP_JOURNAL.jsonl",
+          "sha256": "66ec162dce8903102c12f558bfb9112d7b68e8ca5cde996a6d94dc21ad3c2d2e"
+        },
+        "cleanup_plan": {
+          "bytes": 3182,
+          "path": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/current_readiness_0253/root_archive_io/01_A-17/READBACK_DUPLICATE_CLEANUP_PLAN.json",
+          "sha256": "0bed83ac65d1f54ea81621bc8cce26f856c1df651a844f7d58dfebe395829ed9"
+        },
+        "cleanup_result": {
+          "bytes": 1439,
+          "path": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/current_readiness_0253/root_archive_io/01_A-17/READBACK_DUPLICATE_CLEANUP_RESULT.json",
+          "sha256": "413ade94e818bea442fd5e0649209d1ac0441ff097368d2a6c5102ddd1b02f80"
+        }
+      },
+      "count": 2,
+      "duplicates_absent_at_original_retirement": true,
+      "originals_retained": true
+    },
+    "original_archives_required_by_execution06_ancestry": true,
+    "parts": [
+      {
+        "historical_remote_identity": "Retained in the private original receipt; omitted from the public repository report.",
+        "original_current_stat": {
+          "allocated_bytes": 124424192,
+          "bytes": 124418310,
+          "ctime_ns": 1793361689484649472,
+          "device": 27,
+          "exists": true,
+          "inode": 1745859,
+          "mtime_ns": 1793361573050313328,
+          "nlink": 1,
+          "regular_nonsymlink": true
+        },
+        "original_descriptor": {
+          "bytes": 124418310,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/durable/01_A-17/part-0000.tar.gz",
+          "sha256": "3ffb7f293cf707fd78c224d1922ead1cf90d3d920b85ada6d474d5fb1954b004"
+        },
+        "original_payload_rehashed_this_audit": false,
+        "readback_current_stat": {
+          "exists": false
+        },
+        "retired_readback_descriptor": {
+          "bytes": 124418310,
+          "path": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/current_readiness_0253/root_archive_io/01_A-17/readback/part-0000.tar.gz",
+          "sha256": "3ffb7f293cf707fd78c224d1922ead1cf90d3d920b85ada6d474d5fb1954b004"
+        }
+      },
+      {
+        "historical_remote_identity": "Retained in the private original receipt; omitted from the public repository report.",
+        "original_current_stat": {
+          "allocated_bytes": 4558848,
+          "bytes": 4551689,
+          "ctime_ns": 1793361689600651806,
+          "device": 27,
+          "exists": true,
+          "inode": 1745800,
+          "mtime_ns": 1793361569822255975,
+          "nlink": 1,
+          "regular_nonsymlink": true
+        },
+        "original_descriptor": {
+          "bytes": 4551689,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/durable/01_A-17/part-0001.tar.gz",
+          "sha256": "e541ba43a53e98769bd37a7602f6d472c51064f733f58b7bd7901238688ccc73"
+        },
+        "original_payload_rehashed_this_audit": false,
+        "readback_current_stat": {
+          "exists": false
+        },
+        "retired_readback_descriptor": {
+          "bytes": 4551689,
+          "path": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/current_readiness_0253/root_archive_io/01_A-17/readback/part-0001.tar.gz",
+          "sha256": "e541ba43a53e98769bd37a7602f6d472c51064f733f58b7bd7901238688ccc73"
+        }
+      }
+    ],
+    "retired_binary_copies_remaining": 0,
+    "small_receipt_hash_checks": {
+      "ack": {
+        "current_payload_rehashed": true,
+        "descriptor": {
+          "bytes": 15895,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/durable/01_A-17/ACK.json",
+          "sha256": "d7e9bcb25e6c665269980622fa7cff4e454134ef63699add94a5261c60d0e480"
+        },
+        "matches": true
+      },
+      "ack_verified": {
+        "current_payload_rehashed": true,
+        "descriptor": {
+          "bytes": 1336,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/durable/01_A-17/ACK_VERIFIED.json",
+          "sha256": "e89c99e65a0723b46cacf18183f860b12e8c7d23ff8ccfd0c52126bbed354e57"
+        },
+        "matches": true
+      },
+      "archive_verification": {
+        "current_payload_rehashed": true,
+        "descriptor": {
+          "bytes": 1041,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/durable/01_A-17/VERIFIED.json",
+          "sha256": "d13e3b02c95c6bf2427db8e0603a090aed5dd174c20c5f9586a60ccb52e58123"
+        },
+        "matches": true
+      },
+      "cleanup_journal": {
+        "current_payload_rehashed": true,
+        "descriptor": {
+          "bytes": 1388,
+          "path": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/current_readiness_0253/root_archive_io/01_A-17/READBACK_DUPLICATE_CLEANUP_JOURNAL.jsonl",
+          "sha256": "66ec162dce8903102c12f558bfb9112d7b68e8ca5cde996a6d94dc21ad3c2d2e"
+        },
+        "matches": true
+      },
+      "cleanup_plan": {
+        "current_payload_rehashed": true,
+        "descriptor": {
+          "bytes": 3182,
+          "path": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/current_readiness_0253/root_archive_io/01_A-17/READBACK_DUPLICATE_CLEANUP_PLAN.json",
+          "sha256": "0bed83ac65d1f54ea81621bc8cce26f856c1df651a844f7d58dfebe395829ed9"
+        },
+        "matches": true
+      },
+      "cleanup_result": {
+        "current_payload_rehashed": true,
+        "descriptor": {
+          "bytes": 1439,
+          "path": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/current_readiness_0253/root_archive_io/01_A-17/READBACK_DUPLICATE_CLEANUP_RESULT.json",
+          "sha256": "413ade94e818bea442fd5e0649209d1ac0441ff097368d2a6c5102ddd1b02f80"
+        },
+        "matches": true
+      },
+      "manifest": {
+        "current_payload_rehashed": true,
+        "descriptor": {
+          "bytes": 250420,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/durable/01_A-17/MANIFEST.json",
+          "sha256": "6d66a5864b773adad19d2d767cfe2bb536a22f4a3296e03540aa7b2f317b5bfc"
+        },
+        "matches": true
+      },
+      "request": {
+        "current_payload_rehashed": true,
+        "descriptor": {
+          "bytes": 2315,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/durable/01_A-17/REQUEST.json",
+          "sha256": "35b3c5b5619defd0d18fe54892e040c65e69a780b497f9d17e942f2efb4bb87a"
+        },
+        "matches": true
+      }
+    }
+  },
+  "execution05": {
+    "blocking_original_conditions": [
+      "acceptance() explicitly rejects any failed episode: Failed episode must be preserved without retirement.",
+      "prepare() requires a fresh exclusive plans/<stage> directory, which already exists.",
+      "execute() requires exact old inode/stat identity; current readback part inodes differ from the old plan.",
+      "execute() rejects an existing RESULT.json or JOURNAL.json, preventing retry."
+    ],
+    "current_candidate_allocated_bytes": 129044480,
+    "current_candidate_logical_bytes": 129036541,
+    "current_status_phase": "FAILED",
+    "failed_marker_present": true,
+    "historical_ack_accepted": true,
+    "historical_retirement": {
+      "all_listed_original_parts_and_metadata_retained_byte_exact": true,
+      "all_selected_duplicate_paths_absent_at_that_time": true,
+      "at_utc": "2026-10-30T13:35:53.313506+00:00",
+      "count": 2,
+      "journal": {
+        "bytes": 1490,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/readback_retirement05/plans/01_A-17/JOURNAL.jsonl",
+        "sha256": "b1900ed896758f1d9f441dc7e04c05d6d576fafa16ef4268e25c835b3cf0727a"
+      },
+      "result": {
+        "bytes": 1810,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/readback_retirement05/plans/01_A-17/RESULT.json",
+        "sha256": "a37c86eee9d004945b44b69ad799521b8cf48e8500fcd3b3827d1dd5fcf6c5f1"
+      }
+    },
+    "original_retirement_entry_currently_admissible": false,
+    "parts": [
+      {
+        "current_inode_matches_old_plan": false,
+        "current_payload_rehashed_this_audit": false,
+        "duplicate_current_stat": {
+          "allocated_bytes": 124223488,
+          "bytes": 124215848,
+          "ctime_ns": 1793367355579042490,
+          "device": 27,
+          "exists": true,
+          "inode": 1613808,
+          "mtime_ns": 1793365402980663288,
+          "nlink": 1,
+          "regular_nonsymlink": true
+        },
+        "duplicate_descriptor": {
+          "bytes": 124215848,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_archive_io/01_A-17/readback/part-0000.tar.gz",
+          "sha256": "2683499547b77d507ddc789fa5f672db92a4c4af6b93c3050a9deaccb328e839"
+        },
+        "historical_duplicate_signature": {
+          "blocks": 242632,
+          "ctime_ns": 1793365423041076357,
+          "dev": 27,
+          "ino": 1599542,
+          "mode": 33188,
+          "mtime_ns": 1793365402980663288,
+          "nlink": 1,
+          "size": 124215848
+        },
+        "historical_remote_identity": "Retained in the private original receipt; omitted from the public repository report.",
+        "original_current_stat": {
+          "allocated_bytes": 124227584,
+          "bytes": 124215848,
+          "ctime_ns": 1793365356423702780,
+          "device": 27,
+          "exists": true,
+          "inode": 1600204,
+          "mtime_ns": 1793365110650655550,
+          "nlink": 1,
+          "regular_nonsymlink": true
+        },
+        "retained_original_descriptor": {
+          "bytes": 124215848,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/durable/01_A-17/part-0000.tar.gz",
+          "sha256": "2683499547b77d507ddc789fa5f672db92a4c4af6b93c3050a9deaccb328e839"
+        }
+      },
+      {
+        "current_inode_matches_old_plan": false,
+        "current_payload_rehashed_this_audit": false,
+        "duplicate_current_stat": {
+          "allocated_bytes": 4820992,
+          "bytes": 4820693,
+          "ctime_ns": 1793367355579042490,
+          "device": 27,
+          "exists": true,
+          "inode": 1610829,
+          "mtime_ns": 1793365400124604367,
+          "nlink": 1,
+          "regular_nonsymlink": true
+        },
+        "duplicate_descriptor": {
+          "bytes": 4820693,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_archive_io/01_A-17/readback/part-0001.tar.gz",
+          "sha256": "8bc2614f8b20013cfdbd66045fd4f2b3f675974db62fb01654d0813cab3638ed"
+        },
+        "historical_duplicate_signature": {
+          "blocks": 9424,
+          "ctime_ns": 1793365435649335735,
+          "dev": 27,
+          "ino": 1600411,
+          "mode": 33188,
+          "mtime_ns": 1793365400124604367,
+          "nlink": 1,
+          "size": 4820693
+        },
+        "historical_remote_identity": "Retained in the private original receipt; omitted from the public repository report.",
+        "original_current_stat": {
+          "allocated_bytes": 4825088,
+          "bytes": 4820693,
+          "ctime_ns": 1793365356423702780,
+          "device": 27,
+          "exists": true,
+          "inode": 1600205,
+          "mtime_ns": 1793365110962662069,
+          "nlink": 1,
+          "regular_nonsymlink": true
+        },
+        "retained_original_descriptor": {
+          "bytes": 4820693,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/durable/01_A-17/part-0001.tar.gz",
+          "sha256": "8bc2614f8b20013cfdbd66045fd4f2b3f675974db62fb01654d0813cab3638ed"
+        }
+      }
+    ],
+    "runbook_requires_original_archives_raw_cas_and_all_small_evidence_retained": true,
+    "small_receipt_hash_checks": {
+      "ack": {
+        "current_payload_rehashed": true,
+        "descriptor": {
+          "bytes": 15212,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/durable/01_A-17/ACK.json",
+          "sha256": "9fd91e32707868db3aca149aed712840622c488ad334ccab12ecc5e84b2a69d5"
+        },
+        "matches": true
+      },
+      "ack_verified": {
+        "current_payload_rehashed": true,
+        "descriptor": {
+          "bytes": 1341,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/durable/01_A-17/ACK_VERIFIED.json",
+          "sha256": "cedd9c674802b994926b1a27beff672036c68f710592e010ec3b0583e8fc3fc4"
+        },
+        "matches": true
+      },
+      "pipeline_config": {
+        "current_payload_rehashed": true,
+        "descriptor": {
+          "bytes": 7581,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/registrations/initial/PIPELINE_CONFIG.json",
+          "sha256": "2d0b13dbd02812f0e056fcc252fbdec8f0f0ed5935ef38692b3af4ae96c8c801"
+        },
+        "matches": true
+      },
+      "plan": {
+        "current_payload_rehashed": true,
+        "descriptor": {
+          "bytes": 22213,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/readback_retirement05/plans/01_A-17/PLAN.json",
+          "sha256": "f703bd0e1df0fc0f3d48b2254d329c1f01ebc3cfc66a85e78356b5a3e716426f"
+        },
+        "matches": true
+      },
+      "request": {
+        "current_payload_rehashed": true,
+        "descriptor": {
+          "bytes": 2320,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/durable/01_A-17/REQUEST.json",
+          "sha256": "6448f1f3f8a2ca36f98f9e25d4e31b006be333036f43c6ac2a246377e9f54f1c"
+        },
+        "matches": true
+      },
+      "root_binding": {
+        "current_payload_rehashed": true,
+        "descriptor": {
+          "bytes": 2928,
+          "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_archive_io/01_A-17/BOUND_REQUEST.json",
+          "sha256": "df18c586afc6138a0e24b6408462a0bc4a6b8f2f2dfaf72f7ed18a155b3d3ec9"
+        },
+        "matches": true
+      },
+      "script": {
+        "current_payload_rehashed": true,
+        "descriptor": {
+          "bytes": 21399,
+          "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/readback_retirement05/retire_readback_parts.py",
+          "sha256": "c7de397c99566044e09c41a3c7865aa9930781658dc582e0fb76b71484ef8b3b"
+        },
+        "matches": true
+      }
+    }
+  },
+  "original_sources": {
+    "ancestry": {
+      "bytes": 28327,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/ancestry.py",
+      "sha256": "367725532529c97ab56a4a59c39217dd29c67ba1ca7a94aabb2469c8c227ce7f"
+    },
+    "failed05_costs": {
+      "bytes": 21152,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git/operational/parameter_field_recovery06/execution05_costs.py",
+      "sha256": "955adebcd366b3969719a361b40fee579a3e72b3e6c5f8a25bc2e69bada6eb03"
+    },
+    "retirement_runbook": {
+      "bytes": 4176,
+      "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/readback_retirement05/RUNBOOK.md",
+      "sha256": "d136408411ee8b9caa950316d0c2cb6bb0e24c071f7906c2b46c9138f33450b4"
+    },
+    "retirement_script": {
+      "bytes": 21399,
+      "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/readback_retirement05/retire_readback_parts.py",
+      "sha256": "c7de397c99566044e09c41a3c7865aa9930781658dc582e0fb76b71484ef8b3b"
+    }
+  },
+  "publication_redaction": {
+    "original_local_receipts_modified": false,
+    "private_service_identity_objects_omitted": 4
+  },
+  "raw_import_examples": [
+    {
+      "all_same_inode": false,
+      "relative": "stage_A/seed-17/bank/schedule-6000-baseline-step-0.state",
+      "stats": {
+        "04": {
+          "allocated_bytes": 237568,
+          "bytes": 236446,
+          "ctime_ns": 1793361435297984202,
+          "device": 27,
+          "exists": true,
+          "inode": 1744098,
+          "mtime_ns": 1793361435297984202,
+          "nlink": 1,
+          "regular_nonsymlink": true
+        },
+        "05": {
+          "allocated_bytes": 237568,
+          "bytes": 236446,
+          "ctime_ns": 1793363879096171233,
+          "device": 27,
+          "exists": true,
+          "inode": 1588672,
+          "mtime_ns": 1793363879096171233,
+          "nlink": 1,
+          "regular_nonsymlink": true
+        },
+        "06": {
+          "allocated_bytes": 237568,
+          "bytes": 236446,
+          "ctime_ns": 1793372031416246196,
+          "device": 27,
+          "exists": true,
+          "inode": 1751836,
+          "mtime_ns": 1793372031416246196,
+          "nlink": 1,
+          "regular_nonsymlink": true
+        }
+      }
+    },
+    {
+      "all_same_inode": false,
+      "relative": "stage_A/seed-17/COMPLETE.json",
+      "stats": {
+        "04": {
+          "allocated_bytes": 8192,
+          "bytes": 5780,
+          "ctime_ns": 1793361435089440416,
+          "device": 27,
+          "exists": true,
+          "inode": 1744054,
+          "mtime_ns": 1793361435089440416,
+          "nlink": 1,
+          "regular_nonsymlink": true
+        },
+        "05": {
+          "allocated_bytes": 8192,
+          "bytes": 5780,
+          "ctime_ns": 1793363878937051247,
+          "device": 27,
+          "exists": true,
+          "inode": 1588629,
+          "mtime_ns": 1793363878937051247,
+          "nlink": 1,
+          "regular_nonsymlink": true
+        },
+        "06": {
+          "allocated_bytes": 8192,
+          "bytes": 5780,
+          "ctime_ns": 1793372031305290158,
+          "device": 27,
+          "exists": true,
+          "inode": 1751793,
+          "mtime_ns": 1793372031305290158,
+          "nlink": 1,
+          "regular_nonsymlink": true
+        }
+      }
+    }
+  ],
+  "remote_calls_performed": 0,
+  "retirement_prepare_or_execute_invoked": false,
+  "schema": "hepta.parameter-field.archive-retirement-readonly-audit.1",
+  "scientific_outcomes_parsed": false,
+  "scope": "Only existing execution04/execution05 A17 accepted archives, retirement records, immutable source consumers, and metadata/stat of example imported paths. No outcomes parsed, no binary archive payload rehash or remote authentication this audit.",
+  "source_commit": "bc4e757f5c90f6365f383c1127be710d2ded874a",
+  "source_or_protocol_mutated": false
+}
