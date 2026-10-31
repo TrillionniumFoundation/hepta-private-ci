@@ -1,17 +1,19 @@
 {
-  "schema": "hepta.r9.remote-delivery-verification.v1",
-  "data_commit": "29f0a96d0911ec023f16526e8e0a4a8d4d1b933e",
+  "schema": "hepta.r9.remote-delivery-verification.v2",
+  "data_commit": "b9c1f1c0d057624db112407e9af9a41ee3615875",
   "branch": "research/hcsn-five-track-r9-20261031",
-  "base": "00b94d54a9b85f285298d1a964777bdecfa85385",
-  "files_verified": 197,
+  "initial_delivery_base": "00b94d54a9b85f285298d1a964777bdecfa85385",
+  "merged_upstream_base": "da5a929b7d3fd1d3ff6ea57184c1578dd9f66cea",
+  "pull_request": 4493,
+  "files_verified": 203,
   "all_git_blob_identities_and_lengths_match": true,
   "truncated_tree": false,
-  "method": "Read GitHub Git trees and match each remote content-addressed blob SHA and length to the local delivered bytes. Large binary payloads were also SHA-checked on blob creation. This is byte integrity, not scientific acceptance.",
+  "method": "Read untruncated GitHub Git trees and match each remote content-addressed blob SHA and length to local bytes. Covers all changed payloads except this self-referential receipt; its own remote bytes are read back after commit.",
   "root_manifest_sha256": "7bf90ff72857f71c14800ac6f4ae632a37df7ea047664617b0993c33d1f079b2",
   "scientific_gates_all_closed": false,
   "current_native_cached_rebuild_available": false,
   "production_activation": false,
-  "verification_record_scope": "This record is added in the next commit; all prior data are unchanged. Its own remote blob is verified separately.",
+  "repository_ci_scope": "See integration/REMOTE_CI_DIAGNOSIS.json for the observed source commit and inherited Codespell findings. No claim that all repository CI is green.",
   "files": [
     {
       "path": "tools/hcsn/round8_20261031/event_dynamics/event_kernel.py",
@@ -1193,6 +1195,42 @@
       "path": "tools/hcsn/round9_20261031/verify_delivery.py",
       "git_blob_sha": "62f7bdd35cbeeeba3ee2f36fc8a5dcd186dbc4b1",
       "bytes": 2306,
+      "matched": true
+    },
+    {
+      "path": ".codespellrc",
+      "git_blob_sha": "d000d09c2acdd15cdc97461297d6c37fe01183e9",
+      "bytes": 1363,
+      "matched": true
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "git_blob_sha": "16f134a6089c80b588674606fa5d7a9caf07c00d",
+      "bytes": 2660,
+      "matched": true
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/integration/REPOSITORY_REGISTRATION.json",
+      "git_blob_sha": "abfc54afc98768f5ed2bc2bc8d06ae326d0cd88c",
+      "bytes": 2773,
+      "matched": true
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/integration/CI_TEXT_CHECK.json",
+      "git_blob_sha": "ca969bcc96225f02e901c0b8801100145dd06fdc",
+      "bytes": 46848,
+      "matched": true
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/integration/ARTIFACT_POLICY_CHECK.json",
+      "git_blob_sha": "d48ee88174f3dc4a6797730252eb32aac9bb121f",
+      "bytes": 3155,
+      "matched": true
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/integration/REMOTE_CI_DIAGNOSIS.json",
+      "git_blob_sha": "6daeb7b46e20d3ba64df14d6a5e7c3a194c5f25e",
+      "bytes": 1011,
       "matched": true
     }
   ]
