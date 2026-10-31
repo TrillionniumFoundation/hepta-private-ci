@@ -195,7 +195,21 @@ impl Fixture {
     }
 
     pub(super) fn directory(&self) -> File {
-        File::open(&self.root).unwrap()
+        #[cfg(windows)]
+        {
+            use std::os::windows::fs::OpenOptionsExt;
+
+            OpenOptions::new()
+                .read(true)
+                .write(true)
+                .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
+                .open(&self.root)
+                .unwrap()
+        }
+        #[cfg(not(windows))]
+        {
+            File::open(&self.root).unwrap()
+        }
     }
 
     pub(super) fn writer(&self) -> LedgerWriter {
