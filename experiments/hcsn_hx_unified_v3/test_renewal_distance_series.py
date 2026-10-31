@@ -65,6 +65,17 @@ class RenewalSeriesTests(unittest.TestCase):
         self.assertAlmostEqual(v,b+.8-p.cost)
         self.assertEqual(expected_discounted_event_count(p,b-.8,b,0.).discounted_events,0.)
 
+    def test_chernoff_truncates_tiny_discount_large_drift(self):
+        p=Stop(2.,.5,1e-12,1.,0.,0.)
+        b=2.; x=0.; T=2.
+        result=expected_discounted_event_count(p,x,b,T,max_terms=40)
+        oracle=math.fsum(discounted_first_hit(2.+2.*n,p.drift,p.diffusion,
+                        p.discount,T) for n in range(40))
+        self.assertLessEqual(abs(oracle-result.discounted_events),
+                             result.omitted_events_upper_bound+2e-12)
+        self.assertLess(result.terms_evaluated,40)
+        self.assertLess(result.omitted_events_upper_bound,1e-11)
+
     def test_without_refractory_geometric_tail_is_bounded(self):
         p=Stop(.8,.7,.2,1.,0.,0.)
         b=2.0
