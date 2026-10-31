@@ -135,10 +135,14 @@ def regenerative_value(p: Stop, x: float, *, boundary: float | None = None) -> f
     if denom <= 0:
         raise ValueError('Renewal series not contractive')
     amplitude=(b-p.cost)/denom
+    if not math.isfinite(amplitude):
+        raise ArithmeticError('Regenerative reward amplitude unresolved in f64')
     # Immediate FIRE above the chosen threshold, followed by actual reset value.
-    if x>=b:
-        return x-p.cost+p.delay_discount*amplitude*hr
-    return amplitude*math.exp(-p.kappa*(b-x))
+    value=(x-p.cost+p.delay_discount*amplitude*hr if x>=b else
+           amplitude*math.exp(-p.kappa*(b-x)))
+    if not math.isfinite(value):
+        raise ArithmeticError('Regenerative value unresolved in f64')
+    return value
 
 
 def regenerative_boundary_independent(p: Stop) -> float:
@@ -213,6 +217,25 @@ def _continuation_obstacle(p: Stop, x: float, b: float,
     if abs(obstacle)<=rounding_diagnostic:
         raise ArithmeticError('QVI supplied-boundary obstacle sign unresolved')
     return obstacle
+
+
+
+def regenerative_obstacle(p: Stop, x: float, *, boundary: float | None = None) -> float:
+    """Finite fixed-threshold (intervene - continue) diagnostic.
+
+    This exposes the same strict, cancellation-safe branch used by ``qvi``.
+    A zero in the immediate-FIRE region is an identity of the selected
+    threshold policy, NOT evidence that the threshold is globally optimal.
+    An explicit boundary preserves its genuine smooth-fit correction.
+    Refusal at unresolved continuation signs is intentional; never clip it.
+    """
+    b=regenerative_boundary(p) if boundary is None else boundary
+    if not (math.isfinite(x) and math.isfinite(b) and b>p.cost and b>p.reset):
+        raise ValueError('Invalid stopping obstacle input')
+    value=regenerative_value(p,x,boundary=b)
+    if x>=b:
+        return 0.0
+    return _continuation_obstacle(p,x,b,optimal_boundary=boundary is None)
 
 
 def qvi(p: Stop, x: float, *, boundary: float | None = None) -> dict[str,float|bool]:
