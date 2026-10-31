@@ -115,10 +115,26 @@ fn effective_workspace_intersection_preserves_network_metadata_and_temp() {
     let result = intersection(&authority, &requested, &project);
     let policy = result.file_system_sandbox_policy();
 
+    // Bazel places this fixture below TMPDIR. Both inputs authorize that
+    // directory, independently of their different workspace roots. Check the
+    // workspace intersection separately while retaining and checking the real
+    // temporary-directory grant in the complete result below.
+    let mut workspace_policy = policy.clone();
+    workspace_policy
+        .entries
+        .retain(|entry| !matches!(&entry.path, FileSystemPath::Special { value: Tmpdir }));
     assert_eq!(
-        [&root, &project]
-            .map(|path| policy.resolve_access_with_cwd(path.as_path(), root.as_path())),
+        [&root, &project].map(|path| {
+            workspace_policy.resolve_access_with_cwd(path.as_path(), root.as_path())
+        }),
         [Read, Write]
+    );
+    assert_eq!(
+        policy.resolve_access_with_cwd(root.as_path(), root.as_path()),
+        requested
+            .file_system_sandbox_policy()
+            .resolve_access_with_cwd(root.as_path(), root.as_path()),
+        "the shared temporary-directory grant must not expand requested root access"
     );
     assert_eq!(result.network_sandbox_policy(), Restricted);
     assert!(policy.entries.contains(&special(Tmpdir, Write)));
