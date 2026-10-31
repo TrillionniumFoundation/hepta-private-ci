@@ -1,0 +1,1392 @@
+{
+  "schema": "hcsn.task.native.remote-verification.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "research/hcsn-task-native-loop-r10-20261031",
+  "verified_content_commit": "44f2330e5010d0863aed8c59b1f8fba4c971431f",
+  "verified_root_tree": "426147692dff600c4ade5200d6e7ebf37efb0e9c",
+  "parent_commit": "e7eaa5e0be835269636216c8fe8b1ae2f1a22361",
+  "baseline_parent_tree": "2182eb6fd29f615a9110e4b84103f1d7e254c41d",
+  "source_digest": "a94ee0a631736f37212b6b2077290a8c71f1d44dcaf524b2438872badfc0f6f6",
+  "native_binary_sha256": "f53e90a388a6f97dfe5283535ed2b5877cf197a726a9842debc5f9ed097b5330",
+  "delivery_manifest_sha256": "c55e003da6445a4b7318e21e858275ba1c7f6dcd95f0edd3e336187e39ddc22b",
+  "files_verified": 193,
+  "binary_files_verified": 81,
+  "exact_text_readbacks": [
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/REPORT_ZH.md",
+      "exactTextReadback": true
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/README.md",
+      "exactTextReadback": true
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/ACCEPTANCE.json",
+      "exactTextReadback": true
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/DELIVERY_MANIFEST.json",
+      "exactTextReadback": true
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/native/owner.rs",
+      "exactTextReadback": true
+    }
+  ],
+  "all_git_blob_sha_and_sizes_match": true,
+  "unexpected_files": [],
+  "root_changes": [
+    {
+      "path": ".codespellrc",
+      "previous": "d000d09c2acdd15cdc97461297d6c37fe01183e9",
+      "new": "48a94c0cde84f343c324157af89827ad7f34d66b",
+      "type": "blob"
+    },
+    {
+      "path": ".github",
+      "previous": "c2cf3a7d316d6dc5184f42e06eb02f6d2828699b",
+      "new": "2976449824fdf812c788064a142d93e8afed281b",
+      "type": "tree"
+    },
+    {
+      "path": "experiments",
+      "previous": "b915fd53e7c35aa5bacec268435fd7cb993f2705",
+      "new": "a36d8be8feb833bee4783413c11eb2759932fd6d",
+      "type": "tree"
+    },
+    {
+      "path": "tools",
+      "previous": "e03ed4c88605005f9a8c2815170a042abcd3ed90",
+      "new": "f4d2895abf6a94d2b676cfb329aa1fa32c31fb78",
+      "type": "tree"
+    }
+  ],
+  "unchanged_root_entries": 49,
+  "unchanged_existing_workflows": 78,
+  "unchanged_existing_hcsn_entries": 28,
+  "production_crate_tree_unchanged": true,
+  "raw_audit_failures_preserved": true,
+  "publication_stages": [
+    {
+      "index": 0,
+      "message": "research(hcsn): pin independent scalar QVI reference from R9 companion",
+      "paths": [
+        "experiments/hcsn_hx_unified_v3/qvi_grid_independent.py",
+        "experiments/hcsn_hx_unified_v3/test_qvi_grid_independent.py"
+      ],
+      "sha": "7c1ae4245b8549d8cf2b03d3308840f7f4f9b1cb",
+      "tree": "44f1d68a1631a8bc1fd8e2d52408657b38ad1629"
+    },
+    {
+      "index": 1,
+      "message": "research(hcsn): define shared native evidence-task contract",
+      "paths": [
+        "tools/hcsn/task_native_loop_20261031/native/task.rs"
+      ],
+      "sha": "cd5a1883c3ea4dab696249ce8c5c713e62c531e9",
+      "tree": "23cc2d55ed20183d77532cf53ab7b71b7cfd792c"
+    },
+    {
+      "index": 2,
+      "message": "research(hcsn): select task value actions in NeuronModelPort",
+      "paths": [
+        "tools/hcsn/task_native_loop_20261031/native/policy.rs",
+        "tools/hcsn/task_native_loop_20261031/native/port.rs"
+      ],
+      "sha": "7e2a9876e549f89f2f033eceea709e5a9ac61fa5",
+      "tree": "c6e692d7b2174218f6ea8be8c4719e9b8758ce54"
+    },
+    {
+      "index": 3,
+      "message": "research(hcsn): execute autonomous task and content actions in owner",
+      "paths": [
+        "tools/hcsn/task_native_loop_20261031/native/owner.rs"
+      ],
+      "sha": "2bebec8e7d18e5634b685ba863790c34e70c7f27",
+      "tree": "c30a2872034c96b4da1fc5fd05e6c5859cac4cd3"
+    },
+    {
+      "index": 4,
+      "message": "research(hcsn): persist acknowledged task cell and content frontier",
+      "paths": [
+        "tools/hcsn/task_native_loop_20261031/native/store.rs",
+        "tools/hcsn/task_native_loop_20261031/native/main.rs"
+      ],
+      "sha": "5075a4088b45ec9c8e7c252b1ee27268b22f26eb",
+      "tree": "74979d5ab14d23751b138abce3428c84e337a439"
+    },
+    {
+      "index": 5,
+      "message": "test(hcsn): build native task loop and cover causal recovery invariants",
+      "paths": [
+        "tools/hcsn/task_native_loop_20261031/native/native_tests.rs",
+        "tools/hcsn/task_native_loop_20261031/build.py"
+      ],
+      "sha": "a266475028145f1164cb0bb5226a352441b9416c",
+      "tree": "a32285b2eea0c567fc02b31acb090de3fcaf9fde"
+    },
+    {
+      "index": 6,
+      "message": "research(hcsn): freeze matched joint cell and task critic training",
+      "paths": [
+        "tools/hcsn/task_native_loop_20261031/train.py",
+        "tools/hcsn/task_native_loop_20261031/model.py",
+        "tools/hcsn/task_native_loop_20261031/reference.py",
+        "tools/hcsn/task_native_loop_20261031/PROTOCOL.json",
+        "tools/hcsn/task_native_loop_20261031/requirements.txt"
+      ],
+      "sha": "0add1003cb435a737af3f45ca4fb196722ed7e89",
+      "tree": "4e667abb69d4c9d3db1de11e72f84b743621adc5"
+    },
+    {
+      "index": 7,
+      "message": "research(hcsn): execute frozen native heldout confirmation",
+      "paths": [
+        "tools/hcsn/task_native_loop_20261031/experiment.py"
+      ],
+      "sha": "427c79355e41fedbd3039e17925884fb93e7f4c7",
+      "tree": "11b038db3dc58ba20fbfbd10138cbcafd357b96f"
+    },
+    {
+      "index": 8,
+      "message": "research(hcsn): account paired fit uncertainty and complete cost",
+      "paths": [
+        "tools/hcsn/task_native_loop_20261031/statistics.py"
+      ],
+      "sha": "ba24ebbaa15b934d5dac8ca55190a91c008f3bc8",
+      "tree": "c0c2707272df9886e2c1230273c0be627bdaf681"
+    },
+    {
+      "index": 9,
+      "message": "test(hcsn): independently audit task cell critic and process recovery",
+      "paths": [
+        "tools/hcsn/task_native_loop_20261031/audit.py",
+        "tools/hcsn/task_native_loop_20261031/audit_tests.py",
+        "tools/hcsn/task_native_loop_20261031/AUDIT_NOTES.md"
+      ],
+      "sha": "2799c66cc6eb1e0de57fce734fdc5609ffd51618",
+      "tree": "d838159237a587fda01272b986753f45d53ea600"
+    },
+    {
+      "index": 10,
+      "message": "research(hcsn): compare learned finite cells with continuous references",
+      "paths": [
+        "tools/hcsn/task_native_loop_20261031/numerics.py"
+      ],
+      "sha": "f3ac9b512256c96a157d7b75bcf5bf9326343a61",
+      "tree": "99b5d77525425ef7b9a0d9d6e15b014ce5989de3"
+    },
+    {
+      "index": 11,
+      "message": "research(hcsn): audit actual-outcome feedback and trained boundary effects",
+      "paths": [
+        "tools/hcsn/task_native_loop_20261031/outcome_update.py",
+        "tools/hcsn/task_native_loop_20261031/intervention.py"
+      ],
+      "sha": "5e17e6cb195880481fbfbdc2ebcff5eb3cac29ff",
+      "tree": "117191cb4a42c97e5eb64d22f7c515e724d725b8"
+    },
+    {
+      "index": 12,
+      "message": "ci(hcsn): add fresh public-dependency native mechanism lane",
+      "paths": [
+        "tools/hcsn/task_native_loop_20261031/ci.py",
+        ".github/workflows/hcsn-task-native-loop.yml"
+      ],
+      "sha": "81901ec7d74b7ebe4bf4bf032933a90baf2d5332",
+      "tree": "b25cba17fb0abc228d6ffd25ac03026903d94d52"
+    },
+    {
+      "index": 13,
+      "message": "chore(hcsn): package lossless bounded evidence with exact binary skips",
+      "paths": [
+        "tools/hcsn/task_native_loop_20261031/publication.py",
+        ".codespellrc"
+      ],
+      "sha": "1e7aca7a0bc27918998d347853c623410d054326",
+      "tree": "44716bf04719cc6e8420380c1cc2b48d4c99500c"
+    },
+    {
+      "index": 14,
+      "message": "data(hcsn): preserve five frozen fits and all training trajectories",
+      "paths": [
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/FREEZE.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/PROTOCOL.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/STARTED.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/data/development_seed71031.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/data/development_seed71037.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/data/development_seed71043.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/data/development_seed71049.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/data/development_seed71057.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71031_analytic_fixed.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71031_analytic_value.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71031_ordinary_fixed.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71031_ordinary_value.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71037_analytic_fixed.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71037_analytic_value.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71037_ordinary_fixed.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71037_ordinary_value.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71043_analytic_fixed.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71043_analytic_value.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71043_ordinary_fixed.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71043_ordinary_value.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71049_analytic_fixed.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71049_analytic_value.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71049_ordinary_fixed.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71049_ordinary_value.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71057_analytic_fixed.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71057_analytic_value.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71057_ordinary_fixed.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71057_ordinary_value.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/training/seed71031.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/training/seed71037.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/training/seed71043.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/training/seed71049.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/training/seed71057.json.gz"
+      ],
+      "sha": "2c34d9b3f91f5a3d4470aa645e1d3767102b4d35",
+      "tree": "0c9b064daac0f2a61ae1750b20c9867e074d7f1b"
+    },
+    {
+      "index": 15,
+      "message": "data(hcsn): preserve 1440 confirmation runs and negative factorial results",
+      "paths": [
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/COMPLETE.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/EXECUTION_FREEZE.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/STATISTICS.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/data/seed71031_ood_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/data/seed71031_test_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/data/seed71037_ood_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/data/seed71037_test_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/data/seed71043_ood_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/data/seed71043_test_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/data/seed71049_ood_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/data/seed71049_test_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/data/seed71057_ood_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/data/seed71057_test_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/derived_policies/seed71031_direct_fixed.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/derived_policies/seed71037_direct_fixed.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/derived_policies/seed71043_direct_fixed.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/derived_policies/seed71049_direct_fixed.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/derived_policies/seed71057_direct_fixed.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/partial_results.jsonl.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71031_ood_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71031_ood_part0001.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71031_test_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71031_test_part0001.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71037_ood_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71037_ood_part0001.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71037_test_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71037_test_part0001.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71043_ood_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71043_ood_part0001.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71043_test_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71043_test_part0001.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71049_ood_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71049_ood_part0001.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71049_test_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71049_test_part0001.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71057_ood_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71057_ood_part0001.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71057_test_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71057_test_part0001.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/results/seed71031_ood.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/results/seed71031_test.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/results/seed71037_ood.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/results/seed71037_test.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/results/seed71043_ood.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/results/seed71043_test.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/results/seed71049_ood.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/results/seed71049_test.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/results/seed71057_ood.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/results/seed71057_test.json.gz"
+      ],
+      "sha": "5f8ad69e632c28eafdf19fadb539050689c1c9af",
+      "tree": "2f8f8ecc684f37df720add0a2cdc0b1d7cf67aaa"
+    },
+    {
+      "index": 16,
+      "message": "data(hcsn): retain outcome feedback and boundary intervention evidence",
+      "paths": [
+        "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/PLAN.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/REPORT.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/models/seed71031_analytic_outcome_update.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/models/seed71031_ordinary_outcome_update.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/models/seed71037_analytic_outcome_update.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/models/seed71037_ordinary_outcome_update.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/models/seed71043_analytic_outcome_update.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/models/seed71043_ordinary_outcome_update.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/models/seed71049_analytic_outcome_update.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/models/seed71049_ordinary_outcome_update.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/models/seed71057_analytic_outcome_update.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/models/seed71057_ordinary_outcome_update.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/receipts/seed71031.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/receipts/seed71037.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/receipts/seed71043.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/receipts/seed71049.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/receipts/seed71057.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/EXECUTION_SUMMARY.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/INTERVENTION_SOURCE.py",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/PACKAGING.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/PLAN.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/REPORT_ZH.md",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/SUMMARY.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71031_baseline.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71031_boundary_minus3.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71031_boundary_plus3.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71037_baseline.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71037_boundary_minus3.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71037_boundary_plus3.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71043_baseline.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71043_boundary_minus3.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71043_boundary_plus3.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71049_baseline.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71049_boundary_minus3.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71049_boundary_plus3.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71057_baseline.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71057_boundary_minus3.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71057_boundary_plus3.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/results/seed71031.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/results/seed71037.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/results/seed71043.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/results/seed71049.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/results/seed71057.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/runs/seed71031_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/runs/seed71031_part0001.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/runs/seed71037_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/runs/seed71037_part0001.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/runs/seed71043_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/runs/seed71043_part0001.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/runs/seed71049_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/runs/seed71049_part0001.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/runs/seed71057_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/runs/seed71057_part0001.tar.gz"
+      ],
+      "sha": "d55441159ad1658f1313bf6d3b9b1bae798351ba",
+      "tree": "f114172e90a3b8e55a181b43287f63aad9a493cc"
+    },
+    {
+      "index": 17,
+      "message": "data(hcsn): retain failed audits numerical checks and source provenance",
+      "paths": [
+        "tools/hcsn/task_native_loop_20261031/evidence/AUDIT_ARCHIVE_INDEX.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/BASE_CORE_VERIFICATION.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/BUILD_ATTEMPT01.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/BUILD_ATTEMPT02.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/BUILD_ATTEMPT03.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/CACHED_DEPENDENCY_PROVENANCE.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/CACHED_DEPENDENCY_PROVENANCE.md",
+        "tools/hcsn/task_native_loop_20261031/evidence/CONTINUOUS_REFERENCE.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/NUMERICS.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/PUBLICATION_CHECKS.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/REFERENCE_TESTS.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/RUNNER_DEVELOPMENT_SMOKE.json.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/TRAINING_SIGNAL_AUDIT.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/audit_archives/causal_audit_attempt02_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/audit_archives/causal_audit_attempt02_part0001.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/audit_archives/causal_audit_attempt02_part0002.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/audit_archives/causal_audit_attempt02_part0003.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/audit_archives/causal_audit_fixture_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/audit_archives/causal_audit_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/audit_archives/direct_recovery_diagnostic01_part0000.tar.gz",
+        "tools/hcsn/task_native_loop_20261031/evidence/causal_audit/FAILURE.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/causal_audit/INPUTS.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/causal_audit_attempt02/INPUTS.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/causal_audit_attempt02/REPORT.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/causal_audit_fixture/PROVENANCE.json",
+        "tools/hcsn/task_native_loop_20261031/evidence/direct_recovery_diagnostic01/REPORT.json"
+      ],
+      "sha": "31148b625cc2edfa62a545d5538a7765ebf9d047",
+      "tree": "b52908c080dbc8f53624d3bfd4c30580668ba190"
+    },
+    {
+      "index": 18,
+      "message": "docs(hcsn): record closed-loop delivery and failed efficacy admission",
+      "paths": [
+        "tools/hcsn/task_native_loop_20261031/README.md",
+        "tools/hcsn/task_native_loop_20261031/REPORT_ZH.md",
+        "tools/hcsn/task_native_loop_20261031/ACCEPTANCE.json",
+        "tools/hcsn/task_native_loop_20261031/SOURCE_COMBINATION.json",
+        "tools/hcsn/task_native_loop_20261031/DELIVERY_MANIFEST.json"
+      ],
+      "sha": "44f2330e5010d0863aed8c59b1f8fba4c971431f",
+      "tree": "426147692dff600c4ade5200d6e7ebf37efb0e9c"
+    }
+  ],
+  "remote_files": [
+    {
+      "path": ".codespellrc",
+      "git_blob_sha": "48a94c0cde84f343c324157af89827ad7f34d66b",
+      "bytes": 9807
+    },
+    {
+      "path": ".github/workflows/hcsn-task-native-loop.yml",
+      "git_blob_sha": "31fe414bffeef9f9218236ca2da3fe4a1150b5d9",
+      "bytes": 2561
+    },
+    {
+      "path": "experiments/hcsn_hx_unified_v3/qvi_grid_independent.py",
+      "git_blob_sha": "1d6607de3f9b7944f0938ba1518b811b2f4461b1",
+      "bytes": 7003
+    },
+    {
+      "path": "experiments/hcsn_hx_unified_v3/test_qvi_grid_independent.py",
+      "git_blob_sha": "7bab0949ba117e1c802f496f5a2e78f8b14d486f",
+      "bytes": 5871
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/ACCEPTANCE.json",
+      "git_blob_sha": "592e5854fd087641c519725ec22731add1b09c66",
+      "bytes": 6598
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/AUDIT_NOTES.md",
+      "git_blob_sha": "4557efaf385dd806a7397077af1800fe56b6f264",
+      "bytes": 4401
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/PROTOCOL.json",
+      "git_blob_sha": "c781eb82081e4ada84284df1ea9135082211de01",
+      "bytes": 4225
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/README.md",
+      "git_blob_sha": "e77aeb5da4e8604a72c03b4f9578ba6140d936c5",
+      "bytes": 8111
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/REPORT_ZH.md",
+      "git_blob_sha": "a74257017a8308629a168fdec58a6f85c23ad000",
+      "bytes": 19155
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/SOURCE_COMBINATION.json",
+      "git_blob_sha": "34ea1ee4f38e4f65644877a228254cf03a1d862e",
+      "bytes": 18756
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/audit.py",
+      "git_blob_sha": "e9a7e60d138bdd90ce7ddd78b7c041e796ef8efc",
+      "bytes": 32808
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/audit_tests.py",
+      "git_blob_sha": "f95b220ad70082ade5c9dec3d76f0e26fe9b26ef",
+      "bytes": 3677
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/build.py",
+      "git_blob_sha": "7a7aae459bf1eafcd79b87c715e8f9f2aa975608",
+      "bytes": 10058
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/ci.py",
+      "git_blob_sha": "fa9baa6f7786dd768b06be61322237b34a855912",
+      "bytes": 9692
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/AUDIT_ARCHIVE_INDEX.json",
+      "git_blob_sha": "d51485f10e05705f8fb2159ea8c50371b5f8c84f",
+      "bytes": 176384
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/BASE_CORE_VERIFICATION.json",
+      "git_blob_sha": "68a57f4c32ac8dee9a161759472f7014052509b0",
+      "bytes": 13212
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/BUILD_ATTEMPT01.json",
+      "git_blob_sha": "87d2442195c994c3e33f34261569436565223afb",
+      "bytes": 20834
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/BUILD_ATTEMPT02.json",
+      "git_blob_sha": "95e65f94b0e9e2b92a47872ab787fadddd6db800",
+      "bytes": 61876
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/BUILD_ATTEMPT03.json",
+      "git_blob_sha": "0f4c415866ce1f7ad1630bbeccb215bd1b66b90e",
+      "bytes": 60902
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/CACHED_DEPENDENCY_PROVENANCE.json",
+      "git_blob_sha": "612f2b1aa1b11abaf3679cea8cffd3e8aedd108b",
+      "bytes": 183394
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/CACHED_DEPENDENCY_PROVENANCE.md",
+      "git_blob_sha": "d02b5c12bed9dec72d5141c4d167f1bf0c568da3",
+      "bytes": 2896
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/CONTINUOUS_REFERENCE.json",
+      "git_blob_sha": "9e1761dc0757663474402408951ad531d3f1f7ce",
+      "bytes": 40791
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/NUMERICS.json",
+      "git_blob_sha": "2ea11e6ad88e5b4b471016430bf9901e7c615aa6",
+      "bytes": 46323
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/PUBLICATION_CHECKS.json",
+      "git_blob_sha": "308b91356d08d96a1d2ae0532ee08202bd3365f5",
+      "bytes": 2251
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/REFERENCE_TESTS.json",
+      "git_blob_sha": "7a21844cbd450371f3736efd4091358a08fc2340",
+      "bytes": 4955
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/RUNNER_DEVELOPMENT_SMOKE.json.gz",
+      "git_blob_sha": "5cfaf98a048a8a9d141e65c302c14484bfc75fef",
+      "bytes": 37062
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/TRAINING_SIGNAL_AUDIT.json",
+      "git_blob_sha": "3d812bd3137d598e1462159479c93c9a101db012",
+      "bytes": 10264
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/audit_archives/causal_audit_attempt02_part0000.tar.gz",
+      "git_blob_sha": "9a24477e6054f2866ead195198a5e53aa9c88db8",
+      "bytes": 122818
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/audit_archives/causal_audit_attempt02_part0001.tar.gz",
+      "git_blob_sha": "24e10a8ee0b1a2e2d73e8efe8e9f189cf7b5df24",
+      "bytes": 87778
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/audit_archives/causal_audit_attempt02_part0002.tar.gz",
+      "git_blob_sha": "b4140ebada1ff51b240f3d2e6fa827973937c7fe",
+      "bytes": 404496
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/audit_archives/causal_audit_attempt02_part0003.tar.gz",
+      "git_blob_sha": "a7836dfb6c746d1070acda5a4e6cb14e3da5ba94",
+      "bytes": 399222
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/audit_archives/causal_audit_fixture_part0000.tar.gz",
+      "git_blob_sha": "7749b3f1a3d11b0215bfe95229801e4fca55a9d9",
+      "bytes": 1930
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/audit_archives/causal_audit_part0000.tar.gz",
+      "git_blob_sha": "4d67bdb9b2b48d605281dd7af2f96d34c81fd1a3",
+      "bytes": 15214
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/audit_archives/direct_recovery_diagnostic01_part0000.tar.gz",
+      "git_blob_sha": "d6907d413bc139cabb3a77bdd2131e344572172f",
+      "bytes": 6203
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/causal_audit/FAILURE.json",
+      "git_blob_sha": "0c2fe739e76b900047e38f0270d2a9d06be300f1",
+      "bytes": 210
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/causal_audit/INPUTS.json",
+      "git_blob_sha": "551a147ae5c6936a29aad517e1f21d27281b3ed5",
+      "bytes": 445
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/causal_audit_attempt02/INPUTS.json",
+      "git_blob_sha": "c3ca2bb51eaa73b11fb861367ab847ac5540e0e7",
+      "bytes": 445
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/causal_audit_attempt02/REPORT.json",
+      "git_blob_sha": "04586d4dd5f73b03b13045a07966e59b318df249",
+      "bytes": 9503
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/causal_audit_fixture/PROVENANCE.json",
+      "git_blob_sha": "e49710007bd182bfe5c4a9349ea8d31a81e039d9",
+      "bytes": 373
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/COMPLETE.json",
+      "git_blob_sha": "09e68b67918d2f72e0e20fe1c825f4dd3c12292c",
+      "bytes": 7310
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/EXECUTION_FREEZE.json",
+      "git_blob_sha": "7bde389a36be85498b0db0c0025169cb76288a58",
+      "bytes": 4256
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/STATISTICS.json.gz",
+      "git_blob_sha": "69d591f2d2d9baabdcbf11e663691aaa88b7fab1",
+      "bytes": 17387
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/data/seed71031_ood_part0000.tar.gz",
+      "git_blob_sha": "e5b2dfed976c88895bb8d84367bbd2372eda4448",
+      "bytes": 224734
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/data/seed71031_test_part0000.tar.gz",
+      "git_blob_sha": "7250e0f0b85d59400e29b67549d7149172bf6513",
+      "bytes": 210444
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/data/seed71037_ood_part0000.tar.gz",
+      "git_blob_sha": "78a5fcd0701ba93565ec2c630e776d30343aebdf",
+      "bytes": 199306
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/data/seed71037_test_part0000.tar.gz",
+      "git_blob_sha": "0821ffd987da778f73c627655e09f64f1c8103e9",
+      "bytes": 202699
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/data/seed71043_ood_part0000.tar.gz",
+      "git_blob_sha": "756de596dbc034c672edef58d035a05d08574279",
+      "bytes": 210863
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/data/seed71043_test_part0000.tar.gz",
+      "git_blob_sha": "b70763fba2c882d2b7a1af13f326ef058d06786b",
+      "bytes": 221741
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/data/seed71049_ood_part0000.tar.gz",
+      "git_blob_sha": "8b2db0a1c57c36f27ced2d44078a327fb7da62f8",
+      "bytes": 215389
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/data/seed71049_test_part0000.tar.gz",
+      "git_blob_sha": "525ee03eb23d601148fb376e2d8650a8e89087f9",
+      "bytes": 210650
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/data/seed71057_ood_part0000.tar.gz",
+      "git_blob_sha": "63d3e9659a6527787e8c37a40ce0835d4de4b361",
+      "bytes": 216332
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/data/seed71057_test_part0000.tar.gz",
+      "git_blob_sha": "dca798c92c312a6ba3ddbf98edb9eb471246abd9",
+      "bytes": 217768
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/derived_policies/seed71031_direct_fixed.json",
+      "git_blob_sha": "7e9ff78180fdbd725abcc47835020b3414b3f4d2",
+      "bytes": 58366
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/derived_policies/seed71037_direct_fixed.json",
+      "git_blob_sha": "35aad418f7bb7b224fc6ace2d03406a0f7ba44f6",
+      "bytes": 58287
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/derived_policies/seed71043_direct_fixed.json",
+      "git_blob_sha": "ae1313720046e48a4bdf66b96f7db92bf1f4988e",
+      "bytes": 58330
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/derived_policies/seed71049_direct_fixed.json",
+      "git_blob_sha": "e8e93fabfacddbb9e2ee23028170bb52adf88729",
+      "bytes": 58294
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/derived_policies/seed71057_direct_fixed.json",
+      "git_blob_sha": "56b319c92faa03a5dc0dc1bff51b85533547b39d",
+      "bytes": 58323
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/partial_results.jsonl.gz",
+      "git_blob_sha": "fa2193d92b79e71e656a7cd74af5e434f6552c19",
+      "bytes": 147279
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71031_ood_part0000.tar.gz",
+      "git_blob_sha": "510dcec490802cc188db707e3d2e54a0686afd8f",
+      "bytes": 467222
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71031_ood_part0001.tar.gz",
+      "git_blob_sha": "30ff6a9cf81e858354efc51338d5854c7aacef78",
+      "bytes": 444383
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71031_test_part0000.tar.gz",
+      "git_blob_sha": "48ca936272f1d73ca5904ff6badc4e5deaaba291",
+      "bytes": 438635
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71031_test_part0001.tar.gz",
+      "git_blob_sha": "9d155f5ab295b942b97ad5d6100d30d1c3585e78",
+      "bytes": 435571
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71037_ood_part0000.tar.gz",
+      "git_blob_sha": "84a5f37299f056178b41e1b575fd4cd724799810",
+      "bytes": 432428
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71037_ood_part0001.tar.gz",
+      "git_blob_sha": "a4d60e25237fc6db7c32cb22998c6b169500299a",
+      "bytes": 376702
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71037_test_part0000.tar.gz",
+      "git_blob_sha": "9f8fc164fcc78212eb637b2306c369ab7b003915",
+      "bytes": 419884
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71037_test_part0001.tar.gz",
+      "git_blob_sha": "bb86a726d221f3a89a55fcb17f7b6ffb25930244",
+      "bytes": 427746
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71043_ood_part0000.tar.gz",
+      "git_blob_sha": "e7751b5487edaa36b541d58367cd5758334910c6",
+      "bytes": 441196
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71043_ood_part0001.tar.gz",
+      "git_blob_sha": "6b040e861a69c257ca60cb0b9932f4f74b5bf5ba",
+      "bytes": 405646
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71043_test_part0000.tar.gz",
+      "git_blob_sha": "4fc3db0421712467aaad763895ffd9c0c9aea99f",
+      "bytes": 476565
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71043_test_part0001.tar.gz",
+      "git_blob_sha": "35a8c6678f1e550cbc3f77e5ac50096234954622",
+      "bytes": 458294
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71049_ood_part0000.tar.gz",
+      "git_blob_sha": "7c893bb9331affab08dfc2e67e6a93d78ec7e87a",
+      "bytes": 438341
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71049_ood_part0001.tar.gz",
+      "git_blob_sha": "fe841598f631625791c2dd04b90d2993868ba671",
+      "bytes": 430647
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71049_test_part0000.tar.gz",
+      "git_blob_sha": "fd658247e777ecb0398f310a8df53fc263ea843e",
+      "bytes": 414494
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71049_test_part0001.tar.gz",
+      "git_blob_sha": "21bee787631553554e269784270201798b650087",
+      "bytes": 462831
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71057_ood_part0000.tar.gz",
+      "git_blob_sha": "9d4276a9c0ecb37941e419231a4abf4ea3b0da68",
+      "bytes": 448072
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71057_ood_part0001.tar.gz",
+      "git_blob_sha": "bfa7f201cf83a42f67a163c21f356e306f033a7c",
+      "bytes": 436342
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71057_test_part0000.tar.gz",
+      "git_blob_sha": "a4a1cb34464b43e4f93d99928b949d0cef6479d7",
+      "bytes": 454853
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/receipts/seed71057_test_part0001.tar.gz",
+      "git_blob_sha": "51c83ab35e78753ac973ad2aa871d5da0bf3c76f",
+      "bytes": 455310
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/results/seed71031_ood.json.gz",
+      "git_blob_sha": "b7f85d4bec1917cef44f51a93949f74a27065048",
+      "bytes": 120838
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/results/seed71031_test.json.gz",
+      "git_blob_sha": "8721cf56420e1c842606afedc7a810f906322110",
+      "bytes": 115317
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/results/seed71037_ood.json.gz",
+      "git_blob_sha": "6ba5d15a47ea22f124a30ffa0e520993e11c0705",
+      "bytes": 106377
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/results/seed71037_test.json.gz",
+      "git_blob_sha": "e4eadcca249afb3887d5c1e9995e14c6107097bc",
+      "bytes": 116196
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/results/seed71043_ood.json.gz",
+      "git_blob_sha": "d25b7037d558d892c16813f7d299a91f9fa2c366",
+      "bytes": 116277
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/results/seed71043_test.json.gz",
+      "git_blob_sha": "3e31dd67a798d4121c04ff1030a0dfabfb8b5b48",
+      "bytes": 124706
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/results/seed71049_ood.json.gz",
+      "git_blob_sha": "b70fdf195e023f6a07710dcfadb9b64b1d02ab4e",
+      "bytes": 116408
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/results/seed71049_test.json.gz",
+      "git_blob_sha": "30c6a15a30ab99120bc008f1bdf5cfc40f17f3a5",
+      "bytes": 118616
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/results/seed71057_ood.json.gz",
+      "git_blob_sha": "06650f275700fea23bb578a4ee8fb3ad52b8a485",
+      "bytes": 114859
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_execution/results/seed71057_test.json.gz",
+      "git_blob_sha": "1aa919cd58db03c37636e6989deeec20e4bee0bd",
+      "bytes": 124197
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/FREEZE.json",
+      "git_blob_sha": "d66c02620d4d117af6687e6e32a84a40e95a38ed",
+      "bytes": 13018
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/PROTOCOL.json",
+      "git_blob_sha": "324c2800440150693868523ba1f48309dd4a3fa7",
+      "bytes": 4557
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/STARTED.json",
+      "git_blob_sha": "b000d224a9c5af3c032f085fa198ab54fa1532b0",
+      "bytes": 1493
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/data/development_seed71031.tar.gz",
+      "git_blob_sha": "8dba9582b57bd0014f8304ca21dd8e09ba4caf91",
+      "bytes": 54864
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/data/development_seed71037.tar.gz",
+      "git_blob_sha": "5f5e7b4b6e8b783dfb5db5b2610d13ec76dcc5c0",
+      "bytes": 56592
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/data/development_seed71043.tar.gz",
+      "git_blob_sha": "93715a5bea3f3bd461b04646ad1e5a8427a6c233",
+      "bytes": 56805
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/data/development_seed71049.tar.gz",
+      "git_blob_sha": "3db8dc600ba0a80881e4f107135a663bbb85fb53",
+      "bytes": 54896
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/data/development_seed71057.tar.gz",
+      "git_blob_sha": "dfd56185366e546572499d6126000a5a088e3b74",
+      "bytes": 54651
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71031_analytic_fixed.json",
+      "git_blob_sha": "782814a7fd8159b2c5760871901d89acc7e094e1",
+      "bytes": 58391
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71031_analytic_value.json",
+      "git_blob_sha": "e9fe22e0fea7f37b3da3ff7690f085848162d80e",
+      "bytes": 58391
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71031_ordinary_fixed.json",
+      "git_blob_sha": "4daff176288dda4f7158d34b2fe70061aee6e1e5",
+      "bytes": 58359
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71031_ordinary_value.json",
+      "git_blob_sha": "16328ea017110c8a8b1d05472f55b1c5d4107584",
+      "bytes": 58359
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71037_analytic_fixed.json",
+      "git_blob_sha": "08c0231d7cbdd93de7b31ffcdee5b87adea3fa69",
+      "bytes": 58311
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71037_analytic_value.json",
+      "git_blob_sha": "0b9ac11646708a30372b7dcf7952c73a4a1489f9",
+      "bytes": 58311
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71037_ordinary_fixed.json",
+      "git_blob_sha": "d86947b2ab129c2e1ae6366627a8af430da1c758",
+      "bytes": 58280
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71037_ordinary_value.json",
+      "git_blob_sha": "5cb6051a5d668ae53a2e8911019955de83d1f952",
+      "bytes": 58280
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71043_analytic_fixed.json",
+      "git_blob_sha": "d3007028ce79cdc529e3f83df2c5ba030ea10e0c",
+      "bytes": 58195
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71043_analytic_value.json",
+      "git_blob_sha": "a8d76dd3c52855844b1be35a54f35bd147252791",
+      "bytes": 58195
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71043_ordinary_fixed.json",
+      "git_blob_sha": "f112505c1f91890cdc104477a7376a8ac7a97653",
+      "bytes": 58323
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71043_ordinary_value.json",
+      "git_blob_sha": "ebf5a8fea019982dcb7056eade6352c452c1c29d",
+      "bytes": 58323
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71049_analytic_fixed.json",
+      "git_blob_sha": "2288a2b2295ba83e96bf0ca13c20cb06c1919a13",
+      "bytes": 58337
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71049_analytic_value.json",
+      "git_blob_sha": "affaa33c882fbb16845835f7be74f9901cdb7684",
+      "bytes": 58337
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71049_ordinary_fixed.json",
+      "git_blob_sha": "af33ad0751cd4adf7f1408bd2947a9d88a44edef",
+      "bytes": 58287
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71049_ordinary_value.json",
+      "git_blob_sha": "d8a3ed491038c1d260cebd26275d6e398d50e996",
+      "bytes": 58287
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71057_analytic_fixed.json",
+      "git_blob_sha": "d69b437e0b4c14382d9132b5332f2797cd4c48db",
+      "bytes": 58340
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71057_analytic_value.json",
+      "git_blob_sha": "d26517e77cf198fad78fb223b32eb593e45793b7",
+      "bytes": 58340
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71057_ordinary_fixed.json",
+      "git_blob_sha": "4890697e590948b0f570c01d877b2222ffe953eb",
+      "bytes": 58316
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/models/seed71057_ordinary_value.json",
+      "git_blob_sha": "82ebb5ebe9a44c2be2a9112c13f89dd138989c7d",
+      "bytes": 58316
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/training/seed71031.json.gz",
+      "git_blob_sha": "d0b6404652153f5bb695d43bfbb6c3a0327b1934",
+      "bytes": 265546
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/training/seed71037.json.gz",
+      "git_blob_sha": "a7438bec261e255d1e7fbe99dadfc348a16e5817",
+      "bytes": 269455
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/training/seed71043.json.gz",
+      "git_blob_sha": "43a100cd08abdcf2a1258fc74c18dd3f3a275e24",
+      "bytes": 269335
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/training/seed71049.json.gz",
+      "git_blob_sha": "7592a1c6c0690e7865613215dce68b2b4fa79eca",
+      "bytes": 267341
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/confirmation_training/training/seed71057.json.gz",
+      "git_blob_sha": "ed2b73fe755cc7aa07d8621a3d11ff62161705aa",
+      "bytes": 266038
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/direct_recovery_diagnostic01/REPORT.json",
+      "git_blob_sha": "cbb0eba0517cced5a151bce559ff185af17f8a63",
+      "bytes": 138
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/PLAN.json",
+      "git_blob_sha": "50b91d4348936dbef045e64a297fd44bf8d6b515",
+      "bytes": 909
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/REPORT.json",
+      "git_blob_sha": "02c53b90c008000d580a28fb7c03deb3a01120a8",
+      "bytes": 18329
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/models/seed71031_analytic_outcome_update.json",
+      "git_blob_sha": "db6efe14ecd3ef9356427a3a835af25c6fc97d63",
+      "bytes": 58386
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/models/seed71031_ordinary_outcome_update.json",
+      "git_blob_sha": "90543f5b968bf49e9abcda4a4a99b4f69b731cfc",
+      "bytes": 58360
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/models/seed71037_analytic_outcome_update.json",
+      "git_blob_sha": "9e6dd1d45aba6eda25c295ed0a0b8e42be227f9c",
+      "bytes": 58278
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/models/seed71037_ordinary_outcome_update.json",
+      "git_blob_sha": "5c3a80d2f1d8dc57dd6591d4d49e8ffdb7aff0ba",
+      "bytes": 58293
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/models/seed71043_analytic_outcome_update.json",
+      "git_blob_sha": "f7a843c634c9abd49a1ca7efa413946008365ea0",
+      "bytes": 58193
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/models/seed71043_ordinary_outcome_update.json",
+      "git_blob_sha": "62b3adc265dd703600a0997e5fb5fe4ef9206a3a",
+      "bytes": 58344
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/models/seed71049_analytic_outcome_update.json",
+      "git_blob_sha": "a01289dafe99766880980ee5c6122e186eb6c548",
+      "bytes": 58315
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/models/seed71049_ordinary_outcome_update.json",
+      "git_blob_sha": "7efe13bf173801d4ecdf712ed90a3574e438e713",
+      "bytes": 58297
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/models/seed71057_analytic_outcome_update.json",
+      "git_blob_sha": "263826c2f00ae861dbc5bdbc2c49c76130f4b7c9",
+      "bytes": 58342
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/models/seed71057_ordinary_outcome_update.json",
+      "git_blob_sha": "c13dc6ea26b5fec6f3e0c915ce23ce63a658f75c",
+      "bytes": 58318
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/receipts/seed71031.json.gz",
+      "git_blob_sha": "170c97295ae9487552ac48fc95a978e5cab55d4e",
+      "bytes": 179132
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/receipts/seed71037.json.gz",
+      "git_blob_sha": "5979ed21e15b5ef36779e34638aa13df453fa255",
+      "bytes": 147469
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/receipts/seed71043.json.gz",
+      "git_blob_sha": "180aeefde787491c66e9254e61cee22ce7bbb7a7",
+      "bytes": 185457
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/receipts/seed71049.json.gz",
+      "git_blob_sha": "b9f9003a8c40710db6ae0d8681719c4cd6eefc44",
+      "bytes": 175457
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/outcome_feedback/receipts/seed71057.json.gz",
+      "git_blob_sha": "e62495d68be7fc22892257e2fa426628e773a0ff",
+      "bytes": 199518
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/EXECUTION_SUMMARY.json.gz",
+      "git_blob_sha": "64d3c47af1383bd01892e21ba65695fcd44a48ac",
+      "bytes": 2062
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/INTERVENTION_SOURCE.py",
+      "git_blob_sha": "198782297dfb85231838a6105f63e3eac5e4dd43",
+      "bytes": 18017
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/PACKAGING.json",
+      "git_blob_sha": "91101d65d3d0f17a373871e9f83b657993480bd3",
+      "bytes": 3226
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/PLAN.json",
+      "git_blob_sha": "1cb1d5627a5df8248494facbd95f7cc98190d30f",
+      "bytes": 8339
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/REPORT_ZH.md",
+      "git_blob_sha": "51d936210d82e48bd86cfddffd4ba4e9862ed943",
+      "bytes": 5167
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/SUMMARY.json",
+      "git_blob_sha": "ccdf5c5b19c527d42aeb21bd5d64e3784b103221",
+      "bytes": 13447
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71031_baseline.json",
+      "git_blob_sha": "e9fe22e0fea7f37b3da3ff7690f085848162d80e",
+      "bytes": 58391
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71031_boundary_minus3.json",
+      "git_blob_sha": "469b5183765e90eb98b15add8c9d647eb10a3c69",
+      "bytes": 58376
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71031_boundary_plus3.json",
+      "git_blob_sha": "d229e62963f87bc30ff7c0aed32f39abbf895c17",
+      "bytes": 58375
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71037_baseline.json",
+      "git_blob_sha": "0b9ac11646708a30372b7dcf7952c73a4a1489f9",
+      "bytes": 58311
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71037_boundary_minus3.json",
+      "git_blob_sha": "47d41d0587b1b863ad67cb1660f0411e1f4c99ce",
+      "bytes": 58296
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71037_boundary_plus3.json",
+      "git_blob_sha": "a2b83c800ad31ca555fd909efc274842ed45419f",
+      "bytes": 58295
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71043_baseline.json",
+      "git_blob_sha": "a8d76dd3c52855844b1be35a54f35bd147252791",
+      "bytes": 58195
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71043_boundary_minus3.json",
+      "git_blob_sha": "0b8d0ed08618fd4928e07a289ea16f0a035bdcc2",
+      "bytes": 58179
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71043_boundary_plus3.json",
+      "git_blob_sha": "98e299f94f8582303e1b22c2002b96dab7155f43",
+      "bytes": 58178
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71049_baseline.json",
+      "git_blob_sha": "affaa33c882fbb16845835f7be74f9901cdb7684",
+      "bytes": 58337
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71049_boundary_minus3.json",
+      "git_blob_sha": "fc742ba8e03896ae3f77c317aee4474f844a14c0",
+      "bytes": 58322
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71049_boundary_plus3.json",
+      "git_blob_sha": "f92aa7f1d22c4c5a8e11a28cc738878b8bc9d577",
+      "bytes": 58321
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71057_baseline.json",
+      "git_blob_sha": "d26517e77cf198fad78fb223b32eb593e45793b7",
+      "bytes": 58340
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71057_boundary_minus3.json",
+      "git_blob_sha": "f0be0c15f2a67ce06797e40e90399ee5e2ec9320",
+      "bytes": 58323
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/models/seed71057_boundary_plus3.json",
+      "git_blob_sha": "a341a5bd88c7d5f24da7e796b3f10b4d0be12eb4",
+      "bytes": 58322
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/results/seed71031.json.gz",
+      "git_blob_sha": "9cfaafa768c35b3ad2620919d7d036aed3089b78",
+      "bytes": 90220
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/results/seed71037.json.gz",
+      "git_blob_sha": "fa76582161f0412a36c2b5b46b8ba669fe3d37a6",
+      "bytes": 78320
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/results/seed71043.json.gz",
+      "git_blob_sha": "5de6419c53ae37e410d892d77fa8e653b9669ad8",
+      "bytes": 98320
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/results/seed71049.json.gz",
+      "git_blob_sha": "bdbb633bad8b5805396d8ca76a7980cf7e063d73",
+      "bytes": 88260
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/results/seed71057.json.gz",
+      "git_blob_sha": "f6388d9e6bd73c722207aa4f0f0742de1a5d2dbf",
+      "bytes": 94382
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/runs/seed71031_part0000.tar.gz",
+      "git_blob_sha": "d4240b0efaabb6753de1c8d64c38567091e352ef",
+      "bytes": 408270
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/runs/seed71031_part0001.tar.gz",
+      "git_blob_sha": "ea4099371a17dc8ebd57d09bb647ba0ea2334cd5",
+      "bytes": 117096
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/runs/seed71037_part0000.tar.gz",
+      "git_blob_sha": "faddd6324a57cb8cfcbdbde7b90cacbef6dcb408",
+      "bytes": 389303
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/runs/seed71037_part0001.tar.gz",
+      "git_blob_sha": "631d296473fe482728aaaceca34b6a5bda4b59f2",
+      "bytes": 32480
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/runs/seed71043_part0000.tar.gz",
+      "git_blob_sha": "8ea24804c5fcb2ac68d14927633941d0b67a7c22",
+      "bytes": 387802
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/runs/seed71043_part0001.tar.gz",
+      "git_blob_sha": "9c32953209a195f32f87bd48b722444c8732e600",
+      "bytes": 174511
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/runs/seed71049_part0000.tar.gz",
+      "git_blob_sha": "78baccf56e9176d02f57aa6e49e31bef97d488b1",
+      "bytes": 385714
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/runs/seed71049_part0001.tar.gz",
+      "git_blob_sha": "784e70d8c213f8c544d52a049d7e5d4088a6ab38",
+      "bytes": 101012
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/runs/seed71057_part0000.tar.gz",
+      "git_blob_sha": "a4c1ccba6204db74324023682324890a97d9dd32",
+      "bytes": 381924
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/evidence/trained_boundary_intervention/runs/seed71057_part0001.tar.gz",
+      "git_blob_sha": "bf05bb2612959d3f874bbfcdc832e54e37c718b5",
+      "bytes": 129143
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/experiment.py",
+      "git_blob_sha": "0703c9dc39385f0e27d478ffa5db561f1dc17ce0",
+      "bytes": 25941
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/intervention.py",
+      "git_blob_sha": "198782297dfb85231838a6105f63e3eac5e4dd43",
+      "bytes": 18017
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/model.py",
+      "git_blob_sha": "2b8e269a36a34b65ecea0921dd37601ab70b43e0",
+      "bytes": 4821
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/native/main.rs",
+      "git_blob_sha": "2b0fac4f33100569b956ed32c637b3ec3a6e8854",
+      "bytes": 3968
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/native/native_tests.rs",
+      "git_blob_sha": "df6e748659f6518233076189765aab2f26001bbd",
+      "bytes": 9054
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/native/owner.rs",
+      "git_blob_sha": "6c05666084d2e6b3111b3386a5296203457df72d",
+      "bytes": 16335
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/native/policy.rs",
+      "git_blob_sha": "26e59b74166f031c03cb7a90ece0c02aeb2be943",
+      "bytes": 6224
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/native/port.rs",
+      "git_blob_sha": "b3eee678c315e1382b46df97fa956accd81a91f3",
+      "bytes": 4603
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/native/store.rs",
+      "git_blob_sha": "6f0ac820c7f01ea4e7510122990d36e3b8e4fba4",
+      "bytes": 3127
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/native/task.rs",
+      "git_blob_sha": "2ea828dff13a88da2a6d9e0e48c6ff7c5d3be25f",
+      "bytes": 12484
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/numerics.py",
+      "git_blob_sha": "0529a78d0218c51cb6f7676bcb34d4706faf9ae1",
+      "bytes": 10553
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/outcome_update.py",
+      "git_blob_sha": "23f31bf3d35ceee31687d4ec985a690600466f6d",
+      "bytes": 11259
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/publication.py",
+      "git_blob_sha": "fcc13088c2b707260d088f2c2fe748ea4e51bb09",
+      "bytes": 4099
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/reference.py",
+      "git_blob_sha": "068653f8b7b523924233bb594bf3d0dc6ce570b3",
+      "bytes": 2780
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/requirements.txt",
+      "git_blob_sha": "93054803ebd7928f2973cde4521ddb65a0ab1daa",
+      "bytes": 41
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/statistics.py",
+      "git_blob_sha": "df40ed0d323ea95b54bf645a5f8785bdeb59c2d4",
+      "bytes": 9822
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/train.py",
+      "git_blob_sha": "a088f9b44be4105879d22e3d6d3ce6715047171c",
+      "bytes": 13423
+    },
+    {
+      "path": "tools/hcsn/task_native_loop_20261031/DELIVERY_MANIFEST.json",
+      "git_blob_sha": "fc7323a9c377f868e3f5b944932d7e22d31cf1ba",
+      "bytes": 60827
+    }
+  ],
+  "verification_scope": "GitHub branch, commit, nonrecursive ancestor trees and complete recursive research subtree were read back. Every delivered Git blob SHA, byte size and regular file mode matched; selected text files were fetched and compared byte-equivalently as UTF-8. This record is added in a subsequent commit to avoid circular identity; the manifest excludes this record and itself.",
+  "remote_ci": {
+    "workflow_present": true,
+    "success_claimed": false,
+    "observation": null,
+    "scope": "PR-triggered checks are requested after publishing this readback record. The current PR check status is authoritative; no passing remote run is claimed here."
+  },
+  "scientific_efficacy_qualified": false,
+  "production_activation": false
+}
