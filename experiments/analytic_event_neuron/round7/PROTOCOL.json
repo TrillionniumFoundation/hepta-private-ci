@@ -1,0 +1,641 @@
+{
+  "schema": "hepta.analytic-event.round7.protocol.v1",
+  "status": "frozen_before_confirmation",
+  "frozen": true,
+  "freeze_utc": "2026-10-31T02:23:47.523187+00:00",
+  "freeze_manifest": "FROZEN_MANIFEST.json",
+  "source_baseline": "SOURCE_BASELINE.json",
+  "contract": "CONTRACT.md",
+  "purpose": "Separate event-law, planning-horizon, and deployment effects in a finite evidence task; no superiority requirement.",
+  "fit_seeds": [
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "data": {
+    "train_trajectories_per_fit": 256,
+    "dev_trajectories_per_fit": 64,
+    "confirmation_trajectories_per_fit": 512,
+    "stress_trajectories_per_fit": 256,
+    "episode_id_assignment": "regime_base + fit_index * 10000 + episode_index; fit indices 0..4 map to fit seeds 11..15. Nominal 512 episodes per fit; each of three stress regimes 256 per fit.",
+    "pairing": "Same public task episode and latent source fixture across registered arms within each fit seed; stochastic-neuron RNGs have documented paired streams.",
+    "cross_fit_episode_reuse": false,
+    "training_state_selection": "One public-prefix sequence per fixture: choose STOP with probability 0.12 whenever any non-STOP action is legal; otherwise uniformly choose a legal non-STOP action. Force STOP when required. Include every nonterminal prefix; mask padded/terminated rows and unavailable actions.",
+    "development_selection": "Only train/dev permit implementation, schedule, or checkpoint selection. Record every attempted configuration and its cost.",
+    "confirmation_rule": "No confirmation fixture generation, rollout, aggregate inspection, or selection before frozen code, configuration, protocol, and model hashes are persisted.",
+    "task_nominal": {
+      "horizon": 6,
+      "budget": 6,
+      "ordinary_count": 3,
+      "ordinary_reliability": 0.7,
+      "delayed_reliability": 0.9,
+      "arrival_tick": 2,
+      "corruption_probability": 0.35,
+      "read_budget": 2,
+      "repair_budget": 1,
+      "read_cost": 0.012,
+      "wait_cost": 0.004,
+      "repair_cost": 0.02,
+      "stop_cost": 0.002,
+      "latency_cost": 0.005,
+      "invalid_attempt_cost": 0.03,
+      "prior_probability": 0.5
+    },
+    "public_parameter_variation": {
+      "assignment": "index modulo 8, equal counts when total divisible by 8",
+      "base": "task_nominal",
+      "overrides": [
+        {},
+        {
+          "horizon": 3,
+          "budget": 2
+        },
+        {
+          "horizon": 4,
+          "budget": 4
+        },
+        {
+          "horizon": 6,
+          "budget": 1
+        },
+        {
+          "horizon": 2,
+          "budget": 0
+        },
+        {
+          "read_cost": 0.04,
+          "repair_cost": 0.05
+        },
+        {
+          "read_cost": 0.004,
+          "wait_cost": 0.012
+        },
+        {
+          "ordinary_reliability": 0.8,
+          "delayed_reliability": 0.85
+        }
+      ],
+      "observability": "All altered control-relevant parameters are represented in the shared public features or posterior sufficient statistic."
+    },
+    "stress_domains": {
+      "drift": {
+        "ordinary_reliability": 0.57,
+        "delayed_reliability": 0.72,
+        "prior_probability": 0.65
+      },
+      "missing": {
+        "corruption_probability": 0.8,
+        "arrival_tick": 3
+      },
+      "cost_shift": {
+        "read_cost": 0.08,
+        "repair_cost": 0.12,
+        "latency_cost": 0.02
+      },
+      "application": "Apply each regime override after the same eight public presets, assigned by episode_index modulo 8. Each stress has 256 episodes per fit; do not pool them with nominal primary inference."
+    },
+    "private_fields_prohibited_from_policy": [
+      "truth",
+      "unread_votes",
+      "delayed_vote_before_observation",
+      "unrealized_corruption",
+      "episode_seed"
+    ],
+    "public_features": 18,
+    "train_data_shared_across_fit_seeds": true,
+    "dev_data_shared_across_fit_seeds": true,
+    "stress_interpretation": "The declared stresses vary publicly represented task reliability, corruption/arrival, and costs. They do not replace the internal Gaussian/CTMC noise law with a non-Gaussian law or validate such a replacement.",
+    "stress_count_scope": "256 per stress regime per fit, for each of three regimes; 768 stress fixtures per fit and 3840 across five fits.",
+    "development_runner": {
+      "episode_seed_formula": "210000 + episode_index",
+      "fit_seed": 11,
+      "neural_seed_formula": "880000000 + episode_index",
+      "scope": "Separate development runner only; not confirmation and not reusable as confirmation observations.",
+      "historical_smoke": "The first 96-trajectory smoke used internal base 900000000; it is retained as development. Confirmation was moved to 920000000 before generation so none of those internal innovations are reused."
+    },
+    "seed_namespace": {
+      "train_base": 100000,
+      "dev_base": 200000,
+      "nominal_confirmation_base": 2000000,
+      "drift_base": 3000000,
+      "missing_base": 4000000,
+      "cost_shift_base": 6000000,
+      "per_fit_width": 10000,
+      "fit_index_mapping": {
+        "11": 0,
+        "12": 1,
+        "13": 2,
+        "14": 3,
+        "15": 4
+      },
+      "conditional_rollout_base": 50000000,
+      "broker_base": 70000000,
+      "confirmation_internal_base": 920000000
+    }
+  },
+  "training": {
+    "dtype": "float64",
+    "n_grid": 15,
+    "epochs": 100,
+    "optimizer": "Adam",
+    "learning_rate": 0.02,
+    "schedule_status": "Final registered schedule completed for every eligible checkpoint; coordinator full-test/source/manifest freeze pending.",
+    "objective": "Stage 1: equal Q1/Qstar mass-weighted supervised squared errors over legal active prefix-action pairs. Stage 2: exact finite public/internal-state soft-policy negative return plus detached-target full-policy and one-step critic regressions, each weight 1.0.",
+    "jointly_learned": [
+      "content_encoder",
+      "active_leak_diffusion",
+      "boundary",
+      "reset_distribution_centers",
+      "recovery_probability",
+      "Q1_readout",
+      "Qstar_readout"
+    ],
+    "gradient_claim": "Regression is a finite mass-weighted expectation. Control refinement differentiates the complete finite joint-state soft-policy return, including future state/action changes and reset/recovery. Detached Bellman target regressions are semi-gradient auxiliaries. No continuum OU or production deployment theorem.",
+    "compute_matching": "Common registered update schedule and data do not imply equal compute. Report measured work and cost separately. No equal-compute claim unless a distinct cost-matched experiment is declared.",
+    "hidden_width": 12,
+    "encoder": "18 public features -> Linear(12), tanh -> Linear(8), tanh; drive=1.5*tanh(Linear(8,1)).",
+    "readout": "Concatenate 18 raw public features, 8 learned content features, and per-latent-state (mean, second moment, ref+, ref-); Linear(12), tanh, Linear(8) for two four-action heads.",
+    "gradient_clip_norm": 5.0,
+    "group_overlap": "The diagnostic noise group is a subset of dynamics. Do not sum overlapping group norms or counts.",
+    "regression_checkpoint_rule": "Evaluate train/dev expected MSE at epoch 0, each multiple of 5, and final epoch. Select lowest dev expected MSE with first observed epoch winning an exact tie.",
+    "final_checkpoint_rule": "Start control refinement from the dev-selected regression checkpoint, run exactly 30 control epochs, and use the final control checkpoint without confirmation-based selection.",
+    "control_refinement": {
+      "epochs": 30,
+      "optimizer": "Adam",
+      "learning_rate": 0.003,
+      "temperature": 0.12,
+      "critic_weight": 1.0,
+      "myopic_weight": 1.0,
+      "compute_price_per_decision": 0.0005,
+      "event_price_per_model_event": 0.0002,
+      "public_graph": "All reachable public states of the eight registered nominal configurations, crossed with each model internal state. No private Episode outcomes.",
+      "policy": "Soft actions conditioned on sampled internal state after the incoming neuron update.",
+      "auxiliary_targets": "Full current soft-policy future value and one-step-then-STOP value; both include the same compute/event coefficients and both targets are detached.",
+      "gradient_scope": "Exact gradient of finite-model soft-policy return, plus Bellman semi-gradient auxiliary updates. Not a continuum-QVI or model-free-learning theorem."
+    },
+    "development_history": [
+      {
+        "directory": "evidence/development_smoke",
+        "purpose": "20-epoch, 128-train, 48-dev timing and regression smoke, seed 11; no confirmation."
+      },
+      {
+        "directory": "evidence/development_control",
+        "purpose": "50 regression plus 10 control epochs and auxiliary weights 0.05; replaced using development diagnostics, retained."
+      },
+      {
+        "directory": "evidence/development_final",
+        "purpose": "Pre-confirmation verification of stronger critic regularization and final staged design; retain exact run metadata."
+      },
+      {
+        "directory": "evidence/development_temperature_legacy",
+        "purpose": "Preserve invalid tail-normalization source/tests and all five superseded secondary fits; correction and all-five rerun decided before confirmation on implementation-law evidence, not efficacy."
+      }
+    ],
+    "registered_fit_count": 60,
+    "fit_layout": {
+      "primary_and_controls": {
+        "modes": [
+          "clocked",
+          "first_passage",
+          "continuous",
+          "direct",
+          "first_passage_temperature"
+        ],
+        "seeds": [
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "fits": 25
+      },
+      "first_passage_component_freezes": 30,
+      "clocked_boundary_freezes": 5,
+      "note": "The event-temperature model is secondary despite being stored alongside base modes; the primary statistical family remains three contrasts among A/B/C/D."
+    },
+    "temperature_correction": {
+      "decision_recorded_utc": "2026-10-31T02:02:25.167111+00:00",
+      "final_mode": "first_passage_temperature",
+      "final_checkpoint_directory": "evidence/fits_temperature_corrected",
+      "legacy_seeds_excluded_from_efficacy_but_costed": [
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "registered_final_fits": 60,
+      "counts_provisional_until_completion": false,
+      "scope": "Numerical law repair to secondary temperature only; all primary definitions and training formula unchanged.",
+      "source_hash_policy": "Preserve at-start hashes of old jobs; final manifest binds corrected source and corrected secondary checkpoints.",
+      "validation_receipt": "evidence/temperature_correction_validation.json",
+      "corrected_source_sha256": "0fb4fc5e5524496b6287d0baca6f20a868457f930744630bfdf275e7765aa9dd",
+      "validation_tests": "4/4 temperature validation PASS; corrected source SHA is bound in the validation receipt. All five corrected secondary seeds completed before confirmation.",
+      "attempt_count_scope": "Formal registered fits plus five superseded temperature fits only. Development/smoke fits and validation calls are additional and must be inventoried and costed separately.",
+      "formal_successful_attempts": 65,
+      "formal_process_failures": 0,
+      "superseded_formal_fits": 5
+    },
+    "continuous_reachable_law_inactive_parameters": [
+      "reset_distribution_centers",
+      "recovery_probability"
+    ],
+    "continuous_auxiliary_scope": "Reset/recovery do not affect the reachable continuous-mode transition/return from its initial state. Joint auxiliary MSE is not occupancy-weighted and includes unreachable refractory slots, whose readout moment features depend on reset centers; reset can therefore receive auxiliary gradients and alter shared readout training. Do not call reset globally training-inactive. Recovery does not enter those readout moments.",
+    "registered_checkpoints": {
+      "path": "evidence/REGISTERED_CHECKPOINTS.json",
+      "sha256": "0e22689b17efd7d0e4069d3bfea0239879feb3d7c318eb40ee2619d1c2b39125",
+      "count": 60,
+      "selection": "Explicit directory registration only. Primary four modes use fits_primary; temperature uses fits_temperature_corrected; FPT content/dynamics/noise use fits_freezes_a; FPT boundary/reset/recovery use fits_freezes_b; clocked boundary uses fits_clocked_control. Seeds 11..15 only.",
+      "legacy_rule": "Retain all old temperature files/copies but exclude them from final evaluation. A missing corrected checkpoint is a fatal eligibility failure, never a reason to fall back.",
+      "formal_attempts_inclusive": 65,
+      "formal_attempt_failures": 0,
+      "scope": "Development/smoke fits are additional and separately retained/costed."
+    }
+  },
+  "arms": {
+    "A": {
+      "dynamics": "clocked",
+      "head": "Q1-pretrained then same-cost joint one-step auxiliary head",
+      "checkpoint_group": "clocked",
+      "role": "primary",
+      "deployment": "hard latent categorical state + greedy legal action"
+    },
+    "B": {
+      "dynamics": "clocked",
+      "head": "Qstar-pretrained then joint-policy-return-refined full head",
+      "checkpoint_group": "clocked",
+      "role": "primary",
+      "deployment": "hard latent categorical state + greedy legal action"
+    },
+    "C": {
+      "dynamics": "first_passage",
+      "head": "Q1-pretrained then same-cost joint one-step auxiliary head",
+      "checkpoint_group": "first_passage",
+      "role": "primary",
+      "deployment": "hard latent categorical state + greedy legal action"
+    },
+    "D": {
+      "dynamics": "first_passage",
+      "head": "Qstar-pretrained then joint-policy-return-refined full head",
+      "checkpoint_group": "first_passage",
+      "role": "primary",
+      "deployment": "hard latent categorical state + greedy legal action"
+    },
+    "continuous": {
+      "dynamics": "continuous",
+      "head": "Qstar",
+      "role": "registered_secondary",
+      "deployment": "mean mass + greedy full head; separately include continuous_hard with categorical projected-state sampling"
+    },
+    "probit": {
+      "alias_of": "B",
+      "role": "ordinary Gaussian endpoint/probit control; not an extra independent fit"
+    },
+    "direct_Q": {
+      "dynamics": "none",
+      "input": "same public features",
+      "head": "Qstar",
+      "role": "registered_secondary",
+      "architecture": "Same public content encoder and readout; zero internal-state features, frozen core and drive. Current implementation retains repeated statewise readout computation, so this is a matched graph control, not an optimized low-cost direct-Q implementation.",
+      "deployment": "greedy full head, no stochastic core dependence"
+    },
+    "task_DP": {
+      "role": "known-model finite-task optimal reference; not a learned model",
+      "input": "public state and declared task parameters",
+      "objective_scope": "Exact optimum for original task utility without neural compute/event coefficients; not claimed optimal for registered control utility."
+    },
+    "event_temperature": {
+      "model_mode": "first_passage_temperature",
+      "role": "registered_secondary_only",
+      "fit_seeds": [
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "deployment": "hard latent state + greedy full head",
+      "training_budget": "same 256 train/64 dev, 100 regression and 30 joint-control epochs as the primary models",
+      "stored_parameters": 824,
+      "trainable_parameters": 823,
+      "comparison_trainable_parameters": 823,
+      "definition": "Freeze diffusion at initialization sigma=0.45 and learn T=0.25+1.75*sigmoid(raw_temperature), initially T=1. Compute event/survival weights from softmax([log(actual survival mass),log(actual event mass)]/T), preserve exact-zero supports, and scale by actual conditional branch masses. Retain conditional surviving-state and event-direction laws and original refractory rows.",
+      "interpretation": "One-parameter calibration mechanism control with matched trainable count; not the original FPT generator/semigroup or a physical diffusion parameter. Does not enlarge the three primary comparison family.",
+      "numerical_requirement": "Corrected actual-branch-mass/normalized-log-odds implementation must pass the independent boundary, conditional-law, mass, T=1, parameter-count, and gradient checks. Preserve all failed legacy tests and rerun all five secondary seeds before freeze.",
+      "study_arm_name": "temperature"
+    },
+    "continuous_hard": {
+      "dynamics": "continuous",
+      "head": "full-return",
+      "deployment": "hard projected state + greedy action",
+      "role": "registered_secondary"
+    },
+    "direct_Q1": {
+      "model": "same direct checkpoint as direct_Q",
+      "head": "myopic",
+      "role": "registered_secondary"
+    },
+    "myopic_DP": {
+      "role": "known-model task-only one-step then STOP reference",
+      "objective_scope": "Original task costs only; not a joint neural-cost optimum."
+    }
+  },
+  "deployment": {
+    "primary_mode": "hard: sample one categorical next internal state per decision, then greedy legal action from that state; all four primary arms use this rule.",
+    "hard_latent_rule": "One categorical next-state draw from the declared transition; log RNG stream and state. No independent upper/lower Bernoulli draws.",
+    "action_rule": "Greedy argmax over the legal-action mask with ACTIONS order READ, WAIT, REPAIR, STOP breaking ties; hard_soft instead uses its declared categorical soft policy.",
+    "quantization": "Registered Q24 control with mass-conservation and deterministic rounding rule; disclose any threshold/head changes separately.",
+    "event_time": "Tick-level; no sub-tick firing timestamp or sub-tick latency claim.",
+    "native_scope": "Historical hash-verified executable: typed journal execution, actual artifact readback, then a separate freshly initialized two-tick sparse feedback pair and reset control. The pair does not restore/update the typed checkpoint. No native Round7 implementation or production activation.",
+    "controls": {
+      "A_mean_B_mean_C_mean_D_mean": "Same respective checkpoint and head, propagate the full mass and greedily act on its marginal Q.",
+      "hard_soft": "Same checkpoint, categorical internal state and soft action at temperature 0.12; matches the trained finite-DP policy.",
+      "q24": "Quantize full state mass by a mass-preserving largest-remainder Q24 rule and act on marginal Q. This is a quantized mean-law control, not hard-event sampling.",
+      "continuous": "Projected continuous-law no-event control.",
+      "direct_Q": "No-core public-feature control."
+    },
+    "sampling": "Semantic SHA256 keyed uniform in round7/policy/v1 using seed, call index, channel latent/action. Disclose the fit/episode-to-policy-seed mapping and numerical probability normalization.",
+    "internal_rng_seed_formula": "920000000 + regime_index * 1000000 + fit_index * 10000 + episode_index; nominal/drift/missing/cost_shift regime indices 0/1/2/3. Same semantic latent/action stream seed across arms within a paired fixture.",
+    "arm_execution_order_seed_formula": "700000000 + internal_rng_seed; deterministic permutation of eligible arm names per paired fixture to reduce timing-order bias.",
+    "nominal_arms": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "A_mean",
+      "B_mean",
+      "C_mean",
+      "D_mean",
+      "continuous",
+      "continuous_hard",
+      "direct_Q",
+      "direct_Q1",
+      "temperature",
+      "B_soft",
+      "D_soft",
+      "B_q24",
+      "D_q24",
+      "freeze_content",
+      "freeze_dynamics",
+      "freeze_noise",
+      "freeze_boundary",
+      "freeze_reset",
+      "freeze_recovery",
+      "clocked_freeze_boundary",
+      "task_DP",
+      "myopic_DP"
+    ],
+    "stress_arms": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "D_mean",
+      "D_soft",
+      "D_q24",
+      "continuous",
+      "direct_Q",
+      "temperature",
+      "task_DP"
+    ],
+    "planned_trajectory_counts": {
+      "nominal": 66560,
+      "stress_all_three": 42240,
+      "total": 108800,
+      "scope": "Each arm execution is a trajectory record, not an independent training fit. Paired-arm contrasts use common fixtures and five fit clusters."
+    }
+  },
+  "estimands": {
+    "primary_outcome": "registered_return = task_return - 0.0005 * decision_count - 0.0002 * realized_model_event_count in primary hard-state deployments. These are registered utility coefficients, not measured execution prices.",
+    "weighting": "Equal weight for fitted seeds; within fit, equal weight for complete registered trajectories. No timestep/event pseudo-replication.",
+    "primary_contrasts": [
+      {
+        "name": "controller_clocked",
+        "formula": "B-A"
+      },
+      {
+        "name": "event_law_Qstar",
+        "formula": "D-B"
+      },
+      {
+        "name": "interaction",
+        "formula": "(D-C)-(B-A)"
+      }
+    ],
+    "secondary": [
+      "D-continuous",
+      "D-direct_Q",
+      "task_DP-D",
+      "hard-minus-distribution",
+      "Q24-minus-float64",
+      "per-domain stress utility",
+      "action-value regret",
+      "calibration",
+      "invalid action and fallback rates",
+      "signed event counts",
+      "refractory occupancy",
+      "35 registered component-freeze fits",
+      "per-arm original task_return",
+      "hard-soft rollout versus exact finite-policy value",
+      "D minus event-temperature control under matched trainable parameter count",
+      "D-continuous_hard",
+      "D_mean-continuous"
+    ],
+    "top1_action_accuracy": "Descriptive only; near-tied teacher actions must not determine the main acceptance result.",
+    "practical_effect_threshold": 0.005,
+    "practical_effect_rule": "For B-A and D-B, a practically positive primary result requires a simultaneous lower bound above 0.005. For interaction, positive interaction requires its simultaneous lower bound above 0. No required victory; negative or unresolved results are retained.",
+    "primary_population": "The equal mixture of the eight frozen nominal public parameter presets, conditional on the fixed shared train/dev data and the registered fitted-seed protocol.",
+    "task_outcome_separate": "task_return = terminal quality (+1 correct, -1 incorrect) minus every declared action, latency, and failed-attempt task cost.",
+    "causal_scope": "B-A compares controller/training packages: full head participates in exact return optimization, myopic head is an auxiliary learner, and both share the optimized core. It is not a pure isolated planning-horizon causal effect.",
+    "value_calibration": "Report phase-aligned learned-Q minus conditional-Qpi bias, squared error, continuation sample counts, and sampling uncertainty. Q outputs are returns, not success probabilities; no ECE or confidence claim without a separately registered probability mapping."
+  },
+  "statistics": {
+    "familywise_alpha": 0.05,
+    "primary_family_size": 3,
+    "adjustment": "Bonferroni",
+    "two_sided_interval_level_per_primary": 0.9833333333333333,
+    "bootstrap_replicates": 10000,
+    "bootstrap_seed": 770000007,
+    "resampling": "Fit-seed cluster bootstrap, then paired whole-trajectory bootstrap within each selected fit; confirmation fixtures are disjoint between fit seeds and common across arms within a fit.",
+    "per_seed_reporting": true,
+    "limitations": "Five fitted seeds weakly estimate retraining uncertainty. Bootstrap intervals are empirical uncertainty summaries, not a theorem of coverage or convergence.",
+    "secondary_intervals": "Descriptive 95% paired intervals; do not claim familywise-confirmed secondary discoveries.",
+    "stopping": "Fixed registered sample and training budgets; no optional stopping on positive intervals.",
+    "seed_level_sensitivity": "Also report all five seed mean contrasts, number positive, and a descriptive two-sided t interval with df=4. Five sign observations alone cannot support a conventional two-sided 5% exact sign test even if all five are positive.",
+    "identity_gate": "Before any primary interval, require the exact registered identity grid of regime, fit_seed, episode_index, episode_seed, latent_seed and arm, with no missing or duplicate records, correct expected per-regime sizes, a complete execution receipt, and verified compressed-record SHA256. Paired matrices must align on identities, not equal observed row counts. Any failure blocks complete-family inference; retain the raw failure and counts."
+  },
+  "conditional_value_audit": {
+    "prefixes": {
+      "per_fit": 8,
+      "preset_indices": [
+        0,
+        3,
+        5,
+        6
+      ],
+      "public_prefixes_per_preset": [
+        "initial",
+        "after two scripted legal WAIT actions"
+      ],
+      "state_phase": "Freeze the actual z_after obtained by the neuron update at the public prefix. Scripted prefix actions are disclosed and are not claimed to be choices of the learned policy."
+    },
+    "continuations": "Resample truth from the public posterior and unseen evidence conditional on that truth; preserve observed evidence and the deployed policy/internal state.",
+    "reported_quantities": [
+      "task teacher Qstar",
+      "task teacher Q1",
+      "learned Q estimates",
+      "empirical deployed-policy Qpi",
+      "sampling uncertainty",
+      "continuation count and cost"
+    ],
+    "interpretation": "Qpi is a same-prefix control audit, not an exact solution of the full stochastic network. Fixed realized truth is not a conditional Qpi estimator.",
+    "phase": "Q(s,z_after,a) excludes the incoming neuron transition/event fee already paid. Hold public s and actual internal z_after fixed, execute forced task action with current compute fee, then roll out future neuron/controller steps. Do not advance the neuron twice at the prefix.",
+    "neural_rng": "At each scripted public prefix, perform exactly one real neuron update and freeze z_after/calls. For each conditional continuation, retain that snapshot and substitute future_internal_seed; future randomness is shared across candidate actions within a replicate and resampled across replicates.",
+    "model": "D, first_passage full-return head, hard internal state and greedy actions, all five fitted seeds.",
+    "continuations_per_legal_action": 64,
+    "episode_seed_formula": "50000000 + fit_index * 1000000 + prefix_index * 10000 + replicate_index",
+    "fit_index_mapping": {
+      "11": 0,
+      "12": 1,
+      "13": 2,
+      "14": 3,
+      "15": 4
+    },
+    "pairing": "Each replicate uses common resampled future fixture and internal-RNG streams across candidate first actions; different replicates resample both futures.",
+    "inference_scope": "A registered secondary diagnostic on forty scripted public/internal prefixes. Do not pool with primary confirmation trajectories or inflate five model fits into independent prefix fits.",
+    "prefix_fixture_seed_formula": "50000000 + fit_index * 1000000 + prefix_index * 10000 + 9000",
+    "prefix_internal_seed_formula": "800000000 + 50000000 + fit_index * 1000000 + prefix_index * 10000",
+    "future_internal_seed_formula": "1500000000 + conditional_episode_seed"
+  },
+  "resource_accounting": {
+    "task_utility_separate_from_compute": true,
+    "include": [
+      "fixture and oracle preparation",
+      "all attempted hyperparameters",
+      "all successful and failed training fits",
+      "encoder",
+      "CDF or matrix exponential",
+      "latent sampling or quantization",
+      "readout",
+      "action guard",
+      "artifact broker and readback",
+      "native subprocess",
+      "retry and failure handling",
+      "known-model joint-DP graph construction and refinement",
+      "all 35 component-freeze fits",
+      "five event-temperature control fits including any invalid-law reruns"
+    ],
+    "timing": "Record wall and process CPU time where available; disclose threads, interpreter, dependencies, hardware, warmup, and caching. Avoid summing overlapping nested timers.",
+    "amortization_episode_counts": [
+      1,
+      100,
+      10000,
+      1000000
+    ],
+    "amortization_formula": "per_episode_online_cost + (training_cost + setup_cost) / deployment_episode_count",
+    "report": "Task-quality/cost tables and Pareto tradeoffs, with raw and amortized costs. No unregistered seconds-to-utility conversion.",
+    "native_build": "Historical compilation cost is not a fresh measured compile; disclose excluded historical build and archive restoration separately.",
+    "training_timer_caveat": "learning.train_one timer covers epochs only. The coordinator must separately measure data/oracle preparation, model/optimizer setup, checkpoint serialization, all smoke and ablation fits, and evaluation.",
+    "wire_scope": "state/wire bytes from serialized packets measure the implemented encoding size. Unless actually sent, those packets are not network traffic; broker JSONL and native subprocess IO are actual distinct execution paths.",
+    "shared_checkpoint_cost": "A/B share one clocked fit and C/D share one FPT fit. Count each physical fit once in total study cost. For a hypothetical standalone deployment of either head, charge the full training procedure that produced its shared checkpoint; do not silently halve training cost. Disclose any separately assumed joint-deployment allocation.",
+    "shared_preparation_cost": "Record once the dataset/oracle/graph preparation shared by a training process, plus per-fit training costs. Any per-arm allocation of shared preparation must be explicit and must sum back to the measured total.",
+    "per_fit_timer_scope": "Report per-fit training CPU/wall as measured component time; initialization and checkpoint serialization outside that timer belong to the inclusive batch receipt. Total research cost must also include all development, superseded temperature, failed, audit, and correction runs, even when stored outside fits*."
+  },
+  "failures": {
+    "retain_all_attempts": true,
+    "retain_all_fit_seeds": true,
+    "record": [
+      "nonfinite loss",
+      "invalid transition mass",
+      "training crash",
+      "invalid action",
+      "guard denial",
+      "broker/readback error",
+      "native subprocess error",
+      "timeout",
+      "checkpoint or hash mismatch"
+    ],
+    "missing_arm_or_seed": "Mark incomplete and report operational failure. Do not silently drop, substitute a favorable seed, or compute a complete-family superiority claim from survivors.",
+    "operational_retry": "Allowed only with identical frozen scientific bytes/configuration after documented infrastructure diagnosis; retain both costs and outputs. A scientific change is a new study version with a fresh confirmation namespace.",
+    "fallback": "Any actually executed STOP fallback and invalid-attempt cost count in task utility; a missing model is not silently imputed as a successful trained model."
+  },
+  "required_evidence": [
+    "source, configuration, protocol, environment, and checkpoint hash manifest before confirmation",
+    "independent endpoint and CTMC reference checks and a grid study",
+    "mass, event, reset, refractory, repeated-event, and gradient verification",
+    "independent finite-task DP/transition verification",
+    "joint parameter change and gradient receipts, with inactive groups disclosed",
+    "per-trajectory paired outcome and full cost records for all seeds and arms",
+    "hard deployment and quantization gap",
+    "same-prefix conditional Qpi audit",
+    "actual broker/native requests and artifact readback receipts",
+    "all failures and deviation ledger",
+    "Preserve numerical_audit promotion failures: fixed-grid CTMC validity is separate from continuum OU first-passage accuracy."
+  ],
+  "unresolved_before_freeze": [],
+  "ablations": {
+    "fit_seeds": [
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "first_passage_freeze_groups": [
+      "content",
+      "dynamics",
+      "noise",
+      "boundary",
+      "reset",
+      "recovery"
+    ],
+    "clocked_freeze_groups": [
+      "boundary"
+    ],
+    "rule": "Initialize with the same fitted seed and freeze the named group at its initialized values throughout both stages. All remaining settings identical to the registered base fit. Report actual active parameter counts.",
+    "group_definitions": {
+      "content": "Two content-encoder linear layers; the drive layer remains active unless separately frozen.",
+      "dynamics": "Leak, diffusion, and content-to-drive linear layer.",
+      "noise": "Diffusion only; a subset of dynamics.",
+      "boundary": "One symmetric boundary/projection-scale parameter.",
+      "reset": "Two smooth reset-distribution center parameters.",
+      "recovery": "One end-of-tick release probability."
+    },
+    "inference": "Registered descriptive secondary comparisons; retain all 35 ablation fits and costs. Do not promote selected positive ablations into primary findings.",
+    "pathway_scope": "Reset centers affect transitions and refractory readout moments; boundary changes threshold, grid, and state features; dynamics includes the drive layer. These are parameter-group contribution studies, not isolated interventions on a single physical causal pathway."
+  },
+  "broker_audit": {
+    "cases": 16,
+    "episode_seed_formula": "70000000 + case_index",
+    "model": "D fitted seed 11, hard internal state and greedy legal action",
+    "execution": "Actual broker subprocess, source/repair file IO, terminal output, server and independent client readback.",
+    "snapshot_scope": "Restore policy internal state and public State to test continuation; no claim of worker/process migration.",
+    "native_bridge": "Emit sixteen distinct terminal-artifact manifest records for native_bridge.py; preserve typed/native/readback/reset receipts.",
+    "inference_scope": "Integration audit only; not an added primary efficacy sample.",
+    "policy_seed_formula": "1700000000 + case_index",
+    "native_parameter_mapping": "Terminal public posterior p -> Gaussian proxy mean=2p-1, variance=4p(1-p)+0.01, lower=-0.25, upper=0.25. This is explicitly not the learned neuron distribution or learned weights in Rust."
+  },
+  "deviation_ledger": "DEVIATIONS.json",
+  "reproducibility_bundle": {
+    "packer": "artifact_bundle.py",
+    "source": "evidence",
+    "output": "evidence_bundle",
+    "format": "deterministic USTAR + gzip, split into fixed 524288-byte raw binary parts (last part may be shorter)",
+    "manifest": "evidence_bundle/BUNDLE_MANIFEST.json",
+    "integrity": "Per-part, complete compressed archive, and per-member SHA256 plus exact bytes/type/mode/path inventory.",
+    "retained": "All source evidence except __pycache__ and the bundle output itself, including every development failure, superseded temperature fit, all final fits, raw confirmation, broker artifacts, native receipts, and the pinned historical executable.",
+    "limits": {
+      "archive_bytes": 2147483648,
+      "unpacked_file_bytes": 4294967296,
+      "single_member_bytes": 1073741824,
+      "members": 50000,
+      "manifest_bytes": 33554432
+    },
+    "extraction": "Stage and verify all content before publication. Reject links, special files, extension headers, traversal, duplicate or undeclared members, and size violations. Existing mismatched bytes are never overwritten.",
+    "historical_native_scope": "Binary inclusion is packaging of the hash-verified historical build, not a fresh compile, current-main qualification, or a native Round7 implementation.",
+    "formal_pack_status": "Wait until confirmation and every audit/report evidence file is complete before creating the official bundle."
+  }
+}
