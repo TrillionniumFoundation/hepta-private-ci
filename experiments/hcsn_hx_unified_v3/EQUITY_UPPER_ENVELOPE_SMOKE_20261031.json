@@ -1,0 +1,87 @@
+{
+  "base_pr": 4512,
+  "base_sha": "99fa3ad1f75eb021fc95fd2b6cd5dbda37898e2c",
+  "experiment": "fixed financial barrier, positive payout; 3.6 log upper; exact-rational Taylor interval",
+  "notes": "Sampled fixed-boundary resolvent need not equal global optimal-stopping equity",
+  "numeric_reference": "local HX reconstructed subset; NOT complete upstream CI",
+  "production_activation": false,
+  "rows": [
+    {
+      "barrier": 64.62517667527493,
+      "case": "nominal",
+      "model_assumptions": "killed GBM fixed-barrier equity optimal stopping, positive payout",
+      "nominal_equity": 2307.0428218347365,
+      "observed_abs_diff": 0.5287807900185726,
+      "production_activation": false,
+      "rigorous_fixed_barrier_optimal_equity_envelope": {
+        "lower": "2028.293250302197",
+        "upper": "2365.167366925823"
+      },
+      "sampled_fixed_barrier_equity": 2306.514041044718,
+      "scientific_gate_closed": false,
+      "upper_equity_abs_budget": "278.749571532540"
+    },
+    {
+      "barrier": 101.32402860907811,
+      "case": "high_liquidity",
+      "model_assumptions": "killed GBM fixed-barrier equity optimal stopping, positive payout",
+      "nominal_equity": 3475.154044086535,
+      "observed_abs_diff": 2.704056958133606,
+      "production_activation": false,
+      "rigorous_fixed_barrier_optimal_equity_envelope": {
+        "lower": "3106.956525203898",
+        "upper": "3708.280553812977"
+      },
+      "sampled_fixed_barrier_equity": 3477.8581010446687,
+      "scientific_gate_closed": false,
+      "upper_equity_abs_budget": "368.197518882637"
+    },
+    {
+      "barrier": 61.23062127523274,
+      "case": "zero_shock",
+      "model_assumptions": "killed GBM fixed-barrier equity optimal stopping, positive payout",
+      "nominal_equity": 2199.9651489558332,
+      "observed_abs_diff": 0.855354070822159,
+      "production_activation": false,
+      "rigorous_fixed_barrier_optimal_equity_envelope": {
+        "lower": "1887.085738939189",
+        "upper": "2380.932632563026"
+      },
+      "sampled_fixed_barrier_equity": 2199.109794885011,
+      "scientific_gate_closed": false,
+      "upper_equity_abs_budget": "312.879410016645"
+    },
+    {
+      "barrier": 50.936863777358425,
+      "case": "low_payout_high_vol",
+      "model_assumptions": "killed GBM fixed-barrier equity optimal stopping, positive payout",
+      "nominal_equity": 1806.0747372583673,
+      "observed_abs_diff": 5.404103249827585,
+      "production_activation": false,
+      "rigorous_fixed_barrier_optimal_equity_envelope": {
+        "lower": "1458.883601236245",
+        "upper": "1864.199282349453"
+      },
+      "sampled_fixed_barrier_equity": 1800.6706340085398,
+      "scientific_gate_closed": false,
+      "upper_equity_abs_budget": "347.191136022123"
+    },
+    {
+      "barrier": 62.79801643343473,
+      "case": "lower_coupon",
+      "model_assumptions": "killed GBM fixed-barrier equity optimal stopping, positive payout",
+      "nominal_equity": 2238.662884759413,
+      "observed_abs_diff": 0.4489383092627577,
+      "production_activation": false,
+      "rigorous_fixed_barrier_optimal_equity_envelope": {
+        "lower": "1919.190819287660",
+        "upper": "2298.296528028788"
+      },
+      "sampled_fixed_barrier_equity": 2238.21394645015,
+      "scientific_gate_closed": false,
+      "upper_equity_abs_budget": "319.472065471753"
+    }
+  ],
+  "schema": "HCSN-equity-boundary-envelope-smoke-v1",
+  "scientific_gate_closed": false
+}
