@@ -207,9 +207,14 @@ def _decode_video(path: Path) -> None:
         valid = False
     if not valid:
         _deny("MEDIA", "video has no valid decodable video stream metadata")
-    _run_probe([decoder, "-nostdin", "-v", "error", "-xerror", "-i", str(path),
-                "-map", "0:v:0", "-frames:v", "1", "-f", "null", "-"],
-               "first-frame video decode")
+    decoded = _run_probe([decoder, "-nostdin", "-v", "error", "-xerror", "-i", str(path),
+                          "-map", "0:v:0", "-frames:v", "1", "-f", "framecrc", "-"],
+                         "first-frame video decode")
+    # Exit code 0 and framecrc metadata alone do not demonstrate any actual
+    # decoded frame. Each real frame has a numbered CSV record.
+    if not any(line.split(",", 1)[0].strip().isdigit()
+               for line in decoded.stdout.splitlines() if not line.startswith("#")):
+        _deny("MEDIA", "video stream produced no decoded frames")
 
 
 def validate_manifest(manifest: dict[str, Any], asset_root: Path) -> dict[str, Any]:
