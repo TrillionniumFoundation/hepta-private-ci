@@ -179,6 +179,13 @@ def integrate_passage(x: float, *, drift: float, sigma: float,
         raise ArithmeticError('Nonfinite first-passage quadrature')
     if f < -err or f > 1+err or g < -err or g > f+err:
         raise ArithmeticError('First-passage probability ordering violated')
+    # The historical research quadrature tolerates an estimated f64 error.
+    # That cannot authorize impossible F/G probabilities for the new opt-in
+    # coupon duration: an F>1 (even by one ULP) makes survival negative.
+    # Reject, rather than clipping or silently presenting an invalid PV.
+    # This checks ordering only; it is NOT certified interval arithmetic.
+    if compute_default_duration and not (0. <= g <= f <= 1.):
+        raise ArithmeticError('Direct first-passage probability ordering unresolved')
     duration=None
     duration_error=None
     if compute_default_duration:
