@@ -133,12 +133,12 @@ impl std::io::BufRead for PipeStillOpen {
 fn stream_closes_at_256_without_waiting_for_producer_eof() {
     let mut frame = serde_json::to_vec(&request(vec![path("bounded", &[1])]))
         .expect("encode a bounded request");
-    frame.push(b'\\n');
+    frame.push(b'\n');
     let input = PipeStillOpen(std::io::Cursor::new(frame.repeat(256)));
     let mut output = Vec::new();
     super::stream::run(input, &mut output)
         .expect("a saturated session must close without reading one more byte");
-    assert_eq!(output.iter().filter(|byte| **byte == b'\\n').count(), 257);
+    assert_eq!(output.iter().filter(|byte| **byte == b'\n').count(), 257);
 }
 
 #[test]
