@@ -353,3 +353,9 @@ mod test_support;
 #[cfg(test)]
 #[path = "memory_serving_plan_v11_tests.rs"]
 mod tests;
+#[cfg(test)]
+#[path = "memory_mlp_v12_training_test_support.rs"]
+mod learned_test_support;
+#[cfg(test)]
+#[path = "memory_mlp_v12_tests.rs"]
+mod learned_tests;

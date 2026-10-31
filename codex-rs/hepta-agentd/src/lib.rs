@@ -62,6 +62,8 @@ mod memory_cell_training_tests;
 #[cfg(test)]
 mod memory_cell_v9_continual_tests;
 mod memory_independent_cell_v11;
+mod memory_independent_model_v12;
+mod memory_mlp_v12;
 #[cfg(all(test, unix))]
 mod memory_inventory_actual_tests;
 mod memory_inventory_bundle;
@@ -280,6 +282,7 @@ pub use memory_cell_training::MemoryCellTrainerConfigV1;
 pub use memory_cell_training::MemoryCellTrainingCandidateV1;
 pub use memory_cell_training::MemoryCellTrainingModeV1;
 pub use memory_independent_cell_v11::MemoryCellCandidateV11;
+pub use memory_independent_cell_v11::MemoryCellCandidateV12;
 pub use memory_independent_cell_v11::MemoryCellReleaseV11;
 pub use memory_independent_cell_v11::SelectedMemoryCellV11;
 pub use memory_inventory_bundle::LoadedMemoryInventoryBundleV1;

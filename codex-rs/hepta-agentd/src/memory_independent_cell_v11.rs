@@ -1,6 +1,7 @@
-//! A separately published cell using the existing signed artifact owner. The
-//! V10 numeric payload remains unchanged; V11 binds its complete clean-fit
-//! partition separately from the historical full acquisition cut.
+//! A separately published cell using the existing signed artifact owner.
+//! V11 binds its complete clean-fit partition separately from the historical
+//! acquisition cut. V12 nonlinear candidates reuse these owner/selection fences
+//! with explicit envelope dispatch; no V11 payload is reinterpreted.
 
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
@@ -29,7 +30,6 @@ use codex_hepta_learning_artifacts::WithdrawalBoundArtifactAdmissionV3;
 use codex_hepta_memory::MemoryInventoryOwnerSnapshotV1;
 use codex_hepta_memory::MemoryTrainingProjectionV11;
 use codex_hepta_memory::MemoryTrainingSelectorV11;
-use codex_hepta_neuron::MemoryResidualCellV1;
 use codex_hepta_neuron::MemoryResidualPredictionV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -38,8 +38,10 @@ use serde::Serialize;
 
 use crate::memory_cell_release::core::MemoryReleaseBundle;
 use crate::memory_cell_release::core::MemoryReleaseSlot;
+use crate::memory_independent_model_v12::IndependentCellModel;
+use crate::memory_independent_model_v12::ENVELOPE_V11;
+use crate::memory_independent_model_v12::ENVELOPE_V12;
 
-const SCHEMA: &str = "hepta.memory.independent-cell.v11";
 const MAX_BYTES: usize = 40 * 1024 * 1024;
 
 #[derive(Deserialize, Serialize)]
@@ -69,11 +71,20 @@ impl MemoryCellCandidateV11 {
         generation: ContractGenerationV1,
         payload: &[u8],
     ) -> Result<Self, String> {
+        Self::from_versioned_projection(projection, generation, payload, ENVELOPE_V11)
+    }
+
+    fn from_versioned_projection(
+        projection: &MemoryTrainingProjectionV11,
+        generation: ContractGenerationV1,
+        payload: &[u8],
+        schema: &str,
+    ) -> Result<Self, String> {
         if payload.is_empty() || payload.len() > MAX_BYTES {
             return Err("V11 numerical payload size bound".to_string());
         }
         let wire = CellWire {
-            schema: SCHEMA.to_string(),
+            schema: schema.to_string(),
             owner_agent_id: projection.owner_agent_id().clone(),
             scope: projection.scope().clone(),
             selector: projection.selector().clone(),
@@ -107,13 +118,33 @@ impl MemoryCellCandidateV11 {
     }
 }
 
+/// A learned nonlinear payload using the existing independent cell lifecycle.
+/// Quality and selection remain independently evaluated; creating this value
+/// only proves byte/profile and complete current training-dependency binding.
+pub struct MemoryCellCandidateV12(MemoryCellCandidateV11);
+
+impl MemoryCellCandidateV12 {
+    pub fn from_projection(
+        projection: &MemoryTrainingProjectionV11,
+        generation: ContractGenerationV1,
+        payload: &[u8],
+    ) -> Result<Self, String> {
+        MemoryCellCandidateV11::from_versioned_projection(projection, generation, payload, ENVELOPE_V12).map(Self)
+    }
+    pub fn bytes(&self) -> &[u8] { self.0.bytes() }
+    pub fn digest(&self) -> ContractDigestV1 { self.0.digest() }
+    pub fn bind_manifest(&self, manifest: LearningArtifactManifestV2) -> Result<LearningArtifactManifestV2, String> {
+        self.0.bind_manifest(manifest)
+    }
+}
+
 /// Exact immutable cell bytes plus an evictable numerical cache. Only the
 /// configured artifact owner and selector can make this payload current.
 pub struct SelectedMemoryCellV11 {
     wire: CellWire,
     digest: ContractDigestV1,
     encoded_size_bytes: u64,
-    model: Mutex<Option<MemoryResidualCellV1>>,
+    model: Mutex<Option<IndependentCellModel>>,
 }
 
 impl SelectedMemoryCellV11 {
@@ -185,12 +216,12 @@ impl SelectedMemoryCellV11 {
     }
 
     pub(crate) fn predict(&self, key: &str) -> Result<MemoryResidualPredictionV1, String> {
-        self.with_model(|model| model.predict(key).map_err(|error| error.to_string()))
+        self.with_model(|model| model.predict(key))
     }
 
     fn with_model<T>(
         &self,
-        visit: impl FnOnce(&MemoryResidualCellV1) -> Result<T, String>,
+        visit: impl FnOnce(&IndependentCellModel) -> Result<T, String>,
     ) -> Result<T, String> {
         let mut model = self
             .model
@@ -210,36 +241,11 @@ impl SelectedMemoryCellV11 {
         manifest.source_dataset_digests = vec![self.training_projection_digest().digest()];
         manifest.bytes_digest = self.digest.digest();
         manifest.encoded_size_bytes = self.encoded_size_bytes;
-        manifest.schema_profile_digest = Digest32::of_bytes(SCHEMA.as_bytes());
-        let objective = serde_json::to_vec(&(SCHEMA, self.cell_id(), self.selector().kind))
+        manifest.schema_profile_digest = Digest32::of_bytes(self.wire.schema.as_bytes());
+        let objective = serde_json::to_vec(&(&self.wire.schema, self.cell_id(), self.selector().kind))
             .map_err(|error| error.to_string())?;
         manifest.objective_class_digest = Digest32::of_bytes(&objective);
-        self.with_model(|model| {
-            manifest.lineage_digests = model
-                .lineage_sources()
-                .iter()
-                .map(|source| {
-                    source
-                        .parse::<Digest32>()
-                        .map_err(|error| error.to_string())
-                })
-                .collect::<Result<_, _>>()?;
-            let tuple = serde_json::to_vec(&(
-                model.digest().to_string(),
-                model.parameters_digest().to_string(),
-                model.head_digest().to_string(),
-                model.encoder_digest().to_string(),
-                model.output_profile(),
-            ))
-            .map_err(|error| error.to_string())?;
-            manifest.runtime_tuple_digest = Digest32::of_bytes(&tuple);
-            manifest.compatibility_digest = Digest32::of_bytes(model.numeric_profile().as_bytes());
-            let normalization =
-                serde_json::to_vec(&(model.address_profile(), model.encoder_digest().to_string()))
-                    .map_err(|error| error.to_string())?;
-            manifest.normalization_digest = Digest32::of_bytes(&normalization);
-            Ok(())
-        })
+        self.with_model(|model| model.bind_manifest(manifest))
     }
 }
 
@@ -252,7 +258,7 @@ impl MemoryReleaseBundle for SelectedMemoryCellV11 {
         wire.selector
             .validate()
             .map_err(|error| error.to_string())?;
-        if wire.schema != SCHEMA || wire.generation.get() >= 1_u64 << 53 {
+        if !matches!(wire.schema.as_str(), ENVELOPE_V11 | ENVELOPE_V12) || wire.generation.get() >= 1_u64 << 53 {
             return Err("V11 cell schema or generation".to_string());
         }
         let model = decode_model(&wire)?;
@@ -287,10 +293,8 @@ impl MemoryReleaseBundle for SelectedMemoryCellV11 {
     }
 }
 
-fn decode_model(wire: &CellWire) -> Result<MemoryResidualCellV1, String> {
-    let model =
-        MemoryResidualCellV1::from_bytes(wire.payload.as_bytes(), wire.payload_digest.digest())
-            .map_err(|error| error.to_string())?;
+fn decode_model(wire: &CellWire) -> Result<IndependentCellModel, String> {
+    let model = IndependentCellModel::decode(&wire.schema, wire.payload.as_bytes(), wire.payload_digest.digest())?;
     let kind = match wire.selector.kind {
         MemoryInventoryKindV1::Semantic => MemoryCellKindV1::Semantic,
         MemoryInventoryKindV1::Procedure => MemoryCellKindV1::Procedure,
