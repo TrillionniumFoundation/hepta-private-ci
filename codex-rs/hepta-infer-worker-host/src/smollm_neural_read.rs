@@ -44,6 +44,7 @@ use driver::Mailbox;
 mod query;
 #[path = "smollm_neural_settled_read.rs"]
 mod settled;
+pub(crate) use driver::ControlledCellInputsV2;
 pub use driver::SmolLmCellStartOwnerV1;
 use driver::SmolLmDriver;
 pub use driver::SmolLmFirstExchangeFailureV1;
@@ -53,6 +54,7 @@ pub use driver::SmolLmMeasuredLoadV1;
 pub use driver::SmolLmNeuralReadConfigV1;
 pub use driver::VerifiedCellMaterialV1;
 pub use driver::verify_controlled_cell_material_v1;
+pub(crate) use driver::verify_controlled_cell_material_v2;
 
 #[path = "smollm_runtime_identity.rs"]
 pub(crate) mod runtime_identity;

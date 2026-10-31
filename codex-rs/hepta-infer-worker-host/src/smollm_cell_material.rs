@@ -12,6 +12,7 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_types::Digest32;
 use serde::Deserialize;
+use tokio_util::sync::CancellationToken;
 
 use crate::model_worker::ResourceGrant;
 use crate::native_app_server::TurnStartAuthorizer;
@@ -20,6 +21,10 @@ use crate::smollm_neural_read::SmolLmNeuralReadPortV1;
 
 #[path = "smollm_cell_wire.rs"]
 mod wire;
+
+#[path = "smollm_cell_dependency.rs"]
+mod dependency;
+pub(crate) use dependency::ControlledCellInputsV2;
 
 const SCHEMA: &str = "hepta-smollm-controlled-cell-release-v1";
 const PROFILE: &str = "smollm2-135m-f32-r4-dense-single-adapter-no-fallback-v1";
@@ -121,6 +126,26 @@ impl VerifiedCellMaterialV1 {
             owner.runtime,
         )
     }
+
+    pub(crate) fn start_cancellable(
+        self,
+        owner: SmolLmCellStartOwnerV1,
+        cancellation: CancellationToken,
+    ) -> Result<SmolLmNeuralReadPortV1, String> {
+        SmolLmNeuralReadPortV1::start_cancellable(
+            self.config,
+            self.pin,
+            self.parameters,
+            owner.owner_id,
+            owner.body_generation,
+            owner.worker_id,
+            owner.grant,
+            owner.control,
+            owner.authorizer,
+            owner.runtime,
+            cancellation,
+        )
+    }
 }
 
 /// Verify the narrow eleven-object profile before original model admission.
@@ -145,6 +170,52 @@ pub fn verify_controlled_cell_material_v1(
         .map_err(|e| e.to_string())?;
     need(
         raw.len() as u64 == metadata.len() && Digest32::of_bytes(&raw) == expected_sha256,
+        "sidecar bytes",
+    )?;
+    verify_controlled_cell_bytes(
+        raw,
+        expected_sha256,
+        config,
+        pin,
+        parameters,
+        expected_operation_id,
+        dependency::DependencyPlan::OriginalTcr1,
+    )
+}
+
+pub(crate) fn verify_controlled_cell_material_v2(
+    inputs: ControlledCellInputsV2,
+    config: SmolLmNeuralReadConfigV1,
+    pin: NeuralCognitivePinV1,
+    parameters: Vec<u8>,
+) -> Result<VerifiedCellMaterialV1, String> {
+    verify_controlled_cell_bytes(
+        inputs.sidecar,
+        inputs.sidecar_digest,
+        config,
+        pin,
+        parameters,
+        &inputs.operation_id,
+        dependency::DependencyPlan::PinnedTcd1 {
+            wire: inputs.dependency_wire,
+            id: inputs.dependency_id,
+        },
+    )
+}
+
+fn verify_controlled_cell_bytes(
+    raw: Vec<u8>,
+    expected_sha256: Digest32,
+    config: SmolLmNeuralReadConfigV1,
+    pin: NeuralCognitivePinV1,
+    parameters: Vec<u8>,
+    expected_operation_id: &str,
+    dependency: dependency::DependencyPlan,
+) -> Result<VerifiedCellMaterialV1, String> {
+    need(
+        !raw.is_empty()
+            && raw.len() as u64 <= MAX_SIDECAR
+            && Digest32::of_bytes(&raw) == expected_sha256,
         "sidecar bytes",
     )?;
     let sidecar: Sidecar = serde_json::from_slice(&raw).map_err(|e| e.to_string())?;
@@ -245,6 +316,13 @@ pub fn verify_controlled_cell_material_v1(
         &sidecar.tcr1_hex,
         &release,
         &sidecar.tcr1_id,
+    )?;
+    dependency::verify(
+        dependency,
+        pin.generation.get(),
+        pin.execution_profile_digest,
+        &release,
+        &sidecar.members,
     )?;
     let closure_digest = Digest32::of_parts(&[
         b"hepta.smollm.controlled-cell-release.v1\0",
