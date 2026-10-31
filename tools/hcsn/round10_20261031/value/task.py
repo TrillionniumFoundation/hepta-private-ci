@@ -46,7 +46,7 @@ class Config:
         for p in self.packets:
             if p.arrival < 0 or not .5 < p.reliability < 1 or not 0 <= p.failure_probability < 1:
                 raise ValueError("invalid public packet model")
-        if any(not math.isfinite(x) or x < 0 for x in self.costs):
+        if any(not math.isfinite(x) or x < 0 or x > 1e100 for x in self.costs):
             raise ValueError("costs must be finite and nonnegative")
 
     @property
@@ -91,7 +91,13 @@ def validate(config, state):
         raise ValueError("invalid public resources")
     if not 0 <= state.next_packet <= len(config.packets) or len(state.history) != state.next_packet:
         raise ValueError("invalid history length")
-    if any(bit not in "01x" for bit in state.history) or state.paid_cost < 0:
+    if (any(bit not in "01x" for bit in state.history)
+            or not math.isfinite(state.paid_cost) or state.paid_cost < 0
+            or state.next_packet + state.budget_left != config.budget
+            or state.clock < state.next_packet
+            or not 0 <= state.recovery_until <= config.deadline + config.refractory_ticks
+            or state.terminated != (state.answer is not None)
+            or state.answer not in (None, 0, 1)):
         raise ValueError("invalid evidence/ledger")
 
 
