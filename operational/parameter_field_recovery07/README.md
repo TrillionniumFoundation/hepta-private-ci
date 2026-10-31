@@ -77,6 +77,22 @@ its partial evidence and requires a new explicit operational decision.
 
 ## Lifecycle and source closure
 
+The original loader also requires `RESTORATION.json` beside the nine inputs.
+`prepare_inputs.py` now writes a fresh `hepta.execution07.original-asset-assembly.1`
+receipt after byte-verifying all nine downloaded files. Its archive digest denotes
+the historical original archive identity, backed by the literal committed
+`records/ORIGINAL_ASSET_RESTORATION.json`; the current process explicitly does not
+claim to have downloaded or extracted that old archive. Historical CPU and wall
+values are not copied into current costs. The actual preparation producer,
+source checkout and public input manifest are bound separately.
+
+Initialization verifies this current receipt before starting a worker and keeps
+an identical copy at `ops/registrations/initial/RESTORATION.json`. Both paths are
+directly pinned by A, C and controller freezes and checked again after sealing.
+The copy travels in the operational archives. A portable replay must retain its
+own fresh download evidence separately, then restore and byte-verify the original
+run's literal provenance record when re-entering that run's frozen source gates.
+
 `bootstrap.py` runs a real owned child around the entire lifecycle. Within that
 child, `terminal.py measure-init` records an initialization plan before starting
 the initializer under its own wait4 owner. The plan and generated configuration

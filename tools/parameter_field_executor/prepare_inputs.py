@@ -5,11 +5,15 @@ import json
 import os
 from pathlib import Path
 import resource
+import sys
 import time
 import urllib.request
 
 
 SOURCE = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(SOURCE))
+from operational.parameter_field_recovery07 import asset_provenance, common as c  # noqa: E402
+
 CONTRACT = SOURCE / "operational/parameter_field_recovery07/INPUT_CONTRACT.json"
 REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
 
@@ -71,12 +75,29 @@ def main():
             if row["public_download_url"] != url:
                 raise ValueError("Unexpected original MNIST input source")
         actual.append(download(url, root / relative, row["bytes"], row["sha256"]))
+    source_commit = c.git(SOURCE, "rev-parse", "HEAD").decode().strip()
+    producer = {
+        key: os.environ.get(name)
+        for key, name in (
+            ("repository", "GITHUB_REPOSITORY"),
+            ("run_id", "GITHUB_RUN_ID"),
+            ("run_attempt", "GITHUB_RUN_ATTEMPT"),
+            ("head_sha", "GITHUB_SHA"),
+            ("job", "GITHUB_JOB"),
+        )
+    }
+    restoration = c.write_new(
+        root / "RESTORATION.json",
+        asset_provenance.build(contract, manifest, actual, source_commit, producer),
+    )
+    asset_provenance.validate_current(contract, source_commit, producer)
     result = {
         "schema": "hepta.execution07.public-input-preparation.1",
-        "source_commit": os.environ["GITHUB_SHA"],
+        "source_commit": source_commit,
         "public_assets_commit": contract["public_assets_commit"],
         "manifest": manifest,
         "files": actual,
+        "current_asset_assembly": restoration,
         "scientific_values_decoded": False,
         "wall_seconds": time.monotonic() - started,
         "self_cpu_seconds": time.process_time() - cpu,

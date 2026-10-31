@@ -77,7 +77,7 @@ jobs:
           mkdir /work/transport-sdk
           cp operational/parameter_field_recovery07/package.json operational/parameter_field_recovery07/package-lock.json /work/transport-sdk/
           npm ci --prefix /work/transport-sdk --ignore-scripts --no-audit --no-fund
-      - name: Retrieve and byte-verify all nine original public inputs
+      - name: Retrieve original inputs and seal current provenance for the original loader
         working-directory: /work/source
         run: /opt/runtime/venv/bin/python -B tools/parameter_field_executor/prepare_inputs.py
       - name: Check source closure and direct-script boundaries before initialization

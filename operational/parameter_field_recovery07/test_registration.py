@@ -8,10 +8,96 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
-from . import analysis_worker, common as c, initialize, registration
+from . import analysis_worker, asset_provenance, common as c, initialize, registration
 
 
 class RegistrationTests(unittest.TestCase):
+    def asset_fixture(self, root):
+        assets = root / "assets"
+        assets.mkdir()
+        relative, actual = [], []
+        for index in range(9):
+            path = assets / f"synthetic-{index}.bin"
+            path.write_bytes(bytes([index]))
+            item = c.descriptor(path)
+            actual.append(item)
+            relative.append({**item, "path": path.name})
+        origin = {
+            "schema": "hepta.fullstudy.original-asset-restoration.1",
+            "archive_sha256": "a" * 64,
+            "archive_bytes": 64,
+            "selected_files": relative,
+            "all_pinned_bytes_verified": True,
+            "own_cpu_seconds": 123.0,
+        }
+        origin_item = c.write_new(root / "historical.json", origin)
+        manifest = c.write_new(root / "manifest.json", {"synthetic_inputs_only": True})
+        contract = {
+            "assets_root": str(assets),
+            "assets": relative,
+            "public_assets_commit": "b" * 40,
+            "public_assets_manifest": manifest,
+            "original_asset_restoration": {
+                **origin_item,
+                "path": "historical.json",
+                "archive_sha256": "a" * 64,
+            },
+        }
+        return assets, origin, contract, manifest, actual
+
+    def test_actual_historical_asset_receipt_matches_the_nine_registered_inputs(self):
+        contract = c.read(c.OWN / "INPUT_CONTRACT.json")
+        origin, item = asset_provenance.historical(contract)
+        self.assertEqual(len(origin["selected_files"]), 9)
+        self.assertEqual(
+            item["sha256"],
+            "426d99fd7ba57fc451ac05c6cde7722322d64cc345aa9800f98957938860adb1",
+        )
+        self.assertEqual(
+            origin["archive_sha256"],
+            "ddbdf10b4397c8538183df8fa7c16f08c5fba226a304ff7cb55574ddb97e951e",
+        )
+
+    def test_fresh_asset_assembly_binds_actual_bytes_and_does_not_reuse_historical_cost(
+        self,
+    ):
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            assets, origin, contract, manifest, actual = self.asset_fixture(root)
+            producer = {"fixture": "new run"}
+            with patch.object(c, "SOURCE", root):
+                record = asset_provenance.build(
+                    contract, manifest, actual, "c" * 40, producer
+                )
+                self.assertNotIn("own_cpu_seconds", record)
+                self.assertFalse(record["historical_cost_reused"])
+                self.assertFalse(
+                    record["original_archive_downloaded_or_extracted_here"]
+                )
+                saved = c.write_new(assets / "RESTORATION.json", record)
+                item, verified = asset_provenance.validate_current(
+                    contract, "c" * 40, producer
+                )
+                self.assertEqual((item, verified), (saved, record))
+                with self.assertRaisesRegex(ValueError, "another producer"):
+                    asset_provenance.validate_current(
+                        contract, "c" * 40, {"fixture": "old run"}
+                    )
+                (assets / "synthetic-0.bin").write_bytes(b"changed")
+                with self.assertRaises(ValueError):
+                    asset_provenance.validate_current(contract, "c" * 40, producer)
+
+    def test_historical_asset_receipt_cannot_impersonate_current_assembly(self):
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            assets, origin, contract, manifest, actual = self.asset_fixture(root)
+            c.write_new(assets / "RESTORATION.json", origin)
+            with (
+                patch.object(c, "SOURCE", root),
+                self.assertRaisesRegex(ValueError, "inherited"),
+            ):
+                asset_provenance.validate_current(contract, "c" * 40)
+
     def test_actual_actions_identity_is_bound_without_recording_credentials(self):
         values = {
             "GITHUB_REPOSITORY": "TrillionniumFoundation/hepta-private-ci",

@@ -12,6 +12,7 @@ import time
 SOURCE = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(SOURCE))
 from operational.parameter_field_recovery07 import common as c  # noqa: E402
+from operational.parameter_field_recovery07 import asset_provenance  # noqa: E402
 
 
 def actions_identity(commit):
@@ -317,6 +318,9 @@ def initialize(commit, initialization_intent, initialization_intent_sha256):
     closure = committed_closure(commit, contract)
     amendment = verify_amendment(contract)
     assets = verify_assets(contract)
+    restoration, restoration_value = asset_provenance.validate_current(
+        contract, commit, producer
+    )
     ops, raw, cas = (Path(contract[k]) for k in ("ops_root", "raw_root", "cas_root"))
     c.need(
         not any(p.exists() for p in (ops, raw, cas)),
@@ -342,12 +346,19 @@ def initialize(commit, initialization_intent, initialization_intent_sha256):
     for p in (raw, cas, ops / "empty_cwd"):
         p.mkdir(exist_ok=False)
     runtime_item = c.write_new(initial / "RUNTIME.json", runtime)
+    restoration_copy = c.write_new(initial / "RESTORATION.json", restoration_value)
+    c.need(
+        all(restoration_copy[k] == restoration[k] for k in ("bytes", "sha256")),
+        "Archived input provenance changed bytes",
+    )
     assets_item = c.write_new(
         initial / "ASSETS.json",
         {
             "schema": "hepta.execution07.asset-verification.1",
             "public_source_commit": contract["public_assets_commit"],
             "files": assets,
+            "current_asset_assembly": restoration,
+            "current_asset_assembly_copy": restoration_copy,
             "decoded": False,
         },
     )
@@ -357,6 +368,8 @@ def initialize(commit, initialization_intent, initialization_intent_sha256):
         assets_item,
         c.descriptor(c.OWN / "INPUT_CONTRACT.json"),
         *assets,
+        restoration,
+        restoration_copy,
     ]
     a = c.write_new(
         initial / "A_SOURCE_FREEZE.json",

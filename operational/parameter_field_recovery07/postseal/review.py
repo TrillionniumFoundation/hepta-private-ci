@@ -17,6 +17,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from operational.parameter_field_recovery07 import common as c  # noqa: E402
 from operational.parameter_field_recovery07.job_queue import LABELS  # noqa: E402
+from operational.parameter_field_recovery07 import asset_provenance  # noqa: E402
 
 SCHEMA = "hepta.execution07.postseal-review.1"
 
@@ -387,6 +388,18 @@ def operational_gate(config, config_item, terminal_item, metadata):
     runtime = metadata.read(config["descriptors"]["runtime_receipt"])
     contract = metadata.file(c.OWN / "INPUT_CONTRACT.json")
     asset_receipt = metadata.read(config["descriptors"]["assets_receipt"])
+    restoration, restoration_value = asset_provenance.validate_current(
+        contract, config["source_commit"], config["actions_identity"]
+    )
+    restoration_copy = asset_receipt["current_asset_assembly_copy"]
+    c.need(
+        asset_receipt.get("current_asset_assembly") == restoration
+        and Path(restoration_copy["path"])
+        == ops / "registrations/initial/RESTORATION.json"
+        and all(restoration_copy[k] == restoration[k] for k in ("bytes", "sha256"))
+        and metadata.read(restoration_copy) == restoration_value,
+        "Current input provenance was not literally preserved",
+    )
     expected_assets = [
         {**row, "path": str(Path(config["assets_root"]) / row["path"])}
         for row in contract["assets"]
@@ -397,7 +410,8 @@ def operational_gate(config, config_item, terminal_item, metadata):
         and asset_receipt.get("decoded") is False,
         "Original nine-input byte population differs",
     )
-    for item in expected_assets:
+    pinned_inputs = [*expected_assets, restoration, restoration_copy]
+    for item in pinned_inputs:
         metadata.check(item)
         c.need(
             frozen["artifacts"].get(item["path"]) == item["sha256"],
@@ -408,7 +422,7 @@ def operational_gate(config, config_item, terminal_item, metadata):
         c.need(
             all(
                 source_freeze["artifacts"].get(item["path"]) == item["sha256"]
-                for item in expected_assets
+                for item in pinned_inputs
             ),
             "Scientific freeze omitted a direct input asset pin",
         )

@@ -1,15 +1,177 @@
 {
-  "schema": "hepta.execution07.fixed-input-contract.1",
-  "execution_episode": "execution07_actions_20261031",
-  "scientific_source_commit": "bc4e757f5c90f6365f383c1127be710d2ded874a",
-  "source_root": "/work/source",
-  "ops_root": "/work/execution07/ops",
-  "raw_root": "/work/execution07/raw",
-  "cas_root": "/work/execution07/raw_cas",
+  "assets": [
+    {
+      "bytes": 1648877,
+      "path": "ndu-data/t10k-images-idx3-ubyte.gz",
+      "sha256": "8d422c7b0a1c1c79245a5bcf07fe86e33eeafee792b84584aec276f5a2dbc4e6"
+    },
+    {
+      "bytes": 4542,
+      "path": "ndu-data/t10k-labels-idx1-ubyte.gz",
+      "sha256": "f7ae60f92e00ec6debd23a6088c31dbd2371eca3ffa0defaefb259924204aec6"
+    },
+    {
+      "bytes": 9912422,
+      "path": "ndu-data/train-images-idx3-ubyte.gz",
+      "sha256": "440fcabf73cc546fa21475e81ea370265605f56be210a4024d2ca8f203523609"
+    },
+    {
+      "bytes": 28881,
+      "path": "ndu-data/train-labels-idx1-ubyte.gz",
+      "sha256": "3552534a0a558bbed6aed32b30c495cca23d567ec52cac8be1a0730e8010255c"
+    },
+    {
+      "bytes": 427247,
+      "path": "ndu-runs/full-002/audit-observer.pt",
+      "sha256": "cd560d4ec2f45cef6a0f4db9809b902ea68833c8693798f7597135a83a6e3589"
+    },
+    {
+      "bytes": 427261,
+      "path": "ndu-runs/full-002/reward-observer.pt",
+      "sha256": "a9cfe78a08b9192ba9d8fe9c144de29ef5d3b1e9cd6ed236d01d170d32034210"
+    },
+    {
+      "bytes": 4063045,
+      "path": "ndu-runs/full-002/seed-17-terminal_entropic_ndu.pt",
+      "sha256": "8fa76a13cdeee48e41b84e29211659a065d9573e2fdfecc4281f882248b508b6"
+    },
+    {
+      "bytes": 4063045,
+      "path": "ndu-runs/full-002/seed-29-terminal_entropic_ndu.pt",
+      "sha256": "e92dc06cec18ee279b8367a2fd194ba91978197150e5edcdede1c0d9fde2b11c"
+    },
+    {
+      "bytes": 4063045,
+      "path": "ndu-runs/full-002/seed-43-terminal_entropic_ndu.pt",
+      "sha256": "1a38524e474d35ff9eb1ad584b1714ea2ef7f7f8d0c502a6b3b2172252ddabf9"
+    }
+  ],
   "assets_root": "/work/assets",
+  "cas_root": "/work/execution07/raw_cas",
+  "docker_memory_max_bytes": 8589934592,
+  "execution_episode": "execution07_actions_20261031",
+  "imported_jobs": [],
+  "independent_sample_claim": "Same registered design and prescribed seeds; previous executions are not added as independent samples.",
+  "job_order": [
+    "A-17",
+    "A-29",
+    "A-43",
+    "C",
+    "B-17",
+    "B-29",
+    "B-43",
+    "W",
+    "R-17",
+    "R-29",
+    "R-43",
+    "A_endpoint",
+    "B_endpoint",
+    "C_endpoint"
+  ],
+  "ops_root": "/work/execution07/ops",
+  "original_asset_restoration": {
+    "archive_sha256": "ddbdf10b4397c8538183df8fa7c16f08c5fba226a304ff7cb55574ddb97e951e",
+    "bytes": 2068,
+    "path": "operational/parameter_field_recovery07/records/ORIGINAL_ASSET_RESTORATION.json",
+    "role": "Literal historical asset-origin provenance only; not a current host restoration, runtime, or cost receipt.",
+    "sha256": "426d99fd7ba57fc451ac05c6cde7722322d64cc345aa9800f98957938860adb1"
+  },
+  "original_resource_amendment": {
+    "bytes": 15269,
+    "path": "experiments/parameter_field_fullstudy_20261029/OPS_ATTEMPT02_DISK.json",
+    "sha256": "d0572d7c26f7d15f9a78f3a8d6e6b72f70ae709e075c89a04f4599d90146d372"
+  },
+  "protocol": {
+    "bytes": 37799,
+    "path": "experiments/parameter_field_fullstudy_20261029/PROTOCOL.json",
+    "sha256": "2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55"
+  },
+  "public_assets_commit": "1603a0272aa7b0888be7d44e01242f6bc3d9ebe1",
+  "public_assets_manifest": {
+    "bytes": 3176,
+    "path": "research_inputs/parameter_field_20261031/MANIFEST.json",
+    "sha256": "a6ca37ebe98e44e320f3bdc5ce17a79b2e65fb0e347b4cf8da89715338aa3ee7"
+  },
+  "public_python_archive": {
+    "bytes": 34130340,
+    "sha256": "7ce4a71285d913955a76053cc7605ea96da8ecada54dba9cf395245961816421",
+    "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.12.14%2B20260825-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz"
+  },
+  "public_python_files": [
+    {
+      "name": "python/bin/python3.12",
+      "sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7",
+      "size": 30894944
+    },
+    {
+      "name": "python/lib/libpython3.12.so.1.0",
+      "sha256": "7e177a680eabb11fcb7d3867f7a1b9c4b93a9bd5b18129ce1af51ec07977b024",
+      "size": 32465344
+    }
+  ],
   "python": "/opt/runtime/venv/bin/python",
   "python_base": "/opt/runtime/python",
-  "docker_memory_max_bytes": 8589934592,
+  "raw_root": "/work/execution07/raw",
+  "runtime_contract": {
+    "bytes": 2999,
+    "path": "tools/parameter_field_executor/runtime_contract.json",
+    "sha256": "facebb38f6c8d487569c233334343f5bec8be046a962f37cbcd271505ec16543"
+  },
+  "runtime_expected": {
+    "codec_source_sha256": "75b2be74e5a9bf7ff474e74f5e25f3f6dc3758c09d07ff78a1417537ddc772fb",
+    "descriptor": {
+      "autocast_cpu": false,
+      "cpu_capability": "AVX512",
+      "default_dtype": "torch.float32",
+      "deterministic": true,
+      "environment": {
+        "ATEN_CPU_CAPABILITY": null,
+        "MKL_NUM_THREADS": null,
+        "OMP_NUM_THREADS": null
+      },
+      "grad_enabled": true,
+      "inference_mode": false,
+      "interop_threads": 1,
+      "matmul_precision": "highest",
+      "mkldnn": true,
+      "numpy": "2.3.5",
+      "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+      "threads": 2,
+      "torch": "2.8.0+cpu",
+      "torch_build": "PyTorch built with:\n  - GCC 13.3\n  - C++ Version: 201703\n  - Intel(R) oneAPI Math Kernel Library Version 2024.2-Product Build 20240605 for Intel(R) 64 architecture applications\n  - Intel(R) MKL-DNN v3.7.1 (Git Hash 8d263e693366ef8db40acc569cc7d8edf644556d)\n  - OpenMP 201511 (a.k.a. OpenMP 4.5)\n  - LAPACK is enabled (usually provided by MKL)\n  - NNPACK is enabled\n  - CPU capability usage: AVX512\n  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, COMMIT_SHA=a1cb3cc05d46d198467bebbb6e8fba50a325d4e7, CXX_COMPILER=/opt/rh/gcc-toolset-13/root/usr/bin/c++, CXX_FLAGS= -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOCUPTI -DLIBKINETO_NOROCTRACER -DLIBKINETO_NOXPUPTI=ON -DUSE_FBGEMM -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -DC10_NODEPRECATED -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=range-loop-construct -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-unused-parameter -Wno-strict-overflow -Wno-strict-aliasing -Wno-stringop-overflow -Wsuggest-override -Wno-psabi -Wno-error=old-style-cast -faligned-new -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-dangling-reference -Wno-error=dangling-reference -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, TORCH_VERSION=2.8.0, USE_CUDA=0, USE_CUDNN=OFF, USE_CUSPARSELT=OFF, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_GLOO=ON, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=OFF, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, USE_XCCL=OFF, USE_XPU=OFF, \n"
+    },
+    "descriptor_source_sha256": "59b32cbd4ac52dee2e3b0dec7f1c0b197d2c84dbd6fdf404156ad788d3d38e21",
+    "note": "Historical registered compatibility target; this is not a new destination runtime receipt.",
+    "package_versions": {
+      "Pillow": "12.3.0",
+      "filelock": "4.2.4",
+      "fsspec": "2026.9.0",
+      "jinja2": "3.1.6",
+      "mpmath": "1.3.0",
+      "networkx": "3.7",
+      "numpy": "2.3.5",
+      "sympy": "1.14.0",
+      "torch": "2.8.0+cpu",
+      "typing_extensions": "4.16.0"
+    },
+    "runtime_sha256": "9d6ac19baf5234ed0d7d4ce98e63d550a1fea951126ea4dba0a591e04f65d52c",
+    "schema": "hepta.executor-qualification.expected-runtime.1",
+    "scientific_source_commit": "bc4e757f5c90f6365f383c1127be710d2ded874a"
+  },
+  "schema": "hepta.execution07.fixed-input-contract.1",
+  "scientific_parents": {
+    "A": {
+      "bytes": 10486,
+      "path": "experiments/parameter_field_fullstudy_20261029/registrations/A_SOURCE_FREEZE.json",
+      "sha256": "2a5219147d38ebb6514059bd69e2d3489bf7d69d213cd01343455f63a08a53d2"
+    },
+    "C": {
+      "bytes": 13473,
+      "path": "experiments/parameter_field_fullstudy_20261029/registrations/C_SOURCE_FREEZE.json",
+      "sha256": "5f427c8a8cebe8c96a2a0d81318e22d286dc0aaa8b3dbf4d5844df2177949c6d"
+    }
+  },
+  "scientific_source_commit": "bc4e757f5c90f6365f383c1127be710d2ded874a",
   "source_files": {
     "experiments/continuous_spiking_network/cell.py": "486b9f86ad7cdbae2f3e8a151cb500a219b87cd67a438e9a4e10c038a43ac311",
     "experiments/continuous_spiking_network/kernels.py": "188334725b39b7e3bfdf5b17dd04cef2d3383ab6eb02c17eedad912dea21ae30",
@@ -179,160 +341,5 @@
     "supplements/parameter_field_fullstudy_20261030/postseal_supplement.py": "1b705285b99fc7185c20155fa85f3a5d370b473196eaf59c8ae1d6bb2941a633",
     "supplements/parameter_field_fullstudy_20261030/test_semantics.py": "267745e30f874740c8c739ea7b761ba3de580e75c4c20aee956a6fd8d25d0956"
   },
-  "protocol": {
-    "path": "experiments/parameter_field_fullstudy_20261029/PROTOCOL.json",
-    "bytes": 37799,
-    "sha256": "2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55"
-  },
-  "scientific_parents": {
-    "A": {
-      "path": "experiments/parameter_field_fullstudy_20261029/registrations/A_SOURCE_FREEZE.json",
-      "bytes": 10486,
-      "sha256": "2a5219147d38ebb6514059bd69e2d3489bf7d69d213cd01343455f63a08a53d2"
-    },
-    "C": {
-      "path": "experiments/parameter_field_fullstudy_20261029/registrations/C_SOURCE_FREEZE.json",
-      "bytes": 13473,
-      "sha256": "5f427c8a8cebe8c96a2a0d81318e22d286dc0aaa8b3dbf4d5844df2177949c6d"
-    }
-  },
-  "original_resource_amendment": {
-    "path": "experiments/parameter_field_fullstudy_20261029/OPS_ATTEMPT02_DISK.json",
-    "bytes": 15269,
-    "sha256": "d0572d7c26f7d15f9a78f3a8d6e6b72f70ae709e075c89a04f4599d90146d372"
-  },
-  "public_assets_commit": "1603a0272aa7b0888be7d44e01242f6bc3d9ebe1",
-  "public_assets_manifest": {
-    "path": "research_inputs/parameter_field_20261031/MANIFEST.json",
-    "bytes": 3176,
-    "sha256": "a6ca37ebe98e44e320f3bdc5ce17a79b2e65fb0e347b4cf8da89715338aa3ee7"
-  },
-  "assets": [
-    {
-      "path": "ndu-data/t10k-images-idx3-ubyte.gz",
-      "bytes": 1648877,
-      "sha256": "8d422c7b0a1c1c79245a5bcf07fe86e33eeafee792b84584aec276f5a2dbc4e6"
-    },
-    {
-      "path": "ndu-data/t10k-labels-idx1-ubyte.gz",
-      "bytes": 4542,
-      "sha256": "f7ae60f92e00ec6debd23a6088c31dbd2371eca3ffa0defaefb259924204aec6"
-    },
-    {
-      "path": "ndu-data/train-images-idx3-ubyte.gz",
-      "bytes": 9912422,
-      "sha256": "440fcabf73cc546fa21475e81ea370265605f56be210a4024d2ca8f203523609"
-    },
-    {
-      "path": "ndu-data/train-labels-idx1-ubyte.gz",
-      "bytes": 28881,
-      "sha256": "3552534a0a558bbed6aed32b30c495cca23d567ec52cac8be1a0730e8010255c"
-    },
-    {
-      "path": "ndu-runs/full-002/audit-observer.pt",
-      "bytes": 427247,
-      "sha256": "cd560d4ec2f45cef6a0f4db9809b902ea68833c8693798f7597135a83a6e3589"
-    },
-    {
-      "path": "ndu-runs/full-002/reward-observer.pt",
-      "bytes": 427261,
-      "sha256": "a9cfe78a08b9192ba9d8fe9c144de29ef5d3b1e9cd6ed236d01d170d32034210"
-    },
-    {
-      "path": "ndu-runs/full-002/seed-17-terminal_entropic_ndu.pt",
-      "bytes": 4063045,
-      "sha256": "8fa76a13cdeee48e41b84e29211659a065d9573e2fdfecc4281f882248b508b6"
-    },
-    {
-      "path": "ndu-runs/full-002/seed-29-terminal_entropic_ndu.pt",
-      "bytes": 4063045,
-      "sha256": "e92dc06cec18ee279b8367a2fd194ba91978197150e5edcdede1c0d9fde2b11c"
-    },
-    {
-      "path": "ndu-runs/full-002/seed-43-terminal_entropic_ndu.pt",
-      "bytes": 4063045,
-      "sha256": "1a38524e474d35ff9eb1ad584b1714ea2ef7f7f8d0c502a6b3b2172252ddabf9"
-    }
-  ],
-  "runtime_contract": {
-    "path": "tools/parameter_field_executor/runtime_contract.json",
-    "bytes": 2999,
-    "sha256": "facebb38f6c8d487569c233334343f5bec8be046a962f37cbcd271505ec16543"
-  },
-  "runtime_expected": {
-    "codec_source_sha256": "75b2be74e5a9bf7ff474e74f5e25f3f6dc3758c09d07ff78a1417537ddc772fb",
-    "descriptor": {
-      "autocast_cpu": false,
-      "cpu_capability": "AVX512",
-      "default_dtype": "torch.float32",
-      "deterministic": true,
-      "environment": {
-        "ATEN_CPU_CAPABILITY": null,
-        "MKL_NUM_THREADS": null,
-        "OMP_NUM_THREADS": null
-      },
-      "grad_enabled": true,
-      "inference_mode": false,
-      "interop_threads": 1,
-      "matmul_precision": "highest",
-      "mkldnn": true,
-      "numpy": "2.3.5",
-      "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
-      "threads": 2,
-      "torch": "2.8.0+cpu",
-      "torch_build": "PyTorch built with:\n  - GCC 13.3\n  - C++ Version: 201703\n  - Intel(R) oneAPI Math Kernel Library Version 2024.2-Product Build 20240605 for Intel(R) 64 architecture applications\n  - Intel(R) MKL-DNN v3.7.1 (Git Hash 8d263e693366ef8db40acc569cc7d8edf644556d)\n  - OpenMP 201511 (a.k.a. OpenMP 4.5)\n  - LAPACK is enabled (usually provided by MKL)\n  - NNPACK is enabled\n  - CPU capability usage: AVX512\n  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, COMMIT_SHA=a1cb3cc05d46d198467bebbb6e8fba50a325d4e7, CXX_COMPILER=/opt/rh/gcc-toolset-13/root/usr/bin/c++, CXX_FLAGS= -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOCUPTI -DLIBKINETO_NOROCTRACER -DLIBKINETO_NOXPUPTI=ON -DUSE_FBGEMM -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -DC10_NODEPRECATED -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=range-loop-construct -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-unused-parameter -Wno-strict-overflow -Wno-strict-aliasing -Wno-stringop-overflow -Wsuggest-override -Wno-psabi -Wno-error=old-style-cast -faligned-new -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-dangling-reference -Wno-error=dangling-reference -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, TORCH_VERSION=2.8.0, USE_CUDA=0, USE_CUDNN=OFF, USE_CUSPARSELT=OFF, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_GLOO=ON, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=OFF, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, USE_XCCL=OFF, USE_XPU=OFF, \n"
-    },
-    "descriptor_source_sha256": "59b32cbd4ac52dee2e3b0dec7f1c0b197d2c84dbd6fdf404156ad788d3d38e21",
-    "note": "Historical registered compatibility target; this is not a new destination runtime receipt.",
-    "package_versions": {
-      "Pillow": "12.3.0",
-      "filelock": "4.2.4",
-      "fsspec": "2026.9.0",
-      "jinja2": "3.1.6",
-      "mpmath": "1.3.0",
-      "networkx": "3.7",
-      "numpy": "2.3.5",
-      "sympy": "1.14.0",
-      "torch": "2.8.0+cpu",
-      "typing_extensions": "4.16.0"
-    },
-    "runtime_sha256": "9d6ac19baf5234ed0d7d4ce98e63d550a1fea951126ea4dba0a591e04f65d52c",
-    "schema": "hepta.executor-qualification.expected-runtime.1",
-    "scientific_source_commit": "bc4e757f5c90f6365f383c1127be710d2ded874a"
-  },
-  "public_python_archive": {
-    "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.12.14%2B20260825-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz",
-    "bytes": 34130340,
-    "sha256": "7ce4a71285d913955a76053cc7605ea96da8ecada54dba9cf395245961816421"
-  },
-  "public_python_files": [
-    {
-      "name": "python/bin/python3.12",
-      "size": 30894944,
-      "sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7"
-    },
-    {
-      "name": "python/lib/libpython3.12.so.1.0",
-      "size": 32465344,
-      "sha256": "7e177a680eabb11fcb7d3867f7a1b9c4b93a9bd5b18129ce1af51ec07977b024"
-    }
-  ],
-  "job_order": [
-    "A-17",
-    "A-29",
-    "A-43",
-    "C",
-    "B-17",
-    "B-29",
-    "B-43",
-    "W",
-    "R-17",
-    "R-29",
-    "R-43",
-    "A_endpoint",
-    "B_endpoint",
-    "C_endpoint"
-  ],
-  "imported_jobs": [],
-  "independent_sample_claim": "Same registered design and prescribed seeds; previous executions are not added as independent samples."
+  "source_root": "/work/source"
 }
