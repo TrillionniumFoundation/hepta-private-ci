@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "experiments.hcsn_task_value_v1.portable_replay",
+    "--results-root",
+    "/workspace/scratch/b8d29bac8668/evidence_restore/study001",
+    "--output",
+    "experiments/hcsn_task_value_v1/results/portable_replay001/relocated_run"
+  ],
+  "returncode": 0,
+  "log_sha256": "358fa541a2b9e38211459333c098a0b9c0838ca2138d5973ec2ea8107d7d10b0",
+  "scope": "Read-only relocated artifact replay; no forward pass or training"
+}

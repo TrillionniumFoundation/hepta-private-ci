@@ -1,0 +1,142 @@
+diff --git a/experiments/hcsn_task_value_v1/analysis.py b/experiments/hcsn_task_value_v1/analysis.py
+index 5544e9a..3bdbc5d 100644
+--- a/experiments/hcsn_task_value_v1/analysis.py
++++ b/experiments/hcsn_task_value_v1/analysis.py
+@@ -14,7 +14,7 @@ from pathlib import Path
+ import numpy as np
+ from scipy.stats import t as student_t
+ 
+-from .analysis_audit import audit_job, digest, global_integrity, pending_jobs, read_json, registered_jobs
++from .analysis_audit import audit_job, digest, frontend_account, global_integrity, pending_jobs, read_json, registered_jobs
+ 
+ 
+ DEFAULT_SEEDS = (31031, 31067, 31103)
+@@ -302,7 +302,16 @@ def chinese_report(report):
+               "receipt 不含此前环境安装、共享数据准备及未被 worker 回收的外部进程。推理计量是共享 CPU 主机上整段序列、batch=1、一次预热后五次重复；并非优化 KV-cache 服务，长输入通过重复首个测试输入构造。能耗未直接测量，未从 CPU 时间、事件数或本地 I/O 推造焦耳。", "",
+               "推理的 logical tensor 字节与按底层 storage 去重的字节均在 inference_summaries 中逐长度报告；null 表示该接口未提供缓存状态，不能当作零内存。返回状态不包括输入、输出 logits、反向传播图或所有临时分配，训练内存不由这些数字界定。", "",
+               "## 失败、完整性问题与未关闭问题", ""]
++    frontend = report.get("shared_frontend_account", {})
++    if frontend.get("available"):
++        section = ["### 一次共享前端重建账目", "",
++            f"独立完整进程计量：child CPU {frontend['child_cpu_seconds']:.6f} 秒，wall {frontend['wall_seconds']:.6f} 秒，峰值 RSS {frontend['child_peak_rss_bytes']} 字节；其监控进程 CPU 另计 {frontend['supervisor_cpu_seconds']:.6f} 秒。四个数据/归一化产物逐字节哈希与正式注册产物一致：{frontend['audit_ok']}。",
++            "",
++            "这一次流程从无原始媒体缓存开始，包含 48 个固定来源片段下载、ffprobe/ffmpeg、特征、因果前缀审计、仅训练集归一化、写盘与原始文件清理。它独立列账，未加到每个模型作业或每个比较上；此前旧 attempt 的 13.463 秒内部时钟保留，也不重复相加为‘完整研发成本’。包含审计的真实重建流程不等于最低生产前端成本，未测焦耳。证据为 frontend_cost001/IDENTITY_AND_COST.json 与 whole_process.json。", ""]
++        index = lines.index("## 失败、完整性问题与未关闭问题")
++        lines[index:index] = section
+     lines.extend("- **全局证据**："+error for error in report["integrity"]["errors"])
++    lines.extend("- **共享前端证据**："+error for error in frontend.get("errors", []))
+     for row in audits:
+         if row["errors"]:
+             lines.append(f"- **{row['id']}**："+"；".join(row["errors"]))
+@@ -374,7 +383,8 @@ def analyze(study, output, *, authorized=False):
+                   analysis_thresholds=policy, integrity=integrity, job_audit=audits, comparisons=comparisons,
+                   unavailable_comparisons=unavailable, factorial=factorial(groups, seeds, planned),
+                   arm_summaries=arm_summaries(groups), inference_summaries=inference_summaries(groups),
+-                  resource_totals=totals, test_predictions_used_for="Final prespecified reporting only",
++                  resource_totals=totals, shared_frontend_account=frontend_account(study, protocol),
++                  test_predictions_used_for="Final prespecified reporting only",
+                   source_sha256={name: digest(Path(__file__).parent/name) for name in ("analysis.py", "analysis_audit.py")},
+                   limitations=["Three-seed nominal t intervals; no multiplicity correction",
+                                "Seed intervals do not measure dataset or hardware generalization",
+diff --git a/experiments/hcsn_task_value_v1/analysis_audit.py b/experiments/hcsn_task_value_v1/analysis_audit.py
+index d562a9a..97bb380 100644
+--- a/experiments/hcsn_task_value_v1/analysis_audit.py
++++ b/experiments/hcsn_task_value_v1/analysis_audit.py
+@@ -98,6 +98,47 @@ def global_integrity(study, protocol):
+                 execution_sha256=digest(study/"execution.json"), execution=execution)
+ 
+ 
++def frontend_account(study, protocol):
++    """One shared from-zero AV rebuild, separately metered from every model job."""
++    directory = Path(study).parent/"frontend_cost001"
++    if not (directory/"IDENTITY_AND_COST.json").is_file():
++        return dict(available=False, errors=["Separate frontend receipt unavailable"])
++    identity = read_json(directory/"IDENTITY_AND_COST.json")
++    meter = read_json(directory/"whole_process.json")
++    errors, files = [], []
++    for row in identity["files"]:
++        key = "results/async_frontend001/data/"+row["path"]
++        frozen = protocol["source_hashes"].get(key)
++        rebuilt = digest(directory/"rebuilt/data"/row["path"])
++        equal = frozen == row["registered_sha256"] == row["rebuilt_sha256"] == rebuilt
++        files.append(dict(row, independently_identical=equal))
++        if not equal:
++            errors.append("Rebuilt frontend differs from registered data: "+row["path"])
++    if {row["path"] for row in files} != {"train.npz", "validation.npz", "test.npz", "NORMALIZATION.json"}:
++        errors.append("Frontend identity evidence lacks a required artifact")
++    log = Path(meter["log_path"])
++    if not log.is_absolute():
++        log = Path(meter["cwd"])/log
++    if (meter.get("returncode") != 0 or not meter.get("child_reaped") or meter.get("timed_out")
++            or digest(log) != meter["log_sha256"]):
++        errors.append("Frontend process completion/log evidence is inconsistent")
++    if meter.get("meter_source_sha256") != protocol["source_hashes"].get("cost_meter.py"):
++        errors.append("Frontend meter source differs from frozen meter")
++    for own, recorded in (("child_cpu_seconds", "whole_process_cpu_seconds"),
++                          ("wall_seconds", "whole_process_wall_seconds"),
++                          ("child_peak_rss_bytes", "peak_rss_bytes")):
++        if meter[own] != identity[recorded]:
++            errors.append("Frontend summary and receipt cost disagree: "+own)
++    return dict(available=True, audit_ok=not errors, errors=errors, files=files,
++                child_cpu_seconds=meter["child_cpu_seconds"], wall_seconds=meter["wall_seconds"],
++                child_peak_rss_bytes=meter["child_peak_rss_bytes"], supervisor_cpu_seconds=meter["supervisor_cpu_seconds"],
++                includes=identity["includes"], excludes=identity["excludes"],
++                identity_sha256=digest(directory/"IDENTITY_AND_COST.json"),
++                receipt_sha256=digest(directory/"whole_process.json"),
++                accounting="One shared reconstruction account; not added to each arm, old attempts, or total development cost",
++                production_scope="Includes prefix audits and raw cleanup; not a minimum production frontend cost")
++
++
+ def prediction_metrics(path, expected, cohort=None, classes=None):
+     with np.load(path, allow_pickle=False) as archive:
+         logits, labels = np.asarray(archive["logits"]), np.asarray(archive["labels"])
+diff --git a/experiments/hcsn_task_value_v1/plot_results.py b/experiments/hcsn_task_value_v1/plot_results.py
+index 3ce7f67..9798745 100644
+--- a/experiments/hcsn_task_value_v1/plot_results.py
++++ b/experiments/hcsn_task_value_v1/plot_results.py
+@@ -81,6 +81,8 @@ def save_figure(fig, output, name):
+ 
+ def length_plot(data, output):
+     fig, axes = plt.subplots(1, 3, figsize=(14, 4.5), sharey=True)
++    lower = min([-.03, *[r["accuracy_mean"]-(r["accuracy_sd"] or 0)-.02 for r in data["length_curves"]]])
++    upper = max([1.03, *[r["accuracy_mean"]+(r["accuracy_sd"] or 0)+.02 for r in data["length_curves"]]])
+     for ax, task in zip(axes, SYNTHETIC, strict=True):
+         for arm in ARMS:
+             rows = sorted((r for r in data["length_curves"] if r["task"] == task and r["arm"] == arm), key=lambda r: r["length"])
+@@ -92,7 +94,7 @@ def length_plot(data, output):
+             for r in rows:
+                 if r["n"] != len(data["expected_seeds"]):
+                     ax.annotate(f"n={r['n']}", (r["length"], r["accuracy_mean"]), fontsize=7)
+-        ax.set(title=TASKS[task], xlabel="Test sequence length", xticks=[32, 64, 128], ylim=(-.03, 1.03))
++        ax.set(title=TASKS[task], xlabel="Test sequence length", xticks=[32, 64, 128], ylim=(lower, upper))
+         ax.grid(alpha=.2)
+     axes[0].set_ylabel("Test accuracy")
+     handles = [Line2D([0], [0], color=COLORS[a], marker="o", label=LABELS[a]) for a in ARMS]
+@@ -104,7 +106,7 @@ def length_plot(data, output):
+ 
+ 
+ def cost_plot(data, output):
+-    fig, axes = plt.subplots(2, 2, figsize=(12, 9), sharey=True)
++    fig, axes = plt.subplots(2, 2, figsize=(12, 10), sharey=True)
+     for ax, task in zip(axes.flat, (*SYNTHETIC, "async_av"), strict=True):
+         rows = [r for r in data["cost_points"] if r["task"] == task]
+         notes = []
+@@ -129,8 +131,7 @@ def cost_plot(data, output):
+                 ax.annotate(f"n={r['n']}", (x, y), fontsize=7)
+         if not notes:
+             notes = ["No plotted HCSN comparison passes the registered NI gate."]
+-        ax.text(.02, .98, "\n".join(notes), transform=ax.transAxes, va="top", fontsize=7.5,
+-                bbox=dict(facecolor="white", alpha=.8, edgecolor="none"))
++        ax.text(.02, -.26, "\n".join(notes), transform=ax.transAxes, va="top", fontsize=7.5)
+         ax.set(title=TASKS[task], xlabel="Inner training CPU (seconds, logarithmic scale)",
+                xscale="log", ylim=(-.03, 1.03))
+         ax.grid(alpha=.2)
+@@ -144,7 +145,7 @@ def cost_plot(data, output):
+     fig.text(.5, -.01, "Width 16; all seeds mean ± SD. Black ring: registered quality NI against named baseline(s), not universal superiority.\n"
+              "An asterisk additionally requires the whole-worker CPU ratio CI upper bound < 1. Parameter/CPU matches remain separate in JSON.",
+              ha="center", fontsize=9)
+-    fig.tight_layout(rect=(0, .11, 1, .95))
++    fig.tight_layout(rect=(0, .17, 1, .95), h_pad=4)
+     save_figure(fig, output, "quality_cost_scatter")
+ 
+ 
