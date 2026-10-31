@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/f530455d952b/hepta-hcsn-r9/tools/hcsn/round9_20261031/value/run.py", line 238, in <module>
+    {"register": register, "train": train, "confirm": confirm}[parser.parse_args().stage]()
+  File "/workspace/scratch/f530455d952b/hepta-hcsn-r9/tools/hcsn/round9_20261031/value/run.py", line 156, in confirm
+    assert not (EVIDENCE / "CONFIRM_START.json").exists(), "confirmation is single-use"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: confirmation is single-use

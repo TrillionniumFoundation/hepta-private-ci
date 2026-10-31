@@ -1,0 +1,216 @@
+{
+  "aggregate_max_error": 3.9968028886505635e-15,
+  "cpu_seconds": 3.177680444,
+  "fully_replayed_runs": 3600,
+  "ledger_max_error": 1.7455654977016621e-16,
+  "ordinary_control": [
+    {
+      "first_passage_minus_direct": {
+        "correct": {
+          "lower": -0.0011413324435855293,
+          "mean": 7.975443660734882e-06,
+          "upper": 0.001157283330906999
+        },
+        "cpu_priced_utility": {
+          "lower": -0.008950832513739125,
+          "mean": -0.007254198463348594,
+          "upper": -0.005557564412958064
+        },
+        "decisions": {
+          "lower": -0.0345375966410949,
+          "mean": 0.08325741666107325,
+          "upper": 0.2010524299632414
+        },
+        "events": {
+          "lower": 0.4875040231705771,
+          "mean": 0.8716352045197121,
+          "upper": 1.255766385868847
+        },
+        "inference_cpu_seconds": {
+          "lower": 0.00027038949215158056,
+          "mean": 0.0003513193691406252,
+          "upper": 0.0004322492461296698
+        },
+        "mean_action_regret_all_states": {
+          "lower": -0.0002860156179592528,
+          "mean": 0.0002139681085313651,
+          "upper": 0.0007139518350219831
+        },
+        "utility": {
+          "lower": -0.0025018507754687043,
+          "mean": -0.001134876624347969,
+          "upper": 0.00023209752677276615
+        }
+      },
+      "regime": "nominal",
+      "scope": "Descriptive matched frozen-family contrasts; no new equivalence gate or ensemble."
+    },
+    {
+      "first_passage_minus_direct": {
+        "correct": {
+          "lower": -0.007866151741582457,
+          "mean": 0.0001992115542206019,
+          "upper": 0.00826457485002366
+        },
+        "cpu_priced_utility": {
+          "lower": -0.022861737319521517,
+          "mean": -0.004963456820349388,
+          "upper": 0.012934823678822743
+        },
+        "decisions": {
+          "lower": -1.476205591657728,
+          "mean": 0.06137496195238627,
+          "upper": 1.5989555155625004
+        },
+        "events": {
+          "lower": 0.5259425553701627,
+          "mean": 0.9574167595636933,
+          "upper": 1.388890963757224
+        },
+        "inference_cpu_seconds": {
+          "lower": 0.00021718160346468333,
+          "mean": 0.00041811657773437527,
+          "upper": 0.0006190515520040673
+        },
+        "mean_action_regret_all_states": {
+          "lower": -0.0011102568006739757,
+          "mean": -0.00013119908763163145,
+          "upper": 0.0008478586254107129
+        },
+        "utility": {
+          "lower": -0.016399910921135578,
+          "mean": 0.001222662227244986,
+          "upper": 0.01884523537562555
+        }
+      },
+      "regime": "drift",
+      "scope": "Descriptive matched frozen-family contrasts; no new equivalence gate or ensemble."
+    },
+    {
+      "first_passage_minus_direct": {
+        "correct": {
+          "lower": -0.0034908541967155083,
+          "mean": 0.003560893649438057,
+          "upper": 0.010612641495591622
+        },
+        "cpu_priced_utility": {
+          "lower": -0.01783266148650473,
+          "mean": 0.0017212415349555984,
+          "upper": 0.021275144556415927
+        },
+        "decisions": {
+          "lower": -0.29968440839416666,
+          "mean": 0.005992367298182444,
+          "upper": 0.3116691429905315
+        },
+        "events": {
+          "lower": 0.559183380695098,
+          "mean": 1.0577306621260747,
+          "upper": 1.5562779435570513
+        },
+        "inference_cpu_seconds": {
+          "lower": 0.00036835882234839413,
+          "mean": 0.00047901493867187476,
+          "upper": 0.0005896710549953554
+        },
+        "mean_action_regret_all_states": {
+          "lower": -0.0014679924678630784,
+          "mean": -7.068952970460548e-05,
+          "upper": 0.0013266134084538672
+        },
+        "utility": {
+          "lower": -0.011880962128583257,
+          "mean": 0.007968258943487471,
+          "upper": 0.0278174800155582
+        }
+      },
+      "regime": "missing",
+      "scope": "Descriptive matched frozen-family contrasts; no new equivalence gate or ensemble."
+    },
+    {
+      "first_passage_minus_direct": {
+        "correct": {
+          "lower": -0.006522545555937521,
+          "mean": 0.000739953865201981,
+          "upper": 0.008002453286341483
+        },
+        "cpu_priced_utility": {
+          "lower": -0.02733574790016144,
+          "mean": -0.0002255727374185175,
+          "upper": 0.0268846024253244
+        },
+        "decisions": {
+          "lower": -0.5055138737979619,
+          "mean": -0.0536338525372253,
+          "upper": 0.3982461687235113
+        },
+        "events": {
+          "lower": 0.4618116484418229,
+          "mean": 0.9221114283083116,
+          "upper": 1.3824112081748003
+        },
+        "inference_cpu_seconds": {
+          "lower": 0.0003427439075737736,
+          "mean": 0.00038006960488281286,
+          "upper": 0.00041739530219185215
+        },
+        "mean_action_regret_all_states": {
+          "lower": -0.007090509863737942,
+          "mean": -0.0003930342048698819,
+          "upper": 0.0063044414539981785
+        },
+        "utility": {
+          "lower": -0.02149532270906338,
+          "mean": 0.005922499337324294,
+          "upper": 0.03334032138371197
+        }
+      },
+      "regime": "cost_shift",
+      "scope": "Descriptive matched frozen-family contrasts; no new equivalence gate or ensemble."
+    },
+    {
+      "first_passage_minus_direct": {
+        "correct": {
+          "lower": -0.014924057473769129,
+          "mean": 0.005014697904899656,
+          "upper": 0.024953453283568443
+        },
+        "cpu_priced_utility": {
+          "lower": -0.024497404664240368,
+          "mean": -0.006518879160318815,
+          "upper": 0.011459646343602737
+        },
+        "decisions": {
+          "lower": -0.6322982836524886,
+          "mean": 0.38941693777464986,
+          "upper": 1.4111321592017885
+        },
+        "events": {
+          "lower": 0.5284927247037516,
+          "mean": 1.03815732019779,
+          "upper": 1.5478219156918285
+        },
+        "inference_cpu_seconds": {
+          "lower": 0.0004577664432257761,
+          "mean": 0.0005129511658203117,
+          "upper": 0.0005681358884148473
+        },
+        "mean_action_regret_all_states": {
+          "lower": -0.0030966405813533803,
+          "mean": -0.00019605022084744542,
+          "upper": 0.0027045401396584893
+        },
+        "utility": {
+          "lower": -0.018064395563191896,
+          "mean": -0.0002379255246385048,
+          "upper": 0.017588544513914884
+        }
+      },
+      "regime": "blind",
+      "scope": "Descriptive matched frozen-family contrasts; no new equivalence gate or ensemble."
+    }
+  ],
+  "protocol_sha256": "eabd979e4683dd315191753ec3d8b9b4db48645b668824249bf69e0edb7c121d",
+  "raw_pairs": 76800,
+  "replay_max_error": 0.0
+}

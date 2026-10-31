@@ -1,0 +1,12 @@
+{
+  "schema": "hepta.r9.value.deployment-cost.v1",
+  "repeats": 10,
+  "source_sha256": "451592307b29bcc8da1cad0e2d6d5b0ba67771f40805827ef08b4e5ae7b18be5",
+  "heads_frozen_sha256": "a15b381b3072c0c7e1b2b2f134f1b5b1ccb3dfd62c1cf21ac411f3019359f004",
+  "confirmation_sha256": "28dc88b9737c29e4b0db3661d940b4c2287951b6a326e8c594b432ec702248e2",
+  "scope": "Full model+old/new checkpoint read/parse/arrays and support JSON read+set construction, balanced paired order; warm filesystem possible",
+  "new_support_preparation": "nominal input membership only, generated offline, no action labels",
+  "per_episode_cost": "Registered PAIRED raw already includes full old/new head invocation and support lookup inside episode_run timer",
+  "energy_measured": false,
+  "does_not_replace_registered_gates": true
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.r9.boundary-diagnostic.v1",
+  "source_sha256": "05a63a08aa7550a5b7c26bfd46cd7b53c9df72b8c6b1b6e58ad3ecc8ba256abf",
+  "main_results_sha256": "28dc88b9737c29e4b0db3661d940b4c2287951b6a326e8c594b432ec702248e2",
+  "mode": "first_passage",
+  "seeds": [
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "regime": "eight original nominal contracts",
+  "raw_boundary_offsets": [
+    -2.0,
+    -1.0,
+    0.0,
+    1.0,
+    2.0,
+    5.0
+  ],
+  "gradient_centers": [
+    0.0,
+    1.0
+  ],
+  "finite_difference_steps": [
+    0.02,
+    0.01,
+    0.005
+  ],
+  "paired_execution": {
+    "episodes_per_contract_fit": 128,
+    "seed_start": 95100000,
+    "offset": 1.0
+  },
+  "policy": "one fixed public-state task+compute-cost optimal DP action, identical across latent states and interventions",
+  "ordinary_control": "same public policy with identity latent transition and zero events; same task and per-decision fee",
+  "gradients": "expm_frechet derivative of the 17-state CTMC; not a continuum QVI derivative",
+  "claim_test": "quality/task costs/calls fixed; any utility change must equal minus event fee times event-count change",
+  "not_a_primary_trial_or_trained_policy": true
+}
