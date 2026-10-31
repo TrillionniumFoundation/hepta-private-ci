@@ -1,0 +1,99 @@
+{
+  "active_release": {
+    "artifact": "4bcc743b3cea08fa18b05a689dac535c2e9f610e0f901769a0b2b4c017cda815",
+    "cut": {
+      "records": [
+        {
+          "body_sha256": "e04ea2a936947ee14944c8836ec1d484b2dabc1c62e0895bad4b7c119df49ce7",
+          "revision": 2,
+          "source_id": "project:amber"
+        },
+        {
+          "body_sha256": "a4ca95e3d483572d86702f9198ddb64247524aed02b3d20f6fbe8418d8e6625b",
+          "revision": 1,
+          "source_id": "project:birch"
+        },
+        {
+          "body_sha256": "62b484f66756ae3e83875144cf6cde2575a736b7a8fc2ce8e5c18242bc23c3c1",
+          "revision": 1,
+          "source_id": "project:cobalt"
+        },
+        {
+          "body_sha256": "943f2c4b27b9ae308967c62c57eb70c19dcc9b7b523002f45eb17a03d7731d66",
+          "revision": 1,
+          "source_id": "skills"
+        }
+      ],
+      "scope": "v13-provenance-independent-run"
+    },
+    "epoch": 3
+  },
+  "active_release_matches_candidate": true,
+  "candidate_artifact": "4bcc743b3cea08fa18b05a689dac535c2e9f610e0f901769a0b2b4c017cda815",
+  "candidate_file_sha256": "a509240829e4db1497033006511daf603430ec817793587fb058ab7bf11f4f29",
+  "candidate_path": "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/evidence/provenance/owner/artifacts/4bcc743b3cea08fa18b05a689dac535c2e9f610e0f901769a0b2b4c017cda815/model.npz",
+  "cut": {
+    "records": [
+      {
+        "body_sha256": "e04ea2a936947ee14944c8836ec1d484b2dabc1c62e0895bad4b7c119df49ce7",
+        "revision": 2,
+        "source_id": "project:amber"
+      },
+      {
+        "body_sha256": "a4ca95e3d483572d86702f9198ddb64247524aed02b3d20f6fbe8418d8e6625b",
+        "revision": 1,
+        "source_id": "project:birch"
+      },
+      {
+        "body_sha256": "62b484f66756ae3e83875144cf6cde2575a736b7a8fc2ce8e5c18242bc23c3c1",
+        "revision": 1,
+        "source_id": "project:cobalt"
+      },
+      {
+        "body_sha256": "943f2c4b27b9ae308967c62c57eb70c19dcc9b7b523002f45eb17a03d7731d66",
+        "revision": 1,
+        "source_id": "skills"
+      }
+    ],
+    "scope": "v13-provenance-independent-run"
+  },
+  "frontier": 4,
+  "old_release_depends_on_correction": true,
+  "old_release_probe": {
+    "reason": "source correction invalidated this release",
+    "status": "unavailable"
+  },
+  "parameter_hash_after": "1b1789a53ed5193359747fd53301c728a2ae94619a65815a07774f8a1b67e104",
+  "parameter_hash_before": "0cf5752e055f578accd5179022ac0d9cf646a884c9267e3e98420c436f9b303c",
+  "parent_artifact": "d75aca803f6a46c6715d7a2eee46a9c293f93972a61149a05c05b11cd6238cf9",
+  "publication": {
+    "epoch": 3,
+    "status": "published"
+  },
+  "read_fencing_passed": true,
+  "source_additions": [],
+  "source_corrections": [
+    "project:amber"
+  ],
+  "source_version": "36c379f0e2f04b267894d1dbc348782a1db18b588ea967dc1aaf495b64312fb1",
+  "state_sha256": "8ce197dd4308672f1b05e4e87ebac862d25d70daaf1b3553b4a964391d709aa5",
+  "training": {
+    "examples": 4732,
+    "first_loss": 1.5636125492954398,
+    "last_loss": 0.00013005582643066702,
+    "mean_loss": 0.029954453855710318,
+    "seconds": 0.09706078299495857,
+    "step": 720,
+    "updates": 240
+  },
+  "validation": {
+    "calibration_only": true,
+    "passed": true,
+    "profile_correct": 6,
+    "profile_total": 6,
+    "skill_correct": 41,
+    "skill_floor": 40,
+    "skill_total": 48,
+    "source_count": 4
+  }
+}

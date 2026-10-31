@@ -1,0 +1,108 @@
+{
+  "active_release": {
+    "artifact": "d75aca803f6a46c6715d7a2eee46a9c293f93972a61149a05c05b11cd6238cf9",
+    "cut": {
+      "records": [
+        {
+          "body_sha256": "5bb55016910dabff19c9fb0b6db0414d5d86d66a948e89ceb892191e5a698c04",
+          "revision": 1,
+          "source_id": "project:amber"
+        },
+        {
+          "body_sha256": "a4ca95e3d483572d86702f9198ddb64247524aed02b3d20f6fbe8418d8e6625b",
+          "revision": 1,
+          "source_id": "project:birch"
+        },
+        {
+          "body_sha256": "62b484f66756ae3e83875144cf6cde2575a736b7a8fc2ce8e5c18242bc23c3c1",
+          "revision": 1,
+          "source_id": "project:cobalt"
+        },
+        {
+          "body_sha256": "943f2c4b27b9ae308967c62c57eb70c19dcc9b7b523002f45eb17a03d7731d66",
+          "revision": 1,
+          "source_id": "skills"
+        }
+      ],
+      "scope": "v13-provenance-independent-run"
+    },
+    "epoch": 2
+  },
+  "active_release_matches_candidate": true,
+  "candidate_artifact": "d75aca803f6a46c6715d7a2eee46a9c293f93972a61149a05c05b11cd6238cf9",
+  "candidate_file_sha256": "cb0f9a5b087f91130bcfddf3fb82cf4913a069d46ff607991ffdce35028b134f",
+  "candidate_path": "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/evidence/provenance/owner/artifacts/d75aca803f6a46c6715d7a2eee46a9c293f93972a61149a05c05b11cd6238cf9/model.npz",
+  "cut": {
+    "records": [
+      {
+        "body_sha256": "5bb55016910dabff19c9fb0b6db0414d5d86d66a948e89ceb892191e5a698c04",
+        "revision": 1,
+        "source_id": "project:amber"
+      },
+      {
+        "body_sha256": "a4ca95e3d483572d86702f9198ddb64247524aed02b3d20f6fbe8418d8e6625b",
+        "revision": 1,
+        "source_id": "project:birch"
+      },
+      {
+        "body_sha256": "62b484f66756ae3e83875144cf6cde2575a736b7a8fc2ce8e5c18242bc23c3c1",
+        "revision": 1,
+        "source_id": "project:cobalt"
+      },
+      {
+        "body_sha256": "943f2c4b27b9ae308967c62c57eb70c19dcc9b7b523002f45eb17a03d7731d66",
+        "revision": 1,
+        "source_id": "skills"
+      }
+    ],
+    "scope": "v13-provenance-independent-run"
+  },
+  "frontier": 3,
+  "old_release_depends_on_correction": false,
+  "old_release_probe": {
+    "receipt": {
+      "artifact": "1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455",
+      "epoch": 1,
+      "predictions": [
+        0
+      ],
+      "source_version": "bcdfb871c32611f228aa878fd4f45dc78eab87c78ee8c1c6f93b979b04bea453"
+    },
+    "status": "readable"
+  },
+  "parameter_hash_after": "0cf5752e055f578accd5179022ac0d9cf646a884c9267e3e98420c436f9b303c",
+  "parameter_hash_before": "b673a64e48d9768c5d720eb382ec02e199079d1d360e61f551600214c3801a04",
+  "parent_artifact": "1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455",
+  "publication": {
+    "epoch": 2,
+    "status": "published"
+  },
+  "read_fencing_passed": true,
+  "source_additions": [
+    "project:amber",
+    "project:birch",
+    "project:cobalt"
+  ],
+  "source_corrections": [],
+  "source_version": "1b5fab946934e24e188a765621c1a6c1c5ac44891902ec5fd8c7c5cf8fba8d24",
+  "state_sha256": "9357f0ee57f118c2fa02d9d6b3da249152ed47faefa72a4d941a2529765fe020",
+  "training": {
+    "examples": 4732,
+    "first_loss": 1.044654790820426,
+    "last_loss": 0.00028913734028518894,
+    "mean_loss": 0.023489490945189064,
+    "seconds": 0.08719999800086953,
+    "step": 480,
+    "updates": 240
+  },
+  "validation": {
+    "calibration_only": true,
+    "passed": true,
+    "profile_correct": 6,
+    "profile_total": 6,
+    "skill_correct": 42,
+    "skill_floor": 40,
+    "skill_total": 48,
+    "source_count": 4
+  }
+}

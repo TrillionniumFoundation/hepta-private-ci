@@ -1,0 +1,476 @@
+[
+  {
+    "active_release": {
+      "artifact": "1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455",
+      "cut": {
+        "records": [
+          {
+            "body_sha256": "943f2c4b27b9ae308967c62c57eb70c19dcc9b7b523002f45eb17a03d7731d66",
+            "revision": 1,
+            "source_id": "skills"
+          }
+        ],
+        "scope": "v13-provenance-independent-run"
+      },
+      "epoch": 1
+    },
+    "active_release_matches_candidate": true,
+    "candidate_artifact": "1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455",
+    "candidate_file_sha256": "c64db4368b56bef47ea4571c31b4b551a43c8064ef976241ae272cbde6ef2948",
+    "candidate_path": "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/evidence/provenance/owner/artifacts/1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455/model.npz",
+    "cut": {
+      "records": [
+        {
+          "body_sha256": "943f2c4b27b9ae308967c62c57eb70c19dcc9b7b523002f45eb17a03d7731d66",
+          "revision": 1,
+          "source_id": "skills"
+        }
+      ],
+      "scope": "v13-provenance-independent-run"
+    },
+    "frontier": 0,
+    "old_release_depends_on_correction": false,
+    "old_release_probe": {
+      "reason": "cell has no release in this scope",
+      "status": "unavailable"
+    },
+    "parameter_hash_after": "b673a64e48d9768c5d720eb382ec02e199079d1d360e61f551600214c3801a04",
+    "parameter_hash_before": "183507ef46e812b519c7013a57febcddcd966acf1392735375be71e3e77b3b75",
+    "parent_artifact": null,
+    "publication": {
+      "epoch": 1,
+      "status": "published"
+    },
+    "read_fencing_passed": true,
+    "source_additions": [],
+    "source_corrections": [],
+    "source_version": "bcdfb871c32611f228aa878fd4f45dc78eab87c78ee8c1c6f93b979b04bea453",
+    "state_sha256": "8a03519dff1585b1b49c808371c7e143dac2f91e5cd6a2bef5da5fdceb9f0654",
+    "training": {
+      "examples": 4800,
+      "first_loss": 2.467255602075364,
+      "last_loss": 0.0009342690318681682,
+      "mean_loss": 0.1889656186674962,
+      "seconds": 0.07970184599980712,
+      "step": 240,
+      "updates": 240
+    },
+    "validation": {
+      "calibration_only": true,
+      "passed": true,
+      "profile_correct": 0,
+      "profile_total": 0,
+      "skill_correct": 41,
+      "skill_floor": 39,
+      "skill_total": 48,
+      "source_count": 1
+    }
+  },
+  {
+    "active_release": {
+      "artifact": "d75aca803f6a46c6715d7a2eee46a9c293f93972a61149a05c05b11cd6238cf9",
+      "cut": {
+        "records": [
+          {
+            "body_sha256": "5bb55016910dabff19c9fb0b6db0414d5d86d66a948e89ceb892191e5a698c04",
+            "revision": 1,
+            "source_id": "project:amber"
+          },
+          {
+            "body_sha256": "a4ca95e3d483572d86702f9198ddb64247524aed02b3d20f6fbe8418d8e6625b",
+            "revision": 1,
+            "source_id": "project:birch"
+          },
+          {
+            "body_sha256": "62b484f66756ae3e83875144cf6cde2575a736b7a8fc2ce8e5c18242bc23c3c1",
+            "revision": 1,
+            "source_id": "project:cobalt"
+          },
+          {
+            "body_sha256": "943f2c4b27b9ae308967c62c57eb70c19dcc9b7b523002f45eb17a03d7731d66",
+            "revision": 1,
+            "source_id": "skills"
+          }
+        ],
+        "scope": "v13-provenance-independent-run"
+      },
+      "epoch": 2
+    },
+    "active_release_matches_candidate": true,
+    "candidate_artifact": "d75aca803f6a46c6715d7a2eee46a9c293f93972a61149a05c05b11cd6238cf9",
+    "candidate_file_sha256": "cb0f9a5b087f91130bcfddf3fb82cf4913a069d46ff607991ffdce35028b134f",
+    "candidate_path": "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/evidence/provenance/owner/artifacts/d75aca803f6a46c6715d7a2eee46a9c293f93972a61149a05c05b11cd6238cf9/model.npz",
+    "cut": {
+      "records": [
+        {
+          "body_sha256": "5bb55016910dabff19c9fb0b6db0414d5d86d66a948e89ceb892191e5a698c04",
+          "revision": 1,
+          "source_id": "project:amber"
+        },
+        {
+          "body_sha256": "a4ca95e3d483572d86702f9198ddb64247524aed02b3d20f6fbe8418d8e6625b",
+          "revision": 1,
+          "source_id": "project:birch"
+        },
+        {
+          "body_sha256": "62b484f66756ae3e83875144cf6cde2575a736b7a8fc2ce8e5c18242bc23c3c1",
+          "revision": 1,
+          "source_id": "project:cobalt"
+        },
+        {
+          "body_sha256": "943f2c4b27b9ae308967c62c57eb70c19dcc9b7b523002f45eb17a03d7731d66",
+          "revision": 1,
+          "source_id": "skills"
+        }
+      ],
+      "scope": "v13-provenance-independent-run"
+    },
+    "frontier": 3,
+    "old_release_depends_on_correction": false,
+    "old_release_probe": {
+      "receipt": {
+        "artifact": "1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455",
+        "epoch": 1,
+        "predictions": [
+          0
+        ],
+        "source_version": "bcdfb871c32611f228aa878fd4f45dc78eab87c78ee8c1c6f93b979b04bea453"
+      },
+      "status": "readable"
+    },
+    "parameter_hash_after": "0cf5752e055f578accd5179022ac0d9cf646a884c9267e3e98420c436f9b303c",
+    "parameter_hash_before": "b673a64e48d9768c5d720eb382ec02e199079d1d360e61f551600214c3801a04",
+    "parent_artifact": "1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455",
+    "publication": {
+      "epoch": 2,
+      "status": "published"
+    },
+    "read_fencing_passed": true,
+    "source_additions": [
+      "project:amber",
+      "project:birch",
+      "project:cobalt"
+    ],
+    "source_corrections": [],
+    "source_version": "1b5fab946934e24e188a765621c1a6c1c5ac44891902ec5fd8c7c5cf8fba8d24",
+    "state_sha256": "9357f0ee57f118c2fa02d9d6b3da249152ed47faefa72a4d941a2529765fe020",
+    "training": {
+      "examples": 4732,
+      "first_loss": 1.044654790820426,
+      "last_loss": 0.00028913734028518894,
+      "mean_loss": 0.023489490945189064,
+      "seconds": 0.08719999800086953,
+      "step": 480,
+      "updates": 240
+    },
+    "validation": {
+      "calibration_only": true,
+      "passed": true,
+      "profile_correct": 6,
+      "profile_total": 6,
+      "skill_correct": 42,
+      "skill_floor": 40,
+      "skill_total": 48,
+      "source_count": 4
+    }
+  },
+  {
+    "active_release": {
+      "artifact": "4bcc743b3cea08fa18b05a689dac535c2e9f610e0f901769a0b2b4c017cda815",
+      "cut": {
+        "records": [
+          {
+            "body_sha256": "e04ea2a936947ee14944c8836ec1d484b2dabc1c62e0895bad4b7c119df49ce7",
+            "revision": 2,
+            "source_id": "project:amber"
+          },
+          {
+            "body_sha256": "a4ca95e3d483572d86702f9198ddb64247524aed02b3d20f6fbe8418d8e6625b",
+            "revision": 1,
+            "source_id": "project:birch"
+          },
+          {
+            "body_sha256": "62b484f66756ae3e83875144cf6cde2575a736b7a8fc2ce8e5c18242bc23c3c1",
+            "revision": 1,
+            "source_id": "project:cobalt"
+          },
+          {
+            "body_sha256": "943f2c4b27b9ae308967c62c57eb70c19dcc9b7b523002f45eb17a03d7731d66",
+            "revision": 1,
+            "source_id": "skills"
+          }
+        ],
+        "scope": "v13-provenance-independent-run"
+      },
+      "epoch": 3
+    },
+    "active_release_matches_candidate": true,
+    "candidate_artifact": "4bcc743b3cea08fa18b05a689dac535c2e9f610e0f901769a0b2b4c017cda815",
+    "candidate_file_sha256": "a509240829e4db1497033006511daf603430ec817793587fb058ab7bf11f4f29",
+    "candidate_path": "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/evidence/provenance/owner/artifacts/4bcc743b3cea08fa18b05a689dac535c2e9f610e0f901769a0b2b4c017cda815/model.npz",
+    "cut": {
+      "records": [
+        {
+          "body_sha256": "e04ea2a936947ee14944c8836ec1d484b2dabc1c62e0895bad4b7c119df49ce7",
+          "revision": 2,
+          "source_id": "project:amber"
+        },
+        {
+          "body_sha256": "a4ca95e3d483572d86702f9198ddb64247524aed02b3d20f6fbe8418d8e6625b",
+          "revision": 1,
+          "source_id": "project:birch"
+        },
+        {
+          "body_sha256": "62b484f66756ae3e83875144cf6cde2575a736b7a8fc2ce8e5c18242bc23c3c1",
+          "revision": 1,
+          "source_id": "project:cobalt"
+        },
+        {
+          "body_sha256": "943f2c4b27b9ae308967c62c57eb70c19dcc9b7b523002f45eb17a03d7731d66",
+          "revision": 1,
+          "source_id": "skills"
+        }
+      ],
+      "scope": "v13-provenance-independent-run"
+    },
+    "frontier": 4,
+    "old_release_depends_on_correction": true,
+    "old_release_probe": {
+      "reason": "source correction invalidated this release",
+      "status": "unavailable"
+    },
+    "parameter_hash_after": "1b1789a53ed5193359747fd53301c728a2ae94619a65815a07774f8a1b67e104",
+    "parameter_hash_before": "0cf5752e055f578accd5179022ac0d9cf646a884c9267e3e98420c436f9b303c",
+    "parent_artifact": "d75aca803f6a46c6715d7a2eee46a9c293f93972a61149a05c05b11cd6238cf9",
+    "publication": {
+      "epoch": 3,
+      "status": "published"
+    },
+    "read_fencing_passed": true,
+    "source_additions": [],
+    "source_corrections": [
+      "project:amber"
+    ],
+    "source_version": "36c379f0e2f04b267894d1dbc348782a1db18b588ea967dc1aaf495b64312fb1",
+    "state_sha256": "8ce197dd4308672f1b05e4e87ebac862d25d70daaf1b3553b4a964391d709aa5",
+    "training": {
+      "examples": 4732,
+      "first_loss": 1.5636125492954398,
+      "last_loss": 0.00013005582643066702,
+      "mean_loss": 0.029954453855710318,
+      "seconds": 0.09706078299495857,
+      "step": 720,
+      "updates": 240
+    },
+    "validation": {
+      "calibration_only": true,
+      "passed": true,
+      "profile_correct": 6,
+      "profile_total": 6,
+      "skill_correct": 41,
+      "skill_floor": 40,
+      "skill_total": 48,
+      "source_count": 4
+    }
+  },
+  {
+    "active_release": {
+      "artifact": "4bcc743b3cea08fa18b05a689dac535c2e9f610e0f901769a0b2b4c017cda815",
+      "cut": {
+        "records": [
+          {
+            "body_sha256": "e04ea2a936947ee14944c8836ec1d484b2dabc1c62e0895bad4b7c119df49ce7",
+            "revision": 2,
+            "source_id": "project:amber"
+          },
+          {
+            "body_sha256": "a4ca95e3d483572d86702f9198ddb64247524aed02b3d20f6fbe8418d8e6625b",
+            "revision": 1,
+            "source_id": "project:birch"
+          },
+          {
+            "body_sha256": "62b484f66756ae3e83875144cf6cde2575a736b7a8fc2ce8e5c18242bc23c3c1",
+            "revision": 1,
+            "source_id": "project:cobalt"
+          },
+          {
+            "body_sha256": "943f2c4b27b9ae308967c62c57eb70c19dcc9b7b523002f45eb17a03d7731d66",
+            "revision": 1,
+            "source_id": "skills"
+          }
+        ],
+        "scope": "v13-provenance-independent-run"
+      },
+      "epoch": 3
+    },
+    "active_release_matches_candidate": false,
+    "candidate_artifact": "4bb8a3898d0afffc1bf59a5065b1c7cbe9a3cb702f8ca58be755e2ee93e19ae7",
+    "candidate_file_sha256": "1510401beb23694bcc8d15f7c2be462bee75cf6d8f1e457756aecc609c2ca1d0",
+    "candidate_path": "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/evidence/provenance/owner/artifacts/4bb8a3898d0afffc1bf59a5065b1c7cbe9a3cb702f8ca58be755e2ee93e19ae7/model.npz",
+    "cut": {
+      "records": [
+        {
+          "body_sha256": "e04ea2a936947ee14944c8836ec1d484b2dabc1c62e0895bad4b7c119df49ce7",
+          "revision": 2,
+          "source_id": "project:amber"
+        },
+        {
+          "body_sha256": "9e6bdce1c22f41fba27a097a7196ef70effbb0f5a101aaec72bd41462507cf57",
+          "revision": 2,
+          "source_id": "project:birch"
+        },
+        {
+          "body_sha256": "62b484f66756ae3e83875144cf6cde2575a736b7a8fc2ce8e5c18242bc23c3c1",
+          "revision": 1,
+          "source_id": "project:cobalt"
+        },
+        {
+          "body_sha256": "943f2c4b27b9ae308967c62c57eb70c19dcc9b7b523002f45eb17a03d7731d66",
+          "revision": 1,
+          "source_id": "skills"
+        }
+      ],
+      "scope": "v13-provenance-independent-run"
+    },
+    "frontier": 5,
+    "old_release_depends_on_correction": true,
+    "old_release_probe": {
+      "reason": "source correction invalidated this release",
+      "status": "unavailable"
+    },
+    "parameter_hash_after": "d874a5d62801eb63d2c06bd7cf044d58398fc98908f3bd3a557ff670379ef931",
+    "parameter_hash_before": "1b1789a53ed5193359747fd53301c728a2ae94619a65815a07774f8a1b67e104",
+    "parent_artifact": "4bcc743b3cea08fa18b05a689dac535c2e9f610e0f901769a0b2b4c017cda815",
+    "publication": {
+      "epoch": 3,
+      "reason": "executable publication validator rejected the model",
+      "status": "candidate_retained_not_published"
+    },
+    "read_fencing_passed": true,
+    "source_additions": [],
+    "source_corrections": [
+      "project:birch"
+    ],
+    "source_version": "e040b33b37672fd09271a2440e94856fe5b2ebf019aaf6861d4191d86b1d84c0",
+    "state_sha256": "4f52e6edff67c43a2f716d8784813e7f74733b01bb9f74cbb71f76957055db6b",
+    "training": {
+      "examples": 4732,
+      "first_loss": 0.8381315731020871,
+      "last_loss": 5.853618313050808e-05,
+      "mean_loss": 0.012859942521828838,
+      "seconds": 0.10747705199173652,
+      "step": 960,
+      "updates": 240
+    },
+    "validation": {
+      "calibration_only": true,
+      "passed": false,
+      "profile_correct": 6,
+      "profile_total": 6,
+      "skill_correct": 39,
+      "skill_floor": 40,
+      "skill_total": 48,
+      "source_count": 4
+    }
+  },
+  {
+    "active_release": {
+      "artifact": "4bcc743b3cea08fa18b05a689dac535c2e9f610e0f901769a0b2b4c017cda815",
+      "cut": {
+        "records": [
+          {
+            "body_sha256": "e04ea2a936947ee14944c8836ec1d484b2dabc1c62e0895bad4b7c119df49ce7",
+            "revision": 2,
+            "source_id": "project:amber"
+          },
+          {
+            "body_sha256": "a4ca95e3d483572d86702f9198ddb64247524aed02b3d20f6fbe8418d8e6625b",
+            "revision": 1,
+            "source_id": "project:birch"
+          },
+          {
+            "body_sha256": "62b484f66756ae3e83875144cf6cde2575a736b7a8fc2ce8e5c18242bc23c3c1",
+            "revision": 1,
+            "source_id": "project:cobalt"
+          },
+          {
+            "body_sha256": "943f2c4b27b9ae308967c62c57eb70c19dcc9b7b523002f45eb17a03d7731d66",
+            "revision": 1,
+            "source_id": "skills"
+          }
+        ],
+        "scope": "v13-provenance-independent-run"
+      },
+      "epoch": 3
+    },
+    "active_release_matches_candidate": false,
+    "candidate_artifact": "dfb9437f8cf2bc623ee514fbf02a390e08f22d9bd3fe75478a21ef809a79e079",
+    "candidate_file_sha256": "b5da59673fa00a94245209147dbae5b3f13792bc60e3c53e0add1db7e4ee78e0",
+    "candidate_path": "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/evidence/provenance/owner/artifacts/dfb9437f8cf2bc623ee514fbf02a390e08f22d9bd3fe75478a21ef809a79e079/model.npz",
+    "cut": {
+      "records": [
+        {
+          "body_sha256": "e04ea2a936947ee14944c8836ec1d484b2dabc1c62e0895bad4b7c119df49ce7",
+          "revision": 2,
+          "source_id": "project:amber"
+        },
+        {
+          "body_sha256": "9e6bdce1c22f41fba27a097a7196ef70effbb0f5a101aaec72bd41462507cf57",
+          "revision": 2,
+          "source_id": "project:birch"
+        },
+        {
+          "body_sha256": "c0fd3b39e3a11db0e01e485da9b2c25e72fde97f6663e7d0512b1040e8b283ad",
+          "revision": 2,
+          "source_id": "project:cobalt"
+        },
+        {
+          "body_sha256": "943f2c4b27b9ae308967c62c57eb70c19dcc9b7b523002f45eb17a03d7731d66",
+          "revision": 1,
+          "source_id": "skills"
+        }
+      ],
+      "scope": "v13-provenance-independent-run"
+    },
+    "frontier": 6,
+    "old_release_depends_on_correction": true,
+    "old_release_probe": {
+      "reason": "source correction invalidated this release",
+      "status": "unavailable"
+    },
+    "parameter_hash_after": "c35f6e252d673aea0f551ecc63497e053c9a3fd9d4bfa3607a0bf8c98c208f2f",
+    "parameter_hash_before": "d874a5d62801eb63d2c06bd7cf044d58398fc98908f3bd3a557ff670379ef931",
+    "parent_artifact": "4bb8a3898d0afffc1bf59a5065b1c7cbe9a3cb702f8ca58be755e2ee93e19ae7",
+    "publication": {
+      "epoch": 3,
+      "reason": "executable publication validator rejected the model",
+      "status": "candidate_retained_not_published"
+    },
+    "read_fencing_passed": true,
+    "source_additions": [],
+    "source_corrections": [
+      "project:cobalt"
+    ],
+    "source_version": "cf7dd2ab5201e7a8f17c0090f6f08ba45721b0456a22dd673f582872beaaec4c",
+    "state_sha256": "e4a46be569ed1e52bf4036c9432a8d922b23c4e54c3da6588e4150e887747bf7",
+    "training": {
+      "examples": 4732,
+      "first_loss": 0.5137201109036915,
+      "last_loss": 5.383859645427312e-05,
+      "mean_loss": 0.02000933644544584,
+      "seconds": 0.06893698399653658,
+      "step": 1200,
+      "updates": 240
+    },
+    "validation": {
+      "calibration_only": true,
+      "passed": false,
+      "profile_correct": 6,
+      "profile_total": 6,
+      "skill_correct": 38,
+      "skill_floor": 40,
+      "skill_total": 48,
+      "source_count": 4
+    }
+  }
+]

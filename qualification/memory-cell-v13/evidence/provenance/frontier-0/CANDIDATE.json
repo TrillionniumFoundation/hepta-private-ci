@@ -1,0 +1,67 @@
+{
+  "active_release": {
+    "artifact": "1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455",
+    "cut": {
+      "records": [
+        {
+          "body_sha256": "943f2c4b27b9ae308967c62c57eb70c19dcc9b7b523002f45eb17a03d7731d66",
+          "revision": 1,
+          "source_id": "skills"
+        }
+      ],
+      "scope": "v13-provenance-independent-run"
+    },
+    "epoch": 1
+  },
+  "active_release_matches_candidate": true,
+  "candidate_artifact": "1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455",
+  "candidate_file_sha256": "c64db4368b56bef47ea4571c31b4b551a43c8064ef976241ae272cbde6ef2948",
+  "candidate_path": "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/evidence/provenance/owner/artifacts/1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455/model.npz",
+  "cut": {
+    "records": [
+      {
+        "body_sha256": "943f2c4b27b9ae308967c62c57eb70c19dcc9b7b523002f45eb17a03d7731d66",
+        "revision": 1,
+        "source_id": "skills"
+      }
+    ],
+    "scope": "v13-provenance-independent-run"
+  },
+  "frontier": 0,
+  "old_release_depends_on_correction": false,
+  "old_release_probe": {
+    "reason": "cell has no release in this scope",
+    "status": "unavailable"
+  },
+  "parameter_hash_after": "b673a64e48d9768c5d720eb382ec02e199079d1d360e61f551600214c3801a04",
+  "parameter_hash_before": "183507ef46e812b519c7013a57febcddcd966acf1392735375be71e3e77b3b75",
+  "parent_artifact": null,
+  "publication": {
+    "epoch": 1,
+    "status": "published"
+  },
+  "read_fencing_passed": true,
+  "source_additions": [],
+  "source_corrections": [],
+  "source_version": "bcdfb871c32611f228aa878fd4f45dc78eab87c78ee8c1c6f93b979b04bea453",
+  "state_sha256": "8a03519dff1585b1b49c808371c7e143dac2f91e5cd6a2bef5da5fdceb9f0654",
+  "training": {
+    "examples": 4800,
+    "first_loss": 2.467255602075364,
+    "last_loss": 0.0009342690318681682,
+    "mean_loss": 0.1889656186674962,
+    "seconds": 0.07970184599980712,
+    "step": 240,
+    "updates": 240
+  },
+  "validation": {
+    "calibration_only": true,
+    "passed": true,
+    "profile_correct": 0,
+    "profile_total": 0,
+    "skill_correct": 41,
+    "skill_floor": 39,
+    "skill_total": 48,
+    "source_count": 1
+  }
+}
