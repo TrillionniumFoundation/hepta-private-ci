@@ -1,0 +1,74 @@
+name: Memory cell V12 Python behavior contracts
+
+on:
+  push:
+    branches: [research/memory-cell-v12-20261030]
+    paths:
+      - 'qualification/memory-cell-v12/*.py'
+      - 'qualification/memory-cell-v12/*PROTOCOL.json'
+      - '.github/workflows/memory-cell-v12-python.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /qualification/memory-cell-v12/*.py
+            /qualification/memory-cell-v12/*.json
+            /docs/modules/
+      - name: Install the exact numerical dependency used by the experiments
+        run: |
+          python3 -m venv "$RUNNER_TEMP/v12-env"
+          "$RUNNER_TEMP/v12-env/bin/python" -m pip install --disable-pip-version-check numpy==2.3.5
+      - name: Verify behavior against the exact checked-out source
+        shell: bash
+        run: |
+          "$RUNNER_TEMP/v12-env/bin/python" - <<'PY'
+          import hashlib, json, os, pathlib, re, subprocess, sys, time
+          import numpy
+          assert numpy.__version__ == '2.3.5'
+          package = pathlib.Path('qualification/memory-cell-v12')
+          output = pathlib.Path(os.environ['RUNNER_TEMP']) / 'v12-python-evidence'
+          output.mkdir(exist_ok=False)
+          def sources():
+              return {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
+                      for p in sorted([*package.glob('*.py'), *package.glob('*PROTOCOL.json')])}
+          before = sources()
+          commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          assert commit == os.environ['GITHUB_SHA']
+          started = time.perf_counter()
+          command = [sys.executable, '-m', 'unittest', 'discover', '-s', str(package), '-p', '*_tests.py', '-v']
+          result = subprocess.run(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+          (output / 'tests.log').write_text(result.stdout)
+          print(result.stdout)
+          observed = re.search(r'Ran (\d+) tests', result.stdout)
+          receipt = dict(source_commit=commit, source_hashes=before, source_stable=before == sources(),
+                         command=command, exit_code=result.returncode, numpy_version=numpy.__version__,
+                         tests=int(observed.group(1)) if observed else 0,
+                         wall_seconds=time.perf_counter() - started, scope='Python behavior, not scientific superiority')
+          (output / 'receipt.json').write_text(json.dumps(receipt, sort_keys=True, indent=2) + '\n')
+          assert result.returncode == 0 and receipt['source_stable'] and receipt['tests'] >= 38
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-v12-python-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/v12-python-evidence
+          if-no-files-found: error
+          retention-days: 30
