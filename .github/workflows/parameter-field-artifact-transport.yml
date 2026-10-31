@@ -1,0 +1,84 @@
+name: Parameter field artifact transport
+
+on:
+  push:
+    branches:
+      - research/parameter-field-executor-20261031
+      - research/parameter-field-recovery07-20261031
+    paths:
+      - operational/parameter_field_recovery07/artifact_*
+      - operational/parameter_field_recovery07/action.yml
+      - operational/parameter_field_recovery07/action_bootstrap.mjs
+      - operational/parameter_field_recovery07/transport_synthetic.py
+      - operational/parameter_field_recovery07/test_artifact_transport.py
+      - operational/parameter_field_recovery07/package*.json
+      - .github/workflows/parameter-field-artifact-transport.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-archive:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    container:
+      image: ubuntu:24.04@sha256:78d4744ead1f5b19b04d0df558ab182a5300903900755e515b2ca4d10eb2044d
+      options: --memory=8g --memory-swap=8g
+    steps:
+      - name: Install public container prerequisites
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends ca-certificates curl git
+      - name: Checkout exact transport source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Select Node24 for the pinned transport SDK
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Restore the exact public scientific runtime
+        run: |
+          mkdir -p /opt/runtime /work/qualification
+          curl --fail --location --retry 2 --output /opt/runtime/python.tar.gz 'https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.12.14%2B20260825-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz'
+          echo '7ce4a71285d913955a76053cc7605ea96da8ecada54dba9cf395245961816421  /opt/runtime/python.tar.gz' | sha256sum --check --strict
+          tar -xzf /opt/runtime/python.tar.gz -C /opt/runtime
+          echo 'fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7  /opt/runtime/python/bin/python3.12' | sha256sum --check --strict
+          echo '7e177a680eabb11fcb7d3867f7a1b9c4b93a9bd5b18129ce1af51ec07977b024  /opt/runtime/python/lib/libpython3.12.so.1.0' | sha256sum --check --strict
+          /opt/runtime/python/bin/python3.12 -m venv /opt/runtime/venv
+          /opt/runtime/venv/bin/python -m pip install --disable-pip-version-check --no-cache-dir --only-binary=:all: -r tools/parameter_field_executor/packages.txt
+          /opt/runtime/venv/bin/python -m pip install --disable-pip-version-check --no-cache-dir --no-deps --require-hashes -r tools/parameter_field_executor/torch-wheel.txt
+      - name: Verify the original finite cgroup gate and full runtime digest
+        run: |
+          /opt/runtime/venv/bin/python -B tools/parameter_field_executor/diagnose.py --output /work/qualification/runtime.json
+          /opt/runtime/venv/bin/python -B -c 'import json; r=json.load(open("/work/qualification/runtime.json")); assert r["runtime"]["exact_match"] and r["three_original_joint_passes"] and r["process"]["supported"] and all(r["filesystem"].get(k) is True for k in ["fsync","flock","xattr","atomic_rename","byte_readback"])'
+      - name: Install the integrity-pinned official artifact SDK
+        working-directory: operational/parameter_field_recovery07
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify synthetic corruption and sequence rejection
+        run: /opt/runtime/venv/bin/python -B -m unittest discover -s operational/parameter_field_recovery07 -p test_artifact_transport.py -v
+      - name: Exercise seventeen real archive barriers and terminal readback
+        uses: ./operational/parameter_field_recovery07
+        with:
+          python: /opt/runtime/venv/bin/python
+          output-directory: /work/parameter-field-transport-synthetic
+      - name: Preserve synthetic verification receipts
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: transport-synthetic-receipts-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            /work/qualification/*.json
+            /work/parameter-field-transport-synthetic/*.json
+            /work/parameter-field-transport-synthetic/barriers/*/ACK.json
+            /work/parameter-field-transport-synthetic/barriers/*/FAILED.json
+            /work/parameter-field-transport-synthetic/barriers/*/*.wait4.json
+            /work/parameter-field-transport-synthetic/barriers/*/*.result.json
+            /work/parameter-field-transport-synthetic/terminal/ACK.json
+            /work/parameter-field-transport-synthetic/terminal/*.wait4.json
+            /work/parameter-field-transport-synthetic/terminal/*.result.json
+          if-no-files-found: error
+          retention-days: 90
