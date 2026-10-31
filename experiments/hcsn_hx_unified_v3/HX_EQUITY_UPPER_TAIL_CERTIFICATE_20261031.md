@@ -68,3 +68,17 @@ This result supplies **only the mathematical fixed-barrier financial EQUITY far-
 P0 OPEN: full debt PDE error, global coupled obstacle existence/self-consistency, certified mesh and low-precision financial gradients. P1 OPEN: eight-arm matched causal gain remains unproved. P2 OPEN: full long-memory and native restore net benefit. P3 OPEN: real four-modal paired/OOD validation. P4 OPEN: native GPU and 64/256/1024/4096 Cell/Joules. P5 BLOCKED by no equal-budget backbone net advantage.
 
 The output explicitly asserts input_debt_error_verified=false, entire_P0_certified=false, all_scientific_blockers_closed=false, production_activation=false. Keep Draft/unmerged.
+
+
+## Bounded-seed follow-up with explicit resource accounting
+
+A subsequent new test file, test_hx_equity_upper_tail_stress.py, fixes RNG seed 20261031 and loops through **16 financial regimes × 2 declared log-domain lengths = 32 independent physical numerical cross-checks**, with no data omission or outcome-dependent filtering. Both tests use the exact same rational bound; the stress panel explicitly selects a 64-term (rather than 160-term) **still mathematically valid positive Taylor enclosure** to cap exact-Fraction CPU cost. The independent SciPy reflected-Green value remains a numerical comparison, not a rigorous interval proof.
+
+- Local **stress file alone: 1/1 method PASS, 32/32 subcases, 0 skipped**, approximately 8 seconds on the research container. Exact locally tested remote Git blob: bd8c4b258960c20dccb62f192dbcbf4e360f1030.
+- Original five-test file alone: **5/5 PASS**, zero skipped, approximately 28 seconds.
+- One later attempt to execute both files **in the same Python process did not finish before an execution timeout** (it reached the stress test). It must NOT be reported as a combined 6/6 PASS or whole-repository CI. The original 160-term broader exploratory panel likewise timed out. These are explicit runtime/resource limitations of the reference calculation, not scientific successes.
+- Reproduce as **separate processes** with:
+  python -m unittest -v experiments.hcsn_hx_unified_v3.test_hx_equity_upper_tail_certificate
+  python -m unittest -v experiments.hcsn_hx_unified_v3.test_hx_equity_upper_tail_stress
+
+No P0–P5 gate changes and no production admission.
