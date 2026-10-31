@@ -1,0 +1,55 @@
+{
+  "absolute_error": {
+    "boundary": 0.000874889334539164,
+    "count": 0.0021017965076643996,
+    "drift": 0.0018092845258372847,
+    "recovery_mean": 0.0013146092390793063,
+    "sigma": 0.0026643385747285864
+  },
+  "gates": {
+    "all_errors_decrease": true,
+    "final_accuracy": true,
+    "observed_order": true
+  },
+  "limitations": [
+    "One fixed regular scalar Brownian/reset/Erlang contract; not a uniform continuum theorem.",
+    "The lower-domain count bound does not certify lower-domain gradient error; total gradient convergence is measured against the unbounded-domain oracle.",
+    "The renewal count-tail bound does not certify derivative-tail error; extra-term stability is diagnostic.",
+    "No observed refinement order implies low-noise coarse-grid admissibility."
+  ],
+  "observed_order": {
+    "boundary": 0.9970268682119143,
+    "count": 0.9986944318534665,
+    "drift": 0.9930848123380621,
+    "recovery_mean": 0.9988114643051476,
+    "sigma": 0.995243569287396
+  },
+  "original_result_not_replaced": true,
+  "original_result_passed": false,
+  "passed": true,
+  "process_cpu_seconds": 3.5943568590000003,
+  "protocol": {
+    "baseline_sha256": "9a774d74f8d0ee7c5c30e8f5ca05876c636a695c7ffd5cb8df4b25ef4d7cffb8",
+    "maximum_final_error": 0.005,
+    "minimum_last_order": 0.85,
+    "new_intervals": 1152,
+    "previous_intervals": 576,
+    "reason": "The registered n=576 upwind sigma-gradient error exceeded 0.005"
+  },
+  "schema": "hcsn_round8_renewal_resolution_extension_v1",
+  "source_sha256": {
+    "event_kernel.py": "3a4c84d578855b3ec63a1ca629502b48f76540a26d9efed7c39cee672646e81d",
+    "generator.py": "2dff8cea6b9fd366537488eeec051db20a77d8e58b76fda1b72e21afa38808d8",
+    "renewal.py": "bd479d1fb6f08ef9721fca6f2961dc19ad2b073ea4d92d13914be985cf8a9097",
+    "renewal_resolution.py": "903547b8ab345d0620b264fd92f86ae4572fae4afc2f7b7dba181e06300b73dd",
+    "renewal_resolution_extension.py": "480d8d326ed0fd2aa55a17dfa7d9e35dc365d43a843f61f9347155837102471b",
+    "resolution_audit.py": "544dfef085abffc538fa1c813d2531b3e9e28c975dce36a6d3c1ae86d7ed39cf"
+  },
+  "values": {
+    "boundary": -1.1609820048544768,
+    "count": 0.9642822597941241,
+    "drift": 1.694711552224478,
+    "recovery_mean": -0.21887137590977696,
+    "sigma": 0.8051623066078714
+  }
+}

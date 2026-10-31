@@ -1,0 +1,25 @@
+{
+  "rebase_parent": "00b94d54a9b85f285298d1a964777bdecfa85385",
+  "imported_unchanged": [
+    {
+      "path": "tools/hcsn/round8_20261031/event_dynamics/resolution_audit.py",
+      "blob_sha": "e7e380efaaa643d62d103f244ca0b71c58445332",
+      "source_commit": "00b94d54a9b85f285298d1a964777bdecfa85385",
+      "change": "Two metadata lines clarify that an audit hashes its kernel rather than asserting kernels remain frozen."
+    },
+    {
+      "path": "tools/hcsn/round8_20261031/event_dynamics/renewal_resolution_extension.py",
+      "blob_sha": "98020b32f33aec12c7bdad1c11da3fb72d754217",
+      "source_commit": "333fb9b036b80cf5d892aed222a1aac7aad80e53"
+    }
+  ],
+  "new_algorithm_files": [
+    "tools/hcsn/round8_20261031/event_dynamics/event_kernel.py",
+    "tools/hcsn/round8_20261031/event_dynamics/renewal.py"
+  ],
+  "precedent": {
+    "commit": "946ec0ed3c58c021f38c231cbb2a9d389422c68c",
+    "path": "experiments/hcsn_hx_unified_v3/P0_SECOND_LEG_TRANSITION_GATE.md",
+    "note": "Independent prior module documents the need for second-segment crossing knots. This change integrates that idea into round8's different scalar kernel and supplies accepted-domain counterexamples and a different continuous density reference."
+  }
+}

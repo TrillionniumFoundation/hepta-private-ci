@@ -1,0 +1,88 @@
+--- a/tools/hcsn/round8_20261031/event_dynamics/renewal.py
++++ b/tools/hcsn/round8_20261031/event_dynamics/renewal.py
+@@ -10,7 +10,7 @@
+ 
+ import numpy as np
+ from scipy.integrate import quad_vec
+-from scipy.special import gammaln
++from scipy.special import gammainc, gammaln, ndtr
+ 
+ from .event_kernel import DomainError, first_hit, first_hit_gradient
+ from .generator import recovery_discount
+@@ -40,6 +40,8 @@
+     Count truncation has a proved bound. Quadrature has a numerical estimate.
+     Derivative-tail truncation is NOT covered by the count-tail bound; compare
+     included_events values and independent finite differences before training.
++    Positive drift uses a first-passage normal coordinate so that small noise
++    does not collapse the gradient into an unresolved recovery-time layer.
+     """
+     first_hit(initial_gap, drift, sigma, time)
+     recovery_discount(recovery_mean, phases, 1.0)
+@@ -61,7 +63,7 @@
+         raise DomainError("Requested finite renewal sum does not meet the declared count-tail budget")
+     names = ("initial_gap", "reset_gap", "drift", "sigma", "recovery_mean")
+     total = np.zeros(6)
+-    rows, estimated_error = [], 0.0
++    rows, estimated_error, integral_tail = [], 0.0, 0.0
+     rate = phases / recovery_mean
+     for event in range(1, count + 1):
+         gap = initial_gap + (event - 1) * reset_gap
+@@ -72,6 +74,49 @@
+                              gradient["drift"], gradient["sigma"], 0.0])
+         if event == 1:
+             value, error = event_vector(time), 0.0
++        elif drift > 0 and time > 0:
++            # z=(gap-mu*t)/(sigma*sqrt(t)) maps t in (0,T) onto
++            # (z_T,infinity). In this coordinate f(t)*|dt/dz| is
++            # phi(z)*(1+sigma*z/c), c=sqrt(sigma^2*z^2+4*mu*gap).
++            # Convolve with the smooth Erlang CDF, not a narrowing hit-CDF
++            # derivative in recovery time. The boundary CDF is zero, so its
++            # parameter derivative has no moving-limit contribution.
++            shape = phases * (event - 1)
++            log_gamma = float(gammaln(shape))
++            lower = max(-12., (gap - drift * time) / (sigma * math.sqrt(time)))
++
++            def integrand(z):
++                c = math.hypot(sigma * z, 2 * math.sqrt(drift * gap))
++                root_time = (2 * gap / (c + sigma * z) if z >= 0
++                             else (c - sigma * z) / (2 * drift))
++                active_time = root_time * root_time
++                x = rate * max(0., time - active_time)
++                if x == 0:
++                    return np.zeros(6)
++                probability = float(gammainc(shape, x))
++                pdf = math.exp((shape - 1) * math.log(x) - x - log_gamma)
++                weight = 1 + sigma * z / c
++                time_derivatives = np.array([2 * root_time / c,
++                                             -2 * active_time * root_time / c,
++                                             -2 * z * active_time / c])
++                weight_derivatives = np.array([-2 * drift * sigma * z / c**3,
++                                               -2 * gap * sigma * z / c**3,
++                                               4 * drift * gap * z / c**3])
++                derivatives = probability * weight_derivatives - weight * rate * pdf * time_derivatives
++                return (math.exp(-.5 * z * z) / math.sqrt(2 * math.pi)
++                        * np.array([weight * probability, derivatives[0],
++                                    (event - 1) * derivatives[0], derivatives[1],
++                                    derivatives[2], -weight * x * pdf / recovery_mean]))
++
++            if lower < 12.:
++                points = [z for z in (-8., -4., 0., 4., 8.) if lower < z < 12.]
++                value, error = quad_vec(integrand, lower, 12., points=points,
++                                        epsabs=tail_tolerance/(20*count), epsrel=2e-11, limit=500)
++            else:
++                value, error = np.zeros(6), 0.
++            # 0 <= 1+sigma*z/c <= 2, hence both omitted normal tails
++            # contribute at most 4*Phi(-12) to this count term.
++            integral_tail += 4 * float(ndtr(-12.))
+         else:
+             shape = phases * (event - 1)
+             def integrand(recovery):
+@@ -90,6 +135,8 @@
+     return dict(expected_count=float(total[0]), gradient=dict(zip(names, total[1:].tolist())),
+                 event_survival=rows, included_events=count, count_tail_bound=tail["bound"],
+                 count_log_tail_bound=tail["log_bound"], quadrature_error_estimate=estimated_error,
++                integral_truncation_upper_bound=integral_tail,
++                integration_coordinate=("first_passage_normal" if drift > 0 else "recovery_time"),
+                 gradient_tail_certified=False, roundoff_included=False)
+ 
+ 

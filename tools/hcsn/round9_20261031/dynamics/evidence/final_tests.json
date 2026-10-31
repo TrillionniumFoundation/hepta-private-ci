@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "tools.hcsn.round8_20261031.event_dynamics.test_event_dynamics",
+    "tools.hcsn.round9_20261031.dynamics.test_dynamics_repair",
+    "-q"
+  ],
+  "returncode": 0,
+  "stdout": "",
+  "stderr": "----------------------------------------------------------------------\nRan 15 tests in 2.668s\n\nOK\n",
+  "wall_seconds": 3.2018452979973517,
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "source_sha256": {
+    "event_kernel.py": "3a4c84d578855b3ec63a1ca629502b48f76540a26d9efed7c39cee672646e81d",
+    "renewal.py": "bd479d1fb6f08ef9721fca6f2961dc19ad2b073ea4d92d13914be985cf8a9097"
+  }
+}
