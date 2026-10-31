@@ -1,0 +1,19 @@
+{
+  "schema": "hcsn.regeneration-content.primary.v1",
+  "registration_date": "2026-10-31",
+  "base_commit": "74cf5f30a4e87a2666c57b3f8fba38f8d09fdfd3",
+  "primary_families": ["ordinary", "analytic"],
+  "tasks": ["associative_recall", "multimodal_evidence", "digits_rows"],
+  "widths": [16, 32, 64],
+  "seeds": [11, 23, 37],
+  "training": {"fits": 54, "updates": 300, "batch": 32, "lr": 0.003, "clip": 1.0, "dtype": "float64", "all_parameter_arrays_trained": true},
+  "threads": {"OPENBLAS_NUM_THREADS": "1", "OMP_NUM_THREADS": "1", "MKL_NUM_THREADS": "1"},
+  "renewal": {"formal_rows": 2142, "positive_refractory_cases": 1350, "zero_refractory_diagnostics": 675, "independent_convolutions": 48, "mass_integrals": 24, "mc_cases": 12, "mc_paths_each": 50000, "protocol": "evidence/renewal/protocol_v1/protocol.json"},
+  "content": {"protocol": "evidence/content/content_protocol.json", "test_conditions": ["iid", "long_delay", "clock_shift"], "synthetic_examples_per_condition": 2048, "digit_test_examples": 368, "primary_metrics": ["accuracy", "negative_log_likelihood", "training_cpu_seconds", "training_wall_seconds"], "selection": "fixed 300 updates; no test-based selection"},
+  "controllers": {"content_width": 16, "fits": 6, "slots": 6, "read_budget": 4, "train_configs": 4, "dev_configs": 2, "heldout_configs": 4, "ridge": 1.0, "primary": "exact finite expectation of actual frozen backbone", "contract": "POLICY_CONTRACT.md"},
+  "diagnostics": {"synthetic_examples": 512, "digit_examples": 368, "variants": ["full_history", "last_observation_only", "initial_state"], "prefix_accuracy": true, "benchmark_batches": [1, 64], "warmups": 2, "repeats": 7, "forwards_per_repeat": 3, "benchmark_input": "already loaded raw IID test input; no model selection"},
+  "publication_order": ["source_and_protocol", "formal_renewal_and_content_train", "content_dev_and_policy_fit", "all_content_and_controller_candidate_hashes_and_payloads", "content_test_and_policy_heldout", "diagnostics_and_full_report"],
+  "secondary_comparison": {"planned_families": ["lif_surrogate", "transformer"], "fits": 54, "matrix": "same tasks, widths, seeds, updates, batch, optimizer; separate source freeze before training and test", "parameters": "architecture counts differ; report actual counts and quality-cost curves", "scope": "small NumPy CPU references; no GPU or neuromorphic efficiency claim"},
+  "inference": {"paired_unit": "model seed within task and width", "seeds_are_descriptive": true, "no_universal_superiority_claim": true, "no_posthoc_dropping": true, "interrupted_runs": "retain and explain; never overwrite"},
+  "decision_rules": {"mathematics": "all preregistered deterministic tolerances and Monte Carlo consistency checks reported", "raw_memory": "heldout full-history quality plus paired last-observation ablation; preserve failures", "controller": "compare each frozen backbone with dev-selected lightweight and learned value policy", "boundary": "predicted task advantage versus exact conditional successor values and independent actual execution", "scale": "describe observed three-width frontiers only; this is not a foundation-model scaling law"}
+}
