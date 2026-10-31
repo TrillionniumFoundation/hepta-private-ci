@@ -79,7 +79,8 @@ fn complete_denies_compare_mapped_masks_and_require_every_right() -> Result<()> 
         let mut acl = NativeAcl::new()?;
         acl.deny(&sid, mask, inheritance)?;
         // SAFETY: both arguments point into live, initialized native objects.
-        let complete = unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr()) };
+        let complete =
+            unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Subtree) };
         assert_eq!(complete, expected, "mask={mask:#x}");
     }
     Ok(())
@@ -102,7 +103,7 @@ fn complete_denies_require_effective_recursive_scope_and_precede_allows() -> Res
             acl.deny(&sid, kind.mask(), flags)?;
             // SAFETY: the ACL and SID are valid and retained for this query.
             assert!(
-                !unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr()) },
+                !unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Subtree) },
                 "flags={flags:#x}",
             );
         }
@@ -123,7 +124,42 @@ fn complete_denies_require_effective_recursive_scope_and_precede_allows() -> Res
         }
         acl.deny(&sid, kind.mask(), inheritance)?;
         // SAFETY: the ACL and SID remain valid through the query.
-        assert!(!unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr()) });
+        assert!(!unsafe {
+            kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Subtree)
+        });
+    }
+    Ok(())
+}
+
+#[test]
+fn normalized_denies_require_complete_effective_and_inheritable_coverage() -> Result<()> {
+    let sid = LocalSid::from_string("S-1-5-21-181-282-383-484")?;
+    let inheritance = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE;
+    for kind in [DenyAceKind::Read, DenyAceKind::Write] {
+        let mut acl = NativeAcl::new()?;
+        acl.deny(&sid, kind.mask(), /*flags*/ 0)?;
+        // SAFETY: the native ACL and SID remain initialized and live throughout.
+        assert!(unsafe {
+            dacl_has_complete_deny_for_sid(
+                acl.as_ptr(),
+                sid.as_ptr(),
+                kind.mask(),
+                DenyAceScope::Object,
+            )
+        });
+        assert!(!unsafe {
+            kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Subtree)
+        });
+
+        // An inherit-only template alone cannot replace the effective deny.
+        let mut template_only = NativeAcl::new()?;
+        template_only.deny(&sid, kind.mask(), inheritance | u32::from(INHERIT_ONLY_ACE))?;
+        assert!(!unsafe {
+            kind.already_present(template_only.as_ptr(), sid.as_ptr(), DenyAceScope::Subtree)
+        });
+
+        acl.deny(&sid, kind.mask(), inheritance | u32::from(INHERIT_ONLY_ACE))?;
+        assert!(unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Subtree) });
     }
     Ok(())
 }

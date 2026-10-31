@@ -271,11 +271,27 @@ pub unsafe fn dacl_has_write_allow_for_sid(p_dacl: *mut ACL, psid: *mut c_void) 
 }
 
 pub unsafe fn dacl_has_write_deny_for_sid(p_dacl: *mut ACL, psid: *mut c_void) -> bool {
-    dacl_has_complete_deny_for_sid(p_dacl, psid, DenyAceKind::Write.mask())
+    dacl_has_complete_deny_for_sid(
+        p_dacl,
+        psid,
+        DenyAceKind::Write.mask(),
+        DenyAceScope::Subtree,
+    )
 }
 
 pub unsafe fn dacl_has_read_deny_for_sid(p_dacl: *mut ACL, psid: *mut c_void) -> bool {
-    dacl_has_complete_deny_for_sid(p_dacl, psid, DenyAceKind::Read.mask())
+    dacl_has_complete_deny_for_sid(
+        p_dacl,
+        psid,
+        DenyAceKind::Read.mask(),
+        DenyAceScope::Subtree,
+    )
+}
+
+#[derive(Clone, Copy)]
+enum DenyAceScope {
+    Object,
+    Subtree,
 }
 
 // SAFETY: callers retain a valid ACL (or null) and valid SID throughout this query.
@@ -283,6 +299,7 @@ unsafe fn dacl_has_complete_deny_for_sid(
     p_dacl: *mut ACL,
     psid: *mut c_void,
     mut required_mask: u32,
+    scope: DenyAceScope,
 ) -> bool {
     if p_dacl.is_null() {
         return false;
@@ -307,6 +324,9 @@ unsafe fn dacl_has_complete_deny_for_sid(
     // same specific/standard rights without changing the mask we install.
     // SAFETY: both pointers refer to initialized stack values retained for the call.
     MapGenericMask(&mut required_mask, &mapping);
+    let mut effective_mask = 0;
+    let mut object_inheritance_mask = 0;
+    let mut container_inheritance_mask = 0;
     for i in 0..info.AceCount {
         let mut p_ace: *mut c_void = std::ptr::null_mut();
         if GetAce(p_dacl as *const ACL, i, &mut p_ace) == 0 {
@@ -319,9 +339,10 @@ unsafe fn dacl_has_complete_deny_for_sid(
         if hdr.AceType != ACCESS_DENIED_ACE_TYPE || (hdr.AceFlags & INHERITED_ACE) != 0 {
             return false;
         }
-        // Match the constructor's effective, recursively inheritable scope.
-        // Inherit-only, no-propagate, or missing child scope is insufficient.
-        if hdr.AceFlags != (CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE) as u8 {
+        let inheritance = (CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE) as u8;
+        // Unknown flags and no-propagate entries cannot establish the complete
+        // constructor scope. Inherited entries were rejected above.
+        if hdr.AceFlags & !(inheritance | INHERIT_ONLY_ACE) != 0 {
             continue;
         }
         let ace = &*(p_ace as *const ACCESS_DENIED_ACE);
@@ -331,7 +352,30 @@ unsafe fn dacl_has_complete_deny_for_sid(
         let mut mask = ace.Mask;
         // SAFETY: both pointers refer to initialized stack values retained for the call.
         MapGenericMask(&mut mask, &mapping);
-        if EqualSid(sid_ptr, psid) != 0 && (mask & required_mask) == required_mask {
+        if EqualSid(sid_ptr, psid) == 0 {
+            continue;
+        }
+        // Windows may split generic inheritable rights into an effective ACE
+        // and an inherit-only template. Require complete coverage independently
+        // for the current object and both recursive inheritance directions.
+        if hdr.AceFlags & INHERIT_ONLY_ACE == 0 {
+            effective_mask |= mask;
+        }
+        if hdr.AceFlags & OBJECT_INHERIT_ACE as u8 != 0 {
+            object_inheritance_mask |= mask;
+        }
+        if hdr.AceFlags & CONTAINER_INHERIT_ACE as u8 != 0 {
+            container_inheritance_mask |= mask;
+        }
+        let covers = |granted: u32| (granted & required_mask) == required_mask;
+        if covers(effective_mask)
+            && match scope {
+                DenyAceScope::Object => true,
+                DenyAceScope::Subtree => {
+                    covers(object_inheritance_mask) && covers(container_inheritance_mask)
+                }
+            }
+        {
             return true;
         }
     }
@@ -599,15 +643,22 @@ impl DenyAceKind {
         }
     }
 
-    unsafe fn already_present(self, p_dacl: *mut ACL, psid: *mut c_void) -> bool {
-        match self {
-            Self::Read => dacl_has_read_deny_for_sid(p_dacl, psid),
-            Self::Write => dacl_has_write_deny_for_sid(p_dacl, psid),
-        }
+    unsafe fn already_present(
+        self,
+        p_dacl: *mut ACL,
+        psid: *mut c_void,
+        scope: DenyAceScope,
+    ) -> bool {
+        dacl_has_complete_deny_for_sid(p_dacl, psid, self.mask(), scope)
     }
 }
 
 unsafe fn add_deny_ace(path: &Path, psid: *mut c_void, kind: DenyAceKind) -> Result<bool> {
+    let scope = if std::fs::metadata(path)?.is_dir() {
+        DenyAceScope::Subtree
+    } else {
+        DenyAceScope::Object
+    };
     let mut p_sd: *mut c_void = std::ptr::null_mut();
     let mut p_dacl: *mut ACL = std::ptr::null_mut();
     let code = GetNamedSecurityInfoW(
@@ -629,7 +680,7 @@ unsafe fn add_deny_ace(path: &Path, psid: *mut c_void, kind: DenyAceKind) -> Res
             path.display()
         ));
     }
-    let result = if kind.already_present(p_dacl, psid) {
+    let result = if kind.already_present(p_dacl, psid, scope) {
         Ok(false)
     } else {
         let trustee = TRUSTEE_W {
