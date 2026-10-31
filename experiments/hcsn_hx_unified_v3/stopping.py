@@ -145,6 +145,13 @@ def regenerative_boundary(p: Stop) -> float:
                 raise ArithmeticError('Renewal Lambert-W inverse unresolved')
             residual=-math.log1p(-t)-t-h
             t-=residual*(1-t)/t
+    # A large renewal loss sends the true W0 root toward the upper
+    # endpoint without ever reaching it. In binary64, 1+W0 rounds to
+    # exactly 1 once the remaining gap is sub-ULP. That is not a solved
+    # interior smooth-fit root: reject rather than silently treating the
+    # one-shot limit as the finite-renewal optimum.
+    if not (math.isfinite(t) and 0 < t < 1):
+        raise ArithmeticError('Renewal Lambert-W root unresolved inside (0, 1)')
     displacement=t/k
     b=p.cost+displacement
     if not (math.isfinite(displacement) and displacement>0
