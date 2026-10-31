@@ -1,0 +1,75 @@
+{
+  "schema": "hcsn-p2-equal-cpu-timed-training-pilot-v1",
+  "preregistered_at_utc": "2026-10-31",
+  "parent_pr": 4503,
+  "parent_head": "0c12e663f3e71d2ddca45f6de6cc2d15d66be39b",
+  "status": "EXPLORATORY_RESEARCH_ONLY",
+  "authority": "DENY_ALL / NO_GO",
+  "question": "When both operators are trained directly with their own update law, do event-timestamp FIREs improve true causal content memory per measured CPU budget versus the otherwise identical count-aggregation model?",
+  "arms": [
+    "aggregate_count",
+    "physical_event_timestamp"
+  ],
+  "tasks": [
+    "copy",
+    "mqar4"
+  ],
+  "train_sequence_length": 16,
+  "evaluation_lengths": [
+    16,
+    32
+  ],
+  "paired_seeds": [
+    0,
+    1
+  ],
+  "training_data": {
+    "n": 128,
+    "seed": "100+seed",
+    "sample_id": "seed*100000+i",
+    "event_law": "SpikeStream.default_spec",
+    "identical_inputs_clock_rng": true
+  },
+  "evaluation_data": {
+    "n": 128,
+    "id_seed": "200+seed",
+    "ood_seed": "300+seed",
+    "exogenous_event_pairing": true
+  },
+  "frozen_architecture": {
+    "model": "TrainableEventContent(hidden=32)",
+    "initial_weights_seed": "torch.manual_seed(400+seed)",
+    "weights_shared_at_initialization": true,
+    "float_dtype": "torch.float32",
+    "device": "CPU",
+    "single_thread": true,
+    "trainable_parameter_count": "derived exact by runtime; must match across arms"
+  },
+  "optimizer": {
+    "type": "Adam",
+    "lr": 0.006,
+    "batch": 24,
+    "batch_sampler_seed": "500+seed",
+    "max_steps": 2000,
+    "bce_masked": true,
+    "optimizer_steps_must_not_be_inflated": true
+  },
+  "cpu_training_budget_seconds_per_arm": 25,
+  "budget_definition": "Model-specific data preparation plus optimization loop measured in Python process CPU seconds. Stop after crossing 25s at an update boundary or 2000 updates, whichever first. Do not normalize away preprocessing overhead. Record actual overshoot and reject budget matching >5%.",
+  "data_source": "Precompute independently verified per-observation sampled FIRE times; reject if sample counts disagree with original make_batch.",
+  "evaluation": "Full 128-actor ID/OOD sets; report accuracy, mask-BCE, accuracy per CPU-second, measured inference CPU and wall; no significance assertion from 2 seeds.",
+  "negative_evidence": "Retain all outcomes including OOM, timeouts, missing samples and regressions; report exact scripts, outputs and hashes.",
+  "guardrails": {
+    "production_activation": false,
+    "all_scientific_blockers_closed": false,
+    "P2_scientific_acceptance": false,
+    "P5_scaling_authorized": false,
+    "no_claims": [
+      "not independent blinded confirmation",
+      "not rigorous fixed FLOP or Joule matching",
+      "not full upstream repository CI",
+      "not native GPU/Rust host",
+      "not security-authenticated persistent execution"
+    ]
+  }
+}
