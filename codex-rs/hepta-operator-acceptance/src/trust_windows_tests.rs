@@ -19,11 +19,10 @@ use crate::test_support::private_tempdir;
 use crate::test_support::write_fixture_file;
 
 #[test]
-fn sshsig_entrypoints_fail_closed_without_unix_inherited_descriptors() {
-    let fixture = TrustFixture::new();
-    let anchor = fixture
-        .try_load_anchor()
-        .expect("load pinned fixture trust");
+fn sshsig_entrypoints_fail_closed_without_unix_inherited_descriptors()
+-> Result<(), Box<dyn std::error::Error>> {
+    let fixture = TrustFixture::new()?;
+    let anchor = fixture.try_load_anchor()?;
     for (name, statement, packet) in [
         ("valid", STATEMENT.as_bytes(), VALID_SIGNATURE),
         (
@@ -38,19 +37,19 @@ fn sshsig_entrypoints_fail_closed_without_unix_inherited_descriptors() {
         ),
     ] {
         let path = fixture.root.join(format!("{name}.sig"));
-        write_fixture_file(&path, packet.as_bytes()).expect("test packet");
-        let before = fixture.snapshot();
+        write_fixture_file(&path, packet.as_bytes())?;
+        let before = fixture.snapshot()?;
         for result in [
             anchor.verify(statement, &path),
             anchor.verify_base64(statement, &STANDARD.encode(packet.as_bytes())),
         ] {
-            let error = result.err().expect("Windows verifier must refuse");
+            let error = result.err().ok_or("Windows verifier must refuse")?;
             assert_eq!(
                 error.to_string(),
                 "operator acceptance rejected: OpenSSH SSHSIG verification requires Unix inherited descriptors"
             );
         }
-        assert_eq!(fixture.snapshot(), before);
+        assert_eq!(fixture.snapshot()?, before);
         fixture.assert_no_authority();
     }
     assert!(
@@ -59,11 +58,12 @@ fn sshsig_entrypoints_fail_closed_without_unix_inherited_descriptors() {
             .is_err()
     );
     fixture.assert_no_authority();
+    Ok(())
 }
 
 #[test]
-fn trust_policy_digest_is_external_and_fail_closed() {
-    let fixture = TrustFixture::new();
+fn trust_policy_digest_is_external_and_fail_closed() -> Result<(), Box<dyn std::error::Error>> {
+    let fixture = TrustFixture::new()?;
     assert!(
         TrustAnchor::load(TrustInputs {
             acceptance_store_root: &fixture.root,
@@ -74,15 +74,17 @@ fn trust_policy_digest_is_external_and_fail_closed() {
         .is_err()
     );
     fixture.assert_no_authority();
+    Ok(())
 }
 
 #[test]
-fn trust_policy_pins_store_principal_fingerprint_and_allowed_signers() {
-    let fixture = TrustFixture::new();
+fn trust_policy_pins_store_principal_fingerprint_and_allowed_signers()
+-> Result<(), Box<dyn std::error::Error>> {
+    let fixture = TrustFixture::new()?;
     let other = private_tempdir("other acceptance store");
     assert!(
         TrustAnchor::load(TrustInputs {
-            acceptance_store_root: &other.path().canonicalize().expect("canonical other store"),
+            acceptance_store_root: &other.path().canonicalize()?,
             allowed_signers_path: &fixture.allowed_signers,
             externally_pinned_trust_policy_sha256: &fixture.policy_sha256,
             trust_policy_path: &fixture.policy,
@@ -96,24 +98,24 @@ fn trust_policy_pins_store_principal_fingerprint_and_allowed_signers() {
                 "SHA256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".to_string()
         },
     ] {
-        let mut fixture = TrustFixture::new();
+        let mut fixture = TrustFixture::new()?;
         mutate(&mut fixture.policy_value);
-        let bytes = canonical_json(&fixture.policy_value).expect("canonical changed policy");
-        std::fs::remove_file(&fixture.policy).expect("replace policy");
-        write_fixture_file(&fixture.policy, &bytes).expect("changed policy fixture");
+        let bytes = canonical_json(&fixture.policy_value)?;
+        std::fs::remove_file(&fixture.policy)?;
+        write_fixture_file(&fixture.policy, &bytes)?;
         fixture.policy_sha256 = sha256(&bytes);
         assert!(fixture.try_load_anchor().is_err());
         fixture.assert_no_authority();
     }
-    let fixture = TrustFixture::new();
-    std::fs::remove_file(&fixture.allowed_signers).expect("replace allowed signers");
+    let fixture = TrustFixture::new()?;
+    std::fs::remove_file(&fixture.allowed_signers)?;
     write_fixture_file(
         &fixture.allowed_signers,
         b"operator@example ssh-ed25519 AAAA\n",
-    )
-    .expect("changed signer");
+    )?;
     assert!(fixture.try_load_anchor().is_err());
     fixture.assert_no_authority();
+    Ok(())
 }
 
 #[test]
@@ -136,15 +138,11 @@ struct TrustFixture {
 }
 
 impl TrustFixture {
-    fn new() -> Self {
+    fn new() -> Result<Self, Box<dyn std::error::Error>> {
         let temporary = private_tempdir("Windows trust fixture");
-        let root = temporary
-            .path()
-            .canonicalize()
-            .expect("canonical trust root");
+        let root = temporary.path().canonicalize()?;
         let allowed_signers = root.join("allowed_signers");
-        write_fixture_file(&allowed_signers, ALLOWED_SIGNERS.as_bytes())
-            .expect("allowed signers fixture");
+        write_fixture_file(&allowed_signers, ALLOWED_SIGNERS.as_bytes())?;
         let policy_value = TrustPolicy {
             acceptance_store_root: root.to_string_lossy().into_owned(),
             allowed_signers_sha256: sha256(ALLOWED_SIGNERS.as_bytes()),
@@ -158,16 +156,16 @@ impl TrustFixture {
             trust_root_revision: 1,
         };
         let policy = root.join("trust-policy.json");
-        let bytes = canonical_json(&policy_value).expect("canonical policy");
-        write_fixture_file(&policy, &bytes).expect("policy fixture");
-        Self {
+        let bytes = canonical_json(&policy_value)?;
+        write_fixture_file(&policy, &bytes)?;
+        Ok(Self {
             _temporary: temporary,
             root,
             allowed_signers,
             policy,
             policy_sha256: sha256(&bytes),
             policy_value,
-        }
+        })
     }
 
     fn try_load_anchor(&self) -> Result<TrustAnchor, crate::AcceptanceError> {
@@ -179,13 +177,12 @@ impl TrustFixture {
         })
     }
 
-    fn snapshot(&self) -> BTreeMap<PathBuf, Vec<u8>> {
-        std::fs::read_dir(&self.root)
-            .expect("fixture entries")
+    fn snapshot(&self) -> std::io::Result<BTreeMap<PathBuf, Vec<u8>>> {
+        std::fs::read_dir(&self.root)?
             .map(|entry| {
-                let path = entry.expect("fixture entry").path();
-                let bytes = std::fs::read(&path).expect("fixture bytes");
-                (path, bytes)
+                let path = entry?.path();
+                let bytes = std::fs::read(&path)?;
+                Ok((path, bytes))
             })
             .collect()
     }
