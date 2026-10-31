@@ -139,6 +139,28 @@ def archive_group(output, group, files):
                          archive_files=archive_count, readable_files=len(readable), includes_work=group.endswith("confirmation_01"))
 
 
+def reuse_history_archive(selected):
+    """Keep historical code byte-exact without exposing it to current formatters."""
+    group = "evidence/attempt01_sources"
+    archive_path = group+".tar.gz"
+    records, seen = [], set()
+    with tarfile.open(fileobj=io.BytesIO(selected[archive_path]), mode="r:gz") as archive:
+        for member in archive:
+            if not member.isfile() or member.name in seen:
+                raise ValueError("Unexpected historical source archive member")
+            name = group+"/"+safe(member.name)
+            raw = archive.extractfile(member).read()
+            if name in selected and selected.pop(name) != raw:
+                raise ValueError(("Historical source differs from preserved archive", name))
+            records.append(dict(path=name, bytes=len(raw), sha256=digest(raw),
+                                mode="tar", archive=archive_path, member=member.name))
+            seen.add(member.name)
+    if any(name.startswith(group+"/") for name in selected):
+        raise ValueError("Historical source is missing from preserved archive")
+    return records, dict(original_files=len(records), original_bytes=sum(r["bytes"] for r in records),
+                         archive_files=1, reused_archive=archive_path, readable_files=0, includes_work=False)
+
+
 def write_index(output, records, sequence=0):
     parts, block = [], []
     for record in sorted(records, key=lambda x: x["path"]):
@@ -182,6 +204,10 @@ def finish(output, metadata, records):
 
 def verify(root, destination=None):
     manifest = json.loads((root/MANIFEST).read_text())
+    expected_paths = {row["path"] for row in manifest["files"]} | {MANIFEST}
+    actual_paths = {str(path.relative_to(root)) for path in root.rglob("*") if path.is_file()}
+    if actual_paths != expected_paths:
+        raise ValueError(("Publication inventory mismatch", sorted(actual_paths ^ expected_paths)))
     for row in manifest["files"]:
         raw = (root/safe(row["path"])).read_bytes()
         if len(raw) != row["bytes"] or digest(raw) != row["sha256"] or len(raw) > MAX_FILE:
@@ -244,13 +270,15 @@ def pack(source, output, content_stage):
         grouped, groups[group] = archive_group(output, group, subset); records.extend(grouped)
         for name in subset:
             del selected[name]
+    historical, groups["evidence/attempt01_sources"] = reuse_history_archive(selected)
+    records.extend(historical)
     records.extend(store_file(output, name, raw) for name, raw in sorted(selected.items()))
     index = write_index(output, records)
     metadata = dict(schema="hcsn.r11.release.v1", created_at=datetime.now(timezone.utc).isoformat(),
         max_publication_file_bytes=MAX_FILE, max_new_archive_or_split_part_bytes=MAX_PART,
         original_indexes=index, archived_groups=groups, excluded_duplicate_work_or_cache_counts=excluded,
         late_root_reports_excluded=sorted(LATE_FILES),
-        source_policy="Content/numerics explicit manifests; failed confirmation_01 includes _work. Existing lane archives preserved byte-for-byte; lane restore utilities remain available.",
+        source_policy="Content/numerics explicit manifests; failed confirmation_01 includes _work. Historical attempt01_sources are restored from the byte-verified existing tar only. Existing lane archives preserved byte-for-byte; lane restore utilities remain available.",
         original_sources_modified=False)
     finish(output, metadata, records)
     return verify(output)
