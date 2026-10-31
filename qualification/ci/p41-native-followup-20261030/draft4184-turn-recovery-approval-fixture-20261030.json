@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.p41.native-ancestor-owning-remediation.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 4184,
+  "parent_head": "5131285c93f184c20fdad75473a4e1c6c469910b",
+  "source_path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+  "original_failure": {
+    "workflow": "blocking-ci",
+    "run_id": 41141025036,
+    "job_id": 124355423160,
+    "platform": "ubuntu-24.04 x86_64-unknown-linux-gnu",
+    "sample": "suite::v2::turn_recover::cold_sigkill_after_provider_output_is_not_recoverable",
+    "observed_stderr": "approval_policy = \"untrusted\" is no longer supported; remove this setting",
+    "additional_affected": "all tests calling configured_app/configured_app_with_resume_hook"
+  },
+  "change": {
+    "scope": "test fixture only",
+    "occurrences": 2,
+    "from": "untrusted (rejected by running parser)",
+    "to": "on-request (supported by same repository's app-server test fixtures)",
+    "features_unchanged": true,
+    "approvals_reviewer_user_unchanged": true,
+    "positive_negative_assertions_unchanged": true,
+    "production_permission_changed": false
+  },
+  "validation": {
+    "static_exact_replacement": true,
+    "ci_original_assertions_required": true,
+    "owning_native_reexecution": "PENDING_NEW_HEAD",
+    "manual_rust_bazel_execution": "UNAVAILABLE_IN_THIS_EXECUTION_CONTAINER",
+    "no_success_claim": true
+  },
+  "runtime_mode": "SHADOW_ONLY",
+  "authority": "DENY_ALL",
+  "production_status": "HOLD_NO_GO"
+}
