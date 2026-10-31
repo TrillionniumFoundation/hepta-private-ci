@@ -1,0 +1,21 @@
+[package]
+name = "hepta-hia-ndu-bridge"
+version = "0.1.0"
+edition = "2024"
+license = "Apache-2.0"
+publish = false
+
+# An isolated executable: original owner crates remain unchanged. This avoids
+# resolving unrelated application packages for the advisory transport.
+[workspace]
+
+[dependencies]
+codex-hepta-ndu = { path = "../../codex-rs/hepta-ndu" }
+codex-hepta-types = { path = "../../codex-rs/hepta-types" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true
