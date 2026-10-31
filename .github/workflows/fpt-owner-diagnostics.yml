@@ -106,6 +106,50 @@ jobs:
             //codex-rs/core:core-unit-tests \
             2>&1 | tee "$output/core-fork.log"
 
+      - name: Exercise runtime ownership and cold-close regressions
+        if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          output="$(cygpath -u "$RUNNER_TEMP")/fpt-owner-diagnostics"
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary --print-failed-test-logs \
+            --windows-msvc-host-platform -- \
+            test --platforms=//:windows_x86_64_msvc \
+            --cache_test_results=no --flaky_test_attempts=1 \
+            --test_sharding_strategy=disabled --test_output=all \
+            --test_arg=agent::control::tests::shutdown_tests::delayed_shutdown_preserves_replacement_runtime_and_ownership \
+            --test_arg=agent::control::tests::shutdown_tests::cold_close_waits_for_cancelled_reload_then_releases_ownership \
+            --test_arg=agent::registry::tests::replacement_registration_rejects_stale_release_and_preserves_budget \
+            --test_arg=--exact --test_arg=--nocapture -- \
+            //codex-rs/core:core-unit-tests \
+            2>&1 | tee "$output/core-ownership.log"
+          python - "$output/core-ownership.log" <<'PY'
+          from pathlib import Path
+          import sys
+
+          log = Path(sys.argv[1]).read_text(encoding="utf-8", errors="replace")
+          if "test result: ok. 3 passed; 0 failed" not in log:
+              raise SystemExit("the three exact ownership regressions did not all execute and pass")
+          PY
+
+      - name: Exercise the complete Core unit target under normal sharding
+        if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          output="$(cygpath -u "$RUNNER_TEMP")/fpt-owner-diagnostics"
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary --print-failed-test-logs \
+            --windows-msvc-host-platform -- \
+            test --platforms=//:windows_x86_64_msvc \
+            --cache_test_results=no --flaky_test_attempts=1 \
+            --test_output=all --test_arg=--nocapture -- \
+            //codex-rs/core:core-unit-tests \
+            2>&1 | tee "$output/core-unit-target.log"
+
       - name: Preserve diagnostics even after a failed probe
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
