@@ -6,12 +6,7 @@ on:
       - research/parameter-field-executor-20261031
       - research/parameter-field-recovery07-20261031
     paths:
-      - operational/parameter_field_recovery07/artifact_*
-      - operational/parameter_field_recovery07/action.yml
-      - operational/parameter_field_recovery07/action_bootstrap.mjs
-      - operational/parameter_field_recovery07/transport_synthetic.py
-      - operational/parameter_field_recovery07/test_artifact_transport.py
-      - operational/parameter_field_recovery07/package*.json
+      - operational/parameter_field_recovery07/**
       - .github/workflows/parameter-field-artifact-transport.yml
   workflow_dispatch:
 
@@ -60,11 +55,13 @@ jobs:
         run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Verify synthetic corruption and sequence rejection
         run: /opt/runtime/venv/bin/python -B -m unittest discover -s operational/parameter_field_recovery07 -p test_artifact_transport.py -v
-      - name: Exercise seventeen real archive barriers and terminal readback
+      - name: Verify the actual owned-process and supervisor boundary contracts
+        run: /opt/runtime/venv/bin/python -B -m unittest discover -s operational/parameter_field_recovery07 -p test_supervisor.py -v
+      - name: Exercise fourteen owned fixture workers and seventeen archive barriers
         uses: ./operational/parameter_field_recovery07
         with:
           python: /opt/runtime/venv/bin/python
-          output-directory: /work/parameter-field-transport-synthetic
+          output-directory: /work/synthetic/lifecycle
       - name: Require the original exact runtime identity independently of synthetic transport
         run: /opt/runtime/venv/bin/python -B -c 'import json; r=json.load(open("/work/qualification/runtime.json")); print(json.dumps({"exact_runtime":r["runtime"]["exact_match"],"different_fields":r["runtime"].get("different_fields"),"science_admission":False})); assert r["runtime"]["exact_match"]'
       - name: Preserve synthetic verification receipts
@@ -74,13 +71,20 @@ jobs:
           name: transport-synthetic-receipts-${{ github.sha }}-${{ github.run_attempt }}
           path: |
             /work/qualification/*.json
-            /work/parameter-field-transport-synthetic/*.json
-            /work/parameter-field-transport-synthetic/barriers/*/ACK.json
-            /work/parameter-field-transport-synthetic/barriers/*/FAILED.json
-            /work/parameter-field-transport-synthetic/barriers/*/*.wait4.json
-            /work/parameter-field-transport-synthetic/barriers/*/*.result.json
-            /work/parameter-field-transport-synthetic/terminal/ACK.json
-            /work/parameter-field-transport-synthetic/terminal/*.wait4.json
-            /work/parameter-field-transport-synthetic/terminal/*.result.json
+            /work/synthetic/lifecycle/*.json
+            /work/synthetic/lifecycle/*.log
+            /work/synthetic/lifecycle/measurements/**/*.json
+            /work/synthetic/lifecycle/measurements/**/*.log
+            /work/synthetic/lifecycle/raw/**/*.json
+            /work/synthetic/lifecycle/barriers/*/ACK.json
+            /work/synthetic/lifecycle/barriers/*/FAILED.json
+            /work/synthetic/lifecycle/barriers/*/*.wait4.json
+            /work/synthetic/lifecycle/barriers/*/*.result.json
+            /work/synthetic/lifecycle/barriers/*/upload/MANIFEST.json
+            /work/synthetic/lifecycle/terminal_archive/ACK.json
+            /work/synthetic/lifecycle/terminal_archive/FAILED.json
+            /work/synthetic/lifecycle/terminal_archive/*.wait4.json
+            /work/synthetic/lifecycle/terminal_archive/*.result.json
+            /work/synthetic/lifecycle/terminal_archive/upload/MANIFEST.json
           if-no-files-found: error
           retention-days: 90

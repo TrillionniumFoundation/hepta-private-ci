@@ -8,7 +8,7 @@ if (!destination || !process.env.ACTIONS_RUNTIME_TOKEN || !process.env.ACTIONS_R
   process.stderr.write('Required action runtime context is unavailable.\n');
   process.exitCode = 1;
 } else {
-  const script = fileURLToPath(new URL('./transport_synthetic.py', import.meta.url));
+  const script = fileURLToPath(new URL('./synthetic_lifecycle.py', import.meta.url));
   const child = spawn(executable, ['-B', script, '--output', destination],
     {stdio: 'inherit', env: {...process.env, HEPTA_ARTIFACT_NODE: process.execPath}});
   child.on('error', () => { process.stderr.write('Unable to start synthetic driver.\n'); process.exitCode = 1; });

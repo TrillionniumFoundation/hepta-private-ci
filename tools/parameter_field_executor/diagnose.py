@@ -225,10 +225,14 @@ def main():
         if index < 2:
             time.sleep(10)
     process, filesystem = process_probe(), filesystem_probe(args.output.parent)
-    flags = next((line.split(":", 1)[1].split() for line in Path("/proc/cpuinfo").read_text().splitlines() if line.startswith("flags")), [])
+    cpuinfo = Path("/proc/cpuinfo").read_text().splitlines()
+    flags = next((line.split(":", 1)[1].split() for line in cpuinfo if line.startswith("flags")), [])
+    models = sorted({line.split(":", 1)[1].strip() for line in cpuinfo if line.startswith("model name")})
+    vendors = sorted({line.split(":", 1)[1].strip() for line in cpuinfo if line.startswith("vendor_id")})
     report = {"schema": "hepta.executor-qualification.engineering.1", "at_unix": time.time(),
               "scope": "Synthetic capability measurements; no scientific input, worker or admission.",
               "platform": {"machine": platform.machine(), "kernel": platform.release(),
+                           "cpu_model_names": models, "cpu_vendor_ids": vendors,
                            "avx512_flags": sorted(f for f in flags if f.startswith("avx512"))},
               "runtime": runtime, "runtime_import_admitted_by_visible_headroom": can_import,
               "capacity_samples": samples, "sample_interval_seconds": 10,
