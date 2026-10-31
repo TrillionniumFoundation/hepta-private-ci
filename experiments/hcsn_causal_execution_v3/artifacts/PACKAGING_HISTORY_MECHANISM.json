@@ -1,0 +1,38 @@
+{
+  "schema": "hcsn-packaging-superseded-snapshot.v3",
+  "bundle": "mechanism001",
+  "reason": "Agent added final raw REPORT_ZH.md after first334-file pack snapshot; all334originalmembers validated but final package requires335. Raw results retained unchanged. Superseded archive parts are excluded from publication; canonical final replacement is mechanism_final001.",
+  "first_archive_sha256": "6056cdc6510b40c073d9f17c9f9e89a0fdc66b248a6e485b2e3ff586e8943929",
+  "first_members": 334,
+  "first_compressed_bytes": 7656856,
+  "first_restore_receipt": {
+    "schema": "hcsn-evidence-restore.v3",
+    "manifest_sha256": "66c4d14ac87fc8fc463084d999a7168a1fae9cb5d6941f3dfcbc6cccd6378e36",
+    "archive_sha256": "6056cdc6510b40c073d9f17c9f9e89a0fdc66b248a6e485b2e3ff586e8943929",
+    "verified_members": 334,
+    "written": 334,
+    "identical_existing": 0,
+    "all_verified": true,
+    "restore_cost": {
+      "wall_seconds": 1.2060872279980686,
+      "cpu_seconds": 1.2044895849999975,
+      "process_peak_rss_kib": 107592,
+      "scope": "archive operation; final receipt serialization excluded",
+      "energy_joules": null
+    },
+    "current_source_members_verified": 334,
+    "current_source_mismatches": [],
+    "temporary_restore_removed": true,
+    "raw_sources_preserved": true,
+    "combined_pack_verify_cost": {
+      "wall_seconds": 18.74704050399305,
+      "cpu_seconds": 18.731536149,
+      "process_peak_rss_kib": 107592,
+      "energy_joules": null,
+      "scope": "pack, all hashes, restore and independent comparison; excludes final receipt write"
+    }
+  },
+  "added_member": "results/mechanism/formal001/REPORT_ZH.md",
+  "canonical_final_bundle": "mechanism_final001",
+  "repack_directory_conflict": "A subsequent attempt to reuse mechanism001 refused to overwrite an existing directory. A new distinct final bundle path is used; no existing archive was overwritten."
+}

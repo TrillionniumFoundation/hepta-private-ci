@@ -62,7 +62,7 @@ probabilities = predict_prefix(model, accepted_x, accepted_observed)
 
 保存全部 240 个候选参数、480 份 train/validation 逐样本预测、两个选中 checkpoint 及全部测试干预预测。4 个行为测试通过，覆盖拒绝读取的 payload 不影响输出、继承 delta/age 不影响输出、真实内容/顺序会改变特征，以及空/单模态前缀可执行。
 
-独立重算确认全部候选指标误差为零、选点确为最小验证 CE、checkpoint 哈希和冻结源码身份一致。初次独立审核遗漏实现中 CE 的 `1e-15` 概率下限，导致一个未选中的极端 bilinear candidate 不一致；保留了原失败记录，纠正审核公式后通过，没有改模型、选点或结果。[原审核记录](results/av_probe/verification.json) · [纠正后的审核记录](results/av_probe/verification_corrected.json)
+独立重算确认全部候选指标误差为零、选点确为最小验证 CE、checkpoint 哈希和冻结源码身份一致。初次独立审核遗漏实现中 CE 的 `1e-15` 概率下限，导致一个未选中的极端 bilinear candidate 不一致；保留了原失败记录，纠正审核公式后通过，没有改模型、选点或结果。可复用的 `av_audit.py` 不导入模型评分函数，独立重算全部 480 份候选预测和 10 份测试预测，并核对 actor 结果、候选网格、输入/标签一致性和选中参数。[审核源码](av_audit.py) · [原审核记录](results/av_probe/verification.json) · [纠正后的审核记录](results/av_probe/verification_corrected.json)
 
 ## 6. 复现
 
@@ -75,6 +75,11 @@ python -m experiments.hcsn_causal_execution_v3.av_probe \
 
 PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
 python -m unittest experiments.hcsn_causal_execution_v3.av_probe_tests
+
+PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 \
+python -m experiments.hcsn_causal_execution_v3.av_audit \
+  --results experiments/hcsn_causal_execution_v3/results/av_probe \
+  --output experiments/hcsn_causal_execution_v3/results/av_probe_audit_replay.json
 ```
 
 输入位置为 `experiments/hcsn_task_value_v1/results/async_frontend001/data/`。源训练与验证 NPZ 的哈希已写入冻结协议；训练数据的统计、选择规则和原始预测均可独立重算。下一步的主要障碍仍是更充分、可泛化的共同 AV 内容前端及更多独立 actors，而非给当前近机会水平的绑定器继续叠加解析动态后宣称解决识别问题。

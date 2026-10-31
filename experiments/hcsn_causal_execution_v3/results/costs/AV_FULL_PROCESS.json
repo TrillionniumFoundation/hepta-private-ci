@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+    "-m",
+    "experiments.hcsn_causal_execution_v3.av_probe",
+    "--output",
+    "/tmp/hcsn-v3-avcost-wcwj4mdn/replay"
+  ],
+  "cpu_seconds": 3.010586,
+  "device_energy_joules": null,
+  "energy_sensor_available": false,
+  "input_blocks": 0,
+  "involuntary_context_switches": 298,
+  "log_sha256": "3020f32b4ea4e91a504d7e8f4521ff9a5f93f18aa7a59a1e4fe180ffcdc643f0",
+  "output_blocks": 43656,
+  "peak_rss_bytes": 213700608,
+  "returncode": 0,
+  "scope": "Linux wait4 fresh process and waited descendants; imports/loading/evaluation/output included",
+  "timing_environment": "Single thread, shared host; other tenants cannot be excluded",
+  "voluntary_context_switches": 20,
+  "wall_seconds": 3.0242292909970274
+}
