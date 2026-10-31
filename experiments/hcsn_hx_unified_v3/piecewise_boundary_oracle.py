@@ -35,16 +35,21 @@ def two_segment_first_hit(x, b, mu, sigma, c1, c2, switch, T, q=0, *, dps=60):
         first = linear_boundary_first_hit(x, b, mu, sigma, c1, switch, q, dps=dps + 15)
         nu1 = mu - c1
         variance = sigma**2 * switch
-        root = mp.sqrt(2 * mp.pi * variance)
-        decay = mp.exp(-nu1**2 * switch / (2 * sigma**2))
+        # The surviving gap is Gaussian about mean_gap with standard
+        # deviation scale. Integrating in y loses a narrow mode when
+        # scale is tiny relative to the distance from the original gap.
+        # In z=(y-mean_gap)/scale the killed density times dy has a
+        # standard-normal envelope, even for remote/very narrow modes.
+        scale = sigma * mp.sqrt(switch)
+        mean_gap = a + nu1 * switch
+        lower_z = -mean_gap / scale
+        gaussian_norm = mp.sqrt(2 * mp.pi)
 
-        def killed_density(y):
+        def surviving_gap(z):
+            y = mean_gap + scale * z
             if y <= 0:
                 return mp.mpf(0)
-            # Exponential tilt of the driftless method-of-images kernel.
-            # -expm1 avoids cancellation close to the absorbing boundary.
-            return (decay / root * mp.exp(nu1 * (y - a) / sigma**2
-                    - (y - a)**2 / (2 * variance))
+            return (mp.exp(-z*z/2) / gaussian_norm
                     * (-mp.expm1(-2 * a * y / variance)))
 
         remaining = T - switch
@@ -64,25 +69,41 @@ def two_segment_first_hit(x, b, mu, sigma, c1, c2, switch, T, q=0, *, dps=60):
         def second_G(y):
             if q == 0:
                 return second_F(y)
-            return mp.exp(-(nu2+s2)*y/sigma**2)*first_hit_tail(y, -s2)
+            # nu2+s2 cancels for negative drift and tiny sigma;
+            # rationalize the exponent before dividing by sigma**2.
+            rate = (2*q/(s2-nu2) if nu2 < 0 else
+                    (nu2+s2)/sigma**2)
+            return mp.exp(-rate*y)*first_hit_tail(y, -s2)
 
-        # Integrate over the entire surviving gap domain, with knots near
-        # the Gaussian's mass; no finite-tail truncation or MC approximation.
-        scale = sigma * mp.sqrt(switch)
-        knots = sorted({mp.mpf(0), a/4, a/2, a, a+scale,
-                        max(mp.mpf(0), a+nu1*switch),
-                        max(mp.mpf(0), a+nu1*switch+4*scale)})
-        knots.append(mp.inf)
-        continuation_F = mp.quad(lambda y: killed_density(y)*second_F(y),
-                                 knots)
+        # Integrate in a standardized normal window. Its omitted mass is
+        # bounded by erfc(radius/sqrt(2)); unlike an arbitrary spatial
+        # cutoff, that bound is independent of drift, scale, and F2.
+        radius = mp.sqrt(2 * mp.log(10) * (dps + 30))
+        tail_bound = mp.erfc(radius / mp.sqrt(2))
+        if lower_z >= radius:
+            raise ArithmeticError("unresolved surviving-gap tail")
+        z_knots = sorted({-radius, radius, mp.mpf(-16), mp.mpf(-8),
+                          mp.mpf(-4), mp.mpf(-1), mp.mpf(0),
+                          mp.mpf(1), mp.mpf(4), mp.mpf(8),
+                          mp.mpf(16)}
+                         | ({lower_z} if -radius < lower_z < radius
+                            else set()))
+        continuation_F = mp.quad(
+            lambda z: surviving_gap(z)*second_F(mean_gap+scale*z), z_knots)
         p = first.probability + continuation_F
         if q == 0:
             # Discount-free first-event weight equals probability *exactly*.
             g = p
         else:
-            continuation_G = mp.quad(lambda y: killed_density(y)*second_G(y),
-                                     knots)
+            continuation_G = mp.quad(
+                lambda z: surviving_gap(z)*second_G(mean_gap+scale*z),
+                z_knots)
             g = first.discounted + mp.exp(-q * switch) * continuation_G
+        # Do not silently certify a probability below the known tail
+        # uncertainty; the integral is a research approximation, not an
+        # outward-rounded interval certificate.
+        if p <= tail_bound or (1 - p) <= tail_bound:
+            raise ArithmeticError("unresolved normalized Gaussian tail")
         if not (mp.isfinite(p) and mp.isfinite(g) and 0 <= g <= p <= 1):
             raise ArithmeticError("invalid piecewise first-hit ordering")
         # The exact pathwise bracket is a useful independent self-check.
