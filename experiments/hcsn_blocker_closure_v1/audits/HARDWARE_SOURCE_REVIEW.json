@@ -1,0 +1,121 @@
+{
+  "checks": [
+    {
+      "basis": "Five named architectures, two tasks, seed881101 and B1/16/32 are fixed before timing; no outcome-based arm selection.",
+      "name": "fixed_checkpoint_panel",
+      "passed": true
+    },
+    {
+      "basis": "External INDEX SHA binds shard hashes/counts and each required protocol/lock/checkpoint/selection/RESULT/validation member hash+size before hardware registration.",
+      "name": "externally_pinned_archive_members",
+      "passed": true
+    },
+    {
+      "basis": "Exact source map/full design/study seal/protocol SHA/preflight checked. Immutable hardware registration pins input bytes, rechecked before run.",
+      "name": "registered_source_and_data",
+      "passed": true
+    },
+    {
+      "basis": "Stored validation argmin and LR lock are verified against archived trusted records. RESULT metadata are read; no heldout arrays are loaded and no heldout metric chooses a case.",
+      "name": "checkpoint_selection_scope",
+      "passed": true
+    },
+    {
+      "basis": "Every call omits state and performs a full sequence, including all within-sequence model state, reset and refractory updates; no operator or output is cached across calls.",
+      "name": "complete_fresh_state_forward",
+      "passed": true
+    },
+    {
+      "basis": "Each exact selected checkpoint is loaded on CPU and produces a reference before device transfer. Both resident and host-copy outputs must match registered FP32 tolerances.",
+      "name": "cpu_reference",
+      "passed": true
+    },
+    {
+      "basis": "Device synchronization before/after every timed sample and start/end events on current stream; event time described as stream elapsed, including possible launch gaps.",
+      "name": "cuda_timing",
+      "passed": true
+    },
+    {
+      "basis": "Fresh input/dt device copies and output CPU copy included; model/disk setup separate. CPU executes equivalent fresh allocations.",
+      "name": "host_end_to_end_scope",
+      "passed": true
+    },
+    {
+      "basis": "The resident invoke closure is called by measure_energy inside torch.inference_mode, preserving the declared inference contract.",
+      "name": "energy_inference_mode",
+      "passed": true
+    },
+    {
+      "basis": "NVML handle resolved by full GPU UUID and returned UUID compared to the PyTorch device; unknown/MIG/mismatch yields null.",
+      "name": "exact_uuid",
+      "passed": true
+    },
+    {
+      "basis": "Only cumulative NVML millijoule differences become joules. Device-wide gross energy includes idle/background; no process/CPU/server energy claim or idle subtraction.",
+      "name": "actual_counter_units_and_scope",
+      "passed": true
+    },
+    {
+      "basis": "Regressions inside either idle interval and between all intervals invalidate active joules and normalized values; zero idle increment allowed, unresolved active increment null.",
+      "name": "monotone_counter_repair",
+      "passed": true
+    },
+    {
+      "basis": "Registered minimum active duration and maximum iteration count; too-short windows yield null rather than extrapolated energy.",
+      "name": "bounded_energy_window",
+      "passed": true
+    },
+    {
+      "basis": "Body clocks explicitly exclude imports/integrity checks. External whole-process wait4 remains required; setup/inference/energy clocks are nested.",
+      "name": "cost_scope",
+      "passed": true
+    },
+    {
+      "basis": "Unavailable CUDA is recorded unavailable, actual CUDA errors failed. complete is execution integrity, not evidence of GPU execution or superiority.",
+      "name": "unavailable_hardware",
+      "passed": true
+    }
+  ],
+  "finding": {
+    "id": "energy_idle_regression_001",
+    "initial_counterexample_readings": [
+      100,
+      90,
+      95,
+      110,
+      120,
+      130
+    ],
+    "initial_problem": "Idle-before counter regression could coexist with a published positive active-window energy because only active and cross-window monotonicity were checked.",
+    "resolution": "Both idle windows now receive explicit internal-regression checks; exception clears all derived joule fields; exact fake sequence included in synthetic preflight.",
+    "status": "repaired_before_final_preflight"
+  },
+  "passed": true,
+  "remaining_external_evidence": [
+    "Actual selected-checkpoint hardware execution",
+    "Actual CUDA synchronization/event behavior on available hardware",
+    "Real supported total-energy-counter measurements",
+    "Independent process exclusivity or whole-system energy if later claimed"
+  ],
+  "reviewed_source_sha256": {
+    "experiments/hcsn_blocker_closure_v1/hardware/HARDWARE_DESIGN.json": "cf50e46ba5cb944f82f19db86adc79b22b77b327dfad6e1974bab6f674223727",
+    "experiments/hcsn_blocker_closure_v1/hardware/README.md": "616de1c47d02e3219e7d6a9270d4b3ab306408ce31f7563900a2429c82849bd1",
+    "experiments/hcsn_blocker_closure_v1/hardware/energy.py": "77720abf774f15e0d9d4546882095eba4bdc920bb4796f280b0340734c56eb10",
+    "experiments/hcsn_blocker_closure_v1/hardware/measure.py": "e9bfb3695c547707052cdfc5c042aa9a442af6407035872b8294667d6e76d478",
+    "experiments/hcsn_blocker_closure_v1/hardware/preflight.py": "0deb70e2af3c65391248d70a798369da3a53b9200499c840d513f1908fa7515d"
+  },
+  "schema": "hcsn-hardware-independent-source-review.v1",
+  "scope": "Read-only source review. Reviewer did not execute CUDA, NVML energy, or formal checkpoint measurements. Owner-provided synthetic receipt independently hash-bound.",
+  "status": "no_remaining_source_launch_blocker_found",
+  "synthetic_preflight": {
+    "checks": 28,
+    "cpu_seconds": 0.3229195370000002,
+    "cuda_available": false,
+    "file": "experiments/hcsn_blocker_closure_v1/hardware/PREFLIGHT002.json",
+    "passed": true,
+    "scope": "Synthetic CPU inputs and untrained synthetic checkpoint fixture only. No formal checkpoint, validation/test arrays, CUDA timing or real energy counter is claimed.",
+    "sha256": "21428a0674c7b2ccc5d9afe3676f6615e4c35983087439e6e300969d08d0ce48",
+    "wall_seconds": 0.34600524000416044
+  },
+  "unchanged_content_source": true
+}

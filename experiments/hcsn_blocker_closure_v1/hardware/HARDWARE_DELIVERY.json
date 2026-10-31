@@ -1,0 +1,75 @@
+{
+  "actual_cuda_measurement": false,
+  "actual_energy_joules": null,
+  "cuda_available": false,
+  "files": [
+    {
+      "bytes": 84,
+      "path": "experiments/hcsn_blocker_closure_v1/hardware/__init__.py",
+      "sha256": "c0d24d25d01960bf97444982f3997b056d9b19d90c4e1bb064f715d0747531da"
+    },
+    {
+      "bytes": 5659,
+      "path": "experiments/hcsn_blocker_closure_v1/hardware/energy.py",
+      "sha256": "77720abf774f15e0d9d4546882095eba4bdc920bb4796f280b0340734c56eb10"
+    },
+    {
+      "bytes": 18582,
+      "path": "experiments/hcsn_blocker_closure_v1/hardware/measure.py",
+      "sha256": "e9bfb3695c547707052cdfc5c042aa9a442af6407035872b8294667d6e76d478"
+    },
+    {
+      "bytes": 7371,
+      "path": "experiments/hcsn_blocker_closure_v1/hardware/preflight.py",
+      "sha256": "0deb70e2af3c65391248d70a798369da3a53b9200499c840d513f1908fa7515d"
+    },
+    {
+      "bytes": 3491,
+      "path": "experiments/hcsn_blocker_closure_v1/hardware/HARDWARE_DESIGN.json",
+      "sha256": "cf50e46ba5cb944f82f19db86adc79b22b77b327dfad6e1974bab6f674223727"
+    },
+    {
+      "bytes": 4763,
+      "path": "experiments/hcsn_blocker_closure_v1/hardware/README.md",
+      "sha256": "616de1c47d02e3219e7d6a9270d4b3ab306408ce31f7563900a2429c82849bd1"
+    },
+    {
+      "bytes": 11422,
+      "path": "experiments/hcsn_blocker_closure_v1/hardware/PREFLIGHT001.json",
+      "sha256": "ed70b0e9dd3226374abc83021fc129a758e10c97d591c201e9df2eb81a8b5b17"
+    },
+    {
+      "bytes": 11724,
+      "path": "experiments/hcsn_blocker_closure_v1/hardware/PREFLIGHT002.json",
+      "sha256": "21428a0674c7b2ccc5d9afe3676f6615e4c35983087439e6e300969d08d0ce48"
+    }
+  ],
+  "measurement_requires": "Source-bound registration with externally pinned content protocol SHA256 and published archive INDEX SHA256, then a new result directory; root provides complete process wait4 receipt",
+  "preflight_checks": 28,
+  "preflight_passed": true,
+  "preflight_source_sha256": {
+    "experiments/continuous_spiking_network/baseline.py": "526eaf3ea650d67188cbf898e8a246e7511b196ee2b0b50e7a6063c9ab1583f8",
+    "experiments/hcsn_blocker_closure_v1/content/DESIGN.json": "c38b579da45bc200825419f48b0321586dcdbe26eeec8f45323f56d668ca148f",
+    "experiments/hcsn_blocker_closure_v1/content/__init__.py": "b19567b2db5b6961b63c4d2f8359a4f56a2b1664ea31c45e794339066e12e96c",
+    "experiments/hcsn_blocker_closure_v1/content/analysis.py": "aed2dd5bee0561fbea6030b9902f3eef65b513d6ea5aa4ad19409f65c3b46564",
+    "experiments/hcsn_blocker_closure_v1/content/data.py": "89cec4f5d5926d4971880b4103e8b964f702986d7ad0f884fa95b52c32e876ee",
+    "experiments/hcsn_blocker_closure_v1/content/models.py": "f08878c2760bcec859e5e11c7b906b71647029073f782987c3431a4ca0ea71fe",
+    "experiments/hcsn_blocker_closure_v1/content/preflight.py": "edbba48e2d8b2f464fb714611a6c87aa16f8d495aa0b6db7ed1c269bddd59911",
+    "experiments/hcsn_blocker_closure_v1/content/study.py": "1e7039a7d2cbf3e4be1f009c0aeab92b31c5098b606ee55f89d6f74105d7b3d0",
+    "experiments/hcsn_blocker_closure_v1/hardware/HARDWARE_DESIGN.json": "cf50e46ba5cb944f82f19db86adc79b22b77b327dfad6e1974bab6f674223727",
+    "experiments/hcsn_blocker_closure_v1/hardware/__init__.py": "c0d24d25d01960bf97444982f3997b056d9b19d90c4e1bb064f715d0747531da",
+    "experiments/hcsn_blocker_closure_v1/hardware/energy.py": "77720abf774f15e0d9d4546882095eba4bdc920bb4796f280b0340734c56eb10",
+    "experiments/hcsn_blocker_closure_v1/hardware/measure.py": "e9bfb3695c547707052cdfc5c042aa9a442af6407035872b8294667d6e76d478",
+    "experiments/hcsn_blocker_closure_v1/hardware/preflight.py": "0deb70e2af3c65391248d70a798369da3a53b9200499c840d513f1908fa7515d",
+    "experiments/hcsn_conservative_acceleration_v1/kernel.py": "d528d140b83e11e80b835853d94677e1a2293d6b7c16ec4b27e2fac5d2ffcf68",
+    "experiments/hcsn_conservative_acceleration_v1/model.py": "1326e49d6c5add4eb0ef20524aa5a0c0edd80fc3284da8db4b6266993073118b",
+    "experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "experiments/hcsn_distributional_v2/model.py": "3eb5f6b8797475abf84b09ae5b588f3d0a253e0584578586cb081f15142a355f",
+    "experiments/hcsn_distributional_v2/stable_probability.py": "d4bc918a5907a253007f8efd793ef379ab8c0e7ce9d5753af7feadcd8b836770",
+    "experiments/hcsn_free_boundary_v1/model.py": "c86535bf5b37589503aada3b1d979d80b75e54eb19e6be4f3b93482066147625",
+    "experiments/hcsn_free_boundary_v1/oracle_torch.py": "c651bc1c895596d2f1ca847b0bea80eb01efc951d9392a695ff0ccc2a0c61e9a"
+  },
+  "schema": "hcsn-blocker-hardware-delivery.v1",
+  "scope": "Synthetic CPU preflight only. No formal content checkpoint, validation data, test data or OOD data was loaded.",
+  "status": "source-preflight-complete-unmeasured"
+}
