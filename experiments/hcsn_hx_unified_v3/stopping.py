@@ -165,6 +165,10 @@ def _obstacle_from_value(p: Stop, x: float, b: float, val: float) -> float:
     V(x) is large. The expm1 factor preserves small renewal differences.
     For x>=b, the threshold policy fires immediately, so the obstacle is
     exactly zero by construction; this does not verify an optimal policy.
+    Deep below reset, V(x) underflows while expm1(-h) overflows even if
+    D*V(reset)-V(x) is finite. In that far tail, compute the two bounded
+    continuation values separately; their ratio exceeds exp(36), so the
+    subtraction is not the near-reset cancellation that expm1 protects.
     """
     if x>=b:
         return 0.0
@@ -172,7 +176,14 @@ def _obstacle_from_value(p: Stop, x: float, b: float, val: float) -> float:
     if not math.isfinite(h):
         raise ArithmeticError('Renewal obstacle exponent unresolved in f64')
     try:
-        delta=val*math.expm1(-h)
+        if h < -36.:
+            # Since rho*tau >= 0 and kappa > 0, h<0 entails x<reset.
+            # Here V(x)/(D*V(reset)) = exp(h) < exp(-36), so a direct
+            # difference avoids 0*infinity without cancellation.
+            discounted_reset=p.delay_discount*regenerative_value(p,p.reset,boundary=b)
+            delta=math.fsum((discounted_reset,-val))
+        else:
+            delta=val*math.expm1(-h)
         obstacle=math.fsum((x-p.cost,delta))
     except (OverflowError, ValueError) as exc:
         raise ArithmeticError('Renewal obstacle subtraction unresolved') from exc
