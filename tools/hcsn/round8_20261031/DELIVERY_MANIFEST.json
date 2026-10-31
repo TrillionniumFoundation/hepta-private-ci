@@ -1,7 +1,19 @@
 {
   "branch": "research/hcsn-five-track-verified-delivery-20261031",
-  "content_commit": "e60338afbe044b9bf3f93f622a3dd37c7e266d2b",
+  "content_commit": "2d7d2760cb2df316825688f2a3176a9dcb214497",
   "delivered_files": [
+    {
+      "bytes": 613,
+      "git_blob_sha": "4aa76acd56c4b26aeffd9d591887cac372026ea2",
+      "path": ".codespellrc",
+      "sha256": "27bbd3f764f5f59e5f2613ca1b06a582bb23de2f1a246335913acc319f6f6658"
+    },
+    {
+      "bytes": 2145,
+      "git_blob_sha": "60f97922e80e81ad5414050e8379927194eff980",
+      "path": ".github/blob-size-allowlist.txt",
+      "sha256": "1d76ed1de9a3e4b08677d0359c7b37054be872ac68c86f87c5b6331919c353af"
+    },
     {
       "bytes": 2415,
       "git_blob_sha": "5297fe0411ff8a5eb1eba9eda26df9ffcd1b31fb",
@@ -9,10 +21,16 @@
       "sha256": "93cba5a42cb93b9ae28cc87d6ecb3bc2a668e0791c1fd6fcae7ee4953a74d9cb"
     },
     {
-      "bytes": 16262,
-      "git_blob_sha": "33d67b39042779da74fc2fee0f174e9d21da8afc",
+      "bytes": 5025,
+      "git_blob_sha": "c6f6d7a35e912db6e579a3af228db49cdbf1c161",
+      "path": "tools/hcsn/round8_20261031/CI_DIAGNOSIS.json",
+      "sha256": "93ff6aaaffa503255513e672ab9ed97f58769cd9329dfb5078a3416ff24bf4b7"
+    },
+    {
+      "bytes": 17699,
+      "git_blob_sha": "51e028505ad18c301c145a3d5a6e57aa74046fb3",
       "path": "tools/hcsn/round8_20261031/DELIVERY_REPORT_ZH.md",
-      "sha256": "c53530437f9e5185673f4e4aaa53276d269a4d7745bfe448785d1eeecef7a120"
+      "sha256": "17c09c198a347aa5082fa73439bc8139e122eaa0c1640f2923f90fd9b780b0c4"
     },
     {
       "bytes": 1960,
@@ -1300,7 +1318,7 @@
   "repository": "TrillionniumFoundation/hepta-private-ci",
   "schema": "hepta.hcsn.verified-delivery-manifest.v1",
   "scientific_tests_repeated_by_integrity_check": false,
-  "scope": "Ordinary Git files under R8 plus frozen in-repository dependency inputs. This manifest and the subsequent delivery receipt are excluded to avoid self-reference. Evidence volume indexes recursively bind their archived members.",
+  "scope": "Ordinary Git files under R8 plus the two repository configurations for exact immutable-asset registration and binary-only spelling exclusion, plus frozen in-repository dependency inputs. This manifest and the delivery receipt are excluded to avoid self-reference. Evidence volume indexes recursively bind archived members.",
   "volumes": [
     {
       "archive_sha256": "290403cf96446d607bedea38e01687c74e1baf074df73e2c4ba0ecdc75e6dc97",
