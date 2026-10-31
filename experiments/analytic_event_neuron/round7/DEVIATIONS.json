@@ -1,0 +1,97 @@
+{
+  "schema": "hepta.analytic-event.round7.deviations.v1",
+  "entries": [
+    {
+      "id": "temperature_tail_normalization_preconfirmation_fix",
+      "recorded_utc": "2026-10-31T02:02:25.167111+00:00",
+      "stage": "After formal training jobs started, before any confirmation/audit fixture generation or inspection.",
+      "trigger": "Independent algebra and probability-law tests found that using clamped event probability as a conditional-mass denominator changes transition row mass and conditional tail ratios.",
+      "observed_legacy_example": {
+        "n_grid": 15,
+        "dt": 0.001,
+        "temperature": 1.999413,
+        "center_event_probability": 1.028e-22,
+        "row_mass": 0.999999900472,
+        "source": "Independent mathematics reviewer; exact source/test evidence archived by that reviewer."
+      },
+      "registered_dt1_corner_scope": "Reviewer measured maximum row-mass error 7.11e-13 on 27 allowed-bound dt=1 corners. This does not make the general finite transition valid outside those sampled corners.",
+      "decision": "Fix the probability-normalization implementation, retain legacy source/tests and every old fit/cost, and rerun all five secondary temperature seeds without selecting by task performance.",
+      "decision_maker": "coordinator /root, explicit instruction before confirmation",
+      "affected_mode": "first_passage_temperature",
+      "unaffected_scientific_components": [
+        "primary EventDynamics kernels",
+        "training objective and schedule",
+        "task and oracle definitions",
+        "A/B/C/D primary statistical family"
+      ],
+      "core_sha256_at_recording": "52857735514c295c5bb09846ac7200709d7ecb6a2537c2e38db1d42526f76bc8",
+      "planned_legacy_archive": "evidence/development_temperature_legacy",
+      "planned_corrected_fits": "evidence/fits_temperature_corrected",
+      "registered_final_fit_count": 60,
+      "superseded_temperature_fit_seeds": [
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "counts_are_final_results": true,
+      "cost_rule": "Count all legacy and corrected attempts in total research cost. Do not include superseded legacy temperature checkpoints in final efficacy lookup.",
+      "source_binding": "Keep per-job source hashes at training start. Already-running jobs imported the old temperature class; changing the file does not repair those in-memory jobs. Primary modes do not call that class.",
+      "confirmation_leakage": "No confirmation outcome informed this implementation correction. Final source/protocol/checkpoint freeze is still pending.",
+      "status": "corrected_secondary_all_five_refits_completed_before_confirmation",
+      "legacy_source_sha256": "ba2257561f102983d3f4a1c29a2c8deb5f8cc1de6e0db98f550268a4a8c532be",
+      "corrected_source_sha256": "0fb4fc5e5524496b6287d0baca6f20a868457f930744630bfdf275e7765aa9dd",
+      "validation": {
+        "receipt": "evidence/temperature_correction_validation.json",
+        "receipt_sha256": "c01af873178d15dc6a69f82e4d933ffff88930e23bac8625e0eec57f7611884b",
+        "created_utc": "2026-10-31T02:04:00.668515+00:00",
+        "tests_run": 4,
+        "tests_status": "PASS",
+        "test_source_sha256": "e87aea4bb51729a56cc23fa8aace56bcf3d04b959761f3b6427c023af15df4d0",
+        "scope": [
+          "T=1 reproduces the base FPT law up to row-normalization roundoff.",
+          "Exact zero, exact one, p=1e-20 and near-one probabilities preserve mass, active conditional distribution, and event direction.",
+          "Trainable parameter count remains matched with diffusion fixed and one learned temperature.",
+          "Full task-return temperature derivative agrees with finite differences.",
+          "Actual small-dt CTMC rows conserve probability and have finite temperature gradients."
+        ]
+      },
+      "legacy_archive_verified_files": [
+        "evidence/development_temperature_legacy/temperature.py",
+        "evidence/development_temperature_legacy/failed_test_output.txt",
+        "evidence/development_temperature_legacy/REJECTION.json"
+      ],
+      "coordinator_reported_corrected_refits_started_no_later_than_utc": "2026-10-31T02:04:17Z",
+      "attempt_count_scope": "Formal registered fits and superseded temperature attempts; development/smoke training is additional, retained and separately costed.",
+      "formal_successful_training_attempts": 65,
+      "superseded_formal_fits": 5,
+      "formal_training_process_failures": 0,
+      "completion_recorded_utc": "2026-10-31T02:17:21.193239+00:00",
+      "registered_checkpoint_manifest": {
+        "path": "evidence/REGISTERED_CHECKPOINTS.json",
+        "sha256": "0e22689b17efd7d0e4069d3bfea0239879feb3d7c318eb40ee2619d1c2b39125",
+        "entries": 60
+      },
+      "legacy_original_path_copies_retained": true,
+      "eligibility_rule": "study.checkpoint_path uses explicit model/ablation/seed-to-directory registration. Temperature is eligible only from fits_temperature_corrected. Retained original-path or legacy copies cannot become eligible, even if corrected files are absent; absence must reject, never fall back.",
+      "statistics_selection_rule": "Statistical fitting/cost eligibility uses the sixty registered entries and their hashes rather than directory glob counts. Superseded and duplicate copies stay raw evidence and are not additional successful attempts."
+    },
+    {
+      "id": "separate_confirmation_internal_rng_after_development_runner",
+      "recorded_utc": "2026-10-31T02:05:09.628720+00:00",
+      "stage": "Before final freeze and before any confirmation fixture generation or inspection.",
+      "trigger": "A 96-trajectory development runner used internal RNG namespace 900000000 before the development override was added. Later development uses 880000000.",
+      "decision": "Move confirmation internal RNG base from 900000000 to 920000000 for every registered regime/fit/episode, before confirmation; retain all other seed formulas and sample sizes.",
+      "rationale": "Keep confirmation internal innovations disjoint from already observed development innovations. This is a pre-confirmation namespace correction, not outcome selection.",
+      "old_confirmation_internal_base": 900000000,
+      "final_confirmation_internal_base": 920000000,
+      "development_internal_base": 880000000,
+      "final_formula": "920000000 + regime_index * 1000000 + fit_index * 10000 + episode_index",
+      "arm_order_seed": "700000000 + internal_rng_seed",
+      "external_episode_namespaces_changed": false,
+      "confirmation_leakage": "Coordinator reports no confirmation was generated or inspected; source/protocol/checkpoint freeze is still pending.",
+      "status": "registered_before_confirmation"
+    }
+  ]
+}
