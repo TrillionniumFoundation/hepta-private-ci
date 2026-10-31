@@ -1,0 +1,256 @@
+{
+  "base": "00b94d54a9b85f285298d1a964777bdecfa85385",
+  "branch": "research/hcsn-five-track-r9-20261031",
+  "commits": [
+    {
+      "sha": "dc83347d7de4a397d61d4b3d1ecc274917673eaf",
+      "stage": "continuous production repair and regression source",
+      "files": [
+        "tools/hcsn/round8_20261031/event_dynamics/event_kernel.py",
+        "tools/hcsn/round8_20261031/event_dynamics/renewal.py",
+        "tools/hcsn/round9_20261031/dynamics/protocol.json",
+        "tools/hcsn/round9_20261031/dynamics/test_dynamics_repair.py",
+        "tools/hcsn/round9_20261031/dynamics/audit.py",
+        "tools/hcsn/round9_20261031/dynamics/clock_scaling.py",
+        "tools/hcsn/round9_20261031/dynamics/recovery_scale.py",
+        "tools/hcsn/round9_20261031/dynamics/references.py"
+      ]
+    },
+    {
+      "sha": "4a5e9d4eb19475a3ccc872afb401db38fce3fb21",
+      "stage": "test(hcsn): preserve independent continuous references and failed resolution evidence",
+      "files": [
+        "tools/hcsn/round9_20261031/dynamics/README.md",
+        "tools/hcsn/round9_20261031/dynamics/evidence/after_repair.json",
+        "tools/hcsn/round9_20261031/dynamics/evidence/after_repair_verified.json",
+        "tools/hcsn/round9_20261031/dynamics/evidence/before_repair.json",
+        "tools/hcsn/round9_20261031/dynamics/evidence/final_clock.json",
+        "tools/hcsn/round9_20261031/dynamics/evidence/final_renewal_extension.json",
+        "tools/hcsn/round9_20261031/dynamics/evidence/final_renewal_extension_protocol.json",
+        "tools/hcsn/round9_20261031/dynamics/evidence/final_renewal_resolution.json",
+        "tools/hcsn/round9_20261031/dynamics/evidence/final_renewal_resolution_protocol.json",
+        "tools/hcsn/round9_20261031/dynamics/evidence/final_repair.json",
+        "tools/hcsn/round9_20261031/dynamics/evidence/final_tests.json",
+        "tools/hcsn/round9_20261031/dynamics/evidence/low_noise_stage.patch",
+        "tools/hcsn/round9_20261031/dynamics/evidence/physical_clock.json",
+        "tools/hcsn/round9_20261031/dynamics/evidence/recovery_normal_only_failure.json",
+        "tools/hcsn/round9_20261031/dynamics/evidence/recovery_original_failure.json",
+        "tools/hcsn/round9_20261031/dynamics/evidence/recovery_scale_verified.json",
+        "tools/hcsn/round9_20261031/dynamics/evidence/renewal_resolution_extension_verified.json",
+        "tools/hcsn/round9_20261031/dynamics/evidence/renewal_resolution_extension_verified_protocol.json",
+        "tools/hcsn/round9_20261031/dynamics/evidence/renewal_resolution_replay.json",
+        "tools/hcsn/round9_20261031/dynamics/evidence/renewal_resolution_replay_protocol.json",
+        "tools/hcsn/round9_20261031/dynamics/evidence/renewal_resolution_verified.json",
+        "tools/hcsn/round9_20261031/dynamics/evidence/renewal_resolution_verified_protocol.json",
+        "tools/hcsn/round9_20261031/dynamics/evidence/spatial_resolution_replay.json",
+        "tools/hcsn/round9_20261031/dynamics/evidence/spatial_resolution_verified.json",
+        "tools/hcsn/round9_20261031/dynamics/source_manifest.json",
+        "tools/hcsn/round9_20261031/dynamics/upstream_integration.json",
+        "tools/hcsn/round9_20261031/dynamics/delivery_manifest.json"
+      ]
+    },
+    {
+      "sha": "65987e49427ce2e3799bc6733cf8830753d7dd79",
+      "stage": "refactor(hcsn): carry verified physical cell sources into native content owner",
+      "files": [
+        "tools/hcsn/round9_20261031/native/src/cell.rs",
+        "tools/hcsn/round9_20261031/native/src/native.rs",
+        "tools/hcsn/round9_20261031/native/src/SOURCE_IDENTITY.json",
+        "tools/hcsn/round9_20261031/native/src/CONTENT_SOURCE_IDENTITY.json",
+        "tools/hcsn/round9_20261031/native/SOURCE_IMPORT.json",
+        "tools/hcsn/round9_20261031/native/src/rustfmt.toml"
+      ]
+    },
+    {
+      "sha": "303bfaead5649782cdc76136a3c2d12fba306f2b",
+      "stage": "feat(hcsn): port frozen FullHX content inference to Rust",
+      "files": [
+        "tools/hcsn/round9_20261031/native/src/content.rs",
+        "tools/hcsn/round9_20261031/native/prepare_content.py",
+        "tools/hcsn/round9_20261031/native/fixtures/fullhx.json",
+        "tools/hcsn/round9_20261031/native/fixtures/fullhx.identity.json"
+      ]
+    },
+    {
+      "sha": "1bd91fef511737d67e253373bfc97a3c4aa075b6",
+      "stage": "feat(hcsn): checkpoint content and physics under one native interval owner",
+      "files": [
+        "tools/hcsn/round9_20261031/native/src/owner.rs",
+        "tools/hcsn/round9_20261031/native/src/schedule.rs",
+        "tools/hcsn/round9_20261031/native/src/main.rs",
+        "tools/hcsn/round9_20261031/native/src/tests.rs"
+      ]
+    },
+    {
+      "sha": "8b3c41a313b546e3b0a1ca9cbee3d1920635ff64",
+      "stage": "test(hcsn): exercise native content parity and genuine process recovery",
+      "files": [
+        "tools/hcsn/round9_20261031/native/build_cached.py",
+        "tools/hcsn/round9_20261031/native/port_checks.py",
+        "tools/hcsn/round9_20261031/native/qualify.py",
+        "tools/hcsn/round9_20261031/native/README.md"
+      ]
+    },
+    {
+      "sha": "61be37f73525e7156019ddc5bc576f886cac716f",
+      "stage": "research(hcsn): retain native build identities and complete execution measurements",
+      "files": [
+        "tools/hcsn/round9_20261031/native/evidence/BUILD_ATTEMPT01.json",
+        "tools/hcsn/round9_20261031/native/evidence/BUILD_FINAL.json",
+        "tools/hcsn/round9_20261031/native/evidence/ENVIRONMENT.json",
+        "tools/hcsn/round9_20261031/native/evidence/FORMAT_AND_METADATA.json",
+        "tools/hcsn/round9_20261031/native/evidence/NEXTEST_ATTEMPT01.json",
+        "tools/hcsn/round9_20261031/native/evidence/NEXTEST_ATTEMPT02.json",
+        "tools/hcsn/round9_20261031/native/evidence/NEXTEST_FINAL.json",
+        "tools/hcsn/round9_20261031/native/evidence/REMOTE_R8_SOURCE_00.json",
+        "tools/hcsn/round9_20261031/native/evidence/TRANSITIVE_DEPENDENCIES.json",
+        "tools/hcsn/round9_20261031/native/evidence/port-checks/PROTOCOL.json",
+        "tools/hcsn/round9_20261031/native/evidence/port-checks/REPORT.json",
+        "tools/hcsn/round9_20261031/native/evidence/port-checks/owner/cell-checkpoint.json",
+        "tools/hcsn/round9_20261031/native/evidence/port-checks/owner/journal.bin",
+        "tools/hcsn/round9_20261031/native/evidence/port-checks/owner/model.json",
+        "tools/hcsn/round9_20261031/native/evidence/port-checks/owner/witness.bin",
+        "tools/hcsn/round9_20261031/native/evidence/port-checks/packet-128-0.json",
+        "tools/hcsn/round9_20261031/native/evidence/port-checks/packet-128-1.json",
+        "tools/hcsn/round9_20261031/native/evidence/port-checks/packet-2-0.json",
+        "tools/hcsn/round9_20261031/native/evidence/port-checks/packet-2-1.json",
+        "tools/hcsn/round9_20261031/native/evidence/port-checks/packet-32-0.json",
+        "tools/hcsn/round9_20261031/native/evidence/port-checks/packet-32-1.json",
+        "tools/hcsn/round9_20261031/native/evidence/port-checks/packet-7-0.json",
+        "tools/hcsn/round9_20261031/native/evidence/port-checks/packet-7-1.json",
+        "tools/hcsn/round9_20261031/native/evidence/qualification-dev01/DATA_IDENTITY.json",
+        "tools/hcsn/round9_20261031/native/evidence/qualification-dev01/ORACLE.json",
+        "tools/hcsn/round9_20261031/native/evidence/qualification-dev01/PROTOCOL.json",
+        "tools/hcsn/round9_20261031/native/evidence/qualification-dev01/RAW_RECORDS.tar.gz",
+        "tools/hcsn/round9_20261031/native/evidence/qualification-dev01/RAW_RECORDS_MANIFEST.json",
+        "tools/hcsn/round9_20261031/native/evidence/qualification-dev01/REPORT.json",
+        "tools/hcsn/round9_20261031/native/evidence/qualification-final/DATA_IDENTITY.json",
+        "tools/hcsn/round9_20261031/native/evidence/qualification-final/ORACLE.json",
+        "tools/hcsn/round9_20261031/native/evidence/qualification-final/PROTOCOL.json",
+        "tools/hcsn/round9_20261031/native/evidence/qualification-final/RAW_RECORDS.tar.gz",
+        "tools/hcsn/round9_20261031/native/evidence/qualification-final/RAW_RECORDS_MANIFEST.json",
+        "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+        "tools/hcsn/round9_20261031/native/evidence/REMOTE_WORKFLOW_VERIFICATION.json",
+        "tools/hcsn/round9_20261031/native/DELIVERY_MANIFEST.json"
+      ]
+    },
+    {
+      "sha": "437087a663320e327f4d1f89720791f32072f472",
+      "stage": "feat(hcsn): factor exact action costs from learned continuation values",
+      "files": [
+        "tools/hcsn/round9_20261031/value/head.py",
+        "tools/hcsn/round9_20261031/value/protocol.py",
+        "tools/hcsn/round9_20261031/value/run.py",
+        "tools/hcsn/round9_20261031/value/test_value.py",
+        "tools/hcsn/round9_20261031/value/SOURCE_BASELINE.json"
+      ]
+    },
+    {
+      "sha": "f431a586c26a9d8a4b1a4649e7be6d9cd4d078a0",
+      "stage": "test(hcsn): audit deployment cost and boundary objective degeneracy",
+      "files": [
+        "tools/hcsn/round9_20261031/value/audit/readback.py",
+        "tools/hcsn/round9_20261031/value/deployment/cost.py",
+        "tools/hcsn/round9_20261031/value/diagnostics/boundary.py"
+      ]
+    },
+    {
+      "sha": "ea092b8a08e17d809d85257bd0af664fa441191f",
+      "stage": "research(hcsn): preserve frozen value heads and held-out negative controls",
+      "files": [
+        "tools/hcsn/round9_20261031/value/REPORT.md",
+        "tools/hcsn/round9_20261031/value/audit/PROTOCOL.json",
+        "tools/hcsn/round9_20261031/value/audit/RESULTS.json",
+        "tools/hcsn/round9_20261031/value/audit/RUN.log",
+        "tools/hcsn/round9_20261031/value/deployment/PROTOCOL.json",
+        "tools/hcsn/round9_20261031/value/deployment/RESULTS.json",
+        "tools/hcsn/round9_20261031/value/deployment/RUN.log",
+        "tools/hcsn/round9_20261031/value/deployment/SUPPORT.json",
+        "tools/hcsn/round9_20261031/value/diagnostics/PAIRED.jsonl.gz",
+        "tools/hcsn/round9_20261031/value/diagnostics/PROTOCOL.json",
+        "tools/hcsn/round9_20261031/value/diagnostics/RESULTS.json",
+        "tools/hcsn/round9_20261031/value/diagnostics/RUN.log",
+        "tools/hcsn/round9_20261031/value/evidence/AMENDMENT.json",
+        "tools/hcsn/round9_20261031/value/evidence/CONFIRM.log",
+        "tools/hcsn/round9_20261031/value/evidence/CONFIRM02.log",
+        "tools/hcsn/round9_20261031/value/evidence/CONFIRM_PROGRESS.json",
+        "tools/hcsn/round9_20261031/value/evidence/CONFIRM_START.json",
+        "tools/hcsn/round9_20261031/value/evidence/COST_LEDGER.json",
+        "tools/hcsn/round9_20261031/value/evidence/ENVIRONMENT.json",
+        "tools/hcsn/round9_20261031/value/evidence/HEADS_FROZEN.json",
+        "tools/hcsn/round9_20261031/value/evidence/MECHANISMS.log",
+        "tools/hcsn/round9_20261031/value/evidence/PAIRED.jsonl.gz",
+        "tools/hcsn/round9_20261031/value/evidence/PROTOCOL.json",
+        "tools/hcsn/round9_20261031/value/evidence/REGISTERED.json",
+        "tools/hcsn/round9_20261031/value/evidence/TRAIN.json",
+        "tools/hcsn/round9_20261031/value/evidence/TRAIN.log",
+        "tools/hcsn/round9_20261031/value/evidence/TRAIN_PROGRESS.json",
+        "tools/hcsn/round9_20261031/value/evidence/confirmation02/CONFIRM_PROGRESS.json",
+        "tools/hcsn/round9_20261031/value/evidence/confirmation02/CONFIRM_START.json",
+        "tools/hcsn/round9_20261031/value/evidence/confirmation02/PAIRED.jsonl.gz",
+        "tools/hcsn/round9_20261031/value/evidence/confirmation02/RESULTS.json",
+        "tools/hcsn/round9_20261031/value/evidence/confirmation_attempt01/CONFIRM.log",
+        "tools/hcsn/round9_20261031/value/evidence/confirmation_attempt01/CONFIRM_PROGRESS.json",
+        "tools/hcsn/round9_20261031/value/evidence/confirmation_attempt01/CONFIRM_START.json",
+        "tools/hcsn/round9_20261031/value/evidence/confirmation_attempt01/PAIRED.jsonl.gz",
+        "tools/hcsn/round9_20261031/value/evidence/confirmation_attempt01/source/run.py",
+        "tools/hcsn/round9_20261031/value/evidence/confirmation_attempt01/source/test_value.py",
+        "tools/hcsn/round9_20261031/value/evidence/confirmation_start_guard_attempt02/AMENDMENT_01.json",
+        "tools/hcsn/round9_20261031/value/evidence/confirmation_start_guard_attempt02/CONFIRM.log",
+        "tools/hcsn/round9_20261031/value/evidence/confirmation_start_guard_attempt02/run.py",
+        "tools/hcsn/round9_20261031/value/evidence/heads/clocked_11.json",
+        "tools/hcsn/round9_20261031/value/evidence/heads/clocked_12.json",
+        "tools/hcsn/round9_20261031/value/evidence/heads/clocked_13.json",
+        "tools/hcsn/round9_20261031/value/evidence/heads/clocked_14.json",
+        "tools/hcsn/round9_20261031/value/evidence/heads/clocked_15.json",
+        "tools/hcsn/round9_20261031/value/evidence/heads/direct_11.json",
+        "tools/hcsn/round9_20261031/value/evidence/heads/direct_12.json",
+        "tools/hcsn/round9_20261031/value/evidence/heads/direct_13.json",
+        "tools/hcsn/round9_20261031/value/evidence/heads/direct_14.json",
+        "tools/hcsn/round9_20261031/value/evidence/heads/direct_15.json",
+        "tools/hcsn/round9_20261031/value/evidence/heads/first_passage_11.json",
+        "tools/hcsn/round9_20261031/value/evidence/heads/first_passage_12.json",
+        "tools/hcsn/round9_20261031/value/evidence/heads/first_passage_13.json",
+        "tools/hcsn/round9_20261031/value/evidence/heads/first_passage_14.json",
+        "tools/hcsn/round9_20261031/value/evidence/heads/first_passage_15.json",
+        "tools/hcsn/round9_20261031/value/DELIVERY_MANIFEST.json"
+      ]
+    },
+    {
+      "sha": "1e4eae2cde8bd6b370beab33b9e2079d2887f062",
+      "stage": "feat(hcsn): stream calibrated and ordinary sufficient states with checked recovery",
+      "files": [
+        "tools/hcsn/round9_20261031/streaming/filter.py",
+        "tools/hcsn/round9_20261031/streaming/audit.py",
+        "tools/hcsn/round9_20261031/streaming/protocol.json",
+        "tools/hcsn/round9_20261031/streaming/startup.py",
+        "tools/hcsn/round9_20261031/streaming/numpy_comparison.py"
+      ]
+    },
+    {
+      "sha": "c6fc5c4cabfa4310dff490d866156628971f133e",
+      "stage": "test(hcsn): retain paired backend costs and reproducible streaming evidence",
+      "files": [
+        "tools/hcsn/round9_20261031/streaming/AMENDMENT.json",
+        "tools/hcsn/round9_20261031/streaming/README.md",
+        "tools/hcsn/round9_20261031/streaming/REPRODUCTION_VALIDATION.json",
+        "tools/hcsn/round9_20261031/streaming/evidence/REGISTERED.json",
+        "tools/hcsn/round9_20261031/streaming/evidence/STARTUP_REGISTERED.json",
+        "tools/hcsn/round9_20261031/streaming/evidence/results.json",
+        "tools/hcsn/round9_20261031/streaming/evidence/source_v1/audit.py",
+        "tools/hcsn/round9_20261031/streaming/evidence/source_v1/filter.py",
+        "tools/hcsn/round9_20261031/streaming/evidence/source_v1/protocol.json",
+        "tools/hcsn/round9_20261031/streaming/evidence/source_v1/startup.py",
+        "tools/hcsn/round9_20261031/streaming/evidence/startup.json",
+        "tools/hcsn/round9_20261031/streaming/evidence/v2/NUMPY_REGISTERED.json",
+        "tools/hcsn/round9_20261031/streaming/evidence/v2/REGISTERED.json",
+        "tools/hcsn/round9_20261031/streaming/evidence/v2/STARTUP_REGISTERED.json",
+        "tools/hcsn/round9_20261031/streaming/evidence/v2/numpy_comparison.json",
+        "tools/hcsn/round9_20261031/streaming/evidence/v2/results.json",
+        "tools/hcsn/round9_20261031/streaming/evidence/v2/startup.json",
+        "tools/hcsn/round9_20261031/streaming/reproduce.py",
+        "tools/hcsn/round9_20261031/streaming/DELIVERY_MANIFEST.json"
+      ]
+    }
+  ]
+}

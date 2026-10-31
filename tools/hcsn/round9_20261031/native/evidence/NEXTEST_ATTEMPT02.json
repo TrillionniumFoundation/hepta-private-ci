@@ -1,0 +1,39 @@
+{
+  "command": [
+    "just",
+    "test",
+    "--cargo-metadata",
+    "/workspace/scratch/f530455d952b/native-r9-build/cargo-metadata.json",
+    "--binaries-metadata",
+    "/workspace/scratch/f530455d952b/native-r9-build/binaries-metadata.json",
+    "--config-file",
+    "/workspace/scratch/f530455d952b/native-r9-build/workflow/codex-rs/nextest.toml",
+    "--no-tests",
+    "fail",
+    "-j",
+    "1"
+  ],
+  "returncode": 0,
+  "stdout": "",
+  "stderr": "RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py \"$@\"\nwarning: failed to detect the rustc libdir, may fail to list or run tests\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n Nextest run ID 7060a02a-6d41-46b8-8fa8-772f36df8c95 with nextest profile: local\n    Starting 11 tests across 1 binary\n        PASS [   0.010s] ( 1/11) codex-native-event-owner-r9 tests::acknowledged_physics_tamper_and_native_loss_rejected\n        PASS [   0.005s] ( 2/11) codex-native-event-owner-r9 tests::distribution_and_ordinary_semigroup\n        PASS [   0.006s] ( 3/11) codex-native-event-owner-r9 tests::failed_content_request_does_not_partially_commit_a_dense_interval\n        PASS [   0.004s] ( 4/11) codex-native-event-owner-r9 tests::first_hit_rare_tail_is_positive_and_accurate\n        PASS [   0.010s] ( 5/11) codex-native-event-owner-r9 tests::interrupted_pair_publication_fails_closed\n        PASS [   0.008s] ( 6/11) codex-native-event-owner-r9 tests::native_model_and_exclusive_owner_are_bound\n        PASS [   0.042s] ( 7/11) codex-native-event-owner-r9 tests::owner_schedules_the_same_public_interval_with_fewer_commits\n        PASS [   0.022s] ( 8/11) codex-native-event-owner-r9 tests::real_runtime_restart_restores_physics_and_signal\n        PASS [   0.007s] ( 9/11) codex-native-event-owner-r9 tests::rejection_consumes_neither_physics_rng_nor_journal\n        PASS [   0.004s] (10/11) codex-native-event-owner-r9 tests::sampled_split_keeps_path_and_hazard\n        PASS [   0.004s] (11/11) codex-native-event-owner-r9 tests::snapshot_exact_resume_and_read_only_query\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n     Summary [   0.122s] 11 tests run: 11 passed, 0 skipped\n",
+  "reused_build_metadata": {
+    "rust-build-meta": {
+      "target-directory": "/workspace/scratch/f530455d952b/native-r9-build",
+      "base-output-directories": [
+        "debug"
+      ],
+      "non-test-binaries": {},
+      "linked-paths": []
+    },
+    "rust-binaries": {
+      "codex-native-event-owner-r9": {
+        "binary-id": "codex-native-event-owner-r9",
+        "binary-name": "codex-native-event-owner-r9",
+        "package-id": "path+file:///workspace/scratch/f530455d952b/native-r9-build/workflow/codex-rs#codex-native-event-owner-r9@0.1.0",
+        "kind": "bin",
+        "binary-path": "/workspace/scratch/f530455d952b/native-r9-build/native-owner-r9-tests",
+        "build-platform": "host"
+      }
+    }
+  }
+}

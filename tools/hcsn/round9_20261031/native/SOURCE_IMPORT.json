@@ -1,0 +1,81 @@
+{
+  "schema": "hepta.r9.native.local-recovery.v1",
+  "remote_base": "333fb9b036b80cf5d892aed222a1aac7aad80e53",
+  "native_owner_present_in_remote_base": false,
+  "provenance": "Source first recovered locally while absent from experiment base333; all eight original imported files subsequently byte-verified against Git blob identities published in commit00. R9 modifications derive from these exact verified originals.",
+  "files": {
+    "main.rs": {
+      "source": "/workspace/scratch/7187fe3695d3/hepta/tools/hcsn/round8_20261031/native_owner/main.rs",
+      "sha256": "4797940a6242ba72bd51fbd4d78c4598a5e3e5a7c9b4f155c922b9a23c50753c",
+      "bytes": 3642,
+      "in_remote_base": false,
+      "published_at_commit": "00b94d54a9b85f285298d1a964777bdecfa85385",
+      "published_git_blob_sha": "8097c0cae92ef4c230f07983066cca33aa81bd98",
+      "remote_source_verified": true
+    },
+    "cell.rs": {
+      "source": "/workspace/scratch/7187fe3695d3/hepta/tools/hcsn/round8_20261031/native_owner/cell.rs",
+      "sha256": "7d4cd316379162e95ca06beec23219912ec53febc60107d93d781a9b9593d6a9",
+      "bytes": 15754,
+      "in_remote_base": false,
+      "published_at_commit": "00b94d54a9b85f285298d1a964777bdecfa85385",
+      "published_git_blob_sha": "2c3371a9834f4ca5e2036eb43aa5bf8a31d5d962",
+      "remote_source_verified": true
+    },
+    "native.rs": {
+      "source": "/workspace/scratch/7187fe3695d3/hepta/tools/hcsn/round8_20261031/native_owner/native.rs",
+      "sha256": "418e50e1dd06f1b52fe5937288625db2c7a756acfbd730e732b1d063fbf31ef7",
+      "bytes": 5493,
+      "in_remote_base": false,
+      "published_at_commit": "00b94d54a9b85f285298d1a964777bdecfa85385",
+      "published_git_blob_sha": "c8b40ee8cc757609a76baf101e7a07247288c3de",
+      "remote_source_verified": true
+    },
+    "owner.rs": {
+      "source": "/workspace/scratch/7187fe3695d3/hepta/tools/hcsn/round8_20261031/native_owner/owner.rs",
+      "sha256": "15e72d8c660deab1caa0382d7bc8a908ec3ddd91ea82d45b10b33643a23e066d",
+      "bytes": 11359,
+      "in_remote_base": false,
+      "published_at_commit": "00b94d54a9b85f285298d1a964777bdecfa85385",
+      "published_git_blob_sha": "f4b35efe809bd69f3d773778879088b6f31a07c1",
+      "remote_source_verified": true
+    },
+    "tests.rs": {
+      "source": "/workspace/scratch/7187fe3695d3/hepta/tools/hcsn/round8_20261031/native_owner/tests.rs",
+      "sha256": "f0cb149a269c3edc10a22031eb364adeb56d5cd1e9dec55e805068023f6b7c80",
+      "bytes": 7049,
+      "in_remote_base": false,
+      "published_at_commit": "00b94d54a9b85f285298d1a964777bdecfa85385",
+      "published_git_blob_sha": "3e23cd8d5617d1623aae606788a6963a9acf65f4",
+      "remote_source_verified": true
+    },
+    "rustfmt.toml": {
+      "source": "/workspace/scratch/7187fe3695d3/hepta/tools/hcsn/round8_20261031/native_owner/rustfmt.toml",
+      "sha256": "4b21b072b824dffa5bb560f1eaf080783ff2638bf96621b021034093f07eba69",
+      "bytes": 45,
+      "in_remote_base": false,
+      "published_at_commit": "00b94d54a9b85f285298d1a964777bdecfa85385",
+      "published_git_blob_sha": "b25ea992af71b2b6afd1e9385229b6a5e1f6717b",
+      "remote_source_verified": true
+    },
+    "SOURCE_IDENTITY.json": {
+      "source": "/workspace/scratch/7187fe3695d3/hepta/tools/hcsn/round8_20261031/native_owner/SOURCE_IDENTITY.json",
+      "sha256": "595dcc65efd2557cb5b64878acb3bbdf0c236109e636f4f27e8f0a9919c1a831",
+      "bytes": 8475,
+      "in_remote_base": false,
+      "published_at_commit": "00b94d54a9b85f285298d1a964777bdecfa85385",
+      "published_git_blob_sha": "8cbc8938695888ff573fd2e98852aa99ac455b32",
+      "remote_source_verified": true
+    },
+    "CONTENT_SOURCE_IDENTITY.json": {
+      "source": "/workspace/scratch/7187fe3695d3/hepta/tools/hcsn/round8_20261031/native_owner/CONTENT_SOURCE_IDENTITY.json",
+      "sha256": "4f3de640d6785122f86054e4d230f3b7b6618d020370eacbab33a68e86a3648b",
+      "bytes": 3121,
+      "in_remote_base": false,
+      "published_at_commit": "00b94d54a9b85f285298d1a964777bdecfa85385",
+      "published_git_blob_sha": "54d8908ed50c56b4c979850ebf1e7ad723b830f8",
+      "remote_source_verified": true
+    }
+  },
+  "published_parent": "00b94d54a9b85f285298d1a964777bdecfa85385"
+}

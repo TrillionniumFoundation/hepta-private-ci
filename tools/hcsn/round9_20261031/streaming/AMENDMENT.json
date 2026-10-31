@@ -1,0 +1,13 @@
+{
+  "reason": "Independent review found overflow handling holes outside the frozen task domain. Preserve the original source/evidence and rerun identical task gates after atomic-update and finite-prediction fixes.",
+  "issues": [
+    "two accepted 1e308 observations overflow the accumulated state",
+    "unsigned count 2**63 wraps on int64 restore",
+    "large representable scale times state can overflow logits and return NaN"
+  ],
+  "changes": "validate candidate accumulators and count before assignment; bound restored count; reject nonfinite logits, posterior and risk; no fit or data changes",
+  "previous_filter_sha256": "5fdfba5dfb4bf140c4e04d0da94f760efd233b97765db2fc9ea7996e1913cd5c",
+  "previous_evidence": "evidence/results.json and evidence/startup.json",
+  "next_evidence": "evidence/v2; paired-current-backend cost is an additional measurement against newly published 00b94d5 NumPy replay",
+  "scope": "Existing R8 confirmation data are reused for implementation checks. No new efficacy sample or blind result is claimed."
+}

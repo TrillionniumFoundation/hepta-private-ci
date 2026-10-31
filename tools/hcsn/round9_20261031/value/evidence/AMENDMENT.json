@@ -1,0 +1,59 @@
+{
+  "changes": {
+    "tools/hcsn/round9_20261031/value/run.py": [
+      "19625331ec5ac60d04a823d3969a5b298d51fe40204b2c0d61f2308ca70dc910",
+      "bfca84c813f8955fe878b00fcb387d3a98a55d46cc2be423f437ec5c7a928a4a"
+    ],
+    "tools/hcsn/round9_20261031/value/test_value.py": [
+      "546144c0d4dc73734715842d3347399f318b42e9c6e4853448ec4c761544f408",
+      "39b19693f9f5ecdb6c439ee206589f2d6336e92e407472e44c4b61d7565d47a5"
+    ]
+  },
+  "failed_attempt_cost": {
+    "post_START_wall_seconds_upper_bound_for_single_thread_CPU": 3.9272139072418213,
+    "process_cpu_seconds": null,
+    "scope": "Time from confirmation START timestamp to final failure log mtime; original process CPU was not persisted because the audit aborted. Evaluation cost is separate from deployed training amortization."
+  },
+  "failed_attempt_files": {
+    "CONFIRM.log": "45fb5b46d604d549e7b6481c7cbeace25e2b42a473f2a3ba1450a78037825af9",
+    "CONFIRM_PROGRESS.json": "0d087a5cbd6529b67f1efb20d22ff7ee6cde7dfc70a77bff74a61c6840d43632",
+    "CONFIRM_START.json": "b8d71550af0eadbf18bbf6e442568c63204fe31e1eb063a6120d93076f49362f",
+    "PAIRED.jsonl.gz": "a7bcf294137c75aae06700a28f4ba37fc608e80b4dcad2664c86ccb18d113e53"
+  },
+  "frozen_heads_changed": false,
+  "heads_frozen_sha256": "a15b381b3072c0c7e1b2b2f134f1b5b1ccb3dfd62c1cf21ac411f3019359f004",
+  "original_failure": "first_passage seed11 drift r7 independent value error 0.050527471187238326",
+  "output_directory_amendment": {
+    "final_output": "evidence/confirmation02",
+    "holds_frozen_blind_rule": true,
+    "reason": "The archived failed START also remained at the original location. A single-use guard rejected the next invocation before data work. Use explicit fresh output directory; all failed artifacts remain intact.",
+    "source_change": "confirm accepts --output; no policy/training/task changes",
+    "start_guard_log_sha256": "63fed4ee8b29c852235a537343d6e1310fb2a1a9491e11ef015a41f19ef1fe0b"
+  },
+  "previous_amendment_sha256": "d65808b0e4fe34b8a476d6d3144b268e0ec4a2ac3de315cc25713602be6ccc8e",
+  "protocol_changed": false,
+  "reason": "Independent forward probability audit found duplicate initial contract indices were overwritten instead of accumulated; drift merges nominal presets 0 and 7. Fix initializes probability by addition. Exact DP targets, task execution, weights and optimizer are unchanged.",
+  "registration_sha256": "80c525b0804bf60cb97512d929394ad953f4232369e01046049e8266805ef0f8",
+  "regression_tests_sha256": "362606ff5724706facb1accc2a4338a6fc47bbc69de69f7dd190e2755997cc1c",
+  "results_seen": "first_passage seed11 historical nominal 1024 pairs; historical drift R7 audit failed before head results; blind never evaluated",
+  "same_seeds_rationale": "All regimes are retained; the sole fresh blind parameter combinations had not been evaluated. Historical nominal repeat is not a new efficacy sample.",
+  "schema": "hepta.r9.value.amendment.v1",
+  "seeds_changed": false,
+  "sources": {
+    "experiments/analytic_event_neuron/round7/oracle.py": "c834be7566eb29429e057c04af520b557a1b4743a2406884c902e12ac61f2181",
+    "experiments/analytic_event_neuron/round7/task.py": "c53f09496975c15236962469adf8ad3e0be175bc5fc36f03f7cd79d8d7899522",
+    "tools/hcsn/round8_20261031/value_calibration/audit.py": "46b06ad2dd1e98feff1ae7f06fac0ee703ba24339cf2367fe6f1f8ce08c5ce2b",
+    "tools/hcsn/round8_20261031/value_calibration/finite.py": "b7b5d885078d55cb94c72d59cc795d82ff8366c3078557b18c2d8119f7b2b75b",
+    "tools/hcsn/round8_20261031/value_calibration/frozen.py": "ad47955d0fb4a849627409856ad7c712c4c3391179bb890d0f9593e2a5af037e",
+    "tools/hcsn/round8_20261031/value_calibration/head.py": "d284cbc6f13458d1d718677b499ff941cb8e59a06ecee4b0ee7730e94c1a5e5b",
+    "tools/hcsn/round8_20261031/value_calibration/parity.py": "f1fb672bbfb03df05b1f34c231065c310aa1ae158ed509cd0d05675a7e6dc95b",
+    "tools/hcsn/round8_20261031/value_calibration/run.py": "18fa8a8dc3435c9c78091da0149cef0301de53fdcc281c051c0fdba7af9faa23",
+    "tools/hcsn/round8_20261031/value_calibration/test_value.py": "06817b2494ed34999c019eb29a6b4f0f49fb4719b1559eef085e6bcfe7b2379c",
+    "tools/hcsn/round9_20261031/value/head.py": "b183cef0f481beb57148b0184c9e7117d2a899bc8e7b482f6999c107f7461350",
+    "tools/hcsn/round9_20261031/value/protocol.py": "d9ed77fa4abe35f9d5cbdddf738c14a4e12577dbe49bcfc785a705360ff51999",
+    "tools/hcsn/round9_20261031/value/run.py": "8c3764c783cb38ade55be574ca943dd1e53b506d3016b935cacb06d114eb0f23",
+    "tools/hcsn/round9_20261031/value/test_value.py": "39b19693f9f5ecdb6c439ee206589f2d6336e92e407472e44c4b61d7565d47a5"
+  },
+  "thresholds_changed": false,
+  "utc": "2026-10-31T05:43:55.592769+00:00"
+}

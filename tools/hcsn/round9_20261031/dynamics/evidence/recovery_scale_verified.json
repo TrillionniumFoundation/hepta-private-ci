@@ -1,0 +1,471 @@
+{
+  "gates": [
+    {
+      "name": "recovery_scale_counts",
+      "passed": true
+    },
+    {
+      "name": "recovery_scale_gradients",
+      "passed": true
+    }
+  ],
+  "limitation": "Registered physical recovery scales; numerical estimates exclude roundoff and do not certify derivative tails.",
+  "passed": true,
+  "protocol": {
+    "drift": 1.0,
+    "initial_gap": 0.8,
+    "maximum_count_error": 3e-10,
+    "maximum_recovery_gradient_error": 3e-08,
+    "phases": 2,
+    "recovery_means": [
+      0.5,
+      0.05,
+      0.005,
+      0.0005,
+      5e-05,
+      5e-06,
+      5e-07
+    ],
+    "reference_terms": 48,
+    "reset_gap": 0.7,
+    "sigma": 0.4,
+    "time": 2.2
+  },
+  "reference_sha256": "662c43531c8d5244e9e5a980b4a44e9b5cb436f0de3d1b75bb2f2fd36bb6e6b0",
+  "rows": [
+    {
+      "actual": {
+        "count_log_tail_bound": -24.152693619164975,
+        "count_tail_bound": 3.2405478459594785e-11,
+        "event_survival": [
+          0.9955580343296851,
+          0.6743281304151025,
+          0.07881952376700013,
+          0.0008596269341449292,
+          9.248657001231809e-07,
+          1.1261491958970727e-10,
+          1.742907703414258e-15,
+          3.7519239410767205e-21,
+          1.2050803059694795e-27,
+          6.10571700536361e-35,
+          5.082205572306629e-43,
+          1.9536177612223044e-52,
+          7.514492382569565e-76,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "expected_count": 1.7495662404242496,
+        "gradient": {
+          "drift": 1.33583583022576,
+          "initial_gap": -0.840075206801805,
+          "recovery_mean": -0.943532825020675,
+          "reset_gap": -1.0517585880686882,
+          "sigma": 0.18113836715941345
+        },
+        "gradient_tail_certified": false,
+        "included_events": 16,
+        "integral_truncation_upper_bound": 1.065889267246592e-31,
+        "integration_coordinate": "first_passage_normal",
+        "quadrature_error_estimate": 7.548407797558722e-14,
+        "roundoff_included": false
+      },
+      "count_error": 4.440892098500626e-16,
+      "gradient_error": 2.220446049250313e-16,
+      "recovery_mean": 0.5,
+      "reference": {
+        "count_tail_bound": 2.349083575107921e-13,
+        "expected_count": 1.7495662404242491,
+        "gradient_tail_certified": false,
+        "integration_cutoff_bound": 2.967667902654741e-37,
+        "quadrature_error_estimate": 3.4452447740475474e-14,
+        "recovery_mean_gradient": -0.9435328250206748,
+        "zero_recovery_limit": {
+          "expected_count": 2.6143006451427135,
+          "recovery_mean_gradient": -3.1837178212631168
+        }
+      }
+    },
+    {
+      "actual": {
+        "count_log_tail_bound": -23.09808291592072,
+        "count_tail_bound": 9.303150507266603e-11,
+        "event_survival": [
+          0.9955580343296851,
+          0.8995956338579627,
+          0.4832690510044603,
+          0.08548638616328977,
+          0.0034116015772441104,
+          2.5707406804690075e-05,
+          3.379906084722204e-08,
+          7.517084892028583e-12,
+          2.8113352596957696e-16,
+          1.781183859158223e-21,
+          1.939226247500202e-27,
+          3.270130186590761e-34,
+          1.6732700568715795e-52,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "expected_count": 2.467346448146025,
+        "gradient": {
+          "drift": 2.6980147606924714,
+          "initial_gap": -1.3331633370603206,
+          "recovery_mean": -2.7129490826898612,
+          "reset_gap": -2.6153599203383235,
+          "sigma": 0.4981696329815284
+        },
+        "gradient_tail_certified": false,
+        "included_events": 24,
+        "integral_truncation_upper_bound": 1.6343635431114413e-31,
+        "integration_coordinate": "first_passage_normal",
+        "quadrature_error_estimate": 1.81314533726301e-13,
+        "roundoff_included": false
+      },
+      "count_error": 8.881784197001252e-16,
+      "gradient_error": 0.0,
+      "recovery_mean": 0.05,
+      "reference": {
+        "count_tail_bound": 2.349083575107921e-13,
+        "expected_count": 2.4673464481460243,
+        "gradient_tail_certified": false,
+        "integration_cutoff_bound": 2.967667902654741e-37,
+        "quadrature_error_estimate": 8.221304644407634e-14,
+        "recovery_mean_gradient": -2.7129490826898612,
+        "zero_recovery_limit": {
+          "expected_count": 2.6143006451427135,
+          "recovery_mean_gradient": -3.1837178212631168
+        }
+      }
+    },
+    {
+      "actual": {
+        "count_log_tail_bound": -23.393263266314865,
+        "count_tail_bound": 6.925240333152986e-11,
+        "event_survival": [
+          0.9955580343296851,
+          0.910946657529384,
+          0.5461119535326009,
+          0.1353333458575598,
+          0.010349035112147043,
+          0.0002131461514082462,
+          1.108452664629337e-06,
+          1.4051765075181342e-09,
+          4.2466406858878713e-13,
+          3.0114597210627327e-17,
+          4.950083715615093e-22,
+          1.8673964028882137e-27,
+          9.906613443460514e-35,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "expected_count": 2.5985132823710506,
+        "gradient": {
+          "drift": 2.992034329448989,
+          "initial_gap": -1.4182029543908021,
+          "recovery_mean": -3.131439346955773,
+          "reset_gap": -2.975706737742169,
+          "sigma": 0.5638068762079274
+        },
+        "gradient_tail_certified": false,
+        "included_events": 26,
+        "integral_truncation_upper_bound": 1.7764821120776536e-31,
+        "integration_coordinate": "first_passage_normal",
+        "quadrature_error_estimate": 6.595062916958833e-13,
+        "roundoff_included": false
+      },
+      "count_error": 8.881784197001252e-16,
+      "gradient_error": 2.922107000813412e-13,
+      "recovery_mean": 0.005,
+      "reference": {
+        "count_tail_bound": 2.349083575107921e-13,
+        "expected_count": 2.5985132823710497,
+        "gradient_tail_certified": false,
+        "integration_cutoff_bound": 2.967667902654741e-37,
+        "quadrature_error_estimate": 2.951324577990808e-13,
+        "recovery_mean_gradient": -3.1314393469554807,
+        "zero_recovery_limit": {
+          "expected_count": 2.6143006451427135,
+          "recovery_mean_gradient": -3.1837178212631168
+        }
+      }
+    },
+    {
+      "actual": {
+        "count_log_tail_bound": -23.203293764599927,
+        "count_tail_bound": 8.374088687306495e-11,
+        "event_survival": [
+          0.9955580343296851,
+          0.911985297482642,
+          0.5521916333132921,
+          0.14120520148310772,
+          0.0115053838827611,
+          0.000262962034120329,
+          1.5930919408442604e-06,
+          2.488370781689592e-09,
+          9.870147115381313e-13,
+          9.850625156475282e-17,
+          2.458574635939391e-21,
+          1.5278879899589786e-26,
+          2.0680964020515095e-32,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "expected_count": 2.6127101081069077,
+        "gradient": {
+          "drift": 3.0246919076882834,
+          "initial_gap": -1.427310309920598,
+          "recovery_mean": -3.1784324732255644,
+          "reset_gap": -3.0161061649144014,
+          "sigma": 0.5710766392206907
+        },
+        "gradient_tail_certified": false,
+        "included_events": 26,
+        "integral_truncation_upper_bound": 1.7764821120776536e-31,
+        "integration_coordinate": "first_passage_normal",
+        "quadrature_error_estimate": 2.1097600968465014e-13,
+        "roundoff_included": false
+      },
+      "count_error": 1.7763568394002505e-15,
+      "gradient_error": 2.7106317190828122e-11,
+      "recovery_mean": 0.0005,
+      "reference": {
+        "count_tail_bound": 2.349083575107921e-13,
+        "expected_count": 2.612710108106906,
+        "gradient_tail_certified": false,
+        "integration_cutoff_bound": 2.967667902654741e-37,
+        "quadrature_error_estimate": 2.936872049397067e-13,
+        "recovery_mean_gradient": -3.1784324732526708,
+        "zero_recovery_limit": {
+          "expected_count": 2.6143006451427135,
+          "recovery_mean_gradient": -3.1837178212631168
+        }
+      }
+    },
+    {
+      "actual": {
+        "count_log_tail_bound": -23.184256844480622,
+        "count_tail_bound": 8.535032622603159e-11,
+        "event_survival": [
+          0.9955580343296851,
+          0.9120882561208762,
+          0.5527970919235485,
+          0.1418008490776134,
+          0.011627065142815725,
+          0.00026852133608196984,
+          1.6519130901510394e-06,
+          2.6353008879705494e-09,
+          1.0746786266957387e-12,
+          1.110941464823072e-16,
+          2.895843538298306e-21,
+          1.8966899961923696e-26,
+          2.825358125994836e-32,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "expected_count": 2.614141472480087,
+        "gradient": {
+          "drift": 3.027993572242342,
+          "initial_gap": -1.4282274949745664,
+          "recovery_mean": -3.183188705338154,
+          "reset_gap": -3.0201944277309485,
+          "sigma": 0.571811307872437
+        },
+        "gradient_tail_certified": false,
+        "included_events": 26,
+        "integral_truncation_upper_bound": 1.7764821120776536e-31,
+        "integration_coordinate": "first_passage_normal",
+        "quadrature_error_estimate": 2.4664798934060607e-13,
+        "roundoff_included": false
+      },
+      "count_error": 8.881784197001252e-16,
+      "gradient_error": 2.8273827723523937e-11,
+      "recovery_mean": 5e-05,
+      "reference": {
+        "count_tail_bound": 2.349083575107921e-13,
+        "expected_count": 2.614141472480086,
+        "gradient_tail_certified": false,
+        "integration_cutoff_bound": 2.967667902654741e-37,
+        "quadrature_error_estimate": 2.935718794834377e-13,
+        "recovery_mean_gradient": -3.183188705366428,
+        "zero_recovery_limit": {
+          "expected_count": 2.6143006451427135,
+          "recovery_mean_gradient": -3.1837178212631168
+        }
+      }
+    },
+    {
+      "actual": {
+        "count_log_tail_bound": -23.182352751528402,
+        "count_tail_bound": 8.551299600070643e-11,
+        "event_survival": [
+          0.9955580343296851,
+          0.9120985429889358,
+          0.5528576122967542,
+          0.14186049779756169,
+          0.011639295259727015,
+          0.00026908344887311553,
+          1.6579128132113259e-06,
+          2.6504676644646513e-09,
+          1.0838696488327168e-12,
+          1.1244003409482474e-16,
+          2.943732450765557e-21,
+          1.9382600535730765e-26,
+          2.913654112242224e-32,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "expected_count": 2.614284726685902,
+        "gradient": {
+          "drift": 3.0283241014786735,
+          "initial_gap": -1.4283192784367138,
+          "recovery_mean": -3.1836649038409432,
+          "reset_gap": -3.02060374240957,
+          "sigma": 0.5718848523934934
+        },
+        "gradient_tail_certified": false,
+        "included_events": 26,
+        "integral_truncation_upper_bound": 1.7764821120776536e-31,
+        "integration_coordinate": "first_passage_normal",
+        "quadrature_error_estimate": 1.8212959947877742e-12,
+        "roundoff_included": false
+      },
+      "count_error": 8.881784197001252e-16,
+      "gradient_error": 1.539524063787212e-11,
+      "recovery_mean": 5e-06,
+      "reference": {
+        "count_tail_bound": 2.349083575107921e-13,
+        "expected_count": 2.6142847266859013,
+        "gradient_tail_certified": false,
+        "integration_cutoff_bound": 2.967667902654741e-37,
+        "quadrature_error_estimate": 2.935606278788239e-13,
+        "recovery_mean_gradient": -3.1836649038563385,
+        "zero_recovery_limit": {
+          "expected_count": 2.6143006451427135,
+          "recovery_mean_gradient": -3.1837178212631168
+        }
+      }
+    },
+    {
+      "actual": {
+        "count_log_tail_bound": -23.182162338222525,
+        "count_tail_bound": 8.55292803633008e-11,
+        "event_survival": [
+          0.9955580343296851,
+          0.9120995715858417,
+          0.5528636640788096,
+          0.14186646350847842,
+          0.011640518892859067,
+          0.0002691397224015097,
+          1.6585139769732883e-06,
+          2.6519891818593508e-09,
+          1.0847931359563536e-12,
+          1.12575534534535e-16,
+          2.9485656339362974e-21,
+          1.9424679655749714e-26,
+          2.9226233558235973e-32,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "expected_count": 2.6142990532851265,
+        "gradient": {
+          "drift": 3.0283571580279496,
+          "initial_gap": -1.4283284574302715,
+          "recovery_mean": -3.18371252948985,
+          "reset_gap": -3.0206446787813515,
+          "sigma": 0.571892207658037
+        },
+        "gradient_tail_certified": false,
+        "included_events": 26,
+        "integral_truncation_upper_bound": 1.7764821120776536e-31,
+        "integration_coordinate": "first_passage_normal",
+        "quadrature_error_estimate": 2.2634464468205145e-10,
+        "roundoff_included": false
+      },
+      "count_error": 8.881784197001252e-16,
+      "gradient_error": 2.5589752539190158e-11,
+      "recovery_mean": 5e-07,
+      "reference": {
+        "count_tail_bound": 2.349083575107921e-13,
+        "expected_count": 2.6142990532851256,
+        "gradient_tail_certified": false,
+        "integration_cutoff_bound": 2.967667902654741e-37,
+        "quadrature_error_estimate": 2.9355950567854227e-13,
+        "recovery_mean_gradient": -3.1837125294642603,
+        "zero_recovery_limit": {
+          "expected_count": 2.6143006451427135,
+          "recovery_mean_gradient": -3.1837178212631168
+        }
+      }
+    }
+  ],
+  "schema": "hcsn_round9_recovery_scale_v1",
+  "source_sha256": {
+    "event_kernel.py": "3a4c84d578855b3ec63a1ca629502b48f76540a26d9efed7c39cee672646e81d",
+    "renewal.py": "bd479d1fb6f08ef9721fca6f2961dc19ad2b073ea4d92d13914be985cf8a9097"
+  }
+}

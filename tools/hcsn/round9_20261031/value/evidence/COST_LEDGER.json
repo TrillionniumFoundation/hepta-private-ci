@@ -1,0 +1,49 @@
+{
+  "adjusted_descriptive_intervals": [
+    {
+      "changes_registered_gate": false,
+      "cpu_priced_with_measured_support_and_incremental_loading": {
+        "lower": 0.012357201424280803,
+        "mean": 0.05374500915984533,
+        "upper": 0.09513281689540985
+      },
+      "mode": "first_passage",
+      "regime": "blind"
+    },
+    {
+      "changes_registered_gate": false,
+      "cpu_priced_with_measured_support_and_incremental_loading": {
+        "lower": -0.07741871058144802,
+        "mean": 0.02151380474589844,
+        "upper": 0.12044632007324489
+      },
+      "mode": "clocked",
+      "regime": "blind"
+    },
+    {
+      "changes_registered_gate": false,
+      "cpu_priced_with_measured_support_and_incremental_loading": {
+        "lower": 0.025971219632709742,
+        "mean": 0.06071753146870533,
+        "upper": 0.09546384330470092
+      },
+      "mode": "direct",
+      "regime": "blind"
+    }
+  ],
+  "boundary_diagnostic_process_cpu_seconds": 14.587493546000001,
+  "confirmation_process_cpu_seconds": 106.332146049,
+  "deployment_sessions": 10000,
+  "energy_measured": false,
+  "failed_confirmation": {
+    "post_START_wall_seconds_upper_bound_for_single_thread_CPU": 3.9272139072418213,
+    "process_cpu_seconds": null,
+    "scope": "Time from confirmation START timestamp to final failure log mtime; original process CPU was not persisted because the audit aborted. Evaluation cost is separate from deployed training amortization."
+  },
+  "loading_measurement_cpu_seconds_sum": 1.5637336839999985,
+  "primary_compute_price": 1.0,
+  "readback_process_cpu_seconds": 3.177680444,
+  "scope": "Process CPU in this executor; full action loop and head router, measured checkpoint/support startup. Module import and provenance checks are outside loading timer; failed first confirmation CPU was not persisted, with post-START wall bound recorded. Evaluation/replay/research diagnostics are campaign costs, not charged as deployment inference. Historical R7/R8 training is shared sunk work for the incremental comparison. No claim of full Hepta application cost or energy.",
+  "support_preparation_cpu_seconds": 0.02648505000000001,
+  "training_process_cpu_seconds": 612.20691371
+}

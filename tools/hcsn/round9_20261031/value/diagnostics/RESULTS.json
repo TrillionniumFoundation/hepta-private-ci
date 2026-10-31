@@ -1,0 +1,695 @@
+{
+  "conclusion_scope": "Fixed public-optimal actions in this task; no statement about all learned policies or physical energy.",
+  "cpu_seconds": 14.587493546000001,
+  "ordinary_no_cell": {
+    "action_regret_sum": 0.0,
+    "correct": 0.8442124999999998,
+    "decisions": 3.003875000000001,
+    "events": 0.0,
+    "mean_action_regret_visited": 0.0,
+    "quality": 0.6884249999999995,
+    "task_cost": 0.033155874999999994,
+    "utility": 0.6537671874999995
+  },
+  "paired": [
+    {
+      "mean_utility_delta": 2.597656249999714e-05,
+      "pairs": 1024,
+      "quality_task_return_calls_identical": true,
+      "seed": 11
+    },
+    {
+      "mean_utility_delta": 3.5546874999996085e-05,
+      "pairs": 1024,
+      "quality_task_return_calls_identical": true,
+      "seed": 12
+    },
+    {
+      "mean_utility_delta": 7.128906249999215e-05,
+      "pairs": 1024,
+      "quality_task_return_calls_identical": true,
+      "seed": 13
+    },
+    {
+      "mean_utility_delta": 5.8984374999993504e-05,
+      "pairs": 1024,
+      "quality_task_return_calls_identical": true,
+      "seed": 14
+    },
+    {
+      "mean_utility_delta": 3.222656249999645e-05,
+      "pairs": 1024,
+      "quality_task_return_calls_identical": true,
+      "seed": 15
+    }
+  ],
+  "protocol_sha256": "3ccaa2c805ee394dff8d5f619dd52408c9dba3bf90ea790e5e20205a3693ce2f",
+  "records": [
+    {
+      "gradients": [
+        {
+          "event_count_derivative": -0.17241919682800771,
+          "finite_difference": [
+            {
+              "absolute_error": 3.3006090828791024e-06,
+              "event_count_derivative": -0.17241589621892484,
+              "step": 0.02
+            },
+            {
+              "absolute_error": 8.251434170936101e-07,
+              "event_count_derivative": -0.17241837168459062,
+              "step": 0.01
+            },
+            {
+              "absolute_error": 2.0628529678878849e-07,
+              "event_count_derivative": -0.17241899054271093,
+              "step": 0.005
+            }
+          ],
+          "net_utility_derivative": 3.448383936560154e-05,
+          "raw_offset": 0.0
+        },
+        {
+          "event_count_derivative": -0.10636148344436912,
+          "finite_difference": [
+            {
+              "absolute_error": 2.0603442971958708e-05,
+              "event_count_derivative": -0.10638208688734108,
+              "step": 0.02
+            },
+            {
+              "absolute_error": 1.2921209017427437e-05,
+              "event_count_derivative": -0.10637440465338655,
+              "step": 0.01
+            },
+            {
+              "absolute_error": 4.02282612023408e-06,
+              "event_count_derivative": -0.10636550627048935,
+              "step": 0.005
+            }
+          ],
+          "net_utility_derivative": 2.1272296688873826e-05,
+          "raw_offset": 1.0
+        }
+      ],
+      "interventions": [
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 0.47671277046485505,
+          "correct": 0.8442124999999999,
+          "decisions": 3.0038749999999994,
+          "events": 1.3270932753067746,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884249999999998,
+          "raw_boundary": -2.4867030545039945,
+          "raw_offset": -2.0,
+          "task_cost": 0.03315587499999998,
+          "utility": 0.6535017688449385
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 0.6542882094917851,
+          "correct": 0.8442124999999998,
+          "decisions": 3.0038750000000003,
+          "events": 1.184750219938587,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884249999999995,
+          "raw_boundary": -1.4867030545039943,
+          "raw_offset": -1.0,
+          "task_cost": 0.03315587499999997,
+          "utility": 0.6535302374560118
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 0.9781064087067577,
+          "correct": 0.8442124999999998,
+          "decisions": 3.003875,
+          "events": 0.984538128404491,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884249999999995,
+          "raw_boundary": -0.48670305450399437,
+          "raw_offset": 0.0,
+          "task_cost": 0.03315587499999998,
+          "utility": 0.6535702798743186
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 1.3822054108230795,
+          "correct": 0.8442125,
+          "decisions": 3.003875000000001,
+          "events": 0.8556002103494174,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884250000000001,
+          "raw_boundary": 0.5132969454960057,
+          "raw_offset": 1.0,
+          "task_cost": 0.033155874999999994,
+          "utility": 0.6535960674579302
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 1.7022563451855617,
+          "correct": 0.8442124999999998,
+          "decisions": 3.003875,
+          "events": 0.7506532822013564,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884249999999995,
+          "raw_boundary": 1.5132969454960057,
+          "raw_offset": 2.0,
+          "task_cost": 0.033155874999999974,
+          "utility": 0.6536170568435592
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 1.9821084056556093,
+          "correct": 0.8442125,
+          "decisions": 3.0038750000000007,
+          "events": 0.6215984052061374,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.688425,
+          "raw_boundary": 4.5132969454960055,
+          "raw_offset": 5.0,
+          "task_cost": 0.033155874999999994,
+          "utility": 0.6536428678189588
+        }
+      ],
+      "seed": 11
+    },
+    {
+      "gradients": [
+        {
+          "event_count_derivative": -0.24275132569857466,
+          "finite_difference": [
+            {
+              "absolute_error": 6.8237500693846265e-06,
+              "event_count_derivative": -0.24274450194850528,
+              "step": 0.02
+            },
+            {
+              "absolute_error": 1.7058864087426961e-06,
+              "event_count_derivative": -0.24274961981216592,
+              "step": 0.01
+            },
+            {
+              "absolute_error": 4.264684593802137e-07,
+              "event_count_derivative": -0.24275089923011528,
+              "step": 0.005
+            }
+          ],
+          "net_utility_derivative": 4.855026513971493e-05,
+          "raw_offset": 0.0
+        },
+        {
+          "event_count_derivative": -0.1511929164395746,
+          "finite_difference": [
+            {
+              "absolute_error": 3.660074382072498e-06,
+              "event_count_derivative": -0.15119657651395668,
+              "step": 0.02
+            },
+            {
+              "absolute_error": 9.149576647993207e-07,
+              "event_count_derivative": -0.1511938313972394,
+              "step": 0.01
+            },
+            {
+              "absolute_error": 2.287356355989978e-07,
+              "event_count_derivative": -0.1511931451752102,
+              "step": 0.005
+            }
+          ],
+          "net_utility_derivative": 3.0238583287914924e-05,
+          "raw_offset": 1.0
+        }
+      ],
+      "interventions": [
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 0.4934172209178431,
+          "correct": 0.8442124999999994,
+          "decisions": 3.0038749999999963,
+          "events": 1.4390925189670598,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884249999999986,
+          "raw_boundary": -2.3518412939699025,
+          "raw_offset": -2.0,
+          "task_cost": 0.03315587499999993,
+          "utility": 0.6534793689962052
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 0.6891896845678704,
+          "correct": 0.8442124999999999,
+          "decisions": 3.0038750000000003,
+          "events": 1.2860839608641619,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884249999999998,
+          "raw_boundary": -1.3518412939699025,
+          "raw_offset": -1.0,
+          "task_cost": 0.03315587499999998,
+          "utility": 0.653509970707827
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 1.031344372641796,
+          "correct": 0.8442124999999997,
+          "decisions": 3.003875,
+          "events": 1.0221307497422563,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884249999999994,
+          "raw_boundary": -0.35184129396990244,
+          "raw_offset": 0.0,
+          "task_cost": 0.03315587499999997,
+          "utility": 0.653562761350051
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 1.4333824288271515,
+          "correct": 0.8442125,
+          "decisions": 3.0038750000000016,
+          "events": 0.8353399585896604,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884250000000001,
+          "raw_boundary": 0.6481587060300975,
+          "raw_offset": 1.0,
+          "task_cost": 0.033155874999999994,
+          "utility": 0.6536001195082821
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 1.733759364304536,
+          "correct": 0.8442124999999998,
+          "decisions": 3.0038750000000007,
+          "events": 0.7007504023699983,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884249999999997,
+          "raw_boundary": 1.6481587060300975,
+          "raw_offset": 2.0,
+          "task_cost": 0.03315587499999998,
+          "utility": 0.6536270374195258
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 1.9843442505448108,
+          "correct": 0.8442124999999998,
+          "decisions": 3.0038750000000007,
+          "events": 0.5618515297725827,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884249999999997,
+          "raw_boundary": 4.648158706030098,
+          "raw_offset": 5.0,
+          "task_cost": 0.033155874999999994,
+          "utility": 0.6536548171940452
+        }
+      ],
+      "seed": 12
+    },
+    {
+      "gradients": [
+        {
+          "event_count_derivative": -0.39777401733161993,
+          "finite_difference": [
+            {
+              "absolute_error": 2.8443279653511677e-05,
+              "event_count_derivative": -0.3977455740519664,
+              "step": 0.02
+            },
+            {
+              "absolute_error": 6.849302569278404e-06,
+              "event_count_derivative": -0.39776716802905066,
+              "step": 0.01
+            },
+            {
+              "absolute_error": 1.7123665815854672e-06,
+              "event_count_derivative": -0.39777230496503835,
+              "step": 0.005
+            }
+          ],
+          "net_utility_derivative": 7.9554803466324e-05,
+          "raw_offset": 0.0
+        },
+        {
+          "event_count_derivative": -0.2545145405635926,
+          "finite_difference": [
+            {
+              "absolute_error": 2.8199103899728684e-06,
+              "event_count_derivative": -0.25451736047398255,
+              "step": 0.02
+            },
+            {
+              "absolute_error": 7.053538684242966e-07,
+              "event_count_derivative": -0.254515245917461,
+              "step": 0.01
+            },
+            {
+              "absolute_error": 1.7636198479387133e-07,
+              "event_count_derivative": -0.25451471692557737,
+              "step": 0.005
+            }
+          ],
+          "net_utility_derivative": 5.0902908112718515e-05,
+          "raw_offset": 1.0
+        }
+      ],
+      "interventions": [
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 0.5170921295727098,
+          "correct": 0.8442124999999999,
+          "decisions": 3.0038749999999994,
+          "events": 1.1673592827542678,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884249999999998,
+          "raw_boundary": -2.1832148820348385,
+          "raw_offset": -2.0,
+          "task_cost": 0.03315587499999998,
+          "utility": 0.653533715643449
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 0.7368831631493158,
+          "correct": 0.8442124999999998,
+          "decisions": 3.0038750000000003,
+          "events": 0.9353229774604392,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884249999999996,
+          "raw_boundary": -1.1832148820348385,
+          "raw_offset": -1.0,
+          "task_cost": 0.033155874999999974,
+          "utility": 0.6535801229045075
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 1.0996345636281926,
+          "correct": 0.8442125,
+          "decisions": 3.003875000000001,
+          "events": 0.6006015887888716,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884250000000002,
+          "raw_boundary": -0.18321488203483838,
+          "raw_offset": 0.0,
+          "task_cost": 0.03315587499999999,
+          "utility": 0.6536470671822424
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 1.4943632487064242,
+          "correct": 0.8442124999999996,
+          "decisions": 3.003874999999998,
+          "events": 0.24620194050384753,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884249999999992,
+          "raw_boundary": 0.8167851179651616,
+          "raw_offset": 1.0,
+          "task_cost": 0.03315587499999996,
+          "utility": 0.6537179471118985
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 1.7692968669173537,
+          "correct": 0.8442124999999998,
+          "decisions": 3.003875000000001,
+          "events": 0.09525406074729718,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884249999999995,
+          "raw_boundary": 1.8167851179651615,
+          "raw_offset": 2.0,
+          "task_cost": 0.033155874999999974,
+          "utility": 0.65374813668785
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 1.9867541372672788,
+          "correct": 0.8442124999999998,
+          "decisions": 3.0038750000000003,
+          "events": 0.03772829299332211,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884249999999996,
+          "raw_boundary": 4.8167851179651615,
+          "raw_offset": 5.0,
+          "task_cost": 0.03315587499999998,
+          "utility": 0.653759641841401
+        }
+      ],
+      "seed": 13
+    },
+    {
+      "gradients": [
+        {
+          "event_count_derivative": -0.2860764868975121,
+          "finite_difference": [
+            {
+              "absolute_error": 0.00011797690610182432,
+              "event_count_derivative": -0.28595850999141026,
+              "step": 0.02
+            },
+            {
+              "absolute_error": 6.326662774691627e-05,
+              "event_count_derivative": -0.28601322026976517,
+              "step": 0.01
+            },
+            {
+              "absolute_error": 9.317013596188417e-07,
+              "event_count_derivative": -0.28607555519615246,
+              "step": 0.005
+            }
+          ],
+          "net_utility_derivative": 5.721529737950242e-05,
+          "raw_offset": 0.0
+        },
+        {
+          "event_count_derivative": -0.23329617120924673,
+          "finite_difference": [
+            {
+              "absolute_error": 4.007173218689708e-06,
+              "event_count_derivative": -0.23329216403602804,
+              "step": 0.02
+            },
+            {
+              "absolute_error": 1.0016360328934937e-06,
+              "event_count_derivative": -0.23329516957321383,
+              "step": 0.01
+            },
+            {
+              "absolute_error": 2.503991907154557e-07,
+              "event_count_derivative": -0.233295920810056,
+              "step": 0.005
+            }
+          ],
+          "net_utility_derivative": 4.665923424184935e-05,
+          "raw_offset": 1.0
+        }
+      ],
+      "interventions": [
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 0.5188832106740562,
+          "correct": 0.8442125000000005,
+          "decisions": 3.003875000000002,
+          "events": 1.034437721247413,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884250000000011,
+          "raw_boundary": -2.1713442546526105,
+          "raw_offset": -2.0,
+          "task_cost": 0.033155875000000036,
+          "utility": 0.6535602999557515
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 0.74040994830581,
+          "correct": 0.8442124999999996,
+          "decisions": 3.003874999999999,
+          "events": 0.8561888356071288,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884249999999993,
+          "raw_boundary": -1.1713442546526105,
+          "raw_offset": -1.0,
+          "task_cost": 0.03315587499999996,
+          "utility": 0.6535959497328778
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 1.1044929112158846,
+          "correct": 0.8442125,
+          "decisions": 3.0038750000000007,
+          "events": 0.6235232884815473,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884250000000002,
+          "raw_boundary": -0.17134425465261052,
+          "raw_offset": 0.0,
+          "task_cost": 0.03315587499999999,
+          "utility": 0.6536424828423039
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 1.4985165217542509,
+          "correct": 0.8442124999999999,
+          "decisions": 3.003875000000001,
+          "events": 0.3412394736464349,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884249999999998,
+          "raw_boundary": 0.8286557453473895,
+          "raw_offset": 1.0,
+          "task_cost": 0.033155874999999994,
+          "utility": 0.6536989396052706
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 1.7716424914356188,
+          "correct": 0.8442124999999999,
+          "decisions": 3.0038750000000003,
+          "events": 0.1837915155954817,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884249999999998,
+          "raw_boundary": 1.8286557453473895,
+          "raw_offset": 2.0,
+          "task_cost": 0.03315587499999998,
+          "utility": 0.6537304291968807
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 1.986909204288838,
+          "correct": 0.8442125,
+          "decisions": 3.0038750000000016,
+          "events": 0.09954592188928514,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.688425,
+          "raw_boundary": 4.8286557453473895,
+          "raw_offset": 5.0,
+          "task_cost": 0.033155874999999994,
+          "utility": 0.6537472783156221
+        }
+      ],
+      "seed": 14
+    },
+    {
+      "gradients": [
+        {
+          "event_count_derivative": -0.16605024885715147,
+          "finite_difference": [
+            {
+              "absolute_error": 1.1379062271221763e-05,
+              "event_count_derivative": -0.1660616279194227,
+              "step": 0.02
+            },
+            {
+              "absolute_error": 2.845263253781205e-06,
+              "event_count_derivative": -0.16605309412040525,
+              "step": 0.01
+            },
+            {
+              "absolute_error": 7.113469157049579e-07,
+              "event_count_derivative": -0.16605096020406718,
+              "step": 0.005
+            }
+          ],
+          "net_utility_derivative": 3.32100497714303e-05,
+          "raw_offset": 0.0
+        },
+        {
+          "event_count_derivative": -0.17644530303554162,
+          "finite_difference": [
+            {
+              "absolute_error": 8.691577291664032e-06,
+              "event_count_derivative": -0.17643661145824996,
+              "step": 0.02
+            },
+            {
+              "absolute_error": 2.1331117793232934e-06,
+              "event_count_derivative": -0.1764431699237623,
+              "step": 0.01
+            },
+            {
+              "absolute_error": 5.332917639710999e-07,
+              "event_count_derivative": -0.17644476974377765,
+              "step": 0.005
+            }
+          ],
+          "net_utility_derivative": 3.528906060710833e-05,
+          "raw_offset": 1.0
+        }
+      ],
+      "interventions": [
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 0.5178723583098345,
+          "correct": 0.8442124999999995,
+          "decisions": 3.0038749999999985,
+          "events": 1.242696601589443,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.688424999999999,
+          "raw_boundary": -2.178030011478301,
+          "raw_offset": -2.0,
+          "task_cost": 0.033155874999999946,
+          "utility": 0.6535186481796811
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 0.7384208739527689,
+          "correct": 0.8442124999999997,
+          "decisions": 3.003874999999999,
+          "events": 1.0531088538201137,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884249999999994,
+          "raw_boundary": -1.178030011478301,
+          "raw_offset": -1.0,
+          "task_cost": 0.03315587499999996,
+          "utility": 0.6535565657292354
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 1.1017559720174412,
+          "correct": 0.8442125,
+          "decisions": 3.0038750000000016,
+          "events": 0.8589091295665514,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.688425,
+          "raw_boundary": -0.17803001147830103,
+          "raw_offset": 0.0,
+          "task_cost": 0.033155874999999994,
+          "utility": 0.6535954056740867
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 1.496179683946799,
+          "correct": 0.8442124999999998,
+          "decisions": 3.0038750000000007,
+          "events": 0.6886024304856888,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884249999999996,
+          "raw_boundary": 0.821969988521699,
+          "raw_offset": 1.0,
+          "task_cost": 0.03315587499999998,
+          "utility": 0.6536294670139025
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 1.7703238645845207,
+          "correct": 0.8442124999999997,
+          "decisions": 3.0038750000000003,
+          "events": 0.5361616756054323,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884249999999994,
+          "raw_boundary": 1.821969988521699,
+          "raw_offset": 2.0,
+          "task_cost": 0.03315587499999998,
+          "utility": 0.6536599551648783
+        },
+        {
+          "action_regret_sum": 0.0,
+          "boundary": 1.9868220905290994,
+          "correct": 0.8442124999999998,
+          "decisions": 3.0038750000000007,
+          "events": 0.40747531927001884,
+          "mean_action_regret_visited": 0.0,
+          "quality": 0.6884249999999995,
+          "raw_boundary": 4.821969988521699,
+          "raw_offset": 5.0,
+          "task_cost": 0.03315587499999998,
+          "utility": 0.6536856924361455
+        }
+      ],
+      "seed": 15
+    }
+  ],
+  "wall_seconds": 14.593849351003882
+}

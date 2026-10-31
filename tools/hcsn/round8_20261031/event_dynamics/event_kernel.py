@@ -187,25 +187,45 @@ def two_segment_first_hit(distance, first, second, *, boundary_jump=0.0, tail_to
     if t1 <= 0 or not 1e-15 <= tail_tolerance <= 1e-6:
         raise DomainError("Positive first duration and tail tolerance in [1e-15,1e-6] required")
     initial = first_hit(distance, mu1, s1, t1)["probability"]
-    threshold = max(0.0, -boundary_jump)
     scale = s1 * math.sqrt(t1)
     mean_gap = distance - mu1 * t1
-    upper = max(0.0, mean_gap) + float(-ndtri(tail_tolerance)) * scale
-    density = lambda y: killed_density(distance, y, mu1, s1, t1)
+    # Integrate in the first endpoint's Gaussian coordinate. The second
+    # passage CDF can vary on a much smaller scale than this endpoint law;
+    # its transition must be a panel boundary even when it lies close to an
+    # existing knot. Adaptive quadrature alone can miss that narrow strip.
+    mean = mean_gap / scale
+    radius = float(-ndtri(tail_tolerance / 2))
+    lower, upper = max(-mean, -radius), radius
+    jump_z = (-boundary_jump - mean_gap) / scale
+    second_width = s2 * math.sqrt(t2) / scale
+    crossing_z = jump_z + mu2 * t2 / scale
+    points = [-8., -4., -1., 0., 1., 4., 8.]
+    points += [crossing_z + k * second_width for k in (-16., -8., -4., -1., 0., 1., 4., 8., 16.)]
+    if mu2 < 0:
+        boundary_width = min(second_width, s2 * s2 / (-2 * mu2 * scale))
+        points += [jump_z + k * boundary_width for k in (0., 1., 4., 8., 16.)]
+
+    def density(z):
+        return (math.exp(-.5 * z * z) / math.sqrt(2 * math.pi)
+                * -math.expm1(-2 * (distance / scale) * (mean + z)))
+
     def integrate(fn, left, right):
         if right <= left:
             return 0.0, 0.0
-        points = [mean_gap + k * scale for k in (-4, -1, 0, 1, 4)
-                  if left < mean_gap + k * scale < right]
-        return quad(fn, left, right, points=points, epsabs=tail_tolerance, epsrel=1e-11, limit=250)
-    immediate, err0 = integrate(density, 0.0, min(threshold, upper))
-    def integrand(y):
-        gap = y + boundary_jump
-        return density(y) * first_hit(gap, mu2, s2, t2)["probability"]
-    extra, err1 = integrate(integrand, threshold, upper)
+        knots = sorted(set(z for z in points if left < z < right))
+        return quad(fn, left, right, points=knots, epsabs=tail_tolerance, epsrel=1e-11, limit=250)
+
+    immediate, err0 = integrate(density, lower, min(jump_z, upper))
+
+    def integrand(z):
+        gap = scale * (z - jump_z)
+        return density(z) * first_hit(gap, mu2, s2, t2)["probability"]
+
+    extra, err1 = (integrate(integrand, max(lower, jump_z), upper) if t2 else (0., 0.))
     probability = initial + immediate + extra
     if not 0 <= probability <= 1 + 4 * (err0 + err1 + tail_tolerance):
         raise ArithmeticError("Composed probability violates its numerical error budget")
     return dict(probability=probability, initial_hit=initial, jump_hit=immediate,
                 later_hit=extra, quadrature_error_estimate=err0 + err1,
-                omitted_mass_upper_bound=tail_tolerance, roundoff_included=False)
+                omitted_mass_upper_bound=tail_tolerance, roundoff_included=False,
+                integration_coordinate="standardized_killed_endpoint_with_second_transition")

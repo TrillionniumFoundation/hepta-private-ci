@@ -1,0 +1,571 @@
+{
+  "environment": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "finite_matrix_gradient_checks": [
+    {
+      "absolute_error": 3.147748728338229e-11,
+      "central_difference": -0.6180367524311059,
+      "discount": 0,
+      "parameter": "boundary",
+      "scheme": "upwind",
+      "sensitivity": -0.6180367524625834
+    },
+    {
+      "absolute_error": 1.709622443613057e-10,
+      "central_difference": 0.6408413208869312,
+      "discount": 0,
+      "parameter": "drift",
+      "scheme": "upwind",
+      "sensitivity": 0.6408413210578935
+    },
+    {
+      "absolute_error": 5.445577322404915e-11,
+      "central_difference": -0.4236595351994609,
+      "discount": 0.7,
+      "parameter": "boundary",
+      "scheme": "upwind",
+      "sensitivity": -0.42365953514500515
+    },
+    {
+      "absolute_error": 7.320527517507003e-11,
+      "central_difference": 0.39417257648305387,
+      "discount": 0.7,
+      "parameter": "drift",
+      "scheme": "upwind",
+      "sensitivity": 0.39417257655625915
+    },
+    {
+      "absolute_error": 7.501776977392183e-11,
+      "central_difference": -0.6361620776926258,
+      "discount": 0,
+      "parameter": "boundary",
+      "scheme": "fitted",
+      "sensitivity": -0.6361620777676436
+    },
+    {
+      "absolute_error": 2.5288104943399503e-10,
+      "central_difference": 0.6233481153222753,
+      "discount": 0,
+      "parameter": "drift",
+      "scheme": "fitted",
+      "sensitivity": 0.6233481155751563
+    },
+    {
+      "absolute_error": 2.725886183441162e-11,
+      "central_difference": -0.4298833273234936,
+      "discount": 0.7,
+      "parameter": "boundary",
+      "scheme": "fitted",
+      "sensitivity": -0.42988332729623474
+    },
+    {
+      "absolute_error": 2.080718930486114e-11,
+      "central_difference": 0.3761733768814501,
+      "discount": 0.7,
+      "parameter": "drift",
+      "scheme": "fitted",
+      "sensitivity": 0.3761733769022573
+    }
+  ],
+  "gates": [
+    {
+      "criterion": "all six analytic image bounds below the preregistered 1e-30 budget",
+      "name": "lower_truncation_values_and_derivatives",
+      "passed": true
+    },
+    {
+      "criterion": "every successive refinement decreases all six absolute errors",
+      "name": "upwind_all_errors_decrease",
+      "passed": true
+    },
+    {
+      "criterion": "last-pair observed order >= 0.85 for all six quantities",
+      "name": "upwind_last_order",
+      "passed": true
+    },
+    {
+      "criterion": "all finest-grid absolute errors < 0.005",
+      "name": "upwind_final_accuracy",
+      "passed": true
+    },
+    {
+      "criterion": "every successive refinement decreases all six absolute errors",
+      "name": "fitted_all_errors_decrease",
+      "passed": true
+    },
+    {
+      "criterion": "last-pair observed order >= 1.8 for all six quantities",
+      "name": "fitted_last_order",
+      "passed": true
+    },
+    {
+      "criterion": "all finest-grid absolute errors < 5e-05",
+      "name": "fitted_final_accuracy",
+      "passed": true
+    },
+    {
+      "criterion": "sparse block-exponential sensitivities agree with fixed-grid central differences within 2e-6",
+      "name": "finite_matrix_sensitivities",
+      "passed": true
+    },
+    {
+      "criterion": "no registered low-noise grid bypasses the unchanged 5% local-variance gate",
+      "name": "low_noise_coarse_grids_still_rejected",
+      "passed": true
+    }
+  ],
+  "limitations": [
+    "Empirical refinement at one fixed regular parameter group is not a uniform convergence theorem.",
+    "Boundary derivatives rescale both endpoints; the separate image bound controls the lower-boundary effect.",
+    "The sparse matrix exponential has numerical, not interval-certified, error.",
+    "This audit does not change prior evidence, learned checkpoints, or its fixed resolution protocol."
+  ],
+  "low_noise": [
+    {
+      "extra_variance_ratio": 49.99999999999999,
+      "grid": 15,
+      "local_resolution_admitted": false,
+      "reference_upper_probability": 4.321826006730762e-06,
+      "scheme": "upwind",
+      "upper_probability": 0.31533702655444834
+    },
+    {
+      "extra_variance_ratio": 48.99999999999999,
+      "grid": 15,
+      "local_resolution_admitted": false,
+      "reference_upper_probability": 4.321826006730762e-06,
+      "scheme": "fitted",
+      "upper_probability": 0.31267894902085064
+    },
+    {
+      "extra_variance_ratio": 24.999999999999996,
+      "grid": 31,
+      "local_resolution_admitted": false,
+      "reference_upper_probability": 4.321826006730762e-06,
+      "scheme": "upwind",
+      "upper_probability": 0.22431409382368914
+    },
+    {
+      "extra_variance_ratio": 23.999999999999996,
+      "grid": 31,
+      "local_resolution_admitted": false,
+      "reference_upper_probability": 4.321826006730762e-06,
+      "scheme": "fitted",
+      "upper_probability": 0.21897778580622623
+    },
+    {
+      "extra_variance_ratio": 12.499999999999998,
+      "grid": 63,
+      "local_resolution_admitted": false,
+      "reference_upper_probability": 4.321826006730762e-06,
+      "scheme": "upwind",
+      "upper_probability": 0.13307838097843133
+    },
+    {
+      "extra_variance_ratio": 11.500000000347198,
+      "grid": 63,
+      "local_resolution_admitted": false,
+      "reference_upper_probability": 4.321826006730762e-06,
+      "scheme": "fitted",
+      "upper_probability": 0.12363090422848669
+    },
+    {
+      "extra_variance_ratio": 6.249999999999999,
+      "grid": 127,
+      "local_resolution_admitted": false,
+      "reference_upper_probability": 4.321826006730762e-06,
+      "scheme": "upwind",
+      "upper_probability": 0.059001164816325405
+    },
+    {
+      "extra_variance_ratio": 5.25004658333825,
+      "grid": 127,
+      "local_resolution_admitted": false,
+      "reference_upper_probability": 4.321826006730762e-06,
+      "scheme": "fitted",
+      "upper_probability": 0.04660269875511756
+    },
+    {
+      "extra_variance_ratio": 3.125,
+      "grid": 255,
+      "local_resolution_admitted": false,
+      "reference_upper_probability": 4.321826006730762e-06,
+      "scheme": "upwind",
+      "upper_probability": 0.01734847790917762
+    },
+    {
+      "extra_variance_ratio": 2.1370886749840476,
+      "grid": 255,
+      "local_resolution_admitted": false,
+      "reference_upper_probability": 4.321826006730762e-06,
+      "scheme": "fitted",
+      "upper_probability": 0.008199685425939294
+    }
+  ],
+  "lower_truncation_bounds": {
+    "F": 3.4109956955749467e-42,
+    "F_boundary": 6.501736795287582e-40,
+    "F_drift": 1.4022982304030338e-41,
+    "G": 3.4109956955749467e-42,
+    "G_boundary": 6.501736795287582e-40,
+    "G_drift": 1.4022982304030338e-41,
+    "interpretation": "analytic absolute bounds evaluated in binary64; no interval-arithmetic roundoff certificate"
+  },
+  "passed": true,
+  "process_cpu_seconds": 4.359436872,
+  "protocol": {
+    "intervals": [
+      40,
+      80,
+      160,
+      320,
+      640
+    ],
+    "low_noise_grids": [
+      15,
+      31,
+      63,
+      127,
+      255
+    ],
+    "lower_boundary_ratio": 4,
+    "lower_truncation_budget": 1e-30,
+    "maximum_extra_variance_ratio": 0.05,
+    "maximum_final_absolute_error": {
+      "fitted": 5e-05,
+      "upwind": 0.005
+    },
+    "maximum_sensitivity_fd_error": 2e-06,
+    "minimum_last_refinement_order": {
+      "fitted": 1.8,
+      "upwind": 0.85
+    },
+    "parameters": {
+      "boundary": 1.0,
+      "discount": 0.7,
+      "drift": 0.4,
+      "duration": 1.2,
+      "sigma": 0.6
+    },
+    "schemes": [
+      "upwind",
+      "fitted"
+    ],
+    "sensitivity_check_intervals": 80,
+    "sensitivity_fd_step": 2e-05
+  },
+  "reference": {
+    "F": 0.3267209477116415,
+    "F_boundary": -0.6381858892478225,
+    "F_drift": 0.6238562067290127,
+    "G": 0.19195326844862723,
+    "G_boundary": -0.43123275409294193,
+    "G_drift": 0.37581046119883627
+  },
+  "rows": [
+    {
+      "absolute_error": {
+        "F": 0.024900329486585604,
+        "F_boundary": 0.04034231779724162,
+        "F_drift": 0.027484524541471544,
+        "G": 0.019393978757010072,
+        "G_boundary": 0.016139565909826847,
+        "G_drift": 0.03302981569182556
+      },
+      "extra_variance_ratio": 0.13888888888888884,
+      "interior_states": 39,
+      "intervals": 40,
+      "observed_order": null,
+      "scheme": "upwind",
+      "spacing": 0.125,
+      "values": {
+        "F": 0.3516212771982271,
+        "F_boundary": -0.5978435714505809,
+        "F_drift": 0.6513407312704842,
+        "G": 0.2113472472056373,
+        "G_boundary": -0.4150931881831151,
+        "G_drift": 0.4088402768906618
+      }
+    },
+    {
+      "absolute_error": {
+        "F": 0.012959869605108254,
+        "F_boundary": 0.020149136785239108,
+        "F_drift": 0.016985114328880835,
+        "G": 0.0097345185460396,
+        "G_boundary": 0.007573218947936777,
+        "G_drift": 0.01836211535742288
+      },
+      "extra_variance_ratio": 0.06944444444444442,
+      "interior_states": 79,
+      "intervals": 80,
+      "observed_order": {
+        "F": 0.9421136297623042,
+        "F_boundary": 1.0015759406713698,
+        "F_drift": 0.6943485930073222,
+        "G": 0.9944272764191372,
+        "G_boundary": 1.0916232324593609,
+        "G_drift": 0.8470366492552669
+      },
+      "scheme": "upwind",
+      "spacing": 0.0625,
+      "values": {
+        "F": 0.33968081731674976,
+        "F_boundary": -0.6180367524625834,
+        "F_drift": 0.6408413210578935,
+        "G": 0.20168778699466683,
+        "G_boundary": -0.42365953514500515,
+        "G_drift": 0.39417257655625915
+      }
+    },
+    {
+      "absolute_error": {
+        "F": 0.0066125814275191375,
+        "F_boundary": 0.010027069622596918,
+        "F_drift": 0.009418703055025568,
+        "G": 0.004873541558631012,
+        "G_boundary": 0.0036310129577201145,
+        "G_drift": 0.00968228145177169
+      },
+      "extra_variance_ratio": 0.03472222222222232,
+      "interior_states": 159,
+      "intervals": 160,
+      "observed_order": {
+        "F": 0.9707657148753184,
+        "F_boundary": 1.006817988409294,
+        "F_drift": 0.8506706080881493,
+        "G": 0.9981390804082655,
+        "G_boundary": 1.06053456021967,
+        "G_drift": 0.9233133328181775
+      },
+      "scheme": "upwind",
+      "spacing": 0.03125,
+      "values": {
+        "F": 0.33333352913916064,
+        "F_boundary": -0.6281588196252256,
+        "F_drift": 0.6332749097840382,
+        "G": 0.19682681000725824,
+        "G_boundary": -0.4276017411352218,
+        "G_drift": 0.38549274265060796
+      }
+    },
+    {
+      "absolute_error": {
+        "F": 0.0033398824020330897,
+        "F_boundary": 0.0049941191316309475,
+        "F_drift": 0.004956649207798813,
+        "G": 0.002437815616396999,
+        "G_boundary": 0.0017716751380862927,
+        "G_drift": 0.004971458256768313
+      },
+      "extra_variance_ratio": 0.01736111111111116,
+      "interior_states": 319,
+      "intervals": 320,
+      "observed_order": {
+        "F": 0.9854162767289593,
+        "F_boundary": 1.0055979033798024,
+        "F_drift": 0.92616325606309,
+        "G": 0.9993815346875717,
+        "G_boundary": 1.0352579891592708,
+        "G_drift": 0.9616779386598994
+      },
+      "scheme": "upwind",
+      "spacing": 0.015625,
+      "values": {
+        "F": 0.3300608301136746,
+        "F_boundary": -0.6331917701161915,
+        "F_drift": 0.6288128559368115,
+        "G": 0.19439108406502423,
+        "G_boundary": -0.42946107895485564,
+        "G_drift": 0.3807819194556046
+      }
+    },
+    {
+      "absolute_error": {
+        "F": 0.0016783736287132034,
+        "F_boundary": 0.0024910812868134125,
+        "F_drift": 0.002542187438247079,
+        "G": 0.0012190924092876088,
+        "G_boundary": 0.000874186710989211,
+        "G_drift": 0.0025189287647729985
+      },
+      "extra_variance_ratio": 0.00868055555555558,
+      "interior_states": 639,
+      "intervals": 640,
+      "observed_order": {
+        "F": 0.9927333909989755,
+        "F_boundary": 1.0034581371511786,
+        "F_drift": 0.9632947542023034,
+        "G": 0.9997815233367089,
+        "G_boundary": 1.019100737251485,
+        "G_drift": 0.9808587702046114
+      },
+      "scheme": "upwind",
+      "spacing": 0.0078125,
+      "values": {
+        "F": 0.3283993213403547,
+        "F_boundary": -0.6356948079610091,
+        "F_drift": 0.6263983941672597,
+        "G": 0.19317236085791484,
+        "G_boundary": -0.4303585673819527,
+        "G_drift": 0.37832938996360926
+      }
+    },
+    {
+      "absolute_error": {
+        "F": 0.0010778918232509094,
+        "F_boundary": 0.00816089218128535,
+        "F_drift": 0.001957450733192645,
+        "G": 0.0019239342816024796,
+        "G_boundary": 0.0053836567572705385,
+        "G_drift": 0.001459494073238643
+      },
+      "extra_variance_ratio": 0.006421787228760856,
+      "interior_states": 39,
+      "intervals": 40,
+      "observed_order": null,
+      "scheme": "fitted",
+      "spacing": 0.125,
+      "values": {
+        "F": 0.3277988395348924,
+        "F_boundary": -0.6300249970665371,
+        "F_drift": 0.62189875599582,
+        "G": 0.1938772027302297,
+        "G_boundary": -0.4258490973356714,
+        "G_drift": 0.3772699552720749
+      }
+    },
+    {
+      "absolute_error": {
+        "F": 0.00026340969465415975,
+        "F_boundary": 0.0020238114801789386,
+        "F_drift": 0.0005080911538563049,
+        "G": 0.00048095276823842403,
+        "G_boundary": 0.0013494267967071871,
+        "G_drift": 0.0003629157034210073
+      },
+      "extra_variance_ratio": 0.0016069937074547624,
+      "interior_states": 79,
+      "intervals": 80,
+      "observed_order": {
+        "F": 2.0328320478055715,
+        "F_boundary": 2.0116519740173526,
+        "F_drift": 1.9458167456203173,
+        "G": 2.0000923930719297,
+        "G_boundary": 1.9962397157490122,
+        "G_drift": 2.007761963381218
+      },
+      "scheme": "fitted",
+      "spacing": 0.0625,
+      "values": {
+        "F": 0.32698435740629567,
+        "F_boundary": -0.6361620777676436,
+        "F_drift": 0.6233481155751563,
+        "G": 0.19243422121686565,
+        "G_boundary": -0.42988332729623474,
+        "G_drift": 0.3761733769022573
+      }
+    },
+    {
+      "absolute_error": {
+        "F": 6.547102612242117e-05,
+        "F_boundary": 0.0005048556384119607,
+        "F_drift": 0.00012819687931475698,
+        "G": 0.0001202356258267756,
+        "G_boundary": 0.0003375512680727222,
+        "G_drift": 9.060634662955147e-05
+      },
+      "extra_variance_ratio": 0.0004018452746081813,
+      "interior_states": 159,
+      "intervals": 160,
+      "observed_order": {
+        "F": 2.0083799487315774,
+        "F_boundary": 2.003132089300414,
+        "F_drift": 1.986726203261027,
+        "G": 2.0000307916380327,
+        "G_boundary": 1.999168172246704,
+        "G_drift": 2.0019504695975257
+      },
+      "scheme": "fitted",
+      "spacing": 0.03125,
+      "values": {
+        "F": 0.32678641873776393,
+        "F_boundary": -0.6376810336094105,
+        "F_drift": 0.6237280098496979,
+        "G": 0.192073504074454,
+        "G_boundary": -0.4308952028248692,
+        "G_drift": 0.3759010675454658
+      }
+    },
+    {
+      "absolute_error": {
+        "F": 1.6343888343539614e-05,
+        "F_boundary": 0.00012614429829926888,
+        "F_drift": 3.2122638069953524e-05,
+        "G": 3.0058738975935473e-05,
+        "G_boundary": 8.439961846140598e-05,
+        "G_drift": 2.264392952294747e-05
+      },
+      "extra_variance_ratio": 0.00010046737424218577,
+      "interior_states": 319,
+      "intervals": 320,
+      "observed_order": {
+        "F": 2.0021053371885196,
+        "F_boundary": 2.000795915346289,
+        "F_drift": 1.9966988588996641,
+        "G": 2.000008038360714,
+        "G_boundary": 1.9997982565041523,
+        "G_drift": 2.000487770575164
+      },
+      "scheme": "fitted",
+      "spacing": 0.015625,
+      "values": {
+        "F": 0.32673729159998505,
+        "F_boundary": -0.6380597449495232,
+        "F_drift": 0.6238240840909427,
+        "G": 0.19198332718760316,
+        "G_boundary": -0.4311483544744805,
+        "G_drift": 0.3758331051283592
+      }
+    },
+    {
+      "absolute_error": {
+        "F": 4.084479834187693e-06,
+        "F_boundary": 3.153170775216374e-05,
+        "F_drift": 8.035248751925295e-06,
+        "G": 7.5146742359588625e-06,
+        "G_boundary": 2.110063637655868e-05,
+        "G_drift": 5.66050401196172e-06
+      },
+      "extra_variance_ratio": 2.511722207576561e-05,
+      "interior_states": 639,
+      "intervals": 640,
+      "observed_order": {
+        "F": 2.0005269877770098,
+        "F_boundary": 2.0001997848398734,
+        "F_drift": 1.9991757869106852,
+        "G": 2.0000020173682174,
+        "G_boundary": 1.9999499670743546,
+        "G_drift": 2.000121916899618
+      },
+      "scheme": "fitted",
+      "spacing": 0.0078125,
+      "values": {
+        "F": 0.3267250321914757,
+        "F_boundary": -0.6381543575400703,
+        "F_drift": 0.6238481714802607,
+        "G": 0.1919607831228632,
+        "G_boundary": -0.43121165345656537,
+        "G_drift": 0.3758161217028482
+      }
+    }
+  ],
+  "schema": "hcsn_round8_spatial_resolution_audit_v1",
+  "source_sha256": {
+    "event_kernel.py": "3a4c84d578855b3ec63a1ca629502b48f76540a26d9efed7c39cee672646e81d",
+    "generator.py": "2dff8cea6b9fd366537488eeec051db20a77d8e58b76fda1b72e21afa38808d8",
+    "resolution_audit.py": "544dfef085abffc538fa1c813d2531b3e9e28c975dce36a6d3c1ae86d7ed39cf"
+  }
+}

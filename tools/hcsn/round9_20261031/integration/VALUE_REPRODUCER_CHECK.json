@@ -1,0 +1,41 @@
+{
+  "checks": {
+    "existing_output_rejected": true,
+    "missing_interpreter_rejected_before_writes": true
+  },
+  "copied_file_count": 66,
+  "frozen_value_manifest_sha256": "c815af810b722a7d77a01233708dce50b37464ad76f1ce81a3010093ad92997a",
+  "full_confirmation_and_audit_rerun": false,
+  "helper_sha256": "7ad53ed5632390fcd11bc9960bdf2313ed9f5f17889106afaa2c0a6504c1e4ba",
+  "precheck_attempt": "An earlier nonexistent interpreter failed after copying inputs; the final helper now checks its executable before output creation.",
+  "prepared_repo": "/tmp/hepta-r9-value-prepare-verification-20261031-02",
+  "result": {
+    "copied_inputs_unchanged": true,
+    "energy_joules": null,
+    "original_sources_and_evidence_unchanged": true,
+    "passed": true,
+    "prepare_only": true,
+    "schema": "hepta.r9.value.reproduction-result.v1",
+    "scope": "Integrity/preparation only",
+    "stages": [
+      {
+        "returncode": 0,
+        "stage": "verify",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "057f637a14aeabc303a971a4e5646d98e9e9bf33b26e6e67db3a71c9d56be161",
+        "wall_seconds": 1.0090526130079525
+      }
+    ]
+  },
+  "schema": "hepta.r9.value.reproducer-check.v1",
+  "scope": "Original registration and 30 head loads were executed in a fresh 66-file source tree. The existing scientific confirmation is not rerun by this check.",
+  "verification": {
+    "loaded_baseline_heads": 15,
+    "loaded_new_heads": 15,
+    "new_confirmation_samples": 0,
+    "numpy": "2.3.5",
+    "python": "3.12.14",
+    "scipy": "1.17.0",
+    "verify_registration": true
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "command": [
+    "/tmp/pq-r3-tools/bin/just",
+    "fmt"
+  ],
+  "completed_at_utc": "2026-10-31T06:47:48.160894+00:00",
+  "cwd": "/workspace/scratch/f530455d952b/native-r9-build/workflow/codex-rs",
+  "frozen_delivery_manifest_sha256": {
+    "/workspace/scratch/f530455d952b/hepta-hcsn-r9/tools/hcsn/round9_20261031/native/DELIVERY_MANIFEST.json": "1b029c474d7100dd2aecfba8d0d219f053cbb557009b75af53b9bf712609eb4e",
+    "/workspace/scratch/f530455d952b/hepta-hcsn-r9/tools/hcsn/round9_20261031/streaming/DELIVERY_MANIFEST.json": "880b367ba8620570ff365fbefa4304f13bca52dd4e90a2774671be96bb5f1fb2"
+  },
+  "frozen_delivery_manifests_unchanged": true,
+  "reproducer_sha256": "8c38a191b22760057314ea3e534f9ce55e324b5dc6af59b38f3b88f810cc7965",
+  "returncode": 0,
+  "rust_sources_sha256_after": {
+    "/workspace/scratch/f530455d952b/hepta-hcsn-r9/tools/hcsn/round9_20261031/native/src/cell.rs": "7d4cd316379162e95ca06beec23219912ec53febc60107d93d781a9b9593d6a9",
+    "/workspace/scratch/f530455d952b/hepta-hcsn-r9/tools/hcsn/round9_20261031/native/src/content.rs": "93b34ac7ce743e3cafc5d54124dc477d03999f47b99fcc23ebc6439f7d22ae79",
+    "/workspace/scratch/f530455d952b/hepta-hcsn-r9/tools/hcsn/round9_20261031/native/src/main.rs": "4b01c823a9f19ef7463ccf5c6518e7f75e6f0535652e55cbc6cf4a8ae3e16fe6",
+    "/workspace/scratch/f530455d952b/hepta-hcsn-r9/tools/hcsn/round9_20261031/native/src/native.rs": "418e50e1dd06f1b52fe5937288625db2c7a756acfbd730e732b1d063fbf31ef7",
+    "/workspace/scratch/f530455d952b/hepta-hcsn-r9/tools/hcsn/round9_20261031/native/src/owner.rs": "870aaa407f66eab55df98b0ef386a7a60e1209bae3368521454dac38248d294f",
+    "/workspace/scratch/f530455d952b/hepta-hcsn-r9/tools/hcsn/round9_20261031/native/src/schedule.rs": "2340e300afa93cc370843faa1aca84d0f03640f86daf1d4ebbf60113f0c0ca1a",
+    "/workspace/scratch/f530455d952b/hepta-hcsn-r9/tools/hcsn/round9_20261031/native/src/tests.rs": "156d2882f3a1edbd53a3ee49274ee6f7eb7d776d012bcce9509039d81e6d8446",
+    "/workspace/scratch/f530455d952b/native-r9-build/workflow/codex-rs/cell.rs": "7d4cd316379162e95ca06beec23219912ec53febc60107d93d781a9b9593d6a9",
+    "/workspace/scratch/f530455d952b/native-r9-build/workflow/codex-rs/content.rs": "93b34ac7ce743e3cafc5d54124dc477d03999f47b99fcc23ebc6439f7d22ae79",
+    "/workspace/scratch/f530455d952b/native-r9-build/workflow/codex-rs/main.rs": "4b01c823a9f19ef7463ccf5c6518e7f75e6f0535652e55cbc6cf4a8ae3e16fe6",
+    "/workspace/scratch/f530455d952b/native-r9-build/workflow/codex-rs/native.rs": "418e50e1dd06f1b52fe5937288625db2c7a756acfbd730e732b1d063fbf31ef7",
+    "/workspace/scratch/f530455d952b/native-r9-build/workflow/codex-rs/owner.rs": "870aaa407f66eab55df98b0ef386a7a60e1209bae3368521454dac38248d294f",
+    "/workspace/scratch/f530455d952b/native-r9-build/workflow/codex-rs/schedule.rs": "2340e300afa93cc370843faa1aca84d0f03640f86daf1d4ebbf60113f0c0ca1a",
+    "/workspace/scratch/f530455d952b/native-r9-build/workflow/codex-rs/tests.rs": "156d2882f3a1edbd53a3ee49274ee6f7eb7d776d012bcce9509039d81e6d8446"
+  },
+  "rust_sources_sha256_before": {
+    "/workspace/scratch/f530455d952b/hepta-hcsn-r9/tools/hcsn/round9_20261031/native/src/cell.rs": "7d4cd316379162e95ca06beec23219912ec53febc60107d93d781a9b9593d6a9",
+    "/workspace/scratch/f530455d952b/hepta-hcsn-r9/tools/hcsn/round9_20261031/native/src/content.rs": "93b34ac7ce743e3cafc5d54124dc477d03999f47b99fcc23ebc6439f7d22ae79",
+    "/workspace/scratch/f530455d952b/hepta-hcsn-r9/tools/hcsn/round9_20261031/native/src/main.rs": "4b01c823a9f19ef7463ccf5c6518e7f75e6f0535652e55cbc6cf4a8ae3e16fe6",
+    "/workspace/scratch/f530455d952b/hepta-hcsn-r9/tools/hcsn/round9_20261031/native/src/native.rs": "418e50e1dd06f1b52fe5937288625db2c7a756acfbd730e732b1d063fbf31ef7",
+    "/workspace/scratch/f530455d952b/hepta-hcsn-r9/tools/hcsn/round9_20261031/native/src/owner.rs": "870aaa407f66eab55df98b0ef386a7a60e1209bae3368521454dac38248d294f",
+    "/workspace/scratch/f530455d952b/hepta-hcsn-r9/tools/hcsn/round9_20261031/native/src/schedule.rs": "2340e300afa93cc370843faa1aca84d0f03640f86daf1d4ebbf60113f0c0ca1a",
+    "/workspace/scratch/f530455d952b/hepta-hcsn-r9/tools/hcsn/round9_20261031/native/src/tests.rs": "156d2882f3a1edbd53a3ee49274ee6f7eb7d776d012bcce9509039d81e6d8446",
+    "/workspace/scratch/f530455d952b/native-r9-build/workflow/codex-rs/cell.rs": "7d4cd316379162e95ca06beec23219912ec53febc60107d93d781a9b9593d6a9",
+    "/workspace/scratch/f530455d952b/native-r9-build/workflow/codex-rs/content.rs": "93b34ac7ce743e3cafc5d54124dc477d03999f47b99fcc23ebc6439f7d22ae79",
+    "/workspace/scratch/f530455d952b/native-r9-build/workflow/codex-rs/main.rs": "4b01c823a9f19ef7463ccf5c6518e7f75e6f0535652e55cbc6cf4a8ae3e16fe6",
+    "/workspace/scratch/f530455d952b/native-r9-build/workflow/codex-rs/native.rs": "418e50e1dd06f1b52fe5937288625db2c7a756acfbd730e732b1d063fbf31ef7",
+    "/workspace/scratch/f530455d952b/native-r9-build/workflow/codex-rs/owner.rs": "870aaa407f66eab55df98b0ef386a7a60e1209bae3368521454dac38248d294f",
+    "/workspace/scratch/f530455d952b/native-r9-build/workflow/codex-rs/schedule.rs": "2340e300afa93cc370843faa1aca84d0f03640f86daf1d4ebbf60113f0c0ca1a",
+    "/workspace/scratch/f530455d952b/native-r9-build/workflow/codex-rs/tests.rs": "156d2882f3a1edbd53a3ee49274ee6f7eb7d776d012bcce9509039d81e6d8446"
+  },
+  "rust_sources_unchanged": true,
+  "schema": "hepta.r9.integration.final-format.v1",
+  "scientific_tests_repeated_after_format": false,
+  "scope": "Original just fmt recipe and original format.py in the previously verified isolated native workflow/codex-rs, after final R9 reproducer code changes. This is not an entire upstream workspace format or build claim.",
+  "stderr": "",
+  "stdout": "",
+  "wall_seconds": 0.23104710500047076,
+  "workflow_inputs_match_previous_verified_gate": true,
+  "workflow_inputs_sha256": {
+    "justfile": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+    "scripts/format.py": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3",
+    "scripts/just-shell.py": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9",
+    "scripts/run-nextest.py": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+  }
+}

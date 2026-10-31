@@ -1,0 +1,201 @@
+{
+  "base_commit": "333fb9b036b80cf5d892aed222a1aac7aad80e53",
+  "expected_failures": [
+    "evidence/before_repair.json",
+    "evidence/recovery_original_failure.json",
+    "evidence/recovery_normal_only_failure.json",
+    "evidence/final_renewal_resolution.json"
+  ],
+  "files": [
+    {
+      "bytes": 11763,
+      "path": "tools/hcsn/round9_20261031/dynamics/README.md",
+      "sha256": "60394dad8b65ca4e89d3f666ea75876228466809270dda052dc844d9a34bbc75"
+    },
+    {
+      "bytes": 9032,
+      "path": "tools/hcsn/round9_20261031/dynamics/audit.py",
+      "sha256": "957310cca0b24ba518ad1b5e2740bd90e3747a76fa81f05e33be265f7c6f0089"
+    },
+    {
+      "bytes": 3657,
+      "path": "tools/hcsn/round9_20261031/dynamics/clock_scaling.py",
+      "sha256": "2e9eb5ceff8fbd50c22c3e1e0e3018f321a66e0b308a66db2ca44b6c07860ede"
+    },
+    {
+      "bytes": 40620,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/after_repair.json",
+      "sha256": "95f82f88e235f02003991cf5665a200e4ffda1f2a9278bb45e9c0caadbc14434"
+    },
+    {
+      "bytes": 40813,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/after_repair_verified.json",
+      "sha256": "9ea67ae9b0a06285122c98f07018ce38f0d2aa80394bf74f59a6d570cfeddf93"
+    },
+    {
+      "bytes": 33814,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/before_repair.json",
+      "sha256": "d1863b96018e95b76a809d28c3cc2edff562a51115023569473940f56109e081"
+    },
+    {
+      "bytes": 6298,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_clock.json",
+      "sha256": "295d6f67eb705c3a70659ab5536a433d23275af016f4f2cbd2a2171219ab1bde"
+    },
+    {
+      "bytes": 2295,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_renewal_extension.json",
+      "sha256": "f5832caacb05a6b93193c99278c03703c95f12ebff7dac32598fcdb380f130e8"
+    },
+    {
+      "bytes": 287,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_renewal_extension_protocol.json",
+      "sha256": "91ac52df1f686697238d4c9125ed143da0dbac541475b5473d05770a60ef7e2b"
+    },
+    {
+      "bytes": 11550,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_renewal_resolution.json",
+      "sha256": "9a774d74f8d0ee7c5c30e8f5ca05876c636a695c7ffd5cb8df4b25ef4d7cffb8"
+    },
+    {
+      "bytes": 658,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_renewal_resolution_protocol.json",
+      "sha256": "23518ba6c95be56a28b7dfa5829fea678c92b95a55681b2dae43b927c5364ffa"
+    },
+    {
+      "bytes": 40792,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_repair.json",
+      "sha256": "6042be8be85b1c9853278cfd15acd73d4bfca2e35d96fdb8a649fb1fa18dbd77"
+    },
+    {
+      "bytes": 733,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_tests.json",
+      "sha256": "dec55238c71b5e5136fee00946f9719fff3dcbddead2892f6f0f3773cf21bc5c"
+    },
+    {
+      "bytes": 4813,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/low_noise_stage.patch",
+      "sha256": "78d5a19b963ee30c36beea78bd8046808b33f14ab6de106a93e91e1327036b31"
+    },
+    {
+      "bytes": 6298,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/physical_clock.json",
+      "sha256": "01a51936ea64fdd95c96f66d44dc7358c42e0822b2e9fbacc6b94ee13e51aded"
+    },
+    {
+      "bytes": 14817,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/recovery_normal_only_failure.json",
+      "sha256": "3d5b6b02c4e6581326be8931c6f55a9e75acecfe2b56d7eb6f1d702e8250dc57"
+    },
+    {
+      "bytes": 14386,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/recovery_original_failure.json",
+      "sha256": "8b4437d546cf2a928efc25fdc3698ea15232600ec52854414df8a1207b9e554e"
+    },
+    {
+      "bytes": 14782,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/recovery_scale_verified.json",
+      "sha256": "137c1c5e4487fa3bac6c02b0a7cae42371338802ea7d63bfef91476bc834ff3e"
+    },
+    {
+      "bytes": 2288,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/renewal_resolution_extension_verified.json",
+      "sha256": "015c707933f9c3c26fd0de15c074f631885a34a7d8e72825280ca03c64717a09"
+    },
+    {
+      "bytes": 287,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/renewal_resolution_extension_verified_protocol.json",
+      "sha256": "260ab71cf55f2e9b5bf163b9218ae9c0e16cc772a7055e714c08959c77f1380c"
+    },
+    {
+      "bytes": 11563,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/renewal_resolution_replay.json",
+      "sha256": "22be89be8819b95cd8d07a7e87a85cbceb89116b557c4931c466e7c2992ff07c"
+    },
+    {
+      "bytes": 658,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/renewal_resolution_replay_protocol.json",
+      "sha256": "23518ba6c95be56a28b7dfa5829fea678c92b95a55681b2dae43b927c5364ffa"
+    },
+    {
+      "bytes": 11558,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/renewal_resolution_verified.json",
+      "sha256": "738f44f5af58bb0077240c3026c8b1bbcb45faf76a48c3bc4f84eec07dd2cd19"
+    },
+    {
+      "bytes": 658,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/renewal_resolution_verified_protocol.json",
+      "sha256": "23518ba6c95be56a28b7dfa5829fea678c92b95a55681b2dae43b927c5364ffa"
+    },
+    {
+      "bytes": 17363,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/spatial_resolution_replay.json",
+      "sha256": "f2df6591f8060d60bc34a34219a0713b86c2af67c5ced0d40643bb2c9216b677"
+    },
+    {
+      "bytes": 17384,
+      "path": "tools/hcsn/round9_20261031/dynamics/evidence/spatial_resolution_verified.json",
+      "sha256": "a74e16a1066ab850655d7d3dbb6b5e1fcb7f9d3db748ae103e0bd4f9c81b60f1"
+    },
+    {
+      "bytes": 1979,
+      "path": "tools/hcsn/round9_20261031/dynamics/protocol.json",
+      "sha256": "bc55954f4115206aa70da804c6510b11a53a1df2aacfad322d98ade6e2ecd9f3"
+    },
+    {
+      "bytes": 5742,
+      "path": "tools/hcsn/round9_20261031/dynamics/recovery_scale.py",
+      "sha256": "662c43531c8d5244e9e5a980b4a44e9b5cb436f0de3d1b75bb2f2fd36bb6e6b0"
+    },
+    {
+      "bytes": 4548,
+      "path": "tools/hcsn/round9_20261031/dynamics/references.py",
+      "sha256": "7befc6c710867b9655371d60e8d27aac65e9bdda1c6ebd1b5711e55bfbc2f587"
+    },
+    {
+      "bytes": 1863,
+      "path": "tools/hcsn/round9_20261031/dynamics/source_manifest.json",
+      "sha256": "a29d0484c89a41b86524551d36f82642ef8840824f645b43be8850de009223d5"
+    },
+    {
+      "bytes": 1600,
+      "path": "tools/hcsn/round9_20261031/dynamics/test_dynamics_repair.py",
+      "sha256": "7c9c2ac59e8264c271c001a538c4b6b5453e7513668ee647376653ef2798be79"
+    },
+    {
+      "bytes": 1241,
+      "path": "tools/hcsn/round9_20261031/dynamics/upstream_integration.json",
+      "sha256": "c9eee9d21a1c90fddb25bc47295b9a420400972c9228d9e52ce3256eb5e00597"
+    }
+  ],
+  "final_pass_records": [
+    "evidence/final_repair.json",
+    "evidence/recovery_scale_verified.json",
+    "evidence/final_clock.json",
+    "evidence/spatial_resolution_verified.json",
+    "evidence/final_renewal_extension.json",
+    "evidence/final_tests.json"
+  ],
+  "new_production_changes": [
+    {
+      "added": 32,
+      "path": "tools/hcsn/round8_20261031/event_dynamics/event_kernel.py",
+      "removed": 12,
+      "sha256": "3a4c84d578855b3ec63a1ca629502b48f76540a26d9efed7c39cee672646e81d"
+    },
+    {
+      "added": 59,
+      "path": "tools/hcsn/round8_20261031/event_dynamics/renewal.py",
+      "removed": 2,
+      "sha256": "bd479d1fb6f08ef9721fca6f2961dc19ad2b073ea4d92d13914be985cf8a9097"
+    }
+  ],
+  "rebased_parent": "00b94d54a9b85f285298d1a964777bdecfa85385",
+  "schema": "hcsn_round9_dynamics_delivery_v1",
+  "staging": [
+    "event_kernel.py composition fix",
+    "renewal.py low-noise and fast-recovery fix",
+    "independent references/protocols/regressions",
+    "generated before/after evidence and documentation"
+  ]
+}

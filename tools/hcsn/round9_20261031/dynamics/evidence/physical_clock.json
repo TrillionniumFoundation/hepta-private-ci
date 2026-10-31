@@ -1,0 +1,245 @@
+{
+  "gates": [
+    {
+      "name": "clock_value_covariance",
+      "passed": true
+    },
+    {
+      "name": "clock_gradient_covariance",
+      "passed": true
+    },
+    {
+      "name": "recovery_semigroup_refinement",
+      "passed": true
+    }
+  ],
+  "limitation": "Clock covariance and finite-phase semigroup identities do not establish voltage-grid convergence.",
+  "passed": true,
+  "recovery": [
+    {
+      "interval": 3.0,
+      "maximum_probability_error": 0.0,
+      "substeps": 1
+    },
+    {
+      "interval": 1.5,
+      "maximum_probability_error": 1.1102230246251565e-16,
+      "substeps": 2
+    },
+    {
+      "interval": 0.75,
+      "maximum_probability_error": 2.1094237467877974e-15,
+      "substeps": 4
+    },
+    {
+      "interval": 0.375,
+      "maximum_probability_error": 2.1094237467877974e-15,
+      "substeps": 8
+    },
+    {
+      "interval": 0.1875,
+      "maximum_probability_error": 2.3314683517128287e-15,
+      "substeps": 16
+    },
+    {
+      "interval": 0.09375,
+      "maximum_probability_error": 1.7763568394002505e-15,
+      "substeps": 32
+    },
+    {
+      "interval": 0.046875,
+      "maximum_probability_error": 2.6645352591003757e-15,
+      "substeps": 64
+    }
+  ],
+  "reference": {
+    "count_log_tail_bound": -24.017309886522874,
+    "count_tail_bound": 3.7103497203114e-11,
+    "event_survival": [
+      1.0,
+      0.9826485860371938,
+      0.39748003072959004,
+      4.057952989931484e-06,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "expected_count": 2.380132674719774,
+    "gradient": {
+      "drift": 2.0489126963924957,
+      "initial_gap": -0.9501794752014545,
+      "recovery_mean": -1.603250983939505,
+      "reset_gap": -1.8410976566139672,
+      "sigma": -0.0007566015549848912
+    },
+    "gradient_tail_certified": false,
+    "included_events": 17,
+    "integral_truncation_upper_bound": 1.1369485517296982e-31,
+    "integration_coordinate": "first_passage_normal",
+    "quadrature_error_estimate": 1.9117434562427332e-13,
+    "roundoff_included": false
+  },
+  "rows": [
+    {
+      "clock_scale": 0.01,
+      "count": 2.3801326747197735,
+      "count_error": 4.440892098500626e-16,
+      "discounted_value_error": 1.1102230246251565e-16,
+      "first_hit_error": 0.0,
+      "gradient_error": {
+        "drift": 4.440892098500626e-16,
+        "initial_gap": 0.0,
+        "recovery_mean": 2.220446049250313e-16,
+        "reset_gap": 2.220446049250313e-16,
+        "sigma": 2.3863289816405953e-16
+      },
+      "gradient_in_original_units": {
+        "drift": 2.0489126963924953,
+        "initial_gap": -0.9501794752014545,
+        "recovery_mean": -1.6032509839395048,
+        "reset_gap": -1.841097656613967,
+        "sigma": -0.0007566015549851299
+      },
+      "parameters": [
+        0.8,
+        0.7,
+        100.0,
+        0.01,
+        0.03,
+        0.005
+      ]
+    },
+    {
+      "clock_scale": 0.1,
+      "count": 2.3801326747197744,
+      "count_error": 4.440892098500626e-16,
+      "discounted_value_error": 0.0,
+      "first_hit_error": 0.0,
+      "gradient_error": {
+        "drift": 4.440892098500626e-16,
+        "initial_gap": 2.220446049250313e-16,
+        "recovery_mean": 0.0,
+        "reset_gap": 4.440892098500626e-16,
+        "sigma": 3.122502256758253e-17
+      },
+      "gradient_in_original_units": {
+        "drift": 2.0489126963924953,
+        "initial_gap": -0.9501794752014543,
+        "recovery_mean": -1.603250983939505,
+        "reset_gap": -1.8410976566139667,
+        "sigma": -0.0007566015549849225
+      },
+      "parameters": [
+        0.8,
+        0.7,
+        10.0,
+        0.0031622776601683794,
+        0.30000000000000004,
+        0.05
+      ]
+    },
+    {
+      "clock_scale": 1.0,
+      "count": 2.380132674719774,
+      "count_error": 0.0,
+      "discounted_value_error": 0.0,
+      "first_hit_error": 0.0,
+      "gradient_error": {
+        "drift": 0.0,
+        "initial_gap": 0.0,
+        "recovery_mean": 0.0,
+        "reset_gap": 0.0,
+        "sigma": 0.0
+      },
+      "gradient_in_original_units": {
+        "drift": 2.0489126963924957,
+        "initial_gap": -0.9501794752014545,
+        "recovery_mean": -1.603250983939505,
+        "reset_gap": -1.8410976566139672,
+        "sigma": -0.0007566015549848912
+      },
+      "parameters": [
+        0.8,
+        0.7,
+        1.0,
+        0.001,
+        3.0,
+        0.5
+      ]
+    },
+    {
+      "clock_scale": 10.0,
+      "count": 2.380132674719774,
+      "count_error": 0.0,
+      "discounted_value_error": 0.0,
+      "first_hit_error": 0.0,
+      "gradient_error": {
+        "drift": 0.0,
+        "initial_gap": 0.0,
+        "recovery_mean": 4.440892098500626e-16,
+        "reset_gap": 0.0,
+        "sigma": 3.5778671692021646e-17
+      },
+      "gradient_in_original_units": {
+        "drift": 2.0489126963924957,
+        "initial_gap": -0.9501794752014545,
+        "recovery_mean": -1.6032509839395046,
+        "reset_gap": -1.8410976566139672,
+        "sigma": -0.000756601554984927
+      },
+      "parameters": [
+        0.8,
+        0.7,
+        0.1,
+        0.00031622776601683794,
+        30.0,
+        5.0
+      ]
+    },
+    {
+      "clock_scale": 100.0,
+      "count": 2.380132674719774,
+      "count_error": 0.0,
+      "discounted_value_error": 0.0,
+      "first_hit_error": 0.0,
+      "gradient_error": {
+        "drift": 0.0,
+        "initial_gap": 1.1102230246251565e-16,
+        "recovery_mean": 0.0,
+        "reset_gap": 2.220446049250313e-16,
+        "sigma": 1.8409752888803865e-16
+      },
+      "gradient_in_original_units": {
+        "drift": 2.0489126963924957,
+        "initial_gap": -0.9501794752014546,
+        "recovery_mean": -1.603250983939505,
+        "reset_gap": -1.8410976566139674,
+        "sigma": -0.0007566015549847071
+      },
+      "parameters": [
+        0.8,
+        0.7,
+        0.01,
+        0.0001,
+        300.0,
+        50.0
+      ]
+    }
+  ],
+  "schema": "hcsn_round9_physical_clock_v1",
+  "source_sha256": {
+    "event_kernel.py": "3a4c84d578855b3ec63a1ca629502b48f76540a26d9efed7c39cee672646e81d",
+    "generator.py": "2dff8cea6b9fd366537488eeec051db20a77d8e58b76fda1b72e21afa38808d8",
+    "renewal.py": "b9aef35135edcdd90b3a4381112a0ccb63be1aa7686539345ab668698490c722"
+  }
+}

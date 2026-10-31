@@ -1,0 +1,46 @@
+{
+  "baseline_commit": "00b94d54a9b85f285298d1a964777bdecfa85385",
+  "source_sha256": {
+    "tools/hcsn/round9_20261031/streaming/numpy_comparison.py": "343d77027f84a2030e827959e7a48258238ca252b6e17a61efc68a023733c9e5",
+    "tools/hcsn/round9_20261031/streaming/filter.py": "e07f9bb0a496bb8141c02ecf25552108864a3c10941bb5e8561c81ad8fe624a4",
+    "tools/hcsn/round8_20261031/state_task/replay.py": "05f7a9573617e51a52aceb102b992cb76d4d5edafb2b557131ed4cf56929d8d6"
+  },
+  "regimes": [
+    "iid",
+    "long_history",
+    "low_noise",
+    "moving_boundary"
+  ],
+  "seeds": {
+    "iid": 191001,
+    "long_history": 191002,
+    "low_noise": 191003,
+    "moving_boundary": 191004
+  },
+  "arms": [
+    "analytic_filter",
+    "fixed_ordinary_filter"
+  ],
+  "fit_seed": 17,
+  "implementations": [
+    "full_history_numpy",
+    "streaming"
+  ],
+  "batch_sizes": [
+    1,
+    64,
+    2048
+  ],
+  "rounds": 5,
+  "warmups": 1,
+  "workloads": [
+    "one_shot",
+    "varying_horizon",
+    "online"
+  ],
+  "queries": "32 horizons evenly spaced from .25 to 1.8; every call has a different horizon. Online consumes each new public observation once.",
+  "timed_scope": "Input conversion in each actual implementation, state initialization/updates, risk, action and JSON output. Frozen parameters and input slicing prepared before timing for both.",
+  "order": "Alternate paired implementation order each repeat; same data for each pair.",
+  "interpretation": "Additional implementation/cost check on existing confirmation inputs, not a new efficacy trial. Shared CPU, one BLAS thread; no measured energy.",
+  "written_before_measurement": true
+}

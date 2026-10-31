@@ -1,0 +1,43 @@
+{
+  "schema": "hcsn-continuous-repair-protocol-v1",
+  "base_commit": "333fb9b036b80cf5d892aed222a1aac7aad80e53",
+  "scope": "Scalar Brownian first passage, two affine segments, and independent Erlang renewal; finite fixed fixtures do not prove uniform continuous convergence.",
+  "second_segment": {
+    "initial_gap": 1.0,
+    "first": [1.0, 0.0, 0.5],
+    "second_duration": [1e-8, 1e-10],
+    "second_sigma": 0.5,
+    "crossing_z": [-1.0001, -0.9999, -0.0001, 0.0001, 0.9999, 1.0001, 3.9999, 4.0001],
+    "drift_rule": "(1 + 0.5 * crossing_z) / second_duration",
+    "reference": "Integrate the second-segment Brownian maximum density against the closed killed-endpoint CDF; neither tested first_hit nor two_segment_first_hit is called by this reference.",
+    "maximum_probability_error": 3e-11,
+    "maximum_z_derivative_error": 3e-6,
+    "derivative_steps": [1e-5, 2e-6, 4e-7]
+  },
+  "renewal": {
+    "initial_gap": 0.8,
+    "reset_gap": 0.7,
+    "drift": 1.0,
+    "sigma": [0.05, 0.01, 0.001, 0.0001, 0.00001],
+    "time": 3.0,
+    "recovery_mean": 0.5,
+    "phases": 2,
+    "reference_event_terms": 24,
+    "reference": "Integrate the inverse-Gaussian density in log time against an Erlang recovery CDF; independent of the tested normal-coordinate mapping and analytic gradient.",
+    "maximum_count_error": 3e-10,
+    "maximum_gradient_error": 3e-7,
+    "gradient_step_relative": 2e-5,
+    "sigma_gradient_step": "min(0.05 * sigma, 1e-5)",
+    "tail_tolerance": 1e-10,
+    "event_count_extension": 4,
+    "maximum_extended_gradient_difference": 3e-8,
+    "monte_carlo_paths": 50000,
+    "monte_carlo_seed": 2026103109,
+    "monte_carlo_standard_error_multiplier": 5.0
+  },
+  "preserve": [
+    "Existing low-noise CTMC grids remain unqualified; repairing an integral does not remove artificial diffusion.",
+    "Count-tail bounds do not certify gradient tails or floating-point roundoff.",
+    "Keep the before-repair evidence and all earlier resolution failures."
+  ]
+}

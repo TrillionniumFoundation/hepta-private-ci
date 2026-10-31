@@ -1,0 +1,84 @@
+{
+  "records": [
+    {
+      "exact": {
+        "new_unrouted": {
+          "action_regret_sum": 0.005613314908725129,
+          "correct": 0.8442124999999998,
+          "decisions": 3.401897980504155,
+          "events": 1.096920311378442,
+          "independent_value_error": 0.0,
+          "max_action_regret_all_states": 0.044132266218958494,
+          "mean_action_regret_all_states": 0.002155877610765327,
+          "mean_action_regret_visited": 0.0016500538643117234,
+          "q_max_abs_error": 0.15186717991270682,
+          "q_rmse": 0.017536593560497922,
+          "quality": 0.6884249999999997,
+          "task_cost": 0.03854770198187828,
+          "utility": 0.6479569649655936
+        },
+        "r7": {
+          "action_regret_sum": 0.03652798586901973,
+          "correct": 0.8274076256065332,
+          "decisions": 3.1147598111783013,
+          "events": 1.0544072169907965,
+          "independent_value_error": 7.771561172376096e-16,
+          "max_action_regret_all_states": 0.457384448683342,
+          "mean_action_regret_all_states": 0.012334216311365243,
+          "mean_action_regret_visited": 0.011727384480153973,
+          "q_max_abs_error": 0.5942289475079574,
+          "q_rmse": 0.23284013685897714,
+          "quality": 0.6548152512130666,
+          "task_cost": 0.03600469585878093,
+          "utility": 0.6170422940052983
+        },
+        "r8": {
+          "action_regret_sum": 0.00249874611280835,
+          "correct": 0.8450249999999997,
+          "decisions": 3.303968519973744,
+          "events": 1.0763792362784999,
+          "independent_value_error": 4.440892098500626e-16,
+          "max_action_regret_all_states": 0.01769977812218626,
+          "mean_action_regret_all_states": 0.0010666611234529388,
+          "mean_action_regret_visited": 0.0007562862956176735,
+          "q_max_abs_error": 0.06573892738438736,
+          "q_rmse": 0.008872792585773776,
+          "quality": 0.6900499999999993,
+          "task_cost": 0.037111206131246625,
+          "utility": 0.6510715337615101
+        },
+        "r9": {
+          "action_regret_sum": 0.00249874611280835,
+          "correct": 0.8450249999999997,
+          "decisions": 3.303968519973744,
+          "events": 1.0763792362784999,
+          "independent_value_error": 4.440892098500626e-16,
+          "max_action_regret_all_states": 0.01769977812218626,
+          "mean_action_regret_all_states": 0.0010666611234529388,
+          "mean_action_regret_visited": 0.0007562862956176735,
+          "q_max_abs_error": 0.06573892738438736,
+          "q_rmse": 0.008872792585773776,
+          "quality": 0.6900499999999993,
+          "task_cost": 0.037111206131246625,
+          "utility": 0.6510715337615101
+        }
+      },
+      "independent_branch_max_error": 2.714842239903703e-16,
+      "mode": "first_passage",
+      "paired_delta": {
+        "action_regret_sum": 0.0,
+        "correct": 0.0,
+        "cpu_priced_utility": -0.006242465247973438,
+        "cpu_seconds": 2.21998427734375e-05,
+        "decisions": 0.0,
+        "events": 0.0,
+        "task_return": 0.0,
+        "utility": 0.0
+      },
+      "paired_episodes": 1024,
+      "regime": "nominal",
+      "seed": 11,
+      "training_charge_per_session": 0.0062202654052
+    }
+  ]
+}

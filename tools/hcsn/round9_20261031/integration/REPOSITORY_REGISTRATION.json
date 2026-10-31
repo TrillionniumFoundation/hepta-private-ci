@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.r9.repository-artifact-registration.v1",
+  "upstream_base": "da5a929b7d3fd1d3ff6ea57184c1578dd9f66cea",
+  "policy_max_bytes_unchanged": 512000,
+  "exact_large_asset_paths": {
+    "tools/hcsn/round9_20261031/integration/native_executables.tar.gz": {
+      "bytes": 1493439,
+      "sha256": "ecf5865ddd4e542e7796d362f20953358d47aea4871eeb2b102a3c10b22eacf6",
+      "git_blob_sha": "183faf010ec8bf53065dd3b17157d66f94ceeb5a"
+    },
+    "tools/hcsn/round9_20261031/native/evidence/qualification-dev01/RAW_RECORDS.tar.gz": {
+      "bytes": 1591523,
+      "sha256": "a70478a7f069b3f8fe3607aa9778f20b3837c0f88b5cad93c288943aa9f2a00e",
+      "git_blob_sha": "31148943528e582bcaca70f0e5b589eefb789287"
+    },
+    "tools/hcsn/round9_20261031/native/evidence/qualification-final/RAW_RECORDS.tar.gz": {
+      "bytes": 1591347,
+      "sha256": "a83d3ee731a0d6c212904e6e57522e8c9aa2c9336a895cc911e1f620511649a0",
+      "git_blob_sha": "43105b0abd898251415ebd85489789e8162b6a7f"
+    },
+    "tools/hcsn/round9_20261031/native/fixtures/fullhx.json": {
+      "bytes": 784447,
+      "sha256": "66bb4fabc2fdca0b08d7e834f6a1dfdd73aedb4cfbd1b4c594b709f742092972",
+      "git_blob_sha": "38ad00490ee921834d05667323372da36cfc5ef4"
+    },
+    "tools/hcsn/round9_20261031/value/evidence/confirmation02/PAIRED.jsonl.gz": {
+      "bytes": 1662446,
+      "sha256": "b585d326b87ea5e5bb501cd6a145d878d8e0340a79081c593cadf66bdcdbeee6",
+      "git_blob_sha": "52b0f67099be9971a3188d86de30df945bd9a2e1"
+    }
+  },
+  "exact_binary_codespell_skips": [
+    "tools/hcsn/round9_20261031/integration/native_executables.tar.gz",
+    "tools/hcsn/round9_20261031/native/evidence/port-checks/owner/journal.bin",
+    "tools/hcsn/round9_20261031/native/evidence/port-checks/owner/witness.bin",
+    "tools/hcsn/round9_20261031/native/evidence/qualification-dev01/RAW_RECORDS.tar.gz",
+    "tools/hcsn/round9_20261031/native/evidence/qualification-final/RAW_RECORDS.tar.gz",
+    "tools/hcsn/round9_20261031/value/diagnostics/PAIRED.jsonl.gz",
+    "tools/hcsn/round9_20261031/value/evidence/PAIRED.jsonl.gz",
+    "tools/hcsn/round9_20261031/value/evidence/confirmation02/PAIRED.jsonl.gz",
+    "tools/hcsn/round9_20261031/value/evidence/confirmation_attempt01/PAIRED.jsonl.gz"
+  ],
+  "scientific_text_excluded": false,
+  "configuration_sha256": {
+    ".codespellrc": "f5b4305b43ccb2b10634d69c811f6d29396b238cbd5ef677a42c79051c872646",
+    ".github/blob-size-allowlist.txt": "4b64b004500cdf6c832f0f559f0ca6dc5cb5425e5557fb4af1a818f973c6ae24"
+  },
+  "source_evidence_unchanged": true,
+  "full_repository_ci_green_claimed": false,
+  "reason": "Use the existing repository mechanism for intentional immutable research assets and binary-only spelling exclusions. Preserve all concurrent R8 registrations."
+}

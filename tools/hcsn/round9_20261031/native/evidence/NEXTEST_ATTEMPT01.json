@@ -1,0 +1,25 @@
+{
+  "returncode": 96,
+  "stdout": "",
+  "stderr": "RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py \"$@\"\nerror: error reading metadata from argument --binaries-metadata\n\nCaused by:\n  error deserializing metadata file `/workspace/scratch/f530455d952b/native-r9-build/binaries-metadata.json`\n\nCaused by:\n  invalid type: map, expected a sequence at line 1 column 171\nerror: recipe `test` failed on line 89 with exit code 96\n",
+  "reused_build_metadata": {
+    "rust-build-meta": {
+      "target-directory": "/workspace/scratch/f530455d952b/native-r9-build",
+      "base-output-directories": [
+        "debug"
+      ],
+      "non-test-binaries": {},
+      "linked-paths": {}
+    },
+    "rust-binaries": {
+      "codex-native-event-owner-r9": {
+        "binary-id": "codex-native-event-owner-r9",
+        "binary-name": "codex-native-event-owner-r9",
+        "package-id": "path+file:///workspace/scratch/f530455d952b/native-r9-build/workflow/codex-rs#codex-native-event-owner-r9@0.1.0",
+        "kind": "bin",
+        "binary-path": "/workspace/scratch/f530455d952b/native-r9-build/native-owner-r9-tests",
+        "build-platform": "host"
+      }
+    }
+  }
+}
