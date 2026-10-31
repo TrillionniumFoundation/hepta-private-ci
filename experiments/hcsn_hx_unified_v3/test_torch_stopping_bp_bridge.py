@@ -1,5 +1,7 @@
 """CPU/f64 independent gradient and obstacle checks for the regenerative bridge."""
 import unittest
+import math
+import random
 
 import torch
 
@@ -54,6 +56,41 @@ class TestScalarQVIBridge(unittest.TestCase):
         loss=(value*torch.tensor([.5,-.3,.4,.7])).sum() + (adv*torch.tensor([.2,.6,-.1,.4])).sum() + .05*margin.sum()
         gradients=torch.autograd.grad(loss,args)
         self.assertTrue(all(bool(torch.isfinite(g).all()) and abs(g.item())>1e-9 for g in gradients))
+
+    def test_seeded_250_domain_probe_analytic_and_numerical_gradients(self):
+        rng=random.Random(202610311026)
+        accepted=0
+        refused=0
+        for _ in range(250):
+            mu=rng.uniform(-.8,.8)
+            sigma=math.exp(rng.uniform(math.log(.1),math.log(1.5)))
+            rho=math.exp(rng.uniform(math.log(.08),math.log(1.2)))
+            cost=rng.uniform(.4,3.)
+            reset=cost-math.exp(rng.uniform(math.log(.1),math.log(2.)))
+            tau=rng.uniform(0.,1.)
+            values=(mu,sigma,rho,cost,reset,tau)
+            args=self.tensors(values)
+            try:
+                b=ScalarQVISmoothFit.apply(*args)
+                grad=torch.autograd.grad(b,args)
+            except UnresolvedBP:
+                refused+=1
+                continue
+            accepted+=1
+            independent=regenerative_boundary(Stop(*values))
+            self.assertAlmostEqual(b.item(),independent,delta=2e-10*max(1,abs(independent)))
+            for i,g in enumerate(grad):
+                h=1e-5*max(1,abs(values[i]))
+                left=list(values);right=list(values)
+                left[i]-=h;right[i]+=h
+                if ((i in (1,2) and left[i]<=0) or
+                        (i==5 and left[i]<0) or (i==4 and right[i]>=cost)):
+                    continue
+                numerical=(regenerative_boundary(Stop(*right))-
+                           regenerative_boundary(Stop(*left)))/(2*h)
+                self.assertAlmostEqual(g.item(),numerical,delta=2e-5*max(1,abs(numerical)))
+        self.assertGreaterEqual(accepted,200)
+        self.assertEqual(accepted+refused,250)
 
     def test_fail_closed_near_boundary_f32_and_invalid_domain(self):
         vals=(.1,.6,.25,1.,.1,.3)
