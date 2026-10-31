@@ -51,6 +51,8 @@ jobs:
         run: |
           python3 -m venv "$RUNNER_TEMP/hcsn-av-venv"
           "$RUNNER_TEMP/hcsn-av-venv/bin/python" -m pip install --no-cache-dir numpy==2.3.5 scipy==1.17.0
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
           command -v ffmpeg
           command -v ffprobe
       - name: Acquire and decode all 720 preselected clips

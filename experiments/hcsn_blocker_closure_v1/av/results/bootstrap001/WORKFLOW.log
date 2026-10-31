@@ -1,0 +1,197 @@
+﻿2026-10-31T01:37:22.5608202Z Current runner version: '2.338.2'
+2026-10-31T01:37:22.5627635Z ##[group]Runner Image Provisioner
+2026-10-31T01:37:22.5628233Z Hosted Compute Agent
+2026-10-31T01:37:22.5628601Z Version: 20261021.618
+2026-10-31T01:37:22.5628971Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-31T01:37:22.5629427Z Build Date: 2026-10-21T00:45:21Z
+2026-10-31T01:37:22.5629895Z Worker ID: {055385c9-974e-4883-9d4e-a21ed5819e7c}
+2026-10-31T01:37:22.5630332Z Region: southcentralus
+2026-10-31T01:37:22.5630687Z Cloud: Azure
+2026-10-31T01:37:22.5631013Z ##[endgroup]
+2026-10-31T01:37:22.5631872Z ##[group]Operating System
+2026-10-31T01:37:22.5632258Z Ubuntu
+2026-10-31T01:37:22.5632556Z 24.04.5
+2026-10-31T01:37:22.5632911Z LTS
+2026-10-31T01:37:22.5633389Z ##[endgroup]
+2026-10-31T01:37:22.5633739Z ##[group]Runner Image
+2026-10-31T01:37:22.5634167Z Image: ubuntu-24.04
+2026-10-31T01:37:22.5634494Z Version: 20261025.353.1
+2026-10-31T01:37:22.5635287Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261025.353/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-31T01:37:22.5636133Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261025.353
+2026-10-31T01:37:22.5636761Z ##[endgroup]
+2026-10-31T01:37:22.5637403Z ##[group]GITHUB_TOKEN Permissions
+2026-10-31T01:37:22.5638620Z Contents: read
+2026-10-31T01:37:22.5638951Z Metadata: read
+2026-10-31T01:37:22.5639360Z ##[endgroup]
+2026-10-31T01:37:22.5640971Z Secret source: Actions
+2026-10-31T01:37:22.5641583Z Cache mode: write
+2026-10-31T01:37:22.5642011Z Prepare workflow directory
+2026-10-31T01:37:22.5916611Z Prepare all required actions
+2026-10-31T01:37:22.5950380Z Getting action download info
+2026-10-31T01:37:22.8418569Z Download action repository 'actions/checkout@11d5960a326750d5838078e36cf38b85af677262' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-31T01:37:22.9415113Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-10-31T01:37:23.1263939Z Complete job name: acquire
+2026-10-31T01:37:23.1788064Z ##[group]Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+2026-10-31T01:37:23.1788612Z with:
+2026-10-31T01:37:23.1788889Z   ref: 913a18c752326f2f101327a53e08fb2454755b2a
+2026-10-31T01:37:23.1789221Z   fetch-depth: 1
+2026-10-31T01:37:23.1789468Z   filter: blob:none
+2026-10-31T01:37:23.1789733Z   persist-credentials: false
+2026-10-31T01:37:23.1790034Z   sparse-checkout-cone-mode: false
+2026-10-31T01:37:23.1790803Z   sparse-checkout: /experiments/hcsn_blocker_closure_v1/av/
+/experiments/hcsn_real_av_v1/data.py
+/experiments/hcsn_real_av_v1/data/COHORT_PLAN.json
+/.github/workflows/hcsn-blocker-av.yml
+
+2026-10-31T01:37:23.1791626Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-10-31T01:37:23.1794007Z   token: ***
+2026-10-31T01:37:23.1794253Z   ssh-strict: true
+2026-10-31T01:37:23.1794502Z   ssh-user: git
+2026-10-31T01:37:23.1794744Z   clean: true
+2026-10-31T01:37:23.1794981Z   fetch-tags: false
+2026-10-31T01:37:23.1795234Z   show-progress: true
+2026-10-31T01:37:23.1795537Z   lfs: false
+2026-10-31T01:37:23.1795772Z   submodules: false
+2026-10-31T01:37:23.1796030Z   set-safe-directory: true
+2026-10-31T01:37:23.1796318Z   allow-unsafe-pr-checkout: false
+2026-10-31T01:37:23.1796689Z env:
+2026-10-31T01:37:23.1796931Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-31T01:37:23.1797233Z   OMP_NUM_THREADS: 1
+2026-10-31T01:37:23.1797492Z   OPENBLAS_NUM_THREADS: 1
+2026-10-31T01:37:23.1797761Z   MKL_NUM_THREADS: 1
+2026-10-31T01:37:23.1798011Z ##[endgroup]
+2026-10-31T01:37:23.3968024Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-10-31T01:37:23.3969024Z ##[group]Getting Git version info
+2026-10-31T01:37:23.3969422Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-10-31T01:37:23.3969969Z [command]/usr/bin/git version
+2026-10-31T01:37:23.4049280Z git version 2.56.0
+2026-10-31T01:37:23.4062979Z ##[endgroup]
+2026-10-31T01:37:23.4073549Z Temporarily overriding HOME='/home/runner/work/_temp/a8dd11a3-b23a-4a2a-9012-b974f6600255' before making global git config changes
+2026-10-31T01:37:23.4074930Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-31T01:37:23.4078288Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-31T01:37:23.4128579Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-10-31T01:37:23.4129715Z ##[group]Initializing the repository
+2026-10-31T01:37:23.4130171Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-31T01:37:23.4217001Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-31T01:37:23.4217616Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-31T01:37:23.4218099Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-31T01:37:23.4218476Z hint: call:
+2026-10-31T01:37:23.4218692Z hint:
+2026-10-31T01:37:23.4219034Z hint: 	git config --global init.defaultBranch <name>
+2026-10-31T01:37:23.4219364Z hint:
+2026-10-31T01:37:23.4219665Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-31T01:37:23.4220180Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-31T01:37:23.4220620Z hint:
+2026-10-31T01:37:23.4220837Z hint: 	git branch -m <name>
+2026-10-31T01:37:23.4221083Z hint:
+2026-10-31T01:37:23.4221402Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-31T01:37:23.4228176Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-10-31T01:37:23.4237684Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-10-31T01:37:23.4284606Z ##[endgroup]
+2026-10-31T01:37:23.4285273Z ##[group]Disabling automatic garbage collection
+2026-10-31T01:37:23.4287662Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-31T01:37:23.4315931Z ##[endgroup]
+2026-10-31T01:37:23.4316868Z ##[group]Setting up auth
+2026-10-31T01:37:23.4320987Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-31T01:37:23.4351765Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-31T01:37:23.4672110Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-31T01:37:23.4710556Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-31T01:37:23.4893216Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-31T01:37:23.4930276Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-31T01:37:23.5117232Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-31T01:37:23.5160942Z ##[endgroup]
+2026-10-31T01:37:23.5161494Z ##[group]Fetching the repository
+2026-10-31T01:37:23.5170598Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=1 origin 913a18c752326f2f101327a53e08fb2454755b2a
+2026-10-31T01:37:24.0417855Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-10-31T01:37:24.0418517Z  * branch            913a18c752326f2f101327a53e08fb2454755b2a -> FETCH_HEAD
+2026-10-31T01:37:24.0420685Z ##[endgroup]
+2026-10-31T01:37:24.0421129Z ##[group]Determining the checkout info
+2026-10-31T01:37:24.0422548Z ##[endgroup]
+2026-10-31T01:37:24.0422961Z ##[group]Setting up sparse checkout
+2026-10-31T01:37:24.0427624Z [command]/usr/bin/git config core.sparseCheckout true
+2026-10-31T01:37:24.0466060Z [command]/usr/bin/git rev-parse --git-path info/sparse-checkout
+2026-10-31T01:37:24.0497640Z .git/info/sparse-checkout
+2026-10-31T01:37:24.0502226Z ##[endgroup]
+2026-10-31T01:37:24.0502827Z ##[group]Checking out the ref
+2026-10-31T01:37:24.0505143Z [command]/usr/bin/git checkout --progress --force 913a18c752326f2f101327a53e08fb2454755b2a
+2026-10-31T01:37:24.6564454Z Note: switching to '913a18c752326f2f101327a53e08fb2454755b2a'.
+2026-10-31T01:37:24.6565228Z 
+2026-10-31T01:37:24.6565672Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-31T01:37:24.6566794Z changes and commit them, and you can discard any commits you make in this
+2026-10-31T01:37:24.6567944Z state without impacting any branches by switching back to a branch.
+2026-10-31T01:37:24.6568601Z 
+2026-10-31T01:37:24.6569013Z If you want to create a new branch to retain commits you create, you may
+2026-10-31T01:37:24.6570065Z do so (now or later) by using -c with the switch command. Example:
+2026-10-31T01:37:24.6570663Z 
+2026-10-31T01:37:24.6570885Z   git switch -c <new-branch-name>
+2026-10-31T01:37:24.6571363Z 
+2026-10-31T01:37:24.6571580Z Or undo this operation with:
+2026-10-31T01:37:24.6571936Z 
+2026-10-31T01:37:24.6572157Z   git switch -
+2026-10-31T01:37:24.6572433Z 
+2026-10-31T01:37:24.6572930Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-31T01:37:24.6573801Z 
+2026-10-31T01:37:24.6574455Z HEAD is now at 913a18c research(hcsn): preregister fresh actor cohort and retain acquisition evidence
+2026-10-31T01:37:24.6577226Z ##[endgroup]
+2026-10-31T01:37:24.6622628Z [command]/usr/bin/git log -1 --format=%H
+2026-10-31T01:37:24.6652321Z 913a18c752326f2f101327a53e08fb2454755b2a
+2026-10-31T01:37:24.6659894Z ##[group]Removing auth
+2026-10-31T01:37:24.6661994Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-31T01:37:24.6696559Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-31T01:37:24.6919553Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-31T01:37:24.6950987Z http.https://github.com/.extraheader
+2026-10-31T01:37:24.6958270Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-31T01:37:24.6994470Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-31T01:37:24.7199136Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-31T01:37:24.7231482Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-31T01:37:24.7436509Z ##[endgroup]
+2026-10-31T01:37:24.7624211Z ##[group]Run python3 -m venv "$RUNNER_TEMP/hcsn-av-venv"
+2026-10-31T01:37:24.7625224Z [36;1mpython3 -m venv "$RUNNER_TEMP/hcsn-av-venv"[0m
+2026-10-31T01:37:24.7626462Z [36;1m"$RUNNER_TEMP/hcsn-av-venv/bin/python" -m pip install --no-cache-dir numpy==2.3.5 scipy==1.17.0[0m
+2026-10-31T01:37:24.7627608Z [36;1mcommand -v ffmpeg[0m
+2026-10-31T01:37:24.7628210Z [36;1mcommand -v ffprobe[0m
+2026-10-31T01:37:24.7648035Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-31T01:37:24.7648857Z env:
+2026-10-31T01:37:24.7649348Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-31T01:37:24.7649949Z   OMP_NUM_THREADS: 1
+2026-10-31T01:37:24.7650487Z   OPENBLAS_NUM_THREADS: 1
+2026-10-31T01:37:24.7651042Z   MKL_NUM_THREADS: 1
+2026-10-31T01:37:24.7651551Z ##[endgroup]
+2026-10-31T01:37:27.1264168Z Collecting numpy==2.3.5
+2026-10-31T01:37:27.1845501Z   Downloading numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-10-31T01:37:27.1978359Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 62.1/62.1 kB 4.5 MB/s eta 0:00:00
+2026-10-31T01:37:27.2901353Z Collecting scipy==1.17.0
+2026-10-31T01:37:27.3059906Z   Downloading scipy-1.17.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-10-31T01:37:27.3085884Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 62.1/62.1 kB 44.0 MB/s eta 0:00:00
+2026-10-31T01:37:27.3458051Z Downloading numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+2026-10-31T01:37:27.4663912Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 168.8 MB/s eta 0:00:00
+2026-10-31T01:37:27.4829063Z Downloading scipy-1.17.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (35.0 MB)
+2026-10-31T01:37:27.6854102Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 35.0/35.0 MB 171.7 MB/s eta 0:00:00
+2026-10-31T01:37:27.7501775Z Installing collected packages: numpy, scipy
+2026-10-31T01:37:31.2906791Z Successfully installed numpy-2.3.5 scipy-1.17.0
+2026-10-31T01:37:31.3875189Z ##[error]Process completed with exit code 1.
+2026-10-31T01:37:31.4024731Z ##[group]Run test 'skipped' = success
+2026-10-31T01:37:31.4024958Z [36;1mtest 'skipped' = success[0m
+2026-10-31T01:37:31.4045100Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-31T01:37:31.4045295Z env:
+2026-10-31T01:37:31.4045423Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-31T01:37:31.4045567Z   OMP_NUM_THREADS: 1
+2026-10-31T01:37:31.4045701Z   OPENBLAS_NUM_THREADS: 1
+2026-10-31T01:37:31.4045833Z   MKL_NUM_THREADS: 1
+2026-10-31T01:37:31.4045956Z ##[endgroup]
+2026-10-31T01:37:31.4083313Z ##[error]Process completed with exit code 1.
+2026-10-31T01:37:31.4156953Z Post job cleanup.
+2026-10-31T01:37:31.4733853Z [command]/usr/bin/git version
+2026-10-31T01:37:31.4771080Z git version 2.56.0
+2026-10-31T01:37:31.4796865Z Temporarily overriding HOME='/home/runner/work/_temp/e636b984-f494-4d53-8d18-5bf5b2175eff' before making global git config changes
+2026-10-31T01:37:31.4797707Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-31T01:37:31.4803812Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-31T01:37:31.4842925Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-31T01:37:31.4901523Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-31T01:37:31.5151988Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-31T01:37:31.5189312Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-31T01:37:31.5425935Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-31T01:37:31.5462586Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-31T01:37:31.5816531Z Evaluate and set job outputs
+2026-10-31T01:37:31.5822287Z Cleaning up orphan processes
+2026-10-31T01:37:31.6077412Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
