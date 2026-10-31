@@ -1,0 +1,4875 @@
+{
+  "child_cpu_seconds": 16187.178104999999,
+  "complete": true,
+  "coordinator_cpu_seconds": 2.108282654,
+  "coordinator_queue_cpu_seconds": 1.768523792,
+  "failed": 0,
+  "jobs": [
+    {
+      "child_cpu_seconds": 8.284923,
+      "exit_code": 0,
+      "id": "selective_copy__lif_snn__seed881102",
+      "job": {
+        "arm": "lif_snn",
+        "id": "selective_copy__lif_snn__seed881102",
+        "learning_rate": 0.001,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 370724864,
+      "wall_seconds": 8.364720372000079
+    },
+    {
+      "child_cpu_seconds": 52.570788,
+      "exit_code": 0,
+      "id": "mqar__fixed_jg__seed881101",
+      "job": {
+        "arm": "fixed_jg",
+        "id": "mqar__fixed_jg__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 587722752,
+      "wall_seconds": 52.768750522000005
+    },
+    {
+      "child_cpu_seconds": 58.989256,
+      "exit_code": 0,
+      "id": "mqar__value_jg__seed881104",
+      "job": {
+        "arm": "value_jg",
+        "id": "mqar__value_jg__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 598978560,
+      "wall_seconds": 59.166097788
+    },
+    {
+      "child_cpu_seconds": 6.809889,
+      "exit_code": 0,
+      "id": "selective_copy__transformer__seed881108",
+      "job": {
+        "arm": "transformer",
+        "id": "selective_copy__transformer__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 376008704,
+      "wall_seconds": 6.86529894399996
+    },
+    {
+      "child_cpu_seconds": 59.509297,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_boundary__seed881101",
+      "job": {
+        "arm": "freeze_boundary",
+        "id": "selective_copy__freeze_boundary__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 597770240,
+      "wall_seconds": 59.84577914600004
+    },
+    {
+      "child_cpu_seconds": 59.776794,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_boundary__seed881104",
+      "job": {
+        "arm": "freeze_boundary",
+        "id": "selective_copy__freeze_boundary__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 598503424,
+      "wall_seconds": 59.96134522199998
+    },
+    {
+      "child_cpu_seconds": 55.160576,
+      "exit_code": 0,
+      "id": "selective_copy__learned_ordinary__seed881104",
+      "job": {
+        "arm": "learned_ordinary",
+        "id": "selective_copy__learned_ordinary__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 596574208,
+      "wall_seconds": 55.29923876299995
+    },
+    {
+      "child_cpu_seconds": 56.326831,
+      "exit_code": 0,
+      "id": "selective_copy__value_ordinary__seed881101",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "selective_copy__value_ordinary__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 560685056,
+      "wall_seconds": 56.486536323999985
+    },
+    {
+      "child_cpu_seconds": 57.749685,
+      "exit_code": 0,
+      "id": "mqar__freeze_refractory__seed881105",
+      "job": {
+        "arm": "freeze_refractory",
+        "id": "mqar__freeze_refractory__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 601190400,
+      "wall_seconds": 58.096532544999945
+    },
+    {
+      "child_cpu_seconds": 57.368809,
+      "exit_code": 0,
+      "id": "mqar__value_jg__seed881103",
+      "job": {
+        "arm": "value_jg",
+        "id": "mqar__value_jg__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 583815168,
+      "wall_seconds": 57.63658426099994
+    },
+    {
+      "child_cpu_seconds": 56.57773400000001,
+      "exit_code": 0,
+      "id": "selective_copy__value_margin__seed881101",
+      "job": {
+        "arm": "value_margin",
+        "id": "selective_copy__value_margin__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 602447872,
+      "wall_seconds": 56.762935493999976
+    },
+    {
+      "child_cpu_seconds": 59.044639000000004,
+      "exit_code": 0,
+      "id": "mqar__freeze_refractory__seed881103",
+      "job": {
+        "arm": "freeze_refractory",
+        "id": "mqar__freeze_refractory__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 602808320,
+      "wall_seconds": 59.33850625000002
+    },
+    {
+      "child_cpu_seconds": 59.274029999999996,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_dynamics__seed881108",
+      "job": {
+        "arm": "freeze_dynamics",
+        "id": "selective_copy__freeze_dynamics__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 618717184,
+      "wall_seconds": 59.40200393099997
+    },
+    {
+      "child_cpu_seconds": 57.712647999999994,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_refractory__seed881104",
+      "job": {
+        "arm": "freeze_refractory",
+        "id": "selective_copy__freeze_refractory__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 616402944,
+      "wall_seconds": 57.998666611999965
+    },
+    {
+      "child_cpu_seconds": 57.16245,
+      "exit_code": 0,
+      "id": "mqar__learned_jg__seed881101",
+      "job": {
+        "arm": "learned_jg",
+        "id": "mqar__learned_jg__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 596373504,
+      "wall_seconds": 57.323859162000076
+    },
+    {
+      "child_cpu_seconds": 57.54181,
+      "exit_code": 0,
+      "id": "mqar__freeze_refractory__seed881104",
+      "job": {
+        "arm": "freeze_refractory",
+        "id": "mqar__freeze_refractory__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 587599872,
+      "wall_seconds": 57.8721146690001
+    },
+    {
+      "child_cpu_seconds": 6.31891,
+      "exit_code": 0,
+      "id": "selective_copy__transformer__seed881102",
+      "job": {
+        "arm": "transformer",
+        "id": "selective_copy__transformer__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 377606144,
+      "wall_seconds": 6.33126419700011
+    },
+    {
+      "child_cpu_seconds": 56.852091,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_boundary__seed881107",
+      "job": {
+        "arm": "freeze_boundary",
+        "id": "selective_copy__freeze_boundary__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 628813824,
+      "wall_seconds": 57.01173225800005
+    },
+    {
+      "child_cpu_seconds": 55.003794,
+      "exit_code": 0,
+      "id": "mqar__freeze_reset__seed881107",
+      "job": {
+        "arm": "freeze_reset",
+        "id": "mqar__freeze_reset__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 570580992,
+      "wall_seconds": 55.18572825699994
+    },
+    {
+      "child_cpu_seconds": 55.581252,
+      "exit_code": 0,
+      "id": "selective_copy__value_jg__seed881107",
+      "job": {
+        "arm": "value_jg",
+        "id": "selective_copy__value_jg__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 629288960,
+      "wall_seconds": 55.794165615
+    },
+    {
+      "child_cpu_seconds": 7.954309,
+      "exit_code": 0,
+      "id": "selective_copy__two_gates__seed881101",
+      "job": {
+        "arm": "two_gates",
+        "id": "selective_copy__two_gates__seed881101",
+        "learning_rate": 0.001,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 369348608,
+      "wall_seconds": 7.97826149499997
+    },
+    {
+      "child_cpu_seconds": 57.481141,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_reset__seed881106",
+      "job": {
+        "arm": "freeze_reset",
+        "id": "selective_copy__freeze_reset__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 598360064,
+      "wall_seconds": 57.69920102699996
+    },
+    {
+      "child_cpu_seconds": 182.63348100000002,
+      "exit_code": 0,
+      "id": "mqar__value_fh__seed881106",
+      "job": {
+        "arm": "value_fh",
+        "id": "mqar__value_fh__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 961593344,
+      "wall_seconds": 183.73756697
+    },
+    {
+      "child_cpu_seconds": 58.805924000000005,
+      "exit_code": 0,
+      "id": "mqar__value_j__seed881101",
+      "job": {
+        "arm": "value_j",
+        "id": "mqar__value_j__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 612163584,
+      "wall_seconds": 58.90591367000002
+    },
+    {
+      "child_cpu_seconds": 10.48149,
+      "exit_code": 0,
+      "id": "mqar__mamba1__seed881102",
+      "job": {
+        "arm": "mamba1",
+        "id": "mqar__mamba1__seed881102",
+        "learning_rate": 0.001,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 428212224,
+      "wall_seconds": 10.497079403000043
+    },
+    {
+      "child_cpu_seconds": 184.009844,
+      "exit_code": 0,
+      "id": "selective_copy__value_fh__seed881108",
+      "job": {
+        "arm": "value_fh",
+        "id": "selective_copy__value_fh__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 963489792,
+      "wall_seconds": 184.93153360500003
+    },
+    {
+      "child_cpu_seconds": 56.492813999999996,
+      "exit_code": 0,
+      "id": "mqar__freeze_content__seed881103",
+      "job": {
+        "arm": "freeze_content",
+        "id": "mqar__freeze_content__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 604565504,
+      "wall_seconds": 56.70413492199998
+    },
+    {
+      "child_cpu_seconds": 56.591827,
+      "exit_code": 0,
+      "id": "selective_copy__value_j__seed881108",
+      "job": {
+        "arm": "value_j",
+        "id": "selective_copy__value_j__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 575811584,
+      "wall_seconds": 56.71393402300009
+    },
+    {
+      "child_cpu_seconds": 6.718458,
+      "exit_code": 0,
+      "id": "mqar__transformer__seed881104",
+      "job": {
+        "arm": "transformer",
+        "id": "mqar__transformer__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 377278464,
+      "wall_seconds": 6.769593019000013
+    },
+    {
+      "child_cpu_seconds": 56.969570000000004,
+      "exit_code": 0,
+      "id": "mqar__freeze_reset__seed881101",
+      "job": {
+        "arm": "freeze_reset",
+        "id": "mqar__freeze_reset__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 612089856,
+      "wall_seconds": 57.192317797999976
+    },
+    {
+      "child_cpu_seconds": 51.864125,
+      "exit_code": 0,
+      "id": "mqar__fixed_jg__seed881106",
+      "job": {
+        "arm": "fixed_jg",
+        "id": "mqar__fixed_jg__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 573685760,
+      "wall_seconds": 52.03673649999996
+    },
+    {
+      "child_cpu_seconds": 8.350366,
+      "exit_code": 0,
+      "id": "selective_copy__lif_snn__seed881107",
+      "job": {
+        "arm": "lif_snn",
+        "id": "selective_copy__lif_snn__seed881107",
+        "learning_rate": 0.001,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 372068352,
+      "wall_seconds": 8.375278756999933
+    },
+    {
+      "child_cpu_seconds": 9.839175,
+      "exit_code": 0,
+      "id": "mqar__mamba1__seed881104",
+      "job": {
+        "arm": "mamba1",
+        "id": "mqar__mamba1__seed881104",
+        "learning_rate": 0.001,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 425308160,
+      "wall_seconds": 9.884732785000097
+    },
+    {
+      "child_cpu_seconds": 56.912974999999996,
+      "exit_code": 0,
+      "id": "mqar__value_ordinary__seed881105",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "mqar__value_ordinary__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 593281024,
+      "wall_seconds": 57.07180310600006
+    },
+    {
+      "child_cpu_seconds": 55.047025999999995,
+      "exit_code": 0,
+      "id": "mqar__value_margin__seed881108",
+      "job": {
+        "arm": "value_margin",
+        "id": "mqar__value_margin__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 616169472,
+      "wall_seconds": 55.30658587399989
+    },
+    {
+      "child_cpu_seconds": 59.138416,
+      "exit_code": 0,
+      "id": "mqar__value_j__seed881107",
+      "job": {
+        "arm": "value_j",
+        "id": "mqar__value_j__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 597983232,
+      "wall_seconds": 59.27151371500008
+    },
+    {
+      "child_cpu_seconds": 57.961186,
+      "exit_code": 0,
+      "id": "mqar__freeze_reset__seed881106",
+      "job": {
+        "arm": "freeze_reset",
+        "id": "mqar__freeze_reset__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 594468864,
+      "wall_seconds": 58.179836944000044
+    },
+    {
+      "child_cpu_seconds": 184.413062,
+      "exit_code": 0,
+      "id": "selective_copy__value_fh__seed881103",
+      "job": {
+        "arm": "value_fh",
+        "id": "selective_copy__value_fh__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 970960896,
+      "wall_seconds": 185.4210294510001
+    },
+    {
+      "child_cpu_seconds": 52.068566,
+      "exit_code": 0,
+      "id": "mqar__fixed_jg__seed881108",
+      "job": {
+        "arm": "fixed_jg",
+        "id": "mqar__fixed_jg__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 557858816,
+      "wall_seconds": 52.20057975000009
+    },
+    {
+      "child_cpu_seconds": 55.55674,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_content__seed881103",
+      "job": {
+        "arm": "freeze_content",
+        "id": "selective_copy__freeze_content__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 578334720,
+      "wall_seconds": 55.88787774599996
+    },
+    {
+      "child_cpu_seconds": 56.00023,
+      "exit_code": 0,
+      "id": "selective_copy__learned_jg__seed881108",
+      "job": {
+        "arm": "learned_jg",
+        "id": "selective_copy__learned_jg__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 568000512,
+      "wall_seconds": 56.23466373700012
+    },
+    {
+      "child_cpu_seconds": 58.62257,
+      "exit_code": 0,
+      "id": "selective_copy__value_j__seed881106",
+      "job": {
+        "arm": "value_j",
+        "id": "selective_copy__value_j__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 608243712,
+      "wall_seconds": 58.90229302800003
+    },
+    {
+      "child_cpu_seconds": 55.932204,
+      "exit_code": 0,
+      "id": "mqar__freeze_refractory__seed881102",
+      "job": {
+        "arm": "freeze_refractory",
+        "id": "mqar__freeze_refractory__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 590315520,
+      "wall_seconds": 56.2733470149999
+    },
+    {
+      "child_cpu_seconds": 55.969127,
+      "exit_code": 0,
+      "id": "mqar__learned_ordinary__seed881106",
+      "job": {
+        "arm": "learned_ordinary",
+        "id": "mqar__learned_ordinary__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 603910144,
+      "wall_seconds": 56.26950402399984
+    },
+    {
+      "child_cpu_seconds": 6.572363999999999,
+      "exit_code": 0,
+      "id": "mqar__transformer__seed881101",
+      "job": {
+        "arm": "transformer",
+        "id": "mqar__transformer__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 375517184,
+      "wall_seconds": 6.591062867999881
+    },
+    {
+      "child_cpu_seconds": 58.887249999999995,
+      "exit_code": 0,
+      "id": "mqar__freeze_reset__seed881104",
+      "job": {
+        "arm": "freeze_reset",
+        "id": "mqar__freeze_reset__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 618946560,
+      "wall_seconds": 59.04548528400005
+    },
+    {
+      "child_cpu_seconds": 7.6122000000000005,
+      "exit_code": 0,
+      "id": "mqar__two_gates__seed881108",
+      "job": {
+        "arm": "two_gates",
+        "id": "mqar__two_gates__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 370692096,
+      "wall_seconds": 7.643217271999902
+    },
+    {
+      "child_cpu_seconds": 49.373755,
+      "exit_code": 0,
+      "id": "selective_copy__fixed_ordinary__seed881108",
+      "job": {
+        "arm": "fixed_ordinary",
+        "id": "selective_copy__fixed_ordinary__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 546394112,
+      "wall_seconds": 49.56026760999998
+    },
+    {
+      "child_cpu_seconds": 53.630802,
+      "exit_code": 0,
+      "id": "mqar__learned_ordinary__seed881107",
+      "job": {
+        "arm": "learned_ordinary",
+        "id": "mqar__learned_ordinary__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 587710464,
+      "wall_seconds": 53.82180276000008
+    },
+    {
+      "child_cpu_seconds": 51.775465999999994,
+      "exit_code": 0,
+      "id": "selective_copy__fixed_jg__seed881104",
+      "job": {
+        "arm": "fixed_jg",
+        "id": "selective_copy__fixed_jg__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 581062656,
+      "wall_seconds": 51.9391533659998
+    },
+    {
+      "child_cpu_seconds": 54.942415000000004,
+      "exit_code": 0,
+      "id": "selective_copy__value_g__seed881103",
+      "job": {
+        "arm": "value_g",
+        "id": "selective_copy__value_g__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 582868992,
+      "wall_seconds": 55.24256862999982
+    },
+    {
+      "child_cpu_seconds": 184.944146,
+      "exit_code": 0,
+      "id": "mqar__value_fh__seed881104",
+      "job": {
+        "arm": "value_fh",
+        "id": "mqar__value_fh__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 968318976,
+      "wall_seconds": 185.6309234790001
+    },
+    {
+      "child_cpu_seconds": 55.194844,
+      "exit_code": 0,
+      "id": "mqar__freeze_refractory__seed881108",
+      "job": {
+        "arm": "freeze_refractory",
+        "id": "mqar__freeze_refractory__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 572481536,
+      "wall_seconds": 55.60057471800019
+    },
+    {
+      "child_cpu_seconds": 57.67072700000001,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_boundary__seed881102",
+      "job": {
+        "arm": "freeze_boundary",
+        "id": "selective_copy__freeze_boundary__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 602857472,
+      "wall_seconds": 58.019780803
+    },
+    {
+      "child_cpu_seconds": 185.183807,
+      "exit_code": 0,
+      "id": "mqar__value_fh__seed881103",
+      "job": {
+        "arm": "value_fh",
+        "id": "mqar__value_fh__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 963735552,
+      "wall_seconds": 185.98985876899997
+    },
+    {
+      "child_cpu_seconds": 6.9612300000000005,
+      "exit_code": 0,
+      "id": "selective_copy__transformer__seed881106",
+      "job": {
+        "arm": "transformer",
+        "id": "selective_copy__transformer__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 375046144,
+      "wall_seconds": 6.999992041000041
+    },
+    {
+      "child_cpu_seconds": 60.232288,
+      "exit_code": 0,
+      "id": "selective_copy__value_g__seed881101",
+      "job": {
+        "arm": "value_g",
+        "id": "selective_copy__value_g__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 597225472,
+      "wall_seconds": 60.46413024399999
+    },
+    {
+      "child_cpu_seconds": 53.343347,
+      "exit_code": 0,
+      "id": "selective_copy__fixed_jg__seed881101",
+      "job": {
+        "arm": "fixed_jg",
+        "id": "selective_copy__fixed_jg__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 607019008,
+      "wall_seconds": 53.51620909300004
+    },
+    {
+      "child_cpu_seconds": 58.593494,
+      "exit_code": 0,
+      "id": "mqar__value_jg__seed881102",
+      "job": {
+        "arm": "value_jg",
+        "id": "mqar__value_jg__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 639934464,
+      "wall_seconds": 58.80695108100008
+    },
+    {
+      "child_cpu_seconds": 57.813328,
+      "exit_code": 0,
+      "id": "mqar__value_g__seed881107",
+      "job": {
+        "arm": "value_g",
+        "id": "mqar__value_g__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 598093824,
+      "wall_seconds": 58.04536826100002
+    },
+    {
+      "child_cpu_seconds": 59.751720999999996,
+      "exit_code": 0,
+      "id": "mqar__freeze_dynamics__seed881103",
+      "job": {
+        "arm": "freeze_dynamics",
+        "id": "mqar__freeze_dynamics__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 606781440,
+      "wall_seconds": 60.056509372999926
+    },
+    {
+      "child_cpu_seconds": 8.437695,
+      "exit_code": 0,
+      "id": "mqar__lif_snn__seed881102",
+      "job": {
+        "arm": "lif_snn",
+        "id": "mqar__lif_snn__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 371113984,
+      "wall_seconds": 8.475523107000072
+    },
+    {
+      "child_cpu_seconds": 57.546591,
+      "exit_code": 0,
+      "id": "selective_copy__value_margin__seed881105",
+      "job": {
+        "arm": "value_margin",
+        "id": "selective_copy__value_margin__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 599089152,
+      "wall_seconds": 57.65753128000006
+    },
+    {
+      "child_cpu_seconds": 8.532823,
+      "exit_code": 0,
+      "id": "mqar__lif_snn__seed881103",
+      "job": {
+        "arm": "lif_snn",
+        "id": "mqar__lif_snn__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 370880512,
+      "wall_seconds": 8.561457510000082
+    },
+    {
+      "child_cpu_seconds": 58.252447000000004,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_reset__seed881102",
+      "job": {
+        "arm": "freeze_reset",
+        "id": "selective_copy__freeze_reset__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 628154368,
+      "wall_seconds": 58.66241474699996
+    },
+    {
+      "child_cpu_seconds": 57.817736000000004,
+      "exit_code": 0,
+      "id": "selective_copy__value_j__seed881107",
+      "job": {
+        "arm": "value_j",
+        "id": "selective_copy__value_j__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 569802752,
+      "wall_seconds": 58.066082254999856
+    },
+    {
+      "child_cpu_seconds": 8.117265,
+      "exit_code": 0,
+      "id": "mqar__two_gates__seed881103",
+      "job": {
+        "arm": "two_gates",
+        "id": "mqar__two_gates__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 369262592,
+      "wall_seconds": 8.142362444000128
+    },
+    {
+      "child_cpu_seconds": 55.788052,
+      "exit_code": 0,
+      "id": "selective_copy__learned_ordinary__seed881108",
+      "job": {
+        "arm": "learned_ordinary",
+        "id": "selective_copy__learned_ordinary__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 598061056,
+      "wall_seconds": 55.957242550000046
+    },
+    {
+      "child_cpu_seconds": 57.979678,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_boundary__seed881108",
+      "job": {
+        "arm": "freeze_boundary",
+        "id": "selective_copy__freeze_boundary__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 582279168,
+      "wall_seconds": 58.20609872099999
+    },
+    {
+      "child_cpu_seconds": 58.914526,
+      "exit_code": 0,
+      "id": "mqar__value_g__seed881101",
+      "job": {
+        "arm": "value_g",
+        "id": "mqar__value_g__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 613982208,
+      "wall_seconds": 59.18455859400001
+    },
+    {
+      "child_cpu_seconds": 57.644360000000006,
+      "exit_code": 0,
+      "id": "mqar__freeze_refractory__seed881107",
+      "job": {
+        "arm": "freeze_refractory",
+        "id": "mqar__freeze_refractory__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 578363392,
+      "wall_seconds": 57.87957038600007
+    },
+    {
+      "child_cpu_seconds": 8.090355,
+      "exit_code": 0,
+      "id": "mqar__two_gates__seed881106",
+      "job": {
+        "arm": "two_gates",
+        "id": "mqar__two_gates__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 369872896,
+      "wall_seconds": 8.113796271999945
+    },
+    {
+      "child_cpu_seconds": 54.951236,
+      "exit_code": 0,
+      "id": "mqar__learned_ordinary__seed881102",
+      "job": {
+        "arm": "learned_ordinary",
+        "id": "mqar__learned_ordinary__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 573784064,
+      "wall_seconds": 55.185254347999944
+    },
+    {
+      "child_cpu_seconds": 8.08212,
+      "exit_code": 0,
+      "id": "selective_copy__two_gates__seed881106",
+      "job": {
+        "arm": "two_gates",
+        "id": "selective_copy__two_gates__seed881106",
+        "learning_rate": 0.001,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 370073600,
+      "wall_seconds": 8.108660801999804
+    },
+    {
+      "child_cpu_seconds": 56.518696000000006,
+      "exit_code": 0,
+      "id": "selective_copy__value_ordinary__seed881105",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "selective_copy__value_ordinary__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 563019776,
+      "wall_seconds": 56.765416750999975
+    },
+    {
+      "child_cpu_seconds": 50.855551,
+      "exit_code": 0,
+      "id": "selective_copy__fixed_ordinary__seed881103",
+      "job": {
+        "arm": "fixed_ordinary",
+        "id": "selective_copy__fixed_ordinary__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 606326784,
+      "wall_seconds": 51.09190065100006
+    },
+    {
+      "child_cpu_seconds": 57.118361,
+      "exit_code": 0,
+      "id": "mqar__learned_jg__seed881103",
+      "job": {
+        "arm": "learned_jg",
+        "id": "mqar__learned_jg__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 600297472,
+      "wall_seconds": 57.291351690000056
+    },
+    {
+      "child_cpu_seconds": 56.439149,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_content__seed881104",
+      "job": {
+        "arm": "freeze_content",
+        "id": "selective_copy__freeze_content__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 614129664,
+      "wall_seconds": 56.69405649800001
+    },
+    {
+      "child_cpu_seconds": 60.232372,
+      "exit_code": 0,
+      "id": "mqar__value_jg__seed881108",
+      "job": {
+        "arm": "value_jg",
+        "id": "mqar__value_jg__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 609665024,
+      "wall_seconds": 60.4689963400001
+    },
+    {
+      "child_cpu_seconds": 8.269657,
+      "exit_code": 0,
+      "id": "mqar__two_gates__seed881102",
+      "job": {
+        "arm": "two_gates",
+        "id": "mqar__two_gates__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 369438720,
+      "wall_seconds": 8.304645053000058
+    },
+    {
+      "child_cpu_seconds": 51.956685,
+      "exit_code": 0,
+      "id": "mqar__fixed_ordinary__seed881102",
+      "job": {
+        "arm": "fixed_ordinary",
+        "id": "mqar__fixed_ordinary__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 584548352,
+      "wall_seconds": 52.14959108400012
+    },
+    {
+      "child_cpu_seconds": 54.611957000000004,
+      "exit_code": 0,
+      "id": "selective_copy__fixed_jg__seed881107",
+      "job": {
+        "arm": "fixed_jg",
+        "id": "selective_copy__fixed_jg__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 588845056,
+      "wall_seconds": 54.80272805100003
+    },
+    {
+      "child_cpu_seconds": 58.525960999999995,
+      "exit_code": 0,
+      "id": "mqar__freeze_reset__seed881103",
+      "job": {
+        "arm": "freeze_reset",
+        "id": "mqar__freeze_reset__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 597258240,
+      "wall_seconds": 58.77462444799994
+    },
+    {
+      "child_cpu_seconds": 58.622254,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_refractory__seed881108",
+      "job": {
+        "arm": "freeze_refractory",
+        "id": "selective_copy__freeze_refractory__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 590405632,
+      "wall_seconds": 58.976936142999875
+    },
+    {
+      "child_cpu_seconds": 60.745318999999995,
+      "exit_code": 0,
+      "id": "selective_copy__value_g__seed881102",
+      "job": {
+        "arm": "value_g",
+        "id": "selective_copy__value_g__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 605499392,
+      "wall_seconds": 60.93837620799991
+    },
+    {
+      "child_cpu_seconds": 56.765347999999996,
+      "exit_code": 0,
+      "id": "selective_copy__learned_ordinary__seed881107",
+      "job": {
+        "arm": "learned_ordinary",
+        "id": "selective_copy__learned_ordinary__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 592445440,
+      "wall_seconds": 56.92176993200019
+    },
+    {
+      "child_cpu_seconds": 58.404945,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_dynamics__seed881102",
+      "job": {
+        "arm": "freeze_dynamics",
+        "id": "selective_copy__freeze_dynamics__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 570503168,
+      "wall_seconds": 58.68134392899992
+    },
+    {
+      "child_cpu_seconds": 59.448713999999995,
+      "exit_code": 0,
+      "id": "mqar__value_j__seed881106",
+      "job": {
+        "arm": "value_j",
+        "id": "mqar__value_j__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 569499648,
+      "wall_seconds": 59.78345219300013
+    },
+    {
+      "child_cpu_seconds": 56.567685000000004,
+      "exit_code": 0,
+      "id": "mqar__freeze_content__seed881106",
+      "job": {
+        "arm": "freeze_content",
+        "id": "mqar__freeze_content__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 574169088,
+      "wall_seconds": 56.86690507399999
+    },
+    {
+      "child_cpu_seconds": 56.794485,
+      "exit_code": 0,
+      "id": "mqar__freeze_content__seed881104",
+      "job": {
+        "arm": "freeze_content",
+        "id": "mqar__freeze_content__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 619192320,
+      "wall_seconds": 56.96355560899997
+    },
+    {
+      "child_cpu_seconds": 56.252598,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_content__seed881107",
+      "job": {
+        "arm": "freeze_content",
+        "id": "selective_copy__freeze_content__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 633663488,
+      "wall_seconds": 56.46270387000004
+    },
+    {
+      "child_cpu_seconds": 58.098072,
+      "exit_code": 0,
+      "id": "mqar__value_ordinary__seed881106",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "mqar__value_ordinary__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 607637504,
+      "wall_seconds": 58.473879457000066
+    },
+    {
+      "child_cpu_seconds": 48.946572,
+      "exit_code": 0,
+      "id": "mqar__fixed_ordinary__seed881101",
+      "job": {
+        "arm": "fixed_ordinary",
+        "id": "mqar__fixed_ordinary__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 548405248,
+      "wall_seconds": 49.200937950000025
+    },
+    {
+      "child_cpu_seconds": 58.20147,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_refractory__seed881101",
+      "job": {
+        "arm": "freeze_refractory",
+        "id": "selective_copy__freeze_refractory__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 608235520,
+      "wall_seconds": 58.40060478800001
+    },
+    {
+      "child_cpu_seconds": 10.059507,
+      "exit_code": 0,
+      "id": "selective_copy__mamba1__seed881104",
+      "job": {
+        "arm": "mamba1",
+        "id": "selective_copy__mamba1__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 426209280,
+      "wall_seconds": 10.11040376599999
+    },
+    {
+      "child_cpu_seconds": 9.978551999999999,
+      "exit_code": 0,
+      "id": "selective_copy__mamba1__seed881105",
+      "job": {
+        "arm": "mamba1",
+        "id": "selective_copy__mamba1__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 426561536,
+      "wall_seconds": 10.107155181000053
+    },
+    {
+      "child_cpu_seconds": 48.613988,
+      "exit_code": 0,
+      "id": "mqar__fixed_ordinary__seed881108",
+      "job": {
+        "arm": "fixed_ordinary",
+        "id": "mqar__fixed_ordinary__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 546287616,
+      "wall_seconds": 48.75040471500006
+    },
+    {
+      "child_cpu_seconds": 57.685297999999996,
+      "exit_code": 0,
+      "id": "mqar__freeze_boundary__seed881101",
+      "job": {
+        "arm": "freeze_boundary",
+        "id": "mqar__freeze_boundary__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 605564928,
+      "wall_seconds": 57.94854281699986
+    },
+    {
+      "child_cpu_seconds": 187.77544,
+      "exit_code": 0,
+      "id": "mqar__value_fh__seed881107",
+      "job": {
+        "arm": "value_fh",
+        "id": "mqar__value_fh__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 959148032,
+      "wall_seconds": 188.57555516499997
+    },
+    {
+      "child_cpu_seconds": 56.678066,
+      "exit_code": 0,
+      "id": "selective_copy__value_margin__seed881108",
+      "job": {
+        "arm": "value_margin",
+        "id": "selective_copy__value_margin__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 593756160,
+      "wall_seconds": 56.8288037650002
+    },
+    {
+      "child_cpu_seconds": 57.032226,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_boundary__seed881106",
+      "job": {
+        "arm": "freeze_boundary",
+        "id": "selective_copy__freeze_boundary__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 606384128,
+      "wall_seconds": 57.27858205099983
+    },
+    {
+      "child_cpu_seconds": 56.191226,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_boundary__seed881103",
+      "job": {
+        "arm": "freeze_boundary",
+        "id": "selective_copy__freeze_boundary__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 593223680,
+      "wall_seconds": 56.40222394999978
+    },
+    {
+      "child_cpu_seconds": 188.086288,
+      "exit_code": 0,
+      "id": "mqar__value_fh__seed881108",
+      "job": {
+        "arm": "value_fh",
+        "id": "mqar__value_fh__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 959643648,
+      "wall_seconds": 188.86089071499987
+    },
+    {
+      "child_cpu_seconds": 6.783117,
+      "exit_code": 0,
+      "id": "mqar__transformer__seed881103",
+      "job": {
+        "arm": "transformer",
+        "id": "mqar__transformer__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 376741888,
+      "wall_seconds": 6.801912127000378
+    },
+    {
+      "child_cpu_seconds": 59.231607999999994,
+      "exit_code": 0,
+      "id": "mqar__freeze_dynamics__seed881107",
+      "job": {
+        "arm": "freeze_dynamics",
+        "id": "mqar__freeze_dynamics__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 616013824,
+      "wall_seconds": 59.5574757710001
+    },
+    {
+      "child_cpu_seconds": 59.538125,
+      "exit_code": 0,
+      "id": "mqar__value_g__seed881105",
+      "job": {
+        "arm": "value_g",
+        "id": "mqar__value_g__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 626036736,
+      "wall_seconds": 59.832679376000215
+    },
+    {
+      "child_cpu_seconds": 57.923016,
+      "exit_code": 0,
+      "id": "selective_copy__learned_jg__seed881101",
+      "job": {
+        "arm": "learned_jg",
+        "id": "selective_copy__learned_jg__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 604295168,
+      "wall_seconds": 58.06853195799977
+    },
+    {
+      "child_cpu_seconds": 10.587171000000001,
+      "exit_code": 0,
+      "id": "selective_copy__mamba1__seed881102",
+      "job": {
+        "arm": "mamba1",
+        "id": "selective_copy__mamba1__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 428720128,
+      "wall_seconds": 10.641685997999957
+    },
+    {
+      "child_cpu_seconds": 56.269017,
+      "exit_code": 0,
+      "id": "mqar__value_margin__seed881107",
+      "job": {
+        "arm": "value_margin",
+        "id": "mqar__value_margin__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 600612864,
+      "wall_seconds": 56.60208615300007
+    },
+    {
+      "child_cpu_seconds": 52.976256,
+      "exit_code": 0,
+      "id": "selective_copy__fixed_jg__seed881105",
+      "job": {
+        "arm": "fixed_jg",
+        "id": "selective_copy__fixed_jg__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 611975168,
+      "wall_seconds": 53.19719859399993
+    },
+    {
+      "child_cpu_seconds": 8.44368,
+      "exit_code": 0,
+      "id": "mqar__lif_snn__seed881106",
+      "job": {
+        "arm": "lif_snn",
+        "id": "mqar__lif_snn__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 371642368,
+      "wall_seconds": 8.48372343400024
+    },
+    {
+      "child_cpu_seconds": 54.390181,
+      "exit_code": 0,
+      "id": "mqar__learned_ordinary__seed881103",
+      "job": {
+        "arm": "learned_ordinary",
+        "id": "mqar__learned_ordinary__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 564527104,
+      "wall_seconds": 54.625148438
+    },
+    {
+      "child_cpu_seconds": 6.724628999999999,
+      "exit_code": 0,
+      "id": "mqar__transformer__seed881107",
+      "job": {
+        "arm": "transformer",
+        "id": "mqar__transformer__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 376913920,
+      "wall_seconds": 6.770077474000118
+    },
+    {
+      "child_cpu_seconds": 51.885971,
+      "exit_code": 0,
+      "id": "mqar__fixed_ordinary__seed881107",
+      "job": {
+        "arm": "fixed_ordinary",
+        "id": "mqar__fixed_ordinary__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 595083264,
+      "wall_seconds": 52.19623314199998
+    },
+    {
+      "child_cpu_seconds": 8.075752,
+      "exit_code": 0,
+      "id": "mqar__two_gates__seed881105",
+      "job": {
+        "arm": "two_gates",
+        "id": "mqar__two_gates__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 368832512,
+      "wall_seconds": 8.133525361000011
+    },
+    {
+      "child_cpu_seconds": 56.42441,
+      "exit_code": 0,
+      "id": "mqar__learned_jg__seed881104",
+      "job": {
+        "arm": "learned_jg",
+        "id": "mqar__learned_jg__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 589533184,
+      "wall_seconds": 56.62490945699983
+    },
+    {
+      "child_cpu_seconds": 56.464552,
+      "exit_code": 0,
+      "id": "selective_copy__value_ordinary__seed881102",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "selective_copy__value_ordinary__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 591618048,
+      "wall_seconds": 56.69255431900001
+    },
+    {
+      "child_cpu_seconds": 58.677783000000005,
+      "exit_code": 0,
+      "id": "mqar__freeze_dynamics__seed881105",
+      "job": {
+        "arm": "freeze_dynamics",
+        "id": "mqar__freeze_dynamics__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 611717120,
+      "wall_seconds": 58.791565732000436
+    },
+    {
+      "child_cpu_seconds": 10.602814,
+      "exit_code": 0,
+      "id": "selective_copy__mamba1__seed881107",
+      "job": {
+        "arm": "mamba1",
+        "id": "selective_copy__mamba1__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 431255552,
+      "wall_seconds": 10.625554398000077
+    },
+    {
+      "child_cpu_seconds": 56.314272,
+      "exit_code": 0,
+      "id": "selective_copy__value_ordinary__seed881104",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "selective_copy__value_ordinary__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 640073728,
+      "wall_seconds": 56.60462044299993
+    },
+    {
+      "child_cpu_seconds": 8.098486000000001,
+      "exit_code": 0,
+      "id": "mqar__two_gates__seed881104",
+      "job": {
+        "arm": "two_gates",
+        "id": "mqar__two_gates__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 369987584,
+      "wall_seconds": 8.151056252000217
+    },
+    {
+      "child_cpu_seconds": 56.442353999999995,
+      "exit_code": 0,
+      "id": "mqar__learned_jg__seed881107",
+      "job": {
+        "arm": "learned_jg",
+        "id": "mqar__learned_jg__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 561061888,
+      "wall_seconds": 56.73221163599965
+    },
+    {
+      "child_cpu_seconds": 56.188281,
+      "exit_code": 0,
+      "id": "mqar__freeze_content__seed881107",
+      "job": {
+        "arm": "freeze_content",
+        "id": "mqar__freeze_content__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 619954176,
+      "wall_seconds": 56.446091198999966
+    },
+    {
+      "child_cpu_seconds": 6.7078880000000005,
+      "exit_code": 0,
+      "id": "mqar__transformer__seed881108",
+      "job": {
+        "arm": "transformer",
+        "id": "mqar__transformer__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 377749504,
+      "wall_seconds": 6.738451220000115
+    },
+    {
+      "child_cpu_seconds": 57.610915,
+      "exit_code": 0,
+      "id": "mqar__freeze_dynamics__seed881101",
+      "job": {
+        "arm": "freeze_dynamics",
+        "id": "mqar__freeze_dynamics__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 606040064,
+      "wall_seconds": 57.80239320800001
+    },
+    {
+      "child_cpu_seconds": 57.613456,
+      "exit_code": 0,
+      "id": "mqar__freeze_boundary__seed881104",
+      "job": {
+        "arm": "freeze_boundary",
+        "id": "mqar__freeze_boundary__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 602275840,
+      "wall_seconds": 57.849006075000034
+    },
+    {
+      "child_cpu_seconds": 57.801502,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_refractory__seed881103",
+      "job": {
+        "arm": "freeze_refractory",
+        "id": "selective_copy__freeze_refractory__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 605974528,
+      "wall_seconds": 58.04834604500002
+    },
+    {
+      "child_cpu_seconds": 60.698606,
+      "exit_code": 0,
+      "id": "selective_copy__value_jg__seed881101",
+      "job": {
+        "arm": "value_jg",
+        "id": "selective_copy__value_jg__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 603062272,
+      "wall_seconds": 60.909027229
+    },
+    {
+      "child_cpu_seconds": 51.335643000000005,
+      "exit_code": 0,
+      "id": "selective_copy__fixed_ordinary__seed881101",
+      "job": {
+        "arm": "fixed_ordinary",
+        "id": "selective_copy__fixed_ordinary__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 599093248,
+      "wall_seconds": 51.52460554699974
+    },
+    {
+      "child_cpu_seconds": 10.425773,
+      "exit_code": 0,
+      "id": "mqar__mamba1__seed881101",
+      "job": {
+        "arm": "mamba1",
+        "id": "mqar__mamba1__seed881101",
+        "learning_rate": 0.001,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 432304128,
+      "wall_seconds": 10.4559215459999
+    },
+    {
+      "child_cpu_seconds": 8.460832,
+      "exit_code": 0,
+      "id": "mqar__lif_snn__seed881101",
+      "job": {
+        "arm": "lif_snn",
+        "id": "mqar__lif_snn__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 370835456,
+      "wall_seconds": 8.481357606000074
+    },
+    {
+      "child_cpu_seconds": 8.450444,
+      "exit_code": 0,
+      "id": "selective_copy__lif_snn__seed881103",
+      "job": {
+        "arm": "lif_snn",
+        "id": "selective_copy__lif_snn__seed881103",
+        "learning_rate": 0.001,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 370409472,
+      "wall_seconds": 8.475989572999879
+    },
+    {
+      "child_cpu_seconds": 10.53479,
+      "exit_code": 0,
+      "id": "mqar__mamba1__seed881105",
+      "job": {
+        "arm": "mamba1",
+        "id": "mqar__mamba1__seed881105",
+        "learning_rate": 0.001,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 429568000,
+      "wall_seconds": 10.572897356999874
+    },
+    {
+      "child_cpu_seconds": 53.521844,
+      "exit_code": 0,
+      "id": "mqar__fixed_jg__seed881102",
+      "job": {
+        "arm": "fixed_jg",
+        "id": "mqar__fixed_jg__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 607498240,
+      "wall_seconds": 53.82326778800007
+    },
+    {
+      "child_cpu_seconds": 56.815402999999996,
+      "exit_code": 0,
+      "id": "selective_copy__learned_jg__seed881103",
+      "job": {
+        "arm": "learned_jg",
+        "id": "selective_copy__learned_jg__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 620961792,
+      "wall_seconds": 56.993745278000006
+    },
+    {
+      "child_cpu_seconds": 7.709891000000001,
+      "exit_code": 0,
+      "id": "selective_copy__two_gates__seed881104",
+      "job": {
+        "arm": "two_gates",
+        "id": "selective_copy__two_gates__seed881104",
+        "learning_rate": 0.001,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 371290112,
+      "wall_seconds": 7.72823166299986
+    },
+    {
+      "child_cpu_seconds": 6.490758,
+      "exit_code": 0,
+      "id": "mqar__transformer__seed881105",
+      "job": {
+        "arm": "transformer",
+        "id": "mqar__transformer__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 379076608,
+      "wall_seconds": 6.508390070000132
+    },
+    {
+      "child_cpu_seconds": 57.875393,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_reset__seed881104",
+      "job": {
+        "arm": "freeze_reset",
+        "id": "selective_copy__freeze_reset__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 597020672,
+      "wall_seconds": 58.122308041999986
+    },
+    {
+      "child_cpu_seconds": 6.349285999999999,
+      "exit_code": 0,
+      "id": "mqar__transformer__seed881102",
+      "job": {
+        "arm": "transformer",
+        "id": "mqar__transformer__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 374951936,
+      "wall_seconds": 6.37330214099984
+    },
+    {
+      "child_cpu_seconds": 56.722713,
+      "exit_code": 0,
+      "id": "mqar__freeze_dynamics__seed881108",
+      "job": {
+        "arm": "freeze_dynamics",
+        "id": "mqar__freeze_dynamics__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 631013376,
+      "wall_seconds": 56.82842836300006
+    },
+    {
+      "child_cpu_seconds": 52.433321,
+      "exit_code": 0,
+      "id": "selective_copy__learned_ordinary__seed881101",
+      "job": {
+        "arm": "learned_ordinary",
+        "id": "selective_copy__learned_ordinary__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 557318144,
+      "wall_seconds": 52.71369500999981
+    },
+    {
+      "child_cpu_seconds": 9.942159,
+      "exit_code": 0,
+      "id": "selective_copy__mamba1__seed881106",
+      "job": {
+        "arm": "mamba1",
+        "id": "selective_copy__mamba1__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 432324608,
+      "wall_seconds": 9.965258463999817
+    },
+    {
+      "child_cpu_seconds": 48.741421,
+      "exit_code": 0,
+      "id": "selective_copy__fixed_ordinary__seed881105",
+      "job": {
+        "arm": "fixed_ordinary",
+        "id": "selective_copy__fixed_ordinary__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 570486784,
+      "wall_seconds": 48.904252412999995
+    },
+    {
+      "child_cpu_seconds": 55.754594999999995,
+      "exit_code": 0,
+      "id": "selective_copy__value_jg__seed881103",
+      "job": {
+        "arm": "value_jg",
+        "id": "selective_copy__value_jg__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 609726464,
+      "wall_seconds": 55.991210724999746
+    },
+    {
+      "child_cpu_seconds": 186.064622,
+      "exit_code": 0,
+      "id": "mqar__value_fh__seed881102",
+      "job": {
+        "arm": "value_fh",
+        "id": "mqar__value_fh__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 964440064,
+      "wall_seconds": 186.8263729119999
+    },
+    {
+      "child_cpu_seconds": 49.998597000000004,
+      "exit_code": 0,
+      "id": "selective_copy__fixed_jg__seed881106",
+      "job": {
+        "arm": "fixed_jg",
+        "id": "selective_copy__fixed_jg__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 597659648,
+      "wall_seconds": 50.298709921999944
+    },
+    {
+      "child_cpu_seconds": 50.040624,
+      "exit_code": 0,
+      "id": "selective_copy__fixed_jg__seed881102",
+      "job": {
+        "arm": "fixed_jg",
+        "id": "selective_copy__fixed_jg__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 568225792,
+      "wall_seconds": 50.246230148999985
+    },
+    {
+      "child_cpu_seconds": 185.79294,
+      "exit_code": 0,
+      "id": "selective_copy__value_fh__seed881104",
+      "job": {
+        "arm": "value_fh",
+        "id": "selective_copy__value_fh__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 960933888,
+      "wall_seconds": 186.59885135100012
+    },
+    {
+      "child_cpu_seconds": 57.880919,
+      "exit_code": 0,
+      "id": "mqar__value_j__seed881102",
+      "job": {
+        "arm": "value_j",
+        "id": "mqar__value_j__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 566624256,
+      "wall_seconds": 58.02960781999991
+    },
+    {
+      "child_cpu_seconds": 53.153068000000005,
+      "exit_code": 0,
+      "id": "selective_copy__fixed_jg__seed881108",
+      "job": {
+        "arm": "fixed_jg",
+        "id": "selective_copy__fixed_jg__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 590237696,
+      "wall_seconds": 53.33353992000002
+    },
+    {
+      "child_cpu_seconds": 57.791889,
+      "exit_code": 0,
+      "id": "selective_copy__value_j__seed881102",
+      "job": {
+        "arm": "value_j",
+        "id": "selective_copy__value_j__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 619929600,
+      "wall_seconds": 58.0507057890004
+    },
+    {
+      "child_cpu_seconds": 59.927744000000004,
+      "exit_code": 0,
+      "id": "selective_copy__value_j__seed881104",
+      "job": {
+        "arm": "value_j",
+        "id": "selective_copy__value_j__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 625180672,
+      "wall_seconds": 60.24379024500013
+    },
+    {
+      "child_cpu_seconds": 6.834371,
+      "exit_code": 0,
+      "id": "selective_copy__transformer__seed881105",
+      "job": {
+        "arm": "transformer",
+        "id": "selective_copy__transformer__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 376446976,
+      "wall_seconds": 6.875632241999938
+    },
+    {
+      "child_cpu_seconds": 55.201488,
+      "exit_code": 0,
+      "id": "mqar__learned_ordinary__seed881101",
+      "job": {
+        "arm": "learned_ordinary",
+        "id": "mqar__learned_ordinary__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 564785152,
+      "wall_seconds": 55.52835346500024
+    },
+    {
+      "child_cpu_seconds": 57.804764,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_content__seed881105",
+      "job": {
+        "arm": "freeze_content",
+        "id": "selective_copy__freeze_content__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 614260736,
+      "wall_seconds": 57.995222772000034
+    },
+    {
+      "child_cpu_seconds": 58.456631,
+      "exit_code": 0,
+      "id": "selective_copy__value_ordinary__seed881106",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "selective_copy__value_ordinary__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 598355968,
+      "wall_seconds": 58.592685452000296
+    },
+    {
+      "child_cpu_seconds": 10.634271,
+      "exit_code": 0,
+      "id": "mqar__mamba1__seed881103",
+      "job": {
+        "arm": "mamba1",
+        "id": "mqar__mamba1__seed881103",
+        "learning_rate": 0.001,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 428756992,
+      "wall_seconds": 10.66500188100008
+    },
+    {
+      "child_cpu_seconds": 59.386977,
+      "exit_code": 0,
+      "id": "mqar__value_g__seed881108",
+      "job": {
+        "arm": "value_g",
+        "id": "mqar__value_g__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 569696256,
+      "wall_seconds": 59.76677138900004
+    },
+    {
+      "child_cpu_seconds": 58.833749999999995,
+      "exit_code": 0,
+      "id": "mqar__value_jg__seed881106",
+      "job": {
+        "arm": "value_jg",
+        "id": "mqar__value_jg__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 582070272,
+      "wall_seconds": 59.095904883
+    },
+    {
+      "child_cpu_seconds": 54.168330999999995,
+      "exit_code": 0,
+      "id": "mqar__fixed_jg__seed881103",
+      "job": {
+        "arm": "fixed_jg",
+        "id": "mqar__fixed_jg__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 591417344,
+      "wall_seconds": 54.39921673300023
+    },
+    {
+      "child_cpu_seconds": 8.343678,
+      "exit_code": 0,
+      "id": "mqar__lif_snn__seed881108",
+      "job": {
+        "arm": "lif_snn",
+        "id": "mqar__lif_snn__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 371916800,
+      "wall_seconds": 8.387447538999822
+    },
+    {
+      "child_cpu_seconds": 58.488273,
+      "exit_code": 0,
+      "id": "mqar__freeze_boundary__seed881107",
+      "job": {
+        "arm": "freeze_boundary",
+        "id": "mqar__freeze_boundary__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 569663488,
+      "wall_seconds": 58.72864001100015
+    },
+    {
+      "child_cpu_seconds": 8.498234,
+      "exit_code": 0,
+      "id": "mqar__lif_snn__seed881104",
+      "job": {
+        "arm": "lif_snn",
+        "id": "mqar__lif_snn__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 370429952,
+      "wall_seconds": 8.523179089999758
+    },
+    {
+      "child_cpu_seconds": 58.865045,
+      "exit_code": 0,
+      "id": "selective_copy__value_g__seed881106",
+      "job": {
+        "arm": "value_g",
+        "id": "selective_copy__value_g__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 602279936,
+      "wall_seconds": 59.04169706000039
+    },
+    {
+      "child_cpu_seconds": 50.362099,
+      "exit_code": 0,
+      "id": "selective_copy__fixed_ordinary__seed881106",
+      "job": {
+        "arm": "fixed_ordinary",
+        "id": "selective_copy__fixed_ordinary__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 587132928,
+      "wall_seconds": 50.58429633300011
+    },
+    {
+      "child_cpu_seconds": 8.421035,
+      "exit_code": 0,
+      "id": "selective_copy__lif_snn__seed881108",
+      "job": {
+        "arm": "lif_snn",
+        "id": "selective_copy__lif_snn__seed881108",
+        "learning_rate": 0.001,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 371511296,
+      "wall_seconds": 8.48199902999977
+    },
+    {
+      "child_cpu_seconds": 54.227917,
+      "exit_code": 0,
+      "id": "mqar__fixed_jg__seed881105",
+      "job": {
+        "arm": "fixed_jg",
+        "id": "mqar__fixed_jg__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 599035904,
+      "wall_seconds": 54.390965585999766
+    },
+    {
+      "child_cpu_seconds": 7.625266,
+      "exit_code": 0,
+      "id": "selective_copy__two_gates__seed881103",
+      "job": {
+        "arm": "two_gates",
+        "id": "selective_copy__two_gates__seed881103",
+        "learning_rate": 0.001,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 370135040,
+      "wall_seconds": 7.651782345999891
+    },
+    {
+      "child_cpu_seconds": 56.833715,
+      "exit_code": 0,
+      "id": "mqar__value_ordinary__seed881108",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "mqar__value_ordinary__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 616878080,
+      "wall_seconds": 57.004065385000104
+    },
+    {
+      "child_cpu_seconds": 58.643715,
+      "exit_code": 0,
+      "id": "selective_copy__value_g__seed881104",
+      "job": {
+        "arm": "value_g",
+        "id": "selective_copy__value_g__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 610729984,
+      "wall_seconds": 59.01091438100002
+    },
+    {
+      "child_cpu_seconds": 54.035464999999995,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_content__seed881101",
+      "job": {
+        "arm": "freeze_content",
+        "id": "selective_copy__freeze_content__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 615526400,
+      "wall_seconds": 54.26582521700038
+    },
+    {
+      "child_cpu_seconds": 56.286177,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_content__seed881106",
+      "job": {
+        "arm": "freeze_content",
+        "id": "selective_copy__freeze_content__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 577085440,
+      "wall_seconds": 56.39057400499996
+    },
+    {
+      "child_cpu_seconds": 58.110601,
+      "exit_code": 0,
+      "id": "mqar__value_j__seed881103",
+      "job": {
+        "arm": "value_j",
+        "id": "mqar__value_j__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 575979520,
+      "wall_seconds": 58.29096370800016
+    },
+    {
+      "child_cpu_seconds": 56.52707,
+      "exit_code": 0,
+      "id": "mqar__freeze_content__seed881102",
+      "job": {
+        "arm": "freeze_content",
+        "id": "mqar__freeze_content__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 612003840,
+      "wall_seconds": 56.662339041999985
+    },
+    {
+      "child_cpu_seconds": 56.376248000000004,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_boundary__seed881105",
+      "job": {
+        "arm": "freeze_boundary",
+        "id": "selective_copy__freeze_boundary__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 618020864,
+      "wall_seconds": 56.62378487800015
+    },
+    {
+      "child_cpu_seconds": 59.090937,
+      "exit_code": 0,
+      "id": "mqar__value_g__seed881104",
+      "job": {
+        "arm": "value_g",
+        "id": "mqar__value_g__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 610410496,
+      "wall_seconds": 59.35774156299976
+    },
+    {
+      "child_cpu_seconds": 55.986039,
+      "exit_code": 0,
+      "id": "mqar__value_margin__seed881102",
+      "job": {
+        "arm": "value_margin",
+        "id": "mqar__value_margin__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 561700864,
+      "wall_seconds": 56.14780348399972
+    },
+    {
+      "child_cpu_seconds": 186.253479,
+      "exit_code": 0,
+      "id": "selective_copy__value_fh__seed881102",
+      "job": {
+        "arm": "value_fh",
+        "id": "selective_copy__value_fh__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 955817984,
+      "wall_seconds": 187.15844838800012
+    },
+    {
+      "child_cpu_seconds": 58.133949,
+      "exit_code": 0,
+      "id": "mqar__value_g__seed881106",
+      "job": {
+        "arm": "value_g",
+        "id": "mqar__value_g__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 617127936,
+      "wall_seconds": 58.36882122499992
+    },
+    {
+      "child_cpu_seconds": 54.061077999999995,
+      "exit_code": 0,
+      "id": "mqar__fixed_jg__seed881107",
+      "job": {
+        "arm": "fixed_jg",
+        "id": "mqar__fixed_jg__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 589082624,
+      "wall_seconds": 54.16429237700004
+    },
+    {
+      "child_cpu_seconds": 57.069796000000004,
+      "exit_code": 0,
+      "id": "mqar__freeze_boundary__seed881103",
+      "job": {
+        "arm": "freeze_boundary",
+        "id": "mqar__freeze_boundary__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 573870080,
+      "wall_seconds": 57.46139204500014
+    },
+    {
+      "child_cpu_seconds": 7.912265,
+      "exit_code": 0,
+      "id": "selective_copy__lif_snn__seed881101",
+      "job": {
+        "arm": "lif_snn",
+        "id": "selective_copy__lif_snn__seed881101",
+        "learning_rate": 0.001,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 370782208,
+      "wall_seconds": 7.938612342999932
+    },
+    {
+      "child_cpu_seconds": 59.977475,
+      "exit_code": 0,
+      "id": "selective_copy__value_jg__seed881105",
+      "job": {
+        "arm": "value_jg",
+        "id": "selective_copy__value_jg__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 612040704,
+      "wall_seconds": 60.17327317599984
+    },
+    {
+      "child_cpu_seconds": 9.908520000000001,
+      "exit_code": 0,
+      "id": "mqar__mamba1__seed881107",
+      "job": {
+        "arm": "mamba1",
+        "id": "mqar__mamba1__seed881107",
+        "learning_rate": 0.001,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 429989888,
+      "wall_seconds": 9.961613371000112
+    },
+    {
+      "child_cpu_seconds": 8.078759,
+      "exit_code": 0,
+      "id": "selective_copy__two_gates__seed881105",
+      "job": {
+        "arm": "two_gates",
+        "id": "selective_copy__two_gates__seed881105",
+        "learning_rate": 0.001,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 370315264,
+      "wall_seconds": 8.098486835999665
+    },
+    {
+      "child_cpu_seconds": 8.450504,
+      "exit_code": 0,
+      "id": "selective_copy__lif_snn__seed881104",
+      "job": {
+        "arm": "lif_snn",
+        "id": "selective_copy__lif_snn__seed881104",
+        "learning_rate": 0.001,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 371707904,
+      "wall_seconds": 8.478730985999846
+    },
+    {
+      "child_cpu_seconds": 56.841351,
+      "exit_code": 0,
+      "id": "selective_copy__value_j__seed881105",
+      "job": {
+        "arm": "value_j",
+        "id": "selective_copy__value_j__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 598204416,
+      "wall_seconds": 57.11336086900019
+    },
+    {
+      "child_cpu_seconds": 6.712733999999999,
+      "exit_code": 0,
+      "id": "mqar__transformer__seed881106",
+      "job": {
+        "arm": "transformer",
+        "id": "mqar__transformer__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 375648256,
+      "wall_seconds": 6.728298084000016
+    },
+    {
+      "child_cpu_seconds": 57.593358,
+      "exit_code": 0,
+      "id": "selective_copy__value_jg__seed881104",
+      "job": {
+        "arm": "value_jg",
+        "id": "selective_copy__value_jg__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 585039872,
+      "wall_seconds": 57.837206113999855
+    },
+    {
+      "child_cpu_seconds": 186.323525,
+      "exit_code": 0,
+      "id": "selective_copy__value_fh__seed881101",
+      "job": {
+        "arm": "value_fh",
+        "id": "selective_copy__value_fh__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 968720384,
+      "wall_seconds": 187.18620082899997
+    },
+    {
+      "child_cpu_seconds": 8.219502,
+      "exit_code": 0,
+      "id": "selective_copy__lif_snn__seed881106",
+      "job": {
+        "arm": "lif_snn",
+        "id": "selective_copy__lif_snn__seed881106",
+        "learning_rate": 0.001,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 371924992,
+      "wall_seconds": 8.251810399000078
+    },
+    {
+      "child_cpu_seconds": 57.866058,
+      "exit_code": 0,
+      "id": "selective_copy__value_jg__seed881106",
+      "job": {
+        "arm": "value_jg",
+        "id": "selective_copy__value_jg__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 598941696,
+      "wall_seconds": 58.02399221199994
+    },
+    {
+      "child_cpu_seconds": 57.259572,
+      "exit_code": 0,
+      "id": "mqar__freeze_content__seed881101",
+      "job": {
+        "arm": "freeze_content",
+        "id": "mqar__freeze_content__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 607608832,
+      "wall_seconds": 57.517487874999915
+    },
+    {
+      "child_cpu_seconds": 10.774209,
+      "exit_code": 0,
+      "id": "mqar__mamba1__seed881106",
+      "job": {
+        "arm": "mamba1",
+        "id": "mqar__mamba1__seed881106",
+        "learning_rate": 0.001,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 430632960,
+      "wall_seconds": 10.902028600999984
+    },
+    {
+      "child_cpu_seconds": 58.275059,
+      "exit_code": 0,
+      "id": "mqar__value_ordinary__seed881103",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "mqar__value_ordinary__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 598630400,
+      "wall_seconds": 58.77614641700029
+    },
+    {
+      "child_cpu_seconds": 56.822329999999994,
+      "exit_code": 0,
+      "id": "selective_copy__value_ordinary__seed881108",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "selective_copy__value_ordinary__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 567062528,
+      "wall_seconds": 57.101489636000224
+    },
+    {
+      "child_cpu_seconds": 57.767002,
+      "exit_code": 0,
+      "id": "mqar__freeze_content__seed881108",
+      "job": {
+        "arm": "freeze_content",
+        "id": "mqar__freeze_content__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 597467136,
+      "wall_seconds": 57.95812269700036
+    },
+    {
+      "child_cpu_seconds": 58.501278,
+      "exit_code": 0,
+      "id": "mqar__value_j__seed881108",
+      "job": {
+        "arm": "value_j",
+        "id": "mqar__value_j__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 608636928,
+      "wall_seconds": 58.89293022600032
+    },
+    {
+      "child_cpu_seconds": 56.350514,
+      "exit_code": 0,
+      "id": "selective_copy__value_margin__seed881106",
+      "job": {
+        "arm": "value_margin",
+        "id": "selective_copy__value_margin__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 566898688,
+      "wall_seconds": 56.642034673000126
+    },
+    {
+      "child_cpu_seconds": 59.295842,
+      "exit_code": 0,
+      "id": "mqar__value_ordinary__seed881107",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "mqar__value_ordinary__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 606896128,
+      "wall_seconds": 59.45149622000008
+    },
+    {
+      "child_cpu_seconds": 57.025681,
+      "exit_code": 0,
+      "id": "selective_copy__learned_jg__seed881104",
+      "job": {
+        "arm": "learned_jg",
+        "id": "selective_copy__learned_jg__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 573448192,
+      "wall_seconds": 57.15358488699985
+    },
+    {
+      "child_cpu_seconds": 51.230494,
+      "exit_code": 0,
+      "id": "selective_copy__fixed_ordinary__seed881107",
+      "job": {
+        "arm": "fixed_ordinary",
+        "id": "selective_copy__fixed_ordinary__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 540758016,
+      "wall_seconds": 51.49457038999981
+    },
+    {
+      "child_cpu_seconds": 57.620778,
+      "exit_code": 0,
+      "id": "selective_copy__value_ordinary__seed881103",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "selective_copy__value_ordinary__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 607436800,
+      "wall_seconds": 57.93995322699993
+    },
+    {
+      "child_cpu_seconds": 59.845416,
+      "exit_code": 0,
+      "id": "mqar__freeze_boundary__seed881106",
+      "job": {
+        "arm": "freeze_boundary",
+        "id": "mqar__freeze_boundary__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 610512896,
+      "wall_seconds": 60.02948126399997
+    },
+    {
+      "child_cpu_seconds": 61.587371999999995,
+      "exit_code": 0,
+      "id": "mqar__value_j__seed881105",
+      "job": {
+        "arm": "value_j",
+        "id": "mqar__value_j__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 605020160,
+      "wall_seconds": 61.85518747600008
+    },
+    {
+      "child_cpu_seconds": 58.818607,
+      "exit_code": 0,
+      "id": "mqar__freeze_dynamics__seed881104",
+      "job": {
+        "arm": "freeze_dynamics",
+        "id": "mqar__freeze_dynamics__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 626843648,
+      "wall_seconds": 59.22512694499983
+    },
+    {
+      "child_cpu_seconds": 59.600735,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_reset__seed881103",
+      "job": {
+        "arm": "freeze_reset",
+        "id": "selective_copy__freeze_reset__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 621395968,
+      "wall_seconds": 59.842876015
+    },
+    {
+      "child_cpu_seconds": 52.169472999999996,
+      "exit_code": 0,
+      "id": "mqar__fixed_ordinary__seed881104",
+      "job": {
+        "arm": "fixed_ordinary",
+        "id": "mqar__fixed_ordinary__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 589172736,
+      "wall_seconds": 52.40637323200008
+    },
+    {
+      "child_cpu_seconds": 59.169326000000005,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_dynamics__seed881107",
+      "job": {
+        "arm": "freeze_dynamics",
+        "id": "selective_copy__freeze_dynamics__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 602636288,
+      "wall_seconds": 59.53374243899998
+    },
+    {
+      "child_cpu_seconds": 8.630718,
+      "exit_code": 0,
+      "id": "mqar__lif_snn__seed881105",
+      "job": {
+        "arm": "lif_snn",
+        "id": "mqar__lif_snn__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 371093504,
+      "wall_seconds": 8.659753816000375
+    },
+    {
+      "child_cpu_seconds": 58.699887,
+      "exit_code": 0,
+      "id": "selective_copy__value_g__seed881107",
+      "job": {
+        "arm": "value_g",
+        "id": "selective_copy__value_g__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 586063872,
+      "wall_seconds": 59.03485489200011
+    },
+    {
+      "child_cpu_seconds": 55.11166,
+      "exit_code": 0,
+      "id": "mqar__learned_ordinary__seed881105",
+      "job": {
+        "arm": "learned_ordinary",
+        "id": "mqar__learned_ordinary__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 581242880,
+      "wall_seconds": 55.4044602150002
+    },
+    {
+      "child_cpu_seconds": 58.079032999999995,
+      "exit_code": 0,
+      "id": "mqar__freeze_dynamics__seed881106",
+      "job": {
+        "arm": "freeze_dynamics",
+        "id": "mqar__freeze_dynamics__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 596131840,
+      "wall_seconds": 58.16949488699993
+    },
+    {
+      "child_cpu_seconds": 58.053978,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_dynamics__seed881104",
+      "job": {
+        "arm": "freeze_dynamics",
+        "id": "selective_copy__freeze_dynamics__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 609906688,
+      "wall_seconds": 58.36514672600015
+    },
+    {
+      "child_cpu_seconds": 56.431663,
+      "exit_code": 0,
+      "id": "mqar__value_ordinary__seed881101",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "mqar__value_ordinary__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 609255424,
+      "wall_seconds": 56.65380821999997
+    },
+    {
+      "child_cpu_seconds": 55.309222000000005,
+      "exit_code": 0,
+      "id": "mqar__learned_jg__seed881102",
+      "job": {
+        "arm": "learned_jg",
+        "id": "mqar__learned_jg__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 583471104,
+      "wall_seconds": 55.55395345199986
+    },
+    {
+      "child_cpu_seconds": 7.900051,
+      "exit_code": 0,
+      "id": "selective_copy__lif_snn__seed881105",
+      "job": {
+        "arm": "lif_snn",
+        "id": "selective_copy__lif_snn__seed881105",
+        "learning_rate": 0.001,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 371961856,
+      "wall_seconds": 7.9231238390002545
+    },
+    {
+      "child_cpu_seconds": 55.962561,
+      "exit_code": 0,
+      "id": "mqar__learned_jg__seed881106",
+      "job": {
+        "arm": "learned_jg",
+        "id": "mqar__learned_jg__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 603066368,
+      "wall_seconds": 56.2484319969999
+    },
+    {
+      "child_cpu_seconds": 57.126241,
+      "exit_code": 0,
+      "id": "mqar__freeze_refractory__seed881101",
+      "job": {
+        "arm": "freeze_refractory",
+        "id": "mqar__freeze_refractory__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 585248768,
+      "wall_seconds": 57.489183671999854
+    },
+    {
+      "child_cpu_seconds": 57.394955,
+      "exit_code": 0,
+      "id": "selective_copy__value_j__seed881103",
+      "job": {
+        "arm": "value_j",
+        "id": "selective_copy__value_j__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 614481920,
+      "wall_seconds": 57.68073677300026
+    },
+    {
+      "child_cpu_seconds": 53.574537,
+      "exit_code": 0,
+      "id": "selective_copy__value_margin__seed881103",
+      "job": {
+        "arm": "value_margin",
+        "id": "selective_copy__value_margin__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 572833792,
+      "wall_seconds": 53.725363301000016
+    },
+    {
+      "child_cpu_seconds": 57.723203999999996,
+      "exit_code": 0,
+      "id": "selective_copy__value_j__seed881101",
+      "job": {
+        "arm": "value_j",
+        "id": "selective_copy__value_j__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 608559104,
+      "wall_seconds": 58.06374344999995
+    },
+    {
+      "child_cpu_seconds": 57.681731,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_content__seed881108",
+      "job": {
+        "arm": "freeze_content",
+        "id": "selective_copy__freeze_content__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 624467968,
+      "wall_seconds": 58.0913737840001
+    },
+    {
+      "child_cpu_seconds": 54.716685999999996,
+      "exit_code": 0,
+      "id": "selective_copy__learned_jg__seed881107",
+      "job": {
+        "arm": "learned_jg",
+        "id": "selective_copy__learned_jg__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 629010432,
+      "wall_seconds": 54.84935134299985
+    },
+    {
+      "child_cpu_seconds": 8.16461,
+      "exit_code": 0,
+      "id": "mqar__two_gates__seed881101",
+      "job": {
+        "arm": "two_gates",
+        "id": "mqar__two_gates__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 369799168,
+      "wall_seconds": 8.206185597000058
+    },
+    {
+      "child_cpu_seconds": 183.01745899999997,
+      "exit_code": 0,
+      "id": "selective_copy__value_fh__seed881105",
+      "job": {
+        "arm": "value_fh",
+        "id": "selective_copy__value_fh__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 972173312,
+      "wall_seconds": 183.45269670400012
+    },
+    {
+      "child_cpu_seconds": 10.536863,
+      "exit_code": 0,
+      "id": "selective_copy__mamba1__seed881101",
+      "job": {
+        "arm": "mamba1",
+        "id": "selective_copy__mamba1__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 429637632,
+      "wall_seconds": 10.606302368999877
+    },
+    {
+      "child_cpu_seconds": 54.589833999999996,
+      "exit_code": 0,
+      "id": "selective_copy__learned_ordinary__seed881106",
+      "job": {
+        "arm": "learned_ordinary",
+        "id": "selective_copy__learned_ordinary__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 583774208,
+      "wall_seconds": 54.72465476900015
+    },
+    {
+      "child_cpu_seconds": 56.700801000000006,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_refractory__seed881106",
+      "job": {
+        "arm": "freeze_refractory",
+        "id": "selective_copy__freeze_refractory__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 586055680,
+      "wall_seconds": 57.118685925000136
+    },
+    {
+      "child_cpu_seconds": 9.998006,
+      "exit_code": 0,
+      "id": "selective_copy__mamba1__seed881108",
+      "job": {
+        "arm": "mamba1",
+        "id": "selective_copy__mamba1__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 429514752,
+      "wall_seconds": 10.04701926000007
+    },
+    {
+      "child_cpu_seconds": 57.979485,
+      "exit_code": 0,
+      "id": "mqar__freeze_boundary__seed881108",
+      "job": {
+        "arm": "freeze_boundary",
+        "id": "mqar__freeze_boundary__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 622764032,
+      "wall_seconds": 58.11500332800006
+    },
+    {
+      "child_cpu_seconds": 59.048917,
+      "exit_code": 0,
+      "id": "mqar__value_jg__seed881107",
+      "job": {
+        "arm": "value_jg",
+        "id": "mqar__value_jg__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 610426880,
+      "wall_seconds": 59.263408516000254
+    },
+    {
+      "child_cpu_seconds": 55.017216999999995,
+      "exit_code": 0,
+      "id": "mqar__learned_jg__seed881105",
+      "job": {
+        "arm": "learned_jg",
+        "id": "mqar__learned_jg__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 606375936,
+      "wall_seconds": 55.33295082700033
+    },
+    {
+      "child_cpu_seconds": 56.139089999999996,
+      "exit_code": 0,
+      "id": "mqar__value_margin__seed881106",
+      "job": {
+        "arm": "value_margin",
+        "id": "mqar__value_margin__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 562794496,
+      "wall_seconds": 56.3350849149997
+    },
+    {
+      "child_cpu_seconds": 55.545193999999995,
+      "exit_code": 0,
+      "id": "mqar__learned_ordinary__seed881108",
+      "job": {
+        "arm": "learned_ordinary",
+        "id": "mqar__learned_ordinary__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 604385280,
+      "wall_seconds": 55.73260852400017
+    },
+    {
+      "child_cpu_seconds": 53.353331000000004,
+      "exit_code": 0,
+      "id": "mqar__fixed_jg__seed881104",
+      "job": {
+        "arm": "fixed_jg",
+        "id": "mqar__fixed_jg__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 589004800,
+      "wall_seconds": 53.547384645999955
+    },
+    {
+      "child_cpu_seconds": 56.39532199999999,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_refractory__seed881107",
+      "job": {
+        "arm": "freeze_refractory",
+        "id": "selective_copy__freeze_refractory__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 628985856,
+      "wall_seconds": 56.5755620330001
+    },
+    {
+      "child_cpu_seconds": 57.740407,
+      "exit_code": 0,
+      "id": "mqar__value_margin__seed881101",
+      "job": {
+        "arm": "value_margin",
+        "id": "mqar__value_margin__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 600174592,
+      "wall_seconds": 57.895966719999706
+    },
+    {
+      "child_cpu_seconds": 186.067345,
+      "exit_code": 0,
+      "id": "selective_copy__value_fh__seed881107",
+      "job": {
+        "arm": "value_fh",
+        "id": "selective_copy__value_fh__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 969789440,
+      "wall_seconds": 187.0853059699998
+    },
+    {
+      "child_cpu_seconds": 50.983034,
+      "exit_code": 0,
+      "id": "selective_copy__fixed_ordinary__seed881104",
+      "job": {
+        "arm": "fixed_ordinary",
+        "id": "selective_copy__fixed_ordinary__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 581939200,
+      "wall_seconds": 51.17661870399979
+    },
+    {
+      "child_cpu_seconds": 49.831184,
+      "exit_code": 0,
+      "id": "mqar__fixed_ordinary__seed881105",
+      "job": {
+        "arm": "fixed_ordinary",
+        "id": "mqar__fixed_ordinary__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 588099584,
+      "wall_seconds": 50.052556918999926
+    },
+    {
+      "child_cpu_seconds": 51.577588,
+      "exit_code": 0,
+      "id": "mqar__fixed_ordinary__seed881106",
+      "job": {
+        "arm": "fixed_ordinary",
+        "id": "mqar__fixed_ordinary__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 571633664,
+      "wall_seconds": 51.686755592999816
+    },
+    {
+      "child_cpu_seconds": 56.773126999999995,
+      "exit_code": 0,
+      "id": "selective_copy__value_margin__seed881104",
+      "job": {
+        "arm": "value_margin",
+        "id": "selective_copy__value_margin__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 575741952,
+      "wall_seconds": 57.059266751999985
+    },
+    {
+      "child_cpu_seconds": 59.863894,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_dynamics__seed881106",
+      "job": {
+        "arm": "freeze_dynamics",
+        "id": "selective_copy__freeze_dynamics__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 599126016,
+      "wall_seconds": 60.13038650599992
+    },
+    {
+      "child_cpu_seconds": 59.47905,
+      "exit_code": 0,
+      "id": "mqar__value_jg__seed881101",
+      "job": {
+        "arm": "value_jg",
+        "id": "mqar__value_jg__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 609460224,
+      "wall_seconds": 59.7989037719999
+    },
+    {
+      "child_cpu_seconds": 6.686898,
+      "exit_code": 0,
+      "id": "selective_copy__transformer__seed881104",
+      "job": {
+        "arm": "transformer",
+        "id": "selective_copy__transformer__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 378044416,
+      "wall_seconds": 6.724131038999985
+    },
+    {
+      "child_cpu_seconds": 7.75687,
+      "exit_code": 0,
+      "id": "selective_copy__two_gates__seed881107",
+      "job": {
+        "arm": "two_gates",
+        "id": "selective_copy__two_gates__seed881107",
+        "learning_rate": 0.001,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 370044928,
+      "wall_seconds": 7.788942967999901
+    },
+    {
+      "child_cpu_seconds": 8.141435,
+      "exit_code": 0,
+      "id": "selective_copy__two_gates__seed881108",
+      "job": {
+        "arm": "two_gates",
+        "id": "selective_copy__two_gates__seed881108",
+        "learning_rate": 0.001,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 369905664,
+      "wall_seconds": 8.168610571000045
+    },
+    {
+      "child_cpu_seconds": 57.87164,
+      "exit_code": 0,
+      "id": "mqar__value_g__seed881102",
+      "job": {
+        "arm": "value_g",
+        "id": "mqar__value_g__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 640630784,
+      "wall_seconds": 58.20613447799997
+    },
+    {
+      "child_cpu_seconds": 56.571002,
+      "exit_code": 0,
+      "id": "mqar__value_ordinary__seed881102",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "mqar__value_ordinary__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 585048064,
+      "wall_seconds": 56.78285158699964
+    },
+    {
+      "child_cpu_seconds": 57.54007,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_dynamics__seed881103",
+      "job": {
+        "arm": "freeze_dynamics",
+        "id": "selective_copy__freeze_dynamics__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 614768640,
+      "wall_seconds": 58.12696638699981
+    },
+    {
+      "child_cpu_seconds": 57.198226,
+      "exit_code": 0,
+      "id": "selective_copy__value_jg__seed881102",
+      "job": {
+        "arm": "value_jg",
+        "id": "selective_copy__value_jg__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 581279744,
+      "wall_seconds": 57.51731064700016
+    },
+    {
+      "child_cpu_seconds": 59.099579,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_reset__seed881107",
+      "job": {
+        "arm": "freeze_reset",
+        "id": "selective_copy__freeze_reset__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 610840576,
+      "wall_seconds": 59.3063405490002
+    },
+    {
+      "child_cpu_seconds": 54.063334000000005,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_content__seed881102",
+      "job": {
+        "arm": "freeze_content",
+        "id": "selective_copy__freeze_content__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 578166784,
+      "wall_seconds": 54.360726257999886
+    },
+    {
+      "child_cpu_seconds": 54.990655000000004,
+      "exit_code": 0,
+      "id": "mqar__learned_jg__seed881108",
+      "job": {
+        "arm": "learned_jg",
+        "id": "mqar__learned_jg__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 582537216,
+      "wall_seconds": 55.21119857699978
+    },
+    {
+      "child_cpu_seconds": 187.267852,
+      "exit_code": 0,
+      "id": "mqar__value_fh__seed881101",
+      "job": {
+        "arm": "value_fh",
+        "id": "mqar__value_fh__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 972386304,
+      "wall_seconds": 188.1379485460002
+    },
+    {
+      "child_cpu_seconds": 51.218900000000005,
+      "exit_code": 0,
+      "id": "selective_copy__fixed_ordinary__seed881102",
+      "job": {
+        "arm": "fixed_ordinary",
+        "id": "selective_copy__fixed_ordinary__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 585248768,
+      "wall_seconds": 51.51959063200002
+    },
+    {
+      "child_cpu_seconds": 6.619688999999999,
+      "exit_code": 0,
+      "id": "selective_copy__transformer__seed881107",
+      "job": {
+        "arm": "transformer",
+        "id": "selective_copy__transformer__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 378224640,
+      "wall_seconds": 6.634373361999678
+    },
+    {
+      "child_cpu_seconds": 55.737103000000005,
+      "exit_code": 0,
+      "id": "selective_copy__value_ordinary__seed881107",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "selective_copy__value_ordinary__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 614461440,
+      "wall_seconds": 56.074640013000135
+    },
+    {
+      "child_cpu_seconds": 6.730499,
+      "exit_code": 0,
+      "id": "selective_copy__transformer__seed881103",
+      "job": {
+        "arm": "transformer",
+        "id": "selective_copy__transformer__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 377610240,
+      "wall_seconds": 6.762340344999757
+    },
+    {
+      "child_cpu_seconds": 56.959148,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_reset__seed881101",
+      "job": {
+        "arm": "freeze_reset",
+        "id": "selective_copy__freeze_reset__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 612597760,
+      "wall_seconds": 57.192935660999865
+    },
+    {
+      "child_cpu_seconds": 56.487389,
+      "exit_code": 0,
+      "id": "mqar__value_ordinary__seed881104",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "mqar__value_ordinary__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 612413440,
+      "wall_seconds": 56.6076150910003
+    },
+    {
+      "child_cpu_seconds": 58.276327,
+      "exit_code": 0,
+      "id": "mqar__value_j__seed881104",
+      "job": {
+        "arm": "value_j",
+        "id": "mqar__value_j__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 618962944,
+      "wall_seconds": 58.637311082999986
+    },
+    {
+      "child_cpu_seconds": 57.470942,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_refractory__seed881102",
+      "job": {
+        "arm": "freeze_refractory",
+        "id": "selective_copy__freeze_refractory__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 571809792,
+      "wall_seconds": 57.677135235999685
+    },
+    {
+      "child_cpu_seconds": 57.173308,
+      "exit_code": 0,
+      "id": "selective_copy__learned_jg__seed881105",
+      "job": {
+        "arm": "learned_jg",
+        "id": "selective_copy__learned_jg__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 597135360,
+      "wall_seconds": 57.299246997999944
+    },
+    {
+      "child_cpu_seconds": 59.761239,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_dynamics__seed881105",
+      "job": {
+        "arm": "freeze_dynamics",
+        "id": "selective_copy__freeze_dynamics__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 596688896,
+      "wall_seconds": 60.10879676600052
+    },
+    {
+      "child_cpu_seconds": 6.553802,
+      "exit_code": 0,
+      "id": "selective_copy__transformer__seed881101",
+      "job": {
+        "arm": "transformer",
+        "id": "selective_copy__transformer__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 377389056,
+      "wall_seconds": 6.572066204999828
+    },
+    {
+      "child_cpu_seconds": 57.206230000000005,
+      "exit_code": 0,
+      "id": "mqar__value_margin__seed881104",
+      "job": {
+        "arm": "value_margin",
+        "id": "mqar__value_margin__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 599232512,
+      "wall_seconds": 57.618033235999974
+    },
+    {
+      "child_cpu_seconds": 57.783718,
+      "exit_code": 0,
+      "id": "selective_copy__learned_ordinary__seed881105",
+      "job": {
+        "arm": "learned_ordinary",
+        "id": "selective_copy__learned_ordinary__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 605839360,
+      "wall_seconds": 58.03998699300064
+    },
+    {
+      "child_cpu_seconds": 58.49104,
+      "exit_code": 0,
+      "id": "mqar__value_g__seed881103",
+      "job": {
+        "arm": "value_g",
+        "id": "mqar__value_g__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 627978240,
+      "wall_seconds": 58.607921673999954
+    },
+    {
+      "child_cpu_seconds": 60.712253,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_dynamics__seed881101",
+      "job": {
+        "arm": "freeze_dynamics",
+        "id": "selective_copy__freeze_dynamics__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 600231936,
+      "wall_seconds": 61.21709867200025
+    },
+    {
+      "child_cpu_seconds": 8.637222,
+      "exit_code": 0,
+      "id": "mqar__lif_snn__seed881107",
+      "job": {
+        "arm": "lif_snn",
+        "id": "mqar__lif_snn__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 370311168,
+      "wall_seconds": 8.682880845
+    },
+    {
+      "child_cpu_seconds": 187.43414,
+      "exit_code": 0,
+      "id": "selective_copy__value_fh__seed881106",
+      "job": {
+        "arm": "value_fh",
+        "id": "selective_copy__value_fh__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 950689792,
+      "wall_seconds": 187.89272415699998
+    },
+    {
+      "child_cpu_seconds": 59.708944,
+      "exit_code": 0,
+      "id": "mqar__freeze_reset__seed881102",
+      "job": {
+        "arm": "freeze_reset",
+        "id": "mqar__freeze_reset__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 575643648,
+      "wall_seconds": 60.11327556000015
+    },
+    {
+      "child_cpu_seconds": 57.716352,
+      "exit_code": 0,
+      "id": "selective_copy__learned_jg__seed881106",
+      "job": {
+        "arm": "learned_jg",
+        "id": "selective_copy__learned_jg__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 611852288,
+      "wall_seconds": 57.84172185999978
+    },
+    {
+      "child_cpu_seconds": 59.429736,
+      "exit_code": 0,
+      "id": "selective_copy__value_g__seed881105",
+      "job": {
+        "arm": "value_g",
+        "id": "selective_copy__value_g__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 576712704,
+      "wall_seconds": 59.77703344299971
+    },
+    {
+      "child_cpu_seconds": 61.060556999999996,
+      "exit_code": 0,
+      "id": "mqar__freeze_reset__seed881105",
+      "job": {
+        "arm": "freeze_reset",
+        "id": "mqar__freeze_reset__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 622751744,
+      "wall_seconds": 61.33949983399998
+    },
+    {
+      "child_cpu_seconds": 60.832953,
+      "exit_code": 0,
+      "id": "mqar__freeze_reset__seed881108",
+      "job": {
+        "arm": "freeze_reset",
+        "id": "mqar__freeze_reset__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 570990592,
+      "wall_seconds": 61.04155061700021
+    },
+    {
+      "child_cpu_seconds": 59.97765,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_refractory__seed881105",
+      "job": {
+        "arm": "freeze_refractory",
+        "id": "selective_copy__freeze_refractory__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 593018880,
+      "wall_seconds": 60.2222458389997
+    },
+    {
+      "child_cpu_seconds": 56.128867,
+      "exit_code": 0,
+      "id": "mqar__value_margin__seed881103",
+      "job": {
+        "arm": "value_margin",
+        "id": "mqar__value_margin__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 578543616,
+      "wall_seconds": 56.35801304300003
+    },
+    {
+      "child_cpu_seconds": 57.392087,
+      "exit_code": 0,
+      "id": "selective_copy__learned_jg__seed881102",
+      "job": {
+        "arm": "learned_jg",
+        "id": "selective_copy__learned_jg__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 604131328,
+      "wall_seconds": 57.61900516700007
+    },
+    {
+      "child_cpu_seconds": 10.670612,
+      "exit_code": 0,
+      "id": "selective_copy__mamba1__seed881103",
+      "job": {
+        "arm": "mamba1",
+        "id": "selective_copy__mamba1__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 426795008,
+      "wall_seconds": 10.694385001999763
+    },
+    {
+      "child_cpu_seconds": 55.713335,
+      "exit_code": 0,
+      "id": "mqar__learned_ordinary__seed881104",
+      "job": {
+        "arm": "learned_ordinary",
+        "id": "mqar__learned_ordinary__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 596049920,
+      "wall_seconds": 56.08256559199981
+    },
+    {
+      "child_cpu_seconds": 7.9932490000000005,
+      "exit_code": 0,
+      "id": "selective_copy__two_gates__seed881102",
+      "job": {
+        "arm": "two_gates",
+        "id": "selective_copy__two_gates__seed881102",
+        "learning_rate": 0.001,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 370098176,
+      "wall_seconds": 8.02560118600013
+    },
+    {
+      "child_cpu_seconds": 7.866689,
+      "exit_code": 0,
+      "id": "mqar__two_gates__seed881107",
+      "job": {
+        "arm": "two_gates",
+        "id": "mqar__two_gates__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 370462720,
+      "wall_seconds": 7.891309808999722
+    },
+    {
+      "child_cpu_seconds": 59.501109,
+      "exit_code": 0,
+      "id": "selective_copy__value_jg__seed881108",
+      "job": {
+        "arm": "value_jg",
+        "id": "selective_copy__value_jg__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 609599488,
+      "wall_seconds": 59.74858716899962
+    },
+    {
+      "child_cpu_seconds": 59.982799,
+      "exit_code": 0,
+      "id": "mqar__freeze_refractory__seed881106",
+      "job": {
+        "arm": "freeze_refractory",
+        "id": "mqar__freeze_refractory__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 606429184,
+      "wall_seconds": 60.41485102200022
+    },
+    {
+      "child_cpu_seconds": 189.609858,
+      "exit_code": 0,
+      "id": "mqar__value_fh__seed881105",
+      "job": {
+        "arm": "value_fh",
+        "id": "mqar__value_fh__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 965337088,
+      "wall_seconds": 190.17393853399972
+    },
+    {
+      "child_cpu_seconds": 55.468799,
+      "exit_code": 0,
+      "id": "selective_copy__learned_ordinary__seed881103",
+      "job": {
+        "arm": "learned_ordinary",
+        "id": "selective_copy__learned_ordinary__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 589758464,
+      "wall_seconds": 55.605581494000035
+    },
+    {
+      "child_cpu_seconds": 55.640197,
+      "exit_code": 0,
+      "id": "selective_copy__fixed_jg__seed881103",
+      "job": {
+        "arm": "fixed_jg",
+        "id": "selective_copy__fixed_jg__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 584409088,
+      "wall_seconds": 55.92335239300064
+    },
+    {
+      "child_cpu_seconds": 51.966629,
+      "exit_code": 0,
+      "id": "mqar__fixed_ordinary__seed881103",
+      "job": {
+        "arm": "fixed_ordinary",
+        "id": "mqar__fixed_ordinary__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 579993600,
+      "wall_seconds": 52.33007439799985
+    },
+    {
+      "child_cpu_seconds": 58.531137,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_reset__seed881108",
+      "job": {
+        "arm": "freeze_reset",
+        "id": "selective_copy__freeze_reset__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 595095552,
+      "wall_seconds": 58.6438043750004
+    },
+    {
+      "child_cpu_seconds": 59.919354000000006,
+      "exit_code": 0,
+      "id": "mqar__value_jg__seed881105",
+      "job": {
+        "arm": "value_jg",
+        "id": "mqar__value_jg__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 619368448,
+      "wall_seconds": 60.10685421400012
+    },
+    {
+      "child_cpu_seconds": 58.867397999999994,
+      "exit_code": 0,
+      "id": "selective_copy__value_g__seed881108",
+      "job": {
+        "arm": "value_g",
+        "id": "selective_copy__value_g__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 621150208,
+      "wall_seconds": 59.12320097799966
+    },
+    {
+      "child_cpu_seconds": 57.321351,
+      "exit_code": 0,
+      "id": "mqar__freeze_content__seed881105",
+      "job": {
+        "arm": "freeze_content",
+        "id": "mqar__freeze_content__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 618852352,
+      "wall_seconds": 57.56649204000041
+    },
+    {
+      "child_cpu_seconds": 56.270496,
+      "exit_code": 0,
+      "id": "mqar__value_margin__seed881105",
+      "job": {
+        "arm": "value_margin",
+        "id": "mqar__value_margin__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 594169856,
+      "wall_seconds": 56.47371551700053
+    },
+    {
+      "child_cpu_seconds": 56.247115,
+      "exit_code": 0,
+      "id": "selective_copy__value_margin__seed881102",
+      "job": {
+        "arm": "value_margin",
+        "id": "selective_copy__value_margin__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 608673792,
+      "wall_seconds": 56.48461521199988
+    },
+    {
+      "child_cpu_seconds": 10.659792,
+      "exit_code": 0,
+      "id": "mqar__mamba1__seed881108",
+      "job": {
+        "arm": "mamba1",
+        "id": "mqar__mamba1__seed881108",
+        "learning_rate": 0.001,
+        "seed": 881108,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 426971136,
+      "wall_seconds": 10.699862725999992
+    },
+    {
+      "child_cpu_seconds": 58.441992,
+      "exit_code": 0,
+      "id": "mqar__freeze_dynamics__seed881102",
+      "job": {
+        "arm": "freeze_dynamics",
+        "id": "mqar__freeze_dynamics__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 580894720,
+      "wall_seconds": 58.75590835799994
+    },
+    {
+      "child_cpu_seconds": 58.711234,
+      "exit_code": 0,
+      "id": "selective_copy__freeze_reset__seed881105",
+      "job": {
+        "arm": "freeze_reset",
+        "id": "selective_copy__freeze_reset__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 620064768,
+      "wall_seconds": 58.88730087499971
+    },
+    {
+      "child_cpu_seconds": 57.615646999999996,
+      "exit_code": 0,
+      "id": "selective_copy__value_margin__seed881107",
+      "job": {
+        "arm": "value_margin",
+        "id": "selective_copy__value_margin__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 608432128,
+      "wall_seconds": 57.786074361999454
+    },
+    {
+      "child_cpu_seconds": 59.483205999999996,
+      "exit_code": 0,
+      "id": "mqar__freeze_boundary__seed881102",
+      "job": {
+        "arm": "freeze_boundary",
+        "id": "mqar__freeze_boundary__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 619687936,
+      "wall_seconds": 59.70965717799936
+    },
+    {
+      "child_cpu_seconds": 35.853628,
+      "exit_code": 0,
+      "id": "selective_copy__learned_ordinary__seed881102",
+      "job": {
+        "arm": "learned_ordinary",
+        "id": "selective_copy__learned_ordinary__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "fixed",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 584863744,
+      "wall_seconds": 35.88883253199947
+    },
+    {
+      "child_cpu_seconds": 55.164947,
+      "exit_code": 0,
+      "id": "mqar__freeze_boundary__seed881105",
+      "job": {
+        "arm": "freeze_boundary",
+        "id": "mqar__freeze_boundary__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "fixed",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 613040128,
+      "wall_seconds": 55.31977935299983
+    }
+  ],
+  "stage": "fixed",
+  "wall_seconds": 4074.941889089
+}

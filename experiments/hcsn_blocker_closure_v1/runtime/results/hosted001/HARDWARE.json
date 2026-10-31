@@ -1,0 +1,20 @@
+{
+  "affinity_cpus": 4,
+  "cgroup_limits": {
+    "cpu.max": "400000 100000",
+    "memory.current": "1560997888",
+    "memory.max": "8589934592"
+  },
+  "direct_energy_counter_available": false,
+  "energy_counters": [],
+  "energy_scope": "A readable package counter alone would not isolate this process's energy.",
+  "gpu_experiment_executed": false,
+  "joules_measured": null,
+  "logical_cpus_visible": 4,
+  "machine": "x86_64",
+  "nvidia_devices": [],
+  "nvidia_smi": null,
+  "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.41",
+  "python": "3.12.14",
+  "schema": "hcsn-hardware-observation.v1"
+}
