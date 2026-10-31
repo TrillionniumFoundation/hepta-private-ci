@@ -1,0 +1,1745 @@
+{
+  "schema": "hepta.r9.five-priority-acceptance.v1",
+  "created_utc": "2026-10-31T06:41:14.326392+00:00",
+  "evaluation_kind": "read-only synthesis of final JSON evidence; no thresholds, weights, source, or lane manifests changed",
+  "status_vocabulary": {
+    "support": "该具体命题在列明fixture/域中有执行证据支持。",
+    "contradicted": "该具体正面命题在当前fixture中存在明确反例或该轮注册验收结果为否；不是普遍不可能证明。",
+    "open": "当前证据不覆盖或不足以关闭该要求，包括未测能耗和未执行场景。"
+  },
+  "overall_status": "open",
+  "all_five_acceptance_rows_closed": false,
+  "production_activation": false,
+  "priorities": [
+    {
+      "id": "P0_task_value",
+      "priority": "P0",
+      "user_acceptance": "动作regret和最终净效用同时改善",
+      "overall_status": "open",
+      "summary": "相对退化R8有真实改善；first_passage全状态blind regret区间未过，R7仍更好；当前边界目标退化为减少事件收费。",
+      "claims": [
+        {
+          "id": "executed_action_value_improvement",
+          "status": "support",
+          "claim": "精确当前成本+扩域continuation学习相对最新R8，在first_passage blind实际净效用和已访问状态regret上改善。",
+          "scope": "固定已知有限任务；5fit区间；R8为比较基线；不是联合边界训练。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/value/evidence/confirmation02/RESULTS.json",
+              "sha256": "28dc88b9737c29e4b0db3661d940b4c2287951b6a326e8c594b432ec702248e2",
+              "json_pointer": "/aggregate/4/paired_intervals/utility",
+              "observed": {
+                "lower": 0.019145069564746382,
+                "mean": 0.05982060546875001,
+                "upper": 0.10049614137275364
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/evidence/confirmation02/RESULTS.json",
+              "sha256": "28dc88b9737c29e4b0db3661d940b4c2287951b6a326e8c594b432ec702248e2",
+              "json_pointer": "/aggregate/4/exact_delta_intervals/mean_action_regret_visited",
+              "observed": {
+                "lower": -0.028243170441080788,
+                "mean": -0.014482862948823083,
+                "upper": -0.000722555456565379
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/evidence/confirmation02/RESULTS.json",
+              "sha256": "28dc88b9737c29e4b0db3661d940b4c2287951b6a326e8c594b432ec702248e2",
+              "json_pointer": "/aggregate/4/gates/quality",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/evidence/confirmation02/RESULTS.json",
+              "sha256": "28dc88b9737c29e4b0db3661d940b4c2287951b6a326e8c594b432ec702248e2",
+              "json_pointer": "/aggregate/4/gates/cpu_priced",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/audit/RESULTS.json",
+              "sha256": "fa6fc42fb3b25647476c6062120d924f9663554d987447c19295bd44cb6e811e",
+              "json_pointer": "/raw_pairs",
+              "observed": 76800
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/audit/RESULTS.json",
+              "sha256": "fa6fc42fb3b25647476c6062120d924f9663554d987447c19295bd44cb6e811e",
+              "json_pointer": "/replay_max_error",
+              "observed": 0.0
+            }
+          ]
+        },
+        {
+          "id": "first_passage_full_blind_gate_pass",
+          "status": "contradicted",
+          "claim": "本轮first_passage已满足全部预注册blind门槛。",
+          "scope": "五个fit的regret均值均改善，但预注册98.333333%区间跨0；不能换成访问状态regret或单看均值。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/value/evidence/confirmation02/RESULTS.json",
+              "sha256": "28dc88b9737c29e4b0db3661d940b4c2287951b6a326e8c594b432ec702248e2",
+              "json_pointer": "/aggregate/4/all_gates_pass",
+              "observed": false
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/evidence/confirmation02/RESULTS.json",
+              "sha256": "28dc88b9737c29e4b0db3661d940b4c2287951b6a326e8c594b432ec702248e2",
+              "json_pointer": "/aggregate/4/gates/regret",
+              "observed": false
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/evidence/confirmation02/RESULTS.json",
+              "sha256": "28dc88b9737c29e4b0db3661d940b4c2287951b6a326e8c594b432ec702248e2",
+              "json_pointer": "/aggregate/4/exact_delta_intervals/mean_action_regret_all_states",
+              "observed": {
+                "lower": -0.029280689906383283,
+                "mean": -0.01359636701571447,
+                "upper": 0.002087955874954344
+              }
+            }
+          ]
+        },
+        {
+          "id": "r9_beats_best_historical_task_policy",
+          "status": "contradicted",
+          "claim": "本轮新组合R9净效用已超过原R7策略。",
+          "scope": "first_passage与direct的R9均高于R8、低于R7；恢复退化基线损失不等于超过最强既有策略。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/value/evidence/confirmation02/RESULTS.json",
+              "sha256": "28dc88b9737c29e4b0db3661d940b4c2287951b6a326e8c594b432ec702248e2",
+              "json_pointers": [
+                "/records/4/exact/r7/utility",
+                "/records/9/exact/r7/utility",
+                "/records/14/exact/r7/utility",
+                "/records/19/exact/r7/utility",
+                "/records/24/exact/r7/utility"
+              ],
+              "aggregation": "mean",
+              "observed": 0.44725945431827974,
+              "family": "first_passage",
+              "generation": "r7"
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/evidence/confirmation02/RESULTS.json",
+              "sha256": "28dc88b9737c29e4b0db3661d940b4c2287951b6a326e8c594b432ec702248e2",
+              "json_pointers": [
+                "/records/4/exact/r8/utility",
+                "/records/9/exact/r8/utility",
+                "/records/14/exact/r8/utility",
+                "/records/19/exact/r8/utility",
+                "/records/24/exact/r8/utility"
+              ],
+              "aggregation": "mean",
+              "observed": 0.3700843448528247,
+              "family": "first_passage",
+              "generation": "r8"
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/evidence/confirmation02/RESULTS.json",
+              "sha256": "28dc88b9737c29e4b0db3661d940b4c2287951b6a326e8c594b432ec702248e2",
+              "json_pointers": [
+                "/records/4/exact/r9/utility",
+                "/records/9/exact/r9/utility",
+                "/records/14/exact/r9/utility",
+                "/records/19/exact/r9/utility",
+                "/records/24/exact/r9/utility"
+              ],
+              "aggregation": "mean",
+              "observed": 0.4281302634367015,
+              "family": "first_passage",
+              "generation": "r9"
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/evidence/confirmation02/RESULTS.json",
+              "sha256": "28dc88b9737c29e4b0db3661d940b4c2287951b6a326e8c594b432ec702248e2",
+              "json_pointers": [
+                "/records/54/exact/r7/utility",
+                "/records/59/exact/r7/utility",
+                "/records/64/exact/r7/utility",
+                "/records/69/exact/r7/utility",
+                "/records/74/exact/r7/utility"
+              ],
+              "aggregation": "mean",
+              "observed": 0.44991273,
+              "family": "direct",
+              "generation": "r7"
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/evidence/confirmation02/RESULTS.json",
+              "sha256": "28dc88b9737c29e4b0db3661d940b4c2287951b6a326e8c594b432ec702248e2",
+              "json_pointers": [
+                "/records/54/exact/r8/utility",
+                "/records/59/exact/r8/utility",
+                "/records/64/exact/r8/utility",
+                "/records/69/exact/r8/utility",
+                "/records/74/exact/r8/utility"
+              ],
+              "aggregation": "mean",
+              "observed": 0.36828537405975,
+              "family": "direct",
+              "generation": "r8"
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/evidence/confirmation02/RESULTS.json",
+              "sha256": "28dc88b9737c29e4b0db3661d940b4c2287951b6a326e8c594b432ec702248e2",
+              "json_pointers": [
+                "/records/54/exact/r9/utility",
+                "/records/59/exact/r9/utility",
+                "/records/64/exact/r9/utility",
+                "/records/69/exact/r9/utility",
+                "/records/74/exact/r9/utility"
+              ],
+              "aggregation": "mean",
+              "observed": 0.42836818896134005,
+              "family": "direct",
+              "generation": "r9"
+            }
+          ]
+        },
+        {
+          "id": "boundary_adds_business_quality_or_skips_decodes",
+          "status": "contradicted",
+          "claim": "当前task中调高边界在固定公共oracle动作下提高任务质量、发放后业务价值或减少实际决策调用。",
+          "scope": "5120组实际三路执行；固定公共oracle动作；所有收益变化仅为-0.0002×事件次数变化。普通无cell达到相同质量和调用数且少付手续费。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/value/diagnostics/RESULTS.json",
+              "sha256": "a56626566b1024f47ee1eaa33d53bd059d627bf21f9cba483edd355a9ce81a63",
+              "json_pointer": "/ordinary_no_cell",
+              "observed": {
+                "action_regret_sum": 0.0,
+                "correct": 0.8442124999999998,
+                "decisions": 3.003875000000001,
+                "events": 0.0,
+                "mean_action_regret_visited": 0.0,
+                "quality": 0.6884249999999995,
+                "task_cost": 0.033155874999999994,
+                "utility": 0.6537671874999995
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/diagnostics/RESULTS.json",
+              "sha256": "a56626566b1024f47ee1eaa33d53bd059d627bf21f9cba483edd355a9ce81a63",
+              "json_pointers": [
+                "/paired/0/quality_task_return_calls_identical",
+                "/paired/1/quality_task_return_calls_identical",
+                "/paired/2/quality_task_return_calls_identical",
+                "/paired/3/quality_task_return_calls_identical",
+                "/paired/4/quality_task_return_calls_identical"
+              ],
+              "aggregation": "all",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/diagnostics/RESULTS.json",
+              "sha256": "a56626566b1024f47ee1eaa33d53bd059d627bf21f9cba483edd355a9ce81a63",
+              "json_pointers": [
+                "/paired/0/pairs",
+                "/paired/1/pairs",
+                "/paired/2/pairs",
+                "/paired/3/pairs",
+                "/paired/4/pairs"
+              ],
+              "aggregation": "sum",
+              "observed": 5120
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/diagnostics/RESULTS.json",
+              "sha256": "a56626566b1024f47ee1eaa33d53bd059d627bf21f9cba483edd355a9ce81a63",
+              "json_pointer": "/records/0/interventions/2",
+              "observed": {
+                "action_regret_sum": 0.0,
+                "boundary": 0.9781064087067577,
+                "correct": 0.8442124999999998,
+                "decisions": 3.003875,
+                "events": 0.984538128404491,
+                "mean_action_regret_visited": 0.0,
+                "quality": 0.6884249999999995,
+                "raw_boundary": -0.48670305450399437,
+                "raw_offset": 0.0,
+                "task_cost": 0.03315587499999998,
+                "utility": 0.6535702798743186
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/diagnostics/RESULTS.json",
+              "sha256": "a56626566b1024f47ee1eaa33d53bd059d627bf21f9cba483edd355a9ce81a63",
+              "json_pointer": "/records/0/interventions/3",
+              "observed": {
+                "action_regret_sum": 0.0,
+                "boundary": 1.3822054108230795,
+                "correct": 0.8442125,
+                "decisions": 3.003875000000001,
+                "events": 0.8556002103494174,
+                "mean_action_regret_visited": 0.0,
+                "quality": 0.6884250000000001,
+                "raw_boundary": 0.5132969454960057,
+                "raw_offset": 1.0,
+                "task_cost": 0.033155874999999994,
+                "utility": 0.6535960674579302
+              }
+            }
+          ]
+        },
+        {
+          "id": "ordinary_control_passes_registered_improvement",
+          "status": "support",
+          "claim": "普通direct在同信息、同优化cap的新协议下通过四项blind改善门槛。",
+          "scope": "这支持任务值修复可由普通对照获得；不是解析状态不可替代的证据。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/value/evidence/confirmation02/RESULTS.json",
+              "sha256": "28dc88b9737c29e4b0db3661d940b4c2287951b6a326e8c594b432ec702248e2",
+              "json_pointer": "/aggregate/14/all_gates_pass",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/evidence/confirmation02/RESULTS.json",
+              "sha256": "28dc88b9737c29e4b0db3661d940b4c2287951b6a326e8c594b432ec702248e2",
+              "json_pointer": "/aggregate/14/paired_intervals/utility",
+              "observed": {
+                "lower": 0.026123402406239296,
+                "mean": 0.06094882812500001,
+                "upper": 0.09577425384376072
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/evidence/confirmation02/RESULTS.json",
+              "sha256": "28dc88b9737c29e4b0db3661d940b4c2287951b6a326e8c594b432ec702248e2",
+              "json_pointer": "/aggregate/14/exact_delta_intervals/mean_action_regret_all_states",
+              "observed": {
+                "lower": -0.02232798091929286,
+                "mean": -0.013253184273462438,
+                "upper": -0.004178387627632013
+              }
+            }
+          ]
+        },
+        {
+          "id": "joint_boundary_task_value_closure",
+          "status": "open",
+          "claim": "边界、事件触发的真实观测/动作调用、期限、预算与post-fire业务价值形成同一可训练执行闭环。",
+          "scope": "当前Python动作头、native内容/物理owner和任务业务状态仍是分立实验。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/probability_gate_content_savings",
+              "observed": false
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/event_scope",
+              "observed": "Public input/observation schedule; native output does not autonomously decide which required endpoint to omit"
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/diagnostics/RESULTS.json",
+              "sha256": "a56626566b1024f47ee1eaa33d53bd059d627bf21f9cba483edd355a9ce81a63",
+              "json_pointer": "/conclusion_scope",
+              "observed": "Fixed public-optimal actions in this task; no statement about all learned policies or physical energy."
+            }
+          ],
+          "remaining": "把task.step/finite.targets与Owner::interval/commit及业务状态原子快照连接后，重新注册同信息强基线实验。"
+        }
+      ]
+    },
+    {
+      "id": "P0_continuous_events",
+      "priority": "P0",
+      "user_acceptance": "首达分布、次数、价值和梯度随分辨率收敛",
+      "overall_status": "open",
+      "summary": "固定已登记模型的积分/恢复/细化证据得到支持；低噪CTMC粗网格仍拒绝，非正漂移与统一尾项/误差保证仍开放。",
+      "claims": [
+        {
+          "id": "fixed_model_moving_boundary_and_renewal_repair",
+          "status": "support",
+          "claim": "登记的正漂移固定模型中，移动边界第二段概率/梯度、低噪声renewal计数/梯度及独立事件采样通过。",
+          "scope": "16个移动边界点和已登记正漂移噪声尺度；修复积分层，不等于有限电压网格均已合格。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_repair.json",
+              "sha256": "6042be8be85b1c9853278cfd15acd73d4bfca2e35d96fdb8a649fb1fa18dbd77",
+              "json_pointer": "/all_gates_pass",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_repair.json",
+              "sha256": "6042be8be85b1c9853278cfd15acd73d4bfca2e35d96fdb8a649fb1fa18dbd77",
+              "json_pointer": "/gates",
+              "observed": [
+                {
+                  "criterion": "Fixed transition-layer error < 3e-11 against independent maximum-density integral",
+                  "name": "second_leg_transition_probability",
+                  "passed": true
+                },
+                {
+                  "criterion": "All three finite-difference resolutions agree with independent reference within 3e-6",
+                  "name": "second_leg_transition_gradient",
+                  "passed": true
+                },
+                {
+                  "criterion": "All registered positive-drift noise scales are evaluated without internal quadrature domain failure",
+                  "name": "low_noise_renewal_resolves",
+                  "passed": true
+                },
+                {
+                  "criterion": "Count error < 3e-10 against independent log-time density integrals",
+                  "name": "low_noise_renewal_count",
+                  "passed": true
+                },
+                {
+                  "criterion": "Five analytic parameter gradients agree with independent finite differences within 3e-7",
+                  "name": "low_noise_renewal_gradient",
+                  "passed": true
+                },
+                {
+                  "criterion": "Four extra renewal terms change registered gradients < 3e-8; this is not a derivative-tail theorem",
+                  "name": "renewal_gradient_event_extension",
+                  "passed": true
+                },
+                {
+                  "criterion": "Exact Wald/Gamma Monte Carlo agrees within 5 sampling standard errors",
+                  "name": "independent_event_time_sampling",
+                  "passed": true
+                }
+              ]
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_repair.json",
+              "sha256": "6042be8be85b1c9853278cfd15acd73d4bfca2e35d96fdb8a649fb1fa18dbd77",
+              "json_pointers": [
+                "/moving/0/absolute_probability_error",
+                "/moving/1/absolute_probability_error",
+                "/moving/2/absolute_probability_error",
+                "/moving/3/absolute_probability_error",
+                "/moving/4/absolute_probability_error",
+                "/moving/5/absolute_probability_error",
+                "/moving/6/absolute_probability_error",
+                "/moving/7/absolute_probability_error",
+                "/moving/8/absolute_probability_error",
+                "/moving/9/absolute_probability_error",
+                "/moving/10/absolute_probability_error",
+                "/moving/11/absolute_probability_error",
+                "/moving/12/absolute_probability_error",
+                "/moving/13/absolute_probability_error",
+                "/moving/14/absolute_probability_error",
+                "/moving/15/absolute_probability_error"
+              ],
+              "aggregation": "max",
+              "observed": 1.1102230246251565e-16
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_repair.json",
+              "sha256": "6042be8be85b1c9853278cfd15acd73d4bfca2e35d96fdb8a649fb1fa18dbd77",
+              "json_pointer": "/monte_carlo/paths",
+              "observed": 50000
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_repair.json",
+              "sha256": "6042be8be85b1c9853278cfd15acd73d4bfca2e35d96fdb8a649fb1fa18dbd77",
+              "json_pointer": "/deterministic_limit/expected_count",
+              "observed": 2.380133053040952
+            }
+          ]
+        },
+        {
+          "id": "fixed_regular_resolution_value_and_gradient",
+          "status": "support",
+          "claim": "一个固定regular Brownian/reset/Erlang合同的首达、贴现价值与梯度及renewal加密达到已登记门槛。",
+          "scope": "空间审计与额外renewal细网格的经验验证；不是统一连续收敛定理。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/spatial_resolution_verified.json",
+              "sha256": "a74e16a1066ab850655d7d3dbb6b5e1fcb7f9d3db748ae103e0bd4f9c81b60f1",
+              "json_pointer": "/passed",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/spatial_resolution_verified.json",
+              "sha256": "a74e16a1066ab850655d7d3dbb6b5e1fcb7f9d3db748ae103e0bd4f9c81b60f1",
+              "json_pointer": "/gates",
+              "observed": [
+                {
+                  "criterion": "all six analytic image bounds below the preregistered 1e-30 budget",
+                  "name": "lower_truncation_values_and_derivatives",
+                  "passed": true
+                },
+                {
+                  "criterion": "every successive refinement decreases all six absolute errors",
+                  "name": "upwind_all_errors_decrease",
+                  "passed": true
+                },
+                {
+                  "criterion": "last-pair observed order >= 0.85 for all six quantities",
+                  "name": "upwind_last_order",
+                  "passed": true
+                },
+                {
+                  "criterion": "all finest-grid absolute errors < 0.005",
+                  "name": "upwind_final_accuracy",
+                  "passed": true
+                },
+                {
+                  "criterion": "every successive refinement decreases all six absolute errors",
+                  "name": "fitted_all_errors_decrease",
+                  "passed": true
+                },
+                {
+                  "criterion": "last-pair observed order >= 1.8 for all six quantities",
+                  "name": "fitted_last_order",
+                  "passed": true
+                },
+                {
+                  "criterion": "all finest-grid absolute errors < 5e-05",
+                  "name": "fitted_final_accuracy",
+                  "passed": true
+                },
+                {
+                  "criterion": "sparse block-exponential sensitivities agree with fixed-grid central differences within 2e-6",
+                  "name": "finite_matrix_sensitivities",
+                  "passed": true
+                },
+                {
+                  "criterion": "no registered low-noise grid bypasses the unchanged 5% local-variance gate",
+                  "name": "low_noise_coarse_grids_still_rejected",
+                  "passed": true
+                }
+              ]
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_renewal_extension.json",
+              "sha256": "f5832caacb05a6b93193c99278c03703c95f12ebff7dac32598fcdb380f130e8",
+              "json_pointer": "/passed",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_renewal_extension.json",
+              "sha256": "f5832caacb05a6b93193c99278c03703c95f12ebff7dac32598fcdb380f130e8",
+              "json_pointer": "/gates",
+              "observed": {
+                "all_errors_decrease": true,
+                "final_accuracy": true,
+                "observed_order": true
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_renewal_extension.json",
+              "sha256": "f5832caacb05a6b93193c99278c03703c95f12ebff7dac32598fcdb380f130e8",
+              "json_pointer": "/absolute_error",
+              "observed": {
+                "boundary": 0.000874889334539164,
+                "count": 0.0021017965076643996,
+                "drift": 0.0018092845258372847,
+                "recovery_mean": 0.0013146092390793063,
+                "sigma": 0.0026643385747285864
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_renewal_extension.json",
+              "sha256": "f5832caacb05a6b93193c99278c03703c95f12ebff7dac32598fcdb380f130e8",
+              "json_pointer": "/observed_order",
+              "observed": {
+                "boundary": 0.9970268682119143,
+                "count": 0.9986944318534665,
+                "drift": 0.9930848123380621,
+                "recovery_mean": 0.9988114643051476,
+                "sigma": 0.995243569287396
+              }
+            }
+          ]
+        },
+        {
+          "id": "original_renewal_sweep_already_all_passed",
+          "status": "contradicted",
+          "claim": "原renewal sweep本身已全部通过。",
+          "scope": "原upwind最终精度未过；extension通过，原失败保留。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_renewal_resolution.json",
+              "sha256": "9a774d74f8d0ee7c5c30e8f5ca05876c636a695c7ffd5cb8df4b25ef4d7cffb8",
+              "json_pointer": "/passed",
+              "observed": false
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_renewal_resolution.json",
+              "sha256": "9a774d74f8d0ee7c5c30e8f5ca05876c636a695c7ffd5cb8df4b25ef4d7cffb8",
+              "json_pointer": "/gates/2",
+              "observed": {
+                "name": "upwind_final_accuracy",
+                "passed": false
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_renewal_extension.json",
+              "sha256": "f5832caacb05a6b93193c99278c03703c95f12ebff7dac32598fcdb380f130e8",
+              "json_pointer": "/original_result_passed",
+              "observed": false
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_renewal_extension.json",
+              "sha256": "f5832caacb05a6b93193c99278c03703c95f12ebff7dac32598fcdb380f130e8",
+              "json_pointer": "/original_result_not_replaced",
+              "observed": true
+            }
+          ]
+        },
+        {
+          "id": "physical_clock_and_recovery_scales",
+          "status": "support",
+          "claim": "已登记物理时钟变换、恢复半群细化及0.5至5e-7恢复尺度的计数和导数核对通过。",
+          "scope": "固定漂移/噪声和有限phase恢复模型；时钟协变不能替代电压网格收敛。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_clock.json",
+              "sha256": "295d6f67eb705c3a70659ab5536a433d23275af016f4f2cbd2a2171219ab1bde",
+              "json_pointer": "/passed",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_clock.json",
+              "sha256": "295d6f67eb705c3a70659ab5536a433d23275af016f4f2cbd2a2171219ab1bde",
+              "json_pointer": "/gates",
+              "observed": [
+                {
+                  "name": "clock_value_covariance",
+                  "passed": true
+                },
+                {
+                  "name": "clock_gradient_covariance",
+                  "passed": true
+                },
+                {
+                  "name": "recovery_semigroup_refinement",
+                  "passed": true
+                }
+              ]
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/recovery_scale_verified.json",
+              "sha256": "137c1c5e4487fa3bac6c02b0a7cae42371338802ea7d63bfef91476bc834ff3e",
+              "json_pointer": "/passed",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/recovery_scale_verified.json",
+              "sha256": "137c1c5e4487fa3bac6c02b0a7cae42371338802ea7d63bfef91476bc834ff3e",
+              "json_pointer": "/protocol/recovery_means",
+              "observed": [
+                0.5,
+                0.05,
+                0.005,
+                0.0005,
+                5e-05,
+                5e-06,
+                5e-07
+              ]
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/recovery_scale_verified.json",
+              "sha256": "137c1c5e4487fa3bac6c02b0a7cae42371338802ea7d63bfef91476bc834ff3e",
+              "json_pointers": [
+                "/rows/0/count_error",
+                "/rows/1/count_error",
+                "/rows/2/count_error",
+                "/rows/3/count_error",
+                "/rows/4/count_error",
+                "/rows/5/count_error",
+                "/rows/6/count_error"
+              ],
+              "aggregation": "max",
+              "observed": 1.7763568394002505e-15
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/recovery_scale_verified.json",
+              "sha256": "137c1c5e4487fa3bac6c02b0a7cae42371338802ea7d63bfef91476bc834ff3e",
+              "json_pointers": [
+                "/rows/0/gradient_error",
+                "/rows/1/gradient_error",
+                "/rows/2/gradient_error",
+                "/rows/3/gradient_error",
+                "/rows/4/gradient_error",
+                "/rows/5/gradient_error",
+                "/rows/6/gradient_error"
+              ],
+              "aggregation": "max",
+              "observed": 2.8273827723523937e-11
+            }
+          ]
+        },
+        {
+          "id": "low_noise_coarse_ctmc_admissible",
+          "status": "contradicted",
+          "claim": "已测试15至255格低噪声CTMC已经可以准入。",
+          "scope": "10个upwind/fitted网格均被原5%局部方差门槛拒绝；拒绝不是任务收益或收敛成功。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/spatial_resolution_verified.json",
+              "sha256": "a74e16a1066ab850655d7d3dbb6b5e1fcb7f9d3db748ae103e0bd4f9c81b60f1",
+              "json_pointers": [
+                "/low_noise/0/local_resolution_admitted",
+                "/low_noise/1/local_resolution_admitted",
+                "/low_noise/2/local_resolution_admitted",
+                "/low_noise/3/local_resolution_admitted",
+                "/low_noise/4/local_resolution_admitted",
+                "/low_noise/5/local_resolution_admitted",
+                "/low_noise/6/local_resolution_admitted",
+                "/low_noise/7/local_resolution_admitted",
+                "/low_noise/8/local_resolution_admitted",
+                "/low_noise/9/local_resolution_admitted"
+              ],
+              "aggregation": "sum",
+              "observed": 0
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/spatial_resolution_verified.json",
+              "sha256": "a74e16a1066ab850655d7d3dbb6b5e1fcb7f9d3db748ae103e0bd4f9c81b60f1",
+              "json_pointer": "/low_noise/0",
+              "observed": {
+                "extra_variance_ratio": 49.99999999999999,
+                "grid": 15,
+                "local_resolution_admitted": false,
+                "reference_upper_probability": 4.321826006730762e-06,
+                "scheme": "upwind",
+                "upper_probability": 0.31533702655444834
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/spatial_resolution_verified.json",
+              "sha256": "a74e16a1066ab850655d7d3dbb6b5e1fcb7f9d3db748ae103e0bd4f9c81b60f1",
+              "json_pointer": "/low_noise/9",
+              "observed": {
+                "extra_variance_ratio": 2.1370886749840476,
+                "grid": 255,
+                "local_resolution_admitted": false,
+                "reference_upper_probability": 4.321826006730762e-06,
+                "scheme": "fitted",
+                "upper_probability": 0.008199685425939294
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/spatial_resolution_verified.json",
+              "sha256": "a74e16a1066ab850655d7d3dbb6b5e1fcb7f9d3db748ae103e0bd4f9c81b60f1",
+              "json_pointer": "/gates/8",
+              "observed": {
+                "criterion": "no registered low-noise grid bypasses the unchanged 5% local-variance gate",
+                "name": "low_noise_coarse_grids_still_rejected",
+                "passed": true
+              }
+            }
+          ]
+        },
+        {
+          "id": "nonpositive_drift_and_uniform_gradient_tail",
+          "status": "open",
+          "claim": "非正漂移、一般动态边界及带尾项和浮点误差认证的统一连续梯度保证。",
+          "scope": "当前低噪renewal登记域限正漂移；额外项稳定性和有限差分不是梯度尾项/roundoff证书。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_repair.json",
+              "sha256": "6042be8be85b1c9853278cfd15acd73d4bfca2e35d96fdb8a649fb1fa18dbd77",
+              "json_pointer": "/gates/2/criterion",
+              "observed": "All registered positive-drift noise scales are evaluated without internal quadrature domain failure"
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_repair.json",
+              "sha256": "6042be8be85b1c9853278cfd15acd73d4bfca2e35d96fdb8a649fb1fa18dbd77",
+              "json_pointer": "/limitations/1",
+              "observed": "Count-tail bounds do not certify gradient tails or floating-point roundoff."
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/final_renewal_extension.json",
+              "sha256": "f5832caacb05a6b93193c99278c03703c95f12ebff7dac32598fcdb380f130e8",
+              "json_pointer": "/limitations",
+              "observed": [
+                "One fixed regular scalar Brownian/reset/Erlang contract; not a uniform continuum theorem.",
+                "The lower-domain count bound does not certify lower-domain gradient error; total gradient convergence is measured against the unbounded-domain oracle.",
+                "The renewal count-tail bound does not certify derivative-tail error; extra-term stability is diagnostic.",
+                "No observed refinement order implies low-noise coarse-grid admissibility."
+              ]
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/recovery_scale_verified.json",
+              "sha256": "137c1c5e4487fa3bac6c02b0a7cae42371338802ea7d63bfef91476bc834ff3e",
+              "json_pointer": "/rows/6/actual/gradient_tail_certified",
+              "observed": false
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/dynamics/evidence/recovery_scale_verified.json",
+              "sha256": "137c1c5e4487fa3bac6c02b0a7cae42371338802ea7d63bfef91476bc834ff3e",
+              "json_pointer": "/rows/6/actual/roundoff_included",
+              "observed": false
+            }
+          ],
+          "remaining": "新增非正漂移域与一般边界/重入机制的独立参考及冻结验收。"
+        }
+      ]
+    },
+    {
+      "id": "P1_analytic_state_function",
+      "priority": "P1",
+      "user_acceptance": "普通门控或直接Q在同信息、同成本下不能轻易复现同等结果",
+      "overall_status": "contradicted",
+      "summary": "已知模型中的压缩/风险/不规则传播功能成立，但ordinary exact同信息控制给出复现反例；不把该反例推广成所有模型的不可能定理。",
+      "claims": [
+        {
+          "id": "history_compression_irregular_propagation_and_risk",
+          "status": "support",
+          "claim": "已知风险任务中，两累积量状态压缩历史并支持不规则输入、风险查询和精确恢复。",
+          "scope": "4个regime、8192个基础例；16个predictor/regime组合。40B是数值状态载荷，不是Python进程RSS。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/results.json",
+              "sha256": "29977d0d94aa313c63385919e3aac11d04a2af07ea2b1c346d0810ed724e0210",
+              "json_pointer": "/acceptance/numerical_parity",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/results.json",
+              "sha256": "29977d0d94aa313c63385919e3aac11d04a2af07ea2b1c346d0810ed724e0210",
+              "json_pointer": "/acceptance/same_actions",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/results.json",
+              "sha256": "29977d0d94aa313c63385919e3aac11d04a2af07ea2b1c346d0810ed724e0210",
+              "json_pointer": "/acceptance/exact_recovery",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/results.json",
+              "sha256": "29977d0d94aa313c63385919e3aac11d04a2af07ea2b1c346d0810ed724e0210",
+              "json_pointer": "/acceptance/chunking",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/results.json",
+              "sha256": "29977d0d94aa313c63385919e3aac11d04a2af07ea2b1c346d0810ed724e0210",
+              "json_pointer": "/checks/irregular_block_resume",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/results.json",
+              "sha256": "29977d0d94aa313c63385919e3aac11d04a2af07ea2b1c346d0810ed724e0210",
+              "json_pointer": "/quality/0/state_bytes_per_episode",
+              "observed": 40.0
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/results.json",
+              "sha256": "29977d0d94aa313c63385919e3aac11d04a2af07ea2b1c346d0810ed724e0210",
+              "json_pointer": "/quality/0/history_bytes_per_episode",
+              "observed": 768.0
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/results.json",
+              "sha256": "29977d0d94aa313c63385919e3aac11d04a2af07ea2b1c346d0810ed724e0210",
+              "json_pointers": [
+                "/quality/0/action_regret",
+                "/quality/1/action_regret",
+                "/quality/2/action_regret",
+                "/quality/3/action_regret",
+                "/quality/4/action_regret",
+                "/quality/5/action_regret",
+                "/quality/6/action_regret",
+                "/quality/7/action_regret",
+                "/quality/8/action_regret",
+                "/quality/9/action_regret",
+                "/quality/10/action_regret",
+                "/quality/11/action_regret",
+                "/quality/12/action_regret",
+                "/quality/13/action_regret",
+                "/quality/14/action_regret",
+                "/quality/15/action_regret"
+              ],
+              "aggregation": "max",
+              "observed": 0.0
+            }
+          ]
+        },
+        {
+          "id": "ordinary_cannot_reproduce_analytic_state_function",
+          "status": "contradicted",
+          "claim": "普通同信息模型不能在同等或更低成本下重现当前解析状态功能。",
+          "scope": "ordinary_exact四域MSE=0、regret=0，精确恢复；同NumPy IID scalar varying_horizon查询比analytic更便宜。它也使用已知风险算子，反驳的是脉冲独特性，非算子本身无用。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/results.json",
+              "sha256": "29977d0d94aa313c63385919e3aac11d04a2af07ea2b1c346d0810ed724e0210",
+              "json_pointer": "/acceptance/independent_spiking_necessity",
+              "observed": false
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/results.json",
+              "sha256": "29977d0d94aa313c63385919e3aac11d04a2af07ea2b1c346d0810ed724e0210",
+              "json_pointers": [
+                "/quality/3/teacher_mse",
+                "/quality/7/teacher_mse",
+                "/quality/11/teacher_mse",
+                "/quality/15/teacher_mse"
+              ],
+              "aggregation": "max",
+              "observed": 0.0
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/results.json",
+              "sha256": "29977d0d94aa313c63385919e3aac11d04a2af07ea2b1c346d0810ed724e0210",
+              "json_pointers": [
+                "/quality/3/action_regret",
+                "/quality/7/action_regret",
+                "/quality/11/action_regret",
+                "/quality/15/action_regret"
+              ],
+              "aggregation": "max",
+              "observed": 0.0
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/results.json",
+              "sha256": "29977d0d94aa313c63385919e3aac11d04a2af07ea2b1c346d0810ed724e0210",
+              "json_pointers": [
+                "/quality/3/exact_resume",
+                "/quality/7/exact_resume",
+                "/quality/11/exact_resume",
+                "/quality/15/exact_resume"
+              ],
+              "aggregation": "all",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/numpy_comparison.json",
+              "sha256": "a5b80aacc4b77e388bad73415fd8d718e0a9d19e5b404b4dbd10db8880215b53",
+              "json_pointer": "/summary/3",
+              "observed": {
+                "regime": "iid",
+                "family": "analytic_filter",
+                "batch_size": 1,
+                "workload": "varying_horizon",
+                "implementation": "streaming",
+                "median_cpu_seconds": 0.001603281000000012,
+                "median_wall_seconds": 0.001604204997420311,
+                "min_cpu_seconds": 0.0014922660000000199,
+                "max_cpu_seconds": 0.001783638000000004
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/numpy_comparison.json",
+              "sha256": "a5b80aacc4b77e388bad73415fd8d718e0a9d19e5b404b4dbd10db8880215b53",
+              "json_pointer": "/summary/21",
+              "observed": {
+                "regime": "iid",
+                "family": "fixed_ordinary_filter",
+                "batch_size": 1,
+                "workload": "varying_horizon",
+                "implementation": "streaming",
+                "median_cpu_seconds": 0.001490583999999906,
+                "median_wall_seconds": 0.0014913350023562089,
+                "min_cpu_seconds": 0.0014683309999998784,
+                "max_cpu_seconds": 0.0016547170000000833
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/results.json",
+              "sha256": "29977d0d94aa313c63385919e3aac11d04a2af07ea2b1c346d0810ed724e0210",
+              "json_pointer": "/cost_accounting/r8_ordinary_exact_training_cpu_seconds",
+              "observed": 0.0
+            }
+          ]
+        },
+        {
+          "id": "unknown_model_irreducibility_and_event_time_learning",
+          "status": "open",
+          "claim": "未知模型、真实任务或更广不规则间隔下，解析状态具有普通门控/direct不可替代的历史/事件时间功能。",
+          "scope": "当前是已知生成模型的事件概率查询；本轮没有一般架构下界或未知动力学学习证明。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/results.json",
+              "sha256": "29977d0d94aa313c63385919e3aac11d04a2af07ea2b1c346d0810ed724e0210",
+              "json_pointer": "/acceptance/independent_spiking_necessity",
+              "observed": false
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/numpy_comparison.json",
+              "sha256": "a5b80aacc4b77e388bad73415fd8d718e0a9d19e5b404b4dbd10db8880215b53",
+              "json_pointer": "/probability_spike_necessity_proved",
+              "observed": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P1_native_execution",
+      "priority": "P1",
+      "user_acceptance": "连续运行与恢复一致，事件调度真实减少调用",
+      "overall_status": "open",
+      "summary": "统一owner和已确认interval边界真实退出恢复通过；内部提交实际减少，但decode次数不受概率状态控制，任意crash及包内恢复未证。",
+      "claims": [
+        {
+          "id": "unified_owner_native_content_and_restart",
+          "status": "support",
+          "claim": "同一原生owner完成真实content解码及物理状态的持久化，已完成interval边界的真实退出/恢复与连续运行一致。",
+          "scope": "48个运行、24个恢复对照；共享内容/概率物理checkpoint。不是任意崩溃原子性证明。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/passed",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/native_content_inference",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/python_content_inference_in_runtime",
+              "observed": false
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/shared_content_and_physics_checkpoint",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointers": [
+                "/recoveries/0/endpoints_bit_exact",
+                "/recoveries/1/endpoints_bit_exact",
+                "/recoveries/2/endpoints_bit_exact",
+                "/recoveries/3/endpoints_bit_exact",
+                "/recoveries/4/endpoints_bit_exact",
+                "/recoveries/5/endpoints_bit_exact",
+                "/recoveries/6/endpoints_bit_exact",
+                "/recoveries/7/endpoints_bit_exact",
+                "/recoveries/8/endpoints_bit_exact",
+                "/recoveries/9/endpoints_bit_exact",
+                "/recoveries/10/endpoints_bit_exact",
+                "/recoveries/11/endpoints_bit_exact",
+                "/recoveries/12/endpoints_bit_exact",
+                "/recoveries/13/endpoints_bit_exact",
+                "/recoveries/14/endpoints_bit_exact",
+                "/recoveries/15/endpoints_bit_exact",
+                "/recoveries/16/endpoints_bit_exact",
+                "/recoveries/17/endpoints_bit_exact",
+                "/recoveries/18/endpoints_bit_exact",
+                "/recoveries/19/endpoints_bit_exact",
+                "/recoveries/20/endpoints_bit_exact",
+                "/recoveries/21/endpoints_bit_exact",
+                "/recoveries/22/endpoints_bit_exact",
+                "/recoveries/23/endpoints_bit_exact"
+              ],
+              "aggregation": "all",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointers": [
+                "/recoveries/0/endpoints_bit_exact",
+                "/recoveries/1/endpoints_bit_exact",
+                "/recoveries/2/endpoints_bit_exact",
+                "/recoveries/3/endpoints_bit_exact",
+                "/recoveries/4/endpoints_bit_exact",
+                "/recoveries/5/endpoints_bit_exact",
+                "/recoveries/6/endpoints_bit_exact",
+                "/recoveries/7/endpoints_bit_exact",
+                "/recoveries/8/endpoints_bit_exact",
+                "/recoveries/9/endpoints_bit_exact",
+                "/recoveries/10/endpoints_bit_exact",
+                "/recoveries/11/endpoints_bit_exact",
+                "/recoveries/12/endpoints_bit_exact",
+                "/recoveries/13/endpoints_bit_exact",
+                "/recoveries/14/endpoints_bit_exact",
+                "/recoveries/15/endpoints_bit_exact",
+                "/recoveries/16/endpoints_bit_exact",
+                "/recoveries/17/endpoints_bit_exact",
+                "/recoveries/18/endpoints_bit_exact",
+                "/recoveries/19/endpoints_bit_exact",
+                "/recoveries/20/endpoints_bit_exact",
+                "/recoveries/21/endpoints_bit_exact",
+                "/recoveries/22/endpoints_bit_exact",
+                "/recoveries/23/endpoints_bit_exact"
+              ],
+              "aggregation": "count",
+              "observed": 24
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/cost_scope",
+              "observed": "Parent IPC, receipt serialization/fsync and child startup, weight parsing, actual file reads, FullHX inference, physics/native runtime, journal/witness/paired checkpoint, complete owner process restart, shutdown"
+            }
+          ]
+        },
+        {
+          "id": "real_public_schedule_commit_reduction",
+          "status": "support",
+          "claim": "在声明的无中间外部动作义务合同中，owner事件调度真实减少内部物理查询/提交并保持输出。",
+          "scope": "192降至12个提交；93.75%减少；公共端点不省略，不把host请求数变化冒充内部工作减少。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/owner_schedules_intermediate_commits",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointers": [
+                "/pairs/0/commit_reduction",
+                "/pairs/1/commit_reduction",
+                "/pairs/2/commit_reduction",
+                "/pairs/3/commit_reduction",
+                "/pairs/4/commit_reduction",
+                "/pairs/5/commit_reduction",
+                "/pairs/6/commit_reduction",
+                "/pairs/7/commit_reduction",
+                "/pairs/8/commit_reduction",
+                "/pairs/9/commit_reduction",
+                "/pairs/10/commit_reduction",
+                "/pairs/11/commit_reduction",
+                "/pairs/12/commit_reduction",
+                "/pairs/13/commit_reduction",
+                "/pairs/14/commit_reduction",
+                "/pairs/15/commit_reduction",
+                "/pairs/16/commit_reduction",
+                "/pairs/17/commit_reduction",
+                "/pairs/18/commit_reduction",
+                "/pairs/19/commit_reduction",
+                "/pairs/20/commit_reduction",
+                "/pairs/21/commit_reduction",
+                "/pairs/22/commit_reduction",
+                "/pairs/23/commit_reduction"
+              ],
+              "aggregation": "min",
+              "observed": 0.9375
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointers": [
+                "/pairs/0/content_equal",
+                "/pairs/1/content_equal",
+                "/pairs/2/content_equal",
+                "/pairs/3/content_equal",
+                "/pairs/4/content_equal",
+                "/pairs/5/content_equal",
+                "/pairs/6/content_equal",
+                "/pairs/7/content_equal",
+                "/pairs/8/content_equal",
+                "/pairs/9/content_equal",
+                "/pairs/10/content_equal",
+                "/pairs/11/content_equal",
+                "/pairs/12/content_equal",
+                "/pairs/13/content_equal",
+                "/pairs/14/content_equal",
+                "/pairs/15/content_equal",
+                "/pairs/16/content_equal",
+                "/pairs/17/content_equal",
+                "/pairs/18/content_equal",
+                "/pairs/19/content_equal",
+                "/pairs/20/content_equal",
+                "/pairs/21/content_equal",
+                "/pairs/22/content_equal",
+                "/pairs/23/content_equal"
+              ],
+              "aggregation": "all",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointers": [
+                "/pairs/0/signals_equal",
+                "/pairs/1/signals_equal",
+                "/pairs/2/signals_equal",
+                "/pairs/3/signals_equal",
+                "/pairs/4/signals_equal",
+                "/pairs/5/signals_equal",
+                "/pairs/6/signals_equal",
+                "/pairs/7/signals_equal",
+                "/pairs/8/signals_equal",
+                "/pairs/9/signals_equal",
+                "/pairs/10/signals_equal",
+                "/pairs/11/signals_equal",
+                "/pairs/12/signals_equal",
+                "/pairs/13/signals_equal",
+                "/pairs/14/signals_equal",
+                "/pairs/15/signals_equal",
+                "/pairs/16/signals_equal",
+                "/pairs/17/signals_equal",
+                "/pairs/18/signals_equal",
+                "/pairs/19/signals_equal",
+                "/pairs/20/signals_equal",
+                "/pairs/21/signals_equal",
+                "/pairs/22/signals_equal",
+                "/pairs/23/signals_equal"
+              ],
+              "aggregation": "all",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/means/distribution~1dense/native_commits",
+              "observed": 192.0
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/means/distribution~1event/native_commits",
+              "observed": 12.0
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/protocol/observation_contract",
+              "observed": "Piecewise constant public driver, content decoding and observation at every interval endpoint; no intermediate external action obligation"
+            }
+          ]
+        },
+        {
+          "id": "probability_state_controls_content_calls",
+          "status": "contradicted",
+          "claim": "当前概率/脉冲状态已经控制decode，并减少所需内容调用。",
+          "scope": "dense/event均12次decode；收益来自公共interval调度，非概率门自动选择省略内容。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/probability_gate_content_savings",
+              "observed": false
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/event_scope",
+              "observed": "Public input/observation schedule; native output does not autonomously decide which required endpoint to omit"
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/means/distribution~1dense/decoder_calls",
+              "observed": 12.0
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/means/distribution~1event/decoder_calls",
+              "observed": 12.0
+            }
+          ]
+        },
+        {
+          "id": "arbitrary_crash_and_in_packet_resume",
+          "status": "open",
+          "claim": "任意crash时刻及内容包内的中途恢复已经具备与连续执行同等保证。",
+          "scope": "已证已确认interval边界重启；incomplete native/pair commit fail closed，不能等同任意崩溃恢复或包内解码恢复。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/crash_scope",
+              "observed": "Acknowledged completed-interval restarts; arbitrary-crash atomicity is not established; incomplete native/pair commits fail closed"
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/protocol/observation_contract",
+              "observed": "Piecewise constant public driver, content decoding and observation at every interval endpoint; no intermediate external action obligation"
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/protocol/packet_length",
+              "observed": 32
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/faults",
+              "observed": [
+                {
+                  "case": "missing_packet",
+                  "error": "No such file or directory (os error 2)",
+                  "frontier_unchanged": true,
+                  "rejected": true
+                },
+                {
+                  "case": "packet_digest_mismatch",
+                  "error": "content packet digest mismatch",
+                  "frontier_unchanged": true,
+                  "rejected": true
+                },
+                {
+                  "case": "stale_acknowledgement",
+                  "error": "interval envelope/frontier",
+                  "frontier_unchanged": true,
+                  "rejected": true
+                },
+                {
+                  "case": "content_checkpoint_tamper",
+                  "error": "acknowledged pair mismatch",
+                  "rejected": true
+                },
+                {
+                  "case": "content_model_digest_change",
+                  "error": "content weight digest mismatch",
+                  "rejected": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P1_compute_benefit",
+      "priority": "P1",
+      "user_acceptance": "质量—成本比较改善，能耗收益有实际测量",
+      "overall_status": "open",
+      "summary": "存在有条件的generic CPU/写入收益且ordinary同益；同后端并非所有负载更快，解析独特收益未建立，能耗观测为null。",
+      "claims": [
+        {
+          "id": "measured_generic_cpu_and_durable_savings",
+          "status": "support",
+          "claim": "公共interval稀疏提交带来已测CPU和持久化写入减少，普通对照也获益。",
+          "scope": "同一native执行器，包含父IPC、child启动/解析、真实读包、FullHX、journal/witness/checkpoint、恢复和退出；具体fixture，不是整套产品负载。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/means/distribution~1dense",
+              "observed": {
+                "accuracy": 1.0,
+                "child_cpu_seconds": 0.200171875,
+                "cpu_seconds": 0.20506394162499997,
+                "decoder_calls": 12.0,
+                "durable_bytes": 284032.0,
+                "native_commits": 192.0,
+                "peak_child_rss_kib": 29724.0,
+                "wall_seconds": 0.4210006164994411
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/means/distribution~1event",
+              "observed": {
+                "accuracy": 1.0,
+                "child_cpu_seconds": 0.07011825,
+                "cpu_seconds": 0.07404968650000002,
+                "decoder_calls": 12.0,
+                "durable_bytes": 17906.0,
+                "native_commits": 12.0,
+                "peak_child_rss_kib": 30828.0,
+                "wall_seconds": 0.0936016258692689
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/means/ordinary~1dense",
+              "observed": {
+                "accuracy": 1.0,
+                "child_cpu_seconds": 0.205235125,
+                "cpu_seconds": 0.21057131574999996,
+                "decoder_calls": 12.0,
+                "durable_bytes": 283264.0,
+                "native_commits": 192.0,
+                "peak_child_rss_kib": 30092.0,
+                "wall_seconds": 0.41751678262880887
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/means/ordinary~1event",
+              "observed": {
+                "accuracy": 1.0,
+                "child_cpu_seconds": 0.07377587499999999,
+                "cpu_seconds": 0.07737685512499995,
+                "decoder_calls": 12.0,
+                "durable_bytes": 17858.0,
+                "native_commits": 12.0,
+                "peak_child_rss_kib": 30396.0,
+                "wall_seconds": 0.09600951699758298
+              }
+            }
+          ]
+        },
+        {
+          "id": "same_backend_repeated_query_optimization",
+          "status": "support",
+          "claim": "同NumPy后端，缓存充分状态在已测varying_horizon查询负载降低CPU，analytic与ordinary均受益。",
+          "scope": "IID scalar例；完整144条summary保留所有regime/batch/workload，不能用PyTorch/NumPy后端差异声称算子收益。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/numpy_comparison.json",
+              "sha256": "a5b80aacc4b77e388bad73415fd8d718e0a9d19e5b404b4dbd10db8880215b53",
+              "json_pointer": "/parity_passed",
+              "observed": true
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/numpy_comparison.json",
+              "sha256": "a5b80aacc4b77e388bad73415fd8d718e0a9d19e5b404b4dbd10db8880215b53",
+              "json_pointer": "/summary/2",
+              "observed": {
+                "regime": "iid",
+                "family": "analytic_filter",
+                "batch_size": 1,
+                "workload": "varying_horizon",
+                "implementation": "full_history_numpy",
+                "median_cpu_seconds": 0.0018427470000000057,
+                "median_wall_seconds": 0.001843606005422771,
+                "min_cpu_seconds": 0.0017092880000000032,
+                "max_cpu_seconds": 0.0022515429999999947
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/numpy_comparison.json",
+              "sha256": "a5b80aacc4b77e388bad73415fd8d718e0a9d19e5b404b4dbd10db8880215b53",
+              "json_pointer": "/summary/3",
+              "observed": {
+                "regime": "iid",
+                "family": "analytic_filter",
+                "batch_size": 1,
+                "workload": "varying_horizon",
+                "implementation": "streaming",
+                "median_cpu_seconds": 0.001603281000000012,
+                "median_wall_seconds": 0.001604204997420311,
+                "min_cpu_seconds": 0.0014922660000000199,
+                "max_cpu_seconds": 0.001783638000000004
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/numpy_comparison.json",
+              "sha256": "a5b80aacc4b77e388bad73415fd8d718e0a9d19e5b404b4dbd10db8880215b53",
+              "json_pointer": "/summary/20",
+              "observed": {
+                "regime": "iid",
+                "family": "fixed_ordinary_filter",
+                "batch_size": 1,
+                "workload": "varying_horizon",
+                "implementation": "full_history_numpy",
+                "median_cpu_seconds": 0.0017412860000001196,
+                "median_wall_seconds": 0.001742073000059463,
+                "min_cpu_seconds": 0.0016366610000000392,
+                "max_cpu_seconds": 0.0018958260000001559
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/numpy_comparison.json",
+              "sha256": "a5b80aacc4b77e388bad73415fd8d718e0a9d19e5b404b4dbd10db8880215b53",
+              "json_pointer": "/summary/21",
+              "observed": {
+                "regime": "iid",
+                "family": "fixed_ordinary_filter",
+                "batch_size": 1,
+                "workload": "varying_horizon",
+                "implementation": "streaming",
+                "median_cpu_seconds": 0.001490583999999906,
+                "median_wall_seconds": 0.0014913350023562089,
+                "min_cpu_seconds": 0.0014683309999998784,
+                "max_cpu_seconds": 0.0016547170000000833
+              }
+            }
+          ]
+        },
+        {
+          "id": "uniform_streaming_speedup",
+          "status": "contradicted",
+          "claim": "同后端的所有单次或逐观测查询负载都因streaming而更快。",
+          "scope": "IID scalar one_shot及online反例；one_shot/online额外状态维护可能更慢，不能只报受益工作负载。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/numpy_comparison.json",
+              "sha256": "a5b80aacc4b77e388bad73415fd8d718e0a9d19e5b404b4dbd10db8880215b53",
+              "json_pointer": "/summary/0",
+              "observed": {
+                "regime": "iid",
+                "family": "analytic_filter",
+                "batch_size": 1,
+                "workload": "one_shot",
+                "implementation": "full_history_numpy",
+                "median_cpu_seconds": 6.923300000000188e-05,
+                "median_wall_seconds": 6.934399425517768e-05,
+                "min_cpu_seconds": 6.074099999997529e-05,
+                "max_cpu_seconds": 0.00017220600000000807
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/numpy_comparison.json",
+              "sha256": "a5b80aacc4b77e388bad73415fd8d718e0a9d19e5b404b4dbd10db8880215b53",
+              "json_pointer": "/summary/1",
+              "observed": {
+                "regime": "iid",
+                "family": "analytic_filter",
+                "batch_size": 1,
+                "workload": "one_shot",
+                "implementation": "streaming",
+                "median_cpu_seconds": 0.00012332299999998075,
+                "median_wall_seconds": 0.00012352599878795445,
+                "min_cpu_seconds": 0.00011197599999998586,
+                "max_cpu_seconds": 0.00018191000000000734
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/numpy_comparison.json",
+              "sha256": "a5b80aacc4b77e388bad73415fd8d718e0a9d19e5b404b4dbd10db8880215b53",
+              "json_pointer": "/summary/4",
+              "observed": {
+                "regime": "iid",
+                "family": "analytic_filter",
+                "batch_size": 1,
+                "workload": "online",
+                "implementation": "full_history_numpy",
+                "median_cpu_seconds": 0.001819211000000015,
+                "median_wall_seconds": 0.0018188179965363815,
+                "min_cpu_seconds": 0.0016783320000000046,
+                "max_cpu_seconds": 0.0021842539999999966
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/numpy_comparison.json",
+              "sha256": "a5b80aacc4b77e388bad73415fd8d718e0a9d19e5b404b4dbd10db8880215b53",
+              "json_pointer": "/summary/5",
+              "observed": {
+                "regime": "iid",
+                "family": "analytic_filter",
+                "batch_size": 1,
+                "workload": "online",
+                "implementation": "streaming",
+                "median_cpu_seconds": 0.0028770529999999905,
+                "median_wall_seconds": 0.0028778330015484244,
+                "min_cpu_seconds": 0.002797514000000001,
+                "max_cpu_seconds": 0.003153002000000016
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/numpy_comparison.json",
+              "sha256": "a5b80aacc4b77e388bad73415fd8d718e0a9d19e5b404b4dbd10db8880215b53",
+              "json_pointer": "/summary/22",
+              "observed": {
+                "regime": "iid",
+                "family": "fixed_ordinary_filter",
+                "batch_size": 1,
+                "workload": "online",
+                "implementation": "full_history_numpy",
+                "median_cpu_seconds": 0.001760353999999964,
+                "median_wall_seconds": 0.001760981002007611,
+                "min_cpu_seconds": 0.0017341050000001523,
+                "max_cpu_seconds": 0.001885520000000085
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/numpy_comparison.json",
+              "sha256": "a5b80aacc4b77e388bad73415fd8d718e0a9d19e5b404b4dbd10db8880215b53",
+              "json_pointer": "/summary/23",
+              "observed": {
+                "regime": "iid",
+                "family": "fixed_ordinary_filter",
+                "batch_size": 1,
+                "workload": "online",
+                "implementation": "streaming",
+                "median_cpu_seconds": 0.0032104080000001645,
+                "median_wall_seconds": 0.003211716000805609,
+                "min_cpu_seconds": 0.00303513699999991,
+                "max_cpu_seconds": 0.004948469000000344
+              }
+            }
+          ]
+        },
+        {
+          "id": "analytic_specific_quality_cost_gain",
+          "status": "contradicted",
+          "claim": "本轮CPU/状态收益已证明来自脉冲独特性。",
+          "scope": "generic优化和ordinary exact可复现；first_passage对direct的blind净效用无优势区间保证、推理CPU更多。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/analytic_cell_advantage_established",
+              "observed": false
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/numpy_comparison.json",
+              "sha256": "a5b80aacc4b77e388bad73415fd8d718e0a9d19e5b404b4dbd10db8880215b53",
+              "json_pointer": "/probability_spike_necessity_proved",
+              "observed": false
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/results.json",
+              "sha256": "29977d0d94aa313c63385919e3aac11d04a2af07ea2b1c346d0810ed724e0210",
+              "json_pointer": "/acceptance/independent_spiking_necessity",
+              "observed": false
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/audit/RESULTS.json",
+              "sha256": "fa6fc42fb3b25647476c6062120d924f9663554d987447c19295bd44cb6e811e",
+              "json_pointer": "/ordinary_control/4/first_passage_minus_direct/utility",
+              "observed": {
+                "lower": -0.018064395563191896,
+                "mean": -0.0002379255246385048,
+                "upper": 0.017588544513914884
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/audit/RESULTS.json",
+              "sha256": "fa6fc42fb3b25647476c6062120d924f9663554d987447c19295bd44cb6e811e",
+              "json_pointer": "/ordinary_control/4/first_passage_minus_direct/inference_cpu_seconds",
+              "observed": {
+                "lower": 0.0004577664432257761,
+                "mean": 0.0005129511658203117,
+                "upper": 0.0005681358884148473
+              }
+            }
+          ]
+        },
+        {
+          "id": "explicit_training_inference_and_failure_ledger",
+          "status": "support",
+          "claim": "各实验已测训练/推理/加载/恢复费用及未测项有明确口径，没有把继承训练或失败费用伪记为零。",
+          "scope": "这是带明确排除项的费用账本，不是所有产品成本已齐全；首次失败CPU未持久化，保留wall上界。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/value/evidence/COST_LEDGER.json",
+              "sha256": "ddc54b1495eee1e5267ff4c760e3bcc6be8b7ba1784b4455319e08b2e1a2e30b",
+              "json_pointer": "/training_process_cpu_seconds",
+              "observed": 612.20691371
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/evidence/COST_LEDGER.json",
+              "sha256": "ddc54b1495eee1e5267ff4c760e3bcc6be8b7ba1784b4455319e08b2e1a2e30b",
+              "json_pointer": "/confirmation_process_cpu_seconds",
+              "observed": 106.332146049
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/evidence/COST_LEDGER.json",
+              "sha256": "ddc54b1495eee1e5267ff4c760e3bcc6be8b7ba1784b4455319e08b2e1a2e30b",
+              "json_pointer": "/failed_confirmation",
+              "observed": {
+                "post_START_wall_seconds_upper_bound_for_single_thread_CPU": 3.9272139072418213,
+                "process_cpu_seconds": null,
+                "scope": "Time from confirmation START timestamp to final failure log mtime; original process CPU was not persisted because the audit aborted. Evaluation cost is separate from deployed training amortization."
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/evidence/COST_LEDGER.json",
+              "sha256": "ddc54b1495eee1e5267ff4c760e3bcc6be8b7ba1784b4455319e08b2e1a2e30b",
+              "json_pointer": "/scope",
+              "observed": "Process CPU in this executor; full action loop and head router, measured checkpoint/support startup. Module import and provenance checks are outside loading timer; failed first confirmation CPU was not persisted, with post-START wall bound recorded. Evaluation/replay/research diagnostics are campaign costs, not charged as deployment inference. Historical R7/R8 training is shared sunk work for the incremental comparison. No claim of full Hepta application cost or energy."
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/results.json",
+              "sha256": "29977d0d94aa313c63385919e3aac11d04a2af07ea2b1c346d0810ed724e0210",
+              "json_pointer": "/cost_accounting",
+              "observed": {
+                "r9_training_cpu_seconds": 0.0,
+                "r8_all_model_search_cpu_seconds": 31.871366576999996,
+                "r8_analytic_all_three_fits_cpu_seconds": 3.80807476,
+                "r8_ordinary_exact_training_cpu_seconds": 0.0,
+                "energy_joules": null,
+                "energy_observation": {
+                  "powercap_present": false,
+                  "nvidia_device_present": false
+                },
+                "scope": "Run costs include real execution and JSON serialization. Prior R8 data-generation/setup costs remain in original R8 evidence; not recomputed as zero."
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/excluded_per_run",
+              "observed": "Shared input generation, separate NumPy oracle, evaluator scoring, summary; no native training in this frozen-content experiment"
+            }
+          ]
+        },
+        {
+          "id": "hardware_energy_advantage",
+          "status": "open",
+          "claim": "质量—成本改善已转化为实际测量的硬件能耗收益。",
+          "scope": "energy_joules必须保持null；CPU不是能耗代理证明，环境未观察到powercap/NVIDIA计量设备。",
+          "evidence": [
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/energy_joules",
+              "observed": null
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/energy_measured",
+              "observed": false
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json",
+              "sha256": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a",
+              "json_pointer": "/hardware_energy_claim",
+              "observed": false
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/results.json",
+              "sha256": "29977d0d94aa313c63385919e3aac11d04a2af07ea2b1c346d0810ed724e0210",
+              "json_pointer": "/cost_accounting/energy_joules",
+              "observed": null
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/results.json",
+              "sha256": "29977d0d94aa313c63385919e3aac11d04a2af07ea2b1c346d0810ed724e0210",
+              "json_pointer": "/cost_accounting/energy_observation",
+              "observed": {
+                "powercap_present": false,
+                "nvidia_device_present": false
+              }
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/streaming/evidence/v2/numpy_comparison.json",
+              "sha256": "a5b80aacc4b77e388bad73415fd8d718e0a9d19e5b404b4dbd10db8880215b53",
+              "json_pointer": "/energy_joules",
+              "observed": null
+            },
+            {
+              "path": "tools/hcsn/round9_20261031/value/evidence/COST_LEDGER.json",
+              "sha256": "ddc54b1495eee1e5267ff4c760e3bcc6be8b7ba1784b4455319e08b2e1a2e30b",
+              "json_pointer": "/energy_measured",
+              "observed": false
+            }
+          ],
+          "remaining": "在有可靠功率/能量计量的同硬件端到端工作负载复测。"
+        }
+      ]
+    }
+  ],
+  "source_files": {
+    "tools/hcsn/round9_20261031/value/evidence/confirmation02/RESULTS.json": "28dc88b9737c29e4b0db3661d940b4c2287951b6a326e8c594b432ec702248e2",
+    "tools/hcsn/round9_20261031/value/diagnostics/RESULTS.json": "a56626566b1024f47ee1eaa33d53bd059d627bf21f9cba483edd355a9ce81a63",
+    "tools/hcsn/round9_20261031/value/audit/RESULTS.json": "fa6fc42fb3b25647476c6062120d924f9663554d987447c19295bd44cb6e811e",
+    "tools/hcsn/round9_20261031/value/evidence/COST_LEDGER.json": "ddc54b1495eee1e5267ff4c760e3bcc6be8b7ba1784b4455319e08b2e1a2e30b",
+    "tools/hcsn/round9_20261031/dynamics/evidence/final_repair.json": "6042be8be85b1c9853278cfd15acd73d4bfca2e35d96fdb8a649fb1fa18dbd77",
+    "tools/hcsn/round9_20261031/dynamics/evidence/final_clock.json": "295d6f67eb705c3a70659ab5536a433d23275af016f4f2cbd2a2171219ab1bde",
+    "tools/hcsn/round9_20261031/dynamics/evidence/final_renewal_resolution.json": "9a774d74f8d0ee7c5c30e8f5ca05876c636a695c7ffd5cb8df4b25ef4d7cffb8",
+    "tools/hcsn/round9_20261031/dynamics/evidence/final_renewal_extension.json": "f5832caacb05a6b93193c99278c03703c95f12ebff7dac32598fcdb380f130e8",
+    "tools/hcsn/round9_20261031/dynamics/evidence/spatial_resolution_verified.json": "a74e16a1066ab850655d7d3dbb6b5e1fcb7f9d3db748ae103e0bd4f9c81b60f1",
+    "tools/hcsn/round9_20261031/dynamics/evidence/recovery_scale_verified.json": "137c1c5e4487fa3bac6c02b0a7cae42371338802ea7d63bfef91476bc834ff3e",
+    "tools/hcsn/round9_20261031/streaming/evidence/v2/results.json": "29977d0d94aa313c63385919e3aac11d04a2af07ea2b1c346d0810ed724e0210",
+    "tools/hcsn/round9_20261031/streaming/evidence/v2/numpy_comparison.json": "a5b80aacc4b77e388bad73415fd8d718e0a9d19e5b404b4dbd10db8880215b53",
+    "tools/hcsn/round9_20261031/native/evidence/qualification-final/REPORT.json": "5540def3da8993be2ec06fa0d512a1e641692266294014ee47e13414fe19494a"
+  },
+  "scope_rules": [
+    "固定模型数值通过不能替代真实任务价值闭环。",
+    "拒绝/准入失败不是业务收益或低噪收敛成功。",
+    "普通exact使用同风险算子，反驳脉冲独特性，不否定风险算子的功能。",
+    "重复运行、审计重放和多个预测器不是额外独立效力样本。",
+    "不显著差异不是等价证明；原注册门槛及失败证据保留。",
+    "energy_joules为null，不填0，不从CPU秒推断节能。"
+  ]
+}

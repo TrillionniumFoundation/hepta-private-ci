@@ -1,0 +1,68 @@
+{
+  "archive": "native_executables.tar.gz",
+  "archive_bytes": 1493439,
+  "archive_sha256": "ecf5865ddd4e542e7796d362f20953358d47aea4871eeb2b102a3c10b22eacf6",
+  "build_report": "../native/evidence/BUILD_FINAL.json",
+  "build_report_sha256": "867e40f2bc257ba5e9eecc314969f5400d52b991fe36db4c9f8a33164f81cccc",
+  "compiler": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+  "current_cached_dependency_rebuild_available": false,
+  "energy_joules": null,
+  "members": {
+    "native-owner-r9": {
+      "bytes": 1853432,
+      "elf_class": 2,
+      "elf_machine": 62,
+      "elf_magic": "7f454c46",
+      "original_path": "/workspace/scratch/f530455d952b/native-r9-build/native-owner-r9",
+      "original_retained": true,
+      "role": "binary",
+      "sha256": "9e31b10bb1718f97e3932666dd544aa5b80dbc6ea459981ed008942b37915568"
+    },
+    "native-owner-r9-tests": {
+      "bytes": 2346368,
+      "elf_class": 2,
+      "elf_machine": 62,
+      "elf_magic": "7f454c46",
+      "original_path": "/workspace/scratch/f530455d952b/native-r9-build/native-owner-r9-tests",
+      "original_retained": true,
+      "role": "tests",
+      "sha256": "85bb2707ddfe1f29eecd252bb43a01792d48aee8051a48d94e172c0324e0a55a"
+    }
+  },
+  "original_executables_retained": true,
+  "packaged_at_utc": "2026-10-31T06:47:25.452316+00:00",
+  "packaging_host": {
+    "machine": "x86_64",
+    "node": "c18e87a619ae",
+    "processor": "x86_64",
+    "release": "6.18.57",
+    "system": "Linux",
+    "version": "#1 SMP Tue Oct 20 21:56:04 UTC 2026"
+  },
+  "portable_general_release": false,
+  "production_activation": false,
+  "recorded_environment": {
+    "energy_joules": null,
+    "fresh_cargo_build": false,
+    "isolated_host": false,
+    "logical_cpus": 9,
+    "machine": "x86_64",
+    "python": "3.12.14",
+    "shared_host": true,
+    "system": "Linux",
+    "thread_environment": {
+      "MKL_NUM_THREADS": null,
+      "OMP_NUM_THREADS": null,
+      "OPENBLAS_NUM_THREADS": null
+    }
+  },
+  "recorded_test_count": 11,
+  "recorded_test_result": "passed",
+  "runtime_limitations": "Linux x86_64 GNU-target executables; compatible OS/runtime dependencies are required. This archive is not a multi-platform release or a clean source-build certificate.",
+  "schema": "hepta.r9.integration.native-executables.v1",
+  "scope": "Preserved bytes of the already built and tested executables for inspection and isolated experiment replay with the registered content fixtures; no new execution was performed during packaging.",
+  "source_digest": "c90ea5b70e0be3ff8eb3dec36e0a68a2e633270c57be6ea743d5c681263cd999",
+  "target": "x86_64-unknown-linux-gnu",
+  "test_report": "../native/evidence/NEXTEST_FINAL.json",
+  "test_report_sha256": "ae7e8bea16102cb518245e4e06bd7a873e289bcf3eae043e60a112ffef2885f6"
+}
