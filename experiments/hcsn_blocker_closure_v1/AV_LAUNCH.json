@@ -1,0 +1,28 @@
+{
+  "cpu_cores": 4,
+  "data": {
+    "acquisition_run_id": 41156412198,
+    "acquisition_seal": "4ac7583aca2c06187c691ce8e43c5902dd46717d",
+    "commit": "dca9febc8143c682077fe27d40dbeaa1137bcaa4",
+    "dataset_sha256": "2096f8a3da7c5540062506c9a38aa6251ad0a0b103968cc120ba508c8309e051",
+    "transport_git_blob": "e760433f55b8488e78a0ff5b97bc34b0d74cfffc",
+    "transport_prefix": "experiments/hcsn_blocker_closure_v1/av/transport_41156412198",
+    "transport_sha256": "0c65b7a9b5a497a7ea77136a0857544d04a7e6c2f108b969b2c4155be6996ae6"
+  },
+  "design_sha256": "c722f33475adacb8711e4044cbd988f4a529303d06f2d2d7ec20f1aca7c0ae35",
+  "expected_jobs": {
+    "development": 10,
+    "equal_cpu": 40,
+    "fixed": 40,
+    "total": 90
+  },
+  "memory_bytes": 8589934592,
+  "preflight_sha256": "c2a4bba07401156fd7c84a0d556d0f48d7de6a9206bfd1b6e65de3e69b6be824",
+  "publication": "Isolated evidence branch; never overwrite content archive or source seal.",
+  "python": "3.12.14",
+  "schema": "hcsn-fresh-av-hosted-launch.v1",
+  "scientific_gate": "All90valid; preregistered8positivecontrasts evaluated without relaxingnegativeoutcomes.",
+  "timeout_minutes": 180,
+  "torch": "2.8.0+cpu",
+  "workers": 4
+}

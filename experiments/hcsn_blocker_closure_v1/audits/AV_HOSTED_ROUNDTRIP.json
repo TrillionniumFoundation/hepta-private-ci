@@ -1,0 +1,63 @@
+{
+  "schema": "hcsn-av-hosted-roundtrip-review.v1",
+  "passed": true,
+  "checks": [
+    {
+      "name": "multipart_package_verify_restore_roundtrip",
+      "passed": true,
+      "members": 3,
+      "parts": 2,
+      "raw_bytes": 352180,
+      "verification": {
+        "passed": true,
+        "files": 7,
+        "raw_members": 3
+      }
+    },
+    {
+      "name": "publication_has_only_AV_prefix",
+      "passed": true
+    },
+    {
+      "name": "bounded_publication_blobs",
+      "passed": true,
+      "max_bytes": 327680
+    },
+    {
+      "name": "unlisted_publication_byte_rejected",
+      "passed": true
+    },
+    {
+      "name": "guard_complete_false",
+      "passed": true,
+      "observed": false
+    },
+    {
+      "name": "guard_one_missing",
+      "passed": true,
+      "observed": false
+    },
+    {
+      "name": "guard_integrity_error",
+      "passed": true,
+      "observed": false
+    },
+    {
+      "name": "guard_analysis_child_failed",
+      "passed": true,
+      "observed": false
+    },
+    {
+      "name": "guard_negative_scientific_outcome_allowed",
+      "passed": true,
+      "observed": true
+    }
+  ],
+  "real_AV_tensors_loaded": false,
+  "model_outcomes_accessed": false,
+  "tested_sources": {
+    "experiments/hcsn_blocker_closure_v1/av_hosted.py": "dfb46e93f97418e5aecb43be4a27163ebf8b8e4414929e498f459f9c267d7439",
+    "experiments/hcsn_blocker_closure_v1/av_evidence.py": "4b774d6617c6d61f3930bf6369abe52d4b113708bdfff9bc5897ffd639677b65"
+  },
+  "fixture_scope": "av_evidence.BASE temporarily points to three newlycreated synthetic files; module source and repository data unchanged"
+}

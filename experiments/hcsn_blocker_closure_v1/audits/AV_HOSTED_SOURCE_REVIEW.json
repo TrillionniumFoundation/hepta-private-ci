@@ -1,0 +1,182 @@
+{
+  "schema": "hcsn-av-hosted-source-review.v1",
+  "passed": true,
+  "status": "no_first_launch_blocker_found",
+  "checks": [
+    {
+      "name": "immutable_execution_source",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Bothworkflowjobs checkout github.sha; prepare checksactualHEAD againstGITHUB_SHA"
+    },
+    {
+      "name": "required_sparse_dependencies",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Experimentcheckoutincludes entireblockerpackage,frozenpydependencies,hostedrunner.py,andoldreal_av_v1/data.py;publisherincludesarchive.py"
+    },
+    {
+      "name": "bootstrap_restore_imports_available",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Bootstrapimportsolddata.py atmoduletop; itsnumpy/scipy dependenciesinstalled;restoredoesnotrequireffmpegormediaacquisition"
+    },
+    {
+      "name": "git_safe_directory_precedes_fetch",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "ExactGITHUB_WORKSPACE addedassafe.directory duringinstallbeforeRunBookgitcommands"
+    },
+    {
+      "name": "pinned_data_commit_and_flat_prefix",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Validated40hexcommit; prefixexactlyav/transport_41156412198; gitarchiveonlythatprefix; regularfilesflatrelativeenames"
+    },
+    {
+      "name": "transport_git_blob_and_sha",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "rev-parse commit:path mustmatche760433f...; materializedTRANSPORTSHA mustmatch0c65b7a9..."
+    },
+    {
+      "name": "acquisition_identity",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Acquisitionseal4ac7583...andrun41156412198 checkedbeforebootstraprestore"
+    },
+    {
+      "name": "runner_temp_restore_path",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "archiveunderRUNNER_TEMP/hcsn-fresh-av-input.tar;flattransporthcsn-fresh-av-input;restoredhcsn-fresh-av-data;registerdatasetexactDATASETpath"
+    },
+    {
+      "name": "cli_transport_path_present",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Launcherpasses--data-transport-path prefix/TRANSPORT.json;AVstudyparserandregisteracceptandverifyit"
+    },
+    {
+      "name": "registration_rechecks_all_data",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Registerreadsactualgitshowtransport/rev-parse,checksall15restoredfiles,decoder/normalization/cohort/datasetSHA,thenretainscopiedbytes"
+    },
+    {
+      "name": "synthetic_preflight_bound",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Hostedpreflightusesonlysyntheticdataanditsresultmustmatchcurrentsource_mapbefore registration"
+    },
+    {
+      "name": "runtime_versions_and_cgroups",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "PinnedPython3.12.14image,torch2.8+cpu,numpy2.3.5,scipy1.17;launcherrequirescpuquota4,memory8GiB,swap0"
+    },
+    {
+      "name": "inherited_two_core_validator_not_called",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "RunBookhelperisreused;olderCONTAINER_OPTIONS2corevalidationfunctionisnotinvokedbyAVlauncher"
+    },
+    {
+      "name": "development_lock_before_formal",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Launcherexecutesdevelopmentthenlockbeforefixed/equalCPU;exact10+40+40matrixcheckedbyAVanalyzer"
+    },
+    {
+      "name": "negative_outcomes_not_integrity_failures",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Finalize requireschildexit0,completeisTrue,errors[],valid_jobs90;scientificpositivegatesareseparate"
+    },
+    {
+      "name": "failures_are_preserved",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Train/finalizecontinueonerrorthenfinalintegritystepfailsproperly;packagealwaysrunsandpublishermaypreservefailedstudy"
+    },
+    {
+      "name": "evidence_prefix_disjoint",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "AVprefixexperiments/hcsn_blocker_closure_v1/av/artifacts/closure001differsfromcontentrootartifacts/closure001"
+    },
+    {
+      "name": "bounded_parts_and_member_shards",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Archiveparts327680B;600memberspershard;everypublicationfileincludingreceiptmustfit512000B"
+    },
+    {
+      "name": "canonical_manifest_reconstruction",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "INDEX+member_shardsmustreconstructexactoriginalmanifestSHA;restoreverifiespartsandmembers"
+    },
+    {
+      "name": "publisher_isolated_branch",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "Publishjobverifiesactualexecutionseal andeverylistedbyte,pushesresearch/hcsn-blocker-av-trained-RUN_ID;doesnotmoveoriginalsourcebranch"
+    },
+    {
+      "name": "precise_cost_scopes",
+      "passed": true,
+      "kind": "independent_manual_source_review",
+      "evidence": "RunBookretainswholewait4childcostandseparatecoordinatorself;packagingseparate;noGPU/Joulesclaim"
+    },
+    {
+      "name": "launch_design_data_binding_identical",
+      "passed": true
+    },
+    {
+      "name": "exact90job_counts_match_launch",
+      "passed": true
+    },
+    {
+      "name": "declared_resource_fields_match_launcher",
+      "passed": true
+    }
+  ],
+  "roundtrip_and_actual_guard_checks": {
+    "path": "AV_HOSTED_ROUNDTRIP.json",
+    "passed": true,
+    "checks": 9,
+    "fixture_raw_bytes": 352180,
+    "multipart_parts": 2
+  },
+  "remote_metadata_checks": {
+    "path": "AV_TRANSPORT_PIN_REVIEW.json",
+    "passed": true,
+    "checks": 6,
+    "manifest_bytes": 29557,
+    "logical_files": 15
+  },
+  "source_sha256": {
+    "experiments/hcsn_blocker_closure_v1/av_hosted.py": "dfb46e93f97418e5aecb43be4a27163ebf8b8e4414929e498f459f9c267d7439",
+    "experiments/hcsn_blocker_closure_v1/av_evidence.py": "4b774d6617c6d61f3930bf6369abe52d4b113708bdfff9bc5897ffd639677b65",
+    "experiments/hcsn_blocker_closure_v1/AV_LAUNCH.json": "5d1b9505fb521f3efe6c2211e83d960a9f4a4f23b97958ab4242e171c35cf728",
+    ".github/workflows/hcsn-blocker-av-training.yml": "0101143adae21eaa9e097cd0240ba3e20e4983f1cd72380004243aaaab2b6a57",
+    "experiments/hcsn_blocker_closure_v1/av/study.py": "6b290db97e42176678ddb69080bf8b44812887504d0edca064051bf3a7951b4a",
+    "experiments/hcsn_blocker_closure_v1/av/analysis.py": "840eb12209d6c69e16773646306f24c993ce703b0c275fa85347353364e32268",
+    "experiments/hcsn_blocker_closure_v1/av/bootstrap.py": "321d0ae85861f76adf0c4367690e5dc088755e148dc13fc7d689df30e48d57cd",
+    "experiments/hcsn_blocker_closure_v1/av/AV_DESIGN.json": "c722f33475adacb8711e4044cbd988f4a529303d06f2d2d7ec20f1aca7c0ae35",
+    "experiments/hcsn_real_av_v1/data.py": "02fc21d1f3f1b98320659421f6ed03450fbe042eed25d91ae2bc93e50bde485f",
+    "experiments/hcsn_free_boundary_v1/archive.py": "7aefcc785977bb391116750d04e9abd8bfa1db28381ee06227bac501c61eceab",
+    "experiments/hcsn_conservative_acceleration_v1/hosted/runner.py": "dbe943e9fa1553bf8ca6f32f7095ae453542b465b5cbff889a05d0a00907754b"
+  },
+  "reviewer_edits_to_owned_source": false,
+  "real_AV_tensor_bytes_downloaded_or_loaded": false,
+  "model_outcomes_accessed": false,
+  "scope": [
+    "First-launchsource/path/integrityreviewandtinysyntheticartifactroundtrip",
+    "Remoteproofreadonlythe29557byteTRANSPORTmanifestatthepinnedcommit;notactualaudio/video/tensordata",
+    "Doesnotclaimtheworkflowalreadyran,resourceswereobservedonthefuturehost,or90jobswillpass",
+    "Math/statisticalvalidityoftheentireAVmodelstudyisbeyondthisorchestrationreview",
+    "Noactualgitremotearchive/cgroup/PyTorchinstallationwasexecutedlocally"
+  ]
+}

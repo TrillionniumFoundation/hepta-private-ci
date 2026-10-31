@@ -1,0 +1,137 @@
+name: HCSN fresh audiovisual encoder study
+
+on:
+  push:
+    branches:
+      - research/hcsn-conservative-acceleration-20261030
+    paths:
+      - .github/workflows/hcsn-blocker-av-training.yml
+      - experiments/hcsn_blocker_closure_v1/AV_LAUNCH.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcsn-blocker-av-training-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  OMP_NUM_THREADS: "1"
+  OPENBLAS_NUM_THREADS: "1"
+  MKL_NUM_THREADS: "1"
+  NUMEXPR_NUM_THREADS: "1"
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  experiments:
+    runs-on: ubuntu-24.04
+    container:
+      image: python:3.12.14@sha256:6dc02694c53fde08b0e39de9273a708d2f2a612f77dc173a64835c3f7a40ee35
+      options: --memory=8g --memory-swap=8g --cpus=4 --cgroupns=private
+    timeout-minutes: 180
+    outputs:
+      packaged: ${{ steps.package.outputs.ready }}
+    steps:
+      - name: Check out exact registered source and frozen dependencies
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /experiments/hcsn_blocker_closure_v1/
+            /experiments/hcsn_conservative_acceleration_v1/*.py
+            /experiments/hcsn_conservative_acceleration_v1/hosted/runner.py
+            /experiments/hcsn_distributional_v2/*.py
+            /experiments/hcsn_free_boundary_v1/*.py
+            /experiments/hcsn_real_av_v1/data.py
+            /experiments/continuous_spiking_network/*.py
+            /.github/workflows/hcsn-blocker-av-training.yml
+      - name: Install pinned numerical runtime
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          python -m pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu torch==2.8.0
+          python -m pip install --no-cache-dir numpy==2.3.5 scipy==1.17.0
+      - name: Verify synthetic gradients and exact fresh data before registration
+        id: prepare
+        run: python -m experiments.hcsn_blocker_closure_v1.av_hosted prepare
+      - name: Preserve source-bound registration before outcome access
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: hcsn-av-study-registration-${{ github.run_id }}
+          retention-days: 1
+          if-no-files-found: error
+          path: |
+            experiments/hcsn_blocker_closure_v1/av/results/hosted001/PROTOCOL.json
+            experiments/hcsn_blocker_closure_v1/av/results/hosted_preflight001.json
+            experiments/hcsn_blocker_closure_v1/av/results/hosted_driver001
+      - name: Execute all registered development and paired formal jobs
+        id: train
+        continue-on-error: true
+        run: python -m experiments.hcsn_blocker_closure_v1.av_hosted train
+      - name: Recompute classification, retrieval, paired interventions and actor statistics
+        id: finalize
+        if: ${{ always() && steps.prepare.outcome == 'success' }}
+        continue-on-error: true
+        run: python -m experiments.hcsn_blocker_closure_v1.av_hosted finalize
+      - name: Preserve every attempted job including failed attempts
+        id: package
+        if: ${{ always() }}
+        run: |
+          python -m experiments.hcsn_blocker_closure_v1.av_evidence package --output "$RUNNER_TEMP/hcsn-av-study-publication"
+          echo 'ready=true' >> "$GITHUB_OUTPUT"
+      - name: Upload complete evidence
+        if: ${{ always() && steps.package.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: hcsn-av-study-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/hcsn-av-study-publication
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+      - name: Require integrity independently of scientific outcomes
+        if: ${{ always() }}
+        run: |
+          test '${{ steps.prepare.outcome }}' = success
+          test '${{ steps.train.outcome }}' = success
+          test '${{ steps.finalize.outcome }}' = success
+
+  publish:
+    needs: experiments
+    if: ${{ always() && needs.experiments.outputs.packaged == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - name: Check out the immutable source seal
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /experiments/hcsn_blocker_closure_v1/
+            /experiments/hcsn_free_boundary_v1/archive.py
+      - name: Obtain this exact run's evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: hcsn-av-study-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/hcsn-av-study-publication
+      - name: Verify all bytes and publish on an isolated evidence branch
+        run: |
+          python3 -m experiments.hcsn_blocker_closure_v1.av_evidence verify --output "$RUNNER_TEMP/hcsn-av-study-publication" --seal "$GITHUB_SHA"
+          cp -a "$RUNNER_TEMP/hcsn-av-study-publication/experiments/hcsn_blocker_closure_v1/." experiments/hcsn_blocker_closure_v1/
+          git add -- experiments/hcsn_blocker_closure_v1
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'research(hcsn): preserve fresh actor training, full costs and negative outcomes'
+          git push origin "HEAD:refs/heads/research/hcsn-blocker-av-trained-${GITHUB_RUN_ID}"

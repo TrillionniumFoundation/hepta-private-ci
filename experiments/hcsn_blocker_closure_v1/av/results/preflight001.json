@@ -1,0 +1,638 @@
+{
+  "checks": [
+    {
+      "name": "value_jg_all_owned_groups_update",
+      "passed": true
+    },
+    {
+      "name": "five_physical_content_groups_have_gradients",
+      "passed": true
+    },
+    {
+      "name": "audio_retains_real_elapsed_duration",
+      "passed": true
+    },
+    {
+      "name": "video_retains_real_elapsed_duration",
+      "passed": true
+    },
+    {
+      "name": "value_jg_retrieval_calibration_pairing_finite",
+      "passed": true
+    },
+    {
+      "name": "two_gates_all_owned_groups_update",
+      "passed": true
+    },
+    {
+      "name": "two_gates_retrieval_calibration_pairing_finite",
+      "passed": true
+    },
+    {
+      "name": "transformer_all_owned_groups_update",
+      "passed": true
+    },
+    {
+      "name": "transformer_retrieval_calibration_pairing_finite",
+      "passed": true
+    },
+    {
+      "name": "lif_snn_all_owned_groups_update",
+      "passed": true
+    },
+    {
+      "name": "lif_snn_retrieval_calibration_pairing_finite",
+      "passed": true
+    },
+    {
+      "name": "mamba1_all_owned_groups_update",
+      "passed": true
+    },
+    {
+      "name": "mamba1_retrieval_calibration_pairing_finite",
+      "passed": true
+    },
+    {
+      "name": "matched_active_backbones_within_3percent",
+      "passed": true
+    },
+    {
+      "name": "common_frontend_projection_head_identity",
+      "passed": true
+    },
+    {
+      "name": "identity_embeddings_rank_first",
+      "passed": true
+    },
+    {
+      "name": "exact_retrieval_ties_follow_frozen_index",
+      "passed": true
+    },
+    {
+      "name": "within_actor_derangement",
+      "passed": true
+    },
+    {
+      "name": "source_identity_unchanged",
+      "passed": true
+    }
+  ],
+  "cost_prediction": "One synthetic full-batch update per model, includes first-use overhead. Real training/validation can cost more. This is not a performance benchmark.",
+  "models": [
+    {
+      "arm": "value_jg",
+      "common_initial_hash": "dd6be0afbceb9665b0ee5ee3591cc32a50113c20673c4d35af99d8c75bb10407",
+      "components": {
+        "audio_ce": 1.8257169723510742,
+        "fused_ce": 1.8218013048171997,
+        "symmetric_infonce": 3.4916625022888184,
+        "video_ce": 1.8338550329208374
+      },
+      "counts": {
+        "audio": {
+          "backbone": 17936,
+          "frontend": 4256,
+          "frozen_group": null,
+          "groups": {
+            "boundary": 8,
+            "content": 22944,
+            "dynamics": 280,
+            "refractory": 8,
+            "reset": 8
+          },
+          "readout": 1056,
+          "total": 23248,
+          "trainable": 23248
+        },
+        "backbone": 35872,
+        "groups": {
+          "boundary": 16,
+          "content": 46086,
+          "dynamics": 560,
+          "refractory": 16,
+          "reset": 16
+        },
+        "shared_head": 198,
+        "total": 46694,
+        "trainable": 46694,
+        "video": {
+          "backbone": 17936,
+          "frontend": 4256,
+          "frozen_group": null,
+          "groups": {
+            "boundary": 8,
+            "content": 22944,
+            "dynamics": 280,
+            "refractory": 8,
+            "reset": 8
+          },
+          "readout": 1056,
+          "total": 23248,
+          "trainable": 23248
+        }
+      },
+      "full_B16_T32_update_cpu_seconds": 0.4399322990000001,
+      "gradient_groups": {
+        "boundary": {
+          "l2": 0.0005025132136869284,
+          "maximum_absolute": 0.0002721007040236145,
+          "nonzero": 16
+        },
+        "content": {
+          "l2": 7.08645837524334,
+          "maximum_absolute": 0.33518052101135254,
+          "nonzero": 46086
+        },
+        "dynamics": {
+          "l2": 0.010682157541711894,
+          "maximum_absolute": 0.0018813008209690452,
+          "nonzero": 560
+        },
+        "refractory": {
+          "l2": 0.0005624719315684664,
+          "maximum_absolute": 0.00025080080376937985,
+          "nonzero": 16
+        },
+        "reset": {
+          "l2": 0.00044006226680719853,
+          "maximum_absolute": 0.00020643424068111926,
+          "nonzero": 16
+        }
+      },
+      "loss": 4.482525825500488,
+      "physical": {
+        "audio": {
+          "boundary_mean": 1.0847656726837158,
+          "expected_events": 62.293724060058594,
+          "maximum_mass_defect": 4.616958904080093e-08,
+          "minimum": 5.169343078592625e-11,
+          "refractory_mean": 0.11590545624494553
+        },
+        "video": {
+          "boundary_mean": 1.0828146934509277,
+          "expected_events": 62.80132293701172,
+          "maximum_mass_defect": 4.5050001062918454e-08,
+          "minimum": 1.0350615503584848e-10,
+          "refractory_mean": 0.11697492003440857
+        }
+      },
+      "update_groups": {
+        "boundary": {
+          "l2": 0.003995687643597836,
+          "maximum_absolute": 0.000999869778752327,
+          "nonzero": 16
+        },
+        "content": {
+          "l2": 0.21403214409834484,
+          "maximum_absolute": 0.001000046730041504,
+          "nonzero": 46086
+        },
+        "dynamics": {
+          "l2": 0.023650314987114757,
+          "maximum_absolute": 0.0009999796748161316,
+          "nonzero": 560
+        },
+        "refractory": {
+          "l2": 0.003998572070040233,
+          "maximum_absolute": 0.0009998586028814316,
+          "nonzero": 16
+        },
+        "reset": {
+          "l2": 0.003997074956369125,
+          "maximum_absolute": 0.0009998283348977566,
+          "nonzero": 16
+        }
+      },
+      "update_wall_seconds": 0.4470154079972417
+    },
+    {
+      "arm": "two_gates",
+      "common_initial_hash": "dd6be0afbceb9665b0ee5ee3591cc32a50113c20673c4d35af99d8c75bb10407",
+      "components": {
+        "audio_ce": 1.8053280115127563,
+        "fused_ce": 1.802362084388733,
+        "symmetric_infonce": 2.7960147857666016,
+        "video_ce": 1.8001880645751953
+      },
+      "counts": {
+        "audio": {
+          "backbone": 17770,
+          "frontend": 4256,
+          "matching": {
+            "hidden_width": 49,
+            "n_parameters": 17770,
+            "parameter_padding": false,
+            "relative_gap": 0.009255129348795719,
+            "target_parameters": 17936
+          },
+          "readout": 1056,
+          "total": 23082
+        },
+        "backbone": 35540,
+        "groups": {
+          "backbone": 35540,
+          "content": 198,
+          "frontend": 8512,
+          "readout": 2112
+        },
+        "shared_head": 198,
+        "total": 46362,
+        "trainable": 46362,
+        "video": {
+          "backbone": 17770,
+          "frontend": 4256,
+          "matching": {
+            "hidden_width": 49,
+            "n_parameters": 17770,
+            "parameter_padding": false,
+            "relative_gap": 0.009255129348795719,
+            "target_parameters": 17936
+          },
+          "readout": 1056,
+          "total": 23082
+        }
+      },
+      "full_B16_T32_update_cpu_seconds": 0.028544278000000034,
+      "gradient_groups": {
+        "backbone": {
+          "l2": 0.20865779040324778,
+          "maximum_absolute": 0.014292150735855103,
+          "nonzero": 35540
+        },
+        "content": {
+          "l2": 0.15822786588145055,
+          "maximum_absolute": 0.0978696271777153,
+          "nonzero": 198
+        },
+        "frontend": {
+          "l2": 0.14992385715098158,
+          "maximum_absolute": 0.00810045562684536,
+          "nonzero": 8512
+        },
+        "readout": {
+          "l2": 0.12979247970957505,
+          "maximum_absolute": 0.028683047741651535,
+          "nonzero": 2112
+        }
+      },
+      "loss": 4.101748466491699,
+      "physical": {
+        "audio": {},
+        "video": {}
+      },
+      "update_groups": {
+        "backbone": {
+          "l2": 0.18828880702703826,
+          "maximum_absolute": 0.0010000020265579224,
+          "nonzero": 35540
+        },
+        "content": {
+          "l2": 0.014071126293022576,
+          "maximum_absolute": 0.0010000020265579224,
+          "nonzero": 198
+        },
+        "frontend": {
+          "l2": 0.0922539022859246,
+          "maximum_absolute": 0.0010000020265579224,
+          "nonzero": 8512
+        },
+        "readout": {
+          "l2": 0.045955004414673914,
+          "maximum_absolute": 0.0010000020265579224,
+          "nonzero": 2112
+        }
+      },
+      "update_wall_seconds": 0.028545621993544046
+    },
+    {
+      "arm": "transformer",
+      "common_initial_hash": "dd6be0afbceb9665b0ee5ee3591cc32a50113c20673c4d35af99d8c75bb10407",
+      "components": {
+        "audio_ce": 1.7875590324401855,
+        "fused_ce": 1.7942734956741333,
+        "symmetric_infonce": 3.203740119934082,
+        "video_ce": 1.8144514560699463
+      },
+      "counts": {
+        "audio": {
+          "backbone": 17954,
+          "frontend": 4256,
+          "matching": {
+            "ffn_width": 138,
+            "hidden_width": 36,
+            "n_parameters": 17954,
+            "parameter_padding": false,
+            "relative_gap": 0.0010035682426404995,
+            "target_parameters": 17936
+          },
+          "readout": 1056,
+          "total": 23266
+        },
+        "backbone": 35908,
+        "groups": {
+          "backbone": 35908,
+          "content": 198,
+          "frontend": 8512,
+          "readout": 2112
+        },
+        "shared_head": 198,
+        "total": 46730,
+        "trainable": 46730,
+        "video": {
+          "backbone": 17954,
+          "frontend": 4256,
+          "matching": {
+            "ffn_width": 138,
+            "hidden_width": 36,
+            "n_parameters": 17954,
+            "parameter_padding": false,
+            "relative_gap": 0.0010035682426404995,
+            "target_parameters": 17936
+          },
+          "readout": 1056,
+          "total": 23266
+        }
+      },
+      "full_B16_T32_update_cpu_seconds": 0.040637996000000065,
+      "gradient_groups": {
+        "backbone": {
+          "l2": 2.0843864645817227,
+          "maximum_absolute": 0.16912057995796204,
+          "nonzero": 35908
+        },
+        "content": {
+          "l2": 0.2730527736245169,
+          "maximum_absolute": 0.08160482347011566,
+          "nonzero": 198
+        },
+        "frontend": {
+          "l2": 1.8944559258103713,
+          "maximum_absolute": 0.1087665781378746,
+          "nonzero": 8512
+        },
+        "readout": {
+          "l2": 1.5077708074883704,
+          "maximum_absolute": 0.13393640518188477,
+          "nonzero": 2112
+        }
+      },
+      "loss": 4.2966461181640625,
+      "physical": {
+        "audio": {},
+        "video": {}
+      },
+      "update_groups": {
+        "backbone": {
+          "l2": 0.18929064940169749,
+          "maximum_absolute": 0.001000046730041504,
+          "nonzero": 35908
+        },
+        "content": {
+          "l2": 0.01407122331039352,
+          "maximum_absolute": 0.0010000020265579224,
+          "nonzero": 198
+        },
+        "frontend": {
+          "l2": 0.09225958266717596,
+          "maximum_absolute": 0.001000046730041504,
+          "nonzero": 8512
+        },
+        "readout": {
+          "l2": 0.04595639111288757,
+          "maximum_absolute": 0.0010000020265579224,
+          "nonzero": 2112
+        }
+      },
+      "update_wall_seconds": 0.0681773790056468
+    },
+    {
+      "arm": "lif_snn",
+      "common_initial_hash": "dd6be0afbceb9665b0ee5ee3591cc32a50113c20673c4d35af99d8c75bb10407",
+      "components": {
+        "audio_ce": 1.803998351097107,
+        "fused_ce": 1.8022282123565674,
+        "symmetric_infonce": 2.7725892066955566,
+        "video_ce": 1.8013529777526855
+      },
+      "counts": {
+        "audio": {
+          "backbone": 17886,
+          "frontend": 4256,
+          "matching": {
+            "hidden_width": 79,
+            "n_parameters": 17886,
+            "parameter_padding": false,
+            "relative_gap": 0.0027876895628902764,
+            "target_parameters": 17936
+          },
+          "readout": 1056,
+          "total": 23198
+        },
+        "backbone": 35772,
+        "groups": {
+          "backbone": 35772,
+          "content": 198,
+          "frontend": 8512,
+          "readout": 2112
+        },
+        "shared_head": 198,
+        "total": 46594,
+        "trainable": 46594,
+        "video": {
+          "backbone": 17886,
+          "frontend": 4256,
+          "matching": {
+            "hidden_width": 79,
+            "n_parameters": 17886,
+            "parameter_padding": false,
+            "relative_gap": 0.0027876895628902764,
+            "target_parameters": 17936
+          },
+          "readout": 1056,
+          "total": 23198
+        }
+      },
+      "full_B16_T32_update_cpu_seconds": 0.04204890199999989,
+      "gradient_groups": {
+        "backbone": {
+          "l2": 0.03662830977008532,
+          "maximum_absolute": 0.01137755811214447,
+          "nonzero": 19814
+        },
+        "content": {
+          "l2": 0.15041114783976361,
+          "maximum_absolute": 0.09673674404621124,
+          "nonzero": 198
+        },
+        "frontend": {
+          "l2": 0.013637464995844333,
+          "maximum_absolute": 0.0007621217519044876,
+          "nonzero": 8512
+        },
+        "readout": {
+          "l2": 0.0554696594436415,
+          "maximum_absolute": 0.016674138605594635,
+          "nonzero": 2112
+        }
+      },
+      "loss": 4.089860916137695,
+      "physical": {
+        "audio": {},
+        "video": {}
+      },
+      "update_groups": {
+        "backbone": {
+          "l2": 0.13858196496886135,
+          "maximum_absolute": 0.0010000020265579224,
+          "nonzero": 19814
+        },
+        "content": {
+          "l2": 0.014070986463533648,
+          "maximum_absolute": 0.0010000020265579224,
+          "nonzero": 198
+        },
+        "frontend": {
+          "l2": 0.09220387371907651,
+          "maximum_absolute": 0.0009999871253967285,
+          "nonzero": 8512
+        },
+        "readout": {
+          "l2": 0.04592637438789837,
+          "maximum_absolute": 0.0010000020265579224,
+          "nonzero": 2112
+        }
+      },
+      "update_wall_seconds": 0.04209811900364002
+    },
+    {
+      "arm": "mamba1",
+      "common_initial_hash": "dd6be0afbceb9665b0ee5ee3591cc32a50113c20673c4d35af99d8c75bb10407",
+      "components": {
+        "audio_ce": 1.793529748916626,
+        "fused_ce": 1.7893258333206177,
+        "symmetric_infonce": 3.3734586238861084,
+        "video_ce": 1.788236379623413
+      },
+      "counts": {
+        "audio": {
+          "backbone": 17826,
+          "frontend": 4256,
+          "matching": {
+            "hidden_width": 41,
+            "n_parameters": 17826,
+            "parameter_padding": false,
+            "relative_gap": 0.006132917038358609,
+            "target_parameters": 17936
+          },
+          "readout": 1056,
+          "total": 23138
+        },
+        "backbone": 35652,
+        "groups": {
+          "backbone": 35652,
+          "content": 198,
+          "frontend": 8512,
+          "readout": 2112
+        },
+        "shared_head": 198,
+        "total": 46474,
+        "trainable": 46474,
+        "video": {
+          "backbone": 17826,
+          "frontend": 4256,
+          "matching": {
+            "hidden_width": 41,
+            "n_parameters": 17826,
+            "parameter_padding": false,
+            "relative_gap": 0.006132917038358609,
+            "target_parameters": 17936
+          },
+          "readout": 1056,
+          "total": 23138
+        }
+      },
+      "full_B16_T32_update_cpu_seconds": 0.06686250099999969,
+      "gradient_groups": {
+        "backbone": {
+          "l2": 3.1509727705547577,
+          "maximum_absolute": 0.2108459323644638,
+          "nonzero": 35652
+        },
+        "content": {
+          "l2": 0.23341430304689034,
+          "maximum_absolute": 0.07982856780290604,
+          "nonzero": 198
+        },
+        "frontend": {
+          "l2": 3.853963680235601,
+          "maximum_absolute": 0.22792291641235352,
+          "nonzero": 8512
+        },
+        "readout": {
+          "l2": 2.39681920551991,
+          "maximum_absolute": 0.31692391633987427,
+          "nonzero": 2112
+        }
+      },
+      "loss": 4.371496677398682,
+      "physical": {
+        "audio": {},
+        "video": {}
+      },
+      "update_groups": {
+        "backbone": {
+          "l2": 0.18519001555126938,
+          "maximum_absolute": 0.001000046730041504,
+          "nonzero": 35652
+        },
+        "content": {
+          "l2": 0.014071071103113635,
+          "maximum_absolute": 0.0010000020265579224,
+          "nonzero": 198
+        },
+        "frontend": {
+          "l2": 0.0922596845618833,
+          "maximum_absolute": 0.001000046730041504,
+          "nonzero": 8512
+        },
+        "readout": {
+          "l2": 0.04595637851575927,
+          "maximum_absolute": 0.0010000020265579224,
+          "nonzero": 2112
+        }
+      },
+      "update_wall_seconds": 0.13304210799833527
+    }
+  ],
+  "passed": true,
+  "peak_rss_bytes": 393732096,
+  "previous_test_data_loaded": false,
+  "process_cpu_seconds": 2.669798596,
+  "real_data_loaded": false,
+  "schema": "hcsn-av-synthetic-preflight.v1",
+  "source_sha256": {
+    "experiments/continuous_spiking_network/baseline.py": "526eaf3ea650d67188cbf898e8a246e7511b196ee2b0b50e7a6063c9ab1583f8",
+    "experiments/hcsn_blocker_closure_v1/av/AV_DESIGN.json": "4d36a1e4128f5b0ac3535766539b0f31ad34921d63b756a68f0ea69fbd7a08ab",
+    "experiments/hcsn_blocker_closure_v1/av/COHORT_PLAN.json": "180d7a90e0a7f8615dcd97c4bf91e5795cbaab1cf7a0f9bfa2fb64fb9d7c510f",
+    "experiments/hcsn_blocker_closure_v1/av/analysis.py": "8f9156c40eb8f14de1c53826d6317f35748b10f5c700860b0b67e11cddb4b9dc",
+    "experiments/hcsn_blocker_closure_v1/av/bootstrap.py": "321d0ae85861f76adf0c4367690e5dc088755e148dc13fc7d689df30e48d57cd",
+    "experiments/hcsn_blocker_closure_v1/av/metrics.py": "54a291d3d7ddd1d4e47bf349e0649001112332e0580be5a55aca3ae28566d0d6",
+    "experiments/hcsn_blocker_closure_v1/av/model.py": "b726779b3ab4fc1e96151987f7a7560ac7776afe23f98492149cc23593be2e3d",
+    "experiments/hcsn_blocker_closure_v1/av/study.py": "17b696136b14e37f8ec856aefe15a86e8b280b2e0e0b86122d09ea61b3b1aae2",
+    "experiments/hcsn_blocker_closure_v1/content/DESIGN.json": "c38b579da45bc200825419f48b0321586dcdbe26eeec8f45323f56d668ca148f",
+    "experiments/hcsn_blocker_closure_v1/content/__init__.py": "b19567b2db5b6961b63c4d2f8359a4f56a2b1664ea31c45e794339066e12e96c",
+    "experiments/hcsn_blocker_closure_v1/content/analysis.py": "aed2dd5bee0561fbea6030b9902f3eef65b513d6ea5aa4ad19409f65c3b46564",
+    "experiments/hcsn_blocker_closure_v1/content/data.py": "89cec4f5d5926d4971880b4103e8b964f702986d7ad0f884fa95b52c32e876ee",
+    "experiments/hcsn_blocker_closure_v1/content/models.py": "f08878c2760bcec859e5e11c7b906b71647029073f782987c3431a4ca0ea71fe",
+    "experiments/hcsn_blocker_closure_v1/content/preflight.py": "edbba48e2d8b2f464fb714611a6c87aa16f8d495aa0b6db7ed1c269bddd59911",
+    "experiments/hcsn_blocker_closure_v1/content/study.py": "1e7039a7d2cbf3e4be1f009c0aeab92b31c5098b606ee55f89d6f74105d7b3d0",
+    "experiments/hcsn_conservative_acceleration_v1/kernel.py": "d528d140b83e11e80b835853d94677e1a2293d6b7c16ec4b27e2fac5d2ffcf68",
+    "experiments/hcsn_conservative_acceleration_v1/model.py": "1326e49d6c5add4eb0ef20524aa5a0c0edd80fc3284da8db4b6266993073118b",
+    "experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "experiments/hcsn_distributional_v2/model.py": "3eb5f6b8797475abf84b09ae5b588f3d0a253e0584578586cb081f15142a355f",
+    "experiments/hcsn_distributional_v2/stable_probability.py": "d4bc918a5907a253007f8efd793ef379ab8c0e7ce9d5753af7feadcd8b836770",
+    "experiments/hcsn_free_boundary_v1/model.py": "c86535bf5b37589503aada3b1d979d80b75e54eb19e6be4f3b93482066147625",
+    "experiments/hcsn_free_boundary_v1/oracle_torch.py": "c651bc1c895596d2f1ca847b0bea80eb01efc951d9392a695ff0ccc2a0c61e9a",
+    "experiments/hcsn_real_av_v1/data.py": "02fc21d1f3f1b98320659421f6ed03450fbe042eed25d91ae2bc93e50bde485f"
+  }
+}

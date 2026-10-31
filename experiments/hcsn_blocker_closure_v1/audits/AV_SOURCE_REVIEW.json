@@ -1,0 +1,67 @@
+{
+  "blocking_findings_remaining": [],
+  "passed": true,
+  "review_checks": [
+    {
+      "finding": "Registration executes git show and git rev-parse on the exact predeclared 40-hex commit and repository-relative TRANSPORT.json path, recomputes the Git blob SHA-1, verifies its declared blob, acquisition execution seal, and DATASET SHA-256. Every restored regular file must match the committed inventory, bytes and SHA-256; symlink files are rejected.",
+      "id": "immutable_data_binding",
+      "status": "reviewed_pass"
+    },
+    {
+      "finding": "Analysis reconstructs each development/fixed/equal-CPU job from the sealed design and learning-rate choices, requires exact unique job identifiers and complete wait4 attempts, and separately requires the exact eight formal seed identities.",
+      "id": "unique_90_job_matrix",
+      "status": "reviewed_pass"
+    },
+    {
+      "finding": "Analysis reads all updates 1..N, validates increasing finite CPU clocks, finite losses and gradients, loss-component sums, state probability checks, exact midpoint/final validation clocks, and the first full-update crossing of the registered 60-second CPU budget.",
+      "id": "complete_trajectory_and_cpu_budget",
+      "status": "reviewed_pass"
+    },
+    {
+      "finding": "Analysis binds the learning-rate lock to this protocol and exact model set, recomputes each model development CE/step/LR argmin, verifies its exact result path/hash/score, and requires development completion before global lock and all formal training/test access after that lock.",
+      "id": "learning_rate_lock_provenance",
+      "status": "reviewed_pass"
+    },
+    {
+      "finding": "Selected checkpoint and selection receipt are fsynced before any worker test-array loading. Analysis verifies selection and final tensor hashes, exact train/validation/test access order, and selected validation argmin.",
+      "id": "test_checkpoint_access",
+      "status": "reviewed_pass"
+    },
+    {
+      "finding": "Separate audio/video encoders receive the same 32-step 128-dimensional modality inputs and positive observed elapsed dt. Common frontend/readout/head initialization is paired. Active backbone parameters remain within 3%; no padding parameters are introduced.",
+      "id": "two_encoder_comparison",
+      "status": "reviewed_pass"
+    },
+    {
+      "finding": "Shared linear mean fusion and symmetric InfoNCE are implemented as declared. Exact whole-pool and within-actor ranks, derangements and classification metrics passed independent synthetic checks. Duplicate in-batch clips can be false negatives for every arm. Shuffled-pair degradation is explicitly not proof of cross-modal synergy.",
+      "id": "fusion_and_retrieval_scope",
+      "status": "reviewed_pass"
+    },
+    {
+      "finding": "Intervals resample paired initialization seeds and actor identities independently on the 8-by-8 effect matrix while retaining each actor clip cluster. Exact discrete-convolution synthetic checks agree within declared Monte Carlo tolerance. Eight-actor population coverage remains approximate; retrieval is secondary and conditioned on its fixed candidate pool.",
+      "id": "crossed_uncertainty_scope",
+      "status": "reviewed_pass"
+    },
+    {
+      "finding": "Wait4 covers each exact worker child through exit. Training and inference clocks are contained measures and cannot be added again; acquisition/decoding/registration are separate receipts. Negative scientific results remain successful execution; incomplete analysis or failed workers exit nonzero.",
+      "id": "full_cost_and_failure_scope",
+      "status": "reviewed_pass"
+    }
+  ],
+  "reviewed_utc": "2026-10-31T01:59:58.890923+00:00",
+  "schema": "hcsn-blocker-av-independent-source-review.v1",
+  "scope": "Independent read-only source review plus synthetic metric/bootstrap checks. No real cohort arrays, validation predictions, test predictions, checkpoints, or experimental outcomes were loaded. Owner preflight002 and hosted immutable-data registration remain separate required execution receipts. Review binds only the listed current source hashes and is not a claim of HCSN superiority.",
+  "source_sha256": {
+    "experiments/hcsn_blocker_closure_v1/av/AV_DESIGN.json": "c722f33475adacb8711e4044cbd988f4a529303d06f2d2d7ec20f1aca7c0ae35",
+    "experiments/hcsn_blocker_closure_v1/av/analysis.py": "840eb12209d6c69e16773646306f24c993ce703b0c275fa85347353364e32268",
+    "experiments/hcsn_blocker_closure_v1/av/metrics.py": "54a291d3d7ddd1d4e47bf349e0649001112332e0580be5a55aca3ae28566d0d6",
+    "experiments/hcsn_blocker_closure_v1/av/model.py": "b726779b3ab4fc1e96151987f7a7560ac7776afe23f98492149cc23593be2e3d",
+    "experiments/hcsn_blocker_closure_v1/av/study.py": "6b290db97e42176678ddb69080bf8b44812887504d0edca064051bf3a7951b4a"
+  },
+  "synthetic_math_metrics_receipt": {
+    "checks": 29,
+    "file": "experiments/hcsn_blocker_closure_v1/audits/AV_MATH_METRICS_REVIEW.json",
+    "passed": true,
+    "sha256": "11e7e13e2575a55f837fcac967d7ac839b90019dc9fa527c142112281ed5b78f"
+  }
+}
