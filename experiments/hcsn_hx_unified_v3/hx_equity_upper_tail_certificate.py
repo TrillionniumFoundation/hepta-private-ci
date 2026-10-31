@@ -141,7 +141,7 @@ class EquityUpperTailCertificate:
 
 
 def certified_equity_farfield_boundary(p, *, candidate_barrier, log_upper,
-                                       taylor_terms=160, sqrt_decimal_digits=40):
+                                       taylor_terms=64, sqrt_decimal_digits=40):
     """Mathematically bounded one-component budget, conservative and finite.
 
     The returned upper bound is OUTWARD decimal rounded, unlike simply
