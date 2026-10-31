@@ -1,0 +1,16 @@
+{
+  "actual_review_passed": true,
+  "first_attempt": {
+    "command": "python -u experiments/analytic_event_neuron/round3/evidence/review_calibration_confirmation.py --run-dir /tmp/aen-round3-20261028 --output /tmp/aen-round3-20261028/reviews/CALIBRATION_CONFIRMATION_REVIEW.json",
+    "error": "ModuleNotFoundError: No module named experiments",
+    "exit_code": 1,
+    "measured_wall_seconds": 0.30083437,
+    "reason": "Direct script invocation did not put the repository root on Python module search path",
+    "scientific_data_opened": false,
+    "source_models_or_results_changed": false
+  },
+  "schema": "hepta.round3.calibration-review-invocation.v1",
+  "scientific_source_modified_to_resolve_invocation": false,
+  "successful_invocation": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -u -m experiments.analytic_event_neuron.round3.evidence.review_calibration_confirmation --run-dir /tmp/aen-round3-20261028 --output /tmp/aen-round3-20261028/reviews/CALIBRATION_CONFIRMATION_REVIEW.json",
+  "successful_review_sha256": "c5e1ccd28eba817372e8530960bee10763f98a6403e2ed6df8cb30ea7c4d738c"
+}

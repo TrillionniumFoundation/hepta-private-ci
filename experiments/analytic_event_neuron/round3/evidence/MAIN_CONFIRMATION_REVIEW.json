@@ -1,0 +1,267 @@
+{
+  "archive_members": 652874,
+  "checks": {
+    "aggregate": 318,
+    "analysis": 6645,
+    "archive": 652919,
+    "audit": 15,
+    "bootstrap": 96,
+    "certificate": 722477,
+    "control": 1604968,
+    "coverage": 86446,
+    "data": 30,
+    "freeze": 16,
+    "gate": 10,
+    "mechanism": 30,
+    "packet": 934565,
+    "png": 518400,
+    "prediction": 696960,
+    "sampling": 161,
+    "transport": 1086568
+  },
+  "control_rows": 86400,
+  "main_results_sha256": "f3a88a8bb8c5f8b8db6323394056fdb170470d966fd5f417c86cab0392ab4ccc",
+  "maximum_statistics_difference": 1.1102230246251565e-16,
+  "model_or_native_inference_rerun_by_this_review": false,
+  "negative_and_equivalent_results_retained": true,
+  "passed": true,
+  "pngs_independently_decoded": 172800,
+  "prediction_rows": 63360,
+  "recomputed_contrasts": {
+    "analytic_vs_always_wait_repair": {
+      "interval": [
+        0.0750594289461347,
+        0.1245121174964957
+      ],
+      "mean_difference": 0.09986647367548598,
+      "per_seed_mean_difference": [
+        0.08537903902084294,
+        0.09597927802373261,
+        0.12627132320756626,
+        0.09427783637734966,
+        0.0974248917479385
+      ]
+    },
+    "analytic_vs_equivalent_gaussian": {
+      "interval": [
+        -5.661125503560645e-17,
+        1.7348680362664723e-17
+      ],
+      "mean_difference": -1.8041124150158794e-17,
+      "per_seed_mean_difference": [
+        -1.590163186312073e-17,
+        2.4864369822334236e-17,
+        -7.343662714968484e-17,
+        -1.0986582014519778e-17,
+        -1.474514954580286e-17
+      ]
+    },
+    "analytic_vs_history": {
+      "interval": [
+        0.12264184648660562,
+        0.21804069664576492
+      ],
+      "mean_difference": 0.1674044325563177,
+      "per_seed_mean_difference": [
+        0.205543311842228,
+        0.12704487413164903,
+        0.22331432526343495,
+        0.14180743507809762,
+        0.13931221646617892
+      ]
+    },
+    "analytic_vs_native": {
+      "interval": [
+        0.2975773215248466,
+        0.4377417962255925
+      ],
+      "mean_difference": 0.3643073011875844,
+      "per_seed_mean_difference": [
+        0.38690492012924604,
+        0.33362046163308084,
+        0.4110099612505975,
+        0.38366374964475863,
+        0.30633741328023917
+      ]
+    },
+    "drift_shift:analytic_vs_history": {
+      "interval": [
+        0.16245826924622553,
+        0.23438281469598382
+      ],
+      "mean_difference": 0.19758033425913477,
+      "per_seed_mean_difference": [
+        0.24280372974288453,
+        0.16596669350456253,
+        0.21275685029289812,
+        0.169697787964455,
+        0.1966766097908735
+      ]
+    },
+    "drift_shift:analytic_vs_native": {
+      "interval": [
+        0.5057716011905122,
+        0.7383380793575542
+      ],
+      "mean_difference": 0.6092279311777088,
+      "per_seed_mean_difference": [
+        0.5100693956824788,
+        0.8072383001849303,
+        0.5920909863101708,
+        0.5566068597726697,
+        0.5801341139382948
+      ]
+    },
+    "drift_shift:event_vs_continuous": {
+      "interval": [
+        -0.00045281376651642573,
+        0.00033614486766243607
+      ],
+      "mean_difference": -4.9585850213353334e-05,
+      "per_seed_mean_difference": [
+        0.00025228309331357807,
+        -0.0001939770465078878,
+        -0.0005280842312057093,
+        -1.5378318468940087e-05,
+        0.0002372272518021924
+      ]
+    },
+    "event_adaptive_vs_event_direct": {
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "mean_difference": 0.0,
+      "per_seed_mean_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "event_adaptive_vs_event_fixed": {
+      "interval": [
+        -0.0028583008966838025,
+        0.004059395655804045
+      ],
+      "mean_difference": 8.75779750762804e-05,
+      "per_seed_mean_difference": [
+        -0.001874913582711777,
+        0.005233868156054126,
+        -0.002789520385735142,
+        -0.0004382446253808917,
+        0.0003067003131550855
+      ]
+    },
+    "event_adaptive_vs_event_no_residual": {
+      "interval": [
+        -0.0059856721853030264,
+        0.0016641099644061864
+      ],
+      "mean_difference": -0.0016091476675306198,
+      "per_seed_mean_difference": [
+        -0.001176203005428211,
+        -0.006302228755801856,
+        -0.001812950197898995,
+        0.000705055083547153,
+        0.0005405885379288119
+      ]
+    },
+    "event_adaptive_vs_event_round2": {
+      "interval": [
+        -0.011361867109105363,
+        0.0072186928704720795
+      ],
+      "mean_difference": -0.001057570162094628,
+      "per_seed_mean_difference": [
+        0.001761877295946428,
+        -0.015851586933217175,
+        0.0021811630111540567,
+        0.002066975952118628,
+        0.004553719863524917
+      ]
+    },
+    "event_adaptive_vs_pulse": {
+      "interval": [
+        0.5067558881628964,
+        0.6928083403032856
+      ],
+      "mean_difference": 0.5898307437890438,
+      "per_seed_mean_difference": [
+        0.6950185631101456,
+        0.5053131446051092,
+        0.6824752651205287,
+        0.5354971166489505,
+        0.5308496294604849
+      ]
+    },
+    "event_vs_continuous": {
+      "interval": [
+        -0.000537750618760246,
+        0.00028630622520089125
+      ],
+      "mean_difference": -0.00010928110527256191,
+      "per_seed_mean_difference": [
+        -0.0005841917818159079,
+        0.0001353442978850029,
+        0.0001583297084128335,
+        -3.216591268717881e-05,
+        -0.00022372183815755928
+      ]
+    },
+    "student_t:analytic_vs_history": {
+      "interval": [
+        0.15431358574256046,
+        0.23924440681010126
+      ],
+      "mean_difference": 0.19630414338027943,
+      "per_seed_mean_difference": [
+        0.16495343142782096,
+        0.25637692126202444,
+        0.20392260019893152,
+        0.1519810022016588,
+        0.20428676181096148
+      ]
+    },
+    "student_t:analytic_vs_native": {
+      "interval": [
+        0.29519768454527445,
+        0.4431062090239424
+      ],
+      "mean_difference": 0.36328900334994974,
+      "per_seed_mean_difference": [
+        0.3371945732883843,
+        0.4778742711286917,
+        0.30886550905058924,
+        0.3120944031387718,
+        0.3804162601433118
+      ]
+    },
+    "student_t:event_vs_continuous": {
+      "interval": [
+        -0.0005561116474131408,
+        0.00023520609579346318
+      ],
+      "mean_difference": -0.00013800506385517797,
+      "per_seed_mean_difference": [
+        0.0002419946061435766,
+        -0.00011254544191380365,
+        -5.7596601138336775e-06,
+        -1.3065479455151111e-05,
+        -0.0008006493439366779
+      ]
+    }
+  },
+  "review_script_sha256": "1cb030eef36161d0e04d50fa890780f5818bae010789b2b6366fb54aead28af3",
+  "schema": "hepta.analytic-event.round3.main-independent-review.v1",
+  "scope_limits": [
+    "Frozen full inference/native replay is separately recorded in each AUDIT.",
+    "Five fitted seeds; dependent horizons and model outputs do not enlarge independent trajectory counts.",
+    "Student-t4 squared-loss intervals remain descriptive; no population noninferiority or hardware/energy claim."
+  ],
+  "scopes": 15,
+  "source_commit": "29174619dfc56cef1c16b34fbf98f85a1cd2e4c3",
+  "total_checks": 6310624,
+  "unique_trajectories": 5760
+}

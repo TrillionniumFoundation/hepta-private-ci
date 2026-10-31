@@ -1,0 +1,1830 @@
+{
+  "artifacts_sha256": {
+    "seed_1009/ANCHOR.json": "36bfb498b7db4a1e7b83851e16712ad6a6651c5a17f389dcedb3d3edd5c52655",
+    "seed_1009/ORIGINAL_TRAIN.npz": "7700f9e84cad8fecb40e5ed3135adc3bdf53b3da8c4d5e87a01566c23d293a8f",
+    "seed_1009/window_00_CHECKPOINT.json": "96d34d8fe49c2fdd1466ce6d98362cf941c0534841029cd06c1c27670e88e66b",
+    "seed_1009/window_00_NEW_DEV.npz": "9796d40efd2271f7bb937f60b5bfa1614f704d38e44bde2b6927340ee96c76fa",
+    "seed_1009/window_00_OLD_DEV.npz": "decfc9a101a1c4807a50169cc324fbb6911a131360975b0d5fac9dcc3f3a782b",
+    "seed_1009/window_00_TRAIN.npz": "59e6fe51cca760f5e3959cd710bcae535fab1c8739f7a3ac399894372f331ff3",
+    "seed_1009/window_01_CHECKPOINT.json": "0fe877c0984bf23dbe8a57c57197f07cd22176ba4c685a56453bb64f5d7b6e0e",
+    "seed_1009/window_01_NEW_DEV.npz": "7a23e2b99b8b3767252cf9f83ed7d8fb4d96399e0f4a3c1dc9f206cc06f960f3",
+    "seed_1009/window_01_OLD_DEV.npz": "ef79c84eeb93e6ded54e01942c33cfce0ed7556af4595840c208396165862657",
+    "seed_1009/window_01_TRAIN.npz": "0e2d2efa7dc6bdadc094277df7b35978c8f35ff3addda3a4d1a0836808d33706",
+    "seed_1009/window_02_CHECKPOINT.json": "7cb20ca60b112a617b62f11b51bd569ff5bf1f288581196cfbe94129763c4df1",
+    "seed_1009/window_02_NEW_DEV.npz": "757e517a3faf24237cf0435fb1e8ad278448490f15abff2bec3bf9934e74ba2c",
+    "seed_1009/window_02_OLD_DEV.npz": "482ff61998c82a834cdd59dc0fa7f43e61a278f867eb6b0f27675fd4f85344f7",
+    "seed_1009/window_02_TRAIN.npz": "20fd273c29ea0a00cfa44be1483cbb3c3ac5aea0c5b346df8bc1567d169fb811",
+    "seed_1009/window_03_CHECKPOINT.json": "066851716adea36d82a581d3f86d1df88cc26581ee893ecd1398ac155b70546f",
+    "seed_1009/window_03_NEW_DEV.npz": "deb8edc5a32da21f4dea9f9d4c5b7cfe6538cf76059a99e69680fdb405009485",
+    "seed_1009/window_03_OLD_DEV.npz": "7466fffc1f0052bd7670c9281033237cf32ba577a6a221ec2a2647f7e61eb874",
+    "seed_1009/window_03_TRAIN.npz": "f303e7eaab01c71b4159f2ed1996b7bb4fec6082466e554a3856f1bfbf0900ce",
+    "seed_1009/window_04_CHECKPOINT.json": "939e4dd09d89cb5e45640fd48c2cb4e5ac78a2afa06d7549f1e02e17f3661126",
+    "seed_1009/window_04_NEW_DEV.npz": "c0d8a254aef216919e1e86791330fb1a805fab6abf60e6d1e8f3380a0b302614",
+    "seed_1009/window_04_OLD_DEV.npz": "900c0e805be32751e5e75a0a91003c33a7a34ddbeedaaf5b8f912f125e4a8a04",
+    "seed_1009/window_04_TRAIN.npz": "4519662437ee4655f1779dee1429dc6cf0db1fa80fa5caa5373638373340d438",
+    "seed_1009/window_05_CHECKPOINT.json": "09a3b11df22c24f68e501ca7b49fd13cb00c200653f36c3b113eb9e1280d1c65",
+    "seed_1009/window_05_NEW_DEV.npz": "a086edceeb8f955aa190bc7f2f7e7162ef4c85bce3407a2a79cbee732a2158b9",
+    "seed_1009/window_05_OLD_DEV.npz": "ed4290006795930e087facf3e1ac7c90fdbda6cd81b8547015c3a776fc8095c6",
+    "seed_1009/window_05_TRAIN.npz": "393d569d72bca9e188ee6c4916f0baee6ba7b7b3215b397ae143b0a21228ee0f",
+    "seed_1009/window_06_CHECKPOINT.json": "a894b8d6dee62bdd03d4a2ac60018a280e9285bcd9f6e8fd26d4ec6b6f024d9b",
+    "seed_1009/window_06_NEW_DEV.npz": "9b5c586138f60f49a4b4c2470fd0114b404d9cfab08ad8504f69c5541c784c5d",
+    "seed_1009/window_06_OLD_DEV.npz": "59ff1fafe0e03d658d31d0a858a1f1bd655b99c71f23241c0ea30be2532f53da",
+    "seed_1009/window_06_TRAIN.npz": "531e8300fd791e05cda1c36a7ed1a193659fd5d73c786318309ef99ef69e259c",
+    "seed_1009/window_07_CHECKPOINT.json": "324155a128d02e8abdad1e067f059adf7ecf7d734094e95c4783df10eec75215",
+    "seed_1009/window_07_NEW_DEV.npz": "9842937d86884a1c1397f2285ed479ef27239bd7eb2420c36b23870e58180c89",
+    "seed_1009/window_07_OLD_DEV.npz": "065d2967bc03ac467a28bdabe69ed53ad72ceb1c1061f32d559cf1961fbcecf2",
+    "seed_1009/window_07_TRAIN.npz": "f1e4bf5b9f620b276e5d04e6f1631ca61eff6dff3755bed7dcd27acfc8c73094",
+    "seed_1009/window_08_CHECKPOINT.json": "6d09905c0c9103030d3c1507de7f0700c399c0ce63c95485fc175ba4b7a2f9d1",
+    "seed_1009/window_08_NEW_DEV.npz": "4cc7f837f5f7e89ff4a4190bfa124f7f3b575fd10b30330b89f9ec7e5e244da8",
+    "seed_1009/window_08_OLD_DEV.npz": "0234b9e6cb647e3fd2a943e8570c33173f284761adb65ce2ca35dc084a3c7164",
+    "seed_1009/window_08_TRAIN.npz": "5c1f0ec6189cda82a719717b30fb082c8adb6191a9ca8e212d496f62e326fdf4",
+    "seed_1009/window_09_CHECKPOINT.json": "405d5903a3fd70f7d096b2886b271553709700f27b040473f4d1dd2d9bea5194",
+    "seed_1009/window_09_NEW_DEV.npz": "5488e7108fceac0787a5026f18bc114a373f7f538ec7271d6d7615b28269a9f8",
+    "seed_1009/window_09_OLD_DEV.npz": "c97e5b63c75bf72b1b299cc4401372b0d94c116bc54f07c9f1a93ee64f884777",
+    "seed_1009/window_09_TRAIN.npz": "f919c7e20f695d3c6485fc90e5f83b5495998569bca8b80481181c8e4a59a769",
+    "seed_1009/window_10_CHECKPOINT.json": "443cd05b45beffe0a44c2071c5b02a902d9893f5370c21eb5359e2207649c485",
+    "seed_1009/window_10_NEW_DEV.npz": "9ff11e15fbb295775a59d5413967eea58ee54dc4a5b4d27b69ce30f525ab4ab1",
+    "seed_1009/window_10_OLD_DEV.npz": "1a38beeb0bd146975767fc4d1cb77013e5c2690882a13b7c3429320487535ce3",
+    "seed_1009/window_10_TRAIN.npz": "54acde7b3a7b590ad4e97b1d78842bfd5e36fee2e91c23dbcd35966cb2ab6f30",
+    "seed_1009/window_11_CHECKPOINT.json": "e000ab33e16a7d1b7480532ddd287c04c30bedf94bb2d87379055a9678424d94",
+    "seed_1009/window_11_NEW_DEV.npz": "1dac1519d128d84072079b5b94bad612f224211733282d9c1995501827408d07",
+    "seed_1009/window_11_OLD_DEV.npz": "b00d332947e18197fef0c0e7fe5de66bf27b3a0dc8a1459be2b1bdd9ea806a3d",
+    "seed_1009/window_11_TRAIN.npz": "5211f4235d9ff8d7858c933bb23d17e18abb7c8923ce4e7bf150f06308c36a43",
+    "seed_607/ANCHOR.json": "7352d603c462be8e66b990e49682ead72fbca8474a3056cef5288fd7ccf853b7",
+    "seed_607/ORIGINAL_TRAIN.npz": "fa6e7cc88c07539adc82f284068b69f9d6773919a532d3271aa08ae766d7930e",
+    "seed_607/window_00_CHECKPOINT.json": "83cec06282d99fe86eae6f641108430dba16cdded092466faa2cdb4bdf04abf3",
+    "seed_607/window_00_NEW_DEV.npz": "a11d993d6288d03dceb932c389c93b805f24a30ca4be5b46a0adc62e097a04d3",
+    "seed_607/window_00_OLD_DEV.npz": "ddbd5b7a16c8a08f311878a573e42c8da893d911812f7eabd36f7d032ec852a8",
+    "seed_607/window_00_TRAIN.npz": "747b2281c6204a8a75f2a972256d0c175e7427da58b753a8932afa9dfc6ba880",
+    "seed_607/window_01_CHECKPOINT.json": "86ba680cd111faa6c990a63222d1338e7760c55081824fc3bdaa54839847170f",
+    "seed_607/window_01_NEW_DEV.npz": "f42a3f4f818c4896679b6cf9faeb21d02c7d7c61385e070ff3b3be8b514cfbdc",
+    "seed_607/window_01_OLD_DEV.npz": "bad44e501a9855e487f82e51a25b23306d17fbfa0395c3c6928e51c80096ca4d",
+    "seed_607/window_01_TRAIN.npz": "606cf40b12e6d0262969e5b70fa4584bf4566db776dd2743bc5f0c098cf0094e",
+    "seed_607/window_02_CHECKPOINT.json": "4a91885c6e5979b262b2bf6fa7958c9d179b9fef14e7e3a6befca9fe1a0181b6",
+    "seed_607/window_02_NEW_DEV.npz": "dffa6c798a3c60e19a1b505d135af9a276a4d8ab73f3c5549f734ed387a78810",
+    "seed_607/window_02_OLD_DEV.npz": "d1a0fec02b6689ae79bb67d5f58501eb2ac740e013f9e6e3bc1aa77bcaeffa09",
+    "seed_607/window_02_TRAIN.npz": "68f1f2b29c865f511ec1b8dd28a92f446003dee61cb4ca6686b6a3cf6bad4f83",
+    "seed_607/window_03_CHECKPOINT.json": "fc628a10428c0d0ea5203b9989e86d718c1f5e2c6b985d2b74006a96b3377b3e",
+    "seed_607/window_03_NEW_DEV.npz": "5aebdbb21aafb841b3f42e896542ef60ad4910d709b71b4485b1cfa939c89254",
+    "seed_607/window_03_OLD_DEV.npz": "901f94cdf8800d0c79bf767c3775f5ecd869d51698a0c88b94b91ae3be0fede4",
+    "seed_607/window_03_TRAIN.npz": "d5aa7c766bf0e0df4d3c3bbcfabeb2915a66ae4c62ececff216d04f801de747f",
+    "seed_607/window_04_CHECKPOINT.json": "c6fedb0adaff432fe1db11a9b2c475c19a7c451fe7f297a429af32a922cbf500",
+    "seed_607/window_04_NEW_DEV.npz": "7e841616ceaef4205ceb8de3f4ecb62df2f52ace127719cda17dc5a2e8654e03",
+    "seed_607/window_04_OLD_DEV.npz": "04e1baf61086a78cb40f9c8cb2212fc02ca508b1a6c2346966e37e6fee9dee0b",
+    "seed_607/window_04_TRAIN.npz": "40bb2405560eac5ad6f5f0831fa99c27d7295f967cb4d39bd651150ed93f09cd",
+    "seed_607/window_05_CHECKPOINT.json": "e2924f719672fa7135a74b485529169979486daab776cca4a043a538b837197b",
+    "seed_607/window_05_NEW_DEV.npz": "8cba1cff870f55c8597885446317d4c40807fb6bc305dcbb37059b0b8c647b43",
+    "seed_607/window_05_OLD_DEV.npz": "343ca3cb841ecf2e9159cab0c6b3ab0325da55f5c12388d572473fc2af506ac4",
+    "seed_607/window_05_TRAIN.npz": "9fc41364304685afde7974a497cf27efe3ad2d32f6fd79e3e9936157043a49e0",
+    "seed_607/window_06_CHECKPOINT.json": "bfe5d787c4a8e0bb9129588d06ffde1b084a34232daa08ad97fa8ccb584b8786",
+    "seed_607/window_06_NEW_DEV.npz": "4a93bd12551655f9511dd581c86fd0a7928dd928a719995779628ac8358e043a",
+    "seed_607/window_06_OLD_DEV.npz": "5d9d83746799b3b9eddedfe646a5df0a7c2115a5ae8e74f85a1de44e5a94bd5f",
+    "seed_607/window_06_TRAIN.npz": "4da79f23515982fc23273814b807e9cfecc9da0ae1a4c80f248e474e06c150e9",
+    "seed_607/window_07_CHECKPOINT.json": "55b5279d19f557a27ecec2e9bd2cf81ecaf0bf5c6d6070d12c32bd7c2a6d2a0f",
+    "seed_607/window_07_NEW_DEV.npz": "1271248858a2e9f643f452396426d94a32376dc28450c0814406a1e18d75a2ea",
+    "seed_607/window_07_OLD_DEV.npz": "cd90ac7cdaf16f7be14d71ca3b28db29348303a2ec19c2fec357cba18d3e8491",
+    "seed_607/window_07_TRAIN.npz": "d66ba4aeddab1d938c461f65be9d36510b4fc50a47ce70a151ec536fe290cef7",
+    "seed_607/window_08_CHECKPOINT.json": "c531a74708ef3988ba86419540251f804c029321278831deaf2896d94a5f9605",
+    "seed_607/window_08_NEW_DEV.npz": "07f4ccc3db264ef1400aacdcbca7ab823c25b4762e21a55be5983b084186c6e0",
+    "seed_607/window_08_OLD_DEV.npz": "c94265c490749296446ab5362aca519d701ef3bc776890425b6b97b8719c9915",
+    "seed_607/window_08_TRAIN.npz": "57d8b342e6b654314e5d68f7ef09dbffce89f00e097109d79f848a445dfb77bc",
+    "seed_607/window_09_CHECKPOINT.json": "0f266a44c529b07015b6f18ce82b70d46b0754a1238f1b62a8520f3bfe06dcf4",
+    "seed_607/window_09_NEW_DEV.npz": "5ec09bfff23c117314d7b1b8854e94c81e2248a63586726371ab9ca3c011a6e7",
+    "seed_607/window_09_OLD_DEV.npz": "3946d49c8e4618124266033240057438f75337e231a6c8005232bcb48301ad54",
+    "seed_607/window_09_TRAIN.npz": "93d553c2b70ce29dd7ceb1676fb68c83b7ff587cf6c23a5266f3c6ad11ae9774",
+    "seed_607/window_10_CHECKPOINT.json": "dd7bd1ab12e55e5b2895d70bf8cbbd550e1cf7d63fae93b2ce43516089c6fe5d",
+    "seed_607/window_10_NEW_DEV.npz": "cf957de0b312b21ac84fcda9155aa95fddaf39e668efd542c360641435ed19ea",
+    "seed_607/window_10_OLD_DEV.npz": "9da2cb680f99960fa3d455ea77d37ceabbbd36adf752767d2897679543a3a64c",
+    "seed_607/window_10_TRAIN.npz": "e9881262d423445a1f454f5335c3f81e63ceb569739b1801503133404d035940",
+    "seed_607/window_11_CHECKPOINT.json": "33e85f5f393e98b1d60f66113e6933ae8cf1a4ef456c02edeefda2a02b688488",
+    "seed_607/window_11_NEW_DEV.npz": "27362a339705d37e3b78f60f656158d06d56dd88b36c18d6aef8944ff6bfa5a0",
+    "seed_607/window_11_OLD_DEV.npz": "a338b4d0754424fa8d4adcdee8d009ad36804f51db112aff06fbde4f9f3d0f44",
+    "seed_607/window_11_TRAIN.npz": "a87e7269069a490b9d2d7b337b959af1f2151a608d3b9a9efb62a35374fb20ce",
+    "seed_701/ANCHOR.json": "ad8d7e7b1950ee31c777623fca3b210e70b17d2cbad14f295b5b903d7eb25ce4",
+    "seed_701/ORIGINAL_TRAIN.npz": "85eae084efd65075372bfdb0f2fc68f6a84c17d066b12350bb211dd7cc0e9fd1",
+    "seed_701/window_00_CHECKPOINT.json": "b056c13a5ee013f7e7b7193d6282d638553b5cbd89bd094a588167799ffebb4f",
+    "seed_701/window_00_NEW_DEV.npz": "e89bd0586ad1df156cf5e820288201c346f53130dca713799fa3c7c650c011ab",
+    "seed_701/window_00_OLD_DEV.npz": "744725f502357732e2cf37a979d125c15d34395bf1b4ed8b3eee2444ebc353b9",
+    "seed_701/window_00_TRAIN.npz": "4c43cfd78fb87214ea325a41d3d8372ed0a2e858e5eebd3e97071887e46b4713",
+    "seed_701/window_01_CHECKPOINT.json": "51e037fadd4e7309a5116f399033a30363c3a4e2e796e7e5f09185ac72bb9ed8",
+    "seed_701/window_01_NEW_DEV.npz": "9d114b86780f65f368a88fa023977d20a8b5809aba3a68c1012e578392da988a",
+    "seed_701/window_01_OLD_DEV.npz": "15146ee03f4f216f747f47bcaf3c96e850c4893f9a2a0f3dbee8fa51f65bcb29",
+    "seed_701/window_01_TRAIN.npz": "cd4eeefe0d8ff476ffb666129bd9e4cc85f3d768758d3cc525275a6c443e95e9",
+    "seed_701/window_02_CHECKPOINT.json": "51e3c1c31e8bc36d16b05bdc015b869acc0bbee1bd25c32c112df77b43f4dda7",
+    "seed_701/window_02_NEW_DEV.npz": "732f7123958b8fb6cd5e56063a59f8c771444bd41546d07bd69f14bae248ce99",
+    "seed_701/window_02_OLD_DEV.npz": "1da230512bcc9b63488d899a71eb1a36399fe75d755728ed7fc27310ad6ae44b",
+    "seed_701/window_02_TRAIN.npz": "4a79fbeb28273de42444817409ad2eb5190527446d3e1318f13a493f64f6aaf4",
+    "seed_701/window_03_CHECKPOINT.json": "94a9cb319681c85dfa7ee951eb324e6b318bf6f764368040c306abe11bed7c18",
+    "seed_701/window_03_NEW_DEV.npz": "8513f103aa0bcfea3f66945df07cf29a49e78c9b85240d9e77f93c4e2f2195b0",
+    "seed_701/window_03_OLD_DEV.npz": "e8f1f6851c05ef3033077aec5b950aa60948d4f9f81405d20e56bfe9c6dc7813",
+    "seed_701/window_03_TRAIN.npz": "97d13b16c4c5b665684fbbbf1d2226df9dc7137da6105cb770526146e712894a",
+    "seed_701/window_04_CHECKPOINT.json": "8f1d2e323a3ce11c6c57184b0430fc0b5ee9a2d15445dc6df9f6e2769c819f49",
+    "seed_701/window_04_NEW_DEV.npz": "a33b2173429fcaf65d06a53900e8f273f97c2f35cd8744cf0378dde59aebb2f9",
+    "seed_701/window_04_OLD_DEV.npz": "5f4bbefd2ea1721776b9a36bac9b610eb9ec883a79ecd458410fb30ed481a4ec",
+    "seed_701/window_04_TRAIN.npz": "7a9b6997e53e36ebab98604a488dd1604180daeeb854dfcbffdbc26eb36a3f72",
+    "seed_701/window_05_CHECKPOINT.json": "ca7bf122f23f55979234339566f70bfd92b1d1f88ad55478b03ffa0593344742",
+    "seed_701/window_05_NEW_DEV.npz": "8f3f1dfaae68602a4352c78d0daa9128e83e692e0f4d841b717489933eb41600",
+    "seed_701/window_05_OLD_DEV.npz": "c7bfb7ea5ef397e12a3721f08966e3646af3b9c825aeb01f5e8c98852c63f0fe",
+    "seed_701/window_05_TRAIN.npz": "fd5d55f16e9eb64018d8b9fa6911b39c6f874cf72e6448022b6bff846c0739f5",
+    "seed_701/window_06_CHECKPOINT.json": "07502e477bd2161611d6f50d7d90a102420e27045509bfa4632a96a011c43db6",
+    "seed_701/window_06_NEW_DEV.npz": "ef7eefd6c8197440a0c412503c46bec59debe74431b3a17e157e625fc5938d2a",
+    "seed_701/window_06_OLD_DEV.npz": "fa259dcee2def6d465899c6d865cf5e10dca6541cf1cdf04084762a869438ae0",
+    "seed_701/window_06_TRAIN.npz": "303f7882439de9ad9c060957daadfc8571e85b60511a3e6c4fbd63334d212050",
+    "seed_701/window_07_CHECKPOINT.json": "66617b7dfc518355d9f7bd96e67ffc4dd6a3cd39635205ad706e3cc76b285e08",
+    "seed_701/window_07_NEW_DEV.npz": "91d3787957fd7a9054d271f71049b9904087dc612d518e467629c10dcaf96a9b",
+    "seed_701/window_07_OLD_DEV.npz": "d750339194c038edd355003be4fdb14b9453c7fc936ab2f2ea3c23dd69619aba",
+    "seed_701/window_07_TRAIN.npz": "f504178f4c008f97b0e5e25ecdcb98a1c890e24046785530a55ab7560265745a",
+    "seed_701/window_08_CHECKPOINT.json": "a29d78726fcfcbf71724b1aa0e7797da3e18b3229befbb45df4a0f2ab95529bd",
+    "seed_701/window_08_NEW_DEV.npz": "9765f2ed6ec0505e1dc67c3618bda2e57876c13bccb40eb48811b441a13d3009",
+    "seed_701/window_08_OLD_DEV.npz": "dcffb4de0566878768a8bb4d1b611c3838344d1c334a47f3ca0b234137dddfba",
+    "seed_701/window_08_TRAIN.npz": "50b7aff4876dcaa613c7fa65535ffffb841d952c4b251ad1349f6237f7f2640d",
+    "seed_701/window_09_CHECKPOINT.json": "b442152802326c7d3ae12524831cf8d4d6c1ea5a80691da0c98f252e6a3eeee0",
+    "seed_701/window_09_NEW_DEV.npz": "a53980ce0f8a4f673f9378a4f594e523d0adb7b5374ae7ea68c57b54fcc32bf8",
+    "seed_701/window_09_OLD_DEV.npz": "05498ee5d27ae9d51a2304726ebfd4ed40bf0a983eca580d5ef1e4ab0b74a915",
+    "seed_701/window_09_TRAIN.npz": "933dfbe9dfc2696b53cb559ec52e6fcb96a32630420817e01d724cda9d119e89",
+    "seed_701/window_10_CHECKPOINT.json": "7fc1f4b25ae3f7cbc71c6999df4d639bf61aaeaf149df57456e551af33dcdbd8",
+    "seed_701/window_10_NEW_DEV.npz": "739b682142b193f65438326a9354022c298a326f4473ad0427ad57410c73f7ea",
+    "seed_701/window_10_OLD_DEV.npz": "db33c6a3c2dcbb8c4dd25517354d08abf44e8d8f6aac2dd223a37a8c711a6f6a",
+    "seed_701/window_10_TRAIN.npz": "84ffeb93e205d1cecefa9c3d13a5cad9f51074fa13e97c8e9b1956536ca7512e",
+    "seed_701/window_11_CHECKPOINT.json": "9cd9495f074d3b84a2f0d5484c4b4d7f8ea3eb6f16fa0dc75ade6a5831655a77",
+    "seed_701/window_11_NEW_DEV.npz": "b0960be3b31a5cb3b4f2b94bac2990410ff2d4d6d4dbe92eaaf85e696cadd78e",
+    "seed_701/window_11_OLD_DEV.npz": "e5400136040c495a994c5512a7bfe08d2edcb264d58351430e704684cc9a49b6",
+    "seed_701/window_11_TRAIN.npz": "1032f73d3c2752a6815bc7c8767c68425f2be5dfde3b2b7a6de95d0dfac26431",
+    "seed_809/ANCHOR.json": "928bc75f95463d581d7551924312eb93c22f344fc2f1aa2d11aee2d6c3cf2774",
+    "seed_809/ORIGINAL_TRAIN.npz": "de2e431ef4417a9ce417b5996d91ff88d119cacf6571b3ed5e8e3318317ac3ed",
+    "seed_809/window_00_CHECKPOINT.json": "6e9f10db5687bb6915a25626077ab3bcc58b64aae9e530929a8b7050d4bfcc53",
+    "seed_809/window_00_NEW_DEV.npz": "26cd717e5502e62d16ec86491d0e51c879c709c69974be8f3b5dbf547b1ed6ca",
+    "seed_809/window_00_OLD_DEV.npz": "3059bed2b90bc79c167e97252dfa542de7dc01e1e122fabba0b858307bc5c25e",
+    "seed_809/window_00_TRAIN.npz": "539cdc75b476b75aa113d8ef69faf29decefe2735b37cb8163502d762d00024a",
+    "seed_809/window_01_CHECKPOINT.json": "f9a2e1150a12557913170aeebe40266a169cd54d05f8b99f18bf3bc721a88f09",
+    "seed_809/window_01_NEW_DEV.npz": "6db055920381ba8f83311f79698de488811e0559a9f55a2f91ea662e09298e6c",
+    "seed_809/window_01_OLD_DEV.npz": "bbe71ed12f93b58a56d951493c0145593abdbd16c8677e3eea5ce969029432ff",
+    "seed_809/window_01_TRAIN.npz": "79173a9984cb8522a95ed93e5924a7663bf8dd92af26ecb606d7f65d34fd771c",
+    "seed_809/window_02_CHECKPOINT.json": "008136d1a8e08e0a49ab68fe89a3727a25b358395f1745e8fab99fc8b24cec7d",
+    "seed_809/window_02_NEW_DEV.npz": "6282e689b304491299b300608efa36a66f91cdd57d2da3013968d9fc9d4103b2",
+    "seed_809/window_02_OLD_DEV.npz": "ce5420b235adee1df1ad1b1c08443c60c3fd5b6369ae8657b2eecb666dc35f49",
+    "seed_809/window_02_TRAIN.npz": "e085ee7e26caafeb30e2a717d4cdb797c13eed40dfff8d7be4984e7dbb4aa5a1",
+    "seed_809/window_03_CHECKPOINT.json": "bec0566c43355839e15ed45c1c05a400dadb53d414c64cf76c3a8251e083dfa7",
+    "seed_809/window_03_NEW_DEV.npz": "af90c3e622da6c9eb7b07f1f715ded5694e5ea26903bd0389630fc2ebc996f09",
+    "seed_809/window_03_OLD_DEV.npz": "50935e09fd8c37adf1dfb0a21e1762082865760f30f289a5a91df0862fddd358",
+    "seed_809/window_03_TRAIN.npz": "cbcf29aba8ead9ba659a13090915fe326f085f47449ee15ebf1ca62967915c6b",
+    "seed_809/window_04_CHECKPOINT.json": "8b83dfdb48c8a05623ba07139542713e9ab3e47d018ada3b00daa675efdf50a3",
+    "seed_809/window_04_NEW_DEV.npz": "0daa4215ab588e2b5285418958756e6674dcfc391816ba9a66947b8a27df4aa6",
+    "seed_809/window_04_OLD_DEV.npz": "d2741992500d3b2232a14a55ebc87dce70d35ab86f7ae02f24cf7d5cc5b731be",
+    "seed_809/window_04_TRAIN.npz": "520bbda41ea1aace446d0c6d3f7727e4b41277834756ae4f6dc4ae83316ffa6c",
+    "seed_809/window_05_CHECKPOINT.json": "a3442c74bd7596d51ad7b23c19f7399197580695f1e887088d6330b17d81ab71",
+    "seed_809/window_05_NEW_DEV.npz": "ba152d8f8369b755e6f70f9193cf6676eef13f0a1ba08aaf38fa1db20b04331f",
+    "seed_809/window_05_OLD_DEV.npz": "06efb9bede9421fbc8e3e25a3b2f8caf4edc96044e24269fcf3076516d999f0d",
+    "seed_809/window_05_TRAIN.npz": "b43d1e238436050a5d97a055064d29f3e5c6c51805feca7158d5f97b73e3ba4f",
+    "seed_809/window_06_CHECKPOINT.json": "6f0dcb41394544fba3d42e50278a622d35d3a754a4c99a23fc990ac7be97e5a9",
+    "seed_809/window_06_NEW_DEV.npz": "e82c9a82de5c82d7db83ad21de2a82ad5f629659dc39c0da05097902a5115246",
+    "seed_809/window_06_OLD_DEV.npz": "962d9268899614012eef5b900881dc12953f3c44ea2c7ac91d0db48dbb3b7c91",
+    "seed_809/window_06_TRAIN.npz": "13b6cc4df710f3afb49af24bdbef5414f7c01cecc19cb96b96f84441f0879107",
+    "seed_809/window_07_CHECKPOINT.json": "0dced1a6249e407ddc01e7f8b72773bf97789f081cd1246bfd9a4dbd667cf9ba",
+    "seed_809/window_07_NEW_DEV.npz": "aa1a6d7a61fd34aa09fd95743db6cfe552d35de415b513ae5a6d1cb072a2a18b",
+    "seed_809/window_07_OLD_DEV.npz": "8c9ce0276c19e786feddea1a0186a2b2d39da8c0f0d3460faafa48ce41521f3d",
+    "seed_809/window_07_TRAIN.npz": "62e47739aba0d2836262dbcbbb70b4c64834cd8a4fc7a4a200a540930c355c9a",
+    "seed_809/window_08_CHECKPOINT.json": "43405d023085d493dd99c94179df46dd0df9d842e5154dfdd659743cba8cff7f",
+    "seed_809/window_08_NEW_DEV.npz": "bc6d6da33322e9f55ec8446bb1dfc570d83c0820446548d1272d9ee7e0a9276e",
+    "seed_809/window_08_OLD_DEV.npz": "48bb68af53a291882bc0caefdc7c097348058a0d96844b8db634baeb6cf65ede",
+    "seed_809/window_08_TRAIN.npz": "ddfd2107559faca1c293301e25b2ecc99ca4ccab64c3412101744abac3a1ba6d",
+    "seed_809/window_09_CHECKPOINT.json": "f300e2f230618f9b2e718fd0af4bf4af936a5d1b12f88da8a1aaaaba4a3b9cc2",
+    "seed_809/window_09_NEW_DEV.npz": "390dc7724ae774ad4b4e529116595933fbcbd238ea2ebc4460064a9c94a20c8e",
+    "seed_809/window_09_OLD_DEV.npz": "9d3ee5ad37f6d1c238deafcd952087e7b418d5d0ac41c2bca667a596484f8740",
+    "seed_809/window_09_TRAIN.npz": "c07830a25333e75a35ea536e38b0e46b9dd03f0b8432ab4776599a713761f930",
+    "seed_809/window_10_CHECKPOINT.json": "d5fe378456deb8fb3106b027786366fb4ddadb268795eb95f1c069825b14eb3e",
+    "seed_809/window_10_NEW_DEV.npz": "bd8f7ec1ca85c293b05b6f100d5a75e6d2e9836376fa335a01f36d9e43bd8212",
+    "seed_809/window_10_OLD_DEV.npz": "21e7afed10bbf20b7e9a7eeff87fe9be58797cd89ffac42dd9f15c4e54c39688",
+    "seed_809/window_10_TRAIN.npz": "5bb190a9baf3d6025151b31f8fe5539a9d6718b66c1006a859521805b0313883",
+    "seed_809/window_11_CHECKPOINT.json": "e936575abcda414be41075822610850f03a7ba981837dc60401522cca097d504",
+    "seed_809/window_11_NEW_DEV.npz": "57bcdc653942afa8d4109e7984637bcb86b38456b1db1c6f78fe8bd93e221e17",
+    "seed_809/window_11_OLD_DEV.npz": "9f80632a459979ebd3379f2d0b527d2ea5898c8bcadb8c5512931afbced37980",
+    "seed_809/window_11_TRAIN.npz": "4549f65dd15a68f4c0d8b96d26791ea1f30a80d7d95ce0b4b1818487a9274fad",
+    "seed_907/ANCHOR.json": "cecce81803b7b4fee0650b818e84e86ff8e726f1c2a0479aeb71360e9429da67",
+    "seed_907/ORIGINAL_TRAIN.npz": "7c746946b58719b332b8dd577123aa3b4e44ae0470e4fd9245d2b5e9803a193b",
+    "seed_907/window_00_CHECKPOINT.json": "8f0692756e5cfb504d01177c5ba0b88fbbf12b192d13a6cab9dd0385ef17bdac",
+    "seed_907/window_00_NEW_DEV.npz": "8576cc75b83c9144a1f9092b0a051738b5b3e0fd44478b778be57d2e6ae5c140",
+    "seed_907/window_00_OLD_DEV.npz": "28bd2e400641e54615a06495c336509b807a602fe605f0f2cc9410108b7e3894",
+    "seed_907/window_00_TRAIN.npz": "e86ea77232eceaca313cd37ea166ef5cd95639f307b7d9ea211928a309e6c862",
+    "seed_907/window_01_CHECKPOINT.json": "07cb9a403ce33400e31983afaa470d903553cf135a6763fec8b6f16de02151dd",
+    "seed_907/window_01_NEW_DEV.npz": "577ad036651a475741aeff53caa7aeb8b68af5a9dbf40d0360feb77a0ec6b869",
+    "seed_907/window_01_OLD_DEV.npz": "94138aeab35bfe4ca14c633404edf8825cd616040a076f07252f2b853678bff8",
+    "seed_907/window_01_TRAIN.npz": "adb917f479dc38796a4a7654b87fd0f4e7fd546c76a7b84c8b9815945e65e425",
+    "seed_907/window_02_CHECKPOINT.json": "51fd5a0ec37ad53ac22a7d351938bdf644a99e4cae1e85ed1ec6a7da80da2a2b",
+    "seed_907/window_02_NEW_DEV.npz": "ae14cfdfa72e28f106e2f4e3644f48004fc9f6e21a6f0f7b676b0bedbfb146ed",
+    "seed_907/window_02_OLD_DEV.npz": "2aa308e9d7ceae41c9ae455e5170e2a4dbc028be47354957d92210f8f601ac63",
+    "seed_907/window_02_TRAIN.npz": "d1c411ff8421689e1e5d93f97b1cd76f3e79a1b603225c8ec9d3003aa29d60cc",
+    "seed_907/window_03_CHECKPOINT.json": "19fa5b2e988646a2f575ca8aeece9680034f7c777f3a987df91f946e1fb74a28",
+    "seed_907/window_03_NEW_DEV.npz": "d0963c0451258332b457f78ff6c86786eb8246771ad0f8635751213389b30754",
+    "seed_907/window_03_OLD_DEV.npz": "2ebdffab13e764de62516147e77a1abbe33494c157d1829206a84867be8b0388",
+    "seed_907/window_03_TRAIN.npz": "b00cea31d60aa0b779057ed34235a03c879663d339d26fcbfcbb2ec77b9b1743",
+    "seed_907/window_04_CHECKPOINT.json": "fcf46f3dc1ca5ad2ce1dfa697db43914336bdc62cd29ecccc37101b4d8ba2ddb",
+    "seed_907/window_04_NEW_DEV.npz": "9e41cd011d16359289cda48b50edda0f6ce53469b2d984609679fc80b098f92b",
+    "seed_907/window_04_OLD_DEV.npz": "b74189206fc34b8c6a9f80075d985b34b424df480a6f62adc5e86dbfdda8ba19",
+    "seed_907/window_04_TRAIN.npz": "d0786b7fc11052855c0a151c7b3ade29b87ec8de075aeaadfe2866c21b46c352",
+    "seed_907/window_05_CHECKPOINT.json": "9681016625867a6fe6b4168207f2747995898515e573fc1c57bd9adbbb93fb6b",
+    "seed_907/window_05_NEW_DEV.npz": "c373c5536feab820a63c34bec037b91f1314e4400616d4140a71f96237a639db",
+    "seed_907/window_05_OLD_DEV.npz": "6d6e905539aa8d1c4536f97393d9dfad2d028d608239c0055e853c84d8d25804",
+    "seed_907/window_05_TRAIN.npz": "883af6e3c179b2230618c920b4f00e6500bd008504882ca36f9d7463f7f1ea72",
+    "seed_907/window_06_CHECKPOINT.json": "bee8a6e9176f2198639ada930738da07833457c7cdc792d7446be16ca6f27755",
+    "seed_907/window_06_NEW_DEV.npz": "6844e23ac4e267e3ee628c3d2230df31b56b747b0c08d3909910120363353716",
+    "seed_907/window_06_OLD_DEV.npz": "d29d9d08cb1cbfa4e1a0e3c934ee1cd466cf768857d3b4610ad37895486a6633",
+    "seed_907/window_06_TRAIN.npz": "4cf76d86820f4cdadc7c533f6e054cc4328eaa50091489b9036638d2462072f6",
+    "seed_907/window_07_CHECKPOINT.json": "9b9b69f4de47b07f681ca94d37d4e96908be6fc84cedfc4512d102ba4b76c936",
+    "seed_907/window_07_NEW_DEV.npz": "11c97e8df7b34810678f1ce49debbdc054a3901675f7f8318e44e472fe344138",
+    "seed_907/window_07_OLD_DEV.npz": "f86de3d5d859848b9559f2f17fb1eb32b914c44cc3d7551e6c1ef8ffdd84e04e",
+    "seed_907/window_07_TRAIN.npz": "b3fdd97bf6890dc020b3374e7f5e90dfa517274388acb7dbf437a0ae79da18eb",
+    "seed_907/window_08_CHECKPOINT.json": "460e28e3d17fa1951c0d36a121b7a19597b9eedeb480c183468879083d9f6da9",
+    "seed_907/window_08_NEW_DEV.npz": "f8ea5d326fee8ff4610e0818a2be59a34edcfdec3ecef809ff6c1bf05dc50bde",
+    "seed_907/window_08_OLD_DEV.npz": "2feeba8b0309c8291a0f001463506ad67f37b443528794f5887429346a3dc34f",
+    "seed_907/window_08_TRAIN.npz": "ef5a40f594f195663f2e0bd6f08b15f2403ed60c11116175c415f56f2b4ae6b2",
+    "seed_907/window_09_CHECKPOINT.json": "f5d36a2762dba2f845535dba0b7b8121df4387ca4136cfc80aec72cd728d3343",
+    "seed_907/window_09_NEW_DEV.npz": "c4d926d9ccf862c8159c2d8774921a94b775a6899d248b2f285899600d876991",
+    "seed_907/window_09_OLD_DEV.npz": "48da0b1a00d70f97e1520ea0dd826e3d74f1030210decbeec7c18f10bef01683",
+    "seed_907/window_09_TRAIN.npz": "e79d4db04996cb51a0bbb4d1af625291c57c489b5d6e7a1c064c58c66dce6f14",
+    "seed_907/window_10_CHECKPOINT.json": "d4932e5b292e6e1268b956ebfceac7f76201dcf1e287edf9dd9add6641251063",
+    "seed_907/window_10_NEW_DEV.npz": "6062119bda33ac333c9cca2224f9f609fe596fc9d03f8d8341b09a9588305fe1",
+    "seed_907/window_10_OLD_DEV.npz": "783e3a879b0656927e0fa3faf860754357ddef57789fde593651d85088e4c886",
+    "seed_907/window_10_TRAIN.npz": "0010cf696df6a5dd64a2b6adb2b81746c8bf861d4f96aa851968e2f4e13a7eb5",
+    "seed_907/window_11_CHECKPOINT.json": "64b58cabd06b2701dd28de879983690c36d1a81d0cee78d758fee60bb39ebab8",
+    "seed_907/window_11_NEW_DEV.npz": "211d79e23f5d7fee4b4257c199c582869502a87b6d0260b09b90cbf7994fd648",
+    "seed_907/window_11_OLD_DEV.npz": "9533a50d36513668c66570c5f4a8e2859118a462862967c9e750ee1a26c620d5",
+    "seed_907/window_11_TRAIN.npz": "8eb5b9051ea2e5474250ebdf8651ef44fad3fd5dbead9fe5db014aab62db89a7"
+  },
+  "checkpoint_receipts": [
+    {
+      "calibration_parameter_l2_change": 0.13748003953628157,
+      "candidate_count": 55,
+      "checkpoint_sha256": "83cec06282d99fe86eae6f641108430dba16cdded092466faa2cdb4bdf04abf3",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 607,
+      "selected_index": 51,
+      "window": 0
+    },
+    {
+      "calibration_parameter_l2_change": 1.2658922287211023,
+      "candidate_count": 55,
+      "checkpoint_sha256": "86ba680cd111faa6c990a63222d1338e7760c55081824fc3bdaa54839847170f",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 607,
+      "selected_index": 25,
+      "window": 1
+    },
+    {
+      "calibration_parameter_l2_change": 0.20163951843651295,
+      "candidate_count": 55,
+      "checkpoint_sha256": "4a91885c6e5979b262b2bf6fa7958c9d179b9fef14e7e3a6befca9fe1a0181b6",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 607,
+      "selected_index": 38,
+      "window": 2
+    },
+    {
+      "calibration_parameter_l2_change": 0.7790097068250691,
+      "candidate_count": 55,
+      "checkpoint_sha256": "fc628a10428c0d0ea5203b9989e86d718c1f5e2c6b985d2b74006a96b3377b3e",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 607,
+      "selected_index": 30,
+      "window": 3
+    },
+    {
+      "calibration_parameter_l2_change": 0.14464724951752136,
+      "candidate_count": 55,
+      "checkpoint_sha256": "c6fedb0adaff432fe1db11a9b2c475c19a7c451fe7f297a429af32a922cbf500",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 607,
+      "selected_index": 51,
+      "window": 4
+    },
+    {
+      "calibration_parameter_l2_change": 1.3898242001134296,
+      "candidate_count": 55,
+      "checkpoint_sha256": "e2924f719672fa7135a74b485529169979486daab776cca4a043a538b837197b",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 607,
+      "selected_index": 12,
+      "window": 5
+    },
+    {
+      "calibration_parameter_l2_change": 0.34515319801112115,
+      "candidate_count": 55,
+      "checkpoint_sha256": "bfe5d787c4a8e0bb9129588d06ffde1b084a34232daa08ad97fa8ccb584b8786",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 607,
+      "selected_index": 0,
+      "window": 6
+    },
+    {
+      "calibration_parameter_l2_change": 1.3994023575301404,
+      "candidate_count": 55,
+      "checkpoint_sha256": "55b5279d19f557a27ecec2e9bd2cf81ecaf0bf5c6d6070d12c32bd7c2a6d2a0f",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 607,
+      "selected_index": 20,
+      "window": 7
+    },
+    {
+      "calibration_parameter_l2_change": 0.18840053071748977,
+      "candidate_count": 55,
+      "checkpoint_sha256": "c531a74708ef3988ba86419540251f804c029321278831deaf2896d94a5f9605",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 607,
+      "selected_index": 0,
+      "window": 8
+    },
+    {
+      "calibration_parameter_l2_change": 1.4507985205335,
+      "candidate_count": 55,
+      "checkpoint_sha256": "0f266a44c529b07015b6f18ce82b70d46b0754a1238f1b62a8520f3bfe06dcf4",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 607,
+      "selected_index": 13,
+      "window": 9
+    },
+    {
+      "calibration_parameter_l2_change": 0.1353123200575377,
+      "candidate_count": 55,
+      "checkpoint_sha256": "dd7bd1ab12e55e5b2895d70bf8cbbd550e1cf7d63fae93b2ce43516089c6fe5d",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 607,
+      "selected_index": 0,
+      "window": 10
+    },
+    {
+      "calibration_parameter_l2_change": 1.0469464613273736,
+      "candidate_count": 55,
+      "checkpoint_sha256": "33e85f5f393e98b1d60f66113e6933ae8cf1a4ef456c02edeefda2a02b688488",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 607,
+      "selected_index": 21,
+      "window": 11
+    },
+    {
+      "calibration_parameter_l2_change": 0.03365045277285626,
+      "candidate_count": 55,
+      "checkpoint_sha256": "b056c13a5ee013f7e7b7193d6282d638553b5cbd89bd094a588167799ffebb4f",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 701,
+      "selected_index": 51,
+      "window": 0
+    },
+    {
+      "calibration_parameter_l2_change": 1.0563558957083565,
+      "candidate_count": 55,
+      "checkpoint_sha256": "51e037fadd4e7309a5116f399033a30363c3a4e2e796e7e5f09185ac72bb9ed8",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 701,
+      "selected_index": 25,
+      "window": 1
+    },
+    {
+      "calibration_parameter_l2_change": 0.03277522612831805,
+      "candidate_count": 55,
+      "checkpoint_sha256": "51e3c1c31e8bc36d16b05bdc015b869acc0bbee1bd25c32c112df77b43f4dda7",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 701,
+      "selected_index": 53,
+      "window": 2
+    },
+    {
+      "calibration_parameter_l2_change": 1.2046839802262383,
+      "candidate_count": 55,
+      "checkpoint_sha256": "94a9cb319681c85dfa7ee951eb324e6b318bf6f764368040c306abe11bed7c18",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 701,
+      "selected_index": 27,
+      "window": 3
+    },
+    {
+      "calibration_parameter_l2_change": 0.11096358330988114,
+      "candidate_count": 55,
+      "checkpoint_sha256": "8f1d2e323a3ce11c6c57184b0430fc0b5ee9a2d15445dc6df9f6e2769c819f49",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 701,
+      "selected_index": 40,
+      "window": 4
+    },
+    {
+      "calibration_parameter_l2_change": 1.073475927863954,
+      "candidate_count": 55,
+      "checkpoint_sha256": "ca7bf122f23f55979234339566f70bfd92b1d1f88ad55478b03ffa0593344742",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 701,
+      "selected_index": 22,
+      "window": 5
+    },
+    {
+      "calibration_parameter_l2_change": 0.1203842712633664,
+      "candidate_count": 55,
+      "checkpoint_sha256": "07502e477bd2161611d6f50d7d90a102420e27045509bfa4632a96a011c43db6",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 701,
+      "selected_index": 51,
+      "window": 6
+    },
+    {
+      "calibration_parameter_l2_change": 1.217314662736902,
+      "candidate_count": 55,
+      "checkpoint_sha256": "66617b7dfc518355d9f7bd96e67ffc4dd6a3cd39635205ad706e3cc76b285e08",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 701,
+      "selected_index": 12,
+      "window": 7
+    },
+    {
+      "calibration_parameter_l2_change": 0.07564835370456899,
+      "candidate_count": 55,
+      "checkpoint_sha256": "a29d78726fcfcbf71724b1aa0e7797da3e18b3229befbb45df4a0f2ab95529bd",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 701,
+      "selected_index": 50,
+      "window": 8
+    },
+    {
+      "calibration_parameter_l2_change": 1.2296808724496202,
+      "candidate_count": 55,
+      "checkpoint_sha256": "b442152802326c7d3ae12524831cf8d4d6c1ea5a80691da0c98f252e6a3eeee0",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 701,
+      "selected_index": 12,
+      "window": 9
+    },
+    {
+      "calibration_parameter_l2_change": 0.08548096491748594,
+      "candidate_count": 55,
+      "checkpoint_sha256": "7fc1f4b25ae3f7cbc71c6999df4d639bf61aaeaf149df57456e551af33dcdbd8",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 701,
+      "selected_index": 50,
+      "window": 10
+    },
+    {
+      "calibration_parameter_l2_change": 1.0524055525675444,
+      "candidate_count": 55,
+      "checkpoint_sha256": "9cd9495f074d3b84a2f0d5484c4b4d7f8ea3eb6f16fa0dc75ade6a5831655a77",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 701,
+      "selected_index": 16,
+      "window": 11
+    },
+    {
+      "calibration_parameter_l2_change": 0.0455582535813897,
+      "candidate_count": 55,
+      "checkpoint_sha256": "6e9f10db5687bb6915a25626077ab3bcc58b64aae9e530929a8b7050d4bfcc53",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 809,
+      "selected_index": 53,
+      "window": 0
+    },
+    {
+      "calibration_parameter_l2_change": 1.1557943510532214,
+      "candidate_count": 55,
+      "checkpoint_sha256": "f9a2e1150a12557913170aeebe40266a169cd54d05f8b99f18bf3bc721a88f09",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 809,
+      "selected_index": 11,
+      "window": 1
+    },
+    {
+      "calibration_parameter_l2_change": 0.06653121107937672,
+      "candidate_count": 55,
+      "checkpoint_sha256": "008136d1a8e08e0a49ab68fe89a3727a25b358395f1745e8fab99fc8b24cec7d",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 809,
+      "selected_index": 53,
+      "window": 2
+    },
+    {
+      "calibration_parameter_l2_change": 0.9753934044957093,
+      "candidate_count": 55,
+      "checkpoint_sha256": "bec0566c43355839e15ed45c1c05a400dadb53d414c64cf76c3a8251e083dfa7",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 809,
+      "selected_index": 22,
+      "window": 3
+    },
+    {
+      "calibration_parameter_l2_change": 0.05231973167555089,
+      "candidate_count": 55,
+      "checkpoint_sha256": "8b83dfdb48c8a05623ba07139542713e9ab3e47d018ada3b00daa675efdf50a3",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 809,
+      "selected_index": 53,
+      "window": 4
+    },
+    {
+      "calibration_parameter_l2_change": 0.8009028282654872,
+      "candidate_count": 55,
+      "checkpoint_sha256": "a3442c74bd7596d51ad7b23c19f7399197580695f1e887088d6330b17d81ab71",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 809,
+      "selected_index": 20,
+      "window": 5
+    },
+    {
+      "calibration_parameter_l2_change": 0.06559077157799541,
+      "candidate_count": 55,
+      "checkpoint_sha256": "6f0dcb41394544fba3d42e50278a622d35d3a754a4c99a23fc990ac7be97e5a9",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 809,
+      "selected_index": 50,
+      "window": 6
+    },
+    {
+      "calibration_parameter_l2_change": 1.0774092676806368,
+      "candidate_count": 55,
+      "checkpoint_sha256": "0dced1a6249e407ddc01e7f8b72773bf97789f081cd1246bfd9a4dbd667cf9ba",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 809,
+      "selected_index": 32,
+      "window": 7
+    },
+    {
+      "calibration_parameter_l2_change": 0.05506727496956206,
+      "candidate_count": 55,
+      "checkpoint_sha256": "43405d023085d493dd99c94179df46dd0df9d842e5154dfdd659743cba8cff7f",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 809,
+      "selected_index": 50,
+      "window": 8
+    },
+    {
+      "calibration_parameter_l2_change": 1.11850519407773,
+      "candidate_count": 55,
+      "checkpoint_sha256": "f300e2f230618f9b2e718fd0af4bf4af936a5d1b12f88da8a1aaaaba4a3b9cc2",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 809,
+      "selected_index": 12,
+      "window": 9
+    },
+    {
+      "calibration_parameter_l2_change": 0.07292122647609382,
+      "candidate_count": 55,
+      "checkpoint_sha256": "d5fe378456deb8fb3106b027786366fb4ddadb268795eb95f1c069825b14eb3e",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 809,
+      "selected_index": 53,
+      "window": 10
+    },
+    {
+      "calibration_parameter_l2_change": 1.294415179843825,
+      "candidate_count": 55,
+      "checkpoint_sha256": "e936575abcda414be41075822610850f03a7ba981837dc60401522cca097d504",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 809,
+      "selected_index": 12,
+      "window": 11
+    },
+    {
+      "calibration_parameter_l2_change": 0.2690777781833156,
+      "candidate_count": 55,
+      "checkpoint_sha256": "8f0692756e5cfb504d01177c5ba0b88fbbf12b192d13a6cab9dd0385ef17bdac",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 907,
+      "selected_index": 0,
+      "window": 0
+    },
+    {
+      "calibration_parameter_l2_change": 1.2026015536558652,
+      "candidate_count": 55,
+      "checkpoint_sha256": "07cb9a403ce33400e31983afaa470d903553cf135a6763fec8b6f16de02151dd",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 907,
+      "selected_index": 8,
+      "window": 1
+    },
+    {
+      "calibration_parameter_l2_change": 0.13217156804023092,
+      "candidate_count": 55,
+      "checkpoint_sha256": "51fd5a0ec37ad53ac22a7d351938bdf644a99e4cae1e85ed1ec6a7da80da2a2b",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 907,
+      "selected_index": 51,
+      "window": 2
+    },
+    {
+      "calibration_parameter_l2_change": 1.3912741720869706,
+      "candidate_count": 55,
+      "checkpoint_sha256": "19fa5b2e988646a2f575ca8aeece9680034f7c777f3a987df91f946e1fb74a28",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 907,
+      "selected_index": 7,
+      "window": 3
+    },
+    {
+      "calibration_parameter_l2_change": 0.05627090997566102,
+      "candidate_count": 55,
+      "checkpoint_sha256": "fcf46f3dc1ca5ad2ce1dfa697db43914336bdc62cd29ecccc37101b4d8ba2ddb",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 907,
+      "selected_index": 54,
+      "window": 4
+    },
+    {
+      "calibration_parameter_l2_change": 0.9790058953003741,
+      "candidate_count": 55,
+      "checkpoint_sha256": "9681016625867a6fe6b4168207f2747995898515e573fc1c57bd9adbbb93fb6b",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 907,
+      "selected_index": 13,
+      "window": 5
+    },
+    {
+      "calibration_parameter_l2_change": 0.05123766310118982,
+      "candidate_count": 55,
+      "checkpoint_sha256": "bee8a6e9176f2198639ada930738da07833457c7cdc792d7446be16ca6f27755",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 907,
+      "selected_index": 0,
+      "window": 6
+    },
+    {
+      "calibration_parameter_l2_change": 0.8721209691056806,
+      "candidate_count": 55,
+      "checkpoint_sha256": "9b9b69f4de47b07f681ca94d37d4e96908be6fc84cedfc4512d102ba4b76c936",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 907,
+      "selected_index": 18,
+      "window": 7
+    },
+    {
+      "calibration_parameter_l2_change": 0.22037988529845298,
+      "candidate_count": 55,
+      "checkpoint_sha256": "460e28e3d17fa1951c0d36a121b7a19597b9eedeb480c183468879083d9f6da9",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 907,
+      "selected_index": 31,
+      "window": 8
+    },
+    {
+      "calibration_parameter_l2_change": 0.8632647879056238,
+      "candidate_count": 55,
+      "checkpoint_sha256": "f5d36a2762dba2f845535dba0b7b8121df4387ca4136cfc80aec72cd728d3343",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 907,
+      "selected_index": 12,
+      "window": 9
+    },
+    {
+      "calibration_parameter_l2_change": 0.05143365081602972,
+      "candidate_count": 55,
+      "checkpoint_sha256": "d4932e5b292e6e1268b956ebfceac7f76201dcf1e287edf9dd9add6641251063",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 907,
+      "selected_index": 54,
+      "window": 10
+    },
+    {
+      "calibration_parameter_l2_change": 1.1788459745822386,
+      "candidate_count": 55,
+      "checkpoint_sha256": "64b58cabd06b2701dd28de879983690c36d1a81d0cee78d758fee60bb39ebab8",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 907,
+      "selected_index": 9,
+      "window": 11
+    },
+    {
+      "calibration_parameter_l2_change": 0.07305776615780739,
+      "candidate_count": 55,
+      "checkpoint_sha256": "96d34d8fe49c2fdd1466ce6d98362cf941c0534841029cd06c1c27670e88e66b",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 1009,
+      "selected_index": 0,
+      "window": 0
+    },
+    {
+      "calibration_parameter_l2_change": 1.3361219781920834,
+      "candidate_count": 55,
+      "checkpoint_sha256": "0fe877c0984bf23dbe8a57c57197f07cd22176ba4c685a56453bb64f5d7b6e0e",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 1009,
+      "selected_index": 25,
+      "window": 1
+    },
+    {
+      "calibration_parameter_l2_change": 0.11795717126059342,
+      "candidate_count": 55,
+      "checkpoint_sha256": "7cb20ca60b112a617b62f11b51bd569ff5bf1f288581196cfbe94129763c4df1",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 1009,
+      "selected_index": 50,
+      "window": 2
+    },
+    {
+      "calibration_parameter_l2_change": 1.0609446205092978,
+      "candidate_count": 55,
+      "checkpoint_sha256": "066851716adea36d82a581d3f86d1df88cc26581ee893ecd1398ac155b70546f",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 1009,
+      "selected_index": 16,
+      "window": 3
+    },
+    {
+      "calibration_parameter_l2_change": 0.11179641591572363,
+      "candidate_count": 55,
+      "checkpoint_sha256": "939e4dd09d89cb5e45640fd48c2cb4e5ac78a2afa06d7549f1e02e17f3661126",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 1009,
+      "selected_index": 25,
+      "window": 4
+    },
+    {
+      "calibration_parameter_l2_change": 1.0086263060882699,
+      "candidate_count": 55,
+      "checkpoint_sha256": "09a3b11df22c24f68e501ca7b49fd13cb00c200653f36c3b113eb9e1280d1c65",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 1009,
+      "selected_index": 22,
+      "window": 5
+    },
+    {
+      "calibration_parameter_l2_change": 0.09068205994061616,
+      "candidate_count": 55,
+      "checkpoint_sha256": "a894b8d6dee62bdd03d4a2ac60018a280e9285bcd9f6e8fd26d4ec6b6f024d9b",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 1009,
+      "selected_index": 0,
+      "window": 6
+    },
+    {
+      "calibration_parameter_l2_change": 1.1865207926089218,
+      "candidate_count": 55,
+      "checkpoint_sha256": "324155a128d02e8abdad1e067f059adf7ecf7d734094e95c4783df10eec75215",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 1009,
+      "selected_index": 13,
+      "window": 7
+    },
+    {
+      "calibration_parameter_l2_change": 0.13257777662775844,
+      "candidate_count": 55,
+      "checkpoint_sha256": "6d09905c0c9103030d3c1507de7f0700c399c0ce63c95485fc175ba4b7a2f9d1",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 1009,
+      "selected_index": 0,
+      "window": 8
+    },
+    {
+      "calibration_parameter_l2_change": 1.0466657730744184,
+      "candidate_count": 55,
+      "checkpoint_sha256": "405d5903a3fd70f7d096b2886b271553709700f27b040473f4d1dd2d9bea5194",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 1009,
+      "selected_index": 15,
+      "window": 9
+    },
+    {
+      "calibration_parameter_l2_change": 0.0553438363201254,
+      "candidate_count": 55,
+      "checkpoint_sha256": "443cd05b45beffe0a44c2071c5b02a902d9893f5370c21eb5359e2207649c485",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 1009,
+      "selected_index": 53,
+      "window": 10
+    },
+    {
+      "calibration_parameter_l2_change": 1.5829766215969179,
+      "candidate_count": 55,
+      "checkpoint_sha256": "e000ab33e16a7d1b7480532ddd287c04c30bedf94bb2d87379055a9678424d94",
+      "optimizer_success": {
+        "calibration": true,
+        "online": true,
+        "replay": true
+      },
+      "reload_max_absolute_errors": {
+        "calibrated": 0.0,
+        "calibrated_classical": 0.0,
+        "calibrated_q24": 0.0,
+        "calibrated_q24_classical": 0.0,
+        "calibrated_unconstrained": 0.0,
+        "frozen": 0.0,
+        "online": 0.0,
+        "protected": 0.0,
+        "protected_q24": 0.0,
+        "replay": 0.0
+      },
+      "seed": 1009,
+      "selected_index": 13,
+      "window": 11
+    }
+  ],
+  "empirical_selection_is_not_a_pointwise_bound": true,
+  "holdouts_constructed": false,
+  "preparation_parent_cpu_ns": 13268392449,
+  "preparation_wall_ns": 13269556265,
+  "registration": {
+    "arms": [
+      "frozen",
+      "online",
+      "replay",
+      "protected",
+      "protected_q24",
+      "calibrated",
+      "calibrated_classical",
+      "calibrated_q24",
+      "calibrated_q24_classical",
+      "calibrated_unconstrained"
+    ],
+    "bootstrap_replicates": 4000,
+    "bootstrap_seed": 20261028,
+    "calibration_coverage_max": 0.98,
+    "calibration_coverage_min": 0.92,
+    "calibration_ece_max": 0.04,
+    "development_rows": 128,
+    "empirical_profile_pointwise_guarantee": false,
+    "epsilon": 0.02,
+    "new_holdout_rows": 256,
+    "new_nll_improvement_min": 0.005,
+    "old_holdout_rows": 256,
+    "old_nll_margin": 0.02,
+    "online_labelled_rows_per_window": 256,
+    "phase": "confirmation",
+    "prediction_receives_hidden_regime_or_window": false,
+    "replay_and_calibration_labelled_rows_equal": true,
+    "replay_and_calibration_labelled_rows_per_window": 512,
+    "same_available_information": true,
+    "seed_offset": 50000000,
+    "seed_rule": "offset+10000*seed+100*window+code; train1,olddev2,newdev3,newholdout4; oldholdout window12/code5",
+    "seeds": [
+      607,
+      701,
+      809,
+      907,
+      1009
+    ],
+    "selector": "55 candidates; old-dev mean NLL change+1.645 paired SE<=.02; min new-dev Gaussian NLL",
+    "training_rows": 256,
+    "windows": [
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift"
+    ]
+  },
+  "schema": "hepta.analytic-event.calibration-prepared.v1",
+  "source_sha256": {
+    "analytic.py": "6d447f88aa5c52b6a273271f4936b5e3dc1a2db8b791f48db71d141d97713264",
+    "learners.py": "3ad97885325df186b3a9545019df033d93ef8c92a7f1aa5c991b0d5a5d149d8d",
+    "retention.py": "202210e0047a48da272c9bc4e9810d16781c7d91dfd35a13153bcfaa151a7488",
+    "round2/adaptation.py": "4aa017c439303f5760fb478991d3e7fc7dbc47eda3e50776ad273b5d97911f8c",
+    "round2/quantized_guard.py": "7be5ac2877f5d09f94e0f85b7b7efe4efb453e43f50e0f4de8b77cbe951e5859",
+    "round2/retention_study.py": "bbf3d066c7eab6ea709e5cdd13bb48e06c3dd32cbef14c5e1b1840e7e0e23b16",
+    "round3/calibration.py": "f5086b8fd0f6652b8b2098b5b75cd78f2e6a873c3da908e54ac52c84db97649d",
+    "round3/calibration_study.py": "1a26a50f427d3c6f1943ebe9f20ae3a98446244f8e5d0cbc4de992308c8aa9a4",
+    "statistics.py": "c92f983b7bac7d24b3a759f36f859dbbf2e2f182277e1d78d074e7add9bb3323",
+    "task.py": "d113363eefc6c29a10c1ee493ba11d45371221600b861e966f6617f34d8d1971"
+  }
+}

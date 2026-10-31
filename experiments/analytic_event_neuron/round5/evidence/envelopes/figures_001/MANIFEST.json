@@ -1,0 +1,43 @@
+{
+  "archive_bytes": 322996,
+  "archive_format": "xz+POSIX-tar; regular relative files only",
+  "archive_sha256": "d761b94b5e606876619497f0631a467244f0c85f815a5c9b75c7affca055eed8",
+  "chunks": [
+    {
+      "decoded_bytes": 196608,
+      "decoded_sha256": "816fd1ff1ed56e168991a2147e6e671a4c9f32e1ccd112b3453acff55f5a68e7",
+      "encoded_bytes": 262144,
+      "encoded_sha256": "aa4ad8af6db25c37eaab8ef3cafe54ca41496f002776418e3ce2e5c90c9eb7f4",
+      "path": "archive.tar.xz.b64.part0000"
+    },
+    {
+      "decoded_bytes": 126388,
+      "decoded_sha256": "9c4c72fa7ed626e0a506e753cafbd0be1effe3449a160c22003e7ce9363d809f",
+      "encoded_bytes": 168520,
+      "encoded_sha256": "8bfc37a8d58f667adf15376404b2bf993d407018961fc8ee83b18f567ccb835c",
+      "path": "archive.tar.xz.b64.part0001"
+    }
+  ],
+  "created_utc": "2026-10-29T00:26:41.637194+00:00",
+  "encoding": "independent standard base64 chunks without whitespace",
+  "historical_missing_evidence_reconstructed": false,
+  "members": [
+    {
+      "bytes": 516,
+      "path": "PROVENANCE.json",
+      "sha256": "369c67cce33fe7864625f9de63a9212a9141005aa76825a2cbdccaef7b628e76"
+    },
+    {
+      "bytes": 342127,
+      "path": "selection_results.png",
+      "sha256": "75e70850890e94c09b4aae9233a659d519f118278e1d376ab19f1a357dc2dff0"
+    },
+    {
+      "bytes": 146902,
+      "path": "selection_results.svg",
+      "sha256": "0a2bd7b152050b859250af0d17c1a119e07fd499ebfeca33861afaa9b239a3d1"
+    }
+  ],
+  "schema": "hepta.analytic-event.evidence-envelope.v2",
+  "source_label": "Frozen-result scientific figure PNG SVG and exact source/output digest record"
+}

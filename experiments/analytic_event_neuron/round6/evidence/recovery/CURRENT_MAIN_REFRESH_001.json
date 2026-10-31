@@ -1,0 +1,577 @@
+{
+  "audited_blob_counts_by_crate": {
+    "hepta-infer-core": 12,
+    "hepta-neuron": 32,
+    "hepta-types": 37
+  },
+  "audited_current_crate_blob_count": 81,
+  "ci_launched": false,
+  "code_edited": false,
+  "commit_message": "docs: clear public repository homepage README [skip ci]",
+  "commit_timestamp": "2026-10-30T01:21:45Z",
+  "commit_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/732e934ba496d90fbe042b8d41d479ef901643e5",
+  "current_audited_git_blobs": [
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/BUILD.bazel",
+      "sha": "df56b1032c7184ece376d8524ffc7c50a13f3733",
+      "size": 125
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/CANONICAL_DIGEST_V1.md",
+      "sha": "62bf8679c36b30d4d4a5235f1cbf732e4ba5d7ca",
+      "size": 2868
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/CANONICAL_V1_CONFORMANCE.json",
+      "sha": "1d925b7283a0b15aa5d52a95879154a6e8b38b79",
+      "size": 8007
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/Cargo.toml",
+      "sha": "753e54835f933be4bf647417b2fb4c90a5e55181",
+      "size": 268
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/NUMERIC_SIGNAL_CONVERSION.md",
+      "sha": "b1d6f451bfe97cf8571d151096762363886e80de",
+      "size": 2949
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/bindings/PLATFORM_TYPES_BINDINGS_V1.json",
+      "sha": "d72d79091b6304f52c32fc9284ef7e6cda3eab3d",
+      "size": 2025
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/bindings/generate_bindings.py",
+      "sha": "f8f2d0ceb0d84d79cbf0121a727259b140f7b2f2",
+      "size": 8382
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/bindings/verify_generated.mjs",
+      "sha": "d1e686821f28c4f54f3d7215fc02ea1b7dddf05c",
+      "size": 2453
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/bindings/verify_generated.py",
+      "sha": "9437a58417646d1ea30bf90e7da56e4b8d358748",
+      "size": 2145
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/conformance/verify_rejections.mjs",
+      "sha": "8ed39a8988bd8e8da33192714139556879450133",
+      "size": 6960
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/conformance/verify_rejections.py",
+      "sha": "fdfc3e44000763596749ca887d9d87aa59968326",
+      "size": 7144
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/conformance/verify_vectors.py",
+      "sha": "b1f6e2dc89e6ed61290e1b75f1f8e89913638d24",
+      "size": 3988
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/conformance/verify_vectors.ts",
+      "sha": "d7a1fff002c3452c53bfdf7c008f75c17841ef4b",
+      "size": 4595
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/generated/javascript/hepta_platform_types_v1.mjs",
+      "sha": "76a9bd2320abd840cb12d10c07554f14442a8a97",
+      "size": 3794
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/generated/python/hepta_platform_types_v1.py",
+      "sha": "ea1d91f4473fb72eff4dd8345b6bc7682fce432d",
+      "size": 4067
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/generated/typescript/hepta_platform_types_v1.d.ts",
+      "sha": "935b7216e59323b08114df986e41474ec0609dd4",
+      "size": 1578
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/src/bounded.rs",
+      "sha": "5b8afd7be362d5383283d03b785b57b6128fa28d",
+      "size": 3413
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/src/bounded_tests.rs",
+      "sha": "b82714a659ef1bc0505a9aa2fb1ebd2f443a9589",
+      "size": 1642
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/src/canonical_digest.rs",
+      "sha": "331d16b144b559d170c5e2919b6c042b45289f61",
+      "size": 15228
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/src/canonical_digest_tests.rs",
+      "sha": "3f85f0d52ad0198b83476d051d36f0992ac6c106",
+      "size": 14679
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/src/digest.rs",
+      "sha": "4b6fe231f9faa717067818f509ebb4b150dbfbce",
+      "size": 4474
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/src/digest_stream_tests.rs",
+      "sha": "b38ebda455df98d1380f0bae0a8e094630341217",
+      "size": 1484
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/src/digest_tests.rs",
+      "sha": "9479823a601803f9c43c4e9a465907f4d466fc2b",
+      "size": 1719
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/src/fixed.rs",
+      "sha": "3c2674dce405fd20f254f5f1816654aae99d7c13",
+      "size": 3717
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/src/fixed_tests.rs",
+      "sha": "0b6194dd7ec6f14c966faa951abbbc8289e3ffdb",
+      "size": 2115
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/src/identity.rs",
+      "sha": "d57e5c9d0ebe8dced59c096a3586830d52e3df4f",
+      "size": 13344
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/src/identity_tests.rs",
+      "sha": "a51092759c8ac8da9d494f920637a291ef1a38a1",
+      "size": 5482
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/src/lib.rs",
+      "sha": "80039df26ca8d1a4fc74d715e2b73423c6806365",
+      "size": 3046
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/src/numeric_conversion.rs",
+      "sha": "03f4df15838b6c71fc0017fdb75cb179fb1b70a7",
+      "size": 9505
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/src/numeric_conversion_tests.rs",
+      "sha": "dcaadc76f2563010e955cc5a61e64909bd3b7312",
+      "size": 11101
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/src/numeric_profile.rs",
+      "sha": "383ef3eb7a62873b74faa50f097f7aa11130b18a",
+      "size": 9363
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/src/numeric_profile_tests.rs",
+      "sha": "87f2a3388516610ac96da38fb2e1c36feba41a72",
+      "size": 1969
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/src/prompt_delivery.rs",
+      "sha": "11494905ff09b30a51e0131d81364df87cd41475",
+      "size": 4948
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/src/prompt_delivery_tests.rs",
+      "sha": "a87cfe27c12292278e4db2a7b3fc13c860255cf9",
+      "size": 2578
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/src/registry.rs",
+      "sha": "b9af7af31f2eb6dda29f78701ccc608563920f87",
+      "size": 9460
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/src/registry_tests.rs",
+      "sha": "3f1091284d412fdebd05ccb76c7a803349252c99",
+      "size": 5008
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-types/src/topology.rs",
+      "sha": "0089680a88f93b1b9245a6077cb95eaa14e6affe",
+      "size": 14135
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-infer-core/BUILD.bazel",
+      "sha": "99835135ede5f3842562647baaaa17dd546e51fa",
+      "size": 135
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-infer-core/Cargo.toml",
+      "sha": "d89bf7c4764cdaaa4b040a447a295965ea0142c5",
+      "size": 384
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+      "sha": "668369cbb5484be2c54ce2c5e376e7f1a879640d",
+      "size": 269
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-infer-core/src/durable_control.rs",
+      "sha": "339ba148df339c48897aa977b27d2d995271b278",
+      "size": 29683
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-infer-core/src/durable_control_tests.rs",
+      "sha": "a5bba9c0835983dfcf1f141faaa1fa10adcd670c",
+      "size": 5586
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-infer-core/src/durable_history_tests.rs",
+      "sha": "4a9a07a782a33f0bee3f8373ba9bc9d3c7d11dae",
+      "size": 6729
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-infer-core/src/lib.rs",
+      "sha": "61a9a737d2f1899987530ce59e75f43a62a02bbe",
+      "size": 8071
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-infer-core/src/lib_tests.rs",
+      "sha": "1fc3f93f91b30cdc19526c03535b5195fdb51ed6",
+      "size": 2098
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "sha": "d92b748a22b19046465bcfe0b4fd9f58cc0c09fa",
+      "size": 32502
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+      "sha": "60094e54bdeb0f35d5004b1579c7fc5f71b740c3",
+      "size": 23275
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-infer-core/src/neuron_feature.rs",
+      "sha": "b8e380656fb7e4f3faaafe6181f25b4e603d132b",
+      "size": 12836
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-infer-core/src/neuron_feature_tests.rs",
+      "sha": "c8c012caa93186533ea56953df2295a745db1ead",
+      "size": 3709
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/BUILD.bazel",
+      "sha": "655208a9c31233fb3ab7471b82642715af7912d2",
+      "size": 127
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/Cargo.toml",
+      "sha": "dbd650a75e7ebe47d2642bc653468355d42cd2e3",
+      "size": 495
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/EXECUTION.md",
+      "sha": "90475210ef8cc174d1aab2de210225680bca2813",
+      "size": 4750
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/JOURNAL.md",
+      "sha": "fca4ee203d2abc84ded326416ec3d09af252ab07",
+      "size": 5667
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/RECOVERY_ANCHOR.md",
+      "sha": "85e29f2c0dbc51faf6abd258e3750712ed842486",
+      "size": 3893
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/deletion.rs",
+      "sha": "4c7d8a6d22b7daabc65e80e2d4f39b03737c6bf5",
+      "size": 4726
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/deletion_tests.rs",
+      "sha": "d3a39d590a251f971c50d2162385ed498ebe8433",
+      "size": 1832
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/inference_control.rs",
+      "sha": "8a85a1e433f29b1354b4ee3c73f27b85a1842b31",
+      "size": 4441
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/inference_control_tests.rs",
+      "sha": "c9c80a99f0442ec4f91bd41e4a144202b5dde997",
+      "size": 4428
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/journal.rs",
+      "sha": "4a1a9cbba6082e259da3b8df7414aea8f87c79bb",
+      "size": 22951
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/journal_anchor_tests.rs",
+      "sha": "94b34ffce20dae73053185c05d1ff838747df25b",
+      "size": 8559
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/journal_lock.rs",
+      "sha": "8cf8324008b4fdc4e50fbb2e3dfd65e2d26d9722",
+      "size": 1270
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/journal_segment_tests.rs",
+      "sha": "d156c800f986628452d9401f3a7835bd2883e9fe",
+      "size": 8934
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/journal_tests.rs",
+      "sha": "3cecd1ccfc52d7f498b3d84897678f0791b3b387",
+      "size": 15094
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/lib.rs",
+      "sha": "6771c122520efe45049e99dea68ac3a046611b7b",
+      "size": 9491
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/lib_tests.rs",
+      "sha": "4465317bc7d681527759d8f3af648ad9cd613e79",
+      "size": 1975
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/plasticity.rs",
+      "sha": "0bcfab2466d4b03161e6f4c4eb66fcbcf110b6ec",
+      "size": 14553
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/plasticity_tests.rs",
+      "sha": "5c9a3d33895e647b3666b12f27c0239ad150d6fe",
+      "size": 3939
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/population_v2.rs",
+      "sha": "2222068405ee85e2adf0f550ae626f7f8fc1ea08",
+      "size": 21626
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/population_v2_tests.rs",
+      "sha": "5dec0a2793fd1dab221c67864cf3a4cff326155c",
+      "size": 4551
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/protocol.rs",
+      "sha": "7afd7cdb43063e35dab9ca89f5d3b94765f43665",
+      "size": 38284
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/protocol_tests.rs",
+      "sha": "631d1b4932fc4aa1fb486adbd475ea54c08711a7",
+      "size": 11489
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/qualification.rs",
+      "sha": "2794951279cdb1795623dfe420d7f9f4f5f6a6d1",
+      "size": 8503
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/qualification_tests.rs",
+      "sha": "61badd8e4f810715f727522b135e1c83700079b8",
+      "size": 4844
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/runtime.rs",
+      "sha": "d483e00a69756339254124a633eb4fdcd05664d7",
+      "size": 16402
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/runtime_tests.rs",
+      "sha": "4e46c63f3c0d915ae5bbe5474dfe3ca6b13e99d6",
+      "size": 17193
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/runtime_types.rs",
+      "sha": "d15b3a4f8be07c35d1884f660b6a20d494c8e5e4",
+      "size": 21134
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/sparse.rs",
+      "sha": "d94d50088b4cac452ad259ab08e1813049e4a78f",
+      "size": 15728
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/sparse_body_scope_tests.rs",
+      "sha": "e990e799865f996d7c981e311d0de4ef1341f154",
+      "size": 3808
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/sparse_tests.rs",
+      "sha": "889e72b6102e0e82057c4f5f9c0477f1929f10e7",
+      "size": 10294
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/witness.rs",
+      "sha": "c56bad3540aa606fcadf0d45dc4fea45145cb4c6",
+      "size": 8398
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/hepta-neuron/src/witness_tests.rs",
+      "sha": "586bddeee18e2c9e9c8e1680397608410b23b0f0",
+      "size": 4769
+    }
+  ],
+  "github_retrieval_evidence": [
+    {
+      "api_json": "{\"ref\":\"refs/heads/main\",\"node_id\":\"REF_kwDOTrgxoK9yZWZzL2hlYWRzL21haW4\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/main\",\"object\":{\"sha\":\"732e934ba496d90fbe042b8d41d479ef901643e5\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/732e934ba496d90fbe042b8d41d479ef901643e5\"}}",
+      "api_json_sha256": "703d78ce30254b1b23fa985039b2ac0f1e900d88b5732552d945a91acba05e2f",
+      "request_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/main",
+      "tool": "github_fetch"
+    },
+    {
+      "api_json": "{\"sha\":\"732e934ba496d90fbe042b8d41d479ef901643e5\",\"node_id\":\"C_kwDOTrgxoNoAKDczMmU5MzRiYTQ5NmQ5MGZiZTA0MmI4ZDQxZDQ3OWVmOTAxNjQzZTU\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/732e934ba496d90fbe042b8d41d479ef901643e5\",\"html_url\":\"https://github.com/TrillionniumFoundation/hepta-private-ci/commit/732e934ba496d90fbe042b8d41d479ef901643e5\",\"author\":{\"name\":\"Qian QI\",\"email\":\"102159240+ProfHepta@users.noreply.github.com\",\"date\":\"2026-10-30T01:21:45Z\"},\"committer\":{\"name\":\"Qian QI\",\"email\":\"102159240+ProfHepta@users.noreply.github.com\",\"date\":\"2026-10-30T01:21:45Z\"},\"tree\":{\"sha\":\"75dc1c1f65375c97da259d947c465a04f030461d\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/75dc1c1f65375c97da259d947c465a04f030461d\"},\"message\":\"docs: clear public repository homepage README [skip ci]\",\"parents\":[{\"sha\":\"f8c9419df6ddeb36ff8b522a50219981fb8d9345\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/f8c9419df6ddeb36ff8b522a50219981fb8d9345\",\"html_url\":\"https://github.com/TrillionniumFoundation/hepta-private-ci/commit/f8c9419df6ddeb36ff8b522a50219981fb8d9345\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+      "api_json_sha256": "f4559ad45cffd407e7f60ef4d5a514d5d0366cfd4ad3bbe3c6a76b33d8f16fc4",
+      "request_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/732e934ba496d90fbe042b8d41d479ef901643e5",
+      "tool": "github_fetch"
+    }
+  ],
+  "historical_binary_source_comparison": {
+    "binary_changed": false,
+    "different_git_blob_entries": [
+      {
+        "new": "61a9a737d2f1899987530ce59e75f43a62a02bbe",
+        "old": "f7569459f57f4a0fa74ceb467650276600afa801",
+        "path": "codex-rs/hepta-infer-core/src/lib.rs"
+      }
+    ],
+    "fresh_build_performed": false,
+    "identical_git_blob_count": 80,
+    "interpretation": "All audited hepta-neuron and hepta-types blobs retain their historical identity. The two generation_step files and infer-core lib.rs remain the same declared source differences; this is not a claim that the complete historical build source equals main.",
+    "missing_in_current_main": [
+      {
+        "old": "fecbeded1704f923149e6ecc9b45b9fb92f5de8d",
+        "path": "codex-rs/hepta-infer-core/src/generation_step.rs",
+        "status": "absent_or_outside_compared_crates"
+      },
+      {
+        "old": "637e05f99db609f8f70c4c718679bb15cfa85591",
+        "path": "codex-rs/hepta-infer-core/src/generation_step_tests.rs",
+        "status": "absent_or_outside_compared_crates"
+      }
+    ],
+    "original_manifest_files": 83,
+    "original_native_binary_sha256": "b519cae26325f818d9596aab34504490a0b5355b9eb633369878e6f07a50e179",
+    "original_native_source_commit": "0acfd9b27db910c180b0d8911f39aea469b7f864"
+  },
+  "initial_audit_overwritten": false,
+  "initial_main_commit": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "initial_observation_utc": "2026-10-30T12:04:07.574Z",
+  "inventory_currentness_method": "One fresh main-ref GET equals the previously audited immutable commit. A fresh GET of that fixed commit supplies its root tree. All cached path/blob identities bound to that identical Git commit remain current; individual blobs were not redundantly downloaded.",
+  "main_changed_since_initial_observation": false,
+  "observed_main_commit": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "observed_main_root_tree": "75dc1c1f65375c97da259d947c465a04f030461d",
+  "observed_utc": "2026-10-30 13:21:21 UTC",
+  "original_audit_records": {
+    "SOURCE_AUDIT.json": {
+      "repository_copy": "experiments/analytic_event_neuron/round6/evidence/recovery/CURRENT_MAIN_SOURCES.json",
+      "sha256": "d47695db823ac5e1611c6a7353650eebfa8b89ae2c842e03b2c389b765be78d8"
+    },
+    "current_native_blobs.json": {
+      "inventory_also_embedded_in_source_audit_and_this_receipt": true,
+      "sha256": "b6d544f9165e148089afc83275f3ee4a1fb651c3e63e3b6f39a2180fa070b30c"
+    },
+    "native_comparison.json": {
+      "repository_copy": "experiments/analytic_event_neuron/round6/evidence/recovery/CURRENT_NATIVE_COMPARISON.json",
+      "sha256": "829b5797f4c172d8e91015811804e1935d50bfc5934b1622e96a1ac8158c6889"
+    }
+  },
+  "parent_commits": [
+    "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+  ],
+  "passed": true,
+  "production_activation_claimed": false,
+  "read_only_github_requests": true,
+  "recorded_utc": "2026-10-30 13:24:16 UTC",
+  "registered_run_written": false,
+  "relevant_source_git_blobs_changed_since_initial_observation": [],
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reviewer": "/root/r6_current_runtime",
+  "schema": "hepta.current-main-refresh.v6"
+}

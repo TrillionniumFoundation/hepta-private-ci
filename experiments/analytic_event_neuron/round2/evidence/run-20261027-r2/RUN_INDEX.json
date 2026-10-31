@@ -1,0 +1,265 @@
+{
+  "complete": true,
+  "completed_utc": "2026-10-28T00:49:00.937854+00:00",
+  "freeze_sha256": "db5aa2ff983e27bc0009562acb7b095cd6c06aabf3ddea1378eb4b75e0354f68",
+  "schema": "hepta.analytic-event.round2.run.v1",
+  "scopes": [
+    {
+      "analysis_path": "analysis/seed_101_gaussian.npz",
+      "analysis_sha256": "c261e56b096848ef66efaec5e6b3806ebd2e8cd193edef6d403d7b23a786f4ea",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 8884776,
+        "file_count": 30016,
+        "sha256": "19ecddfbee78fa810a63888718693784e764c6941437910e636423919869d13f"
+      },
+      "archive_path": "archives/seed_101_gaussian.tar.gz",
+      "audit_passed": true,
+      "data_seed": 1200101,
+      "law": "gaussian",
+      "scope": "seed_101_gaussian",
+      "scope_wall_ns_including_audit_and_archive": 90122632968,
+      "training_seed": 101
+    },
+    {
+      "analysis_path": "analysis/seed_101_drift_shift.npz",
+      "analysis_sha256": "9c1e506908c32d72077859bcf5cdf8690187e91a0d7f6340f0d4faa470a55e6f",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 8889099,
+        "file_count": 30122,
+        "sha256": "1666e4168200b3028e7d60c2ade7d44791e6cfc8826edcaa30d12d1782a593b9"
+      },
+      "archive_path": "archives/seed_101_drift_shift.tar.gz",
+      "audit_passed": true,
+      "data_seed": 1300101,
+      "law": "drift_shift",
+      "scope": "seed_101_drift_shift",
+      "scope_wall_ns_including_audit_and_archive": 86969374017,
+      "training_seed": 101
+    },
+    {
+      "analysis_path": "analysis/seed_101_student_t.npz",
+      "analysis_sha256": "0ef4dd755ed9f984420d7596d4d4242743803f8850bb99c4a3e7ed960796f6fd",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 8962376,
+        "file_count": 30173,
+        "sha256": "75bc9dc22560b4e30c6983a919745235370a342554b9211b588afc72912ba3dc"
+      },
+      "archive_path": "archives/seed_101_student_t.tar.gz",
+      "audit_passed": true,
+      "data_seed": 1400101,
+      "law": "student_t",
+      "scope": "seed_101_student_t",
+      "scope_wall_ns_including_audit_and_archive": 124462607669,
+      "training_seed": 101
+    },
+    {
+      "analysis_path": "analysis/seed_211_gaussian.npz",
+      "analysis_sha256": "14791c6e04ca8f088a5324191a5ff8ac979cfd97638adee3083bb828745f8f80",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 8917291,
+        "file_count": 30146,
+        "sha256": "40f3b2624ad744f08c4272c30a419581e49617b33cf62ff7d89f743621f04b76"
+      },
+      "archive_path": "archives/seed_211_gaussian.tar.gz",
+      "audit_passed": true,
+      "data_seed": 1200211,
+      "law": "gaussian",
+      "scope": "seed_211_gaussian",
+      "scope_wall_ns_including_audit_and_archive": 84820478043,
+      "training_seed": 211
+    },
+    {
+      "analysis_path": "analysis/seed_211_drift_shift.npz",
+      "analysis_sha256": "0d84b169828645b8b03d6b9a624ca5215ad599007e8323d4f3c3fcb35267699a",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 8783161,
+        "file_count": 29810,
+        "sha256": "9312605f96c8d16f35e9f4ba431f8fc2a9122b3a855e6fb7be7c60c02445ce73"
+      },
+      "archive_path": "archives/seed_211_drift_shift.tar.gz",
+      "audit_passed": true,
+      "data_seed": 1300211,
+      "law": "drift_shift",
+      "scope": "seed_211_drift_shift",
+      "scope_wall_ns_including_audit_and_archive": 112491108399,
+      "training_seed": 211
+    },
+    {
+      "analysis_path": "analysis/seed_211_student_t.npz",
+      "analysis_sha256": "04da33312382c67b0f07b312f5416921ca0b3da46b69a2199891c0a0d300da72",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 8925457,
+        "file_count": 30162,
+        "sha256": "c2d89fd6539627d03992a2d2751515137e21e75dd577543f4a77bf119a3efff1"
+      },
+      "archive_path": "archives/seed_211_student_t.tar.gz",
+      "audit_passed": true,
+      "data_seed": 1400211,
+      "law": "student_t",
+      "scope": "seed_211_student_t",
+      "scope_wall_ns_including_audit_and_archive": 98394381356,
+      "training_seed": 211
+    },
+    {
+      "analysis_path": "analysis/seed_307_gaussian.npz",
+      "analysis_sha256": "aa88b20cafca6cf94045d33cd4338a502de603a53b0d2360e6b75e5da7aa8ced",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 8941286,
+        "file_count": 30210,
+        "sha256": "41f02eab1c850756b4f492691e47e42573813dcdeffa73f87760a16e82e355b7"
+      },
+      "archive_path": "archives/seed_307_gaussian.tar.gz",
+      "audit_passed": true,
+      "data_seed": 1200307,
+      "law": "gaussian",
+      "scope": "seed_307_gaussian",
+      "scope_wall_ns_including_audit_and_archive": 95182650455,
+      "training_seed": 307
+    },
+    {
+      "analysis_path": "analysis/seed_307_drift_shift.npz",
+      "analysis_sha256": "a4a6a2c7f38cf8b2ad4f1b8746ea4606cfb5d2df824ddee658bfdb39f2f95a42",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 8999744,
+        "file_count": 30466,
+        "sha256": "a916ddd2915ad96d9432e772d97e36a2e56993ca95df71837fa78feb48132e1c"
+      },
+      "archive_path": "archives/seed_307_drift_shift.tar.gz",
+      "audit_passed": true,
+      "data_seed": 1300307,
+      "law": "drift_shift",
+      "scope": "seed_307_drift_shift",
+      "scope_wall_ns_including_audit_and_archive": 115841465499,
+      "training_seed": 307
+    },
+    {
+      "analysis_path": "analysis/seed_307_student_t.npz",
+      "analysis_sha256": "dfc4fc4cf78838e0c8cef0879633eebafd043a4e1e236b554cdb0b4592dfd583",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 8952115,
+        "file_count": 30151,
+        "sha256": "107834d96b1a2c75d044e739663979ac07fccb549ef319f3f763293760549c21"
+      },
+      "archive_path": "archives/seed_307_student_t.tar.gz",
+      "audit_passed": true,
+      "data_seed": 1400307,
+      "law": "student_t",
+      "scope": "seed_307_student_t",
+      "scope_wall_ns_including_audit_and_archive": 116394571118,
+      "training_seed": 307
+    },
+    {
+      "analysis_path": "analysis/seed_401_gaussian.npz",
+      "analysis_sha256": "17a1cf892c703236add3c96fc315bea2bcf57bb0c746ea991480496946570bf6",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 8827589,
+        "file_count": 29804,
+        "sha256": "d504ad978a35af24be41ad46f190ef838bf82311ff0f38d203c022dd160bf962"
+      },
+      "archive_path": "archives/seed_401_gaussian.tar.gz",
+      "audit_passed": true,
+      "data_seed": 1200401,
+      "law": "gaussian",
+      "scope": "seed_401_gaussian",
+      "scope_wall_ns_including_audit_and_archive": 77492769231,
+      "training_seed": 401
+    },
+    {
+      "analysis_path": "analysis/seed_401_drift_shift.npz",
+      "analysis_sha256": "e0d94ca0937c07f5132e6e8445a2a81113286dcae25c3045db857c0ce012d223",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 8939821,
+        "file_count": 30280,
+        "sha256": "17296dfd8eeeb272b35edaf7ece706b33cd37667575d3619f4ec2449e1efb0a1"
+      },
+      "archive_path": "archives/seed_401_drift_shift.tar.gz",
+      "audit_passed": true,
+      "data_seed": 1300401,
+      "law": "drift_shift",
+      "scope": "seed_401_drift_shift",
+      "scope_wall_ns_including_audit_and_archive": 86304847005,
+      "training_seed": 401
+    },
+    {
+      "analysis_path": "analysis/seed_401_student_t.npz",
+      "analysis_sha256": "7c109a747da5fe17b6ec6d734ef6261d0fbd21e580507a54e1fdc12526fa0078",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 8960488,
+        "file_count": 30228,
+        "sha256": "fdb92131b6d342fb8dd99a3b6e227b6405660e0513ac30441b607b90737c8e00"
+      },
+      "archive_path": "archives/seed_401_student_t.tar.gz",
+      "audit_passed": true,
+      "data_seed": 1400401,
+      "law": "student_t",
+      "scope": "seed_401_student_t",
+      "scope_wall_ns_including_audit_and_archive": 89516382048,
+      "training_seed": 401
+    },
+    {
+      "analysis_path": "analysis/seed_503_gaussian.npz",
+      "analysis_sha256": "badbb6c3539b622ba89045894e23626b61c1c577a10291918cc64eaab34da843",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 8929958,
+        "file_count": 30148,
+        "sha256": "ba411d86e4fa27ca3acc4a06c880a47eb741e98045d7175f7ea5ad2f7e082e87"
+      },
+      "archive_path": "archives/seed_503_gaussian.tar.gz",
+      "audit_passed": true,
+      "data_seed": 1200503,
+      "law": "gaussian",
+      "scope": "seed_503_gaussian",
+      "scope_wall_ns_including_audit_and_archive": 106484181884,
+      "training_seed": 503
+    },
+    {
+      "analysis_path": "analysis/seed_503_drift_shift.npz",
+      "analysis_sha256": "4927c5ca3e5231fed14d1c62b97763714637661f445f65f823e81243026a171b",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 8977542,
+        "file_count": 30519,
+        "sha256": "25526d8962c3de292a42370f0a30d1707d5f7726d9c4cf8dd90800c1ead6aac2"
+      },
+      "archive_path": "archives/seed_503_drift_shift.tar.gz",
+      "audit_passed": true,
+      "data_seed": 1300503,
+      "law": "drift_shift",
+      "scope": "seed_503_drift_shift",
+      "scope_wall_ns_including_audit_and_archive": 84371574125,
+      "training_seed": 503
+    },
+    {
+      "analysis_path": "analysis/seed_503_student_t.npz",
+      "analysis_sha256": "14af52d875fe912b1cb49f5a1f3bb3355d2be4d24abbb94f035e0a7acdfdd387",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 8948170,
+        "file_count": 30250,
+        "sha256": "3d3178113046bc096dcad93b01af80f6eec2dade6a067f373dedc6f95e827036"
+      },
+      "archive_path": "archives/seed_503_student_t.tar.gz",
+      "audit_passed": true,
+      "data_seed": 1400503,
+      "law": "student_t",
+      "scope": "seed_503_student_t",
+      "scope_wall_ns_including_audit_and_archive": 108179717638,
+      "training_seed": 503
+    }
+  ],
+  "source_commit": "9c27481fcd6c2d1861a048ded9a11f988afd521f",
+  "started_utc": "2026-10-28T00:24:01.926513+00:00"
+}

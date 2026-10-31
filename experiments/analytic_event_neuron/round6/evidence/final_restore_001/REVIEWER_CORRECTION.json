@@ -1,0 +1,17 @@
+{
+  "change": "Add explicit import importlib.util; no other verifier code changes.",
+  "created_utc": "2026-10-30T14:16:06.533652+00:00",
+  "documented_helper_verify_passed": true,
+  "documented_lifecycle_verify_passed": true,
+  "documented_restore_passed": true,
+  "failed_log_sha256": "d4a61545f131ea6900e9e075934922075066428963e15a8b9ab03c0dc32ca954",
+  "failed_wrapper_sha256": "4a698c764113acd061baea3fac0636190f8d800b495c2f512346e279c4557e2e",
+  "failure_location": "Added postcheck after both documented blocks completed successfully",
+  "failure_type": "AttributeError: module importlib has no attribute util",
+  "new_restore_or_scientific_execution_needed": false,
+  "new_verifier_sha256": "b69bda643487852ecc9df5b0a5101b25124ad7725f8a708e1e204e8b6c3fd730",
+  "old_verifier_sha256": "4feefc65854f0fa11f4f665324f78f22ef625a61b606e05f3a2c4e425583a844",
+  "original_script_receipts_and_restored_bytes_preserved": true,
+  "restored_root": "/dev/shm/hepta-round6-d831a963ef2f/final_restore_001/tmp/hepta-round6-final.OpQtYC/research",
+  "schema": "hepta.round6.restore-reviewer-import-correction.v1"
+}

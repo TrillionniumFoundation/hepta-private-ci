@@ -1,0 +1,94 @@
+{
+  "actual_cost": {
+    "cpu_ns": 475088388,
+    "native_requests": 69,
+    "native_roundtrip_ns": 282800102,
+    "native_ticks": 69,
+    "ordinary_logical_unit_events": 460942,
+    "ordinary_native_journal_bytes_written": 29696,
+    "ordinary_packet_bytes": 12797,
+    "owners_archive_bytes": 100482,
+    "wall_ns": 2411062247
+  },
+  "all_archive_members_verified": 177,
+  "checks": {
+    "accounting": 140,
+    "archive": 782,
+    "cdf": 274,
+    "coverage": 5,
+    "freeze": 834,
+    "identity": 11,
+    "interruption": 10,
+    "native_json": 204,
+    "owner": 204,
+    "packet": 136,
+    "posterior": 136,
+    "privacy": 69,
+    "q24_cdf": 136,
+    "qualification": 71,
+    "recovery": 4,
+    "runtime": 408,
+    "semantics": 2
+  },
+  "committed_owner_chains": 34,
+  "continuation_native_ticks": 1,
+  "cpu_ns": 742342811,
+  "duplicate_native_ticks": 0,
+  "freeze_sha256": "75df6af8ce501e624fd2900f096b7c6a050e5c61cbb200fca4ada5fc54d81146",
+  "fresh_processes": 2,
+  "independent_unique_histories": 32,
+  "indexed_files_sha256": {
+    "runtime_confirmation/seed_809/FORECASTS.json.gz": "e72bcb637609c155350faec35b287f9ecaf797411c997e36acb191de92e76733",
+    "runtime_confirmation/seed_809/PUBLIC.npz": "99f8702c8ff028a5c862970bcaf50174d645cf1596f0bd8518b2e735a0fe6458",
+    "runtime_confirmation/seed_809/QUALIFICATION.json": "4969d116b5a56118574666b8274ad8a1a0c8c77243d950981cb721d985727cb7",
+    "runtime_confirmation/seed_809/owners.tar.gz": "d683bc4076a1514adae0f958374248007c7e4b26340782ca4afbdc6ad490c7e8",
+    "runtime_confirmation/seed_809/recovery_2.json": "6a8abb0409a7d681d6fa99888c0b244307bb5050dbb9e32f850c26a0a8811a08",
+    "runtime_confirmation/seed_809/recovery_3.json": "d91474d2df0dcff058f4676d6a2a79197280ef7ab19e604717fbe470fb391628",
+    "runtime_confirmation/seed_809/recovery_job_2.json": "3bb5d27a8c07b3bafa89150d7761a8ec28c847c21138ec77b5799fef3e7c0e3c",
+    "runtime_confirmation/seed_809/recovery_job_3.json": "1c7625bcf7750bc37aa0f26f7345654ce0101e32fa7b1957000518772de3af60"
+  },
+  "maximum_absolute_errors": {
+    "cdf": 0.0,
+    "native_json": 2.7755575615628914e-17,
+    "posterior": 2.220446049250313e-16,
+    "q24_cdf": 3.5244488882923974e-08,
+    "runtime": 0.0
+  },
+  "ordinary_forecasts": 64,
+  "ordinary_forecasts_with_any_zero_probability": 10,
+  "ordinary_zero_probabilities_by_category": [
+    6,
+    0,
+    4
+  ],
+  "passed": true,
+  "qualification_limits": [
+    "No additional native calls executed by this independent reviewer.",
+    "Rejected-call occurrence follows frozen qualification source and retained check results; no independent syscall trace.",
+    "Retained pending/native files directly demonstrate separate owners and non-atomic partial states.",
+    "No production grant, calibrated success confidence, adversarial process isolation or density-retention certificate."
+  ],
+  "registered_qualification_check_count": 268,
+  "retained_partial_commits": {
+    "after_native": {
+      "committed_adapter_law": false,
+      "native_ticks": 1,
+      "subject": "cb6db075acec41b6cfab9e8a689b846515f59ba80b02b6a6ea74d99fd694dd69"
+    },
+    "after_pending": {
+      "committed_adapter_law": false,
+      "native_ticks": 0,
+      "subject": "497ad6ba0f45fef68d0085b6e026b11ce66b740edee75b7005e870edf577bb70"
+    }
+  },
+  "reviewer_sha256": {
+    "review_feedback_evidence.py": "5d7b6d7e9d9b0c0d1235c6ae36e3de2552906b397199bd4b0961ade9e9c98dbf",
+    "review_runtime_confirmation.py": "7716eea4aeab7684a18f92cb63a5f88344f720e402d872c4d9ef65694d8a8d71"
+  },
+  "schema": "hepta.round3.independent-runtime-review.v1",
+  "seed": 809,
+  "source_commit": "29174619dfc56cef1c16b34fbf98f85a1cd2e4c3",
+  "successful_native_ticks_including_partial_commit": 69,
+  "total_checks": 3426,
+  "wall_ns": 1244970949
+}

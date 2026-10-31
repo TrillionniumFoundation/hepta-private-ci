@@ -1,0 +1,274 @@
+{
+  "base_commit": "ecbfadf12a0347919553220fc0684b16e088347b",
+  "base_scientific_source_commit": "9c27481fcd6c2d1861a048ded9a11f988afd521f",
+  "calibration": {
+    "arms": [
+      "frozen",
+      "online",
+      "replay",
+      "protected",
+      "protected_q24",
+      "calibrated",
+      "calibrated_classical",
+      "calibrated_q24",
+      "calibrated_q24_classical",
+      "calibrated_unconstrained"
+    ],
+    "bootstrap_replicates": 4000,
+    "bootstrap_seed": 20261028,
+    "calibration_coverage_max": 0.98,
+    "calibration_coverage_min": 0.92,
+    "calibration_ece_max": 0.04,
+    "development_rows": 128,
+    "empirical_profile_pointwise_guarantee": false,
+    "epsilon": 0.02,
+    "new_holdout_rows": 256,
+    "new_nll_improvement_min": 0.005,
+    "old_holdout_rows": 256,
+    "old_nll_margin": 0.02,
+    "online_labelled_rows_per_window": 256,
+    "phase": "confirmation",
+    "prediction_receives_hidden_regime_or_window": false,
+    "replay_and_calibration_labelled_rows_equal": true,
+    "replay_and_calibration_labelled_rows_per_window": 512,
+    "same_available_information": true,
+    "seed_offset": 50000000,
+    "seed_rule": "offset+10000*seed+100*window+code; train1,olddev2,newdev3,newholdout4; oldholdout window12/code5",
+    "seeds": [
+      607,
+      701,
+      809,
+      907,
+      1009
+    ],
+    "selector": "55 candidates; old-dev mean NLL change+1.645 paired SE<=.02; min new-dev Gaussian NLL",
+    "training_rows": 256,
+    "windows": [
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift"
+    ]
+  },
+  "calibration_registration_field_interpretation": {
+    "empirical_vs_replay_contrast_is_single_mechanism_ablation": false,
+    "fully_budget_matched_structure_controls": [
+      "calibrated_classical",
+      "calibrated_q24_classical"
+    ],
+    "replay_and_calibration_labelled_rows_equal": "optimizer fitting rows only,512 each; calibration additionally uses256 development labels for selection, replay0",
+    "same_available_information": "query-time public fields only; not identical total fit+development label consumption"
+  },
+  "data_offsets": {
+    "development": 31000000,
+    "drift_shift": 33000000,
+    "gaussian": 32000000,
+    "student_t": 34000000,
+    "train": 30000000
+  },
+  "event": {
+    "all_adaptive_development_decisions_certified_for_eligibility": true,
+    "candidate_logvar_bits_adaptive": [
+      4,
+      6
+    ],
+    "candidate_logvar_bits_fixed": [
+      4,
+      6,
+      8,
+      10,
+      12
+    ],
+    "candidate_mean_bits": [
+      6,
+      8,
+      10
+    ],
+    "direct_quantization_same_representation": true,
+    "integer_packet_decoder_only": true,
+    "maximum_development_gaussian_nll_deficit": 0.001,
+    "maximum_development_utility_deficit": 0.001,
+    "maximum_logvar_bits": 24,
+    "selection": "eligible minimum serialized packet bytes then maximum utility then original candidate index; explicit maximum-utility fallback retained",
+    "stateful_packet_resolution_changes_explicit": true,
+    "units_and_bytes_and_latency_distinct": true
+  },
+  "execution": {
+    "confirmation_created_only_after_freeze": true,
+    "fresh_rust_builds": 0,
+    "native_binary_source": "verified round1 artifact reused; previous build receipt preserved",
+    "negative_and_equivalent_results_retained": true,
+    "original_sources_unchanged": true,
+    "prior_confirmation_not_reused_for_fitting": true,
+    "production_authority": "confidence0,abstain,DENY_ALL",
+    "train_and_select_before_source_model_publication_and_freeze": true
+  },
+  "feedback": {
+    "confirmation_rows": 384,
+    "data_offset": 80000000,
+    "data_seed_rule": "data_offset+100*seed+1(train),+2(development),+3(confirmation)",
+    "development_rows": 256,
+    "primary_contrasts": [
+      [
+        "event",
+        "gaussian"
+      ],
+      [
+        "analytic",
+        "numeric"
+      ],
+      [
+        "analytic",
+        "gaussian"
+      ]
+    ],
+    "secondary_contrasts": [
+      [
+        "analytic",
+        "history"
+      ],
+      [
+        "analytic",
+        "zero"
+      ],
+      [
+        "analytic",
+        "reset"
+      ],
+      [
+        "event",
+        "quantized"
+      ],
+      [
+        "gaussian",
+        "probit"
+      ]
+    ],
+    "seeds": [
+      607,
+      701,
+      809,
+      907,
+      1009
+    ],
+    "selection_scope": "training/development only; exact Gaussian expected net gain strong baseline; paid wait/repair/stop; matched Q24 repair amplitude for memory interventions",
+    "statistics": {
+      "all_seed_above_negative_margin_for_noninferiority": true,
+      "all_seed_positive_for_superiority": true,
+      "bootstrap_replicates": 4000,
+      "bootstrap_seed": 28102840,
+      "event_noninferiority_margin": 0.01,
+      "family_alpha": 0.05,
+      "primary_family_size": 3,
+      "superiority_margin": 0.01
+    },
+    "train_rows": 512
+  },
+  "laws": {
+    "mismatch": [
+      "drift_shift",
+      "student_t"
+    ],
+    "primary": "gaussian"
+  },
+  "phase": "preconfirmation",
+  "rows": {
+    "confirmation": 384,
+    "development": 256,
+    "each_mismatch": 384,
+    "train": 512
+  },
+  "runtime": {
+    "actual_native_same_prediction_head_used_for_feedback_decisions_and_utility": true,
+    "data_offset": 90000000,
+    "fresh_process_recovery_per_seed_min": 1,
+    "production_promotion": false,
+    "seeds": [
+      607,
+      701,
+      809,
+      907,
+      1009
+    ],
+    "unique_histories_per_seed": 32
+  },
+  "schema": "hepta.analytic-event.round3.protocol.v1",
+  "scope_limits": {
+    "empirical_calibration_guard_not_pointwise_retention_proof": true,
+    "event_refinement_cost_and_discrete_pulse_units_separate": true,
+    "hardware_energy_or_money_cost_unmeasured": true,
+    "novel_function_class_established": false,
+    "universal_dqn_convergence_transferred": false
+  },
+  "secondary_contrasts": [
+    [
+      "event_adaptive",
+      "event_round2"
+    ],
+    [
+      "event_adaptive",
+      "event_fixed"
+    ],
+    [
+      "event_adaptive",
+      "event_no_residual"
+    ],
+    [
+      "event_adaptive",
+      "event_direct"
+    ],
+    [
+      "event_adaptive",
+      "pulse"
+    ],
+    [
+      "analytic",
+      "equivalent_gaussian"
+    ],
+    [
+      "analytic",
+      "always_wait_repair"
+    ]
+  ],
+  "statistics": {
+    "all_seed_above_negative_margin_for_noninferiority": true,
+    "all_seed_positive_for_superiority": true,
+    "bootstrap_replicates": 4000,
+    "bootstrap_seed": 2801028,
+    "event_utility_noninferiority_margin": 0.01,
+    "family_alpha": 0.05,
+    "minimum_useful_net_utility_gain": 0.01,
+    "mismatch_descriptive_margin": 0.02,
+    "primary_contrasts": [
+      [
+        "analytic",
+        "history"
+      ],
+      [
+        "analytic",
+        "native"
+      ],
+      [
+        "event_adaptive",
+        "analytic"
+      ]
+    ],
+    "primary_family_size": 3,
+    "student_t4_squared_loss_intervals_descriptive_only": true
+  },
+  "training_seeds": [
+    607,
+    701,
+    809,
+    907,
+    1009
+  ]
+}

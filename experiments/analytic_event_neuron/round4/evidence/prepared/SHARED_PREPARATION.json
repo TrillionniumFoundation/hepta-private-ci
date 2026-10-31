@@ -1,0 +1,33 @@
+{
+  "bytes": 13106591,
+  "data_bytes": 21911404,
+  "data_files": 34,
+  "member_hashes_verified": true,
+  "member_manifest": "SHARED_PREPARATION_MANIFEST.json",
+  "name": "SHARED_PREPARATION",
+  "parts": [
+    {
+      "bytes": 8388608,
+      "path": "experiments/analytic_event_neuron/round4/evidence/prepared/SHARED_PREPARATION.tar.gz.part000",
+      "sha256": "5c856b317a0840bd5a2f4f0b8437f78ce3b5790fd6d37b16022a2d437d835aa7"
+    },
+    {
+      "bytes": 4717983,
+      "path": "experiments/analytic_event_neuron/round4/evidence/prepared/SHARED_PREPARATION.tar.gz.part001",
+      "sha256": "4487721b08a1323e3d747cbac0a9c2d1485666d94c0596b01f52d14e964a8958"
+    }
+  ],
+  "restore_root": ".",
+  "scientific_data_regenerated": false,
+  "sha256": "249129ea9cfc5f796582883325d9189a189e95c94f99f803546b248375f2733f",
+  "source_collections": [
+    "calibration_prepared/PREPARED.json",
+    "runtime_bridge_prepared",
+    "native",
+    "validation",
+    "runtime_preparation_review",
+    "reviews/CALIBRATION_PREPARE_REVIEW.json",
+    "MATH_REFERENCE.json",
+    "calibration_development"
+  ]
+}

@@ -1,0 +1,379 @@
+{
+  "schema": "hepta.analytic-event.round3.final-publication-receipt.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "research/analytic-event-neuron-20261027",
+  "verified_commit": "060b47d065a5adc0ae8317afda03ebfee389e968",
+  "verified_tree": "e9976441f9eeab597b482ea80046b81e62a480f8",
+  "receipt_is_added_in_a_followup_commit": true,
+  "receipt_itself_is_not_part_of_the_verified_commit": true,
+  "source_commit": "29174619dfc56cef1c16b34fbf98f85a1cd2e4c3",
+  "freeze_sha256": "75df6af8ce501e624fd2900f096b7c6a050e5c61cbb200fca4ada5fc54d81146",
+  "baseline_commit": "ecbfadf12a0347919553220fc0684b16e088347b",
+  "baseline_blobs_verified_unchanged": 11192,
+  "added_files_confined_to_round3": true,
+  "added_file_count": 236,
+  "published_blob_identities_verified": 236,
+  "frozen_source_files_verified_locally_and_remotely": 83,
+  "frozen_prepared_artifacts_verified_locally": 329,
+  "logical_archives_verified": 37,
+  "physical_archive_blobs_verified": 79,
+  "compressed_archive_bytes": 526326531,
+  "core_artifact_and_source_identities": {
+    "experiments/analytic_event_neuron/FEEDBACK.md": {
+      "sha256": "9239938a7c2a01756df5a3b5d99b34b11c77640a201075f8cf788fd248c7e553",
+      "git_blob_sha1": "60ac6d3f1379e53f044949650715ea76ab77b0de"
+    },
+    "experiments/analytic_event_neuron/MATH.md": {
+      "sha256": "ec7752a079791fea54625ac93c08f12781424c2c51bb00f6f296600f5632fcf9",
+      "git_blob_sha1": "0ae2188d7cc345d971c1aefdb0858601fb144643"
+    },
+    "experiments/analytic_event_neuron/NATIVE_SOURCE_MANIFEST.json": {
+      "sha256": "7ee363fc23278df3dbb491ee60f4416e993f60f8f9af6570fac924d1a83fe40c",
+      "git_blob_sha1": "bb24c724194121ac4e7b221daea755a985155bf7"
+    },
+    "experiments/analytic_event_neuron/PROTOCOL.json": {
+      "sha256": "73e18acc4eb593a89f4dfd7bd6396e528b40a9a6d4751ef915bd5aee3de573fc",
+      "git_blob_sha1": "85f6ce62f006771b120da2cfc2c255370e288a6c"
+    },
+    "experiments/analytic_event_neuron/RUNTIME.md": {
+      "sha256": "eb6d1236e6b98dadbfc5b22688a3a7a250ef901a35754ee8e87a55a3db1418c8",
+      "git_blob_sha1": "d90b3e0f6775b516a01acbd4ec7bc5f47501271d"
+    },
+    "experiments/analytic_event_neuron/SPEC.md": {
+      "sha256": "b816199bbdb8744a06f526f4f0c351613182e695dacaa1b36f9f05cfb7ccda87",
+      "git_blob_sha1": "3a534c8784c6f017ba1a9ad8858aa480d95841ce"
+    },
+    "experiments/analytic_event_neuron/TASK.md": {
+      "sha256": "879797e2ddf7540dac828d58f7b4090af2a88bf9c17baabbac5342be25b1f3b2",
+      "git_blob_sha1": "7b440bd1a11ced9c3a73fc0cccff1057529fc35c"
+    },
+    "experiments/analytic_event_neuron/__init__.py": {
+      "sha256": "f94bbf75a71aaf08882c29b109df510f609f0cac188c70a3ee59805dc1b59ce4",
+      "git_blob_sha1": "3a57e6c68368531efacf0247213885fd314bccfb"
+    },
+    "experiments/analytic_event_neuron/analytic.py": {
+      "sha256": "6d447f88aa5c52b6a273271f4936b5e3dc1a2db8b791f48db71d141d97713264",
+      "git_blob_sha1": "f369b51533965f39808fbe7e832251da70ce0c70"
+    },
+    "experiments/analytic_event_neuron/audit_feedback.py": {
+      "sha256": "bdc3ca4d5e30fbeebd7af5f8ef67a3b5dd0629d05b4c7f43d351e94ace857dd9",
+      "git_blob_sha1": "377ca69568f048a56a3a1239266f957bbabf6e09"
+    },
+    "experiments/analytic_event_neuron/evidence_audit.py": {
+      "sha256": "00f2df0d998b6d882ef7de0cf2529969553e7d305cf5c99581c3874e50355f37",
+      "git_blob_sha1": "57ff013dca53d8839a5b6346aad96b8f40c53bcc"
+    },
+    "experiments/analytic_event_neuron/experiment.py": {
+      "sha256": "de73ce68c3158eebe3119c1c40f407e9bf46687c6a11cdce9c35195cd062d68d",
+      "git_blob_sha1": "4fba273b2ec8b86a1e53fca583402694585ef2a9"
+    },
+    "experiments/analytic_event_neuron/feedback_chain.py": {
+      "sha256": "2e51b708e45e71e400aa78bff3983ebf6d5e45f3958ad824354cca8d5eadeaa4",
+      "git_blob_sha1": "4b73f8c2c7192e01575ec4e3a02e9da51300534d"
+    },
+    "experiments/analytic_event_neuron/feedback_driver.py": {
+      "sha256": "efdb0b25729d9d937dc99a09f42d8eb727c9c71ce04b5c1a677665995db21da5",
+      "git_blob_sha1": "5fdf9a97d8e8102958fc20320396601c73472211"
+    },
+    "experiments/analytic_event_neuron/learners.py": {
+      "sha256": "3ad97885325df186b3a9545019df033d93ef8c92a7f1aa5c991b0d5a5d149d8d",
+      "git_blob_sha1": "0fc4848c13b2f22788ab46424691a7696d00ea6b"
+    },
+    "experiments/analytic_event_neuron/native.rs": {
+      "sha256": "039432dd6b0f8387813e71de5a5e239d2deb1c8c36f6b1082a7616faa5522935",
+      "git_blob_sha1": "51843c51bc6b65eb4c32033118a15bb5ba377816"
+    },
+    "experiments/analytic_event_neuron/native_adapter.py": {
+      "sha256": "24e3b7babc15a60341a7ce0e74e02c48bbc477d9801664f55509a4caec40a389",
+      "git_blob_sha1": "7b5c6bac9db639ea0e2b07b7d5fee59eafa5fc1b"
+    },
+    "experiments/analytic_event_neuron/native_head.rs": {
+      "sha256": "b5312dea693ea7edcef5db210b6a25e08573fe2a3a5e2873843fd6b01d5ac983",
+      "git_blob_sha1": "6038f1330e7d37647ea1b27ed1e5071d7726a003"
+    },
+    "experiments/analytic_event_neuron/prepare_native.py": {
+      "sha256": "a687147a3539328ca99f7858805cda3aacd7f14f630f0a671c9a71cb9ee99364",
+      "git_blob_sha1": "e03dd5b54d97460dd45e0517fe5595ad2e740132"
+    },
+    "experiments/analytic_event_neuron/reference.py": {
+      "sha256": "f6793ae7a19fe324ecbb86eb2af38c9e55820e643a4fd7ed09bab66a5be84fdb",
+      "git_blob_sha1": "9268ee0b708bb1b25e01fa0cdd3b44e73721d969"
+    },
+    "experiments/analytic_event_neuron/requirements.txt": {
+      "sha256": "f793676a40e71a12c2d9066d4f2e342bf5d920a971a725519c00ed500c4231ed",
+      "git_blob_sha1": "55fdab080467cce80bff7dbef6ef27cfe741a507"
+    },
+    "experiments/analytic_event_neuron/retention.py": {
+      "sha256": "202210e0047a48da272c9bc4e9810d16781c7d91dfd35a13153bcfaa151a7488",
+      "git_blob_sha1": "246978bf848db6e150420f444875e042976f7c4b"
+    },
+    "experiments/analytic_event_neuron/round2/CONTRACT.md": {
+      "sha256": "c17240da55a297040674a568b2b45bdeff5a4f06ecaacf9325547cf7a9385f5b",
+      "git_blob_sha1": "dfd0915d55968572a3e8c09344daaa238cfe0a6f"
+    },
+    "experiments/analytic_event_neuron/round2/FEEDBACK_RUNTIME.md": {
+      "sha256": "d0172e8e45dda48dca50635fac5251fa38cbcd1650c84626c8c98de4918dcfae",
+      "git_blob_sha1": "93b1c521ea63189504db0aad46e9448cc618eaab"
+    },
+    "experiments/analytic_event_neuron/round2/PROTOCOL.json": {
+      "sha256": "a64a785fbb3302bf271065fd950b3397cfe997094a85f271a089f92674bef317",
+      "git_blob_sha1": "cf80a004e41ed299d4d7f35451b3beec923992d6"
+    },
+    "experiments/analytic_event_neuron/round2/PULSE.md": {
+      "sha256": "d4c6626ceea17d2bbe06a64275495d1274fcb5e6e3abd590c4c67ce5ecdf21f8",
+      "git_blob_sha1": "ff1d96c6fca1af74ffc51f163310bb31d8c9dfbd"
+    },
+    "experiments/analytic_event_neuron/round2/QUANTIZED_GUARD.md": {
+      "sha256": "025e5a9ab4c9305c28c4061064982eb7761598b24f458280db4fe5b25c19820d",
+      "git_blob_sha1": "f8124da61dcce6af3b497bcb4f9bc87d8df87655"
+    },
+    "experiments/analytic_event_neuron/round2/RETENTION.md": {
+      "sha256": "ccde55ef39edd598cc594f0b647573e05b4a3d19d4633a9a772a8d01e6bb33f5",
+      "git_blob_sha1": "8de133593c260b7c1f1d51341bcb4207b9f1b1f8"
+    },
+    "experiments/analytic_event_neuron/round2/RUNTIME_HARNESS_AMENDMENT.md": {
+      "sha256": "c278bb2590d409beadd27d0a334b1f30305d99faca63827c44e38fd6513f3779",
+      "git_blob_sha1": "28dcee3e9bc7f3798fbb8a7bc062c1cfd2bd4907"
+    },
+    "experiments/analytic_event_neuron/round2/__init__.py": {
+      "sha256": "27e184e3992c8195edccd3e51acc9469259baa02fe3786ef61aa7f8815c82a38",
+      "git_blob_sha1": "b1410c84b6bf30d79518297ce850f8339294e4e0"
+    },
+    "experiments/analytic_event_neuron/round2/adaptation.py": {
+      "sha256": "4aa017c439303f5760fb478991d3e7fc7dbc47eda3e50776ad273b5d97911f8c",
+      "git_blob_sha1": "e727bd7bb2a7cca4e18db5a7746b8ae3934c5fa5"
+    },
+    "experiments/analytic_event_neuron/round2/adaptation_validation.py": {
+      "sha256": "d65679a43e55d0b6a01ab051837e31bc5d60a958819f17afe5bceb28bf5fd273",
+      "git_blob_sha1": "8973454d85ca9b1e8c2baafb8cdc87ffd11f357d"
+    },
+    "experiments/analytic_event_neuron/round2/audit.py": {
+      "sha256": "9074a6c7454dc86e2a621cc9b5aa5202cd5cf08bef3669f3e11a851961da388e",
+      "git_blob_sha1": "519dad041bd9c9ef167dceb884804e986e41c208"
+    },
+    "experiments/analytic_event_neuron/round2/evaluation.py": {
+      "sha256": "2750300b0fccfdb4025ab8d9fbc0f1637595ec8b6a7b316434d9b266102164a2",
+      "git_blob_sha1": "3a1033eeba515257eab969ced07a2c495fda352b"
+    },
+    "experiments/analytic_event_neuron/round2/feedback.py": {
+      "sha256": "dd538060c36f189b664401c89f7004d14ddbd66be9c0f086a9984c3b8ece157e",
+      "git_blob_sha1": "72304c6da3f578448811838903bc638393fc5e3d"
+    },
+    "experiments/analytic_event_neuron/round2/feedback_study.py": {
+      "sha256": "f90afac6e523e7d96b4ffe81ccf1e4850ec428a03999fa289a87903db07d7ade",
+      "git_blob_sha1": "a8d1d6b735de203ec76096b97b524daf96b13b8e"
+    },
+    "experiments/analytic_event_neuron/round2/feedback_summary.py": {
+      "sha256": "2e5fb9b3bef84a247c792c51146f25761a8dff3086738438790e3f72b4e86798",
+      "git_blob_sha1": "3ca69b893e49893c7b440dac0e3eba3ecef7f7a4"
+    },
+    "experiments/analytic_event_neuron/round2/independent_validation.py": {
+      "sha256": "dc5a1d314ff9faf3112673ccefb6189683c16f04b7f9d744aec6bfe10d826e28",
+      "git_blob_sha1": "b0f059865320e751b3d84e50e5327f69f0e1362b"
+    },
+    "experiments/analytic_event_neuron/round2/predictors.py": {
+      "sha256": "7628157442228af4816e711377fdd83b77f405680b7ef28a6f4610b00253ae96",
+      "git_blob_sha1": "60df4b6323aa14cc668b194f789c5a2585414a21"
+    },
+    "experiments/analytic_event_neuron/round2/preflight.py": {
+      "sha256": "2eb7056c3451e9be7651f4425828f9e37b017676264b399b5be13799462ad69d",
+      "git_blob_sha1": "1782325a131dbb2c9c5304941dc653eb34d2ba0d"
+    },
+    "experiments/analytic_event_neuron/round2/pulse.py": {
+      "sha256": "4c8528150ae738329175777fe49ae9f2ecce2010e1e28e2b78829a61aceca6e4",
+      "git_blob_sha1": "ac1a7e49fbfe5b93e1567fe4a905d6a17c83fd35"
+    },
+    "experiments/analytic_event_neuron/round2/pulse_validation.py": {
+      "sha256": "d9f13ad0c0d4594ab396e979789f0b7de8bb0e4de36cc05c2bcf77dee2cccfc0",
+      "git_blob_sha1": "ea56abaad24dbad340078724d541111b70a28b9d"
+    },
+    "experiments/analytic_event_neuron/round2/quantized_guard.py": {
+      "sha256": "7be5ac2877f5d09f94e0f85b7b7efe4efb453e43f50e0f4de8b77cbe951e5859",
+      "git_blob_sha1": "57c27d680f25a425286cf71c4990c46dd9624439"
+    },
+    "experiments/analytic_event_neuron/round2/restore_evidence.py": {
+      "sha256": "1cf39883b9cb4aea03db0ef343edecb04313d9c05cfe53809b7a3f069d2348ed",
+      "git_blob_sha1": "fb27a2744336671db8125b78d0462dd42ecbf4c3"
+    },
+    "experiments/analytic_event_neuron/round2/retention_study.py": {
+      "sha256": "bbf3d066c7eab6ea709e5cdd13bb48e06c3dd32cbef14c5e1b1840e7e0e23b16",
+      "git_blob_sha1": "79a4d8202ec7bbc698e3ec8e97d58eccbda9e651"
+    },
+    "experiments/analytic_event_neuron/round2/run.py": {
+      "sha256": "9c50652eaace9cd9ba56123e1d7c9f164d9d9d110d389eb4105a07e09c82a135",
+      "git_blob_sha1": "74c3ee12e969fd25fd6fc0deb4aa35f160eb303d"
+    },
+    "experiments/analytic_event_neuron/round2/runtime_bridge.py": {
+      "sha256": "b1cac1179e8fdab0380be2b9f619fdfac0ae3ee0c30a89f542ed785bcbf41194",
+      "git_blob_sha1": "4b3d0bf34dc57634984943aea363f3f3b095f8db"
+    },
+    "experiments/analytic_event_neuron/round2/runtime_confirmation.py": {
+      "sha256": "ca68ba58cece2639de96d75c11e82802dbe6fbd255ed05923f37ab11e8831392",
+      "git_blob_sha1": "8f3f959bc919c1fb143784fe200bcb06f3cf829a"
+    },
+    "experiments/analytic_event_neuron/round2/statistics.py": {
+      "sha256": "3121b92443e8f9a4977af569dd566097cde8a72e2438a5ea70c0d88c5538a19d",
+      "git_blob_sha1": "ca0b9bc78188250f15aa5b41ed0e2d1276d2122d"
+    },
+    "experiments/analytic_event_neuron/round3/CALIBRATION_CONTRACT.md": {
+      "sha256": "08d2373e2bc4d70ab03c6d4299a384a23b5eee840e6e59bf81690330c84b2d4f",
+      "git_blob_sha1": "dd5fdaaf5b076b49390e28892c4e5590a82c4f65"
+    },
+    "experiments/analytic_event_neuron/round3/CONTRACT.md": {
+      "sha256": "38d1c25dee23a4683e8c9dc62567bf65dfe0d5b134156062410e41e7a0de2f79",
+      "git_blob_sha1": "9a0eecc328b32edf40fbdfacfc49ef409f572c37"
+    },
+    "experiments/analytic_event_neuron/round3/EVENT_CONTRACT.md": {
+      "sha256": "201778d7786441e15225319d84f63cf9cd2837758d28578f88e79f3ecfc918a4",
+      "git_blob_sha1": "738d0c9d5bc97f24ca49cc1c8447ec06a8342f75"
+    },
+    "experiments/analytic_event_neuron/round3/FEEDBACK_RUNTIME.md": {
+      "sha256": "2c26773b1d890fd71bd30ecf68ebd89654283744b495512d2792ee7e9a9263ca",
+      "git_blob_sha1": "8a5ad5e5e64bfaea827801c835b40d905cde893c"
+    },
+    "experiments/analytic_event_neuron/round3/PROTOCOL.json": {
+      "sha256": "db2d045c733e892e3beeb1de2bdd2e469837373e9ec9cef35ab4785dfae7cffc",
+      "git_blob_sha1": "286604594f340928a5ad41e2eee52cd333d4f9f7"
+    },
+    "experiments/analytic_event_neuron/round3/__init__.py": {
+      "sha256": "f203b998feb38e7a6069177ec9c78f04f01c35dc113288a3139c56070db1e6ad",
+      "git_blob_sha1": "79958c6c72a7ca615e6cd579ee465c10403563eb"
+    },
+    "experiments/analytic_event_neuron/round3/audit.py": {
+      "sha256": "3516ec7d1eaf791597bf41e1c0d612173607f1e5cf8341b98ca33562d4b71384",
+      "git_blob_sha1": "cf93dd93b66cc6a14018ba1f81d48aa96a72660b"
+    },
+    "experiments/analytic_event_neuron/round3/calibration.py": {
+      "sha256": "f5086b8fd0f6652b8b2098b5b75cd78f2e6a873c3da908e54ac52c84db97649d",
+      "git_blob_sha1": "a56c4b958ec23cef3564f4cb0fcb8075e2247c84"
+    },
+    "experiments/analytic_event_neuron/round3/calibration_study.py": {
+      "sha256": "1a26a50f427d3c6f1943ebe9f20ae3a98446244f8e5d0cbc4de992308c8aa9a4",
+      "git_blob_sha1": "c7c3dc9a1e17e8ecc38876065b7c0617e6f327e7"
+    },
+    "experiments/analytic_event_neuron/round3/calibration_validation.py": {
+      "sha256": "2da5194af7d4f9101a4544b2a0e9d762e23e75c56c34c391df73fc263055bece",
+      "git_blob_sha1": "ce8de3373cefcbafc3926f09ce6e1a3ccb634836"
+    },
+    "experiments/analytic_event_neuron/round3/event_codec.py": {
+      "sha256": "47f39617d919fd8e02835734d73b42af11e564cc2aa855d6f55e5e2a6842b32f",
+      "git_blob_sha1": "50d2fcab4056e84d6b096f1eb86fd7bae4e7527a"
+    },
+    "experiments/analytic_event_neuron/round3/event_study.py": {
+      "sha256": "a533ed0646e7bf631bc27e1f6b516780aca9002cc828c5cac2adb3faa85fd32c",
+      "git_blob_sha1": "84e5d0c8844aa1635ac0a19382fa83d2a92eeba3"
+    },
+    "experiments/analytic_event_neuron/round3/event_validation.py": {
+      "sha256": "40390adb09613efd4147838c4fa24533badc2e9141c10bcd243226fb4e46519f",
+      "git_blob_sha1": "7e77f4a93b45ddee8d0386aa31a84e2e81421df6"
+    },
+    "experiments/analytic_event_neuron/round3/feedback.py": {
+      "sha256": "4e8f2b01048af4cfff5d90b3215e88535b7f447a6ccc2ddb8c5506b518c882b6",
+      "git_blob_sha1": "9d94545c05e057008bf419b55930c4e3ce56c3fc"
+    },
+    "experiments/analytic_event_neuron/round3/feedback_audit.py": {
+      "sha256": "ff7829057a2970a28fb0765d4e7905647c1b3e3634546db58bbad5410530b37b",
+      "git_blob_sha1": "2012963e4619f9d5fdd998d6e9f2070c67689d39"
+    },
+    "experiments/analytic_event_neuron/round3/feedback_study.py": {
+      "sha256": "77ddd04fc08f783cab16b2c46b81e0c780f10e9e2c96d56eba7c0fbe48c76288",
+      "git_blob_sha1": "4850688dfcdb8a6044e6296efe170ea366636550"
+    },
+    "experiments/analytic_event_neuron/round3/feedback_summary.py": {
+      "sha256": "ce6dd8df9c0380424897fb840b4d4fdf36f1b137c476e89139c896554256d75c",
+      "git_blob_sha1": "a74b327cbeb937a9eab073cb55e1b1e6f7c042a4"
+    },
+    "experiments/analytic_event_neuron/round3/feedback_validation.py": {
+      "sha256": "42f914dc41af2f8f0e098cca3e343b345da0cd54d69f8dba4ee4a74ec96f924c",
+      "git_blob_sha1": "1338b9fefe3611db67b24389f86a0bc5ece02669"
+    },
+    "experiments/analytic_event_neuron/round3/freeze.py": {
+      "sha256": "ed376a074ba333cbf14d2b133cc5c240789cb7db65217aeeae2bd955d7cd7072",
+      "git_blob_sha1": "6c41adcfc8edccde00c6d4af18c163b83e1aab6d"
+    },
+    "experiments/analytic_event_neuron/round3/phases.py": {
+      "sha256": "2b96c5673ccaf8059e71206ed2c100dcd8c99a29a6a182ac967402f9de853e40",
+      "git_blob_sha1": "56e02ca019836809c516a6f6439afa41ce7e9525"
+    },
+    "experiments/analytic_event_neuron/round3/prepare.py": {
+      "sha256": "47e346c37242e29287c550007b9c236ae2b481b93a1f0b755ca98b24ba1ff6af",
+      "git_blob_sha1": "d5eaf257e722953c17012ff6d109c65f21438140"
+    },
+    "experiments/analytic_event_neuron/round3/run.py": {
+      "sha256": "7681c71f37123dae5e4bb3bca0ac17cd1d161f8d07f2d159303a310e4c85f652",
+      "git_blob_sha1": "baf27dba62a83fdb55e44bc927127fb6157756b6"
+    },
+    "experiments/analytic_event_neuron/round3/runtime_feedback.py": {
+      "sha256": "eee01cc5eaea553bfa4b6f7ade5cbce703501b9f13e9b220a649b69927f0d07f",
+      "git_blob_sha1": "ae1b324de3d9fac7092f3a90c4328c2e9e8f8852"
+    },
+    "experiments/analytic_event_neuron/round3/runtime_feedback_study.py": {
+      "sha256": "75ad90a0e0861e9c151e8702d19f2187862310e0abeecab815887bf8e2e564c1",
+      "git_blob_sha1": "9cebb3ce36fd3ecb5533526d197a206ad59f2ba0"
+    },
+    "experiments/analytic_event_neuron/round3/statistics.py": {
+      "sha256": "f4fd01a14ecbd2e0f9748d58096ef112eca38f7329e6fdb3c78ce5d0061e59ca",
+      "git_blob_sha1": "4d848d0042243ab7744528fe32b5eafb29ad1d64"
+    },
+    "experiments/analytic_event_neuron/run.py": {
+      "sha256": "a7b5a60936e7fb84d2fb4d5bf911123b32ca75b5f642b9ee894c2cddb963a46b",
+      "git_blob_sha1": "e84d554c27bb9facbc44cb0266ec2cfe813fc82d"
+    },
+    "experiments/analytic_event_neuron/runtime.py": {
+      "sha256": "f10545abcd1dad3edfdc88f3e3f48a108edf1418dc0f2295c8adb5d3df757c02",
+      "git_blob_sha1": "00df5af28a51c0b89c27757135e9a31b3d86dcf9"
+    },
+    "experiments/analytic_event_neuron/statistics.py": {
+      "sha256": "c92f983b7bac7d24b3a759f36f859dbbf2e2f182277e1d78d074e7add9bb3323",
+      "git_blob_sha1": "d3ede6bb3d6b4cc146f6bb83cb180a10880c9d5f"
+    },
+    "experiments/analytic_event_neuron/summarize_compat.py": {
+      "sha256": "e22291b457342c488b2027ec04621cde5ef83eb1170f216cb3bdb4966b4a4b22",
+      "git_blob_sha1": "b231008644807739c3f440ac24df0c0cd91b62b9"
+    },
+    "experiments/analytic_event_neuron/task.py": {
+      "sha256": "d113363eefc6c29a10c1ee493ba11d45371221600b861e966f6617f34d8d1971",
+      "git_blob_sha1": "c5132307c208c4f911e3732e7c9fb3556b019ce9"
+    },
+    "experiments/analytic_event_neuron/train.py": {
+      "sha256": "b359e291a7485252a7d9a62645bd18f29373ba787fe40bf1b26773b1164586b3",
+      "git_blob_sha1": "8207442083ac36f5df7acf1fbbab04f409b50560"
+    },
+    "experiments/analytic_event_neuron/trained_runtime.py": {
+      "sha256": "96d82fe7a64adf22263d63e571a6714862a62f749a716baa6e4d00a4defd8be5",
+      "git_blob_sha1": "73e978edea86c5bf1d4131d01468f663ff7a4cba"
+    },
+    "experiments/analytic_event_neuron/transport.py": {
+      "sha256": "9c4ef85de95b8f797f5c7da37f20bc675b67d0a32fe114fafdba4009ba9fe6f8",
+      "git_blob_sha1": "aaf7909669b73bc2247bdade1bcb43121d71d1af"
+    },
+    "experiments/analytic_event_neuron/validate_runtime.py": {
+      "sha256": "c9168f5c52d3311cee2d2b050fc04fde0d097a6f533793999d6a17bb56f6b874",
+      "git_blob_sha1": "1dc9b4a6ca984873de073a13e92cf8ebabb2a0bb"
+    },
+    "experiments/analytic_event_neuron/round3/README.md": {
+      "sha256": "fc5ae280410ccb333b5ac222fdb2372b1316dfcacc1b3ce16a97ee9ae6a4d2f2",
+      "git_blob_sha1": "1375a503ae399497bf3f1ae5c0e64f909daac5d1"
+    },
+    "experiments/analytic_event_neuron/round3/evidence/ACCEPTANCE.json": {
+      "sha256": "810d1b5e1dbc8d27824cbef3f45192613a6d9ade9b1d94e8368a254a35f018b8",
+      "git_blob_sha1": "67d51e112d0180a51021d6e7225a6d9fae2af2cd"
+    },
+    "experiments/analytic_event_neuron/round3/evidence/EVIDENCE_MANIFEST.json": {
+      "sha256": "8e70650a3f2b91a15007d1c403b6ababbb3200028c3637afae9905d2ddd297e5",
+      "git_blob_sha1": "dbcc23a3704dcb3573f35866638ba47b77776ae6"
+    },
+    "experiments/analytic_event_neuron/round3/evidence/results/reviews/FINAL_REPORT_QA.json": {
+      "sha256": "23c31d366992573d24eb10a64ccf506c81acee3ab2bb1c6624b1c685cce31da5",
+      "git_blob_sha1": "90a36bf4db87e4e2f6b6444ee8ec86116d958f92"
+    },
+    "experiments/analytic_event_neuron/round3/evidence/verify_publication.js": {
+      "sha256": "10375829eb3ae9467006249e532517844d969c44f91204a48e2381879332cf10",
+      "git_blob_sha1": "d9d68a4fc6edc36a208b4b7280f066e9cbfdc25f"
+    }
+  },
+  "production_promotion": false,
+  "scientific_data_regenerated": false,
+  "native_inference_or_training_performed": false,
+  "all_checks_passed": true
+}

@@ -1,0 +1,29 @@
+{
+  "schema": "hepta.analytic-event.release-scope.v5",
+  "commit": "0deb51fc76252fddf92c0207230222065548ad82",
+  "parent": "6c4d3b8ee40a4a1d8d4b7f09410a07c1b5017163",
+  "tree": "9dc78e8b92d7d501f41cd6bbc09c0e39d41568e0",
+  "only_round5_changed": true,
+  "compared_trees": [
+    {
+      "path": "",
+      "before": "0d9be1a793bd055ed5683712a23a29cc2b28ed8a",
+      "after": "9dc78e8b92d7d501f41cd6bbc09c0e39d41568e0",
+      "only_changed_entry": "experiments"
+    },
+    {
+      "path": "experiments/",
+      "before": "046b6c60173db7d358700af77b499c45e9a3b4ec",
+      "after": "723c31a5a35c35a51cbe7946cacb79d97615a771",
+      "only_changed_entry": "analytic_event_neuron"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/",
+      "before": "ed3062ab4b1bf6f343a6c7023d7464e4573a10f4",
+      "after": "c529019ca8d4ae9b08c7dcf8c38c01d1ab2696ce",
+      "only_changed_entry": "round5"
+    }
+  ],
+  "verified_utc": "2026-10-29T00:52:07.556Z",
+  "original_preservation_inherited": true
+}

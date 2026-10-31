@@ -1,0 +1,264 @@
+{
+  "complete": true,
+  "completed_utc": "2026-10-27T19:24:40.387088+00:00",
+  "freeze_sha256": "825b5d4ffd3fae2ab03851ea8792d272b886490e7a3ea7d9bd1a478a25e6e5f4",
+  "operational_recovery": [
+    {
+      "analysis_arrays_reverified": 167,
+      "archive_members_reverified": 24518,
+      "audit_passed": true,
+      "evaluation_repeated": false,
+      "model_or_protocol_changed": false,
+      "reason": "shutil.rmtree raised ENOTEMPTY after complete scoring, independent audit, archive creation and member verification",
+      "schema": "hepta.analytic-event.operational-recovery.v1",
+      "scope": "seed_11_student_t",
+      "scope_wall_ns_unavailable_due_to_cleanup_failure": true
+    }
+  ],
+  "preconfirmation_source_commit": "9b111ae4916cebbe2c6142aaa97c50235f8782e5",
+  "schema": "hepta.analytic-event.run.v1",
+  "scopes": [
+    {
+      "analysis_path": "analysis/seed_11_gaussian.npz",
+      "analysis_sha256": "d399e5209b797746f251a4d97b0acb24ca8bb1bbd39371f0c431a89eeb50e86a",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 7349875,
+        "file_count": 24716,
+        "sha256": "7acd9146cd9f655091b600843046e4c307a4777554ce9a3b28bea014be7f4ad7"
+      },
+      "archive_path": "archives/seed_11_gaussian.tar.gz",
+      "data_seed": 30011,
+      "law": "gaussian",
+      "scope": "seed_11_gaussian",
+      "scope_wall_ns_including_audit_and_archive": 45552631341,
+      "training_seed": 11
+    },
+    {
+      "analysis_path": "analysis/seed_11_drift_shift.npz",
+      "analysis_sha256": "b9ae651082eac7909c954a8bb809d2786d3c723e98deac8227ba83ed58c7fdb2",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 7234156,
+        "file_count": 24524,
+        "sha256": "3e9a46caebca34a9cac27de0d1da5abc0796c513bede36c7a42458bea8134756"
+      },
+      "archive_path": "archives/seed_11_drift_shift.tar.gz",
+      "data_seed": 40011,
+      "law": "drift_shift",
+      "scope": "seed_11_drift_shift",
+      "scope_wall_ns_including_audit_and_archive": 48473203079,
+      "training_seed": 11
+    },
+    {
+      "analysis_path": "analysis/seed_11_student_t.npz",
+      "analysis_sha256": "8cdbd81d05f078125a62ed542c1131caa9263f825d9957e17f3f78abb32fe18c",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 7287139,
+        "file_count": 24519,
+        "sha256": "f7dd78784328ffefe724f017e824d55e75af17094d9a908212bf4a99e0e9a6b5"
+      },
+      "archive_path": "archives/seed_11_student_t.tar.gz",
+      "data_seed": 50011,
+      "law": "student_t",
+      "recovered_from_verified_archive": true,
+      "scope": "seed_11_student_t",
+      "scope_wall_ns_including_audit_and_archive": null,
+      "training_seed": 11
+    },
+    {
+      "analysis_path": "analysis/seed_23_gaussian.npz",
+      "analysis_sha256": "c020de1cf9d86b61ad0d484b0ec4967b0f58f6cebf1d553bb9bfc11ab49a93cc",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 7227162,
+        "file_count": 24343,
+        "sha256": "e55b03ff5c192ecc75279868d85ba0a2074723c43f4531973559a57e80adf79b"
+      },
+      "archive_path": "archives/seed_23_gaussian.tar.gz",
+      "data_seed": 30023,
+      "law": "gaussian",
+      "scope": "seed_23_gaussian",
+      "scope_wall_ns_including_audit_and_archive": 48040738386,
+      "training_seed": 23
+    },
+    {
+      "analysis_path": "analysis/seed_23_drift_shift.npz",
+      "analysis_sha256": "953468877d37052e99bf2c4e362f8d2a4e187dee80fbb6d7a6f7d0a32523ffaa",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 7237304,
+        "file_count": 24449,
+        "sha256": "5c2e0a28440ede5491c2129ff09dcc0160cc843241078a56cdc05ecea750e8b4"
+      },
+      "archive_path": "archives/seed_23_drift_shift.tar.gz",
+      "data_seed": 40023,
+      "law": "drift_shift",
+      "scope": "seed_23_drift_shift",
+      "scope_wall_ns_including_audit_and_archive": 53431199365,
+      "training_seed": 23
+    },
+    {
+      "analysis_path": "analysis/seed_23_student_t.npz",
+      "analysis_sha256": "d2b94bb7c5b0da0f2b6e54a3121810b9beede21d85a81fb79ddda3e89e8216cb",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 7301401,
+        "file_count": 24466,
+        "sha256": "d31c0f0c2622d0f3657c6ee1e5c504b29c41aa3cda22d6966bde4e287642cc0c"
+      },
+      "archive_path": "archives/seed_23_student_t.tar.gz",
+      "data_seed": 50023,
+      "law": "student_t",
+      "scope": "seed_23_student_t",
+      "scope_wall_ns_including_audit_and_archive": 48900200550,
+      "training_seed": 23
+    },
+    {
+      "analysis_path": "analysis/seed_37_gaussian.npz",
+      "analysis_sha256": "4e31e8f0d14b60685f0d74b24225d210a05de09bc5512f4399110cb83bd85793",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 7271776,
+        "file_count": 24425,
+        "sha256": "e3d84d5a968c8bca1356fe9a50e3510c10a1bb2c141816501e0976186eb5c83c"
+      },
+      "archive_path": "archives/seed_37_gaussian.tar.gz",
+      "data_seed": 30037,
+      "law": "gaussian",
+      "scope": "seed_37_gaussian",
+      "scope_wall_ns_including_audit_and_archive": 54700129637,
+      "training_seed": 37
+    },
+    {
+      "analysis_path": "analysis/seed_37_drift_shift.npz",
+      "analysis_sha256": "e878de9d999476b19bfe21ffe421d37fb42c65a889ec542aa59a8162bc1c1f93",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 7275324,
+        "file_count": 24539,
+        "sha256": "c4355c7cf8f2acb44375614753d727983b57f02476c256c388b8ec249b62e575"
+      },
+      "archive_path": "archives/seed_37_drift_shift.tar.gz",
+      "data_seed": 40037,
+      "law": "drift_shift",
+      "scope": "seed_37_drift_shift",
+      "scope_wall_ns_including_audit_and_archive": 51361526751,
+      "training_seed": 37
+    },
+    {
+      "analysis_path": "analysis/seed_37_student_t.npz",
+      "analysis_sha256": "66e8f059563f7d40967f04780e29ee64a882624deecfb3d40df2f6c6ff900f8a",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 7335372,
+        "file_count": 24607,
+        "sha256": "73152b5cfa24ea0225d41bb2b0f42ea02f4763633d4792b372420e39619209d0"
+      },
+      "archive_path": "archives/seed_37_student_t.tar.gz",
+      "data_seed": 50037,
+      "law": "student_t",
+      "scope": "seed_37_student_t",
+      "scope_wall_ns_including_audit_and_archive": 51853659467,
+      "training_seed": 37
+    },
+    {
+      "analysis_path": "analysis/seed_53_gaussian.npz",
+      "analysis_sha256": "287bc17e2caf468d0df968bb94feed450b3f9c374b45bef13839ae3bb0825425",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 7248474,
+        "file_count": 24370,
+        "sha256": "d2631f4683d5a6692aa8931e6e39be167ab5145849bc0494513e74776c33606e"
+      },
+      "archive_path": "archives/seed_53_gaussian.tar.gz",
+      "data_seed": 30053,
+      "law": "gaussian",
+      "scope": "seed_53_gaussian",
+      "scope_wall_ns_including_audit_and_archive": 50950773664,
+      "training_seed": 53
+    },
+    {
+      "analysis_path": "analysis/seed_53_drift_shift.npz",
+      "analysis_sha256": "872494e8f7c6114faba304c8b7abfe90ac4190e184cee4d54d4cb4d922537ee1",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 7264736,
+        "file_count": 24536,
+        "sha256": "829461f85e130ddf501df3fee72c20761d16ff20a781113b537316b4f9c3b3cf"
+      },
+      "archive_path": "archives/seed_53_drift_shift.tar.gz",
+      "data_seed": 40053,
+      "law": "drift_shift",
+      "scope": "seed_53_drift_shift",
+      "scope_wall_ns_including_audit_and_archive": 48885822246,
+      "training_seed": 53
+    },
+    {
+      "analysis_path": "analysis/seed_53_student_t.npz",
+      "analysis_sha256": "38bca46b83e0f87da6d045112cebfd782e674bfb72667a7405171256fb159e63",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 7281690,
+        "file_count": 24479,
+        "sha256": "b65b49f80f85392184f2d15558cc3c66def4792bb5e3b1e7e8a581aa25e1f161"
+      },
+      "archive_path": "archives/seed_53_student_t.tar.gz",
+      "data_seed": 50053,
+      "law": "student_t",
+      "scope": "seed_53_student_t",
+      "scope_wall_ns_including_audit_and_archive": 59089860608,
+      "training_seed": 53
+    },
+    {
+      "analysis_path": "analysis/seed_71_gaussian.npz",
+      "analysis_sha256": "0726fe41ff9500c19e1a144bbe622df7a7231b3c9cd88d6a7fc7a05fd55483af",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 7314989,
+        "file_count": 24602,
+        "sha256": "69cf8e9f06f4f2495bf3e0deb34defbee12ae20ec4ae255b02b74451817c4e02"
+      },
+      "archive_path": "archives/seed_71_gaussian.tar.gz",
+      "data_seed": 30071,
+      "law": "gaussian",
+      "scope": "seed_71_gaussian",
+      "scope_wall_ns_including_audit_and_archive": 55001351687,
+      "training_seed": 71
+    },
+    {
+      "analysis_path": "analysis/seed_71_drift_shift.npz",
+      "analysis_sha256": "acb0019d0cb8fb03a50828620d124f9185fe799dce945410eaf3233c23213cc3",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 7261862,
+        "file_count": 24501,
+        "sha256": "0a67291fe710115820429149eb3f0ca7310bb62f02bd9be1e937cf4c9f293b61"
+      },
+      "archive_path": "archives/seed_71_drift_shift.tar.gz",
+      "data_seed": 40071,
+      "law": "drift_shift",
+      "scope": "seed_71_drift_shift",
+      "scope_wall_ns_including_audit_and_archive": 49634451965,
+      "training_seed": 71
+    },
+    {
+      "analysis_path": "analysis/seed_71_student_t.npz",
+      "analysis_sha256": "1d18cf88747861b8cacc5125c64591d56ea0f6e0d85830fa9cd065000b13a1be",
+      "archive": {
+        "all_member_hashes_verified": true,
+        "compressed_bytes": 7318873,
+        "file_count": 24522,
+        "sha256": "4e14b0fe9104efd516c5ba8c72c5770d122b860be90ad808b4f4da64da210666"
+      },
+      "archive_path": "archives/seed_71_student_t.tar.gz",
+      "data_seed": 50071,
+      "law": "student_t",
+      "scope": "seed_71_student_t",
+      "scope_wall_ns_including_audit_and_archive": 51560504451,
+      "training_seed": 71
+    }
+  ],
+  "started_utc": "2026-10-27T19:09:48.798622+00:00"
+}

@@ -1,0 +1,84 @@
+{
+  "checks": 14809,
+  "confirmation_generated": false,
+  "failures": [],
+  "maxima": {
+    "baseline_utility": 2.220446049250313e-16,
+    "candidate_nll": 1.1102230246251565e-16,
+    "candidate_paid_cost": 0.0,
+    "candidate_utility": 0.0
+  },
+  "passed": true,
+  "proof_review": {
+    "action_score_monotonicity": "stop v+qT, repair qT+vr/(v+r)+c, wait cw+q+min(H(v+q,s),H(H(v+q,s),r)+cr) are all increasing in v; upper chosen below lower every other implies same action throughout cell",
+    "costs": "actual wait/repair costs use the same public multiplier as decision scores; packet bytes are reported separately and not fabricated utility or money",
+    "encoding": "error-feedback mode has exact-real telescoping target minus decoded previous center; subtractive residual retained only encoder; decoder receives signed counts, bits, time,kind",
+    "events": "signed update packets are state communication, not terminal call/put samples; no first-passage model is claimed",
+    "limits": "at an unresolved boundary after maximum precision, decision remains explicitly uncertified; no continuous bypass",
+    "quantization_control": "matched absolute quantization reproduces decoded counts/decisions/delivery in all five development seeds"
+  },
+  "resolved_before_freeze": [
+    "Stable harmonic costs plus finite result guard",
+    "Refinement requires unchanged encoder target and same time/increasing precision/zero mean count"
+  ],
+  "review_script_sha256": "64ad55ba4c09a110e8373eea6f09f96bd2e88daae292cdaa996e0d5560d1c3f1",
+  "schema": "hepta.round3.event-independent-prefreeze-review.v1",
+  "scope": {
+    "all_105_candidates_utilities_nll_action_costs_certificate_counts_independently_recomputed": true,
+    "all_selected_packet_bytes_and_units_independently_counted": true,
+    "all_selection_rules_and_saved_models_checked": true,
+    "dense_conditional_covariance_reference": true,
+    "finite_fp64_tests_are_not_universal_error_proof": true,
+    "process_isolation_proof": false,
+    "selected_3840_model_episodes_reexecuted": true,
+    "source_order_private_target_after_delivery_checked": true,
+    "unselected_candidate_packet_byte_counts_independently_reexecuted": false
+  },
+  "seeds": [
+    {
+      "candidates_independently_recomputed": 21,
+      "development_rows": 256,
+      "models_sha256": "67e28449e8f1f7d485e5ec70a53dc658bd67e744abbbdce8c6ae4dbaef37b2dc",
+      "seed": 607,
+      "selected_models_reexecuted": 3,
+      "selection_sha256": "7d8e14f06062b2fddf00bbaa0c07d06ffc3b833a3aa5f8a61b16189c930bf60f"
+    },
+    {
+      "candidates_independently_recomputed": 21,
+      "development_rows": 256,
+      "models_sha256": "5a7ca4f052820ff37e455d853e315d0efc1c677a3208ac279059a14f6f61cd86",
+      "seed": 701,
+      "selected_models_reexecuted": 3,
+      "selection_sha256": "f5873d3e35d972a1f6c12e0606de4f4fdbf3b3835a0c336b26ba56ac6768bd72"
+    },
+    {
+      "candidates_independently_recomputed": 21,
+      "development_rows": 256,
+      "models_sha256": "f389eeeef10ab3e12b5718e2082a90d39724708c325786f51e417e3498d3cd4b",
+      "seed": 809,
+      "selected_models_reexecuted": 3,
+      "selection_sha256": "479c6ab840dcaaac2c64bb43241976e9b61839bfbda3e21d100f9dde129459c7"
+    },
+    {
+      "candidates_independently_recomputed": 21,
+      "development_rows": 256,
+      "models_sha256": "39e2458c7ce4ec675fbed54aba2839dbaf0d0ab935ed0fa27679d3ee4df424a7",
+      "seed": 907,
+      "selected_models_reexecuted": 3,
+      "selection_sha256": "735c16651264f12ebd222f7348d8ef1d53e4bf29eb6a46b2720c53d8a18dc701"
+    },
+    {
+      "candidates_independently_recomputed": 21,
+      "development_rows": 256,
+      "models_sha256": "f002bccd102ff44632a689a528ee7510b2a92bcee790e1da48e8bb6060037e30",
+      "seed": 1009,
+      "selected_models_reexecuted": 3,
+      "selection_sha256": "19b12e4eabc52ad282b804b7482281e4925022a2d9dac8b59dd25590f11a2f93"
+    }
+  ],
+  "source_sha256": {
+    "experiments/analytic_event_neuron/round3/event_codec.py": "47f39617d919fd8e02835734d73b42af11e564cc2aa855d6f55e5e2a6842b32f",
+    "experiments/analytic_event_neuron/round3/event_study.py": "a533ed0646e7bf631bc27e1f6b516780aca9002cc828c5cac2adb3faa85fd32c",
+    "experiments/analytic_event_neuron/round3/event_validation.py": "40390adb09613efd4147838c4fa24533badc2e9141c10bcd243226fb4e46519f"
+  }
+}

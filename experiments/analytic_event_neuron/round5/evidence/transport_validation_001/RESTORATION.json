@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.analytic-event.transport-verification.v2",
+  "helper_sha256": "d19ab45f36b92170f11102f943261389dae54e1e8b54eabe93c2c98391aa14a4",
+  "checks": [
+    {
+      "schema": "hepta.analytic-event.evidence-restoration.v1",
+      "manifest_sha256": "6d1523dbb4a4b90bf6283cbbe2615a482efd868c5c32708eaeec504cbde1da46",
+      "archive_sha256": "6b5e137f23997c93ababf625c901fc60a1b6ba46fae6d8e67ad0d8c50fb91c16",
+      "member_count": 187,
+      "original_bytes_verified": 56646467,
+      "all_bytes_match": true,
+      "envelope": "selection_confirmation_001"
+    },
+    {
+      "schema": "hepta.analytic-event.evidence-restoration.v1",
+      "manifest_sha256": "64a2e6e460d92f61d0dc420b97c2522addcbd9c72298f98ff2bdd4fa4bf8eb16",
+      "archive_sha256": "287595b89ada292aeed13b1ae68c92d9c4da9ce1fbdc3cd2538c87549c271721",
+      "member_count": 251,
+      "original_bytes_verified": 10372700,
+      "all_bytes_match": true,
+      "envelope": "selection_prepared_001"
+    }
+  ],
+  "all_bytes_match": true,
+  "wall_ns": 2389023246,
+  "parent_cpu_ns": 1420916164,
+  "scope": "Actual independent new-directory restores, including v1 reader compatibility and v2 xz confirmation envelope"
+}

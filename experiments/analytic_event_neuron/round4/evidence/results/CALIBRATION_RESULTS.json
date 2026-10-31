@@ -1,0 +1,606 @@
+{
+  "arms": {
+    "frozen": {
+      "final_new_nll_difference": {
+        "alpha": 0.05,
+        "interval": [
+          0.0,
+          0.0
+        ],
+        "mean_difference": 0.0,
+        "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+        "per_seed_mean": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "replicates": 4000
+      },
+      "old_nll_increase_by_window": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "passes_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_nll_efficacy_gate": false,
+      "passes_retention_gate": true,
+      "pointwise_retention_certificate": false,
+      "pooled_shifted_classwise_ece": 0.06100316024969076,
+      "pooled_shifted_coverage95": 0.8916666666666667,
+      "worst_cross_seed_mean_old_nll_increase": 0.0,
+      "worst_single_seed_window_old_nll_increase": 0.0
+    },
+    "mixture_classical": {
+      "final_new_nll_difference": {
+        "alpha": 0.05,
+        "interval": [
+          -0.19630453759021407,
+          -0.1366431407057828
+        ],
+        "mean_difference": -0.16667657859377122,
+        "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+        "per_seed_mean": [
+          -0.18628280990309376,
+          -0.1748289944672542,
+          -0.163374029310001,
+          -0.1506800253266991,
+          -0.15821703396180814
+        ],
+        "replicates": 4000
+      },
+      "old_nll_increase_by_window": [
+        -1.8885078497408307e-05,
+        0.005099037102006948,
+        -0.0024362835089496446,
+        0.006867596150342466,
+        -0.001149973253615031,
+        0.005643321474239677,
+        -0.0002410707001923408,
+        0.009689904361903433,
+        -0.0015376466689089906,
+        0.006461243627549242,
+        -0.0016543214043119564,
+        0.009288897335670234
+      ],
+      "passes_calibration_gate": true,
+      "passes_joint_empirical_gate": true,
+      "passes_nll_efficacy_gate": true,
+      "passes_retention_gate": true,
+      "pointwise_retention_certificate": false,
+      "pooled_shifted_classwise_ece": 0.023102487218521164,
+      "pooled_shifted_coverage95": 0.9446614583333334,
+      "worst_cross_seed_mean_old_nll_increase": 0.009689904361903433,
+      "worst_single_seed_window_old_nll_increase": 0.035616694047849076
+    },
+    "mixture_context": {
+      "final_new_nll_difference": {
+        "alpha": 0.025,
+        "interval": [
+          -0.19956046108015804,
+          -0.1330396132422267
+        ],
+        "mean_difference": -0.16667657859377125,
+        "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+        "per_seed_mean": [
+          -0.18628280990309382,
+          -0.1748289944672542,
+          -0.163374029310001,
+          -0.15068002532669922,
+          -0.15821703396180803
+        ],
+        "replicates": 4000
+      },
+      "old_nll_increase_by_window": [
+        -1.888507849740267e-05,
+        0.005099037102006973,
+        -0.0024362835089496433,
+        0.006867596150342474,
+        -0.001149973253615023,
+        0.0056433214742397115,
+        -0.00024107070019233857,
+        0.009689904361903465,
+        -0.00153764666890896,
+        0.006461243627549261,
+        -0.0016543214043119394,
+        0.00928889733567025
+      ],
+      "passes_calibration_gate": true,
+      "passes_joint_empirical_gate": true,
+      "passes_nll_efficacy_gate": true,
+      "passes_retention_gate": true,
+      "pointwise_retention_certificate": false,
+      "pooled_shifted_classwise_ece": 0.023102487218521133,
+      "pooled_shifted_coverage95": 0.9446614583333334,
+      "worst_cross_seed_mean_old_nll_increase": 0.009689904361903465,
+      "worst_single_seed_window_old_nll_increase": 0.03561669404784911
+    },
+    "mixture_q24": {
+      "final_new_nll_difference": {
+        "alpha": 0.05,
+        "interval": [
+          -0.19640480626908824,
+          -0.13746536254897257
+        ],
+        "mean_difference": -0.1666765774417071,
+        "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+        "per_seed_mean": [
+          -0.18628280431691369,
+          -0.17482900021245243,
+          -0.16337402616302593,
+          -0.150680017083688,
+          -0.15821703943245552
+        ],
+        "replicates": 4000
+      },
+      "old_nll_increase_by_window": [
+        -1.8885593436716474e-05,
+        0.005099035961192272,
+        -0.002436285012268255,
+        0.006867594362078927,
+        -0.0011499752598970858,
+        0.005643318858354734,
+        -0.00024107257439292718,
+        0.009689903159663315,
+        -0.0015376474683662697,
+        0.0064612407648935374,
+        -0.0016543225728905334,
+        0.009288894879484259
+      ],
+      "passes_calibration_gate": true,
+      "passes_joint_empirical_gate": true,
+      "passes_nll_efficacy_gate": true,
+      "passes_retention_gate": true,
+      "pointwise_retention_certificate": false,
+      "pooled_shifted_classwise_ece": 0.023102487787929227,
+      "pooled_shifted_coverage95": 0.9446614583333334,
+      "worst_cross_seed_mean_old_nll_increase": 0.009689903159663315,
+      "worst_single_seed_window_old_nll_increase": 0.03561668820352784
+    },
+    "mixture_q24_classical": {
+      "final_new_nll_difference": {
+        "alpha": 0.05,
+        "interval": [
+          -0.19554371043745603,
+          -0.13687581206703184
+        ],
+        "mean_difference": -0.16667657744170716,
+        "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+        "per_seed_mean": [
+          -0.18628280431691363,
+          -0.17482900021245254,
+          -0.16337402616302596,
+          -0.15068001708368803,
+          -0.1582170394324556
+        ],
+        "replicates": 4000
+      },
+      "old_nll_increase_by_window": [
+        -1.8885593436714824e-05,
+        0.005099035961192256,
+        -0.002436285012268253,
+        0.006867594362078923,
+        -0.0011499752598970905,
+        0.005643318858354734,
+        -0.00024107257439290861,
+        0.009689903159663334,
+        -0.0015376474683662742,
+        0.006461240764893542,
+        -0.0016543225728905305,
+        0.009288894879484245
+      ],
+      "passes_calibration_gate": true,
+      "passes_joint_empirical_gate": true,
+      "passes_nll_efficacy_gate": true,
+      "passes_retention_gate": true,
+      "pointwise_retention_certificate": false,
+      "pooled_shifted_classwise_ece": 0.023102487787929227,
+      "pooled_shifted_coverage95": 0.9446614583333334,
+      "worst_cross_seed_mean_old_nll_increase": 0.009689903159663334,
+      "worst_single_seed_window_old_nll_increase": 0.03561668820352783
+    },
+    "mixture_zero": {
+      "final_new_nll_difference": {
+        "alpha": 0.025,
+        "interval": [
+          -0.11482129949777563,
+          -0.07021075297860663
+        ],
+        "mean_difference": -0.0919341325868864,
+        "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+        "per_seed_mean": [
+          -0.10847106138538866,
+          -0.11487616618988356,
+          -0.06929278717581433,
+          -0.07260890477193452,
+          -0.094421743411411
+        ],
+        "replicates": 4000
+      },
+      "old_nll_increase_by_window": [
+        0.00024240199013751424,
+        0.006532624116374145,
+        -0.002531887027519376,
+        0.007998658066415526,
+        -0.0012223623677980104,
+        0.004342862475108545,
+        -0.0006816451137094717,
+        0.009000644325512269,
+        -0.0012275699077229471,
+        0.006152431099740877,
+        -0.001943369367561221,
+        0.0071748423064268985
+      ],
+      "passes_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_nll_efficacy_gate": true,
+      "passes_retention_gate": true,
+      "pointwise_retention_certificate": false,
+      "pooled_shifted_classwise_ece": 0.051251328408106145,
+      "pooled_shifted_coverage95": 0.929296875,
+      "worst_cross_seed_mean_old_nll_increase": 0.009000644325512269,
+      "worst_single_seed_window_old_nll_increase": 0.026015989751358073
+    },
+    "moment_context": {
+      "final_new_nll_difference": {
+        "alpha": 0.05,
+        "interval": [
+          -0.19576361953551372,
+          -0.13626900835534236
+        ],
+        "mean_difference": -0.16687801497354546,
+        "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+        "per_seed_mean": [
+          -0.18465234304577388,
+          -0.1765889461907699,
+          -0.16334572202719,
+          -0.15016868799126193,
+          -0.15963437561273167
+        ],
+        "replicates": 4000
+      },
+      "old_nll_increase_by_window": [
+        2.9977795405642695e-05,
+        0.005378586526470606,
+        -0.002410465037440673,
+        0.006875801956806102,
+        -0.0011448660872525177,
+        0.005509297316190738,
+        -0.00028898441776350223,
+        0.009788828251150374,
+        -0.0015494958743593485,
+        0.005659863210560586,
+        -0.0013928181977020519,
+        0.008973245363343086
+      ],
+      "passes_calibration_gate": true,
+      "passes_joint_empirical_gate": true,
+      "passes_nll_efficacy_gate": true,
+      "passes_retention_gate": true,
+      "pointwise_retention_certificate": false,
+      "pooled_shifted_classwise_ece": 0.023228878769726735,
+      "pooled_shifted_coverage95": 0.9446180555555556,
+      "worst_cross_seed_mean_old_nll_increase": 0.009788828251150374,
+      "worst_single_seed_window_old_nll_increase": 0.03392946095281485
+    },
+    "moment_zero": {
+      "final_new_nll_difference": {
+        "alpha": 0.05,
+        "interval": [
+          -0.1123387449259089,
+          -0.07266912945261786
+        ],
+        "mean_difference": -0.09184814633294244,
+        "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+        "per_seed_mean": [
+          -0.10870320753559798,
+          -0.11495070117509733,
+          -0.0683868594566431,
+          -0.07401467298965653,
+          -0.09318529050771726
+        ],
+        "replicates": 4000
+      },
+      "old_nll_increase_by_window": [
+        0.00028836391420746573,
+        0.005602509175124754,
+        -0.002644153609043025,
+        0.007315766281658172,
+        -0.001210799871429673,
+        0.0042518450153132365,
+        -0.0007103913647232837,
+        0.008822717451237265,
+        -0.0012471994495433028,
+        0.0067888695347356615,
+        -0.0018201640837544498,
+        0.006979801413256145
+      ],
+      "passes_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_nll_efficacy_gate": true,
+      "passes_retention_gate": true,
+      "pointwise_retention_certificate": false,
+      "pooled_shifted_classwise_ece": 0.051349615538475675,
+      "pooled_shifted_coverage95": 0.9279947916666667,
+      "worst_cross_seed_mean_old_nll_increase": 0.008822717451237265,
+      "worst_single_seed_window_old_nll_increase": 0.026316812254752874
+    },
+    "replay": {
+      "final_new_nll_difference": {
+        "alpha": 0.05,
+        "interval": [
+          -0.10903185823598632,
+          -0.07558897465162807
+        ],
+        "mean_difference": -0.09297659876713989,
+        "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+        "per_seed_mean": [
+          -0.10693264189713425,
+          -0.10896458546608853,
+          -0.06527639591211319,
+          -0.08396945717831054,
+          -0.09973991338205285
+        ],
+        "replicates": 4000
+      },
+      "old_nll_increase_by_window": [
+        0.00033049299166784495,
+        0.004028617051557531,
+        -0.0028652885100480933,
+        0.004698324312049058,
+        -0.0014033937152404534,
+        0.003161878486444214,
+        -0.0007892457796625184,
+        0.004428357198202943,
+        -0.00030492814746216465,
+        0.0034353937038955444,
+        -0.0010221201141261964,
+        0.0070204769461953585
+      ],
+      "passes_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_nll_efficacy_gate": true,
+      "passes_retention_gate": true,
+      "pointwise_retention_certificate": false,
+      "pooled_shifted_classwise_ece": 0.04841463542638939,
+      "pooled_shifted_coverage95": 0.9194010416666667,
+      "worst_cross_seed_mean_old_nll_increase": 0.0070204769461953585,
+      "worst_single_seed_window_old_nll_increase": 0.029264445434128632
+    },
+    "same_weight_moment": {
+      "final_new_nll_difference": {
+        "alpha": 0.05,
+        "interval": [
+          -0.19619780159342448,
+          -0.1375958259645901
+        ],
+        "mean_difference": -0.1669181842694335,
+        "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+        "per_seed_mean": [
+          -0.18604408332940522,
+          -0.17613807867385153,
+          -0.16382602081383546,
+          -0.14951560185676527,
+          -0.15906713667331007
+        ],
+        "replicates": 4000
+      },
+      "old_nll_increase_by_window": [
+        -5.143057973228029e-06,
+        0.005305875714507217,
+        -0.002435679037305282,
+        0.0068321397157652675,
+        -0.0011526021267878452,
+        0.005591747166498585,
+        -0.00024625437599698615,
+        0.009743306273692577,
+        -0.0015321564479210711,
+        0.00651104822682262,
+        -0.0016699572379943154,
+        0.009247239350891974
+      ],
+      "passes_calibration_gate": true,
+      "passes_joint_empirical_gate": true,
+      "passes_nll_efficacy_gate": true,
+      "passes_retention_gate": true,
+      "pointwise_retention_certificate": false,
+      "pooled_shifted_classwise_ece": 0.02308775586591366,
+      "pooled_shifted_coverage95": 0.9447482638888888,
+      "worst_cross_seed_mean_old_nll_increase": 0.009743306273692577,
+      "worst_single_seed_window_old_nll_increase": 0.03547145953615099
+    }
+  },
+  "context_task_is_a_distinct_information_experiment": true,
+  "equivalence": {
+    "fp64": 5.10702591327572e-14,
+    "q24": 6.972200594645983e-14
+  },
+  "independent_sampling_unit": "a full public-context/query block; old blocks reused over windows",
+  "mechanism_comparisons": {
+    "mixture_context_minus_mixture_zero": {
+      "alpha": 0.05,
+      "interval": [
+        -0.10035388779152521,
+        -0.08059433647110772
+      ],
+      "mean_difference": -0.09043354766361839,
+      "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+      "per_seed_mean": [
+        -0.08477160018401113,
+        -0.09727193019369151,
+        -0.07905132134570785,
+        -0.09878322358555443,
+        -0.09228966300912707
+      ],
+      "replicates": 4000
+    },
+    "mixture_context_minus_moment_context": {
+      "alpha": 0.05,
+      "interval": [
+        -0.0010229023326057602,
+        0.0004213732170063507
+      ],
+      "mean_difference": -0.00034097249715110987,
+      "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+      "per_seed_mean": [
+        -0.0007868494723994648,
+        0.000873497907787992,
+        -0.0011353299982675218,
+        -0.0008190973857121513,
+        0.00016291646283559652
+      ],
+      "replicates": 4000
+    },
+    "mixture_context_minus_replay": {
+      "alpha": 0.05,
+      "interval": [
+        -0.111578904145958,
+        -0.09285650427059444
+      ],
+      "mean_difference": -0.10214102330072825,
+      "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+      "per_seed_mean": [
+        -0.09780422163999508,
+        -0.1063836375619317,
+        -0.09390314173546077,
+        -0.10863486612694541,
+        -0.10397924943930825
+      ],
+      "replicates": 4000
+    },
+    "mixture_context_minus_same_weight_moment": {
+      "alpha": 0.05,
+      "interval": [
+        -0.0002298129818487779,
+        0.0003226681556075847
+      ],
+      "mean_difference": 4.931539873600119e-05,
+      "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+      "per_seed_mean": [
+        0.00019986248774432968,
+        0.0001527119051669761,
+        7.217865545994168e-05,
+        -0.0002446458116082994,
+        6.646975691705788e-05
+      ],
+      "replicates": 4000
+    },
+    "mixture_q24_minus_mixture_context": {
+      "alpha": 0.05,
+      "interval": [
+        -2.419248806137003e-09,
+        2.7171195550341568e-09
+      ],
+      "mean_difference": 5.750912793576803e-11,
+      "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+      "per_seed_mean": [
+        4.074790821385552e-09,
+        1.2853698599559157e-10,
+        -5.276733407860723e-10,
+        -2.66683298675522e-09,
+        -7.212758401610106e-10
+      ],
+      "replicates": 4000
+    },
+    "mixture_zero_minus_moment_zero": {
+      "alpha": 0.05,
+      "interval": [
+        -0.0036018853609661983,
+        -0.0006417055290544659
+      ],
+      "mean_difference": -0.001830061957081882,
+      "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+      "per_seed_mean": [
+        -0.0013685452589647766,
+        -0.00507950262199127,
+        -0.0003890493139934073,
+        -0.0015187122111537455,
+        -0.0007945003793062094
+      ],
+      "replicates": 4000
+    }
+  },
+  "registration": {
+    "anchor_rows": 512,
+    "arms": [
+      "frozen",
+      "replay",
+      "mixture_zero",
+      "moment_zero",
+      "mixture_context",
+      "moment_context",
+      "same_weight_moment",
+      "mixture_classical",
+      "mixture_q24",
+      "mixture_q24_classical"
+    ],
+    "bootstrap_replicates": 4000,
+    "bootstrap_seed": 28102844,
+    "calibration_coverage_max": 0.98,
+    "calibration_coverage_min": 0.92,
+    "calibration_ece_max": 0.04,
+    "confirmation_generated_after_freeze_only": true,
+    "confirmation_rows_per_domain": 256,
+    "confirmation_seed_offset": 500000000,
+    "context_block_unit": "8 distinct prior public-only trajectories and one query; shared regime, independent conditional paths",
+    "development_rows_per_domain": 256,
+    "diagnostic_interval_alpha": 0.05,
+    "matched_train_and_development_labels": true,
+    "new_nll_improvement_min": 0.005,
+    "old_confirm_blocks_reused_across_windows": true,
+    "old_nll_margin": 0.02,
+    "phase": "confirmation",
+    "pointwise_retention_guarantee": false,
+    "primary_family_size": 2,
+    "primary_interval_alpha": 0.025,
+    "primary_profiles": [
+      "mixture_zero",
+      "mixture_context"
+    ],
+    "public_context_histories_per_block": 8,
+    "query_regime_window_or_targets_are_not_features": true,
+    "replay_rows": 256,
+    "same_query_and_context_information_except_declared_zero_context_ablation": true,
+    "schema": "hepta.analytic-event.calibration-registration.v4",
+    "seed_rule": "offset+10000*seed+100*window+code; newtrain1,olddev2,newdev3,newconfirm4; window99 anchor1/oldconfirm5; context=correspondingqueryseed+50",
+    "seeds": [
+      1213,
+      1427,
+      1619,
+      1823,
+      2017
+    ],
+    "selection_candidates_per_trained_head": 21,
+    "selector": "old-dev exact density NLL difference mean+1.645 pairedSE<=.02; minimize new-dev densityNLL; anchor feasible",
+    "train_seed_offset": 400000000,
+    "training_rows": 256,
+    "windows": [
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift"
+    ]
+  },
+  "schema": "hepta.analytic-event.calibration-results.v4",
+  "unique_public_context_histories": 133120,
+  "unique_query_blocks": 16640
+}

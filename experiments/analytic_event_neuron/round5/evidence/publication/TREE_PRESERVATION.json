@@ -1,0 +1,168 @@
+{
+  "schema": "hepta.git-merkle-preservation.v1",
+  "baseline_commit": "62728e442acac6c67831b9b4adffadc075294f62",
+  "baseline_tree": "75cb88c7f1c35126a69b627e7d4b924da8a56e4c",
+  "verified_commit": "6c4d3b8ee40a4a1d8d4b7f09410a07c1b5017163",
+  "verified_tree": "0d9be1a793bd055ed5683712a23a29cc2b28ed8a",
+  "method": "Compare immutable Git trees: equal subtree identities preserve every descendant; recursively inspect each changed tree and every addition.",
+  "compared_changed_trees": [
+    {
+      "path": "/",
+      "before": "75cb88c7f1c35126a69b627e7d4b924da8a56e4c",
+      "after": "0d9be1a793bd055ed5683712a23a29cc2b28ed8a"
+    },
+    {
+      "path": "experiments/",
+      "before": "ffd7ecc2873b37a25fe011c11ce2493c7b0acff4",
+      "after": "046b6c60173db7d358700af77b499c45e9a3b4ec"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/",
+      "before": "d05a34bfe775d60d3cd0d4f18a8ac0d7ad1830d7",
+      "after": "ed3062ab4b1bf6f343a6c7023d7464e4573a10f4"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round4/",
+      "before": "74ca6800880318fd99a6a422a36638b7dfa37ab2",
+      "after": "66b44df83df61507e6cf770c89e40b21bfd54e01"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round4/evidence/",
+      "before": "c3601f50039be93ef7248bd5aeb3d9a63242d0f6",
+      "after": "a7ac142385d4284b1c6577e7f7287943f38322c8"
+    }
+  ],
+  "equal_subtrees": [
+    {
+      "path": ".codex",
+      "sha": "4197dacb9c16ffc115bdd8fd6e1d0d5aaf3930ee"
+    },
+    {
+      "path": ".devcontainer",
+      "sha": "1a56aab0d0be75484ff210f326d0512817a3a119"
+    },
+    {
+      "path": ".g1",
+      "sha": "67598d14cb17933af7bc6eac148f54b4fc54ce59"
+    },
+    {
+      "path": ".github",
+      "sha": "13fe232803edd0dc91585c171101972a4cfd8b7d"
+    },
+    {
+      "path": ".vscode",
+      "sha": "b26f3b4bbfa530719068fbf14ad6ea3a4b502b33"
+    },
+    {
+      "path": "apps",
+      "sha": "f3d381302e34f0e3d34c63d68934c3820353db42"
+    },
+    {
+      "path": "bazel",
+      "sha": "914a8be4d07a93dc0d8a523b04c2c73f450a8ba2"
+    },
+    {
+      "path": "codex-cli",
+      "sha": "8a51d813d1387f192cc66bb9feade5e12675a3f7"
+    },
+    {
+      "path": "codex-rs",
+      "sha": "346caa752c4443bb1e2837e195aba2736c354d4b"
+    },
+    {
+      "path": "docs",
+      "sha": "c0727b9824e9e0cf3f9ccc3842a022661b5ee983"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/evidence",
+      "sha": "c28ed8735cd0ab0c72949d9f72cbc67bac69f08f"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round2",
+      "sha": "252c199e4a945bae0f6e3d9939e2c1171aab3ae2"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round3",
+      "sha": "5839ec08a789d1699362aecbdd9b19521097baba"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round4/evidence/confirmation",
+      "sha": "1be93a4de8561dbcbde376b0692b4a1e32cf24c3"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round4/evidence/figures",
+      "sha": "7fff4daa33881bbd51467fac43a442290109b912"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round4/evidence/operational",
+      "sha": "ac99eab64c2dde6f2c281e2d81b22e9b44aad63f"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round4/evidence/prepared",
+      "sha": "ed5a495a39a1a59df7c992890f6a7c78a8128b33"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round4/evidence/results",
+      "sha": "f4ea45501516a2f49079d5385d90ebf59cdebea3"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio",
+      "sha": "135ce8b0c622678e5652988204944d80f01b59db"
+    },
+    {
+      "path": "external",
+      "sha": "6717a894bfc52f7908d89aedeb0003e8eb660eec"
+    },
+    {
+      "path": "patches",
+      "sha": "a07d84aaa297b9dc4afe058733acee145f74fce7"
+    },
+    {
+      "path": "qa",
+      "sha": "b0ff8e41ae3a0bf30c6e17403f3402d5ce6d13ea"
+    },
+    {
+      "path": "qualification",
+      "sha": "223e0c4e603ba064d1e005d3a3134d211619d483"
+    },
+    {
+      "path": "scratch",
+      "sha": "65b649147864de2851b5a9e4ddfaa3bc93e0fb77"
+    },
+    {
+      "path": "scripts",
+      "sha": "5c643a7824acd4a25af8987228e22e1c368bd085"
+    },
+    {
+      "path": "sdk",
+      "sha": "e47f468bf8a5aae58c35d847359ebd4d123a0f5f"
+    },
+    {
+      "path": "third_party",
+      "sha": "97b01860fa11309451cc85cdbf523988d2295f73"
+    },
+    {
+      "path": "tools",
+      "sha": "32addfbe946d0188721b706c8ccbc35d98687341"
+    }
+  ],
+  "equal_blobs": 111,
+  "additions": [
+    {
+      "path": "experiments/analytic_event_neuron/round4/evidence/recovery_20261028",
+      "type": "tree",
+      "sha": "52bedeb61f82ea31d4ae568fbe371c69df92b492"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5",
+      "type": "tree",
+      "sha": "fd0410ad7ea514a5c988103a433746cbda004b6a"
+    }
+  ],
+  "failures": [],
+  "all_original_blobs_preserved": true,
+  "original_blob_count": 11553,
+  "verified_round5_blobs": 323,
+  "added_blob_count": 324,
+  "verified_utc": "2026-10-29T00:43:22.992Z"
+}

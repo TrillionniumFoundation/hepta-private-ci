@@ -1,0 +1,28 @@
+{
+  "audit_subprocess_interpreter": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+  "authorization": "Root explicitly authorized a second separately preserved independent-audit attempt using the exact frozen interpreter and unchanged reviewer; no scientific confirmation rerun.",
+  "created_utc": "2026-10-29T00:20:25.112362+00:00",
+  "diagnosis": "Strict numerical-environment identity rejected the python3 executable alias before numerical replay. The scientific inputs and all other recorded environment fields match.",
+  "diagnostic_scope": "Read-only source/environment metadata comparison; no training or numerical score replay.",
+  "environment_differences": {
+    "executable": {
+      "audit_launch": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "frozen": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python"
+    }
+  },
+  "environment_gate_relaxed": false,
+  "failed_review_sha256": "20805a420efef76181e4bbab6e4f2a3b6b7a9391e8971a5f39b5a8cf0bd8c377",
+  "failed_wrapper_receipt_sha256": "080f89629744d3aa40ec291cab7170e2a255a4be97253769fac9a22f9d96ba07",
+  "matched_source_count": 107,
+  "next_attempt": "review_confirmation_002",
+  "planned_seed_schedule_matches": true,
+  "prepared_sha256": "077a8fc372ba603da451ed6118fd99343d924524c5fd7cd2e0b6ef10b6432bf6",
+  "previous_attempt_retained_unchanged": true,
+  "recomputed_scopes_in_failed_attempt": 0,
+  "reviewer_source_changed": false,
+  "reviewer_source_sha256": "0514ebf3c6bcd5b8d610a3b4c3ae2b995d0d464338eedeb782b6326186374535",
+  "same_resolved_executable": true,
+  "schema": "hepta.analytic-event.confirmation-audit-launch-recovery.v1",
+  "scientific_sources_models_data_results_changed": false,
+  "source_mismatches": []
+}

@@ -1,0 +1,100 @@
+{
+  "artifact_sha256": {
+    "AUDIT_SUMMARY.json": "c7eb2f743b0348c5a448357fbccbc446eb8462f18e8638035b24ff6492597442",
+    "broker_trace.json": "8eafa4fd452fb136100bd2fe907659b18dc055be682fbf56e799dbffbcee1863",
+    "conditional_qpi.json": "0a671f157fe597f5e628b51ec3351704680f6612f02e441a9a093a0b96b2a363",
+    "native_manifest.json": "c826d119952bee7ffef6d479a0c6f9248ffa7eee876c2717dc698b2b90b826ee",
+    "snapshot_audit.json": "65d317465a9733cd4237a6f29f5cccad1a129ea625fd06c7e7bf0a70e12d5769"
+  },
+  "broker": {
+    "action_counts": {
+      "READ": 6,
+      "REPAIR": 4,
+      "STOP": 16,
+      "WAIT": 25
+    },
+    "actual_jsonl_transport_bytes": {
+      "request_utf8": 8155,
+      "response_utf8": 95995
+    },
+    "all_client_readbacks_verified": true,
+    "all_resume_windows_exact": true,
+    "episodes": 16,
+    "restore_read_ns": 2603173,
+    "snapshot_bytes": 5950,
+    "snapshot_windows": 35,
+    "wall_seconds": 0.5614180590055184
+  },
+  "broker_actual_io_totals": {
+    "artifact_output_bytes": 5128,
+    "guard_fallbacks": 0,
+    "setup_source_bytes": 16384,
+    "source_bytes_read": 4864,
+    "source_bytes_repaired": 1024,
+    "source_read_receipts": 19
+  },
+  "by_fit": {
+    "11": {
+      "branches": 23,
+      "learned_rmse": 0.1331632268688659,
+      "mc_rmse": 0.12468670628196547,
+      "mean_selected_regret": 0.0019693354270479413
+    },
+    "12": {
+      "branches": 23,
+      "learned_rmse": 0.13360161862621991,
+      "mc_rmse": 0.10952428285524697,
+      "mean_selected_regret": 0.001000300822389985
+    },
+    "13": {
+      "branches": 24,
+      "learned_rmse": 0.15058050978801538,
+      "mc_rmse": 0.08281539582994978,
+      "mean_selected_regret": 0.0010001636247096296
+    },
+    "14": {
+      "branches": 24,
+      "learned_rmse": 0.14599532210690708,
+      "mc_rmse": 0.07711958339303013,
+      "mean_selected_regret": 0.000996301351901277
+    },
+    "15": {
+      "branches": 25,
+      "learned_rmse": 0.16148411357955747,
+      "mc_rmse": 0.10070337624302636,
+      "mean_selected_regret": 0.0010015384258113963
+    }
+  },
+  "conditional_MC_vs_exact_greedy_Qpi": {
+    "bias": -0.015041683272568359,
+    "inside_descriptive_95_interval": 105,
+    "mae": 0.0778018940781203,
+    "max_abs_z_where_se_positive": 3.13944333684079,
+    "maximum_absolute_error": 0.31249999999999994,
+    "mean_standard_error": 0.08637726058319319,
+    "rmse": 0.10018230537468883,
+    "zero_se_cells": 0
+  },
+  "counts": {
+    "action_branches": 119,
+    "conditional_rollouts": 7616,
+    "prefixes": 40
+  },
+  "interpretation": "Unweighted state-action-cell calibration summaries, descriptive only. Learned head was refined against soft-policy Qpi, whereas exact and conditional rollout targets here use greedy deployment; error is a deployment calibration gap, not exclusively a critic fitting error. Correlated actions within a prefix are not independent fits. Original task Qstar has different continuation and excludes neural proxy charges.",
+  "learned_vs_exact_greedy_Qpi": {
+    "bias": -0.058026578224477855,
+    "mae": 0.1273768514454239,
+    "maximum_absolute_error": 0.35418916078953516,
+    "rmse": 0.1456959309701488
+  },
+  "registered_prefix_identity_phase_and_future_seed_audit": "all 40 complete and consistent",
+  "schema": "hepta.round7.independent-audit-review.v1",
+  "selected_action_under_exact_greedy_Qpi": {
+    "maximum_regret": 0.01575468341638353,
+    "mean_regret": 0.001193527930372046,
+    "prefix_count": 40,
+    "prefixes_with_regret_over_0_005": 5,
+    "prefixes_with_regret_over_1e_8": 5
+  },
+  "source_frozen_bytes_unchanged_after_run": true
+}

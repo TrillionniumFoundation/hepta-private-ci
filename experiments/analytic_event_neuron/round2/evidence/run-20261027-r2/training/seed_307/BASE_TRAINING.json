@@ -1,0 +1,550 @@
+{
+  "development_dataset_sha256": "9068dfa33322b0d9c72b17f92ae7ab936c682d0c82a24faa41410acc4d5e3242",
+  "filter_parameter_l2_change": 0.8500113312202132,
+  "filter_training_seconds": 0.0681887460013968,
+  "fitted_filter_parameters": [
+    0.10828070721771066,
+    0.1850811302286124,
+    0.9845874186691084
+  ],
+  "frozen_after_development": true,
+  "initial_filter_parameters": [
+    0.03987609890541979,
+    0.4,
+    1.4
+  ],
+  "loss_scope": "composite conditional Gaussian score; correlated stages/horizons are not independent samples",
+  "model_sha256": "78c1696607607a04f7f6c3e9fadeafbb510d878bf7e2d6e30d1caaae49206af0",
+  "native_baseline_trained": true,
+  "objective_trace": [
+    {
+      "composite_conditional_nll": 0.7854030013699248,
+      "parameters": [
+        0.03987609890541979,
+        0.4,
+        1.4
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.7854029990646092,
+      "parameters": [
+        0.039876108905419795,
+        0.4,
+        1.4
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.785403002864555,
+      "parameters": [
+        0.03987609890541979,
+        0.4000000040000001,
+        1.4
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.7854030020299408,
+      "parameters": [
+        0.03987609890541979,
+        0.4,
+        1.400000014
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.8080878799623274,
+      "parameters": [
+        0.2704076593745831,
+        0.344468113751961,
+        1.3105811075504015
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.8080878868030902,
+      "parameters": [
+        0.2704076693745831,
+        0.344468113751961,
+        1.3105811075504015
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.8080878807043614,
+      "parameters": [
+        0.2704076593745831,
+        0.34446811719664217,
+        1.3105811075504015
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.8080878805710007,
+      "parameters": [
+        0.2704076593745831,
+        0.344468113751961,
+        1.3105811206562126
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.7682731080273578,
+      "parameters": [
+        0.1326953853220395,
+        0.3766385655916099,
+        1.3632859243099278
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.768273109051853,
+      "parameters": [
+        0.1326953953220395,
+        0.3766385655916099,
+        1.3632859243099278
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.7682731095284936,
+      "parameters": [
+        0.1326953853220395,
+        0.3766385693579956,
+        1.3632859243099278
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.7682731086142853,
+      "parameters": [
+        0.1326953853220395,
+        0.3766385655916099,
+        1.363285937942787
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.7577405866896054,
+      "parameters": [
+        0.13549958241648552,
+        0.35308845094796754,
+        1.3278840613071012
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.7577405878920045,
+      "parameters": [
+        0.13549959241648551,
+        0.35308845094796754,
+        1.3278840613071012
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.7577405880829967,
+      "parameters": [
+        0.13549958241648552,
+        0.353088454478852,
+        1.3278840613071012
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.7577405872398334,
+      "parameters": [
+        0.13549958241648552,
+        0.35308845094796754,
+        1.327884074585942
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.724835013261755,
+      "parameters": [
+        0.14671637079426958,
+        0.272720895522449,
+        1.1952341340935098
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.724835015403909,
+      "parameters": [
+        0.14671638079426957,
+        0.272720895522449,
+        1.1952341340935098
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.7248350141571454,
+      "parameters": [
+        0.14671637079426958,
+        0.2727208982496579,
+        1.1952341340935098
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.7248350136452166,
+      "parameters": [
+        0.14671637079426958,
+        0.272720895522449,
+        1.195234146045851
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.7079054116705948,
+      "parameters": [
+        0.0751295374601986,
+        0.15584882140461567,
+        0.932371803603202
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.7079054083362782,
+      "parameters": [
+        0.07512954746019859,
+        0.15584882140461567,
+        0.932371803603202
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.7079054110862387,
+      "parameters": [
+        0.0751295374601986,
+        0.15584882296310387,
+        0.932371803603202
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.7079054115373488,
+      "parameters": [
+        0.0751295374601986,
+        0.15584882140461567,
+        0.9323718129269201
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6987819422846105,
+      "parameters": [
+        0.1242253718662517,
+        0.18911709278296018,
+        1.0144555547616394
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.698781943555762,
+      "parameters": [
+        0.12422538186625169,
+        0.18911709278296018,
+        1.0144555547616394
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.698781942346906,
+      "parameters": [
+        0.1242253718662517,
+        0.1891170946741311,
+        1.0144555547616394
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6987819423359699,
+      "parameters": [
+        0.1242253718662517,
+        0.18911709278296018,
+        1.014455564906195
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6977051051367885,
+      "parameters": [
+        0.10840426318318826,
+        0.18762684140959823,
+        1.0099856302119912
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6977051051409054,
+      "parameters": [
+        0.10840427318318825,
+        0.18762684140959823,
+        1.0099856302119912
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6977051051806461,
+      "parameters": [
+        0.10840426318318826,
+        0.18762684328586665,
+        1.0099856302119912
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6977051051844144,
+      "parameters": [
+        0.10840426318318826,
+        0.18762684140959823,
+        1.0099856403118475
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6976454257723855,
+      "parameters": [
+        0.10833105809176405,
+        0.18275304322683072,
+        0.9980482424461138
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6976454257625703,
+      "parameters": [
+        0.10833106809176404,
+        0.18275304322683072,
+        0.9980482424461138
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6976454257434702,
+      "parameters": [
+        0.10833105809176405,
+        0.18275304505436116,
+        0.9980482424461138
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6976454257914474,
+      "parameters": [
+        0.10833105809176405,
+        0.18275304322683072,
+        0.9980482524265962
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.69761876070437,
+      "parameters": [
+        0.10838585508569366,
+        0.18457446635340713,
+        0.9915231657002248
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6976187607078509,
+      "parameters": [
+        0.10838586508569366,
+        0.18457446635340713,
+        0.9915231657002248
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6976187606994868,
+      "parameters": [
+        0.10838585508569366,
+        0.1845744681991518,
+        0.9915231657002248
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6976187607154588,
+      "parameters": [
+        0.10838585508569366,
+        0.18457446635340713,
+        0.9915231756154566
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.697614246569596,
+      "parameters": [
+        0.10830256243154458,
+        0.18513050503175382,
+        0.9853505620556329
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6976142465711153,
+      "parameters": [
+        0.10830257243154458,
+        0.18513050503175382,
+        0.9853505620556329
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.697614246570561,
+      "parameters": [
+        0.10830256243154458,
+        0.18513050688305885,
+        0.9853505620556329
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6976142465710016,
+      "parameters": [
+        0.10830256243154458,
+        0.18513050503175382,
+        0.9853505719091386
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6976141776113741,
+      "parameters": [
+        0.1082826574694327,
+        0.18508246337557557,
+        0.9845897110467928
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6976141776115335,
+      "parameters": [
+        0.1082826674694327,
+        0.18508246337557557,
+        0.9845897110467928
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6976141776113957,
+      "parameters": [
+        0.1082826574694327,
+        0.1850824652264002,
+        0.9845897110467928
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6976141776113792,
+      "parameters": [
+        0.1082826574694327,
+        0.18508246337557557,
+        0.98458972089269
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6976141775874708,
+      "parameters": [
+        0.10828070721771066,
+        0.1850811302286124,
+        0.9845874186691084
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6976141775874685,
+      "parameters": [
+        0.10828071721771065,
+        0.1850811302286124,
+        0.9845874186691084
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6976141775874716,
+      "parameters": [
+        0.10828070721771066,
+        0.1850811320794237,
+        0.9845874186691084
+      ]
+    },
+    {
+      "composite_conditional_nll": 0.6976141775874704,
+      "parameters": [
+        0.10828070721771066,
+        0.1850811302286124,
+        0.9845874285149826
+      ]
+    }
+  ],
+  "optimizer_evaluations": 52,
+  "optimizer_iterations": 10,
+  "optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+  "optimizer_success": true,
+  "readouts": {
+    "history": {
+      "candidate_alphas": [
+        0.1,
+        1.0,
+        10.0
+      ],
+      "development_nll": [
+        1.055040404649429,
+        1.0548135372781142,
+        1.0538714085719065
+      ],
+      "feature_bytes_sha256": "d1bfe07e3d42694fdd105eb84f05d90d30190d97039e5d7b2bb8c2ec5f3ec68b",
+      "feature_width": 50,
+      "fit_rows": 1536,
+      "independent_training_trajectories": 384,
+      "readout_parameters": 412,
+      "selected_index": 2,
+      "training_seconds": 2.0721928570001182,
+      "variance_calibration_source": "development_only",
+      "weight_l2": 2.463978635844409
+    },
+    "mean_drive": {
+      "candidate_alphas": [
+        0.1,
+        1.0,
+        10.0
+      ],
+      "development_nll": [
+        1.2057229793220303,
+        1.2036231838116063,
+        1.1975074739333103
+      ],
+      "feature_bytes_sha256": "429e93d68c8bc08df07c1ff99fc8097820235b2267f6f39f48e3fc9cd1683a6b",
+      "feature_width": 8,
+      "fit_rows": 1536,
+      "independent_training_trajectories": 384,
+      "readout_parameters": 76,
+      "selected_index": 2,
+      "training_seconds": 5.360197582000183,
+      "variance_calibration_source": "development_only",
+      "weight_l2": 2.619578151613626
+    },
+    "native": {
+      "candidate_alphas": [
+        0.1,
+        1.0,
+        10.0
+      ],
+      "development_nll": [
+        1.1695109080510293,
+        1.1699701868921333,
+        1.173888801104829
+      ],
+      "feature_bytes_sha256": "653ce0534b7906170ab8d44ebc93ebc13e2015835763beddbed70ce78e8e2aef",
+      "feature_width": 20,
+      "fit_rows": 1536,
+      "independent_training_trajectories": 384,
+      "readout_parameters": 172,
+      "selected_index": 0,
+      "training_seconds": 2.957525184001497,
+      "variance_calibration_source": "development_only",
+      "weight_l2": 3.749028320738785
+    },
+    "pulse": {
+      "candidate_alphas": [
+        0.1,
+        1.0,
+        10.0
+      ],
+      "development_nll": [
+        1.291814012564303,
+        1.2913155583206524,
+        1.289098926653464
+      ],
+      "feature_bytes_sha256": "758c1069f3e42e71146226d1a85a13e6f9e205fd3513a8ba7f87ffbf8cef0e76",
+      "feature_width": 8,
+      "fit_rows": 1536,
+      "independent_training_trajectories": 384,
+      "readout_parameters": 76,
+      "selected_index": 2,
+      "training_seconds": 4.227867961999436,
+      "variance_calibration_source": "development_only",
+      "weight_l2": 2.3071797403425363
+    },
+    "pulse_no_reset": {
+      "candidate_alphas": [
+        0.1,
+        1.0,
+        10.0
+      ],
+      "development_nll": [
+        1.2999975962405759,
+        1.2998136975758217,
+        1.2995704510089887
+      ],
+      "feature_bytes_sha256": "52540220608970ff418bc6337c4d3fac01951d8401fae5bb13723a9028168530",
+      "feature_width": 8,
+      "fit_rows": 1536,
+      "independent_training_trajectories": 384,
+      "readout_parameters": 76,
+      "selected_index": 2,
+      "training_seconds": 3.5593627569996897,
+      "variance_calibration_source": "development_only",
+      "weight_l2": 2.624416132130364
+    }
+  },
+  "seed": 307,
+  "training_dataset_sha256": "8e2e675fb0f64d7c91fababf661a1496bc80cc9624aff973c31af709d46b68f0"
+}

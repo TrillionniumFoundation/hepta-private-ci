@@ -1,0 +1,8 @@
+{"passed": true, "manifest_sha256": "539d5b59740faeb3e96f68428d7af093e48ec47156e14de2ab0b346e16426bfc", "archive": {"bytes": 354658019, "name": "archive.tar.gz", "sha256": "2a1b985439029ada9eb3493a6f2cb6d51d204fe051ef2327e9e7d2ef397e5336"}, "chunks": 451, "members": 1253}
+{"passed": true, "manifest_sha256": "539d5b59740faeb3e96f68428d7af093e48ec47156e14de2ab0b346e16426bfc", "archive": {"bytes": 354658019, "name": "archive.tar.gz", "sha256": "2a1b985439029ada9eb3493a6f2cb6d51d204fe051ef2327e9e7d2ef397e5336"}, "chunks": 451, "members": 1253}
+{"schema": "hepta.acquired-feedback.freeze.v6", "source_files": 118}
+Traceback (most recent call last):
+  File "/dev/shm/hepta-round6-d831a963ef2f/final_restore_001/VERIFY_RESTORED.py", line 32, in <module>
+    spec=importlib.util.find_spec(name)
+         ^^^^^^^^^^^^^^
+AttributeError: module 'importlib' has no attribute 'util'

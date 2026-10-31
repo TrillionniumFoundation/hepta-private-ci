@@ -1,0 +1,2888 @@
+{
+  "arms": {
+    "calibrated": {
+      "final_nll_difference": {
+        "interval95": [
+          -0.09524463297106119,
+          -0.051284304173644345
+        ],
+        "mean_difference": -0.0729216253583451,
+        "method": "seed bootstrap then trajectory bootstrap inside each fixed window",
+        "per_seed_mean": [
+          -0.10398877135369394,
+          -0.0797174895262334,
+          -0.042951827293902074,
+          -0.0514025108431419,
+          -0.08654752777475419
+        ],
+        "replicates": 4000,
+        "windows_not_independent_training_replicates": true
+      },
+      "old_nll_changes_by_window": [
+        0.0009814780327734862,
+        0.006835980916331909,
+        0.001083173492442213,
+        0.0070478928779664175,
+        0.0024273185807067925,
+        0.006009494157957117,
+        -0.00022573300054545684,
+        0.005635691157352721,
+        2.9481299659116007e-05,
+        0.003626210889818013,
+        0.0014062278660090747,
+        0.004452350931358795
+      ],
+      "passes_descriptive_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_new_nll_efficacy_gate": true,
+      "passes_original_bounded_retention_gate": true,
+      "shifted_calibration": {
+        "bins": [
+          {
+            "bin": 0,
+            "count": 19487,
+            "event": 0,
+            "frequency": 0.001436855339457074,
+            "mean_probability": 0.00924241492604604
+          },
+          {
+            "bin": 1,
+            "count": 1209,
+            "event": 0,
+            "frequency": 0.04052936311000827,
+            "mean_probability": 0.1435422156243231
+          },
+          {
+            "bin": 2,
+            "count": 624,
+            "event": 0,
+            "frequency": 0.07692307692307693,
+            "mean_probability": 0.2428634900930149
+          },
+          {
+            "bin": 3,
+            "count": 444,
+            "event": 0,
+            "frequency": 0.18693693693693694,
+            "mean_probability": 0.34724086392574316
+          },
+          {
+            "bin": 4,
+            "count": 317,
+            "event": 0,
+            "frequency": 0.24605678233438485,
+            "mean_probability": 0.4474413747844268
+          },
+          {
+            "bin": 5,
+            "count": 243,
+            "event": 0,
+            "frequency": 0.3662551440329218,
+            "mean_probability": 0.5483958138960672
+          },
+          {
+            "bin": 6,
+            "count": 190,
+            "event": 0,
+            "frequency": 0.47368421052631576,
+            "mean_probability": 0.6492153829120797
+          },
+          {
+            "bin": 7,
+            "count": 178,
+            "event": 0,
+            "frequency": 0.601123595505618,
+            "mean_probability": 0.7467729585000047
+          },
+          {
+            "bin": 8,
+            "count": 161,
+            "event": 0,
+            "frequency": 0.6956521739130435,
+            "mean_probability": 0.8493858620202117
+          },
+          {
+            "bin": 9,
+            "count": 187,
+            "event": 0,
+            "frequency": 0.8877005347593583,
+            "mean_probability": 0.9533118306897214
+          },
+          {
+            "bin": 0,
+            "count": 12674,
+            "event": 1,
+            "frequency": 0.004023986113302825,
+            "mean_probability": 0.01850762424895765
+          },
+          {
+            "bin": 1,
+            "count": 2281,
+            "event": 1,
+            "frequency": 0.07233669443226655,
+            "mean_probability": 0.14688532741681087
+          },
+          {
+            "bin": 2,
+            "count": 1748,
+            "event": 1,
+            "frequency": 0.13729977116704806,
+            "mean_probability": 0.24816549793482745
+          },
+          {
+            "bin": 3,
+            "count": 1625,
+            "event": 1,
+            "frequency": 0.23507692307692307,
+            "mean_probability": 0.34941820564411424
+          },
+          {
+            "bin": 4,
+            "count": 1795,
+            "event": 1,
+            "frequency": 0.3325905292479109,
+            "mean_probability": 0.45421537474591017
+          },
+          {
+            "bin": 5,
+            "count": 1779,
+            "event": 1,
+            "frequency": 0.4620573355817875,
+            "mean_probability": 0.5460521538953903
+          },
+          {
+            "bin": 6,
+            "count": 1049,
+            "event": 1,
+            "frequency": 0.561487130600572,
+            "mean_probability": 0.6386190166766348
+          },
+          {
+            "bin": 7,
+            "count": 89,
+            "event": 1,
+            "frequency": 0.6853932584269663,
+            "mean_probability": 0.7180760101084747
+          },
+          {
+            "bin": 8,
+            "count": 0,
+            "event": 1,
+            "frequency": null,
+            "mean_probability": null
+          },
+          {
+            "bin": 9,
+            "count": 0,
+            "event": 1,
+            "frequency": null,
+            "mean_probability": null
+          },
+          {
+            "bin": 0,
+            "count": 1559,
+            "event": 2,
+            "frequency": 0.08659397049390635,
+            "mean_probability": 0.03436528157562057
+          },
+          {
+            "bin": 1,
+            "count": 829,
+            "event": 2,
+            "frequency": 0.3365500603136309,
+            "mean_probability": 0.15015443250055605
+          },
+          {
+            "bin": 2,
+            "count": 827,
+            "event": 2,
+            "frequency": 0.47642079806529625,
+            "mean_probability": 0.2514783017995895
+          },
+          {
+            "bin": 3,
+            "count": 821,
+            "event": 2,
+            "frequency": 0.5749086479902558,
+            "mean_probability": 0.35018889595779185
+          },
+          {
+            "bin": 4,
+            "count": 879,
+            "event": 2,
+            "frequency": 0.6996587030716723,
+            "mean_probability": 0.4503262092057486
+          },
+          {
+            "bin": 5,
+            "count": 1013,
+            "event": 2,
+            "frequency": 0.7680157946692991,
+            "mean_probability": 0.5506030147536682
+          },
+          {
+            "bin": 6,
+            "count": 1195,
+            "event": 2,
+            "frequency": 0.8167364016736401,
+            "mean_probability": 0.6514114171177386
+          },
+          {
+            "bin": 7,
+            "count": 1479,
+            "event": 2,
+            "frequency": 0.8992562542258282,
+            "mean_probability": 0.753477819394731
+          },
+          {
+            "bin": 8,
+            "count": 2013,
+            "event": 2,
+            "frequency": 0.9483358171882762,
+            "mean_probability": 0.8545442395471127
+          },
+          {
+            "bin": 9,
+            "count": 12425,
+            "event": 2,
+            "frequency": 0.9975855130784709,
+            "mean_probability": 0.9820767537322457
+          }
+        ],
+        "classwise_ece": 0.05325635743060545,
+        "event_ece": [
+          0.02846212169395281,
+          0.05142241445195534,
+          0.07988453614590821
+        ],
+        "horizon_measurements_per_trajectory": 3,
+        "independent_sample_count": 7680
+      },
+      "shifted_coverage95": 0.9275173611111112,
+      "shifted_nll_difference": {
+        "interval95": [
+          -0.09851863656093325,
+          -0.0668244113469233
+        ],
+        "mean_difference": -0.0831758101988528,
+        "method": "seed bootstrap then trajectory bootstrap inside each fixed window",
+        "per_seed_mean": [
+          -0.10018594446846259,
+          -0.08923666569590022,
+          -0.0666585960419948,
+          -0.05802976535539362,
+          -0.10176807943251269
+        ],
+        "replicates": 4000,
+        "windows_not_independent_training_replicates": true
+      },
+      "universal_pointwise_retention_guarantee": false,
+      "worst_single_seed_window_old_nll_increase": 0.0190441583909782,
+      "worst_window_old_nll_increase": 0.0070478928779664175
+    },
+    "calibrated_classical": {
+      "final_nll_difference": {
+        "interval95": [
+          -0.0952446329710612,
+          -0.05128430417364435
+        ],
+        "mean_difference": -0.07292162535834511,
+        "method": "seed bootstrap then trajectory bootstrap inside each fixed window",
+        "per_seed_mean": [
+          -0.10398877135369403,
+          -0.07971748952623335,
+          -0.0429518272939021,
+          -0.05140251084314189,
+          -0.08654752777475416
+        ],
+        "replicates": 4000,
+        "windows_not_independent_training_replicates": true
+      },
+      "old_nll_changes_by_window": [
+        0.0009814780327734717,
+        0.006835980916331903,
+        0.0010831734924422003,
+        0.0070478928779664106,
+        0.0024273185807067886,
+        0.006009494157957115,
+        -0.0002257330005454473,
+        0.0056356911573527185,
+        2.948129965911197e-05,
+        0.0036262108898179974,
+        0.0014062278660090652,
+        0.004452350931358781
+      ],
+      "passes_descriptive_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_new_nll_efficacy_gate": true,
+      "passes_original_bounded_retention_gate": true,
+      "shifted_calibration": {
+        "bins": [
+          {
+            "bin": 0,
+            "count": 19487,
+            "event": 0,
+            "frequency": 0.001436855339457074,
+            "mean_probability": 0.00924241492604604
+          },
+          {
+            "bin": 1,
+            "count": 1209,
+            "event": 0,
+            "frequency": 0.04052936311000827,
+            "mean_probability": 0.1435422156243231
+          },
+          {
+            "bin": 2,
+            "count": 624,
+            "event": 0,
+            "frequency": 0.07692307692307693,
+            "mean_probability": 0.24286349009301494
+          },
+          {
+            "bin": 3,
+            "count": 444,
+            "event": 0,
+            "frequency": 0.18693693693693694,
+            "mean_probability": 0.34724086392574327
+          },
+          {
+            "bin": 4,
+            "count": 317,
+            "event": 0,
+            "frequency": 0.24605678233438485,
+            "mean_probability": 0.4474413747844268
+          },
+          {
+            "bin": 5,
+            "count": 243,
+            "event": 0,
+            "frequency": 0.3662551440329218,
+            "mean_probability": 0.5483958138960672
+          },
+          {
+            "bin": 6,
+            "count": 190,
+            "event": 0,
+            "frequency": 0.47368421052631576,
+            "mean_probability": 0.6492153829120797
+          },
+          {
+            "bin": 7,
+            "count": 178,
+            "event": 0,
+            "frequency": 0.601123595505618,
+            "mean_probability": 0.7467729585000047
+          },
+          {
+            "bin": 8,
+            "count": 161,
+            "event": 0,
+            "frequency": 0.6956521739130435,
+            "mean_probability": 0.8493858620202117
+          },
+          {
+            "bin": 9,
+            "count": 187,
+            "event": 0,
+            "frequency": 0.8877005347593583,
+            "mean_probability": 0.9533118306897214
+          },
+          {
+            "bin": 0,
+            "count": 12674,
+            "event": 1,
+            "frequency": 0.004023986113302825,
+            "mean_probability": 0.018507624248957653
+          },
+          {
+            "bin": 1,
+            "count": 2281,
+            "event": 1,
+            "frequency": 0.07233669443226655,
+            "mean_probability": 0.14688532741681087
+          },
+          {
+            "bin": 2,
+            "count": 1748,
+            "event": 1,
+            "frequency": 0.13729977116704806,
+            "mean_probability": 0.24816549793482745
+          },
+          {
+            "bin": 3,
+            "count": 1625,
+            "event": 1,
+            "frequency": 0.23507692307692307,
+            "mean_probability": 0.34941820564411424
+          },
+          {
+            "bin": 4,
+            "count": 1795,
+            "event": 1,
+            "frequency": 0.3325905292479109,
+            "mean_probability": 0.45421537474591017
+          },
+          {
+            "bin": 5,
+            "count": 1779,
+            "event": 1,
+            "frequency": 0.4620573355817875,
+            "mean_probability": 0.5460521538953903
+          },
+          {
+            "bin": 6,
+            "count": 1049,
+            "event": 1,
+            "frequency": 0.561487130600572,
+            "mean_probability": 0.6386190166766348
+          },
+          {
+            "bin": 7,
+            "count": 89,
+            "event": 1,
+            "frequency": 0.6853932584269663,
+            "mean_probability": 0.7180760101084747
+          },
+          {
+            "bin": 8,
+            "count": 0,
+            "event": 1,
+            "frequency": null,
+            "mean_probability": null
+          },
+          {
+            "bin": 9,
+            "count": 0,
+            "event": 1,
+            "frequency": null,
+            "mean_probability": null
+          },
+          {
+            "bin": 0,
+            "count": 1559,
+            "event": 2,
+            "frequency": 0.08659397049390635,
+            "mean_probability": 0.03436528157562057
+          },
+          {
+            "bin": 1,
+            "count": 829,
+            "event": 2,
+            "frequency": 0.3365500603136309,
+            "mean_probability": 0.15015443250055602
+          },
+          {
+            "bin": 2,
+            "count": 827,
+            "event": 2,
+            "frequency": 0.47642079806529625,
+            "mean_probability": 0.2514783017995895
+          },
+          {
+            "bin": 3,
+            "count": 821,
+            "event": 2,
+            "frequency": 0.5749086479902558,
+            "mean_probability": 0.35018889595779185
+          },
+          {
+            "bin": 4,
+            "count": 879,
+            "event": 2,
+            "frequency": 0.6996587030716723,
+            "mean_probability": 0.45032620920574856
+          },
+          {
+            "bin": 5,
+            "count": 1013,
+            "event": 2,
+            "frequency": 0.7680157946692991,
+            "mean_probability": 0.5506030147536682
+          },
+          {
+            "bin": 6,
+            "count": 1195,
+            "event": 2,
+            "frequency": 0.8167364016736401,
+            "mean_probability": 0.6514114171177386
+          },
+          {
+            "bin": 7,
+            "count": 1479,
+            "event": 2,
+            "frequency": 0.8992562542258282,
+            "mean_probability": 0.753477819394731
+          },
+          {
+            "bin": 8,
+            "count": 2013,
+            "event": 2,
+            "frequency": 0.9483358171882762,
+            "mean_probability": 0.8545442395471127
+          },
+          {
+            "bin": 9,
+            "count": 12425,
+            "event": 2,
+            "frequency": 0.9975855130784709,
+            "mean_probability": 0.9820767537322457
+          }
+        ],
+        "classwise_ece": 0.05325635743060545,
+        "event_ece": [
+          0.02846212169395281,
+          0.05142241445195534,
+          0.07988453614590821
+        ],
+        "horizon_measurements_per_trajectory": 3,
+        "independent_sample_count": 7680
+      },
+      "shifted_coverage95": 0.9275173611111112,
+      "shifted_nll_difference": {
+        "interval95": [
+          -0.09851863656093325,
+          -0.0668244113469233
+        ],
+        "mean_difference": -0.08317581019885276,
+        "method": "seed bootstrap then trajectory bootstrap inside each fixed window",
+        "per_seed_mean": [
+          -0.10018594446846259,
+          -0.0892366656959002,
+          -0.0666585960419948,
+          -0.05802976535539358,
+          -0.10176807943251266
+        ],
+        "replicates": 4000,
+        "windows_not_independent_training_replicates": true
+      },
+      "universal_pointwise_retention_guarantee": false,
+      "worst_single_seed_window_old_nll_increase": 0.01904415839097818,
+      "worst_window_old_nll_increase": 0.0070478928779664106
+    },
+    "calibrated_q24": {
+      "final_nll_difference": {
+        "interval95": [
+          -0.09524463249571581,
+          -0.051284304757628935
+        ],
+        "mean_difference": -0.07292162490600922,
+        "method": "seed bootstrap then trajectory bootstrap inside each fixed window",
+        "per_seed_mean": [
+          -0.10398876886723471,
+          -0.07971748983234365,
+          -0.042951827126104604,
+          -0.0514025115262291,
+          -0.08654752717813403
+        ],
+        "replicates": 4000,
+        "windows_not_independent_training_replicates": true
+      },
+      "old_nll_changes_by_window": [
+        0.0009814774545896978,
+        0.006835980688836308,
+        0.0010831724928844222,
+        0.0070478928468302015,
+        0.002427318730612452,
+        0.006009493692628669,
+        -0.00022573359711568395,
+        0.005635690817075626,
+        2.9480121759201248e-05,
+        0.0036262103833235595,
+        0.0014062275500976724,
+        0.00445235003406185
+      ],
+      "passes_descriptive_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_new_nll_efficacy_gate": true,
+      "passes_original_bounded_retention_gate": true,
+      "shifted_calibration": {
+        "bins": [
+          {
+            "bin": 0,
+            "count": 19487,
+            "event": 0,
+            "frequency": 0.001436855339457074,
+            "mean_probability": 0.009242414921157661
+          },
+          {
+            "bin": 1,
+            "count": 1209,
+            "event": 0,
+            "frequency": 0.04052936311000827,
+            "mean_probability": 0.14354221607058448
+          },
+          {
+            "bin": 2,
+            "count": 624,
+            "event": 0,
+            "frequency": 0.07692307692307693,
+            "mean_probability": 0.24286349005938598
+          },
+          {
+            "bin": 3,
+            "count": 444,
+            "event": 0,
+            "frequency": 0.18693693693693694,
+            "mean_probability": 0.3472408641644613
+          },
+          {
+            "bin": 4,
+            "count": 317,
+            "event": 0,
+            "frequency": 0.24605678233438485,
+            "mean_probability": 0.44744137508241694
+          },
+          {
+            "bin": 5,
+            "count": 243,
+            "event": 0,
+            "frequency": 0.3662551440329218,
+            "mean_probability": 0.548395813861717
+          },
+          {
+            "bin": 6,
+            "count": 190,
+            "event": 0,
+            "frequency": 0.47368421052631576,
+            "mean_probability": 0.6492153812181798
+          },
+          {
+            "bin": 7,
+            "count": 178,
+            "event": 0,
+            "frequency": 0.601123595505618,
+            "mean_probability": 0.7467729589253277
+          },
+          {
+            "bin": 8,
+            "count": 161,
+            "event": 0,
+            "frequency": 0.6956521739130435,
+            "mean_probability": 0.8493858623696212
+          },
+          {
+            "bin": 9,
+            "count": 187,
+            "event": 0,
+            "frequency": 0.8877005347593583,
+            "mean_probability": 0.953311830953032
+          },
+          {
+            "bin": 0,
+            "count": 12674,
+            "event": 1,
+            "frequency": 0.004023986113302825,
+            "mean_probability": 0.01850762423414859
+          },
+          {
+            "bin": 1,
+            "count": 2281,
+            "event": 1,
+            "frequency": 0.07233669443226655,
+            "mean_probability": 0.14688532751079733
+          },
+          {
+            "bin": 2,
+            "count": 1748,
+            "event": 1,
+            "frequency": 0.13729977116704806,
+            "mean_probability": 0.2481654979703581
+          },
+          {
+            "bin": 3,
+            "count": 1625,
+            "event": 1,
+            "frequency": 0.23507692307692307,
+            "mean_probability": 0.34941820565937914
+          },
+          {
+            "bin": 4,
+            "count": 1795,
+            "event": 1,
+            "frequency": 0.3325905292479109,
+            "mean_probability": 0.4542153747499759
+          },
+          {
+            "bin": 5,
+            "count": 1779,
+            "event": 1,
+            "frequency": 0.4620573355817875,
+            "mean_probability": 0.5460521535993789
+          },
+          {
+            "bin": 6,
+            "count": 1049,
+            "event": 1,
+            "frequency": 0.561487130600572,
+            "mean_probability": 0.6386190171807126
+          },
+          {
+            "bin": 7,
+            "count": 89,
+            "event": 1,
+            "frequency": 0.6853932584269663,
+            "mean_probability": 0.718076007985655
+          },
+          {
+            "bin": 8,
+            "count": 0,
+            "event": 1,
+            "frequency": null,
+            "mean_probability": null
+          },
+          {
+            "bin": 9,
+            "count": 0,
+            "event": 1,
+            "frequency": null,
+            "mean_probability": null
+          },
+          {
+            "bin": 0,
+            "count": 1559,
+            "event": 2,
+            "frequency": 0.08659397049390635,
+            "mean_probability": 0.03436528150992766
+          },
+          {
+            "bin": 1,
+            "count": 829,
+            "event": 2,
+            "frequency": 0.3365500603136309,
+            "mean_probability": 0.15015443238911572
+          },
+          {
+            "bin": 2,
+            "count": 827,
+            "event": 2,
+            "frequency": 0.47642079806529625,
+            "mean_probability": 0.2514783015367513
+          },
+          {
+            "bin": 3,
+            "count": 821,
+            "event": 2,
+            "frequency": 0.5749086479902558,
+            "mean_probability": 0.35018889642777384
+          },
+          {
+            "bin": 4,
+            "count": 879,
+            "event": 2,
+            "frequency": 0.6996587030716723,
+            "mean_probability": 0.4503262088315316
+          },
+          {
+            "bin": 5,
+            "count": 1013,
+            "event": 2,
+            "frequency": 0.7680157946692991,
+            "mean_probability": 0.5506030148843751
+          },
+          {
+            "bin": 6,
+            "count": 1195,
+            "event": 2,
+            "frequency": 0.8167364016736401,
+            "mean_probability": 0.6514114170512681
+          },
+          {
+            "bin": 7,
+            "count": 1479,
+            "event": 2,
+            "frequency": 0.8992562542258282,
+            "mean_probability": 0.7534778193925966
+          },
+          {
+            "bin": 8,
+            "count": 2013,
+            "event": 2,
+            "frequency": 0.9483358171882762,
+            "mean_probability": 0.8545442394225772
+          },
+          {
+            "bin": 9,
+            "count": 12425,
+            "event": 2,
+            "frequency": 0.9975855130784709,
+            "mean_probability": 0.9820767537440946
+          }
+        ],
+        "classwise_ece": 0.05325635744243701,
+        "event_ece": [
+          0.028462121714558405,
+          0.05142241444909712,
+          0.0798845361636555
+        ],
+        "horizon_measurements_per_trajectory": 3,
+        "independent_sample_count": 7680
+      },
+      "shifted_coverage95": 0.9275173611111112,
+      "shifted_nll_difference": {
+        "interval95": [
+          -0.0985186359516118,
+          -0.06682441152288666
+        ],
+        "mean_difference": -0.08317581003319123,
+        "method": "seed bootstrap then trajectory bootstrap inside each fixed window",
+        "per_seed_mean": [
+          -0.10018594417923495,
+          -0.08923666556072239,
+          -0.06665859576228524,
+          -0.058029765257139675,
+          -0.10176807940657394
+        ],
+        "replicates": 4000,
+        "windows_not_independent_training_replicates": true
+      },
+      "universal_pointwise_retention_guarantee": false,
+      "worst_single_seed_window_old_nll_increase": 0.019044158454865054,
+      "worst_window_old_nll_increase": 0.0070478928468302015
+    },
+    "calibrated_q24_classical": {
+      "final_nll_difference": {
+        "interval95": [
+          -0.09524463249571581,
+          -0.051284304757628935
+        ],
+        "mean_difference": -0.07292162490600922,
+        "method": "seed bootstrap then trajectory bootstrap inside each fixed window",
+        "per_seed_mean": [
+          -0.10398876886723471,
+          -0.07971748983234365,
+          -0.042951827126104604,
+          -0.0514025115262291,
+          -0.08654752717813403
+        ],
+        "replicates": 4000,
+        "windows_not_independent_training_replicates": true
+      },
+      "old_nll_changes_by_window": [
+        0.0009814774545896978,
+        0.006835980688836308,
+        0.0010831724928844222,
+        0.0070478928468302015,
+        0.002427318730612452,
+        0.006009493692628669,
+        -0.00022573359711568395,
+        0.005635690817075626,
+        2.9480121759201248e-05,
+        0.0036262103833235595,
+        0.0014062275500976724,
+        0.00445235003406185
+      ],
+      "passes_descriptive_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_new_nll_efficacy_gate": true,
+      "passes_original_bounded_retention_gate": true,
+      "shifted_calibration": {
+        "bins": [
+          {
+            "bin": 0,
+            "count": 19487,
+            "event": 0,
+            "frequency": 0.001436855339457074,
+            "mean_probability": 0.009242414921157661
+          },
+          {
+            "bin": 1,
+            "count": 1209,
+            "event": 0,
+            "frequency": 0.04052936311000827,
+            "mean_probability": 0.14354221607058448
+          },
+          {
+            "bin": 2,
+            "count": 624,
+            "event": 0,
+            "frequency": 0.07692307692307693,
+            "mean_probability": 0.24286349005938598
+          },
+          {
+            "bin": 3,
+            "count": 444,
+            "event": 0,
+            "frequency": 0.18693693693693694,
+            "mean_probability": 0.3472408641644613
+          },
+          {
+            "bin": 4,
+            "count": 317,
+            "event": 0,
+            "frequency": 0.24605678233438485,
+            "mean_probability": 0.44744137508241694
+          },
+          {
+            "bin": 5,
+            "count": 243,
+            "event": 0,
+            "frequency": 0.3662551440329218,
+            "mean_probability": 0.548395813861717
+          },
+          {
+            "bin": 6,
+            "count": 190,
+            "event": 0,
+            "frequency": 0.47368421052631576,
+            "mean_probability": 0.6492153812181798
+          },
+          {
+            "bin": 7,
+            "count": 178,
+            "event": 0,
+            "frequency": 0.601123595505618,
+            "mean_probability": 0.7467729589253277
+          },
+          {
+            "bin": 8,
+            "count": 161,
+            "event": 0,
+            "frequency": 0.6956521739130435,
+            "mean_probability": 0.8493858623696212
+          },
+          {
+            "bin": 9,
+            "count": 187,
+            "event": 0,
+            "frequency": 0.8877005347593583,
+            "mean_probability": 0.953311830953032
+          },
+          {
+            "bin": 0,
+            "count": 12674,
+            "event": 1,
+            "frequency": 0.004023986113302825,
+            "mean_probability": 0.01850762423414859
+          },
+          {
+            "bin": 1,
+            "count": 2281,
+            "event": 1,
+            "frequency": 0.07233669443226655,
+            "mean_probability": 0.14688532751079733
+          },
+          {
+            "bin": 2,
+            "count": 1748,
+            "event": 1,
+            "frequency": 0.13729977116704806,
+            "mean_probability": 0.2481654979703581
+          },
+          {
+            "bin": 3,
+            "count": 1625,
+            "event": 1,
+            "frequency": 0.23507692307692307,
+            "mean_probability": 0.34941820565937914
+          },
+          {
+            "bin": 4,
+            "count": 1795,
+            "event": 1,
+            "frequency": 0.3325905292479109,
+            "mean_probability": 0.4542153747499759
+          },
+          {
+            "bin": 5,
+            "count": 1779,
+            "event": 1,
+            "frequency": 0.4620573355817875,
+            "mean_probability": 0.5460521535993789
+          },
+          {
+            "bin": 6,
+            "count": 1049,
+            "event": 1,
+            "frequency": 0.561487130600572,
+            "mean_probability": 0.6386190171807126
+          },
+          {
+            "bin": 7,
+            "count": 89,
+            "event": 1,
+            "frequency": 0.6853932584269663,
+            "mean_probability": 0.718076007985655
+          },
+          {
+            "bin": 8,
+            "count": 0,
+            "event": 1,
+            "frequency": null,
+            "mean_probability": null
+          },
+          {
+            "bin": 9,
+            "count": 0,
+            "event": 1,
+            "frequency": null,
+            "mean_probability": null
+          },
+          {
+            "bin": 0,
+            "count": 1559,
+            "event": 2,
+            "frequency": 0.08659397049390635,
+            "mean_probability": 0.03436528150992766
+          },
+          {
+            "bin": 1,
+            "count": 829,
+            "event": 2,
+            "frequency": 0.3365500603136309,
+            "mean_probability": 0.15015443238911572
+          },
+          {
+            "bin": 2,
+            "count": 827,
+            "event": 2,
+            "frequency": 0.47642079806529625,
+            "mean_probability": 0.2514783015367513
+          },
+          {
+            "bin": 3,
+            "count": 821,
+            "event": 2,
+            "frequency": 0.5749086479902558,
+            "mean_probability": 0.35018889642777384
+          },
+          {
+            "bin": 4,
+            "count": 879,
+            "event": 2,
+            "frequency": 0.6996587030716723,
+            "mean_probability": 0.4503262088315316
+          },
+          {
+            "bin": 5,
+            "count": 1013,
+            "event": 2,
+            "frequency": 0.7680157946692991,
+            "mean_probability": 0.5506030148843751
+          },
+          {
+            "bin": 6,
+            "count": 1195,
+            "event": 2,
+            "frequency": 0.8167364016736401,
+            "mean_probability": 0.6514114170512681
+          },
+          {
+            "bin": 7,
+            "count": 1479,
+            "event": 2,
+            "frequency": 0.8992562542258282,
+            "mean_probability": 0.7534778193925966
+          },
+          {
+            "bin": 8,
+            "count": 2013,
+            "event": 2,
+            "frequency": 0.9483358171882762,
+            "mean_probability": 0.8545442394225772
+          },
+          {
+            "bin": 9,
+            "count": 12425,
+            "event": 2,
+            "frequency": 0.9975855130784709,
+            "mean_probability": 0.9820767537440946
+          }
+        ],
+        "classwise_ece": 0.05325635744243701,
+        "event_ece": [
+          0.028462121714558405,
+          0.05142241444909712,
+          0.0798845361636555
+        ],
+        "horizon_measurements_per_trajectory": 3,
+        "independent_sample_count": 7680
+      },
+      "shifted_coverage95": 0.9275173611111112,
+      "shifted_nll_difference": {
+        "interval95": [
+          -0.0985186359516118,
+          -0.06682441152288666
+        ],
+        "mean_difference": -0.08317581003319123,
+        "method": "seed bootstrap then trajectory bootstrap inside each fixed window",
+        "per_seed_mean": [
+          -0.10018594417923495,
+          -0.08923666556072239,
+          -0.06665859576228524,
+          -0.058029765257139675,
+          -0.10176807940657394
+        ],
+        "replicates": 4000,
+        "windows_not_independent_training_replicates": true
+      },
+      "universal_pointwise_retention_guarantee": false,
+      "worst_single_seed_window_old_nll_increase": 0.019044158454865054,
+      "worst_window_old_nll_increase": 0.0070478928468302015
+    },
+    "calibrated_unconstrained": {
+      "final_nll_difference": {
+        "interval95": [
+          -0.22271715521478727,
+          -0.1503497079500557
+        ],
+        "mean_difference": -0.1862025347741479,
+        "method": "seed bootstrap then trajectory bootstrap inside each fixed window",
+        "per_seed_mean": [
+          -0.19262116974251653,
+          -0.19271813970966034,
+          -0.13510949474261053,
+          -0.17403951981146398,
+          -0.236524349864488
+        ],
+        "replicates": 4000,
+        "windows_not_independent_training_replicates": true
+      },
+      "old_nll_changes_by_window": [
+        -0.00030292344326672614,
+        0.04364847770354681,
+        -0.0003387311924385742,
+        0.0446801917136572,
+        0.001192597348391423,
+        0.043695409297902874,
+        0.0010141016422578807,
+        0.0409705843671885,
+        0.001196203600219874,
+        0.04733693723624436,
+        0.0003126262601052177,
+        0.04500060876392039
+      ],
+      "passes_descriptive_calibration_gate": true,
+      "passes_joint_empirical_gate": false,
+      "passes_new_nll_efficacy_gate": false,
+      "passes_original_bounded_retention_gate": false,
+      "shifted_calibration": {
+        "bins": [
+          {
+            "bin": 0,
+            "count": 20101,
+            "event": 0,
+            "frequency": 0.0020396995174369434,
+            "mean_probability": 0.007859258525368869
+          },
+          {
+            "bin": 1,
+            "count": 1029,
+            "event": 0,
+            "frequency": 0.061224489795918366,
+            "mean_probability": 0.1411831375699394
+          },
+          {
+            "bin": 2,
+            "count": 547,
+            "event": 0,
+            "frequency": 0.16087751371115175,
+            "mean_probability": 0.24668630573839317
+          },
+          {
+            "bin": 3,
+            "count": 352,
+            "event": 0,
+            "frequency": 0.2159090909090909,
+            "mean_probability": 0.34578667017094333
+          },
+          {
+            "bin": 4,
+            "count": 251,
+            "event": 0,
+            "frequency": 0.350597609561753,
+            "mean_probability": 0.4478627631354374
+          },
+          {
+            "bin": 5,
+            "count": 193,
+            "event": 0,
+            "frequency": 0.44041450777202074,
+            "mean_probability": 0.5505706688391444
+          },
+          {
+            "bin": 6,
+            "count": 165,
+            "event": 0,
+            "frequency": 0.5636363636363636,
+            "mean_probability": 0.6505818077115348
+          },
+          {
+            "bin": 7,
+            "count": 136,
+            "event": 0,
+            "frequency": 0.6691176470588235,
+            "mean_probability": 0.7493849583725148
+          },
+          {
+            "bin": 8,
+            "count": 133,
+            "event": 0,
+            "frequency": 0.7744360902255639,
+            "mean_probability": 0.8535697547866152
+          },
+          {
+            "bin": 9,
+            "count": 133,
+            "event": 0,
+            "frequency": 0.9172932330827067,
+            "mean_probability": 0.9563066268587467
+          },
+          {
+            "bin": 0,
+            "count": 13719,
+            "event": 1,
+            "frequency": 0.0067789197463371965,
+            "mean_probability": 0.016566638930759818
+          },
+          {
+            "bin": 1,
+            "count": 2248,
+            "event": 1,
+            "frequency": 0.08941281138790036,
+            "mean_probability": 0.14733990346322123
+          },
+          {
+            "bin": 2,
+            "count": 1626,
+            "event": 1,
+            "frequency": 0.18081180811808117,
+            "mean_probability": 0.24923085702405726
+          },
+          {
+            "bin": 3,
+            "count": 1389,
+            "event": 1,
+            "frequency": 0.2613390928725702,
+            "mean_probability": 0.3502963456638673
+          },
+          {
+            "bin": 4,
+            "count": 1503,
+            "event": 1,
+            "frequency": 0.3805721889554225,
+            "mean_probability": 0.4510270011956451
+          },
+          {
+            "bin": 5,
+            "count": 1556,
+            "event": 1,
+            "frequency": 0.5012853470437018,
+            "mean_probability": 0.5465985159388888
+          },
+          {
+            "bin": 6,
+            "count": 899,
+            "event": 1,
+            "frequency": 0.5973303670745272,
+            "mean_probability": 0.6393456517227408
+          },
+          {
+            "bin": 7,
+            "count": 100,
+            "event": 1,
+            "frequency": 0.67,
+            "mean_probability": 0.7201914716890424
+          },
+          {
+            "bin": 8,
+            "count": 0,
+            "event": 1,
+            "frequency": null,
+            "mean_probability": null
+          },
+          {
+            "bin": 9,
+            "count": 0,
+            "event": 1,
+            "frequency": null,
+            "mean_probability": null
+          },
+          {
+            "bin": 0,
+            "count": 1275,
+            "event": 2,
+            "frequency": 0.06196078431372549,
+            "mean_probability": 0.03519239880056324
+          },
+          {
+            "bin": 1,
+            "count": 672,
+            "event": 2,
+            "frequency": 0.25297619047619047,
+            "mean_probability": 0.1490374295019475
+          },
+          {
+            "bin": 2,
+            "count": 705,
+            "event": 2,
+            "frequency": 0.3843971631205674,
+            "mean_probability": 0.25161957937359086
+          },
+          {
+            "bin": 3,
+            "count": 718,
+            "event": 2,
+            "frequency": 0.5027855153203342,
+            "mean_probability": 0.351058619981126
+          },
+          {
+            "bin": 4,
+            "count": 783,
+            "event": 2,
+            "frequency": 0.5951468710089399,
+            "mean_probability": 0.4512694513213199
+          },
+          {
+            "bin": 5,
+            "count": 909,
+            "event": 2,
+            "frequency": 0.7183718371837183,
+            "mean_probability": 0.5520530489819003
+          },
+          {
+            "bin": 6,
+            "count": 1053,
+            "event": 2,
+            "frequency": 0.7739791073124407,
+            "mean_probability": 0.6522358755103871
+          },
+          {
+            "bin": 7,
+            "count": 1385,
+            "event": 2,
+            "frequency": 0.8418772563176895,
+            "mean_probability": 0.7530116803830509
+          },
+          {
+            "bin": 8,
+            "count": 2013,
+            "event": 2,
+            "frequency": 0.9210134128166915,
+            "mean_probability": 0.8534951719652399
+          },
+          {
+            "bin": 9,
+            "count": 13527,
+            "event": 2,
+            "frequency": 0.9941598284911658,
+            "mean_probability": 0.9838465440874491
+          }
+        ],
+        "classwise_ece": 0.031743660506657605,
+        "event_ece": [
+          0.01643056967533978,
+          0.03118492108464661,
+          0.04761549075998641
+        ],
+        "horizon_measurements_per_trajectory": 3,
+        "independent_sample_count": 7680
+      },
+      "shifted_coverage95": 0.9511718750000001,
+      "shifted_nll_difference": {
+        "interval95": [
+          -0.2052610808583034,
+          -0.1649416465038722
+        ],
+        "mean_difference": -0.18618354784263283,
+        "method": "seed bootstrap then trajectory bootstrap inside each fixed window",
+        "per_seed_mean": [
+          -0.19254828117521217,
+          -0.18797214034934204,
+          -0.14835356424949192,
+          -0.18620155267920727,
+          -0.2158422007599109
+        ],
+        "replicates": 4000,
+        "windows_not_independent_training_replicates": true
+      },
+      "universal_pointwise_retention_guarantee": false,
+      "worst_single_seed_window_old_nll_increase": 0.06284454582785398,
+      "worst_window_old_nll_increase": 0.04733693723624436
+    },
+    "frozen": {
+      "final_nll_difference": {
+        "interval95": [
+          0.0,
+          0.0
+        ],
+        "mean_difference": 0.0,
+        "method": "seed bootstrap then trajectory bootstrap inside each fixed window",
+        "per_seed_mean": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "replicates": 4000,
+        "windows_not_independent_training_replicates": true
+      },
+      "old_nll_changes_by_window": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "passes_descriptive_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_new_nll_efficacy_gate": false,
+      "passes_original_bounded_retention_gate": true,
+      "shifted_calibration": {
+        "bins": [
+          {
+            "bin": 0,
+            "count": 19375,
+            "event": 0,
+            "frequency": 0.001238709677419355,
+            "mean_probability": 0.008918264510438733
+          },
+          {
+            "bin": 1,
+            "count": 1190,
+            "event": 0,
+            "frequency": 0.03697478991596639,
+            "mean_probability": 0.14373729419740494
+          },
+          {
+            "bin": 2,
+            "count": 631,
+            "event": 0,
+            "frequency": 0.07131537242472266,
+            "mean_probability": 0.24244322705904706
+          },
+          {
+            "bin": 3,
+            "count": 453,
+            "event": 0,
+            "frequency": 0.1545253863134658,
+            "mean_probability": 0.3467417827408994
+          },
+          {
+            "bin": 4,
+            "count": 331,
+            "event": 0,
+            "frequency": 0.21148036253776434,
+            "mean_probability": 0.4472696979617716
+          },
+          {
+            "bin": 5,
+            "count": 256,
+            "event": 0,
+            "frequency": 0.3515625,
+            "mean_probability": 0.5476751104975996
+          },
+          {
+            "bin": 6,
+            "count": 213,
+            "event": 0,
+            "frequency": 0.43661971830985913,
+            "mean_probability": 0.6501426111380085
+          },
+          {
+            "bin": 7,
+            "count": 187,
+            "event": 0,
+            "frequency": 0.5240641711229946,
+            "mean_probability": 0.7505198731734473
+          },
+          {
+            "bin": 8,
+            "count": 178,
+            "event": 0,
+            "frequency": 0.6797752808988764,
+            "mean_probability": 0.8511838802746015
+          },
+          {
+            "bin": 9,
+            "count": 226,
+            "event": 0,
+            "frequency": 0.8628318584070797,
+            "mean_probability": 0.9570603129516453
+          },
+          {
+            "bin": 0,
+            "count": 12535,
+            "event": 1,
+            "frequency": 0.0047068209014758675,
+            "mean_probability": 0.018071277208498094
+          },
+          {
+            "bin": 1,
+            "count": 2148,
+            "event": 1,
+            "frequency": 0.07076350093109869,
+            "mean_probability": 0.14640804111585132
+          },
+          {
+            "bin": 2,
+            "count": 1732,
+            "event": 1,
+            "frequency": 0.13106235565819863,
+            "mean_probability": 0.24901762750397635
+          },
+          {
+            "bin": 3,
+            "count": 1519,
+            "event": 1,
+            "frequency": 0.22317314022383147,
+            "mean_probability": 0.34983215472521156
+          },
+          {
+            "bin": 4,
+            "count": 1625,
+            "event": 1,
+            "frequency": 0.30646153846153845,
+            "mean_probability": 0.45196992946271314
+          },
+          {
+            "bin": 5,
+            "count": 2003,
+            "event": 1,
+            "frequency": 0.41687468796804794,
+            "mean_probability": 0.5469915084432536
+          },
+          {
+            "bin": 6,
+            "count": 1287,
+            "event": 1,
+            "frequency": 0.526029526029526,
+            "mean_probability": 0.642730476754898
+          },
+          {
+            "bin": 7,
+            "count": 191,
+            "event": 1,
+            "frequency": 0.6282722513089005,
+            "mean_probability": 0.7205354400971552
+          },
+          {
+            "bin": 8,
+            "count": 0,
+            "event": 1,
+            "frequency": null,
+            "mean_probability": null
+          },
+          {
+            "bin": 9,
+            "count": 0,
+            "event": 1,
+            "frequency": null,
+            "mean_probability": null
+          },
+          {
+            "bin": 0,
+            "count": 1809,
+            "event": 2,
+            "frequency": 0.11553344389165285,
+            "mean_probability": 0.03302094936172836
+          },
+          {
+            "bin": 1,
+            "count": 875,
+            "event": 2,
+            "frequency": 0.37142857142857144,
+            "mean_probability": 0.14888756809828121
+          },
+          {
+            "bin": 2,
+            "count": 882,
+            "event": 2,
+            "frequency": 0.528344671201814,
+            "mean_probability": 0.2485336382233386
+          },
+          {
+            "bin": 3,
+            "count": 844,
+            "event": 2,
+            "frequency": 0.6220379146919431,
+            "mean_probability": 0.34999147840249933
+          },
+          {
+            "bin": 4,
+            "count": 894,
+            "event": 2,
+            "frequency": 0.738255033557047,
+            "mean_probability": 0.4507383363211618
+          },
+          {
+            "bin": 5,
+            "count": 1011,
+            "event": 2,
+            "frequency": 0.7893175074183977,
+            "mean_probability": 0.5514249573693883
+          },
+          {
+            "bin": 6,
+            "count": 1118,
+            "event": 2,
+            "frequency": 0.8372093023255814,
+            "mean_probability": 0.6523360862235928
+          },
+          {
+            "bin": 7,
+            "count": 1438,
+            "event": 2,
+            "frequency": 0.9109874826147427,
+            "mean_probability": 0.7518143944282011
+          },
+          {
+            "bin": 8,
+            "count": 1908,
+            "event": 2,
+            "frequency": 0.9554507337526206,
+            "mean_probability": 0.8544751762728099
+          },
+          {
+            "bin": 9,
+            "count": 12261,
+            "event": 2,
+            "frequency": 0.9975532175189625,
+            "mean_probability": 0.9825304855152391
+          }
+        ],
+        "classwise_ece": 0.061642723855491154,
+        "event_ece": [
+          0.03206508294379608,
+          0.06039900283944061,
+          0.09246408578323675
+        ],
+        "horizon_measurements_per_trajectory": 3,
+        "independent_sample_count": 7680
+      },
+      "shifted_coverage95": 0.8938368055555557,
+      "shifted_nll_difference": {
+        "interval95": [
+          0.0,
+          0.0
+        ],
+        "mean_difference": 0.0,
+        "method": "seed bootstrap then trajectory bootstrap inside each fixed window",
+        "per_seed_mean": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "replicates": 4000,
+        "windows_not_independent_training_replicates": true
+      },
+      "universal_pointwise_retention_guarantee": true,
+      "worst_single_seed_window_old_nll_increase": 0.0,
+      "worst_window_old_nll_increase": 0.0
+    },
+    "online": {
+      "final_nll_difference": {
+        "interval95": [
+          -0.29508983475100253,
+          -0.16589775210409527
+        ],
+        "mean_difference": -0.2323179255733599,
+        "method": "seed bootstrap then trajectory bootstrap inside each fixed window",
+        "per_seed_mean": [
+          -0.25715341115227186,
+          -0.26768297513483635,
+          -0.136189088319265,
+          -0.1919183585577989,
+          -0.3086457947026273
+        ],
+        "replicates": 4000,
+        "windows_not_independent_training_replicates": true
+      },
+      "old_nll_changes_by_window": [
+        0.0004947933299820669,
+        0.22910733548027523,
+        0.0004887396184743466,
+        0.23257328383359893,
+        0.0041805020179468645,
+        0.2164099460158874,
+        0.0030852759257301797,
+        0.21319505515771162,
+        0.0036291708676102234,
+        0.256852071515935,
+        0.002783988608084395,
+        0.24010185553935504
+      ],
+      "passes_descriptive_calibration_gate": true,
+      "passes_joint_empirical_gate": false,
+      "passes_new_nll_efficacy_gate": false,
+      "passes_original_bounded_retention_gate": false,
+      "shifted_calibration": {
+        "bins": [
+          {
+            "bin": 0,
+            "count": 21131,
+            "event": 0,
+            "frequency": 0.004969002886754058,
+            "mean_probability": 0.005635945272596141
+          },
+          {
+            "bin": 1,
+            "count": 669,
+            "event": 0,
+            "frequency": 0.1554559043348281,
+            "mean_probability": 0.14313597516371554
+          },
+          {
+            "bin": 2,
+            "count": 352,
+            "event": 0,
+            "frequency": 0.30113636363636365,
+            "mean_probability": 0.24422547336561778
+          },
+          {
+            "bin": 3,
+            "count": 215,
+            "event": 0,
+            "frequency": 0.3395348837209302,
+            "mean_probability": 0.3440945574475969
+          },
+          {
+            "bin": 4,
+            "count": 171,
+            "event": 0,
+            "frequency": 0.52046783625731,
+            "mean_probability": 0.44736655719368934
+          },
+          {
+            "bin": 5,
+            "count": 137,
+            "event": 0,
+            "frequency": 0.5912408759124088,
+            "mean_probability": 0.5471907555075718
+          },
+          {
+            "bin": 6,
+            "count": 102,
+            "event": 0,
+            "frequency": 0.6666666666666666,
+            "mean_probability": 0.64493823214685
+          },
+          {
+            "bin": 7,
+            "count": 88,
+            "event": 0,
+            "frequency": 0.7727272727272727,
+            "mean_probability": 0.7443308015687241
+          },
+          {
+            "bin": 8,
+            "count": 91,
+            "event": 0,
+            "frequency": 0.8461538461538461,
+            "mean_probability": 0.843780169124652
+          },
+          {
+            "bin": 9,
+            "count": 84,
+            "event": 0,
+            "frequency": 0.9404761904761905,
+            "mean_probability": 0.9532374239785814
+          },
+          {
+            "bin": 0,
+            "count": 15512,
+            "event": 1,
+            "frequency": 0.014504899432697267,
+            "mean_probability": 0.013823189077142296
+          },
+          {
+            "bin": 1,
+            "count": 1960,
+            "event": 1,
+            "frequency": 0.1596938775510204,
+            "mean_probability": 0.14614078245186252
+          },
+          {
+            "bin": 2,
+            "count": 1290,
+            "event": 1,
+            "frequency": 0.2527131782945736,
+            "mean_probability": 0.24876164237233503
+          },
+          {
+            "bin": 3,
+            "count": 1046,
+            "event": 1,
+            "frequency": 0.32504780114722753,
+            "mean_probability": 0.3477422456172858
+          },
+          {
+            "bin": 4,
+            "count": 1027,
+            "event": 1,
+            "frequency": 0.433300876338851,
+            "mean_probability": 0.4500780247492075
+          },
+          {
+            "bin": 5,
+            "count": 1177,
+            "event": 1,
+            "frequency": 0.5174171622769753,
+            "mean_probability": 0.5478519932072756
+          },
+          {
+            "bin": 6,
+            "count": 881,
+            "event": 1,
+            "frequency": 0.6254256526674233,
+            "mean_probability": 0.6448237250954039
+          },
+          {
+            "bin": 7,
+            "count": 147,
+            "event": 1,
+            "frequency": 0.6666666666666666,
+            "mean_probability": 0.7252966965805361
+          },
+          {
+            "bin": 8,
+            "count": 0,
+            "event": 1,
+            "frequency": null,
+            "mean_probability": null
+          },
+          {
+            "bin": 9,
+            "count": 0,
+            "event": 1,
+            "frequency": null,
+            "mean_probability": null
+          },
+          {
+            "bin": 0,
+            "count": 947,
+            "event": 2,
+            "frequency": 0.03590285110876452,
+            "mean_probability": 0.034706757100344474
+          },
+          {
+            "bin": 1,
+            "count": 531,
+            "event": 2,
+            "frequency": 0.17325800376647835,
+            "mean_probability": 0.1510030801922743
+          },
+          {
+            "bin": 2,
+            "count": 451,
+            "event": 2,
+            "frequency": 0.270509977827051,
+            "mean_probability": 0.2513208756191089
+          },
+          {
+            "bin": 3,
+            "count": 573,
+            "event": 2,
+            "frequency": 0.3699825479930192,
+            "mean_probability": 0.35174707189637794
+          },
+          {
+            "bin": 4,
+            "count": 608,
+            "event": 2,
+            "frequency": 0.46710526315789475,
+            "mean_probability": 0.45171267037014246
+          },
+          {
+            "bin": 5,
+            "count": 702,
+            "event": 2,
+            "frequency": 0.5698005698005698,
+            "mean_probability": 0.5510422918172859
+          },
+          {
+            "bin": 6,
+            "count": 866,
+            "event": 2,
+            "frequency": 0.6709006928406467,
+            "mean_probability": 0.6525905769542971
+          },
+          {
+            "bin": 7,
+            "count": 1151,
+            "event": 2,
+            "frequency": 0.7402258905299739,
+            "mean_probability": 0.7522894001192875
+          },
+          {
+            "bin": 8,
+            "count": 1813,
+            "event": 2,
+            "frequency": 0.8411472697186982,
+            "mean_probability": 0.8545530891903529
+          },
+          {
+            "bin": 9,
+            "count": 15398,
+            "event": 2,
+            "frequency": 0.9859072606832057,
+            "mean_probability": 0.9863995463581922
+          }
+        ],
+        "classwise_ece": 0.004757353316781987,
+        "event_ece": [
+          0.002946461745634206,
+          0.006281895456331429,
+          0.005043702748380325
+        ],
+        "horizon_measurements_per_trajectory": 3,
+        "independent_sample_count": 7680
+      },
+      "shifted_coverage95": 0.9494791666666668,
+      "shifted_nll_difference": {
+        "interval95": [
+          -0.265330787841333,
+          -0.20271632340095924
+        ],
+        "mean_difference": -0.2350571520276861,
+        "method": "seed bootstrap then trajectory bootstrap inside each fixed window",
+        "per_seed_mean": [
+          -0.25284563598034887,
+          -0.2430771315515118,
+          -0.18235866738156703,
+          -0.21871219859237265,
+          -0.27829212663263014
+        ],
+        "replicates": 4000,
+        "windows_not_independent_training_replicates": true
+      },
+      "universal_pointwise_retention_guarantee": false,
+      "worst_single_seed_window_old_nll_increase": 0.3130390113926168,
+      "worst_window_old_nll_increase": 0.256852071515935
+    },
+    "protected": {
+      "final_nll_difference": {
+        "interval95": [
+          -0.020442754570864023,
+          -0.014251170155472344
+        ],
+        "mean_difference": -0.017427691513853594,
+        "method": "seed bootstrap then trajectory bootstrap inside each fixed window",
+        "per_seed_mean": [
+          -0.019538246333685755,
+          -0.01870526642497048,
+          -0.012695685629258612,
+          -0.015938349669909604,
+          -0.020260909511443513
+        ],
+        "replicates": 4000,
+        "windows_not_independent_training_replicates": true
+      },
+      "old_nll_changes_by_window": [
+        -2.067948440016426e-05,
+        -0.0002247458149128515,
+        0.00028962979980852476,
+        -0.0002247458149128515,
+        0.0006111188099554266,
+        -0.0002247458149128515,
+        0.0004614707858012413,
+        -0.0002247458149128515,
+        0.0006059607319859383,
+        -0.0002247458149128515,
+        0.0002585750776276555,
+        -0.0002247458149128515
+      ],
+      "passes_descriptive_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_new_nll_efficacy_gate": true,
+      "passes_original_bounded_retention_gate": true,
+      "shifted_calibration": {
+        "bins": [
+          {
+            "bin": 0,
+            "count": 19396,
+            "event": 0,
+            "frequency": 0.0012889255516601362,
+            "mean_probability": 0.008976598203334688
+          },
+          {
+            "bin": 1,
+            "count": 1201,
+            "event": 0,
+            "frequency": 0.03913405495420483,
+            "mean_probability": 0.1438866551402783
+          },
+          {
+            "bin": 2,
+            "count": 630,
+            "event": 0,
+            "frequency": 0.07142857142857142,
+            "mean_probability": 0.2433707063296007
+          },
+          {
+            "bin": 3,
+            "count": 451,
+            "event": 0,
+            "frequency": 0.15964523281596452,
+            "mean_probability": 0.34744205209040563
+          },
+          {
+            "bin": 4,
+            "count": 327,
+            "event": 0,
+            "frequency": 0.22629969418960244,
+            "mean_probability": 0.4480678008494875
+          },
+          {
+            "bin": 5,
+            "count": 260,
+            "event": 0,
+            "frequency": 0.3384615384615385,
+            "mean_probability": 0.5499976776387238
+          },
+          {
+            "bin": 6,
+            "count": 196,
+            "event": 0,
+            "frequency": 0.4489795918367347,
+            "mean_probability": 0.651422245166928
+          },
+          {
+            "bin": 7,
+            "count": 188,
+            "event": 0,
+            "frequency": 0.5585106382978723,
+            "mean_probability": 0.7487411065848188
+          },
+          {
+            "bin": 8,
+            "count": 175,
+            "event": 0,
+            "frequency": 0.68,
+            "mean_probability": 0.850779811181216
+          },
+          {
+            "bin": 9,
+            "count": 216,
+            "event": 0,
+            "frequency": 0.8657407407407407,
+            "mean_probability": 0.9565312139860853
+          },
+          {
+            "bin": 0,
+            "count": 12551,
+            "event": 1,
+            "frequency": 0.004541470799139511,
+            "mean_probability": 0.01811921347099635
+          },
+          {
+            "bin": 1,
+            "count": 2174,
+            "event": 1,
+            "frequency": 0.07129714811407543,
+            "mean_probability": 0.14625111500618343
+          },
+          {
+            "bin": 2,
+            "count": 1750,
+            "event": 1,
+            "frequency": 0.13314285714285715,
+            "mean_probability": 0.24894138961792142
+          },
+          {
+            "bin": 3,
+            "count": 1535,
+            "event": 1,
+            "frequency": 0.2247557003257329,
+            "mean_probability": 0.3501422169826126
+          },
+          {
+            "bin": 4,
+            "count": 1652,
+            "event": 1,
+            "frequency": 0.30387409200968524,
+            "mean_probability": 0.45271359670161293
+          },
+          {
+            "bin": 5,
+            "count": 1982,
+            "event": 1,
+            "frequency": 0.42885973763874874,
+            "mean_probability": 0.5468873669933295
+          },
+          {
+            "bin": 6,
+            "count": 1236,
+            "event": 1,
+            "frequency": 0.5339805825242718,
+            "mean_probability": 0.6420346999077386
+          },
+          {
+            "bin": 7,
+            "count": 160,
+            "event": 1,
+            "frequency": 0.65625,
+            "mean_probability": 0.7192645171740225
+          },
+          {
+            "bin": 8,
+            "count": 0,
+            "event": 1,
+            "frequency": null,
+            "mean_probability": null
+          },
+          {
+            "bin": 9,
+            "count": 0,
+            "event": 1,
+            "frequency": null,
+            "mean_probability": null
+          },
+          {
+            "bin": 0,
+            "count": 1740,
+            "event": 2,
+            "frequency": 0.10632183908045977,
+            "mean_probability": 0.03283821800942283
+          },
+          {
+            "bin": 1,
+            "count": 884,
+            "event": 2,
+            "frequency": 0.36425339366515835,
+            "mean_probability": 0.14846852862723384
+          },
+          {
+            "bin": 2,
+            "count": 866,
+            "event": 2,
+            "frequency": 0.5127020785219399,
+            "mean_probability": 0.24913454034993518
+          },
+          {
+            "bin": 3,
+            "count": 854,
+            "event": 2,
+            "frequency": 0.6159250585480094,
+            "mean_probability": 0.35034682673481293
+          },
+          {
+            "bin": 4,
+            "count": 894,
+            "event": 2,
+            "frequency": 0.7393736017897091,
+            "mean_probability": 0.4516991329025476
+          },
+          {
+            "bin": 5,
+            "count": 1001,
+            "event": 2,
+            "frequency": 0.7832167832167832,
+            "mean_probability": 0.5517313889005903
+          },
+          {
+            "bin": 6,
+            "count": 1140,
+            "event": 2,
+            "frequency": 0.8324561403508772,
+            "mean_probability": 0.6524573163233108
+          },
+          {
+            "bin": 7,
+            "count": 1429,
+            "event": 2,
+            "frequency": 0.9104268719384184,
+            "mean_probability": 0.7518974000535935
+          },
+          {
+            "bin": 8,
+            "count": 1945,
+            "event": 2,
+            "frequency": 0.9532133676092545,
+            "mean_probability": 0.8542490547092791
+          },
+          {
+            "bin": 9,
+            "count": 12287,
+            "event": 2,
+            "frequency": 0.9975583950516806,
+            "mean_probability": 0.9824581955751802
+          }
+        ],
+        "classwise_ece": 0.059963121775209495,
+        "event_ece": [
+          0.0312671330897568,
+          0.05867754957305743,
+          0.08994468266281425
+        ],
+        "horizon_measurements_per_trajectory": 3,
+        "independent_sample_count": 7680
+      },
+      "shifted_coverage95": 0.9002604166666668,
+      "shifted_nll_difference": {
+        "interval95": [
+          -0.019137503442480393,
+          -0.016021330319399375
+        ],
+        "mean_difference": -0.017611483127053688,
+        "method": "seed bootstrap then trajectory bootstrap inside each fixed window",
+        "per_seed_mean": [
+          -0.018998085451675552,
+          -0.017363555975226607,
+          -0.015093778310134575,
+          -0.016978217353368116,
+          -0.019623778544863576
+        ],
+        "replicates": 4000,
+        "windows_not_independent_training_replicates": true
+      },
+      "universal_pointwise_retention_guarantee": true,
+      "worst_single_seed_window_old_nll_increase": 0.002074610189262975,
+      "worst_window_old_nll_increase": 0.0006111188099554266
+    },
+    "protected_q24": {
+      "final_nll_difference": {
+        "interval95": [
+          -0.01039660962486364,
+          -0.007270158438022058
+        ],
+        "mean_difference": -0.008874147883748082,
+        "method": "seed bootstrap then trajectory bootstrap inside each fixed window",
+        "per_seed_mean": [
+          -0.0099398765708914,
+          -0.009519258501387021,
+          -0.006484712821705778,
+          -0.008122102790626147,
+          -0.010304788734130071
+        ],
+        "replicates": 4000,
+        "windows_not_independent_training_replicates": true
+      },
+      "old_nll_changes_by_window": [
+        -4.7536090832661725e-05,
+        -0.00018749619237879542,
+        0.0001677949558906582,
+        -0.00018749619237879542,
+        0.00034614888624746095,
+        -0.00018749619237879542,
+        0.000162059640286298,
+        -0.00018749619237879542,
+        0.0002788962473910301,
+        -0.00018749619237879542,
+        0.00014643329965812789,
+        -0.00018749619237879542
+      ],
+      "passes_descriptive_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_new_nll_efficacy_gate": true,
+      "passes_original_bounded_retention_gate": true,
+      "shifted_calibration": {
+        "bins": [
+          {
+            "bin": 0,
+            "count": 19386,
+            "event": 0,
+            "frequency": 0.0012380068090374497,
+            "mean_probability": 0.008950186719539647
+          },
+          {
+            "bin": 1,
+            "count": 1196,
+            "event": 0,
+            "frequency": 0.038461538461538464,
+            "mean_probability": 0.1438801970350972
+          },
+          {
+            "bin": 2,
+            "count": 627,
+            "event": 0,
+            "frequency": 0.07177033492822966,
+            "mean_probability": 0.24274636420933607
+          },
+          {
+            "bin": 3,
+            "count": 457,
+            "event": 0,
+            "frequency": 0.15317286652078774,
+            "mean_probability": 0.3471098091692371
+          },
+          {
+            "bin": 4,
+            "count": 332,
+            "event": 0,
+            "frequency": 0.2289156626506024,
+            "mean_probability": 0.4488808725848736
+          },
+          {
+            "bin": 5,
+            "count": 250,
+            "event": 0,
+            "frequency": 0.344,
+            "mean_probability": 0.5494136490298256
+          },
+          {
+            "bin": 6,
+            "count": 205,
+            "event": 0,
+            "frequency": 0.43902439024390244,
+            "mean_probability": 0.6495620106790159
+          },
+          {
+            "bin": 7,
+            "count": 189,
+            "event": 0,
+            "frequency": 0.5396825396825397,
+            "mean_probability": 0.7489610873538719
+          },
+          {
+            "bin": 8,
+            "count": 177,
+            "event": 0,
+            "frequency": 0.6779661016949152,
+            "mean_probability": 0.8508181866845318
+          },
+          {
+            "bin": 9,
+            "count": 221,
+            "event": 0,
+            "frequency": 0.8642533936651584,
+            "mean_probability": 0.9567822708970898
+          },
+          {
+            "bin": 0,
+            "count": 12541,
+            "event": 1,
+            "frequency": 0.004545092097918826,
+            "mean_probability": 0.018083536350566237
+          },
+          {
+            "bin": 1,
+            "count": 2162,
+            "event": 1,
+            "frequency": 0.0698427382053654,
+            "mean_probability": 0.14626768694394518
+          },
+          {
+            "bin": 2,
+            "count": 1741,
+            "event": 1,
+            "frequency": 0.13210798391728892,
+            "mean_probability": 0.24893218362158318
+          },
+          {
+            "bin": 3,
+            "count": 1530,
+            "event": 1,
+            "frequency": 0.22549019607843138,
+            "mean_probability": 0.35001955124090983
+          },
+          {
+            "bin": 4,
+            "count": 1646,
+            "event": 1,
+            "frequency": 0.3043742405832321,
+            "mean_probability": 0.45269160299296457
+          },
+          {
+            "bin": 5,
+            "count": 1987,
+            "event": 1,
+            "frequency": 0.42425767488676397,
+            "mean_probability": 0.5472544200284258
+          },
+          {
+            "bin": 6,
+            "count": 1259,
+            "event": 1,
+            "frequency": 0.5297855440826053,
+            "mean_probability": 0.6425543946009368
+          },
+          {
+            "bin": 7,
+            "count": 174,
+            "event": 1,
+            "frequency": 0.6494252873563219,
+            "mean_probability": 0.7200212706003078
+          },
+          {
+            "bin": 8,
+            "count": 0,
+            "event": 1,
+            "frequency": null,
+            "mean_probability": null
+          },
+          {
+            "bin": 9,
+            "count": 0,
+            "event": 1,
+            "frequency": null,
+            "mean_probability": null
+          },
+          {
+            "bin": 0,
+            "count": 1780,
+            "event": 2,
+            "frequency": 0.11348314606741573,
+            "mean_probability": 0.03315448330692541
+          },
+          {
+            "bin": 1,
+            "count": 871,
+            "event": 2,
+            "frequency": 0.3639494833524684,
+            "mean_probability": 0.14881270147178371
+          },
+          {
+            "bin": 2,
+            "count": 882,
+            "event": 2,
+            "frequency": 0.518140589569161,
+            "mean_probability": 0.24899067418674728
+          },
+          {
+            "bin": 3,
+            "count": 839,
+            "event": 2,
+            "frequency": 0.6221692491060786,
+            "mean_probability": 0.35017796321449196
+          },
+          {
+            "bin": 4,
+            "count": 891,
+            "event": 2,
+            "frequency": 0.7362514029180696,
+            "mean_probability": 0.45049472257170114
+          },
+          {
+            "bin": 5,
+            "count": 1010,
+            "event": 2,
+            "frequency": 0.7881188118811882,
+            "mean_probability": 0.5509906646880152
+          },
+          {
+            "bin": 6,
+            "count": 1132,
+            "event": 2,
+            "frequency": 0.8348056537102474,
+            "mean_probability": 0.6521682400065649
+          },
+          {
+            "bin": 7,
+            "count": 1430,
+            "event": 2,
+            "frequency": 0.9104895104895104,
+            "mean_probability": 0.7516725520668982
+          },
+          {
+            "bin": 8,
+            "count": 1932,
+            "event": 2,
+            "frequency": 0.9539337474120083,
+            "mean_probability": 0.8542517900432619
+          },
+          {
+            "bin": 9,
+            "count": 12273,
+            "event": 2,
+            "frequency": 0.9975556098753361,
+            "mean_probability": 0.9825003363933393
+          }
+        ],
+        "classwise_ece": 0.06080096694889078,
+        "event_ece": [
+          0.031664913590047764,
+          0.05953653683328835,
+          0.09120145042333624
+        ],
+        "horizon_measurements_per_trajectory": 3,
+        "independent_sample_count": 7680
+      },
+      "shifted_coverage95": 0.8975260416666667,
+      "shifted_nll_difference": {
+        "interval95": [
+          -0.009737520400304709,
+          -0.008164003075852048
+        ],
+        "mean_difference": -0.008966953892734145,
+        "method": "seed bootstrap then trajectory bootstrap inside each fixed window",
+        "per_seed_mean": [
+          -0.00966712177340768,
+          -0.008841759673830258,
+          -0.007695634597780465,
+          -0.008647186504894168,
+          -0.009983066913758153
+        ],
+        "replicates": 4000,
+        "windows_not_independent_training_replicates": true
+      },
+      "universal_pointwise_retention_guarantee": true,
+      "worst_single_seed_window_old_nll_increase": 0.0009781904954527904,
+      "worst_window_old_nll_increase": 0.00034614888624746095
+    },
+    "replay": {
+      "final_nll_difference": {
+        "interval95": [
+          -0.22561999459021187,
+          -0.1515816983767506
+        ],
+        "mean_difference": -0.1881559301214458,
+        "method": "seed bootstrap then trajectory bootstrap inside each fixed window",
+        "per_seed_mean": [
+          -0.18936012702645394,
+          -0.19758203194105725,
+          -0.136250912262871,
+          -0.17564781098649856,
+          -0.24193876839034828
+        ],
+        "replicates": 4000,
+        "windows_not_independent_training_replicates": true
+      },
+      "old_nll_changes_by_window": [
+        0.0007668375052057226,
+        0.04425049840137265,
+        0.0006976957202345901,
+        0.04532850766372404,
+        0.0014941029367302847,
+        0.044149999137561166,
+        0.0018041625898088738,
+        0.0418644527156633,
+        0.001911891093682587,
+        0.04741775619474477,
+        0.0006721635451659149,
+        0.04526906105740093
+      ],
+      "passes_descriptive_calibration_gate": true,
+      "passes_joint_empirical_gate": false,
+      "passes_new_nll_efficacy_gate": false,
+      "passes_original_bounded_retention_gate": false,
+      "shifted_calibration": {
+        "bins": [
+          {
+            "bin": 0,
+            "count": 20167,
+            "event": 0,
+            "frequency": 0.002231368076560718,
+            "mean_probability": 0.007636366133360958
+          },
+          {
+            "bin": 1,
+            "count": 987,
+            "event": 0,
+            "frequency": 0.05977710233029382,
+            "mean_probability": 0.14223818332210642
+          },
+          {
+            "bin": 2,
+            "count": 531,
+            "event": 0,
+            "frequency": 0.1713747645951036,
+            "mean_probability": 0.2477336142445578
+          },
+          {
+            "bin": 3,
+            "count": 337,
+            "event": 0,
+            "frequency": 0.22551928783382788,
+            "mean_probability": 0.34541981155397306
+          },
+          {
+            "bin": 4,
+            "count": 247,
+            "event": 0,
+            "frequency": 0.3441295546558704,
+            "mean_probability": 0.44496438728848736
+          },
+          {
+            "bin": 5,
+            "count": 201,
+            "event": 0,
+            "frequency": 0.4228855721393035,
+            "mean_probability": 0.5495322931078281
+          },
+          {
+            "bin": 6,
+            "count": 161,
+            "event": 0,
+            "frequency": 0.546583850931677,
+            "mean_probability": 0.6524320689296272
+          },
+          {
+            "bin": 7,
+            "count": 129,
+            "event": 0,
+            "frequency": 0.6744186046511628,
+            "mean_probability": 0.7481987834808321
+          },
+          {
+            "bin": 8,
+            "count": 133,
+            "event": 0,
+            "frequency": 0.7669172932330827,
+            "mean_probability": 0.8501838348006022
+          },
+          {
+            "bin": 9,
+            "count": 147,
+            "event": 0,
+            "frequency": 0.8979591836734694,
+            "mean_probability": 0.9547670172136099
+          },
+          {
+            "bin": 0,
+            "count": 13829,
+            "event": 1,
+            "frequency": 0.007231180851833104,
+            "mean_probability": 0.016065830199780005
+          },
+          {
+            "bin": 1,
+            "count": 2198,
+            "event": 1,
+            "frequency": 0.09599636032757052,
+            "mean_probability": 0.1466776664277917
+          },
+          {
+            "bin": 2,
+            "count": 1595,
+            "event": 1,
+            "frequency": 0.17304075235109717,
+            "mean_probability": 0.2486916478900168
+          },
+          {
+            "bin": 3,
+            "count": 1351,
+            "event": 1,
+            "frequency": 0.2686898593634345,
+            "mean_probability": 0.3500958313506428
+          },
+          {
+            "bin": 4,
+            "count": 1431,
+            "event": 1,
+            "frequency": 0.37735849056603776,
+            "mean_probability": 0.4505095740448868
+          },
+          {
+            "bin": 5,
+            "count": 1565,
+            "event": 1,
+            "frequency": 0.49009584664536743,
+            "mean_probability": 0.5465618178928244
+          },
+          {
+            "bin": 6,
+            "count": 967,
+            "event": 1,
+            "frequency": 0.6008273009307136,
+            "mean_probability": 0.6398756162672673
+          },
+          {
+            "bin": 7,
+            "count": 104,
+            "event": 1,
+            "frequency": 0.6634615384615384,
+            "mean_probability": 0.7179512636112199
+          },
+          {
+            "bin": 8,
+            "count": 0,
+            "event": 1,
+            "frequency": null,
+            "mean_probability": null
+          },
+          {
+            "bin": 9,
+            "count": 0,
+            "event": 1,
+            "frequency": null,
+            "mean_probability": null
+          },
+          {
+            "bin": 0,
+            "count": 1314,
+            "event": 2,
+            "frequency": 0.0669710806697108,
+            "mean_probability": 0.035216068654540265
+          },
+          {
+            "bin": 1,
+            "count": 657,
+            "event": 2,
+            "frequency": 0.2602739726027397,
+            "mean_probability": 0.14943616280193184
+          },
+          {
+            "bin": 2,
+            "count": 692,
+            "event": 2,
+            "frequency": 0.3829479768786127,
+            "mean_probability": 0.25031670992077487
+          },
+          {
+            "bin": 3,
+            "count": 705,
+            "event": 2,
+            "frequency": 0.5035460992907801,
+            "mean_probability": 0.3502518368182354
+          },
+          {
+            "bin": 4,
+            "count": 788,
+            "event": 2,
+            "frequency": 0.6129441624365483,
+            "mean_probability": 0.4518016264785684
+          },
+          {
+            "bin": 5,
+            "count": 866,
+            "event": 2,
+            "frequency": 0.6997690531177829,
+            "mean_probability": 0.5519697292358777
+          },
+          {
+            "bin": 6,
+            "count": 1036,
+            "event": 2,
+            "frequency": 0.7712355212355212,
+            "mean_probability": 0.6513049428610291
+          },
+          {
+            "bin": 7,
+            "count": 1348,
+            "event": 2,
+            "frequency": 0.8405044510385756,
+            "mean_probability": 0.7520615536898029
+          },
+          {
+            "bin": 8,
+            "count": 1990,
+            "event": 2,
+            "frequency": 0.9160804020100503,
+            "mean_probability": 0.853157808278113
+          },
+          {
+            "bin": 9,
+            "count": 13644,
+            "event": 2,
+            "frequency": 0.9938434476693052,
+            "mean_probability": 0.9842918855229406
+          }
+        ],
+        "classwise_ece": 0.030913800106924877,
+        "event_ece": [
+          0.015958824249499414,
+          0.030411875910887873,
+          0.04637070016038734
+        ],
+        "horizon_measurements_per_trajectory": 3,
+        "independent_sample_count": 7680
+      },
+      "shifted_coverage95": 0.9475694444444446,
+      "shifted_nll_difference": {
+        "interval95": [
+          -0.2074541951452185,
+          -0.16559031332176016
+        ],
+        "mean_difference": -0.18762722592238845,
+        "method": "seed bootstrap then trajectory bootstrap inside each fixed window",
+        "per_seed_mean": [
+          -0.1910843812876396,
+          -0.19109737878961594,
+          -0.14836187724613756,
+          -0.18825372912138072,
+          -0.21933876316716835
+        ],
+        "replicates": 4000,
+        "windows_not_independent_training_replicates": true
+      },
+      "universal_pointwise_retention_guarantee": false,
+      "worst_single_seed_window_old_nll_increase": 0.06367674121657896,
+      "worst_window_old_nll_increase": 0.04741775619474477
+    }
+  },
+  "checkpoint_count": 60,
+  "empirical_bootstrap_not_population_certificate": true,
+  "equivalence": {
+    "fp64_max_abs": 2.220446049250313e-15,
+    "q24_max_abs": 0.0
+  },
+  "global_freeze_sha256": "75df6af8ce501e624fd2900f096b7c6a050e5c61cbb200fca4ada5fc54d81146",
+  "native_execution_in_this_study": false,
+  "parent_cpu_ns": 24572103423,
+  "prepared_sha256": "16b896a125c375537cd48d603d0da93958dfeec1e33c0badc57aa4e63d15fc91",
+  "production_promotion": false,
+  "protected_profiles": {
+    "protected": {
+      "max_certified_bound": 0.019901313648089856,
+      "max_observed_excess": 0.019901313646791374
+    },
+    "protected_q24": {
+      "max_certified_bound": 0.009975224211071974,
+      "max_observed_excess": 0.009975201037896397
+    }
+  },
+  "registration": {
+    "arms": [
+      "frozen",
+      "online",
+      "replay",
+      "protected",
+      "protected_q24",
+      "calibrated",
+      "calibrated_classical",
+      "calibrated_q24",
+      "calibrated_q24_classical",
+      "calibrated_unconstrained"
+    ],
+    "bootstrap_replicates": 4000,
+    "bootstrap_seed": 20261028,
+    "calibration_coverage_max": 0.98,
+    "calibration_coverage_min": 0.92,
+    "calibration_ece_max": 0.04,
+    "development_rows": 128,
+    "empirical_profile_pointwise_guarantee": false,
+    "epsilon": 0.02,
+    "new_holdout_rows": 256,
+    "new_nll_improvement_min": 0.005,
+    "old_holdout_rows": 256,
+    "old_nll_margin": 0.02,
+    "online_labelled_rows_per_window": 256,
+    "phase": "confirmation",
+    "prediction_receives_hidden_regime_or_window": false,
+    "replay_and_calibration_labelled_rows_equal": true,
+    "replay_and_calibration_labelled_rows_per_window": 512,
+    "same_available_information": true,
+    "seed_offset": 50000000,
+    "seed_rule": "offset+10000*seed+100*window+code; train1,olddev2,newdev3,newholdout4; oldholdout window12/code5",
+    "seeds": [
+      607,
+      701,
+      809,
+      907,
+      1009
+    ],
+    "selector": "55 candidates; old-dev mean NLL change+1.645 paired SE<=.02; min new-dev Gaussian NLL",
+    "training_rows": 256,
+    "windows": [
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift"
+    ]
+  },
+  "schema": "hepta.analytic-event.calibration-results.v1",
+  "unbounded_retention_claim": false,
+  "unique_new_holdout_trajectories": 15360,
+  "unique_old_holdout_trajectories": 1280,
+  "wall_ns": 24761367937,
+  "windows_are_not_independent_training_replicates": true
+}

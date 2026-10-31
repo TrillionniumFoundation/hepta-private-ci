@@ -1,0 +1,14 @@
+{
+  "command": [
+    "python",
+    "-B",
+    "-c",
+    "import hashlib, pathlib, runpy, sys\nroot=pathlib.Path(\"/dev/shm/hepta-round6-d831a963ef2f/hepta-analytic/experiments/analytic_event_neuron/round6/evidence/registered_001\")\nfor name, expected in [(\"RESULTS.json\",\"303e98b4c6679f7dd827bb2c3a7083d96010984adbba43e1c6548b7930f53a69\"),(\"FREEZE.json\",\"1f4d994da28d3bd61853a904d3e9da03b6ea6c90fe9d680e217f976656450ca1\")]:\n actual=hashlib.sha256((root/name).read_bytes()).hexdigest()\n if actual!=expected:\n  raise ValueError(name+\" differs from independently received identity: \"+actual)\n print(\"Verified independently expected \"+name+\" SHA256 \"+actual,flush=True)\nsys.argv=[\"audit_round6\",\"--run-dir\",\"/dev/shm/hepta-round6-d831a963ef2f/hepta-analytic/experiments/analytic_event_neuron/round6/evidence/registered_001\",\"--output\",\"/dev/shm/hepta-round6-d831a963ef2f/hepta-analytic/experiments/analytic_event_neuron/round6/evidence/review_confirmation_registered_001\",\"--phase\",\"confirmation\",\"--expected-freeze-sha256\",\"1f4d994da28d3bd61853a904d3e9da03b6ea6c90fe9d680e217f976656450ca1\"]\nrunpy.run_module(\"experiments.analytic_event_neuron.round6.audit_round6\",run_name=\"__main__\")"
+  ],
+  "cwd": "/dev/shm/hepta-round6-d831a963ef2f/hepta-analytic",
+  "full_invocation_scope": true,
+  "label": "full_independent_confirmation",
+  "nested_component_times_must_not_be_added": true,
+  "schema": "hepta.analytic-event.round4.execution.v1",
+  "started_utc": "2026-10-30T13:36:40.420903+00:00"
+}

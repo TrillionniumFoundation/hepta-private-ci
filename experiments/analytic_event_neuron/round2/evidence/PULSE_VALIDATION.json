@@ -1,0 +1,1084 @@
+{
+  "schema": "hepta.signed-event.validation.v1",
+  "passed": true,
+  "checks": [
+    {
+      "name": "residual_bound_over_4096_updates",
+      "passed": true,
+      "updates": 4096,
+      "maximum_errors": [
+        0.015620133273315642,
+        0.031245590565051495
+      ],
+      "logical_unit_events": 15376
+    },
+    {
+      "name": "independent_absolute_quantizer",
+      "passed": true,
+      "differing_updates": 0
+    },
+    {
+      "name": "matched_direct_control",
+      "passed": true,
+      "differing_count_packets": 0
+    },
+    {
+      "name": "decoder_only_reconstruction_and_checkpoint_continuation",
+      "passed": true,
+      "checkpoint_restarts": 5,
+      "checkpoint_sha256": [
+        "76c38c8ac72106503e0ed19080d94a4fbe31ce8bb2b1c2a5c7a8d3cbd42a32e9",
+        "a7e811ef09ae0637f2d7fb9a5636de0c8b4b9e1d0191c80b3f4622abea16124e",
+        "37a042b3a816103ec9e7904b5016d6d086ec824fc5d47ba70912ee61eee54813",
+        "0bbf522d776779004d53f02efd99a8ca935ab743a1cba6aa1fc8e4da8d751c37",
+        "eba94c76846ed2a4cc7e15388777de88fc8168c8805e2f7fa896ba8c1d08e76d"
+      ]
+    },
+    {
+      "name": "residual_discard_counterexample",
+      "passed": true,
+      "increment_only_error": 4.9,
+      "error_feedback_error": 0.0
+    },
+    {
+      "name": "uniform_cdf_and_interval_error_bound",
+      "passed": true,
+      "cases": 2000,
+      "maximum_bound_excess": 0.0,
+      "maximum_probability_error": 0.9999999999999974,
+      "qualification": "Absolute bound can be loose for tiny variance; no relative tail-error guarantee"
+    },
+    {
+      "name": "missing_propagation_and_silence_are_distinct",
+      "passed": true,
+      "packets": [
+        {
+          "schema": "hepta.signed-event.packet.v1",
+          "config_sha256": "a99a00307ed9985c14d79cc99440a3d893914077c211a170ec6b22eb49c86a1c",
+          "sequence": 1,
+          "time": 0.0,
+          "observation_kind": "observed",
+          "counts": [
+            0,
+            0
+          ]
+        },
+        {
+          "schema": "hepta.signed-event.packet.v1",
+          "config_sha256": "a99a00307ed9985c14d79cc99440a3d893914077c211a170ec6b22eb49c86a1c",
+          "sequence": 2,
+          "time": 1.0,
+          "observation_kind": "missing",
+          "counts": [
+            0,
+            0
+          ]
+        },
+        {
+          "schema": "hepta.signed-event.packet.v1",
+          "config_sha256": "a99a00307ed9985c14d79cc99440a3d893914077c211a170ec6b22eb49c86a1c",
+          "sequence": 3,
+          "time": 2.0,
+          "observation_kind": "propagation",
+          "counts": [
+            0,
+            0
+          ]
+        }
+      ],
+      "terminal_probabilities": [
+        0.27425311775007355,
+        0.45149376449985285,
+        0.27425311775007355
+      ]
+    },
+    {
+      "name": "domain_and_state_rejections_are_transactional",
+      "passed": true,
+      "rejections": {
+        "zero_variance": true,
+        "negative_variance": true,
+        "nonfinite_mean": true,
+        "clock_regression": true,
+        "duplicate_packet": true,
+        "noninteger_counts": true,
+        "inconsistent_encoder_residual": true,
+        "unknown_version": true,
+        "oversized_counts": true
+      },
+      "checkpoint_unchanged": true
+    },
+    {
+      "name": "driver_is_actually_trained_and_bound",
+      "passed": true,
+      "initial_parameters": [
+        0.14293172591242084,
+        0.4,
+        1.4
+      ],
+      "fitted_parameters": [
+        0.1123174067032693,
+        0.21574535328524236,
+        1.025659130769512
+      ],
+      "initial_loss": 0.809396985893917,
+      "fitted_loss": 0.7522964949985103,
+      "optimizer_success": true
+    },
+    {
+      "name": "trained_adapter_matches_direct_and_independent_probit_control",
+      "passed": true,
+      "direct_event_prediction_gap": 0.0,
+      "continuous_dense_gaussian_gap": 1.7763568394002505e-15
+    },
+    {
+      "name": "trained_history_packets_reconstruct_without_analog_bypass",
+      "passed": true,
+      "histories": 384,
+      "packet_count": 2688
+    },
+    {
+      "name": "selection_rejects_confirmation_labels",
+      "passed": true,
+      "existing_development_values_relabelled_only": true
+    }
+  ],
+  "passed_checks": 12,
+  "total_checks": 12,
+  "development_selection": {
+    "schema": "hepta.signed-event.selection.v1",
+    "development_dataset_sha256": "b35b48f2020e8726da9668c9525a22de0b330af06b1563d88ef2e1099f2afe6e",
+    "driver_sha256": "2d62f313dea277029c311c6b8d4fc6cdf2c19658da22090becc291294465d973",
+    "fitted_driver_parameters": [
+      0.1123174067032693,
+      0.21574535328524236,
+      1.025659130769512
+    ],
+    "driver_training_link": {
+      "receipt_sha256": "f20ed59818a68e3ae99c2d501fa4f740d0e3d3657258320de703ed23ea208fd7",
+      "initial_filter_parameters": [
+        0.14293172591242084,
+        0.4,
+        1.4
+      ],
+      "fitted_filter_parameters": [
+        0.1123174067032693,
+        0.21574535328524236,
+        1.025659130769512
+      ],
+      "filter_parameter_l2_change": 0.6920143101059529,
+      "optimizer_success": true,
+      "objective_trace_sha256": "5fd380452e1277d2ce2cb21e456e5c7dab70a393470d72b3fd7b1a2857b8e7d1"
+    },
+    "independent_development_trajectories": 96,
+    "baseline_development_nll": 0.6430101417965213,
+    "maximum_development_nll_deficit": 0.002,
+    "selection_rule": "minimum logical unit counts within development NLL budget; best NLL fallback if none qualify",
+    "candidates": [
+      {
+        "event_config": {
+          "mean_step": 0.0078125,
+          "logvar_step": 0.0078125,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.6430896971543315,
+        "deficit": 7.955535781023482e-05,
+        "logical_unit_events": 293559,
+        "nonzero_channel_packets": 5326,
+        "packet_bytes": 536438
+      },
+      {
+        "event_config": {
+          "mean_step": 0.0078125,
+          "logvar_step": 0.015625,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.6431914210167715,
+        "deficit": 0.00018127922025024112,
+        "logical_unit_events": 216924,
+        "nonzero_channel_packets": 5306,
+        "packet_bytes": 535650
+      },
+      {
+        "event_config": {
+          "mean_step": 0.0078125,
+          "logvar_step": 0.03125,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.6432864171919723,
+        "deficit": 0.0002762753954510533,
+        "logical_unit_events": 178469,
+        "nonzero_channel_packets": 5230,
+        "packet_bytes": 534780
+      },
+      {
+        "event_config": {
+          "mean_step": 0.0078125,
+          "logvar_step": 0.0625,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.6433809387262511,
+        "deficit": 0.00037079692972985523,
+        "logical_unit_events": 159342,
+        "nonzero_channel_packets": 5150,
+        "packet_bytes": 534234
+      },
+      {
+        "event_config": {
+          "mean_step": 0.0078125,
+          "logvar_step": 0.125,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.6432034946687226,
+        "deficit": 0.00019335287220134667,
+        "logical_unit_events": 149743,
+        "nonzero_channel_packets": 4970,
+        "packet_bytes": 533694
+      },
+      {
+        "event_config": {
+          "mean_step": 0.015625,
+          "logvar_step": 0.0078125,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.6434190981102524,
+        "deficit": 0.00040895631373116803,
+        "logical_unit_events": 223470,
+        "nonzero_channel_packets": 5303,
+        "packet_bytes": 535763
+      },
+      {
+        "event_config": {
+          "mean_step": 0.015625,
+          "logvar_step": 0.015625,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.6435188900941258,
+        "deficit": 0.0005087482976044999,
+        "logical_unit_events": 146835,
+        "nonzero_channel_packets": 5283,
+        "packet_bytes": 534975
+      },
+      {
+        "event_config": {
+          "mean_step": 0.015625,
+          "logvar_step": 0.03125,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.6436164362440585,
+        "deficit": 0.0006062944475372367,
+        "logical_unit_events": 108380,
+        "nonzero_channel_packets": 5207,
+        "packet_bytes": 534105
+      },
+      {
+        "event_config": {
+          "mean_step": 0.015625,
+          "logvar_step": 0.0625,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.6437065700430445,
+        "deficit": 0.000696428246523273,
+        "logical_unit_events": 89253,
+        "nonzero_channel_packets": 5127,
+        "packet_bytes": 533559
+      },
+      {
+        "event_config": {
+          "mean_step": 0.015625,
+          "logvar_step": 0.125,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.6435313135737984,
+        "deficit": 0.000521171777277174,
+        "logical_unit_events": 79654,
+        "nonzero_channel_packets": 4947,
+        "packet_bytes": 533019
+      },
+      {
+        "event_config": {
+          "mean_step": 0.03125,
+          "logvar_step": 0.0078125,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.6418855416902421,
+        "deficit": -0.0011246001062791278,
+        "logical_unit_events": 188463,
+        "nonzero_channel_packets": 5269,
+        "packet_bytes": 535166
+      },
+      {
+        "event_config": {
+          "mean_step": 0.03125,
+          "logvar_step": 0.015625,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.6419908532410572,
+        "deficit": -0.0010192885554640707,
+        "logical_unit_events": 111828,
+        "nonzero_channel_packets": 5249,
+        "packet_bytes": 534378
+      },
+      {
+        "event_config": {
+          "mean_step": 0.03125,
+          "logvar_step": 0.03125,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.6420910281492339,
+        "deficit": -0.0009191136472873618,
+        "logical_unit_events": 73373,
+        "nonzero_channel_packets": 5173,
+        "packet_bytes": 533508
+      },
+      {
+        "event_config": {
+          "mean_step": 0.03125,
+          "logvar_step": 0.0625,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.642183975578562,
+        "deficit": -0.0008261662179592788,
+        "logical_unit_events": 54246,
+        "nonzero_channel_packets": 5093,
+        "packet_bytes": 532962
+      },
+      {
+        "event_config": {
+          "mean_step": 0.03125,
+          "logvar_step": 0.125,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.6419900945229319,
+        "deficit": -0.0010200472735893973,
+        "logical_unit_events": 44647,
+        "nonzero_channel_packets": 4913,
+        "packet_bytes": 532422
+      },
+      {
+        "event_config": {
+          "mean_step": 0.0625,
+          "logvar_step": 0.0078125,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.6424751333923805,
+        "deficit": -0.0005350084041407799,
+        "logical_unit_events": 170924,
+        "nonzero_channel_packets": 5174,
+        "packet_bytes": 534446
+      },
+      {
+        "event_config": {
+          "mean_step": 0.0625,
+          "logvar_step": 0.015625,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.6425771599522793,
+        "deficit": -0.0004329818442420086,
+        "logical_unit_events": 94289,
+        "nonzero_channel_packets": 5154,
+        "packet_bytes": 533658
+      },
+      {
+        "event_config": {
+          "mean_step": 0.0625,
+          "logvar_step": 0.03125,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.6426562038608489,
+        "deficit": -0.0003539379356723993,
+        "logical_unit_events": 55834,
+        "nonzero_channel_packets": 5078,
+        "packet_bytes": 532788
+      },
+      {
+        "event_config": {
+          "mean_step": 0.0625,
+          "logvar_step": 0.0625,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.6427655222767606,
+        "deficit": -0.0002446195197606249,
+        "logical_unit_events": 36707,
+        "nonzero_channel_packets": 4998,
+        "packet_bytes": 532242
+      },
+      {
+        "event_config": {
+          "mean_step": 0.0625,
+          "logvar_step": 0.125,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.6425706111213216,
+        "deficit": -0.00043953067519963973,
+        "logical_unit_events": 27108,
+        "nonzero_channel_packets": 4818,
+        "packet_bytes": 531702
+      },
+      {
+        "event_config": {
+          "mean_step": 0.125,
+          "logvar_step": 0.0078125,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.6494493176479968,
+        "deficit": 0.006439175851475576,
+        "logical_unit_events": 162250,
+        "nonzero_channel_packets": 4998,
+        "packet_bytes": 533875
+      },
+      {
+        "event_config": {
+          "mean_step": 0.125,
+          "logvar_step": 0.015625,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.6495567634931018,
+        "deficit": 0.00654662169658049,
+        "logical_unit_events": 85615,
+        "nonzero_channel_packets": 4978,
+        "packet_bytes": 533087
+      },
+      {
+        "event_config": {
+          "mean_step": 0.125,
+          "logvar_step": 0.03125,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.649684519096056,
+        "deficit": 0.006674377299534684,
+        "logical_unit_events": 47160,
+        "nonzero_channel_packets": 4902,
+        "packet_bytes": 532217
+      },
+      {
+        "event_config": {
+          "mean_step": 0.125,
+          "logvar_step": 0.0625,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.649644484930983,
+        "deficit": 0.006634343134461762,
+        "logical_unit_events": 28033,
+        "nonzero_channel_packets": 4822,
+        "packet_bytes": 531671
+      },
+      {
+        "event_config": {
+          "mean_step": 0.125,
+          "logvar_step": 0.125,
+          "mode": "error_feedback",
+          "maximum_count": 2147483647
+        },
+        "development_nll": 0.6497147815493461,
+        "deficit": 0.00670463975282487,
+        "logical_unit_events": 18434,
+        "nonzero_channel_packets": 4642,
+        "packet_bytes": 531131
+      }
+    ],
+    "selected_index": 19,
+    "selected_config": {
+      "mean_step": 0.0625,
+      "logvar_step": 0.125,
+      "mode": "error_feedback",
+      "maximum_count": 2147483647
+    },
+    "development_budget_met": true,
+    "selection_ns": 1567403343,
+    "training_scope": "driver fitted externally; finite development-only resolution selection; no gradient-through-spikes claim",
+    "model_sha256": "1dfd1147e50f5f2e0fce6438cdae1a8f0e48167703955e5feee1e66d4285608b"
+  },
+  "training_receipt": {
+    "seed": 7301,
+    "training_dataset_sha256": "3eb1ad339f838501e8f97d16c5b77d122b413b573eccaaa9f331de6a7a4eed6d",
+    "development_dataset_sha256": "b35b48f2020e8726da9668c9525a22de0b330af06b1563d88ef2e1099f2afe6e",
+    "initial_filter_parameters": [
+      0.14293172591242084,
+      0.4,
+      1.4
+    ],
+    "fitted_filter_parameters": [
+      0.1123174067032693,
+      0.21574535328524236,
+      1.025659130769512
+    ],
+    "optimizer_success": true,
+    "optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+    "optimizer_iterations": 13,
+    "optimizer_evaluations": 56,
+    "objective_trace": [
+      {
+        "parameters": [
+          0.14293172591242084,
+          0.4,
+          1.4
+        ],
+        "composite_conditional_nll": 0.809396985893917
+      },
+      {
+        "parameters": [
+          0.14293173591242084,
+          0.4,
+          1.4
+        ],
+        "composite_conditional_nll": 0.8093969870182898
+      },
+      {
+        "parameters": [
+          0.14293172591242084,
+          0.4000000040000001,
+          1.4
+        ],
+        "composite_conditional_nll": 0.8093969872370248
+      },
+      {
+        "parameters": [
+          0.14293172591242084,
+          0.4,
+          1.400000014
+        ],
+        "composite_conditional_nll": 0.8093969864745119
+      },
+      {
+        "parameters": [
+          0.030494444145838406,
+          0.3497273192804083,
+          1.3210313351546032
+        ],
+        "composite_conditional_nll": 0.8012311716343452
+      },
+      {
+        "parameters": [
+          0.030494454145838408,
+          0.3497273192804083,
+          1.3210313351546032
+        ],
+        "composite_conditional_nll": 0.801231168315756
+      },
+      {
+        "parameters": [
+          0.030494444145838406,
+          0.3497273227776815,
+          1.3210313351546032
+        ],
+        "composite_conditional_nll": 0.8012311725812538
+      },
+      {
+        "parameters": [
+          0.030494444145838406,
+          0.3497273192804083,
+          1.3210313483649168
+        ],
+        "composite_conditional_nll": 0.8012311721678719
+      },
+      {
+        "parameters": [
+          0.08111316485318301,
+          0.34157882757694774,
+          1.304860730712577
+        ],
+        "composite_conditional_nll": 0.7865569303746327
+      },
+      {
+        "parameters": [
+          0.081113174853183,
+          0.34157882757694774,
+          1.304860730712577
+        ],
+        "composite_conditional_nll": 0.7865569290972683
+      },
+      {
+        "parameters": [
+          0.08111316485318301,
+          0.34157883099273606,
+          1.304860730712577
+        ],
+        "composite_conditional_nll": 0.786556931422357
+      },
+      {
+        "parameters": [
+          0.08111316485318301,
+          0.34157882757694774,
+          1.3048607437611843
+        ],
+        "composite_conditional_nll": 0.7865569308556482
+      },
+      {
+        "parameters": [
+          0.13392256158236043,
+          0.29024658373439427,
+          1.2113423318608385
+        ],
+        "composite_conditional_nll": 0.7679441245090919
+      },
+      {
+        "parameters": [
+          0.13392257158236043,
+          0.29024658373439427,
+          1.2113423318608385
+        ],
+        "composite_conditional_nll": 0.7679441256194204
+      },
+      {
+        "parameters": [
+          0.13392256158236043,
+          0.29024658663686015,
+          1.2113423318608385
+        ],
+        "composite_conditional_nll": 0.7679441252415151
+      },
+      {
+        "parameters": [
+          0.13392256158236043,
+          0.29024658373439427,
+          1.2113423439742619
+        ],
+        "composite_conditional_nll": 0.7679441248478711
+      },
+      {
+        "parameters": [
+          0.137771779913018,
+          0.237453214123253,
+          1.1028905173301389
+        ],
+        "composite_conditional_nll": 0.7561775702485589
+      },
+      {
+        "parameters": [
+          0.137771789913018,
+          0.237453214123253,
+          1.1028905173301389
+        ],
+        "composite_conditional_nll": 0.7561775718449648
+      },
+      {
+        "parameters": [
+          0.137771779913018,
+          0.2374532164977851,
+          1.1028905173301389
+        ],
+        "composite_conditional_nll": 0.7561775704973965
+      },
+      {
+        "parameters": [
+          0.137771779913018,
+          0.237453214123253,
+          1.102890528359044
+        ],
+        "composite_conditional_nll": 0.7561775703946448
+      },
+      {
+        "parameters": [
+          0.10202958750869509,
+          0.20961012297895035,
+          1.0225525321899287
+        ],
+        "composite_conditional_nll": 0.752792779039625
+      },
+      {
+        "parameters": [
+          0.10202959750869509,
+          0.20961012297895035,
+          1.0225525321899287
+        ],
+        "composite_conditional_nll": 0.7527927783001546
+      },
+      {
+        "parameters": [
+          0.10202958750869509,
+          0.20961012507505156,
+          1.0225525321899287
+        ],
+        "composite_conditional_nll": 0.752792778956144
+      },
+      {
+        "parameters": [
+          0.10202958750869509,
+          0.20961012297895035,
+          1.022552542415454
+        ],
+        "composite_conditional_nll": 0.7527927790253607
+      },
+      {
+        "parameters": [
+          0.11323394500902177,
+          0.21539416892974075,
+          1.0399366493680875
+        ],
+        "composite_conditional_nll": 0.7523132200484295
+      },
+      {
+        "parameters": [
+          0.11323395500902177,
+          0.21539416892974075,
+          1.0399366493680875
+        ],
+        "composite_conditional_nll": 0.7523132201082778
+      },
+      {
+        "parameters": [
+          0.11323394500902177,
+          0.21539417108368245,
+          1.0399366493680875
+        ],
+        "composite_conditional_nll": 0.7523132200503827
+      },
+      {
+        "parameters": [
+          0.11323394500902177,
+          0.21539416892974075,
+          1.039936659767454
+        ],
+        "composite_conditional_nll": 0.7523132200688686
+      },
+      {
+        "parameters": [
+          0.11234678579649161,
+          0.21469220242662382,
+          1.0375336851793935
+        ],
+        "composite_conditional_nll": 0.7523073936551085
+      },
+      {
+        "parameters": [
+          0.11234679579649161,
+          0.21469220242662382,
+          1.0375336851793935
+        ],
+        "composite_conditional_nll": 0.752307393653271
+      },
+      {
+        "parameters": [
+          0.11234678579649161,
+          0.21469220457354585,
+          1.0375336851793935
+        ],
+        "composite_conditional_nll": 0.7523073936474629
+      },
+      {
+        "parameters": [
+          0.11234678579649161,
+          0.21469220242662382,
+          1.0375336955547305
+        ],
+        "composite_conditional_nll": 0.7523073936707781
+      },
+      {
+        "parameters": [
+          0.11225722423610258,
+          0.21467009717849836,
+          1.0368488733174648
+        ],
+        "composite_conditional_nll": 0.7523065188380742
+      },
+      {
+        "parameters": [
+          0.11225723423610258,
+          0.21467009717849836,
+          1.0368488733174648
+        ],
+        "composite_conditional_nll": 0.752306518830143
+      },
+      {
+        "parameters": [
+          0.11225722423610258,
+          0.21467009932519932,
+          1.0368488733174648
+        ],
+        "composite_conditional_nll": 0.7523065188298546
+      },
+      {
+        "parameters": [
+          0.11225722423610258,
+          0.21467009717849836,
+          1.0368488836859535
+        ],
+        "composite_conditional_nll": 0.7523065188527032
+      },
+      {
+        "parameters": [
+          0.11187796006309525,
+          0.21488443584274486,
+          1.030527969638199
+        ],
+        "composite_conditional_nll": 0.7523002372154185
+      },
+      {
+        "parameters": [
+          0.11187797006309524,
+          0.21488443584274486,
+          1.030527969638199
+        ],
+        "composite_conditional_nll": 0.7523002371828835
+      },
+      {
+        "parameters": [
+          0.11187796006309525,
+          0.21488443799158924,
+          1.030527969638199
+        ],
+        "composite_conditional_nll": 0.7523002372070254
+      },
+      {
+        "parameters": [
+          0.11187796006309525,
+          0.21488443584274486,
+          1.0305279799434788
+        ],
+        "composite_conditional_nll": 0.7523002372211285
+      },
+      {
+        "parameters": [
+          0.11199332734859338,
+          0.215355785071018,
+          1.02658727663509
+        ],
+        "composite_conditional_nll": 0.7522972923335435
+      },
+      {
+        "parameters": [
+          0.11199333734859337,
+          0.215355785071018,
+          1.02658727663509
+        ],
+        "composite_conditional_nll": 0.7522972923105103
+      },
+      {
+        "parameters": [
+          0.11199332734859338,
+          0.21535578722457585,
+          1.02658727663509
+        ],
+        "composite_conditional_nll": 0.7522972923291863
+      },
+      {
+        "parameters": [
+          0.11199332734859338,
+          0.215355785071018,
+          1.026587286900963
+        ],
+        "composite_conditional_nll": 0.7522972923342384
+      },
+      {
+        "parameters": [
+          0.11225936209304221,
+          0.215713108878716,
+          1.025431808282312
+        ],
+        "composite_conditional_nll": 0.7522965146799587
+      },
+      {
+        "parameters": [
+          0.11225937209304221,
+          0.215713108878716,
+          1.025431808282312
+        ],
+        "composite_conditional_nll": 0.752296514675979
+      },
+      {
+        "parameters": [
+          0.11225936209304221,
+          0.21571311103584712,
+          1.025431808282312
+        ],
+        "composite_conditional_nll": 0.7522965146794662
+      },
+      {
+        "parameters": [
+          0.11225936209304221,
+          0.215713108878716,
+          1.02543181853663
+        ],
+        "composite_conditional_nll": 0.7522965146795586
+      },
+      {
+        "parameters": [
+          0.11231240876129396,
+          0.21574627308610866,
+          1.025600598261975
+        ],
+        "composite_conditional_nll": 0.7522964953500191
+      },
+      {
+        "parameters": [
+          0.11231241876129396,
+          0.21574627308610866,
+          1.025600598261975
+        ],
+        "composite_conditional_nll": 0.752296495349695
+      },
+      {
+        "parameters": [
+          0.11231240876129396,
+          0.2157462752435714,
+          1.025600598261975
+        ],
+        "composite_conditional_nll": 0.7522964953500076
+      },
+      {
+        "parameters": [
+          0.11231240876129396,
+          0.21574627308610866,
+          1.025600608517981
+        ],
+        "composite_conditional_nll": 0.7522964953499284
+      },
+      {
+        "parameters": [
+          0.1123174067032693,
+          0.21574535328524236,
+          1.025659130769512
+        ],
+        "composite_conditional_nll": 0.7522964949985103
+      },
+      {
+        "parameters": [
+          0.1123174167032693,
+          0.21574535328524236,
+          1.025659130769512
+        ],
+        "composite_conditional_nll": 0.7522964949985161
+      },
+      {
+        "parameters": [
+          0.1123174067032693,
+          0.21574535544269588,
+          1.025659130769512
+        ],
+        "composite_conditional_nll": 0.7522964949985134
+      },
+      {
+        "parameters": [
+          0.1123174067032693,
+          0.21574535328524236,
+          1.0256591410261033
+        ],
+        "composite_conditional_nll": 0.752296494998505
+      }
+    ],
+    "filter_parameter_l2_change": 0.6920143101059529,
+    "filter_training_seconds": 0.03784230400015076,
+    "loss_scope": "composite conditional Gaussian score; correlated stages/horizons are not independent samples",
+    "readouts": {
+      "history": {
+        "candidate_alphas": [
+          0.1,
+          1.0,
+          10.0
+        ],
+        "development_nll": [
+          0.9923295181382689,
+          0.9914607515624286,
+          0.9822448983530752
+        ],
+        "selected_index": 2,
+        "readout_parameters": 412,
+        "weight_l2": 2.3438626732175085,
+        "variance_calibration_source": "development_only",
+        "fit_rows": 1024,
+        "independent_training_trajectories": 256,
+        "training_seconds": 0.29368722199978947,
+        "feature_width": 50,
+        "feature_bytes_sha256": "4e223a1904e2e5588e0884cf3fac5e435b8ec6a21c0cf2613d4b2d7eb55fb2f2"
+      },
+      "pulse": {
+        "candidate_alphas": [
+          0.1,
+          1.0,
+          10.0
+        ],
+        "development_nll": [
+          1.237463903347098,
+          1.2380731828690237,
+          1.241314385056844
+        ],
+        "selected_index": 0,
+        "readout_parameters": 76,
+        "weight_l2": 2.4083911725024563,
+        "variance_calibration_source": "development_only",
+        "fit_rows": 1024,
+        "independent_training_trajectories": 256,
+        "training_seconds": 1.286500447000435,
+        "feature_width": 8,
+        "feature_bytes_sha256": "6ab0470ef37be65a7677adafaaebac4dc90505a5242799b3f6a8cbe963f3f5d2"
+      },
+      "mean_drive": {
+        "candidate_alphas": [
+          0.1,
+          1.0,
+          10.0
+        ],
+        "development_nll": [
+          1.1390118422171962,
+          1.13825800124052,
+          1.1366748296333078
+        ],
+        "selected_index": 2,
+        "readout_parameters": 76,
+        "weight_l2": 2.2051188245307993,
+        "variance_calibration_source": "development_only",
+        "fit_rows": 1024,
+        "independent_training_trajectories": 256,
+        "training_seconds": 1.1666764710007556,
+        "feature_width": 8,
+        "feature_bytes_sha256": "be125024b3d1bb49199bd6be8a970785293aa34978e9c874cb160f9eee89c0d1"
+      },
+      "pulse_no_reset": {
+        "candidate_alphas": [
+          0.1,
+          1.0,
+          10.0
+        ],
+        "development_nll": [
+          1.2259392297435874,
+          1.2283031593553433,
+          1.2325769359317955
+        ],
+        "selected_index": 0,
+        "readout_parameters": 76,
+        "weight_l2": 5.020353952867308,
+        "variance_calibration_source": "development_only",
+        "fit_rows": 1024,
+        "independent_training_trajectories": 256,
+        "training_seconds": 1.3036334150001494,
+        "feature_width": 8,
+        "feature_bytes_sha256": "185439870b1b377a2698124e78e7cda2530ec1b8fd49e934b4d3e2a4882087db"
+      }
+    },
+    "model_sha256": "1fff40ceb73ad587117d5628c1ea1ebc33fb981a1ccbef6d477d90e64dadd1ce",
+    "native_baseline_trained": false,
+    "frozen_after_development": true
+  },
+  "validation_source_sha256": "d9f13ad0c0d4594ab396e979789f0b7de8bb0e4de36cc05c2bcf77dee2cccfc0",
+  "implementation_source_sha256": "4c8528150ae738329175777fe49ae9f2ecce2010e1e28e2b78829a61aceca6e4",
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "elapsed_ns": 6113639109,
+  "no_confirmation_data_used": true,
+  "scope": "Numerical, codec, checkpoint and development training validation; no task superiority or hardware-efficiency qualification"
+}

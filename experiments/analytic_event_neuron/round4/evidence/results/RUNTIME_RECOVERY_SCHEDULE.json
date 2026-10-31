@@ -1,0 +1,24 @@
+{
+  "created_utc": "2026-10-28T17:23:26.685891+00:00",
+  "execution": "Root-owned long-lived process; children remain attached to this live process. Detached launch was not durable.",
+  "failure_policy": "Stop launching phases on any failure; allow already running wrappers to finish and retain all evidence; no summary on failure.",
+  "freeze_sha256": "e7fd9c474e0c4a0ad56ad910a643ab84970da430600e6f8caccae2849c824c2d",
+  "interruption_sha256": "4f56aaed21b002a333ae09603f125bba292bc681def3555456c8b351d3a90460",
+  "mandatory_seeds": [
+    1213,
+    1427,
+    1619,
+    1823,
+    2017
+  ],
+  "maximum_audit_jobs": 2,
+  "maximum_confirmation_jobs": 4,
+  "maximum_qualification_jobs": 1,
+  "orchestrator_sha256": "2e326ea3120ef9fa4d2ff3c14ca5a06b955a7cc2e81734502e73bc6b920e7d71",
+  "original_schedule_sha256": "17f5c9d0ae48e75ebc289c9eac58764128f2546ba99a6b84b01ec9f805adc043",
+  "schema": "hepta.round4.recovery-schedule.v1",
+  "scientific_source_model_data_order_selection_and_gates_unchanged": true,
+  "source_commit": "65df1c8166c8ed370ab6773522186b2b783c94e3",
+  "successful_1213_confirmation_reexecuted": false,
+  "timing": "Mixed-concurrency shared-host descriptive measurements. Do not sum overlapping wall times or nested wrapper scopes."
+}

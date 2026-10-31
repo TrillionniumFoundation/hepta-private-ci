@@ -1,0 +1,144 @@
+{
+  "schema": "hepta.analytic-event.selection-independent-source-review.v5",
+  "reviewed_at_utc": "2026-10-29T00:09:45Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "signed_by_role": {
+    "reviewer_agent": "/root/neuron_bridge_scope",
+    "role": "independent statistical-design and provenance source reviewer",
+    "attestation": "Role attribution only; not a cryptographic signature",
+    "cryptographic_signature": false
+  },
+  "review_scope": {
+    "source_files_read_only": true,
+    "scientific_sources_modified": false,
+    "selection_tests_executed_by_reviewer": 0,
+    "experiments_executed_by_reviewer": 0,
+    "data_generated_by_reviewer": false,
+    "formal_preparation_started_by_reviewer": false,
+    "confirmation_started_by_reviewer": false,
+    "scope_note": "These statements concern this independent Round5 selection review. Only the explicitly requested review receipt is written; no source or experimental artifact was modified.",
+    "artifact_written": "experiments/analytic_event_neuron/round5/evidence/reviews/SELECTION_SOURCE_REVIEW.json"
+  },
+  "source_hashes_sha256": {
+    "experiments/analytic_event_neuron/round5/selection_study.py": "32d5033041ed69c4f6b880f165d98705d1aa1a2ea91136714d7b4229f9a73e83",
+    "experiments/analytic_event_neuron/round5/selection_math.py": "ea1344a6c4c5a81d9fa932f4f70e938e9d37cb9a695301c5bcabe87055d9f72b",
+    "experiments/analytic_event_neuron/round5/SELECTION_CONTRACT.md": "cb00c253a1564ceb3533d78831964e5bb17a36d022ef920bf5c0b1d2fdaffa4a",
+    "experiments/analytic_event_neuron/round5/test_selection.py": "f86a63f1e9fb91706efe4865e55e507d7b91da91c40282cf59a6dcfb279908ec",
+    "experiments/analytic_event_neuron/round5/__init__.py": "b02ccc3b03e70e66e4338ce36e0a12cc76e38a8ec50845e315a4695e39dee4b5"
+  },
+  "inherited_source_identity": {
+    "freeze_path": "experiments/analytic_event_neuron/round4/evidence/FREEZE.json",
+    "freeze_sha256": "e7fd9c474e0c4a0ad56ad910a643ab84970da430600e6f8caccae2849c824c2d",
+    "reviewer_independently_hashed_files": 102,
+    "matched": 102,
+    "mismatches": [],
+    "imported_scientific_dependencies_covered": true,
+    "interop_module_is_not_a_selection_dependency": true
+  },
+  "design_findings": [
+    {
+      "id": "equal_information",
+      "status": "pass_for_declared_primary_pairs",
+      "finding": "Within each exact-mixture or moment family, legacy/full-range selectors share the component pair, fitted-prior preparation, training/development rows and zero-context query information. Each evaluates 21 candidates. Range and spacing change jointly; nested candidate sets and monotonic improvement are not assumed."
+    },
+    {
+      "id": "controls",
+      "status": "adequate_for_narrow_candidate_range_question",
+      "finding": "Frozen anchor, legacy replay Gaussian, current-only Gaussian interpolation, exact mixture, separately fitted moment family and same-weight moment projection are present. Gaussian endpoint and cross-family differences remain descriptive, with unequal architecture/arithmetic budgets disclosed."
+    },
+    {
+      "id": "primary_endpoint_and_family",
+      "status": "pass",
+      "finding": "Exactly two primary full-range-minus-legacy density-NLL contrasts, averaging complete query scores over six fixed drift windows. Three correlated horizons stay inside each query score. The inherited interval resamples training-seed clusters and whole queries within each fixed window. Per-comparison alpha .025 is the nominal two-comparison Bonferroni family."
+    },
+    {
+      "id": "old_guard_and_profile_gates",
+      "status": "pass_with_declared_scope",
+      "finding": "Old-development mean paired NLL increase plus 1.645 paired SE <= .02 is explicitly a selection heuristic. Primary upper endpoint < 0 is sign evidence only. The .005 anchor-relative efficacy margin and old/calibration conditions are separate empirical/descriptive profile gates; worst individual seed-window deterioration is separately reported."
+    },
+    {
+      "id": "information_boundary",
+      "status": "no_leakage_found_in_read_code",
+      "finding": "Prediction uses public query histories only. Targets are used for training, development selection or post-freeze scoring. Query IDs, hidden law metadata and future labels do not enter the conditional-law predictor. Registration/smoke/unit namespaces are distinct; the smoke profile cannot address registered confirmation identities."
+    },
+    {
+      "id": "freeze_order",
+      "status": "pass",
+      "finding": "Preparation records all sources and numerical environment; freeze binds complete prepared artifacts and reviewed registration. Confirmation verifies them before constructing confirmation arrays. Local identity binding is explicitly distinguished from remote publication and durable storage."
+    }
+  ],
+  "initial_blockers_and_closures": [
+    {
+      "id": "R5_REVIEW_01",
+      "severity": "blocking_before_formal_run_acceptance",
+      "status": "closed",
+      "initial_finding": "The original standalone summarize entry checked registration/score hashes but did not bind the frozen sources, prepared model, numerical environment or raw confirmation identities.",
+      "closure": "summarize now calls verify_confirmation, which calls verify_prepared against the exact freeze; verifies start/index freeze and environment identities; checks complete raw/score/scope inventory, per-scope checkpoint binding, raw seeds/IDs/digests, score roster/shapes/finiteness, targets/labels and within-query density averaging. Results bind index and freeze hashes.",
+      "code_symbols": [
+        "selection_study.verify_confirmation",
+        "selection_study.verify_prepared",
+        "selection_study.summarize"
+      ],
+      "test_source_reviewed": [
+        "test_recovery_verifies_source_environment_and_prepared_model",
+        "test_recovery_rejects_rebound_raw_identities_score_shapes_and_wrong_freeze"
+      ]
+    },
+    {
+      "id": "R5_REVIEW_02",
+      "severity": "blocking_before_formal_preparation",
+      "status": "closed",
+      "initial_finding": "Effective numerical environment was not recorded or checked across preparation, freeze, confirmation and recovery summary.",
+      "closure": "environment_snapshot records Python implementation/version/executable, NumPy/SciPy versions and build configurations, platform/machine and numerical-thread environment. Matching identity is required at preparation completion, freeze, confirmation and recovery.",
+      "code_symbols": [
+        "selection_study.environment_snapshot",
+        "selection_study.prepare",
+        "selection_study.verify_prepared",
+        "selection_study.freeze_prepared",
+        "selection_study.confirm",
+        "selection_study.verify_confirmation"
+      ]
+    }
+  ],
+  "other_findings_and_closures": [
+    {
+      "id": "cost_scope",
+      "status": "resolved",
+      "finding": "Original component-fit receipts lacked per-fit parent CPU; outer summary verification/bootstrap had no timer.",
+      "closure": "New adapt wrapper records complete component-call wall and parent CPU, retaining nested inherited timing. Summary records verification/metrics/bootstrap wall and CPU, explicitly excluding its final JSON write. Contract distinguishes aggregate, nested and optional invocation-wrapper costs."
+    },
+    {
+      "id": "five_cluster_inference",
+      "status": "resolved_by_explicit_qualification",
+      "finding": "Five independent fitted-seed clusters do not justify a finite-sample coverage guarantee from a nominal percentile-bootstrap/Bonferroni label.",
+      "closure": "Registration and contract now explicitly state five clusters and nominal/approximate coverage; primary sign evidence is separated from practical anchor-relative thresholds."
+    }
+  ],
+  "validation_provenance": {
+    "reviewer_performed": "Static source/protocol/test review and read-only file hashing only.",
+    "author_reported_targeted_tests_passed": 11,
+    "author_reported_targeted_tests_failed": 0,
+    "author_execution_independently_rerun_by_reviewer": false,
+    "reviewer_read_successful_binding_and_rejection_test_sources": true,
+    "unit_binding_namespace": "hepta.aen.r5.unit-binding.v1",
+    "formal_scientific_results_evaluated": false
+  },
+  "nonblocking_limitations": [
+    "verify_confirmation is an identity and consistency audit; it does not independently recompute every forecast/score from the frozen model. Do not describe it as a complete numerical replay.",
+    "Five-seed bootstrap uncertainty remains approximate; the review does not upgrade nominal coverage or descriptive profile gates into finite-sample certificates.",
+    "The primary result concerns a candidate-range/resolution selection change, not a new neuron class, first-passage behavior, downstream utility, runtime benefit or recovery of missing Round4 evidence.",
+    "Source identity review does not substitute for actual preparation, freeze/publication, confirmation and evidence receipts."
+  ],
+  "verdict": {
+    "status": "READY_FOR_ROOT_CONTROLLED_FORMAL_PREPARATION",
+    "blocking_findings_remaining": 0,
+    "scope": "Valid only for the five exact source hashes above and the pinned inherited source identity.",
+    "confirmation_preconditions": [
+      "Successful complete preparation under the unchanged reviewed protocol and environment",
+      "Freeze binding to the reviewed registration, sources and exact prepared artifacts",
+      "Source/freeze publication and durable-evidence receipts required by the root workflow before formal confirmation",
+      "No confirmation outcomes consulted to change the registered method or acceptance rules"
+    ],
+    "review_does_not_execute_or_claim_confirmation": true
+  }
+}

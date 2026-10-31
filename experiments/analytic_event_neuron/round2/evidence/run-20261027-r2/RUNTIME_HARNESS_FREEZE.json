@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.runtime-qualification-harness.freeze.v1",
+  "created_utc": "2026-10-28T00:32:18.342174+00:00",
+  "main_freeze_sha256": "db5aa2ff983e27bc0009562acb7b095cd6c06aabf3ddea1378eb4b75e0354f68",
+  "main_source_commit": "9c27481fcd6c2d1861a048ded9a11f988afd521f",
+  "main_freeze_receipt_commit": "540d02b2ee486b41c5925ea74aff72b4f4de3412",
+  "runtime_harness_source_commit": "ca09bb02fdb7e79aad4cb16c86dad7485c1b8fc0",
+  "protocol_sha256": "a64a785fbb3302bf271065fd950b3397cfe997094a85f271a089f92674bef317",
+  "qualification_only": true,
+  "frozen_model_inference_guard_worker_unchanged": true,
+  "formal_runtime_data_generated_before_harness_freeze": false,
+  "dataset_relabeling": false,
+  "primary_gates_changed": false,
+  "sources_sha256": {
+    "experiments/analytic_event_neuron/round2/runtime_confirmation.py": "ca68ba58cece2639de96d75c11e82802dbe6fbd255ed05923f37ab11e8831392",
+    "experiments/analytic_event_neuron/round2/RUNTIME_HARNESS_AMENDMENT.md": "c278bb2590d409beadd27d0a334b1f30305d99faca63827c44e38fd6513f3779",
+    "experiments/analytic_event_neuron/round2/runtime_bridge.py": "b1cac1179e8fdab0380be2b9f619fdfac0ae3ee0c30a89f542ed785bcbf41194"
+  },
+  "parity_evidence_sha256": {
+    "runtime_harness_validation/AST_DIFF.json": "b904e9a26ebcfb1dce79a6002d1efd8090707ebb066661872dd37594ceb43277",
+    "runtime_harness_validation/QUALIFICATION_SOURCE_DIFF.patch": "5c9d61f4973406db78fa65d54c8b579605bb4893f052df71f1bb9f2c4d97d003",
+    "runtime_harness_validation/ORIGINAL_SPLIT_REJECTION.json": "ae712411ac8d05e9cc5b8edc15f86d4b1f0cae0f1fe53b20d0db2b5ef545e214",
+    "runtime_harness_validation/PARITY_PLAN.json": "56e8a1ce6c89b54da7aa943eed53452a23bf86be55c0ac80d9049d2cf4c28f2a",
+    "runtime_harness_validation/PARITY.json": "616d31704a8caba292d1cc602c4669c17d4bed37482a3f813112bfc0546c1ec7",
+    "runtime_harness_validation/ROOT_REVIEW.json": "f66055e6d56fad0aababad83d59e16425eb4bb8442fd77117626c9bdcbcc539a"
+  },
+  "verification": {
+    "normalized_qualification_AST_identical_except_admission_and_provenance": true,
+    "development_parity_nodes": 3898,
+    "development_parity_max_float_difference": 0.0,
+    "checks_each": 92
+  },
+  "coverage": "5 seeds x 3 profiles x first 4 of 16 histories x 3 horizons; additional recovery/negative checks and one deterministic tail fixture per guarded profile"
+}

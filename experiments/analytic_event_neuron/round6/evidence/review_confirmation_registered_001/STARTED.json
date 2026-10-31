@@ -1,0 +1,26 @@
+{
+  "EM_and_GD_trajectories_reconstructed_for_verification": false,
+  "data_generation_or_primary_training_performed": false,
+  "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+  "expected_freeze_sha256": "1f4d994da28d3bd61853a904d3e9da03b6ea6c90fe9d680e217f976656450ca1",
+  "namespace": "registered",
+  "native_build_is_new": false,
+  "native_execution_is_new": true,
+  "numpy": "2.3.5",
+  "phase": "confirmation",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "reviewer_sources_sha256": {
+    "audit_confirmation.py": "d199ad91948c0d299c213601e255fd8f73d168ec0a6ef50f588b9a11d7daa707",
+    "audit_replay.py": "de69941752cbf9591091c48d96fd76f550c808ecb015a0cc157858dd8145824e",
+    "audit_round6.py": "b32fa2819a54441885054cf76b24d44d1943ef283653ee36c5764fe885366b42",
+    "audit_statistics.py": "ac52d66f70d1b9420b39c1fb1bf610442590286b367263e4d0584e3931b85533",
+    "audit_training.py": "ec3e178c7d0b728a65bda87bd80df626980d9c13e06b4b19c1d8fa026538128d",
+    "audit_transport.py": "ae7495196365a8265b0ee74c3a3d00d2ab0aeafec4539a4d9577c3815b4bd702",
+    "reference.py": "ea279d20f2c9e5344083ba10ba94c1df213065ebe9bb142170ce1ad1e3dffc36"
+  },
+  "run_dir": "/dev/shm/hepta-round6-d831a963ef2f/hepta-analytic/experiments/analytic_event_neuron/round6/evidence/registered_001",
+  "schema": "hepta.acquired-feedback.independent-review.v6",
+  "scipy": "1.17.0",
+  "started_utc": "2026-10-30T13:36:40.915471+00:00"
+}

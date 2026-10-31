@@ -1,0 +1,20 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "experiments.analytic_event_neuron.round5.evidence_io",
+    "pack",
+    "experiments/analytic_event_neuron/round5/evidence/selection_registered_001/confirmation",
+    "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001",
+    "--source-label",
+    "new registered Round5 confirmation;16640 independent queries; unchanged negative results; independent audit passed",
+    "--compression",
+    "xz"
+  ],
+  "cwd": "/workspace/scratch/d831a963ef2f/hepta-analytic",
+  "full_invocation_scope": true,
+  "label": "confirmation_archive_pack",
+  "nested_component_times_must_not_be_added": true,
+  "schema": "hepta.analytic-event.round4.execution.v1",
+  "started_utc": "2026-10-29T00:22:25.593721+00:00"
+}

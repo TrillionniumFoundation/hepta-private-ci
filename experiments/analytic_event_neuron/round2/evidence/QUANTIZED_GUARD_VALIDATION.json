@@ -1,0 +1,241 @@
+{
+  "schema": "hepta.quantized-guard.independent-validation.v1",
+  "passed": true,
+  "checks": [
+    {
+      "name": "wide_domain_delivered_gaussian_density_envelope",
+      "passed": true,
+      "cases": 1126,
+      "maximum_independent_supremum": 0.009984181073280727,
+      "maximum_certificate_error": 3.469446951953614e-18,
+      "maximum_stationary_check_error": 6.63e-90,
+      "native_domain_count": 63
+    },
+    {
+      "name": "parameter_grid_and_scalar_vector_equivalence",
+      "passed": true
+    },
+    {
+      "name": "naive_parameter_quantization_does_not_inherit_fp64_guard",
+      "passed": true,
+      "counterexamples": [
+        {
+          "anchor": [
+            0.0,
+            1.0000000149011612
+          ],
+          "naive": [
+            0.0,
+            1.0
+          ],
+          "naive_supremum_unbounded": true,
+          "guarded": {
+            "mean": 0.0,
+            "variance": 1.0000000596046448,
+            "schema": "hepta.protected-q24.gaussian.v1",
+            "epsilon": 0.02,
+            "mean_q24": 0,
+            "variance_q24": 16777217,
+            "normalized_correction": 0.0,
+            "relative_variance_inflation": 4.470348291540916e-08,
+            "pointwise_nll_bound": 2.235174095810425e-08,
+            "margin": 0.019999977648259042,
+            "protected_mask": true,
+            "native_typed_domain_mask": true,
+            "anchor_required": true,
+            "additional_same_public_information_reference": true,
+            "input_rounding": "mean nearest ties-even; variance ceiling; outputs exactly on Q24 grid",
+            "scope": "Gaussian density logscore relative to declared anchor, not rounded categorical event logscore"
+          }
+        },
+        {
+          "anchor": [
+            1.4901161193847656e-08,
+            1.0
+          ],
+          "naive": [
+            0.0,
+            1.0
+          ],
+          "naive_supremum_unbounded": true,
+          "guarded": {
+            "mean": 0.0,
+            "variance": 1.0000000596046448,
+            "schema": "hepta.protected-q24.gaussian.v1",
+            "epsilon": 0.02,
+            "mean_q24": 0,
+            "variance_q24": 16777217,
+            "normalized_correction": -1.4901161193847656e-08,
+            "relative_variance_inflation": 5.960464477539063e-08,
+            "pointwise_nll_bound": 3.166496664874789e-08,
+            "margin": 0.01999996833503335,
+            "protected_mask": true,
+            "native_typed_domain_mask": true,
+            "anchor_required": true,
+            "additional_same_public_information_reference": true,
+            "input_rounding": "mean nearest ties-even; variance ceiling; outputs exactly on Q24 grid",
+            "scope": "Gaussian density logscore relative to declared anchor, not rounded categorical event logscore"
+          }
+        }
+      ]
+    },
+    {
+      "name": "categorical_q24_pointwise_logscore_and_underflow_support",
+      "passed": true,
+      "cases": 1004,
+      "maximum_independent_excess": 0.01999999994673389,
+      "maximum_certificate_error": 3.219646771412954e-15,
+      "extreme_cases": [
+        {
+          "anchor_logp": [
+            0.0,
+            -800.0,
+            -1000000.0
+          ],
+          "candidate_probs": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "delivered_counts": [
+            16777214,
+            1,
+            1
+          ],
+          "independent_maximum_excess": 1.1920929665620916e-07
+        },
+        {
+          "anchor_logp": [
+            -1e+300,
+            0.0,
+            -1e+300
+          ],
+          "candidate_probs": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "delivered_counts": [
+            332210,
+            16445005,
+            1
+          ],
+          "independent_maximum_excess": 0.019999991789656946
+        },
+        {
+          "anchor_logp": [
+            null,
+            0.0,
+            null
+          ],
+          "candidate_probs": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "delivered_counts": [
+            332211,
+            16445005,
+            0
+          ],
+          "independent_maximum_excess": 0.019999991789656946
+        },
+        {
+          "anchor_logp": [
+            -0.00926626380634364,
+            -5.999266263806343,
+            -4.999266263806343
+          ],
+          "candidate_probs": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "delivered_counts": [
+            16293325,
+            40794,
+            443097
+          ],
+          "independent_maximum_excess": 0.01999999692959876
+        }
+      ]
+    },
+    {
+      "name": "naive_event_zero_has_infinite_rare_event_nll",
+      "passed": true,
+      "finite_anchor_log_probability": -800.0,
+      "raw_count": 0,
+      "protected_count": 1
+    },
+    {
+      "name": "integer_projection_matches_exhaustive_optimum",
+      "passed": true,
+      "cases": 250,
+      "maximum_objective_excess": 0.0
+    },
+    {
+      "name": "guard_domains_and_infeasible_budgets_fail_closed",
+      "passed": true,
+      "rejections": {
+        "negative_epsilon": true,
+        "unsupported_mean": true,
+        "unsupported_variance": true,
+        "nonfinite_proposal": true,
+        "categorical_negative_epsilon": true,
+        "categorical_bad_mass": true,
+        "categorical_unormalized_anchor": true,
+        "infeasible_zero_budget": true
+      },
+      "exact_zero_budget_counts": [
+        16777216,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "actual_native_ties_even_and_exact_guarded_parameter_roundtrip",
+      "passed": true,
+      "guarded_native_cases": 36,
+      "rounding_cases": [
+        {
+          "input_mean": 2.9802322387695312e-08,
+          "native_mean": 0.0,
+          "expected_ties_even_mean": 0.0
+        },
+        {
+          "input_mean": 8.940696716308594e-08,
+          "native_mean": 1.1920928955078125e-07,
+          "expected_ties_even_mean": 1.1920928955078125e-07
+        },
+        {
+          "input_mean": -2.9802322387695312e-08,
+          "native_mean": 0.0,
+          "expected_ties_even_mean": -0.0
+        },
+        {
+          "input_mean": -8.940696716308594e-08,
+          "native_mean": -1.1920928955078125e-07,
+          "expected_ties_even_mean": -1.1920928955078125e-07
+        }
+      ],
+      "binary_sha256": "b519cae26325f818d9596aab34504490a0b5355b9eb633369878e6f07a50e179"
+    },
+    {
+      "name": "post_native_gaussian_and_separate_categorical_certificates",
+      "passed": true,
+      "maximum_gaussian_nll_excess": 0.009979608622608042,
+      "maximum_delivered_categorical_nll_excess": 0.008490204778644914,
+      "maximum_native_cdf_vs_quadrature_error": 1.5612511283791264e-16,
+      "original_native_output_not_relabelled_as_projected": true
+    }
+  ],
+  "total_checks": 9,
+  "native_evidence_directory": "/tmp/aen-quantized-guard-validation-evidence",
+  "native_evidence_manifest_sha256": "e65515105445400787ede0bc4de4ded216d0a7e0eabbdf6e531d9caf9019ee5d",
+  "native_receipts": 40,
+  "elapsed_ns": 1369000161,
+  "implementation_source_sha256": "7be5ac2877f5d09f94e0f85b7b7efe4efb453e43f50e0f4de8b77cbe951e5859",
+  "validation_source_sha256": "dc5a1d314ff9faf3112673ccefb6189683c16f04b7f9d744aec6bfe10d826e28",
+  "no_confirmation_data_used": true,
+  "scope": "Q24 density and categorical guards with exact native roundtrip on the native-domain intersection; no task superiority or production promotion"
+}

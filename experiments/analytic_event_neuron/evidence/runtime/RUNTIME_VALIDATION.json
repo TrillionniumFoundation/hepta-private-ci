@@ -1,0 +1,662 @@
+{
+  "all_passed": true,
+  "check_count": 147,
+  "checks": [
+    {
+      "name": "lost acknowledgement after durable commit",
+      "passed": true,
+      "rejection": "Injected acknowledgement loss after durable commit"
+    },
+    {
+      "name": "restart and lost-ack replay preserve exact semantic receipts",
+      "passed": true,
+      "ticks": 12
+    },
+    {
+      "name": "historical duplicate is idempotent",
+      "passed": true
+    },
+    {
+      "name": "changed payload under duplicate tick ID",
+      "passed": true,
+      "rejection": "Tick ID conflict"
+    },
+    {
+      "name": "clock regression",
+      "passed": true,
+      "rejection": "Sequence gap or clock regression"
+    },
+    {
+      "name": "sequence gap",
+      "passed": true,
+      "rejection": "Sequence gap or clock regression"
+    },
+    {
+      "name": "stale expected checkpoint",
+      "passed": true,
+      "rejection": "Checkpoint compare-and-swap conflict"
+    },
+    {
+      "name": "missing observation is not neutral evidence",
+      "passed": true,
+      "rejection": "Invalid tick; missing observation is not a neutral event"
+    },
+    {
+      "name": "rejected transitions leave checkpoint unchanged",
+      "passed": true
+    },
+    {
+      "name": "checkpoint identity mismatch: seed",
+      "passed": true,
+      "rejection": "Checkpoint corruption or identity mismatch"
+    },
+    {
+      "name": "checkpoint identity mismatch: subject_id",
+      "passed": true,
+      "rejection": "Checkpoint corruption or identity mismatch"
+    },
+    {
+      "name": "checkpoint identity mismatch: generation",
+      "passed": true,
+      "rejection": "Checkpoint corruption or identity mismatch"
+    },
+    {
+      "name": "checkpoint identity mismatch: model_digest",
+      "passed": true,
+      "rejection": "Checkpoint corruption or identity mismatch"
+    },
+    {
+      "name": "checkpoint identity mismatch: dataset_digest",
+      "passed": true,
+      "rejection": "Checkpoint corruption or identity mismatch"
+    },
+    {
+      "name": "checkpoint identity mismatch: reset_enabled",
+      "passed": true,
+      "rejection": "Checkpoint corruption or identity mismatch"
+    },
+    {
+      "name": "checkpoint byte corruption",
+      "passed": true,
+      "rejection": "Checkpoint corruption or identity mismatch"
+    },
+    {
+      "name": "valid rollback rejected by caller-held anchor",
+      "passed": true,
+      "rejection": "Checkpoint compare-and-swap conflict"
+    },
+    {
+      "name": "bounded owner capacity",
+      "passed": true,
+      "rejection": "Bounded owner capacity exceeded"
+    },
+    {
+      "name": "posterior and future target times are explicit in pulse receipts",
+      "passed": true
+    },
+    {
+      "name": "prediction-only missing tick uses its propagated conditional law",
+      "passed": true
+    },
+    {
+      "name": "target before conditioning time rejected",
+      "passed": true,
+      "rejection": "Invalid tick; missing observation is not a neutral event"
+    },
+    {
+      "name": "changed target time under duplicate ID rejected",
+      "passed": true,
+      "rejection": "Tick ID conflict"
+    },
+    {
+      "name": "reset and refractory have explicit recurrence",
+      "passed": true
+    },
+    {
+      "name": "reset and mean-drive ablations change recurrent features",
+      "passed": true
+    },
+    {
+      "name": "invalid pure state: potential",
+      "passed": true,
+      "rejection": "Unrecognized or invalid pulse state"
+    },
+    {
+      "name": "invalid pure state: eligibility",
+      "passed": true,
+      "rejection": "Unrecognized or invalid pulse state"
+    },
+    {
+      "name": "invalid pure state: steps",
+      "passed": true,
+      "rejection": "Unrecognized or invalid pulse state"
+    },
+    {
+      "name": "invalid pure state: age",
+      "passed": true,
+      "rejection": "Unrecognized or invalid pulse state"
+    },
+    {
+      "name": "invalid pure state: last_output",
+      "passed": true,
+      "rejection": "Unrecognized or invalid pulse state"
+    },
+    {
+      "name": "invalid pure state: refractory",
+      "passed": true,
+      "rejection": "Unrecognized or invalid pulse state"
+    },
+    {
+      "name": "counter RNG independent of iteration order",
+      "passed": true
+    },
+    {
+      "name": "4096-step pure recurrence remains finite",
+      "passed": true,
+      "scope": "numerical recurrence; not a multi-day retention qualification"
+    },
+    {
+      "cases": 2000,
+      "maximum_error": 3.9271517981998016e-08,
+      "name": "Q24 conserves probability mass independently of calibration",
+      "passed": true
+    },
+    {
+      "name": "native prefix is append-stable including checkpoint identity",
+      "passed": true
+    },
+    {
+      "name": "missing payload cannot masquerade as measured evidence",
+      "passed": true
+    },
+    {
+      "name": "missing and measured zero retain distinct drive masks",
+      "passed": true
+    },
+    {
+      "name": "public reliability reaches the original kernel",
+      "passed": true
+    },
+    {
+      "name": "native physical clock regression",
+      "passed": true,
+      "rejection": "Native rejection: Invalid public history"
+    },
+    {
+      "name": "fresh legacy reference binary bound to receipt",
+      "passed": true
+    },
+    {
+      "feedback_q24": -16777216,
+      "name": "original feedback adapter exact semantic parity",
+      "passed": true,
+      "reset": false
+    },
+    {
+      "feedback_q24": -16777216,
+      "name": "original feedback adapter exact semantic parity",
+      "passed": true,
+      "reset": true
+    },
+    {
+      "feedback_q24": -5592406,
+      "name": "original feedback adapter exact semantic parity",
+      "passed": true,
+      "reset": false
+    },
+    {
+      "feedback_q24": -5592406,
+      "name": "original feedback adapter exact semantic parity",
+      "passed": true,
+      "reset": true
+    },
+    {
+      "feedback_q24": 0,
+      "name": "original feedback adapter exact semantic parity",
+      "passed": true,
+      "reset": false
+    },
+    {
+      "feedback_q24": 0,
+      "name": "original feedback adapter exact semantic parity",
+      "passed": true,
+      "reset": true
+    },
+    {
+      "feedback_q24": 5592405,
+      "name": "original feedback adapter exact semantic parity",
+      "passed": true,
+      "reset": false
+    },
+    {
+      "feedback_q24": 5592405,
+      "name": "original feedback adapter exact semantic parity",
+      "passed": true,
+      "reset": true
+    },
+    {
+      "feedback_q24": 16777216,
+      "name": "original feedback adapter exact semantic parity",
+      "passed": true,
+      "reset": false
+    },
+    {
+      "feedback_q24": 16777216,
+      "name": "original feedback adapter exact semantic parity",
+      "passed": true,
+      "reset": true
+    },
+    {
+      "name": "original typed runtime recovers journal and independent witness",
+      "passed": true
+    },
+    {
+      "name": "original typed runtime rejects stale CAS",
+      "passed": true,
+      "rejection": "Native rejection: CheckpointMismatch"
+    },
+    {
+      "name": "native witness enforces subject scope",
+      "passed": true,
+      "rejection": "Native rejection: ContextMismatch"
+    },
+    {
+      "name": "native independent witness rejects acknowledged journal rollback",
+      "passed": true,
+      "rejection": "Native rejection: Journal(AcknowledgedHistoryMissing)"
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "name": "analytic probability stays distinct from runtime confidence",
+      "passed": true
+    },
+    {
+      "cases": 88,
+      "maximum_error": 1.3877787807814457e-16,
+      "name": "native erfc probability matches independent SciPy reference",
+      "passed": true
+    },
+    {
+      "input_parameter_quantization_max_probability_error": 1.911500424611745e-08,
+      "maximum_error": 3.655178938688497e-08,
+      "name": "native output Q24 error separately bounded",
+      "passed": true
+    },
+    {
+      "name": "native sub-Q24 variance rejected explicitly",
+      "passed": true,
+      "rejection": "Native rejection: Invalid typed parameter domain; positive variance must be >= 2^-24"
+    },
+    {
+      "name": "native Q24 threshold collapse rejected explicitly",
+      "passed": true,
+      "rejection": "Native rejection: Thresholds collapse in Q24"
+    },
+    {
+      "name": "native workload counted",
+      "original_sparse_ticks": 125,
+      "passed": true,
+      "requests": 104
+    },
+    {
+      "name": "separate process recovers durable native owner",
+      "passed": true
+    }
+  ],
+  "limits": [
+    "Linux x86_64 native libm qualification only",
+    "No Agentd production owner integration",
+    "No empirical calibration claimed for typed legacy confidence",
+    "Python checksum alone is not hostile-writer authentication; rollback needs caller-held anchor",
+    "4096 steps validate numerical recurrence, not multi-day retention"
+  ],
+  "native_binary_sha256": "b519cae26325f818d9596aab34504490a0b5355b9eb633369878e6f07a50e179",
+  "schema": "hepta.analytic-event.runtime-validation.v1"
+}

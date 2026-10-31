@@ -1,0 +1,103 @@
+{
+  "all_actual_restores_passed": true,
+  "archive_bytes": 150715701,
+  "archive_count": 6,
+  "archives": [
+    {
+      "actual_restore_receipt": "archival_reviews/RUNTIME_CONFIRMATION_RESTORE.json",
+      "archive_bytes": 759788,
+      "archive_materialization_backend": "Original published disk materialization through inherited safe restorer",
+      "archive_sha256": "65be108f0b6c9a8f5e1e7b3fc8e6d4abca434c65176aa56c70577e054d62be86",
+      "data_members": 40,
+      "name": "RUNTIME_CONFIRMATION",
+      "package_ns": 45015093,
+      "physical_blobs": 1,
+      "restore_receipt_sha256": "ed1e6fb8d5c7aae628d89a649de7afd78858df1461f4b8ed4eb336d4686545f1",
+      "restore_verification_ns": 49206624,
+      "restored_bytes_and_modes_match_phase_inventory": true,
+      "temporary_directory_removed": true
+    },
+    {
+      "actual_restore_receipt": "archival_reviews/FEEDBACK_CONFIRMATION_607_RESTORE.json",
+      "archive_bytes": 29777303,
+      "archive_materialization_backend": "Original published disk materialization through inherited safe restorer",
+      "archive_sha256": "742b91cd59167c685e7a7b31e558bc1e38fd3f7fab0eaa901b178d19943384cc",
+      "data_members": 9,
+      "name": "FEEDBACK_CONFIRMATION_607",
+      "package_ns": 1269138885,
+      "physical_blobs": 4,
+      "restore_receipt_sha256": "4014b026f4b4ed605ac5eae30c92d9cda3bcf2b4750ad1fabb8803b2772e3e35",
+      "restore_verification_ns": 653414983,
+      "restored_bytes_and_modes_match_phase_inventory": true,
+      "temporary_directory_removed": true
+    },
+    {
+      "actual_restore_receipt": "archival_reviews/FEEDBACK_CONFIRMATION_701_RESTORE.json",
+      "archive_bytes": 29878190,
+      "archive_materialization_backend": "Linux memfd for multipart; original path for single-file bundle",
+      "archive_sha256": "d29875b8cdee5e102ea540a92cfda5b443ba18eef48ab68e7cbd954fdec34944",
+      "data_members": 9,
+      "name": "FEEDBACK_CONFIRMATION_701",
+      "package_ns": 1260617023,
+      "physical_blobs": 4,
+      "restore_receipt_sha256": "f0b3081bbd667950afc24820b7c7f4fe7314c1e31c1db27755348502818aaefe",
+      "restore_verification_ns": 552064930,
+      "restored_bytes_and_modes_match_phase_inventory": true,
+      "temporary_directory_removed": true
+    },
+    {
+      "actual_restore_receipt": "archival_reviews/FEEDBACK_CONFIRMATION_809_RESTORE.json",
+      "archive_bytes": 29950832,
+      "archive_materialization_backend": "Linux memfd for multipart; original path for single-file bundle",
+      "archive_sha256": "6def37f1d01f0d289264dd1b2245a0f9f4623d7e5910591169e3705719540fd1",
+      "data_members": 9,
+      "name": "FEEDBACK_CONFIRMATION_809",
+      "package_ns": 2517268473,
+      "physical_blobs": 4,
+      "restore_receipt_sha256": "329cebb78474f3a2ef18237beb78c453ee1f20440a780db2b096a1b6b196aa4f",
+      "restore_verification_ns": 788377657,
+      "restored_bytes_and_modes_match_phase_inventory": true,
+      "temporary_directory_removed": true
+    },
+    {
+      "actual_restore_receipt": "archival_reviews/FEEDBACK_CONFIRMATION_907_RESTORE.json",
+      "archive_bytes": 30247064,
+      "archive_materialization_backend": "Linux memfd for multipart; original path for single-file bundle",
+      "archive_sha256": "9f892d6e8a949a9d7f67af1aa78449c812da0f1bfad3f5bb0724cdd2ca2ae758",
+      "data_members": 9,
+      "name": "FEEDBACK_CONFIRMATION_907",
+      "package_ns": 1252953742,
+      "physical_blobs": 4,
+      "restore_receipt_sha256": "191b51a1805282cdfc460762c35a5583427f28d54bda475a0c037b5d4971f97a",
+      "restore_verification_ns": 628242504,
+      "restored_bytes_and_modes_match_phase_inventory": true,
+      "temporary_directory_removed": true
+    },
+    {
+      "actual_restore_receipt": "archival_reviews/FEEDBACK_CONFIRMATION_1009_RESTORE.json",
+      "archive_bytes": 30102524,
+      "archive_materialization_backend": "Linux memfd for multipart; original path for single-file bundle",
+      "archive_sha256": "564f600d6d20a8037c98eb29ee76e43c8abd05d8397a0bf9eae4ec6f854ede62",
+      "data_members": 9,
+      "name": "FEEDBACK_CONFIRMATION_1009",
+      "package_ns": 1414378432,
+      "physical_blobs": 4,
+      "restore_receipt_sha256": "047c8fb3170c14711dea34b4d7f01a2e240cca575ebe75b26080e0323ee384c0",
+      "restore_verification_ns": 714473094,
+      "restored_bytes_and_modes_match_phase_inventory": true,
+      "temporary_directory_removed": true
+    }
+  ],
+  "data_members": 85,
+  "package_ns": 7759371648,
+  "phase_index_sha256": {
+    "feedback": "d3dde6bb70a4d58c3c8c28d948d10804e1a0a84734acdead2fa5a47f6af87205",
+    "runtime": "562fb20de8b56d0eacfe39b7b5f7b5de5fe33eb3a4a51dc077e5cd8f223cc8da"
+  },
+  "physical_blobs": 21,
+  "restore_verification_ns": 3385779792,
+  "schema": "hepta.round3.feedback-runtime-restoration-summary.v1",
+  "scientific_data_regenerated": false,
+  "scope": "Aggregation of six completed actual extraction receipts, each cross-checked against completed frozen phase indexes; this aggregation does not rerun inference or extraction. Earlier duplicate files may be evicted only under separate publication receipts.",
+  "source_commit": "29174619dfc56cef1c16b34fbf98f85a1cd2e4c3"
+}

@@ -1,0 +1,307 @@
+{
+  "schema": "hepta.neuron-bridge-scope.v1",
+  "date": "2026-10-28",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "remote_operations": "read_only",
+  "scientific_results_status": "Reported in pinned repository sources; not independently rerun in this task",
+  "branches": {
+    "terminal": {
+      "branch": "research/analytic-event-neuron-20261027",
+      "commit": "62728e442acac6c67831b9b4adffadc075294f62",
+      "role": "Conditional terminal law and signed communication; Round4 excludes newly trained first-passage/reset cells"
+    },
+    "first_passage": {
+      "branch": "research/first-passage-cell-20261028",
+      "commit": "2abafe82a99d6def2132e605e57af183e3080194",
+      "implemented": [
+        "Stable F/S/f/H and gradients, killed density/CDF",
+        "Exact segmented physical cell with multiple renewal resets, refractory carry and retained Philox seed/counter",
+        "Complete renewal likelihood fitting of six physical coefficients; no general hard-spike backprop",
+        "One-cycle absorbing grid filter with retained absorbed atom on missing observation",
+        "Native signed-Q32 original NDU forecast and realized-path adapter"
+      ],
+      "reported_confirmation": {
+        "training_seeds": 8,
+        "episodes_per_seed_per_arm": 256,
+        "paired_primary_gates_passed": 3,
+        "paired_primary_gates_total": 3,
+        "comparisons": [
+          {
+            "name": "full renewal minus single event",
+            "mean": 0.03748856,
+            "ci": [
+              0.02596592,
+              0.05046213
+            ]
+          },
+          {
+            "name": "full renewal minus fixed-cross7",
+            "mean": 0.02209145,
+            "ci": [
+              0.00977929,
+              0.03466599
+            ]
+          },
+          {
+            "name": "full renewal minus learned-threshold7",
+            "mean": 0.02214138,
+            "ci": [
+              0.00937348,
+              0.03518791
+            ]
+          }
+        ],
+        "interval": "Bonferroni-adjusted empirical intervals; each lower endpoint > .005 and all eight seed means positive"
+      },
+      "limits": [
+        "Fully observed synthetic maintenance task",
+        "Hidden-state repeated-reset deployment not established",
+        "Physical barrier is fitted shared model; action-value maintenance boundary is not an optimized natural firing free boundary",
+        "Planned WAIT_AFTER_CURRENT value differs from deployed MPC_REPLAN_EACH_HALF policy",
+        "No production authority or automatic transfer of scientific acceptance"
+      ]
+    },
+    "adaptive": {
+      "branch": "research/adaptive-neuron-closure-20261028",
+      "commit": "0d113abe0ead3b23a682c052583f4dd1381b9656",
+      "implemented": [
+        "Eight bipolar hard-IF cells with 57 deployed network parameters",
+        "Fixed-logistic, fixed-FPT and learned-FPT surrogate training arms",
+        "One-step bilevel hypergradient for mu/sigma/lambda through clipped/projected actual support update",
+        "Original owner/credit-finalizer research sidecar; deployed forward never evaluates FPT surrogate"
+      ],
+      "observed_evidence": "Current recursive Git tree contains registration and development learning_stability001/SUMMARY.json, explicitly development_only; no final scientific summary found in that pinned tree",
+      "limits": [
+        "FPT mu/sigma/lambda are training surrogate quantities, not deployed physical Brownian coefficients",
+        "Training-surrogate lambda, resource price and exogenous physical kill are separate quantities",
+        "README planned batch counts do not substantiate completed confirmation",
+        "A separate complete artifact may exist outside this Git commit; not inspected here"
+      ]
+    },
+    "free_boundary": {
+      "branch": "research/free-boundary-neuron-20261027",
+      "commit": "b6f4543ed6217364923a53ae191bde502a4749af",
+      "reported": {
+        "numerical_gates_passed": 20,
+        "learning_fits": 90,
+        "primary_boundary_comparisons_passed": 2,
+        "primary_boundary_comparisons_total": 2,
+        "owner_episodes": 168
+      },
+      "limits": [
+        "First-passage surrogate superiority not established; its descriptive intervals include zero",
+        "Model-informed Bellman advantage does not isolate unique boundary geometry or SNN benefit",
+        "Owner host evaluates separate finite Gaussian MDP readout, not the learned SNN",
+        "Maintenance corrected one stale test filename; original scientific seal retained and original 46-passing-test claim explicitly qualified"
+      ]
+    },
+    "continuous_flow": {
+      "branch": "research/continuous-boundary-flow-20261028",
+      "commit": "8efa84ecb0ae5e5a1f38b15974da6e1db1f80df0",
+      "reported": {
+        "independent_seeds": 8,
+        "audited_episodes": 26624,
+        "primary_benefit_gates_passed": 0,
+        "primary_benefit_gates_total": 3,
+        "comparisons": [
+          {
+            "name": "value_margin minus learned_margin",
+            "mean": -0.072,
+            "ci": [
+              -0.3701,
+              0.2261
+            ]
+          },
+          {
+            "name": "value_dual minus value_call",
+            "mean": 0.0485,
+            "ci": [
+              -0.0313,
+              0.1282
+            ]
+          },
+          {
+            "name": "value_dual minus event_reset",
+            "mean": -0.0211,
+            "ci": [
+              -0.1006,
+              0.0584
+            ]
+          }
+        ]
+      },
+      "limits": [
+        "Original strict audit rejected tiny negative child-CPU tokens; an explicitly normalized view passed unchanged auditor",
+        "Net utility prices numeric payload bytes only; other measured costs reported separately",
+        "Learned arms fit readouts on frozen recurrent/reservoir substrate; not a fully trained GRU comparison",
+        "Owner replay evidence adds no independent scientific samples"
+      ]
+    }
+  },
+  "local_bridge": {
+    "directory": "experiments/analytic_event_neuron/round5",
+    "handwritten_files": [
+      "interop.py",
+      "test_interop.py",
+      "INTEROP_CONTRACT.md",
+      "DEPENDENCIES.json"
+    ],
+    "vendor_source": "first_passage pinned above, four byte-identical source files",
+    "reuse": [
+      "Round4 analytic.py, runtime_law.py and runtime_codec.py imported unchanged",
+      "Pinned first-passage kernels, cell and one-cycle filtering reused"
+    ],
+    "tests": {
+      "command": "python3 -m unittest experiments.analytic_event_neuron.round5.test_interop -v",
+      "passed": 9,
+      "failed": 0,
+      "test_time_seconds": 0.015
+    },
+    "format_gate": "just fmt could not launch: restored checkout lacks codex-rs and just executable; no Rust source changed",
+    "authority": "No remote write, production activation, new fit or new confirmation run"
+  },
+  "integration_invariants": [
+    "Terminal endpoint mixture cannot identify a path model; require actual physical initial state and coefficients",
+    "Two one-sided hitting events can overlap; never normalize them as call/put complements",
+    "Density f and discounted event weight H are not probabilities",
+    "Missing event observation retains absorbed mass; observed survival conditions it away",
+    "Communication zero delta and physical survival are different events",
+    "Single-cycle absorbing belief and regenerative runtime have different state spaces",
+    "Same future segment schedule required for exact RNG continuation",
+    "Each original model, source seal, native numerical profile and scientific evidence scope remains distinct"
+  ],
+  "sources": [
+    {
+      "path": "experiments/first_passage_cell/cell.py",
+      "commit": "2abafe82a99d6def2132e605e57af183e3080194",
+      "git_blob_sha1": "18583ac13b3c100f97daa698f2dfe0d9f8cfcae6",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2abafe82a99d6def2132e605e57af183e3080194/experiments/first_passage_cell/cell.py"
+    },
+    {
+      "path": "experiments/first_passage_cell/kernels.py",
+      "commit": "2abafe82a99d6def2132e605e57af183e3080194",
+      "git_blob_sha1": "ba36d943f405403ed7e26a607d28cd18a23055fa",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2abafe82a99d6def2132e605e57af183e3080194/experiments/first_passage_cell/kernels.py"
+    },
+    {
+      "path": "experiments/first_passage_cell/filtering.py",
+      "commit": "2abafe82a99d6def2132e605e57af183e3080194",
+      "git_blob_sha1": "fd94bb1af63f184dba2a979138f140d860ab7e28",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2abafe82a99d6def2132e605e57af183e3080194/experiments/first_passage_cell/filtering.py"
+    },
+    {
+      "path": "experiments/first_passage_cell/training.py",
+      "commit": "2abafe82a99d6def2132e605e57af183e3080194",
+      "git_blob_sha1": "56b2c47c23c7131d28f858e1221d73e957660e67",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2abafe82a99d6def2132e605e57af183e3080194/experiments/first_passage_cell/training.py"
+    },
+    {
+      "path": "experiments/first_passage_cell/value.py",
+      "commit": "2abafe82a99d6def2132e605e57af183e3080194",
+      "git_blob_sha1": "b12de642fe9a408c30622b9dd012db8836cdf97f",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2abafe82a99d6def2132e605e57af183e3080194/experiments/first_passage_cell/value.py"
+    },
+    {
+      "path": "experiments/first_passage_cell/ndu.py",
+      "commit": "2abafe82a99d6def2132e605e57af183e3080194",
+      "git_blob_sha1": "902b610bbe36dc626c76a68b06d264384e0f36ae",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2abafe82a99d6def2132e605e57af183e3080194/experiments/first_passage_cell/ndu.py"
+    },
+    {
+      "path": "experiments/first_passage_cell/RESULTS.md",
+      "commit": "2abafe82a99d6def2132e605e57af183e3080194",
+      "git_blob_sha1": "67ce3b11eabff47c02893994793d84ac011d7e34",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2abafe82a99d6def2132e605e57af183e3080194/experiments/first_passage_cell/RESULTS.md"
+    },
+    {
+      "path": "experiments/first_passage_cell/prepared/1103/model6.json",
+      "commit": "2abafe82a99d6def2132e605e57af183e3080194",
+      "git_blob_sha1": "a9da51c499831e64f505dfc7770f9908180b6eb3",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2abafe82a99d6def2132e605e57af183e3080194/experiments/first_passage_cell/prepared/1103/model6.json"
+    },
+    {
+      "path": "experiments/adaptive_neuron_v2/README.md",
+      "commit": "0d113abe0ead3b23a682c052583f4dd1381b9656",
+      "git_blob_sha1": "abcaa823b31480e8695dd94273e41298973a37a8",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0d113abe0ead3b23a682c052583f4dd1381b9656/experiments/adaptive_neuron_v2/README.md"
+    },
+    {
+      "path": "experiments/adaptive_neuron_v2/learning/THEORY.md",
+      "commit": "0d113abe0ead3b23a682c052583f4dd1381b9656",
+      "git_blob_sha1": "79e672c118dbd68201fd00a69465abece6eac4d5",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0d113abe0ead3b23a682c052583f4dd1381b9656/experiments/adaptive_neuron_v2/learning/THEORY.md"
+    },
+    {
+      "path": "experiments/adaptive_neuron_v2/learning/kernel.py",
+      "commit": "0d113abe0ead3b23a682c052583f4dd1381b9656",
+      "git_blob_sha1": "e98aa241fc7ca36a1b3cdc10d4f0629b2ea802c8",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0d113abe0ead3b23a682c052583f4dd1381b9656/experiments/adaptive_neuron_v2/learning/kernel.py"
+    },
+    {
+      "path": "experiments/adaptive_neuron_v2/learning/network.py",
+      "commit": "0d113abe0ead3b23a682c052583f4dd1381b9656",
+      "git_blob_sha1": "5a5e9639ee7e6b23d1958104a60f7d97784c7a2b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0d113abe0ead3b23a682c052583f4dd1381b9656/experiments/adaptive_neuron_v2/learning/network.py"
+    },
+    {
+      "path": "experiments/adaptive_neuron_v2/learning/meta.py",
+      "commit": "0d113abe0ead3b23a682c052583f4dd1381b9656",
+      "git_blob_sha1": "ff4bbd5076bed063f276e85d9015941c47555c29",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0d113abe0ead3b23a682c052583f4dd1381b9656/experiments/adaptive_neuron_v2/learning/meta.py"
+    },
+    {
+      "path": "experiments/adaptive_neuron_v2/owner/README.md",
+      "commit": "0d113abe0ead3b23a682c052583f4dd1381b9656",
+      "git_blob_sha1": "9d07e91b65ac17497c940314650fd76be693baba",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0d113abe0ead3b23a682c052583f4dd1381b9656/experiments/adaptive_neuron_v2/owner/README.md"
+    },
+    {
+      "path": "experiments/adaptive_neuron_v2/deployment.py",
+      "commit": "0d113abe0ead3b23a682c052583f4dd1381b9656",
+      "git_blob_sha1": "2afe04eae4c1ebe8717e893c1c2b6cee94290bee",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0d113abe0ead3b23a682c052583f4dd1381b9656/experiments/adaptive_neuron_v2/deployment.py"
+    },
+    {
+      "path": "experiments/adaptive_neuron_v2/results/development/learning_stability001/SUMMARY.json",
+      "commit": "0d113abe0ead3b23a682c052583f4dd1381b9656",
+      "git_blob_sha1": "f1e780159679adc46638d51db9744d768ad6bc41",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0d113abe0ead3b23a682c052583f4dd1381b9656/experiments/adaptive_neuron_v2/results/development/learning_stability001/SUMMARY.json"
+    },
+    {
+      "path": "experiments/free_boundary_neuron/README.md",
+      "commit": "b6f4543ed6217364923a53ae191bde502a4749af",
+      "git_blob_sha1": "e6fa827c146421a3ddfbc9dfa808f86079077d34",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b6f4543ed6217364923a53ae191bde502a4749af/experiments/free_boundary_neuron/README.md"
+    },
+    {
+      "path": "experiments/free_boundary_neuron/owner/README.md",
+      "commit": "b6f4543ed6217364923a53ae191bde502a4749af",
+      "git_blob_sha1": "0d4ff08b6d1c124b4354ac1d095b5f3246c1d6c0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b6f4543ed6217364923a53ae191bde502a4749af/experiments/free_boundary_neuron/owner/README.md"
+    },
+    {
+      "path": "experiments/free_boundary_neuron/ACCEPTANCE.md",
+      "commit": "b6f4543ed6217364923a53ae191bde502a4749af",
+      "git_blob_sha1": "accad4fdcd11fc07a275163d8b57c961b3e56b6d",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b6f4543ed6217364923a53ae191bde502a4749af/experiments/free_boundary_neuron/ACCEPTANCE.md"
+    },
+    {
+      "path": "experiments/continuous_boundary_flow/README.md",
+      "commit": "8efa84ecb0ae5e5a1f38b15974da6e1db1f80df0",
+      "git_blob_sha1": "d9d5ffef13ec90d6a14a9f1d9d58d7410d7e2664",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8efa84ecb0ae5e5a1f38b15974da6e1db1f80df0/experiments/continuous_boundary_flow/README.md"
+    },
+    {
+      "path": "experiments/continuous_boundary_flow/results/RESULTS.md",
+      "commit": "8efa84ecb0ae5e5a1f38b15974da6e1db1f80df0",
+      "git_blob_sha1": "3f23713ef57fc9d8577ed4104f97017e9821f6f5",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8efa84ecb0ae5e5a1f38b15974da6e1db1f80df0/experiments/continuous_boundary_flow/results/RESULTS.md"
+    },
+    {
+      "path": "experiments/first_passage_cell/CONTRACT.md",
+      "commit": "2abafe82a99d6def2132e605e57af183e3080194",
+      "git_blob_sha1": "e65156865c56f3085db37fe6b5a2605f02184f3a",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2abafe82a99d6def2132e605e57af183e3080194/experiments/first_passage_cell/CONTRACT.md"
+    }
+  ]
+}

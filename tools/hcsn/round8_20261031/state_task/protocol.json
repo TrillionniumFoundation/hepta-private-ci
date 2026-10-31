@@ -1,0 +1,148 @@
+{
+  "task": "partial-observation irregular-history future first-passage risk",
+  "status": "preregistered_before_training_and_confirmation",
+  "modes": [
+    -0.8,
+    0,
+    0.8
+  ],
+  "prior": [
+    0.3,
+    0.4,
+    0.3
+  ],
+  "history_sensor_sd": [
+    0.6,
+    1.4
+  ],
+  "history_dt": [
+    0.05,
+    0.6
+  ],
+  "history_lengths": {
+    "train": [
+      3,
+      16
+    ],
+    "dev": [
+      3,
+      16
+    ],
+    "iid": [
+      3,
+      16
+    ],
+    "long_history": [
+      24,
+      32
+    ],
+    "low_noise": [
+      3,
+      16
+    ],
+    "moving_boundary": [
+      3,
+      16
+    ]
+  },
+  "query": {
+    "distance": [
+      0.25,
+      1.4
+    ],
+    "sigma": [
+      0.15,
+      0.65
+    ],
+    "horizon": [
+      0.2,
+      1.8
+    ],
+    "slope": [
+      -0.2,
+      0.2
+    ],
+    "protect_cost": [
+      0.2,
+      0.8
+    ]
+  },
+  "shifts": {
+    "low_noise": {
+      "sigma": [
+        0.025,
+        0.08
+      ]
+    },
+    "moving_boundary": {
+      "slope": [
+        0.35,
+        0.8
+      ]
+    }
+  },
+  "data_sizes": {
+    "train": 3072,
+    "dev": 768,
+    "confirmation_per_regime": 2048
+  },
+  "data_seeds": {
+    "train": 12017,
+    "dev": 12029,
+    "iid": 91001,
+    "long_history": 91002,
+    "low_noise": 91003,
+    "moving_boundary": 91004
+  },
+  "confirmation_generation_rule": "Only after checkpoints and all source files have been hashed and frozen. All four regimes reported; no retuning.",
+  "model_seeds": [
+    17,
+    29,
+    43
+  ],
+  "models": [
+    "analytic_filter",
+    "sufficient_mlp",
+    "gru",
+    "memoryless"
+  ],
+  "known_model_reference": "ordinary two-accumulator Bayes filter plus the same closed-form risk; constructive equivalence control, not an extra observation",
+  "input_contract": "All predictors see identical causal sensor increments, interval lengths, sensor standard deviations and query parameters; no hidden drift label at inference. Sufficient features are deterministic transforms, and their preparation is included in timing.",
+  "supervised_target": "Exact conditional event probability in a declared known generative model; sampled event labels are reserved for calibration reporting. This is not model-free learning.",
+  "training": {
+    "optimizer": "Adam",
+    "steps": 800,
+    "batch": 256,
+    "lr": 0.003,
+    "gradient_clip": 1,
+    "checkpoint_every": 100,
+    "selection": "minimum development MSE",
+    "dtype": "float32",
+    "threads": 1
+  },
+  "architecture": {
+    "gru_hidden": 24,
+    "head_hidden": 48,
+    "head_layers": 2,
+    "analytic_trainable": "two positive sufficient-statistic scales and three prior logits"
+  },
+  "gates": {
+    "memory_function": "mean confirmation MSE below memoryless and lower expected protective-action regret",
+    "ordinary_noninferiority_margin_mse": 0.0005,
+    "ordinary_noninferiority_margin_regret": 0.001,
+    "irreducibility": "fails if an ordinary recurrent/gated/direct head, including a known-model nonspiking sufficient-statistic implementation, matches both margins at no greater full execution cost",
+    "scope": "Synthetic matched-model evidence only; no general lower bound, no imported Hölder-space theorem, no production activation"
+  },
+  "cost": {
+    "timing": "CPU process_time and wall perf_counter, full history preparation plus prediction plus action selection; batch and scalar workloads reported separately",
+    "training_amortization_horizons": [
+      128,
+      1000,
+      10000,
+      100000
+    ],
+    "compute_price_per_cpu_second": 1,
+    "include": "data/teacher generation, train/dev selection, failed development, preprocessing, model serialization, inference and decision; native logging/recovery is a separate integrated track"
+  },
+  "uncertainty": "Paired episode bootstrap (1000 resamples) on seed-averaged metrics, descriptive only; seeded training results also reported individually."
+}

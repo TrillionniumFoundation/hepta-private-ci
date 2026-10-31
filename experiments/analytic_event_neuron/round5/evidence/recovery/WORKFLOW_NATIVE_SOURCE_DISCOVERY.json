@@ -1,0 +1,348 @@
+{
+  "schema": "hepta.analytic-event.round4.bounded-workflow-recovery.v1",
+  "created_utc": "2026-10-29T00:04:54.352Z",
+  "discovery_scope": "One bounded existing-run discovery pass for the analytic-event research branch and the pinned original native-source commit; no workflows created or triggered.",
+  "queries": [
+    {
+      "label": "analytic_event_branch",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?branch=research%2Fanalytic-event-neuron-20261027&per_page=20",
+      "total_count": 0,
+      "runs": []
+    },
+    {
+      "label": "native_source_commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=0acfd9b27db910c180b0d8911f39aea469b7f864&per_page=20",
+      "total_count": 4,
+      "runs": [
+        {
+          "id": 40541734166,
+          "name": "blocking-ci",
+          "event": "pull_request",
+          "head_branch": "research/parameter-field-neuron-bridge-20261027",
+          "head_sha": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+          "status": "completed",
+          "conclusion": "failure",
+          "created_at": "2026-10-27T16:31:22Z",
+          "updated_at": "2026-10-27T18:08:41Z",
+          "artifacts_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40541734166/artifacts",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40541734166"
+        },
+        {
+          "id": 40541734043,
+          "name": "v8-canary",
+          "event": "pull_request",
+          "head_branch": "research/parameter-field-neuron-bridge-20261027",
+          "head_sha": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-27T16:31:22Z",
+          "updated_at": "2026-10-27T16:37:40Z",
+          "artifacts_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40541734043/artifacts",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40541734043"
+        },
+        {
+          "id": 40541734218,
+          "name": "Hepta architecture convergence",
+          "event": "pull_request",
+          "head_branch": "research/parameter-field-neuron-bridge-20261027",
+          "head_sha": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-27T16:31:22Z",
+          "updated_at": "2026-10-27T17:19:59Z",
+          "artifacts_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40541734218/artifacts",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40541734218"
+        },
+        {
+          "id": 40541729664,
+          "name": "PR #4086",
+          "event": "dynamic",
+          "head_branch": "refs/pull/4086/head",
+          "head_sha": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-27T16:31:21Z",
+          "updated_at": "2026-10-27T18:56:16Z",
+          "artifacts_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40541729664/artifacts",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40541729664"
+        }
+      ]
+    }
+  ],
+  "artifact_listings": [
+    {
+      "run": {
+        "id": 40541734166,
+        "name": "blocking-ci",
+        "event": "pull_request",
+        "head_branch": "research/parameter-field-neuron-bridge-20261027",
+        "head_sha": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-10-27T16:31:22Z",
+        "updated_at": "2026-10-27T18:08:41Z",
+        "artifacts_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40541734166/artifacts",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40541734166"
+      },
+      "artifacts": [
+        {
+          "id": 12757440883,
+          "name": "bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-2",
+          "size_in_bytes": 4596626,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12757440883",
+          "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12757440883/zip",
+          "expired": false,
+          "created_at": "2026-10-27T17:56:17Z",
+          "expires_at": "2027-01-25T16:31:23Z",
+          "updated_at": "2026-10-27T17:56:17Z",
+          "digest": "sha256:9d033ba5e9f1365d09327d37acbf499017fe83e6d894d9e7b04f5fa0d35c6098",
+          "workflow_run": {
+            "id": 40541734166,
+            "repository_id": 1320694176,
+            "head_repository_id": 1320694176,
+            "head_branch": "research/parameter-field-neuron-bridge-20261027",
+            "head_sha": "0acfd9b27db910c180b0d8911f39aea469b7f864"
+          }
+        },
+        {
+          "id": 12757218191,
+          "name": "bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-1",
+          "size_in_bytes": 4805082,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12757218191",
+          "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12757218191/zip",
+          "expired": false,
+          "created_at": "2026-10-27T18:07:46Z",
+          "expires_at": "2027-01-25T16:31:23Z",
+          "updated_at": "2026-10-27T18:07:46Z",
+          "digest": "sha256:fbfb7a1aad0a83201328ee9428f626d8fdf5e3dd8807be123ecf8f77b92fd51f",
+          "workflow_run": {
+            "id": 40541734166,
+            "repository_id": 1320694176,
+            "head_repository_id": 1320694176,
+            "head_branch": "research/parameter-field-neuron-bridge-20261027",
+            "head_sha": "0acfd9b27db910c180b0d8911f39aea469b7f864"
+          }
+        },
+        {
+          "id": 12756284956,
+          "name": "bazel-execution-logs-clippy-x86_64-pc-windows-msvc",
+          "size_in_bytes": 5116597,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12756284956",
+          "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12756284956/zip",
+          "expired": false,
+          "created_at": "2026-10-27T18:05:23Z",
+          "expires_at": "2027-01-25T16:31:23Z",
+          "updated_at": "2026-10-27T18:05:23Z",
+          "digest": "sha256:137d79b42f6c21a460d728b2112ebe21f613bd75e5e8f159b4b3b77c3d51f609",
+          "workflow_run": {
+            "id": 40541734166,
+            "repository_id": 1320694176,
+            "head_repository_id": 1320694176,
+            "head_branch": "research/parameter-field-neuron-bridge-20261027",
+            "head_sha": "0acfd9b27db910c180b0d8911f39aea469b7f864"
+          }
+        },
+        {
+          "id": 12755580474,
+          "name": "bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-3",
+          "size_in_bytes": 4759953,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12755580474",
+          "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12755580474/zip",
+          "expired": false,
+          "created_at": "2026-10-27T17:30:45Z",
+          "expires_at": "2027-01-25T16:31:23Z",
+          "updated_at": "2026-10-27T17:30:45Z",
+          "digest": "sha256:4b0ef959b6f33c4c01d03a30ae592b9703471ee7083e3c86ef24038d9ec83b54",
+          "workflow_run": {
+            "id": 40541734166,
+            "repository_id": 1320694176,
+            "head_repository_id": 1320694176,
+            "head_branch": "research/parameter-field-neuron-bridge-20261027",
+            "head_sha": "0acfd9b27db910c180b0d8911f39aea469b7f864"
+          }
+        },
+        {
+          "id": 12755372263,
+          "name": "bazel-execution-logs-verify-release-build-x86_64-pc-windows-msvc",
+          "size_in_bytes": 4895502,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12755372263",
+          "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12755372263/zip",
+          "expired": false,
+          "created_at": "2026-10-27T17:35:18Z",
+          "expires_at": "2027-01-25T16:31:23Z",
+          "updated_at": "2026-10-27T17:35:18Z",
+          "digest": "sha256:1c8f63f407b99882e810ade018bf6825f3b310859a34f063986af378ccd4c924",
+          "workflow_run": {
+            "id": 40541734166,
+            "repository_id": 1320694176,
+            "head_repository_id": 1320694176,
+            "head_branch": "research/parameter-field-neuron-bridge-20261027",
+            "head_sha": "0acfd9b27db910c180b0d8911f39aea469b7f864"
+          }
+        },
+        {
+          "id": 12754849758,
+          "name": "bazel-execution-logs-clippy-x86_64-unknown-linux-gnu",
+          "size_in_bytes": 6792308,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12754849758",
+          "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12754849758/zip",
+          "expired": false,
+          "created_at": "2026-10-27T17:41:34Z",
+          "expires_at": "2027-01-25T16:31:23Z",
+          "updated_at": "2026-10-27T17:41:34Z",
+          "digest": "sha256:ae321ec714ad33ea98d5f18fe5c567eeed033a1bee603d97ef1ee94749968247",
+          "workflow_run": {
+            "id": 40541734166,
+            "repository_id": 1320694176,
+            "head_repository_id": 1320694176,
+            "head_branch": "research/parameter-field-neuron-bridge-20261027",
+            "head_sha": "0acfd9b27db910c180b0d8911f39aea469b7f864"
+          }
+        },
+        {
+          "id": 12753337224,
+          "name": "ndu-v6-smoke-40541734166-1",
+          "size_in_bytes": 24612256,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12753337224",
+          "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12753337224/zip",
+          "expired": false,
+          "created_at": "2026-10-27T17:07:20Z",
+          "expires_at": "2026-11-10T17:07:19Z",
+          "updated_at": "2026-10-27T17:07:20Z",
+          "digest": "sha256:b7a46a91403e82ae0d85a3a85219754c4cb032a0acc8991f4e02c9d369447266",
+          "workflow_run": {
+            "id": 40541734166,
+            "repository_id": 1320694176,
+            "head_repository_id": 1320694176,
+            "head_branch": "research/parameter-field-neuron-bridge-20261027",
+            "head_sha": "0acfd9b27db910c180b0d8911f39aea469b7f864"
+          }
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": {
+        "id": 40541734043,
+        "name": "v8-canary",
+        "event": "pull_request",
+        "head_branch": "research/parameter-field-neuron-bridge-20261027",
+        "head_sha": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-10-27T16:31:22Z",
+        "updated_at": "2026-10-27T16:37:40Z",
+        "artifacts_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40541734043/artifacts",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40541734043"
+      },
+      "artifacts": [],
+      "error": null
+    },
+    {
+      "run": {
+        "id": 40541734218,
+        "name": "Hepta architecture convergence",
+        "event": "pull_request",
+        "head_branch": "research/parameter-field-neuron-bridge-20261027",
+        "head_sha": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-10-27T16:31:22Z",
+        "updated_at": "2026-10-27T17:19:59Z",
+        "artifacts_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40541734218/artifacts",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40541734218"
+      },
+      "artifacts": [
+        {
+          "id": 12754910863,
+          "name": "hepta-architecture-40541734218-1-source-head",
+          "size_in_bytes": 106236,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12754910863",
+          "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12754910863/zip",
+          "expired": false,
+          "created_at": "2026-10-27T17:19:49Z",
+          "expires_at": "2026-11-26T17:19:48Z",
+          "updated_at": "2026-10-27T17:19:49Z",
+          "digest": "sha256:56ec189156a2a9c16417a8524475525143447b42721308836da27fcc445d9f13",
+          "workflow_run": {
+            "id": 40541734218,
+            "repository_id": 1320694176,
+            "head_repository_id": 1320694176,
+            "head_branch": "research/parameter-field-neuron-bridge-20261027",
+            "head_sha": "0acfd9b27db910c180b0d8911f39aea469b7f864"
+          }
+        },
+        {
+          "id": 12752437453,
+          "name": "hepta-architecture-40541734218-1-base-merge",
+          "size_in_bytes": 23598,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12752437453",
+          "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12752437453/zip",
+          "expired": false,
+          "created_at": "2026-10-27T16:50:51Z",
+          "expires_at": "2026-11-26T16:50:50Z",
+          "updated_at": "2026-10-27T16:50:51Z",
+          "digest": "sha256:c3e88e624d8a2f168c88b7dabc3d64731896bd05f429c4413c8c909a7fc32853",
+          "workflow_run": {
+            "id": 40541734218,
+            "repository_id": 1320694176,
+            "head_repository_id": 1320694176,
+            "head_branch": "research/parameter-field-neuron-bridge-20261027",
+            "head_sha": "0acfd9b27db910c180b0d8911f39aea469b7f864"
+          }
+        }
+      ],
+      "error": null
+    },
+    {
+      "run": {
+        "id": 40541729664,
+        "name": "PR #4086",
+        "event": "dynamic",
+        "head_branch": "refs/pull/4086/head",
+        "head_sha": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-10-27T16:31:21Z",
+        "updated_at": "2026-10-27T18:56:16Z",
+        "artifacts_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40541729664/artifacts",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40541729664"
+      },
+      "artifacts": [],
+      "error": null
+    }
+  ],
+  "candidate": {
+    "artifact_id": 12753337224,
+    "name": "ndu-v6-smoke-40541734166-1",
+    "declared_zip_bytes": 24612256,
+    "declared_github_artifact_digest": "sha256:b7a46a91403e82ae0d85a3a85219754c4cb032a0acc8991f4e02c9d369447266",
+    "workflow_source_commit": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+    "workflow_path": ".github/workflows/ndu-v6.yml",
+    "declared_payload": "Workflow copies the actual ndu-generation-rollout evaluator plus native-binary.sha256 into its uploaded evidence directory and retains rollout/owner evidence and failure status.",
+    "distinction": "This is a different NDU evaluator and smoke corpus. It cannot substitute for the Round4 analytic-event executable or recover the missing original Round4 confirmations.",
+    "tested_source_caveat": "The PR workflow checks out github.sha, the prospective merge commit; head_sha/SOURCE_SHA is the PR source. Actual TESTED_SHA and binary identity require reading the artifact's retained environment/status, which was not possible locally."
+  },
+  "provider_download_returned_file_reference": true,
+  "returned_file_reference": {
+    "file_id": "file_0000000080648230bedf769ce799db88",
+    "file_name": "native-source-0acfd9-ndu-v6.zip",
+    "mime_type": "application/zip"
+  },
+  "local_materialization_attempt": {
+    "route": "Library resolved-reference prepare_materialize followed once by current library_file_transfer.py materialize",
+    "exit_code": 1,
+    "message": "library file transfer failed: download failed",
+    "wall_time_seconds": 0.047758515
+  },
+  "local_zip_bytes_recovered": false,
+  "zip_hash_revalidated_locally": false,
+  "native_binary_inspected": false,
+  "native_binary_executed": false,
+  "signed_urls_or_credentials_retained_in_this_receipt": false,
+  "browser_used": false,
+  "manual_transfer_attempted": false,
+  "network_policy_changed": false,
+  "new_scientific_execution": false,
+  "discovery_closed": true
+}

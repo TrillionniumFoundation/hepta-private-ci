@@ -1,0 +1,111 @@
+{
+  "registered_training_schedule": {
+    "regression_epochs": 100,
+    "control_epochs": 30,
+    "fit_seeds": [
+      11,
+      12,
+      13,
+      14,
+      15
+    ]
+  },
+  "development_attempts": [
+    {
+      "name": "initial_task_step_smoke",
+      "status": "failed_before_any_fit",
+      "error": "ValueError: a live state must leave at least one submission tick",
+      "cause": "STOP constructed an intermediate nonterminal State at the deadline",
+      "resolution": "construct terminated flag on initial successor; exact deadline tests pass",
+      "whole_process_cost_available": false
+    },
+    {
+      "name": "development_smoke",
+      "models": 2,
+      "regression_epochs": 20,
+      "control_epochs": 0,
+      "train_episodes": 128,
+      "dev_episodes": 48,
+      "purpose": "speed and gradient check",
+      "whole_process_cost_available": false
+    },
+    {
+      "name": "development_control",
+      "models": 2,
+      "regression_epochs": 50,
+      "control_epochs": 10,
+      "critic_weight": 0.05,
+      "myopic_weight": 0.05,
+      "train_episodes": 128,
+      "dev_episodes": 48,
+      "purpose": "joint-return prototype before final cost-aligned Q1 and auxiliary weights",
+      "whole_process_cost_available": false
+    },
+    {
+      "name": "development_final",
+      "models": 2,
+      "regression_epochs": 100,
+      "control_epochs": 30,
+      "critic_weight": 1.0,
+      "myopic_weight": 1.0,
+      "train_episodes": 256,
+      "dev_episodes": 64,
+      "purpose": "fixed-budget speed validation",
+      "whole_process_cost_available": false,
+      "repeat_state_dict_bitwise_equal_to_registered_seed11": {
+        "clocked": true,
+        "first_passage": true
+      }
+    },
+    {
+      "name": "development_runner",
+      "trajectories": 96,
+      "status": "complete",
+      "failures": 0,
+      "fixture_seed_base": 210000,
+      "internal_seed_base": 900000000,
+      "final_confirmation_internal_seed_base": 920000000
+    }
+  ],
+  "limitations": [
+    "Early prototype source revisions were not all snapshotted; saved exploratory checkpoints/data/curves and rejection records are retained, but these smokes are not part of confirmatory inference.",
+    "Whole-process timing for early exploratory attempts is unavailable; recorded epoch timing is a lower bound, never substituted for complete cost."
+  ],
+  "temperature_relocations": [
+    {
+      "original": "evidence/fits_primary/first_passage_temperature_none_11.json",
+      "retained": "evidence/development_temperature_legacy/checkpoints/first_passage_temperature_none_11.json",
+      "sha256": "ac517f6720a8483ea0f7b32d01d68dead55995cc602ab0795cc5a89838d76e89",
+      "excluded_from_confirmation": true,
+      "reason": "pre-confirmation mass-conservation rejection; all five excluded without outcome selection"
+    },
+    {
+      "original": "evidence/fits_primary/first_passage_temperature_none_12.json",
+      "retained": "evidence/development_temperature_legacy/checkpoints/first_passage_temperature_none_12.json",
+      "sha256": "235b7ec5c4e48b6fc115c35bf1c6b636897e7578d64db16accbe9e8728857836",
+      "excluded_from_confirmation": true,
+      "reason": "pre-confirmation mass-conservation rejection; all five excluded without outcome selection"
+    },
+    {
+      "original": "evidence/fits_primary/first_passage_temperature_none_13.json",
+      "retained": "evidence/development_temperature_legacy/checkpoints/first_passage_temperature_none_13.json",
+      "sha256": "e482a0524a6f1b8c715a8aa929ac03a0495c7b2ec2cf40b0f0fc0ce8c26d5e4e",
+      "excluded_from_confirmation": true,
+      "reason": "pre-confirmation mass-conservation rejection; all five excluded without outcome selection"
+    },
+    {
+      "original": "evidence/fits_primary/first_passage_temperature_none_14.json",
+      "retained": "evidence/development_temperature_legacy/checkpoints/first_passage_temperature_none_14.json",
+      "sha256": "fb958af89227d1d4728f4113c8e0a7a1b7992afd3da903dd2970ef93cfd846f9",
+      "excluded_from_confirmation": true,
+      "reason": "pre-confirmation mass-conservation rejection; all five excluded without outcome selection"
+    },
+    {
+      "original": "evidence/fits_primary/first_passage_temperature_none_15.json",
+      "retained": "evidence/development_temperature_legacy/checkpoints/first_passage_temperature_none_15.json",
+      "sha256": "73bb8de964c601daf7a1e786ac4fb1684aef94aa358830ff9b9e251e2a827055",
+      "excluded_from_confirmation": true,
+      "reason": "pre-confirmation mass-conservation rejection; all five excluded without outcome selection"
+    }
+  ]
+}

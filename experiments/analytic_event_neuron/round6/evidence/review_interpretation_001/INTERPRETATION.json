@@ -1,0 +1,89 @@
+{
+  "confirmation_data_accessed": false,
+  "created_utc": "2026-10-30T13:00:22.695186+00:00",
+  "interpretation": "The wait value is an unconstrained continuous-repair lookahead; actual bounded codec/native/broker execution determines accepted outcomes and utility.",
+  "native_binary_sha256": "b519cae26325f818d9596aab34504490a0b5355b9eb633369878e6f07a50e179",
+  "native_typed_input_domain": {
+    "every_parameter_finite_and_absolute_value_at_most": 8.0,
+    "parameter_order": [
+      "mean",
+      "variance",
+      "lower",
+      "upper"
+    ],
+    "raw_typed_variance": "zero or [2^-24,8]; this study shared law excludes zero",
+    "symmetric_thresholds": "lower=-sqrt(repair_cost), upper=sqrt(repair_cost); both must satisfy the native bounds",
+    "thresholds": "lower < upper before quantization and after ties-to-even signed Q24 quantization"
+  },
+  "new_experiment_or_retraining_performed": false,
+  "prepared_review_sha256": "6ed48a3cc78d36216c8674f6c60c9c3530be7ff3e1de8f1caf85c9cefa8f5358",
+  "prepared_sha256": "01cd90245b3d024d5be8676a684266c44a2e8e608fd9d175625db979d48d688a",
+  "primary_sources_or_registered_artifacts_changed": false,
+  "refusal_policy": {
+    "discard_confirmation_sample": false,
+    "real_native_codec_or_broker_refusal": "retain as recorded execution failure and incomplete registered scope",
+    "replace_seed_or_regenerate_confirmation_for_success": false,
+    "report_success_only_after_full_registered_inventory_and_replay": true,
+    "silently_clip_action_or_state_to_salvage_sample": false
+  },
+  "rounding_bound": {
+    "does_not_cover": [
+      "future parameter/transport quantization",
+      "future learned readout policy deviations",
+      "future finite state/action domain constraints or refusal"
+    ],
+    "not_a_Bellman_optimality_certificate": true,
+    "scope": "nearest-Q24 rounding of an unconstrained continuous optimal amount; excludes clipping/refusal and all other approximations",
+    "squared_error_gain_loss_upper_bound": 8.881784197001252e-16
+  },
+  "schema": "hepta.round6.independent-continuation-domain-interpretation.v1",
+  "shared_law_domain": {
+    "applies_after_codec_decode": true,
+    "component_counts": [
+      1,
+      2
+    ],
+    "decoded_component_mean_closed_interval": [
+      -8.0,
+      8.0
+    ],
+    "decoded_component_variance_closed_interval": [
+      5.960464477539063e-08,
+      8.0
+    ],
+    "source_values_can_be_refused_if_quantization_moves_decoded_values_outside_domain": true,
+    "weights": "finite, strictly positive, normalized to sum one within 1e-12"
+  },
+  "sources_sha256": {
+    "experiments/analytic_event_neuron/native_head.rs": "b5312dea693ea7edcef5db210b6a25e08573fe2a3a5e2873843fd6b01d5ac983",
+    "experiments/analytic_event_neuron/round4/runtime_codec.py": "aa7904959b2d0facfa1c902b2602973019b3a575ef22c0a80c66e7640651e744",
+    "experiments/analytic_event_neuron/round4/runtime_law.py": "1bfdb5ff3262a7b8cf54f96f0896f13f956432b9f261c22705dc0e28aacb218f",
+    "experiments/analytic_event_neuron/round4/runtime_owner.py": "0a7b6d2fa94a5195984a773c145445afa10deec1124120f4956ed8d326b16c63",
+    "experiments/analytic_event_neuron/round6/broker.py": "e9d10479e4b5ef590a7a965c2409c0d85720313a15b83b226e6a14d685c7ad25",
+    "experiments/analytic_event_neuron/round6/continuation.py": "c1d197dca1887cae48b5551477e5719922fb875091b956ec302620ddcfd6c0e5"
+  },
+  "state_and_public_domain": {
+    "codec_sequence_inclusive": [
+      1,
+      16
+    ],
+    "component_count_fixed_within_owner": true,
+    "nonfloat_packed_and_accumulated_integer_absolute_value_strictly_below": 281474976710656,
+    "public": "exactly six declared fields; initial/residuals finite, costs and sensor variances strictly positive finite; no general absolute bound on public observations",
+    "study_acquired_observations_inclusive": [
+      1,
+      2
+    ],
+    "timestamps": "finite, nonnegative, nondecreasing; propagation frames retain prior timestamp"
+  },
+  "storage_scope": "Tmpfs byte writes/readbacks and fsync calls support the stated process-level execution/replay checks; they do not establish persistent-disk or host-reboot durability.",
+  "terminal_action_domain": {
+    "final_delivered_value": "initial + repair_amount must be finite",
+    "refusal_is_not_silent_clipping": true,
+    "repair_amount_closed_interval": [
+      -8.0,
+      8.0
+    ],
+    "stop_amount": 0.0
+  }
+}

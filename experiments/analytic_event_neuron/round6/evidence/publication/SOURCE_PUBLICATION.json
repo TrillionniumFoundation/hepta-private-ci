@@ -1,0 +1,385 @@
+{
+  "schema": "hepta.round6.source-publication.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "research/analytic-event-round6-20261030",
+  "base_commit": "d6a828eac92cc8df03f3ccce0a6d2fc04c7ce9f6",
+  "stages": [
+    {
+      "stage": 1,
+      "commit": "cf16a5a4435ebaac49e655492989ccddbd5f79b7",
+      "tree": "ae86f3bae589d55d2e95acde1dba54be21e66026",
+      "files": [
+        {
+          "path": "experiments/analytic_event_neuron/round6/CONTRACT.md",
+          "sha256": "20cf029bf08bc2aafd351f16ae0680183a66c581aa6c0409c5f282c75aba2518",
+          "git_sha": "040ab0f2155c99dfd008efc818b5d8568a04d6e9"
+        },
+        {
+          "path": "experiments/analytic_event_neuron/round6/__init__.py",
+          "sha256": "8e3119de2b99657e32f72de47c93aa25b654935cccf6794eda9dc60d88992dd3",
+          "git_sha": "d051eaa350beb8c299b049ed48e26e243e49f010"
+        },
+        {
+          "path": "experiments/analytic_event_neuron/round6/continuation.py",
+          "sha256": "c1d197dca1887cae48b5551477e5719922fb875091b956ec302620ddcfd6c0e5",
+          "git_sha": "e4f37028fa0e4a6bd9b8552348be1836d267ce8f"
+        },
+        {
+          "path": "experiments/analytic_event_neuron/round6/data.py",
+          "sha256": "9f38a6ae3c22f95db0a6ca39fad8e701cb9e0d1e1768613736821ea0b2582b16",
+          "git_sha": "8ffcf834add1fbfc815f4977fb43c225640a04d6"
+        },
+        {
+          "path": "experiments/analytic_event_neuron/round6/registration.py",
+          "sha256": "57eef7eb23ab78f4d44e5e549c347705efe184fbad23eb5a052cd92d83856155",
+          "git_sha": "20b03aa434537a886642a72b8bfd9b2ed1b4d496"
+        }
+      ],
+      "lines": 395
+    },
+    {
+      "stage": 2,
+      "commit": "5e32be8fc1e0e0f9fe2033847472ab5462002610",
+      "tree": "411e458844148930303d9cf0f8961872f15b1717",
+      "files": [
+        {
+          "path": "experiments/analytic_event_neuron/round6/reference.py",
+          "sha256": "ea279d20f2c9e5344083ba10ba94c1df213065ebe9bb142170ce1ad1e3dffc36",
+          "git_sha": "f8d5cc1f7decb3da4009f998c74f405b1f23cd94"
+        },
+        {
+          "path": "experiments/analytic_event_neuron/round6/test_math.py",
+          "sha256": "918f04d8cf418a9bb9e09900e83199c843e5c4b52771a7b972a5d3a65506c28f",
+          "git_sha": "8546827ed27fa0f0b5909283bccc04dc411ebdf2"
+        }
+      ],
+      "lines": 360
+    },
+    {
+      "stage": 3,
+      "commit": "f3fc7804abfb0ce5abeed6ffb61a408ca45c561b",
+      "tree": "bb3b867f6ca2e37100b231d3a78bc5de537ea1af",
+      "files": [
+        {
+          "path": "experiments/analytic_event_neuron/round6/BROKER_CONTRACT.md",
+          "sha256": "4d090ee60205e5b538def97d859028ef3a564793fe2ce25de3a72ff21941e841",
+          "git_sha": "b11a91d455652a7750b88a9bff18a84f33a02390"
+        },
+        {
+          "path": "experiments/analytic_event_neuron/round6/broker.py",
+          "sha256": "e9d10479e4b5ef590a7a965c2409c0d85720313a15b83b226e6a14d685c7ad25",
+          "git_sha": "1436aa910975c807b9dac60586194c6ec266e26d"
+        },
+        {
+          "path": "experiments/analytic_event_neuron/round6/test_broker.py",
+          "sha256": "5f9730dc81f2e1966a0aeaeaeb1d18f74c8c774a4200f6656d57a39b8131b651",
+          "git_sha": "00ebaf5d85471069a02612340f91963252464dfa"
+        }
+      ],
+      "lines": 474
+    },
+    {
+      "stage": 4,
+      "commit": "13f2cb79e3c0105db17c08e701e8ec1924dd540f",
+      "tree": "8a984ae8ac1eb457d9f0a9c0a1951769745a3a25",
+      "files": [
+        {
+          "path": "experiments/analytic_event_neuron/round6/learning.py",
+          "sha256": "4c7fd1feae4f40af2845c283111bbfef85969d6d4cc45fd8519552fd664b4e21",
+          "git_sha": "a129bd9e830a71bae26c5ea2a4b6fcc8b1c1f056"
+        },
+        {
+          "path": "experiments/analytic_event_neuron/round6/study.py",
+          "sha256": "96aa51aa88eca2482d72dcb51d7084855360bd9800de6e880660d31cf75b6e84",
+          "git_sha": "8fcc717cd1047c8d187e714c3cf2f5d1c5f039ea"
+        }
+      ],
+      "lines": 403
+    },
+    {
+      "stage": 5,
+      "commit": "11cc14115c91a6e615291a11290a1939d7cad84a",
+      "tree": "e5920219d33aa2f175742d9bae34c6de68d60085",
+      "files": [
+        {
+          "path": "experiments/analytic_event_neuron/round6/lifecycle.py",
+          "sha256": "9ecc3b0e0937cd5a1ba07beecc3c83c2f5ebf24ecead4a335709a6ae9984c069",
+          "git_sha": "76a689228c2745d4b3ad4fbdb77848f7a2eac412"
+        },
+        {
+          "path": "experiments/analytic_event_neuron/round6/test_study.py",
+          "sha256": "514f0ed4b9399b69d146e76c3ff49eeb535a2d18a6d16443d18797a544c3ae1f",
+          "git_sha": "00b55840d35608ce5a0ebe3b6641b5302b11b994"
+        }
+      ],
+      "lines": 355
+    },
+    {
+      "stage": 6,
+      "commit": "3ef9dbaafa82b91e0171d93574d1ef5da15f2486",
+      "tree": "422e0d9563838cb51b85734cb0e22358342f2d59",
+      "files": [
+        {
+          "path": "experiments/analytic_event_neuron/round6/summary.py",
+          "sha256": "fe4622cde55e8d32ab0b5133caec104e25c5d5f460c8b2372758b8e43d62a8cb",
+          "git_sha": "fd8c312bc7e9a0b2c0fe9cb6c5fb7812c9783a01"
+        },
+        {
+          "path": "experiments/analytic_event_neuron/round6/test_summary.py",
+          "sha256": "909a29bf3f4fa12e2529162ac155b6cf0ca4a063e42afb42056a8a968e5f94b4",
+          "git_sha": "9c496f741c6576cd4a0b1befd13b69ff7734fd07"
+        }
+      ],
+      "lines": 351
+    },
+    {
+      "stage": 7,
+      "commit": "8df55ee310b2e6f45ac827f587b4ebe783992d5e",
+      "tree": "29a92ab1240bc373e7d74348991606fe3e0b475a",
+      "files": [
+        {
+          "path": "experiments/analytic_event_neuron/round6/audit_replay.py",
+          "sha256": "de69941752cbf9591091c48d96fd76f550c808ecb015a0cc157858dd8145824e",
+          "git_sha": "ee5c4b990afa919c15a92150460bbd9c88e76a37"
+        },
+        {
+          "path": "experiments/analytic_event_neuron/round6/audit_training.py",
+          "sha256": "3f4d1671f3688e2f963cc9d49a189d02c8d808dee24110b95d0b4cd508f94b61",
+          "git_sha": "dd1aa37a9f5cbdf3a836ef20d3d3ecc048193eb7"
+        }
+      ],
+      "lines": 354
+    },
+    {
+      "stage": 8,
+      "commit": "f872b844cc914ba6f468a8f0a4ef0196f9079c7e",
+      "tree": "6704d49e866d128dce4187dabf5a75f09ddf7f67",
+      "files": [
+        {
+          "path": "experiments/analytic_event_neuron/round6/audit_confirmation.py",
+          "sha256": "d199ad91948c0d299c213601e255fd8f73d168ec0a6ef50f588b9a11d7daa707",
+          "git_sha": "ee2c9315499d7fabe8ead1297e4058fef2d755df"
+        },
+        {
+          "path": "experiments/analytic_event_neuron/round6/audit_transport.py",
+          "sha256": "ae7495196365a8265b0ee74c3a3d00d2ab0aeafec4539a4d9577c3815b4bd702",
+          "git_sha": "652533850157e1cd4dae78c52a532fa93b6691f8"
+        }
+      ],
+      "lines": 456
+    },
+    {
+      "stage": 9,
+      "commit": "9e1fba1558bc82ed449ae099412ac92539072406",
+      "tree": "62312bdfddbb0da6b043b72f5acaec43519dbc77",
+      "files": [
+        {
+          "path": "experiments/analytic_event_neuron/round6/audit_round6.py",
+          "sha256": "b32fa2819a54441885054cf76b24d44d1943ef283653ee36c5764fe885366b42",
+          "git_sha": "0f732dcc17976f8a5e014c5343d6e13d545c2944"
+        },
+        {
+          "path": "experiments/analytic_event_neuron/round6/audit_statistics.py",
+          "sha256": "ac52d66f70d1b9420b39c1fb1bf610442590286b367263e4d0584e3931b85533",
+          "git_sha": "4881e09f02506cf2469e8087b5acc2d5faafcfe9"
+        },
+        {
+          "path": "experiments/analytic_event_neuron/round6/test_audit.py",
+          "sha256": "1352aa13c3a74da64e13e187a9116d1b14e4e8b0406d8a9dc4acf6960754d385",
+          "git_sha": "2b14f1982000c01e6cd6f1313622c67baf055f8b"
+        }
+      ],
+      "lines": 407
+    },
+    {
+      "stage": 10,
+      "commit": "f0ea2dcc0146ffcb6f7090c9f7587827f988074b",
+      "tree": "9f275aea139a03358a6fcaa463dcf0f2251b9638",
+      "files": [
+        {
+          "path": "experiments/analytic_event_neuron/round6/qualifier.py",
+          "sha256": "c8ed7b89f5833e9e232635d7f66198f4e6371b3a7c6ae98b1c60944db908e061",
+          "git_sha": "e098afc458934c61653dc7fcdd3305b4eb372ed4"
+        },
+        {
+          "path": "experiments/analytic_event_neuron/round6/test_qualifier.py",
+          "sha256": "8bebd1313277a34722af8595a596c7885d431c4d3f3493fb385f6ce2018f398d",
+          "git_sha": "1871520d6fbe8212746499383f4b4d65ad05c448"
+        }
+      ],
+      "lines": 435
+    }
+  ],
+  "correction": {
+    "commit": "84ff3685373bc1f512342414dd78dda9ecad3cda",
+    "tree": "f1ddcc4cac5dee443d3be5d89393bc73a082f3a4",
+    "files": [
+      {
+        "path": "experiments/analytic_event_neuron/round6/audit_training.py",
+        "sha256": "ec3e178c7d0b728a65bda87bd80df626980d9c13e06b4b19c1d8fa026538128d",
+        "git_sha": "ea31460d0a4e746f7061982c97409b2f38245805"
+      },
+      {
+        "path": "experiments/analytic_event_neuron/round6/lifecycle.py",
+        "sha256": "5800ce39395b2d35e891d8b5fbcb8311fa6c18824ca189e50075e4133bfe9720",
+        "git_sha": "140851d30bddf8f0243e564b5ceb7906241c824a"
+      }
+    ]
+  },
+  "verified_head": "84ff3685373bc1f512342414dd78dda9ecad3cda",
+  "verified_tree": "f1ddcc4cac5dee443d3be5d89393bc73a082f3a4",
+  "all_25_source_git_blobs_matched": true,
+  "directory_readback": [
+    {
+      "path": "experiments/analytic_event_neuron/round6/BROKER_CONTRACT.md",
+      "sha": "b11a91d455652a7750b88a9bff18a84f33a02390",
+      "type": "file",
+      "size": 4082
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/CONTRACT.md",
+      "sha": "040ab0f2155c99dfd008efc818b5d8568a04d6e9",
+      "type": "file",
+      "size": 7906
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/__init__.py",
+      "sha": "d051eaa350beb8c299b049ed48e26e243e49f010",
+      "type": "file",
+      "size": 80
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/audit_confirmation.py",
+      "sha": "ee2c9315499d7fabe8ead1297e4058fef2d755df",
+      "type": "file",
+      "size": 20573
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/audit_replay.py",
+      "sha": "ee5c4b990afa919c15a92150460bbd9c88e76a37",
+      "type": "file",
+      "size": 10107
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/audit_round6.py",
+      "sha": "0f732dcc17976f8a5e014c5343d6e13d545c2944",
+      "type": "file",
+      "size": 6519
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/audit_statistics.py",
+      "sha": "4881e09f02506cf2469e8087b5acc2d5faafcfe9",
+      "type": "file",
+      "size": 14029
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/audit_training.py",
+      "sha": "ea31460d0a4e746f7061982c97409b2f38245805",
+      "type": "file",
+      "size": 15125
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/audit_transport.py",
+      "sha": "652533850157e1cd4dae78c52a532fa93b6691f8",
+      "type": "file",
+      "size": 9075
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/broker.py",
+      "sha": "1436aa910975c807b9dac60586194c6ec266e26d",
+      "type": "file",
+      "size": 13771
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/continuation.py",
+      "sha": "e4f37028fa0e4a6bd9b8552348be1836d267ce8f",
+      "type": "file",
+      "size": 7119
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/data.py",
+      "sha": "8ffcf834add1fbfc815f4977fb43c225640a04d6",
+      "type": "file",
+      "size": 3276
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/learning.py",
+      "sha": "a129bd9e830a71bae26c5ea2a4b6fcc8b1c1f056",
+      "type": "file",
+      "size": 7608
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/lifecycle.py",
+      "sha": "140851d30bddf8f0243e564b5ceb7906241c824a",
+      "type": "file",
+      "size": 12367
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/qualifier.py",
+      "sha": "e098afc458934c61653dc7fcdd3305b4eb372ed4",
+      "type": "file",
+      "size": 20093
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/reference.py",
+      "sha": "f8d5cc1f7decb3da4009f998c74f405b1f23cd94",
+      "type": "file",
+      "size": 10600
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/registration.py",
+      "sha": "20b03aa434537a886642a72b8bfd9b2ed1b4d496",
+      "type": "file",
+      "size": 4265
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/study.py",
+      "sha": "8fcc717cd1047c8d187e714c3cf2f5d1c5f039ea",
+      "type": "file",
+      "size": 15881
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/summary.py",
+      "sha": "fd8c312bc7e9a0b2c0fe9cb6c5fb7812c9783a01",
+      "type": "file",
+      "size": 12242
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/test_audit.py",
+      "sha": "2b14f1982000c01e6cd6f1313622c67baf055f8b",
+      "type": "file",
+      "size": 2422
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/test_broker.py",
+      "sha": "00ebaf5d85471069a02612340f91963252464dfa",
+      "type": "file",
+      "size": 7026
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/test_math.py",
+      "sha": "8546827ed27fa0f0b5909283bccc04dc411ebdf2",
+      "type": "file",
+      "size": 10270
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/test_qualifier.py",
+      "sha": "1871520d6fbe8212746499383f4b4d65ad05c448",
+      "type": "file",
+      "size": 5160
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/test_study.py",
+      "sha": "00b55840d35608ce5a0ebe3b6641b5302b11b994",
+      "type": "file",
+      "size": 5545
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/test_summary.py",
+      "sha": "9c496f741c6576cd4a0b1befd13b69ff7734fd07",
+      "type": "file",
+      "size": 7313
+    }
+  ],
+  "confirmation_started": false
+}

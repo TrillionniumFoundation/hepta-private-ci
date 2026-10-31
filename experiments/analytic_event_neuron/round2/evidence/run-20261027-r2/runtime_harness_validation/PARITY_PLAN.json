@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.runtime-harness-parity-plan.v1",
+  "data_role": "existing frozen development data; no relabeling",
+  "formal_runtime_data_generated": false,
+  "profile": "protected_anchor_guarded",
+  "source_model": "retention_prepared/seed_101/window_11_CHECKPOINT.json models.protected",
+  "source_data": "training/seed_101/DEVELOPMENT.npz",
+  "removed_fields": {
+    "forecast_receipt": [
+      "compute_ns_before_commit",
+      "checkpoint_before",
+      "checkpoint_after"
+    ],
+    "native_receipt": [
+      "checkpoint_before",
+      "checkpoint_after",
+      "model_runtime_digest",
+      "temporal_state_digest",
+      "typed_tick_wall_ns",
+      "head_execution_micros",
+      "process_resident_bytes",
+      "subprocess_roundtrip_ns"
+    ],
+    "native_head": [
+      "model_output_digest"
+    ]
+  },
+  "reason": "Measured timing/RSS and identities derived from those measurements are execution-specific; all predictive values, counts, certificates, permissions and internally validated ancestry checks remain compared",
+  "numeric_tolerance": {
+    "rtol": 2e-10,
+    "atol": 2e-11
+  },
+  "integer_counts_booleans_permissions_exact": true,
+  "check_name_normalization": "First split-admission label only; all pass booleans identical",
+  "frozen_inference_native_guard_worker_changed": false
+}

@@ -1,0 +1,64 @@
+{
+  "descriptive_only": true,
+  "financial_cost": null,
+  "full_independent_review_sha256": "ef2ef939432eaa457b97def830f8719030e5050afa79457e4c663d33e5f977f2",
+  "gaussian_probit": {
+    "action_mismatches": 0,
+    "compared_acquired_coordinate_groups": 3076,
+    "component_sequence_time_mismatches": 0,
+    "interpretation": "Outputs and actions agree on all registered executions; FP64 decoder coordinates are not bitwise identical. The coordinate diagnostic is descriptive, not a new scientific gate.",
+    "maximum_absolute_coordinate_difference": 2.220446049250313e-15,
+    "maximum_absolute_coordinate_difference_exact_fraction": "5/2251799813685248",
+    "maximum_by_coordinate": {
+      "log_variance": 2.220446049250313e-15,
+      "mean": 4.440892098500626e-16
+    },
+    "maximum_delivered_output_difference": 0.0,
+    "maximum_location": {
+      "coordinate": "log_variance",
+      "domain": "drift",
+      "gaussian_hex": "-0x1.ba4e9a04da683p+1",
+      "gaussian_value": -3.455523731584266,
+      "index": 6,
+      "probit_hex": "-0x1.ba4e9a04da67ep+1",
+      "probit_value": -3.4555237315842637,
+      "seed": 4001,
+      "stage": 2
+    },
+    "maximum_released_probability_difference": 0.0,
+    "nonidentical_coordinate_groups": 2164,
+    "paired_trajectories": 1920
+  },
+  "inputs_sha256": {
+    "FREEZE.json": "1f4d994da28d3bd61853a904d3e9da03b6ea6c90fe9d680e217f976656450ca1",
+    "RESULTS.json": "303e98b4c6679f7dd827bb2c3a7083d96010984adbba43e1c6548b7930f53a69",
+    "execution/CONFIRMATION_BATCH_COMPLETED.json": "5548532acbfdc14e43df432058a9dc67653786e3fb6d146a3f6c20f68a2e6c37",
+    "execution/confirmation_batch_001_COMPLETED.json": "cc86ccca9688ae7f86bdc584c823075e5099a9c9d6bd42203508cc18952d6932"
+  },
+  "native_energy": null,
+  "new_training_or_experiment_performed": false,
+  "operational_ledger": {
+    "all_15_scope_receipts_counts_and_costs_independently_bound": true,
+    "counts": {
+      "actual_arm_executions": 17280,
+      "actual_native_requests": 65344,
+      "actual_native_sparse_ticks": 83248,
+      "completed_scopes": 15,
+      "execution_archive_bytes": 255604692,
+      "independent_queries_across_seed_domain_scopes": 1920,
+      "native_roundtrip_ns_nested_component": 19621723174,
+      "verified_archive_members": 393264
+    },
+    "full_batch_system_cpu_seconds": 162.208273,
+    "full_batch_user_cpu_seconds": 3881.5605769999997,
+    "full_batch_wall_ns": 1375138000109,
+    "nested_costs_must_not_be_added_to_outer_cost": true,
+    "nested_scope_wall_sum_not_elapsed_time": 4054583105322
+  },
+  "parent_cpu_ns": 3785471216,
+  "passed": true,
+  "schema": "hepta.round6.post-audit-descriptive-diagnostics.v1",
+  "scientific_results_or_gates_changed": false,
+  "source_sha256": "7e02549413d676d171a62374ebe6fdb577e6b3d91e8ca5eb1add3efc65a1e28d",
+  "wall_ns": 3791755076
+}

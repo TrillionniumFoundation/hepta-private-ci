@@ -1,0 +1,96 @@
+{
+  "archive": {
+    "all_member_hashes_verified": true,
+    "compressed_bytes": 112818,
+    "file_count": 392,
+    "sha256": "13e99dee42c208f341cdcd252c62743ec86694e5bcc222686f1f950d47e15fde"
+  },
+  "audit": {
+    "audit_elapsed_ns": 228846976,
+    "audit_source_sha256": "00f2df0d998b6d882ef7de0cf2529969553e7d305cf5c99581c3874e50355f37",
+    "checks": {
+      "artifact_hash": 279,
+      "chronology": 454,
+      "control": 348,
+      "cost": 279,
+      "coverage": 4,
+      "dataset": 3,
+      "decision": 1160,
+      "delivery": 208,
+      "feedback": 142,
+      "model_hash": 52,
+      "model_replay": 273,
+      "png_bit_replay": 104,
+      "prediction": 144,
+      "prediction_loss": 108,
+      "public_history": 1464,
+      "receipt": 837,
+      "score": 208,
+      "summary": 149
+    },
+    "chronology_scope": "Retained files, timestamps, and frozen source; not process-memory isolation proof",
+    "control_rows": 52,
+    "dataset_seed": 912278,
+    "dataset_split": "development_pipeline",
+    "evidence_sha256": {
+      "CONTROL.jsonl": "eb8e7c923676e94868c4682db45064ccfd78aa15a23313dbd65c7d544ee92fe9",
+      "DATA.npz": "eefed12cd6156319a3bc6bb6c0299889e68efd84125bf78841a2811a8ffcb897",
+      "DATASET.json": "baee8896c4cee60cf3264bc97417d4b2e3807bf309c800172304f351cbc97a3c",
+      "MODELS.json": "56c2bba2778e87a70984d666e5d4698be33133ab6b02c7fb7aa6fc57c2f8161e",
+      "PREDICTION.jsonl": "4870eebaf2cbebad38fecbc559b93bbe263a2ff05e02340405888c054feda259",
+      "SUMMARY.json": "5c8a0f42f9aae10d90ae48cdef30e94f1767954894b42f81d9f888e375482a14",
+      "transport/TRANSPORT_RECEIPTS.jsonl": "0815144560ae6e8ec1f0f21fcd5af2d64e2157276c36f7398053b38bcf1b8454"
+    },
+    "frozen_model_binding": false,
+    "law": "gaussian",
+    "maximum_absolute_numeric_error": 8.881784197001252e-16,
+    "model_sha256": "56c2bba2778e87a70984d666e5d4698be33133ab6b02c7fb7aa6fc57c2f8161e",
+    "models": 9,
+    "offline_replay": true,
+    "passed": true,
+    "prediction_rows": 36,
+    "schema": "hepta.analytic-event.scope-audit.v1",
+    "scope": "/tmp/aen-pipeline-development-6ves_z6w",
+    "trajectories": 4,
+    "transport_receipts": 279
+  },
+  "bootstrap_constant": {
+    "interval": [
+      0.030000000000000006,
+      0.030000000000000006
+    ],
+    "interval_alpha": 0.016666666666666666,
+    "mean_difference": 0.030000000000000006,
+    "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+    "per_seed_mean_difference": [
+      0.03,
+      0.03,
+      0.03,
+      0.03,
+      0.03
+    ],
+    "replicates": 400,
+    "training_seed_count": 5,
+    "trajectories_per_seed": 4
+  },
+  "bootstrap_zero": {
+    "interval": [
+      0.0,
+      0.0
+    ],
+    "interval_alpha": 0.016666666666666666,
+    "mean_difference": 0.0,
+    "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+    "per_seed_mean_difference": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "replicates": 400,
+    "training_seed_count": 5,
+    "trajectories_per_seed": 4
+  },
+  "confirmation_accessed": false
+}

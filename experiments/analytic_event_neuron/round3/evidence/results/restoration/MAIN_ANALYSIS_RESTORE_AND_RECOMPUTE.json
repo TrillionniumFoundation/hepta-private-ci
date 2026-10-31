@@ -1,0 +1,87 @@
+{
+  "all_member_bytes_exact": true,
+  "all_member_modes_exact": true,
+  "analysis_storage": "New ordinary files extracted from the byte-verified archive by the existing safe restorer.",
+  "archive": {
+    "all_member_hashes_verified": true,
+    "bytes": 9577556,
+    "data_members": 16,
+    "member_manifest": "_bundle_manifests/MAIN_ANALYSIS.json",
+    "name": "MAIN_ANALYSIS",
+    "parts": [
+      {
+        "bytes": 8388608,
+        "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_ANALYSIS.tar.gz.part000",
+        "sha256": "e8a0e389c74456fd0b6b2032c82632eb991c8e96f476213ae9142ad9c7823a30"
+      },
+      {
+        "bytes": 1188948,
+        "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_ANALYSIS.tar.gz.part001",
+        "sha256": "baa09f40ebecc540917c71751b3556b8d1b380a2668296c8030956b1b704e572"
+      }
+    ],
+    "restore_root": "run",
+    "scientific_data_regenerated": false,
+    "sha256": "b161b8bb36365b464209bb03a6b0f6ea85c36885f0a49546c138f6e9a93e2476"
+  },
+  "archive_statistics_dependency": "Frozen statistics require the restored analysis, complete index and verified prepared/source bindings; original full main execution archives are not read by this recomputation.",
+  "completed_utc": "2026-10-28T09:51:32.458573+00:00",
+  "created_utc": "2026-10-28T09:51:28.859768+00:00",
+  "descriptor_file": "/tmp/aen-r3-main-analysis-archives.json",
+  "descriptor_sha256": "0c0d1a6b27da25911f30cf7fc892dc0458137e098af8e135402a4b20be06ef4d",
+  "driver_source_sha256": "55b1a35952112260317508b97bebbeb07a1250b0e5451e29172cf1ed2f0a0ec4",
+  "freeze_sha256": "75df6af8ce501e624fd2900f096b7c6a050e5c61cbb200fca4ada5fc54d81146",
+  "freeze_verified_before_and_after_recompute": true,
+  "frozen_prepared_artifacts_verified": 329,
+  "frozen_sources_verified": 83,
+  "member_sha256": {
+    "main/RUN_INDEX.json": "75ae2129a1585a31fa39b6dfb1a4491913c942ac6ace81f1cd8c5564521e7cae",
+    "main/analysis/seed_1009_drift_shift.npz": "89954f94c1b8f0caa9df02967fe4c314ff11429d50e186e3353c9f1fa70f2278",
+    "main/analysis/seed_1009_gaussian.npz": "539b39f1ccb50b2f3c4f4ba352eb8a389143e9f830c5a3f5dc484ece3ad1fc77",
+    "main/analysis/seed_1009_student_t.npz": "f8d1553dcaaf469ce5147d8508eee22ff5f5d12e4b0eba42f8fbfc05259b9003",
+    "main/analysis/seed_607_drift_shift.npz": "26085a5ad51c12fd1b5e4f97224da3d78e6565e00ae92cf587557a25c952bd64",
+    "main/analysis/seed_607_gaussian.npz": "bc40933b9f9a957e0c28400300799e135fb485b7c6d70b5a01399b882129e095",
+    "main/analysis/seed_607_student_t.npz": "c1c19ef1e6e98af78407eab9c3c69e8686bff52b113136bcb21309a03d5b3b7e",
+    "main/analysis/seed_701_drift_shift.npz": "b4a54f1f013b38302e73717e2c773754421eed7a8b26c99ffaa7b3ee7148d17b",
+    "main/analysis/seed_701_gaussian.npz": "c82c4d87c432dbc314bba6cf5337106f40fc9c8a73e0a6df3508d42ff391567e",
+    "main/analysis/seed_701_student_t.npz": "01d9e477e8410d1cc34b4575babb9d4e9be8586be870d135d7f3d0bc88e0bc54",
+    "main/analysis/seed_809_drift_shift.npz": "8935fffd6b5b6adb30d875c2595f43e6a9684430c0cfda3b8f0455da74428caa",
+    "main/analysis/seed_809_gaussian.npz": "cc6758e5ae2d30f36e508634772bfd6c88bc84a7a1f84f8cd5b2e0fb57f29824",
+    "main/analysis/seed_809_student_t.npz": "aa63f3e89eb13d7fff8e9906df398f6bc6427837dba3467f3a5dd84333f94cd9",
+    "main/analysis/seed_907_drift_shift.npz": "7815133ee7aa1434a71aa0079f5306182aed9beead637177c2a765780895e04b",
+    "main/analysis/seed_907_gaussian.npz": "59a45ef481f79401eb911893f2998d52745dc3e4a09b88aab0e0d11854121a25",
+    "main/analysis/seed_907_student_t.npz": "38200df0c3700f898dd0ee3da3a2debcd56f3a4bdd9ee8a6bc79add0f537de20"
+  },
+  "model_fitting_performed": false,
+  "native_inference_rerun": false,
+  "original_inputs_unchanged": true,
+  "passed": true,
+  "prepared_storage": "Previously actually restored prepared artifacts were later deduplicated into exact-hash hardlinks to immutable originals; see RESTORED_COPY_DEDUPLICATION.json.",
+  "recompute": {
+    "child_system_cpu_seconds": 0.392169,
+    "child_user_cpu_seconds": 3.5827549999999997,
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "experiments.analytic_event_neuron.round3.statistics",
+      "--run-dir",
+      "/tmp/aen-round3-restore-check/run"
+    ],
+    "log_relative_to_run": "archival_reviews/MAIN_ANALYSIS_RECOMPUTE.log",
+    "log_sha256": "634c8b4c47dd20ddc7cdf56a5485ef562b00e7eef829272099e578c1f1ad20b5",
+    "original_result_sha256": "f3a88a8bb8c5f8b8db6323394056fdb170470d966fd5f417c86cab0392ab4ccc",
+    "restored_result_sha256": "f3a88a8bb8c5f8b8db6323394056fdb170470d966fd5f417c86cab0392ab4ccc",
+    "result_bytes_exact": true,
+    "result_json_content_exact": true,
+    "returncode": 0,
+    "wall_ns": 2415333951
+  },
+  "restored_destination": "/tmp/aen-round3-restore-check/run",
+  "restored_members": 16,
+  "safe_restore_source": "experiments/analytic_event_neuron/round2/restore_evidence.py",
+  "safe_restore_source_sha256": "1cf39883b9cb4aea03db0ef343edecb04313d9c05cfe53809b7a3f069d2348ed",
+  "schema": "hepta.analytic-event.round3.main-analysis-restore-recompute.v1",
+  "scientific_data_regenerated": false,
+  "source_analysis_and_index_bytes": 10510660,
+  "source_commit": "29174619dfc56cef1c16b34fbf98f85a1cd2e4c3"
+}

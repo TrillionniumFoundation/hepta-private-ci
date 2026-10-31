@@ -1,0 +1,334 @@
+{
+  "schema": "hepta.runtime-confirmation-accounting.v1",
+  "profiles": [
+    {
+      "seed": 101,
+      "profile": "analytic_count_only",
+      "unique_successful_native_ticks": 21,
+      "committed_composite_ticks": 20,
+      "pending_stages": {
+        "native_committed": 1,
+        "prepared": 2
+      },
+      "native_journal_rollback_rejection_checks": 1,
+      "native_roundtrip_ns": 124304429,
+      "native_typed_tick_wall_ns": 32199476,
+      "native_head_execution_micros": 808,
+      "native_journal_bytes_written": 9744,
+      "maximum_sampled_native_resident_bytes": 1720320,
+      "qualification_wall_ns": 1815823494,
+      "qualification_parent_cpu_ns": 133331593,
+      "profile_final_file_bytes": 253950
+    },
+    {
+      "seed": 101,
+      "profile": "protected_count_only",
+      "unique_successful_native_ticks": 21,
+      "committed_composite_ticks": 20,
+      "pending_stages": {
+        "native_committed": 1,
+        "prepared": 2
+      },
+      "native_journal_rollback_rejection_checks": 1,
+      "native_roundtrip_ns": 111931638,
+      "native_typed_tick_wall_ns": 30368543,
+      "native_head_execution_micros": 688,
+      "native_journal_bytes_written": 9744,
+      "maximum_sampled_native_resident_bytes": 1753088,
+      "qualification_wall_ns": 4411870055,
+      "qualification_parent_cpu_ns": 205482855,
+      "profile_final_file_bytes": 270488
+    },
+    {
+      "seed": 101,
+      "profile": "protected_anchor_guarded",
+      "unique_successful_native_ticks": 22,
+      "committed_composite_ticks": 21,
+      "pending_stages": {
+        "prepared": 2,
+        "native_committed": 1
+      },
+      "native_journal_rollback_rejection_checks": 1,
+      "native_roundtrip_ns": 78054083,
+      "native_typed_tick_wall_ns": 17936892,
+      "native_head_execution_micros": 872,
+      "native_journal_bytes_written": 10208,
+      "maximum_sampled_native_resident_bytes": 1724416,
+      "qualification_wall_ns": 1676235914,
+      "qualification_parent_cpu_ns": 171579995,
+      "profile_final_file_bytes": 340649
+    },
+    {
+      "seed": 211,
+      "profile": "analytic_count_only",
+      "unique_successful_native_ticks": 21,
+      "committed_composite_ticks": 20,
+      "pending_stages": {
+        "prepared": 2,
+        "native_committed": 1
+      },
+      "native_journal_rollback_rejection_checks": 1,
+      "native_roundtrip_ns": 146636575,
+      "native_typed_tick_wall_ns": 46529196,
+      "native_head_execution_micros": 957,
+      "native_journal_bytes_written": 9744,
+      "maximum_sampled_native_resident_bytes": 1765376,
+      "qualification_wall_ns": 1983199196,
+      "qualification_parent_cpu_ns": 214207087,
+      "profile_final_file_bytes": 253258
+    },
+    {
+      "seed": 211,
+      "profile": "protected_count_only",
+      "unique_successful_native_ticks": 21,
+      "committed_composite_ticks": 20,
+      "pending_stages": {
+        "prepared": 2,
+        "native_committed": 1
+      },
+      "native_journal_rollback_rejection_checks": 1,
+      "native_roundtrip_ns": 326543866,
+      "native_typed_tick_wall_ns": 122393371,
+      "native_head_execution_micros": 10225,
+      "native_journal_bytes_written": 9744,
+      "maximum_sampled_native_resident_bytes": 1769472,
+      "qualification_wall_ns": 2489126934,
+      "qualification_parent_cpu_ns": 291245031,
+      "profile_final_file_bytes": 269491
+    },
+    {
+      "seed": 211,
+      "profile": "protected_anchor_guarded",
+      "unique_successful_native_ticks": 22,
+      "committed_composite_ticks": 21,
+      "pending_stages": {
+        "prepared": 2,
+        "native_committed": 1
+      },
+      "native_journal_rollback_rejection_checks": 1,
+      "native_roundtrip_ns": 147614316,
+      "native_typed_tick_wall_ns": 36614621,
+      "native_head_execution_micros": 832,
+      "native_journal_bytes_written": 10208,
+      "maximum_sampled_native_resident_bytes": 1765376,
+      "qualification_wall_ns": 2185061013,
+      "qualification_parent_cpu_ns": 256057442,
+      "profile_final_file_bytes": 339652
+    },
+    {
+      "seed": 307,
+      "profile": "analytic_count_only",
+      "unique_successful_native_ticks": 21,
+      "committed_composite_ticks": 20,
+      "pending_stages": {
+        "prepared": 2,
+        "native_committed": 1
+      },
+      "native_journal_rollback_rejection_checks": 1,
+      "native_roundtrip_ns": 91028341,
+      "native_typed_tick_wall_ns": 23685122,
+      "native_head_execution_micros": 739,
+      "native_journal_bytes_written": 9744,
+      "maximum_sampled_native_resident_bytes": 1724416,
+      "qualification_wall_ns": 1588261129,
+      "qualification_parent_cpu_ns": 116820738,
+      "profile_final_file_bytes": 252292
+    },
+    {
+      "seed": 307,
+      "profile": "protected_count_only",
+      "unique_successful_native_ticks": 21,
+      "committed_composite_ticks": 20,
+      "pending_stages": {
+        "native_committed": 1,
+        "prepared": 2
+      },
+      "native_journal_rollback_rejection_checks": 1,
+      "native_roundtrip_ns": 108889115,
+      "native_typed_tick_wall_ns": 35757727,
+      "native_head_execution_micros": 1718,
+      "native_journal_bytes_written": 9744,
+      "maximum_sampled_native_resident_bytes": 1724416,
+      "qualification_wall_ns": 1908030983,
+      "qualification_parent_cpu_ns": 204856186,
+      "profile_final_file_bytes": 268846
+    },
+    {
+      "seed": 307,
+      "profile": "protected_anchor_guarded",
+      "unique_successful_native_ticks": 22,
+      "committed_composite_ticks": 21,
+      "pending_stages": {
+        "prepared": 2,
+        "native_committed": 1
+      },
+      "native_journal_rollback_rejection_checks": 1,
+      "native_roundtrip_ns": 99963405,
+      "native_typed_tick_wall_ns": 30516311,
+      "native_head_execution_micros": 767,
+      "native_journal_bytes_written": 10208,
+      "maximum_sampled_native_resident_bytes": 1740800,
+      "qualification_wall_ns": 1520501142,
+      "qualification_parent_cpu_ns": 193910629,
+      "profile_final_file_bytes": 339066
+    },
+    {
+      "seed": 401,
+      "profile": "analytic_count_only",
+      "unique_successful_native_ticks": 21,
+      "committed_composite_ticks": 20,
+      "pending_stages": {
+        "native_committed": 1,
+        "prepared": 2
+      },
+      "native_journal_rollback_rejection_checks": 1,
+      "native_roundtrip_ns": 98934972,
+      "native_typed_tick_wall_ns": 25970359,
+      "native_head_execution_micros": 860,
+      "native_journal_bytes_written": 9744,
+      "maximum_sampled_native_resident_bytes": 1716224,
+      "qualification_wall_ns": 1480671044,
+      "qualification_parent_cpu_ns": 114753917,
+      "profile_final_file_bytes": 251910
+    },
+    {
+      "seed": 401,
+      "profile": "protected_count_only",
+      "unique_successful_native_ticks": 21,
+      "committed_composite_ticks": 20,
+      "pending_stages": {
+        "prepared": 2,
+        "native_committed": 1
+      },
+      "native_journal_rollback_rejection_checks": 1,
+      "native_roundtrip_ns": 95065796,
+      "native_typed_tick_wall_ns": 30968216,
+      "native_head_execution_micros": 848,
+      "native_journal_bytes_written": 9744,
+      "maximum_sampled_native_resident_bytes": 1765376,
+      "qualification_wall_ns": 1409001118,
+      "qualification_parent_cpu_ns": 139858982,
+      "profile_final_file_bytes": 268564
+    },
+    {
+      "seed": 401,
+      "profile": "protected_anchor_guarded",
+      "unique_successful_native_ticks": 22,
+      "committed_composite_ticks": 21,
+      "pending_stages": {
+        "native_committed": 1,
+        "prepared": 2
+      },
+      "native_journal_rollback_rejection_checks": 1,
+      "native_roundtrip_ns": 127672475,
+      "native_typed_tick_wall_ns": 36606079,
+      "native_head_execution_micros": 964,
+      "native_journal_bytes_written": 10208,
+      "maximum_sampled_native_resident_bytes": 1769472,
+      "qualification_wall_ns": 1638253457,
+      "qualification_parent_cpu_ns": 178263006,
+      "profile_final_file_bytes": 338908
+    },
+    {
+      "seed": 503,
+      "profile": "analytic_count_only",
+      "unique_successful_native_ticks": 21,
+      "committed_composite_ticks": 20,
+      "pending_stages": {
+        "prepared": 2,
+        "native_committed": 1
+      },
+      "native_journal_rollback_rejection_checks": 1,
+      "native_roundtrip_ns": 85096975,
+      "native_typed_tick_wall_ns": 25969248,
+      "native_head_execution_micros": 716,
+      "native_journal_bytes_written": 9744,
+      "maximum_sampled_native_resident_bytes": 1720320,
+      "qualification_wall_ns": 1555040091,
+      "qualification_parent_cpu_ns": 117751985,
+      "profile_final_file_bytes": 253978
+    },
+    {
+      "seed": 503,
+      "profile": "protected_count_only",
+      "unique_successful_native_ticks": 21,
+      "committed_composite_ticks": 20,
+      "pending_stages": {
+        "prepared": 2,
+        "native_committed": 1
+      },
+      "native_journal_rollback_rejection_checks": 1,
+      "native_roundtrip_ns": 104142847,
+      "native_typed_tick_wall_ns": 23439719,
+      "native_head_execution_micros": 1052,
+      "native_journal_bytes_written": 9744,
+      "maximum_sampled_native_resident_bytes": 1720320,
+      "qualification_wall_ns": 1455198695,
+      "qualification_parent_cpu_ns": 169627922,
+      "profile_final_file_bytes": 270618
+    },
+    {
+      "seed": 503,
+      "profile": "protected_anchor_guarded",
+      "unique_successful_native_ticks": 22,
+      "committed_composite_ticks": 21,
+      "pending_stages": {
+        "prepared": 2,
+        "native_committed": 1
+      },
+      "native_journal_rollback_rejection_checks": 1,
+      "native_roundtrip_ns": 85466746,
+      "native_typed_tick_wall_ns": 21553660,
+      "native_head_execution_micros": 699,
+      "native_journal_bytes_written": 10208,
+      "maximum_sampled_native_resident_bytes": 1691648,
+      "qualification_wall_ns": 1429014599,
+      "qualification_parent_cpu_ns": 197084929,
+      "profile_final_file_bytes": 340789
+    }
+  ],
+  "counts": {
+    "forecast_ticks": 180,
+    "fresh_process_duplicate_replays_without_ticks": 15,
+    "fresh_process_continuation_ticks": 15,
+    "deterministic_tail_fixture_ticks": 5,
+    "other_successful_qualification_intervention_ticks": 120,
+    "unique_successful_native_ticks_total": 320,
+    "native_journal_rollback_rejection_checks": 15,
+    "fresh_python_processes": 30,
+    "engine_qualification_checks": 1100,
+    "generated_histories": 80,
+    "unique_random_histories_exercised": 20
+  },
+  "costs": {
+    "qualification_wall_ns": 28545288864,
+    "qualification_parent_cpu_ns": 2704832297,
+    "successful_native_roundtrip_ns": 1831345579,
+    "successful_native_typed_tick_wall_ns": 540508540,
+    "successful_native_head_execution_micros": 22745,
+    "native_journal_bytes_written": 148480,
+    "maximum_sampled_native_resident_bytes": 1769472,
+    "profile_final_file_bytes": 4312459,
+    "failed_native_request_isolated_latency_ns": null,
+    "total_child_cpu_ns": null,
+    "total_adapter_file_write_bytes": null
+  },
+  "numerical_results": {
+    "guarded_gaussian_bound_max_including_tail": 0.009975306464536416,
+    "guarded_categorical_bound_max_including_tail": 0.009206830736971039,
+    "maximum_native_output_q24_error": 3.933093517538566e-08,
+    "maximum_native_cdf_error": 2.220446049250313e-16,
+    "naive_protected_density_certificate_violations": 27,
+    "naive_protected_forecasts": 60,
+    "naive_maximum_finite_density_bound": 0.04164963791754635
+  },
+  "method": "Deduplicate actual successful native receipts by (case,sequence,checkpoint_after) across composite states and native-committed pending markers. Cached duplicate receipts are not additional ticks. Native rejection checks have no successful tick receipt. Timings are nested and must not be added together. Qualification wall time includes negative checks and fresh processes.",
+  "cost_limits": [
+    "Shared host and concurrent main/feedback studies; no isolated hardware speed claim",
+    "Native RSS is maximum sampled process resident bytes, not system peak",
+    "File bytes are final artifact occupancy, not total write amplification",
+    "Missing measurements remain null"
+  ],
+  "main_freeze_verified": true,
+  "runtime_harness_freeze_verified": true
+}

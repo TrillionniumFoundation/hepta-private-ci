@@ -1,0 +1,29 @@
+--- frozen runtime_bridge.qualify
++++ amended runtime_confirmation.qualify_confirmation
+@@ -1,5 +1,5 @@
+-def qualify(models_file, model_key, dataset_file, output, native_binary, native_receipt, runtime_mode="count_only"):
+-    """Use a frozen model and developmental histories; never confirmation labels."""
++def qualify_confirmation(models_file, model_key, dataset_file, output, native_binary, native_receipt, runtime_mode="count_only", *, parity_only=False):
++    """Qualify frozen engines on the registered fresh split, or explicit development parity."""
+     began, parent_cpu = time.perf_counter_ns(), time.process_time_ns()
+     output = Path(output)
+     output.mkdir(parents=True, exist_ok=True)
+@@ -10,7 +10,8 @@
+         checks.append({"name": name, "passed": True})
+     model_sha, data_sha = file_sha(models_file), file_sha(dataset_file)
+     with np.load(dataset_file, allow_pickle=False) as source:
+-        check("development split only", str(source["split"].item()) == "development")
++        required_split = "development" if parity_only else "runtime_confirmation"
++        check("explicit qualification split only", type(parity_only) is bool and str(source["split"].item()) == required_split)
+         histories = []
+         for i in range(min(4, len(source["ids"]))):
+             histories.append({"id": str(source["ids"][i]), "observations": source["obs"][i].tolist(),
+@@ -209,6 +210,8 @@
+                "runtime_mode": runtime_mode, "protected_postcodec_guarantee_claimed": runtime_mode == "anchor_guarded",
+                "protected_density_bounds": protected,
+                "source_sha256": file_sha(__file__), "production_agentd_owner": False,
++               "qualification_data_role": required_split, "parity_only": parity_only,
++               "frozen_engine_source_sha256": file_sha(frozen_engine.__file__),
+                "wall_ns": time.perf_counter_ns() - began, "parent_cpu_ns": time.process_time_ns() - parent_cpu,
+                "cost_scope": "Whole qualification including fresh processes and negative interventions; native timings and file sizes in per-tick receipts",
+                "limitation": "Pending partial transactions require explicit reconciliation; no cross-owner atomicity claim"}

@@ -1,0 +1,1019 @@
+{
+  "arms": {
+    "analytic": {
+      "calibration": {
+        "bins": [
+          {
+            "bin": 0,
+            "count": 255,
+            "frequency": 0.0196078431372549,
+            "probability": 0.053333334803647756
+          },
+          {
+            "bin": 1,
+            "count": 82,
+            "frequency": 0.0975609756097561,
+            "probability": 0.1414190144093157
+          },
+          {
+            "bin": 2,
+            "count": 58,
+            "frequency": 0.20689655172413793,
+            "probability": 0.2540486996158408
+          },
+          {
+            "bin": 3,
+            "count": 72,
+            "frequency": 0.3888888888888889,
+            "probability": 0.3474892312708331
+          },
+          {
+            "bin": 4,
+            "count": 133,
+            "frequency": 0.48120300751879697,
+            "probability": 0.45807734952617934
+          },
+          {
+            "bin": 5,
+            "count": 168,
+            "frequency": 0.5357142857142857,
+            "probability": 0.5534988241459692
+          },
+          {
+            "bin": 6,
+            "count": 138,
+            "frequency": 0.6376811594202898,
+            "probability": 0.6449543930280115
+          },
+          {
+            "bin": 7,
+            "count": 104,
+            "frequency": 0.7884615384615384,
+            "probability": 0.7498986573272449
+          },
+          {
+            "bin": 8,
+            "count": 102,
+            "frequency": 0.8627450980392157,
+            "probability": 0.8613868741221686
+          },
+          {
+            "bin": 9,
+            "count": 168,
+            "frequency": 0.9523809523809523,
+            "probability": 0.9393226356852191
+          }
+        ],
+        "brier": 0.14247660608266877,
+        "clipped_binary_nll": 0.43335791201399776,
+        "ece": 0.024470356541021813,
+        "nll_probability_clip": [
+          1e-12,
+          0.999999999999
+        ]
+      },
+      "cost": 0.0658359375,
+      "episodes": 1280,
+      "repairs": 565,
+      "squared_error": 0.3123638155644012,
+      "utility": 0.6218002469355988,
+      "wall_ns": 12860950.009375
+    },
+    "event": {
+      "calibration": {
+        "bins": [
+          {
+            "bin": 0,
+            "count": 236,
+            "frequency": 0.00847457627118644,
+            "probability": 0.06129637044659041
+          },
+          {
+            "bin": 1,
+            "count": 100,
+            "frequency": 0.11,
+            "probability": 0.14330127513579327
+          },
+          {
+            "bin": 2,
+            "count": 51,
+            "frequency": 0.23529411764705882,
+            "probability": 0.25496190618457587
+          },
+          {
+            "bin": 3,
+            "count": 77,
+            "frequency": 0.37662337662337664,
+            "probability": 0.3487959949969599
+          },
+          {
+            "bin": 4,
+            "count": 137,
+            "frequency": 0.45255474452554745,
+            "probability": 0.4560582456154899
+          },
+          {
+            "bin": 5,
+            "count": 178,
+            "frequency": 0.5617977528089888,
+            "probability": 0.5513179973091392
+          },
+          {
+            "bin": 6,
+            "count": 138,
+            "frequency": 0.644927536231884,
+            "probability": 0.6457609464349151
+          },
+          {
+            "bin": 7,
+            "count": 109,
+            "frequency": 0.8073394495412844,
+            "probability": 0.7506962754086844
+          },
+          {
+            "bin": 8,
+            "count": 103,
+            "frequency": 0.883495145631068,
+            "probability": 0.859027820097686
+          },
+          {
+            "bin": 9,
+            "count": 151,
+            "frequency": 0.9470198675496688,
+            "probability": 0.9307971770586075
+          }
+        ],
+        "brier": 0.1428483729721332,
+        "clipped_binary_nll": 0.43619122515888253,
+        "ece": 0.02542663285193575,
+        "nll_probability_clip": [
+          1e-12,
+          0.999999999999
+        ]
+      },
+      "cost": 0.06536718749999999,
+      "episodes": 1280,
+      "repairs": 569,
+      "squared_error": 0.31394559726563454,
+      "utility": 0.6206872152343654,
+      "wall_ns": 11871253.82421875
+    },
+    "gaussian": {
+      "calibration": {
+        "bins": [
+          {
+            "bin": 0,
+            "count": 272,
+            "frequency": 0.014705882352941176,
+            "probability": 0.018367565127021725
+          },
+          {
+            "bin": 1,
+            "count": 61,
+            "frequency": 0.11475409836065574,
+            "probability": 0.14899664814820127
+          },
+          {
+            "bin": 2,
+            "count": 61,
+            "frequency": 0.22950819672131148,
+            "probability": 0.24894433429371612
+          },
+          {
+            "bin": 3,
+            "count": 83,
+            "frequency": 0.3493975903614458,
+            "probability": 0.3540812997428191
+          },
+          {
+            "bin": 4,
+            "count": 108,
+            "frequency": 0.4166666666666667,
+            "probability": 0.4530252037117347
+          },
+          {
+            "bin": 5,
+            "count": 169,
+            "frequency": 0.5680473372781065,
+            "probability": 0.5477608588906764
+          },
+          {
+            "bin": 6,
+            "count": 162,
+            "frequency": 0.6481481481481481,
+            "probability": 0.6448058253413106
+          },
+          {
+            "bin": 7,
+            "count": 97,
+            "frequency": 0.8247422680412371,
+            "probability": 0.7471397952460379
+          },
+          {
+            "bin": 8,
+            "count": 75,
+            "frequency": 0.8266666666666667,
+            "probability": 0.8415845709975378
+          },
+          {
+            "bin": 9,
+            "count": 192,
+            "frequency": 0.953125,
+            "probability": 0.9704767420023422
+          }
+        ],
+        "brier": 0.13894484969483556,
+        "clipped_binary_nll": 0.4169364685010312,
+        "ece": 0.01916682485594605,
+        "nll_probability_clip": [
+          1e-12,
+          0.999999999999
+        ]
+      },
+      "cost": 0.07921875,
+      "episodes": 1280,
+      "repairs": 695,
+      "squared_error": 0.28205967623832995,
+      "utility": 0.6387215737616699,
+      "wall_ns": 22419090.2546875
+    },
+    "history": {
+      "calibration": {
+        "bins": [
+          {
+            "bin": 0,
+            "count": 82,
+            "frequency": 0.024390243902439025,
+            "probability": 0.06096305419814596
+          },
+          {
+            "bin": 1,
+            "count": 174,
+            "frequency": 0.06321839080459771,
+            "probability": 0.15144645703362483
+          },
+          {
+            "bin": 2,
+            "count": 130,
+            "frequency": 0.26153846153846155,
+            "probability": 0.2482542637598214
+          },
+          {
+            "bin": 3,
+            "count": 142,
+            "frequency": 0.3591549295774648,
+            "probability": 0.35571299995750955
+          },
+          {
+            "bin": 4,
+            "count": 152,
+            "frequency": 0.5,
+            "probability": 0.4466367308761537
+          },
+          {
+            "bin": 5,
+            "count": 150,
+            "frequency": 0.6,
+            "probability": 0.5485041443032964
+          },
+          {
+            "bin": 6,
+            "count": 156,
+            "frequency": 0.6987179487179487,
+            "probability": 0.6512393670559626
+          },
+          {
+            "bin": 7,
+            "count": 126,
+            "frequency": 0.7857142857142857,
+            "probability": 0.7506881722762077
+          },
+          {
+            "bin": 8,
+            "count": 95,
+            "frequency": 0.9368421052631579,
+            "probability": 0.8479008081800262
+          },
+          {
+            "bin": 9,
+            "count": 73,
+            "frequency": 0.8767123287671232,
+            "probability": 0.9529432307380055
+          }
+        ],
+        "brier": 0.16821581516011413,
+        "clipped_binary_nll": 0.5095216974862264,
+        "ece": 0.048622013317129134,
+        "nll_probability_clip": [
+          1e-12,
+          0.999999999999
+        ]
+      },
+      "cost": 0.0736875,
+      "episodes": 1280,
+      "repairs": 714,
+      "squared_error": 0.30537073099318296,
+      "utility": 0.620941769006817,
+      "wall_ns": 10825155.871875
+    },
+    "numeric": {
+      "calibration": {
+        "bins": [
+          {
+            "bin": 0,
+            "count": 80,
+            "frequency": 0.05,
+            "probability": 0.057313252928164395
+          },
+          {
+            "bin": 1,
+            "count": 142,
+            "frequency": 0.09154929577464789,
+            "probability": 0.14989763857187868
+          },
+          {
+            "bin": 2,
+            "count": 132,
+            "frequency": 0.15151515151515152,
+            "probability": 0.25227507215237477
+          },
+          {
+            "bin": 3,
+            "count": 169,
+            "frequency": 0.3076923076923077,
+            "probability": 0.349358450437934
+          },
+          {
+            "bin": 4,
+            "count": 163,
+            "frequency": 0.5276073619631901,
+            "probability": 0.45021650455145235
+          },
+          {
+            "bin": 5,
+            "count": 157,
+            "frequency": 0.6751592356687898,
+            "probability": 0.5523372819814789
+          },
+          {
+            "bin": 6,
+            "count": 161,
+            "frequency": 0.7018633540372671,
+            "probability": 0.6432225368192975
+          },
+          {
+            "bin": 7,
+            "count": 119,
+            "frequency": 0.7815126050420168,
+            "probability": 0.7499238515794483
+          },
+          {
+            "bin": 8,
+            "count": 102,
+            "frequency": 0.8725490196078431,
+            "probability": 0.8460698505722997
+          },
+          {
+            "bin": 9,
+            "count": 55,
+            "frequency": 0.8909090909090909,
+            "probability": 0.9492646269586311
+          }
+        ],
+        "brier": 0.17024404717737096,
+        "clipped_binary_nll": 0.5158127570201029,
+        "ece": 0.06267252500397985,
+        "nll_probability_clip": [
+          1e-12,
+          0.999999999999
+        ]
+      },
+      "cost": 0.0725625,
+      "episodes": 1280,
+      "repairs": 696,
+      "squared_error": 0.30155881658232975,
+      "utility": 0.6258786834176703,
+      "wall_ns": 12023564.88125
+    },
+    "probit": {
+      "calibration": {
+        "bins": [
+          {
+            "bin": 0,
+            "count": 272,
+            "frequency": 0.014705882352941176,
+            "probability": 0.01836756512702171
+          },
+          {
+            "bin": 1,
+            "count": 61,
+            "frequency": 0.11475409836065574,
+            "probability": 0.1489966481482012
+          },
+          {
+            "bin": 2,
+            "count": 61,
+            "frequency": 0.22950819672131148,
+            "probability": 0.2489443342937161
+          },
+          {
+            "bin": 3,
+            "count": 83,
+            "frequency": 0.3493975903614458,
+            "probability": 0.3540812997428191
+          },
+          {
+            "bin": 4,
+            "count": 108,
+            "frequency": 0.4166666666666667,
+            "probability": 0.45302520371173466
+          },
+          {
+            "bin": 5,
+            "count": 169,
+            "frequency": 0.5680473372781065,
+            "probability": 0.5477608588906764
+          },
+          {
+            "bin": 6,
+            "count": 162,
+            "frequency": 0.6481481481481481,
+            "probability": 0.6448058253413106
+          },
+          {
+            "bin": 7,
+            "count": 97,
+            "frequency": 0.8247422680412371,
+            "probability": 0.747139795246038
+          },
+          {
+            "bin": 8,
+            "count": 75,
+            "frequency": 0.8266666666666667,
+            "probability": 0.8415845709975379
+          },
+          {
+            "bin": 9,
+            "count": 192,
+            "frequency": 0.953125,
+            "probability": 0.9704767420023422
+          }
+        ],
+        "brier": 0.13894484969483556,
+        "clipped_binary_nll": 0.4169364685010312,
+        "ece": 0.019166824855946035,
+        "nll_probability_clip": [
+          1e-12,
+          0.999999999999
+        ]
+      },
+      "cost": 0.07921875,
+      "episodes": 1280,
+      "repairs": 695,
+      "squared_error": 0.28205967623833,
+      "utility": 0.6387215737616699,
+      "wall_ns": 10479413.70703125
+    },
+    "quantized": {
+      "calibration": {
+        "bins": [
+          {
+            "bin": 0,
+            "count": 236,
+            "frequency": 0.00847457627118644,
+            "probability": 0.06129637044659041
+          },
+          {
+            "bin": 1,
+            "count": 100,
+            "frequency": 0.11,
+            "probability": 0.14330127513579327
+          },
+          {
+            "bin": 2,
+            "count": 51,
+            "frequency": 0.23529411764705882,
+            "probability": 0.25496190618457587
+          },
+          {
+            "bin": 3,
+            "count": 77,
+            "frequency": 0.37662337662337664,
+            "probability": 0.3487959949969599
+          },
+          {
+            "bin": 4,
+            "count": 137,
+            "frequency": 0.45255474452554745,
+            "probability": 0.4560582456154899
+          },
+          {
+            "bin": 5,
+            "count": 178,
+            "frequency": 0.5617977528089888,
+            "probability": 0.5513179973091392
+          },
+          {
+            "bin": 6,
+            "count": 138,
+            "frequency": 0.644927536231884,
+            "probability": 0.6457609464349151
+          },
+          {
+            "bin": 7,
+            "count": 109,
+            "frequency": 0.8073394495412844,
+            "probability": 0.7506962754086844
+          },
+          {
+            "bin": 8,
+            "count": 103,
+            "frequency": 0.883495145631068,
+            "probability": 0.859027820097686
+          },
+          {
+            "bin": 9,
+            "count": 151,
+            "frequency": 0.9470198675496688,
+            "probability": 0.9307971770586075
+          }
+        ],
+        "brier": 0.1428483729721332,
+        "clipped_binary_nll": 0.43619122515888253,
+        "ece": 0.02542663285193575,
+        "nll_probability_clip": [
+          1e-12,
+          0.999999999999
+        ]
+      },
+      "cost": 0.06536718749999999,
+      "episodes": 1280,
+      "repairs": 569,
+      "squared_error": 0.31394559726563454,
+      "utility": 0.6206872152343654,
+      "wall_ns": 11773313.96484375
+    },
+    "reset": {
+      "calibration": {
+        "bins": [
+          {
+            "bin": 0,
+            "count": 0,
+            "frequency": null,
+            "probability": null
+          },
+          {
+            "bin": 1,
+            "count": 0,
+            "frequency": null,
+            "probability": null
+          },
+          {
+            "bin": 2,
+            "count": 0,
+            "frequency": null,
+            "probability": null
+          },
+          {
+            "bin": 3,
+            "count": 0,
+            "frequency": null,
+            "probability": null
+          },
+          {
+            "bin": 4,
+            "count": 1024,
+            "frequency": 0.4775390625,
+            "probability": 0.467447916671512
+          },
+          {
+            "bin": 5,
+            "count": 256,
+            "frequency": 0.53125,
+            "probability": 0.5
+          },
+          {
+            "bin": 6,
+            "count": 0,
+            "frequency": null,
+            "probability": null
+          },
+          {
+            "bin": 7,
+            "count": 0,
+            "frequency": null,
+            "probability": null
+          },
+          {
+            "bin": 8,
+            "count": 0,
+            "frequency": null,
+            "probability": null
+          },
+          {
+            "bin": 9,
+            "count": 0,
+            "frequency": null,
+            "probability": null
+          }
+        ],
+        "brier": 0.251041666666225,
+        "clipped_binary_nll": 0.6952624072477336,
+        "ece": 0.01432291666279042,
+        "nll_probability_clip": [
+          1e-12,
+          0.999999999999
+        ]
+      },
+      "cost": 0.22532812500000002,
+      "episodes": 1280,
+      "repairs": 1280,
+      "squared_error": 0.24154210013052313,
+      "utility": 0.5331297748694769,
+      "wall_ns": 10716586.79921875
+    },
+    "zero": {
+      "calibration": {
+        "bins": [
+          {
+            "bin": 0,
+            "count": 0,
+            "frequency": null,
+            "probability": null
+          },
+          {
+            "bin": 1,
+            "count": 0,
+            "frequency": null,
+            "probability": null
+          },
+          {
+            "bin": 2,
+            "count": 0,
+            "frequency": null,
+            "probability": null
+          },
+          {
+            "bin": 3,
+            "count": 0,
+            "frequency": null,
+            "probability": null
+          },
+          {
+            "bin": 4,
+            "count": 1024,
+            "frequency": 0.4775390625,
+            "probability": 0.467447916671512
+          },
+          {
+            "bin": 5,
+            "count": 256,
+            "frequency": 0.53125,
+            "probability": 0.5
+          },
+          {
+            "bin": 6,
+            "count": 0,
+            "frequency": null,
+            "probability": null
+          },
+          {
+            "bin": 7,
+            "count": 0,
+            "frequency": null,
+            "probability": null
+          },
+          {
+            "bin": 8,
+            "count": 0,
+            "frequency": null,
+            "probability": null
+          },
+          {
+            "bin": 9,
+            "count": 0,
+            "frequency": null,
+            "probability": null
+          }
+        ],
+        "brier": 0.251041666666225,
+        "clipped_binary_nll": 0.6952624072477336,
+        "ece": 0.01432291666279042,
+        "nll_probability_clip": [
+          1e-12,
+          0.999999999999
+        ]
+      },
+      "cost": 0.22532812500000002,
+      "episodes": 1280,
+      "repairs": 1280,
+      "squared_error": 0.24154210013052313,
+      "utility": 0.5331297748694769,
+      "wall_ns": 11263164.9484375
+    }
+  },
+  "complete": true,
+  "contrasts": {
+    "analytic_vs_gaussian": {
+      "baseline": "gaussian",
+      "candidate": "analytic",
+      "descriptive_only": true,
+      "interval": [
+        -0.04533788348464617,
+        0.00489925006847774
+      ],
+      "interval_alpha": 0.05,
+      "mean_difference": -0.016921326826071205,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "per_seed_mean_difference": [
+        -0.06741136967396741,
+        0.011513914841886273,
+        -0.017796208443645545,
+        -0.008293667075991423,
+        -0.0026193037786379388
+      ],
+      "production_superiority_established": false,
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 256
+    },
+    "analytic_vs_history": {
+      "baseline": "history",
+      "candidate": "analytic",
+      "descriptive_only": true,
+      "interval": [
+        -0.03583388748426065,
+        0.03419807243677987
+      ],
+      "interval_alpha": 0.05,
+      "mean_difference": 0.0008584779287817617,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "per_seed_mean_difference": [
+        -0.06397163707422253,
+        0.0056675287352786815,
+        -0.006135717641111796,
+        0.01599445243737108,
+        0.052737763186593345
+      ],
+      "production_superiority_established": false,
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 256
+    },
+    "analytic_vs_numeric": {
+      "baseline": "numeric",
+      "candidate": "analytic",
+      "descriptive_only": true,
+      "interval": [
+        -0.04031068830251885,
+        0.030173256203661333
+      ],
+      "interval_alpha": 0.05,
+      "mean_difference": -0.004078436482071466,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "per_seed_mean_difference": [
+        -0.06576337024135412,
+        0.0006766163234782742,
+        -0.015191151327323535,
+        0.011795785087750142,
+        0.04808993774709191
+      ],
+      "production_superiority_established": false,
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 256
+    },
+    "event_vs_gaussian": {
+      "baseline": "gaussian",
+      "candidate": "event",
+      "descriptive_only": true,
+      "interval": [
+        -0.04593917120869704,
+        0.0038826208162130145
+      ],
+      "interval_alpha": 0.05,
+      "mean_difference": -0.01803435852730457,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "per_seed_mean_difference": [
+        -0.06747178049339886,
+        0.011146984651686264,
+        -0.015534856717792568,
+        -0.013343924123456342,
+        -0.004968215953561334
+      ],
+      "production_superiority_established": false,
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 256
+    },
+    "event_vs_numeric": {
+      "baseline": "numeric",
+      "candidate": "event",
+      "descriptive_only": true,
+      "interval": [
+        -0.040299688654673975,
+        0.02647221696173614
+      ],
+      "interval_alpha": 0.05,
+      "mean_difference": -0.005191468183304825,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "per_seed_mean_difference": [
+        -0.06582378106078557,
+        0.0003096861332782643,
+        -0.01292979960147056,
+        0.00674552804028522,
+        0.04574102557216852
+      ],
+      "production_superiority_established": false,
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 256
+    },
+    "event_vs_quantized": {
+      "baseline": "quantized",
+      "candidate": "event",
+      "descriptive_only": true,
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "interval_alpha": 0.05,
+      "mean_difference": 0.0,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "per_seed_mean_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "production_superiority_established": false,
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 256
+    },
+    "event_vs_reset": {
+      "baseline": "reset",
+      "candidate": "event",
+      "descriptive_only": true,
+      "interval": [
+        0.062275348854368015,
+        0.11021720107915309
+      ],
+      "interval_alpha": 0.05,
+      "mean_difference": 0.08755744036488858,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "per_seed_mean_difference": [
+        0.055649408614944704,
+        0.07922948227534408,
+        0.09558599405069546,
+        0.10755940218269294,
+        0.09976291470076562
+      ],
+      "production_superiority_established": false,
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 256
+    },
+    "event_vs_zero": {
+      "baseline": "zero",
+      "candidate": "event",
+      "descriptive_only": true,
+      "interval": [
+        0.061505390798035686,
+        0.11117907669473749
+      ],
+      "interval_alpha": 0.05,
+      "mean_difference": 0.08755744036488858,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "per_seed_mean_difference": [
+        0.055649408614944704,
+        0.07922948227534408,
+        0.09558599405069546,
+        0.10755940218269294,
+        0.09976291470076562
+      ],
+      "production_superiority_established": false,
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 256
+    },
+    "gaussian_vs_probit": {
+      "baseline": "probit",
+      "candidate": "gaussian",
+      "descriptive_only": true,
+      "interval": [
+        -2.7755575615628915e-18,
+        5.551115123125783e-18
+      ],
+      "interval_alpha": 0.05,
+      "mean_difference": 1.474514954580286e-18,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "per_seed_mean_difference": [
+        4.336808689942018e-18,
+        -2.168404344971009e-18,
+        2.6020852139652106e-18,
+        2.6020852139652106e-18,
+        0.0
+      ],
+      "production_superiority_established": false,
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 256
+    }
+  },
+  "episodes": 11520,
+  "execution_receipts": [
+    {
+      "audit_passed": true,
+      "audit_wall_ns": 14367828145,
+      "episodes": 2304,
+      "evaluation_parent_cpu_ns": 28045237038,
+      "evaluation_wall_ns": 29467881902,
+      "native_roundtrip_ns": 1700541820,
+      "native_ticks_replayed": 9216,
+      "seed": 101
+    },
+    {
+      "audit_passed": true,
+      "audit_wall_ns": 13347968065,
+      "episodes": 2304,
+      "evaluation_parent_cpu_ns": 42915227902,
+      "evaluation_wall_ns": 43804575838,
+      "native_roundtrip_ns": 1156582301,
+      "native_ticks_replayed": 9216,
+      "seed": 211
+    },
+    {
+      "audit_passed": true,
+      "audit_wall_ns": 14251650061,
+      "episodes": 2304,
+      "evaluation_parent_cpu_ns": 41038269688,
+      "evaluation_wall_ns": 43857385817,
+      "native_roundtrip_ns": 1780732535,
+      "native_ticks_replayed": 9216,
+      "seed": 307
+    },
+    {
+      "audit_passed": true,
+      "audit_wall_ns": 28328127278,
+      "episodes": 2304,
+      "evaluation_parent_cpu_ns": 52309823544,
+      "evaluation_wall_ns": 57747889241,
+      "native_roundtrip_ns": 1498364601,
+      "native_ticks_replayed": 9216,
+      "seed": 401
+    },
+    {
+      "audit_passed": true,
+      "audit_wall_ns": 12425632718,
+      "episodes": 2304,
+      "evaluation_parent_cpu_ns": 47797259881,
+      "evaluation_wall_ns": 51293389407,
+      "native_roundtrip_ns": 1690979498,
+      "native_ticks_replayed": 9216,
+      "seed": 503
+    }
+  ],
+  "frozen_model_binding": true,
+  "mechanism": [
+    {
+      "analytic_vs_numeric_action_disagreements": 107,
+      "event_vs_direct_quantization_action_disagreements": 0,
+      "event_vs_numeric_action_disagreements": 107,
+      "gaussian_vs_probit_action_disagreements": 0,
+      "seed": 101
+    },
+    {
+      "analytic_vs_numeric_action_disagreements": 24,
+      "event_vs_direct_quantization_action_disagreements": 0,
+      "event_vs_numeric_action_disagreements": 22,
+      "gaussian_vs_probit_action_disagreements": 0,
+      "seed": 211
+    },
+    {
+      "analytic_vs_numeric_action_disagreements": 44,
+      "event_vs_direct_quantization_action_disagreements": 0,
+      "event_vs_numeric_action_disagreements": 44,
+      "gaussian_vs_probit_action_disagreements": 0,
+      "seed": 307
+    },
+    {
+      "analytic_vs_numeric_action_disagreements": 22,
+      "event_vs_direct_quantization_action_disagreements": 0,
+      "event_vs_numeric_action_disagreements": 23,
+      "gaussian_vs_probit_action_disagreements": 0,
+      "seed": 401
+    },
+    {
+      "analytic_vs_numeric_action_disagreements": 34,
+      "event_vs_direct_quantization_action_disagreements": 0,
+      "event_vs_numeric_action_disagreements": 33,
+      "gaussian_vs_probit_action_disagreements": 0,
+      "seed": 503
+    }
+  ],
+  "native_ticks_replayed": 46080,
+  "schema": "hepta.analytic-event.round2.feedback-results.v1",
+  "scope": "Five new seeds; paired trajectory secondary comparisons; no multiplicity-adjusted promotion claim"
+}

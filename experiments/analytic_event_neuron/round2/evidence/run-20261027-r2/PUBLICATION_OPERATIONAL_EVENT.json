@@ -1,0 +1,19 @@
+{
+  "schema": "hepta.round2.publication-operation.v1",
+  "operation": "support archive byte upload",
+  "interrupted_attempt": {
+    "archive": "RUNTIME_CONFIRMATION",
+    "bytes": 908772,
+    "approximately_waited_seconds": 548,
+    "acknowledged_blob_sha": null,
+    "nested_stalled_stage_known": false,
+    "tree_commit_ref_changes": false
+  },
+  "recovery": {
+    "same_archive_uploaded_and_sha_verified_by_root": true,
+    "commit": "bfb945ec9163edba20ee7ab8a2873aab62ea84e2",
+    "scientific_experiment_rerun": false,
+    "frozen_source_model_or_protocol_changes": false
+  },
+  "remaining_support_archives": "root publishing with verified chunk reads and returned Git blob hash"
+}

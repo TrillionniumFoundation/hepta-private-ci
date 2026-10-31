@@ -1,0 +1,20 @@
+{
+  "schema": "hepta.round6.transfer-capacity-check.v1",
+  "observed_utc": "2026-10-30T14:12:07.209170+00:00",
+  "attempt": "copy raw parts to default publication_queue",
+  "required_free_bytes": 1500000000,
+  "command_exit": 1,
+  "reason": "Capacity precheck assertion before destination creation",
+  "scratch_disk": {
+    "total": 33770192896,
+    "used": 29156167680,
+    "free": 2879262720
+  },
+  "tmpfs_disk": {
+    "total": 5225713664,
+    "used": 1495695360,
+    "free": 3730018304
+  },
+  "destination_created": false,
+  "continuation": "Use approved isolated tmpfs for parts publication and independent restore; no unrelated cleanup."
+}

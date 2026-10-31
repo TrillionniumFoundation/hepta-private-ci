@@ -1,0 +1,184 @@
+{
+  "schema": "hepta.analytic-event.round2.acceptance.v1",
+  "source_commit": "9c27481fcd6c2d1861a048ded9a11f988afd521f",
+  "overall_decision": "KEEP_RESEARCH",
+  "production_promotion": false,
+  "implementation_and_evidence_completion_is_not_all_scientific_gates_passing": true,
+  "work_packages": [
+    {
+      "sequence": 1,
+      "name": "mathematical and event contract",
+      "implementation_status": "COMPLETE",
+      "scientific_gate_status": "SPECIFIED",
+      "terminal_firstpassage_neutral_silence_missing_distinct": true,
+      "shared_call_put_probability_law": true
+    },
+    {
+      "sequence": 2,
+      "name": "analytic kernel and independent references",
+      "implementation_status": "COMPLETE",
+      "scientific_gate_status": "PASS_IN_DECLARED_DOMAIN",
+      "stable_tail_interval_gradient_semigroup_and_projection_references": true,
+      "quantization_layers_separately_certified": true
+    },
+    {
+      "sequence": 3,
+      "name": "trained prototypes and mechanism controls",
+      "implementation_status": "COMPLETE",
+      "scientific_gate_status": "MIXED",
+      "continuous_vs_history_superiority": true,
+      "continuous_vs_registered_sparse_superiority": true,
+      "event_superiority": false,
+      "event_utility_noninferiority_001": false,
+      "new_function_class_established": false,
+      "event_direct_quantization_equivalent": true,
+      "discrete_spike_end_to_end_gradient_training_claimed": false,
+      "constant_zero_reset_controls_can_have_unchanged_parameters": true
+    },
+    {
+      "sequence": 4,
+      "name": "hidden noisy state with costly subsequent actions",
+      "implementation_status": "COMPLETE",
+      "scientific_gate_status": "CONTINUOUS_CANDIDATE_SUPPORTED_IN_REGISTERED_TASK",
+      "control_executions": 61440,
+      "unique_confirmation_trajectories": 3840,
+      "private_target_used_for_scoring_after_final_delivery_by_source_order": true,
+      "process_memory_isolation_proof": false,
+      "task_costs_monetary": false
+    },
+    {
+      "sequence": 5,
+      "name": "original Hepta feedback execution and replay",
+      "implementation_status": "COMPLETE",
+      "scientific_gate_status": "EXTRA_ANALYTIC_EVENT_SUPERIORITY_NOT_ESTABLISHED",
+      "control_executions": 11520,
+      "unique_confirmation_trajectories": 1280,
+      "native_ticks_replayed": 46080,
+      "actual_delivery_readback_state_choice_and_scoring": true,
+      "natural_language_or_natural_image_quality_study": false,
+      "zero_reset_controls_isolate_only_memory": false
+    },
+    {
+      "sequence": 6,
+      "name": "runtime and expanded retention/generalization research",
+      "implementation_status": "COMPLETE_FOR_DECLARED_RESEARCH_SCOPE",
+      "scientific_gate_status": "MIXED",
+      "runtime_engineering_checks": 1100,
+      "unique_runtime_histories_exercised": 20,
+      "naive_protected_count_only_bound_passes": false,
+      "naive_protected_bound_violations": 27,
+      "guarded_actual_native_q24_density_passes": true,
+      "separate_delivered_categorical_guard_passes": true,
+      "fp64_original_retention_gate": true,
+      "q24_original_retention_gate": true,
+      "fp64_additional_shift_efficacy": true,
+      "q24_additional_shift_efficacy": true,
+      "drift_calibration_resolved": false,
+      "unbounded_multitask_or_multiyear_retention_established": false,
+      "generalization_population_noninferiority_established": false,
+      "isolated_neuron_hardware_speed_or_energy_advantage_established": false,
+      "all_resource_costs_measured": false,
+      "production_authority": "confidence0,abstain,DENY_ALL"
+    }
+  ],
+  "primary_results": {
+    "analytic_vs_history": {
+      "baseline": "history",
+      "candidate": "analytic",
+      "interval": [
+        0.12954030624915322,
+        0.23510317555005228
+      ],
+      "interval_alpha": 0.016666666666666666,
+      "law": "gaussian",
+      "mean_difference": 0.1841274733954347,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "passes_registered_superiority": true,
+      "per_seed_mean_difference": [
+        0.18301180681470855,
+        0.20368040586327557,
+        0.2077246982164474,
+        0.11723889339086317,
+        0.20898156269187862
+      ],
+      "primary": true,
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 256
+    },
+    "analytic_vs_native": {
+      "baseline": "native",
+      "candidate": "analytic",
+      "interval": [
+        0.27906469049182075,
+        0.483265442194796
+      ],
+      "interval_alpha": 0.016666666666666666,
+      "law": "gaussian",
+      "mean_difference": 0.3782672371658486,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "passes_registered_superiority": true,
+      "per_seed_mean_difference": [
+        0.3161406277699734,
+        0.3959954948203102,
+        0.41280881109887946,
+        0.2767263127496312,
+        0.48966493939044864
+      ],
+      "primary": true,
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 256
+    },
+    "event_vs_continuous": {
+      "baseline": "analytic",
+      "candidate": "event_feedback",
+      "interval": [
+        -0.015212610622026498,
+        0.009301841658361256
+      ],
+      "interval_alpha": 0.016666666666666666,
+      "law": "gaussian",
+      "mean_difference": -0.0019468757633479983,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "passes_registered_superiority": false,
+      "per_seed_mean_difference": [
+        -0.0003514998942998693,
+        0.0008530971689346013,
+        0.0026788147803015853,
+        0.0031787817716142637,
+        -0.016093572643290574
+      ],
+      "primary": true,
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 256
+    }
+  },
+  "event_accuracy_repair": {
+    "does_not_establish_new_function_class_or_population_guarantee": true,
+    "margin": 0.01,
+    "original_superiority_gate_unchanged": true,
+    "passes_empirical_noninferiority": false,
+    "uses_same_adjusted_interval": true
+  },
+  "event_return_decomposition": {
+    "squared_error_reduction": 0.006490624236651976,
+    "paid_cost_increase": 0.008437499999999973,
+    "net_utility_difference": -0.0019468757633479966
+  },
+  "negative_and_equivalent_results_retained": true,
+  "qualification_only_runtime_harness_amendment_separately_frozen": true,
+  "frozen_scientific_files_changed_during_confirmation": false,
+  "five_training_seeds_and_dependent_horizons_not_inflated": true,
+  "timing_scope": "Shared host; nested and overlapping measurements not added into a total; null unmeasured resources retained",
+  "native_build_provenance": "Reused verified Round 1 artifact; zero fresh Rust builds or test-suite claims",
+  "evidence_reports": [
+    "MAIN_CONFIRMATION_REVIEW.json",
+    "RETENTION_CONFIRMATION_REVIEW.json",
+    "RESULTS_REVIEW.json",
+    "EXECUTION_COSTS.json",
+    "run-20261027-r2/reviews/FEEDBACK_INDEPENDENT_REVIEW.json",
+    "run-20261027-r2/reviews/RUNTIME_INDEPENDENT_REVIEW.json"
+  ]
+}

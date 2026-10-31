@@ -1,0 +1,640 @@
+{
+  "action_tariffs": {
+    "feedback": {
+      "repair": 0.12
+    },
+    "main": {
+      "case_multipliers": [
+        0.5,
+        1,
+        2,
+        4
+      ],
+      "repair": 0.12,
+      "utility": "1 - squared_terminal_prediction_error - paid_action_costs",
+      "wait": 0.07
+    },
+    "separation": "Action tariffs remain distinct from CPU, wall, native execution, artifact bytes, and archive time. No monetary conversion and no addition of unlike units.",
+    "unit": "Declared task utility units, not currency or measured compute resource cost"
+  },
+  "execution_costs": {
+    "included_here": false,
+    "status": "pending separate report after frozen main/feedback execution completes"
+  },
+  "feedback_training": {
+    "aggregate": {
+      "actual_deliveries_sum": 7680,
+      "actual_observations_sum": 2560,
+      "adapter_non_tick_residual_ns_sum": 1339771681,
+      "archive_wall_ns_sum": 8388376975,
+      "enclosing_fit_wall_ns_sum": 28649072746,
+      "native_accounting_sum": {
+        "adapter_roundtrip_ns": 1636842390,
+        "kernel_tick_ns": 297070709,
+        "original_sparse_ticks": 20480,
+        "requests": 10240
+      },
+      "parent_python_cpu_ns_sum": 27843163750,
+      "seed_count": 5
+    },
+    "all_native_accounting_recomputed": true,
+    "child_rust_cpu_ns": null,
+    "non_additivity": "Native roundtrip and archive intervals are already inside enclosing fit wall time. Native tick timers are already inside adapter roundtrip. CPU is a distinct clock and must not be added to wall.",
+    "per_seed": [
+      {
+        "adapter_non_tick_residual_ns": 310561073,
+        "archive_suboperations": {
+          "development": {
+            "archive_bytes": 218912,
+            "archive_ns": 399114738,
+            "archive_sha256": "349ac233ccaa56881611521c66f353088587f41f36dbeb3284938f046c1cecf9",
+            "deliveries": 384,
+            "files": 896,
+            "observations": 128,
+            "verified_archive_files": 898
+          },
+          "train": {
+            "archive_bytes": 649142,
+            "archive_ns": 1357133294,
+            "archive_sha256": "511a34a250e30002d8263ef893554586accd6c769bab29779b7c0d46a3477b3d",
+            "deliveries": 1152,
+            "files": 2688,
+            "observations": 384,
+            "verified_archive_files": 2690
+          }
+        },
+        "archive_wall_ns_sum": 1756248032,
+        "confirmation_used": false,
+        "model_file_sha256": "fe7ebc26772cf7a5a94d385a11e2c3351fdc79998164df1318e1c26d902213be",
+        "native_accounting": {
+          "adapter_roundtrip_ns": 377118871,
+          "kernel_tick_ns": 66557798,
+          "original_sparse_ticks": 4096,
+          "requests": 2048
+        },
+        "native_accounting_recomputed_from_all_original_receipts": true,
+        "parent_python_cpu_ns": 5225835905,
+        "seed": 11,
+        "source_complete_receipt_gzip": "experiments/analytic_event_neuron/evidence/run-20261027/feedback_training/seed_11/TRAINING.json.gz",
+        "source_compressed_payload_sha256": "99373599ffe9a8c74f341a94c139017a192f476773c7b844aa44c9d403b74bfb",
+        "source_summary": "experiments/analytic_event_neuron/evidence/run-20261027/feedback_training/seed_11/TRAINING_SUMMARY.json",
+        "total_fit_wall_ns": 5413534137
+      },
+      {
+        "adapter_non_tick_residual_ns": 321209535,
+        "archive_suboperations": {
+          "development": {
+            "archive_bytes": 218420,
+            "archive_ns": 461029996,
+            "archive_sha256": "d7976f97e40b0b8715ad250c43c4083e590157d65af653a95f17287cc892cac4",
+            "deliveries": 384,
+            "files": 896,
+            "observations": 128,
+            "verified_archive_files": 898
+          },
+          "train": {
+            "archive_bytes": 651454,
+            "archive_ns": 1488843401,
+            "archive_sha256": "0411019dde65717ebae548a812cc98c75eb83920547f175fa5c1653fb2465ac3",
+            "deliveries": 1152,
+            "files": 2688,
+            "observations": 384,
+            "verified_archive_files": 2690
+          }
+        },
+        "archive_wall_ns_sum": 1949873397,
+        "confirmation_used": false,
+        "model_file_sha256": "ad650afc36cf8029f1c849fc6a42dd47a82a63a62e8d9cc2a255177f1499eeef",
+        "native_accounting": {
+          "adapter_roundtrip_ns": 395846562,
+          "kernel_tick_ns": 74637027,
+          "original_sparse_ticks": 4096,
+          "requests": 2048
+        },
+        "native_accounting_recomputed_from_all_original_receipts": true,
+        "parent_python_cpu_ns": 6405475820,
+        "seed": 23,
+        "source_complete_receipt_gzip": "experiments/analytic_event_neuron/evidence/run-20261027/feedback_training/seed_23/TRAINING.json.gz",
+        "source_compressed_payload_sha256": "65e08dcc5cc403e52f5f4ee90948bf60526e6d3a928fc44cfccc8a9cf60e6af3",
+        "source_summary": "experiments/analytic_event_neuron/evidence/run-20261027/feedback_training/seed_23/TRAINING_SUMMARY.json",
+        "total_fit_wall_ns": 6620232730
+      },
+      {
+        "adapter_non_tick_residual_ns": 255097685,
+        "archive_suboperations": {
+          "development": {
+            "archive_bytes": 218352,
+            "archive_ns": 444932005,
+            "archive_sha256": "dc97ecfe4b06ea67a378618840eda2032c37efaff4de697406c2e9a66d700f42",
+            "deliveries": 384,
+            "files": 896,
+            "observations": 128,
+            "verified_archive_files": 898
+          },
+          "train": {
+            "archive_bytes": 651745,
+            "archive_ns": 1266538807,
+            "archive_sha256": "060e7c3f245adc809eab541ef4ed65ada90af9b9bc0b1ac13228186e27831eae",
+            "deliveries": 1152,
+            "files": 2688,
+            "observations": 384,
+            "verified_archive_files": 2690
+          }
+        },
+        "archive_wall_ns_sum": 1711470812,
+        "confirmation_used": false,
+        "model_file_sha256": "78a6f8dba72de15c04e0973ba5a52c9fb027d3cae87fc368364346f133f2ea8a",
+        "native_accounting": {
+          "adapter_roundtrip_ns": 300243560,
+          "kernel_tick_ns": 45145875,
+          "original_sparse_ticks": 4096,
+          "requests": 2048
+        },
+        "native_accounting_recomputed_from_all_original_receipts": true,
+        "parent_python_cpu_ns": 5601553322,
+        "seed": 37,
+        "source_complete_receipt_gzip": "experiments/analytic_event_neuron/evidence/run-20261027/feedback_training/seed_37/TRAINING.json.gz",
+        "source_compressed_payload_sha256": "42d2dc68453fa6f5bbc274ed1e85b1489135bc02283c05e56a3ce729905af0d2",
+        "source_summary": "experiments/analytic_event_neuron/evidence/run-20261027/feedback_training/seed_37/TRAINING_SUMMARY.json",
+        "total_fit_wall_ns": 5722865940
+      },
+      {
+        "adapter_non_tick_residual_ns": 191528421,
+        "archive_suboperations": {
+          "development": {
+            "archive_bytes": 219363,
+            "archive_ns": 361630085,
+            "archive_sha256": "3f851a7ce3d40a8ff604f08672008bef6f0c5f7bbdf139b1b947dc70a020125d",
+            "deliveries": 384,
+            "files": 896,
+            "observations": 128,
+            "verified_archive_files": 898
+          },
+          "train": {
+            "archive_bytes": 650881,
+            "archive_ns": 1226873265,
+            "archive_sha256": "f7aef00ce433f440f2a8f1a735e097ad86bc8411a2ab28f84867889748337a41",
+            "deliveries": 1152,
+            "files": 2688,
+            "observations": 384,
+            "verified_archive_files": 2690
+          }
+        },
+        "archive_wall_ns_sum": 1588503350,
+        "confirmation_used": false,
+        "model_file_sha256": "cd904f1ed0257f5c52ade2219c7154bd8ffb5a8feedfd8ae98c8f85f74ef692c",
+        "native_accounting": {
+          "adapter_roundtrip_ns": 247039356,
+          "kernel_tick_ns": 55510935,
+          "original_sparse_ticks": 4096,
+          "requests": 2048
+        },
+        "native_accounting_recomputed_from_all_original_receipts": true,
+        "parent_python_cpu_ns": 5442534564,
+        "seed": 53,
+        "source_complete_receipt_gzip": "experiments/analytic_event_neuron/evidence/run-20261027/feedback_training/seed_53/TRAINING.json.gz",
+        "source_compressed_payload_sha256": "b64046829883d5497bcfc2aedc0acbf9ef8aac39677987a54187efbed67115cb",
+        "source_summary": "experiments/analytic_event_neuron/evidence/run-20261027/feedback_training/seed_53/TRAINING_SUMMARY.json",
+        "total_fit_wall_ns": 5586693051
+      },
+      {
+        "adapter_non_tick_residual_ns": 261374967,
+        "archive_suboperations": {
+          "development": {
+            "archive_bytes": 218414,
+            "archive_ns": 298081989,
+            "archive_sha256": "12f8f4807dbfb7b264a73d0e138485d7321f01e3e81bfcd9c5dfb0b4b6f1dfee",
+            "deliveries": 384,
+            "files": 896,
+            "observations": 128,
+            "verified_archive_files": 898
+          },
+          "train": {
+            "archive_bytes": 650518,
+            "archive_ns": 1084199395,
+            "archive_sha256": "2b252ed420c02a3237987522d4cf15c2133fa42a51812c1e00945343c6bdab1b",
+            "deliveries": 1152,
+            "files": 2688,
+            "observations": 384,
+            "verified_archive_files": 2690
+          }
+        },
+        "archive_wall_ns_sum": 1382281384,
+        "confirmation_used": false,
+        "model_file_sha256": "c208f7b8b21f8eea8cfe404df4ae6e6ffa48fe42cf8d0881bf4209e5e08e2b73",
+        "native_accounting": {
+          "adapter_roundtrip_ns": 316594041,
+          "kernel_tick_ns": 55219074,
+          "original_sparse_ticks": 4096,
+          "requests": 2048
+        },
+        "native_accounting_recomputed_from_all_original_receipts": true,
+        "parent_python_cpu_ns": 5167764139,
+        "seed": 71,
+        "source_complete_receipt_gzip": "experiments/analytic_event_neuron/evidence/run-20261027/feedback_training/seed_71/TRAINING.json.gz",
+        "source_compressed_payload_sha256": "f661c3dac1861b849e234072ab6b08e196ddd8875083f80d1422e7e7d3524b3d",
+        "source_summary": "experiments/analytic_event_neuron/evidence/run-20261027/feedback_training/seed_71/TRAINING_SUMMARY.json",
+        "total_fit_wall_ns": 5305746888
+      }
+    ],
+    "timing_scope": "fit_feedback_models includes actual train/development delivery and readback, original sparse calls, all head candidates/threshold selection, and readback archive/verification. Driver dataset generation/save and final MODELS/TRAINING JSON/gzip writes are outside this interval."
+  },
+  "main_training": {
+    "aggregate": {
+      "enclosing_training_wall_ns_sum": 26851267787,
+      "filter_wall_seconds_sum": 0.26155879501311574,
+      "native_adapter_roundtrip_ns": null,
+      "native_requests_sum": 10240,
+      "native_tick_timer_ns": null,
+      "original_sparse_ticks_sum": 71680,
+      "python_cpu_ns": null,
+      "readout_wall_seconds_sum_by_arm": {
+        "history": 0.8398086820088793,
+        "mean_drive": 7.214064564002911,
+        "native": 3.4618713640084025,
+        "pulse": 7.446072204998927,
+        "pulse_no_reset": 7.602372581022792
+      },
+      "seed_count": 5
+    },
+    "non_additivity": "Filter and readout phase times are nested within total_training_wall_ns; do not add them again to the enclosing total.",
+    "per_seed": [
+      {
+        "component_wall_seconds_sum": 5.568978341005277,
+        "filter_wall_seconds": 0.02832383099303115,
+        "model_file_sha256": "56c2bba2778e87a70984d666e5d4698be33133ab6b02c7fb7aa6fc57c2f8161e",
+        "native_adapter_roundtrip_ns": null,
+        "native_requests": 2048,
+        "native_tick_timer_ns": null,
+        "optimizer_evaluations": 56,
+        "optimizer_iterations": 10,
+        "original_sparse_ticks": 14336,
+        "python_cpu_ns": null,
+        "readout_wall_seconds": {
+          "history": 0.15010943500965368,
+          "mean_drive": 1.5196541259938385,
+          "native": 0.7075560219964245,
+          "pulse": 1.734828329004813,
+          "pulse_no_reset": 1.428506598007516
+        },
+        "seed": 11,
+        "source_receipt": "experiments/analytic_event_neuron/evidence/run-20261027/training/seed_11/TRAINING.json",
+        "total_training_wall_ns": 5572997295,
+        "total_training_wall_seconds": 5.572997295,
+        "unattributed_outer_wall_seconds": 0.0040189539947235176
+      },
+      {
+        "component_wall_seconds_sum": 5.045906207000371,
+        "filter_wall_seconds": 0.050038353001582436,
+        "model_file_sha256": "e497b342d9b5e08600d83b702d821bc06f47a883bc708270253806f59ae904ee",
+        "native_adapter_roundtrip_ns": null,
+        "native_requests": 2048,
+        "native_tick_timer_ns": null,
+        "optimizer_evaluations": 56,
+        "optimizer_iterations": 10,
+        "original_sparse_ticks": 14336,
+        "python_cpu_ns": null,
+        "readout_wall_seconds": {
+          "history": 0.12550276599358767,
+          "mean_drive": 1.4407454440079164,
+          "native": 0.7782062240003143,
+          "pulse": 1.215115925995633,
+          "pulse_no_reset": 1.4362974940013373
+        },
+        "seed": 23,
+        "source_receipt": "experiments/analytic_event_neuron/evidence/run-20261027/training/seed_23/TRAINING.json",
+        "total_training_wall_ns": 5050263701,
+        "total_training_wall_seconds": 5.050263701,
+        "unattributed_outer_wall_seconds": 0.004357493999629369
+      },
+      {
+        "component_wall_seconds_sum": 4.889686649039504,
+        "filter_wall_seconds": 0.07329040201148018,
+        "model_file_sha256": "81856f26eb98784afa0275acb8a160f20ccf742f6b8be401f959c011df5a4367",
+        "native_adapter_roundtrip_ns": null,
+        "native_requests": 2048,
+        "native_tick_timer_ns": null,
+        "optimizer_evaluations": 60,
+        "optimizer_iterations": 11,
+        "original_sparse_ticks": 14336,
+        "python_cpu_ns": null,
+        "readout_wall_seconds": {
+          "history": 0.10744620200421195,
+          "mean_drive": 1.3512731340015307,
+          "native": 0.5540747400082182,
+          "pulse": 1.539217091005412,
+          "pulse_no_reset": 1.2643850800086511
+        },
+        "seed": 37,
+        "source_receipt": "experiments/analytic_event_neuron/evidence/run-20261027/training/seed_37/TRAINING.json",
+        "total_training_wall_ns": 4899042905,
+        "total_training_wall_seconds": 4.899042905,
+        "unattributed_outer_wall_seconds": 0.00935625596049583
+      },
+      {
+        "component_wall_seconds_sum": 5.829620960008469,
+        "filter_wall_seconds": 0.039793504009139724,
+        "model_file_sha256": "b0b4f751c32a9c829cf007c59c31e9d59c75e5017cdfb7e4cf44b77df5e5ebf2",
+        "native_adapter_roundtrip_ns": null,
+        "native_requests": 2048,
+        "native_tick_timer_ns": null,
+        "optimizer_evaluations": 52,
+        "optimizer_iterations": 10,
+        "original_sparse_ticks": 14336,
+        "python_cpu_ns": null,
+        "readout_wall_seconds": {
+          "history": 0.10165406500163954,
+          "mean_drive": 1.5098802720021922,
+          "native": 0.7721388740028488,
+          "pulse": 1.3223991169943474,
+          "pulse_no_reset": 2.0837551279983018
+        },
+        "seed": 53,
+        "source_receipt": "experiments/analytic_event_neuron/evidence/run-20261027/training/seed_53/TRAINING.json",
+        "total_training_wall_ns": 5833514767,
+        "total_training_wall_seconds": 5.833514767,
+        "unattributed_outer_wall_seconds": 0.003893806991530191
+      },
+      {
+        "component_wall_seconds_sum": 5.491556034001405,
+        "filter_wall_seconds": 0.07011270499788225,
+        "model_file_sha256": "9e3803e59da0b2953cf8d50965e682d3c5c7f63f8b1ca12efcb62dd15722cf84",
+        "native_adapter_roundtrip_ns": null,
+        "native_requests": 2048,
+        "native_tick_timer_ns": null,
+        "optimizer_evaluations": 60,
+        "optimizer_iterations": 12,
+        "original_sparse_ticks": 14336,
+        "python_cpu_ns": null,
+        "readout_wall_seconds": {
+          "history": 0.3550962139997864,
+          "mean_drive": 1.3925115879974328,
+          "native": 0.6498955040005967,
+          "pulse": 1.6345117419987218,
+          "pulse_no_reset": 1.3894282810069853
+        },
+        "seed": 71,
+        "source_receipt": "experiments/analytic_event_neuron/evidence/run-20261027/training/seed_71/TRAINING.json",
+        "total_training_wall_ns": 5495449119,
+        "total_training_wall_seconds": 5.495449119,
+        "unattributed_outer_wall_seconds": 0.0038930849985945315
+      }
+    ],
+    "timing_scope": "Outer total wraps fit_models after dataset creation/save and before MODELS/TRAINING file writes. Readout phases include feature extraction, candidate fitting, development selection and variance calibration. Filter phase includes optimizer and immediate model/receipt construction.",
+    "unrecorded": [
+      "parent Python CPU",
+      "Rust child CPU",
+      "native request/tick durations in the main-training receipts",
+      "dataset generation/save and final artifact serialization wall time"
+    ]
+  },
+  "measurement_context": {
+    "aggregation": "Sums are sums of recorded operation durations across the five seeds, not an end-to-end elapsed project timeline.",
+    "currency_conversion": null,
+    "environment_from_frozen_receipt": {
+      "packages": {
+        "Pillow": "12.3.0",
+        "numpy": "2.3.5",
+        "scipy": "1.17.0"
+      },
+      "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+      "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+    },
+    "hardware_qualification": "shared host measured; not an isolated hardware benchmark",
+    "method": "Read only pre-existing frozen training/build receipts and retained qualification evidence; no training, confirmation, or runtime replay was executed for this report."
+  },
+  "measurement_definitions": {
+    "adapter_non_tick_residual": "adapter_roundtrip minus recorded native tick timers; derived residual includes several bookkeeping and IPC components and is not a pure network/IPC measurement.",
+    "adapter_roundtrip": "Python persistent-process request elapsed time: lock/serialization, pipe I/O, native execution, response parsing, and scheduling.",
+    "missing_measurement": "null means the frozen receipt did not record this dimension; it is not zero and is not inferred from another clock.",
+    "native_tick_timer": "Sum of retained Rust native_ns fields: sparse_tick plus receipt/digest work completed before the timer sample; not an isolated kernel CPU benchmark.",
+    "parent_python_cpu": "time.process_time_ns of the Python process; includes its threads and native code in-process, excludes CPU of the separate Rust child.",
+    "wall": "perf_counter/Instant elapsed intervals include waiting and shared-host scheduling; these are not CPU-time measurements."
+  },
+  "qualification_evidence": {
+    "runtime": {
+      "counter_scope": "First Native process before the final separate-process recovery; retained assertion subgroup, not all qualification work.",
+      "limits": [
+        "Linux x86_64 native libm qualification only",
+        "No Agentd production owner integration",
+        "No empirical calibration claimed for typed legacy confidence",
+        "Python checksum alone is not hostile-writer authentication; rollback needs caller-held anchor",
+        "4096 steps validate numerical recurrence, not multi-day retention"
+      ],
+      "passed_checks": 147,
+      "recorded_accepted_native_requests": 104,
+      "recorded_original_sparse_ticks": 125,
+      "retained_typed_sample_timing": {
+        "subprocess_roundtrip_ns": {
+          "count": 91,
+          "maximum_ns": 3576910,
+          "mean_ns": 1619277.5494505495,
+          "median_ns": 1538308,
+          "minimum_ns": 998255,
+          "sum_ns": 147354257
+        },
+        "typed_tick_wall_ns": {
+          "count": 91,
+          "maximum_ns": 809871,
+          "mean_ns": 547163.8131868131,
+          "median_ns": 552883,
+          "minimum_ns": 355355,
+          "sum_ns": 49791907
+        }
+      },
+      "retained_typed_samples": 91,
+      "scope": [
+        "atomic pulse commit/lost acknowledgement",
+        "idempotent replay and identity mismatch",
+        "explicit conditioning/target time",
+        "reset/refractory and pure recurrence",
+        "FP64/Q24 numerical comparison",
+        "fresh original-adapter parity",
+        "actual journal/witness/CAS/recovery"
+      ],
+      "source": "experiments/analytic_event_neuron/evidence/runtime/RUNTIME_VALIDATION.json",
+      "total_qualification_cpu_ns": null,
+      "total_qualification_wall_ns": null
+    },
+    "trained_adapter": {
+      "accepted_typed_native_requests": 65,
+      "additional_recovery_computational_ticks": 5,
+      "assertions_are_not_independent_performance_samples": true,
+      "data_scope": "Existing development histories only; no confirmation and no new task-effect comparison.",
+      "exact_duplicate_replays_without_native_append": 5,
+      "forecast_executions": 60,
+      "limits": [
+        "Recovery ticks reuse the same history/time/target; they are computational Monte Carlo drives, not independent observations or added likelihood/confidence.",
+        "Paired owners use pending markers and fail-closed reconciliation, not a cross-owner atomic transaction.",
+        "Timing subtotals omit adapter/model/history/owner work outside their timer boundaries."
+      ],
+      "passed_checks": 81,
+      "retained_typed_sample_timing": {
+        "subprocess_roundtrip_ns": {
+          "count": 65,
+          "maximum_ns": 9829476,
+          "mean_ns": 2561093.4153846153,
+          "median_ns": 2228369,
+          "minimum_ns": 1102061,
+          "sum_ns": 166471072
+        },
+        "typed_tick_wall_ns": {
+          "count": 65,
+          "maximum_ns": 6112383,
+          "mean_ns": 709793.9230769231,
+          "median_ns": 569809,
+          "minimum_ns": 367304,
+          "sum_ns": 46136605
+        }
+      },
+      "scope": "Five frozen models -> mean/variance -> actual typed native probability head and durable pulse owner, with exact replay and separate-process recovery.",
+      "source": "experiments/analytic_event_neuron/evidence/trained_runtime/TRAINED_RUNTIME_VALIDATION.json",
+      "total_qualification_cpu_ns": null,
+      "total_qualification_wall_ns": null
+    }
+  },
+  "qualified_native_build": {
+    "binary_sha256": "b519cae26325f818d9596aab34504490a0b5355b9eb633369878e6f07a50e179",
+    "commands": {
+      "build": {
+        "log_sha256": "c00fb230a9a67773335ea43a0b9c0f1f89610cb52830164988f42d6f52c26f4c",
+        "returncode": 0,
+        "wall_seconds": 9.802989636998973
+      },
+      "fmt": {
+        "log_sha256": "ee72e3cf717755f576db4de9c726e29bc48172bf0b35948d6af1a474c788f0b8",
+        "returncode": 0,
+        "wall_seconds": 0.023238346999278292
+      },
+      "test": {
+        "log_sha256": "1bac32d467df7b2f9e36faf5828a1f7f1135cd40c7002b7f48b658fb813dfa82",
+        "returncode": 0,
+        "wall_seconds": 11.999975951999659
+      }
+    },
+    "cpu_seconds": null,
+    "recorded_phase_wall_seconds_sum": 21.82620393599791,
+    "scope": "Final v6 isolated offline build, formatting, and original three-crate tests only. Earlier unfrozen prototypes/failed builds and engineering time are excluded.",
+    "source_receipt": "experiments/analytic_event_neuron/evidence/run-20261027/native/BUILD_RECEIPT.json",
+    "test_results": {
+      "failed": 0,
+      "ignored": 1,
+      "passed": 170
+    }
+  },
+  "schema": "hepta.analytic-event.training-costs.v1",
+  "source_freeze": {
+    "all_frozen_source_and_trained_file_hashes_reverified": true,
+    "preconfirmation_source_commit": "9b111ae4916cebbe2c6142aaa97c50235f8782e5",
+    "protocol_sha256": "73e18acc4eb593a89f4dfd7bd6396e528b40a9a6d4751ef915bd5aee3de573fc",
+    "receipt": "experiments/analytic_event_neuron/evidence/run-20261027/FREEZE.json",
+    "source_and_model_mutations_performed": false
+  },
+  "sources": {
+    "experiments/analytic_event_neuron/PROTOCOL.json": {
+      "bytes": 6069,
+      "sha256": "73e18acc4eb593a89f4dfd7bd6396e528b40a9a6d4751ef915bd5aee3de573fc"
+    },
+    "experiments/analytic_event_neuron/evidence/native/build.log": {
+      "bytes": 1201,
+      "sha256": "c00fb230a9a67773335ea43a0b9c0f1f89610cb52830164988f42d6f52c26f4c"
+    },
+    "experiments/analytic_event_neuron/evidence/native/fmt.log": {
+      "bytes": 206,
+      "sha256": "ee72e3cf717755f576db4de9c726e29bc48172bf0b35948d6af1a474c788f0b8"
+    },
+    "experiments/analytic_event_neuron/evidence/native/test.log": {
+      "bytes": 16989,
+      "sha256": "1bac32d467df7b2f9e36faf5828a1f7f1135cd40c7002b7f48b658fb813dfa82"
+    },
+    "experiments/analytic_event_neuron/evidence/run-20261027/FREEZE.json": {
+      "bytes": 9769,
+      "sha256": "825b5d4ffd3fae2ab03851ea8792d272b886490e7a3ea7d9bd1a478a25e6e5f4"
+    },
+    "experiments/analytic_event_neuron/evidence/run-20261027/feedback_training/seed_11/TRAINING.json.gz": {
+      "bytes": 1059778,
+      "sha256": "2e963b7b3d2fc1e0bc3f299324decabd44120b76010363c6445be47354994f45"
+    },
+    "experiments/analytic_event_neuron/evidence/run-20261027/feedback_training/seed_11/TRAINING_SUMMARY.json": {
+      "bytes": 37345,
+      "sha256": "50e969ee2c0a8143d393402cca383b8dd9143faf7772e60783e3ac8f00f91271"
+    },
+    "experiments/analytic_event_neuron/evidence/run-20261027/feedback_training/seed_23/TRAINING.json.gz": {
+      "bytes": 1060541,
+      "sha256": "84861f01e21d456c0867e902f49c78c2a1758828669fc2189f7eb6867302afaf"
+    },
+    "experiments/analytic_event_neuron/evidence/run-20261027/feedback_training/seed_23/TRAINING_SUMMARY.json": {
+      "bytes": 37335,
+      "sha256": "639be4694d94155c464f8a803c6d3e51bc2bcad66186e3d6b61ceaadcffc57e2"
+    },
+    "experiments/analytic_event_neuron/evidence/run-20261027/feedback_training/seed_37/TRAINING.json.gz": {
+      "bytes": 1058593,
+      "sha256": "c72bb70745d0faeaf49cc868c55885ced7f28585b309267996860df4f543535d"
+    },
+    "experiments/analytic_event_neuron/evidence/run-20261027/feedback_training/seed_37/TRAINING_SUMMARY.json": {
+      "bytes": 37346,
+      "sha256": "edd57a9b6a7e8c9b3c4adb22dba17d5ea34dd6949f3f5e3fcdd5970070e40eea"
+    },
+    "experiments/analytic_event_neuron/evidence/run-20261027/feedback_training/seed_53/TRAINING.json.gz": {
+      "bytes": 1059033,
+      "sha256": "90f25074cb6625014468c417f307ad1177e557948eab646a64e801b851548b83"
+    },
+    "experiments/analytic_event_neuron/evidence/run-20261027/feedback_training/seed_53/TRAINING_SUMMARY.json": {
+      "bytes": 37328,
+      "sha256": "d59412a6998b9d90c2b8488d7359a123436c48aa60db2d0b53fd29b31f84971c"
+    },
+    "experiments/analytic_event_neuron/evidence/run-20261027/feedback_training/seed_71/TRAINING.json.gz": {
+      "bytes": 1059101,
+      "sha256": "b1efd05cf5d71eb89ba71f0f54782b61b97302332e6dbf3b54e486e7f11839f0"
+    },
+    "experiments/analytic_event_neuron/evidence/run-20261027/feedback_training/seed_71/TRAINING_SUMMARY.json": {
+      "bytes": 37406,
+      "sha256": "4843079df557a7a42b2c81d0ec7aa0fa9430d818a99707a8854dab73c3f51867"
+    },
+    "experiments/analytic_event_neuron/evidence/run-20261027/native/BUILD_RECEIPT.json": {
+      "bytes": 9414,
+      "sha256": "3d791e7d7245904a31a9d71301075ac562772130dd6d9628a8369e7ae701ba3d"
+    },
+    "experiments/analytic_event_neuron/evidence/run-20261027/training/seed_11/TRAINING.json": {
+      "bytes": 14285,
+      "sha256": "fbc7f746f5ec40db137dcdafe4792666673afdbfb9bc0d9acccc012d90672764"
+    },
+    "experiments/analytic_event_neuron/evidence/run-20261027/training/seed_23/TRAINING.json": {
+      "bytes": 14253,
+      "sha256": "2f5090e333ce5d3d3911d0f43b868e3feb928fbce2307d7d1decd5eeebf82db3"
+    },
+    "experiments/analytic_event_neuron/evidence/run-20261027/training/seed_37/TRAINING.json": {
+      "bytes": 15004,
+      "sha256": "6863b2e7668d53bad8111ef8ffea79bf12f5ce57342c8b901723b8d30c8332d0"
+    },
+    "experiments/analytic_event_neuron/evidence/run-20261027/training/seed_53/TRAINING.json": {
+      "bytes": 13477,
+      "sha256": "9a925908cc95207dd79e4183525ae2283ea23003b0ffaf7d50473c4ab1fb3287"
+    },
+    "experiments/analytic_event_neuron/evidence/run-20261027/training/seed_71/TRAINING.json": {
+      "bytes": 14994,
+      "sha256": "54780207d919f59dc6060aff09434ea8ed1f69e041182280c9f92424088d1182"
+    },
+    "experiments/analytic_event_neuron/evidence/runtime/RUNTIME_VALIDATION.json": {
+      "bytes": 18680,
+      "sha256": "e7c2a2795abed86405c3153dffe0465e0e09c6ca9a662e8bdc8e83f178957a60"
+    },
+    "experiments/analytic_event_neuron/evidence/runtime/TYPED_SAMPLES.json": {
+      "bytes": 221313,
+      "sha256": "a617de29da511631483e5ad374f04178c843d906d1b3f4932a6e6c934e35f5eb"
+    },
+    "experiments/analytic_event_neuron/evidence/trained_runtime/FORECAST_RECEIPTS.json": {
+      "bytes": 429103,
+      "sha256": "5770498370f970e54698a33e41e8d4f0eb113f1f09e196e695f23a7544c51fd5"
+    },
+    "experiments/analytic_event_neuron/evidence/trained_runtime/RECOVERY_RECEIPTS.json": {
+      "bytes": 35778,
+      "sha256": "0ec51dd06e53bdcd5985eec08a5841477af1c928ddcdd0b6e461f10584a055fa"
+    },
+    "experiments/analytic_event_neuron/evidence/trained_runtime/TRAINED_RUNTIME_VALIDATION.json": {
+      "bytes": 9776,
+      "sha256": "66d20193d8609bdbc0aa097a4f160ce6143374d5a5ba6d59b9e3f17eddea5fbe"
+    }
+  },
+  "status": "training_and_existing_qualification_only"
+}

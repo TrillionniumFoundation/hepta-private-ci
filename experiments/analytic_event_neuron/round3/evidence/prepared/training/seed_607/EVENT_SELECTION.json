@@ -1,0 +1,1031 @@
+{
+  "baseline_gaussian_nll": 0.7153840509976207,
+  "baseline_utility": 0.5610674927291015,
+  "candidate_count": 21,
+  "candidates": [
+    {
+      "action_disagreements_vs_continuous": 0,
+      "action_sequences": {
+        "stop": 85,
+        "wait/repair": 133,
+        "wait/stop": 38
+      },
+      "config": {
+        "adaptive": true,
+        "initial_logvar_bits": 4,
+        "maximum_logvar_bits": 24,
+        "mean_bits": 6,
+        "mode": "error_feedback"
+      },
+      "cpu_ns": 777952481,
+      "eligible": true,
+      "event_packet_bytes": 380557,
+      "event_packets": 1880,
+      "gaussian_nll": 0.715024041852259,
+      "logical_unit_events": 58791,
+      "mean_action_cost": 0.10947265625,
+      "mean_squared_error": 0.3291932338666309,
+      "mean_utility": 0.5613341098833691,
+      "nll_deficit": -0.00036000914536171713,
+      "severe_loss_fraction": 0.00390625,
+      "uncertified_decisions": 0,
+      "utility": 0.5613341098833691,
+      "utility_deficit": -0.0002666171542675677,
+      "wall_ns": 836564438
+    },
+    {
+      "action_disagreements_vs_continuous": 0,
+      "action_sequences": {
+        "stop": 85,
+        "wait/repair": 133,
+        "wait/stop": 38
+      },
+      "config": {
+        "adaptive": true,
+        "initial_logvar_bits": 6,
+        "maximum_logvar_bits": 24,
+        "mean_bits": 6,
+        "mode": "error_feedback"
+      },
+      "cpu_ns": 438518573,
+      "eligible": true,
+      "event_packet_bytes": 375853,
+      "event_packets": 1852,
+      "gaussian_nll": 0.715009635671447,
+      "logical_unit_events": 98322,
+      "mean_action_cost": 0.10947265625,
+      "mean_squared_error": 0.3291932338666309,
+      "mean_utility": 0.5613341098833691,
+      "nll_deficit": -0.00037441532617366047,
+      "severe_loss_fraction": 0.00390625,
+      "uncertified_decisions": 0,
+      "utility": 0.5613341098833691,
+      "utility_deficit": -0.0002666171542675677,
+      "wall_ns": 508966859
+    },
+    {
+      "action_disagreements_vs_continuous": 0,
+      "action_sequences": {
+        "stop": 85,
+        "wait/repair": 133,
+        "wait/stop": 38
+      },
+      "config": {
+        "adaptive": true,
+        "initial_logvar_bits": 4,
+        "maximum_logvar_bits": 24,
+        "mean_bits": 8,
+        "mode": "error_feedback"
+      },
+      "cpu_ns": 282968633,
+      "eligible": true,
+      "event_packet_bytes": 381625,
+      "event_packets": 1880,
+      "gaussian_nll": 0.7153224971125136,
+      "logical_unit_events": 195358,
+      "mean_action_cost": 0.10947265625,
+      "mean_squared_error": 0.32932936486046094,
+      "mean_utility": 0.5611979788895392,
+      "nll_deficit": -6.15538851070907e-05,
+      "severe_loss_fraction": 0.00390625,
+      "uncertified_decisions": 0,
+      "utility": 0.5611979788895392,
+      "utility_deficit": -0.00013048616043764838,
+      "wall_ns": 284382666
+    },
+    {
+      "action_disagreements_vs_continuous": 0,
+      "action_sequences": {
+        "stop": 85,
+        "wait/repair": 133,
+        "wait/stop": 38
+      },
+      "config": {
+        "adaptive": true,
+        "initial_logvar_bits": 6,
+        "maximum_logvar_bits": 24,
+        "mean_bits": 8,
+        "mode": "error_feedback"
+      },
+      "cpu_ns": 343299007,
+      "eligible": true,
+      "event_packet_bytes": 376921,
+      "event_packets": 1852,
+      "gaussian_nll": 0.7153089927374946,
+      "logical_unit_events": 234889,
+      "mean_action_cost": 0.10947265625,
+      "mean_squared_error": 0.32932936486046094,
+      "mean_utility": 0.5611979788895392,
+      "nll_deficit": -7.505826012610406e-05,
+      "severe_loss_fraction": 0.00390625,
+      "uncertified_decisions": 0,
+      "utility": 0.5611979788895392,
+      "utility_deficit": -0.00013048616043764838,
+      "wall_ns": 351468203
+    },
+    {
+      "action_disagreements_vs_continuous": 0,
+      "action_sequences": {
+        "stop": 85,
+        "wait/repair": 133,
+        "wait/stop": 38
+      },
+      "config": {
+        "adaptive": true,
+        "initial_logvar_bits": 4,
+        "maximum_logvar_bits": 24,
+        "mean_bits": 10,
+        "mode": "error_feedback"
+      },
+      "cpu_ns": 364332974,
+      "eligible": true,
+      "event_packet_bytes": 384555,
+      "event_packets": 1880,
+      "gaussian_nll": 0.7154203930820695,
+      "logical_unit_events": 741650,
+      "mean_action_cost": 0.10947265625,
+      "mean_squared_error": 0.3294957309100016,
+      "mean_utility": 0.5610316128399984,
+      "nll_deficit": 3.6342084448803824e-05,
+      "severe_loss_fraction": 0.00390625,
+      "uncertified_decisions": 0,
+      "utility": 0.5610316128399984,
+      "utility_deficit": 3.587988910314088e-05,
+      "wall_ns": 370738010
+    },
+    {
+      "action_disagreements_vs_continuous": 0,
+      "action_sequences": {
+        "stop": 85,
+        "wait/repair": 133,
+        "wait/stop": 38
+      },
+      "config": {
+        "adaptive": true,
+        "initial_logvar_bits": 6,
+        "maximum_logvar_bits": 24,
+        "mean_bits": 10,
+        "mode": "error_feedback"
+      },
+      "cpu_ns": 245766602,
+      "eligible": true,
+      "event_packet_bytes": 379823,
+      "event_packets": 1852,
+      "gaussian_nll": 0.715406474316179,
+      "logical_unit_events": 781181,
+      "mean_action_cost": 0.10947265625,
+      "mean_squared_error": 0.3294957309100016,
+      "mean_utility": 0.5610316128399984,
+      "nll_deficit": 2.24233185582845e-05,
+      "severe_loss_fraction": 0.00390625,
+      "uncertified_decisions": 0,
+      "utility": 0.5610316128399984,
+      "utility_deficit": 3.587988910314088e-05,
+      "wall_ns": 248800386
+    },
+    {
+      "action_disagreements_vs_continuous": 4,
+      "action_sequences": {
+        "stop": 84,
+        "wait/repair": 132,
+        "wait/stop": 40
+      },
+      "config": {
+        "adaptive": false,
+        "initial_logvar_bits": 4,
+        "maximum_logvar_bits": 4,
+        "mean_bits": 6,
+        "mode": "error_feedback"
+      },
+      "cpu_ns": 254646037,
+      "eligible": true,
+      "event_packet_bytes": 372417,
+      "event_packets": 1840,
+      "gaussian_nll": 0.715024041852259,
+      "logical_unit_events": 58705,
+      "mean_action_cost": 0.11017578125,
+      "mean_squared_error": 0.3285620034952316,
+      "mean_utility": 0.5612622152547684,
+      "nll_deficit": -0.00036000914536171713,
+      "severe_loss_fraction": 0.00390625,
+      "uncertified_decisions": 28,
+      "utility": 0.5612622152547684,
+      "utility_deficit": -0.00019472252566687942,
+      "wall_ns": 254054941
+    },
+    {
+      "action_disagreements_vs_continuous": 1,
+      "action_sequences": {
+        "stop": 86,
+        "wait/repair": 133,
+        "wait/stop": 37
+      },
+      "config": {
+        "adaptive": false,
+        "initial_logvar_bits": 6,
+        "maximum_logvar_bits": 6,
+        "mean_bits": 6,
+        "mode": "error_feedback"
+      },
+      "cpu_ns": 311301405,
+      "eligible": true,
+      "event_packet_bytes": 373205,
+      "event_packets": 1839,
+      "gaussian_nll": 0.715009635671447,
+      "logical_unit_events": 98289,
+      "mean_action_cost": 0.10892578124999999,
+      "mean_squared_error": 0.3290783010912124,
+      "mean_utility": 0.5619959176587875,
+      "nll_deficit": -0.00037441532617366047,
+      "severe_loss_fraction": 0.00390625,
+      "uncertified_decisions": 12,
+      "utility": 0.5619959176587875,
+      "utility_deficit": -0.0009284249296860336,
+      "wall_ns": 310321010
+    },
+    {
+      "action_disagreements_vs_continuous": 0,
+      "action_sequences": {
+        "stop": 85,
+        "wait/repair": 133,
+        "wait/stop": 38
+      },
+      "config": {
+        "adaptive": false,
+        "initial_logvar_bits": 8,
+        "maximum_logvar_bits": 8,
+        "mean_bits": 6,
+        "mode": "error_feedback"
+      },
+      "cpu_ns": 272588363,
+      "eligible": true,
+      "event_packet_bytes": 374318,
+      "event_packets": 1840,
+      "gaussian_nll": 0.7150294047272401,
+      "logical_unit_events": 256822,
+      "mean_action_cost": 0.10947265625,
+      "mean_squared_error": 0.3291932338666309,
+      "mean_utility": 0.5613341098833691,
+      "nll_deficit": -0.0003546462703806208,
+      "severe_loss_fraction": 0.00390625,
+      "uncertified_decisions": 0,
+      "utility": 0.5613341098833691,
+      "utility_deficit": -0.0002666171542675677,
+      "wall_ns": 271656487
+    },
+    {
+      "action_disagreements_vs_continuous": 0,
+      "action_sequences": {
+        "stop": 85,
+        "wait/repair": 133,
+        "wait/stop": 38
+      },
+      "config": {
+        "adaptive": false,
+        "initial_logvar_bits": 10,
+        "maximum_logvar_bits": 10,
+        "mean_bits": 6,
+        "mode": "error_feedback"
+      },
+      "cpu_ns": 275671752,
+      "eligible": true,
+      "event_packet_bytes": 377270,
+      "event_packets": 1840,
+      "gaussian_nll": 0.71502331674173,
+      "logical_unit_events": 890634,
+      "mean_action_cost": 0.10947265625,
+      "mean_squared_error": 0.3291932338666309,
+      "mean_utility": 0.5613341098833691,
+      "nll_deficit": -0.0003607342558906712,
+      "severe_loss_fraction": 0.00390625,
+      "uncertified_decisions": 0,
+      "utility": 0.5613341098833691,
+      "utility_deficit": -0.0002666171542675677,
+      "wall_ns": 275414691
+    },
+    {
+      "action_disagreements_vs_continuous": 0,
+      "action_sequences": {
+        "stop": 85,
+        "wait/repair": 133,
+        "wait/stop": 38
+      },
+      "config": {
+        "adaptive": false,
+        "initial_logvar_bits": 12,
+        "maximum_logvar_bits": 12,
+        "mean_bits": 6,
+        "mode": "error_feedback"
+      },
+      "cpu_ns": 368725377,
+      "eligible": true,
+      "event_packet_bytes": 378395,
+      "event_packets": 1840,
+      "gaussian_nll": 0.7150224968955259,
+      "logical_unit_events": 3426158,
+      "mean_action_cost": 0.10947265625,
+      "mean_squared_error": 0.3291932338666309,
+      "mean_utility": 0.5613341098833691,
+      "nll_deficit": -0.00036155410209481875,
+      "severe_loss_fraction": 0.00390625,
+      "uncertified_decisions": 0,
+      "utility": 0.5613341098833691,
+      "utility_deficit": -0.0002666171542675677,
+      "wall_ns": 368105507
+    },
+    {
+      "action_disagreements_vs_continuous": 4,
+      "action_sequences": {
+        "stop": 84,
+        "wait/repair": 132,
+        "wait/stop": 40
+      },
+      "config": {
+        "adaptive": false,
+        "initial_logvar_bits": 4,
+        "maximum_logvar_bits": 4,
+        "mean_bits": 8,
+        "mode": "error_feedback"
+      },
+      "cpu_ns": 371977346,
+      "eligible": true,
+      "event_packet_bytes": 373483,
+      "event_packets": 1840,
+      "gaussian_nll": 0.7153224971125136,
+      "logical_unit_events": 195202,
+      "mean_action_cost": 0.11017578125,
+      "mean_squared_error": 0.32867919215012875,
+      "mean_utility": 0.5611450265998712,
+      "nll_deficit": -6.15538851070907e-05,
+      "severe_loss_fraction": 0.00390625,
+      "uncertified_decisions": 28,
+      "utility": 0.5611450265998712,
+      "utility_deficit": -7.753387076969709e-05,
+      "wall_ns": 371601280
+    },
+    {
+      "action_disagreements_vs_continuous": 1,
+      "action_sequences": {
+        "stop": 86,
+        "wait/repair": 133,
+        "wait/stop": 37
+      },
+      "config": {
+        "adaptive": false,
+        "initial_logvar_bits": 6,
+        "maximum_logvar_bits": 6,
+        "mean_bits": 8,
+        "mode": "error_feedback"
+      },
+      "cpu_ns": 331349369,
+      "eligible": true,
+      "event_packet_bytes": 374272,
+      "event_packets": 1839,
+      "gaussian_nll": 0.7153089927374946,
+      "logical_unit_events": 234827,
+      "mean_action_cost": 0.10892578124999999,
+      "mean_squared_error": 0.32917319149099705,
+      "mean_utility": 0.561901027259003,
+      "nll_deficit": -7.505826012610406e-05,
+      "severe_loss_fraction": 0.00390625,
+      "uncertified_decisions": 12,
+      "utility": 0.561901027259003,
+      "utility_deficit": -0.0008335345299015362,
+      "wall_ns": 358038562
+    },
+    {
+      "action_disagreements_vs_continuous": 0,
+      "action_sequences": {
+        "stop": 85,
+        "wait/repair": 133,
+        "wait/stop": 38
+      },
+      "config": {
+        "adaptive": false,
+        "initial_logvar_bits": 8,
+        "maximum_logvar_bits": 8,
+        "mean_bits": 8,
+        "mode": "error_feedback"
+      },
+      "cpu_ns": 502279878,
+      "eligible": true,
+      "event_packet_bytes": 375386,
+      "event_packets": 1840,
+      "gaussian_nll": 0.7153287172509921,
+      "logical_unit_events": 393389,
+      "mean_action_cost": 0.10947265625,
+      "mean_squared_error": 0.32932936486046094,
+      "mean_utility": 0.5611979788895392,
+      "nll_deficit": -5.5333746628583036e-05,
+      "severe_loss_fraction": 0.00390625,
+      "uncertified_decisions": 0,
+      "utility": 0.5611979788895392,
+      "utility_deficit": -0.00013048616043764838,
+      "wall_ns": 502085494
+    },
+    {
+      "action_disagreements_vs_continuous": 0,
+      "action_sequences": {
+        "stop": 85,
+        "wait/repair": 133,
+        "wait/stop": 38
+      },
+      "config": {
+        "adaptive": false,
+        "initial_logvar_bits": 10,
+        "maximum_logvar_bits": 10,
+        "mean_bits": 8,
+        "mode": "error_feedback"
+      },
+      "cpu_ns": 333846784,
+      "eligible": true,
+      "event_packet_bytes": 378338,
+      "event_packets": 1840,
+      "gaussian_nll": 0.7153225084009958,
+      "logical_unit_events": 1027201,
+      "mean_action_cost": 0.10947265625,
+      "mean_squared_error": 0.32932936486046094,
+      "mean_utility": 0.5611979788895392,
+      "nll_deficit": -6.154259662494166e-05,
+      "severe_loss_fraction": 0.00390625,
+      "uncertified_decisions": 0,
+      "utility": 0.5611979788895392,
+      "utility_deficit": -0.00013048616043764838,
+      "wall_ns": 333285778
+    },
+    {
+      "action_disagreements_vs_continuous": 0,
+      "action_sequences": {
+        "stop": 85,
+        "wait/repair": 133,
+        "wait/stop": 38
+      },
+      "config": {
+        "adaptive": false,
+        "initial_logvar_bits": 12,
+        "maximum_logvar_bits": 12,
+        "mean_bits": 8,
+        "mode": "error_feedback"
+      },
+      "cpu_ns": 422343380,
+      "eligible": true,
+      "event_packet_bytes": 379463,
+      "event_packets": 1840,
+      "gaussian_nll": 0.7153217472113154,
+      "logical_unit_events": 3562725,
+      "mean_action_cost": 0.10947265625,
+      "mean_squared_error": 0.32932936486046094,
+      "mean_utility": 0.5611979788895392,
+      "nll_deficit": -6.230378630533995e-05,
+      "severe_loss_fraction": 0.00390625,
+      "uncertified_decisions": 0,
+      "utility": 0.5611979788895392,
+      "utility_deficit": -0.00013048616043764838,
+      "wall_ns": 421680578
+    },
+    {
+      "action_disagreements_vs_continuous": 4,
+      "action_sequences": {
+        "stop": 84,
+        "wait/repair": 132,
+        "wait/stop": 40
+      },
+      "config": {
+        "adaptive": false,
+        "initial_logvar_bits": 4,
+        "maximum_logvar_bits": 4,
+        "mean_bits": 10,
+        "mode": "error_feedback"
+      },
+      "cpu_ns": 449306365,
+      "eligible": true,
+      "event_packet_bytes": 376374,
+      "event_packets": 1840,
+      "gaussian_nll": 0.7154203930820695,
+      "logical_unit_events": 741219,
+      "mean_action_cost": 0.11017578125,
+      "mean_squared_error": 0.32885391529804514,
+      "mean_utility": 0.5609703034519549,
+      "nll_deficit": 3.6342084448803824e-05,
+      "severe_loss_fraction": 0.00390625,
+      "uncertified_decisions": 28,
+      "utility": 0.5609703034519549,
+      "utility_deficit": 9.71892771466365e-05,
+      "wall_ns": 448242459
+    },
+    {
+      "action_disagreements_vs_continuous": 1,
+      "action_sequences": {
+        "stop": 86,
+        "wait/repair": 133,
+        "wait/stop": 37
+      },
+      "config": {
+        "adaptive": false,
+        "initial_logvar_bits": 6,
+        "maximum_logvar_bits": 6,
+        "mean_bits": 10,
+        "mode": "error_feedback"
+      },
+      "cpu_ns": 436856327,
+      "eligible": true,
+      "event_packet_bytes": 377160,
+      "event_packets": 1839,
+      "gaussian_nll": 0.715406474316179,
+      "logical_unit_events": 781006,
+      "mean_action_cost": 0.10892578124999999,
+      "mean_squared_error": 0.32934447177704074,
+      "mean_utility": 0.5617297469729592,
+      "nll_deficit": 2.24233185582845e-05,
+      "severe_loss_fraction": 0.00390625,
+      "uncertified_decisions": 12,
+      "utility": 0.5617297469729592,
+      "utility_deficit": -0.0006622542438576851,
+      "wall_ns": 435978142
+    },
+    {
+      "action_disagreements_vs_continuous": 0,
+      "action_sequences": {
+        "stop": 85,
+        "wait/repair": 133,
+        "wait/stop": 38
+      },
+      "config": {
+        "adaptive": false,
+        "initial_logvar_bits": 8,
+        "maximum_logvar_bits": 8,
+        "mean_bits": 10,
+        "mode": "error_feedback"
+      },
+      "cpu_ns": 448494644,
+      "eligible": true,
+      "event_packet_bytes": 378276,
+      "event_packets": 1840,
+      "gaussian_nll": 0.7154264574707541,
+      "logical_unit_events": 939681,
+      "mean_action_cost": 0.10947265625,
+      "mean_squared_error": 0.3294957309100016,
+      "mean_utility": 0.5610316128399984,
+      "nll_deficit": 4.2406473133360656e-05,
+      "severe_loss_fraction": 0.00390625,
+      "uncertified_decisions": 0,
+      "utility": 0.5610316128399984,
+      "utility_deficit": 3.587988910314088e-05,
+      "wall_ns": 463871035
+    },
+    {
+      "action_disagreements_vs_continuous": 0,
+      "action_sequences": {
+        "stop": 85,
+        "wait/repair": 133,
+        "wait/stop": 38
+      },
+      "config": {
+        "adaptive": false,
+        "initial_logvar_bits": 10,
+        "maximum_logvar_bits": 10,
+        "mean_bits": 10,
+        "mode": "error_feedback"
+      },
+      "cpu_ns": 436715800,
+      "eligible": true,
+      "event_packet_bytes": 381228,
+      "event_packets": 1840,
+      "gaussian_nll": 0.7154202333668642,
+      "logical_unit_events": 1573493,
+      "mean_action_cost": 0.10947265625,
+      "mean_squared_error": 0.3294957309100016,
+      "mean_utility": 0.5610316128399984,
+      "nll_deficit": 3.618236924352036e-05,
+      "severe_loss_fraction": 0.00390625,
+      "uncertified_decisions": 0,
+      "utility": 0.5610316128399984,
+      "utility_deficit": 3.587988910314088e-05,
+      "wall_ns": 435899368
+    },
+    {
+      "action_disagreements_vs_continuous": 0,
+      "action_sequences": {
+        "stop": 85,
+        "wait/repair": 133,
+        "wait/stop": 38
+      },
+      "config": {
+        "adaptive": false,
+        "initial_logvar_bits": 12,
+        "maximum_logvar_bits": 12,
+        "mean_bits": 10,
+        "mode": "error_feedback"
+      },
+      "cpu_ns": 468186583,
+      "eligible": true,
+      "event_packet_bytes": 382353,
+      "event_packets": 1840,
+      "gaussian_nll": 0.7154194887842364,
+      "logical_unit_events": 4109017,
+      "mean_action_cost": 0.10947265625,
+      "mean_squared_error": 0.3294957309100016,
+      "mean_utility": 0.5610316128399984,
+      "nll_deficit": 3.543778661574404e-05,
+      "severe_loss_fraction": 0.00390625,
+      "uncertified_decisions": 0,
+      "utility": 0.5610316128399984,
+      "utility_deficit": 3.587988910314088e-05,
+      "wall_ns": 467660841
+    }
+  ],
+  "development_dataset_sha256": "a652085c43d461103e01f22c8d40afa05790524bd5e99782a79cb1316f0320c4",
+  "development_trajectories": 256,
+  "driver_parameter_l2_change": 0.8709849882106059,
+  "driver_parameters": [
+    0.11931182033416658,
+    0.17894288488318458,
+    1.0112647138359367
+  ],
+  "driver_receipt_sha256": "ee2fc025fb42e2069aec37d8cce5871bfa6bddb4f21e3ed3b546d03fedd21ea9",
+  "gradient_through_discrete_events_claimed": false,
+  "maximum_gaussian_nll_deficit": 0.001,
+  "maximum_utility_deficit": 0.001,
+  "model_sha256": "cf594f5c0e27a8e4582c91b9f19503e32e9e2de1bca0690a45c24e366c47089b",
+  "optimizer_success": true,
+  "round2_selection": {
+    "baseline_development_nll": 0.7153840509976207,
+    "candidates": [
+      {
+        "deficit": -2.334393575442739e-06,
+        "development_nll": 0.7153817166040453,
+        "event_config": {
+          "logvar_step": 0.0078125,
+          "maximum_count": 2147483647,
+          "mean_step": 0.0078125,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 768940,
+        "nonzero_channel_packets": 14215,
+        "packet_bytes": 1429759
+      },
+      {
+        "deficit": -1.4548371801814675e-05,
+        "development_nll": 0.7153695026258189,
+        "event_config": {
+          "logvar_step": 0.015625,
+          "maximum_count": 2147483647,
+          "mean_step": 0.0078125,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 561121,
+        "nonzero_channel_packets": 14113,
+        "packet_bytes": 1427627
+      },
+      {
+        "deficit": 9.849671703709983e-05,
+        "development_nll": 0.7154825477146578,
+        "event_config": {
+          "logvar_step": 0.03125,
+          "maximum_count": 2147483647,
+          "mean_step": 0.0078125,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 457544,
+        "nonzero_channel_packets": 14045,
+        "packet_bytes": 1425285
+      },
+      {
+        "deficit": -2.2180091184820228e-06,
+        "development_nll": 0.7153818329885022,
+        "event_config": {
+          "logvar_step": 0.0625,
+          "maximum_count": 2147483647,
+          "mean_step": 0.0078125,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 405718,
+        "nonzero_channel_packets": 13797,
+        "packet_bytes": 1423733
+      },
+      {
+        "deficit": 6.574789204272236e-05,
+        "development_nll": 0.7154497988896634,
+        "event_config": {
+          "logvar_step": 0.125,
+          "maximum_count": 2147483647,
+          "mean_step": 0.0078125,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 379790,
+        "nonzero_channel_packets": 13325,
+        "packet_bytes": 1422163
+      },
+      {
+        "deficit": -0.0003613997429444682,
+        "development_nll": 0.7150226512546762,
+        "event_config": {
+          "logvar_step": 0.0078125,
+          "maximum_count": 2147483647,
+          "mean_step": 0.015625,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 591991,
+        "nonzero_channel_packets": 14147,
+        "packet_bytes": 1427924
+      },
+      {
+        "deficit": -0.00037441532617366047,
+        "development_nll": 0.715009635671447,
+        "event_config": {
+          "logvar_step": 0.015625,
+          "maximum_count": 2147483647,
+          "mean_step": 0.015625,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 384172,
+        "nonzero_channel_packets": 14045,
+        "packet_bytes": 1425792
+      },
+      {
+        "deficit": -0.0002629664989824976,
+        "development_nll": 0.7151210844986382,
+        "event_config": {
+          "logvar_step": 0.03125,
+          "maximum_count": 2147483647,
+          "mean_step": 0.015625,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 280595,
+        "nonzero_channel_packets": 13977,
+        "packet_bytes": 1423450
+      },
+      {
+        "deficit": -0.00036000914536171713,
+        "development_nll": 0.715024041852259,
+        "event_config": {
+          "logvar_step": 0.0625,
+          "maximum_count": 2147483647,
+          "mean_step": 0.015625,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 228769,
+        "nonzero_channel_packets": 13729,
+        "packet_bytes": 1421898
+      },
+      {
+        "deficit": -0.000297870477560358,
+        "development_nll": 0.7150861805200603,
+        "event_config": {
+          "logvar_step": 0.125,
+          "maximum_count": 2147483647,
+          "mean_step": 0.015625,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 202841,
+        "nonzero_channel_packets": 13257,
+        "packet_bytes": 1420328
+      },
+      {
+        "deficit": 0.0013025027862555438,
+        "development_nll": 0.7166865537838762,
+        "event_config": {
+          "logvar_step": 0.0078125,
+          "maximum_count": 2147483647,
+          "mean_step": 0.03125,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 503687,
+        "nonzero_channel_packets": 14051,
+        "packet_bytes": 1426232
+      },
+      {
+        "deficit": 0.0012904854304897073,
+        "development_nll": 0.7166745364281104,
+        "event_config": {
+          "logvar_step": 0.015625,
+          "maximum_count": 2147483647,
+          "mean_step": 0.03125,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 295868,
+        "nonzero_channel_packets": 13949,
+        "packet_bytes": 1424100
+      },
+      {
+        "deficit": 0.0014093176172321753,
+        "development_nll": 0.7167933686148529,
+        "event_config": {
+          "logvar_step": 0.03125,
+          "maximum_count": 2147483647,
+          "mean_step": 0.03125,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 192291,
+        "nonzero_channel_packets": 13881,
+        "packet_bytes": 1421758
+      },
+      {
+        "deficit": 0.0012997909498672078,
+        "development_nll": 0.7166838419474879,
+        "event_config": {
+          "logvar_step": 0.0625,
+          "maximum_count": 2147483647,
+          "mean_step": 0.03125,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 140465,
+        "nonzero_channel_packets": 13633,
+        "packet_bytes": 1420206
+      },
+      {
+        "deficit": 0.0014092068251866374,
+        "development_nll": 0.7167932578228073,
+        "event_config": {
+          "logvar_step": 0.125,
+          "maximum_count": 2147483647,
+          "mean_step": 0.03125,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 114537,
+        "nonzero_channel_packets": 13161,
+        "packet_bytes": 1418636
+      },
+      {
+        "deficit": -0.0001292193996454971,
+        "development_nll": 0.7152548315979752,
+        "event_config": {
+          "logvar_step": 0.0078125,
+          "maximum_count": 2147483647,
+          "mean_step": 0.0625,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 459287,
+        "nonzero_channel_packets": 13732,
+        "packet_bytes": 1424251
+      },
+      {
+        "deficit": -0.0001350044039195586,
+        "development_nll": 0.7152490465937011,
+        "event_config": {
+          "logvar_step": 0.015625,
+          "maximum_count": 2147483647,
+          "mean_step": 0.0625,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 251468,
+        "nonzero_channel_packets": 13630,
+        "packet_bytes": 1422119
+      },
+      {
+        "deficit": -2.2769006104983447e-05,
+        "development_nll": 0.7153612819915157,
+        "event_config": {
+          "logvar_step": 0.03125,
+          "maximum_count": 2147483647,
+          "mean_step": 0.0625,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 147891,
+        "nonzero_channel_packets": 13562,
+        "packet_bytes": 1419777
+      },
+      {
+        "deficit": -0.00010914647161042179,
+        "development_nll": 0.7152749045260103,
+        "event_config": {
+          "logvar_step": 0.0625,
+          "maximum_count": 2147483647,
+          "mean_step": 0.0625,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 96065,
+        "nonzero_channel_packets": 13314,
+        "packet_bytes": 1418225
+      },
+      {
+        "deficit": -6.967353837483703e-05,
+        "development_nll": 0.7153143774592459,
+        "event_config": {
+          "logvar_step": 0.125,
+          "maximum_count": 2147483647,
+          "mean_step": 0.0625,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 70137,
+        "nonzero_channel_packets": 12842,
+        "packet_bytes": 1416655
+      },
+      {
+        "deficit": 0.005254294765841605,
+        "development_nll": 0.7206383457634623,
+        "event_config": {
+          "logvar_step": 0.0078125,
+          "maximum_count": 2147483647,
+          "mean_step": 0.125,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 437232,
+        "nonzero_channel_packets": 13342,
+        "packet_bytes": 1422911
+      },
+      {
+        "deficit": 0.005234020252179117,
+        "development_nll": 0.7206180712497998,
+        "event_config": {
+          "logvar_step": 0.015625,
+          "maximum_count": 2147483647,
+          "mean_step": 0.125,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 229413,
+        "nonzero_channel_packets": 13240,
+        "packet_bytes": 1420779
+      },
+      {
+        "deficit": 0.005358249628309442,
+        "development_nll": 0.7207423006259301,
+        "event_config": {
+          "logvar_step": 0.03125,
+          "maximum_count": 2147483647,
+          "mean_step": 0.125,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 125836,
+        "nonzero_channel_packets": 13172,
+        "packet_bytes": 1418437
+      },
+      {
+        "deficit": 0.00525907841826212,
+        "development_nll": 0.7206431294158828,
+        "event_config": {
+          "logvar_step": 0.0625,
+          "maximum_count": 2147483647,
+          "mean_step": 0.125,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 74010,
+        "nonzero_channel_packets": 12924,
+        "packet_bytes": 1416885
+      },
+      {
+        "deficit": 0.005315277871887236,
+        "development_nll": 0.7206993288695079,
+        "event_config": {
+          "logvar_step": 0.125,
+          "maximum_count": 2147483647,
+          "mean_step": 0.125,
+          "mode": "error_feedback"
+        },
+        "logical_unit_events": 48082,
+        "nonzero_channel_packets": 12452,
+        "packet_bytes": 1415315
+      }
+    ],
+    "development_budget_met": true,
+    "development_dataset_sha256": "a652085c43d461103e01f22c8d40afa05790524bd5e99782a79cb1316f0320c4",
+    "driver_sha256": "3b3273f8c86ffd8c8465653f9b48d94cbf1a473c406c3d3048dd708d05977fd0",
+    "driver_training_link": {
+      "filter_parameter_l2_change": 0.8709849882106059,
+      "fitted_filter_parameters": [
+        0.11931182033416658,
+        0.17894288488318458,
+        1.0112647138359367
+      ],
+      "initial_filter_parameters": [
+        0.04343021255831214,
+        0.4,
+        1.4
+      ],
+      "objective_trace_sha256": "65cf9fda15b297dbb2428d160632ec2842e584801e84ee131839482b29bace72",
+      "optimizer_success": true,
+      "receipt_sha256": "ee2fc025fb42e2069aec37d8cce5871bfa6bddb4f21e3ed3b546d03fedd21ea9"
+    },
+    "fitted_driver_parameters": [
+      0.11931182033416658,
+      0.17894288488318458,
+      1.0112647138359367
+    ],
+    "independent_development_trajectories": 256,
+    "maximum_development_nll_deficit": 0.002,
+    "model_sha256": "9a68102c673daf76b56ef73eb4cf9a17f56bce5e08c36ce539c8bf53793fc93c",
+    "schema": "hepta.signed-event.selection.v1",
+    "selected_config": {
+      "logvar_step": 0.125,
+      "maximum_count": 2147483647,
+      "mean_step": 0.0625,
+      "mode": "error_feedback"
+    },
+    "selected_index": 19,
+    "selection_ns": 3699506042,
+    "selection_rule": "minimum logical unit counts within development NLL budget; best NLL fallback if none qualify",
+    "training_scope": "driver fitted externally; finite development-only resolution selection; no gradient-through-spikes claim"
+  },
+  "schema": "hepta.decision-event.selection.v1",
+  "selected": {
+    "event_adaptive": {
+      "eligible": true,
+      "index": 1
+    },
+    "event_fixed": {
+      "eligible": true,
+      "index": 6
+    }
+  },
+  "selection_rule": "eligible minimum serialized packet bytes; utility then grid index tie breaks; explicit fallback"
+}

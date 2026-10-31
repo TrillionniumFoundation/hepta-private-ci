@@ -1,0 +1,126 @@
+{
+  "checks": {
+    "analytic_gradients": {
+      "cases": 80,
+      "central_difference_step": 1e-05,
+      "chain_rule_errors": {
+        "diffusion": 3.446365415271657e-11,
+        "drift": 6.2874150330571865e-12,
+        "dt": 3.2768787683323808e-12
+      },
+      "maximum_errors": {
+        "mean": 8.092926329084094e-11,
+        "variance": 2.673216648041432e-10
+      },
+      "pass": true
+    },
+    "first_passage_is_a_separate_event": {
+      "endpoint_probability": 0.15865525393145707,
+      "first_passage_probability": 0.31731050786291415,
+      "pass": true
+    },
+    "independent_density_quadrature": {
+      "cases": 64,
+      "maximum_absolute_error": 2.220446049250313e-16,
+      "pass": true
+    },
+    "invalid_domain_rejection": {
+      "cases": 7,
+      "pass": true,
+      "rejected": 7
+    },
+    "positive_operator_and_q24": {
+      "maximum_q24_component_error": 3.883052290820643e-08,
+      "maximum_row_sum_error": 2.220446049250313e-16,
+      "observed_sup_norm_gain": 0.7644305237009262,
+      "pass": true
+    },
+    "probability_partition": {
+      "cases": 400,
+      "maximum_normalization_error": 2.220446049250313e-16,
+      "minimum_probability": 0.0,
+      "pass": true
+    },
+    "probit_reparameterization_negative_control": {
+      "maximum_forward_error": 3.3306690738754696e-16,
+      "pass": true,
+      "scope": "Identical affine function; optimizer trajectories need separately matched geometry."
+    },
+    "tail_and_narrow_interval_logs": {
+      "maximum_narrow_log_error": 7.105427357601002e-15,
+      "maximum_tail_log_error": 1.1368683772161603e-13,
+      "pass": true,
+      "tail_z": [
+        0,
+        1,
+        4,
+        8,
+        16,
+        32,
+        40
+      ],
+      "underflow_probability_keeps_finite_log": true
+    },
+    "ties_and_binary_complement": {
+      "atom_probabilities": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "binary_sum_error": 1.1102230246251565e-16,
+      "pass": true
+    },
+    "time_consistency": {
+      "continuous_quadrature_error": 1.1102230246251565e-16,
+      "finite_partition_claims_exact_semigroup": false,
+      "finite_partition_projection_errors": [
+        {
+          "absolute_error": 0.004977040838373137,
+          "spacing": 0.5
+        },
+        {
+          "absolute_error": 0.0012784484376547889,
+          "spacing": 0.25
+        },
+        {
+          "absolute_error": 0.0003211827340808826,
+          "spacing": 0.125
+        }
+      ],
+      "maximum_moment_composition_error": 4.440892098500626e-16,
+      "pass": true
+    }
+  },
+  "numpy": "2.3.5",
+  "pass": true,
+  "python": "3.12.14",
+  "schema": "hepta.analytic-event.math-validation.v1",
+  "scipy": "1.17.0",
+  "seed": 260627,
+  "source_sha256": {
+    "analytic.py": "6d447f88aa5c52b6a273271f4936b5e3dc1a2db8b791f48db71d141d97713264",
+    "reference.py": "f6793ae7a19fe324ecbb86eb2af38c9e55820e643a4fd7ed09bab66a5be84fdb"
+  }
+}

@@ -1,0 +1,510 @@
+{
+  "action_cost_is_not_cpu_time_or_dollars": true,
+  "actual_runtime_profile_scored": true,
+  "all_terms_public_and_target_only_postdelivery": true,
+  "arms": {
+    "analytic": {
+      "cost": 0.11082812500000001,
+      "episodes": 1920,
+      "initial_95_gaussian_coverage": 0.95,
+      "initial_terminal_brier": 0.38773140113631627,
+      "initial_terminal_classwise_ece": 0.019692182934118643,
+      "initial_terminal_nll": 0.6346713716170377,
+      "initial_terminal_top_label_ece": 0.017656794966508925,
+      "logical_unit_events": 26123305,
+      "nll_definition": "Actual delivered head probabilities, no clipping; mean null if any zero-mass realized event",
+      "packet_bytes": 623545,
+      "repairs": 1064,
+      "squared_error": 0.15595802534481398,
+      "true_event_zero_probability_count": 0,
+      "utility": 0.7332138496551861,
+      "waits": 1193,
+      "wall_ns": 35316873.508854166
+    },
+    "event": {
+      "cost": 0.11881770833333333,
+      "episodes": 1920,
+      "initial_95_gaussian_coverage": 0.95,
+      "initial_terminal_brier": 0.38773140113631627,
+      "initial_terminal_classwise_ece": 0.019692182934118643,
+      "initial_terminal_nll": 0.6346713716170377,
+      "initial_terminal_top_label_ece": 0.017656794966508925,
+      "logical_unit_events": 26392088,
+      "nll_definition": "Actual delivered head probabilities, no clipping; mean null if any zero-mass realized event",
+      "packet_bytes": 624670,
+      "repairs": 1127,
+      "squared_error": 0.13984897456060216,
+      "true_event_zero_probability_count": 0,
+      "utility": 0.7413333171060645,
+      "waits": 1198,
+      "wall_ns": 40023193.319270834
+    },
+    "gaussian": {
+      "cost": 0.11881770833333333,
+      "episodes": 1920,
+      "initial_95_gaussian_coverage": 0.95,
+      "initial_terminal_brier": 0.38772917960869463,
+      "initial_terminal_classwise_ece": 0.019517827234359745,
+      "initial_terminal_nll": 0.6346712175535539,
+      "initial_terminal_top_label_ece": 0.01682234093806931,
+      "logical_unit_events": 0,
+      "nll_definition": "Actual delivered head probabilities, no clipping; mean null if any zero-mass realized event",
+      "packet_bytes": 0,
+      "repairs": 1127,
+      "squared_error": 0.1398482783496923,
+      "true_event_zero_probability_count": 0,
+      "utility": 0.7413340133169743,
+      "waits": 1198,
+      "wall_ns": 13236218.853125
+    },
+    "history": {
+      "cost": 0.11891666666666666,
+      "episodes": 1920,
+      "initial_95_gaussian_coverage": 0.95,
+      "initial_terminal_brier": 0.38773140113631627,
+      "initial_terminal_classwise_ece": 0.019692182934118643,
+      "initial_terminal_nll": 0.6346713716170377,
+      "initial_terminal_top_label_ece": 0.017656794966508925,
+      "logical_unit_events": 25893671,
+      "nll_definition": "Actual delivered head probabilities, no clipping; mean null if any zero-mass realized event",
+      "packet_bytes": 618718,
+      "repairs": 1106,
+      "squared_error": 0.15067128815648337,
+      "true_event_zero_probability_count": 0,
+      "utility": 0.73041204517685,
+      "waits": 1169,
+      "wall_ns": 37489592.3734375
+    },
+    "numeric": {
+      "cost": 0.12894791666666666,
+      "episodes": 1920,
+      "initial_95_gaussian_coverage": 0.95,
+      "initial_terminal_brier": 0.38773140113631627,
+      "initial_terminal_classwise_ece": 0.019692182934118643,
+      "initial_terminal_nll": 0.6346713716170377,
+      "initial_terminal_top_label_ece": 0.017656794966508925,
+      "logical_unit_events": 24946124,
+      "nll_definition": "Actual delivered head probabilities, no clipping; mean null if any zero-mass realized event",
+      "packet_bytes": 600598,
+      "repairs": 1271,
+      "squared_error": 0.16871257725659158,
+      "true_event_zero_probability_count": 0,
+      "utility": 0.7023395060767418,
+      "waits": 1079,
+      "wall_ns": 34930333.64895833
+    },
+    "probit": {
+      "cost": 0.11881770833333333,
+      "episodes": 1920,
+      "initial_95_gaussian_coverage": 0.95,
+      "initial_terminal_brier": 0.38772917960869463,
+      "initial_terminal_classwise_ece": 0.019517827234359755,
+      "initial_terminal_nll": 0.6346712175535537,
+      "initial_terminal_top_label_ece": 0.01682234093806932,
+      "logical_unit_events": 0,
+      "nll_definition": "Actual delivered head probabilities, no clipping; mean null if any zero-mass realized event",
+      "packet_bytes": 0,
+      "repairs": 1127,
+      "squared_error": 0.1398482783496923,
+      "true_event_zero_probability_count": 0,
+      "utility": 0.7413340133169743,
+      "waits": 1198,
+      "wall_ns": 12299275.216145834
+    },
+    "quantized": {
+      "cost": 0.11881770833333333,
+      "episodes": 1920,
+      "initial_95_gaussian_coverage": 0.95,
+      "initial_terminal_brier": 0.38773140113631627,
+      "initial_terminal_classwise_ece": 0.019692182934118643,
+      "initial_terminal_nll": 0.6346713716170377,
+      "initial_terminal_top_label_ece": 0.017656794966508925,
+      "logical_unit_events": 26392088,
+      "nll_definition": "Actual delivered head probabilities, no clipping; mean null if any zero-mass realized event",
+      "packet_bytes": 624670,
+      "repairs": 1127,
+      "squared_error": 0.13984897456060216,
+      "true_event_zero_probability_count": 0,
+      "utility": 0.7413333171060645,
+      "waits": 1198,
+      "wall_ns": 36623942.1015625
+    },
+    "reset": {
+      "cost": 0.23880208333333333,
+      "episodes": 1920,
+      "initial_95_gaussian_coverage": 0.95,
+      "initial_terminal_brier": 0.38773140113631627,
+      "initial_terminal_classwise_ece": 0.019692182934118643,
+      "initial_terminal_nll": 0.6346713716170377,
+      "initial_terminal_top_label_ece": 0.017656794966508925,
+      "logical_unit_events": 24473877,
+      "nll_definition": "Actual delivered head probabilities, no clipping; mean null if any zero-mass realized event",
+      "packet_bytes": 593903,
+      "repairs": 1920,
+      "squared_error": 0.13269493030983118,
+      "true_event_zero_probability_count": 0,
+      "utility": 0.6285029863568354,
+      "waits": 1046,
+      "wall_ns": 32422355.363020834
+    },
+    "zero": {
+      "cost": 0.23880208333333333,
+      "episodes": 1920,
+      "initial_95_gaussian_coverage": 0.95,
+      "initial_terminal_brier": 0.38773140113631627,
+      "initial_terminal_classwise_ece": 0.019692182934118643,
+      "initial_terminal_nll": 0.6346713716170377,
+      "initial_terminal_top_label_ece": 0.017656794966508925,
+      "logical_unit_events": 24473877,
+      "nll_definition": "Actual delivered head probabilities, no clipping; mean null if any zero-mass realized event",
+      "packet_bytes": 593903,
+      "repairs": 1920,
+      "squared_error": 0.13269493030983118,
+      "true_event_zero_probability_count": 0,
+      "utility": 0.6285029863568354,
+      "waits": 1046,
+      "wall_ns": 32863456.14375
+    }
+  },
+  "complete": true,
+  "contrasts": {
+    "analytic_vs_gaussian": {
+      "baseline": "gaussian",
+      "candidate": "analytic",
+      "empirical_noninferiority_001": false,
+      "empirical_superiority_001": false,
+      "family_adjusted": true,
+      "interval": [
+        -0.01617581502868866,
+        0.0003014099660984393
+      ],
+      "interval_alpha": 0.016666666666666666,
+      "mean_difference": -0.0081201636617884,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "per_seed_mean_difference": [
+        -0.01084776054066545,
+        -0.012794829783683917,
+        -0.005739807056563456,
+        0.00014452484863170258,
+        -0.011362945776660879
+      ],
+      "population_or_production_guarantee": false,
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 384
+    },
+    "analytic_vs_history": {
+      "baseline": "history",
+      "candidate": "analytic",
+      "empirical_noninferiority_001": true,
+      "empirical_superiority_001": false,
+      "family_adjusted": false,
+      "interval": [
+        -0.0035792276669265825,
+        0.009119132765644503
+      ],
+      "interval_alpha": 0.05,
+      "mean_difference": 0.0028018044783360203,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "per_seed_mean_difference": [
+        0.004678218231695087,
+        -0.00010817331654184789,
+        0.0016974299171504462,
+        0.00440190597402811,
+        0.003339641585348302
+      ],
+      "population_or_production_guarantee": false,
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 384
+    },
+    "analytic_vs_numeric": {
+      "baseline": "numeric",
+      "candidate": "analytic",
+      "empirical_noninferiority_001": true,
+      "empirical_superiority_001": true,
+      "family_adjusted": true,
+      "interval": [
+        0.01165503321447255,
+        0.0540342426495276
+      ],
+      "interval_alpha": 0.016666666666666666,
+      "mean_difference": 0.030874343578444246,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "per_seed_mean_difference": [
+        0.021781541523544782,
+        0.008043169654758086,
+        0.039859204717582725,
+        0.03319993174573344,
+        0.051487870250602204
+      ],
+      "population_or_production_guarantee": false,
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 384
+    },
+    "analytic_vs_reset": {
+      "baseline": "reset",
+      "candidate": "analytic",
+      "empirical_noninferiority_001": true,
+      "empirical_superiority_001": true,
+      "family_adjusted": false,
+      "interval": [
+        0.08999921729794191,
+        0.12086596953588723
+      ],
+      "interval_alpha": 0.05,
+      "mean_difference": 0.1047108632983505,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "per_seed_mean_difference": [
+        0.09194608627266448,
+        0.10041117628869084,
+        0.1012349041392883,
+        0.12728989033945812,
+        0.10267225945165072
+      ],
+      "population_or_production_guarantee": false,
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 384
+    },
+    "analytic_vs_zero": {
+      "baseline": "zero",
+      "candidate": "analytic",
+      "empirical_noninferiority_001": true,
+      "empirical_superiority_001": true,
+      "family_adjusted": false,
+      "interval": [
+        0.09019085405170531,
+        0.12085621066565037
+      ],
+      "interval_alpha": 0.05,
+      "mean_difference": 0.1047108632983505,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "per_seed_mean_difference": [
+        0.09194608627266448,
+        0.10041117628869084,
+        0.1012349041392883,
+        0.12728989033945812,
+        0.10267225945165072
+      ],
+      "population_or_production_guarantee": false,
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 384
+    },
+    "event_vs_gaussian": {
+      "baseline": "gaussian",
+      "candidate": "event",
+      "empirical_noninferiority_001": true,
+      "empirical_superiority_001": false,
+      "family_adjusted": true,
+      "interval": [
+        -2.9456999781837656e-06,
+        1.3361303796233531e-06
+      ],
+      "interval_alpha": 0.016666666666666666,
+      "mean_difference": -6.962109098541368e-07,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "per_seed_mean_difference": [
+        -2.7812893074423184e-07,
+        -1.3682646183216126e-06,
+        -2.0969955598174974e-06,
+        -1.7770644038817932e-07,
+        4.400410000008371e-07
+      ],
+      "population_or_production_guarantee": false,
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 384
+    },
+    "event_vs_quantized": {
+      "baseline": "quantized",
+      "candidate": "event",
+      "empirical_noninferiority_001": true,
+      "empirical_superiority_001": false,
+      "family_adjusted": false,
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "interval_alpha": 0.05,
+      "mean_difference": 0.0,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "per_seed_mean_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "population_or_production_guarantee": false,
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 384
+    },
+    "gaussian_vs_probit": {
+      "baseline": "probit",
+      "candidate": "gaussian",
+      "empirical_noninferiority_001": true,
+      "empirical_superiority_001": false,
+      "family_adjusted": false,
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "interval_alpha": 0.05,
+      "mean_difference": 0.0,
+      "method": "paired two-stage seed/whole-trajectory percentile bootstrap",
+      "per_seed_mean_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "population_or_production_guarantee": false,
+      "replicates": 4000,
+      "training_seed_count": 5,
+      "trajectories_per_seed": 384
+    }
+  },
+  "control_executions": 17280,
+  "execution_receipts": [
+    {
+      "audit_native_roundtrip_ns": 20658955003,
+      "audit_wall_ns": 51339468360,
+      "episodes": 3456,
+      "evaluation_cpu_ns": 96418400627,
+      "evaluation_wall_ns": 159909247490,
+      "native_requests": 11407,
+      "native_roundtrip_ns": 16765160334,
+      "seed": 607,
+      "sparse_ticks_replayed": 14352,
+      "typed_ticks_replayed": 4231
+    },
+    {
+      "audit_native_roundtrip_ns": 30331392937,
+      "audit_wall_ns": 67696245249,
+      "episodes": 3456,
+      "evaluation_cpu_ns": 113240854041,
+      "evaluation_wall_ns": 185659428374,
+      "native_requests": 11409,
+      "native_roundtrip_ns": 21803672659,
+      "seed": 701,
+      "sparse_ticks_replayed": 14298,
+      "typed_ticks_replayed": 4260
+    },
+    {
+      "audit_native_roundtrip_ns": 30002293150,
+      "audit_wall_ns": 86938708170,
+      "episodes": 3456,
+      "evaluation_cpu_ns": 125432617730,
+      "evaluation_wall_ns": 220288785439,
+      "native_requests": 11491,
+      "native_roundtrip_ns": 22219373304,
+      "seed": 809,
+      "sparse_ticks_replayed": 14472,
+      "typed_ticks_replayed": 4255
+    },
+    {
+      "audit_native_roundtrip_ns": 22542562016,
+      "audit_wall_ns": 63878119212,
+      "episodes": 3456,
+      "evaluation_cpu_ns": 107937972166,
+      "evaluation_wall_ns": 180309445846,
+      "native_requests": 11625,
+      "native_roundtrip_ns": 19673702702,
+      "seed": 907,
+      "sparse_ticks_replayed": 14586,
+      "typed_ticks_replayed": 4332
+    },
+    {
+      "audit_native_roundtrip_ns": 39143016237,
+      "audit_wall_ns": 86411897352,
+      "episodes": 3456,
+      "evaluation_cpu_ns": 124461265785,
+      "evaluation_wall_ns": 218342083523,
+      "native_requests": 11569,
+      "native_roundtrip_ns": 23253211261,
+      "seed": 1009,
+      "sparse_ticks_replayed": 14556,
+      "typed_ticks_replayed": 4291
+    }
+  ],
+  "frozen_source_and_model_binding": true,
+  "independent_confirmation_trajectories": 1920,
+  "initial_terminal_event_labels": 17280,
+  "mechanism": {
+    "analytic_vs_gaussian": {
+      "action_disagreements": 302,
+      "final_output_disagreements": 1160,
+      "maximum_initial_probability_difference": 0.0002530171290086036,
+      "mean_paid_cost_increase": -0.007989583333333333,
+      "mean_squared_error_reduction": -0.016109746995121733
+    },
+    "analytic_vs_history": {
+      "action_disagreements": 388,
+      "final_output_disagreements": 388,
+      "maximum_initial_probability_difference": 0.0,
+      "mean_paid_cost_increase": -0.008088541666666667,
+      "mean_squared_error_reduction": -0.005286737188330646
+    },
+    "analytic_vs_numeric": {
+      "action_disagreements": 559,
+      "final_output_disagreements": 559,
+      "maximum_initial_probability_difference": 0.0,
+      "mean_paid_cost_increase": -0.018119791666666666,
+      "mean_squared_error_reduction": 0.012754551911777582
+    },
+    "analytic_vs_reset": {
+      "action_disagreements": 1274,
+      "final_output_disagreements": 1274,
+      "maximum_initial_probability_difference": 0.0,
+      "mean_paid_cost_increase": -0.12797395833333333,
+      "mean_squared_error_reduction": -0.023263095034982837
+    },
+    "analytic_vs_zero": {
+      "action_disagreements": 1274,
+      "final_output_disagreements": 1274,
+      "maximum_initial_probability_difference": 0.0,
+      "mean_paid_cost_increase": -0.12797395833333333,
+      "mean_squared_error_reduction": -0.023263095034982837
+    },
+    "event_vs_gaussian": {
+      "action_disagreements": 0,
+      "final_output_disagreements": 1127,
+      "maximum_initial_probability_difference": 0.0002530171290086036,
+      "mean_paid_cost_increase": 0.0,
+      "mean_squared_error_reduction": -6.962109098537477e-07
+    },
+    "event_vs_quantized": {
+      "action_disagreements": 0,
+      "final_output_disagreements": 0,
+      "maximum_initial_probability_difference": 0.0,
+      "mean_paid_cost_increase": 0.0,
+      "mean_squared_error_reduction": 0.0
+    },
+    "gaussian_vs_probit": {
+      "action_disagreements": 0,
+      "final_output_disagreements": 0,
+      "maximum_initial_probability_difference": 5.551115123125783e-16,
+      "mean_paid_cost_increase": 0.0,
+      "mean_squared_error_reduction": 0.0
+    }
+  },
+  "memory_ablation_scope": "Same Q24 posterior repair amplitude and planning formula; zero/reset affect sparse decision representation, each readout refitted",
+  "probability_semantics": "Terminal remaining-error interval at initial public conditioning, not first passage or repair-gain probability",
+  "production_promotion": false,
+  "schema": "hepta.paid-feedback.results.v3",
+  "source_commit": "29174619dfc56cef1c16b34fbf98f85a1cd2e4c3",
+  "task_law": "Gaussian static hidden error; paid independent second noisy sensor",
+  "training_seeds": [
+    607,
+    701,
+    809,
+    907,
+    1009
+  ],
+  "unique_trajectories": 1920
+}

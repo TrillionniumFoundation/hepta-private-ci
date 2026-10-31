@@ -1,0 +1,89 @@
+{
+  "schema": "hepta.analytic-event.round2.restoration-review.v1",
+  "verified_utc": "2026-10-28T00:43:04.379338+00:00",
+  "passed": true,
+  "archive_restorations": [
+    {
+      "archive": "CORE_TRAINING",
+      "sha256": "0c37f99194a4100a59e197dba0a32bb6bc041e19413d3c85e0f10e8f019a9ae0",
+      "data_files": 28,
+      "member_hashes_verified": true,
+      "restored": true,
+      "destination": "/tmp/aen-round2-restore-check/run"
+    },
+    {
+      "archive": "FEEDBACK_TRAINING_101",
+      "sha256": "ce6fe32b20cfae25896354c7d7b5a889c66a6934de0b0b8717596275767e9047",
+      "data_files": 7,
+      "member_hashes_verified": true,
+      "restored": true,
+      "destination": "/tmp/aen-round2-restore-check/run"
+    },
+    {
+      "archive": "FEEDBACK_TRAINING_211",
+      "sha256": "56cc33d4fe99fce8d60751e6fb42b5048faacf3f074e89b8706d1dad3a7ca267",
+      "data_files": 7,
+      "member_hashes_verified": true,
+      "restored": true,
+      "destination": "/tmp/aen-round2-restore-check/run"
+    },
+    {
+      "archive": "FEEDBACK_TRAINING_307",
+      "sha256": "cb1ed119d809ee93b2314413abd753fbf6b280453954b0ee0bade4e26eaffecb",
+      "data_files": 7,
+      "member_hashes_verified": true,
+      "restored": true,
+      "destination": "/tmp/aen-round2-restore-check/run"
+    },
+    {
+      "archive": "FEEDBACK_TRAINING_401",
+      "sha256": "5d1c53fa8e4303d97c6c2a863e8b8f308b959a1244aee0f507e655759dfb6955",
+      "data_files": 7,
+      "member_hashes_verified": true,
+      "restored": true,
+      "destination": "/tmp/aen-round2-restore-check/run"
+    },
+    {
+      "archive": "FEEDBACK_TRAINING_503",
+      "sha256": "4a3bbd2ae14bf6ba86d03f4f10a079467d73424df4eda5e69ddf1570b514d482",
+      "data_files": 7,
+      "member_hashes_verified": true,
+      "restored": true,
+      "destination": "/tmp/aen-round2-restore-check/run"
+    },
+    {
+      "archive": "RETENTION_PREPARED",
+      "sha256": "a1e3dcbf4ff2b9fae89dcb97e0031716d896c5d148397098bdfc9328e3ee1efb",
+      "data_files": 131,
+      "member_hashes_verified": true,
+      "restored": true,
+      "destination": "/tmp/aen-round2-restore-check/run"
+    },
+    {
+      "archive": "RUNTIME_CONFIRMATION",
+      "sha256": "a5f49889ebbbb10283ff3bfba1756dbcefe0575f5b64a804881db800ac4aea55",
+      "data_files": 1535,
+      "member_hashes_verified": true,
+      "restored": true,
+      "destination": "/tmp/aen-round2-restore-check/run"
+    },
+    {
+      "archive": "REPORTING_AND_ANALYSIS",
+      "sha256": "35d5e79b79e428e36d99806c00afd652bdde50c879c90df5a8131891bbe1db76",
+      "data_files": 48,
+      "member_hashes_verified": true,
+      "restored": true,
+      "destination": "/tmp/aen-round2-restore-check/run"
+    }
+  ],
+  "frozen_training_artifacts_reverified": true,
+  "source_files": 56,
+  "trained_artifacts": 194,
+  "native_executable_mode_preserved": true,
+  "freeze_receipt_copied_for_preliminary_verification": true,
+  "scientific_data_regenerated": false,
+  "scope": "9 published bundles materialized, 1777 archive data members verified, real extraction to fresh directory, all original freeze artifact hashes verified, and complete main statistics exactly reproduced; this is evidence portability, not owner state migration or fresh native compilation",
+  "archives_restored_total": 9,
+  "data_members_verified_total": 1777,
+  "restored_statistics_exactly_match_original": true
+}

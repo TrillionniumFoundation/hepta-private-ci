@@ -1,0 +1,17 @@
+{
+  "round": "r8",
+  "base_commit": "e67a5e13ba82768a25858153452c15e76670b641",
+  "upstream_analytic_event_commit": "1bbf9712140ec388f7fb7967fa7b22244386441d",
+  "upstream_tree_path": "experiments/analytic_event_neuron",
+  "upstream_tree_sha": "5e9c85c95cafab62a33a92df7060aaf0da0b5871",
+  "rule": "Historical source, checkpoints and evidence are imported byte-for-byte; all new work is under tools/hcsn/round8_20261031. No historical result is overwritten.",
+  "intended_branch": "research/hcsn-five-track-closure-20261031-r8",
+  "priorities": [
+    "event_dynamics",
+    "value_calibration",
+    "state_task",
+    "native_owner",
+    "operator_theory"
+  ],
+  "production_activation": false
+}

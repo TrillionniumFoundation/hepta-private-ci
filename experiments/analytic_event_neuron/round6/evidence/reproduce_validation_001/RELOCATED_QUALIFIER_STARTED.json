@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "experiments.analytic_event_neuron.round6.test_qualifier",
+    "-v"
+  ],
+  "cwd": "/dev/shm/hepta-round6-d831a963ef2f/hepta-analytic",
+  "environment_overrides": {
+    "HEPTA_QUALIFICATION_RESULT": "/dev/shm/hepta-round6-d831a963ef2f/reproduce_validation_001/restored_development/experiments/analytic_event_neuron/round6/evidence/native_qualification_001/results"
+  },
+  "started_utc": "2026-10-30T13:18:21.984652+00:00",
+  "stdin_sha256": null
+}

@@ -1,0 +1,32 @@
+{
+  "python_ast_sources_checked": 19,
+  "sources": [
+    "experiments/analytic_event_neuron/round4/__init__.py",
+    "experiments/analytic_event_neuron/round4/calibration.py",
+    "experiments/analytic_event_neuron/round4/calibration_study.py",
+    "experiments/analytic_event_neuron/round4/evidence/execute.py",
+    "experiments/analytic_event_neuron/round4/evidence/package.py",
+    "experiments/analytic_event_neuron/round4/evidence/review_calibration.py",
+    "experiments/analytic_event_neuron/round4/evidence/review_runtime_prepared.py",
+    "experiments/analytic_event_neuron/round4/freeze.py",
+    "experiments/analytic_event_neuron/round4/math_validation.py",
+    "experiments/analytic_event_neuron/round4/prefreeze_review.py",
+    "experiments/analytic_event_neuron/round4/runtime_audit.py",
+    "experiments/analytic_event_neuron/round4/runtime_codec.py",
+    "experiments/analytic_event_neuron/round4/runtime_evidence.py",
+    "experiments/analytic_event_neuron/round4/runtime_law.py",
+    "experiments/analytic_event_neuron/round4/runtime_learning.py",
+    "experiments/analytic_event_neuron/round4/runtime_owner.py",
+    "experiments/analytic_event_neuron/round4/runtime_qualification.py",
+    "experiments/analytic_event_neuron/round4/runtime_study.py",
+    "experiments/analytic_event_neuron/round4/runtime_summary.py"
+  ],
+  "python_syntax_passed": true,
+  "just_fmt": {
+    "command": "cd codex-rs && just fmt",
+    "returncode": 1,
+    "status": "NOT_RUN",
+    "stderr": "bash: line 1: cd: codex-rs: No such file or directory\n",
+    "reason": "Partial research checkout contains no codex-rs directory; no Rust sources changed."
+  }
+}

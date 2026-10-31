@@ -1,0 +1,50 @@
+{
+  "count_completed_worker_native_cost_once_in_formal_cohort": true,
+  "dataset_identity": {
+    "all_npz_bytes_identical": true,
+    "passed": true,
+    "path": "runtime_recovery_v2/DATASET_IDENTITY_seed_2017.json",
+    "sha256": "0a1ffae0272f89d3d750875ec2a941049f5efb1bf4e74cae634758e4f8273a6b"
+  },
+  "financial_cost": null,
+  "frozen_source_sha256": "8423356449123f2f0cd064da1741ee38b2c0f9db6a27d7f96ea3ac85b9faafc2",
+  "inputs_sha256": {
+    "DATA.npz": "7b588f60cd01afbd973c80caf2b03b42dfce8ed43b8c3f9db994cf1467fb723f",
+    "PUBLIC.npz": "11bc1e44d63d7eb9d8ff96afee6e8c50985b508756d314fcd216d8a38a2bdd61",
+    "PUBLIC_ROWS.json.gz": "c15e8b4b2a433fabb49b73b472bc1cbda9b961fed990a9ba9c47f1dc43f12bc5",
+    "WORKER.json": "19f5ccdbc1698e020609ec0032114b55642cc7bd49f5806a0c5475dbfd73c0c1",
+    "WORKER.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "WORKER.stdout.log": "9348350e2c8ac29add1d678f65f0ceda0c4184f43755b773434615a26f1d4300",
+    "execution.manifest.json": "5530731b2ca1f3ccc3c31a79a06cbc7430cfbbb09a9e604b3fc378ac44123bc7",
+    "execution.zip": "281e8500b0cb87d7fbaa718b4c3528160084135ab72300c29a962d7ae241d7fb"
+  },
+  "native_energy": null,
+  "original_inputs_unchanged": true,
+  "original_outer_cpu_ns": null,
+  "original_outer_exit_code": null,
+  "original_outer_wall_ns": null,
+  "original_worker_costs": {
+    "cpu_ns": 1088484337680,
+    "native": {
+      "requests": 8015,
+      "roundtrip_ns": 54784687492,
+      "ticks": 10466
+    },
+    "wall_ns": 1310645765739
+  },
+  "passed": true,
+  "reexecuted_policy": false,
+  "reused_in_completed_cohort": true,
+  "schema": "hepta.round4.completed-worker-scoring-recovery.v1",
+  "scored_rows_sha256": "2b210a31d7c102a23c2a988cdea273f277e97c021a063a009ffdee19964042db",
+  "scoring_ast_sha256": "a0e11711650ebf6d36082d263acb9f0cc94155cbf65e26b87fe1bd800cd35d3d",
+  "scoring_recovery": {
+    "cpu_ns": 2523513586,
+    "native_requests": 0,
+    "native_ticks": 0,
+    "scope": "Frozen scoring and aggregation of the already completed saved worker only",
+    "wall_ns": 2527277109
+  },
+  "seed": 2017,
+  "summary_sha256": "c58f3cdcdc5cdb77fb8afb2a14085a7f39a86876af1e4775122753b07092d1a6"
+}

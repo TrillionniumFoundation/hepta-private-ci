@@ -1,0 +1,61 @@
+{
+  "actual_safe_restore_performed": true,
+  "all_inputs_exactly_match_planning_inventory": true,
+  "all_member_bytes_exact": true,
+  "all_member_modes_exact": true,
+  "archive": {
+    "all_member_hashes_verified": true,
+    "bytes": 2910744,
+    "data_members": 916,
+    "member_manifest": "_bundle_manifests/DEVELOPMENT_AND_FAILED_ATTEMPTS.json",
+    "name": "DEVELOPMENT_AND_FAILED_ATTEMPTS",
+    "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/DEVELOPMENT_AND_FAILED_ATTEMPTS.tar.gz",
+    "restore_root": "run",
+    "scientific_data_regenerated": false,
+    "sha256": "b10f374251b0bcca21e9ba88c6947c32b24c82fcf185b4f57684d0e57dbf46a7"
+  },
+  "completed_utc": "2026-10-28T09:54:22.931106+00:00",
+  "created_utc": "2026-10-28T09:54:20.112313+00:00",
+  "descriptor_sha256": "43b5ff84ccd63a066b560d97de175dabdb67471d48b198c71838c3dcd3656e3b",
+  "file_count": 916,
+  "frozen_prepared_artifacts_verified": 329,
+  "frozen_sources_verified": 83,
+  "group_member_counts": {
+    "feedback_development_validation": 6,
+    "feedback_failed_seed_701_enospc_attempt1.tar.gz": 1,
+    "feedback_runtime_independent_development": 8,
+    "review_attempts": 3,
+    "validation": 898
+  },
+  "input_bytes": 3889369,
+  "inputs": [
+    "feedback_development_validation",
+    "feedback_failed_seed_701_enospc_attempt1.tar.gz",
+    "feedback_runtime_independent_development",
+    "review_attempts",
+    "validation"
+  ],
+  "model_fitting_performed": false,
+  "native_inference_rerun": false,
+  "nested_archives": "Preserved and restored as exact archive bytes; outer member count does not include their embedded members.",
+  "original_files_unchanged_and_not_deleted": true,
+  "passed": true,
+  "planning_inventory_sha256": "2313196b2ca91d8ac45ccf5035721c7df7e247d55c694ff9d1416d3ee4fe566f",
+  "restored_allocated_data_bytes": 7417856,
+  "restored_data_members": 916,
+  "restored_destination": "/tmp/aen-r3-development-restore-gqr3j5zy/run",
+  "root_training_failure_receipt": {
+    "included_in_this_bundle": false,
+    "intended_bundle": "RUN_REPORTS",
+    "path": "FEEDBACK_TRAINING_OPERATIONAL_EVENT.json",
+    "sha256": "cac1eff45fe39d878eff7895a5ab9dc4a68d7db8b3077678d2e0dacf8849229c",
+    "unchanged": true
+  },
+  "schema": "hepta.analytic-event.round3.development-failures-restore.v1",
+  "scientific_data_regenerated": false,
+  "source_commit": "29174619dfc56cef1c16b34fbf98f85a1cd2e4c3",
+  "task_disk_limit_bytes": 20000000,
+  "task_estimated_peak_allocated_bytes": 12328600,
+  "temporary_restore_removed_after_verification": true,
+  "wall_ns": 2818807187
+}

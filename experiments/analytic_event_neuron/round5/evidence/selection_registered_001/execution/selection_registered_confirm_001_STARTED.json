@@ -1,0 +1,18 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "experiments.analytic_event_neuron.round5.selection_study",
+    "confirm",
+    "--run-dir",
+    "experiments/analytic_event_neuron/round5/evidence/selection_registered_001",
+    "--freeze",
+    "experiments/analytic_event_neuron/round5/evidence/selection_registered_001/FREEZE.json"
+  ],
+  "cwd": "/workspace/scratch/d831a963ef2f/hepta-analytic",
+  "full_invocation_scope": true,
+  "label": "selection_registered_confirm_001",
+  "nested_component_times_must_not_be_added": true,
+  "schema": "hepta.analytic-event.round4.execution.v1",
+  "started_utc": "2026-10-29T00:16:51.902581+00:00"
+}

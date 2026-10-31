@@ -1,0 +1,31 @@
+{
+  "absolute_tolerance": 2e-10,
+  "data_generators_called": false,
+  "error": "Prepared source, numerical environment or planned identities changed",
+  "error_type": "ValueError",
+  "expected_freeze_sha256": "1e5676bd481ef5a3d13e63a5de8eb90223e9abf55bb918721b28ab32e1f5ba16",
+  "expected_index_sha256": "7de85b15d658d34cef74a3b7ebeb7e9ac19d9fcef446c056f4566c15b0fe7636",
+  "expected_results_sha256": "3a7d02813f2c0d7338c9e1d9d344f4406c13a0e4b01900c659911bbe371005bd",
+  "maximum_errors": {},
+  "parent_cpu_ns": 26961749,
+  "private_information_challenges": 0,
+  "recomputed_model_domain_scopes": 0,
+  "recomputed_query_forecasts_including_reused_old_rows": 0,
+  "reference_methods": [
+    "dense Cholesky conditioning and public-history likelihood",
+    "independent mixture scoring and quantile inversion",
+    "whole-query private-field challenges",
+    "independent ECE and hierarchical resampling aggregation"
+  ],
+  "relative_tolerance": 2e-10,
+  "review_pass": false,
+  "reviewer": "/root/neuron_bridge_scope",
+  "reviewer_source_sha256": "0514ebf3c6bcd5b8d610a3b4c3ae2b995d0d464338eedeb782b6326186374535",
+  "role_attestation_not_cryptographic_signature": true,
+  "schema": "hepta.analytic-event.independent-confirmation-review.v5",
+  "scientific_artifacts_modified": false,
+  "started_utc": "2026-10-29T00:18:51.077559+00:00",
+  "timing_scope": "review including verification, dense replay, information challenges and bootstrap; excludes final receipt write",
+  "training_executed": false,
+  "wall_ns": 28593865
+}

@@ -1,0 +1,114 @@
+{
+  "bash_syntax": [
+    {
+      "block": 1,
+      "returncode": 0,
+      "sha256": "57979b5e38474217f5f1a917286adef6565ceef055bbf7ffaf07319b809e8fc4",
+      "stderr": ""
+    },
+    {
+      "block": 2,
+      "returncode": 0,
+      "sha256": "cb909b61e04f702f53187377a875b8c2552452fceac304a58f2a76b5e00944d4",
+      "stderr": ""
+    },
+    {
+      "block": 3,
+      "returncode": 0,
+      "sha256": "bdf8b9119de23b1f08ad48b22284894c960827b7aae06a863f562ce01ef5bd4a",
+      "stderr": ""
+    },
+    {
+      "block": 4,
+      "returncode": 0,
+      "sha256": "65332c8f21fe194aa1c2ce42a42e46191e57da3cd3e0e754f4009d5f289df550",
+      "stderr": ""
+    },
+    {
+      "block": 5,
+      "returncode": 0,
+      "sha256": "ef6f450907da6d09c28acf5d0e7d5237c5056c0bd39e7cb19f6478f5facd89ff",
+      "stderr": ""
+    },
+    {
+      "block": 6,
+      "returncode": 0,
+      "sha256": "1da51e3f73477b8c3e7e1f8ff747118c5301a47a9b111a9dc57c7be5664e51c5",
+      "stderr": ""
+    },
+    {
+      "block": 7,
+      "returncode": 0,
+      "sha256": "44e49ba6a56ffe1550712456e2a605cf8e0b1144116fd85eaec5c0f3dee935d0",
+      "stderr": ""
+    },
+    {
+      "block": 8,
+      "returncode": 0,
+      "sha256": "f85c9c72f37f8b9f36cc7350f81f0fac2af86cd2fc4323e69d374aa9144271de",
+      "stderr": ""
+    }
+  ],
+  "commands_executed": "bash -n only; Python heredocs parsed with ast.parse but not executed",
+  "created_utc": "2026-10-30T14:05:16.761096+00:00",
+  "fixed_identities": {
+    "artifact_bundle.py": "3c98bfe234c1bfba14b72e114f771cd18c06fc900d754be3c59d3145a12cbb66",
+    "evidence/registered_001/FREEZE.json": "1f4d994da28d3bd61853a904d3e9da03b6ea6c90fe9d680e217f976656450ca1",
+    "evidence/registered_001/PREPARED.json": "01cd90245b3d024d5be8676a684266c44a2e8e608fd9d175625db979d48d688a",
+    "evidence/registered_001/RESULTS.json": "303e98b4c6679f7dd827bb2c3a7083d96010984adbba43e1c6548b7930f53a69",
+    "evidence/registered_001/execution/CONFIRMATION_BATCH_COMPLETED.json": "5548532acbfdc14e43df432058a9dc67653786e3fb6d146a3f6c20f68a2e6c37",
+    "evidence/review_confirmation_diagnostics_001/DIAGNOSTICS.json": "ff3ea0e5a1b2b5039e268bdc999098340c57e70760649008618451679a9ae503",
+    "evidence/review_confirmation_registered_001/REVIEW.json": "ef2ef939432eaa457b97def830f8719030e5050afa79457e4c663d33e5f977f2",
+    "evidence/review_confirmation_registered_001_execution/execution/full_independent_confirmation_COMPLETED.json": "ca46099d10d22a81b4fb0aa20c3ad0667056ba9b0605c8dee758ab8cae4a1818"
+  },
+  "frozen_source_bytes_unchanged": true,
+  "frozen_source_files_checked": 118,
+  "guide_path": "experiments/analytic_event_neuron/round6/REPRODUCE.md",
+  "guide_sha256": "8a74b89b1e3e830bae9f5bed49281f14bfe936935939b109d9e42125911f4cb3",
+  "legacy_python_body_sha256": "e340a65340feeac1c017b59d1410a62f678d2d9f3e533a8babe4f1e97283b504",
+  "passed": true,
+  "python_syntax": [
+    {
+      "marker": "PYFINAL",
+      "parsed_only": true,
+      "sha256": "f9692c229f18de7f4a7b0e13007f93a528c1bed005fb7dd2d508ec0120f94be2"
+    },
+    {
+      "marker": "PYDEV",
+      "parsed_only": true,
+      "sha256": "e340a65340feeac1c017b59d1410a62f678d2d9f3e533a8babe4f1e97283b504"
+    }
+  ],
+  "relative_links": [
+    {
+      "sha256": "3c98bfe234c1bfba14b72e114f771cd18c06fc900d754be3c59d3145a12cbb66",
+      "target": "artifact_bundle.py"
+    },
+    {
+      "sha256": "303e98b4c6679f7dd827bb2c3a7083d96010984adbba43e1c6548b7930f53a69",
+      "target": "evidence/registered_001/RESULTS.json"
+    },
+    {
+      "sha256": "ef2ef939432eaa457b97def830f8719030e5050afa79457e4c663d33e5f977f2",
+      "target": "evidence/review_confirmation_registered_001/REVIEW.json"
+    },
+    {
+      "sha256": "ca46099d10d22a81b4fb0aa20c3ad0667056ba9b0605c8dee758ab8cae4a1818",
+      "target": "evidence/review_confirmation_registered_001_execution/execution/full_independent_confirmation_COMPLETED.json"
+    },
+    {
+      "sha256": "ff3ea0e5a1b2b5039e268bdc999098340c57e70760649008618451679a9ae503",
+      "target": "evidence/review_confirmation_diagnostics_001/DIAGNOSTICS.json"
+    },
+    {
+      "sha256": "5548532acbfdc14e43df432058a9dc67653786e3fb6d146a3f6c20f68a2e6c37",
+      "target": "evidence/registered_001/execution/CONFIRMATION_BATCH_COMPLETED.json"
+    },
+    {
+      "sha256": "20cf029bf08bc2aafd351f16ae0680183a66c581aa6c0409c5f282c75aba2518",
+      "target": "CONTRACT.md"
+    }
+  ],
+  "schema": "hepta.round6.final-reproduction-document-checks.v1",
+  "scientific_tests_or_training_repeated": false
+}
