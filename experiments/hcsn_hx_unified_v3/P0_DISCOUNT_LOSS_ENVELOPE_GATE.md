@@ -25,13 +25,13 @@ On exact parent source at frozen Python 3.13.5 / mpmath 1.3.0:
 - Linear: identical physics, `q=1e-90,dps=65`. Old accepted an apparent `D~2.97e-67`, versus the strict upper bound of order `1e-90`; this is numerical significance loss, not physical amplification.
 - Two-segment: `x=1,b=0,mu=0,sigma=.6,c1=-.2,c2=.7,s=.6,T=1.3,q=1e-90` or `1e-200,dps=50`. Old accepted `F=G` despite q>0. New path may fail at the linear first leg before the piecewise final check; both checks are conservative.
 
-The new 6-method focused tests against **unchanged, exact-parent source blobs** gave **4 failing assertions/subtests**, as intended. Patched local exact-source tests: **25/25 pass, zero skipped** (11 existing linear, 8 existing two-segment, 6 new discount-loss methods), Python unittest process approximately 10.1 seconds on local CPU. Prior standalone 6/6 new-method pass. Existing test sources were reconstructed byte-for-byte, confirmed by their Git blob hashes.
+The new 7-method focused tests against **unchanged, exact-parent source blobs** gave **5 failing assertions/subtests**, as intended. Patched local exact-source tests: **26/26 pass, zero skipped** (11 existing linear, 8 existing two-segment, 7 new discount-loss methods), Python unittest process approximately 9.734 seconds on local CPU. The new direct piecewise regression injects paired quadrature outputs with F=G=0.25, satisfying the old physical ordering and global slope bracket; the patched final guard independently refuses it. Prior standalone 6/6 new-method pass preceded this seventh method. Existing test sources were reconstructed byte-for-byte, confirmed by their Git blob hashes.
 
 ### Executed source identities
 
 - Original linear source blob: `f2f2f864188f6563d0033af998d7cdec7ab95b6d`; patched: `5c026d1626b97a0c06ad5fe86fa20628651e2cb8`.
 - Original two-segment source blob: `2b8f117fb445b431ad4c027b1b71866c51fa3653`; patched: `65443676d823c25ef9d4cb352cba5cd1677989d7`.
-- New test blob: `09cf69ad6cff02772e67927680cf7981dc700dab`.
+- New test blob: `5faadd275f8dbe204996e9ae7be6c90c645042e8`.
 - Existing unchanged linear test blob: `50fa3d457f368d449eaa6b187a43dfc9a87a80e9`, two-segment test blob `60ef6896eb673b31ef20731b7408b64fbdd027e9`.
 
 Reproduce (at branch HEAD with `mpmath` installed):
