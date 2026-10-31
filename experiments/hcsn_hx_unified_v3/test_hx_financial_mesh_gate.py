@@ -1,7 +1,7 @@
 """A disagreement is an explicit blocker, never a green release signal."""
 import unittest
 from .hx import HX, boundary
-from .hx_financial_mesh_gate import financial_obstacle_mesh_gate
+from .hx_financial_mesh_gate import financial_obstacle_mesh_gate, _within_one_local_cell
 
 class MeshGateTests(unittest.TestCase):
     def test_hazard_counterexample_refuses_coarse_method_disagreement(self):
@@ -20,6 +20,13 @@ class MeshGateTests(unittest.TestCase):
         self.assertTrue(all(v.endpoint_within_one_cell for v in gate.comparisons))
         self.assertFalse(gate.scientific_gate_closed)
         self.assertFalse(gate.production_activation)
+
+    def test_endpoint_tolerance_uses_local_cell_not_far_field(self):
+        self.assertTrue(_within_one_local_cell(None,None,101,3.6))
+        self.assertFalse(_within_one_local_cell(None,103.,101,3.6))
+        self.assertTrue(_within_one_local_cell(103.,104.,101,3.6))
+        # Old right-edge-derived tolerance was huge and falsely accepted this.
+        self.assertFalse(_within_one_local_cell(103.,200.,101,3.6))
 
     def test_invalid_mesh_plan_refused(self):
         p=HX()
