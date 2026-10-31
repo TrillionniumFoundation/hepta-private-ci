@@ -18,6 +18,7 @@ import math
 from .first_hit_time_interval import (bound_first_hit,
     financial_bond_from_hit_interval, UnresolvedFirstHit, _ceil_grid)
 from .hx_bond_pde_independent import solve_bond_pde
+from .hx_debt_panel_identity import panel_input_digest, UnboundDebtPanel
 
 
 class UnresolvedDebtAudit(ValueError):
@@ -49,6 +50,7 @@ class FullDebtGridBound:
     guaranteed_lower_witness_node: int
     independent_nodes: int
     rows: tuple[DebtNodeBound,...]
+    physical_parameters_sha256: str = ''
     global_continuum_certified: bool = False
     complete_hx_equilibrium_certified: bool = False
     production_activation: bool = False
@@ -76,6 +78,11 @@ def audit_all_debt_nodes(p, barrier: float, *, nodes: int=101,
     """
     if not (type(barrier) in (int,float) and math.isfinite(barrier) and barrier>0):
         raise UnresolvedDebtAudit('invalid fixed candidate barrier')
+    try:
+        input_digest=panel_input_digest(p,barrier=barrier,nodes=nodes,
+                 time_steps=time_steps,log_upper=log_upper)
+    except UnboundDebtPanel as exc:
+        raise UnresolvedDebtAudit('unbound HX physical inputs') from exc
     grid=solve_bond_pde(p,barrier,nodes=nodes,time_steps=time_steps,
                         log_upper=log_upper)
     float_r=F.from_float
@@ -118,7 +125,7 @@ def audit_all_debt_nodes(p, barrier: float, *, nodes: int=101,
         raise UnresolvedDebtAudit('incomplete grid panel')
     return FullDebtGridBound(nodes,time_steps,log_upper,barrier,p.sale_fraction,
             hit_tolerance,str(largest),str(guaranteed_lower),imax,lower_imax,
-            len(rows),tuple(rows))
+            len(rows),tuple(rows),physical_parameters_sha256=input_digest)
 
 
 if __name__=='__main__':

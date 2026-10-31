@@ -11,6 +11,7 @@ import math
 
 from .debt_pde_rational_interval_audit import FullDebtGridBound, UnresolvedDebtAudit
 from .hx_actual_pde_conditional_audit import evaluate_grid
+from .hx_debt_panel_identity import panel_input_digest, UnboundDebtPanel
 
 
 @dataclass(frozen=True)
@@ -45,6 +46,15 @@ def check_idealized_equity_boundary(p, panel: FullDebtGridBound) -> DebtOnlyCond
             len(panel.rows)==panel.nodes and
             tuple(row.index for row in panel.rows)==tuple(range(panel.nodes))):
         raise UnresolvedDebtAudit('physical panel mismatch')
+    try:
+        expected=panel_input_digest(p,barrier=panel.candidate_barrier,
+            nodes=panel.nodes,time_steps=panel.time_steps,
+            log_upper=panel.log_upper)
+    except UnboundDebtPanel as exc:
+        raise UnresolvedDebtAudit('invalid HX physical identity') from exc
+    if (type(panel.physical_parameters_sha256) is not str or
+            panel.physical_parameters_sha256!=expected):
+        raise UnresolvedDebtAudit('stale/unbound physical HX debt-error panel')
     debt=F(panel.worst_absolute_discrepancy_upper)
     if debt<0:
         raise UnresolvedDebtAudit('negative external debt error')
