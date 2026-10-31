@@ -1,0 +1,28 @@
+{
+  "original_protocol": "protocol.json",
+  "reason": "A pre-freeze numerical unit test generated the original low_noise and moving_boundary confirmation fixtures (seeds 91003 and 91004), comparing only teacher probabilities to an independent stable kernel. No model predictions or confirmation performance were examined, but the literal generation-order rule was violated.",
+  "action": "Preserve original protocol, source, training, checkpoints and FREEZE bytes. Use fresh seeds for all four confirmation regimes, registered before any confirmation prediction. Do not retune.",
+  "original_seed_exposure": {
+    "low_noise": 91003,
+    "moving_boundary": 91004,
+    "used_for": "teacher/kernel numerical parity only"
+  },
+  "replacement_seeds": {
+    "iid": 191001,
+    "long_history": 191002,
+    "low_noise": 191003,
+    "moving_boundary": 191004
+  },
+  "unchanged": [
+    "training data",
+    "development data",
+    "model weights",
+    "selection rules",
+    "task distributions",
+    "sample sizes",
+    "quality margins"
+  ],
+  "additional_analysis": "Preserve original evaluation and its target-conversion timing. Add query-only predictor costs, explicit amortization and computed quality/cost gates. Structural non-necessity of spikes is a mathematical observation, not an empirical cost test.",
+  "analysis_commit_stage": "this amendment and analysis source are published before replacement confirmation generation",
+  "inference_scope": "Intervals condition on the three frozen fit seeds; no population guarantee over training randomness."
+}
