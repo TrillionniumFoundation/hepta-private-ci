@@ -1,0 +1,47 @@
+{
+  "schema": "hcsn.preread-task-contract.v1",
+  "reference": "../value/task.py",
+  "actions": ["READ", "WAIT", "STOP"],
+  "action_tie_order": ["STOP", "WAIT", "READ"],
+  "action_tie_tolerance": "choose first legal action with Q >= maximum legal Q - 1e-12",
+  "state_key": "t={clock};b={budget_left};r={recovery_until};i={next_packet};h={history}",
+  "config_fields": {
+    "deadline": "integer 1..16",
+    "budget": "integer 0..8",
+    "prior": "finite probability strictly between 0 and 1",
+    "read_cost": "finite nonnegative",
+    "latency_cost": "finite nonnegative",
+    "stop_cost": "finite nonnegative",
+    "failure_cost": "finite nonnegative",
+    "invalid_cost": "finite nonnegative",
+    "refractory_ticks": "integer 0..8",
+    "packets": "1..4 public metadata records ordered by nondecreasing arrival"
+  },
+  "packet_fields": {
+    "arrival": "nonnegative integer tick",
+    "reliability": "finite probability strictly between 0.5 and 1",
+    "failure_probability": "finite probability in [0,1), defaults to 0"
+  },
+  "state_fields": ["clock", "budget_left", "recovery_until", "next_packet", "history", "paid_cost", "terminated", "answer"],
+  "policy_schema": {"kind": "q_table", "entries": {"t=0;b=1;r=0;i=0;h=": [0.7, 0.6, 0.5]}},
+  "request_schema": {"task_before": "64 hex externally acknowledged task digest", "requested": "optional READ/WAIT/STOP; absent invokes policy"},
+  "read": {
+    "guard": "clock < deadline AND budget_left > 0 AND clock >= recovery_until AND next packet exists AND arrival <= clock",
+    "packet": "first unconsumed packet only, indexed by next_packet",
+    "observation": "0 or 1 from actual frozen FullHX logits; x for actual read/decode failure",
+    "clock_delta": 1,
+    "budget_delta": -1,
+    "recovery_until": "clock_after + refractory_ticks",
+    "cost": "read_cost + (failure_cost if observation is x else 0)",
+    "failure": "consumes packet, budget and tick; no posterior evidence update"
+  },
+  "wait": {"guard": "clock < deadline", "clock_delta": 1, "cost": "latency_cost"},
+  "stop": {"guard": "all nonterminal states including initial state", "clock_delta": 0, "cost": "stop_cost", "answer": "int(posterior >= 0.5)", "reward": "external evaluator supplies int(answer == private truth)"},
+  "illegal_action": "do not access payload; actual STOP; cost invalid_cost + stop_cost",
+  "deadline": "READ/WAIT may finish at deadline; next decision only STOP is legal",
+  "posterior": "sigmoid(log(prior/(1-prior)) + sum(sign(bit)*log(reliability/(1-reliability)))) over revealed non-x history",
+  "private_data": "truth, votes, failures and payload bytes are absent from policy inputs",
+  "physical_clock": "each READ/WAIT commits tick_micros through the real R9 native owner; STOP checkpoints task only and leaves native physics frontier unchanged",
+  "recovery": "externally acknowledged composite digest binds task, policy, payload manifest, source and inner native frontier; incomplete intent or mismatched frontier fails closed",
+  "limitations": ["finite binary task", "declared reliability/failure model", "Linux native experiment", "no arbitrary crash exactly-once claim", "no production activation"]
+}

@@ -70,6 +70,8 @@ codex-hepta-types = {{path = "../hepta-types"}}
 serde = {{workspace = true, features = ["derive"]}}
 serde_json.workspace = true
 libc = "=0.2.182"
+[dev-dependencies]
+pretty_assertions.workspace = true
 '''
         (dest / "Cargo.toml").write_text(manifest)
         members.append(name)
